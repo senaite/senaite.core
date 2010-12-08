@@ -1,0 +1,18 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:five="http://namespaces.zope.org/five"
+    xmlns:cmf="http://namespaces.zope.org/cmf"
+    xmlns:i18n="http://namespaces.zope.org/i18n"
+    xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
+    i18n_domain="bika.lims">
+
+<permission id="bika.lims.addAnalysisRequest" title="bika.lims: Add AnalysisRequest" />
+<permission id="bika.lims.addAnalysisService" title="bika.lims: Add AnalysisService" />
+<permission id="bika.lims.addSample" title="bika.lims: Add Sample" />
+<permission id="bika.lims.addAnalysis" title="bika.lims: Add Analysis" />
+<permission id="bika.lims.addResult" title="bika.lims: Add Result" />
+<permission id="bika.lims.addClientFolder" title="bika.lims: Add ClientFolder" />
+<permission id="bika.lims.addClient" title="bika.lims: Add Client" />
+<permission id="bika.lims.addContact" title="bika.lims: Add Contact" />
+
+</configure>

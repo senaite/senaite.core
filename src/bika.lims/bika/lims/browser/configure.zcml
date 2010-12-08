@@ -1,0 +1,16 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    i18n_domain="bika.lims">
+
+    <!-- The customized logo -->
+    <browser:viewlet
+        name="plone.logo"
+        manager="plone.app.layout.viewlets.interfaces.IPortalHeader"
+        template="logo.pt"
+        class="plone.app.layout.viewlets.common.LogoViewlet"
+        permission="zope2.View"
+        layer="bika.lims.interfaces.IBikaLIMSLayer"
+        /> 
+
+</configure>

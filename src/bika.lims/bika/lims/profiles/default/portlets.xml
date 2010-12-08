@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<!-- This file is used to register new types of portlets. It can also
+     be used to register completely new column types. See CMFPlone's version
+     of this file for more information.
+  -->
+<portlets
+    xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+    i18n:domain="plone">
+
+    <!-- Navigation portlet gets some changes -->
+    <assignment name="navigation" category="context" key="/"
+                manager="plone.leftcolumn" type="portlets.Navigation" visible="True">
+        <property name="currentFolderOnly">False</property>
+        <property name="includeTop">False</property>
+        <property name="topLevel">0</property>
+        <property name="bottomLevel">0</property>
+    </assignment>
+
+</portlets>
