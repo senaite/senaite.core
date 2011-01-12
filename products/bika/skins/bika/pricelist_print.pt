@@ -1,0 +1,141 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<metal:block use-macro="here/global_defines/macros/defines" />
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      lang="en"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      tal:attributes="lang default_language|default;
+                      xml:lang default_language|default;"
+      i18n:domain="bika">
+
+<head metal:use-macro="here/header/macros/html_header">
+
+<metal:fillbase fill-slot="base">
+    <base href="" tal:attributes="href here/renderBase" />
+</metal:fillbase>
+
+<metal:headslot fill-slot="head_slot"
+                tal:define="language here/Language;
+                            lang language | default_language;
+                            charset site_properties/default_charset|string:utf-8">
+
+    <metal:cache use-macro="here/global_cache_settings/macros/cacheheaders">
+    Get the global cache headers located in global_cache_settings.
+    </metal:cache>
+
+</metal:headslot>
+
+</head>
+
+<body style="font-size: 100%" onload="this.print()"
+    tal:define="pricelist python:here">
+
+<img src="" tal:attributes="src string:${portal_url}/logo.png"/>
+
+<metal:block define-macro="pricelist">
+<tal:block
+     define="analysis_service python:pricelist.getType() == 'AnalysisService';
+               lab_accredited python:test(analysis_service, context.bika_labinfo.laboratory.getLaboratoryAccredited(), False)">
+
+<table class="invoice">
+<thead>
+
+<tr>
+<th nowrap colspan="4">
+<strong tal:content="pricelist/Title">Pricelist title</strong><br/>
+</th>
+</tr>
+
+<tr>
+<th nowrap colspan="4">
+<span i18n:translate="label_pricelist_for">Pricelist for</span>
+<!-- 2b fixed, lemoene
+<strong tal:define="vocab python:pricelist.Schema()['Type'].Vocabulary();
+    value pricelist/getType"
+    tal:content="python:here.translate(vocab.getMsgId(value), default=vocab.getValue(value))" i18n:translate="analytical_services">Analysis services</strong><br/>
+-->
+<strong 
+    tal:define="vocab python:pricelist.Schema()['Type'].Vocabulary();
+                value pricelist/getType"
+    tal:content="python:here.translate(vocab.getMsgId(value), default=vocab.getValue(value))">Analysis services</strong><br/>
+</th>
+</tr>
+
+
+<tr>
+<th nowrap colspan="4">
+<strong i18n:translate="label_pricelist_valid_from_to">Valid from
+<em tal:content="python:context.toLocalizedTime(pricelist.getStartDate(), long_format=0)"  i18n:name="startdate"
+    >2005-01-01</em> to
+<em tal:content="python:context.toLocalizedTime(pricelist.getEndDate(), long_format=0)" i18n:name="enddate"
+    >2005-01-01</em> 
+</strong>
+</th>
+</tr>
+
+<tr>
+<th i18n:translate="label_description">Description</th>
+<th class="amount" i18n:translate="label_amount">Amount</th>
+<th class="amount" i18n:translate="label_vat">VAT</th>
+<th class="amount" i18n:translate="label_amount_incl_vat">Amount incl VAT</th>
+</tr>
+</thead>
+
+<tbody
+    tal:define="
+        sort_on python:(('getCategoryName', 'nocase', 'asc'), ('Title', 'nocase', 'asc'),);
+        items python:pricelist.objectValues('PricelistLineItem');
+        global catname python:''">
+
+
+<tal:items tal:repeat="item python:sequence.sort(items, sort_on)">
+<tr class="category" 
+    tal:condition="python:item.getCategoryName() != catname">
+<td colspan="4"
+    tal:define="global catname item/getCategoryName">
+<b tal:content="catname">category name</b></td>
+</tr>
+<tr>
+<td>
+<b tal:content="structure item/Title">Item</b>
+<img tal:condition="python:lab_accredited and item.getAccredited()"
+    src="" tal:attributes="src string:${portal/absolute_url}/accredited.png">
+<span tal:content="structure item/getItemDescription">Item Description</span>
+</td>
+<td class="amount" tal:content="item/getSubtotal">10.00</td>
+<td class="amount" tal:content="item/getVAT">1.14</td>
+<td class="amount" tal:content="item/getTotal">11.14</td>
+</tr>
+</tal:items>
+
+</tbody>
+</table>
+
+<p tal:condition="pricelist/getNotes">
+<label i18n:translate="Note">Note</label>:
+<span tal:content="pricelist/getNotes">Notes</span>
+</p>
+
+<p tal:condition="pricelist/getDiscount">
+<span i18n:translate="description_discount"
+    tal:define="discount pricelist/getDiscount;
+    discount python:(discount % 1) and float(discount) or int(discount);">
+A discount of <tal:block replace="discount" i18n:name="accreditation_body"/>% has been applied</span>
+</p>
+
+<p tal:condition="lab_accredited">
+<img src="" tal:attributes="src string:${portal/absolute_url}/accredited.png">
+<span i18n:translate="disclaimer_accredit">
+Methods included in the <tal:block replace="here/bika_labinfo/laboratory/AccreditationBody" i18n:name="accreditation_body"/> schedule of Accreditation for this Laboratory</span>
+</p>
+
+</tal:block>
+
+</metal:block>
+
+</body>
+
+</html>
+

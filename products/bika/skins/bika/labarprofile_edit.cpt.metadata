@@ -1,0 +1,16 @@
+[default]
+title=Edit lab analysis profiles
+
+[validators]
+validators..submit = validate_arprofile
+validators.. = validate_arprofile
+validators..cancel =
+validators..category =
+
+[actions]
+action.success..category = traverse_to:string:labarprofile_edit
+action.success..submit = traverse_to:string:labarprofile_mod
+action.success.. = traverse_to:string:labarprofile_mod
+action.success..cancel = redirect_to:string:..
+action.failure = traverse_to:string:labarprofile_edit
+

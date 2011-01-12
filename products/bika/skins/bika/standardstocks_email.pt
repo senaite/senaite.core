@@ -1,0 +1,30 @@
+<html
+    xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en"
+    i18n:domain="bika"
+    metal:use-macro="here/prefs_main_template/macros/master">
+
+<head>
+    <metal:block fill-slot="top_slot"
+                 tal:define="dummy python:request.set('disable_border', 1)" />
+</head>
+
+<body>
+
+<div metal:fill-slot="prefs_configlet_main">
+
+<h1 tal:content="here/title">Tool title</h1>
+
+<div style="width:380px">
+<metal:email_result
+    tal:define="mail_template string:mail_standardstocks;
+        form_action string:email_standardstocks;
+        form_legend string:Email standard stocks">
+    <metal:block use-macro="here/email_results_form/macros/body"/>
+</metal:email_result>
+</div>
+
+</div>
+
+</body>
+
+</html>

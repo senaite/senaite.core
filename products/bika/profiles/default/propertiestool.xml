@@ -1,0 +1,677 @@
+<?xml version="1.0"?>
+<object name="portal_properties" meta_type="Plone Properties Tool">
+ <object name="extensions_properties" meta_type="Plone Property Sheet">
+  <property name="title">Properties of the ATExtension product</property>
+  <property name="phone_number_types" type="lines">
+   <element value="Office"/>
+   <element value="Secretariat"/>
+   <element value="Laboratory"/>
+   <element value="Mobile"/>
+   <element value="Fax"/>
+   <element value="Private"/>
+  </property>
+  <property name="country_names" type="lines">
+   <element value="Afghanistan"/>
+   <element value="Albania"/>
+   <element value="Algeria"/>
+   <element value="American Samoa"/>
+   <element value="Andorra"/>
+   <element value="Angola"/>
+   <element value="Anguilla"/>
+   <element value="Antarctica"/>
+   <element value="Antigua Barbuda"/>
+   <element value="Argentina"/>
+   <element value="Armenia"/>
+   <element value="Aruba"/>
+   <element value="Australia"/>
+   <element value="Austria"/>
+   <element value="Azerbaijan"/>
+   <element value="Bahamas"/>
+   <element value="Bahrain"/>
+   <element value="Bangladesh"/>
+   <element value="Barbados"/>
+   <element value="Belarus"/>
+   <element value="Belgium"/>
+   <element value="Belize"/>
+   <element value="Benin"/>
+   <element value="Bermuda"/>
+   <element value="Bhutan"/>
+   <element value="Bolivia"/>
+   <element value="Bosnia Herzegovina"/>
+   <element value="Botswana"/>
+   <element value="Bouvet Island"/>
+   <element value="Brazil"/>
+   <element value="British Indian Ocean Territory"/>
+   <element value="Brunei Darussalam"/>
+   <element value="Bulgaria"/>
+   <element value="Burkina Faso"/>
+   <element value="Burundi"/>
+   <element value="Cambodia"/>
+   <element value="Cameroon"/>
+   <element value="Canada"/>
+   <element value="Cape Verde"/>
+   <element value="Cayman Islands"/>
+   <element value="Central African Republic"/>
+   <element value="Chad"/>
+   <element value="Chile"/>
+   <element value="China"/>
+   <element value="Christmas Island"/>
+   <element value="Cocos (Keeling) Islands"/>
+   <element value="Colombia"/>
+   <element value="Comoros"/>
+   <element value="Congo"/>
+   <element value="Congo, Democratic Republic"/>
+   <element value="Cook Islands"/>
+   <element value="Costa Rica"/>
+   <element value="Cote D'Ivoire"/>
+   <element value="Croatia"/>
+   <element value="Cuba"/>
+   <element value="Cyprus"/>
+   <element value="Czech Republic"/>
+   <element value="Denmark"/>
+   <element value="Djibouti"/>
+   <element value="Dominica"/>
+   <element value="Dominican Republic"/>
+   <element value="Ecuador"/>
+   <element value="Egypt"/>
+   <element value="El Salvador"/>
+   <element value="Equatorial Guinea"/>
+   <element value="Eritrea"/>
+   <element value="Estonia"/>
+   <element value="Ethiopia"/>
+   <element value="Falkland Islands (Malvinas)"/>
+   <element value="Faroe Islands"/>
+   <element value="Fiji"/>
+   <element value="Finland"/>
+   <element value="France"/>
+   <element value="French Guiana"/>
+   <element value="French Polynesia"/>
+   <element value="French Southern Territories"/>
+   <element value="Gabon"/>
+   <element value="Gambia"/>
+   <element value="Georgia"/>
+   <element value="Germany"/>
+   <element value="Ghana"/>
+   <element value="Gibraltar"/>
+   <element value="Greece"/>
+   <element value="Greenland"/>
+   <element value="Grenada"/>
+   <element value="Guadeloupe"/>
+   <element value="Guam"/>
+   <element value="Guatemala"/>
+   <element value="Guinea"/>
+   <element value="Guinea-Bissau"/>
+   <element value="Guyana"/>
+   <element value="Haiti"/>
+   <element value="Heard Island Mcdonald Islands"/>
+   <element value="Holy See (Vatican City State)"/>
+   <element value="Honduras"/>
+   <element value="Hong Kong"/>
+   <element value="Hungary"/>
+   <element value="Iceland"/>
+   <element value="India"/>
+   <element value="Indonesia"/>
+   <element value="Iran, Islamic Republic"/>
+   <element value="Iraq"/>
+   <element value="Ireland"/>
+   <element value="Israel"/>
+   <element value="Italy"/>
+   <element value="Jamaica"/>
+   <element value="Japan"/>
+   <element value="Jordan"/>
+   <element value="Kazakhstan"/>
+   <element value="Kenya"/>
+   <element value="Kiribati"/>
+   <element value="Korea, Democratic People's Republic"/>
+   <element value="Korea, Republic"/>
+   <element value="Kuwait"/>
+   <element value="Kyrgyzstan"/>
+   <element value="Lao People's Democratic Republic"/>
+   <element value="Latvia"/>
+   <element value="Lebanon"/>
+   <element value="Lesotho"/>
+   <element value="Liberia"/>
+   <element value="Libyan Arab Jamahiriya"/>
+   <element value="Liechtenstein"/>
+   <element value="Lithuania"/>
+   <element value="Luxembourg"/>
+   <element value="Macao"/>
+   <element value="Macedonia, Former Yugoslav Republic"/>
+   <element value="Madagascar"/>
+   <element value="Malawi"/>
+   <element value="Malaysia"/>
+   <element value="Maldives"/>
+   <element value="Mali"/>
+   <element value="Malta"/>
+   <element value="Marshall Islands"/>
+   <element value="Martinique"/>
+   <element value="Mauritania"/>
+   <element value="Mauritius"/>
+   <element value="Mayotte"/>
+   <element value="Mexico"/>
+   <element value="Micronesia, Federated States"/>
+   <element value="Moldova, Republic"/>
+   <element value="Monaco"/>
+   <element value="Mongolia"/>
+   <element value="Montserrat"/>
+   <element value="Morocco"/>
+   <element value="Mozambique"/>
+   <element value="Myanmar"/>
+   <element value="Namibia"/>
+   <element value="Nauru"/>
+   <element value="Nepal"/>
+   <element value="Netherlands"/>
+   <element value="Netherlands Antilles"/>
+   <element value="New Caledonia"/>
+   <element value="New Zealand"/>
+   <element value="Nicaragua"/>
+   <element value="Niger"/>
+   <element value="Nigeria"/>
+   <element value="Niue"/>
+   <element value="Norfolk Island"/>
+   <element value="Northern Mariana Islands"/>
+   <element value="Norway"/>
+   <element value="Oman"/>
+   <element value="Pakistan"/>
+   <element value="Palau"/>
+   <element value="Palestinian Territory, Occupied"/>
+   <element value="Panama"/>
+   <element value="Papua New Guinea"/>
+   <element value="Paraguay"/>
+   <element value="Peru"/>
+   <element value="Philippines"/>
+   <element value="Pitcairn"/>
+   <element value="Poland"/>
+   <element value="Portugal"/>
+   <element value="Puerto Rico"/>
+   <element value="Qatar"/>
+   <element value="Reunion"/>
+   <element value="Romania"/>
+   <element value="Russian Federation"/>
+   <element value="Rwanda"/>
+   <element value="Saint Helena"/>
+   <element value="Saint Kitts Nevis"/>
+   <element value="Saint Lucia"/>
+   <element value="Saint Pierre Miquelon"/>
+   <element value="Saint Vincent Grenadines"/>
+   <element value="Samoa"/>
+   <element value="San Marino"/>
+   <element value="Sao Tome Principe"/>
+   <element value="Saudi Arabia"/>
+   <element value="Senegal"/>
+   <element value="Serbia Montenegro"/>
+   <element value="Seychelles"/>
+   <element value="Sierra Leone"/>
+   <element value="Singapore"/>
+   <element value="Slovakia"/>
+   <element value="Slovenia"/>
+   <element value="Solomon Islands"/>
+   <element value="Somalia"/>
+   <element value="South Africa"/>
+   <element value="South Georgia South Sandwich Islands"/>
+   <element value="Spain"/>
+   <element value="Sri Lanka"/>
+   <element value="Sudan"/>
+   <element value="Suriname"/>
+   <element value="Svalbard Jan Mayen"/>
+   <element value="Swaziland"/>
+   <element value="Sweden"/>
+   <element value="Switzerland"/>
+   <element value="Syrian Arab Republic"/>
+   <element value="Taiwan, Province China"/>
+   <element value="Tajikistan"/>
+   <element value="Tanzania, United Republic"/>
+   <element value="Thailand"/>
+   <element value="Timor-Leste"/>
+   <element value="Togo"/>
+   <element value="Tokelau"/>
+   <element value="Tonga"/>
+   <element value="Trinidad Tobago"/>
+   <element value="Tunisia"/>
+   <element value="Turkey"/>
+   <element value="Turkmenistan"/>
+   <element value="Turks Caicos Islands"/>
+   <element value="Tuvalu"/>
+   <element value="Uganda"/>
+   <element value="Ukraine"/>
+   <element value="United Arab Emirates"/>
+   <element value="United Kingdom"/>
+   <element value="United States"/>
+   <element value="United States Minor Outlying Islands"/>
+   <element value="Uruguay"/>
+   <element value="Uzbekistan"/>
+   <element value="Vanuatu"/>
+   <element value="Venezuela"/>
+   <element value="Vietnam"/>
+   <element value="Virgin Islands, British"/>
+   <element value="Virgin Islands, U.S."/>
+   <element value="Wallis Futuna"/>
+   <element value="Western Sahara"/>
+   <element value="Yemen"/>
+   <element value="Zambia"/>
+   <element value="Zimbabwe"/>
+  </property>
+ </object>
+ <object name="navtree_properties" meta_type="Plone Property Sheet">
+  <property name="title">NavigationTree properties</property>
+  <property name="sortAttribute" type="string">sortable_title</property>
+  <property name="sortOrder" type="string">asc</property>
+  <property name="sitemapDepth" type="int">3</property>
+  <property name="name" type="string"></property>
+  <property name="root" type="string">/</property>
+  <property name="currentFolderOnlyInNavtree" type="boolean">False</property>
+  <property name="includeTop" type="boolean">False</property>
+  <property name="topLevel" type="int">0</property>
+  <property name="bottomLevel" type="int">0</property>
+  <property name="showAllParents" type="boolean">True</property>
+  <property name="idsNotToList" type="lines"/>
+  <property name="parentMetaTypesNotToQuery" type="lines">
+   <element value="TempFolder"/>
+   <element value="Large Plone Folder"/>
+  </property>
+  <property name="metaTypesNotToList" type="lines">
+   <element value="ATBooleanCriterion"/>
+   <element value="ATDateCriteria"/>
+   <element value="ATDateRangeCriterion"/>
+   <element value="ATListCriterion"/>
+   <element value="ATPortalTypeCriterion"/>
+   <element value="ATReferenceCriterion"/>
+   <element value="ATSelectionCriterion"/>
+   <element value="ATSimpleIntCriterion"/>
+   <element value="ATSimpleStringCriterion"/>
+   <element value="ATSortCriterion"/>
+   <element value="Discussion Item"/>
+   <element value="Plone Site"/>
+   <element value="TempFolder"/>
+   <element value="ATCurrentAuthorCriterion"/>
+   <element value="ATPathCriterion"/>
+   <element value="AnalysisRequest"/>
+   <element value="Sample"/>
+   <element value="Analysis"/>
+   <element value="Client"/>
+   <element value="SamplePoint"/>
+   <element value="SampleType"/>
+   <element value="StandardManufacturer"/>
+   <element value="StandardStock"/>
+   <element value="StandardSupplier"/>
+   <element value="StandardSample"/>
+   <element value="StandardAnalysis"/>
+   <element value="LabProduct"/>
+   <element value="Attachment"/>
+   <element value="AnalysisService"/>
+   <element value="AnalysisSpec"/>
+   <element value="LabAnalysisSpec"/>
+   <element value="ARProfile"/>
+   <element value="LabARProfile"/>
+   <element value="Address"/>
+   <element value="Worksheet"/>
+   <element value="DuplicateAnalysis"/>
+   <element value="RejectAnalysis"/>
+   <element value="Order"/>
+   <element value="OrderItem"/>
+   <element value="ARImport"/>
+   <element value="ARImportItem"/>
+   <element value="InvoiceLineItem"/>
+   <element value="PricelistLineItem"/>
+   <element value="MethodLogEntry"/>
+   <element value="Instrument"/>
+   <element value="WorksheetTemplate"/>
+  </property>
+  <property name="enable_wf_state_filtering" type="boolean">False</property>
+  <property name="wf_states_to_show" type="lines"/>
+ </object>
+ <object name="portaltransport_properties" meta_type="Plone Property Sheet">
+  <property name="title">PortalTransport properties</property>
+  <property name="unique_emails" type="boolean">True</property>
+  <property name="types" type="lines">
+   <element value="ForumNB"/>
+  </property>
+  <property name="mailer"
+     type="string">PortalTransport MailTransport</property>
+  <property name="mta_ips" type="lines"/>
+  <property name="max_size" type="int">0</property>
+  <property name="commands" type="lines">
+   <element value="subscribe"/>
+   <element value="unsubscribe"/>
+  </property>
+  <property name="allow_subscriptions" type="boolean">False</property>
+  <property name="subscriptions_types" type="lines">
+   <element value="Document"/>
+   <element value="Event"/>
+  </property>
+ </object>
+ <object name="site_properties" meta_type="Plone Property Sheet">
+  <property name="title">Site wide properties</property>
+  <property name="allowAnonymousViewAbout" type="boolean">True</property>
+  <property name="localTimeFormat" type="string">%Y-%m-%d</property>
+  <property name="localLongTimeFormat" type="string">%d %b %Y %Hh%M</property>
+  <property name="default_language" type="string">en</property>
+  <property name="default_charset" type="string">utf-8</property>
+  <property name="use_folder_tabs" type="lines">
+   <element value="PT_MailCategory"/>
+   <element value="Organisation"/>
+   <element value="Person"/>
+  </property>
+  <property name="ext_editor" type="boolean">False</property>
+  <property name="available_editors" type="lines">
+   <element value="None"/>
+   <element value="Kupu"/>
+  </property>
+  <property name="allowRolesToAddKeywords" type="lines">
+   <element value="Manager"/>
+   <element value="Reviewer"/>
+  </property>
+  <property name="auth_cookie_length" type="int">0</property>
+  <property name="calendar_starting_year" type="int">1999</property>
+  <property name="calendar_future_years_available" type="int">5</property>
+  <property name="invalid_ids" type="lines">
+   <element value="actions"/>
+  </property>
+  <property name="default_page" type="lines">
+   <element value="welcome"/>
+  </property>
+  <property name="search_results_description_length" type="int">160</property>
+  <property name="ellipsis" type="string">...</property>
+  <property name="typesLinkToFolderContentsInFC" type="lines">
+   <element value="PT_MailCategory"/>
+   <element value="Organisation"/>
+   <element value="Person"/>
+   <element value="Large Plone Folder"/>
+   <element value="Folder"/>
+  </property>
+  <property name="visible_ids" type="boolean">False</property>
+  <property name="exposeDCMetaTags" type="boolean">False</property>
+  <property name="types_not_searched" type="lines">
+   <element value="ATBooleanCriterion"/>
+   <element value="ATDateCriteria"/>
+   <element value="ATDateRangeCriterion"/>
+   <element value="ATListCriterion"/>
+   <element value="ATPortalTypeCriterion"/>
+   <element value="ATReferenceCriterion"/>
+   <element value="ATSelectionCriterion"/>
+   <element value="ATSimpleIntCriterion"/>
+   <element value="ATSimpleStringCriterion"/>
+   <element value="ATSortCriterion"/>
+   <element value="Discussion Item"/>
+   <element value="Plone Site"/>
+   <element value="TempFolder"/>
+   <element value="ATCurrentAuthorCriterion"/>
+   <element value="ATPathCriterion"/>
+   <element value="CMF Document"/>
+   <element value="CMF Event"/>
+   <element value="CMF Favorite"/>
+   <element value="CMF File"/>
+   <element value="CMF Folder"/>
+   <element value="CMF Image"/>
+   <element value="CMF Large Plone Folder"/>
+   <element value="CMF Link"/>
+   <element value="CMF News Item"/>
+   <element value="CMF Topic"/>
+   <element value="AnalysisService"/>
+   <element value="BikaSettings"/>
+   <element value="Laboratory"/>
+   <element value="LabProduct"/>
+  </property>
+  <property name="disable_folder_sections" type="boolean">True</property>
+  <property name="typesUseViewActionInListings" type="lines">
+   <element value="Image"/>
+   <element value="File"/>
+  </property>
+  <property name="verify_login_name" type="boolean">True</property>
+  <property name="many_users" type="boolean">False</property>
+  <property name="enable_livesearch" type="boolean">True</property>
+  <property name="default_page_types" type="lines">
+   <element value="Document"/>
+   <element value="Event"/>
+   <element value="Link"/>
+   <element value="News Item"/>
+   <element value="Topic"/>
+  </property>
+  <property name="use_folder_contents" type="lines"/>
+  <property name="refwidget_startupdirectories" type="lines"/>
+ </object>
+ <object name="bikamembers_properties" meta_type="Plone Property Sheet">
+  <property name="title">BikaMembers Properties</property>
+  <property name="country_names" type="lines">
+   <element value="Afghanistan"/>
+   <element value="Albania"/>
+   <element value="Algeria"/>
+   <element value="American Samoa"/>
+   <element value="Andorra"/>
+   <element value="Angola"/>
+   <element value="Anguilla"/>
+   <element value="Antarctica"/>
+   <element value="Antigua Barbuda"/>
+   <element value="Argentina"/>
+   <element value="Armenia"/>
+   <element value="Aruba"/>
+   <element value="Australia"/>
+   <element value="Austria"/>
+   <element value="Azerbaijan"/>
+   <element value="Bahamas"/>
+   <element value="Bahrain"/>
+   <element value="Bangladesh"/>
+   <element value="Barbados"/>
+   <element value="Belarus"/>
+   <element value="Belgium"/>
+   <element value="Belize"/>
+   <element value="Benin"/>
+   <element value="Bermuda"/>
+   <element value="Bhutan"/>
+   <element value="Bolivia"/>
+   <element value="Bosnia Herzegovina"/>
+   <element value="Botswana"/>
+   <element value="Bouvet Island"/>
+   <element value="Brazil"/>
+   <element value="British Indian Ocean Territory"/>
+   <element value="Brunei Darussalam"/>
+   <element value="Bulgaria"/>
+   <element value="Burkina Faso"/>
+   <element value="Burundi"/>
+   <element value="Cambodia"/>
+   <element value="Cameroon"/>
+   <element value="Canada"/>
+   <element value="Cape Verde"/>
+   <element value="Cayman Islands"/>
+   <element value="Central African Republic"/>
+   <element value="Chad"/>
+   <element value="Chile"/>
+   <element value="China"/>
+   <element value="Christmas Island"/>
+   <element value="Cocos (Keeling) Islands"/>
+   <element value="Colombia"/>
+   <element value="Comoros"/>
+   <element value="Congo"/>
+   <element value="Congo, Democratic Republic"/>
+   <element value="Cook Islands"/>
+   <element value="Costa Rica"/>
+   <element value="Cote D'Ivoire"/>
+   <element value="Croatia"/>
+   <element value="Cuba"/>
+   <element value="Cyprus"/>
+   <element value="Czech Republic"/>
+   <element value="Denmark"/>
+   <element value="Djibouti"/>
+   <element value="Dominica"/>
+   <element value="Dominican Republic"/>
+   <element value="Ecuador"/>
+   <element value="Egypt"/>
+   <element value="El Salvador"/>
+   <element value="Equatorial Guinea"/>
+   <element value="Eritrea"/>
+   <element value="Estonia"/>
+   <element value="Ethiopia"/>
+   <element value="Falkland Islands (Malvinas)"/>
+   <element value="Faroe Islands"/>
+   <element value="Fiji"/>
+   <element value="Finland"/>
+   <element value="France"/>
+   <element value="French Guiana"/>
+   <element value="French Polynesia"/>
+   <element value="French Southern Territories"/>
+   <element value="Gabon"/>
+   <element value="Gambia"/>
+   <element value="Georgia"/>
+   <element value="Germany"/>
+   <element value="Ghana"/>
+   <element value="Gibraltar"/>
+   <element value="Greece"/>
+   <element value="Greenland"/>
+   <element value="Grenada"/>
+   <element value="Guadeloupe"/>
+   <element value="Guam"/>
+   <element value="Guatemala"/>
+   <element value="Guinea"/>
+   <element value="Guinea-Bissau"/>
+   <element value="Guyana"/>
+   <element value="Haiti"/>
+   <element value="Heard Island Mcdonald Islands"/>
+   <element value="Holy See (Vatican City State)"/>
+   <element value="Honduras"/>
+   <element value="Hong Kong"/>
+   <element value="Hungary"/>
+   <element value="Iceland"/>
+   <element value="India"/>
+   <element value="Indonesia"/>
+   <element value="Iran, Islamic Republic"/>
+   <element value="Iraq"/>
+   <element value="Ireland"/>
+   <element value="Israel"/>
+   <element value="Italy"/>
+   <element value="Jamaica"/>
+   <element value="Japan"/>
+   <element value="Jordan"/>
+   <element value="Kazakhstan"/>
+   <element value="Kenya"/>
+   <element value="Kiribati"/>
+   <element value="Korea, Democratic People's Republic"/>
+   <element value="Korea, Republic"/>
+   <element value="Kuwait"/>
+   <element value="Kyrgyzstan"/>
+   <element value="Lao People's Democratic Republic"/>
+   <element value="Latvia"/>
+   <element value="Lebanon"/>
+   <element value="Lesotho"/>
+   <element value="Liberia"/>
+   <element value="Libyan Arab Jamahiriya"/>
+   <element value="Liechtenstein"/>
+   <element value="Lithuania"/>
+   <element value="Luxembourg"/>
+   <element value="Macao"/>
+   <element value="Macedonia, Former Yugoslav Republic"/>
+   <element value="Madagascar"/>
+   <element value="Malawi"/>
+   <element value="Malaysia"/>
+   <element value="Maldives"/>
+   <element value="Mali"/>
+   <element value="Malta"/>
+   <element value="Marshall Islands"/>
+   <element value="Martinique"/>
+   <element value="Mauritania"/>
+   <element value="Mauritius"/>
+   <element value="Mayotte"/>
+   <element value="Mexico"/>
+   <element value="Micronesia, Federated States"/>
+   <element value="Moldova, Republic"/>
+   <element value="Monaco"/>
+   <element value="Mongolia"/>
+   <element value="Montserrat"/>
+   <element value="Morocco"/>
+   <element value="Mozambique"/>
+   <element value="Myanmar"/>
+   <element value="Namibia"/>
+   <element value="Nauru"/>
+   <element value="Nepal"/>
+   <element value="Netherlands"/>
+   <element value="Netherlands Antilles"/>
+   <element value="New Caledonia"/>
+   <element value="New Zealand"/>
+   <element value="Nicaragua"/>
+   <element value="Niger"/>
+   <element value="Nigeria"/>
+   <element value="Niue"/>
+   <element value="Norfolk Island"/>
+   <element value="Northern Mariana Islands"/>
+   <element value="Norway"/>
+   <element value="Oman"/>
+   <element value="Pakistan"/>
+   <element value="Palau"/>
+   <element value="Palestinian Territory, Occupied"/>
+   <element value="Panama"/>
+   <element value="Papua New Guinea"/>
+   <element value="Paraguay"/>
+   <element value="Peru"/>
+   <element value="Philippines"/>
+   <element value="Pitcairn"/>
+   <element value="Poland"/>
+   <element value="Portugal"/>
+   <element value="Puerto Rico"/>
+   <element value="Qatar"/>
+   <element value="Reunion"/>
+   <element value="Romania"/>
+   <element value="Russian Federation"/>
+   <element value="Rwanda"/>
+   <element value="Saint Helena"/>
+   <element value="Saint Kitts Nevis"/>
+   <element value="Saint Lucia"/>
+   <element value="Saint Pierre Miquelon"/>
+   <element value="Saint Vincent Grenadines"/>
+   <element value="Samoa"/>
+   <element value="San Marino"/>
+   <element value="Sao Tome Principe"/>
+   <element value="Saudi Arabia"/>
+   <element value="Senegal"/>
+   <element value="Serbia Montenegro"/>
+   <element value="Seychelles"/>
+   <element value="Sierra Leone"/>
+   <element value="Singapore"/>
+   <element value="Slovakia"/>
+   <element value="Slovenia"/>
+   <element value="Solomon Islands"/>
+   <element value="Somalia"/>
+   <element value="South Africa"/>
+   <element value="South Georgia South Sandwich Islands"/>
+   <element value="Spain"/>
+   <element value="Sri Lanka"/>
+   <element value="Sudan"/>
+   <element value="Suriname"/>
+   <element value="Svalbard Jan Mayen"/>
+   <element value="Swaziland"/>
+   <element value="Sweden"/>
+   <element value="Switzerland"/>
+   <element value="Syrian Arab Republic"/>
+   <element value="Taiwan, Province China"/>
+   <element value="Tajikistan"/>
+   <element value="Tanzania, United Republic"/>
+   <element value="Thailand"/>
+   <element value="Timor-Leste"/>
+   <element value="Togo"/>
+   <element value="Tokelau"/>
+   <element value="Tonga"/>
+   <element value="Trinidad Tobago"/>
+   <element value="Tunisia"/>
+   <element value="Turkey"/>
+   <element value="Turkmenistan"/>
+   <element value="Turks Caicos Islands"/>
+   <element value="Tuvalu"/>
+   <element value="Uganda"/>
+   <element value="Ukraine"/>
+   <element value="United Arab Emirates"/>
+   <element value="United Kingdom"/>
+   <element value="United States"/>
+   <element value="United States Minor Outlying Islands"/>
+   <element value="Uruguay"/>
+   <element value="Uzbekistan"/>
+   <element value="Vanuatu"/>
+   <element value="Venezuela"/>
+   <element value="Vietnam"/>
+   <element value="Virgin Islands, British"/>
+   <element value="Virgin Islands, U.S."/>
+   <element value="Wallis Futuna"/>
+   <element value="Western Sahara"/>
+   <element value="Yemen"/>
+   <element value="Zambia"/>
+   <element value="Zimbabwe"/>
+  </property>
+ </object>
+</object>

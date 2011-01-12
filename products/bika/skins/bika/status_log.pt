@@ -1,0 +1,93 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      lang="en"
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="bika">
+
+  <metal:block fill-slot="top_slot">
+    <metal:block tal:define="dummy python:request.RESPONSE.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate, post-check=0, pre-check=0');
+                             dummy python:request.set('enable_border', 1);" />
+  </metal:block>
+
+  <body>
+
+    <div metal:fill-slot="main">
+
+      <h1 i18n:translate="heading_status_history">Action log</h1>
+
+      <div>
+
+        <table class="listing nosort" summary="Status History"
+               i18n:attributes="summary"
+               tal:define="
+                    review_history python:wtool.getInfoFor(here, 'review_history', []);
+                   review_history python:[review for review in review_history if review.get('action','')];
+                   creation_info python:{};
+                   creator here/Creator;
+                   creation_time here/CreationDate;
+                   creation_info python:dict([['action', 'create'],['actor', creator],['time', creation_time]]);
+                   dummy python:review_history.insert(0,creation_info);
+                   global previous_date python:0;
+                   calendars python:here.check_calendar_used()"
+               tal:condition="review_history">
+
+          <tr>
+            <th i18n:translate="listingheader_action">Action</th>
+            <th i18n:translate="listingheader_performed_by">Performed&nbsp;by</th>
+            <th i18n:translate="listingheader_date_and_time">Date&nbsp;and&nbsp;Time</th>
+            <th tal:condition="calendars"
+                i18n:translate="heading_worktime">Work time</th>
+            <th tal:condition="not: calendars"
+                i18n:translate="heading_realtime">Real time</th>
+          </tr>
+
+          <metal:block tal:define="reverseList nocall:portal/reverseList"
+                       tal:repeat="items review_history">
+            <tr tal:define="review_history python: reverseList(review_history);
+                            global odd repeat/items/odd" 
+                tal:attributes="class python:test(odd, 'even', 'odd')"
+                tal:condition="items/action">
+
+            
+              <td i18n:translate="">
+                <span tal:replace="items/action" />
+              </td>
+
+              <td>
+                <span tal:content="items/actor">
+                  runyaga
+                </span>
+              </td>
+
+              <td>
+                <span tal:replace="python: plone_view.toLocalizedTime(items['time'], long_format=1)" />
+              </td>
+
+              <td 
+                    tal:define="first_entry python:repeat['items'].index == 0">
+                <div tal:condition="not: first_entry">
+                <span
+                    tal:condition="calendars"
+                    tal:define="
+                        duration python:context.bika_calendar_tool.getDuration(previous_date, items['time']);
+                        duration_str python:here.format_duration(duration)"
+                    tal:replace="duration_str">0</span>
+                <span
+                    tal:condition="not: calendars"
+                    tal:define="
+                        duration python:here.get_real_duration(previous_date, items['time'])"
+                    tal:replace="duration">0</span>
+                </div>
+                <div tal:define="global previous_date items/time"/>
+              </td>
+
+            </tr>
+          </metal:block>
+        </table>
+
+      </div>
+
+    </div>
+
+  </body>
+</html>
+

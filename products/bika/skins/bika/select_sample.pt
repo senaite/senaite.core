@@ -1,0 +1,205 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      i18n:domain="bika">
+
+<head tal:define="ztu modules/ZTUtils;">
+    <title tal:content="here/title_or_id">Title or Id</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"
+          tal:define="charset here/portal_properties/site_properties/default_charset;
+                      dummy python:request.RESPONSE.setHeader('Content-Type', 'text/html;;charset=%s' % charset)"
+          tal:attributes="content string:text/html;;charset=${charset}" />
+    <tal:cssreg tal:condition="exists:here/portal_css">    
+        <metal:css metal:use-macro="here/renderAllTheStylesheets/macros/cssrenderer">
+             <!-- Fetch stylesheets from the CSS Registry -->
+        </metal:css>
+    </tal:cssreg>
+    <style type="text/css" media="all" 
+           tal:condition="not: exists:here/portal_css"
+           tal:define="current_skin python: request.get(here.portal_skins.getRequestVarname(),'');
+           skin_query python:(current_skin and ('?' + ztu.make_query(skin=current_skin))) or ''"
+           tal:content="string: @import url(${here/portal_url}/plone.css${skin_query});">
+    </style>
+</head>
+    <body onload="focus();self.name='referencebrowser_popup'" style="margin: 4px;padding:0.5em;" 
+          tal:define="border_color here/base_properties/globalBorderColor;
+                      show_indexes string:1;
+                      b_size python:15;
+                      b_start python:0;
+                      b_start request/b_start | b_start;
+                      Batch python:modules['Products.CMFPlone'].Batch;">
+<script type="text/javascript" src="utils.js"></script>
+        <div style="text-align:right;">
+           <a href="javascript:window.close()" i18n:translate="referencebrowser_close">close window</a>
+        </div>
+        <h2><strong>Samples</strong></h2>
+
+
+        <!-- Search form -->
+        <form action="search"
+              method="post"
+              name="search"
+              style="padding-bottom:1em;"
+              tal:define="DateTime python:modules['DateTime'].DateTime;
+                          indexes python:here.portal_catalog.indexes();"
+              tal:attributes="action string: ${here/absolute_url}/${template/getId}">
+            <fieldset>
+            <legend i18n:translate="referencebrowser_search_terms">Search</legend>
+            <table width="100%">
+
+            <tr>
+            <td width="50%">
+                <label i18n:translate="label_sampletype">Sample type</label><br/>
+                <select name="getSampleTypeUID:ignore_empty" 
+                        style=""
+                        id="getSampleTypeUID"
+                        tal:attributes="style string:font-family:${here/base_properties/fontFamily};;font-size:100%;">
+                    <option value=""/>
+
+                    <tal:sampletypes
+                        define="    
+                            sampletypes python:here.portal_catalog(portal_type='SampleType');
+                            sort_on python:(('Title', 'nocase', 'asc'),);
+                            sampletypes python:sequence.sort(sampletypes, sort_on);"
+                        repeat="sampletype sampletypes">
+                    <option value=""
+                        tal:define="sampletype_uid python:sampletype.getObject().UID()" 
+                        tal:attributes="value sampletype_uid;
+                            selected python:request.get('getSampleTypeUID', '') == sampletype_uid and 'selected' or ''"
+                        tal:content="sampletype/Title"
+                        >Sample type</option>
+                    </tal:sampletypes>
+                </select>               
+            </td>
+            <td>
+                <label i18n:translate="label_samplepoint">Sample point</label><br/>
+                <select name="getSamplePointUID:ignore_empty" 
+                        style=""
+                        id="getSamplePointUID"
+                        tal:attributes="style string:font-family:${here/base_properties/fontFamily};;font-size:100%;">
+                    <option value=""/>
+
+                    <tal:samplepoints
+                        define="    
+                            samplepoints python:here.portal_catalog(portal_type='SamplePoint');
+                            sort_on python:(('Title', 'nocase', 'asc'),);
+                            samplepoints python:sequence.sort(samplepoints, sort_on);"
+                        repeat="samplepoint samplepoints">
+                    <option value=""
+                        tal:define="samplepoint_uid python:samplepoint.getObject().UID()" 
+                        tal:attributes="value samplepoint_uid;
+                            selected python:request.get('getSamplePointUID', '') == samplepoint_uid and 'selected' or ''"
+                        tal:content="samplepoint/Title"
+                        >Sample point</option>
+                    </tal:samplepoints>
+                </select>   
+            </td>
+            </tr>
+            <tr>
+            <td width="50%">
+                    <label i18n:translate="label_clientreference">Client Reference</label><br/>
+                    <input name="getClientReference:ignore_empty"
+                        tal:attributes="value request/getClientReference | nothing"/>
+            </td>
+            <td>
+                    <label i18n:translate="label_clientsampleid">Client Sample ID</label><br/>
+                    <input name="getClientSampleID:ignore_empty"
+                        tal:attributes="value request/getClientSampleID | nothing"/>
+            </td>
+            </tr>
+            <tr>
+            <td></td>
+            <td>
+                <input tabindex=""
+                       class="searchButton"
+                       type="submit"
+                       name="submit"
+                       value="Search"
+                       i18n:attributes="value"
+                       />                       
+            </td>
+            </tr>
+            </table>
+            <!-- add these to make sure that after a search result, we still have these paremeters -->
+            <input type="hidden" name="portal_type:list" value="Sample"/>
+            </fieldset>
+        </form>
+
+        <!-- actual list of objects, either searchresults or folder contents -->
+        <tal:block tal:define="
+                        dummy_a python:request.set('portal_type', 'Sample');
+                        dummy_b python:request.set('getClientUID', context.UID());
+                        dummy_c python:request.set('review_state', ['due', 'received']);
+                        dummy_d python:request.set('sort_on', 'getDateSubmitted');
+                        query_results python:here.queryCatalog()">
+
+            <div style="border-top:1px solid black;border-bottom:1px solid black;"
+                    tal:attributes="style string:border-top:1px solid ${border_color};;
+                                          border-bottom:1px solid ${border_color};;
+                                          margin-bottom:1em;;padding:0.2em 0 0.1em 0">
+                <strong tal:content="here/title_or_id"/>
+            </div>
+
+        
+           <!-- object list -->
+           <tal:noresults tal:condition="python:query_results==[]">
+               <p i18n:translate="referencebrowser_no_items_found">No items found.</p>
+           </tal:noresults>
+           <tal:list tal:define="checkPermission python: here.portal_membership.checkPermission;
+                                 results query_results;
+                                 batch python: Batch(results, b_size, int(b_start), orphan=1);">
+<table class="group" width="100%" cellspacing="0" cellpadding="2"
+    tal:condition="batch">
+<tbody>
+
+<tal:results tal:repeat="item batch">
+<tal:row  tal:define="
+    sample item/getObject;   
+    sampletypeobj sample/getSampleType;
+    sampletype sampletypeobj/Title;
+    clientref sample/getClientReference;
+    clientsid sample/getClientSampleID;
+    samplepointobj sample/getSamplePoint;
+    samplepoint python:samplepointobj and samplepointobj.Title() or '';
+    sample_description string: $clientref $sampletype $samplepoint;
+    uid sample/aq_explicit/UID|string:'';
+    color here/base_properties/discreetColor;
+    color string:rgb(175,175,175);">
+<tr tal:define="oddrow repeat/item/odd" 
+    tal:attributes="class python:test(oddrow, 'even', 'odd')">
+    <td width="50%">
+    <img src="#" tal:attributes="src string:${here/portal_url}/${sample/getIcon};alt sample/Title" />
+    <strong tal:content="sample/title_or_id">Title</strong>
+    <span tal:content="sample_description">Title</span>
+    </td>
+
+    <td width="25%" nowrap="nowrap" style="text-align:right">
+            <a href=""
+                onclick=""
+                tal:attributes="href string: #;
+                                onclick string: window.opener.select_sample('${sample/UID}', '${sample/title_or_id}','${sampletype}','${samplepoint}', '${clientref}', '${clientsid}');; window.close();; ;">
+                <strong i18n:translate="label_select_sample">select</strong>
+            </a>
+            |
+            <a href="" target="_blank"
+                tal:attributes="href python:sample.absolute_url();">
+                <strong i18n:translate="referencebrowser_view">view</strong>
+            </a>
+    </td>
+</tr>
+</tal:row>
+</tal:results>
+</tbody>
+</table>
+                <div metal:use-macro="here/batch_macros/macros/navigation" />
+            </tal:list>
+        </tal:block>
+    </body>
+</html>
+
+
+
+
+

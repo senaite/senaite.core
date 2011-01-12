@@ -1,0 +1,11 @@
+[default]
+title=Add analysis profile
+
+[validators]
+validators..category =
+validators = validate_arprofile
+
+[actions]
+action.success..category = traverse_to:string:arprofile_add_form
+action.success = traverse_to:string:arprofile_mod
+action.failure = traverse_to:string:arprofile_add_form

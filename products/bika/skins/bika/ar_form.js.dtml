@@ -1,0 +1,422 @@
+/* 
+    When a user selects a new AnalysisRequest profile,
+    the changes on the rest of the form are applied 
+*/
+function setProfile(control_id, col){
+    /* Isolate the profile */
+    profiles = document.getElementById(control_id);
+    profile_id =  "arprofiles." + profiles.selectedIndex;
+    profile = document.getElementById(profile_id);
+
+    if (document.getElementById(profile_id) == undefined) {
+        return
+        }
+
+    /* Get the AnalysisServices, and update the object(s) */
+
+    expand = profile.getAttribute('expand');
+    if (expand.length > 0) {
+        alert('expand the following categories: ' + expand);
+        return;
+    }
+    services = profile.value;
+    var ServiceArray = services.split(";");
+    var analysis_prefix = col + ".analysis.";
+    var prefix = 'ar.' + col;
+    var subtotal = 0;
+    var vat = 0;
+    var total = 0;
+    var idx = 0;
+
+    var selectedservices = document.getElementById(prefix + ".selectedservices");
+    var selectedArray = selectedservices.value.split(",");
+
+    for (idx = 0;idx < selectedArray.length;idx++)
+    {
+        s_idx = parseInt(selectedArray[idx]);
+        analysisid = analysis_prefix + s_idx;
+        analysis = document.getElementById(analysisid);
+        if (analysis) 
+            { analysis.checked = false } 
+    }
+
+    var sel_list = ""
+    var list_splitter = "";
+    for (idx = 0;idx < ServiceArray.length;idx++)
+    {
+        a_idx = parseInt(ServiceArray[idx]);
+        analysisid = analysis_prefix + a_idx;
+        analysis = document.getElementById(analysisid);
+        analysis.checked = true; 
+
+        price_elem = getElem("id", "Prices." + a_idx, null)
+        price = parseFloat(price_elem.value);
+        vat_amount = parseFloat(price_elem.getAttribute('vat_amount'));
+        total_price = parseFloat(price_elem.getAttribute('total_price'));
+        subtotal = subtotal + price;
+        vat = vat + vat_amount;
+        total = total + total_price;
+
+        sel_list = sel_list + list_splitter + a_idx;
+        list_splitter = ",";
+    } 
+    selectedservices.value = sel_list;
+
+    subtotal_fld = getElem("id", prefix + ".Subtotal", null)
+    subtotal_fld.value = subtotal.toFixed(2)
+    subtotal_h_fld = getElem("id", prefix + ".Subtotal_hidden", null)
+    subtotal_h_fld.value = subtotal.toFixed(2)
+
+    vat_fld = getElem("id", prefix + ".VAT" , null)
+    vat_fld.value = vat.toFixed(2)
+    vat_h_fld = getElem("id", prefix + ".VAT_hidden", null)
+    vat_h_fld.value = vat.toFixed(2)
+
+    total_fld = getElem("id", prefix + ".Total", null)
+    total_fld.value = total.toFixed(2)
+    total_h_fld = getElem("id", prefix + ".Total_hidden", null)
+    total_h_fld.value = total.toFixed(2)
+
+}
+
+function selectService(column, as_no) {
+    /* first reset the selected profile */
+    profile_elem=document.getElementById('ar.' + column + '.arprofiles')
+    profile_elem.options.selectedIndex = 0
+
+    subtotal = getElem("id", "ar." + column + ".Subtotal", null)
+    subtotal_h = getElem("id", "ar." + column + ".Subtotal_hidden", null)
+    subtot_price = parseFloat(subtotal.value)
+
+    vat = getElem("id", "ar." + column + ".VAT", null)
+    vat_h = getElem("id", "ar." + column + ".VAT_hidden", null)
+    vat_price = parseFloat(vat.value)
+
+    total = getElem("id", "ar." + column + ".Total", null)
+    total_h = getElem("id", "ar." + column + ".Total_hidden", null)
+    tot_price = parseFloat(total.value)
+
+    analysis = getElem("id", column + ".analysis." + as_no, null)
+    price_elem = getElem("id", "Prices." + as_no, null)
+    
+    item_price = parseFloat(price_elem.value);
+    item_vatamount = parseFloat(price_elem.getAttribute('vat_amount'));
+    item_total_price = parseFloat(price_elem.getAttribute('total_price'));
+
+    var selectedservices = document.getElementById("ar." + column + ".selectedservices");
+    var sel_list = selectedservices.value;
+
+    if (analysis.checked) {
+        subtot_price = subtot_price + item_price;
+        vat_price = vat_price + item_vatamount;
+        tot_price = tot_price + item_total_price;
+        if (sel_list == '')
+          { sel_list = as_no }
+        else
+          { sel_list = sel_list + "," + as_no }
+        selectedservices.value = sel_list;
+    }
+    else {
+        subtot_price = subtot_price - item_price;
+        vat_price = vat_price - item_vatamount;
+        tot_price = tot_price - item_total_price;
+        var list_splitter = "";
+        var selectedArray = sel_list.split(",");
+        sel_list = "";
+        for (idx = 0;idx < selectedArray.length;idx++)
+        {
+            if (parseInt(selectedArray[idx]) != parseInt(as_no))
+            {
+                sel_list = sel_list + list_splitter + selectedArray[idx];
+                list_splitter = ",";
+            }
+        }
+        selectedservices.value = sel_list;
+    }
+
+    subtotal.value = subtot_price.toFixed(2)
+    subtotal_h.value = subtot_price.toFixed(2)
+    vat.value = vat_price.toFixed(2)
+    vat_h.value = vat_price.toFixed(2)
+    total.value = tot_price.toFixed(2)
+    total_h.value = tot_price.toFixed(2)
+
+    return
+}
+function recalcPrice(as_no) {
+    price_elem = getElem("id", "Prices." + as_no, null)
+    
+    old_price = parseFloat(price_elem.getAttribute('old_price'));
+    old_vatamount = parseFloat(price_elem.getAttribute('vat_amount'));
+    old_totalprice = parseFloat(price_elem.getAttribute('total_price'));
+
+    item_price = parseFloat(price_elem.value);
+    item_vatperc = parseFloat(price_elem.getAttribute('vat')); 
+    item_vatamount = item_price * item_vatperc / 100;
+    item_totalprice = item_price + item_vatamount;
+
+    price_elem.value = item_price.toFixed(2);
+    price_elem.setAttribute('vat_amount', item_vatamount.toFixed(2));
+    price_elem.setAttribute('total_price', item_totalprice.toFixed(2));
+    price_elem.setAttribute('old_price', item_price.toFixed(2));
+    price_elem.setAttribute('old_vatamount', item_vatamount.toFixed(2));
+
+    req = 0;
+    ser = 0;
+    
+    for (req=0;req<999;req++) {
+        elem = req + ".analysis." + as_no;
+        if (document.getElementById(elem) == undefined) {
+            break;
+        }
+        analysis = getElem("id", elem, null)
+        if (analysis.checked) {
+            subtotal_id = "ar." + req + ".Subtotal"
+            subtotal_elem = getElem("id", subtotal_id, null)
+            subtotal_h_elem = getElem("id", subtotal_id+"_hidden", null)
+            vat_id = "ar." + req + ".VAT"
+            vat_elem = getElem("id", vat_id, null)
+            vat_h_elem = getElem("id", vat_id+"_hidden", null)
+            total_id = "ar." + req + ".Total"
+            total_elem = getElem("id", total_id, null)
+            total_h_elem = getElem("id", total_id+"_hidden", null)
+
+            subtotal = subtotal_elem.value;
+            subtotal = subtotal - old_price + item_price;  
+            vat = vat_elem.value;
+            vat = vat - old_vatamount + item_vatamount;
+            total = total_elem.value;
+            total = total - old_totalprice + item_totalprice;  
+
+            subtotal_elem.value = subtotal.toFixed(2)
+            subtotal_h_elem.value = subtotal.toFixed(2)
+            vat_elem.value = vat.toFixed(2)
+            vat_h_elem.value = vat.toFixed(2)
+            total_elem.value = total.toFixed(2)
+            total_h_elem.value = total.toFixed(2)
+        }
+    }
+    return
+}
+
+// function to open the client contacts popup window
+function open_cc_browser(path)
+{
+    contact_element=document.getElementById('contact');
+    contact_uid = contact_element.value;
+    cc_element=document.getElementById('cc_uids');
+    cc_uids = cc_element.value;
+    window.open(path + '/select_cc?contact_uid=' + contact_uid + '&cc_uids=' + cc_uids, 'select_cc','toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=500,height=550');                 
+}
+
+
+// function to return a reference from the popup window back into the widget
+function select_cc( uids, titles)
+{
+    contact_element=document.getElementById('contact');
+    contact = contact_element.value;
+
+    source_id = 'ccu' + contact;
+    source_element=document.getElementById(source_id);
+    source=source_element.value;
+    uids_element=document.getElementById('cc_uids');
+    uids_element.value=uids;
+    titles_element=document.getElementById('cc_titles');
+    titles_element.value=titles;
+
+}
+
+var which_col;
+// function to open the samples popup window
+function open_sample_browser(path, column)
+{
+    which_col = column;
+    window.open(path + '/select_sample', 'select_sample','toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=500,height=550');                 
+}
+
+// function to return a reference from the popup window back into the widget
+function select_sample( sampleuid, sampleid, sampletype, samplepoint, clientreference, clientsampleid)
+{
+    incol = which_col;
+    fieldid='ar.' + incol + '.SampleUID';
+    s_uid=document.getElementById(fieldid);
+    s_uid.value=sampleuid;
+    fieldid='ar.' + incol + '.SampleID';
+    s_id=document.getElementById(fieldid);
+    s_id.value=sampleid;
+    fieldid='SampleIDButton.' + incol;
+    s_button=document.getElementById(fieldid);
+    s_button.value=sampleid;
+    fieldid='ar.' + incol + '.SampleType';
+    s_type=document.getElementById(fieldid);
+    s_type.value=sampletype;
+    s_type.readOnly=true;
+    fieldid='ar.' + incol + '.SamplePoint';
+    s_point=document.getElementById(fieldid);
+    s_point.value=samplepoint;
+    s_point.readOnly=true;
+    fieldid='ar.' + incol + '.ClientReference';
+    c_ref=document.getElementById(fieldid);
+    c_ref.value=clientreference;
+    c_ref.readOnly=true;
+    fieldid='ar.' + incol + '.ClientSampleID';
+    c_ref=document.getElementById(fieldid);
+    c_ref.value=clientsampleid;
+    c_ref.readOnly=true;
+    fieldid='SampleIDRemoveButton' ;
+    remove_button=document.getElementById(fieldid);
+    remove_button.style.visibility="visible";
+}
+
+function remove_sample(no_cols)
+{
+    for (i=0; i < no_cols; i++) {
+        fieldid='ar.' + i + '.SampleUID';
+        s_uid=document.getElementById(fieldid);
+        if (s_uid.value == '') {
+            continue;
+        }
+        s_uid.value='';
+        fieldid='ar.' + i + '.SampleID';
+        s_id=document.getElementById(fieldid);
+        s_id.value='';
+        fieldid='SampleIDButton.' + i;
+        s_button=document.getElementById(fieldid);
+        s_button.value='Link...';
+        fieldid='ar.' + i + '.SampleType';
+        s_type=document.getElementById(fieldid);
+        s_type.value='';
+        s_type.readOnly=false;
+        fieldid='ar.' + i + '.SamplePoint';
+        s_point=document.getElementById(fieldid);
+        s_point.value='';
+        s_point.readOnly=false;
+        fieldid='ar.' + i + '.ClientReference';
+        c_ref=document.getElementById(fieldid);
+        c_ref.value='';
+        c_ref.readOnly=false;
+        fieldid='ar.' + i + '.ClientSampleID';
+        c_ref=document.getElementById(fieldid);
+        c_ref.value='';
+        c_ref.readOnly=false;
+    }
+    fieldid='SampleIDRemoveButton';
+    remove_button=document.getElementById(fieldid);
+    remove_button.style.visibility="hidden";
+}
+function getCC() {
+    contact_element=document.getElementById('contact');
+    contact = contact_element.value;
+
+    source_id = 'ccu' + contact;
+    source_element=document.getElementById(source_id);
+    source=source_element.value;
+    uids_element=document.getElementById('cc_uids');
+    uids_element.value=source;
+    source_id = 'ccn' + contact;
+    source_element=document.getElementById(source_id);
+    source=source_element.value;
+    titles_element=document.getElementById('cc_titles');
+    titles_element.value=source;
+
+}
+function copyValue(field_id, col_count) {
+
+    elem=document.getElementById('ar.0.' + field_id);
+    first_value = elem.value;
+
+    for (i=1;i<col_count;i++) {
+        other_elem_id = 'ar.' + i + '.' + field_id;
+        other_elem=document.getElementById(other_elem_id);
+        other_elem.value = first_value;
+    }
+}
+function copyChecks(field_id, col_count) {
+    first_elem=document.getElementById('ar.0.' + field_id);
+    for (i=1;i<col_count;i++) {
+        other_elem_id = 'ar.' + i + '.' + field_id;
+        other_elem=document.getElementById(other_elem_id);
+        if (first_elem.checked) {
+            other_elem.checked = true;
+        } else {
+            other_elem.checked = false;
+        }
+    }
+}
+function copyDateSelection(field_id, col_count) {
+    /* Do year, month and day seperately */
+    elem=document.getElementById('ar.0.' + field_id + 'Year');
+    first_index = elem.options.selectedIndex;
+    for (i=1;i<col_count;i++) {
+        other_elem_id = 'ar.' + i + '.' + field_id + 'Year';
+        other_elem=document.getElementById(other_elem_id);
+        other_elem.options.selectedIndex = first_index
+    }
+
+    elem=document.getElementById('ar.0.' + field_id + 'Month');
+    first_index = elem.options.selectedIndex;
+
+    for (i=1;i<col_count;i++) {
+        other_elem_id = 'ar.' + i + '.' + field_id + 'Month';
+        other_elem=document.getElementById(other_elem_id);
+        other_elem.options.selectedIndex = first_index
+    }
+
+    elem=document.getElementById('ar.0.' + field_id + 'Day');
+    first_index = elem.options.selectedIndex;
+    for (i=1;i<col_count;i++) {
+        other_elem_id = 'ar.' + i + '.' + field_id + 'Day';
+        other_elem=document.getElementById(other_elem_id);
+        other_elem.options.selectedIndex = first_index
+    }
+}
+
+function copyProfile(field_id, col_count) {
+
+    elem=document.getElementById('ar.0.' + field_id);
+    first_index = elem.options.selectedIndex;
+
+    for (i=1;i<col_count;i++) {
+        other_elem_id = 'ar.' + i + '.' + field_id;
+        other_elem=document.getElementById(other_elem_id);
+        other_elem.options.selectedIndex = first_index;
+        setProfile(other_elem_id, i)
+    }
+}
+
+function checkAll(field_id, as_no, col_count) {
+    all = document.getElementById("all." + as_no);
+    prefix = 'ar.';
+
+    for (i=0;i<col_count;i++) {
+    /* first reset the selected profiles */
+        profile_elem=document.getElementById('ar.' + i + '.arprofiles');
+        profile_elem.options.selectedIndex = 0;
+        elem=document.getElementById(i + "." + field_id + "." + as_no);
+        if (all.checked) {
+            if (elem.checked) {
+                continue;
+            } else {
+                elem.checked = true;
+                subtotalID   = prefix + i +  ".Subtotal";
+                vatID        = prefix +  i + ".VAT";
+                totalID      = prefix +  i + ".Total";
+                selectService(i, as_no, subtotalID, vatID, totalID);
+            }
+        } else {
+            if (elem.checked) {
+                elem.checked = false;
+                subtotalID   = prefix + i +  ".Subtotal";
+                vatID        = prefix +  i + ".VAT";
+                totalID      = prefix +  i + ".Total";
+                selectService(i, as_no, subtotalID, vatID, totalID);
+            } else {
+                continue;
+            }
+        }
+    }
+}
+sampletypearray = new Array(<dtml-in "portal_catalog(portal_type='SampleType', sort_on='sortable_title')">'<dtml-var Title>'<dtml-unless sequence-end>,</dtml-unless></dtml-in>);
+
+samplepointarray = new Array(<dtml-in "portal_catalog(portal_type='SamplePoint', sort_on='sortable_title')">'<dtml-var Title>'<dtml-unless sequence-end>,</dtml-unless></dtml-in>);
+

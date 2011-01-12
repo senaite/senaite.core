@@ -1,0 +1,7 @@
+[default]
+title=Edit attachment
+
+[actions]
+action.success..submit = traverse_to:string:attachment_mod
+action.success.. = traverse_to:string:attachment_mod
+action.success..cancel = redirect_to:string:${object/aq_parent/absolute_url}/client_attachments

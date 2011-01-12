@@ -1,0 +1,40 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      lang="en"
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="bika">
+
+<head>
+    <metal:block fill-slot="top_slot"
+       tal:define="dummy python:request.set('disable_border', 1)" />
+</head>
+
+
+<body>
+
+<div metal:fill-slot="main">
+<div metal:use-macro="here/document_actions/macros/document_actions">
+Document actions (print, sendto etc)
+</div>
+<h1>
+<tal:block replace="structure python:getattr(here, here.getIcon(1))"/>
+<span i18n:translate="heading_analysis_set_prices"
+    >Analysis Service price updates</span>
+</h1>
+
+<div
+tal:define="
+    art python:context.analysis_reset_tool;
+    msgs python:art.import_file(context.REQUEST.csvfile.readlines());
+    ">
+
+<tal:msg 
+    tal:repeat="msg msgs">
+<p tal:content="msg"/>
+</tal:msg>
+
+</div>
+</div>
+
+</body>
+</html>
+

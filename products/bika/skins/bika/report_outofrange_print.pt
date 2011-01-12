@@ -1,0 +1,176 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<metal:block use-macro="here/global_defines/macros/defines" />
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      lang="en"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      tal:attributes="lang default_language|default;
+                      xml:lang default_language|default;"
+      i18n:domain="bika">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"
+          tal:define="charset site_properties/default_charset|string:utf-8"
+          tal:attributes="content string:text/html;;charset=${charset}" />
+
+    <!-- Column style sheet. -->
+    <style type="text/css" media="all" tal:condition="exists: portal/ploneColumns.css"
+           tal:content="string:@import url($portal_url/ploneColumns.css);">
+    </style>
+
+    <!-- Main style sheets for CSS2 capable browsers -->
+    <style type="text/css" media="screen"
+           tal:content="string: @import url($portal_url/plone.css);">
+    </style>
+
+    <!-- Alternate style sheets for the bigger/smaller text switcher -->
+    <link rel="alternate stylesheet" type="text/css" media="screen" href="" tal:attributes="href string:$portal_url/ploneTextSmall.css" title="Small Text" />
+    <link rel="alternate stylesheet" type="text/css" media="screen" href="" tal:attributes="href string:$portal_url/ploneTextLarge.css" title="Large Text" />
+
+    <!-- Custom style sheet if available -->
+    <style type="text/css" media="all" tal:condition="exists: portal/ploneCustom.css"
+           tal:content="string:@import url($portal_url/ploneCustom.css);">
+    </style>
+
+    <!-- Style sheet used for printing -->
+    <link rel="stylesheet" type="text/css" media="print" href=""
+          tal:attributes="href string:$portal_url/plonePrint.css" />
+
+    <!-- Internet Explorer CSS Fixes -->
+    <tal:iefixstart replace="structure string:&lt;!--[if IE]&gt;" />
+    <style type="text/css" media="all" tal:condition="exists: portal/ploneIEFixes.css"
+           tal:content="string:@import url($portal_url/ploneIEFixes.css);">
+    </style>
+    <tal:iefixend replace="structure string:&lt;![endif]--&gt;" />
+
+</head>
+
+<body style="font-size: 100%" onload="this.print()">
+<metal:block use-macro="here/report_print_header/macros/report_header"/>
+
+<metal:block define-macro="header">
+<h1>
+        <span i18n:translate="heading_outofrange_analyses">Analyses out of range</span> 
+</h1>
+<p i18n:translate="description_outofrange_analyses">
+Analysis results out of lab or client specified range
+</p>
+<br/>
+</metal:block>
+
+<metal:block define-macro="subheader">
+<div tal:define="
+        fromdate request/getDateReceived_fromdate | nothing;
+        todate request/getDateReceived_todate | nothing;
+        spec request/spec | nothing;">
+<div>
+<span i18n:translate="label_specification">Specification</span>
+<b tal:condition="spec"
+    tal:content="python:request.get('spec', None)"></b>
+<b tal:condition="not:spec"
+    i18n:translate="label_not_specified">not specified</b>
+</div>
+<br/>
+<div tal:condition="python:fromdate or todate">
+<span i18n:translate="label_received_date">Date received</span>
+<span tal:condition="fromdate"
+    i18n:translate="label_from">from</span>
+<b tal:condition="fromdate"
+        tal:content="python:plone_view.toLocalizedTime(fromdate, long_format=0)">2006-01-01 </b>
+<span tal:condition="todate"
+    i18n:translate="label_to">to</span>
+<b tal:condition="todate"
+        tal:content="python:plone_view.toLocalizedTime(todate, long_format=0)">2006-01-01</b>
+</div>
+<div tal:condition="python:not (fromdate or todate)">
+<span i18n:translate="label_received_date">Date received</span>
+<b i18n:translate="label_not_specified">not specified</b>
+</div>
+</div>
+<br/>
+</metal:block>
+
+<metal:block define-macro="body"
+    tal:define="
+        fromdate request/getDateReceived_fromdate | nothing;
+        todate request/getDateReceived_todate | nothing;
+        spec python:request.get('spec' , 'client');
+        results python:here.get_analyses_outofrange(spec, fromdate, todate);
+        analyses results/analyses;
+        cats results/cat;
+        sampletypes results/st;
+        samplepoints results/sp;
+        clients results/clients;
+        services results/as">
+<table
+    tal:condition="results"
+    class="listing"
+    summary="Results"
+    cellpadding="0" cellspacing="0">
+<thead>
+<tr>
+<th i18n:translate="heading_client">Client</th>
+<th i18n:translate="heading_requestid">Request id</th>
+<th i18n:translate="heading_sampletype">Sample Type</th>
+<th i18n:translate="heading_samplepoint">Sample Point</th>
+<th i18n:translate="heading_category">Category</th>
+<th i18n:translate="heading_analysis">Analysis</th>
+<th i18n:translate="heading_result">Result</th>
+<th i18n:translate="heading_min">Min</th>
+<th i18n:translate="heading_max">Max</th>
+<th i18n:translate="heading_status">Status</th>
+</tr>
+</thead>
+
+<tbody>
+<metal:block
+    tal:repeat="analysis analyses">
+<tr tal:define="
+        oddrow repeat/analysis/odd;
+        client_uid analysis/client;
+        url python:clients[client_uid]['url'];
+        client_url python:'%s/base_edit' %url;
+        ar_url python:'%s/%s' %(url, analysis['ar'])"
+    tal:attributes="class python:test(oddrow, 'even', 'odd')">
+<td>
+<a href="" 
+    tal:attributes="href client_url"
+    tal:content="python:clients[client_uid]['name']"></a></td>
+<td>
+<a href=""
+    tal:attributes="href ar_url"
+    tal:content="analysis/ar"></a></td>
+<td tal:content="python:sampletypes[analysis['st']]"></td>
+<td>
+<span tal:define="sp_uid python:analysis['sp']"
+      tal:condition="sp_uid"
+      tal:content="python:samplepoints[sp_uid]" ></span></td>
+<td tal:content="python:cats[analysis['cat']]"></td>
+<td tal:content="python:services[analysis['as']]"></td>
+<td tal:content="analysis/result"></td>
+<td tal:content="analysis/min"></td>
+<td tal:content="analysis/max"></td>
+<td tal:content="analysis/rs"></td>
+</tr>
+</metal:block>
+</tbody>
+<tfoot>
+<tr>
+<th colspan="6"><b i18n:translate="label_count_outofrange">
+Number of analyses out of range for period</b></th>
+<td colspan="4"><b tal:content="python:len(analyses)"/></td>
+</tr>
+
+</tfoot>
+
+</table>
+
+</metal:block>
+
+</body>
+
+</html>
+
+

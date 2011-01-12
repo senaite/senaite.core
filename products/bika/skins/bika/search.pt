@@ -1,0 +1,96 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      lang="en"
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="bika">
+
+<metal:block fill-slot="top_slot"
+             tal:define="dummy python:request.set('disable_border',1)" />
+
+<div metal:fill-slot="main"
+       tal:define="results python:here.queryCatalog();
+                 Batch python:modules['Products.CMFPlone'].Batch;
+                 DateTime python:modules['DateTime'].DateTime;
+                 b_size python:30;b_start python:0;b_start request/b_start | b_start;
+                 desc_length site_properties/search_results_description_length;
+                 desc_ellipsis site_properties/ellipsis;
+                 searchterm request/SearchableText|nothing">
+
+    <h1 i18n:translate="heading_search_results">Search results</h1>
+
+    <div tal:condition="not: results">
+        <p><strong i18n:translate="description_no_results_found">No results were found.</strong></p>
+    </div>
+
+    <p i18n:translate="search_results_advanced">
+    Did you not find what you were looking for? Try the
+    <span i18n:name="advanced_search">
+    <a href=""
+       i18n:translate="search_results_advanced_link"
+       tal:attributes="href string:$portal_url/query_form">Advanced Search</a>
+    </span>
+    for more precise search options.
+    </p>
+
+    <div tal:condition="results"
+          tal:define="batch python:Batch(results, b_size, int(b_start), orphan=1);">
+
+        <strong>
+        <span i18n:translate="batch_x_items_matching_your_criteria"><span i18n:name="number" tal:content="python:len(results)">234</span> items matching your criteria.</span>
+        </strong>
+
+        <a href="" tal:attributes="href string:$here_url/search_rss?${request/QUERY_STRING}">
+        <img i18n:attributes="title; alt"
+             tal:attributes="src string:$portal_url/rss.gif"
+             src="rss.gif"
+             alt="RSS Feed"
+             title="RSS feed of these search results" />
+        </a>
+
+        <!-- Search results -->
+
+        <dl>
+        <tal:results repeat="result batch">
+        <tal:entry define="result_url result/getURL;
+                           url string:$result_url/view?searchterm=${searchterm};">
+            <dt>
+        <a href="#"
+                tal:attributes="href url">
+                <img src="#"
+                     height="16"
+                     width="16"
+                     alt=""
+                     tal:on-error="structure python:path('here/linkOpaque.gif')"
+                     tal:replace="structure python:path('here/%s' % result.getIcon)" /></a>&nbsp;<a
+                href="#" tal:attributes="href url"
+                tal:content="python:result.Title or result.getId" />
+               <span class="discreet" 
+                     title="Relevance"
+                     tal:condition="result/data_record_normalized_score_"
+                     i18n:translate="label_relevance_percentage"
+                     i18n:attributes="title">
+                    [<span tal:replace="result/data_record_normalized_score_"
+                                      i18n:name="percentage">23%</span>%]
+               </span>
+
+                <span class="discreet" i18n:translate="results_by_author">
+                by <span tal:replace="result/Creator" i18n:name="author">Author</span>,
+                <span tal:replace="python:plone_view.toLocalizedTime(result.ModificationDate, long_format=1)" i18n:name="date">Modification Date</span>
+                </span>
+
+            </dt>
+            
+            <dd tal:content="python:here.cropText(result.Description, desc_length, desc_ellipsis)"> Description </dd>
+
+        </tal:entry>
+        </tal:results>
+        </dl>
+         
+        <!-- Navigation -->
+        <div metal:use-macro="here/batch_macros/macros/navigation" />
+
+    </div>
+</div>
+
+
+</html>
+

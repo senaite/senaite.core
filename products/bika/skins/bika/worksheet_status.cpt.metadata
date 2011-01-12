@@ -1,0 +1,17 @@
+[default]
+title=Workflow state
+
+[security]
+View=0:Authenticated
+
+[validators]
+validators..Publish = validate_content_status_modify
+validators.. = validate_content_status_modify
+validators..Cancel =
+
+[actions]
+action.success..Publish=traverse_to:string:content_status_modify
+action.success..FolderPublish=traverse_to:string:folder_publish
+action.success..Cancel=redirect_to_action:string:view
+action.success=redirect_to_action:string:view
+action.failure=traverse_to:string:content_status_history

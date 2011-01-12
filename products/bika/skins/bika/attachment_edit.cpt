@@ -1,0 +1,162 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      lang="en"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="bika">
+
+<head><title></title></head>
+
+<body>
+<div metal:fill-slot="main"
+    tal:define="
+        errors options/state/getErrors">
+
+<script type="text/javascript" src="utils.js"></script>
+
+<tal:error repeat="error python:errors.keys()">
+<tal:x define="message python:errors[error]">
+<p class="portalMessage">
+<span tal:content="error">field</span>:
+<span tal:content="message">Error</span> </p>
+</tal:x>
+</tal:error>
+
+<div metal:use-macro="here/document_actions/macros/document_actions">
+    Document actions (print, sendto etc)
+</div>
+
+<h1>
+    <img src="attachment.png" tal:attributes="src python:here.portal_types.getTypeInfo('Attachment').getIcon()"/>
+    <span i18n:translate="label_attachment_on">Attachment on</span>
+    <a href=""  
+        tal:define="ar python:here.getRequest()"
+        tal:attributes="href ar/absolute_url"
+        tal:content="here/getTextTitle">AR-01</a>
+</h1>
+
+<br/>
+<form name="attachment_form" method="POST" action="template/getId"
+    enctype="multipart/form-data"
+    tal:attributes="action template/getId" autocomplete="off"
+    tal:define="attachmentfile here/getAttachmentFile">
+
+<input type="hidden" name="form.submitted" value="1" />
+<input type="hidden" name="came_from" value="edit" />
+<input type="hidden" name="AttachmentUID" value=""
+    tal:attributes="value here/UID"/>
+
+<div class="field ArchetypesFileWidget"
+     id="archetypes-fieldname-AttachmentFile">
+<span></span>
+<label for="Attachment">Attachment</label>
+
+<tal:attachment tal:condition="attachmentfile">
+<div class="field"
+    tal:define="filename attachmentfile/filename | nothing;
+                thissize attachmentfile/get_size | python:attachmentfile and len(attachmentfile) or 0;
+                filesize python:test((thissize < 1024), '%sb' %(thissize), '%sKb' %(thissize / 1024));
+                icon attachmentfile/getBestIcon | nothing">
+<img tal:condition="icon" src=""
+    tal:attributes="src string:${here/portal_url}/$icon"/>
+<a href=""  title="Click to download"
+    tal:attributes="href string:${here/absolute_url}/at_download/AttachmentFile"
+    tal:content="python:getattr(attachmentfile, 'filename') or 'noname'"
+    >Current file</a>
+<span tal:content="python:here.lookupMime(attachmentfile.getContentType())">ContentType</span> &mdash;
+<tal:size content="filesize">0Kb</tal:size>
+      
+          <div class="field">
+            <input class="noborder" type="radio"
+                   value="nochange" checked="checked"
+                   id="Attachment_nochange"
+                   name="Attachment_action"
+                   onclick="document.getElementById('AttachmentFile_file').disabled=true" />
+             <label for="Attachment_nochange">
+                    Keep existing file
+             </label>
+             <br />
+            <input class="noborder" type="radio" value="replace"
+                   id="Attachment_upload"
+                   name="Attachment_action"
+                   onclick="document.getElementById('AttachmentFile_file').disabled=false" />
+             <label for="Attachment_upload">
+                    Replace with new file:
+             </label>
+                
+
+             <div style="padding-left:1.5em;padding-top:0.5em;">
+             </div>
+          </div>          
+</div>
+</tal:attachment>
+            
+<input type="file" size="30" name="AttachmentFile_file"
+       id="AttachmentFile_file" />
+<script type="text/javascript"> document.getElementById('AttachmentFile_file').disabled=true;</script>
+    
+    
+</div>
+
+<br/>
+<div>
+<label i18n:translate="label_attachment_type">Attachment Type</label>
+</div>
+<div>
+    <select name="AttachmentType" 
+        tal:attributes="tabindex tabindex/next;">
+    <tal:item 
+        tal:define="
+            vocab python:here.portal_catalog(portal_type='AttachmentType');
+            sort_on python:(('Title', 'nocase', 'asc'),);
+            vocab python:sequence.sort(vocab, sort_on);
+            current here/getAttachmentType;
+            attachmenttype current/Title"
+        tal:repeat="item vocab">
+    <option selected="selected"
+        tal:attributes="value item/UID;
+            selected python:item.Title == attachmenttype"
+        tal:content="item/Title"></option>
+    </tal:item>
+
+    </select>
+</div>
+<br/>
+<div>
+<label i18n:translate="label_attachment_keys">Keywords</label>
+</div>
+<div>
+<input size="40" name="AttachmentKeys"
+    tal:attributes="value here/getAttachmentKeys | here/getAttachmentKeys"/>
+</div>
+<br/>
+
+<input class="context"
+        tabindex=""
+        type="submit"
+        name="form.button.submit"
+        value="Save"
+        i18n:attributes="value"
+        tal:attributes="tabindex tabindex/next"
+        />
+<input class="standalone"
+        tabindex=""
+        type="submit"
+        name="form.button.cancel"
+        value="Cancel"
+        i18n:attributes="value"
+        tal:attributes="tabindex tabindex/next"
+        />
+
+
+
+</form>
+</div>
+
+</body>
+
+</html>
+
+
+

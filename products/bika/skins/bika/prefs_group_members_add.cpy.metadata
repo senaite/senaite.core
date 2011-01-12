@@ -1,0 +1,3 @@
+[actions]
+action.success = traverse_to:string:prefs_group_members
+action.failure = traverse_to:string:prefs_group_members

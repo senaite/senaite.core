@@ -1,0 +1,295 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      lang="en"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      i18n:domain="bika">
+
+<head><title></title></head>
+
+<body>
+<metal:body_macro metal:define-macro="body"
+    tal:define="standardstock here/getStandardStock;
+        manufacturer here/getStandardManufacturer;
+        sort_on python:(('getStandardAnalysisID', 'nocase', 'desc'),);
+        analyses python:sequence.sort(here.getStandardAnalyses(), sort_on);
+        calc_cols python:here.get_calc_columns(analyses);
+        any_tv python:'tv' in calc_cols;
+        any_tf python:'tf' in calc_cols;
+        any_vm python:'vm' in calc_cols;
+        any_gm python:'gm' in calc_cols;
+        any_nm python:'nm' in calc_cols;
+        any_sm python:'sm' in calc_cols;
+        specs python:here.getResultsRangeSorted();
+        global category python:'';
+    ">
+
+<script type="text/javascript" src="utils.js"></script>
+
+
+<br/>
+
+<table
+    summary="Standard sample form"
+    class="analysisrequest"
+    cellpadding="0" cellspacing="0">
+
+<thead>
+<tr>
+<th>
+<span i18n:translate="label_title">Title</span>
+</th>
+<td class="left"
+    colspan="3"
+    tal:content="here/getStandardDescription">
+</td>
+</tr>
+<tr>
+<th>
+<span i18n:translate="label_manufacturer">Manufacturer</span>
+</th>
+<td class="left"
+    colspan="3"
+    tal:content="python:manufacturer and manufacturer.Title()">
+</td>
+</tr>
+<tr>
+<th>
+<span i18n:translate="label_cataloguenumber">Catalogue number</span>
+</th>
+<td class="left"
+    colspan="3"
+    tal:content="here/getCatalogueNumber">
+</td>
+</tr>
+<tr>
+<th>
+<span i18n:translate="label_lotnumber">Lot number</span>
+</th>
+<td class="left"
+    colspan="3"
+    tal:content="here/getLotNumber">
+</td>
+</tr>
+<tr>
+<th>
+<span i18n:translate="label_standardstock">Stock</span>
+</th>
+<td class="left"
+    colspan="3"
+    tal:content="python:standardstock and standardstock.Title()">
+</td>
+</tr>
+<tr>
+<th i18n:translate="label_datesampled">Date sampled</th>
+<td colspan="3"
+    class="left">
+<span
+    tal:define="date_sampled here/getDateSampled"
+    tal:condition="date_sampled"
+    tal:content="python:plone_view.toLocalizedTime(date_sampled, long_format=0)"
+    >2005-01-01</span>
+</td>
+</tr>
+<tr>
+<th i18n:translate="label_datereceived">Date received</th>
+<td colspan="3"
+    class="left">
+<span
+    tal:define="date_received here/getDateReceived"
+    tal:condition="date_received"
+    tal:content="python:plone_view.toLocalizedTime(date_received, long_format=0)"
+    >2005-01-01</span>
+</td>
+</tr>
+<tr>
+<th i18n:translate="label_dateopened">Date opened</th>
+<td colspan="3"
+    class="left">
+<span
+    tal:define="date_opened here/getDateOpened"
+    tal:condition="date_opened"
+    tal:content="python:plone_view.toLocalizedTime(date_opened, long_format=0)"
+    >2005-01-01</span>
+</td>
+</tr>
+<tr>
+<th i18n:translate="label_expirydate">Expiry date</th>
+<td colspan="3"
+    class="left">
+<span
+    tal:define="expiry_date here/getExpiryDate"
+    tal:condition="expiry_date"
+    tal:content="python:plone_view.toLocalizedTime(expiry_date, long_format=0)"
+    >2005-01-01</span>
+</td>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th>
+<b i18n:translate="label_analyses">Analyses</b> </th>
+<th align="center" i18n:translate="label_result">Result</th>
+<th align="center" i18n:translate="label_min">Min</th>
+<th align="center" i18n:translate="label_max">Max</th>
+</tr>
+<tal:cats tal:repeat="spec specs">
+<tr tal:condition="python:spec['category'] != category">
+<td class="category" colspan="4"
+    tal:content="python:spec['category']">cat</td>
+</tr>
+<tr
+    tal:define="global category python:spec['category'];
+                service_title python:spec['service'];
+                unit python:spec['unit'];
+                id python:spec['id']">
+<td class="left"> 
+<a  onClick=""
+    title="Click for details"
+    tal:attributes="onClick string:javascript:showMethod('$portal_url', '${id}')"
+    tal:content="service_title">
+Alcohol
+</a>
+<em tal:condition="python:unit">(<span tal:replace="unit">mg/l</span>)</em>
+</td>
+<td tal:content="spec/result">2</td>
+<td tal:content="spec/min">5</td>
+<td tal:content="spec/max">10</td>
+</tr>
+</tal:cats>
+
+</tbody>
+
+</table>
+
+<table
+    tal:condition="analyses"
+    id="standard_analyses"
+    summary="Standard sample form"
+    class="listing"
+    cellpadding="0" cellspacing="0">
+
+<thead>
+<tr>
+<th i18n:translate="label_analysisid">Analysis ID</th>
+<th i18n:translate="label_category">Category</th>
+<th i18n:translate="label_analysis">Analysis</th>
+<th i18n:translate="label_status">Status</th>
+<th i18n:translate="label_usage">Usage</th>
+<th i18n:translate="label_worksheet">Worksheet</th>
+<tal:tv condition="any_tv">
+<th i18n:translate="label_titrationvolume">Titration Volume</th>
+</tal:tv>
+<tal:tf condition="any_tf">
+<th i18n:translate="label_titrationfactor">Titration Factor</th>
+</tal:tf>
+<tal:gm condition="any_gm">
+<th i18n:translate="label_grossmass">Gross Mass</th>
+</tal:gm>
+<tal:vm condition="any_vm">
+<th i18n:translate="label_vesselmass">Vessel Mass</th>
+</tal:vm>
+<tal:sm condition="any_sm">
+<th i18n:translate="label_samplemass">Sample Mass</th>
+</tal:sm>
+<tal:nm condition="any_nm">
+<th i18n:translate="label_netmass">Net Mass</th>
+</tal:nm>
+<th i18n:translate="label_result">Result</th>
+<th i18n:translate="label_variation">+/-</th>
+</tr>
+</thead>
+<tbody tal:condition="analyses">
+
+<tal:analyses
+    repeat="analysis analyses">
+<tr tal:define="
+    service analysis/getService;
+    result analysis/getResult;
+    review_state python:wtool.getInfoFor(analysis, 'review_state', '')">
+<td class="left">
+<span  tal:content="analysis/getStandardAnalysisID">SA-001</span></td>
+<td class="left" tal:content="service/getCategoryName"> cat </td>
+<td class="left"> 
+<a  onClick="" title="Click for method"
+    tal:attributes="onClick string:javascript:showMethod('$portal_url', '${service/getId}')"
+    tal:content="service/Title">
+Alcohol
+</a>
+</td>
+<td>
+<a  href="" title="Click for analysis history"
+    tal:define="log_href string:${analysis/absolute_url}/analysis_status_log"
+    tal:attributes="href log_href"
+    tal:content="review_state"
+    i18n:translate="">
+Sample due</a>
+</td>
+<td>
+<span
+   tal:define="vocab python:analysis.Schema()['StandardType'].Vocabulary();
+                value analysis/getStandardType"
+    tal:content="python:here.translate(vocab.getMsgId(value), default=vocab.getValue(value))">Control</span>
+</td>
+<td>
+<a tal:define="worksheet analysis/getWorksheet|nothing"
+   tal:condition="nocall:worksheet"
+   tal:attributes="href worksheet/absolute_url"
+   tal:content="worksheet/Title">worksheet</a>
+</td>
+<tal:tv condition="any_tv">
+<td tal:define="titration_vol analysis/getTitrationVolume|nothing;
+                titration_unit service/getTitrationUnit|nothing">
+<span tal:condition="titration_vol"
+   tal:content="string:$titration_vol $titration_unit">10 ml</span>
+</td>
+</tal:tv>
+<tal:tf condition="any_tf">
+<td tal:content="analysis/getTitrationFactor">10</td>
+</tal:tf>
+<tal:gm condition="any_gm">
+<td tal:content="analysis/getGrossMass">10</td>
+</tal:gm>
+<tal:vm condition="any_vm">
+<td tal:content="analysis/getVesselMass">10</td>
+</tal:vm>
+<tal:sm condition="any_sm">
+<td tal:content="analysis/getSampleMass">10</td>
+</tal:sm>
+<tal:nm condition="any_nm">
+<td tal:content="analysis/getNetMass">10</td>
+</tal:nm>
+<td>
+<tal:result tal:condition="result">
+<span tal:content="result">10</span>
+<span tal:content="analysis/getUnit">%vol</span>
+<div class="retested"
+      tal:condition="analysis/getRetested"
+      i18n:translate="retested">retested</div>
+</tal:result>
+</td>
+
+<td>
+<span tal:content="analysis/getUncertainty">0.8</span>
+</td>
+</tr>
+</tal:analyses>
+
+</tbody>
+</table>
+
+<div class="field">
+<label i18n:translate="label_remarks">Notes:</label>
+<p class="comment" tal:content="python:here.getNotes() or default">None</p>
+</div>
+<tal:hazardous tal:condition="python:standardstock and standardstock.getHazardous()">
+<img src="" tal:attributes="src string:${portal/absolute_url}/hazardous.png">
+</tal:hazardous>
+
+</metal:body_macro>
+
+</body>
+
+</html>
+
+

@@ -1,0 +1,164 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      lang="en"
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="bika">
+
+<head>
+    <metal:block fill-slot="top_slot"
+                 tal:define="dummy python:request.set('disable_border', 1)" />
+</head>
+             
+             
+<body>
+
+<div metal:fill-slot="main"
+    tal:define="
+    service_uid python:request.get('getServiceUID', '');
+    service python:here.reference_catalog.lookupObject(service_uid);
+    client_uid python:request.get('getClientUID', '')">
+
+<div metal:use-macro="here/document_actions/macros/document_actions">
+Document actions (print, sendto etc)
+</div>
+
+<h1>
+<img src="analysisrequest.png" tal:attributes="src python:here.portal_types.getTypeInfo('AnalysisRequest').getIcon()"/>
+<span i18n:translate="heading_duplicate_qc"
+    >Duplicate Analysis QC</span>
+</h1>
+
+<div style="clear:both"/>
+
+<table
+    summary="Standard Analysis View"
+    class="analysisrequest"
+    cellpadding="0" cellspacing="0"
+    width="100%"
+    tal:define="
+    toLocalizedTime nocall:context/@@plone/toLocalizedTime;
+    datefrom request/getDateVerified_fromdate | nothing;
+    dateto python:request.get('getDateVerified_todate', '');
+    client python:client_uid and here.reference_catalog.lookupObject(client_uid) or None;
+    dummy python:here.format_date_query('getDateVerified');
+    proxies python:here.queryCatalog() or [];
+    duplicates python:[p.getObject() for p in proxies];
+    analyses python:here.get_duplicate_results(duplicates);
+    means python:','.join([str(a['mean']) for a in analyses]);
+    errors python:','.join([str(a['error']) for a in analyses]);
+">
+
+<tr>
+<th width="20%" i18n:translate="label_client">Supplier</th>
+<td width="30%" class="left">
+<span tal:condition="client"
+    tal:content="client/Title">Client</span>
+<span tal:condition="not:client"
+    i18n:translate="label_all">All</span>
+</td>
+<th i18n:translate="label_analysis">Analysis
+</th>
+<td class="left" width="30%"
+    tal:define="category python:service and service.getCategoryName() or '';
+                title python:service and service.Title() or ''"
+    tal:content="python:'%s: %s' %(category, title)">Acid</td>
+</tr>
+<tr>
+</tr>
+<tr>
+<th i18n:translate="label_date_verified">Date verified
+</th>
+<td class="left" colspan="3">
+<tal:datefrom tal:condition="datefrom">
+<span i18n:translate="label_from">from</span>
+<span tal:content="python:toLocalizedTime(datefrom, long_format=0)"></span>
+</tal:datefrom>
+<tal:dateto tal:condition="dateto">
+<span i18n:translate="label_to">to</span>
+<span tal:content="python:toLocalizedTime(dateto, long_format=0)"></span>
+</tal:dateto>
+<span tal:condition="python:not dateto and not datefrom"
+    i18n:translate="label_not_specified">Not specified</span>
+</td>
+</tr>
+<tr>
+</tr>
+
+<!-- graph -->
+<tr>
+<tal:nograph tal:condition="python: len(means) < 1">
+<td colspan="4" height="50px" style="vertical-align: middle">No graphs can be displayed, as the number of results for this analysis does not meet the minimum requirement.</td>
+</tal:nograph>
+
+<tal:graph tal:condition="python: len(means) >= 1">
+<td colspan="4" width="100%" height="300px" style="vertical-align: middle">
+<br/>
+<h4 i18n:translate="label_duplicate_rel_error">Duplicate Relative % Error</h4>
+<img tal:define="c_url string:${here/portal_url}/charts/;
+        yvalues python:','.join([str(p) for p in errors]);
+        xvalues python:','.join([str(p) for p in means]);
+        dupvar service/getDuplicateVariation"
+     tal:attributes="src string:${c_url}relerror?&yvalues=${errors}&xvalues=${means}&dupvar=${dupvar}"/>
+<br/>
+<br/>
+</td>
+</tal:graph>
+
+</tr>
+
+<!-- list of values -->
+<tr style="border-top: hidden">
+<td colspan="4">
+
+<br/>
+<h4 i18n:translate="label_all_values">All values</h4>
+
+<table class="listing"
+       id="allvalues"
+       cellpadding="0" cellspacing="0">
+
+<thead>
+<tr>
+<th i18n:translate="label_analysisrequest">Analysis Request</th>
+<th i18n:translate="label_worksheet">Worksheet</th>
+<th i18n:translate="label_result_unit"
+    tal:define="unit python:service and service.getUnit() or nothing">
+Result <tal:block replace="unit" i18n:name="unit"/>
+</th>
+<th i18n:translate="label_dup_result">Duplicate</th>
+<th i18n:translate="label_mean">Mean</th>
+<th i18n:translate="label_rel_error">Rel error</th>
+<th i18n:translate="label_verified">Verified</th>
+</tr>
+</thead>
+<tbody>
+<tal:analyses tal:repeat="analysis analyses">
+<tr>
+<td>
+<a href=""
+    tal:attributes="href analysis/ar_url"
+    tal:content="analysis/ar">SA-001</a></td>
+<td>
+<a href=""
+    tal:attributes="href analysis/ws_url"
+    tal:content="analysis/ws">WS-001</a></td>
+<td tal:content="analysis/real">1</td>
+<td tal:content="analysis/dup">1</td>
+<td tal:content="analysis/mean">1</td>
+<td tal:content="analysis/error">1</td>
+<td tal:define="date_verified analysis/vdate"
+    tal:content="python:toLocalizedTime(date_verified, long_format=0)"></td>
+</tr>
+</tal:analyses>
+</tbody>
+</table>
+
+</td>
+</tr>
+</table>
+
+</div>
+
+</body>
+
+</html>
+

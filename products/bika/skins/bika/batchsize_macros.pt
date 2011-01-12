@@ -1,0 +1,42 @@
+<html xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      i18n:domain="plone">
+<body>
+<div metal:define-macro="batchsize">
+
+    <!-- items per page -->
+<form name="batchsize" action="" method="post"
+    tal:attributes="action template/getId"
+    tal:define="thisbatch python:batch_size or 15">
+    <span class="batchsize">
+    <span i18n:translate="items per page">items per page:</span>
+    <span tal:condition="python:thisbatch == 15">15</span>
+        <input type="button"
+            tal:condition="python:thisbatch != 15"
+            class='batchsizeButton'
+            value="15"
+            onClick="javascript:document.getElementById('batch_size').value=15;this.form.submit()"
+           >
+    <span tal:condition="python:thisbatch == 50">50</span>
+        <input type="button"
+            tal:condition="python:thisbatch != 50"
+            class='batchsizeButton'
+            value="50"
+            onClick="javascript:document.getElementById('batch_size').value=50;this.form.submit()"
+           >
+    <span tal:condition="python:thisbatch == 100">100</span>
+        <input type="button"
+            tal:condition="python:thisbatch != 100"
+            class='batchsizeButton'
+            value="100"
+            onClick="javascript:document.getElementById('batch_size').value=100;this.form.submit()"
+           >
+    </span>
+    <input type="HIDDEN" name="batch_size" id="batch_size" value="15"
+        tal:attributes="value thisbatch"
+        >
+</form>
+</div>
+
+</body>
+</html>

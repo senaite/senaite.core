@@ -1,0 +1,7 @@
+[default]
+title=Set client analysisspecs to lab defaults
+proxy=Manager,Anonymous
+
+[actions]
+action.failure=traverse_to:string:client_analysisspecs
+action.success=traverse_to:string:client_analysisspecs

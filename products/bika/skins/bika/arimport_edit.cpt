@@ -1,0 +1,53 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      lang="en"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="bika">
+
+<head><title></title></head>
+
+<body>
+<div metal:fill-slot="main"
+    tal:define="errors options/state/getErrors;">
+
+<script type="text/javascript" src="utils.js"></script>
+
+<tal:error repeat="error python:errors.keys()">
+<tal:x define="message python:errors[error]">
+<p class="portalMessage">
+<span tal:content="error">field</span>:
+<span tal:content="message">Error</span> </p>
+</tal:x>
+</tal:error>
+
+<div metal:use-macro="here/document_actions/macros/document_actions">
+    Document actions (print, sendto etc)
+</div>
+
+<h1>
+    <img src="arimport.png" tal:attributes="src python:here.portal_types.getTypeInfo('ARImport').getIcon()"/>
+    <span tal:omit-tag="" i18n:translate="heading_arimport"
+        >Edit Analysis Request Import</span>
+</h1>
+
+<div tal:condition="python:here.getImportOption() not in ['s', 'p']">
+<metal:block use-macro="here/arimport_edits/macros/arimport_edit_c"/>
+</div>
+
+<div tal:condition="python:here.getImportOption() == 's'">
+<metal:block use-macro="here/arimport_edits/macros/arimport_edit_s"/>
+</div>
+
+<div tal:condition="python:here.getImportOption() == 'p'">
+<metal:block use-macro="here/arimport_edits/macros/arimport_edit_p"/>
+</div>
+
+</div>
+</body>
+
+</html>
+
+
+

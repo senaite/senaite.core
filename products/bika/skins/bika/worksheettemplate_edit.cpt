@@ -1,0 +1,256 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      lang="en"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      metal:use-macro="here/prefs_main_template/macros/master"
+      i18n:domain="bika">
+
+<head>
+<title></title></head>
+<body>
+<div metal:fill-slot="prefs_configlet_main"
+    tal:define="
+        services python:[p.getObject() for p in here.portal_catalog(portal_type='AnalysisService')];
+        sort_on python:(('Title', 'nocase', 'asc'),);
+        services python:sequence.sort(services, sort_on);
+        standardstocks python:[p.getObject() for p in here.portal_catalog(portal_type='StandardStock')];
+        standardstocks python:sequence.sort(standardstocks, sort_on);
+        types here/getAnalysisTypes;
+        sst_types python:['c', 's', 'b'];
+        dup_types python:['d',];
+        errors options/state/getErrors;
+        num_positions request/NoOfPositions | python:0; 
+        num_positions python:int(num_positions);
+        req_rows request/Rows | nothing;
+        old_rows here/getRow | nothing;
+        current_rows python:test(req_rows, req_rows, old_rows);
+        display_rows python:here.get_template_rows(num_positions, current_rows);
+        req_analyses request/Service | python: [];
+        analyses python:test(req_rows, req_analyses, [s.UID() for s in here.getService()])">
+<script type="text/javascript" src="utils.js"></script>
+<script type="text/javascript">
+<!--
+function showSubtype(row) {
+    type_element = document.getElementById('type' + row);
+    type = type_element.value;
+    subtype_sst = 'sst' + row;
+    subtype_dup = 'dup' + row;
+    if ((type == 's') || (type == 'c') || (type == 'b')) {
+        showPopup(subtype_sst)
+        hidePopup(subtype_dup)
+    } else {
+        if (type == 'd') {
+            showPopup(subtype_dup)
+            hidePopup(subtype_sst)
+        } else {
+            hidePopup(subtype_dup)
+            hidePopup(subtype_sst)
+        }
+    }
+    return
+}
+-->
+</script>
+
+
+
+<tal:error repeat="error python:errors.keys()">
+<tal:x define="message python:errors[error]">
+<p class="portalMessage">
+<span tal:content="error">field</span>:
+<span tal:content="message">Error</span> </p>
+</tal:x>
+</tal:error>
+<h1>
+    <img src="worksheettemplate.png" tal:attributes="src python:here.portal_types.getTypeInfo('WorksheetTemplate').getIcon()"/>
+    <span tal:omit-tag="" i18n:translate="heading_worksheet_template"
+        >Worksheet template</span>
+</h1>
+
+<div metal:use-macro="here/document_actions/macros/document_actions">
+    Document actions (print, sendto etc)
+</div>
+
+<form name="edit_form"
+    method="post"
+    enctype="multipart/form-data"
+    action=""
+    tal:attributes="action python:here.absolute_url()+'/'+template.id"
+    autocomplete="off">
+
+<input type="hidden" name="form.submitted" value="1" />
+<input type="hidden" name="WorksheetTemplateUID" value=""
+    tal:attributes="value here/UID"/>
+
+<br/>
+
+<div class="field">
+<label i18n:translate="label_title">Title</label>
+    &nbsp;<span class="fieldRequired">(Required)</span>
+<br/>
+<input type="text" size="30" name="Title" value=""
+    tal:attributes="value request/Title | here/Title"/>
+</div>
+<br/>
+
+<div class="field">
+<label i18n:translate="label_description">Description</label><br/>
+<textarea rows="5" name="Description"
+          cols="40" id="Description"
+    tal:content="request/Description | here/WorksheetTemplateDescription">
+</textarea>
+</div>
+<br/>
+
+<div class="field">
+<label i18n:translate="label_numpositions">Number of Positions</label>
+<br/>
+<input name="NoOfPositions" size="3" value=""
+    tal:attributes="value request/NoOfPositions | python:len(display_rows)"/>
+&nbsp
+<input type="submit" name="form.button.more"
+     class="context" value=" Reset " />
+</div>
+<br/>
+
+<label i18n:translate="label_positions">Positions</label>
+<br/>
+<table
+    summary="Worksheet template form"
+    class="analysisrequest"
+    cellpadding="0" cellspacing="0">
+<tr>
+<th i18n:translate="label_position">Pos</th>
+<th i18n:translate="label_type">Analysis Type</th>
+<th i18n:translate="label_standardstock">Standard stock</th>
+<th i18n:translate="label_duplicate_of">Dup of</th>
+</tr>
+<tr tal:repeat="row display_rows">
+<tal:type
+    tal:define="type row/type">
+<td tal:content="row/pos">1</td>
+<td>
+    <select name="Type" id=""
+        tal:attributes="
+            id string:type${repeat/row/number};
+            onchange string:showSubtype(${repeat/row/number})"> 
+    <tal:item 
+        tal:define="
+            vocab types"
+        tal:repeat="item vocab">
+    <option selected="selected"
+        tal:define="
+                this_selected python:item == type"
+        tal:attributes="
+                value item;
+                selected this_selected"
+        tal:content="python:here.translate(vocab.getMsgId(item), default=vocab.getValue(item))"></option>
+    </tal:item>
+
+    </select>
+</td>
+<td>
+<div id="" class="hiddendiv"
+    tal:attributes="id string:sst${repeat/row/number};
+                    class python:test(type in sst_types, 'visiblediv', 'hiddendiv')">    
+
+    <select name="SubtypeSST"> 
+    <tal:item 
+        tal:repeat="sst standardstocks">
+    <option selected="selected"
+        tal:define="
+                sst_uid sst/UID;
+                this_selected python:sst_uid == row['sub']"
+        tal:attributes="
+                value sst_uid;
+                selected this_selected"
+        tal:content="sst/Title"></option>
+    </tal:item>
+
+    </select>
+</div>
+</td>
+<td>
+<div id="" class="hiddendiv"
+    tal:define="num_rows repeat/row/length"
+    tal:attributes="id string:dup${repeat/row/number};
+                    class python:test(type in dup_types, 'visiblediv', 'hiddendiv')">    
+    <select name="SubtypeDup"> 
+    <tal:item 
+        tal:repeat="i python:range(1,(num_rows+1))">
+    <option selected="selected"
+        tal:condition="python:i <> repeat['row'].number()"
+        tal:define="
+                this_selected python:str(i) == row['sub']"
+        tal:attributes="
+                value i;
+                selected this_selected"
+        tal:content="i"></option>
+    </tal:item>
+
+    </select>
+</div>
+</td>
+</tal:type>
+</tr>
+</table>
+<label i18n:translate="label_analyses">Analyses</label>
+    &nbsp;<span class="fieldRequired">(Required)</span>
+<table
+    summary="Worksheet template form"
+    class="analysisrequest"
+    cellpadding="0" cellspacing="0">
+
+<tr tal:repeat="service services">
+<tal:service
+    tal:define="service_uid service/UID;
+                analysis_found python:service_uid in analyses">
+<th> 
+<a  onClick=""
+    title="Click for details"
+    tal:attributes="onClick string:javascript:showMethod('$portal_url', '${service/getId}')"
+    tal:content="service/Title">
+Alcohol
+</a>
+</th>
+<td
+    tal:define="item_no repeat/service/index">
+
+<input type="checkbox" name="Service:list:ignore_empty" 
+       class="noborder"
+       value="" 
+       tal:attributes="
+            value python:service_uid;
+            checked analysis_found"
+/>
+</td>
+</tal:service>
+</tr>
+ 
+
+</table>
+
+<br/>
+<input class="context"
+        type="submit"
+        name="form.button.submit"
+        value="Save"
+        i18n:attributes="value"
+        />
+<input class="standalone"
+        type="submit"
+        name="form.button.cancel"
+        value="Cancel"
+        i18n:attributes="value"
+        />
+
+</form>
+
+</div>
+
+</body>
+
+</html>
+
+

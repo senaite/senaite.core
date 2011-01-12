@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<object name="ATSimpleStringCriterion"
+   meta_type="Factory-based Type Information"
+   xmlns:i18n="http://xml.zope.org/namespaces/i18n">
+ <property name="title">Simple String Criterion</property>
+ <property name="description">A simple string criterion</property>
+ <property name="content_icon">document_icon.gif</property>
+ <property name="content_meta_type">ATSimpleStringCriterion</property>
+ <property name="product">ATContentTypes</property>
+ <property name="factory">addATSimpleStringCriterion</property>
+ <property name="immediate_view">base_edit</property>
+ <property name="global_allow">False</property>
+ <property name="filter_content_types">False</property>
+ <property name="allowed_content_types"/>
+ <property name="allow_discussion">False</property>
+ <alias from="edit" to="base_edit"/>
+ <action title="View" action_id="view" category="object" condition_expr=""
+    url_expr="string:${object_url}/base_view" visible="True">
+  <permission value="View"/>
+ </action>
+ <action title="Edit" action_id="edit" category="object" condition_expr=""
+    url_expr="string:${object_url}/base_edit" visible="True">
+  <permission value="Modify portal content"/>
+ </action>
+ <action title="Properties" action_id="metadata" category="object"
+    condition_expr="" url_expr="string:${object_url}/base_metadata"
+    visible="False">
+  <permission value="Modify portal content"/>
+ </action>
+ <action title="References" action_id="references" category="object"
+    condition_expr="object/archetype_tool/has_graphviz"
+    url_expr="string:${object_url}/reference_graph" visible="False">
+  <permission value="Modify portal content"/>
+  <permission value="Review portal content"/>
+ </action>
+</object>

@@ -1,0 +1,83 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      lang="en"
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="bika">
+
+<head>
+    <metal:block fill-slot="top_slot"
+                 tal:define="dummy python:request.set('disable_border', 1)" />
+</head>
+             
+             
+<body>
+
+<div metal:fill-slot="main">
+<script type="text/javascript" src="utils.js"></script>
+<h1>
+<tal:block replace="structure python:getattr(here, here.getIcon(1))"/>
+<span i18n:translate="heading_accreditation">Accreditation</span>
+</h1>
+
+<div metal:use-macro="here/document_actions/macros/document_actions">
+Document actions (print, sendto etc)
+</div>
+
+<div>
+Acme Lab Group Ltd. has been accredited by the 
+<a href=""
+    tal:attributes="href here/bika_labinfo/laboratory/AccreditationBodyURL">
+    Canadian Association for Laboratory Accreditation Inc.
+</a>
+(CALA) as having met the ISO/IEC 17025 standard.
+</div>
+<br>
+<div>
+To safeguard the quality of laboratory data, CALA assess participating laboratories to the ISO/IEC 17025 standard in accordance with the ISO/IEC 17011 standard. The granting of CALA accreditation requires a laboratory to successfully complete an initial site assessment and to maintain accreditation the laboratory must successfully complete a site visit a year following the initial visit and every two years thereafter.  Site visits are conducted by highly trained volunteer assessors who are selected for their strong analytical backgrounds. Each assessor must undergo comprehensive and formal training on both ISO and Canadian requirements.
+</div>
+
+<br>
+<div>
+CALA is a Full member of the Asia Pacific Laboratory Accreditation Cooperation (APLAC) and a signatory to the APLAC Mutual Recognition Arrangement (MRA) for testing. It is also a Full member of ILAC, i.e. a signatory also to the ILAC MRA for testing. These international agreements provide mutual recognition between almost 60 accrediting bodies in 40 countries in Africa, the Asia Pacific region, the Americas, Europe and the Middle East. The main aim of these agreements is increased worldwide use and acceptance by both industry and government of endorsed reports from accredited laboratories - "a product tested once and accepted everywhere".
+</div>
+
+<br>
+<div>
+The CALA programs are endorsed by the Canadian Council of Ministers of the Environment (CCME), and enjoy the support of federal and provincial governments, as well as private sector companies who provide volunteer staff and work with CALA to enhance the quality of information available for making environmental decisions. 
+</div>
+
+<br>
+<div>
+Acme Lab participates in CALA's quarterly Proficiency Testing Program (PT).  Labs that fail to submit analysis within the specified range of results shall receive a notice of suspension are required to a corrective action report within a specified period of time and to the satisfaction of a scientific panel, the CALA Advisory Panel.  The following analysis services have been included in the CALA schedule of Accreditation for this Laboratory and constitute Acme Lab's participation in CALA PT:
+</div>
+<ul> 
+<tal:categories
+ tal:define="
+        categories python:[c for c in here.portal_catalog(portal_type='AnalysisCategory')];
+        sort_on python:(('Title', 'nocase', 'asc'),);
+        categories python:sequence.sort(categories, sort_on)"
+    tal:repeat="category categories">
+<tal:category 
+    tal:define="
+        all_services python:[s.getObject() for s in here.portal_catalog(portal_type='AnalysisService', getCategoryUID=category.UID)];
+        services python:[s for s in all_services if s.getAccredited()];
+        sort_on python:(('Title', 'nocase', 'asc'),);
+        services python:sequence.sort(services, sort_on)">
+<div tal:condition="services">
+<li tal:content="category/Title"></li>
+<tal:services tal:repeat="service services">
+<div  tal:define="item_title_or_id service/title_or_id">
+<a   onClick="" title="Click for details"
+     tal:attributes="onClick string:javascript:showMethod('$portal_url', '${service/getId}')"
+     tal:content="service/Title">
+Alcohol
+</a>
+</div>
+</tal:services>
+</div>
+</tal:category>
+</tal:categories>
+</ul>
+</div>
+
+</body>
+</html>

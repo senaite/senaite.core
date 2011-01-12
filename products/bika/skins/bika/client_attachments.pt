@@ -1,0 +1,126 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      lang="en"
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="bika">
+
+<head>
+
+<metal:block fill-slot="top_slot">
+<span
+    tal:replace="nothing"
+    tal:define="
+        dummy python:request.set('enable_border', 1)"
+    />
+</metal:block>
+
+</head>
+             
+             
+<body>
+
+<div metal:fill-slot="main">
+
+<div metal:use-macro="here/document_actions/macros/document_actions">
+Document actions (print, sendto etc)
+</div>
+<h1>
+<img src="attachment.png" tal:attributes="src python:here.portal_types.getTypeInfo('Attachment').getIcon()"/>
+<span i18n:translate="heading_attachments">Attachments</span>
+</h1>
+
+<tal:x define="
+    dummy_a python:request.set('portal_type', 'Attachment');
+    dummy_b python:request.set('getClientUID', here.UID());
+    dummy_c python:request.set('sort_on', 'sortable_title');
+    dummy_d python:request.set('sort_order', 'reverse');
+    "
+    />
+
+<div id="content-attachments"
+     tal:define="
+        results python:container.queryCatalog();
+        Batch python:modules['Products.CMFPlone'].Batch;
+        b_start python:request.get('b_start',0);
+        batch python:Batch(results, 15, int(b_start), orphan=1);
+        buttons actions/folder_buttons">
+
+<br/>
+<form name="filter_result" action="" method="post"
+    tal:attributes="action template/getId">
+<input type="hidden" name="portal_type" value="Attachment"/>
+<input type="hidden" name="getClientUID" value=""
+    tal:attributes="value here/UID"/>
+<input type="hidden" name="sort_on" value="Title"/>
+</form>
+
+
+<form name="attachments" action="." method="post">
+<table tal:condition="batch"
+    class="listing"
+    summary="attachments listing"
+    cellpadding="0" cellspacing="0">
+
+<thead>
+<tr>
+<th i18n:translate="label_analysisrequest">Request ID</th>
+<th i18n:translate="label_file_name">File</th>
+<th i18n:translate="label_attachment_type">Attachment Type</th>
+<th i18n:translate="label_content_type">Content Type</th>
+<th i18n:translate="label_size">Size</th>
+<th i18n:translate="label_date_loaded">Date Loaded</th>
+</tr>
+</thead>
+
+<tbody tal:define="getRelativeContentURL nocall:utool/getRelativeContentURL">
+
+<metal:block tal:repeat="item batch"
+    tal:define="dummy python:request.RESPONSE.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate, post-check=0, pre-check=0')">
+<tr tal:define="
+        oddrow repeat/item/odd;
+        obj item/getObject;
+        file python:obj.getAttachmentFile();
+        filename file/filename | nothing;
+        filesize file/get_size | python:file and len(file) or 0;
+        icon file/getBestIcon | nothing"
+    tal:attributes="
+        class python:test(oddrow, 'even', 'odd')" >
+<td>
+<a href="" 
+    tal:attributes="href obj/absolute_url"
+    tal:content="obj/getTextTitle">Request and analysis</a>
+</td><td>
+<img tal:condition="icon" src=""
+    tal:attributes="src string:${here/portal_url}/$icon"/>
+<a href=""  title="Click to download"
+    tal:attributes="href string:${obj/absolute_url}/at_download/AttachmentFile"
+    tal:content=filename>Filename</a>
+</td><td>
+<span tal:define="type obj/getAttachmentType"
+    tal:content="type/Title">Photo</span>
+</td><td>
+<span tal:content="python:here.lookupMime(file.getContentType())">ContentType</span>
+</td><td>
+<span tal:content="python:'%sKb' % (filesize / 1024)">0Kb</span>
+</td>
+<td>
+<span tal:content="python:plone_view.toLocalizedTime(obj.getDateLoaded(), long_format=1)"
+    >2005-01-01 10:10</span>
+</td>
+</tr>
+</metal:block>
+
+</tbody>
+
+</table>
+
+
+<!-- Navigation -->
+<div metal:use-macro="here/batch_macros/macros/navigation" />
+
+</form>
+
+</div>
+</div>
+
+</body>
+</html>

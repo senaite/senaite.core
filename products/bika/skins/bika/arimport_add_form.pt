@@ -1,0 +1,73 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      lang="en"
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="bika">
+
+<head><title></title></head>
+             
+             
+<body>
+
+<div metal:fill-slot="main">
+
+<h1>
+<tal:block replace="structure python:getattr(here, here.getIcon(1))"/>
+<span i18n:translate="heading_import_ar"
+    >Import analysis request data</span>
+</h1>
+
+<form action="import_analysisrequest" method="post" name="import_analysisrequest"
+    enctype="multipart/form-data">
+
+<input type="hidden" name="form.submitted" value="1" />
+<input type="hidden" name="ClientID" value=""
+    tal:attributes="value here/getId">
+<tal:importoption
+    tal:define="
+        options here/bika_settings/settings/getARImportOption;
+        options python:options and options or ['c',]">
+<tal:onlyone tal:condition="python:len(options) == 1">
+    <input type="hidden" name="ImportOption" value=""
+        tal:attributes="value python:options[0]">
+</tal:onlyone>
+<tal:choice tal:condition="python:len(options) > 1">
+<div class="field">
+<label i18n:translate="label_import_option">Import option</label>
+<div> </div>
+<tal:options 
+    tal:define="optionslist python:here.getARImportOptions()"
+    tal:repeat="option options">
+<input class="noborder" type="radio"
+    checked="" name="ImportOption" value=""
+    tal:attributes="value option"/>
+<label i18n:translate="value"
+    tal:content="python:here.translate(optionslist.getMsgId(option), default=optionslist.getValue(option))"></label>
+<br />
+</tal:options>
+</div>
+</tal:choice>
+
+</tal:importoption>
+
+
+<div class="field">
+    <label i18n:translate="label_import_ar_file"
+        >Select Analysis request data file</label><br/>
+    <input type="file" name="csvfile" size="60"/>
+</div>
+
+<input tabindex=""
+    class="context"
+    type="submit"
+    name="submit"
+    value="Import"
+    i18n:attributes="value"
+    />                       
+
+</form>
+
+</div>
+
+</body>
+</html>
+

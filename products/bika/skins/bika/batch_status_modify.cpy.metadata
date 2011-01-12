@@ -1,0 +1,15 @@
+[actions]
+action.receive_ars=redirect_to:string:print_stickers
+action.receive_samples=redirect_to:string:print_sample_stickers
+action.success_analysisrequests=redirect_to:string:analysisrequests
+action.print_ars=redirect_to:string:print_analysisrequests
+action.failure_analysisrequests=redirect_to:string:analysisrequests
+action.success_clientars=redirect_to:string:client_analysisrequests
+action.failure_clientars=redirect_to:string:client_analysisrequests
+action.success_samples=redirect_to:string:samples
+action.failure_samples=redirect_to:string:samples
+action.success_orders=redirect_to:string:orders
+action.failure_orders=redirect_to:string:orders
+action.success_standards=redirect_to:string:standardsamples
+action.failure_standards=redirect_to:string:standardsamples
+

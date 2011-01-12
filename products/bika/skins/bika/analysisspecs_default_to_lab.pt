@@ -1,0 +1,62 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      lang="en"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="bika">
+
+<head><title></title></head>
+<body>
+<div metal:fill-slot="main">
+
+<h1>
+    <img src="analysisspec.png" tal:attributes="src python:here.portal_types.getTypeInfo('AnalysisSpec').getIcon()"/>
+    <span tal:omit-tag="" i18n:translate="heading_set_analysisspecs_defaults"
+        >Set analysis specifications to lab defaults</span>
+</h1>
+
+<div metal:use-macro="here/document_actions/macros/document_actions">
+    Document actions (print, sendto etc)
+</div>
+
+<a href="" class="link-parent"
+    tal:define="parent_url python:here.navigationParent(here, template.getId())"
+    tal:condition="parent_url"
+    tal:attributes="href parent_url"
+    i18n:translate="go_to_parent_url">
+Up one level
+</a>
+
+<form name="analysisspecs_default"
+    method="post"
+    enctype="multipart/form-data"
+    action="analysisspecs_default" >
+
+<br/>
+<p i18n:translate="description_client_specs_replaced">
+Client analysis specifications will be replaced by the laboratory's analysis specifications</p>
+<p><b i18n:translate="warning_client_analysisspecs_lost">Client analysis specifications will be lost</b></p> 
+<p i18n:translate="description_confirm_cancel">Please confirm or cancel</p> 
+<br/>
+<input class="context"
+        type="submit"
+        value="Set to lab defaults"
+        i18n:attributes="value"
+        />
+<input class="standalone"
+        type="submit"
+        name="form.button.cancel"
+        value="Cancel"
+        i18n:attributes="value"
+        />
+
+</form>
+
+</div>
+
+</body>
+
+</html>
+
+

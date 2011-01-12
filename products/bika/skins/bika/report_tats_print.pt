@@ -1,0 +1,178 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<metal:block use-macro="here/global_defines/macros/defines" />
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      lang="en"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      tal:attributes="lang default_language|default;
+                      xml:lang default_language|default;"
+      i18n:domain="bika">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"
+          tal:define="charset site_properties/default_charset|string:utf-8"
+          tal:attributes="content string:text/html;;charset=${charset}" />
+
+    <!-- Column style sheet. -->
+    <style type="text/css" media="all" tal:condition="exists: portal/ploneColumns.css"
+           tal:content="string:@import url($portal_url/ploneColumns.css);">
+    </style>
+
+    <!-- Main style sheets for CSS2 capable browsers -->
+    <style type="text/css" media="screen"
+           tal:content="string: @import url($portal_url/plone.css);">
+    </style>
+
+    <!-- Alternate style sheets for the bigger/smaller text switcher -->
+    <link rel="alternate stylesheet" type="text/css" media="screen" href="" tal:attributes="href string:$portal_url/ploneTextSmall.css" title="Small Text" />
+    <link rel="alternate stylesheet" type="text/css" media="screen" href="" tal:attributes="href string:$portal_url/ploneTextLarge.css" title="Large Text" />
+
+    <!-- Custom style sheet if available -->
+    <style type="text/css" media="all" tal:condition="exists: portal/ploneCustom.css"
+           tal:content="string:@import url($portal_url/ploneCustom.css);">
+    </style>
+
+    <!-- Style sheet used for printing -->
+    <link rel="stylesheet" type="text/css" media="print" href=""
+          tal:attributes="href string:$portal_url/plonePrint.css" />
+
+    <!-- Internet Explorer CSS Fixes -->
+    <tal:iefixstart replace="structure string:&lt;!--[if IE]&gt;" />
+    <style type="text/css" media="all" tal:condition="exists: portal/ploneIEFixes.css"
+           tal:content="string:@import url($portal_url/ploneIEFixes.css);">
+    </style>
+    <tal:iefixend replace="structure string:&lt;![endif]--&gt;" />
+
+</head>
+<body style="font-size: 100%" onload="this.print()">
+<metal:block use-macro="here/report_print_header/macros/report_header"/>
+
+<metal:block define-macro="header">
+<h1>
+<span i18n:translate="heading_analyses_turnarounds">Analysis turnaround times </span>
+</h1>
+<p i18n:translate="description_analysis_turnaround">Report the turnaround times of analyses
+</p>
+<br/>
+</metal:block>
+
+<metal:block define-macro="subheader">
+<div tal:define="
+        fromdate request/FromDate | nothing;
+        todate request/ToDate | nothing;
+        client_uid request/ClientUID | nothing;
+        client python:here.reference_catalog.lookupObject(client_uid);
+        ">
+<div tal:condition="not:here/member_is_client">
+<span i18n:translate="label_client">Client</span>
+<b tal:condition="client"
+    tal:content="client/Title"></b>
+<b tal:condition="not:client"
+    i18n:translate="label_not_specified">not specified</b>
+</div>
+<br/>
+<div tal:condition="python:fromdate or todate">
+<span i18n:translate="label_received_date">Date received</span>
+<span tal:condition="fromdate"
+    i18n:translate="label_from">from</span>
+<b tal:condition="fromdate"
+    tal:content="python:plone_view.toLocalizedTime(fromdate, long_format=0)">2006-01-01 </b>
+<span tal:condition="todate"
+    i18n:translate="label_to">to</span>
+<b tal:condition="todate"
+    tal:content="python:plone_view.toLocalizedTime(todate, long_format=0)">2006-01-01</b>
+</div>
+<div tal:condition="python:not (fromdate or todate)">
+<span i18n:translate="label_received_date">Date received</span>
+<b i18n:translate="label_not_specified">not specified</b>
+</div>
+</div>
+<br/>
+</metal:block>
+
+<metal:block define-macro="body"
+    tal:define="tats python:here.analyses_turnarounds() or {}">
+<script type="text/javascript" src="utils.js"></script>
+<table
+    class="listing"
+    summary="analysis request listing"
+    cellpadding="2" cellspacing="0"
+    tal:condition="tats/cats"
+    i18n:domain="bika">
+
+<thead tal:define="col_span python:tats['count_undefined'] > 0 and 6 or 5">
+<tr>
+<th i18n:translate="label_analysis">Analysis</th>
+<th i18n:translate="label_count">Count</th>
+<th tal:condition="python:tats['count_undefined'] > 0"
+    i18n:translate="label_undefined">Undefined</th>
+<th i18n:translate="label_late">Late</th>
+<th i18n:translate="label_ave_late">Average late</th>
+<th i18n:translate="label_early">Early</th>
+<th i18n:translate="label_ave_early">Average early</th>
+</tr>
+
+</thead>
+
+<tbody>
+<tal:category
+    tal:define="cats python:tats['cats'];
+                cat_list python:cats.keys();
+                dummy python:cat_list.sort(lambda x,y:cmp(x.lower(), y.lower()))"
+    tal:repeat="cat cat_list">
+<tr> 
+<td class="category" colspan="7"
+    tal:content="cat">Cat</td>
+</tr>
+<tal:service
+    tal:define="services python:cats[cat]"
+    tal:repeat="service services">
+<tr>
+<td> 
+<a  onClick="" title="Click for details"
+    tal:attributes="onClick string:javascript:showMethod('$portal_url', '${service/id}')"
+    tal:content="service/title">
+Alcohol
+</a>
+</td>
+
+
+
+<td tal:define="total python:service['c_l'] + service['c_e'] + service['c_u']"
+    tal:content="total"></td>
+<td tal:content="service/c_u"
+    tal:condition="python:tats['count_undefined'] > 0">
+</td>
+<td tal:content="service/c_l"></td>
+<td class="right" tal:content="service/a_l"></td>
+<td tal:content="service/c_e"></td>
+<td class="right" tal:content="service/a_e"></td>
+
+</tal:service>
+</tal:category>
+
+</tbody>
+<tfoot>
+<th><b i18n:translate="label_total"></b></th>
+<td><b tal:define="total python:tats['count_late'] + tats['count_early'] + tats['count_undefined']"
+    tal:content="total"></b></td>
+<td><b tal:condition="python:tats['count_undefined'] > 0"
+    tal:content="tats/count_undefined"></b></td>
+<td><b tal:content="tats/count_late"></b></td>
+<td><b class="right" tal:content="tats/ave_late"></b></td>
+<td><b tal:content="tats/count_early"></b></td>
+<td><b class="right" tal:content="tats/ave_early"></b></td>
+
+</tfoot>
+
+</table>
+
+</metal:block>
+
+</body>
+
+</html>
+
+

@@ -1,0 +1,47 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<metal:block use-macro="here/global_defines/macros/defines" />
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      lang="en"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      tal:attributes="lang default_language|default;
+                      xml:lang default_language|default;"
+      i18n:domain="bika">
+
+<head metal:use-macro="here/header/macros/html_header">
+
+<metal:fillbase fill-slot="base">
+    <base href="" tal:attributes="href here/renderBase" />
+</metal:fillbase>
+
+<metal:headslot fill-slot="head_slot"
+                tal:define="language here/Language;
+                            lang language | default_language;
+                            charset site_properties/default_charset|string:utf-8">
+
+    <metal:cache use-macro="here/global_cache_settings/macros/cacheheaders">
+    Get the global cache headers located in global_cache_settings.
+    </metal:cache>
+
+</metal:headslot>
+
+</head>
+
+<body style="font-size: 100%" onload="this.print()">
+
+<tal:invoices repeat="invoice here/invoices">
+<table style="page-break-after: always" cellpadding="0" cellspacing="0">
+<tr><td>
+<img src="" tal:attributes="src string:${portal_url}/logo.png"/>
+</td></tr>
+<tr><td>
+<metal:block use-macro="here/invoice_print/macros/invoice"/>
+</td></tr>
+</table>
+</tal:invoices>
+
+</body>
+
+</html>

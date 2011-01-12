@@ -1,0 +1,191 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      lang="en"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      metal:use-macro="here/prefs_main_template/macros/master"
+      i18n:domain="bika">
+
+<head>
+<title></title></head>
+<body>
+<div metal:fill-slot="prefs_configlet_main"
+    tal:define="
+        sort_on python:(('Title', 'nocase', 'asc'),);
+        selected_cats python:request.get('Categories', []);
+        all_cats python:[c.getObject() for c in here.portal_catalog(portal_type='AnalysisCategory')];
+        all_cats python:sequence.sort(all_cats, sort_on);
+        cats python:selected_cats and selected_cats or here.getCategories();
+        prev_services request/Service | python: [];
+        analyses python:test(prev_services, prev_services, [s.UID() for s in here.getService()]);
+        errors options/state/getErrors">
+
+<script type="text/javascript" src="utils.js"></script>
+
+
+<tal:error repeat="error python:errors.keys()">
+<tal:x define="message python:errors[error]">
+<p class="portalMessage">
+<span tal:content="error">field</span>:
+<span tal:content="message">Error</span> </p>
+</tal:x>
+</tal:error>
+<h1>
+    <img src="arprofile.png" tal:attributes="src python:here.portal_types.getTypeInfo('ARProfile').getIcon()"/>
+    <span tal:omit-tag="" i18n:translate="heading_analysis_profile_edit"
+        >Lab analysis profile</span>
+</h1>
+
+<div metal:use-macro="here/document_actions/macros/document_actions">
+    Document actions (print, sendto etc)
+</div>
+
+<form name="edit_form"
+    method="post"
+    enctype="multipart/form-data"
+    action=""
+    tal:attributes="action python:here.absolute_url()+'/'+template.id"
+    autocomplete="off">
+
+<input type="hidden" name="form.submitted" value="1" />
+<input type="hidden" name="came_from" value="edit" />
+<input type="hidden" name="ARProfileUID" value=""
+    tal:attributes="value here/UID"/>
+
+<br/>
+
+<div class="field">
+<label i18n:translate="label_title">Title</label>
+    &nbsp;<span class="fieldRequired">(Required)</span>
+<br/>
+<input name="ProfileTitle" value=""
+    tal:attributes="value request/ProfileTitle | here/ProfileTitle"/>
+</div>
+<br/>
+
+<div class="field">
+<label i18n:translate="label_profile_key">Profile Key</label>
+    &nbsp;<span class="fieldRequired">(Required)</span>
+<br/>
+<input name="ProfileKey" value=""
+    tal:attributes="value request/ProfileKey | here/ProfileKey"/>
+</div>
+<br/>
+
+<div class="field">
+<label i18n:translate="label_analyses">Analyses</label>
+    &nbsp;<span class="fieldRequired">(Required)</span>
+<table
+    summary="Analysis profile form"
+    class="analysisrequest"
+    cellpadding="0" cellspacing="0">
+<tal:categories>
+<tr>
+<td class="category" colspan="2">
+<input
+    class="noborder"
+    type="checkbox"
+    id="AllCats"
+    title="Expand all categories"
+    onClick="selectAllCats('AllCats', 'Cat')"
+    tal:attributes="
+        tabindex tabindex/next"/>
+
+<b i18n:translate="Categories">Categories</b>
+
+</td>
+</tr>
+
+<tal:category tal:repeat="category all_cats">
+<tr>
+<td class="category" colspan="2">
+&nbsp
+<input
+    class="noborder"
+    type="checkbox"
+    name="Categories:list"
+    title="Expand"
+    tal:define="this_checked python:category.UID() in cats;
+                i repeat/category/index;
+                this_id string:Cat$i"
+    tal:attributes="
+        id this_id;
+        checked this_checked;
+        value category/UID;
+        tabindex tabindex/next"/>
+<b tal:content="category/Title"/>
+
+</td>
+</tr>
+
+<tal:services 
+    tal:condition="python:category.UID() in cats">
+<tal:service 
+    tal:define="
+        services python:[s.getObject() for s in here.portal_catalog(portal_type='AnalysisService', getCategoryUID=category.UID())];
+        sort_on python:(('Title', 'nocase', 'asc'),);
+        services python:sequence.sort(services, sort_on)"
+
+    tal:repeat="service services">
+
+
+<tr tal:define="service_uid service/UID;
+                analysis_found python:service_uid in analyses">
+<th> 
+<a  onClick=""
+    title="Click for details"
+    tal:attributes="onClick string:javascript:showMethod('$portal_url', '${service/getId}')"
+    tal:content="service/Title">
+Alcohol
+</a>
+</th>
+<td
+    tal:define="item_no repeat/service/index">
+
+<input type="checkbox" name="Service:list:ignore_empty"
+       class="noborder"
+       value="" 
+       onclick=""
+       tal:attributes="
+            value python:service_uid;
+            checked analysis_found"
+/>
+</td>
+</tr>
+</tal:service>
+</tal:services>
+</tal:category>
+</tal:categories>
+</table>
+</div>
+<br/>
+
+<input class="context"
+        type="submit"
+        name="form.button.submit"
+        value="Save"
+        i18n:attributes="value"
+        />
+<input class="standalone"
+        type="submit"
+        name="form.button.cancel"
+        value="Cancel"
+        i18n:attributes="value"
+        />
+<input class="standalone"
+        tabindex=""
+        type="submit"
+        name="form.button.category"
+        value="expand"
+        i18n:attributes="value"
+        tal:attributes="tabindex tabindex/next"
+        />
+</form>
+
+</div>
+
+</body>
+
+</html>
+
+

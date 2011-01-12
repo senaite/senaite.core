@@ -1,0 +1,10 @@
+[default]
+title=Register a User
+proxy=Manager,Anonymous
+
+[validators]
+validators = validate_login_details
+ 
+[actions]
+action.failure=traverse_to:string:contact_login_details
+action.success=traverse_to:string:contact_login_details

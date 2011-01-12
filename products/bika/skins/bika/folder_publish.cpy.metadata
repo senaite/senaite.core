@@ -1,0 +1,8 @@
+[actions]
+action.success=redirect_to:string:
+action.success.AnalysisRequest=redirect_to:string:analysisrequest_analyses
+action.success_no_edit=redirect_to:string:
+action.failure=redirect_to:string:
+action.failure.AnalysisRequest=redirect_to:string:analysisrequest_analyses
+action.success.Topic=redirect_to_action:string:subtopics
+action.failure.Topic=redirect_to_action:string:subtopics

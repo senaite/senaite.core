@@ -1,0 +1,220 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en"
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="bika">
+
+<head><head>
+
+<body>
+
+<div metal:fill-slot="main">
+
+<script type="text/javascript" src="utils.js"></script>
+
+<div metal:use-macro="here/document_actions/macros/document_actions">
+Document actions (print, sendto etc)
+</div>
+
+<h1>
+<tal:block replace="structure python:getattr(here, here.getIcon(1))"/>
+<span tal:content="here/title_or_id" tal:omit-tag="">Directory Id</span>
+</h1>
+<br/>
+<form name="folderContentsForm"
+    method="post"
+    action="."
+    tal:attributes="action here_url"
+    tal:define="review_state python:wtool.getInfoFor(here, 'review_state', '')">
+<table
+    summary="Analysisrequest invoice view"
+    class="analysisrequest"
+    cellpadding="0" cellspacing="0" width="100%"
+    tal:define="
+    view_worksheets python:member.has_role(('Manager', 'LabManager', 'LabClerk', 'Owner'));
+    sample here/getSample;
+    sampletype sample/getSampleType">
+
+<tr>
+<th i18n:translate="label_invoice_to">Invoice to</th>
+ <td class="left" colspan="3">
+  <a tal:define="contact here/getContact"
+   tal:condition="nocall:contact"
+   tal:attributes="href contact/absolute_url"
+   tal:content="contact/Title">Pete Smith</a>
+ </td>
+</tr>
+
+<tr>
+<tal:invoiced
+ tal:condition="python:context.hasBeenInvoiced()">
+ <th i18n:translate="label_invoice_id">Invoice ID</th>
+ <td class="left">
+ <a tal:define="invoice here/getInvoice"
+    tal:attributes="href invoice/absolute_url"
+    tal:content="invoice/getInvoiceNumber">I-001</a></td>
+</tal:invoiced>
+
+<tal:not_invoiced
+ tal:condition="python:not context.hasBeenInvoiced()">
+ <th i18n:translate="label_invoice_id">Invoice ID</th>
+ <td class="left"
+    i18n:translate="label_invoice_proforma">Proforma (Not yet invoiced)</td>
+</tal:not_invoiced>
+
+ <th i18n:translate="label_client_order_id">Client Order ID</th>
+ <td class="left" 
+    tal:content="here/getClientOrderNumber|nothing"></td>
+</tr>
+
+
+
+<tr>
+<th i18n:translate="label_clientreference">Client Reference</th>
+<td class="left"
+    tal:content="sample/getClientReference">S001</td>
+
+<th i18n:translate="label_clientsampleid">Client Sample ID</th>
+<td class="left"
+    tal:content="sample/getClientSampleID">S001</td>
+</tr>
+<tr>
+ <th i18n:translate="label_sampletype">Sample type</th>
+ <td class="left" 
+    tal:content="sampletype/Title|nothing">Sample type</td>
+ <th i18n:translate="label_samplepoint">Sample point</th>
+ <td class="left"
+    tal:define="samplepoint sample/getSamplePoint"
+    tal:content="samplepoint/Title|nothing">Sample point</td>
+</tr>
+<tr>
+<th i18n:translate="label_requestid">Request ID</th>
+<td class="left"> 
+<span tal:content="here/getRequestID">AR-0001</span>
+<a tal:attributes="href sample/absolute_url">
+<img src="" 
+    alt="Sample"
+    tal:attributes="src string:${portal/absolute_url}/sample_small.png">
+</a>
+</td>
+<th i18n:translate="label_datereceived">Date received</th>
+<td class="left">
+<span tal:condition="python:review_state != 'sample_due'"
+    tal:define="date_received here/getDateReceived"
+    tal:content="python:plone_view.toLocalizedTime(date_received, long_format=1)"
+    >2005-01-01 10:00</span></td>
+</tr>
+
+<tr tal:condition="python:review_state in ('verified', 'published')">
+<th i18n:translate="label_verified_by">Verified by </th>
+<td class="left">
+<span
+    tal:define="verifier python:here.get_analysisrequest_verifier(here)"
+    tal:content="verifier">Tony Clifton</span></td>
+<th i18n:translate="label_datepublished">Date published</th>
+<td class="left">
+<span tal:condition="python:review_state == 'published'"
+    tal:define="date_published here/getDatePublished"
+    tal:content="python:plone_view.toLocalizedTime(date_published, long_format=1)"
+ >2005-01-01 10:00</span></td>
+</tr>
+
+
+</table>
+
+<table
+    summary="Analysisrequest invoice view"
+    class="analysisrequest"
+    cellpadding="0" cellspacing="0" width="100%"
+    tal:define="
+    view_worksheets python:member.has_role(('Manager', 'LabManager', 'LabClerk', 'Owner'))">
+
+
+<tr>
+<th class="listingCheckbox" i18n:translate="label_analysis_head" 
+	width="40%">
+	<b>Analysis</b></th>
+<th class="listingCheckbox" i18n:translate="label_price" width="20%">
+	<b>Price</b></th>
+<th class="listingCheckbox" i18n:translate="label_vat" width="20%">
+	<b>VAT</b></th>
+<th class="listingCheckbox" i18n:translate="label_price_incl_vat" width="20%">
+	<b>Price incl VAT</b></th>
+</tr>
+
+<tbody>
+
+<tal:analyses
+    define="analyses python:here.get_requested_analyses();
+            global category python:None"
+    repeat="analysis analyses">
+<tal:analysis tal:define="service analysis/getService">
+<tr tal:condition="python:service.getCategoryName() != category">
+<td class="category" colspan="4"
+    tal:define="global category service/getCategoryName"
+    tal:content="service/getCategoryName"></td>
+</tr>
+<tr>
+<td class="left"> 
+
+<a  onClick="" title="Click for details"
+    tal:attributes="onClick string:javascript:showMethod('$portal_url', '${service/getId}')"
+    tal:content="analysis/Title">
+Alcohol
+</a>
+</td>
+
+<td class="amount"><span i18n:translate="label_currency_abbreviation"> R</span>
+<span tal:replace="analysis/getPrice">0.00</span></td>
+
+<td class="amount"><span i18n:translate="label_currency_abbreviation"> R</span>
+<span tal:replace="python:analysis.getTotalPrice() - analysis.getPrice()">0.00</span></td>
+
+<td class="amount"><span i18n:translate="label_currency_abbreviation"> R</span>
+<span tal:replace="analysis/getTotalPrice">0.00</span></td>
+
+</tr>
+
+</tal:analysis>
+</tal:analyses>
+
+<tr>
+<th><b i18n:translate="label_total">Total</b></th>
+<th class="amount"><span i18n:translate="label_currency_abbreviation"> R</span>
+<span tal:replace="here/getSubtotal">0.00</span></th>
+<th class="amount"><span i18n:translate="label_currency_abbreviation"> R</span>
+<span tal:replace="here/getVAT">0.00</span></th>
+<th class="amount"><span i18n:translate="label_currency_abbreviation"> R</span>
+<span tal:replace="here/getTotalPrice">0.00</span></th>
+</tbody>
+
+</table>
+
+<div class="field">
+<label i18n:translate="label_remarks">Notes:</label>
+<p class="comment" tal:content="python:here.getNotes() or default">None</p>
+</div>
+
+<tal:buttons 
+    tal:condition="python:review_state in ['published']"
+    tal:repeat="button actions/folder_buttons|nothing">
+<input
+    class="context"
+    type="submit"
+    name=""
+    value=""
+    tabindex=""
+    tal:condition="python:button['id'] in ('issue_invoice', 'print_invoice')"
+    i18n:attributes="value"
+    tal:attributes="
+        value button/name;
+        name button/url;
+        tabindex tabindex/next" />
+</tal:buttons>
+</form>
+
+</div>
+</body>
+</html>
+
+
+
+

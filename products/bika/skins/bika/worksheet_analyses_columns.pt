@@ -1,0 +1,308 @@
+<metal:block define-macro="body">
+<table
+    class="analysisrequest"
+    summary="analysis request listing"
+    cellpadding="2" cellspacing="0"
+    tal:condition="batch"
+    tal:define="services python:here.get_worksheet_services();"
+    i18n:domain="bika">
+
+<thead>
+
+<tr>
+<th i18n:translate="label_requestid">Request ID</th>
+<td colspan="4"
+    tal:repeat="ar batch" >
+<a href="" tal:content="ar/RequestID"
+    tal:attributes="href ar/absolute_url">AR-00001</a>
+</td>
+</tr>
+<tr>
+<th i18n:translate="label_sampleid">Sample ID</th>
+<td colspan="4"
+    tal:repeat="ar batch" >
+<a href="" tal:content="ar/SampleID"
+    tal:attributes="href ar/sample_absolute_url">AR-00001</a>
+<img src="" 
+    tal:condition="ar/Hazardous"
+    tal:attributes="src string:${portal/absolute_url}/hazardous_small.png">
+</td>
+</tr>
+<tr>
+<th i18n:translate="label_client">Client</th>
+<td colspan="4"
+    tal:repeat="ar batch"
+    tal:content="ar/Client/Title">Lab client</td>
+</tr>
+
+<tr>
+<th i18n:translate="label_clientreference">Client Reference</th>
+<td colspan="4"
+    tal:repeat="ar batch"
+    tal:content="ar/ClientReference">R01</td>
+</tr>
+
+<tr>
+<th i18n:translate="label_clientsampleid">Client Sample ID</th>
+<td colspan="4"
+    tal:repeat="ar batch"
+    tal:content="ar/ClientSampleID">S01</td>
+</tr>
+
+<tr>
+<th i18n:translate="label_sampletype">Sample Type</th>
+<td colspan="4"
+    tal:repeat="ar batch"
+    tal:content="ar/SampleType">SampleType</td>
+</tr>
+
+<tr>
+<th i18n:translate="label_samplepoint">Sample Point</th>
+<td colspan="4"
+    tal:repeat="ar batch"
+    tal:content="ar/SamplePoint">SamplePoint</td>
+</tr>
+
+<tr>
+<th i18n:translate="label_datereceived">Date received
+</th>
+<td colspan="4"
+    tal:repeat="ar batch"
+    tal:content="ar/DateReceived">2005-01-01 10:00</td>
+</tr>
+
+<tr>
+<th i18n:translate="label_datepublished">Date published
+</th>
+<td colspan="4"
+    tal:repeat="ar batch"
+    tal:content="ar/DatePublished">2005-01-01 10:00</td>
+</tr>
+
+<tr>
+<th i18n:translate="label_analyses">Analyses</th>
+<th tal:attributes="colspan python:(b_size*4)">
+<tal:titration 
+    condition="any_titr_vol_reqd">
+Titr: [
+<span i18n:translate="label_volume">Vol</span>
+][
+<span i18n:translate="label_factor">Fact</span>
+]
+</tal:titration>
+
+<tal:both tal:condition="python:any_titr_vol_reqd and any_weight_calc_reqd"> 
+<span i18n:translate="label_or">or</span>
+</tal:both>
+
+<tal:weight 
+    condition="any_weight_calc_reqd">
+Mass: [
+<span i18n:translate="label_grossweight">Gross</span>
+][
+<span i18n:translate="label_netweight">Net</span>
+][
+<span i18n:translate="label_containerweight">Vessel</span>
+]
+</tal:weight>
+
+</th>
+</tr>
+
+</thead>
+
+<tbody>
+
+<tal:service
+    define="sort_on python:(('Title', 'nocase', 'asc'),)"
+    repeat="service services">
+<tr tal:define="AS_requires_titr service/getTitrationRequired|nothing;
+                global service_count python:0;
+                AS_requires_weight service/getWeightRequired|nothing;
+                global weight_service_count python:0">
+<th> 
+<span tal:content="service/Title">Alcohol</span>
+</th>
+<tal:block repeat="ar batch">
+<tal:x
+    tal:define="
+        service_id service/getId;
+        analyses ar/Analyses;
+        analysis python:analyses.get(service_id, None);
+        review_state python:wtool.getInfoFor(analysis, 'review_state', '');
+        sampletype nocall:ar/sampletype_obj">
+<td colspan="4"
+    tal:condition="python:analysis == None">
+</td>
+
+<tal:resultinput
+    condition="python:analysis and review_state == 'assigned'">
+
+<tal:titration
+    condition="AS_requires_titr">
+<td>
+<input 
+    class="amount"
+    size="4"
+    name=""
+    onChange=""
+    tal:condition="python:review_state == 'assigned'"
+    tal:attributes="
+        name string:results.${analysis/UID}.TitrationVolume:record;
+        onChange string:calcResult('${analysis/UID}');
+        tabindex tabindex/next;
+        value analysis/getTitrationVolume|nothing"/>
+</td>
+<td>
+<input 
+    class="amount"
+    size="4"
+    name=""
+    id=""
+    onChange=""
+    tal:condition="python:review_state == 'assigned'"
+    tal:define="global service_count python:service_count+1"
+    tal:attributes="
+        id string:${service/Title}.$service_count;
+        onChange string:autofill('${service/Title}.$service_count');
+        name string:results.${analysis/UID}.TitrationFactor:record;
+        tabindex tabindex/next;
+        value analysis/getTitrationFactor|nothing"/>
+</td>
+</tal:titration>
+
+<tal:weight
+    condition="AS_requires_weight">
+<td>
+<input 
+    class="amount"
+    size="4"
+    name=""
+    onChange=""
+    tal:condition="python:review_state == 'assigned'"
+    tal:attributes="
+        name string:results.${analysis/UID}.GrossWeight:record;
+        onChange string:calcWeight('${analysis/UID}');
+        tabindex tabindex/next;
+        value analysis/getGrossWeight|nothing"/>
+</td>
+<td>
+<input 
+    class="amount"
+    size="4"
+    name=""
+    onChange=""
+    tal:condition="python:review_state == 'assigned'"
+    tal:attributes="
+        name string:results.${analysis/UID}.NetWeight:record;
+        onChange string:calcWeight('${analysis/UID}');
+        tabindex tabindex/next;
+        value analysis/getNetWeight|nothing"/>
+</td>
+<td>
+<input 
+    class="amount"
+    size="4"
+    name=""
+    id=""
+    onChange=""
+    tal:condition="python:review_state == 'assigned'"
+    tal:define="global weight_service_count python:weight_service_count+1;
+                input_id string:container.$weight_service_count"
+    tal:attributes="
+        id string:container.$weight_service_count;
+        onChange string:calcWeight('${analysis/UID}');
+        name string:results.${analysis/UID}.ContainerWeight:record;
+        tabindex tabindex/next;
+        value analysis/getContainerWeight|nothing"/>
+</td>
+</tal:weight>
+
+<td 
+    tal:define="colspan python:AS_requires_weight and 1 or 4;
+                colspan python:AS_requires_titr and 2 or colspan;
+                any_calc_required python:AS_requires_titr or AS_requires_weight"
+    tal:attributes="colspan colspan"> 
+<input
+    READONLY
+    class="calculated"
+    size="4"
+    name=""
+    tabindex="-1"
+    tal:condition="any_calc_required"
+    tal:attributes="
+        name string:results.${analysis/UID}.Result:record;
+        value analysis/getResult|nothing"/>
+<input
+    class="amount"
+    size="4"
+    name=""
+    tal:condition="python:not any_calc_required"
+    tal:attributes="
+        name string:results.${analysis/UID}.Result:record;
+        tabindex tabindex/next;
+        value analysis/getResult|nothing"/>
+<div class="retested"
+      tal:condition="analysis/getRetested"
+      i18n:translate="retested">retested</div>
+<input type="hidden" name=""
+       value="" id=""
+       tal:define="
+            analysis_id analysis/UID;
+            input_name string:results.${analysis_id}.Retested;
+            input_id string:${analysis_id}.Retested_hidden"
+       tal:attributes="
+            id input_id;
+            name string:${analysis_id}:record;
+            value analysis/getRetested"/>
+</td>
+
+</tal:resultinput>
+
+<tal:resultshow
+    condition="python:analysis and review_state != 'assigned'">
+<tal:titration
+    condition="AS_requires_titr">
+<td class="discreet" tal:content="analysis/getTitrationVolume|nothing"/>
+<td class="discreet" tal:content="analysis/getTitrationFactor|nothing"/>
+</tal:titration>
+<tal:weight
+    condition="AS_requires_weight">
+<td class="discreet" tal:content="analysis/getGrossWeight|nothing"/>
+<td class="discreet" tal:content="analysis/getNetWeight|nothing"/>
+<td class="discreet" tal:content="analysis/getContainerWeight|nothing"/>
+</tal:weight>
+
+<div tal:define="
+        client_uid ar/Client/UID;
+        result_class python:analysis and here.result_in_range(analysis.getResult(), sampletype.UID(), service, specification, client_uid) or ''">
+<td tal:define="colspan python:AS_requires_weight and 1 or 4;
+                colspan python:AS_requires_titr and 2 or colspan"
+    tal:attributes="colspan colspan;
+                    class result_class">
+<span tal:content="analysis/getResult|nothing">10</span>
+<div class="retested"
+      tal:condition="analysis/getRetested"
+      i18n:translate="retested">retested</div>
+</td>
+</div>
+</tal:resultshow>
+
+</tal:x>
+</tal:block>
+</tr>
+</tal:service>
+
+</tbody>
+
+</table>
+<br>
+<span i18n:translate="label_remarks">Remarks</span>:
+<p tal:condition="open_ws">
+<textarea name="Notes"
+    tal:content="request/Notes|here/getNotes"></textarea>
+</p>
+<p class="comment" 
+    tal:condition="not:open_ws"
+    tal:content="python:here.getNotes() or default">None</p>
+</metal:block>

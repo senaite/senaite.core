@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+<object name="CMF Folder" meta_type="Factory-based Type Information"
+   xmlns:i18n="http://xml.zope.org/namespaces/i18n">
+ <property name="title"></property>
+ <property
+    name="description">Plone folders can define custom 'view' actions, or will behave like directory listings without one defined.</property>
+ <property name="content_icon">folder_icon.gif</property>
+ <property name="content_meta_type">Plone Folder</property>
+ <property name="product">CMFPlone</property>
+ <property name="factory">addPloneFolder</property>
+ <property name="immediate_view">folder_contents</property>
+ <property name="global_allow">False</property>
+ <property name="filter_content_types">False</property>
+ <property name="allowed_content_types"/>
+ <property name="allow_discussion">False</property>
+ <alias from="view" to="(Default)"/>
+ <action title="View" action_id="view" category="folder" condition_expr=""
+    url_expr="string:${folder_url}/" visible="True">
+  <permission value="View"/>
+ </action>
+ <action title="Edit" action_id="edit" category="folder" condition_expr=""
+    url_expr="string:${folder_url}/folder_edit_form" visible="True">
+  <permission value="Modify portal content"/>
+ </action>
+ <action title="Sharing" action_id="local_roles" category="folder"
+    condition_expr="" url_expr="string:${folder_url}/folder_localrole_form"
+    visible="True">
+  <permission value="Manage properties"/>
+ </action>
+ <action title="Folder Listing" action_id="folderlisting" category="folder"
+    condition_expr="" url_expr="string:${folder_url}/folder_listing"
+    visible="False">
+  <permission value="View"/>
+ </action>
+ <action title="State" action_id="content_status_history"
+    category="object_tabs"
+    condition_expr="python:object and portal.portal_workflow.getTransitionsFor(object, object.getParentNode())"
+    url_expr="string:$object_url/content_status_history" visible="False">
+  <permission value="View"/>
+ </action>
+ <action title="External Edit" action_id="external_edit" category="object"
+    condition_expr="" url_expr="string:$object_url/external_edit"
+    visible="False">
+  <permission value="Modify portal content"/>
+ </action>
+</object>

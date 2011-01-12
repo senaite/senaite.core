@@ -1,0 +1,257 @@
+<?xml version="1.0"?>
+<rolemap>
+  <roles>
+    <role name="Anonymous"/>
+    <role name="Authenticated"/>
+    <role name="LabClerk"/>
+    <role name="LabManager"/>
+    <role name="LabTechnician"/>
+    <role name="Manager"/>
+    <role name="Member"/>
+    <role name="Owner"/>
+    <role name="Publisher"/>
+    <role name="Reviewer"/>
+    <role name="Verifier"/>
+  </roles>
+  <permissions>
+    <permission name="Access inactive portal content" acquire="True">
+      <role name="Owner"/>
+    </permission>
+    <permission name="Add portal content" acquire="True">
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="LabTechnician"/>
+      <role name="Manager"/>
+    </permission>
+    <permission name="Add portal folders" acquire="True">
+      <role name="Manager"/>
+      <role name="Owner"/>
+    </permission>
+    <permission name="Allow sendto" acquire="True">
+      <role name="Anonymous"/>
+      <role name="Manager"/>
+      <role name="Member"/>
+    </permission>
+    <permission name="BIKA: Assign analyses" acquire="True">
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="LabTechnician"/>
+      <role name="Manager"/>
+    </permission>
+    <permission name="BIKA: Delete analyses" acquire="True">
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="LabTechnician"/>
+      <role name="Manager"/>
+    </permission>
+    <permission name="BIKA: Dispatch Order" acquire="True">
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+    </permission>
+    <permission name="BIKA: Import sample" acquire="True">
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="LabTechnician"/>
+      <role name="Manager"/>
+    </permission>
+    <permission name="BIKA: Manage AnalysisRequest" acquire="True">
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="LabTechnician"/>
+      <role name="Manager"/>
+    </permission>
+    <permission name="BIKA: Manage Sample" acquire="True">
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="LabTechnician"/>
+      <role name="Manager"/>
+    </permission>
+    <permission name="BIKA: Manage ARImport" acquire="True">
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+    </permission>
+    <permission name="BIKA: Manage Clients" acquire="True">
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+    </permission>
+    <permission name="BIKA: Manage Standard Suppliers" acquire="True">
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="LabTechnician"/>
+      <role name="Manager"/>
+    </permission>
+    <permission name="BIKA: Manage Standard" acquire="True">
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="LabTechnician"/>
+      <role name="Manager"/>
+    </permission>
+    <permission name="BIKA: Manage Invoices" acquire="True">
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <role name="Owner"/>
+    </permission>
+    <permission name="BIKA: Manage Orders" acquire="True">
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+    </permission>
+    <permission name="BIKA: Manage Pricelists" acquire="True">
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <role name="Owner"/>
+    </permission>
+    <permission name="BIKA: View Methods" acquire="True">
+      <role name="Member"/>
+      <role name="Manager"/>
+    </permission>
+    <permission name="BIKA: Manage Worksheets" acquire="True">
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="LabTechnician"/>
+      <role name="Manager"/>
+    </permission>
+    <permission name="BIKA: Manage bika" acquire="True">
+      <role name="LabManager"/>
+      <role name="Manager"/>
+    </permission>
+    <permission name="BIKA: Post Invoice batch" acquire="True">
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <role name="Owner"/>
+    </permission>
+    <permission name="BIKA: Publish sample" acquire="True">
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <role name="Publisher"/>
+      <role name="Reviewer"/>
+    </permission>
+    <permission name="BIKA: Receive sample" acquire="True">
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+    </permission>
+    <permission name="BIKA: Retract Worksheet" acquire="True">
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <role name="Reviewer"/>
+      <role name="Verifier"/>
+    </permission>
+    <permission name="BIKA: Retract sample" acquire="True">
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <role name="Reviewer"/>
+      <role name="Verifier"/>
+    </permission>
+    <permission name="BIKA: Submit Worksheet" acquire="True">
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="LabTechnician"/>
+      <role name="Manager"/>
+    </permission>
+    <permission name="BIKA: Submit results" acquire="True">
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="LabTechnician"/>
+      <role name="Manager"/>
+    </permission>
+    <permission name="BIKA: Submit sample" acquire="True">
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="LabTechnician"/>
+      <role name="Manager"/>
+    </permission>
+    <permission name="BIKA: Verify Worksheet" acquire="True">
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <role name="Reviewer"/>
+      <role name="Verifier"/>
+    </permission>
+    <permission name="BIKA: Verify sample" acquire="True">
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <role name="Reviewer"/>
+      <role name="Verifier"/>
+    </permission>
+    <permission name="BIKA: View Results" acquire="True">
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <role name="Owner"/>
+    </permission>
+    <permission name="Delete objects" acquire="True">
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <role name="Owner"/>
+    </permission>
+    <permission name="FTP access" acquire="True">
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="LabTechnician"/>
+      <role name="Manager"/>
+    </permission>
+    <permission name="List folder contents" acquire="True">
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="LabTechnician"/>
+      <role name="Manager"/>
+    </permission>
+    <permission name="List portal members" acquire="True">
+      <role name="Manager"/>
+      <role name="Member"/>
+    </permission>
+    <permission name="List undoable changes" acquire="True">
+      <role name="Manager"/>
+      <role name="Member"/>
+    </permission>
+    <permission name="Manage properties" acquire="True">
+      <role name="Manager"/>
+      <role name="Owner"/>
+    </permission>
+    <permission name="Modify portal content" acquire="True">
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="LabTechnician"/>
+      <role name="Manager"/>
+      <role name="Owner"/>
+    </permission>
+    <permission name="Reply to item" acquire="True">
+      <role name="Manager"/>
+      <role name="Member"/>
+    </permission>
+    <permission name="Review portal content" acquire="True">
+      <role name="Manager"/>
+      <role name="Reviewer"/>
+    </permission>
+    <permission name="Set own password" acquire="False">
+      <role name="Authenticated"/>
+      <role name="Manager"/>
+    </permission>
+    <permission name="Set own properties" acquire="False">
+      <role name="Authenticated"/>
+      <role name="Manager"/>
+    </permission>
+    <permission name="Undo changes" acquire="True">
+      <role name="Manager"/>
+      <role name="Owner"/>
+    </permission>
+    <permission name="Use external editor" acquire="False">
+      <role name="Authenticated"/>
+      <role name="Manager"/>
+    </permission>
+    <permission name="View Groups" acquire="True">
+      <role name="Manager"/>
+      <role name="Member"/>
+      <role name="Owner"/>
+    </permission>
+    <permission name="View management screens" acquire="True">
+      <role name="Manager"/>
+      <role name="Owner"/>
+    </permission>
+  </permissions>
+</rolemap>

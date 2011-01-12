@@ -1,0 +1,135 @@
+<?xml version="1.0"?>
+<object name="Client"
+   meta_type="Factory-based Type Information with dynamic views"
+   xmlns:i18n="http://xml.zope.org/namespaces/i18n">
+ <property name="title">Client</property>
+ <property name="description">
+      Mixin class to support instance-based schemas
+      Attention: must be before BaseFolder or BaseContent in
+      the inheritance list, e.g:
+  
+      class Blorf(VariableSchemaSupport, BaseContent):
+          def getSchema():
+              return some schema definition...
+  
+      </property>
+ <property name="content_icon">client.png</property>
+ <property name="content_meta_type">Client</property>
+ <property name="product">bika</property>
+ <property name="factory">addClient</property>
+ <property name="default_view">base_edit</property>
+ <property name="immediate_view">base_edit</property>
+ <property name="global_allow">False</property>
+ <property name="filter_content_types">False</property>
+ <property name="allowed_content_types">
+  <element value="AnalysisRequest"/>
+  <element value="Sample"/>
+  <element value="Attachment"/>
+  <element value="Contact"/>
+  <element value="Order"/>
+  <element value="ARImport"/>
+  <element value="ARProfile"/>
+  <element value="AnalysisSpec"/>
+ </property>
+ <property name="allow_discussion">False</property>
+ <property name="default_view">client_analysisrequests</property>
+ <property name="view_methods">
+  <element value="client_analysisrequests"/>
+ </property>
+ <property name="default_view_fallback">False</property>
+ <alias from="(Default)" to="(dynamic view)"/>
+ <alias from="edit" to="base_edit"/>
+ <alias from="index.html" to="(dynamic view)"/>
+ <alias from="properties" to="base_metadata"/>
+ <alias from="sharing" to="folder_localrole_form"/>
+ <alias from="view" to="(selected layout)"/>
+ <action title="CheckState" action_id="checkstate" category="object"
+    condition_expr="python:here.getSetupState()" 
+    url_expr="string:${object_url}/base_edit" visible="True">
+  <permission value="View"/>
+ </action>
+ <action title="View" action_id="view" category="object" condition_expr=""
+    url_expr="string:${object_url}/base_view" visible="False">
+  <permission value="View"/>
+ </action>
+ <action title="Edit" action_id="edit" category="object"
+    condition_expr="python:here.setup_state" 
+    url_expr="string:${object_url}/base_edit" visible="True">
+  <permission value="Modify portal content"/>
+ </action>
+ <action title="Properties" action_id="metadata" category="object"
+    condition_expr="" url_expr="string:${object_url}/base_metadata"
+    visible="False">
+  <permission value="Modify portal content"/>
+ </action>
+ <action title="References" action_id="references" category="object"
+    condition_expr="object/archetype_tool/has_graphviz"
+    url_expr="string:${object_url}/reference_graph" visible="False">
+  <permission value="Modify portal content"/>
+  <permission value="Review portal content"/>
+ </action>
+ <action title="Folder Listing" action_id="folderlisting" category="folder"
+    condition_expr="object/isPrincipiaFolderish"
+    url_expr="string:${folder_url}/view" visible="False">
+  <permission value="View"/>
+ </action>
+ <action title="Setup" action_id="clientsetup" category="object"
+    condition_expr="python:not here.setup_state" 
+    url_expr="string:${object_url}/redirect_to_client_setup"
+    visible="True">
+  <permission value="List folder contents"/>
+ </action>
+ <action title="Actions" action_id="clientactions" category="object"
+    condition_expr="python:here.setup_state" 
+    url_expr="string:${object_url}/redirect_to_client_actions"
+    visible="True">
+  <permission value="List folder contents"/>
+ </action>
+ <action title="Contacts" action_id="contacts" category="object"
+    condition_expr="python:here.setup_state" 
+    url_expr="string:${object_url}/client_contacts"
+    visible="True">
+  <permission value="List folder contents"/>
+ </action>
+ <action title="Samples" action_id="samples" category="object"
+    condition_expr="python:not here.setup_state" 
+    url_expr="string:${object_url}/client_samples"
+    visible="True">
+  <permission value="List folder contents"/>
+ </action>
+ <action title="Analysis requests" action_id="requests" category="object"
+    condition_expr="python:not here.setup_state" 
+    url_expr="string:${object_url}/client_analysisrequests"
+    visible="True">
+  <permission value="List folder contents"/>
+ </action>
+ <action title="ARImports" action_id="imports" category="object"
+    condition_expr="python:not here.setup_state" 
+    url_expr="string:${object_url}/client_arimports"
+    visible="True">
+  <permission value="List folder contents"/>
+ </action>
+ <action title="AR Profiles" action_id="profiles" category="object"
+    condition_expr="python:here.setup_state" 
+    url_expr="string:${object_url}/client_arprofiles"
+    visible="True">
+  <permission value="List folder contents"/>
+ </action>
+ <action title="Analysis specs" action_id="specs" category="object"
+    condition_expr="python:here.setup_state" 
+    url_expr="string:${object_url}/client_analysisspecs"
+    visible="True">
+  <permission value="List folder contents"/>
+ </action>
+ <action title="Attachments" action_id="attachments" category="object"
+    condition_expr="python:(not here.setup_state) and here.bika_settings.settings.getAttachmentsPermitted()" 
+    url_expr="string:${object_url}/client_attachments"
+    visible="True">
+  <permission value="List folder contents"/>
+ </action>
+ <action title="Orders" action_id="orders" category="object" 
+    condition_expr="python:not here.setup_state" 
+    url_expr="string:${object_url}/client_orders" visible="True">
+  <permission value="List folder contents"/>
+ </action>
+</object>

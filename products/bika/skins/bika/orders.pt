@@ -1,0 +1,188 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      lang="en"
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="bika">
+
+<head>
+    <metal:block fill-slot="top_slot"
+                 tal:define="dummy python:request.set('disable_border', 1)" />
+</head>
+             
+             
+<body>
+
+<div metal:fill-slot="main"
+tal:define="
+    dummy_a python:request.set('portal_type', 'Order');
+    dummy_b python:request.set('sort_on', 'getOrderNumber');
+    dummy_c python:request.set('sort_order', 'reverse');
+    dummy_d python:here.toggle_state('order_review_state', 'all');
+    order_state python:request.get('order_review_state');
+    dummy_e python:here.REQUEST.set('review_state', order_state);
+    states python:here.get_toggles('order');
+    header_state python:here.get_toggle_title(order_state, states)">
+
+<div metal:use-macro="here/document_actions/macros/document_actions">
+Document actions (print, sendto etc)
+</div>
+
+<h1>
+<img src="order.png" tal:attributes="src python:here.portal_types.getTypeInfo('Order').getIcon()"/>
+<span i18n:translate="header_orders">Orders</span>
+<tal:not_all tal:condition="python:order_state != 'all'">
+-
+<span i18n:translate="" tal:content="header_state">All</span>
+</tal:not_all>
+</h1>
+
+<form name="filter_result" action="" method="post"
+    tal:attributes="action template/getId">
+<input type="hidden" name="portal_type" value="Order"/>
+<input type="hidden" name="sort_on" value="getOrderDate"/>
+<input type="hidden" name="sort_order" value="reverse"/>
+<div class="optionsToggle">
+    <tal:x repeat="state states">
+    <input class="noborder" type="radio" name="order_review_state" 
+        value="pending"
+        onclick="this.form.submit()"
+        tal:define="state_id state/id"
+        tal:attributes="value state_id;
+            checked python:request.get('order_review_state', 'pending') == state_id and 'checked' or None"/>
+    <span tal:content="state/title" i18n:translate="">Pending</span>
+    </tal:x>
+</div>
+</form>
+
+<div id="content-orders"
+     tal:define="
+        all python:order_state == 'all';
+        results python:test(all, here.portal_catalog(
+                    portal_type='Order',
+                    sort_on='getOrderNumber',
+                    sort_order='reverse'), 
+                    container.queryCatalog());
+        Batch python:modules['Products.CMFPlone'].Batch;
+        b_start python:request.get('b_start',0);">
+<form name="orders" action="." method="post" tal:condition="results"
+    tal:define="batch python:Batch(results, 15, int(b_start), orphan=1)">
+
+<input type="hidden" name="form.submitted" value="1" />
+<input type="hidden" name="came_from" value="orders" />
+
+<table
+    class="listing"
+    summary="analysis request listing"
+    cellpadding="0" cellspacing="0">
+
+<thead>
+<tr>
+<th class="nosort"><input
+    class="noborder"
+    type="checkbox"
+    src="select_all_icon.gif"
+    name="selectButton"
+    title="Select all items"
+    onClick="toggleSelect(this);"
+    tal:attributes="src string:$portal_url/select_all_icon.gif"
+    alt="Select all items"
+    i18n:attributes="title; alt"
+    />
+</th>
+<th i18n:translate="label_ordernumber">Order number</th>
+<th i18n:translate="label_client">Client</th>
+<th i18n:translate="label_contact">Contact</th>
+<th i18n:translate="label_orderdate">Order date</th>
+<th i18n:translate="label_order_dispatch_date">Dispatched on</th>
+<th i18n:translate="label_totalprice">Total price</th>
+<th i18n:translate="label_status"
+    tal:condition="python:order_state == 'all'">Status</th>
+</tr>
+</thead>
+
+<tbody tal:define="getRelativeContentURL nocall:utool/getRelativeContentURL">
+
+<metal:block tal:repeat="result batch">
+<tal:item define="item result/getObject">
+<tr tal:define="
+        oddrow repeat/result/odd;
+        item_title_or_id item/title_or_id;
+        item_state python:test(order_state == 'all', 
+                        wtool.getInfoFor(item, 'review_state', ''), 
+                        order_state)"
+    tal:attributes="
+        class python:test(oddrow, 'even', 'odd')" >
+<td>
+<input type="checkbox" class="noborder" name="ids:list" id="#" value="#"
+    tal:attributes="
+        value item/UID;
+        id python: 'cb_'+item.getId();
+        checked request/ids_checked|nothing;
+        tabindex tabindex/next|nothing;
+        alt string:Select $item_title_or_id;
+        title string:Select $item_title_or_id"/>
+<input type="hidden" name="obj_paths:list" value="#"
+    tal:attributes="value python:getRelativeContentURL(item)" />
+</td>
+
+<td>
+<a href="" 
+    tal:attributes="href item/absolute_url"
+    tal:content="item/getOrderNumber">ORDER-01</a>
+</td>
+<td tal:content="python:item.aq_parent.Title()">Client</td>
+<td tal:define="contact item/getContact"
+    tal:content="contact/Title|nothing">Contact</td>
+<td tal:content="python:plone_view.toLocalizedTime(item.getOrderDate(), long_format=1)"
+    >2005-01-01 10:10</td>
+<td tal:define="dd item/getDateDispatched"
+    tal:content="python:dd and plone_view.toLocalizedTime(dd, long_format=1)"
+    >2005-01-01 10:10</td>
+<td class="amount" tal:content="item/getTotal">R11.40</td>
+<td tal:condition="python:order_state == 'all'" 
+    tal:content="python:item_state.replace('_', ' ')">
+</td>
+</tr>
+</tal:item>
+</metal:block>
+
+</tbody>
+
+</table>
+
+
+<!-- Navigation -->
+<div metal:use-macro="here/batch_macros/macros/navigation" />
+
+<tal:order_actions
+    condition="batch"
+    define="
+    order_actions python: portal.portal_actions.listFilteredActionsFor(batch[0].getObject());
+    ar_workflow_actions order_actions/workflow;">
+
+<input type="hidden" id="workflow_action" name="workflow_action" value=""/>
+
+<tal:buttons tal:repeat="transition ar_workflow_actions"
+    tal:condition="python:batch and not all">
+
+<input
+    class="context"
+    type="submit"
+    name="batch_status_modify:method"
+    value=""
+    tabindex=""
+    i18n:attributes="value"
+    tal:attributes="
+        value transition/name;
+        tabindex tabindex/next;
+        onclick string:this.form.workflow_action.value = '${transition/id}'" />
+
+</tal:buttons>
+</tal:order_actions>
+
+</form>
+
+</div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,64 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      lang="en"
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="bika">
+
+<head>
+    <metal:block fill-slot="top_slot"
+                 tal:define="dummy python:request.set('disable_border', 1)" />
+</head>
+             
+             
+<body>
+
+<div metal:fill-slot="main">
+
+<h1>
+<tal:block replace="structure python:getattr(here, here.getIcon(1))"/>
+<span i18n:translate="heading_import"
+    >Import instrument data</span>
+</h1>
+
+<form action="instrument_import_results" method="post" name="import_instrument"
+    enctype="multipart/form-data">
+<fieldset>
+
+<legend i18n:translate="legend_import">Import</legend>
+<div class="field" >
+    <label i18n:translate="label_select_input_format">Select an input format</label><br/>
+    <select name="getInstrument" style="" id="getInstrument"
+        tal:define="instruments python:[('instrument1', 'Instrument 1'),
+    ('instrument2', 'Instrument 2'), ('instrument3', 'Instrument 3'), ]">
+        <tal:instruments repeat="instrument instruments">
+        <option value=""
+                tal:attributes="
+                  value python: instrument[0];
+                  selected python:request.get('getInstrument', '')==instrument[0] and 'selected' or ''"
+                tal:content="python:instrument[1]">Instrument Name
+        </option>
+        </tal:instruments>
+    </select>
+</div>
+<div class="field">
+    <label i18n:translate="label_import_file"
+        >Select instrument data file</label><br/>
+    <input type="file" name="csvfile" size="30"/>
+</div>
+
+<div class="field">
+    <input tabindex=""
+        class="standalone"
+        type="submit"
+        name="submit"
+        value="Import"
+        i18n:attributes="value"
+        />                       
+</div>
+
+</fieldset>
+</form>
+
+</div>
+
+</body>
+</html>

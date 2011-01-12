@@ -1,0 +1,63 @@
+<?xml version="1.0"?>
+<object name="portal_actions" meta_type="Plone Actions Tool">
+ <action-provider name="portal_actions">
+ <action title="LIMS" action_id="mystuff" category="portal_tabs"
+     condition_expr="python: member and here.member_is_client()"
+     url_expr="string:$portal_url/redirect_to_client_home" visible="True">
+   <permission>View</permission>
+  </action>
+  <action title="Clients" action_id="clients" category="portal_tabs"
+     condition_expr="" url_expr="string:$portal_url/clients" visible="True">
+   <permission>BIKA: Manage Clients</permission>
+  </action>
+  <action title="Samples" action_id="samples"
+     category="portal_tabs" condition_expr=""
+     url_expr="string:$portal_url/samples" visible="True">
+   <permission>BIKA: Manage Sample</permission>
+  </action>
+  <action title="Analysis requests" action_id="analysisrequests"
+     category="portal_tabs" condition_expr=""
+     url_expr="string:$portal_url/analysisrequests" visible="True">
+   <permission>BIKA: Manage AnalysisRequest</permission>
+  </action>
+  <action title="Worksheets" action_id="worksheets" category="portal_tabs"
+     condition_expr="" url_expr="string:$portal_url/worksheets"
+     visible="True">
+   <permission>BIKA: Manage Worksheets</permission>
+  </action>
+  <action title="Orders" action_id="orders" category="portal_tabs"
+     condition_expr="" url_expr="string:$portal_url/orders" visible="True">
+   <permission>BIKA: Manage Orders</permission>
+  </action>
+  <action title="Suppliers" action_id="standardsuppliers" category="portal_tabs"
+     condition_expr="" url_expr="string:$portal_url/standardsuppliers" visible="True">
+   <permission>BIKA: Manage Standard Suppliers</permission>
+  </action>
+  <action title="Standards" action_id="standardsamples"
+     category="portal_tabs" condition_expr=""
+     url_expr="string:$portal_url/standardsamples" visible="True">
+   <permission>BIKA: Manage Standard</permission>
+  </action>
+  <action title="Queries" action_id="queries" category="portal_tabs"
+     condition_expr="" url_expr="string:$portal_url/query_form"
+     visible="True">
+   <permission>List portal members</permission>
+  </action>
+  <action title="Reports" action_id="reports" category="portal_tabs"
+     condition_expr="" url_expr="string:$portal_url/reports" visible="True">
+   <permission>List portal members</permission>
+  </action>
+  <action title="Extracts" action_id="extracts" category="portal_tabs"
+     condition_expr="" url_expr="string:$portal_url/extracts" visible="True">
+   <permission>List portal members</permission>
+  </action>
+  <action title="Prices" action_id="reset_services" category="portal_tabs"
+     condition_expr="" url_expr="string:$portal_url/setanalyses" visible="True">
+   <permission>List portal members</permission>
+  </action>
+  <action title="Import instrument" action_id="import" category="portal_tabs"
+     condition_expr="" url_expr="string:$portal_url/import" visible="True">
+   <permission>BIKA: Manage AnalysisRequest</permission>
+  </action>
+ </action-provider>
+</object>

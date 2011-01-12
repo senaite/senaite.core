@@ -1,0 +1,8 @@
+[default]
+title=Add or edit analysis specs
+proxy=Manager,Anonymous
+
+[actions]
+action.failure=traverse_to:string:client_analysisspecs
+action.success.AnalysisSpec=redirect_to:string:${object/aq_parent/absolute_url}/client_analysisspecs
+action.success.Client=traverse_to:string:client_analysisspecs

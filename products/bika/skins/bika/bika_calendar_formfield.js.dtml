@@ -1,0 +1,50 @@
+// jscalendar glue -- Leonard Norrgård <vinsci@*>
+// adapted for bika to copy date fields to a named field for refreshes on 
+//search screens
+
+// This function updates a hidden date field with the current values of the widgets
+function update_and_copy_date_field(field, year, month, day, hour, minute, ampm, fieldname, copy_to, show_hm)
+{
+    var field  = document.getElementById(field)
+    var date   = document.getElementById(date)
+    var year   = document.getElementById(year)
+    var month  = document.getElementById(month)
+    var day    = document.getElementById(day)
+    var hour   = document.getElementById(hour)
+    var minute = document.getElementById(minute)
+    var ampm   = document.getElementById(ampm)
+
+    if (0 < year.value)
+    {
+        // Return ISO date string
+        // Note: This relies heavily on what date_components_support.py puts into the form.
+        field.value = year.value + "-" + month.value + "-" + day.value + " " + hour.value + ":" + minute.value
+        // Handle optional AM/PM
+        if (ampm && ampm.value)
+            field.value = field.value + " " + ampm.value
+    } 
+    else 
+    {
+        // Return empty string
+        field.value = ''
+        // Reset widgets
+        month.options[0].selected = 1
+        day.options[0].selected = 1
+        if ((show_hm == '0') || (show_hm == 'False')) {
+            hour.value = '00'
+            minute.value = '00'
+        } else {
+            hour.options[0].selected = 1
+            minute.options[0].selected = 1
+        }
+        if (ampm && ampm.options)
+            ampm.options[0].selected = 1
+    }
+    if (copy_to != '') {
+        to_field_name = copy_to + fieldname;
+        var to_field = document.getElementById(to_field_name)
+        to_field.value = field.value
+    }
+}
+
+

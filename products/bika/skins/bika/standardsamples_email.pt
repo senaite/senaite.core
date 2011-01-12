@@ -1,0 +1,31 @@
+<html
+    xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en"
+    i18n:domain="bika"
+    metal:use-macro="here/main_template/macros/master">
+
+<head>
+    <metal:block fill-slot="top_slot"
+                 tal:define="dummy python:request.set('disable_border', 1)" />
+</head>
+
+<body>
+
+<div metal:fill-slot="main">
+
+<h1>
+<img src="standardsample.png" tal:attributes="src python:here.portal_types.getTypeInfo('StandardSample').getIcon()"/>
+<span i18n:translate="heading_standard_samples">Standard Samples</span>
+</h1>
+
+<metal:email_result
+    tal:define="mail_template string:mail_standardsamples;
+        form_action string:email_standardsamples;
+        form_legend string:Email standard samples">
+    <metal:block use-macro="here/email_results_form/macros/body"/>
+</metal:email_result>
+
+</div>
+
+</body>
+
+</html>

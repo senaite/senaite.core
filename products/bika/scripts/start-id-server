@@ -1,0 +1,15 @@
+#!/bin/bash
+
+reldir=`dirname $0`
+PYTHON=/usr/bin/python
+BIKA_BASE=`cd $reldir; pwd`
+COUNTER_FILE=$BIKA_BASE/var/id.counter
+LOG_FILE=$BIKA_BASE/log/idserver.log
+PID_FILE=$BIKA_BASE/var/idserver.pid
+PORT=8081
+
+exec $PYTHON $BIKA_BASE/Products/bika/scripts/id-server.py \
+	-f $COUNTER_FILE \
+	-p $PORT \
+	-l $LOG_FILE \
+	-d $PID_FILE

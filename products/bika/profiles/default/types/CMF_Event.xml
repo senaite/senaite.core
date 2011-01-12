@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<object name="CMF Event" meta_type="Factory-based Type Information"
+   xmlns:i18n="http://xml.zope.org/namespaces/i18n">
+ <property name="title"></property>
+ <property
+    name="description">Events are objects for use in Calendar topical queries on the catalog.</property>
+ <property name="content_icon">event_icon.gif</property>
+ <property name="content_meta_type">CMF Event</property>
+ <property name="product">CMFCalendar</property>
+ <property name="factory">addEvent</property>
+ <property name="immediate_view">event_edit_form</property>
+ <property name="global_allow">False</property>
+ <property name="filter_content_types">True</property>
+ <property name="allowed_content_types"/>
+ <property name="allow_discussion">False</property>
+ <alias from="(Default)" to="event_view"/>
+ <alias from="view" to="event_view"/>
+ <action title="View" action_id="view" category="object" condition_expr=""
+    url_expr="string:${object_url}/event_view" visible="True">
+  <permission value="View"/>
+ </action>
+ <action title="Edit" action_id="edit" category="object" condition_expr=""
+    url_expr="string:${object_url}/event_edit_form" visible="True">
+  <permission value="Change portal events"/>
+ </action>
+ <action title="State" action_id="content_status_history"
+    category="object_tabs"
+    condition_expr="python:object and portal.portal_workflow.getTransitionsFor(object, object.getParentNode())"
+    url_expr="string:$object_url/content_status_history" visible="False">
+  <permission value="View"/>
+ </action>
+ <action title="Sharing" action_id="local_roles" category="object"
+    condition_expr="" url_expr="string:${object_url}/folder_localrole_form"
+    visible="True">
+  <permission value="Manage properties"/>
+ </action>
+ <action title="External Edit" action_id="external_edit" category="object"
+    condition_expr="" url_expr="string:$object_url/external_edit"
+    visible="False">
+  <permission value="Modify portal content"/>
+ </action>
+</object>

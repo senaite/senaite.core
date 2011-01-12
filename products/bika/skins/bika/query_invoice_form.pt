@@ -1,0 +1,126 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      lang="en"
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="bika">
+
+<head>
+    <metal:block fill-slot="top_slot"
+                 tal:define="dummy python:request.set('disable_border', 1)" />
+
+    <metal:calendar fill-slot="javascript_head_slot">
+        <!-- ECMAScript calendar -->
+        <style type="text/css" media="all"
+            tal:content="string:@import url($portal_url/jscalendar/calendar-system.css);"></style>
+        <script type="text/javascript"
+            tal:attributes="src string:$portal_url/jscalendar/calendar_stripped.js"></script>
+        <script type="text/javascript" charset="iso-8859-1"
+            tal:condition="exists: portal/jscalendar/calendar-en.js"
+            tal:attributes="src string:$portal_url/jscalendar/calendar-en.js"></script>
+    </metal:calendar>
+
+</head>
+             
+             
+<body>
+
+<div metal:fill-slot="main">
+
+<h1>
+<tal:block replace="structure python:getattr(here, here.getIcon(1))"/>
+<span i18n:translate="heading_query_invoices"
+    >Query invoices</span>
+</h1>
+
+<form action="query_invoice_results" method="post" name="search">
+
+<input type="hidden" name="portal_type" value="Invoice"/>
+
+<fieldset>
+
+<legend i18n:translate="legend_search">Search</legend>
+
+<div class="field" tal:condition="not:here/member_is_client">
+    <label i18n:translate="label_client"
+        >Client</label><br/>
+    <select name="getClientUID:ignore_empty" 
+            style=""
+            id="getClientUID"
+            tal:attributes="style string:font-family:${here/base_properties/fontFamily};;font-size:100%;">
+        <option value=""/>
+
+        <tal:clients
+            define="    
+                clients python:here.portal_catalog(portal_type='Client');
+                sort_on python:(('Title', 'nocase', 'asc'),);
+                clients python:sequence.sort(clients, sort_on);"
+            repeat="client clients">
+        <option value=""
+            tal:define="client_uid python:client.getObject().UID()"
+            tal:attributes="value client_uid;
+                selected python:request.get('getClientUID', '') == client_uid and 'selected' or ''"
+            tal:content="client/Title"
+            >Upfront Systems</option>
+
+        </tal:clients>
+    </select>
+</div>
+
+<div class="field">
+    <label i18n:translate="label_invoicedate"
+        >Invoice date</label><br/>
+    <span i18n:translate="label_from">From</span>
+
+
+    <tal:define define="
+        id string:getInvoiceDate_fromdate;
+        inputname id;
+        formname string:search;
+        value request/getInvoiceDate_fromdate | nothing;
+        show_hm python:False;
+        inputvalue python:test(value!='None', value, '');">
+    <metal:use use-macro="here/calendar_macros/macros/calendarDatePickerBox">
+        a calendar, hopefully
+    </metal:use>
+    </tal:define>
+
+    <span i18n:translate="label_to">to</span>
+
+    <tal:define define="
+        id string:getInvoiceDate_todate;
+        inputname id;
+        formname string:search;
+        value request/getInvoiceDate_todate | nothing;
+        show_hm python:False;
+        inputvalue python:test(value!='None', value, '');">
+    <metal:use use-macro="here/calendar_macros/macros/calendarDatePickerBox">
+        a calendar, hopefully
+    </metal:use>
+    </tal:define>
+
+</div>
+
+<div class="field">
+    <label i18n:translate="label_analysis_request_id"
+        >Analysis Request ID</label><br/>
+    <input name="getInvoiceSearchableText:ignore_empty" size="40"
+        tal:attributes="value request/getInvoiceSearchableText | nothing"/>
+</div>
+
+<div class="field">
+    <input tabindex=""
+        class="searchButton"
+        type="submit"
+        name="submit"
+        value="Search"
+        i18n:attributes="value"
+        />                       
+</div>
+
+</fieldset>
+</form>
+
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,359 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      lang="en"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      i18n:domain="bika">
+
+<body>
+
+<!-- special (benchmark) ar imports -->
+<div metal:define-macro="arimport_view_s"
+    tal:define="
+        review_state python:wtool.getInfoFor(here, 'review_state', '');
+        left_col python:review_state == 'submitted' and 6 or 5;
+        right_col python:5">
+<table
+    summary="ARImport view"
+    class="analysisrequest"
+    cellpadding="0" cellspacing="0">
+
+<thead>
+
+<tr>
+<th i18n:translate="label_clientname">Client Name</th>
+<td class="left" tal:attributes="colspan python:left_col"
+    tal:content="here/getClientName">This Client</td>
+<th i18n:translate="label_phone">Phone</th>
+<td class="left" tal:attributes="colspan python:right_col"
+    tal:content="here/ClientPhone">123</td>
+</tr>
+<tr>
+<th i18n:translate="label_address">Address</th>
+<td class="left" tal:attributes="colspan python:left_col"
+    tal:content="here/getClientAddress">This Address</td>
+<th i18n:translate="label_fax">Fax</th>
+<td class="left" tal:attributes="colspan python:right_col"
+    tal:content="here/ClientFax">123</td>
+</tr>
+<tr>
+<th i18n:translate="label_city_prov_postal">City/Prov/Postal</th>
+<td class="left" tal:attributes="colspan python:left_col"
+    tal:content="here/getClientCity">This City</td>
+<th i18n:translate="label_email">Email</th>
+<td class="left" tal:attributes="colspan python:right_col"
+    tal:content="here/ClientEmail">123</td>
+</tr>
+
+<tr>
+<th i18n:translate="label_contact_person">Contact Person</th>
+<td class="left" tal:attributes="colspan python:left_col"
+    tal:content="here/getContactName">JonesJJ</td>
+<th i18n:translate="label_ccemail">CC Email</th>
+<td class="left" tal:attributes="colspan python:right_col" 
+    tal:content="here/getCCEmails">x@y.com</td>
+</tr>
+
+<tr>
+<th i18n:translate="label_client_orderid">Order ID</th>
+<td class="left"  tal:attributes="colspan python:left_col"
+    tal:content="here/getOrderID">Valid</td>
+<th i18n:translate="label_temperature">Temperature</th>
+<td class="left"  tal:attributes="colspan python:right_col"
+    tal:content="here/getTemperature">1</td>
+</tr>
+
+<tr>
+<th i18n:translate="label_status">Status</th>
+<td class="left"  tal:attributes="colspan python:left_col"
+    tal:define="status python:here.getStatus() and 'Valid' or 'Invalid'"
+    tal:content="status">Valid</td>
+<th i18n:translate="label_dateimported">Date imported</th>
+<td class="left"  tal:attributes="colspan python:right_col"
+    tal:define="date_imported here/getDateImported"
+    tal:content="python:plone_view.toLocalizedTime(date_imported, long_format=1)"
+    >2005-01-01 10:00</td>
+</tr>
+
+<tal:date_applied
+    tal:define="date_applied here/getDateApplied">
+<tr tal:condition="date_applied">
+<th>
+<span i18n:translate="label_dateapplied">Date applied</span>
+</th>
+<td class="left"
+    tal:attributes="colspan python:left_col">
+<span
+    tal:content="python:plone_view.toLocalizedTime(date_applied, long_format=1)"
+    >2005-01-01 10:00</span>
+</td>
+<th></th>
+<td tal:attributes="colspan python:right_col"></td>
+</tr>
+</tal:date_applied>
+
+</thead>
+<tbody tal:define="arimport python:here">
+<tr>
+<tal:submitted
+    tal:condition="python:review_state == 'submitted'">
+<th class="center" i18n:translate="label_requestid">Request ID</th>
+</tal:submitted>
+<th class="center" i18n:translate="label_clientreference">Client Reference</th>
+<th class="center" i18n:translate="label_remarks">Remarks</th>
+<th class="center" i18n:translate="label_clientsid">Sample ID</th>
+<th class="center" i18n:translate="label_datesampled">Date Sampled</th>
+<th class="center" i18n:translate="label_sampletype">Sample type</th>
+<th class="center" i18n:translate="label_no_containers"># of Containers</th>
+<th class="center" i18n:translate="label_profile">Profile</th>
+<th class="center" i18n:translate="label_profile">Profile</th>
+<th class="center" i18n:translate="label_analysis">Analysis</th>
+<th class="center" i18n:translate="label_analysis">Analysis</th>
+<th class="center" i18n:translate="label_analysis">Analysis</th>
+<th class="center" i18n:translate="label_valid">Valid</th>
+</tr>
+<tal:items
+    tal:define="aritems python:arimport.objectValues('ARImportItem')"
+    tal:repeat="aritem aritems">
+<tr>
+<tal:submitted
+    tal:define="ar aritem/getAnalysisRequest;
+                sample aritem/getSample| nothing"
+    tal:condition="python:review_state == 'submitted'">
+<td class="left">
+<a tal:attributes="href ar/absolute_url | nothing"
+   tal:content="ar/Title | nothing">AR-001</a>
+<a href="" 
+    tal:attributes="href sample/absolute_url">
+<img src="" 
+    alt="Sample"
+    tal:attributes="src string:${portal/absolute_url}/sample_small.png">
+</a>
+</td>
+</tal:submitted>
+<td tal:content="aritem/getClientRef">R1</td>
+<td tal:content="aritem/getClientRemarks">xxx</td>
+<td tal:content="aritem/getClientSid">S1</td>
+<td tal:content="aritem/getSampleDate">xxx</td>
+<td tal:content="aritem/getSampleType">xxx</td>
+<td tal:content="aritem/getNoContainers">1</td>
+<tal:profiles 
+    tal:define="profiles aritem/getAnalysisProfile">
+<td tal:content="python:len(profiles) > 0 and profiles[0] or None">xxx</td>
+<td tal:content="python:len(profiles) > 1 and profiles[1] or None">xxx</td>
+</tal:profiles>
+<tal:analyses 
+    tal:define="analyses aritem/getAnalyses">
+<td tal:content="python:len(analyses) > 0 and analyses[0] or None">xxx</td>
+<td tal:content="python:len(analyses) > 1 and analyses[1] or None">xxx</td>
+<td tal:content="python:len(analyses) > 2 and analyses[2] or None">xxx</td>
+</tal:analyses>
+<td class="left"
+    tal:define="valid python:aritem.getRemarks() and 'No' or 'Yes'">
+<span tal:content="valid">xxx</span>
+</td>
+</tr>
+</tal:items>
+</tbody>
+</table>
+<div tal:define="remarks here/getRemarks"
+    tal:condition="remarks">
+<label class="emphatic" i18n:translate="label_remarks">Remarks</label>
+<div tal:repeat="remark here/getRemarks"
+    tal:content="remark">Remarks</div>
+</div>
+</div>
+
+<div metal:define-macro="arimport_view_p"
+    tal:define="
+        review_state python:wtool.getInfoFor(here, 'review_state', '');
+        left_col python:review_state == 'submitted' and 4 or 3;
+        right_col python:review_state == 'submitted' and 5 or 4">
+<!--
+coming attractions
+-->
+</div>
+<!-- classic ar imports -->
+<div metal:define-macro="arimport_view_c"
+    tal:define="
+        review_state python:wtool.getInfoFor(here, 'review_state', '');
+        left_col python:review_state == 'submitted' and 4 or 3;
+        right_col python:review_state == 'submitted' and 6 or 5">
+<table
+    summary="ARImport view"
+    class="analysisrequest"
+    cellpadding="0" cellspacing="0">
+
+<thead>
+
+<tr>
+<th i18n:translate="label_clientname">Client</th>
+<td class="left" tal:attributes="colspan python:left_col"
+    tal:content="here/getClientName">This Client</td>
+<th i18n:translate="label_clientid">Client ID</th>
+<td class="left" tal:attributes="colspan python:right_col"
+    tal:content="here/ClientID">SmithTT</td>
+</tr>
+<tr tal:define="contact here/getContact | nothing;
+                global contact_found python:False;
+                cccontact here/getCCContact | nothing;
+                global cccontact_found python:False">
+<tal:contact_found 
+    tal:condition="nocall:contact">
+<th i18n:translate="label_contact">Contact</th>
+<td class="left" tal:attributes="colspan python:left_col"
+    tal:define="global contact_found python:True"
+    tal:content="contact/Title">JonesJJ</td>
+</tal:contact_found>
+<tal:contact_not_found 
+    tal:condition="not:contact_found">
+<th i18n:translate="label_contactid">Contact ID</th>
+<td class="left" tal:attributes="colspan python:left_col"
+    tal:content="here/getContactID">JonesJJ</td>
+</tal:contact_not_found>
+<tal:cccontact_found tal:condition="nocall:cccontact">
+<th i18n:translate="label_cc">CC</th>
+<td class="left" tal:attributes="colspan python:right_col"
+    tal:define="global cccontact_found python:True"
+    tal:content="cccontact/Title">jonesba</td>
+</tal:cccontact_found>
+<tal:cccontact_not_found 
+    tal:condition="not:cccontact_found">
+<th i18n:translate="label_cccontactid">CCContact ID</th>
+<td class="left" tal:attributes="colspan python:right_col"
+    tal:content="here/getCCContactID">JonesJJ</td>
+</tal:cccontact_not_found>
+</tr>
+
+<tr>
+<th i18n:translate="label_ccemails">CC Emails</th>
+<td class="left" tal:attributes="colspan python:left_col" 
+    tal:content="here/getCCEmails">x@y.com</td>
+<th i18n:translate="label_samplepoint">Sample Point</th>
+<td class="left"  tal:attributes="colspan python:right_col"
+    tal:content="here/getSamplePoint">This sample point</td>
+</tr>
+
+<tr>
+<th i18n:translate="label_OrderID">Order</th>
+<td class="left"  tal:attributes="colspan python:left_col"
+    tal:content="here/getOrderID">123</td>
+<th i18n:translate="label_QuoteID">Quote</th>
+<td class="left"  tal:attributes="colspan python:right_col"
+    tal:content="here/getQuoteID">123</td>
+</tr>
+<tr>
+<th i18n:translate="label_filename">File name</th>
+<td class="left" tal:attributes="colspan python:left_col" 
+    tal:content="here/getFileName">file.csv</td>
+<th i18n:translate="label_status">Status</th>
+<td class="left"  tal:attributes="colspan python:right_col"
+    tal:define="status python:here.getStatus() and 'Valid' or 'Invalid'"
+    tal:content="status">Valid</td>
+</tr>
+
+<tr tal:define="date_applied here/getDateApplied">
+<th i18n:translate="label_dateimported">Date imported</th>
+<td class="left"  tal:attributes="colspan python:left_col"
+    tal:define="date_imported here/getDateImported"
+    tal:content="python:plone_view.toLocalizedTime(date_imported, long_format=1)"
+    >2005-01-01 10:00</td>
+<th> 
+<span i18n:translate="label_dateapplied"
+    tal:condition="python:date_applied">Date applied</span>
+</th>
+<td class="left"
+    tal:attributes="colspan python:right_col">
+<span tal:condition="python:date_applied"
+    tal:content="python:plone_view.toLocalizedTime(date_applied, long_format=1)"
+    >2005-01-01 10:00</span>
+</td>
+</tr>
+
+</thead>
+<tbody tal:define="arimport python:here">
+<tr>
+<th class="center" i18n:translate="label_samplename">Sample</th>
+<tal:submitted
+    tal:condition="python:review_state == 'submitted'">
+<th class="center" i18n:translate="label_requestid">Request ID</th>
+</tal:submitted>
+<th class="center" i18n:translate="label_clientref">Client Ref</th>
+<th class="center" i18n:translate="label_clientsid">Client Sid</th>
+<th class="center" i18n:translate="label_sampledate">Sample Date</th>
+<th class="center" i18n:translate="label_sampletype">Sample type</th>
+<th class="center" i18n:translate="label_pickingslip">Picking slip</th>
+<th class="center" i18n:translate="label_report_dry_matter">Report as DM</th>
+<th class="center" i18n:translate="label_orderid">Order ID</th>
+<th class="center" i18n:translate="label_analyses">Analyses</th>
+<th class="center" i18n:translate="label_valid">Valid</th>
+</tr>
+<tal:items
+    tal:define="aritems python:arimport.objectValues('ARImportItem')"
+    tal:repeat="aritem aritems">
+<tr>
+<td class="left"
+    tal:content="aritem/getSampleName">Sample 1</td>
+<tal:submitted
+    tal:define="ar aritem/getAnalysisRequest;
+                sample aritem/getSample| nothing"
+    tal:condition="python:review_state == 'submitted'">
+<td class="left">
+<a tal:attributes="href ar/absolute_url | nothing"
+   tal:content="ar/Title | nothing">AR-001</a>
+<a href="" 
+    tal:attributes="href sample/absolute_url">
+<img src="" 
+    alt="Sample"
+    tal:attributes="src string:${portal/absolute_url}/sample_small.png">
+</a>
+</td>
+</tal:submitted>
+<td tal:content="aritem/getClientRef">R1</td>
+<td tal:content="aritem/getClientSid">S1</td>
+<td tal:content="aritem/getSampleDate">Sampledate</td>
+<td tal:content="aritem/getSampleType">SampleType</td>
+<td tal:content="aritem/getPickingSlip">PickingSlip</td>
+<td tal:content="aritem/getReportDryMatter">ReportDM</td>
+<td tal:content="aritem/getOrderID">OrderID</td>
+<td>
+<a  onMouseover=""
+    onMouseout=""
+    tal:attributes="
+        onMouseover string:showPopup('Analyses.${repeat/aritem/number}');
+        onMouseout string:hidePopup('Analyses.${repeat/aritem/number}')">
+<span i18n:translate="label_show">Show</span>
+</a>
+<div id=""
+     class="uncertaintydiv"
+     tal:attributes="id string:Analyses.${repeat/aritem/number}" >
+<table class="uncertaintytable">
+<tr tal:repeat="analysis aritem/getAnalyses">
+<td tal:content="analysis"/>
+</tr>
+</table>
+</div>
+</td>
+<td class="left"
+    tal:define="valid python:aritem.getRemarks() and 'No' or 'Yes'">
+<span tal:content="valid">xxx</span>
+</td>
+</tr>
+</tal:items>
+</tbody>
+</table>
+
+<div tal:define="remarks here/getRemarks"
+    tal:condition="remarks">
+<label class="emphatic" i18n:translate="label_remarks">Remarks</label>
+<div tal:repeat="remark here/getRemarks"
+    tal:content="remark">Remarks</div>
+</div>
+</div>
+
+</body>
+
+</html>
+
+
+

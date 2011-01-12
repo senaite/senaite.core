@@ -1,0 +1,60 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      lang="en"
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="bika">
+
+<head>
+
+<metal:block fill-slot="top_slot">
+<span
+    tal:replace="nothing"
+    tal:define="dummy python:request.set('disable_border', 1)"
+    />
+</metal:block>
+
+</head>
+             
+<body>
+
+<div metal:fill-slot="main"
+    tal:define="result python:5;
+                xvalues python:[1.0, 2.0, 3.0, 3.0, 4.0, 4.0, 5.0, 5.0, 6.0, 7.0, ];
+                toLocalizedTime nocall:context/@@plone/toLocalizedTime">
+
+<h1>
+<span i18n:translate="heading_testinstall">Test Installation</span>
+</h1>
+
+<div metal:use-macro="here/document_actions/macros/document_actions">
+Document actions (print, sendto etc)
+</div>
+
+<div style="clear:both"/>
+
+<tal:graph >
+<h4 i18n:translate="label_distribution">Distribution</h4>
+<img tal:define="c_url string:${here/portal_url}/charts/"
+     tal:attributes="src string:${c_url}testinstall?result=${result}&xvalues=${xvalues}"/>
+</tal:graph>
+
+<tal:fonts >
+<h4 i18n:translate="label_fonts">Fonts</h4>
+<table>
+<tr style="font-family:Arial;;20;;"> 
+<td>Arial</td>
+<td>
+The quick brown fox jumps over the lazy dog
+</td>
+</tr>
+<tr style="font-family:Times;;20;;"> 
+<td>Times</td>
+<td>
+The quick brown fox jumps over the lazy dog
+</td>
+</tr>
+</table>
+</tal:fonts>
+</div>
+</body>
+</html>
+

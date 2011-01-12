@@ -1,0 +1,83 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      lang="en"
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="bika">
+
+<head>
+    <metal:block fill-slot="top_slot"
+                 tal:define="dummy python:request.set('disable_border', 1)" />
+</head>
+             
+             
+<body>
+
+<div metal:fill-slot="main">
+
+<tal:format_date_query define="dummy python:here.format_date_query('getOrderDate')"/>
+
+<!-- actual list of objects, either searchresults or folder contents -->
+<tal:block
+    tal:define="
+        results python:here.queryCatalog() or [];
+        b_start python:0;
+        b_start request/b_start | b_start;
+        b_size python:15;
+        Batch python:modules['Products.CMFPlone'].Batch;
+        batch python:Batch(results, b_size, int(b_start), orphan=1);
+        orders python:[b.getObject() for b in batch]">
+
+<h1 i18n:translate="heading_search_results">Search results</h1>
+
+<metal:email_result
+    tal:define="mail_template string:order_query_results;
+                date_index string:getOrderDate"
+    tal:condition="results">
+    <metal:block use-macro="here/email_results_form/macros/body"/>
+</metal:email_result>
+
+<div tal:condition="not: results">
+    <p><strong i18n:translate="description_no_results_found">No results were found.</strong></p>
+</div>
+
+<strong tal:condition="results">
+<span i18n:translate="batch_x_items_matching_your_criteria"><span i18n:name="number" tal:content="python:len(results)">234</span> items matching your criteria.</span>
+</strong>
+
+<table
+    class="listing"
+    summary="order listing"
+    cellpadding="2" cellspacing="0"
+    tal:condition="orders"
+    i18n:domain="bika">
+
+<thead>
+
+<tr>
+<th i18n:translate="label_ordernumber">Order number</th>
+<th i18n:translate="label_client">Client</th>
+<th i18n:translate="label_orderdate">Order date</th>
+<th i18n:translate="label_order_dispatch_date">Date dispatched</th>
+</thead>
+
+<tbody>
+<tr tal:repeat="order orders">
+<td><a href="#" tal:attributes="href order/absolute_url"
+    tal:content="order/getOrderNumber">Order 1234</a></td>
+<td tal:define="client nocall:order/aq_parent"
+    tal:content="client/Title">Client Name</td>
+<td tal:content="python:plone_view.toLocalizedTime(order.getOrderDate(), long_format=1)">2005-01-01</td>
+<td tal:content="python:plone_view.toLocalizedTime(order.getDateDispatched(), long_format=1)">2005-01-01</td>
+</tr>
+</tbody>
+
+</table>
+
+<div metal:use-macro="here/batch_macros/macros/navigation" />
+
+</tal:block>
+
+</div>
+
+</body>
+
+</html>

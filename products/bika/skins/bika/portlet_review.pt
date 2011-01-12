@@ -1,0 +1,72 @@
+<html xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      i18n:domain="bika">
+
+<body>
+
+<div metal:define-macro="portlet"
+     tal:condition="python:member.has_role(('LabManager', 'Verifier'))">
+<tal:review
+     tal:define="DateTime python:modules['DateTime'].DateTime;
+                 ws python:here.portal_catalog(
+                    portal_type='Worksheet',
+                    review_state='to_be_verified',
+                    sort_on='getNumber');
+                 ws_results python:[p.getObject() for p in ws[:5]];
+                 ar python:len(ws) < 4 and here.portal_catalog(
+                    portal_type='AnalysisRequest',
+                    review_state='to_be_verified',
+                    sort_on='getRequestID') or [];
+                 ar_results python:[p.getObject() for p in ar[:5]];
+                 rs python:ws_results + ar_results;
+                 results python:rs[:5];
+"
+     tal:condition="results">
+
+    <dl class="portlet" id="portlet-workflow-review">
+
+        <dt class="portletHeader"
+            i18n:translate="box_to_be_verified">To be verified</dt>
+
+        <tal:block repeat="o results">
+        <dd tal:define="oddrow repeat/o/odd"
+                tal:attributes="class python:test(oddrow, 'portletItem odd','portletItem even')">
+
+            <a href="#"
+                class="marker"
+                tal:attributes="href string:${o/absolute_url};
+                                title o/Description">
+                <img src="" height="16" width="16"
+                        tal:attributes="src string:${here/portal_url}/${o/getIcon};
+                                        title o/Type;" />
+                <span tal:replace="o/Title|o/getId">
+                AR-00001
+                </span>
+            </a>
+
+            <div class="portletDetails"
+                    tal:define="moddate o/ModificationDate;"
+                    tal:content="python:plone_view.toLocalizedTime(moddate)">July 7, 08:11
+            </div>
+        </dd>
+        </tal:block>
+
+        <dd class="portletFooter" tal:condition="python:len(rs) > 5">
+
+            <a href=""
+                class="portletMore"
+                tal:attributes="href string:${utool}/analysisrequests?review_state=to_be_verified"
+                i18n:translate="box_morelink"
+                >
+                More...
+            </a>
+            
+        </dd>
+
+    </dl>
+
+</tal:review>
+</div>
+</body>
+
+</html>

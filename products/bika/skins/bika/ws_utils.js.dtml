@@ -1,0 +1,34 @@
+function showServices(current) {
+    var Currents = current.split(";");
+    for (i=0;i<999;i++) {
+        service_id = 'service_' + i;
+        if (document.getElementById(service_id) == undefined) {
+            break};
+        service_obj = document.getElementById(service_id);
+        service = service_obj.value;
+        existing_id = 'existing_' + i;
+        existing_obj = document.getElementById(existing_id);
+        existing = existing_obj.value;
+        current_service = false;
+        for (var x = 0; x < Currents.length; x++) 
+        {
+            if (service == Currents[x]) {
+                current_service = true;
+                break;
+            }
+        }
+        if (current_service) {
+            service_obj.disabled = true;
+            service_obj.checked = false;
+            service_obj.style.visibility = "visible";
+            existing_obj.value = 'already assigned';
+        } else { 
+            service_obj.disabled = false;
+            service_obj.checked = false;
+            service_obj.style.visibility = "visible";
+            existing_obj.value = '';
+        }
+    }
+    return
+}
+

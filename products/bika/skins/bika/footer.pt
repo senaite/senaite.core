@@ -1,0 +1,16 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en"
+      i18n:domain="bika">
+
+<body>
+
+<div id="portal-footer" metal:define-macro="portal_footer" i18n:domain="bika">
+
+<span i18n:translate="description_copyright" tal:omit-tag="">
+Copyright &copy; 2000 - <span i18n:name="current_year" tal:define="now modules/DateTime/DateTime" tal:content="now/year" /> by
+<span i18n:name="label_bika"><a href="http://www.bikalabs.com" i18n:translate="label_bika_url">Bika Lab Systems</a></span>.
+</span>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,756 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      lang="en"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      i18n:domain="bika">
+
+
+<body>
+<!-- special (benchmark) ar imports -->
+<div metal:define-macro="arimport_edit_s"
+    tal:define="
+        review_state python:wtool.getInfoFor(here, 'review_state', '');
+        client python:here.aq_parent;
+        left_col python:review_state == 'submitted' and 6 or 5;
+        right_col python:5">
+<form name="arimport_form" method="POST" action="template/getId"
+    tal:attributes="action template/getId" autocomplete="off">
+
+<input type="hidden" name="form.submitted" value="1" />
+<input type="hidden" name="came_from" value="edit" />
+<input type="hidden" name="ARImportUID" value=""
+    tal:attributes="value here/UID"/>
+
+<br/>
+
+
+<table
+    summary="ARImport edit"
+    class="analysisrequest"
+    cellpadding="0" cellspacing="0">
+
+<thead>
+
+<tr>
+<th i18n:translate="label_clientname">Client Name</th>
+<td class="left" tal:attributes="colspan python:left_col"
+    tal:define="
+        clientname here/getClientName;
+        valid_name python:client.Title() == here.getClientName()">
+<tal:valid tal:condition="valid_name">
+<input type="hidden" value="" name="ClientName"
+    tal:attributes="value here/getClientName"/>
+<span
+    tal:content="here/getClientName">xxx</span>
+</tal:valid>
+<tal:invalid tal:condition="not: valid_name">
+    <select name="ClientName" 
+        tal:attributes="tabindex tabindex/next;">
+
+<option SELECTED 
+    tal:attributes="value clientname"
+    tal:content="string:$clientname (invalid)"></option>)
+<option 
+    tal:attributes="value client/Title"
+    tal:content="client/Title"></option>)
+</select>
+</tal:invalid>
+</td>
+<th i18n:translate="label_phone">Phone</th>
+<td class="left" tal:attributes="colspan python:right_col">
+<input value="" name="ClientPhone"
+    tal:attributes="value here/getClientPhone"/>
+</td>
+</tr>
+
+<tr>
+<th i18n:translate="label_address">Address</th>
+<td class="left" tal:attributes="colspan python:left_col">
+<input value="" name="ClientAddress"
+    tal:attributes="value here/getClientAddress"/>
+</td>
+<th i18n:translate="label_fax">Fax</th>
+<td class="left" tal:attributes="colspan python:right_col">
+<input value="" name="ClientFax"
+    tal:attributes="value here/getClientFax"/>
+</td>
+</tr>
+
+<tr>
+<th i18n:translate="label_city_prov_postal">City/Prov/Postal</th>
+<td class="left" tal:attributes="colspan python:left_col">
+<input value="" name="ClientCity"
+    tal:attributes="value here/getClientCity"/>
+</td>
+<th i18n:translate="label_email">Email</th>
+<td class="left" tal:attributes="colspan python:right_col">
+<input value="" name="ClientEmail"
+    tal:attributes="value here/getClientEmail"/>
+</td>
+</tr>
+
+<tr>
+<th i18n:translate="label_contact">Contact</th>
+<td class="left"
+    tal:define="
+        contacts client/getContactsDisplayList;
+        contactname python:here.getContact() and here.getContact().Title() or here.getContactName();
+        contact_uid python:here.getContact() and here.getContact().UID() or None;
+        invalid python:(not contact_uid) or (not contacts.getValue(contact_uid))"
+    tal:attributes="colspan python:left_col">
+    <select name="Contact" 
+        tal:attributes="tabindex tabindex/next;">
+
+<tal:invalid 
+    tal:condition="invalid">
+<option SELECTED 
+    tal:attributes="value string:None"
+    tal:content="string:$contactname (invalid)"></option>)
+</tal:invalid>
+    <tal:item 
+        tal:define="
+            vocab contacts"
+        tal:repeat="item vocab">
+
+    <option selected="selected"
+        tal:define="
+            no_ref python:item == '';
+            this_selected python:test((item == contact_uid) or no_ref, 'selected', '')"
+        tal:attributes="value item;
+                        selected this_selected"
+        tal:content="python:here.translate(vocab.getMsgId(item), default=vocab.getValue(item))"></option>
+    </tal:item>
+
+    </select>
+</td>
+<th i18n:translate="label_ccemail">CC Email</th>
+<td class="left" tal:attributes="colspan python:right_col">
+<input value="" name="CCEmails"
+    tal:attributes="value here/getCCEmails"/></td>
+</tr>
+
+<tr>
+<th i18n:translate="label_client_orderid">Order ID</th>
+<td class="left"  tal:attributes="colspan python:left_col">
+<input value="" name="OrderID"
+    tal:attributes="value here/getOrderID"/></td>
+<th i18n:translate="label_temperature">Temperature</th>
+<td class="left"  tal:attributes="colspan python:right_col">
+<input value="" name="Temperature"
+    tal:attributes="value here/getTemperature"/></td>
+</tr>
+
+<tr>
+<th i18n:translate="label_status">Status</th>
+<td class="left"  tal:attributes="colspan python:left_col"
+    tal:define="status python:here.getStatus() and 'Valid' or 'Invalid'"
+    tal:content="status">Valid</td>
+<th i18n:translate="label_dateimported">Date imported</th>
+<td class="left"  tal:attributes="colspan python:right_col"
+    tal:define="date_imported here/getDateImported"
+    tal:content="python:plone_view.toLocalizedTime(date_imported, long_format=1)"
+    >2005-01-01 10:00</td>
+</tr>
+
+<tal:date_applied
+    tal:define="date_applied here/getDateApplied | nothing">
+<tr tal:condition="date_applied">
+<th> 
+<span 
+    i18n:translate="label_dateapplied">Date applied</span>
+</th>
+<td class="left"
+    tal:attributes="colspan python:left_col">
+<span
+    tal:content="python:plone_view.toLocalizedTime(date_applied, long_format=1)"
+    >2005-01-01 10:00</span>
+</td>
+<th></th><td tal:attributes="colspan python:right_col"></td>
+</tr>
+</tal:date_applied>
+
+</thead>
+<tbody tal:define="
+    arimport python:here;
+    sampletypes python:[p.Title for p in here.portal_catalog(portal_type='SampleType', sort_on='sortable_title')];
+    labprofiles python:[p.getObject().getProfileKey() for p in here.portal_catalog(portal_type='LabARProfile', sort_on='getProfileKey')];
+    clientprofiles python:[p.getObject().getProfileKey() for p in here.portal_catalog(portal_type='ARProfile', getClientUID=client.UID(), sort_on='getProfileKey')];
+    services python:[p.getObject().getAnalysisKey() for p in here.portal_catalog(portal_type='AnalysisService', sort_on='getAnalysisKey')];
+">
+<tr>
+<th class="center" i18n:translate="label_clientreference">Client Reference</th>
+<th class="center" i18n:translate="label_remarks">Remarks</th>
+<th class="center" i18n:translate="label_clientsid">Client Sid</th>
+<th class="center" i18n:translate="label_datesampled">Date Sampled</th>
+<th class="center" i18n:translate="label_sampletype">Sample type</th>
+<th class="center" i18n:translate="label_nocontainers"># of Containers</th>
+<th class="center" i18n:translate="label_profile">Profile</th>
+<th class="center" i18n:translate="label_profile">Profile</th>
+<th class="center" i18n:translate="label_analysis">Analysis</th>
+<th class="center" i18n:translate="label_analysis">Analysis</th>
+<th class="center" i18n:translate="label_analysis">Analysis</th>
+<th class="center" i18n:translate="label_valid">Valid</th>
+</tr>
+<tal:items
+    tal:define="aritems python:arimport.objectValues('ARImportItem')"
+    tal:repeat="aritem aritems">
+<tr tal:define="iuid aritem/UID">
+<td>
+<input size="10" value="" name="item.uid.ClientRef:ignore_empty:record"
+    tal:define="input_name string:item.${iuid}.ClientRef"
+    tal:attributes="
+        name string:${input_name}:ignore_empty:record;
+        value aritem/getClientRef"/>
+</td>
+<td>
+<input size="10" value="" name="item.uid.ClientRemarks:ignore_empty:record"
+    tal:define="input_name string:item.${iuid}.ClientRemarks"
+    tal:attributes="
+        name string:${input_name}:ignore_empty:record;
+        value aritem/getClientRemarks"/>
+</td>
+
+<td>
+<input size="10" value="" name="item.uid.ClientSid:ignore_empty:record"
+    tal:define="input_name string:item.${iuid}.ClientSid"
+    tal:attributes="
+        name string:${input_name}:ignore_empty:record;
+        value aritem/getClientSid"/>
+</td>
+
+<td>
+<input size="10" value="" name="item.uid.SampleDate:ignore_empty:record"
+    tal:define="input_name string:item.${iuid}.SampleDate"
+    tal:attributes="
+        name string:${input_name}:ignore_empty:record;
+        value aritem/getSampleDate"/>
+</td>
+
+<td class="left"
+    tal:define="sampletype python:aritem.getSampleType();
+                invalid python:sampletype not in sampletypes" >
+<select name="SampleType" 
+    tal:define="input_name string:item.${iuid}.SampleType"
+    tal:attributes="
+        name string:${input_name}:ignore_empty:record;
+        tabindex tabindex/next;">
+
+<tal:invalid 
+    tal:condition="invalid">
+<option 
+    tal:attributes="value sampletype"
+    tal:content="string:$sampletype (invalid)"></option>)
+</tal:invalid>
+    <tal:item 
+        tal:define="
+            vocab sampletypes"
+        tal:repeat="item vocab">
+
+    <option selected="selected"
+        tal:define="
+            no_ref python:item == '';
+            this_selected python:test((item == sampletype) or no_ref, 'selected', '')"
+        tal:attributes="value item;
+                        selected this_selected"
+        tal:content="item"></option>
+    </tal:item>
+
+    </select>
+</td>
+
+<td>
+<input size="5" value="" name="item.uid.NoContainers:ignore_empty:record"
+    tal:define="input_name string:item.${iuid}.NoContainers"
+    tal:attributes="
+        name string:${input_name}:ignore_empty:record;
+        value aritem/getNoContainers"/>
+</td>
+
+<tal:profiles 
+    tal:define="profiles aritem/getAnalysisProfile">
+<td class="left"
+    tal:define="
+        profile python:len(profiles) > 0 and profiles[0] or None;
+        invalid python:profile and (profile not in labprofiles) and (profile not in clientprofiles)" >
+<select name="Profile1" 
+    tal:define="input_name string:item.${iuid}.Profile1"
+    tal:attributes="
+        name string:${input_name}:ignore_empty:record;
+        tabindex tabindex/next;">
+
+<option></option>)
+<tal:invalid 
+    tal:condition="invalid">
+<option selected="selected"
+    tal:attributes="value profile"
+    tal:content="string:$profile (invalid)"></option>)
+</tal:invalid>
+
+    <tal:clientprofiles tal:repeat="item clientprofiles">
+
+    <option selected="selected"
+        tal:define="
+            this_selected python:test(item == profile,  'selected', '')"
+        tal:attributes="value item;
+                        selected this_selected"
+        tal:content="item"></option>
+    </tal:clientprofiles>
+
+    <tal:labprofiles tal:repeat="item labprofiles">
+
+    <option selected="selected"
+        tal:define="
+            this_selected python:test(item == profile,  'selected', '')"
+        tal:attributes="value item;
+                        selected this_selected"
+        tal:content="item"></option>
+    </tal:labprofiles>
+    </select>
+</td>
+
+<td class="left"
+    tal:define="
+        profile python:len(profiles) > 1 and profiles[1] or None;
+        invalid python:profile and (profile not in labprofiles) and (profile not in clientprofiles)" >
+<select name="Profile2" 
+    tal:define="input_name string:item.${iuid}.Profile2"
+    tal:attributes="
+        name string:${input_name}:ignore_empty:record;
+        tabindex tabindex/next;">
+
+<option></option>)
+<tal:invalid 
+    tal:condition="invalid">
+<option selected="selected"
+    tal:attributes="value profile"
+    tal:content="string:$profile (invalid)"></option>)
+</tal:invalid>
+
+    <tal:clientprofiles tal:repeat="item clientprofiles">
+
+    <option selected="selected"
+        tal:define="
+            this_selected python:test(item == profile,  'selected', '')"
+        tal:attributes="value item;
+                        selected this_selected"
+        tal:content="item"></option>
+    </tal:clientprofiles>
+
+    <tal:labprofiles tal:repeat="item labprofiles">
+
+    <option selected="selected"
+        tal:define="
+            this_selected python:test(item == profile,  'selected', '')"
+        tal:attributes="value item;
+                        selected this_selected"
+        tal:content="item"></option>
+    </tal:labprofiles>
+    </select>
+</td>
+</tal:profiles>
+
+<tal:analyses 
+    tal:define="analyses aritem/getAnalyses">
+<td class="left"
+    tal:define="
+        analysis python:len(analyses) > 0 and analyses[0] or None;
+        invalid python:analysis and (analysis not in services)" >
+<select name="Analysis1" 
+    tal:define="input_name string:item.${iuid}.Analysis1"
+    tal:attributes="
+        name string:${input_name}:ignore_empty:record;
+        tabindex tabindex/next;">
+
+<option></option>)
+<tal:invalid 
+    tal:condition="invalid">
+<option selected="selected"
+    tal:attributes="value analysis"
+    tal:content="string:$analysis (invalid)"></option>)
+</tal:invalid>
+
+    <tal:options tal:repeat="item services">
+
+    <option selected="selected"
+        tal:define="
+            this_selected python:test(item == analysis,  'selected', '')"
+        tal:attributes="value item;
+                        selected this_selected"
+        tal:content="item"></option>
+    </tal:options>
+
+    </select>
+</td>
+<td class="left"
+    tal:define="
+        analysis python:len(analyses) > 1 and analyses[1] or None;
+        invalid python:analysis and (analysis not in services)" >
+<select name="Analysis2" 
+    tal:define="input_name string:item.${iuid}.Analysis2"
+    tal:attributes="
+        name string:${input_name}:ignore_empty:record;
+        tabindex tabindex/next;">
+
+<option></option>)
+<tal:invalid 
+    tal:condition="invalid">
+<option selected="selected"
+    tal:attributes="value analysis"
+    tal:content="string:$analysis (invalid)"></option>)
+</tal:invalid>
+
+    <tal:options tal:repeat="item services">
+
+    <option selected="selected"
+        tal:define="
+            this_selected python:test(item == analysis,  'selected', '')"
+        tal:attributes="value item;
+                        selected this_selected"
+        tal:content="item"></option>
+    </tal:options>
+
+    </select>
+</td>
+<td class="left"
+    tal:define="
+        analysis python:len(analyses) > 2 and analyses[2] or None;
+        invalid python:analysis and (analysis not in services)" >
+<select name="Analysis3" 
+    tal:define="input_name string:item.${iuid}.Analysis3"
+    tal:attributes="
+        name string:${input_name}:ignore_empty:record;
+        tabindex tabindex/next;">
+
+<option></option>)
+<tal:invalid 
+    tal:condition="invalid">
+<option selected="selected"
+    tal:attributes="value analysis"
+    tal:content="string:$analysis (invalid)"></option>)
+</tal:invalid>
+
+    <tal:options tal:repeat="item services">
+
+    <option selected="selected"
+        tal:define="
+            this_selected python:test(item == analysis,  'selected', '')"
+        tal:attributes="value item;
+                        selected this_selected"
+        tal:content="item"></option>
+    </tal:options>
+
+    </select>
+</td>
+</tal:analyses>
+
+<td class="left"
+    tal:define="valid python:aritem.getRemarks() and 'No' or 'Yes'">
+<span tal:content="valid">xxx</span>
+</td>
+</tr>
+</tal:items>
+</tbody>
+
+</table>
+<div tal:define="remarks here/getRemarks"
+    tal:condition="remarks">
+<label class="emphatic" i18n:translate="label_remarks">Remarks</label>
+<div tal:repeat="remark here/getRemarks"
+    tal:content="remark">Remarks</div>
+</div>
+<br/>
+<input class="context"
+        tabindex=""
+        type="submit"
+        name="form.button.submit"
+        value="Validate & Save"
+        i18n:attributes="value"
+        tal:attributes="tabindex tabindex/next"
+        />
+<input class="standalone"
+        tabindex=""
+        type="submit"
+        name="form.button.cancel"
+        value="Cancel"
+        i18n:attributes="value"
+        tal:attributes="tabindex tabindex/next"
+        />
+
+</form>
+</div>
+
+<!-- classic ar imports -->
+<div metal:define-macro="arimport_edit_c"
+    tal:define="
+        left_col python:3;
+        right_col python:5;
+        client python:here.aq_parent;
+        contacts client/getContactsDisplayList;
+        samplepoints python:[p.Title for p in here.portal_catalog(portal_type='SamplePoint')];">
+<form name="arimport_form" method="POST" action="template/getId"
+    tal:attributes="action template/getId" autocomplete="off">
+
+<input type="hidden" name="form.submitted" value="1" />
+<input type="hidden" name="came_from" value="edit" />
+<input type="hidden" name="ARImportUID" value=""
+    tal:attributes="value here/UID"/>
+
+<br/>
+
+
+<table
+    summary="ARImport edit"
+    class="analysisrequest"
+    cellpadding="0" cellspacing="0">
+
+<thead>
+
+<tr>
+<th i18n:translate="label_clientname">Client</th>
+<td class="left" tal:attributes="colspan python:left_col"
+    tal:content="here/getClientName">This Client</td>
+<th i18n:translate="label_clientid">Client ID</th>
+<td class="left" tal:attributes="colspan python:right_col">
+<input value="" name="ClientID"
+    tal:attributes="value here/getClientID"/>
+</td>
+</tr>
+<tr>
+<tal:contacts
+    tal:define="
+        contactid python:here.getContact() and here.getContact().getUsername() or here.getContactID();
+        contact_uid python:here.getContact() and here.getContact().UID() or (here.getContactID() and here.getContactFromUsername(here.getContactID) or None);
+        cccontactid python:here.getCCContact() and here.getCCContact().getUsername() or here.getCCContactID();
+        cccontact_uid python:here.getCCContact() and here.getCCContact().UID() or (here.getCCContactID() and here.getContactFromUsername(here.getCCContactID) or None);">
+<th i18n:translate="label_contact">Contact</th>
+<td class="left"
+    tal:define="invalid python:(not contact_uid) or (not contacts.getValue(contact_uid))"
+    tal:attributes="colspan python:left_col">
+    <select name="Contact" 
+        tal:attributes="tabindex tabindex/next;">
+
+<tal:invalid 
+    tal:condition="invalid">
+<option SELECTED 
+    tal:attributes="value string:None"
+    tal:content="string:$contactid (invalid)"></option>)
+</tal:invalid>
+    <tal:item 
+        tal:define="
+            vocab contacts"
+        tal:repeat="item vocab">
+
+    <option selected="selected"
+        tal:define="
+            no_ref python:item == '';
+            this_selected python:test((item == contact_uid) or no_ref, 'selected', '')"
+        tal:attributes="value item;
+                        selected this_selected"
+        tal:content="python:here.translate(vocab.getMsgId(item), default=vocab.getValue(item))"></option>
+    </tal:item>
+
+    </select>
+</td>
+<th i18n:translate="label_cc">CC</th>
+<td class="left"
+    tal:define="
+        invalid python:cccontact_uid and not contacts.getValue(cccontact_uid) or(cccontactid and True or False)"
+    tal:attributes="colspan python:right_col">
+    <select name="CCContact" 
+        tal:attributes="tabindex tabindex/next;">
+
+<option></option>
+<tal:invalid 
+    tal:condition="invalid">
+<option SELECTED
+    tal:attributes="value string:None"
+    tal:content="string:$cccontactid (invalid)"></option>)
+</tal:invalid>
+    <tal:item 
+        tal:define="
+            vocab contacts"
+        tal:repeat="item vocab">
+
+    <option selected="selected"
+        tal:define="
+            no_ref python:item == '';
+            this_selected python:test((item == cccontact_uid) or no_ref, 'selected', '')"
+        tal:condition="python:item != cccontactid"
+        tal:attributes="value item;
+                        selected this_selected"
+        tal:content="python:here.translate(vocab.getMsgId(item), default=vocab.getValue(item))"></option>
+    </tal:item>
+
+    </select>
+</td>
+</tal:contacts>
+</tr>
+
+<tr>
+<th i18n:translate="label_ccemails">CC Emails</th>
+<td class="left" tal:attributes="colspan python:left_col">
+<input value="" name="CCEmails"
+    tal:attributes="value here/getCCEmails"/></td>
+<th i18n:translate="label_samplepoint">Sample Point</th>
+<td class="left" 
+    tal:attributes="colspan python:right_col"
+    tal:define="samplepoint here/getSamplePoint;
+                invalid python:samplepoint not in samplepoints">
+    <select name="SamplePoint" 
+        tal:attributes="tabindex tabindex/next;">
+<tal:invalid tal:condition="invalid">
+<option SELECTED
+    tal:attributes="value samplepoint"
+    tal:content="string:$samplepoint (new)"></option>)
+</tal:invalid>
+
+    <tal:item 
+        tal:define="
+            vocab samplepoints"
+        tal:repeat="item vocab">
+
+    <option selected="selected"
+        tal:define="
+            no_ref python:item == '';
+            this_selected python:test((item == samplepoint) or no_ref, 'selected', '')"
+        tal:attributes="value item;
+                        selected this_selected"
+        tal:content="item"></option>
+    </tal:item>
+
+    </select>
+</td>
+<tr>
+<th i18n:translate="label_OrderID">Order</th>
+<td class="left"  tal:attributes="colspan python:left_col">
+<input value="" name="OrderID"
+    tal:attributes="value here/getOrderID"/></td>
+<th i18n:translate="label_QuoteID">Quote</th>
+<td class="left"  tal:attributes="colspan python:right_col">
+<input value="" name="QuoteID"
+    tal:attributes="value here/getQuoteID"/></td>
+</tr>
+
+<tr>
+<th i18n:translate="label_filename">File name</th>
+<td class="left" tal:attributes="colspan python:left_col">
+<input value="" name="FileName"
+    tal:attributes="value here/getFileName"/></td>
+<th i18n:translate="label_status">Status</th>
+<td class="left"  tal:attributes="colspan python:right_col"
+    tal:define="status python:here.getStatus() and 'Valid' or 'Invalid'"
+    tal:content="status">Valid</td>
+</tr>
+
+<tr tal:define="date_applied here/getDateApplied">
+<th i18n:translate="label_dateimported">Date imported</th>
+<td class="left"  tal:attributes="colspan python:left_col"
+    tal:define="date_imported here/getDateImported"
+    tal:content="python:plone_view.toLocalizedTime(date_imported, long_format=1)"
+    >2005-01-01 10:00</td>
+<th> 
+<span i18n:translate="label_dateapplied"
+    tal:condition="python:date_applied">Date applied</span>
+</th>
+<td class="left"
+    tal:attributes="colspan python:right_col">
+<span tal:condition="python:date_applied"
+    tal:content="python:plone_view.toLocalizedTime(date_applied, long_format=1)"
+    >2005-01-01 10:00</span>
+</td>
+</tr>
+
+</thead>
+<tbody tal:define="arimport python:here">
+<tr>
+<th class="center" i18n:translate="label_samplename">Sample</th>
+<th class="center" i18n:translate="label_clientref">Client Ref</th>
+<th class="center" i18n:translate="label_clientsid">Client Sid</th>
+<th class="center" i18n:translate="label_sampledate">Sample Date</th>
+<th class="center" i18n:translate="label_sampletype">Sample type</th>
+<th class="center" i18n:translate="label_pickingslip">Picking slip</th>
+<th class="center" i18n:translate="label_report_dry_matter">Report as DM</th>
+<th class="center" i18n:translate="label_orderid">Order ID</th>
+<th class="center" i18n:translate="label_analyses">Analyses</th>
+<th class="center" i18n:translate="label_valid">Valid</th>
+</tr>
+<tal:items
+    tal:define="aritems python:arimport.objectValues('ARImportItem')"
+    tal:repeat="aritem aritems">
+<tr>
+<td class="left">
+<a tal:attributes="href string:${aritem/absolute_url}/arimportitem_edit"
+   tal:content="aritem/getSampleName">Sample 1</a>
+</td>   
+<td tal:content="aritem/getClientRef">R1</td>
+<td tal:content="aritem/getClientSid">S1</td>
+<td tal:content="aritem/getSampleDate">SampleDate</td>
+<td tal:content="aritem/getSampleType">SampleType</td>
+<td tal:content="aritem/getPickingSlip">PickingSlip</td>
+<td tal:content="aritem/getReportDryMatter">ReportDryMatter</td>
+<td tal:content="aritem/getOrderID">OrderID</td>
+<td>
+<a  onMouseover=""
+    onMouseout=""
+    tal:attributes="
+        onMouseover string:showPopup('Analyses.${repeat/aritem/number}');
+        onMouseout string:hidePopup('Analyses.${repeat/aritem/number}')">
+<span i18n:translate="label_show">Show</span>
+</a>
+<div id=""
+     class="uncertaintydiv"
+     tal:attributes="id string:Analyses.${repeat/aritem/number}" >
+<table class="uncertaintytable">
+<tr tal:repeat="analysis aritem/getAnalyses">
+<td tal:content="analysis"/>
+</tr>
+</table>
+</div>
+</td>
+<td class="left"
+    tal:define="valid python:aritem.getRemarks() and 'No' or 'Yes'">
+<span tal:content="valid">xxx</span>
+</td>
+</tr>
+</tal:items>
+</tbody>
+
+</table>
+<div tal:define="remarks here/getRemarks"
+    tal:condition="remarks">
+<label class="emphatic" i18n:translate="label_remarks">Remarks</label>
+<div tal:repeat="remark here/getRemarks"
+    tal:content="remark">Remarks</div>
+</div>
+<br/>
+<input class="context"
+        tabindex=""
+        type="submit"
+        name="form.button.submit"
+        value="Validate & Save"
+        i18n:attributes="value"
+        tal:attributes="tabindex tabindex/next"
+        />
+<input class="standalone"
+        tabindex=""
+        type="submit"
+        name="form.button.cancel"
+        value="Cancel"
+        i18n:attributes="value"
+        tal:attributes="tabindex tabindex/next"
+        />
+
+</form>
+</div>
+
+<!-- special (benchmark) ar imports -->
+<div metal:define-macro="arimport_edit_p">
+<span>coming attractions</span>
+</div>
+</body>
+
+</html>
+
+
+

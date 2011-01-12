@@ -1,0 +1,54 @@
+<?xml version="1.0"?>
+<object name="LabProduct"
+   meta_type="Factory-based Type Information with dynamic views"
+   xmlns:i18n="http://xml.zope.org/namespaces/i18n">
+ <property name="title">Product</property>
+ <property
+    name="description">Mixin class for content types using the dynamic view FTI
+  
+      Allow the user to select a layout template (in the same way as
+      TemplateMixin in Archetypes does), and/or to set a contained
+      object's id as a default_page (acting in the same way as index_html)
+  
+      Note: folderish content types should overwrite HEAD like ATContentTypes
+      </property>
+ <property name="content_icon">product.png</property>
+ <property name="content_meta_type">LabProduct</property>
+ <property name="product">bika</property>
+ <property name="factory">addLabProduct</property>
+ <property name="immediate_view">tool_base_edit</property>
+ <property name="global_allow">False</property>
+ <property name="filter_content_types">False</property>
+ <property name="allowed_content_types"/>
+ <property name="allow_discussion">False</property>
+ <property name="default_view">base_view</property>
+ <property name="view_methods">
+  <element value="base_view"/>
+ </property>
+ <property name="default_view_fallback">False</property>
+ <alias from="(Default)" to="(dynamic view)"/>
+ <alias from="edit" to="base_edit"/>
+ <alias from="index.html" to="(dynamic view)"/>
+ <alias from="properties" to="base_metadata"/>
+ <alias from="sharing" to="folder_localrole_form"/>
+ <alias from="view" to="(selected layout)"/>
+ <action title="View" action_id="view" category="object" condition_expr=""
+    url_expr="string:${object_url}/base_view" visible="True">
+  <permission value="View"/>
+ </action>
+ <action title="Edit" action_id="edit" category="object" condition_expr=""
+    url_expr="string:${object_url}/tool_base_edit" visible="True">
+  <permission value="Modify portal content"/>
+ </action>
+ <action title="Properties" action_id="metadata" category="object"
+    condition_expr="" url_expr="string:${object_url}/base_metadata"
+    visible="False">
+  <permission value="Modify portal content"/>
+ </action>
+ <action title="References" action_id="references" category="object"
+    condition_expr="object/archetype_tool/has_graphviz"
+    url_expr="string:${object_url}/reference_graph" visible="False">
+  <permission value="Modify portal content"/>
+  <permission value="Review portal content"/>
+ </action>
+</object>

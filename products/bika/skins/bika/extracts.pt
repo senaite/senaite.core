@@ -1,0 +1,115 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      lang="en"
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="bika">
+
+<head>
+    <metal:block fill-slot="top_slot"
+                 tal:define="dummy python:request.set('disable_border', 1)" />
+</head>
+             
+             
+<body>
+
+<div metal:fill-slot="main">
+
+<h1>
+<tal:block replace="structure python:getattr(here, here.getIcon(1))"/>
+<span i18n:translate="heading_extracts"
+    >Extracts</span>
+</h1>
+
+<dl>
+<dt i18n:translate="heading_extract_services"
+>Extract services</dt>
+<dd i18n:translate="description_extract_services">
+Extract all the analysis services to a csv file
+</dd>
+<br/>
+<br/>
+
+<dl><dt>
+<form action="." method="post" name="extract_services">
+<input
+    class="standalone"
+    type="submit"
+    name="extract_services:method"
+    value="Services"
+    tabindex=""
+    title="Services"
+    tal:attributes="
+        tabindex tabindex/next"/>
+</form>
+</dt></dl>
+
+
+<br/>
+<br/>
+<dt i18n:translate="heading_extract_profiles">Extract profiles</dt>
+<dd i18n:translate="description_extract_profiles">
+Extract the selected analysis service profiles to a csv file
+</dd>
+<dl><dt>
+<br/>
+<br/>
+
+<form action="." method="post" name="extract_profiles">
+<div
+    tal:define="
+    this_client python:here.member_is_client() and here.get_client_for_member() or None;
+    this_client_uid python:this_client and this_client.UID() or None">
+
+<tal:lab tal:condition="not:here/member_is_client">
+    <select name="getClientUID:ignore_empty" 
+            style = ""
+            tal:attributes="
+                style string:font-family:${here/base_properties/fontFamily};;font-size:100%;;">
+        <option value="all">All</option>
+        <option value="lab">Lab</option>
+        <tal:clients
+            define="    
+                clients python:here.portal_catalog(portal_type='Client');
+                sort_on python:(('Title', 'nocase', 'asc'),);
+                clients python:sequence.sort(clients, sort_on);
+                sel_client python:request.get('getClientUID', '');
+                this_client_uid python:sel_client or this_client_uid"
+            repeat="client clients">
+        <option value=""
+            tal:define="client_uid python:client.getObject().UID()"
+            tal:attributes="value client_uid;
+                selected python:this_client_uid == client_uid and 'selected' or ''"
+            tal:content="client/Title"
+            >Acme Systems</option>
+
+        </tal:clients>
+    </select>
+</tal:lab>
+
+<tal:client tal:condition="here/member_is_client">
+    <input class="noborder" type="radio" name="getClientUID" value="loaded"
+        id="ThisClient"
+        checked="checked"
+        tal:attributes="value this_client_uid"/>
+     <span tal:content="this_client/Title"  i18n:translate="">Acme</span>
+    <input class="noborder" type="radio" name="getClientUID" 
+        value="clientandlab"/>
+     <span i18n:translate="label_all">All</span>
+</tal:client>
+</div>
+<br/>
+<input
+    class="standalone"
+    type="submit"
+    name="extract_profiles:method"
+    value="Profiles"
+    tabindex=""
+    title="AR Profiles"
+    tal:attributes="
+        tabindex tabindex/next"/>
+</form>
+</dt></dl>
+</dl>
+</div>
+
+</body>
+</html>

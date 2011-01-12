@@ -1,0 +1,58 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      lang="en"
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="bika">
+
+<head>
+    <metal:block fill-slot="top_slot"
+                 tal:define="dummy python:request.set('disable_border', 1)" />
+</head>
+             
+             
+<body>
+
+<div metal:fill-slot="main">
+
+<h1>
+<tal:block replace="structure python:getattr(here, here.getIcon(1))"/>
+<span i18n:translate="heading_analyses_reset"
+    >Set analysis service prices</span>
+</h1>
+<p>
+Analyses are identified by the Analysis Keyword
+</p>
+<p>
+Please use the [extracts] tab to create the template for the price modification import file
+</p>
+<p>
+Only services and prices in the import file are modified
+</p>
+
+<form action="set_analysis_stuff" method="post" name="reset_services"
+    enctype="multipart/form-data">
+<fieldset>
+
+<legend i18n:translate="legend_load">load</legend>
+<div class="field">
+    <label i18n:translate="label_load_prices"
+        >Select analysis service data file</label><br/>
+    <input type="file" name="csvfile" size="30"/>
+</div>
+
+<div class="field">
+    <input tabindex=""
+        class="standalone"
+        type="submit"
+        name="submit"
+        value="set prices"
+        i18n:attributes="value"
+        />                       
+</div>
+
+</fieldset>
+</form>
+
+</div>
+
+</body>
+</html>

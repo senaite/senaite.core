@@ -1,0 +1,103 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      lang="en"
+      metal:use-macro="here/prefs_main_template/macros/master"
+      i18n:domain="plone">
+
+<metal:block fill-slot="top_slot"
+             tal:define="dummy python:request.set('disable_border',1)" />
+
+<body>
+
+   <div metal:fill-slot="prefs_configlet_main"
+      tal:define="controlPanel python:modules['Products.CMFCore.utils'].getToolByName(here, 'portal_controlpanel');
+                  groups python:controlPanel.getGroups('site');
+                  getIconFor nocall:putils/getIconFor">
+
+    <h1 i18n:translate="heading_control_panel">Site Setup</h1>
+
+    <div class="documentDescription" i18n:translate="description_control_panel">
+      Configuration area for Plone and add-on Products.
+    </div>              
+                        
+    <tal:block tal:repeat="group groups">
+                        
+    <tal:something_to_show 
+        tal:define="configlets python:controlPanel.enumConfiglets(group=group['id'])"
+        tal:condition="configlets">
+
+        <h2 tal:content="group/title"
+            i18n:translate="">Plone Configlet Group Title</h2>
+
+        <ul class="configlets">
+
+            <tal:configlet repeat="configlet configlets">
+                <li tal:condition="configlet/visible">
+                    <a href=""          
+                       tal:attributes="href configlet/url">
+                        <img src="" alt="" tal:attributes="src python:getIconFor('controlpanel',configlet['id']);
+                                                           alt configlet/name;"
+                             i18n:attributes="alt"
+                             tal:on-error="string:" />
+                    <tal:configletname tal:content="configlet/name"
+                                       i18n:translate=""></tal:configletname>
+                    </a>                
+                </li>                   
+            </tal:configlet>            
+                                        
+        </ul>                           
+
+    </tal:something_to_show>
+
+    </tal:block>                        
+
+    <tal:admin_only 
+        tal:condition="python:checkPermission('ManagePortal', here)">
+    <tal:versions define="mt here/portal_migration;
+                          sys mt/coreVersions">
+        <p class="discreet">
+            <strong i18n:translate="heading_plone_version_overview">Plone version overview</strong><br />
+            Plone <span tal:replace="mt/getInstanceVersion" />, <br />
+            <span tal:replace="sys/CMF" />, <br />
+            Zope <span tal:replace="sys/Zope" />, <br />
+            <span tal:replace="sys/Five" />, <br />
+            Python <span tal:replace="sys/Python" />, <br />
+            <tal:pil condition="sys/PIL">
+            PIL <span tal:replace="sys/PIL" />
+            </tal:pil>
+        </p>
+
+        <p class="portalMessage"
+           tal:condition="not:sys/PIL"
+           i18n:translate="text_no_pil_installed">
+        Warning: PIL is not installed properly, image scaling will not work.
+        </p>
+    </tal:versions>
+    
+    <tal:debugmode define="QI python:context.portal_url.getPortalObject().portal_quickinstaller">
+        <p tal:condition="not:QI/isDevelopmentMode" 
+           class="discreet"
+           i18n:translate="description_production_mode">
+          You are running in "production mode". This is the preferred mode of
+          operation for a live Plone site, but means that some
+          configuration changes will not take effect until your server is
+          restarted or a product refreshed. If this is a development instance,
+          and you want to enable debug mode, edit your zope.conf file to say
+          'debug-mode on' &mdash; then restart the server process.
+        </p>
+
+        <p tal:condition="QI/isDevelopmentMode"
+           class="discreet"
+           i18n:translate="description_debug_mode">
+          Note: You are running in "debug mode". This mode is intended for
+          sites that are under development. This allows many configuration
+          changes to be immediately evident, but will make your site
+          run more slowly. To turn off debug mode, edit your zope.conf file to
+          say 'debug-mode off' &mdash; then restart the server process.
+        </p>
+    </tal:debugmode>
+
+    </tal:admin_only>
+    </div>
+
+</body>
+</html>

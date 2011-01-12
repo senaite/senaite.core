@@ -1,0 +1,148 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<metal:block use-macro="here/global_defines/macros/defines" />
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      lang="en"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      tal:attributes="lang default_language|default;
+                      xml:lang default_language|default;"
+      i18n:domain="bika">
+
+<head metal:use-macro="here/header/macros/html_header">
+
+<metal:fillbase fill-slot="base">
+    <base href="" tal:attributes="href here/renderBase" />
+</metal:fillbase>
+
+<metal:headslot fill-slot="head_slot"
+                tal:define="language here/Language;
+                            lang language | default_language;
+                            charset site_properties/default_charset|string:utf-8">
+
+    <metal:cache use-macro="here/global_cache_settings/macros/cacheheaders">
+    Get the global cache headers located in global_cache_settings.
+    </metal:cache>
+
+</metal:headslot>
+
+</head>
+
+<body style="font-size: 100%" onload="this.print()"
+    tal:define="order python:here">
+
+<img src="" tal:attributes="src string:${portal_url}/logo.png"/>
+
+<metal:block define-macro="order">
+
+<table class="invoice"
+    thead tal:define="client nocall:order/aq_parent">
+
+<tr>
+<th nowrap>
+<strong tal:content="client/Title">Clientname</strong><br/>
+<strong tal:content="client/getAccountNumber">1000</strong><br/>
+<strong tal:define="contact order/getContact"
+    tal:content="contact/Title">1000</strong><br/>
+</th>
+
+<th tal:define="mailing python:here.get_billing_address(client, outerJoin=', ')">
+<span tal:replace="structure mailing">Client address</span>
+</th>
+
+<th>
+<strong i18n:translate="label_telephone_abbreviation">Tel:</strong> <span tal:replace="client/getPhone">888 0000</span><br/>
+<strong i18n:translate="label_fax_abbreviation">Fax:</strong> <span tal:replace="client/getFax">888 0000</span>
+</th>
+</tr>
+
+<tr>
+<th><strong i18n:translate="header_order">Order</strong>
+    <strong tal:content="order/getOrderNumber">S001</strong>
+</th>
+<th><strong i18n:translate="label_orderdate">Order date</strong>
+    <strong
+        tal:define="order_date here/getOrderDate"
+        tal:content="python:plone_view.toLocalizedTime(order_date, long_format=1)"
+        >2005-01-01 10:00</strong>
+
+</th>
+<th><strong i18n:translate="label_order_dispatch_date">Date dispatched</strong>
+    <strong
+        tal:define="date_dispatched here/getDateDispatched"
+        tal:content="python:plone_view.toLocalizedTime(date_dispatched, long_format=1)"
+        >2005-01-01 10:00</strong>
+</th>
+</tr>
+</table>
+
+<table class="invoice">
+<thead>
+<tr>
+<th i18n:translate="label_product">Product</th>
+<th i18n:translate="label_description">Description</th>
+<th i18n:translate="label_volume">Volume</th>
+<th i18n:translate="label_unit">Unit</th>
+<th class="amount" i18n:translate="label_price">Price</th>
+<th class="amount" i18n:translate="label_quantity">Quantity</th>
+<th class="amount" i18n:translate="label_total">Total</th>
+</tr>
+</thead>
+
+<tbody>
+
+<tal:orderitem
+    define="
+        items python:order.objectValues('OrderItem');
+        sort_on python:(('Title', 'nocase', 'asc'),);
+        items python:sequence.sort(items, sort_on)"
+    repeat="orderitem items">
+<tr class="left" tal:define="labproduct python:orderitem.getProduct()">
+<td class="left" tal:content="structure labproduct/Title">Bottle</td>
+<td class="left" tal:content="structure labproduct/getProductDescription">Glass bottle</td>
+<td class="left" tal:content="labproduct/getVolume">187 ml</td>
+<td class="left" tal:content="labproduct/getUnit">187 ml</td>
+<td class="amount" tal:content="labproduct/getPrice">R10</td>
+<td class="amount" tal:content="orderitem/getQuantity">5.0</td>
+<td class="amount" tal:content="orderitem/getTotal">50.0</td>
+</tr>
+</tal:orderitem>
+
+</tbody>
+
+<tfoot>
+
+<tr>
+<th colspan="5"  i18n:translate="label_subtotal"><b>Subtotal</b></th>
+<th class="amount">
+<span tal:replace="order/getTotalQty">0.00</span>
+</th>
+<th class="amount" ><span i18n:translate="label_currency_abbreviation"> R</span>
+<span tal:replace="order/getSubtotal">0.00</span>
+</th>
+</tr>
+
+<tr>
+<th colspan="6" i18n:translate="label_vat"><b>VAT</b></th>
+<th class="amount" ><span i18n:translate="label_currency_abbreviation"> R</span>
+<span tal:replace="order/getVAT">0.00</span>
+</th>
+</tr>
+
+<tr>
+<th colspan="6" i18n:translate="label_total"><b>Total</b></th>
+<th class="amount" ><span i18n:translate="label_currency_abbreviation"> R</span>
+<span tal:replace="order/getTotal">0.00</span>
+</th>
+</tr>
+
+</tfoot>
+
+</table>
+
+</metal:block>
+
+</body>
+
+</html>

@@ -1,0 +1,818 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      lang="en"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="bika">
+
+<head>
+</head>
+
+<body>
+
+<div metal:fill-slot="main"
+    tal:define="
+        restrict_cats python:here.getRestrictCategories();
+        default_cats python:here.getDefaultCategory();
+        categories python:restrict_cats and [c for c in default_cats] or [c.getObject() for c in here.portal_catalog(portal_type='AnalysisCategory')];
+        sort_on python:(('Title', 'nocase', 'asc'),);
+        categories python:sequence.sort(categories, sort_on);
+        selected_cats python:request.get('Categories', []);
+        cats python:selected_cats and selected_cats or [c.UID() for c in default_cats];
+        service_info python:here.get_cat_services(cats);
+        services python:service_info['services'];
+        cat_list python:service_info['categories'];
+        profiles python:service_info['profiles'];
+        contacts here/getContactsDisplayList;
+        cc_contacts here/getCCContacts;
+        contact_uid here/getContactUIDForUser;
+        errors options/state/getErrors;
+        global dry_matter python:0;
+        startup_directory here/absolute_url;
+        lab_accredited python:context.bika_labinfo.laboratory.getLaboratoryAccredited();
+        manage_bika python:mtool.checkPermission('BIKA: Manage bika', here);
+        ">
+
+<tal:error repeat="error python:errors.keys()">
+<tal:x define="column_nr python:error.split('.')[0];
+            field_name python:error.split('.')[1];
+            message python:errors[error]">
+<p class="portalMessage" i18n:translate="ar_form_input_required">
+Column
+<span tal:content="column_nr" i18n:name="column_nr">1</span>.
+<span tal:content="field_name" i18n:name="field_name">Analyses</span>:
+<span tal:content="message" i18n:name="message"
+    >Input required but no input is given.</span> </p>
+</tal:x>
+</tal:error>
+
+<div metal:use-macro="here/document_actions/macros/document_actions">
+    Document actions (print, sendto etc)
+</div>
+
+<h1>
+    <img src="ar.png" tal:attributes="src python:here.portal_types.getTypeInfo('AnalysisRequest').getIcon()"/>
+    <span tal:omit-tag="" i18n:translate="heading_request_new_analyses"
+        >Request new analyses</span>
+</h1>
+
+<script type="text/javascript" src="actb.js"></script>
+<script type="text/javascript" src="dhtml.js"></script>
+<script type="text/javascript" src="ar_form.js"></script>
+<script type="text/javascript" src="ar_add_form.js"></script>
+<script type="text/javascript" src="utils.js"></script>
+
+
+<form name="analysisrequest_add_form" method="POST" action="template/getId"
+    tal:attributes="action template/getId" autocomplete="off">
+
+<input type="hidden" name="form.submitted" value="1" />
+
+<br/>
+
+<div tal:repeat="cc cc_contacts">
+<tal:ccs tal:define="i repeat/cc/index;
+                     uid python:cc[0]">
+<input type="hidden" value="" id=""
+    tal:attributes="id string:ccu$uid;
+                    value python:cc[1]">
+<input type="hidden" value="" id=""
+    tal:attributes="id string:ccn$uid;
+                    value python:cc[2]">
+</tal:ccs>
+</div>
+
+<table
+    summary="Analysis request form"
+    class="analysisrequest"
+    cellpadding="0" cellspacing="0"
+    tal:define="col_count python:request.get('col_count', 6)">
+
+<thead>
+
+<tr>
+<th> 
+<span i18n:translate="label_contact_person">Contact person</span>
+    &nbsp;<span class="fieldRequired"/>
+</th>
+<td colspan="2">&nbsp;</td>
+<td style="white-space:nowrap;" class="contact" 
+    tal:attributes="colspan python:col_count"
+    tal:define="this_contact python:request.get('Contact', contact_uid);">
+    <select name="Contact" id="contact"
+        tal:attributes="onchange string:getCC();    
+                        tabindex tabindex/next;">
+
+    <tal:item 
+        tal:define="
+            vocab contacts"
+        tal:repeat="item vocab">
+    <option selected="selected"
+        tal:define="
+                no_ref python:item == '';
+                this_selected python:test((item == this_contact) or no_ref, 'selected', '');
+                global num_selected python:this_selected and repeat['item'].index;"
+        tal:attributes="value item;
+            selected this_selected"
+        tal:content="python:here.translate(vocab.getMsgId(item), default=vocab.getValue(item))"></option>
+    </tal:item>
+
+    </select>
+<tal:ccs
+    tal:define="
+            selected python:num_selected or 0;
+            ccs python:cc_contacts[selected];
+            cc_uids python:ccs[1];
+            cc_titles python:ccs[2]"
+    tal:condition="ccs">
+&nbsp;
+
+
+<input type="button" class="actionButton" value="cc" 
+        onClick="" i18n:attributes="value" i18n:domain="bika"
+        tal:attributes='onClick string:javascript:open_cc_browser("${startup_directory}")' />
+<input DISABLED class="noborder" size="60%" value="" id="cc_titles" 
+    tal:attributes="value cc_titles">
+<input type="hidden" value="" id="cc_uids" name="CCContact"
+    tal:attributes="value cc_uids">
+
+</tal:ccs>
+</td>
+</tr>
+
+<tr>
+<th i18n:translate="label_cc_email">cc emails</th>
+<td colspan="2"></td>
+<td  class="contact" tal:attributes="colspan python:col_count">
+<input size="80%" type="text" name="CCEmails" 
+    tal:attributes="
+        value python:request.get('CCEmails');
+        tabindex tabindex/next"/>
+</td>
+</tr>
+
+<tr>
+    <th i18n:translate="label_arprofiles">Profile</th>
+<td class="center" colspan="2">
+<input type="button" value='' class="copyButton"
+    onClick="" id="copyProfileButton"
+    tal:attributes="
+        onClick string:javascript:copyProfile('arprofiles', '${col_count}')" />
+<tal:profile repeat="profile profiles">
+<input DISABLED type="hidden" name="arprofiles.1:ignore_empty:record"
+    tal:define="
+        number repeat/profile/number;
+        input_name string:arprofiles.${number}"
+    tal:attributes="
+        id input_name;
+        expand profile/expand;
+        value profile/services;
+        "/>
+</tal:profile>
+</td>
+<tal:arprofile repeat="column python:range(col_count)">
+
+<td style = "height:22px; padding:0px; text-align:left">
+    <input type="hidden" name="ar.0.selectedservices"
+      tal:define="
+        id string:ar.${column}.selectedservices"
+      tal:attributes="
+        id id;
+        name string:${id}:ignore_empty:record;
+        value python:request.get(id, '')"/>
+    <select
+        style = "width: 150px; position:absolute"
+        tal:define="
+            profiles_id string:ar.${column}.arprofiles"
+        tal:attributes="
+            id profiles_id;
+            name string:${profiles_id}:ignore_empty:record;
+            onmouseover string:stretch(this);
+            onchange    string:setProfile('${profiles_id}','${column}')">
+        <option value="">None</option>
+     
+<tal:profile repeat="profile profiles">
+<option class="N"
+    tal:condition="python:len(profile['expand']) > 0"
+    tal:content="string:${profile/title} - n/a"
+>Title</option>
+<option
+    tal:condition="python:len(profile['expand']) == 0"
+    tal:content="string:${profile/title}"
+    tal:attributes="value profile/uid;
+            selected python:request.get(profiles_id, '') == profile['uid'] and 'selected' or ''"
+>Title</option>
+</tal:profile>
+</select>
+
+
+       </td>
+    </tal:arprofile>
+</tr>
+
+<tr>
+<th></th>
+<td class="center" colspan="2">
+<input type="button" value='' class="removeButton"
+    onClick="" id="SampleIDRemoveButton"
+    tal:attributes="
+        onClick string:javascript:remove_sample('${col_count}')" />
+</td>
+<tal:linksample repeat="column python:range(col_count)">
+<td class="center">
+<input type="hidden" name="ar.1.SampleID:ignore_empty:record"
+    tal:define="input_name string:ar.${column}.SampleID"
+    tal:attributes="
+        id input_name;
+        name string:${input_name}:ignore_empty:record;
+        value python:request.get(input_name, '');
+        tabindex tabindex/next"/>
+<input type="hidden" name="ar.1.SampleUID:ignore_empty:record"
+    tal:define="input_name string:ar.${column}.SampleUID"
+    tal:attributes="
+        id input_name;
+        name string:${input_name}:ignore_empty:record;
+        value python:request.get(input_name, '');
+        tabindex tabindex/next"/>
+<input type="button" class="sampleButton" value="Sample" 
+    onClick="" i18n:attributes="value" i18n:domain="bika"
+    tal:define="
+        input_name string:SampleIDButton.${column}"
+    tal:attributes="
+        id input_name;
+        onClick string:javascript:open_sample_browser('${startup_directory}', '${column}')" />
+
+</td>
+</tal:linksample>
+</tr>
+
+<tr>
+<th>
+<span id="" i18n:translate="label_client_order_id">Client Order ID</span>
+</th>
+<td class="center" colspan="2">
+<input type="button" value='' class="copyButton"
+    onClick="" id="copyOrderNumberButton"
+    tal:attributes="
+        onClick string:javascript:copyValue('ClientOrderNumber', '${col_count}')" />
+</td>
+<tal:ordernumber repeat="column python:range(col_count)">
+<td>
+<input size="10" type='text' value=''
+    tal:define="input_name string:ar.${column}.ClientOrderNumber"
+    tal:attributes="
+        id input_name;
+        name string:${input_name}:ignore_empty:record;
+        value python:request.get(input_name, '');
+        tabindex tabindex/next"/>
+</td>
+</tal:ordernumber>
+</tr>
+
+<tr>
+<th id="" i18n:translate="label_clientreference">Client Reference</th>
+<td class="center" colspan="2">
+<input type="button" value='' class="copyButton"
+    onClick="" id="copyClientRefButton"
+    tal:attributes="
+        onClick string:javascript:copyValue('ClientReference', '${col_count}')" />
+</td>
+<tal:clientreference repeat="column python:range(col_count)">
+<td align="center">
+<input size="10" name="ar.1.ClientReference:ignore_empty:record"
+    tal:define="input_name string:ar.${column}.ClientReference"
+    tal:attributes="
+        id input_name;
+        name string:${input_name}:ignore_empty:record;
+        value python:request.get(input_name, '');
+        tabindex tabindex/next"/>
+</td>
+</tal:clientreference>
+</tr>
+
+<tr>
+<th id="" i18n:translate="label_clientsampleid">Client Sample ID</th>
+<td class="center" colspan="2">
+<input type="button" value='' class="copyButton"
+    onClick="" id="copyClientSidButton"
+    tal:attributes="
+        onClick string:javascript:copyValue('ClientSampleID', '${col_count}')" />
+</td>
+<tal:clientsid repeat="column python:range(col_count)">
+<td align="center">
+<input size="10" name="ar.1.ClientSampleID:ignore_empty:record"
+    tal:define="input_name string:ar.${column}.ClientSampleID"
+    tal:attributes="
+        id input_name;
+        name string:${input_name}:ignore_empty:record;
+        value python:request.get(input_name, '');
+        tabindex tabindex/next"/>
+</td>
+</tal:clientsid>
+</tr>
+
+<tr>
+<th>
+<span id="" i18n:translate="label_datesampled">Date sampled</span>
+</th>
+<td class="center" colspan="2">
+<input type="button" value='' class="copyButton" id="copyDateSampledButton"
+    tal:attributes="onClick string:javascript:copyDateSelection('DateSampled', '${col_count}')" />
+</td>
+<tal:datesampled repeat="column python:range(col_count)">
+<td nowrap>
+    <select 
+        style="width: 55px"
+        tal:define="id string:ar.${column}.DateSampledYear"
+        tal:attributes="id id; name string:${id}:ignore_empty:record">
+        <option value="">Y</option>
+        <option value="2001" tal:attributes="selected python:request.get(id, '') == '2001' and 'selected' or ''">2001</option>
+        <option value="2002" tal:attributes="selected python:request.get(id, '') == '2002' and 'selected' or ''">2002</option>
+        <option value="2003" tal:attributes="selected python:request.get(id, '') == '2003' and 'selected' or ''">2003</option>
+        <option value="2004" tal:attributes="selected python:request.get(id, '') == '2004' and 'selected' or ''">2004</option>
+        <option value="2005" tal:attributes="selected python:request.get(id, '') == '2005' and 'selected' or ''">2005</option>
+        <option value="2006" tal:attributes="selected python:request.get(id, '') == '2006' and 'selected' or ''">2006</option>
+        <option value="2007" tal:attributes="selected python:request.get(id, '') == '2007' and 'selected' or ''">2007</option>
+        <option value="2008" tal:attributes="selected python:request.get(id, '') == '2008' and 'selected' or ''">2008</option>
+        <option value="2009" tal:attributes="selected python:request.get(id, '') == '2009' and 'selected' or ''">2009</option>
+        <option value="2010" tal:attributes="selected python:request.get(id, '') == '2010' and 'selected' or ''">2010</option>
+        <option value="2011" tal:attributes="selected python:request.get(id, '') == '2011' and 'selected' or ''">2011</option>
+        <option value="2012" tal:attributes="selected python:request.get(id, '') == '2012' and 'selected' or ''">2012</option>
+        <option value="2013" tal:attributes="selected python:request.get(id, '') == '2013' and 'selected' or ''">2013</option>
+        <option value="2014" tal:attributes="selected python:request.get(id, '') == '2014' and 'selected' or ''">2014</option>
+        <option value="2015" tal:attributes="selected python:request.get(id, '') == '2015' and 'selected' or ''">2015</option>
+        <option value="2016" tal:attributes="selected python:request.get(id, '') == '2016' and 'selected' or ''">2016</option>
+        <option value="2017" tal:attributes="selected python:request.get(id, '') == '2017' and 'selected' or ''">2017</option>
+        <option value="2018" tal:attributes="selected python:request.get(id, '') == '2018' and 'selected' or ''">2018</option>
+        <option value="2019" tal:attributes="selected python:request.get(id, '') == '2019' and 'selected' or ''">2019</option>
+        <option value="2020" tal:attributes="selected python:request.get(id, '') == '2020' and 'selected' or ''">2020</option>
+    </select><select 
+        style="width: 55px"
+        tal:define="id string:ar.${column}.DateSampledMonth"
+        tal:attributes="id id; name string:${id}:ignore_empty:record">
+        <option value="">M</option>
+        <option value="01" tal:attributes="selected python:request.get(id, '') == '01' and 'selected' or ''">Jan</option>
+        <option value="02" tal:attributes="selected python:request.get(id, '') == '02' and 'selected' or ''">Feb</option>
+        <option value="03" tal:attributes="selected python:request.get(id, '') == '03' and 'selected' or ''">Mar</option>
+        <option value="04" tal:attributes="selected python:request.get(id, '') == '04' and 'selected' or ''">Apr</option>
+        <option value="05" tal:attributes="selected python:request.get(id, '') == '05' and 'selected' or ''">May</option>
+        <option value="06" tal:attributes="selected python:request.get(id, '') == '06' and 'selected' or ''">Jun</option>
+        <option value="07" tal:attributes="selected python:request.get(id, '') == '07' and 'selected' or ''">Jul</option>
+        <option value="08" tal:attributes="selected python:request.get(id, '') == '08' and 'selected' or ''">Aug</option>
+        <option value="09" tal:attributes="selected python:request.get(id, '') == '09' and 'selected' or ''">Sep</option>
+        <option value="10" tal:attributes="selected python:request.get(id, '') == '10' and 'selected' or ''">Oct</option>
+        <option value="11" tal:attributes="selected python:request.get(id, '') == '11' and 'selected' or ''">Nov</option>
+        <option value="12" tal:attributes="selected python:request.get(id, '') == '12' and 'selected' or ''">Dec</option>
+    </select><select 
+        style="width: 40px"
+        tal:define="id string:ar.${column}.DateSampledDay"
+        tal:attributes="id id; name string:${id}:ignore_empty:record">
+        <option value="">D</option>
+        <option value="01" tal:attributes="selected python:request.get(id, '') == '01' and 'selected' or ''">01</option>
+        <option value="02" tal:attributes="selected python:request.get(id, '') == '02' and 'selected' or ''">02</option>
+        <option value="03" tal:attributes="selected python:request.get(id, '') == '03' and 'selected' or ''">03</option>
+        <option value="04" tal:attributes="selected python:request.get(id, '') == '04' and 'selected' or ''">04</option>
+        <option value="05" tal:attributes="selected python:request.get(id, '') == '05' and 'selected' or ''">05</option>
+        <option value="06" tal:attributes="selected python:request.get(id, '') == '06' and 'selected' or ''">06</option>
+        <option value="07" tal:attributes="selected python:request.get(id, '') == '07' and 'selected' or ''">07</option>
+        <option value="08" tal:attributes="selected python:request.get(id, '') == '08' and 'selected' or ''">08</option>
+        <option value="09" tal:attributes="selected python:request.get(id, '') == '09' and 'selected' or ''">09</option>
+        <option value="10" tal:attributes="selected python:request.get(id, '') == '10' and 'selected' or ''">10</option>
+        <option value="11" tal:attributes="selected python:request.get(id, '') == '11' and 'selected' or ''">11</option>
+        <option value="12" tal:attributes="selected python:request.get(id, '') == '12' and 'selected' or ''">12</option>
+        <option value="13" tal:attributes="selected python:request.get(id, '') == '13' and 'selected' or ''">13</option>
+        <option value="14" tal:attributes="selected python:request.get(id, '') == '14' and 'selected' or ''">14</option>
+        <option value="15" tal:attributes="selected python:request.get(id, '') == '15' and 'selected' or ''">15</option>
+        <option value="16" tal:attributes="selected python:request.get(id, '') == '16' and 'selected' or ''">16</option>
+        <option value="17" tal:attributes="selected python:request.get(id, '') == '17' and 'selected' or ''">17</option>
+        <option value="18" tal:attributes="selected python:request.get(id, '') == '18' and 'selected' or ''">18</option>
+        <option value="19" tal:attributes="selected python:request.get(id, '') == '19' and 'selected' or ''">19</option>
+        <option value="20" tal:attributes="selected python:request.get(id, '') == '20' and 'selected' or ''">20</option>
+        <option value="21" tal:attributes="selected python:request.get(id, '') == '21' and 'selected' or ''">21</option>
+        <option value="22" tal:attributes="selected python:request.get(id, '') == '22' and 'selected' or ''">22</option>
+        <option value="23" tal:attributes="selected python:request.get(id, '') == '23' and 'selected' or ''">23</option>
+        <option value="24" tal:attributes="selected python:request.get(id, '') == '24' and 'selected' or ''">24</option>
+        <option value="25" tal:attributes="selected python:request.get(id, '') == '25' and 'selected' or ''">25</option>
+        <option value="26" tal:attributes="selected python:request.get(id, '') == '26' and 'selected' or ''">26</option>
+        <option value="27" tal:attributes="selected python:request.get(id, '') == '27' and 'selected' or ''">27</option>
+        <option value="28" tal:attributes="selected python:request.get(id, '') == '28' and 'selected' or ''">28</option>
+        <option value="29" tal:attributes="selected python:request.get(id, '') == '29' and 'selected' or ''">29</option>
+        <option value="30" tal:attributes="selected python:request.get(id, '') == '30' and 'selected' or ''">30</option>
+        <option value="31" tal:attributes="selected python:request.get(id, '') == '31' and 'selected' or ''">31</option>
+    </select> 
+</td>
+</tal:datesampled>
+</tr>
+
+<tr>
+<th>
+<span id="" i18n:translate="label_sampletype">Sample Type</span>
+&nbsp;<span class="fieldRequired"/>
+</th>
+<td class="center" colspan="2">
+<input type="button" value='' class="copyButton"
+    onClick="" id="copySampleTypeButton"
+    tal:attributes="
+        onClick string:javascript:copyValue('SampleType', '${col_count}')" />
+</td>
+<tal:sampletype repeat="column python:range(col_count)">
+<td>
+
+<input size="10" type='text' onfocus='' value=''
+    tal:define="input_name string:ar.${column}.SampleType"
+    tal:attributes="
+        id input_name;
+        name string:${input_name}:ignore_empty:record;
+        value python:request.get(input_name, '');
+        tabindex tabindex/next;
+        onfocus string:actb(this, event, sampletypearray); "/>
+</td>
+</tal:sampletype>
+</tr>
+
+<tr>
+<th>
+<span id="" i18n:translate="label_samplepoint">Sample Point</span>
+</th>
+<td class="center" colspan="2">
+<input type="button" value='' class="copyButton"
+    onClick="" id="copySamplePointButton"
+    tal:attributes="
+        onClick string:javascript:copyValue('SamplePoint', '${col_count}')" />
+</td>
+<tal:samplepoint repeat="column python:range(col_count)">
+<td>
+<input size="10" type='text' onfocus='' value=''
+    tal:define="input_name string:ar.${column}.SamplePoint"
+    tal:attributes="
+        id input_name;
+        name string:${input_name}:ignore_empty:record;
+        value python:request.get(input_name, '');
+        tabindex tabindex/next;
+        onfocus string:actb(this, event, samplepointarray); "/>
+</td>
+</tal:samplepoint>
+</tr>
+
+
+<tr>
+<th i18n:translate="label_report_dm">Report as Dry Matter</th>
+<td class="center" colspan="2">
+<input type="button" value='' class="copyButton"
+    onClick="" id="copyReportDMButton"
+    tal:attributes="
+        onClick string:javascript:copyChecks('ReportDryMatter', '${col_count}')" />
+</td>
+<tal:drymatter repeat="column python:range(col_count)">
+<td tal:define="
+            name_dm string:ar.${column}.ReportDryMatter">
+<input type="checkbox" name="" 
+       class="noborder"
+       value="on" id=""
+       onclick=""
+       tal:attributes="
+            checked python:request.get(name_dm, '');
+            name string:${name_dm}:ignore_empty:record;
+            id string:${name_dm};
+            tabindex tabindex/next"/>
+
+</td>
+</tal:drymatter>
+</tr>
+<tr>
+<th i18n:translate="label_invoice_exclude">Exclude from invoice</th>
+<td class="center" colspan="2">
+<input type="button" value='' class="copyButton"
+    onClick="" id="copyExcludeButton"
+    tal:attributes="
+        onClick string:javascript:copyChecks('InvoiceExclude', '${col_count}')" />
+</td>
+<tal:invoice repeat="column python:range(col_count)">
+<td tal:define="
+            name_excl string:ar.${column}.InvoiceExclude">
+<input type="checkbox" name="" 
+       class="noborder"
+       value="on" id=""
+       onclick=""
+       tal:attributes="
+            checked python:request.get(name_excl, '');
+            name string:${name_excl}:ignore_empty:record;
+            id string:${name_excl};
+            tabindex tabindex/next"/>
+
+</td>
+</tal:invoice>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<th>
+<b i18n:translate="label_analyses">Analyses</b> &nbsp;<span class="fieldRequired"/> </th>
+<th align="center" i18n:translate="label_currency_abbreviation">R</th>
+<th align="center" i18n:translate="label_all">All</th>
+<th colspan="9" tal:attributes="colspan col_count"></th>
+</tr>
+
+<tal:categories>
+<tr>
+<td class="category" 
+    tal:attributes="colspan python:col_count + 3">
+<input
+    tal:condition="not:restrict_cats"
+    class="noborder"
+    type="checkbox"
+    id="AllCats"
+    title="Expand all categories"
+    onClick="selectAllCats('AllCats', 'Cat')"
+    tal:attributes="
+        tabindex tabindex/next"/>
+
+<b i18n:translate="Categories">Categories</b>
+
+</td>
+</tr>
+
+<tal:category  
+    tal:repeat="category categories">
+<tr>
+<td class="category" 
+    tal:attributes="colspan python:col_count + 3">
+&nbsp
+<input
+    tal:condition="not:restrict_cats"
+    class="noborder"
+    type="checkbox"
+    name="Categories:list"
+    title="Expand"
+    tal:define="this_checked python:category.UID() in cat_list;
+                i repeat/category/index;
+                this_id string:Cat$i"
+    tal:attributes="
+        id this_id;
+        checked this_checked;
+        value category/UID;
+        tabindex tabindex/next"/>
+<input 
+    tal:condition="restrict_cats"
+    class="noborder"
+    type="hidden"
+    name="Categories:list"
+    title="Expand"
+    tal:define="this_checked python:category.UID() in cat_list;
+                i repeat/category/index;
+                this_id string:Cat$i"
+    tal:attributes="
+        id this_id;
+        checked this_checked;
+        value category/UID;
+        tabindex tabindex/next"/>
+
+<b tal:content="category/Title"/>
+
+</td>
+</tr>
+
+<tal:services 
+    tal:repeat="service_count python:range(0, len(services))">
+<tal:service 
+    tal:define="item python:services[service_count]"
+    tal:condition="python:item['cat'] == category.UID()">
+
+<tr class="row-hover"
+    tal:define="
+        item_price python:float(item['price']);
+        item_vat python:float(item['vat']);
+        item_unit python:item['unit'];
+        item_uid python:item['uid']">
+<th>
+<a  onClick=""
+    title="Click for details"
+    tal:attributes="onClick string:javascript:showMethod('$portal_url', '${item/id}')"
+    tal:content="item/title">
+Alcohol
+</a>
+<em style="white-space:nowrap;" tal:condition="python:item_unit">(<span tal:replace="item_unit">mg/l</span>)</em>
+<tal:dry
+    tal:condition="item/dm">
+<img 
+    tal:define="global dry_matter python:1"
+    src="" tal:attributes="src string:${portal/absolute_url}/dry.png">
+</tal:dry>
+<img tal:condition="python:lab_accredited and item['accr']"
+    src="" tal:attributes="src string:${portal/absolute_url}/accredited.png">
+<input type="hidden" class="text" value="" id="" 
+    name=""
+    tal:define="ss_id string:Services.${service_count}"
+    tal:attributes="name string:${ss_id}:ignore_empty:record;
+                    value item_uid;
+                    id ss_id;
+                   "/>
+</th>
+<td tal:define="
+        price_id string:Prices.${service_count}">
+<tal:pricemod 
+    tal:condition="manage_bika">
+<input class="amount" size="5" value="0.00" id="" onchange=""
+    tal:define="i_price python:request.get(price_id, item_price);
+                price python:(i_price % 1) and i_price or int(i_price);
+                item_vatamount python:price * item_vat / 100.0;
+                total_price python:price + item_vatamount;"
+    tal:attributes="
+        value price;
+        vat item_vat;
+        vat_amount item_vatamount;
+        total_price total_price;
+        name string:${price_id}:ignore_empty:record;
+        id price_id;
+        old_price price;
+        old_vatamount item_vatamount;
+        onchange string:recalcPrice('${service_count}')"/>
+</tal:pricemod>
+<tal:nopricemod
+    tal:define="price python:(item_price % 1) and item_price or int(item_price)"
+    tal:condition="not: manage_bika">
+<input type="hidden" class="calculated" size="5" value="0.00" id="" 
+    tal:define="item_vatamount python:item_price * item_vat / 100.0;
+                total_price python:item_price + item_vatamount;"
+    tal:attributes="
+        value price;
+        vat item_vat;
+        vat_amount item_vatamount;
+        total_price total_price;
+        name string:${price_id}:ignore_empty:record;
+        id price_id"/>
+<span tal:content="price">1.00</span>
+</tal:nopricemod>
+</td>
+<td>
+<input
+    class="cb"
+    type="checkbox"
+    id="all.1"
+    tal:define="all_id string:all.${service_count}"
+    tal:attributes="
+        id all_id;
+        tabindex tabindex/next;
+        onclick string:checkAll('analysis', '${service_count}', '${col_count}')"/>
+</td>
+<tal:block repeat="column python:range(col_count)">
+<td align="center" class="listingCheckbox"
+    tal:define="
+        cb_name string:ar.${column}.Analysis;
+        item_checked python:test(str(service_count) in request.get(cb_name, []),
+                            'checked', None);">
+<input
+    class="cb"
+    type="checkbox"
+    id="ar.1.analysisservice.1"
+    name="ar.1.Analysis:list:ignore_empty:record"
+    tal:define="service_id string:${column}.analysis.${service_count}"
+    tal:attributes="
+        id service_id;
+        name string:${cb_name}:list:ignore_empty:record;
+        value service_count;
+        tabindex tabindex/next;
+        checked item_checked;
+        onclick string:selectService('${column}', '${service_count}')"/>
+</td>
+</tal:block>
+</tr>
+</tal:service>
+</tal:services>
+</tal:category>
+</tal:categories>
+
+</tbody>
+
+<tfoot>
+
+<tr>
+<th colspan="2"><b i18n:translate="label_subtotal">Subtotal</b></th>
+<th><span i18n:translate="label_currency_abbreviation"> R</span></th>
+<tal:subtotal repeat="column python:range(col_count)">
+<td tal:define="input_name string:ar.${column}.Subtotal">
+<input class="calculated" size="5" value="0.00"
+    id="ar.1.Subtotal" 
+    tal:attributes="
+        id string:ar.${column}.Subtotal;
+        value python:request.get(input_name+'_submit', '0.00');"
+    disabled="disabled"/>
+<input type="hidden" value=""
+    name="ar.1.Subtotal_submit" 
+    tal:attributes="
+        name string:${input_name}_submit:ignore_empty:record;
+        id string:${input_name}_hidden;
+        value python:request.get(input_name+'_submit', '');
+        "/>
+</td>
+</tal:subtotal>
+</tr>
+
+<tr>
+<th colspan="2"><b i18n:translate="label_vat">VAT</b></th>
+<th><span i18n:translate="label_currency_abbreviation"> R</span></th>
+<tal:vat repeat="column python:range(col_count)">
+<td tal:define="input_name string:ar.${column}.VAT">
+<input class="calculated" size="5" value="0.00"
+    id="ar.1.VAT" 
+    tal:attributes="id string:ar.${column}.VAT;
+        value python:request.get(input_name+'_submit', '0.00');"
+    disabled="disabled"/>
+<input type="hidden" value=""
+    name="ar.1.VAT_submit" 
+    tal:attributes="
+        name string:${input_name}_submit:ignore_empty:record;
+        id string:${input_name}_hidden;
+        value python:request.get(input_name+'_submit', '');
+        "/>
+</td>
+</tal:vat>
+</tr>
+
+<tr>
+<th colspan="2"><b i18n:translate="label_total">Total</b></th>
+<th i18n:translate="label_currency_abbreviation"> R</th>
+<tal:total repeat="column python:range(col_count)">
+<td tal:define="input_name string:ar.${column}.Total">
+<input class="calculated" size="5" value="0.00"
+    id="ar.1.Total" 
+    tal:attributes="id string:ar.${column}.Total;
+        value python:request.get(input_name+'_submit', '0.00');"
+    disabled="disabled"/>
+<input type="hidden" value=""
+    name="ar.1.Total_submit" 
+    tal:attributes="
+        name string:${input_name}_submit:ignore_empty:record;
+        id string:${input_name}_hidden;
+        value python:request.get(input_name+'_submit', '');
+        "/>
+</td>
+</tal:total>
+</tr>
+
+<tr>
+<th colspan="3" i18n:translate="label_saveprofile">Save profile</th>
+<tal:save repeat="column python:range(col_count)">
+<td>
+
+<input type="text" size="10"
+        tal:define="
+            input_name string:ar.${column}.profileTitle"
+        tal:attributes="
+            id input_name;
+            name string:${input_name}:ignore_empty:record;
+            value python:request.get(input_name, '');
+            tabindex tabindex/next"/>
+</td>
+</tal:save>
+</tr>
+
+</tfoot>
+
+</table>
+<br/>
+<input class="context" 
+       type="submit" 
+       value="Submit"/>
+<input class="standalone"
+        tal:condition="not:restrict_cats"
+        tabindex=""
+        type="submit"
+        name="form.button.category"
+        value="expand"
+        i18n:attributes="value"
+        tal:attributes="tabindex tabindex/next"
+        />
+
+<br/>
+<br/>
+
+<div class="discreeter">
+<p tal:condition="dry_matter">
+<img src="" tal:attributes="src string:${portal/absolute_url}/dry.png">
+<span i18n:translate="disclaimer_can_be_dry">
+Can be reported as dry matter</span>
+</p>
+<p tal:condition="lab_accredited">
+<img src="" tal:attributes="src string:${portal/absolute_url}/accredited.png">
+<span i18n:translate="disclaimer_accred">
+Methods included in the <tal:block replace="here/bika_labinfo/laboratory/AccreditationBody" i18n:name="accreditation_body"/> schedule of Accreditation for this Laboratory. Analysis remarks are not accredited</span>
+</p>
+<p tal:condition="here/getMemberDiscountApplies">
+<span i18n:translate="disclaimer_discount">
+A discount of <tal:block replace="here/bika_settings/settings/getMemberDiscount" i18n:name="discount"/>% applies to all items listed above</span>
+</p>
+</div>
+
+</form>
+
+</div>
+
+</body>
+
+</html>
+
+
+

@@ -1,0 +1,68 @@
+<?xml version="1.0"?>
+<object name="CMF Topic" meta_type="Factory-based Type Information"
+   xmlns:i18n="http://xml.zope.org/namespaces/i18n">
+ <property name="title"></property>
+ <property
+    name="description">Topics are canned queries for organizing content with up to date queries into the catalog.</property>
+ <property name="content_icon">topic_icon.gif</property>
+ <property name="content_meta_type">Portal Topic</property>
+ <property name="product">CMFTopic</property>
+ <property name="factory">addTopic</property>
+ <property name="immediate_view">topic_edit_form</property>
+ <property name="global_allow">False</property>
+ <property name="filter_content_types">True</property>
+ <property name="allowed_content_types">
+  <element value="Topic"/>
+ </property>
+ <property name="allow_discussion">False</property>
+ <alias from="(Default)" to="topic_view"/>
+ <alias from="view" to="topic_view"/>
+ <action title="View" action_id="view" category="object" condition_expr=""
+    url_expr="string:${object_url}/topic_view" visible="True">
+  <permission value="View"/>
+ </action>
+ <action title="Edit" action_id="edit" category="object" condition_expr=""
+    url_expr="string:${object_url}/topic_edit_form" visible="True">
+  <permission value="Change portal topics"/>
+ </action>
+ <action title="Criteria" action_id="criteria" category="object"
+    condition_expr="" url_expr="string:${object_url}/topic_criteria_form"
+    visible="True">
+  <permission value="Change portal topics"/>
+ </action>
+ <action title="Subtopics" action_id="folderContents" category="object"
+    condition_expr="" url_expr="string:${object_url}/folder_contents"
+    visible="True">
+  <permission value="List folder contents"/>
+ </action>
+ <action title="New..." action_id="new" category="object" condition_expr=""
+    url_expr="string:${object_url}/folder_factories" visible="False">
+  <permission value="Add portal topics"/>
+ </action>
+ <action title="Rename items" action_id="rename_items" category="object"
+    condition_expr="" url_expr="string:${object_url}/folder_rename_form"
+    visible="False">
+  <permission value="Add portal topics"/>
+ </action>
+ <action title="State" action_id="content_status_history"
+    category="object_tabs"
+    condition_expr="python:object and portal.portal_workflow.getTransitionsFor(object, object.getParentNode())"
+    url_expr="string:$object_url/content_status_history" visible="False">
+  <permission value="View"/>
+ </action>
+ <action title="Sharing" action_id="local_roles" category="object"
+    condition_expr="" url_expr="string:${object_url}/folder_localrole_form"
+    visible="True">
+  <permission value="Manage properties"/>
+ </action>
+ <action title="Folder Listing" action_id="folderlisting" category="folder"
+    condition_expr="" url_expr="string:${folder_url}/folder_listing"
+    visible="False">
+  <permission value="View"/>
+ </action>
+ <action title="External Edit" action_id="external_edit" category="object"
+    condition_expr="" url_expr="string:$object_url/external_edit"
+    visible="False">
+  <permission value="Modify portal content"/>
+ </action>
+</object>

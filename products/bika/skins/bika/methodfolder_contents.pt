@@ -1,0 +1,73 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      lang="en"
+      i18n:domain="bika"
+      metal:use-macro="here/main_template/macros/master">
+  <head>
+      <metal:block fill-slot="top_slot">
+        <tal:insert tal:replace="nothing"
+              tal:define="dummy python:request.set('disable_border', 1)" />
+      </metal:block>
+  </head>
+<body>
+
+<div metal:fill-slot="main">
+
+        <div metal:use-macro="here/document_actions/macros/document_actions">
+            Document actions (print, sendto etc)
+        </div>
+        <h1>
+          <img src="" tal:attributes="src python:here.portal_types.getTypeInfo('Method').getIcon()"/>
+          <span i18n:translate="heading_methods">Methods</span>
+        </h1>
+
+        <metal:listing define-macro="folder_listing"
+          tal:define="
+             methods python:[p.getObject() for p in here.portal_catalog(portal_type='Method')];
+             sort_on python:(('Title', 'nocase', 'asc'),);
+             methods python:sequence.sort(methods, sort_on);
+             Batch python:modules['Products.CMFPlone'].Batch;
+             b_start python:request.get('b_start',0);
+             batch python:Batch(methods, 15, int(b_start), orphan=1)">
+
+            <div metal:use-macro="here/batch_macros/macros/navigation" />
+
+            <table tal:condition="batch"
+               class="listing"
+               summary="method listing"
+               cellpadding="0" cellspacing="0">
+            <thead>
+                <tr>
+                  <th i18n:translate="label_title">Title</th>
+                  <th i18n:translate="label_document">Document</th>
+                </tr>
+            </thead>
+
+            <tbody>
+              <tal:items tal:repeat="item batch">
+              <tr tal:define="oddrow repeat/item/odd;
+                              doc python:item.getMethodDocument();
+                              docname python:getattr(doc, 'filename', '')"
+                  tal:attributes="class python:test(oddrow, 'even', 'odd')" >
+                <td>
+                  <a href=""  title="Click for description"
+                     tal:attributes="href string:${item/absolute_url}/base_view"
+                     tal:content="item/Title">Method</a>
+                </td>
+                <td>
+                  <a href=""  title="Click to download"
+                     tal:condition=docname
+                     tal:attributes="href string:${item/absolute_url}/at_download/MethodDocument"
+                     tal:content=docname>Filename</a>
+                </td>
+              </tr>
+              </tal:items>
+            </tbody>
+            </table>
+            <!-- Navigation -->
+            <div metal:use-macro="here/batch_macros/macros/navigation" />
+        </metal:listing>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,218 @@
+<html
+    xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en"
+    i18n:domain="bika"
+    metal:use-macro="here/main_template/macros/master">
+
+<head> </head>
+
+<body>
+
+<div metal:fill-slot="main">
+<metal:block 
+    tal:define="
+        selected_uid python:request.get('Standard', '');
+        selected_std python:selected_uid and here.reference_catalog.lookupObject(selected_uid);
+        standardsamples python:here.portal_catalog(portal_type='StandardSample', review_state='current', sort_on='sortable_title', sort_order='reverse');">
+
+<script type="text/javascript" src="ws_utils.js"></script>
+
+<form action="" method="post" name="search"
+    tal:attributes="action template/getId">
+<h1>
+<tal:block replace="structure python:getattr(here, here.getIcon(1))"/>
+<span tal:content="here/title_or_id" tal:omit-tag="">Directory Id</span>
+-
+<span i18n:translate="label_add_blank">Add blank analyses</span>
+</h1>
+<p class="emphatic"
+    tal:condition="not:standardsamples"
+    i18n:translate="msg_no_standards">No standards available</p>
+
+<table
+    class="listing" 
+    cellspacing="0" 
+    cellpadding="5"
+    tal:condition="standardsamples">
+<thead>
+<tr>
+<th colspan="6" class="nosort" align="left">
+<b i18n:translate="label_standards">Standards</b>
+ &nbsp;<span class="fieldRequired"/>
+</th>
+</tr>
+<tr>
+<th class="nosort" >Select </th>
+<th i18n:translate="label_title">Title</th>
+<th i18n:translate="label_supplier">Supplier</th>
+<th i18n:translate="label_sampletype">Sample type</th>
+<th i18n:translate="label_datesampled">Date Sampled</th>
+<th i18n:translate="label_expirydate">Expiry Date</th>
+</tr>
+</thead>
+
+<tbody>
+<tal:results tal:repeat="stdsample standardsamples">
+<tr tal:define="oddrow repeat/stdsample/odd;
+                sample python:stdsample.getObject()"
+    tal:attributes="class python:test(oddrow, 'even', 'odd')">
+<td>
+<input type="radio" class="noborder" name="Standard" value="#"
+    tal:attributes="
+            value sample/UID;
+            checked python:selected_uid == sample.UID() and 'checked' or None;
+            onClick string:this.form.submit()"/>
+</td>
+<td><a href="#"
+    tal:attributes="href sample/absolute_url"
+    tal:content="sample/Title">My standard</a>
+</td>
+<td tal:content="python:sample.aq_parent.Title()"/>
+<td tal:content="python:sample.getStandardStock() and sample.getStandardStock().Title() or None"/>
+<td tal:define="d python:sample.getDateSampled()">
+<span tal:condition="d"
+    tal:content="python:plone_view.toLocalizedTime(d, long_format=0)"/></td>
+<td tal:define="d python:sample.getExpiryDate()">
+<span tal:condition="d"
+    tal:content="python:plone_view.toLocalizedTime(d, long_format=0)"/></td>
+</tr>
+</tal:results>
+</tbody>
+</table>
+
+</form>
+
+<form action="assignStandard" method="post"
+    tal:condition="selected_uid"
+    tal:attributes="action string:${here/absolute_url}/assignStandard">
+<input type="HIDDEN" name="Standard" value=""
+    tal:attributes="value selected_uid"/>
+<input type="hidden" name="Type" value="b"/>
+<table
+    summary="Analysis profile form"
+    class="bikatable"
+    cellpadding="0" cellspacing="0"
+    tal:define="
+        current_standard_positions python:here.getStandardPositions('b', selected_uid);
+        current_positions python:current_standard_positions.keys();
+        dummy python:current_positions.sort()">
+
+<thead>
+<tr>
+<th colspan="2" class="nosort" align="left">
+<b i18n:translate="label_positions">Position</b>
+ &nbsp;<span class="fieldRequired"/>
+</th>
+</tr>
+</thead>
+<tbody>
+
+<tal:positions >
+<tr tal:repeat="pos current_positions">
+<td >
+<input type="radio" class="noborder" name="Position" value=""
+    tal:define="current python:current_standard_positions[pos];"
+    tal:attributes="
+        value pos;
+        onClick string:javascript:showServices('${current}')"/>
+</td>
+<td tal:content="pos">1 </td>
+</tr>
+</tal:positions>
+
+<tr>
+<td >
+<input type="radio" class="noborder" name="Position" value=""
+    id="pos_new"
+    tal:define="new python:0"
+    tal:attributes="
+        onClick string:javascript:showServices('');
+        value new"/>
+</td>
+<td i18n:translate="label_new">new</td>
+</tr>
+
+</tbody>
+</table>
+
+<table
+    tal:condition="standardsamples"
+    summary="Analysis profile form"
+    class="bikatable"
+    cellpadding="0" cellspacing="0">
+
+<thead>
+<tr>
+<th colspan="2" class="nosort" align="left">
+<b i18n:translate="label_analyses">Analyses</b>
+ &nbsp;<span class="fieldRequired"/>
+</th>
+</tr>
+</thead>
+<tbody tal:define="
+        services python:selected_std.getServices();
+        sort_on python:(('getCategoryName', 'nocase', 'asc'),('Title', 'nocase', 'asc'),);
+        services python:sequence.sort(services, sort_on);
+        global category python:None ">
+<tal:services tal:repeat="service services">
+<tr 
+    tal:condition="python:service.getCategoryName() != category">
+<td colspan="2" class="category" 
+    tal:content="service/getCategoryName">cat</td>
+</tr>
+<tr class="noborder" >
+<tal:service
+    tal:define="unit service/getUnit;
+                service_uid service/UID;
+                global category python:service.getCategoryName()">
+<th> 
+<a  onClick=""
+    title="Click for details"
+    tal:attributes="onClick string:javascript:showMethod('$portal_url', '${service/getId}')"
+    tal:content="service/Title">
+Alcohol
+</a>
+<em tal:condition="python:unit">(<span tal:replace="unit">mg/l</span>)</em>
+</th>
+<tal:x
+    tal:define="item_no repeat/service/index">
+<td>
+<input DISABLED type="checkbox" name="Service:list" 
+       class="noborder"
+       value=""
+       tal:define="service_id string:service_${item_no}"
+       tal:attributes="value python:service_uid;
+                       id service_id"
+/>
+</td>
+<td class="noborder">
+<input class="noborder" name="Existing:list"
+     tal:define="existing_id string:existing_${item_no}"
+     tal:attributes="id existing_id">
+</td>
+</tal:x>
+</tal:service>
+</tr>
+</tal:services>
+
+</tbody>
+
+</table>
+
+<input
+    tal:define="text python:test(standardsamples, 'Add blank analyses', 'Return')"
+    tal:attributes="value text"
+    class="context"
+    type="submit"
+    name=""
+    value="Add blank analyses"
+    i18n:attributes="value"/>
+</form>
+
+
+</metal:block>
+
+</div>
+
+</body>
+</html>
+

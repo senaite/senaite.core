@@ -1,0 +1,136 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      lang="en"
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="bika">
+
+<head>
+    <metal:block fill-slot="top_slot"
+                 tal:define="dummy python:request.set('disable_border', 1)" />
+
+    <metal:calendar fill-slot="javascript_head_slot">
+        <!-- ECMAScript calendar -->
+        <style type="text/css" media="all"
+            tal:content="string:@import url($portal_url/jscalendar/calendar-system.css);"></style>
+        <script type="text/javascript"
+            tal:attributes="src string:$portal_url/jscalendar/calendar_stripped.js"></script>
+        <script type="text/javascript" charset="iso-8859-1"
+            tal:condition="exists: portal/jscalendar/calendar-en.js"
+            tal:attributes="src string:$portal_url/jscalendar/calendar-en.js"></script>
+    </metal:calendar>
+
+</head>
+<body>
+<div metal:fill-slot="main"
+    tal:define="form_submitted request/submit|nothing">
+
+
+<div metal:use-macro="here/document_actions/macros/document_actions">
+Document actions (print, sendto etc)
+</div>
+<metal:block use-macro="here/report_attachments_print/macros/header"/>
+<tal:parameters condition="not:form_submitted">
+
+<form action="report_attachments_view" method="post" name="search">
+<fieldset>
+
+<legend i18n:translate="legend_selection_criteria">Selection criteria</legend>
+
+<div class="field" tal:condition="not: here/member_is_client">
+    <label i18n:translate="label_client"
+        >Client</label><br/>
+    <select name="getClientUID:ignore_empty" 
+            style=""
+            id="getClientUID">
+        <option value=""/>
+        <tal:clients
+            define="
+                clients python:here.portal_catalog(portal_type='Client');
+                sort_on python:(('Title', 'nocase', 'asc'),);
+                clients python:sequence.sort(clients, sort_on);"
+            tal:repeat="client clients">
+        <option value=""
+            tal:attributes="value client/UID;
+                selected python:request.get('getClientUID', '') == client.UID and 'selected' or ''"
+            tal:content="client/Title"
+            >Acme</option>
+        </tal:clients>
+    </select>
+</div>
+
+<div class="field">
+    <label i18n:translate="label_dateloaded"
+        >Date loaded</label><br/>
+    <span i18n:translate="label_from">From</span>
+
+
+    <tal:define define="
+        id string:getDateLoaded_fromdate;
+        inputname id;
+        formname string:search;
+        value request/getDateLoaded_fromdate | nothing;
+        show_hm python:False;
+        inputvalue python:test(value!='None', value, '');">
+    <metal:use use-macro="here/calendar_macros/macros/calendarDatePickerBox">
+        a calendar, hopefully
+    </metal:use>
+    </tal:define>
+
+    <span i18n:translate="label_to">to</span>
+
+    <tal:define define="
+        id string:getDateLoaded_todate;
+        inputname id;
+        formname string:search;
+        value request/getDateLoaded_todate | nothing;
+        show_hm python:False;
+        inputvalue python:test(value!='None', value, '');">
+    <metal:use use-macro="here/calendar_macros/macros/calendarDatePickerBox">
+        a calendar, hopefully
+    </metal:use>
+    </tal:define>
+
+</div>
+
+
+<div class="field">
+    <input tabindex=""
+        class="searchButton"
+        type="submit"
+        name="submit"
+        value="Search"
+        i18n:attributes="value"
+        />                       
+</div>
+
+</fieldset>
+</form>
+</tal:parameters>
+
+<tal:results condition="form_submitted">
+<metal:block use-macro="here/report_attachments_print/macros/subheader"/>
+<br/>
+<form name="report_attachments_print" action="." method="post">
+<input type="hidden" name="getDateLoaded_fromdate"
+    tal:attributes="value python:request.get('getDateLoaded_fromdate', None)">
+<input type="hidden" name="getDateLoaded_todate"
+    tal:attributes="value python:request.get('getDateLoaded_todate', None)">
+<input type="hidden" name="getClientUID"
+    tal:attributes="value python:request.get('getClientUID', None)">
+
+<input
+    class="printButton"
+    type="submit"
+    name="report_attachments_print:method"
+    value="Print"
+    tabindex=""
+    i18n:attributes="value"
+    tal:attributes="
+        tabindex tabindex/next|nothing"/>
+        
+</form>
+<metal:block use-macro="here/report_attachments_print/macros/body"/>
+</tal:results>
+</div>
+</body>
+
+</html>

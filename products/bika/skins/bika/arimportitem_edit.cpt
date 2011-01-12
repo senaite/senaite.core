@@ -1,0 +1,199 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      lang="en"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="bika">
+
+<head><title></title></head>
+
+<body>
+<div metal:fill-slot="main"
+    tal:define="
+        arimport python:here.aq_parent;
+        client python:arimport.aq_parent;
+        sort_on python:(('Title', 'nocase', 'asc'),);
+        sampletypes python:[p.Title for p in here.portal_catalog(portal_type='SampleType', sort_on='sortable_title')];
+        services python:[p.getObject() for p in here.portal_catalog(portal_type='AnalysisService')];
+        services python:sequence.sort(services, sort_on);">
+
+<div metal:use-macro="here/document_actions/macros/document_actions">
+    Document actions (print, sendto etc)
+</div>
+
+<h1>
+    <img src="arimport.png" tal:attributes="src python:here.portal_types.getTypeInfo('ARImport').getIcon()"/>
+    <span tal:omit-tag="" i18n:translate="heading_arimportitem"
+        >Edit Analysis Request Import Item</span>
+</h1>
+
+<form name="arimportitem_form" method="POST" action="template/getId"
+    tal:attributes="action template/getId" autocomplete="off">
+
+<input type="hidden" name="form.submitted" value="1" />
+<input type="hidden" name="came_from" value="edit" />
+<input type="hidden" name="ARImportItemUID" value=""
+    tal:attributes="value here/UID"/>
+
+<br/>
+
+
+<table
+    summary="ARImportItem edit"
+    class="analysisrequest"
+    cellpadding="0" cellspacing="0">
+
+<thead>
+
+<tr>
+<th i18n:translate="label_samplename">Sample</th>
+<td class="left">
+<input value="" name="SampleName"
+    tal:attributes="value here/getSampleName"/></td>
+<th i18n:translate="label_sampledate">Sample Date</th>
+<td class="left">
+<input value="" name="SampleDate"
+    tal:attributes="value here/getSampleDate"/>
+</td>
+</tr>
+
+<tr>
+<th i18n:translate="label_clientref">Client Ref</th>
+<td class="left">
+<input value="" name="ClientRef"
+    tal:attributes="value here/getClientRef"/>
+</td>
+<th i18n:translate="label_clientsid">Client Sid</th>
+<td class="left">
+<input value="" name="ClientSid"
+    tal:attributes="value here/getClientSid"/>
+</td>
+</tr>
+
+<tr>
+<th i18n:translate="label_pickingslip">Picking Slip</th>
+<td class="left">
+<input value="" name="PickingSlip"
+    tal:attributes="value here/getPickingSlip"/>
+</td>
+<th i18n:translate="label_sampletype">Sample Type</th>
+<td class="left"
+    tal:define="sampletype python:here.getSampleType();
+                invalid python:sampletype not in sampletypes" >
+    <select name="SampleType" 
+        tal:attributes="tabindex tabindex/next;">
+
+<tal:invalid 
+    tal:condition="invalid">
+<option 
+    tal:attributes="value sampletype"
+    tal:content="string:$sampletype (invalid)"></option>)
+</tal:invalid>
+    <tal:item 
+        tal:define="
+            vocab sampletypes"
+        tal:repeat="item vocab">
+
+    <option selected="selected"
+        tal:define="
+            no_ref python:item == '';
+            this_selected python:test((item == sampletype) or no_ref, 'selected', '')"
+        tal:attributes="value item;
+                        selected this_selected"
+        tal:content="item"></option>
+    </tal:item>
+
+    </select>
+</td>
+</tr>
+
+<tr>
+<th i18n:translate="label_report_dry_matter">Report as DM</th>
+<td class="left">
+<input value="" name="ReportDryMatter"
+    tal:attributes="value here/getReportDryMatter"/>
+</td>
+<th i18n:translate="label_orderid">Order ID</th>
+<td class="left">
+<input value="" name="OrderID"
+    tal:attributes="value here/getOrderID"/>
+</td>
+</tr>
+
+</thead>
+<tbody>
+<tr>
+<th colspan="2">
+<b i18n:translate="label_analyses">Analyses</b>
+&nbsp;<span class="fieldRequired"/>
+</th>
+<th class="center" i18n:translate="label_analysis_key">Analysis Key</th>
+<th></th>
+</tr>
+
+<tal:service
+    define="analyses here/getAnalyses"
+    repeat="service services">
+<tr tal:define="analysis_key service/getAnalysisKey"
+    tal:condition="analysis_key">
+<th colspan="2">
+<a  onClick=""
+    title="Click for details"
+    tal:attributes="onClick string:javascript:showMethod('$portal_url', '${service/getId}')"
+    tal:content="service/Title">
+Alcohol
+</a>
+</th>
+<td class="left" tal:content="analysis_key">Clide</td>
+<td class="listingCheckbox"
+    tal:define="selected python:analysis_key in analyses;
+                input_value python:selected and analysis_key or ''">
+<input
+    class="noborder"
+    type="checkbox"
+    name="Analyses:list:ignore_empty"
+    id="analysisservice.1"
+    tal:attributes="
+        value analysis_key;
+        checked selected;"/>
+
+</td>
+</tr>
+</tal:service>
+
+</tbody>
+
+</table>
+<div tal:define="remarks here/getRemarks"
+    tal:condition="remarks">
+<label class="emphatic" i18n:translate="label_remarks">Remarks</label>
+<div tal:repeat="remark here/getRemarks"
+    tal:content="remark">Remarks</div>
+</div>
+<br/>
+<input class="context"
+        tabindex=""
+        type="submit"
+        name="form.button.submit"
+        value="Validate & Save"
+        i18n:attributes="value"
+        tal:attributes="tabindex tabindex/next"
+        />
+<input class="standalone"
+        tabindex=""
+        type="submit"
+        name="form.button.cancel"
+        value="Cancel"
+        i18n:attributes="value"
+        tal:attributes="tabindex tabindex/next"
+        />
+
+</form>
+</div>
+</body>
+
+</html>
+
+
+n

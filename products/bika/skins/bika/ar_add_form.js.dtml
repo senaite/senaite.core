@@ -1,0 +1,61 @@
+/* 
+    Code to get "profile" select boxes to size nicely in IE:
+*/
+
+var IE
+if (navigator.appName == "Microsoft Internet Explorer")
+{
+   IE=true;
+   document.onmouseover = shrinkAll; //handles abandoned select boxes
+}
+else
+{
+   IE=false;
+}
+
+var lilPx = "150px"; //size of small select box
+var bigPx = "300px"; //size of large select box
+var boxID = 'arprofiles';   //ID of all select boxes (after "ar.0.")
+
+function stretch(elem){
+   if (IE)
+   {
+     elem.style.zIndex = 1;
+     elem.style.width = bigPx;
+   }
+}
+
+function shrink(id){
+    var elem = document.getElementById(id);
+    elem.style.width = lilPx;
+    elem.style.zIndex = 0;
+}
+
+function shrinkAll(e){
+    //be sure we have the real src, not a bubble or trickle!
+    if (!e) var e = window.event;
+    var target = (window.event) ? e.srcElement : e.target;
+
+    var targetID = 'none';
+    var parentID = 'none';
+
+    if (target && target.id){
+       targetID = target.id;
+    }
+    if (target && target.parentNode && target.parentNode.id){
+       parentID = target.parentNode.id;
+    }
+    
+    //shrink em all except that one that was the source (possibly)
+    var selects = document.getElementsByTagName('select');
+    for(i=0; i<selects.length; i++){
+        if(selects[i].id.substring(5,boxID.length + 5) == boxID){
+            
+            //shrink if it wasn't the source (make sure the src isn't parent for <option> in mozilla)
+            if(selects[i].id != targetID && selects[i].id != parentID){
+                shrink(selects[i].id);
+            }
+        }
+    }
+} 
+

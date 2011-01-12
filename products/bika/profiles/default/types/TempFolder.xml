@@ -1,0 +1,75 @@
+<?xml version="1.0"?>
+<object name="TempFolder" meta_type="Factory-based Type Information"
+   xmlns:i18n="http://xml.zope.org/namespaces/i18n">
+ <property name="title"></property>
+ <property
+    name="description">Use folders to put content in categories.</property>
+ <property name="content_icon">folder_icon.gif</property>
+ <property name="content_meta_type">TempFolder</property>
+ <property name="product">CMFCore</property>
+ <property name="factory">manage_addPortalFolder</property>
+ <property name="immediate_view">folder_edit_form</property>
+ <property name="global_allow">False</property>
+ <property name="filter_content_types">False</property>
+ <property name="allowed_content_types">
+  <element value="Discussion Item"/>
+  <element value="Document"/>
+  <element value="Event"/>
+  <element value="Favorite"/>
+  <element value="File"/>
+  <element value="Folder"/>
+  <element value="Image"/>
+  <element value="Large Plone Folder"/>
+  <element value="Link"/>
+  <element value="News Item"/>
+  <element value="TempFolder"/>
+  <element value="Topic"/>
+ </property>
+ <property name="allow_discussion">False</property>
+ <alias from="(Default)" to="index_html"/>
+ <alias from="index.html" to="index_html"/>
+ <alias from="view" to="index_html"/>
+ <action title="View" action_id="view" category="object" condition_expr=""
+    url_expr="string:${object_url}" visible="True">
+  <permission value="View"/>
+ </action>
+ <action title="Edit" action_id="edit" category="object" condition_expr=""
+    url_expr="string:${object_url}/folder_edit_form" visible="True">
+  <permission value="Manage properties"/>
+ </action>
+ <action title="Local Roles" action_id="localroles" category="object"
+    condition_expr="" url_expr="string:${object_url}/folder_localrole_form"
+    visible="True">
+  <permission value="Change local roles"/>
+ </action>
+ <action title="Folder contents" action_id="folderContents" category="object"
+    condition_expr="" url_expr="string:${object_url}/folder_contents"
+    visible="True">
+  <permission value="List folder contents"/>
+ </action>
+ <action title="New..." action_id="new" category="object" condition_expr=""
+    url_expr="string:${object_url}/folder_factories" visible="False">
+  <permission value="Add portal content"/>
+ </action>
+ <action title="Rename items" action_id="rename_items" category="object"
+    condition_expr="" url_expr="string:${object_url}/folder_rename_form"
+    visible="False">
+  <permission value="Add portal content"/>
+ </action>
+ <action title="State" action_id="content_status_history"
+    category="object_tabs"
+    condition_expr="python:object and portal.portal_workflow.getTransitionsFor(object, object.getParentNode())"
+    url_expr="string:$object_url/content_status_history" visible="False">
+  <permission value="View"/>
+ </action>
+ <action title="Sharing" action_id="local_roles" category="object"
+    condition_expr="" url_expr="string:${object_url}/folder_localrole_form"
+    visible="True">
+  <permission value="Manage properties"/>
+ </action>
+ <action title="External Edit" action_id="external_edit" category="object"
+    condition_expr="" url_expr="string:$object_url/external_edit"
+    visible="False">
+  <permission value="Modify portal content"/>
+ </action>
+</object>

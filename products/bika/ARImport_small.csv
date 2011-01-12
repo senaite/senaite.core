@@ -1,0 +1,9 @@
+Header,Import / Export,File name,Client name,Client ID,Contact ID,CC Contact ID,CC Email,Order ID,Quote ID,Sample point,,,,,,,,,,,,,,,,,,,
+Header Data,Import,arimport_small,Happy Hills,12345,rita,billy,a@b.com,O1234,Q123,(Bag),,,,,,,,,,,,,,,,,,,
+Samples,Client Reference,Client Sample ID,Sampling date,Sample type,Pickingslip,Report DM,Total number of analyses,Price excl VAT,Ash,Calcium,Chlorides,FatCrudeAcidHydro,FatCrudeEtherExtraction,FibreADF,FibreNDF,FibreCrude,Lignin,Moisture,MoistureWet,pH,Phosphorus,PotassiumK,ProteinADIP,ProteinNDIP,ProteinKOH,ProteinSoluble,ProteinCrude,Sodium,Starch,TDNDumas
+Analysis price,,,,,,,,R 45,R 45,R 40,R 150,R 90,R 85,R 85,R 90,R 90,R 45,R 45,R 35,R 45,R 70,R 70,R 70,R 90,R 125,R 90,R 55,R 140,R 0
+Total analyses,,,,,,30,"R 1,980",3,0,8,1,2,1,1,1,1,1,1,0,1,0,2,1,1,1,1,1,1,1
+Total price excl VAT,,,,,,30,R 0,R 135,R 0,R 320,R 150,R 180,R 85,R 85,R 90,R 90,R 45,R 45,R 0,R 45,R 0,R 140,R 70,R 90,R 125,R 90,R 55,R 140,R 0
+Sample 1,GS1234,S01,3/5/2008,BR Starter,98762487,y,2,R 100,1,,,,,,,,,,,,,,,,,,,1,,
+Sample 2,MFP2361,S02,3/5/2008,Aartappel/Potato,98762487, ,4,R 300,,,1,,,1,1,,,,,,,,,,,,1,,,
+Sample 3,MFP2362,S03,3/5/2008,aaa(test bracket),98762488,y,4,R 345,,,1,,,,,1,,,,,,,,,1,1,,,,

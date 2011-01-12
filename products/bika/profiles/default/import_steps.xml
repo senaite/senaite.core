@@ -1,0 +1,91 @@
+<?xml version="1.0"?>
+<import-steps>
+ <import-step id="bika-action-icons" version="20061126-01"
+              handler="Products.CMFActionIcons.exportimport.importActionIconsTool"
+              title="Action Icons">
+    Import action icon definitions
+ </import-step>
+ <import-step id="bika-actions" version="20061126-01"
+              handler="Products.CMFCore.exportimport.actions.importActionProviders"
+              title="Action Providers">
+  <dependency step="bika-toolset"/>
+    Import actions tool's action providers and their actions.
+ </import-step>
+ <import-step id="bika-catalog" version="20061126-01"
+              handler="Products.CMFCore.exportimport.catalog.importCatalogTool"
+              title="Catalog Tool">
+  <dependency step="bika-toolset"/>
+    Import catalog tool's sub-objects, indexes and columns.
+ </import-step>
+ <import-step id="bika-content" version="20061126-01"
+              handler="Products.CMFCore.exportimport.content.importSiteStructure"
+              title="Content">
+  <dependency step="bika-toolset"/>
+  <dependency step="bika-catalog"/>
+  <dependency step="bika-typeinfo"/>
+  <dependency step="bika-workflow"/>
+  <dependency step="bika-rolemap"/>
+    Import the site's structure and content.
+ </import-step>
+ <import-step id="bika-cssregistry" version="20061126-01"
+              handler="Products.ResourceRegistries.exportimport.cssregistry.importCSSRegistry"
+              title="Stylesheet registry">
+  <dependency step="bika-toolset"/>
+    Import stylesheet registry
+ </import-step>
+ <import-step id="bika-jsregistry" version="20061126-01"
+              handler="Products.ResourceRegistries.exportimport.jsregistry.importJSRegistry"
+              title="Javascript registry">
+  <dependency step="bika-toolset"/>
+  
+    Import javascript registry
+ </import-step>
+ <import-step id="bika-properties" version="20061126-01"
+              handler="Products.CMFCore.exportimport.properties.importSiteProperties"
+              title="Site Properties">
+  <dependency step="bika-final"/>
+    Import site properties.
+ </import-step>
+ <import-step id="bika-propertiestool" version="20061126-01"
+              handler="Products.CMFPlone.exportimport.propertiestool.importPloneProperties"
+              title="Plone Properties">
+  <dependency step="bika-toolset"/>
+    Export plone properties tool and subobjects.
+ </import-step>
+ <import-step id="bika-rolemap" version="20061126-01"
+              handler="Products.GenericSetup.rolemap.importRolemap"
+              title="Role / Permission Map">
+    Import custom roles and non-default role-permission mappings.
+ </import-step>
+ <import-step id="bika-skins" version="20061126-01"
+              handler="Products.CMFCore.exportimport.skins.importSkinsTool"
+              title="Skins Tool">
+  <dependency step="bika-toolset"/>
+    Import skins tool's filesystem directory views and skin path definitions.
+ </import-step>
+ <import-step id="bika-toolset" version="20061126-01"
+              handler="Products.GenericSetup.tool.importToolset"
+              title="Required tools">
+    Create required tools, replacing any of the wrong class, and remove
+    forbidden ones.
+ </import-step>
+ <import-step id="bika-typeinfo" version="20061126-01"
+              handler="Products.CMFCore.exportimport.typeinfo.importTypesTool"
+              title="Types Tool">
+  <dependency step="bika-toolset"/>
+    Import types tool's type information objects.
+ </import-step>
+ <import-step id="bika-workflow" version="20061126-01"
+              handler="Products.CMFCore.exportimport.workflow.importWorkflowTool"
+              title="Workflow Tool">
+  <dependency step="bika-toolset"/>
+  <dependency step="bika-typeinfo"/>
+    Import workflow tool's workflow definitions and supporting scripts.
+ </import-step>
+ <import-step id="bika-final" version="20061126-01"
+              handler="Products.bika.setuphandlers.importFinalSteps"
+              title="Final Bika Config">
+  <dependency step="bika-content"/>
+    Final Bika configuration
+ </import-step>
+</import-steps>

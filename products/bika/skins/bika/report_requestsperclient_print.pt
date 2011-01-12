@@ -1,0 +1,159 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<metal:block use-macro="here/global_defines/macros/defines" />
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      lang="en"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      tal:attributes="lang default_language|default;
+                      xml:lang default_language|default;"
+      i18n:domain="bika">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"
+          tal:define="charset site_properties/default_charset|string:utf-8"
+          tal:attributes="content string:text/html;;charset=${charset}" />
+
+    <!-- Column style sheet. -->
+    <style type="text/css" media="all" tal:condition="exists: portal/ploneColumns.css"
+           tal:content="string:@import url($portal_url/ploneColumns.css);">
+    </style>
+
+    <!-- Main style sheets for CSS2 capable browsers -->
+    <style type="text/css" media="screen"
+           tal:content="string: @import url($portal_url/plone.css);">
+    </style>
+
+    <!-- Alternate style sheets for the bigger/smaller text switcher -->
+    <link rel="alternate stylesheet" type="text/css" media="screen" href="" tal:attributes="href string:$portal_url/ploneTextSmall.css" title="Small Text" />
+    <link rel="alternate stylesheet" type="text/css" media="screen" href="" tal:attributes="href string:$portal_url/ploneTextLarge.css" title="Large Text" />
+
+    <!-- Custom style sheet if available -->
+    <style type="text/css" media="all" tal:condition="exists: portal/ploneCustom.css"
+           tal:content="string:@import url($portal_url/ploneCustom.css);">
+    </style>
+
+    <!-- Style sheet used for printing -->
+    <link rel="stylesheet" type="text/css" media="print" href=""
+          tal:attributes="href string:$portal_url/plonePrint.css" />
+
+    <!-- Internet Explorer CSS Fixes -->
+    <tal:iefixstart replace="structure string:&lt;!--[if IE]&gt;" />
+    <style type="text/css" media="all" tal:condition="exists: portal/ploneIEFixes.css"
+           tal:content="string:@import url($portal_url/ploneIEFixes.css);">
+    </style>
+    <tal:iefixend replace="structure string:&lt;![endif]--&gt;" />
+
+</head>
+
+<body style="font-size: 100%" onload="this.print()">
+<metal:block use-macro="here/report_print_header/macros/report_header"/>
+
+<metal:block define-macro="header">
+<tal:client tal:condition="here/member_is_client">
+<h1>
+<span i18n:translate="heading_requestsandanalyses">Analysis requests and analyses</span> 
+</h1>
+<p i18n:translate="description_requestsandanalyses_totals">
+Number of requests and analyses
+</p>
+</tal:client>
+<tal:not_client tal:condition="not:here/member_is_client">
+<h1>
+<span i18n:translate="heading_requestsandanalyses_per_client">Analysis requests and analyses per client</span> 
+</h1>
+<p i18n:translate="description_requestsandanalyses_totals_per_client">
+Number of requests and analyses per client
+</p>
+</tal:not_client>
+<br/>
+</metal:block>
+
+<metal:block define-macro="subheader">
+<div tal:define="
+        fromdate request/getDateRequested_fromdate | nothing;
+        todate request/getDateRequested_todate | nothing;">
+<div tal:condition="python:fromdate or todate">
+<span i18n:translate="label_requested_date">Date requested</span>
+<span tal:condition="fromdate"
+    i18n:translate="label_from">from</span>
+<b tal:condition="fromdate"
+    tal:content="python:plone_view.toLocalizedTime(request.getDateRequested_fromdate, long_format=0)">2006-01-01 </b>
+<span tal:condition="todate"
+    i18n:translate="label_to">to</span>
+<b tal:condition="todate"
+        tal:content="python:plone_view.toLocalizedTime(request.getDateRequested_todate, long_format=0)">2006-01-01</b>
+</div>
+<div tal:condition="python:not (fromdate or todate)">
+<span i18n:translate="label_requested_date">Date requested</span>
+<b i18n:translate="label_not_specified">not specified</b>
+</div>
+</div>
+<br/>
+</metal:block>
+
+<metal:block define-macro="body">
+<table
+    class="listing"
+    summary="Results"
+    cellpadding="0" cellspacing="0">
+<thead>
+<tr>
+<th i18n:translate="label_client">Client</th>
+<th i18n:translate="heading_request_totals">Number of requests</th>
+<th i18n:translate="heading_analysis_totals">Number of analyses</th>
+</tr>
+</thead>
+
+<tbody>
+<metal:block
+    tal:define="
+        clients python:here.portal_catalog(portal_type='Client');
+        sort_on python:(('Title', 'nocase', 'asc'),);
+        clients python:sequence.sort(clients, sort_on);
+        global totalRequests python:0;
+        global totalAnalyses python:0"
+    tal:repeat="client clients">
+<tr tal:define="oddrow repeat/client/odd"
+    tal:attributes="class python:test(oddrow, 'even', 'odd')">
+<td tal:content="client/Title">ACME Corporation</td>
+<tal:totals
+    tal:define="
+    client client/getObject;
+    dummy_y python:request.set('getClientUID', client.UID());
+    dummy_z python:here.format_date_query('getDateRequested')">
+
+<td tal:define="
+    dummy_x python:request.set('portal_type', 'AnalysisRequest');
+    numberRequests python:len(here.queryCatalog());
+    global totalRequests python:totalRequests+numberRequests"
+    tal:content="numberRequests">
+</td>
+<td tal:define="
+    dummy_w python:request.set('portal_type', 'Analysis');
+    numberAnalyses python:len(here.queryCatalog());
+    global totalAnalyses python:totalAnalyses+numberAnalyses"
+    tal:content="numberAnalyses">
+</td>
+</tal:totals>
+</tr>
+</metal:block>
+</tbody>
+<tfoot>
+<tr>
+<th><b i18n:translate="label_total">Total</b></th>
+<td><b tal:content="totalRequests"/></td>
+<td><b tal:content="totalAnalyses"/></td>
+</tr>
+
+</tfoot>
+</table>
+
+</metal:block>
+
+</body>
+
+</html>
+
+

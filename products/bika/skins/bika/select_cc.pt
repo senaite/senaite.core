@@ -1,0 +1,137 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      i18n:domain="bika">
+
+<head tal:define="ztu modules/ZTUtils;">
+    <title tal:content="here/title_or_id">Title or Id</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"
+          tal:define="charset here/portal_properties/site_properties/default_charset;
+                      dummy python:request.RESPONSE.setHeader('Content-Type', 'text/html;;charset=%s' % charset)"
+          tal:attributes="content string:text/html;;charset=${charset}" />
+    <tal:cssreg tal:condition="exists:here/portal_css">    
+        <metal:css metal:use-macro="here/renderAllTheStylesheets/macros/cssrenderer">
+             <!-- Fetch stylesheets from the CSS Registry -->
+        </metal:css>
+    </tal:cssreg>
+    <style type="text/css" media="all" 
+           tal:condition="not: exists:here/portal_css"
+           tal:define="current_skin python: request.get(here.portal_skins.getRequestVarname(),'');
+           skin_query python:(current_skin and ('?' + ztu.make_query(skin=current_skin))) or ''"
+           tal:content="string: @import url(${here/portal_url}/plone.css${skin_query});">
+    </style>
+
+</head>
+    <body onload="focus();self.name='referencebrowser_popup'" style="margin: 4px;padding:0.5em;" 
+          tal:define="border_color here/base_properties/globalBorderColor;
+                      show_indexes string:1;
+                      cc_uids python:here.REQUEST.get('cc_uids');
+                      contact_uid python:here.REQUEST.get('contact_uid');
+                      contact python:here.reference_catalog.lookupObject(contact_uid);
+                      client python:contact.aq_parent;
+                      b_size python:15;
+                      b_start python:0;
+                      b_start request/b_start | b_start;
+                      Batch python:modules['Products.CMFPlone'].Batch;">
+<script type="text/javascript" src="utils.js"></script>
+
+        <div style="text-align:right;">
+           <a href="javascript:window.close()" i18n:translate="referencebrowser_close">close window</a>
+        </div>
+        <h2>Contacts to copy</h2>
+
+        <!-- actual list of objects -->
+        <tal:block tal:define="
+                        all_results python:[contact for contact in client.objectValues('Contact')];
+                        all_uids python:[contact.UID() for contact in all_results];
+                        this_uid python:all_uids.index(contact_uid);
+                        this_contact python:all_results.pop(this_uid);
+                        sort_on python:(('Title', 'nocase', 'asc'),);
+                        results python:sequence.sort(all_results, sort_on);
+                        batch python: Batch(results, b_size, int(b_start), orphan=1)">
+
+            <div style="border-top:1px solid black;border-bottom:1px solid black;"
+                    tal:attributes="style string:border-top:1px solid ${border_color};;
+                                          border-bottom:1px solid ${border_color};;
+                                          margin-bottom:1em;;padding:0.2em 0 0.1em 0">
+                <strong tal:content="here/title_or_id"/>
+            </div>
+        
+           <!-- object list -->
+           <tal:noresults tal:condition="python:not results">
+               <p i18n:translate="referencebrowser_no_items_found">No items found.</p>
+           </tal:noresults>
+           <tal:list>
+<table class="group" width="100%" cellspacing="0" cellpadding="2"
+    tal:condition="batch">
+<tbody>
+
+<tal:results tal:repeat="item batch">
+<tal:row  tal:define="
+        uid item/UID|string:'';
+        title item/Title|string:'';
+        color here/base_properties/discreetColor;
+        color string:rgb(175,175,175);
+        selected python:test(uid in cc_uids);
+        input_string string:$uid;
+        input_uid python:selected and input_string or ''; 
+        input_title python:selected and input_string or ''" 
+    tal:condition="python:not (uid == contact_uid)">
+<tr tal:define="oddrow repeat/item/odd"
+    tal:attributes="class python:test(oddrow, 'even', 'odd')">
+    <td width="50%">
+
+    <input type="checkbox" class="noborder"
+                           name="Contact_visible"
+                           value="on" id="Contact.1"
+                           onclick=""
+                        tal:define="input_id string:Contact.${repeat/item/index}"
+                        tal:attributes="checked selected;
+                                        id input_id;
+                                        selected_uid uid;
+                                        selected_title title;"/>
+    <strong tal:content="item/title_or_id">Title</strong>
+    </td>
+
+    <td width="25%" nowrap="nowrap" style="text-align:right">
+            <a href="" target="_blank"
+                tal:attributes="href python:item.absolute_url();">
+                <strong i18n:translate="referencebrowser_view">view</strong>
+            </a>
+    </td>
+</tr>
+</tal:row>
+</tal:results>
+<tr></tr>
+<tr></tr>
+<tr>
+<br/>
+<br/>
+<td></td>
+<td style="text-align:right;">
+    <input type="hidden" name="uids"
+           value="" id="uids"/>
+    <input type="hidden" name="titles"
+           value="" id="titles"/>
+    <input type="button"
+           value="Done"
+           class="actionButton"
+           onclick=""
+           tal:attributes="onclick string:returnCCs()"/>
+</td>
+</tr>
+</tbody>
+</table>
+           <div metal:use-macro="here/batch_macros/macros/navigation" />
+       </tal:list>
+    </tal:block>
+    </body>
+</html>
+
+
+
+
+
+

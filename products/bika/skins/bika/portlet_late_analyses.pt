@@ -1,0 +1,69 @@
+<html xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      i18n:domain="bika">
+
+<body>
+
+<div metal:define-macro="portlet"
+     tal:condition="python:member.has_role(('LabManager', 'LabClerk', 'LabTechnician'))">
+<tal:late
+     tal:define="DateTime python:modules['DateTime'].DateTime;
+                 now python: DateTime();
+                 rs python:here.portal_catalog(
+                    portal_type='Analysis',
+                    getDueDate={'query': [now,], 'range': 'max'},
+                    review_state=['assigned', 'sample_received', 'sample_due', 'to_be_verified', 'verified']);
+                 results python:[p.getObject() for p in rs[:5]];"
+     tal:condition="python:results">
+     
+    <dl class="portlet" id="portlet-late-analysis">
+
+        <dt class="portletHeader" style="background-color: #ff0000">
+        <img src="" tal:attributes="src string:${portal/absolute_url}/late.png">
+        <span i18n:translate="box_late_analyses">Late Analyses</span></dt>
+
+        <tal:block repeat="o results">
+        <dd tal:define="oddrow repeat/o/odd"
+            tal:attributes="class python:test(oddrow, 'portletItem odd','portletItem even')">
+
+            <a href="#" class="marker"
+                tal:attributes="href python: o.aq_parent.absolute_url();
+                                title o/Description">
+                <img src="" height="16" width="16"
+                        tal:attributes="src string:${here/portal_url}/${o/getIcon};
+                                        title o/Type;" />
+                <span tal:replace="o/Title|o/getId">
+                Ph
+                </span>
+                <br />
+                on
+                <span tal:replace="python: o.aq_parent.getId()"></span>
+            </a>
+
+            <div class="portletDetails"
+                    tal:define="moddate o/ModificationDate;"
+                    tal:content="python:plone_view.toLocalizedTime(moddate)">July 7, 08:11
+            </div>
+        </dd>
+        </tal:block>
+
+        <dd class="portletFooter" tal:condition="python:len(rs) > 5">
+
+            <a href=""
+                class="portletMore"
+                tal:attributes="href string:${portal_url}/analyses_late"
+                i18n:translate="box_morelink"
+                >
+                More...
+            </a>
+            
+        </dd>
+
+    </dl>
+</tal:late>
+
+</div>
+
+</body>
+
+</html>
