@@ -108,11 +108,11 @@ def initialize(context):
         icon = 'tool.png'
         ).initialize(context)
 
-    profile_registry.registerProfile(
-        name = 'bika',
-        title = 'Bika LIMS',
-        description = 'Extension profile for default Bika LIMS setup.',
-        path = 'profiles/default',
-        product = 'bika',
-        profile_type = EXTENSION,
-        for_ = IPloneSiteRoot)
+#    profile_registry.registerProfile(
+#        name = 'bika',
+#        title = 'Bika LIMS',
+#        description = 'Extension profile for default Bika LIMS setup.',
+#        path = 'profiles/default',
+#        product = 'bika',
+#        profile_type = EXTENSION,
+#        for_ = IPloneSiteRoot)

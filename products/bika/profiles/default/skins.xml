@@ -4,10 +4,12 @@
    request_varname="plone_skin">
  <object name="ATContentTypes" meta_type="Filesystem Directory View"
     directory="Products.ATContentTypes:skins/ATContentTypes"/>
+ <object name="BikaMembers" meta_type="Filesystem Directory View"
+    directory="Products.BikaMembers:skins/BikaMembers"/>
+ <object name="bika" meta_type="Filesystem Directory View"
+    directory="Products.bika:skins/bika"/>
  <object name="CMFEditions" meta_type="Filesystem Directory View"
     directory="Products.CMFEditions:skins/CMFEditions"/>
- <object name="CMFPlacefulWorkflow" meta_type="Filesystem Directory View"
-    directory="Products.CMFPlacefulWorkflow:skins/CMFPlacefulWorkflow"/>
  <object name="LanguageTool" meta_type="Filesystem Directory View"
     directory="Products.PloneLanguageTool:skins/LanguageTool"/>
  <object name="PasswordReset" meta_type="Filesystem Directory View"
@@ -16,8 +18,8 @@
     directory="Products.Archetypes:skins/archetypes"/>
  <object name="archetypes_kss" meta_type="Filesystem Directory View"
     directory="Products.Archetypes:skins/archetypes_kss"/>
- <object name="bika" meta_type="Filesystem Directory View"
-    directory="Products.bika:skins/bika"/>
+ <object name="at_extensions" meta_type="Filesystem Directory View"
+    directory="Products.ATExtensions:skins/at_extensions"/>
  <object name="classic_ecmascript" meta_type="Filesystem Directory View"
     directory="plonetheme.classic:skins/classic_ecmascript"/>
  <object name="classic_styles" meta_type="Filesystem Directory View"
@@ -27,12 +29,6 @@
  <object name="cmfeditions_views" meta_type="Filesystem Directory View"
     directory="Products.CMFEditions:skins/cmfeditions_views"/>
  <object name="custom" meta_type="Folder"/>
- <object name="kupu" meta_type="Filesystem Directory View"
-    directory="Products.kupu:common"/>
- <object name="kupu_plone" meta_type="Filesystem Directory View"
-    directory="Products.kupu:plone/kupu_plone_layer"/>
- <object name="kupu_tests" meta_type="Filesystem Directory View"
-    directory="Products.kupu:tests"/>
  <object name="mimetypes_icons" meta_type="Filesystem Directory View"
     directory="Products.MimetypesRegistry:skins/mimetypes_icons"/>
  <object name="plone_3rdParty" meta_type="Filesystem Directory View"
@@ -75,15 +71,18 @@
     directory="Products.TinyMCE:skins/tinymce"/>
  <skin-path name="Plone Classic Theme">
   <layer name="custom"/>
+  <layer name="bika"/>
+  <layer name="BikaMembers"/>
+  <layer name="archetypes"/>
+  <layer name="archetypes_kss"/>
+  <layer name="mimetypes_icons"/>
   <layer name="classic_styles"/>
   <layer name="classic_ecmascript"/>
   <layer name="tinymce"/>
   <layer name="referencebrowser"/>
   <layer name="cmfeditions_views"/>
   <layer name="CMFEditions"/>
-  <layer name="archetypes"/>
-  <layer name="archetypes_kss"/>
-  <layer name="mimetypes_icons"/>
+  <layer name="at_extensions"/>
   <layer name="LanguageTool"/>
   <layer name="plone_kss"/>
   <layer name="ATContentTypes"/>
@@ -106,64 +105,22 @@
  <skin-path name="Plone Default">
   <layer name="custom"/>
   <layer name="bika"/>
+  <layer name="BikaMembers"/>
+  <layer name="archetypes"/>
+  <layer name="archetypes_kss"/>
+  <layer name="mimetypes_icons"/>
   <layer name="tinymce"/>
   <layer name="referencebrowser"/>
   <layer name="cmfeditions_views"/>
   <layer name="CMFEditions"/>
-  <layer name="archetypes_kss"/>
+  <layer name="at_extensions"/>
   <layer name="LanguageTool"/>
   <layer name="plone_kss"/>
-  <layer name="at_extensions"/>
-  <layer name="kupu_tests"/>
-  <layer name="CMFPlacefulWorkflow"/>
-  <layer name="PasswordReset"/>
-  <layer name="kupu_plone"/>
-  <layer name="kupu"/>
   <layer name="ATContentTypes"/>
-  <layer name="ATReferenceBrowserWidget"/>
-  <layer name="archetypes"/>
-  <layer name="mimetypes_icons"/>
-  <layer name="ResourceRegistries"/>
-  <layer name="gruf"/>
+  <layer name="PasswordReset"/>
   <layer name="plone_ecmascript"/>
   <layer name="plone_wysiwyg"/>
   <layer name="plone_prefs"/>
-  <layer name="plone_portlets"/>
-  <layer name="plone_templates"/>
-  <layer name="plone_styles"/>
-  <layer name="plone_form_scripts"/>
-  <layer name="plone_scripts"/>
-  <layer name="plone_forms"/>
-  <layer name="plone_images"/>
-  <layer name="plone_content"/>
-  <layer name="plone_login"/>
-  <layer name="plone_deprecated"/>
-  <layer name="plone_3rdParty"/>
-  <layer name="cmf_legacy"/>
- </skin-path>
- <skin-path name="Plone Tableless">
-  <layer name="custom"/>
-  <layer name="bika"/>
-  <layer name="at_extensions"/>
-  <layer name="bikamembers"/>
-  <layer name="portaltransport/maillist"/>
-  <layer name="portaltransport"/>
-  <layer name="kupu_tests"/>
-  <layer name="CMFPlacefulWorkflow"/>
-  <layer name="PasswordReset"/>
-  <layer name="kupu_plone"/>
-  <layer name="kupu"/>
-  <layer name="ATContentTypes"/>
-  <layer name="ATReferenceBrowserWidget"/>
-  <layer name="archetypes"/>
-  <layer name="mimetypes_icons"/>
-  <layer name="ResourceRegistries"/>
-  <layer name="gruf"/>
-  <layer name="plone_ecmascript"/>
-  <layer name="plone_wysiwyg"/>
-  <layer name="plone_prefs"/>
-  <layer name="plone_portlets"/>
-  <layer name="plone_tableless"/>
   <layer name="plone_templates"/>
   <layer name="plone_styles"/>
   <layer name="plone_form_scripts"/>
@@ -179,6 +136,10 @@
  <skin-path name="Sunburst Theme">
   <layer name="custom"/>
   <layer name="bika"/>
+  <layer name="BikaMembers"/>
+  <layer name="archetypes"/>
+  <layer name="archetypes_kss"/>
+  <layer name="mimetypes_icons"/>
   <layer name="sunburst_images"/>
   <layer name="sunburst_templates"/>
   <layer name="sunburst_styles"/>
@@ -186,28 +147,14 @@
   <layer name="referencebrowser"/>
   <layer name="cmfeditions_views"/>
   <layer name="CMFEditions"/>
-  <layer name="archetypes_kss"/>
+  <layer name="at_extensions"/>
   <layer name="LanguageTool"/>
   <layer name="plone_kss"/>
-  <layer name="at_extensions"/>
-  <layer name="bikamembers"/>
-  <layer name="portaltransport/maillist"/>
-  <layer name="portaltransport"/>
-  <layer name="kupu_tests"/>
-  <layer name="CMFPlacefulWorkflow"/>
-  <layer name="PasswordReset"/>
-  <layer name="kupu_plone"/>
-  <layer name="kupu"/>
   <layer name="ATContentTypes"/>
-  <layer name="ATReferenceBrowserWidget"/>
-  <layer name="archetypes"/>
-  <layer name="mimetypes_icons"/>
-  <layer name="ResourceRegistries"/>
-  <layer name="gruf"/>
+  <layer name="PasswordReset"/>
   <layer name="plone_ecmascript"/>
   <layer name="plone_wysiwyg"/>
   <layer name="plone_prefs"/>
-  <layer name="plone_portlets"/>
   <layer name="plone_templates"/>
   <layer name="plone_styles"/>
   <layer name="plone_form_scripts"/>

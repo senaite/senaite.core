@@ -1,10 +1,26 @@
 <configure
     xmlns="http://namespaces.zope.org/zope"
-    xmlns:five="http://namespaces.zope.org/five"
-    xmlns:grok="http://namespaces.zope.org/grok"
     xmlns:i18n="http://namespaces.zope.org/i18n"
-    xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
+    xmlns:browser="http://namespaces.zope.org/browser">
     i18n_domain="bika.lims">
+
+    <!-- The breadcrumbs -->
+    <browser:viewlet
+        name="plone.path_bar"
+        manager="plone.app.layout.viewlets.interfaces.IAboveContent"
+        template="viewlets/path_bar.pt"
+        permission="zope2.View"
+        layer="bika.lims.interfaces.IBikaLIMSLayer"
+        />
+
+    <!-- Render the document byline -->
+    <browser:viewlet
+        name="plone.belowcontenttitle.documentbyline"
+        manager="plone.app.layout.viewlets.interfaces.IBelowContentTitle"
+        template="document_byline.pt"
+        permission="viewlets/zope2.View"
+        layer="bika.lims.interfaces.IBikaLIMSLayer"
+        />
 
 
 </configure>

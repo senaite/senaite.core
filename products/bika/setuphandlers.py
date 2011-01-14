@@ -15,9 +15,9 @@ class BikaGenerator:
         """QuickInstaller install of required Products"""
         # Install add-on products
         qi_tool = getToolByName(p, 'portal_quickinstaller')
-#            ['PortalTransport', 'ATSchemaEditorNG', 'PloneHelpCenter', 'BikaMembers', 'bika', 'BikaCalendar']
+#            ['PortalTransport', 'ATSchemaEditorNG', 'PloneHelpCenter', 'BikaMembers', 'BikaCalendar']
         qi_tool.installProducts(
-            ['ATExtensions', 'BikaMembers', 'bika']
+            ['ATExtensions', 'BikaMembers']
         )
         
     def setupPortalContent(self, portal):

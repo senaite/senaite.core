@@ -12,7 +12,6 @@
   <include file="permissions.zcml" />
   <i18n:registerTranslations directory="i18n" />
 
-<!--  All done in xml
   <genericsetup:registerProfile
       name="default"
       title="Bika LIMS"
@@ -122,6 +121,5 @@
       handler="Products.bika.setuphandlers.importFinalSteps">
     <depends name="bika-content"/>
   </genericsetup:importStep>
--->
 
 </configure>

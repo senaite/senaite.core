@@ -2,7 +2,7 @@
 
 $Id: BikaSetup.py 319 2006-11-05 20:27:14Z anneline $
 """
-from Globals import InitializeClass
+from App.class_init import InitializeClass
 from AccessControl import ClassSecurityInfo
 from ZODB.POSException import ConflictError
 from OFS.Folder import Folder
@@ -16,7 +16,7 @@ class BikaSetup(UniqueObject, Folder):
     id = 'bika_setup'
     title = ('The setup folder holds the configuration data '
              'for the lab information system')
-    meta_type= 'Bika Setup'
+    meta_type = 'Bika Setup'
 
 
-InitializeClass( BikaSetup )
+InitializeClass(BikaSetup)

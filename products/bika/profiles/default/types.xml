@@ -1,172 +1,60 @@
 <?xml version="1.0"?>
 <object name="portal_types" meta_type="Plone Types Tool">
- <property
-    name="title">Controls the available content types in your portal</property>
- <object name="ATBooleanCriterion"
-    meta_type="Factory-based Type Information"/>
- <object name="ATCurrentAuthorCriterion"
-    meta_type="Factory-based Type Information"/>
- <object name="ATDateCriteria" meta_type="Factory-based Type Information"/>
- <object name="ATDateRangeCriterion"
-    meta_type="Factory-based Type Information"/>
- <object name="ATListCriterion" meta_type="Factory-based Type Information"/>
- <object name="ATPathCriterion" meta_type="Factory-based Type Information"/>
- <object name="ATPortalTypeCriterion"
-    meta_type="Factory-based Type Information"/>
- <object name="ATReferenceCriterion"
-    meta_type="Factory-based Type Information"/>
- <object name="ATSelectionCriterion"
-    meta_type="Factory-based Type Information"/>
- <object name="ATSimpleIntCriterion"
-    meta_type="Factory-based Type Information"/>
- <object name="ATSimpleStringCriterion"
-    meta_type="Factory-based Type Information"/>
- <object name="ATSortCriterion" meta_type="Factory-based Type Information"/>
- <object name="Analysis"
-    meta_type="Factory-based Type Information with dynamic views"/>
- <object name="AnalysisRequest"
-    meta_type="Factory-based Type Information with dynamic views"/>
- <object name="AnalysisService"
-    meta_type="Factory-based Type Information with dynamic views"/>
- <object name="AnalysisSpec"
-    meta_type="Factory-based Type Information with dynamic views"/>
- <object name="ARImport"
-    meta_type="Factory-based Type Information with dynamic views"/>
- <object name="ARImportItem"
-    meta_type="Factory-based Type Information with dynamic views"/>
- <object name="ARProfile"
-    meta_type="Factory-based Type Information with dynamic views"/>
- <object name="BikaSettings"
-    meta_type="Factory-based Type Information with dynamic views"/>
- <object name="CMF Document" meta_type="Factory-based Type Information"/>
- <object name="CMF Event" meta_type="Factory-based Type Information"/>
- <object name="CMF Favorite" meta_type="Factory-based Type Information"/>
- <object name="CMF File" meta_type="Factory-based Type Information"/>
- <object name="CMF Folder" meta_type="Factory-based Type Information"/>
- <object name="CMF Image" meta_type="Factory-based Type Information"/>
- <object name="CMF Large Plone Folder"
-    meta_type="Factory-based Type Information"/>
- <object name="CMF Link" meta_type="Factory-based Type Information"/>
- <object name="CMF News Item" meta_type="Factory-based Type Information"/>
- <object name="CMF Topic" meta_type="Factory-based Type Information"/>
- <object name="Client"
-    meta_type="Factory-based Type Information with dynamic views"/>
- <object name="ClientCategory"
-    meta_type="Factory-based Type Information with dynamic views"/>
- <object name="ClientFolder"
-    meta_type="Factory-based Type Information with dynamic views"/>
- <object name="ClientInvoicePreference"
-    meta_type="Factory-based Type Information with dynamic views"/>
- <object name="ClientPublicationPreference"
-    meta_type="Factory-based Type Information with dynamic views"/>
- <object name="ClientStatus"
-    meta_type="Factory-based Type Information with dynamic views"/>
- <object name="Contact"
-    meta_type="Factory-based Type Information with dynamic views"/>
- <object name="AnalysisCategory"
-    meta_type="Factory-based Type Information with dynamic views"/>
- <object name="Department"
-    meta_type="Factory-based Type Information with dynamic views"/>
- <object name="LabContact"
-    meta_type="Factory-based Type Information with dynamic views"/>
- <object name="Attachment"
-    meta_type="Factory-based Type Information with dynamic views"/>
- <object name="AttachmentType"
-    meta_type="Factory-based Type Information with dynamic views"/>
- <object name="CalculationType"
-    meta_type="Factory-based Type Information with dynamic views"/>
+ <property name="title">Controls the available content types in your portal</property>
+ <object name="Analysis" meta_type="Factory-based Type Information with dynamic views"/>
+ <object name="AnalysisRequest" meta_type="Factory-based Type Information with dynamic views"/>
+ <object name="AnalysisService" meta_type="Factory-based Type Information with dynamic views"/>
+ <object name="AnalysisSpec" meta_type="Factory-based Type Information with dynamic views"/>
+ <object name="ARImport" meta_type="Factory-based Type Information with dynamic views"/>
+ <object name="ARImportItem" meta_type="Factory-based Type Information with dynamic views"/>
+ <object name="ARProfile" meta_type="Factory-based Type Information with dynamic views"/>
+ <object name="BikaSettings" meta_type="Factory-based Type Information with dynamic views"/>
+ <object name="Client" meta_type="Factory-based Type Information with dynamic views"/>
+ <object name="ClientCategory" meta_type="Factory-based Type Information with dynamic views"/>
+ <object name="ClientFolder" meta_type="Factory-based Type Information with dynamic views"/>
+ <object name="ClientInvoicePreference" meta_type="Factory-based Type Information with dynamic views"/>
+ <object name="ClientPublicationPreference" meta_type="Factory-based Type Information with dynamic views"/>
+ <object name="ClientStatus" meta_type="Factory-based Type Information with dynamic views"/>
+ <object name="Contact" meta_type="Factory-based Type Information with dynamic views"/>
+ <object name="AnalysisCategory" meta_type="Factory-based Type Information with dynamic views"/>
+ <object name="Department" meta_type="Factory-based Type Information with dynamic views"/>
+ <object name="LabContact" meta_type="Factory-based Type Information with dynamic views"/>
+ <object name="Attachment" meta_type="Factory-based Type Information with dynamic views"/>
+ <object name="AttachmentType" meta_type="Factory-based Type Information with dynamic views"/>
+ <object name="CalculationType" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="Discussion Item" meta_type="Factory-based Type Information"/>
- <object name="Document"
-    meta_type="Factory-based Type Information with dynamic views"/>
- <object name="DuplicateAnalysis"
-    meta_type="Factory-based Type Information with dynamic views"/>
- <object name="Event"
-    meta_type="Factory-based Type Information with dynamic views"/>
- <object name="Favorite"
-    meta_type="Factory-based Type Information with dynamic views"/>
- <object name="File"
-    meta_type="Factory-based Type Information with dynamic views"/>
- <object name="Folder"
-    meta_type="Factory-based Type Information with dynamic views"/>
- <object name="FormattableNameDemo"
-    meta_type="Factory-based Type Information"/>
- <object name="Image"
-    meta_type="Factory-based Type Information with dynamic views"/>
- <object name="Instrument"
-    meta_type="Factory-based Type Information with dynamic views"/>
- <object name="Invoice"
-    meta_type="Factory-based Type Information with dynamic views"/>
- <object name="InvoiceBatch"
-    meta_type="Factory-based Type Information with dynamic views"/>
- <object name="InvoiceFolder"
-    meta_type="Factory-based Type Information with dynamic views"/>
+ <object name="DuplicateAnalysis" meta_type="Factory-based Type Information with dynamic views"/>
+ <object name="Instrument" meta_type="Factory-based Type Information with dynamic views"/>
+ <object name="Invoice" meta_type="Factory-based Type Information with dynamic views"/>
+ <object name="InvoiceBatch" meta_type="Factory-based Type Information with dynamic views"/>
+ <object name="InvoiceFolder" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="InvoiceLineItem" meta_type="Factory-based Type Information"/>
- <object name="Method"
-    meta_type="Factory-based Type Information with dynamic views"/>
- <object name="MethodFolder"
-    meta_type="Factory-based Type Information with dynamic views"/>
+ <object name="Method" meta_type="Factory-based Type Information with dynamic views"/>
+ <object name="MethodFolder" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="MethodLogEntry" meta_type="Factory-based Type Information"/>
- <object name="LabAnalysisSpec"
-    meta_type="Factory-based Type Information with dynamic views"/>
- <object name="LabARProfile"
-    meta_type="Factory-based Type Information with dynamic views"/>
- <object name="Laboratory"
-    meta_type="Factory-based Type Information with dynamic views"/>
- <object name="LabProduct"
-    meta_type="Factory-based Type Information with dynamic views"/>
- <object name="Large Plone Folder"
-    meta_type="Factory-based Type Information with dynamic views"/>
- <object name="Link"
-    meta_type="Factory-based Type Information with dynamic views"/>
- <object name="News Item"
-    meta_type="Factory-based Type Information with dynamic views"/>
- <object name="Order"
-    meta_type="Factory-based Type Information with dynamic views"/>
- <object name="OrderItem"
-    meta_type="Factory-based Type Information with dynamic views"/>
+ <object name="LabAnalysisSpec" meta_type="Factory-based Type Information with dynamic views"/>
+ <object name="LabARProfile" meta_type="Factory-based Type Information with dynamic views"/>
+ <object name="Laboratory" meta_type="Factory-based Type Information with dynamic views"/>
+ <object name="LabProduct" meta_type="Factory-based Type Information with dynamic views"/>
+ <object name="Order" meta_type="Factory-based Type Information with dynamic views"/>
+ <object name="OrderItem" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="Organisation" meta_type="Factory-based Type Information"/>
- <object name="PT_MailCategory" meta_type="Factory-based Type Information"/>
- <object name="PT_MailTemplate" meta_type="Factory-based Type Information"/>
- <object name="PT_SIAnonymous" meta_type="Factory-based Type Information"/>
- <object name="PT_SIMember" meta_type="Factory-based Type Information"/>
  <object name="Person" meta_type="Factory-based Type Information"/>
- <object name="Plone Site"
-    meta_type="Factory-based Type Information with dynamic views"/>
- <object name="Pricelist"
-    meta_type="Factory-based Type Information with dynamic views"/>
- <object name="PricelistFolder"
-    meta_type="Factory-based Type Information with dynamic views"/>
+ <object name="Pricelist" meta_type="Factory-based Type Information with dynamic views"/>
+ <object name="PricelistFolder" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="PricelistLineItem" meta_type="Factory-based Type Information"/>
- <object name="RejectAnalysis"
-    meta_type="Factory-based Type Information with dynamic views"/>
- <object name="Sample"
-    meta_type="Factory-based Type Information with dynamic views"/>
- <object name="SamplePoint"
-    meta_type="Factory-based Type Information with dynamic views"/>
- <object name="SampleType"
-    meta_type="Factory-based Type Information with dynamic views"/>
- <object name="StandardManufacturer"
-    meta_type="Factory-based Type Information with dynamic views"/>
- <object name="StandardStock"
-    meta_type="Factory-based Type Information with dynamic views"/>
- <object name="StandardSample"
-    meta_type="Factory-based Type Information with dynamic views"/>
- <object name="StandardAnalysis"
-    meta_type="Factory-based Type Information with dynamic views"/>
- <object name="StandardSupplier"
-    meta_type="Factory-based Type Information with dynamic views"/>
- <object name="StandardSupplierFolder"
-    meta_type="Factory-based Type Information with dynamic views"/>
- <object name="SupplierContact"
-    meta_type="Factory-based Type Information with dynamic views"/>
- <object name="TempFolder" meta_type="Factory-based Type Information"/>
- <object name="Topic"
-    meta_type="Factory-based Type Information with dynamic views"/>
- <object name="WorkingGroup" meta_type="Factory-based Type Information"/>
- <object name="Worksheet"
-    meta_type="Factory-based Type Information with dynamic views"/>
- <object name="WorksheetFolder"
-    meta_type="Factory-based Type Information with dynamic views"/>
- <object name="WorksheetTemplate"
-    meta_type="Factory-based Type Information with dynamic views"/>
+ <object name="RejectAnalysis" meta_type="Factory-based Type Information with dynamic views"/>
+ <object name="Sample" meta_type="Factory-based Type Information with dynamic views"/>
+ <object name="SamplePoint" meta_type="Factory-based Type Information with dynamic views"/>
+ <object name="SampleType" meta_type="Factory-based Type Information with dynamic views"/>
+ <object name="StandardManufacturer" meta_type="Factory-based Type Information with dynamic views"/>
+ <object name="StandardStock" meta_type="Factory-based Type Information with dynamic views"/>
+ <object name="StandardSample" meta_type="Factory-based Type Information with dynamic views"/>
+ <object name="StandardAnalysis" meta_type="Factory-based Type Information with dynamic views"/>
+ <object name="StandardSupplier" meta_type="Factory-based Type Information with dynamic views"/>
+ <object name="StandardSupplierFolder" meta_type="Factory-based Type Information with dynamic views"/>
+ <object name="SupplierContact" meta_type="Factory-based Type Information with dynamic views"/>
+ <object name="Worksheet" meta_type="Factory-based Type Information with dynamic views"/>
+ <object name="WorksheetFolder" meta_type="Factory-based Type Information with dynamic views"/>
+ <object name="WorksheetTemplate" meta_type="Factory-based Type Information with dynamic views"/>
 </object>
