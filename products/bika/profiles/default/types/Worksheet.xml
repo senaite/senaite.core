@@ -66,7 +66,7 @@
  </action>
  <action title="Log" action_id="log" category="object" condition_expr=""
     url_expr="string:${object_url}/status_log" visible="True">
-  <permission value="BIKA: Manage bika"/>
+  <permission value="BIKA: Manage Bika"/>
  </action>
  <action title="Delete" action_id="delete_analyses" category="folder_buttons"
     condition_expr="" url_expr="string:deleteAnalyses:method" visible="True">

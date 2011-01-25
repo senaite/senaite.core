@@ -17,16 +17,16 @@ for d in prefixes:
     if type_name != d['portal_type']: continue
     prefix, padding = d['prefix'], d['padding']
     if batch_size:
-        next_id = str(context.portal_ids.generate_id(prefix, batch_size=batch_size))
+        next_id = str(context.bika_portal_ids.generate_id(prefix, batch_size = batch_size))
     else:
-        next_id = str(context.portal_ids.generate_id(prefix))
+        next_id = str(context.bika_portal_ids.generate_id(prefix))
     if padding:
         next_id = next_id.zfill(int(padding))
-    return '%s%s' % ( prefix, next_id )
+    return '%s%s' % (prefix, next_id)
 
 if batch_size:
-    next_id = str(context.portal_ids.generate_id(type_name,batch_size=batch_size))
+    next_id = str(context.bika_portal_ids.generate_id(type_name, batch_size = batch_size))
 else:
-    next_id = str(context.portal_ids.generate_id(type_name))
-return '%s_%s'% ( type_name.lower(), next_id )
+    next_id = str(context.bika_portal_ids.generate_id(type_name))
+return '%s_%s' % (type_name.lower(), next_id)
 

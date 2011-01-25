@@ -3,5 +3,5 @@
 when this product is installed. -->
 <layers>
     <layer name="bika.layer" 
-           interface="bika.interfaces.IBikaLIMSLayer" />
+           interface="Products.bika.interfaces.IBikaLIMSLayer" />
 </layers>

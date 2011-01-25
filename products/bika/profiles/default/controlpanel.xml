@@ -1,0 +1,220 @@
+<?xml version="1.0"?>
+<object name="portal_controlpanel" meta_type="Plone Control Panel Tool">
+
+ <configlet
+    appId="Products.bika"
+    category="Bika"
+    icon_expr="string:lab.png"
+    title="Laboratory Information"
+    action_id="bika_labinfo"
+    url_expr="string:$portal_url/bika_labinfo"
+    condition_expr=""
+    visible="True">
+  <permission>BIKA: Manage Bika</permission>
+ </configlet>
+
+ <configlet
+    appId="Products.bika"
+    category="Bika"
+    icon_expr="string:category.png"
+    title="Analysis Categories"
+    action_id="bika_categories"
+    url_expr="string:$portal_url/bika_categories"
+    condition_expr=""
+    visible="True">
+  <permission>BIKA: Manage Bika</permission>
+ </configlet>
+
+ <configlet
+    appId="Products.bika"
+    category="Bika"
+    icon_expr="string:department.png"
+    title="Lab Departments"
+    action_id="bika_departments"
+    url_expr="string:$portal_url/bika_departments"
+    condition_expr=""
+    visible="True">
+  <permission>BIKA: Manage Bika</permission>
+ </configlet>
+
+ <configlet
+    appId="Products.bika"
+    category="Bika"
+    icon_expr="string:contact.png"
+    title="Lab Contacts"
+    action_id="bika_labcontacts"
+    url_expr="string:$portal_url/bika_labcontacts"
+    condition_expr=""
+    visible="True">
+  <permission>BIKA: Manage Bika</permission>
+ </configlet>
+
+ <configlet
+    appId="Products.bika"
+    category="Bika"
+    icon_expr="string:attachment.png"
+    title="Attachment Types"
+    action_id="bika_attachmenttypes"
+    url_expr="string:$portal_url/bika_attachmenttypes"
+    condition_expr=""
+    visible="True">
+  <permission>BIKA: Manage Bika</permission>
+ </configlet>
+
+ <configlet
+    appId="Products.bika"
+    category="Bika"
+    icon_expr="string:calculation.png"
+    title="Calculation Types"
+    action_id="bika_calctypes"
+    url_expr="string:$portal_url/bika_calctypes"
+    condition_expr=""
+    visible="True">
+  <permission>BIKA: Manage Bika</permission>
+ </configlet>
+
+ <configlet
+    appId="Products.bika"
+    category="Bika"
+    icon_expr="string:setup.png"
+    title="Bika Settings"
+    action_id="bika_settings"
+    url_expr="string:$portal_url/bika_settings"
+    condition_expr=""
+    visible="True">
+  <permission>BIKA: Manage Bika</permission>
+ </configlet>
+
+ <configlet
+    appId="Products.bika"
+    category="Bika"
+    icon_expr="string:service.png"
+    title="Analysis Services"
+    action_id="bika_services"
+    url_expr="string:$portal_url/bika_services"
+    condition_expr=""
+    visible="True">
+  <permission>BIKA: Manage Bika</permission>
+ </configlet>
+
+ <configlet
+    appId="Products.bika"
+    category="Bika"
+    icon_expr="string:method.png"
+    title="Methods"
+    action_id="bika_methods"
+    url_expr="string:$portal_url/bika_methods"
+    condition_expr=""
+    visible="True">
+  <permission>BIKA: Manage Bika</permission>
+ </configlet>
+
+ <configlet
+    appId="Products.bika"
+    category="Bika"
+    icon_expr="string:instrument.png"
+    title="Instruments"
+    action_id="bika_instruments"
+    url_expr="string:$portal_url/bika_instruments"
+    condition_expr=""
+    visible="True">
+  <permission>BIKA: Manage Bika</permission>
+ </configlet>
+
+ <configlet
+    appId="Products.bika"
+    category="Bika"
+    icon_expr="string:service.png"
+    title="Analysis Specs"
+    action_id="bika_analysisspecs"
+    url_expr="string:$portal_url/bika_analysisspecs"
+    condition_expr=""
+    visible="True">
+  <permission>BIKA: Manage Bika</permission>
+ </configlet>
+
+ <configlet
+    appId="Products.bika"
+    category="Bika"
+    icon_expr="string:service.png"
+    title="Analysis Profiles"
+    action_id="bika_arprofiles"
+    url_expr="string:$portal_url/bika_arprofiles"
+    condition_expr=""
+    visible="True">
+  <permission>BIKA: Manage Bika</permission>
+ </configlet>
+
+ <configlet
+    appId="Products.bika"
+    category="Bika"
+    icon_expr="string:product.png"
+    title="Products"
+    action_id="bika_products"
+    url_expr="string:$portal_url/bika_products"
+    condition_expr=""
+    visible="True">
+  <permission>BIKA: Manage Bika</permission>
+ </configlet>
+
+ <configlet
+    appId="Products.bika"
+    category="Bika"
+    icon_expr="string:sampletype.png"
+    title="Sample Types"
+    action_id="bika_sampletypes"
+    url_expr="string:$portal_url/bika_sampletypes"
+    condition_expr=""
+    visible="True">
+  <permission>BIKA: Manage Bika</permission>
+ </configlet>
+
+ <configlet
+    appId="Products.bika"
+    category="Bika"
+    icon_expr="string:standardmanufacturer.png"
+    title="Standard Manufacturers"
+    action_id="bika_standardmanufacturers"
+    url_expr="string:$portal_url/bika_standardmanufacturers"
+    condition_expr=""
+    visible="True">
+  <permission>BIKA: Manage Bika</permission>
+ </configlet>
+
+ <configlet
+    appId="Products.bika"
+    category="Bika"
+    icon_expr="string:standardstock.png"
+    title="Standard Stocks"
+    action_id="bika_standardstocks"
+    url_expr="string:$portal_url/bika_standardstocks"
+    condition_expr=""
+    visible="True">
+  <permission>BIKA: Manage Bika</permission>
+ </configlet>
+
+ <configlet
+    appId="Products.bika"
+    category="Bika"
+    icon_expr="string:samplepoint.png"
+    title="Sample Points"
+    action_id="bika_samplepoints"
+    url_expr="string:$portal_url/bika_samplepoints"
+    condition_expr=""
+    visible="True">
+  <permission>BIKA: Manage Bika</permission>
+ </configlet>
+
+ <configlet
+    appId="Products.bika"
+    category="Bika"
+    icon_expr="string:worksheettemplate.png"
+    title="Worksheet Templates"
+    action_id="bika_worksheettemplates"
+    url_expr="string:$portal_url/bika_worksheettemplates"
+    condition_expr=""
+    visible="True">
+  <permission>BIKA: Manage Bika</permission>
+ </configlet>
+
+</object>

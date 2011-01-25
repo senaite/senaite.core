@@ -114,7 +114,7 @@
       <role name="LabTechnician"/>
       <role name="Manager"/>
     </permission>
-    <permission name="BIKA: Manage bika" acquire="True">
+    <permission name="BIKA: Manage Bika" acquire="True">
       <role name="LabManager"/>
       <role name="Manager"/>
     </permission>

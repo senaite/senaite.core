@@ -39,7 +39,7 @@
         startup_directory here/absolute_url;
         lab_accredited python:context.bika_labinfo.laboratory.getLaboratoryAccredited();
         global dry_matter python:0;
-        manage_bika python:mtool.checkPermission('BIKA: Manage bika', here);">
+        manage_bika python:mtool.checkPermission('BIKA: Manage Bika', here);">
 <!--
 <p>exists</p>
 <b tal:content="requestExists"/>

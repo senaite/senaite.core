@@ -31,7 +31,7 @@
         global dry_matter python:0;
         startup_directory here/absolute_url;
         lab_accredited python:context.bika_labinfo.laboratory.getLaboratoryAccredited();
-        manage_bika python:mtool.checkPermission('BIKA: Manage bika', here);
+        manage_bika python:mtool.checkPermission('BIKA: Manage Bika', here);
         ">
 
 <tal:error repeat="error python:errors.keys()">

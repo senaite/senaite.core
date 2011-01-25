@@ -1,34 +1,36 @@
-"""
-Bika setup handlers.
-"""
-
-from Products.CMFCore.utils import getToolByName
+""" Bika setup handlers. """
 
 from Products.CMFCore import permissions
+from Products.CMFCore.utils import getToolByName
+from Products.bika import bikaMessageFactory as _
+from Products.CMFPlone import PloneMessageFactory
+from Products.bika.config import *
+from Products.bika.mailtemplates import templates
+import logging
+
+#from Products.PortalTransport.utils import install_mail_templates
 #from Products.GroupUserFolder.GroupsToolPermissions import ManageGroups
 
-from Products.bika.config import *
+logger = logging.getLogger('Products.bika')
 
 class BikaGenerator:
 
     def installProducts(self, p):
         """QuickInstaller install of required Products"""
-        # Install add-on products
         qi_tool = getToolByName(p, 'portal_quickinstaller')
-#            ['PortalTransport', 'ATSchemaEditorNG', 'PloneHelpCenter', 'BikaMembers', 'BikaCalendar']
+        logger.info("Installing required products")
         qi_tool.installProducts(
-            ['ATExtensions', 'BikaMembers']
+            ['BikaMembers', ]
         )
-        
+
     def setupPortalContent(self, portal):
-        """
-        Setup Bika site structure
-        """
+        """ Setup Bika site structure """
+
+        # remove undesired content objects
         del_ids = []
         for obj_id in ['index_html', 'Members', 'front-page', 'news', 'events']:
             if obj_id in portal.objectIds():
                 del_ids.append(obj_id)
-
         if del_ids:
             portal.manage_delObjects(ids = del_ids)
 
@@ -42,10 +44,66 @@ class BikaGenerator:
         getattr(typesTool, 'Organisation').global_allow = False
         getattr(typesTool, 'Person').global_allow = False
 
-        # Move calendar and user  action to bika
+        # Move calendar and user action to bika
         for action in portal.portal_controlpanel.listActions():
-            if action.id in ('UsersGroups', 'UsersGroups2',
-                'bika_calendar_tool'):
+            if action.id in ('UsersGroups', 'UsersGroups2', 'bika_calendar_tool'):
+                action.category = 'Bika'
+                action.permissions = (ManageBika,)
+
+        # XXX This should be handled in tools/bika_settings.py
+        # but genericsetup import step dependencies are unsatisfied at that point
+        bs = getToolByName(portal, 'bika_settings')
+        bs.invokeFactory(id = 'settings', type_name = 'BikaSettings')
+        bs.settings.setTitle('Bika settings')
+        bs.settings.setPrefixes([
+            {'portal_type': 'AnalysisRequest',
+             'prefix': 'AR-',
+             'padding': '2',
+            },
+            {'portal_type': 'Sample',
+             'prefix': 'S-',
+             'padding': '5',
+            },
+            {'portal_type': 'Worksheet',
+             'prefix': 'WS-',
+             'padding': '5',
+            },
+            {'portal_type': 'Order',
+             'prefix': 'O-',
+             'padding': '4',
+            },
+            {'portal_type': 'Invoice',
+             'prefix': 'I-',
+             'padding': '4',
+            },
+            {'portal_type': 'ARImport',
+             'prefix': 'B-',
+             'padding': '4',
+            },
+            {'portal_type': 'StandardSample',
+             'prefix': 'SS-',
+             'padding': '4',
+            },
+            {'portal_type': 'StandardAnalysis',
+             'prefix': 'SA-',
+             'padding': '4',
+            },
+        ])
+
+
+    def setupControlPanel(self, portal):
+        # Configure the control panel groups so that Bika is before Products.
+        groups = portal.portal_controlpanel.group
+        site_groups = [g[0] for g in groups['site']]
+        if 'Bika' not in site_groups:
+            site_groups = [g for g in groups['site'] if g[0] != 'Products']
+            site_groups.append(('Bika', _(u'Bika Configuration')))
+            site_groups.append(('Products', PloneMessageFactory(u'Add-on Configuration')))
+            groups['site'] = site_groups
+            portal.portal_controlpanel.manage_changeProperties(groups = groups)
+        # Move portal_templates action to bika
+        for action in portal.portal_types.listActions():
+            if action.id in ('PortalTransport_mailtemplates'):
                 action.category = 'Bika'
                 action.permissions = (ManageBika,)
 
@@ -57,7 +115,6 @@ class BikaGenerator:
                 portal.acl_users.portal_role_manager.addRole(role)
             # add roles to the portal
             portal._addRole(role)
-        
 
         # Create groups
         portal_groups = portal.portal_groups
@@ -250,11 +307,64 @@ def importFinalSteps(context):
     """
     if context.readDataFile('bika.txt') is None:
         return
-    
+
     site = context.getSite()
     gen = BikaGenerator()
     gen.installProducts(site)
     gen.setupPortalContent(site)
+    gen.setupControlPanel(site)
     gen.setupGroupsAndRoles(site)
     gen.setupPermissions(site)
     gen.setupProxyRoles(site)
+
+
+#    # install mail templates
+#    install_mail_templates(self, portal, templates, out)
+#
+#    if 'PortalTransport' in portal.objectIds():
+#        portal.portal_mailtemplates.manage_delObjects(
+#            ids = ['PortalTransport'])
+#
+#    # import charts
+#    if 'charts' not in portal.objectIds():
+#        filepath = '%s/charts.zexp' % package_home(GLOBALS)
+#        portal._importObjectFromFile(filepath, set_owner = 1)
+#
+#    # Move checksetup to be first action of Client
+#    actions = []
+#    indices = []
+#    idx = 0
+#    for action in self.portal_types['Client'].listActions():
+#        if action.id not in ['checkstate', ]:
+#            actions.append(action)
+#            indices.append(idx)
+#        idx += 1
+#
+#    del_idx = tuple(indices)
+#    self.portal_types['Client'].deleteActions(del_idx)
+#    for action in actions:
+#        self.portal_types['Client'].addAction(
+#             action.id,
+#             name = action.Title(),
+#             action = action.getActionExpression(),
+#             condition = action.getCondition(),
+#             permission = action.getPermissions(),
+#             category = action.getCategory(),
+#             visible = action.getVisibility(),
+#                        )
+
+
+#    # Add UID index
+#    catalog_indexes = (
+#        { 'name'  : 'UID',
+#          'type'  : 'FieldIndex'
+#          },
+#                        )
+#    cat = portal.portal_catalog
+#    for idx in catalog_indexes:
+#        if idx['name'] in cat.indexes():
+#            pass
+#        else:
+#            cat.addIndex(**idx)
+#            cat.reindexIndex('UID', portal)
+

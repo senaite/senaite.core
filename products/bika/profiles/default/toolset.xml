@@ -1,3 +1,32 @@
 <?xml version="1.0"?>
 <tool-setup>
+ <required tool_id="bika_settings" class="Products.bika.tools.bika_settings"/>
+ <required tool_id="bika_portal_ids" class="Products.bika.tools.bika_portal_ids"/>
+ <required tool_id="bika_services" class="Products.bika.tools.bika_services"/>
+ <required tool_id="bika_analysisspecs" class="Products.bika.tools.bika_analysisspecs"/>
+ <required tool_id="bika_arprofiles" class="Products.bika.tools.bika_arprofiles"/>
+ <required tool_id="bika_products" class="Products.bika.tools.bika_products"/>
+ <required tool_id="bika_methods" class="Products.bika.tools.bika_methods"/>
+ <required tool_id="bika_instruments" class="Products.bika.tools.bika_instruments"/>
+ <required tool_id="bika_client_categories" class="Products.bika.tools.bika_client_categories"/>
+ <required tool_id="bika_client_status" class="Products.bika.tools.bika_client_status"/>
+ <required tool_id="bika_publication_prefs" class="Products.bika.tools.bika_publication_prefs"/>
+ <required tool_id="bika_invoice_prefs" class="Products.bika.tools.bika_invoice_prefs"/>
+ <required tool_id="bika_sampletypes" class="Products.bika.tools.bika_sampletypes"/>
+ <required tool_id="bika_standardmanufacturers" class="Products.bika.tools.bika_standardmanufacturers"/>
+ <required tool_id="bika_standardstocks" class="Products.bika.tools.bika_standardstocks"/>
+ <required tool_id="bika_samplepoints" class="Products.bika.tools.bika_samplepoints"/>
+ <required tool_id="bika_worksheettemplates" class="Products.bika.tools.bika_worksheettemplates"/>
+ <required tool_id="bika_labinfo" class="Products.bika.tools.bika_labinfo"/>
+ <required tool_id="bika_categories" class="Products.bika.tools.bika_categories"/>
+ <required tool_id="bika_departments" class="Products.bika.tools.bika_departments"/>
+ <required tool_id="bika_labcontacts" class="Products.bika.tools.bika_labcontacts"/>
+ <required tool_id="bika_attachmenttypes" class="Products.bika.tools.bika_attachmenttypes"/>
+ <required tool_id="bika_calctypes" class="Products.bika.tools.bika_calctypes"/>
+ <required tool_id="bika_instrument_import" class="Products.bika.tools.bika_instrument_import"/>
+ <required tool_id="bika_ar_import" class="Products.bika.tools.bika_ar_import"/>
+ <required tool_id="bika_ar_export" class="Products.bika.tools.bika_ar_export"/>
+ <required tool_id="bika_services_export" class="Products.bika.tools.bika_services_export"/>
+ <required tool_id="bika_profiles_export" class="Products.bika.tools.bika_profiles_export"/>
+ <required tool_id="bika_pdf_build" class="Products.bika.tools.bika_pdf_build"/>
 </tool-setup>

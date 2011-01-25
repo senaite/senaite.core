@@ -30,9 +30,6 @@ tal:define="
     states python:here.get_toggles('analysisrequest');
     header_state python:here.get_toggle_title(clientar_state, states)">
 
-<div metal:use-macro="here/document_actions/macros/document_actions">
-Document actions (print, sendto etc)
-</div>
 
 <h1>
 <img src="arprofile.png" tal:attributes="src python:here.portal_types.getTypeInfo('AnalysisRequest').getIcon()"/>

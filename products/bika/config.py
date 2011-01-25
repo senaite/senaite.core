@@ -7,7 +7,7 @@ SKINS_DIR = 'skins'
 
 GLOBALS = globals()
 
-ManageBika = 'BIKA: Manage bika'
+ManageBika = 'BIKA: Manage Bika'
 ManageClients = 'BIKA: Manage Clients'
 ManageWorksheets = 'BIKA: Manage Worksheets'
 ManageOrders = 'BIKA: Manage Orders'

@@ -11,7 +11,7 @@
     They are duplicated in config.py for Products.CMFCore.utils.ContentInit()
 /-->
 
-<permission id = "bika.ManageBika" title = "BIKA: Manage bika"/>
+<permission id = "bika.ManageBika" title = "BIKA: Manage Bika"/>
 <permission id = "bika.ManageClients" title = "BIKA: Manage Clients"/>
 <permission id = "bika.ManageWorksheets" title = "BIKA: Manage Worksheets"/>
 <permission id = "bika.ManageOrders" title = "BIKA: Manage Orders"/>

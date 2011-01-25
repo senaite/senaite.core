@@ -57,6 +57,6 @@
  </action>
  <action title="Log" action_id="log" category="object" condition_expr=""
     url_expr="string:${object_url}/status_log" visible="True">
-  <permission value="BIKA: Manage bika"/>
+  <permission value="BIKA: Manage Bika"/>
  </action>
 </object>
