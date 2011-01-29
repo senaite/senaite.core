@@ -4,12 +4,36 @@
     xmlns:i18n="http://namespaces.zope.org/i18n"
     i18n_domain="bika.lims">
 
-	<include package=".viewlets"/>
+	<include file="viewlets.zcml"/>
 
     <browser:page
-      name="bika_folder_contents"
       for="*"
-      class="Products.bika.browser.bika_folder_contents.bika_folder_contents"
+      name="bika_folder_contents"
+      class="Products.bika.browser.bika_folder_contents.BikaFolderContentsView"
+      permission="zope.Public"
+      layer="Products.bika.interfaces.IBikaLIMSLayer"
+    />
+
+    <browser:page
+      for="Products.bika.interfaces.IClientFolder"
+      name="clientfolder_contents"
+      class="Products.bika.browser.clientfolder.ClientFolderContentsView"
+      permission="bika.ManageClients"
+      layer="Products.bika.interfaces.IBikaLIMSLayer"
+    />
+
+    <browser:page
+      for="Products.bika.interfaces.IClient"
+      name="analysisrequests"
+      class="Products.bika.browser.client.ClientAnalysisRequestsView"
+      permission="zope.Public"
+      layer="Products.bika.interfaces.IBikaLIMSLayer"
+    />
+
+    <browser:page
+      for="Products.bika.interfaces.IClient"
+      name="samples"
+      class="Products.bika.browser.client.ClientSamplesView"
       permission="zope.Public"
       layer="Products.bika.interfaces.IBikaLIMSLayer"
     />

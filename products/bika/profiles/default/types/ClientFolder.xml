@@ -8,7 +8,6 @@
  <property name="content_meta_type">ClientFolder</property>
  <property name="product">bika</property>
  <property name="factory">addClientFolder</property>
- <property name="immediate_view">base_edit</property>
  <property name="global_allow">False</property>
  <property name="allow_discussion">False</property>
 
@@ -17,9 +16,10 @@
   <element value="Client"/>
  </property>
 
- <property name="default_view">@@bika_folder_contents</property>
+ <property name="default_view">clientfolder_contents</property>
+ <property name="immediate_view">clientfolder_contents</property>
  <property name="view_methods">
-  <element value="@@bika_folder_contents"/>
+  <element value="clientfolder_contents"/>
  </property>
 
  <property name="default_view_fallback">False</property>

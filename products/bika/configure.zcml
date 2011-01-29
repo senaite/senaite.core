@@ -9,10 +9,10 @@
   <include package="five.grok" />
   <grok:grok package="." />
 
+  <include file="genericsetup.zcml" />
+  <include file="permissions.zcml" />
   <include package=".browser"/>
   <include package=".content"/>
-  <include file="permissions.zcml" />
-  <include file="genericsetup.zcml" />
 
   <i18n:registerTranslations directory="i18n" />
 

@@ -1,1 +1,3 @@
-from bika_folder_contents import bika_folder_contents
+from bika_folder_contents import BikaFolderContentsView
+from clientfolder import ClientFolderContentsView
+from client import ClientAnalysisRequestsView, ClientSamplesView

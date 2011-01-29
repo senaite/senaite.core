@@ -1,6 +1,12 @@
 """BIKA - A lab information management system
 
 $Id: __init__.py 2580 2010-12-03 19:11:40Z anneline $
+
+
+
+XXX form_tabbing.js - threshold is 6 - forced it to 8 - need to remove excess schematas
+
+
 """
 from Products.Archetypes.atapi import process_types, listTypes
 from Products.CMFCore import utils
@@ -116,12 +122,3 @@ def initialize(context):
         tools = toolset,
         icon = 'tool.png'
         ).initialize(context)
-
-    profile_registry.registerProfile(
-        name = 'bika',
-        title = 'Bika LIMS',
-        product = 'bika',
-        description = 'Extension profile for default Bika LIMS setup.',
-        path = 'profiles/default',
-        profile_type = EXTENSION,
-        for_ = IPloneSiteRoot)

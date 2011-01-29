@@ -47,7 +47,6 @@ class BikaGenerator:
         # Move calendar and user action to bika
         for action in portal.portal_controlpanel.listActions():
             if action.id in ('UsersGroups', 'UsersGroups2', 'bika_calendar_tool'):
-                action.category = 'Bika'
                 action.permissions = (ManageBika,)
 
         # XXX This should be handled in tools/bika_settings.py

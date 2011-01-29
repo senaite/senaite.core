@@ -8,8 +8,6 @@
  <property name="content_meta_type">Client</property>
  <property name="product">bika</property>
  <property name="factory">addClient</property>
- <property name="default_view">base_edit</property>
- <property name="immediate_view">base_edit</property>
  <property name="global_allow">False</property>
  <property name="filter_content_types">True</property>
  <property name="allowed_content_types">
@@ -23,9 +21,11 @@
   <element value="AnalysisSpec"/>
  </property>
  <property name="allow_discussion">False</property>
- <property name="default_view">client_analysisrequests</property>
+ <property name="default_view">analysisrequests</property>
+ <property name="immediate_view">analysisrequests</property>
  <property name="view_methods">
-  <element value="client_analysisrequests"/>
+  <element value="analysisrequests"/>
+  <element value="samples"/>
  </property>
  <property name="default_view_fallback">False</property>
  <alias from="(Default)" to="(dynamic view)"/>
@@ -48,14 +48,22 @@
 
  <action title="Edit" action_id="edit" category="object"
     condition_expr="python:here.setup_state" 
-    url_expr="string:${object_url}/base_edit" visible="True">
-  <permission value="Modify portal content"/>
+    url_expr="string:${object_url}/base_edit" visible="False">
  </action>
- 
+
  <action title="Properties" action_id="metadata" category="object"
     condition_expr="" url_expr="string:${object_url}/base_metadata"
     visible="False">
-  <permission value="Modify portal content"/>
+ </action>
+
+ <action title="Sharing" action_id="local_roles" category="object"
+    condition_expr="" url_expr="string:${object_url}/@@sharing"
+    visible="False">
+ </action>
+
+ <action title="Contents" action_id="folderContents" category="object"
+    condition_expr="" url_expr="string:${globals_view/getCurrentFolderUrl}/folder_contents"
+    visible="False">
  </action>
  
  <action title="References" action_id="references" category="object"
@@ -71,13 +79,13 @@
   <permission value="View"/>
  </action>
  
- <action title="Setup" action_id="clientsetup" category="object"
-    condition_expr="python:not here.setup_state" 
-    url_expr="string:${object_url}/redirect_to_client_setup"
+ <action title="Actions" action_id="clientactions" category="object"
+    condition_expr="python:here.setup_state" 
+    url_expr="string:${object_url}/redirect_to_client_actions"
     visible="True">
   <permission value="List folder contents"/>
  </action>
- 
+
  <action title="Actions" action_id="clientactions" category="object"
     condition_expr="python:here.setup_state" 
     url_expr="string:${object_url}/redirect_to_client_actions"
@@ -94,14 +102,14 @@
  
  <action title="Samples" action_id="samples" category="object"
     condition_expr="python:not here.setup_state" 
-    url_expr="string:${object_url}/client_samples"
+    url_expr="string:${object_url}/samples"
     visible="True">
   <permission value="List folder contents"/>
  </action>
  
  <action title="Analysis requests" action_id="requests" category="object"
     condition_expr="python:not here.setup_state" 
-    url_expr="string:${object_url}/client_analysisrequests"
+    url_expr="string:${object_url}/analysisrequests"
     visible="True">
   <permission value="List folder contents"/>
  </action>
@@ -137,6 +145,13 @@
  <action title="Orders" action_id="orders" category="object" 
     condition_expr="python:not here.setup_state" 
     url_expr="string:${object_url}/client_orders" visible="True">
+  <permission value="List folder contents"/>
+ </action>
+
+ <action title="Setup" action_id="clientsetup" category="object"
+    condition_expr="python:not here.setup_state" 
+    url_expr="string:${object_url}/redirect_to_client_setup"
+    visible="True">
   <permission value="List folder contents"/>
  </action>
 

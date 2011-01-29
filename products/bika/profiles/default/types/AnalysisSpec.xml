@@ -2,7 +2,7 @@
 <object name="AnalysisSpec"
    meta_type="Factory-based Type Information with dynamic views"
    xmlns:i18n="http://xml.zope.org/namespaces/i18n">
- <property name="title">Analysis request</property>
+ <property name="title">Analysis Specification</property>
  <property name="description">
       Mixin class to support instance-based schemas
       Attention: must be before BaseFolder or BaseContent in

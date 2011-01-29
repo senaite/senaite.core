@@ -19,11 +19,6 @@ class ClientFolder(folder.ATFolder):
     implements(IClientFolder)
     schema = schema
 
-    displayContentsTab = False
-
-    def getFolderContents(self, contentFilter):
-        portal_catalog = getToolByName(self, 'portal_catalog')
-        return portal_catalog(portal_type = 'Client')
 
 schemata.finalizeATCTSchema(schema, folderish = True, moveDiscussion = False)
 
