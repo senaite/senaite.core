@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<object name="StandardAnalysis"
+   meta_type="Factory-based Type Information with dynamic views"
+   xmlns:i18n="http://xml.zope.org/namespaces/i18n">
+ <property name="title"></property>
+ <property name="description"></property>
+ <property name="icon_expr"></property>
+ <property name="content_meta_type"></property>
+ <property name="product"></property>
+ <property name="factory"></property>
+ <property name="add_view_expr"></property>
+ <property name="link_target"></property>
+ <property name="immediate_view"></property>
+ <property name="global_allow">True</property>
+ <property name="filter_content_types">True</property>
+ <property name="allowed_content_types"/>
+ <property name="allow_discussion">False</property>
+ <property name="default_view"></property>
+ <property name="view_methods"/>
+ <property name="default_view_fallback">False</property>
+</object>
