@@ -4,12 +4,28 @@
     xmlns:i18n="http://namespaces.zope.org/i18n"
     i18n_domain="bika.lims">
 
-	<include file="viewlets.zcml"/>
+    <include file="viewlets.zcml"/>
 
     <browser:page
       for="*"
       name="bika_folder_contents"
       class="Products.bika.browser.bika_folder_contents.BikaFolderContentsView"
+      permission="zope.Public"
+      layer="Products.bika.interfaces.IBikaLIMSLayer"
+    />
+
+    <browser:page
+      for="Products.bika.interfaces.IClient"
+      name="actions"
+      class="Products.bika.browser.client.RedirectToActions"
+      permission="zope.Public"
+      layer="Products.bika.interfaces.IBikaLIMSLayer"
+    />
+
+    <browser:page
+      for="Products.bika.interfaces.IClient"
+      name="setup"
+      class="Products.bika.browser.client.RedirectToSetup"
       permission="zope.Public"
       layer="Products.bika.interfaces.IBikaLIMSLayer"
     />
@@ -24,6 +40,14 @@
 
     <browser:page
       for="Products.bika.interfaces.IClient"
+      name="samples"
+      class="Products.bika.browser.client.ClientSamplesView"
+      permission="zope.Public"
+      layer="Products.bika.interfaces.IBikaLIMSLayer"
+    />
+
+    <browser:page
+      for="Products.bika.interfaces.IClient"
       name="analysisrequests"
       class="Products.bika.browser.client.ClientAnalysisRequestsView"
       permission="zope.Public"
@@ -32,10 +56,50 @@
 
     <browser:page
       for="Products.bika.interfaces.IClient"
-      name="samples"
-      class="Products.bika.browser.client.ClientSamplesView"
+      name="arimports"
+      class="Products.bika.browser.client.ClientARImportsView"
       permission="zope.Public"
       layer="Products.bika.interfaces.IBikaLIMSLayer"
     />
 
+    <browser:page
+      for="Products.bika.interfaces.IClient"
+      name="arprofiles"
+      class="Products.bika.browser.client.ClientARProfilesView"
+      permission="zope.Public"
+      layer="Products.bika.interfaces.IBikaLIMSLayer"
+    />
+
+    <browser:page
+      for="Products.bika.interfaces.IClient"
+      name="analysisspecs"
+      class="Products.bika.browser.client.ClientAnalysisSpecsView"
+      permission="zope.Public"
+      layer="Products.bika.interfaces.IBikaLIMSLayer"
+    />
+
+    <browser:page
+      for="Products.bika.interfaces.IClient"
+      name="attachments"
+      class="Products.bika.browser.client.ClientAttachmentsView"
+      permission="zope.Public"
+      layer="Products.bika.interfaces.IBikaLIMSLayer"
+    />
+
+    <browser:page
+      for="Products.bika.interfaces.IClient"
+      name="orders"
+      class="Products.bika.browser.client.ClientOrdersView"
+      permission="zope.Public"
+      layer="Products.bika.interfaces.IBikaLIMSLayer"
+    />
+
+    <browser:page
+      for="Products.bika.interfaces.IClient"
+      name="contacts"
+      class="Products.bika.browser.client.ClientContactsView"
+      permission="zope.Public"
+      layer="Products.bika.interfaces.IBikaLIMSLayer"
+    />
+    
 </configure>

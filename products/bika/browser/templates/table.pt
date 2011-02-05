@@ -1,5 +1,6 @@
 <div id="folderlisting-main-table"
-     i18n:domain="plone">
+     i18n:domain="bika"
+	 tal:define="wflist_state python:request.get('wflist_state', 'all')">
   <input type="hidden" name="sort_on"
          tal:attributes="value request/sort_on|string:getObjPositionInParent"
          />
@@ -21,143 +22,160 @@
 
   <metal:listing define-macro="folder_listing"
                  tal:define="nosortclass view/get_nosort_class">
-    
+
     <div class="visualClear" id="clear-space-before-navigation"><!-- --></div>
 
-    <div tal:replace="structure view/batching" tal:condition="not:view/show_all"/>
-    <table class="listing"
-           id="listing-table"
-           summary="Content listing"
-           i18n:attributes="summary summary_content_listing;"
-           tal:condition="view/items"
-           tal:define="colspan python:str(len(view.columns)+2)">
-      <thead>
-        <tr tal:condition="view/wflist_states">
-          <th tal:attributes="colspan colspan" class="nosort">
-            <span i18n:translate="label_wfstates" tal:omit-tag="">States: <span tal:omit-tag="" tal:content="structure view/wflist"/></span>
-          </th>
-        </tr>
-        <tr tal:condition="not:view/selectcurrentbatch">
-          <th tal:attributes="colspan colspan" class="nosort"><span i18n:translate="label_select" tal:omit-tag="">Select:</span> <a i18n:translate="label_all" tal:attributes="href view/selectscreen_url" id="foldercontents-selectall">All</a></th>
-        </tr>
-        <tr tal:condition="view/show_select_all_items">
-          <th tal:attributes="colspan colspan" class="nosort">
-            <span tal:omit-tag="" i18n:translate="tableheading_all_items_selected">
-              All <tal:block replace="view/batch/items_on_page" i18n:name="count"/> items on this page are selected. 
-            </span>
-            <a tal:attributes="href view/selectall_url" 
-               id="foldercontents-selectall-completebatch"
-               i18n:translate="tableheading_select_all_items">Select all 
-            <tal:block replace="view/batch/size" i18n:name="count"/> items in this folder.</a>
-          </th>
-        </tr>
-        <tr tal:condition="view/selectall">
-          <th tal:attributes="colspan colspan" class="nosort">
-            <span tal:omit-tag="" i18n:translate="tableheading_all_items_selected_in_folder">
-            All <tal:block replace="view/batch/size" i18n:name="count"/> items in this folder
-            are selected. 
-            </span>
-            <a tal:attributes="href view/selectnone_url"  i18n:translate="tableheading_clear_selection"
-               id="foldercontents-clearselection">Clear selection</a>
-          </th>
-        </tr>
-        <tr>
-          <th class="nosort column"
-              id="foldercontents-order-column"
-              tal:condition="view/show_sort_column">
-          </th>
-          <th class="nosort">&nbsp;</th>
-          <th class="nosort column" tal:repeat="column view/columns"
-              id="string:foldercontents-${column/title}-column"
-              >&nbsp;<span i18n:translate="string:listingheader_${column/title}"><span tal:content="column/title"/></span>&nbsp;
-           </th>
-        </tr>
-      </thead>
+    <div tal:replace="structure view/batching"
+	     tal:condition="not:view/show_all"/>
+    <tal:wflist_state
+        tal:define="wflist_state python: [t for t in view.wflist_states if t['id'] == wflist_state][0]">
+	    <table class="listing"
+	           id="listing-table"
+	           summary="Content listing"
+	           i18n:attributes="summary summary_content_listing;"
+	           tal:condition="view/items"
+	           tal:define="colspan python:str(len(wflist_state['columns'])+2);
+			               columns view/columns;
+						   column_list python:wflist_state['columns']">
+	      <thead>
 
-      <metal:block tal:condition="view/batch">
-        <tbody>
-          <tal:items tal:repeat="item view/batch">
-            <tr tal:attributes="class item/table_row_class;
-                                id string:folder-contents-item-${item/id};" >
+<!-- strangely pretty
+	        <tr tal:condition="python: len(view.wflist_states)>1">
+	          <th tal:attributes="colspan colspan" class="nosort">
+	            <span i18n:translate="label_wfstates" tal:omit-tag="">States:<span tal:omit-tag="" tal:content="structure view/wflist"/></span>
+	          </th>
+	        </tr>
+-->
+
+	        <tr tal:condition="not:view/selectcurrentbatch">
+	          <th tal:attributes="colspan colspan" class="nosort"><span i18n:translate="label_select" tal:omit-tag="">Select:</span> <a i18n:translate="label_all" tal:attributes="href view/selectscreen_url" id="foldercontents-selectall">All</a></th>
+	        </tr>
 
 
-              <td tal:condition="view/show_sort_column" class="draggable">
-                <a href=""
-                   title="Move item up"
-                   i18n:attributes="title title_move_item_up;"
-                   tal:attributes="href string:${view/base_url}/folder_position?position=up&amp;id=${item/quoted_id}">
-                  &#9650;
-                </a>
-                &nbsp;
-                <a href=""
-                   title="Move item down"
-                   i18n:attributes="title title_move_item_down;"
-                   tal:attributes="href string:${view/base_url}/folder_position?position=down&amp;id=${item/quoted_id}">
-                  &#9660;
-                </a>
-              </td>
-              <td class="notDraggable">
-                <input type="checkbox"
-                       class="noborder"
-                       name="paths:list" id="#"
-                       value="#"
-                       tal:attributes="value   item/path;
-                                       id      string:cb_${item/id};
-                                       checked item/checked;
-                                       alt     python:view.msg_select_item(item);
-                                       title   python:view.msg_select_item(item)" />
-                <input type="hidden" name="selected_obj_paths:list" value="#"
-                       tal:attributes="value item/relative_url" />
-                <label tal:content="item/title_or_id"
-                       tal:attributes="for string:cb_${item/id}" 
-                       class="hiddenStructure">
-                  Item Title
-                </label>
-              </td>
+
+	        <tr tal:condition="view/show_select_all_items">
+	          <th tal:attributes="colspan colspan" class="nosort">
+	            <span tal:omit-tag="" i18n:translate="tableheading_all_items_selected">
+	              All <tal:block replace="view/batch/items_on_page" i18n:name="count"/> items on this page are selected. 
+	            </span>
+	            <a tal:attributes="href view/selectall_url" 
+	               id="foldercontents-selectall-completebatch"
+	               i18n:translate="tableheading_select_all_items">Select all 
+	            <tal:block replace="view/batch/size" i18n:name="count"/> items in this folder.</a>
+	          </th>
+	        </tr>
+	
+	        <tr tal:condition="view/selectall">
+	          <th tal:attributes="colspan colspan" class="nosort">
+	            <span tal:omit-tag="" i18n:translate="tableheading_all_items_selected_in_folder">
+	            All <tal:block replace="view/batch/size" i18n:name="count"/> items in this folder
+	            are selected. 
+	            </span>
+	            <a tal:attributes="href view/selectnone_url"  i18n:translate="tableheading_clear_selection"
+	               id="foldercontents-clearselection">Clear selection</a>
+	          </th>
+	        </tr>
 
 
-              <td tal:repeat="column view/columns">
+	
+	        <tr>
+	          <th class="nosort column"
+	              id="foldercontents-order-column"
+	              tal:condition="view/show_sort_column">
+	          </th>
+	          <th class="nosort">&nbsp;</th>
+	          <th class="nosort column" tal:repeat="column column_list"
+	              id="string:foldercontents-${columns/column/title}-column"
+	              >&nbsp;<span i18n:translate="python:'listingheader_' + view.columns[ column ]['title']"><span tal:content="python:view.columns[  column  ]['title']"/></span>&nbsp;
+	           </th>
+	        </tr>
+	      </thead>
+	
+	      <metal:block tal:condition="view/batch">
+	        <tbody>
+	          <tal:items tal:repeat="item view/batch">
+	            <tr tal:attributes="class item/table_row_class;
+	                                id string:folder-contents-item-${item/id};" >
+	
+	
+	              <td tal:condition="view/show_sort_column" class="draggable">
+	                <a href=""
+	                   title="Move item up"
+	                   i18n:attributes="title title_move_item_up;"
+	                   tal:attributes="href string:${view/base_url}/folder_position?position=up&amp;id=${item/quoted_id}">
+	                  &#9650;
+	                </a>
+	                &nbsp;
+	                <a href=""
+	                   title="Move item down"
+	                   i18n:attributes="title title_move_item_down;"
+	                   tal:attributes="href string:${view/base_url}/folder_position?position=down&amp;id=${item/quoted_id}">
+	                  &#9660;
+	                </a>
+	              </td>
+	              <td class="notDraggable">
+	                <input type="checkbox"
+	                       class="noborder"
+	                       name="paths:list" id="#"
+	                       value="#"
+	                       tal:attributes="value   item/path;
+	                                       id      string:cb_${item/id};
+	                                       checked item/checked;
+	                                       alt     python:view.msg_select_item(item);
+	                                       title   python:view.msg_select_item(item)" />
+	                <input type="hidden" name="selected_obj_paths:list" value="#"
+	                       tal:attributes="value item/relative_url" />
+	                <label tal:content="item/title_or_id"
+	                       tal:attributes="for string:cb_${item/id}" 
+	                       class="hiddenStructure">
+	                  Item Title
+	                </label>
+	              </td>
 
-                  <!-- title column is special /-->
-                  <img tal:condition="python:column['title'] == 'Title'" tal:replace="structure item/icon" />
-                  <a tal:condition="python:column['title'] == 'Title'" href="#" 
-                     tal:attributes="href item/view_url;
-                                     title item/url_href_title;
-                                     class string: ${item/state_class} ${item/type_class};">
-                    <strong tal:omit-tag="not: item/is_browser_default"
-                            tal:content="python:item.get(column['field'])"/>
-                  </a>
-                  <span tal:condition="python:item['is_expired'] and column['title'] == 'Title'" 
-                      class="state-expired"
-                      i18n:translate="time_expired">expired</span>
+	              <td tal:repeat="column wflist_state/columns">
 
-                  <!-- other columns are generic -->
-                  <span tal:condition="python:column['title'] != 'Title'"
-                        tal:content="python:item[column['field']]"
-                        tal:attributes="class item/state_class">&nbsp</span>
-              </td>
+	                  <a tal:condition="python:item['links'].has_key(column)" href="#" 
+	                     tal:attributes="href python:item['links'][column];
+	                                     class string: ${item/state_class} ${item/type_class};">
+	                    <strong tal:content="python:item.get(column)"/>
+                        <img tal:condition="python:view.columns[column].has_key('icon')" 
+                             tal:attributes="src python:'images/'+view.columns[column]['icon']" />
+	                  </a>
 
-            </tr>
-          </tal:items>
-        </tbody>
-        <tfoot tal:condition="not:view/within_batch_size">
-          <tr tal:condition="not:view/show_all">
-            <th colspan="6" class="nosort">
-              <a tal:attributes="href view/show_all_url"
-                 i18n:translate="label_show_all"
-                 id="foldercontents-show-all">Show all items</a>
-            </th>
-          </tr>
-          <tr tal:condition="view/show_all">
-            <th colspan="6" class="nosort">
-              <a tal:attributes="href view/view_url"
-                 i18n:translate="label_show_batched"
-                 id="foldercontents-show-batched">Show batched</a>
-            </th>
-          </tr>
-        </tfoot>
-      </metal:block>
-    </table>
+<!--
+	                  <span tal:condition="python:item['is_expired'] and view.columns[column]['title'] == 'Title'" 
+	                      class="state-expired"
+	                      i18n:translate="time_expired">expired</span>
+-->
+
+	                  <span  tal:condition="python:not item['links'].has_key(column)"
+	                        tal:content="python:item.get(column)"
+	                        tal:attributes="class item/state_class">&nbsp</span>
+
+	              </td>
+
+	            </tr>
+	          </tal:items>
+	        </tbody>
+	        <tfoot tal:condition="not:view/within_batch_size">
+	          <tr tal:condition="not:view/show_all">
+	            <th colspan="6" class="nosort">
+	              <a tal:attributes="href view/show_all_url"
+	                 i18n:translate="label_show_all"
+	                 id="foldercontents-show-all">Show all items</a>
+	            </th>
+	          </tr>
+	          <tr tal:condition="view/show_all">
+	            <th colspan="6" class="nosort">
+	              <a tal:attributes="href view/view_url"
+	                 i18n:translate="label_show_batched"
+	                 id="foldercontents-show-batched">Show batched</a>
+	            </th>
+	          </tr>
+	        </tfoot>
+	      </metal:block>
+	    </table>
+    </tal:wflist_state>
     <div tal:replace="structure view/batching" tal:condition="not:view/show_all"/>
     <tal:buttons tal:repeat="button view/buttons">
       <input class="context"

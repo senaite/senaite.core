@@ -4,11 +4,13 @@
  <property name="title">Pricelist line item</property>
  <property
     name="description">A not-so-basic CMF Content implementation with Dublin Core
-      Metadata included</property>
- <property name="content_icon">document_icon.gif</property>
+  Metadata included</property>
+ <property name="icon_expr">string:${portal_url}/document_icon.gif</property>
  <property name="content_meta_type">PricelistLineItem</property>
  <property name="product">bika</property>
  <property name="factory">addPricelistLineItem</property>
+ <property name="add_view_expr"></property>
+ <property name="link_target"></property>
  <property name="immediate_view">base_edit</property>
  <property name="global_allow">False</property>
  <property name="filter_content_types">True</property>
@@ -16,21 +18,24 @@
  <property name="allow_discussion">False</property>
  <alias from="edit" to="base_edit"/>
  <action title="View" action_id="view" category="object" condition_expr=""
-    url_expr="string:${object_url}/base_view" visible="False">
+    icon_expr="" link_target="" url_expr="string:${object_url}/base_view"
+    visible="False">
   <permission value="View"/>
  </action>
  <action title="Edit" action_id="edit" category="object" condition_expr=""
-    url_expr="string:${object_url}/base_edit" visible="True">
+    icon_expr="" link_target="" url_expr="string:${object_url}/base_edit"
+    visible="True">
   <permission value="Modify portal content"/>
  </action>
  <action title="Properties" action_id="metadata" category="object"
-    condition_expr="" url_expr="string:${object_url}/base_metadata"
-    visible="False">
+    condition_expr="" icon_expr="" link_target=""
+    url_expr="string:${object_url}/base_metadata" visible="False">
   <permission value="Modify portal content"/>
  </action>
  <action title="References" action_id="references" category="object"
-    condition_expr="object/archetype_tool/has_graphviz"
-    url_expr="string:${object_url}/reference_graph" visible="False">
+    condition_expr="object/archetype_tool/has_graphviz" icon_expr=""
+    link_target="" url_expr="string:${object_url}/reference_graph"
+    visible="False">
   <permission value="Modify portal content"/>
   <permission value="Review portal content"/>
  </action>

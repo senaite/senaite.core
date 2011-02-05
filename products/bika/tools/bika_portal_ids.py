@@ -24,7 +24,7 @@ class bika_portal_ids(UniqueObject, SimpleItem):
     title = 'Portal Ids'
     description = 'Generates IDs for objects'
     meta_type = 'Portal ID Tool'
-    listing_schema = None 
+    listing_schema = None
     default_template = 'tool_settings_view'
 
     security.declareProtected(permissions.View, 'generate_id')

@@ -11,7 +11,7 @@
 our own ids for transactions and accounts.
 '''
 # get prefix
-prefixes = context.bika_settings.settings.getPrefixes()
+prefixes = context.bika_settings.getPrefixes()
 type_name.replace(' ', '')
 for d in prefixes:
     if type_name != d['portal_type']: continue

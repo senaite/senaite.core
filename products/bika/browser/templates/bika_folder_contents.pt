@@ -7,64 +7,71 @@
       metal:use-macro="here/main_template/macros/master">
 
   <head>
-      <metal:block fill-slot="top_slot">
-        <tal:insert tal:replace="nothing"
-              tal:define="dummy python:request.set('enable_border', 1)" />
-      </metal:block>
+    <metal:block fill-slot="top_slot">
+      <tal:insert tal:replace="nothing"
+           tal:define="dummy python:request.set('enable_border', view.enable_border)" />
+    </metal:block>
   </head>
 
   <body>
+    <metal:content-title fill-slot="content-title">
+      <h1 class="documentFirstHeading"> 
+        <tal:block condition="exists:here/aq_explicit/widget">
+          <metal:field use-macro="python:here.widget('title', mode='view')">Title</metal:field>
+        </tal:block>
+        <tal:block condition="not:exists:here/aq_explicit/widget">
+          <span tal:content="view/title" tal:omit-tag="">Directory Id</span>
+        </tal:block>
+      </h1>
+    </metal:content-title>
 
-      <metal:content-title fill-slot="content-title">
-          <h1 class="documentFirstHeading"> 
-              <tal:block condition="exists:here/aq_explicit/widget">
-                  <metal:field use-macro="python:here.widget('title', mode='view')">
-                  Title
-                  </metal:field>
-              </tal:block>
-              <tal:block condition="not:exists:here/aq_explicit/widget">
-                  <span tal:content="view/title" tal:omit-tag="">Directory Id</span>
-              </tal:block>
-          </h1>
-      </metal:content-title>
+    <metal:content-description fill-slot="content-description">
+      <div class="documentDescription" tal:condition="exists:here/aq_explicit/widget">
+        <metal:field use-macro="python:here.widget('description', mode='view')">Description</metal:field>
+      </div>
+      <tal:block condition="not:exists:here/aq_explicit/widget">
+        <div class="documentDescription" 
+             tal:content="view/description" 
+             tal:condition="view/description">Description</div>
+      </tal:block>
+    </metal:content-description>
 
-      <metal:content-description fill-slot="content-description">
-          <div class="documentDescription" tal:condition="exists:here/aq_explicit/widget">
-              <metal:field use-macro="python:here.widget('description', mode='view')">
-                  Description
-              </metal:field>
-          </div>
-          <tal:block condition="not:exists:here/aq_explicit/widget">
-              <div class="documentDescription" 
-                         tal:content="context/Description" 
-                         tal:condition="context/Description"> 
-                  Description
-              </div>
-          </tal:block>
-      </metal:content-description>
+    <metal:content-core fill-slot="content-core">
 
-      <metal:content-core fill-slot="content-core">
+      <form 
+        name="folderContentsForm"
+        method="post"
+        action="folder_object"
+        tal:attributes="action context/absolute_url"
+        class="kssattr-serveraction-foldercontents_update_table">
 
-<!--
-          <a href=""
-             class="link-parent"
-             tal:define="parent_url view/parent_url"
-             tal:condition="parent_url"
-             tal:attributes="href string:${parent_url}/folder_contents"
-             i18n:translate="go_to_parent_url">
-              Up one level
-          </a>
-/-->
+        <tal:wflist condition="python: len(view.wflist_states)>1">
+          <span i18n:translate="label_wfstates" tal:omit-tag="">States:<span tal:omit-tag="" tal:content="structure view/wflist"/></span>
+        </tal:wflist>
 
-          <form name="folderContentsForm"
-                method="post"
-                action="folder_object"
-                tal:attributes="action context/absolute_url"
-                class="kssattr-serveraction-foldercontents_update_table">
-            <div tal:replace="structure view/contents_table"></div>
-            <input tal:replace="structure context/@@authenticator/authenticator" />
-          </form>
-      </metal:content-core>
-      
+        <tal:add_buttons repeat="add_type view/content_add_buttons">
+          <tal:add_type define="type_info python:view.portal_types[add_type]">
+            <input 
+              class="standalone add"
+              type="submit"
+              name="folder_factories:method"
+              i18n:attributes="value"
+              tal:attributes="value string:Add ${add_type}"/>
+          </tal:add_type>
+        </tal:add_buttons>
+
+        <div class="visualClear" id="clear-space-before-navigation"><!-- --></div>
+
+        <div tal:replace="structure view/contents_table"></div>
+        <input tal:replace="structure context/@@authenticator/authenticator" />
+
+      </form>
+
+    </metal:content-core>
+
   </body>
 </html>
+
+
+
+

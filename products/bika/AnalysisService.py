@@ -13,7 +13,7 @@ from Products.bika.FixedPointField import FixedPointField
 from Products.bika.config import I18N_DOMAIN, PROJECTNAME
 from Products.bika.fixedpoint import FixedPoint
 from Products.ATExtensions.ateapi import RecordsField
-from Products.bika.config import ATTACHMENT_OPTIONS 
+from Products.bika.config import ATTACHMENT_OPTIONS
 
 class UncertaintiesField(RecordsField):
     """a list of uncertainty values per service"""
@@ -309,9 +309,6 @@ class AnalysisService(VariableSchemaSupport, BrowserDefaultMixin, BaseContent):
     default_view = 'analysisservice_edit'
     immediate_view = 'analysisservice_edit'
     content_icon = 'service.png'
-    global_allow = 0
-    filter_content_types = 0
-    use_folder_tabs = 0
 
     actions = (
        {'id': 'edit',

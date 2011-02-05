@@ -6,8 +6,6 @@
     directory="Products.ATContentTypes:skins/ATContentTypes"/>
  <object name="BikaMembers" meta_type="Filesystem Directory View"
     directory="Products.BikaMembers:skins/BikaMembers"/>
- <object name="bika" meta_type="Filesystem Directory View"
-    directory="Products.bika:skins/bika"/>
  <object name="CMFEditions" meta_type="Filesystem Directory View"
     directory="Products.CMFEditions:skins/CMFEditions"/>
  <object name="LanguageTool" meta_type="Filesystem Directory View"
@@ -20,6 +18,8 @@
     directory="Products.Archetypes:skins/archetypes_kss"/>
  <object name="at_extensions" meta_type="Filesystem Directory View"
     directory="Products.ATExtensions:skins/at_extensions"/>
+ <object name="bika" meta_type="Filesystem Directory View"
+    directory="Products.bika:skins/bika"/>
  <object name="classic_ecmascript" meta_type="Filesystem Directory View"
     directory="plonetheme.classic:skins/classic_ecmascript"/>
  <object name="classic_styles" meta_type="Filesystem Directory View"
@@ -71,18 +71,18 @@
     directory="Products.TinyMCE:skins/tinymce"/>
  <skin-path name="Plone Classic Theme">
   <layer name="custom"/>
-  <layer name="bika"/>
-  <layer name="BikaMembers"/>
+  <layer name="at_extensions"/>
   <layer name="archetypes"/>
   <layer name="archetypes_kss"/>
   <layer name="mimetypes_icons"/>
+  <layer name="bika"/>
+  <layer name="BikaMembers"/>
   <layer name="classic_styles"/>
   <layer name="classic_ecmascript"/>
   <layer name="tinymce"/>
   <layer name="referencebrowser"/>
   <layer name="cmfeditions_views"/>
   <layer name="CMFEditions"/>
-  <layer name="at_extensions"/>
   <layer name="LanguageTool"/>
   <layer name="plone_kss"/>
   <layer name="ATContentTypes"/>
@@ -104,16 +104,16 @@
  </skin-path>
  <skin-path name="Plone Default">
   <layer name="custom"/>
-  <layer name="bika"/>
-  <layer name="BikaMembers"/>
+  <layer name="at_extensions"/>
   <layer name="archetypes"/>
   <layer name="archetypes_kss"/>
   <layer name="mimetypes_icons"/>
+  <layer name="bika"/>
+  <layer name="BikaMembers"/>
   <layer name="tinymce"/>
   <layer name="referencebrowser"/>
   <layer name="cmfeditions_views"/>
   <layer name="CMFEditions"/>
-  <layer name="at_extensions"/>
   <layer name="LanguageTool"/>
   <layer name="plone_kss"/>
   <layer name="ATContentTypes"/>
@@ -135,11 +135,12 @@
  </skin-path>
  <skin-path name="Sunburst Theme">
   <layer name="custom"/>
-  <layer name="bika"/>
-  <layer name="BikaMembers"/>
+  <layer name="at_extensions"/>
   <layer name="archetypes"/>
   <layer name="archetypes_kss"/>
   <layer name="mimetypes_icons"/>
+  <layer name="bika"/>
+  <layer name="BikaMembers"/>
   <layer name="sunburst_images"/>
   <layer name="sunburst_templates"/>
   <layer name="sunburst_styles"/>
@@ -147,7 +148,6 @@
   <layer name="referencebrowser"/>
   <layer name="cmfeditions_views"/>
   <layer name="CMFEditions"/>
-  <layer name="at_extensions"/>
   <layer name="LanguageTool"/>
   <layer name="plone_kss"/>
   <layer name="ATContentTypes"/>

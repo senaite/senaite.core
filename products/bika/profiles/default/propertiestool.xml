@@ -17,28 +17,13 @@
   <property name="includeTop" type="boolean">False</property>
   <property name="topLevel" type="int">0</property>
   <property name="bottomLevel" type="int">0</property>
-  <property name="showAllParents" type="boolean">True</property>
+  <property name="showAllParents" type="boolean">False</property>
   <property name="idsNotToList" type="lines"/>
   <property name="parentMetaTypesNotToQuery" type="lines">
    <element value="TempFolder"/>
    <element value="Large Plone Folder"/>
   </property>
   <property name="metaTypesNotToList" type="lines">
-   <element value="ATBooleanCriterion"/>
-   <element value="ATDateCriteria"/>
-   <element value="ATDateRangeCriterion"/>
-   <element value="ATListCriterion"/>
-   <element value="ATPortalTypeCriterion"/>
-   <element value="ATReferenceCriterion"/>
-   <element value="ATSelectionCriterion"/>
-   <element value="ATSimpleIntCriterion"/>
-   <element value="ATSimpleStringCriterion"/>
-   <element value="ATSortCriterion"/>
-   <element value="Discussion Item"/>
-   <element value="Plone Site"/>
-   <element value="TempFolder"/>
-   <element value="ATCurrentAuthorCriterion"/>
-   <element value="ATPathCriterion"/>
    <element value="AnalysisRequest"/>
    <element value="Sample"/>
    <element value="Analysis"/>
@@ -70,6 +55,7 @@
    <element value="MethodLogEntry"/>
    <element value="Instrument"/>
    <element value="WorksheetTemplate"/>
+   <element value="BikaSettings"/>
   </property>
   <property name="enable_wf_state_filtering" type="boolean">False</property>
   <property name="wf_states_to_show" type="lines"/>

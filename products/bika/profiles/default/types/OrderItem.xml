@@ -6,16 +6,17 @@
  <property
     name="description">Mixin class for content types using the dynamic view FTI
   
-      Allow the user to select a layout template (in the same way as
-      TemplateMixin in Archetypes does), and/or to set a contained
-      object's id as a default_page (acting in the same way as index_html)
+  Allow the user to select a layout template (in the same way as
+  TemplateMixin in Archetypes does), and/or to set a contained
+  object's id as a default_page (acting in the same way as index_html)
   
-      Note: folderish content types should overwrite HEAD like ATContentTypes
-      </property>
- <property name="content_icon">product.png</property>
+  Note: folderish content types should overwrite HEAD like ATContentTypes</property>
+ <property name="icon_expr">string:${portal_url}/product.png</property>
  <property name="content_meta_type">OrderItem</property>
  <property name="product">bika</property>
  <property name="factory">addOrderItem</property>
+ <property name="add_view_expr"></property>
+ <property name="link_target"></property>
  <property name="immediate_view">base_view</property>
  <property name="global_allow">False</property>
  <property name="filter_content_types">False</property>
@@ -33,21 +34,24 @@
  <alias from="sharing" to="folder_localrole_form"/>
  <alias from="view" to="(selected layout)"/>
  <action title="View" action_id="view" category="object" condition_expr=""
-    url_expr="string:${object_url}/base_view" visible="True">
+    icon_expr="" link_target="" url_expr="string:${object_url}/base_view"
+    visible="True">
   <permission value="View"/>
  </action>
  <action title="Edit" action_id="edit" category="object" condition_expr=""
-    url_expr="string:${object_url}/base_edit" visible="True">
+    icon_expr="" link_target="" url_expr="string:${object_url}/base_edit"
+    visible="True">
   <permission value="Modify portal content"/>
  </action>
  <action title="Properties" action_id="metadata" category="object"
-    condition_expr="" url_expr="string:${object_url}/base_metadata"
-    visible="False">
+    condition_expr="" icon_expr="" link_target=""
+    url_expr="string:${object_url}/base_metadata" visible="False">
   <permission value="Modify portal content"/>
  </action>
  <action title="References" action_id="references" category="object"
-    condition_expr="object/archetype_tool/has_graphviz"
-    url_expr="string:${object_url}/reference_graph" visible="False">
+    condition_expr="object/archetype_tool/has_graphviz" icon_expr=""
+    link_target="" url_expr="string:${object_url}/reference_graph"
+    visible="False">
   <permission value="Modify portal content"/>
   <permission value="Review portal content"/>
  </action>

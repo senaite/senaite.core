@@ -18,6 +18,8 @@ schema['title'].widget.visible = {'edit':'hidden', 'view': 'invisible'}
 class ClientFolder(folder.ATFolder):
     implements(IClientFolder)
     schema = schema
+#    canSetConstrainTypes = False
+    displayContentsTab = False
 
 
 schemata.finalizeATCTSchema(schema, folderish = True, moveDiscussion = False)

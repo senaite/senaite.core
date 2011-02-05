@@ -3,6 +3,8 @@
   <roles>
     <role name="Anonymous"/>
     <role name="Authenticated"/>
+    <role name="Contributor"/>
+    <role name="Editor"/>
     <role name="LabClerk"/>
     <role name="LabManager"/>
     <role name="LabTechnician"/>
@@ -10,20 +12,64 @@
     <role name="Member"/>
     <role name="Owner"/>
     <role name="Publisher"/>
+    <role name="Reader"/>
     <role name="Reviewer"/>
     <role name="Verifier"/>
   </roles>
   <permissions>
+    <permission name="ATContentTypes: Add Document" acquire="True">
+      <role name="Contributor"/>
+      <role name="Manager"/>
+      <role name="Owner"/>
+    </permission>
+    <permission name="ATContentTypes: Add Event" acquire="True">
+      <role name="Contributor"/>
+      <role name="Manager"/>
+      <role name="Owner"/>
+    </permission>
+    <permission name="ATContentTypes: Add File" acquire="True">
+      <role name="Contributor"/>
+      <role name="Manager"/>
+      <role name="Owner"/>
+    </permission>
+    <permission name="ATContentTypes: Add Folder" acquire="True">
+      <role name="Contributor"/>
+      <role name="Manager"/>
+      <role name="Owner"/>
+    </permission>
+    <permission name="ATContentTypes: Add Image" acquire="True">
+      <role name="Contributor"/>
+      <role name="Manager"/>
+      <role name="Owner"/>
+    </permission>
+    <permission name="ATContentTypes: Add Link" acquire="True">
+      <role name="Contributor"/>
+      <role name="Manager"/>
+      <role name="Owner"/>
+    </permission>
+    <permission name="ATContentTypes: Add News Item" acquire="True">
+      <role name="Contributor"/>
+      <role name="Manager"/>
+      <role name="Owner"/>
+    </permission>
+    <permission name="Access contents information" acquire="True">
+      <role name="Contributor"/>
+      <role name="Editor"/>
+      <role name="Reader"/>
+    </permission>
     <permission name="Access inactive portal content" acquire="True">
       <role name="Owner"/>
     </permission>
-    <permission name="Add portal content" acquire="True">
-      <role name="LabClerk"/>
+    <permission name="Add portal content" acquire="False">
       <role name="LabManager"/>
-      <role name="LabTechnician"/>
       <role name="Manager"/>
+      <role name="Owner"/>
     </permission>
     <permission name="Add portal folders" acquire="True">
+      <role name="Manager"/>
+      <role name="Owner"/>
+    </permission>
+    <permission name="Add portal member" acquire="False">
       <role name="Manager"/>
       <role name="Owner"/>
     </permission>
@@ -55,38 +101,24 @@
       <role name="LabTechnician"/>
       <role name="Manager"/>
     </permission>
+    <permission name="BIKA: Manage ARImport" acquire="True">
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+    </permission>
     <permission name="BIKA: Manage AnalysisRequest" acquire="True">
       <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="LabTechnician"/>
       <role name="Manager"/>
     </permission>
-    <permission name="BIKA: Manage Sample" acquire="True">
-      <role name="LabClerk"/>
-      <role name="LabManager"/>
-      <role name="LabTechnician"/>
-      <role name="Manager"/>
-    </permission>
-    <permission name="BIKA: Manage ARImport" acquire="True">
-      <role name="LabClerk"/>
+    <permission name="BIKA: Manage Bika" acquire="True">
       <role name="LabManager"/>
       <role name="Manager"/>
     </permission>
     <permission name="BIKA: Manage Clients" acquire="True">
       <role name="LabClerk"/>
       <role name="LabManager"/>
-      <role name="Manager"/>
-    </permission>
-    <permission name="BIKA: Manage Standard Suppliers" acquire="True">
-      <role name="LabClerk"/>
-      <role name="LabManager"/>
-      <role name="LabTechnician"/>
-      <role name="Manager"/>
-    </permission>
-    <permission name="BIKA: Manage Standard" acquire="True">
-      <role name="LabClerk"/>
-      <role name="LabManager"/>
-      <role name="LabTechnician"/>
       <role name="Manager"/>
     </permission>
     <permission name="BIKA: Manage Invoices" acquire="True">
@@ -104,18 +136,28 @@
       <role name="Manager"/>
       <role name="Owner"/>
     </permission>
-    <permission name="BIKA: View Methods" acquire="True">
-      <role name="Member"/>
+    <permission name="BIKA: Manage Sample" acquire="True">
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="LabTechnician"/>
+      <role name="Manager"/>
+    </permission>
+    <permission name="BIKA: Manage Standard" acquire="True">
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="LabTechnician"/>
+      <role name="Manager"/>
+    </permission>
+    <permission name="BIKA: Manage Standard Suppliers" acquire="True">
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="LabTechnician"/>
       <role name="Manager"/>
     </permission>
     <permission name="BIKA: Manage Worksheets" acquire="True">
       <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="LabTechnician"/>
-      <role name="Manager"/>
-    </permission>
-    <permission name="BIKA: Manage Bika" acquire="True">
-      <role name="LabManager"/>
       <role name="Manager"/>
     </permission>
     <permission name="BIKA: Post Invoice batch" acquire="True">
@@ -177,11 +219,51 @@
       <role name="Reviewer"/>
       <role name="Verifier"/>
     </permission>
+    <permission name="BIKA: View Methods" acquire="True">
+      <role name="Manager"/>
+      <role name="Member"/>
+    </permission>
     <permission name="BIKA: View Results" acquire="True">
       <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="Manager"/>
       <role name="Owner"/>
+    </permission>
+    <permission name="CMFEditions: Access previous versions" acquire="True">
+      <role name="Contributor"/>
+      <role name="Editor"/>
+      <role name="Manager"/>
+      <role name="Owner"/>
+      <role name="Reviewer"/>
+    </permission>
+    <permission name="CMFEditions: Apply version control" acquire="True">
+      <role name="Contributor"/>
+      <role name="Editor"/>
+      <role name="Manager"/>
+      <role name="Owner"/>
+      <role name="Reviewer"/>
+    </permission>
+    <permission name="CMFEditions: Checkout to location" acquire="True">
+      <role name="Editor"/>
+      <role name="Manager"/>
+      <role name="Owner"/>
+      <role name="Reviewer"/>
+    </permission>
+    <permission name="CMFEditions: Revert to previous versions" acquire="True">
+      <role name="Editor"/>
+      <role name="Manager"/>
+      <role name="Owner"/>
+      <role name="Reviewer"/>
+    </permission>
+    <permission name="CMFEditions: Save new version" acquire="True">
+      <role name="Contributor"/>
+      <role name="Editor"/>
+      <role name="Manager"/>
+      <role name="Owner"/>
+      <role name="Reviewer"/>
+    </permission>
+    <permission name="Content rules: Manage rules" acquire="False">
+      <role name="Manager"/>
     </permission>
     <permission name="Delete objects" acquire="True">
       <role name="LabClerk"/>
@@ -196,9 +278,6 @@
       <role name="Manager"/>
     </permission>
     <permission name="List folder contents" acquire="True">
-      <role name="LabClerk"/>
-      <role name="LabManager"/>
-      <role name="LabTechnician"/>
       <role name="Manager"/>
     </permission>
     <permission name="List portal members" acquire="True">
@@ -213,6 +292,10 @@
       <role name="Manager"/>
       <role name="Owner"/>
     </permission>
+    <permission name="Manage users" acquire="True">
+      <role name="LabManager"/>
+      <role name="Manager"/>
+    </permission>
     <permission name="Modify portal content" acquire="True">
       <role name="LabClerk"/>
       <role name="LabManager"/>
@@ -220,9 +303,30 @@
       <role name="Manager"/>
       <role name="Owner"/>
     </permission>
+    <permission name="Modify view template" acquire="True">
+      <role name="Editor"/>
+      <role name="Manager"/>
+      <role name="Owner"/>
+    </permission>
+    <permission name="Portlets: Manage own portlets" acquire="True">
+      <role name="Manager"/>
+      <role name="Member"/>
+    </permission>
+    <permission name="Portlets: Manage portlets" acquire="True">
+      <role name="Manager"/>
+    </permission>
+    <permission name="Portlets: View dashboard" acquire="True">
+      <role name="Manager"/>
+      <role name="Member"/>
+    </permission>
     <permission name="Reply to item" acquire="True">
       <role name="Manager"/>
       <role name="Member"/>
+    </permission>
+    <permission name="Request review" acquire="True">
+      <role name="Editor"/>
+      <role name="Manager"/>
+      <role name="Owner"/>
     </permission>
     <permission name="Review portal content" acquire="True">
       <role name="Manager"/>
@@ -244,12 +348,27 @@
       <role name="Authenticated"/>
       <role name="Manager"/>
     </permission>
+    <permission name="View" acquire="True">
+      <role name="Contributor"/>
+      <role name="Editor"/>
+      <role name="Reader"/>
+    </permission>
     <permission name="View Groups" acquire="True">
       <role name="Manager"/>
       <role name="Member"/>
       <role name="Owner"/>
     </permission>
     <permission name="View management screens" acquire="True">
+      <role name="Manager"/>
+      <role name="Owner"/>
+    </permission>
+    <permission name="iterate : Check in content" acquire="True">
+      <role name="Editor"/>
+      <role name="Manager"/>
+      <role name="Owner"/>
+    </permission>
+    <permission name="iterate : Check out content" acquire="True">
+      <role name="Editor"/>
       <role name="Manager"/>
       <role name="Owner"/>
     </permission>

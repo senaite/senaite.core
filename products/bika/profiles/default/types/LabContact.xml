@@ -4,20 +4,20 @@
    xmlns:i18n="http://xml.zope.org/namespaces/i18n">
  <property name="title">Lab Contact</property>
  <property name="description">
-      Mixin class to support instance-based schemas
-      Attention: must be before BaseFolder or BaseContent in
-      the inheritance list, e.g:
+  Mixin class to support instance-based schemas
+  Attention: must be before BaseFolder or BaseContent in
+  the inheritance list, e.g:
   
-      class Blorf(VariableSchemaSupport, BaseContent):
-          def getSchema():
-              return some schema definition...
-  
-      </property>
- <property name="content_icon">contact.png</property>
+  class Blorf(VariableSchemaSupport, BaseContent):
+  def getSchema():
+  return some schema definition...
+  </property>
+ <property name="icon_expr">string:${portal_url}/contact.png</property>
  <property name="content_meta_type">LabContact</property>
  <property name="product">bika</property>
  <property name="factory">addLabContact</property>
- <property name="default_view">base_edit</property>
+ <property name="add_view_expr"></property>
+ <property name="link_target"></property>
  <property name="immediate_view">base_edit</property>
  <property name="global_allow">False</property>
  <property name="filter_content_types">False</property>
@@ -37,26 +37,29 @@
  <alias from="sharing" to="folder_localrole_form"/>
  <alias from="view" to="(selected layout)"/>
  <action title="View" action_id="view" category="object" condition_expr=""
-    url_expr="string:${object_url}/base_view" visible="False">
+    icon_expr="" link_target="" url_expr="string:${object_url}/base_view"
+    visible="False">
   <permission value="View"/>
  </action>
  <action title="Edit" action_id="edit" category="object" condition_expr=""
-    url_expr="string:${object_url}/base_edit" visible="True">
+    icon_expr="" link_target="" url_expr="string:${object_url}/base_edit"
+    visible="True">
   <permission value="Modify portal content"/>
  </action>
  <action title="Properties" action_id="metadata" category="object"
-    condition_expr="" url_expr="string:${object_url}/base_metadata"
-    visible="False">
+    condition_expr="" icon_expr="" link_target=""
+    url_expr="string:${object_url}/base_metadata" visible="False">
   <permission value="Modify portal content"/>
  </action>
  <action title="References" action_id="references" category="object"
-    condition_expr="object/archetype_tool/has_graphviz"
-    url_expr="string:${object_url}/reference_graph" visible="False">
+    condition_expr="object/archetype_tool/has_graphviz" icon_expr=""
+    link_target="" url_expr="string:${object_url}/reference_graph"
+    visible="False">
   <permission value="Modify portal content"/>
   <permission value="Review portal content"/>
  </action>
  <action title="Folder Listing" action_id="folderlisting" category="folder"
-    condition_expr="object/isPrincipiaFolderish"
+    condition_expr="object/isPrincipiaFolderish" icon_expr="" link_target=""
     url_expr="string:${folder_url}/view" visible="False">
   <permission value="View"/>
  </action>

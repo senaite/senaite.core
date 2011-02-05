@@ -1,18 +1,21 @@
 id: index_html
 title: Welcome to Bika LIMS
-excludeFromNav: True
-subject: 
 description: This is 2.9, due for release in March 2011.
-contributors: 
-creators: admin
-effectiveDate: 2011/01/01 23:00:00.000 GMT+2
-expirationDate: None
-language: 
-rights: 
-creation_date: 2011/01/01 23:00:00.000 GMT+2
-modification_date: 2011/01/01 23:00:00.000 GMT+2
+subject: 
 relatedItems: 
-allowDiscussion: 0
+location: 
+language: 
+effectiveDate: 2011/01/01 23:00:00 GMT+2
+expirationDate: None
+creation_date: 2011/01/01 23:00:00 GMT+2
+modification_date: 2011/02/01 10:59:31.194263 GMT+2
+creators: admin
+contributors: 
+rights: 
+allowDiscussion: True
+excludeFromNav: True
+presentation: False
+tableContents: False
 Content-Type: text/html
 
 <p class="documentDescription">Thank you for downloading Bika LIMS</p>

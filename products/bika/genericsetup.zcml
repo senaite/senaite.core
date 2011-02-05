@@ -50,18 +50,6 @@
       handler="Products.CMFCore.exportimport.catalog.importCatalogTool">
   </genericsetup:importStep>
     
-  <genericsetup:importStep name="bika-cssregistry" title="Stylesheet registry"
-      description="Import stylesheet registry"
-      handler="Products.ResourceRegistries.exportimport.cssregistry.importCSSRegistry">
-    <depends name="toolset"/>
-  </genericsetup:importStep>
-
-  <genericsetup:importStep name="bika-jsregistry" title="Javascript registry"
-      description="Import javascript registry"
-      handler="Products.ResourceRegistries.exportimport.jsregistry.importJSRegistry">
-    <depends name="toolset"/>
-  </genericsetup:importStep>
-
   <genericsetup:importStep name="bika-propertiestool" title="Site Properties"
       description="Import Plone properties tool and subobjects"
       handler="Products.CMFPlone.exportimport.propertiestool.importPloneProperties">

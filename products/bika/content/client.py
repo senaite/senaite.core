@@ -7,7 +7,6 @@ from AccessControl import ClassSecurityInfo
 from DateTime import DateTime
 from Products.ATContentTypes.content import schemata
 from Products.Archetypes import atapi
-from Products.Archetypes.interfaces.schema import IMultiPageSchema
 from Products.Archetypes.utils import DisplayList
 from Products.BikaMembers import Organisation
 from Products.CMFCore import permissions
@@ -83,27 +82,29 @@ schema = Organisation.schema.copy() + atapi.Schema((
 ))
 
 
-AccountNumber = schema['AccountNumber']
-AccountNumber.write_permission = ManageClients
-
-schema['id'].widget.visible = {'edit':'hidden', 'view': 'invisible'}
-schema['title'].widget.visible = {'edit':'hidden', 'view': 'invisible'}
-schema['description'].widget.visible = {'edit':'hidden', 'view': 'invisible'}
-#schema['allowDiscussion'].widget.visible = {'edit':'hidden', 'view': 'invisible'}
-#schema['excludeFromNav'].widget.visible = {'edit':'hidden', 'view': 'invisible'}
-#schema['nextPreviousEnabled'].widget.visible = {'edit':'hidden', 'view': 'invisible'}
-#schema['creators'].widget.visible = {'edit':'hidden', 'view': 'invisible'}
-#schema['contributors'].widget.visible = {'edit':'hidden', 'view': 'invisible'}
-#schema['rights'].widget.visible = {'edit':'hidden', 'view': 'invisible'}
-#schema['effectiveDate'].widget.visible = {'edit':'hidden', 'view': 'invisible'}
-#schema['expirationDate'].widget.visible = {'edit':'hidden', 'view': 'invisible'}
+schema['AccountNumber'].write_permission = ManageClients
+schema['id'].widget.visible = False
+schema['title'].widget.visible = False
+schema['description'].widget.visible = False
+schema['allowDiscussion'].widget.visible = False
+schema['excludeFromNav'].widget.visible = False
+schema['nextPreviousEnabled'].widget.visible = False
+schema['creators'].widget.visible = False
+schema['contributors'].widget.visible = False
+schema['rights'].widget.visible = False
+schema['effectiveDate'].widget.visible = False
+schema['expirationDate'].widget.visible = False
+schema['subject'].widget.visible = False
+schema['language'].widget.visible = False
+schema['location'].widget.visible = False
 
 class Client(BrowserDefaultMixin, Organisation.Organisation):
     implements(IClient)
     security = ClassSecurityInfo()
 
     schema = schema
-    canSetContrainTypes = False
+#    canSetConstrainTypes = False
+    displayContentsTab = False
 
     setup_state = False
 
@@ -210,8 +211,10 @@ class Client(BrowserDefaultMixin, Organisation.Organisation):
         return DisplayList(sampletypes)
 
     def allowedContentTypes(self):
-        if getattr(self, "allowed_content_types"): allowed_content_types = self.allowed_content_types
-        else: allowed_content_types = None
+        if getattr(self, "allowed_content_types"):
+            allowed_content_types = self.allowed_content_types
+        else:
+            allowed_content_types = None
 
         portal_types = getToolByName(self, 'portal_types')
         myType = portal_types.getTypeInfo(self)

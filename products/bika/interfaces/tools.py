@@ -1,5 +1,14 @@
 from zope.interface import Interface
-class IToolFolder(Interface):
+
+class IBikaSettings(Interface):
+    """
+    """
+
+
+
+
+
+class  IToolFolder(Interface):
     """
     """
 
@@ -87,9 +96,6 @@ class Ibika_labcontacts(Interface):
     """
     """
 
-class Ibika_settings(Interface):
-    """
-    """
 
 class Ibika_portal_ids(Interface):
     """

@@ -1,15 +1,16 @@
-import sys
 from AccessControl import ClassSecurityInfo
-from Products.CMFCore.permissions import View, \
-    ModifyPortalContent
-from Products.CMFDynamicViewFTI.browserdefault import \
-    BrowserDefaultMixin
+from Products.ATExtensions.ateapi import RecordsField
 from Products.Archetypes.public import *
 from Products.Archetypes.references import HoldingReference
-from Products.ATExtensions.ateapi import RecordsField
-from Products.bika.BikaContent import BikaSchema
-from Products.bika.config import I18N_DOMAIN, ATTACHMENT_OPTIONS, ARIMPORT_OPTIONS, PROJECTNAME
+from Products.CMFCore.permissions import View, ModifyPortalContent
+from Products.CMFDynamicViewFTI.browserdefault import BrowserDefaultMixin
 from Products.bika.FixedPointField import FixedPointField
+from Products.bika.config import I18N_DOMAIN, ATTACHMENT_OPTIONS, \
+    ARIMPORT_OPTIONS, PROJECTNAME
+from plone.app.folder import folder
+from Products.bika.interfaces.tools import IBikaSettings
+from zope.interface import implements
+import sys
 
 class PrefixesField(RecordsField):
     """a list of prefixes per portal_type"""
@@ -24,8 +25,7 @@ class PrefixesField(RecordsField):
         })
     security = ClassSecurityInfo()
 
-
-schema = BikaSchema.copy() + Schema((
+schema = folder.ATFolderSchema.copy() + Schema((
     IntegerField('PasswordLifetime',
         required = 1,
         default = 0,
@@ -104,6 +104,7 @@ schema = BikaSchema.copy() + Schema((
             i18n_domain = I18N_DOMAIN,
         )
     ),
+    # XXX stringfield, chars to strip from cell number
     StringField('SMSGatewayAddress',
         required = 0,
         widget = StringWidget(
@@ -114,7 +115,6 @@ schema = BikaSchema.copy() + Schema((
             i18n_domain = I18N_DOMAIN,
         ),
     ),
-    # XXX stringfield, chars to strip from cell number
     ReferenceField('DryMatterService',
         required = 0,
         vocabulary_display_path_bound = sys.maxint,
@@ -184,39 +184,15 @@ TitleField = schema['title']
 TitleField.required = 0
 TitleField.widget.visible = {'edit': 'hidden', 'view': 'invisible'}
 
-class BikaSettings(BrowserDefaultMixin, BaseContent):
+class BikaSettings(BrowserDefaultMixin, folder.ATFolder):
     security = ClassSecurityInfo()
-    archetype_name = 'BikaSettings'
     schema = schema
-    allowed_content_types = ()
-    default_view = 'tool_base_edit'
-    immediate_view = 'tool_base_edit'
-    content_icon = 'setup.png'
-    global_allow = 0
-    filter_content_types = 0
-    use_folder_tabs = 0
+    implements(IBikaSettings)
+
     # XXX: Temporary workaround to enable importing of exported bika
     # instance. If '__replaceable__' is not set we get BadRequest, The
     # id is invalid - it is already in use.
     __replaceable__ = 1
-
-    actions = (
-       {'id': 'edit',
-        'name': 'Edit',
-        'action': 'string:${object_url}/tool_base_edit',
-        'permissions': (ModifyPortalContent,),
-        },
-       # Make view action the same as edit
-       {'id': 'view',
-        'name': 'View',
-        'action': 'string:${object_url}/tool_base_edit',
-        'permissions': (ModifyPortalContent,),
-        },
-    )
-
-    factory_type_information = {
-        'title': 'Bika settings'
-    }
 
     def getAttachmentsPermitted(self):
         """ are any attachments permitted """

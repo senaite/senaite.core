@@ -6,7 +6,6 @@ from bika_ar_import import bika_ar_import
 from bika_arprofiles import bika_arprofiles
 from bika_attachmenttypes import bika_attachmenttypes
 from bika_calctypes import bika_calctypes
-from bika_categories import bika_categories
 from bika_client_categories import bika_client_categories
 from bika_client_status import bika_client_status
 from bika_departments import bika_departments
@@ -25,7 +24,6 @@ from bika_samplepoints import bika_samplepoints
 from bika_sampletypes import bika_sampletypes
 from bika_services_export import bika_services_export
 from bika_services import bika_services
-from bika_settings import bika_settings
 from bika_standardmanufacturers import bika_standardmanufacturers
 from bika_standardstocks import bika_standardstocks
 from bika_worksheettemplates import bika_worksheettemplates

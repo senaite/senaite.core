@@ -1,10 +1,9 @@
 from zope.interface import Interface
 
-from bika_folder_contents import IBikaFolderContentsView
-
 from client import IClient
-
+from tools import *
 from clientfolder import IClientFolder, IClientFolderView
+
 
 class IClientFolder(Interface):
     """Client Folder marker interface"""

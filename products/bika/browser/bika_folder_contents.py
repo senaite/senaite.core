@@ -4,7 +4,6 @@ from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import pretty_title_or_id, isExpired, safe_unicode
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from Products.bika import logger
-from Products.bika.interfaces import IBikaFolderContentsView
 from plone.app.content.browser import tableview
 from plone.app.content.browser.foldercontents import FolderContentsView, \
     FolderContentsTable
@@ -20,21 +19,34 @@ class BikaFolderContentsView(FolderContentsView):
     """
     """
 
-    implements(IFolderContentsView, IBikaFolderContentsView)
+    implements(IFolderContentsView)
     template = ViewPageTemplateFile("templates/bika_folder_contents.pt")
+    wflist = ViewPageTemplateFile("templates/wflist.pt")
 
     contentFilter = {}
     batch = True
-    b_size = 100
+    b_size = 20
     full_objects = False
+    enable_border = True
+    show_sort_column = False
 
-    # setting this to a list of IDs restricts the Add New... contentactions menu.
+    title = "Folder Contents"
+    description = ""
+
+    # setting this to a list of portal_type IDs restricts the Add New... contentactions menu.
+    # setting it to empty displays the Plone default list.
+    # setting it to None will disable the Add new... menu # XXX ?
     allowed_content_types = []
 
-    # Setting this enables the workflow state selector
-    wflist_states = [] # {'title': '', 'id':''}, ...
+    # A list of portal_types for 'Add X' buttons above the output
+    content_add_buttons = []
+
+    # Setting this enables the workflow state selector.
+    wflist_states = []
 
     # The fields listed must be in the catalog metadata
+    # or folderitems() must be overridden to provide them
+    # if they are not in brains.
     columns = [
               {'title': 'Title', 'field':'title_or_id'},
               {'title': 'Size', 'field':'size'},
@@ -45,10 +57,10 @@ class BikaFolderContentsView(FolderContentsView):
     def __init__(self, context, request):
         super(BikaFolderContentsView, self).__init__(context, request)
         self.context.allowed_content_types = self.allowed_content_types
+        self.portal_types = getToolByName(context, 'portal_types')
 
     def getFolderContents(self):
         """ Lifted from CMFPlone/skins/plone_skins/getFolderContents.py
-            Do not override this function, extend it rather.
         """
         context = aq_inner(self.context)
 
@@ -147,6 +159,7 @@ class BikaFolderContentsView(FolderContentsView):
                 obj.id == browser_default[1][0])
 
             results_dict = dict(
+                obj = obj,
                 url = url,
                 url_href_title = url_href_title,
                 id = obj.getId,
@@ -159,8 +172,7 @@ class BikaFolderContentsView(FolderContentsView):
                 icon = icon.html_tag(),
                 type_class = type_class,
                 wf_state = review_state,
-                state_title = portal_workflow.getTitleForStateOnType(review_state,
-                                                           obj_type),
+                state_title = portal_workflow.getTitleForStateOnType(review_state, obj_type),
                 state_class = state_class,
                 is_browser_default = is_browser_default,
                 folderish = obj.is_folderish,
@@ -168,6 +180,7 @@ class BikaFolderContentsView(FolderContentsView):
                 view_url = view_url,
                 table_row_class = table_row_class,
                 is_expired = isExpired(obj),
+                links = {},
             )
 
             # Insert all fields from the schema, if they are in the brains
@@ -183,45 +196,76 @@ class BikaFolderContentsView(FolderContentsView):
         return self.template()
 
     def contents_table(self):
-        table = BikaFolderContentsTable(aq_inner(self.context), self.request,
+        table = BikaFolderContentsTable(aq_inner(self.context),
+                                        self.request,
                                         getFolderContents = self.getFolderContents,
                                         folderitems = self.folderitems,
                                         columns = self.columns,
                                         wflist_states = self.wflist_states,
+                                        pagesize = self.b_size,
+                                        show_sort_column = self.show_sort_column,
                                         view_url = "/@@bika_folder_contents",
                                         )
 
         return table.render()
 
-class Table(tableview.Table):
-    def __init__(self, request, base_url, view_url, items, columns, wflist_states, show_sort_column = False,
-                 buttons = [], pagesize = 20):
-        tableview.Table.__init__(self, request, base_url, view_url, items, show_sort_column = False,
-                 buttons = [], pagesize = 20)
-        self.columns = columns
-        self.wflist_states = wflist_states
-        self.show_sort_column = show_sort_column
-
-    render = ViewPageTemplateFile("templates/table.pt")
-    batching = ViewPageTemplateFile("templates/batching.pt")
-    wflist = ViewPageTemplateFile("templates/wflist.pt")
 
 class BikaFolderContentsTable(FolderContentsTable):
     """
     """
     implements(IFolderContentsView)
 
-    def __init__(self, context, request, getFolderContents, folderitems, columns, wflist_states,
+    def __init__(self,
+                 context,
+                 request,
+                 getFolderContents,
+                 folderitems,
+                 columns,
+                 wflist_states,
+                 pagesize,
+                 show_sort_column,
                  view_url = '/@@bika_folder_contents'):
         self.context = context
         self.request = request
         self.getFolderContents = getFolderContents
-        self.items = folderitems()
+        self.items = folderitems() # XXX original buttons() requires this
         url = context.absolute_url()
-        self.wflist_states = wflist_states
-        self.table = Table(request, url, url + view_url, self.items, columns, wflist_states,
-                           show_sort_column = self.show_sort_column,
-                           buttons = self.buttons)
+        self.table = Table(request,
+                           url,
+                           url + view_url,
+                           self.items,
+                           columns,
+                           wflist_states,
+                           show_sort_column = show_sort_column,
+                           buttons = self.buttons,
+                           pagesize = pagesize)
 
     def render(self):
         return self.table.render()
+
+class Table(tableview.Table):
+    def __init__(self,
+                 request,
+                 base_url,
+                 view_url,
+                 items,
+                 columns,
+                 wflist_states,
+                 show_sort_column = False,
+                 buttons = [],
+                 pagesize = 20):
+
+        tableview.Table.__init__(self,
+                                 request,
+                                 base_url,
+                                 view_url,
+                                 items,
+                                 show_sort_column = show_sort_column,
+                                 buttons = [],
+                                 pagesize = 20)
+
+        self.columns = columns
+        self.wflist_states = wflist_states
+
+    render = ViewPageTemplateFile("templates/table.pt")
+    batching = ViewPageTemplateFile("templates/batching.pt")
