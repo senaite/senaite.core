@@ -18,7 +18,7 @@ class ClientFolderContentsView(BikaFolderContentsView):
     b_size = 100
     full_objects = False
     columns = {
-               'title_or_id': {'title': 'Name', 'field': 'title_or_id', 'icon':'client.png', 'link':'view_url'},
+               'title_or_id': {'title': 'Name', 'field': 'title_or_id'},
                'getEmailAddress': {'title': 'Email Address', 'field':'getEmailAddress'},
                'getPhone': {'title': 'Phone', 'field':'getPhone'},
                'getFax': {'title': 'Fax', 'field':'getFax'},

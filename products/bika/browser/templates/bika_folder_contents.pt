@@ -44,7 +44,6 @@
              or I can't figure it out. -->
       </tal:comment>
       <tal:add_buttons repeat="add_type view/content_add_buttons">
-        <tal:add_type define="type_info python:view.portal_types[add_type]">
           <form 
             name="folderContentsForm"
             method="post"
@@ -58,7 +57,6 @@
               tal:attributes="value string:Add ${add_type};
 			                  name string:add_${add_type}"/>
           </form>
-        </tal:add_type>
       </tal:add_buttons>
 
 

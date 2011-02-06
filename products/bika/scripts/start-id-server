@@ -1,14 +1,13 @@
 #!/bin/bash
 
-reldir=`dirname $0`
+BIKA_BASE=/home/godfrey/workspace/Bika3
 PYTHON=/usr/bin/python
-BIKA_BASE=`cd $reldir; pwd`
 COUNTER_FILE=$BIKA_BASE/var/id.counter
-LOG_FILE=$BIKA_BASE/log/idserver.log
+LOG_FILE=$BIKA_BASE/var/log/idserver.log
 PID_FILE=$BIKA_BASE/var/idserver.pid
 PORT=8081
 
-exec $PYTHON $BIKA_BASE/Products/bika/scripts/id-server.py \
+exec $PYTHON $BIKA_BASE/products/bika/scripts/id-server.py \
 	-f $COUNTER_FILE \
 	-p $PORT \
 	-l $LOG_FILE \
