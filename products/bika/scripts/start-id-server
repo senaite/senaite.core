@@ -1,6 +1,7 @@
 #!/bin/bash
 
-BIKA_BASE=/home/godfrey/workspace/Bika3
+reldir=`dirname $0`
+BIKA_BASE=$reldir/../../..
 PYTHON=/usr/bin/python
 COUNTER_FILE=$BIKA_BASE/var/id.counter
 LOG_FILE=$BIKA_BASE/var/log/idserver.log
