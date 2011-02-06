@@ -100,7 +100,7 @@ class LabProduct(BrowserDefaultMixin, BaseContent):
     def getDefaultVAT(self):
         """ return default VAT from bika_settings """
         try:
-            vat = self.bika_settings.settings.getVAT()
+            vat = self.bika_settings.getVAT()
             return FixedPoint(vat)
         except ValueError:
             return FixedPoint('0')

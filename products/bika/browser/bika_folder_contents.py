@@ -28,7 +28,12 @@ class BikaFolderContentsView(FolderContentsView):
     b_size = 20
     full_objects = False
     enable_border = True
+
+    # the draggable bit for re-ordering rows manually
     show_sort_column = False
+
+    # the select All/Batch/None row.
+    show_select_row = False
 
     title = "Folder Contents"
     description = ""
@@ -41,9 +46,6 @@ class BikaFolderContentsView(FolderContentsView):
     # A list of portal_types for 'Add X' buttons above the output
     content_add_buttons = []
 
-    # Setting this enables the workflow state selector.
-    wflist_states = []
-
     # The fields listed must be in the catalog metadata
     # or folderitems() must be overridden to provide them
     # if they are not in brains.
@@ -53,6 +55,10 @@ class BikaFolderContentsView(FolderContentsView):
               {'title': 'Modified', 'field':'modified'},
               {'title': 'State', 'field':'state_title'},
               ]
+
+
+    # Setting this enables and congiures the workflow state selector.
+    wflist_states = []
 
     def __init__(self, context, request):
         super(BikaFolderContentsView, self).__init__(context, request)
@@ -204,6 +210,7 @@ class BikaFolderContentsView(FolderContentsView):
                                         wflist_states = self.wflist_states,
                                         pagesize = self.b_size,
                                         show_sort_column = self.show_sort_column,
+                                        show_select_row = self.show_select_row,
                                         view_url = "/@@bika_folder_contents",
                                         )
 
@@ -224,6 +231,7 @@ class BikaFolderContentsTable(FolderContentsTable):
                  wflist_states,
                  pagesize,
                  show_sort_column,
+                 show_select_row,
                  view_url = '/@@bika_folder_contents'):
         self.context = context
         self.request = request
@@ -237,6 +245,7 @@ class BikaFolderContentsTable(FolderContentsTable):
                            columns,
                            wflist_states,
                            show_sort_column = show_sort_column,
+                           show_select_row = show_select_row,
                            buttons = self.buttons,
                            pagesize = pagesize)
 
@@ -252,6 +261,7 @@ class Table(tableview.Table):
                  columns,
                  wflist_states,
                  show_sort_column = False,
+                 show_select_row = False,
                  buttons = [],
                  pagesize = 20):
 

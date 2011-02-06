@@ -10,11 +10,11 @@
 required_keys = []
 required_uids = []
 if Requirement == 'DryMatter':
-    drymatter = context.bika_settings.settings.getDryMatterService()
+    drymatter = context.bika_settings.getDryMatterService()
     if drymatter:
         required_keys.append(drymatter.getAnalysisKey())
         required_uids.append(drymatter.UID())
-    moisture = context.bika_settings.settings.getMoistureService()
+    moisture = context.bika_settings.getMoistureService()
     if moisture:
         required_keys.append(moisture.getAnalysisKey())
         required_uids.append(moisture.UID())

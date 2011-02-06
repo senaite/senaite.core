@@ -16,7 +16,7 @@ if context.getClientType() == 'corporate':
 else:
     corporate = False
 
-discount_perc = context.bika_settings.settings.getMemberDiscount()
+discount_perc = context.bika_settings.getMemberDiscount()
 
 service_dict = {}
 service_list = []

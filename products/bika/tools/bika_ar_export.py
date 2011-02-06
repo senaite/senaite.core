@@ -32,12 +32,12 @@ class bika_ar_export(UniqueObject, SimpleItem):
         now = DateTime()
         filename = 'BikaResults%s.csv' % (now.strftime('%Y%m%d-%H%M%S'))
 
-        if self.bika_settings.settings.getARAttachmentOption() == 'n':
+        if self.bika_settings.getARAttachmentOption() == 'n':
             allow_ar_attach = False
         else:
             allow_ar_attach = True
 
-        if self.bika_settings.settings.getAnalysisAttachmentOption() == 'n':
+        if self.bika_settings.getAnalysisAttachmentOption() == 'n':
             allow_analysis_attach = False
         else:
             allow_analysis_attach = True
@@ -111,7 +111,7 @@ class bika_ar_export(UniqueObject, SimpleItem):
         # header labels
         header = ['Header', 'Import/Export', 'File name', 'Client', \
                   'Client ID', 'Contact', 'Contact ID', 'CC Recipients', 'CCEmails']
-        rows.append(header)    
+        rows.append(header)
 
         # header values
         cc_contacts = [cc.getUsername() for cc in ar.getCCContact()]
@@ -119,7 +119,7 @@ class bika_ar_export(UniqueObject, SimpleItem):
         header = ['Header Data', 'Export', filename, client_name, \
                   client_id, contact_name, contact_id, ccs, ar.getCCEmails(), \
                   '']
-        rows.append(header)    
+        rows.append(header)
 
         # category headers    
         s_array = []
@@ -134,7 +134,7 @@ class bika_ar_export(UniqueObject, SimpleItem):
                 if services[service_name]['attach']:
                     header.append('')
             s_array.extend(service_array)
-        rows.append(header)    
+        rows.append(header)
 
         # column headers    
         header = ['Samples', 'Order ID', 'Client Reference', 'Client Sample ID', 'Sample Type', \
@@ -161,7 +161,7 @@ class bika_ar_export(UniqueObject, SimpleItem):
             header.append('Attachments')
 
 
-        rows.append(header)    
+        rows.append(header)
 
 
         # detail lines 
@@ -183,7 +183,7 @@ class bika_ar_export(UniqueObject, SimpleItem):
                 datesampled = plone_view.toLocalizedTime(sample.getDateSampled(), long_format = 1)
             else:
                 datesampled = None
-            
+
             # create detail line
             detail = [sample_num, ar.getClientOrderNumber(), \
                       sample.getClientReference(), sample.getClientSampleID(), sampletype, \

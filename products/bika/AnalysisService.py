@@ -341,7 +341,7 @@ class AnalysisService(VariableSchemaSupport, BrowserDefaultMixin, BaseContent):
         """ compute discounted price excl. vat """
         price = self.getPrice()
         price = price and price or 0
-        discount = self.bika_settings.settings.getMemberDiscount()
+        discount = self.bika_settings.getMemberDiscount()
         discount = discount and discount or 0
         return price - (price * discount) / 100
 
@@ -350,7 +350,7 @@ class AnalysisService(VariableSchemaSupport, BrowserDefaultMixin, BaseContent):
         """ compute discounted corporate price excl. vat """
         price = self.getCorporatePrice()
         price = price and price or 0
-        discount = self.bika_settings.settings.getMemberDiscount()
+        discount = self.bika_settings.getMemberDiscount()
         discount = discount and discount or 0
         return price - (price * discount) / 100
 
@@ -391,7 +391,7 @@ class AnalysisService(VariableSchemaSupport, BrowserDefaultMixin, BaseContent):
     def getDefaultVAT(self):
         """ return default VAT from bika_settings """
         try:
-            vat = self.bika_settings.settings.getVAT()
+            vat = self.bika_settings.getVAT()
             return FixedPoint(vat)
         except ValueError:
             return FixedPoint('0')

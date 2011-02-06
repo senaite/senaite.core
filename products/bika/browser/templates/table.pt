@@ -39,20 +39,12 @@
 						   column_list python:wflist_state['columns']">
 	      <thead>
 
-<!-- strangely pretty
-	        <tr tal:condition="python: len(view.wflist_states)>1">
-	          <th tal:attributes="colspan colspan" class="nosort">
-	            <span i18n:translate="label_wfstates" tal:omit-tag="">States:<span tal:omit-tag="" tal:content="structure view/wflist"/></span>
-	          </th>
-	        </tr>
--->
 
+            <tal:selectrow condition="view/show_select_row">
 	        <tr tal:condition="not:view/selectcurrentbatch">
-	          <th tal:attributes="colspan colspan" class="nosort"><span i18n:translate="label_select" tal:omit-tag="">Select:</span> <a i18n:translate="label_all" tal:attributes="href view/selectscreen_url" id="foldercontents-selectall">All</a></th>
+	          <th tal:attributes="colspan colspan" class="nosort">
+	          	<span i18n:translate="label_select" tal:omit-tag="">Select:</span> <a i18n:translate="label_all" tal:attributes="href view/selectscreen_url" id="foldercontents-selectall">All</a></th>
 	        </tr>
-
-
-
 	        <tr tal:condition="view/show_select_all_items">
 	          <th tal:attributes="colspan colspan" class="nosort">
 	            <span tal:omit-tag="" i18n:translate="tableheading_all_items_selected">
@@ -64,7 +56,6 @@
 	            <tal:block replace="view/batch/size" i18n:name="count"/> items in this folder.</a>
 	          </th>
 	        </tr>
-	
 	        <tr tal:condition="view/selectall">
 	          <th tal:attributes="colspan colspan" class="nosort">
 	            <span tal:omit-tag="" i18n:translate="tableheading_all_items_selected_in_folder">
@@ -75,7 +66,7 @@
 	               id="foldercontents-clearselection">Clear selection</a>
 	          </th>
 	        </tr>
-
+            </tal:selectrow>
 
 	
 	        <tr>

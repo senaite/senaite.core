@@ -19,16 +19,16 @@ def test_reqs(reqd_calcs):
 
 def update_data(parent, result_in):
     if result_in == None:
-        result = None 
+        result = None
     else:
-        result = '%.2f' %result_in 
+        result = '%.2f' % result_in
     service = parent.getService()
 
-    uncertainty = context.get_uncertainty(result, service)   
+    uncertainty = context.get_uncertainty(result, service)
     parent.edit(
-        Result=result,
-        Uncertainty=uncertainty,
-        Unit=service.getUnit()
+        Result = result,
+        Uncertainty = uncertainty,
+        Unit = service.getUnit()
     )
     return
 
@@ -50,8 +50,8 @@ for p in parents:
     result = None
     if parent_keyword[0:3] == 'AME':
         protein_type = parent_keyword[3:len(parent_keyword)]
-        protein_keyword = 'ProteinCrude%s' %protein_type
-        reqds = [protein_keyword,  'FatCrudeEtherExtraction', 'Starch', 'Sugars']
+        protein_keyword = 'ProteinCrude%s' % protein_type
+        reqds = [protein_keyword, 'FatCrudeEtherExtraction', 'Starch', 'Sugars']
         if  test_reqs(reqds):
             ProteinCrude = results[protein_keyword]
             FatCrudeEtherExtraction = results['FatCrudeEtherExtraction']
@@ -66,7 +66,7 @@ for p in parents:
 
     if parent_keyword[0:2] == 'ME':
         protein_type = parent_keyword[2:len(parent_keyword)]
-        protein_keyword = 'ProteinCrude%s' %protein_type
+        protein_keyword = 'ProteinCrude%s' % protein_type
         reqds = [protein_keyword, 'FatCrudeEtherExtraction', 'FibreCrude', 'Ash']
         if test_reqs(reqds):
             ProteinCrude = results[protein_keyword]
@@ -82,8 +82,8 @@ for p in parents:
 
     if parent_keyword[0:3] == 'TDN':
         ME_type = parent_keyword[3:len(parent_keyword)]
-        ME_keyword = 'ME%s' %ME_type
-        reqds = [ME_keyword,]
+        ME_keyword = 'ME%s' % ME_type
+        reqds = [ME_keyword, ]
         if test_reqs(reqds):
             ME = results[ME_keyword]
             result = 6.67 * ME
@@ -93,7 +93,7 @@ for p in parents:
 
     if parent_keyword[0:3] == 'NSC':
         protein_type = parent_keyword[3:len(parent_keyword)]
-        protein_keyword = 'ProteinCrude%s' %protein_type
+        protein_keyword = 'ProteinCrude%s' % protein_type
         reqds = ['FibreNDF', protein_keyword, 'FatCrudeEtherExtraction', 'Ash']
         if test_reqs(reqds):
             FibreNDF = results['FibreNDF']
@@ -108,7 +108,7 @@ for p in parents:
 
     if parent_keyword[0:2] == 'DE':
         protein_type = parent_keyword[2:len(parent_keyword)]
-        protein_keyword = 'ProteinCrude%s' %protein_type
+        protein_keyword = 'ProteinCrude%s' % protein_type
         reqds = [protein_keyword, 'FatCrudeEtherExtraction', 'FibreCrude', 'Ash']
         if test_reqs(reqds):
             ProteinCrude = results[protein_keyword]
@@ -123,11 +123,11 @@ for p in parents:
         update_data(parent, result)
         update_data(parent, result)
 
-    drymatter = context.bika_settings.settings.getDryMatterService()
+    drymatter = context.bika_settings.getDryMatterService()
     if parent.getServiceUID() == drymatter.UID():
-        moisture = context.bika_settings.settings.getMoistureService()
+        moisture = context.bika_settings.getMoistureService()
         moisture_key = moisture.getAnalysisKey()
-        reqds = [moisture_key,]
+        reqds = [moisture_key, ]
         if test_reqs(reqds):
             Moisture = results[moisture_key]
             result = 100 - Moisture
@@ -138,4 +138,4 @@ for p in parents:
     if parent.checkHigherDependancies():
         parent.get_dependant_results(parent)
 
-return 
+return

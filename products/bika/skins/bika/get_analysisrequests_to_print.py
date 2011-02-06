@@ -42,7 +42,7 @@ from_addr = headers['From'] = formataddr(
     ( encode_header(lab.Title()), lab.getEmailAddress() )
 )
 
-settings = context.bika_settings.settings
+settings = context.bika_settings
 batch_max = settings.getBatchEmail()
 
 for contact_uid, ars in contact_ar_map.items():

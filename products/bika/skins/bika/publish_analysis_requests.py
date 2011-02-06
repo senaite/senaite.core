@@ -15,7 +15,7 @@ import re
 portal = context.portal_url.getPortalObject()
 pmt = portal.portal_mailtemplates
 lab = context.bika_labinfo.laboratory
-settings = context.bika_settings.settings
+settings = context.bika_settings
 lab_url = lab.getLabURL() or portal.absolute_url
 ar_results = portal.portal_mailtemplates.getTemplate('bika', 'ar_results')
 ar_dict = dict([ (ar.getRequestID(), ar) for ar in analysis_requests ])
@@ -25,7 +25,7 @@ sorted_ars = [ ar_dict[key] for key in keys ]
 
 headers = {
         'Date': DateTime().rfc822(),
-        'From': formataddr(( encode_header(lab.Title()), lab.getEmailAddress() ))
+        'From': formataddr((encode_header(lab.Title()), lab.getEmailAddress()))
         }
 from_addr = headers['From']
 
@@ -58,10 +58,10 @@ def send_this_mail(contact, mail_ars, to_addrs):
 
     if mail_attach:
         message = pmt.createMessage(
-         'bika', 'ar_results', info, headers, text_format='html', files=mail_attach)
+         'bika', 'ar_results', info, headers, text_format = 'html', files = mail_attach)
     else:
         message = pmt.createMessage(
-         'bika', 'ar_results', info, headers, text_format='html')
+         'bika', 'ar_results', info, headers, text_format = 'html')
     sendmail(portal, from_addr, to_addrs, message)
     return
 
@@ -72,11 +72,11 @@ def send_this_fax(fax_ars, to_addrs):
             'laboratory': lab,
             'contact': contact,
             'output': 'fax',
-            'lab_url': lab_url, 
+            'lab_url': lab_url,
             'portal': portal}
 
     message = pmt.createMessage(
-        'bika', 'ar_results', info, headers, text_format='html')
+        'bika', 'ar_results', info, headers, text_format = 'html')
     sendmail(portal, from_addr, to_addrs, message)
     # email copy to lab
     to_addrs = (from_addr,)
@@ -123,7 +123,7 @@ def get_mail_subject(subject_ars):
                     css.append(sample.getClientSampleID())
             else:
                 blanks_found = True
-               
+
     tot_line = ''
     if ais:
         ais.sort()
@@ -166,15 +166,15 @@ if contact:
         if not email:
             email = lab.getEmailAddress()
         to_addr = headers['To'] = formataddr(
-            ( encode_header(contact.getFullname()),
-              email )
+            (encode_header(contact.getFullname()),
+              email)
         )
 else:
     if ccemail:
         email_option = True
         email = ccemail
         to_addr = headers['To'] = formataddr(
-            ( encode_header(email), email ))
+            (encode_header(email), email))
 
 to_addrs = []
 if email_option:
@@ -208,13 +208,13 @@ if contact and 'fax' in contact.getPublicationPreference():
     if not fax_no:
         fax_no = lab.getFax()
     if fax_no:
-        fax_no.replace(' ','')
-        fax_mail = '%s@vax.co.za' %fax_no
+        fax_no.replace(' ', '')
+        fax_mail = '%s@vax.co.za' % fax_no
     to_addr = headers['To'] = formataddr(
-        ( encode_header(fullname), fax_mail )
+        (encode_header(fullname), fax_mail)
     )
     to_addrs.append(to_addr)
-    
+
     to_addrs = tuple(to_addrs)
 
     batch_max = settings.getBatchFax()
@@ -225,7 +225,7 @@ if contact and 'fax' in contact.getPublicationPreference():
     for i in range(len(sorted_ars)):
         max_ars.append(sorted_ars[i])
         j += 1
-        if j == batch_max:    
+        if j == batch_max:
             send_this_fax(max_ars, to_addrs)
             j = 0
             max_ars = []
@@ -236,8 +236,8 @@ if contact and 'fax' in contact.getPublicationPreference():
 to_addrs = []
 if contact and 'file' in contact.getPublicationPreference():
     to_addr = headers['To'] = formataddr(
-        ( encode_header(contact.getFullname()),
-          contact.getEmailAddress() )
+        (encode_header(contact.getFullname()),
+          contact.getEmailAddress())
     )
     to_addrs.append(to_addr)
     # send copy to lab
@@ -260,7 +260,7 @@ if contact and 'file' in contact.getPublicationPreference():
         attachments = these_attachments(sorted_ars)
     attachments.append((results_file['file'], 'text/x-comma-separated-values', results_file['file_name']))
     message = pmt.createMessage(
-        'bika', 'ar_results_csv', info, headers, text_format='html', files=attachments)
+        'bika', 'ar_results_csv', info, headers, text_format = 'html', files = attachments)
     sendmail(portal, from_addr, to_addrs, message)
 
 if contact and 'sms' in contact.getPublicationPreference():
@@ -268,24 +268,24 @@ if contact and 'sms' in contact.getPublicationPreference():
     if not sms_gw: raise "No SMS Gateway defined in settings"
     # XXX strips special chars - bika_settings.
     cell = "".join([c for c in contact.getMobilePhone() if c in '0123456789'])
-    
+
     if sms_gw[0] == "@":
-        to_addr = headers['To'] = formataddr( ("SMSGateway", cell+sms_gw) )
+        to_addr = headers['To'] = formataddr(("SMSGateway", cell + sms_gw))
     else:
-        to_addr = headers['To'] = formataddr( ("SMSGateway", sms_gw) )
+        to_addr = headers['To'] = formataddr(("SMSGateway", sms_gw))
 
     info = {'contact':contact,
             'lab_url':lab_url,
             'items': ", ".join([ar.getRequestID() for ar in analysis_requests]),
            }
-    message = pmt.createMessage( 'bika', 'sms', info, headers )
+    message = pmt.createMessage('bika', 'sms', info, headers)
     sendmail(portal, from_addr, (to_addr,), message)
 
 to_addrs = []
 if contact and 'pdf' in contact.getPublicationPreference():
     to_addr = headers['To'] = formataddr(
-        ( encode_header(contact.getFullname()),
-          contact.getEmailAddress() )
+        (encode_header(contact.getFullname()),
+          contact.getEmailAddress())
     )
     to_addrs.append(to_addr)
     # send copy to lab
@@ -308,7 +308,7 @@ if contact and 'pdf' in contact.getPublicationPreference():
         attachments = these_attachments(sorted_ars)
     attachments.append((results_file['file'], 'application/pdf', results_file['file_name']))
     message = pmt.createMessage(
-        'bika', 'ar_results_csv', info, headers, text_format='html', files=attachments)
+        'bika', 'ar_results_csv', info, headers, text_format = 'html', files = attachments)
     sendmail(portal, from_addr, to_addrs, message)
 
 

@@ -115,7 +115,7 @@
     analyses python:here.get_valid_analyses(all_analyses);
     sort_on python:(('getDateVerified', 'cmp', 'asc'),);
     analyses python:sequence.sort(analyses, sort_on);
-    minresults python: context.bika_settings.settings.getMinimumResults() or 5;
+    minresults python: context.bika_settings.getMinimumResults() or 5;
     expected_result python:service and stdsample.getStandardResult(service_uid) or [0,0,0];
     expected python:expected_result[0];
     expected_min python:expected_result[1];

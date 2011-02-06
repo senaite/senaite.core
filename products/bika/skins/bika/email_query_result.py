@@ -15,7 +15,7 @@ portal = context.portal_url.getPortalObject()
 pmt = portal.portal_mailtemplates
 lab = context.bika_labinfo.laboratory
 request = context.REQUEST
-settings = context.bika_settings.settings
+settings = context.bika_settings
 
 ar_query_results = portal.portal_mailtemplates.getTemplate(
     'bika', request.mail_template)
@@ -23,7 +23,7 @@ ar_query_results = portal.portal_mailtemplates.getTemplate(
 headers = {}
 headers['Date'] = DateTime().rfc822()
 from_addr = headers['From'] = formataddr(
-    ( encode_header(lab.Title()), lab.getEmailAddress() )
+    (encode_header(lab.Title()), lab.getEmailAddress())
 )
 
 if request.has_key('Contact_email_address'):
@@ -34,8 +34,8 @@ if request.has_key('Contact_email_address'):
 else:
     contact = context.reference_catalog.lookupObject(request.Contact_uid)
     contact_address = formataddr(
-        ( encode_header(contact.getFullname()),
-          contact.getEmailAddress() )
+        (encode_header(contact.getFullname()),
+          contact.getEmailAddress())
     )
     msg = 'portal_status_message=Query result sent to %s at %s' % (
         contact.Title(), contact.getEmailAddress())
@@ -73,7 +73,7 @@ for i in range(len(results)):
                 'laboratory': lab,
                 'portal': portal}
         message = pmt.createMessage(
-            'bika', request.mail_template, info, headers, text_format='html')
+            'bika', request.mail_template, info, headers, text_format = 'html')
         sendmail(portal, from_addr, to_addrs, message)
         j = 0
         max_ars = []
@@ -84,7 +84,7 @@ if j > 0:
             'laboratory': lab,
             'portal': portal}
     message = pmt.createMessage(
-        'bika', request.mail_template, info, headers, text_format='html')
+        'bika', request.mail_template, info, headers, text_format = 'html')
     sendmail(portal, from_addr, to_addrs, message)
 
 request.RESPONSE.redirect('%s?%s' % (context.query_form.absolute_url(), msg))

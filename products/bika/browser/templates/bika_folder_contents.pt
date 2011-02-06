@@ -38,6 +38,30 @@
 
     <metal:content-core fill-slot="content-core">
 
+      <tal:comment replace="nothing"> 
+      <!-- XXX Yes this is one form per add button and yes this is gross.
+             folder_factories:method doesn't work the way it did in 2.5 apparently, 
+             or I can't figure it out. -->
+      </tal:comment>
+      <tal:add_buttons repeat="add_type view/content_add_buttons">
+        <tal:add_type define="type_info python:view.portal_types[add_type]">
+          <form 
+            name="folderContentsForm"
+            method="post"
+            action="folder_object"
+            tal:attributes="action string:${context/absolute_url}/createObject?type_name=${add_type}">
+            <input 
+              class="standalone add"
+              type="submit"
+              name=""
+              i18n:attributes="value"
+              tal:attributes="value string:Add ${add_type};
+			                  name string:add_${add_type}"/>
+          </form>
+        </tal:add_type>
+      </tal:add_buttons>
+
+
       <form 
         name="folderContentsForm"
         method="post"
@@ -48,17 +72,6 @@
         <tal:wflist condition="python: len(view.wflist_states)>1">
           <span i18n:translate="label_wfstates" tal:omit-tag="">States:<span tal:omit-tag="" tal:content="structure view/wflist"/></span>
         </tal:wflist>
-
-        <tal:add_buttons repeat="add_type view/content_add_buttons">
-          <tal:add_type define="type_info python:view.portal_types[add_type]">
-            <input 
-              class="standalone add"
-              type="submit"
-              name="folder_factories:method"
-              i18n:attributes="value"
-              tal:attributes="value string:Add ${add_type}"/>
-          </tal:add_type>
-        </tal:add_buttons>
 
         <div class="visualClear" id="clear-space-before-navigation"><!-- --></div>
 

@@ -24,7 +24,7 @@ wf_tool = context.portal_workflow
 
 if context.portal_type == 'Analysis':
     if not context.getAttachment():
-        if context.bika_settings.settings.getAnalysisAttachmentsPermitted():
+        if context.bika_settings.getAnalysisAttachmentsPermitted():
             service = context.getService()
             if service.getAttachmentOption() == 'r':
                 return 0
@@ -53,7 +53,7 @@ if context.portal_type == 'Analysis':
         return 1
 elif context.portal_type == 'AnalysisRequest':
     if not context.getAttachment():
-        if context.bika_settings.settings.getARAttachmentOption() == 'r':
+        if context.bika_settings.getARAttachmentOption() == 'r':
             return 0
     self_submitted = False
     for analysis in context.getAnalyses():

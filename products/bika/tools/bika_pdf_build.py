@@ -71,7 +71,7 @@ class bika_pdf_build(UniqueObject, SimpleItem):
             # several pages this will save some CPU
 
             self.logos = {}
-            self.logo_imgs = ['logo_print.jpg', 'accreditation_print.jpg'] 
+            self.logo_imgs = ['logo_print.jpg', 'accreditation_print.jpg']
             for pic in self.logo_imgs:
                 image = self.getImageFP(pic)
                 self.logos[pic] = image
@@ -108,7 +108,7 @@ class bika_pdf_build(UniqueObject, SimpleItem):
             # get page size
             page_width = self.doc.pagesize[0] - 1.5 * inch
             h_col_width = page_width / 2
-            page_height = self.doc.pagesize[1] 
+            page_height = self.doc.pagesize[1]
 
             # get the default style sheets
             self.StyleSheet = styles.getSampleStyleSheet()
@@ -129,7 +129,7 @@ class bika_pdf_build(UniqueObject, SimpleItem):
             self.append(h_table)
 
             self.append(Spacer(0, 10))
-            
+
             no_ars = all_ars[0]
 
             col = page_width / ((no_ars * 2) + 4)
@@ -178,7 +178,7 @@ class bika_pdf_build(UniqueObject, SimpleItem):
 
                 """ headings and results """
 
-                
+
                 general_table_style = [('ALIGN', (0, 0), (0, -1), 'LEFT'),
                                ('ALIGN', (1, 0), (-1, -1), 'CENTER'),
                                ('TEXTCOLOR', (0, 0), (-1, -1), colors.black),
@@ -186,7 +186,7 @@ class bika_pdf_build(UniqueObject, SimpleItem):
                                ('FONT', (0, 0), (-1, -1), 'Helvetica'),
                                ('FONTSIZE', (0, 0), (-1, -1), 9),
                                 ]
-               
+
 
                 page_max = 18 - attachment_count
 
@@ -368,7 +368,7 @@ class bika_pdf_build(UniqueObject, SimpleItem):
                 email = manager.getEmailAddress()
 
                 m_stuff.append([name, images['telephone.jpg'], phone, images['email.jpg'], email])
-                x = page_width - (len(name) * h_spacer) - (len(phone) * h_spacer) - len(email) - 36 
+                x = page_width - (len(name) * h_spacer) - (len(phone) * h_spacer) - len(email) - 36
                 m_table = platypus.Table(m_stuff, colWidths = (len(name) * h_spacer, 18, len(phone) * h_spacer, 18, len(email) + x))
                 m_table.setStyle(style)
                 keepers.append(m_table)
@@ -412,7 +412,7 @@ class bika_pdf_build(UniqueObject, SimpleItem):
                 p_img = platypus.Image(fp, width = width / 2, height = height / 2)
 
                 return (p_img)
-                
+
             except AttributeError :
                 # not found !
                 return None
@@ -438,10 +438,10 @@ class bika_pdf_build(UniqueObject, SimpleItem):
                 except IOError:
                     return []
                 p_img = platypus.Image(tmp_img.name, width = width / 2, height = height / 2)
-            
+
                 return (p_img)
                 #return ((p_img, width, height))
-                
+
             except AttributeError :
                 # not found !
                 return None
@@ -452,7 +452,7 @@ class bika_pdf_build(UniqueObject, SimpleItem):
     security.declarePublic('ar_results_pdf')
     def ar_results_pdf(self, info):
 
-        settings = self.aq_parent.bika_settings.settings
+        settings = self.aq_parent.bika_settings
         max_batch = settings.getBatchEmail()
 
 
@@ -489,7 +489,7 @@ class bika_pdf_build(UniqueObject, SimpleItem):
         location = location + ', ' + contact_address.get('zip', '')
         location = location + ' ' + contact_address.get('country', '')
         contact_stuff = contact_stuff + '\n' + location
-        
+
         lab_stuff = laboratory.Title()
         lab_title = laboratory.Title()
         address = newline_to_br(lab_address.get('address', ''))
@@ -566,7 +566,7 @@ class bika_pdf_build(UniqueObject, SimpleItem):
 
         # get the document's content itself as a string of text
         file = self.MyPDFDoc(self, filename, headings, all_first_heads, all_other_heads, all_ars, all_results, all_cats, all_oor, all_dries, all_attachments, all_remarks, all_managers, all_disclaimers, lab_title)
-        filecontent = file.report.getvalue() 
+        filecontent = file.report.getvalue()
 
         self.REQUEST.RESPONSE.setHeader('Content-Type', 'application/pdf')
         self.REQUEST.RESPONSE.setHeader('Content-Disposition', 'inline; filename=%s' % filename)
@@ -575,7 +575,7 @@ class bika_pdf_build(UniqueObject, SimpleItem):
         file_data['file_name'] = filename
         return file_data
 
-    def process_batch(self, ars, lab_accredited, lab_title): 
+    def process_batch(self, ars, lab_accredited, lab_title):
         service_info = self.get_services_from_requests(ars)
         services = service_info['Services']
 
@@ -645,13 +645,13 @@ class bika_pdf_build(UniqueObject, SimpleItem):
             print_data = print_data.replace('>', '&gt;')
             para = Paragraph(print_data, serviceStyle)
             results.append([para])
-        
+
         ar_analyses = {}
         ar_sampletype = {}
         for ar in ars:
             ar_analyses[ar.getRequestID()] = self.group_analyses_by_service(ar.getPublishedAnalyses())
             ar_sampletype[ar.getRequestID()] = ar.getSample().getSampleType().UID()
-        
+
         paraStyle = ParagraphStyle('BodyText',
                                   spaceBefore = 0,
                                   spaceAfter = 0,
@@ -678,7 +678,7 @@ class bika_pdf_build(UniqueObject, SimpleItem):
                     att = att + print_att
                     para = Paragraph(att, paraStyle)
                 attachments[-1].append(para)
-                
+
             analyses = ar.getPublishedAnalyses()
             for analysis in analyses:
                 if analysis.getAttachment():
@@ -702,7 +702,7 @@ class bika_pdf_build(UniqueObject, SimpleItem):
                         att = att + print_att
                         para = Paragraph(att, paraStyle)
                     attachments[-1].append(para)
-        
+
         """ remarks """
 
         remarks = [['Remarks', ''], ]
@@ -712,7 +712,7 @@ class bika_pdf_build(UniqueObject, SimpleItem):
                 remarks.append([ar.getRequestID(), para])
             else:
                 remarks.append([ar.getRequestID(), 'None'])
-                
+
 
         """ ars """
         any_oor = False
@@ -725,8 +725,8 @@ class bika_pdf_build(UniqueObject, SimpleItem):
             para = Paragraph(text, paraStyle)
             first_heads[0].extend([para, ''])
             other_heads[0].extend([para, ''])
-        
-            """ temporary fix for long client refs not splitting """ 
+
+            """ temporary fix for long client refs not splitting """
             this_text = sample.getClientReference() and sample.getClientReference() or ''
             max_len = 40
             if len(ars) > 3:
@@ -844,7 +844,7 @@ class bika_pdf_build(UniqueObject, SimpleItem):
             disclaimers.append(['!   Result out of client specified range'])
         if accredited:
             disclaimers.append(['*   Methods included in the schedule of Accreditation for this Laboratory. Analysis remarks are not accredited'])
-        disclaimers.append(['1.  Analysis results relate only to the samples tested'])                
+        disclaimers.append(['1.  Analysis results relate only to the samples tested'])
         disclaimers.append(['2.  This document shall not be reproduced except in full, without the written approval of %s' % lab_title])
 
         return (first_heads, other_heads, results, cats, oor, dries, attachments, remarks, disclaimers)
