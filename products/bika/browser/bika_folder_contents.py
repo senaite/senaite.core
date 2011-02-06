@@ -57,7 +57,7 @@ class BikaFolderContentsView(FolderContentsView):
               ]
 
 
-    # Setting this enables and congiures the workflow state selector.
+    # Setting this enables and configures the workflow state selector.
     wflist_states = []
 
     def __init__(self, context, request):
@@ -275,6 +275,7 @@ class Table(tableview.Table):
                                  pagesize = 20)
 
         self.columns = columns
+        self.show_select_row = show_select_row
         self.wflist_states = wflist_states
 
     render = ViewPageTemplateFile("templates/table.pt")
