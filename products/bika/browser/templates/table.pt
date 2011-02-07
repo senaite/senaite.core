@@ -16,8 +16,7 @@
   <p class="discreet"
      tal:condition="not: view/batch"
      i18n:translate="description_no_visible_items_add_paste">
-    This folder has no visible items. To add content, press the
-    add button, or paste content from another location.
+    This folder has no visible items.
   </p>
 
   <metal:listing define-macro="folder_listing"
@@ -167,7 +166,9 @@
 	      </metal:block>
 	    </table>
       <div tal:replace="structure view/batching" tal:condition="not:view/show_all"/>
-      <tal:buttons tal:repeat="button wflist_state/buttons">
+      <tal:buttons
+	    tal:condition="wflist_state/buttons|nothing"
+	    tal:repeat="button wflist_state/buttons">
         <input class="context"
              type="submit"
              name=""

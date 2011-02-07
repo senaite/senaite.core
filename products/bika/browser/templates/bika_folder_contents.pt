@@ -59,6 +59,7 @@
           </form>
       </tal:add_buttons>
 
+      <p/>
 
       <form 
         name="folderContentsForm"

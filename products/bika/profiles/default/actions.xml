@@ -3,6 +3,7 @@
    xmlns:i18n="http://xml.zope.org/namespaces/i18n">
 
  <action-provider name="portal_actions"/>
+
   <object name="local_roles" meta_type="CMF Action" i18n:domain="plone">
    <property name="title" i18n:translate="">Sharing</property>
    <property name="description" i18n:translate=""></property>
@@ -10,7 +11,7 @@
    <property name="link_target"></property>
    <property name="icon_expr"></property>
    <property
-      name="available_expr">python:here.portal_type not in ['Client',]</property>
+      name="available_expr">python:here.portal_type not in ['Client','ClientFolder']</property>
    <property name="permissions"/>
    <property name="visible">False</property>
   </object>

@@ -28,9 +28,6 @@ class ClientFolderContentsView(BikaFolderContentsView):
                'delete': {'cssclass': 'context',
                           'title': 'Delete',
                           'url': 'folder_delete:method'},
-               'quicktest': {'cssclass': 'standalone',
-                          'title': 'Quick Test',
-                          'url': 'quick_test:method'},
               }
 
     wflist_states = [
@@ -39,13 +36,8 @@ class ClientFolderContentsView(BikaFolderContentsView):
                                 'getEmailAddress',
                                 'getPhone',
                                 'getFax', ],
-                     'buttons':[buttons['delete'],
-                                buttons['quicktest']]},
+                     'buttons':[buttons['delete']]},
                     ]
-
-    def quick_test(self):
-        import pdb
-        pdb.set_trace()
 
     def folderitems(self):
         items = BikaFolderContentsView.folderitems(self)
@@ -55,5 +47,4 @@ class ClientFolderContentsView(BikaFolderContentsView):
         return items
 
     def __call__(self):
-
         return self.template()
