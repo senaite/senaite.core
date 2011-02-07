@@ -46,11 +46,4 @@
  <action title="Properties" action_id="metadata" category="object"
     condition_expr="" icon_expr="" link_target=""
     url_expr="string:${object_url}/base_metadata" visible="False"/>
- <action title="Sharing" action_id="local_roles" category="object"
-    condition_expr="" icon_expr="" link_target=""
-    url_expr="string:${object_url}/@@sharing" visible="False"/>
- <action title="Contents" action_id="folderContents" category="object"
-    condition_expr="" icon_expr="" link_target=""
-    url_expr="string:${globals_view/getCurrentFolderUrl}/folder_contents"
-    visible="False"/>
 </object>

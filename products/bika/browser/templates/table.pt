@@ -166,15 +166,15 @@
 	        </tfoot>
 	      </metal:block>
 	    </table>
-    </tal:wflist_state>
-    <div tal:replace="structure view/batching" tal:condition="not:view/show_all"/>
-    <tal:buttons tal:repeat="button view/buttons">
-      <input class="context"
+      <div tal:replace="structure view/batching" tal:condition="not:view/show_all"/>
+      <tal:buttons tal:repeat="button wflist_state/buttons">
+        <input class="context"
              type="submit"
              name=""
              value=""
              i18n:attributes="value"
              tal:attributes="value button/title; name button/url; class button/cssclass" />
-    </tal:buttons>
+      </tal:buttons>
+    </tal:wflist_state>
   </metal:listing>
 </div>

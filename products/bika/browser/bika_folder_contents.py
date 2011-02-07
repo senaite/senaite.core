@@ -49,17 +49,25 @@ class BikaFolderContentsView(FolderContentsView):
     # The fields listed must be in the catalog metadata
     # or folderitems() must be overridden to provide them
     # if they are not in brains.
-    columns = [
-              {'title': 'Title', 'field':'title_or_id'},
-              {'title': 'Size', 'field':'size'},
-              {'title': 'Modified', 'field':'modified'},
-              {'title': 'State', 'field':'state_title'},
-              ]
+    columns = {
+               'title_or_id': {'title': 'Title', 'field': 'title_or_id'},
+               'size': {'title': 'Size', 'field':'size'},
+               'modified': {'title': 'Modified', 'field':'modified'},
+               'state_title': {'title': 'State', 'field':'state_title'},
+              }
 
+    buttons = []
 
     # Setting this enables and configures the workflow state selector.
-    wflist_states = []
-
+    # At the very least, the 'All' workflow state is required.
+    # if only All is specified, the workflow selector will not be rendered 
+    wflist_states = [
+                    {'title': 'All', 'id':'all',
+                     'columns':['title_or_id',
+                                'size',
+                                'modified',
+                                'state_title']},
+                    ]
     def __init__(self, context, request):
         super(BikaFolderContentsView, self).__init__(context, request)
         self.context.allowed_content_types = self.allowed_content_types
@@ -207,6 +215,7 @@ class BikaFolderContentsView(FolderContentsView):
                                         getFolderContents = self.getFolderContents,
                                         folderitems = self.folderitems,
                                         columns = self.columns,
+                                        buttons = self.buttons,
                                         wflist_states = self.wflist_states,
                                         pagesize = self.b_size,
                                         show_sort_column = self.show_sort_column,
@@ -228,6 +237,7 @@ class BikaFolderContentsTable(FolderContentsTable):
                  getFolderContents,
                  folderitems,
                  columns,
+                 buttons,
                  wflist_states,
                  pagesize,
                  show_sort_column,
@@ -236,17 +246,16 @@ class BikaFolderContentsTable(FolderContentsTable):
         self.context = context
         self.request = request
         self.getFolderContents = getFolderContents
-        self.items = folderitems() # XXX original buttons() requires this
         url = context.absolute_url()
         self.table = Table(request,
                            url,
                            url + view_url,
-                           self.items,
+                           folderitems(),
                            columns,
                            wflist_states,
                            show_sort_column = show_sort_column,
                            show_select_row = show_select_row,
-                           buttons = self.buttons,
+                           buttons = buttons,
                            pagesize = pagesize)
 
     def render(self):
@@ -260,10 +269,10 @@ class Table(tableview.Table):
                  items,
                  columns,
                  wflist_states,
-                 show_sort_column = False,
-                 show_select_row = False,
-                 buttons = [],
-                 pagesize = 20):
+                 show_sort_column,
+                 show_select_row,
+                 buttons,
+                 pagesize):
 
         tableview.Table.__init__(self,
                                  request,
@@ -271,8 +280,8 @@ class Table(tableview.Table):
                                  view_url,
                                  items,
                                  show_sort_column = show_sort_column,
-                                 buttons = [],
-                                 pagesize = 20)
+                                 buttons = buttons,
+                                 pagesize = pagesize)
 
         self.columns = columns
         self.show_select_row = show_select_row

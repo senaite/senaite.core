@@ -55,7 +55,7 @@
               name=""
               i18n:attributes="value"
               tal:attributes="value string:Add ${add_type};
-			                  name string:add_${add_type}"/>
+                              name string:add_${add_type}"/>
           </form>
       </tal:add_buttons>
 
