@@ -8,8 +8,6 @@
 
   <head>
     <metal:block fill-slot="top_slot">
-      <tal:insert tal:replace="nothing"
-           tal:define="dummy python:request.set('enable_border', view.enable_border)" />
       <style type="text/css">
         /*To hide the 'Add new' dropdown in the edit bar*/
         #plone-contentmenu-factories {display:none;}

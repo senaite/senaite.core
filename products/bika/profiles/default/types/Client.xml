@@ -38,7 +38,7 @@
  <action title="Properties" action_id="metadata" category="object"
     condition_expr="" icon_expr="" link_target=""
     url_expr="string:${object_url}/base_metadata" visible="False"/>
- <action title="Client Details" action_id="edit" category="object"
+ <action title="Edit" action_id="edit" category="object"
     condition_expr="" icon_expr="" link_target=""
     url_expr="string:${object_url}/base_edit" visible="True"/>
  <action title="Contacts" action_id="contacts" category="object"

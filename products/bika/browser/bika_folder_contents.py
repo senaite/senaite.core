@@ -27,7 +27,7 @@ class BikaFolderContentsView(FolderContentsView):
     batch = True
     b_size = 20
     full_objects = False
-    enable_border = True
+    show_editable_border = True
 
     # the draggable bit for re-ordering rows manually
     show_sort_column = False
@@ -70,6 +70,8 @@ class BikaFolderContentsView(FolderContentsView):
                     ]
     def __init__(self, context, request):
         super(BikaFolderContentsView, self).__init__(context, request)
+        if self.show_editable_border: request.set('enable_border', 1)
+        if not self.show_editable_border: request.set('disable_border', 1)
         self.context.allowed_content_types = self.allowed_content_types
         self.portal_types = getToolByName(context, 'portal_types')
 

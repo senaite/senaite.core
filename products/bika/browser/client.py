@@ -18,7 +18,7 @@ from zope.interface import implements
 #        self.request = request
 #        request.SESSION.set('client_setup_state', 'setup')
 #    def __call__(self):
-#        self.request.RESPONSE.redirect(self.context.absolute_url())
+#        self.request.RESPONSE.redirect(self.context.absolute_url() + "/edit")
 
 class ClientAnalysisRequestsView(BikaFolderContentsView):
     implements(IFolderContentsView)

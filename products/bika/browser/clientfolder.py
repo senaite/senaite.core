@@ -16,6 +16,7 @@ class ClientFolderContentsView(BikaFolderContentsView):
     batch = True
     b_size = 100
     full_objects = False
+    show_editable_border = False
 
     columns = {
                'title_or_id': {'title': 'Name', 'field': 'title_or_id'},
