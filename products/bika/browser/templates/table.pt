@@ -167,7 +167,7 @@
 	    </table>
       <div tal:replace="structure view/batching" tal:condition="not:view/show_all"/>
       <tal:buttons
-	    tal:condition="wflist_state/buttons|nothing"
+	    tal:condition="python: wflist_state.has_key('buttons') and view.items"
 	    tal:repeat="button wflist_state/buttons">
         <input class="context"
              type="submit"

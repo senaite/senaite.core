@@ -4,21 +4,21 @@ from Products.bika.browser.bika_folder_contents import BikaFolderContentsView
 from plone.app.content.browser.interfaces import IFolderContentsView
 from zope.interface import implements
 
-class RedirectToActions(BrowserView):
-    def __init__(self, context, request):
-        self.context = context
-        self.request = request
-        request.SESSION.set('client_setup_state', 'actions')
-    def __call__(self):
-        self.request.RESPONSE.redirect(self.context.absolute_url())
-
-class RedirectToSetup(BrowserView):
-    def __init__(self, context, request):
-        self.context = context
-        self.request = request
-        request.SESSION.set('client_setup_state', 'setup')
-    def __call__(self):
-        self.request.RESPONSE.redirect(self.context.absolute_url())
+#class RedirectToActions(BrowserView):
+#    def __init__(self, context, request):
+#        self.context = context
+#        self.request = request
+#        request.SESSION.set('client_setup_state', 'actions')
+#    def __call__(self):
+#        self.request.RESPONSE.redirect(self.context.absolute_url())
+#
+#class RedirectToSetup(BrowserView):
+#    def __init__(self, context, request):
+#        self.context = context
+#        self.request = request
+#        request.SESSION.set('client_setup_state', 'setup')
+#    def __call__(self):
+#        self.request.RESPONSE.redirect(self.context.absolute_url())
 
 class ClientAnalysisRequestsView(BikaFolderContentsView):
     implements(IFolderContentsView)
