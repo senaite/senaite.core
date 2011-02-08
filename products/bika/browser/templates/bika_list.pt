@@ -17,25 +17,13 @@
 
   <body>
     <metal:content-title fill-slot="content-title">
-      <h1 class="documentFirstHeading"> 
-        <tal:block condition="exists:here/aq_explicit/widget">
-          <metal:field use-macro="python:here.widget('title', mode='view')">Title</metal:field>
-        </tal:block>
-        <tal:block condition="not:exists:here/aq_explicit/widget">
-          <span tal:content="view/title" tal:omit-tag="">Directory Id</span>
-        </tal:block>
-      </h1>
+      <h1 class="documentFirstHeading" tal:content="view/title"/>
     </metal:content-title>
 
     <metal:content-description fill-slot="content-description">
-      <div class="documentDescription" tal:condition="exists:here/aq_explicit/widget">
-        <metal:field use-macro="python:here.widget('description', mode='view')">Description</metal:field>
-      </div>
-      <tal:block condition="not:exists:here/aq_explicit/widget">
         <div class="documentDescription" 
              tal:content="view/description" 
-             tal:condition="view/description">Description</div>
-      </tal:block>
+             tal:condition="view/description"/>
     </metal:content-description>
 
     <metal:content-core fill-slot="content-core">

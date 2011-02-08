@@ -5,11 +5,12 @@
     i18n_domain="bika.lims">
 
     <include file="viewlets.zcml"/>
-
+    <include package=".controlpanel"/>
+  
     <browser:page
       for="*"
-      name="bika_folder_contents"
-      class="Products.bika.browser.bika_folder_contents.BikaFolderContentsView"
+      name="bika_list"
+      class="Products.bika.browser.bika_list.BikaListView"
       permission="zope.Public"
       layer="Products.bika.interfaces.IBikaLIMSLayer"
     />

@@ -12,7 +12,7 @@
       layer="Products.bika.interfaces.IBikaLIMSLayer"
     />
 
-    <!-- Magic so we can traverse these @@views from TAL -->
+    <!-- Magic so we can traverse these views from TAL, like we can with the @@plone view  -->
     <class class="ZPublisher.BaseRequest.BaseRequest">
       <implements interface="zope.annotation.interfaces.IAttributeAnnotatable" />
     </class>

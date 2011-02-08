@@ -15,13 +15,16 @@ from zope.interface import implements
 import urllib
 ploneMessageFactory = MessageFactory('plone')
 
-class BikaFolderContentsView(FolderContentsView):
+class BikaListView(FolderContentsView):
     """
     """
 
     implements(IFolderContentsView)
-    template = ViewPageTemplateFile("templates/bika_folder_contents.pt")
+    template = ViewPageTemplateFile("templates/bika_list.pt")
     wflist = ViewPageTemplateFile("templates/wflist.pt")
+
+    title = "Folder Contents"
+    description = ""
 
     contentFilter = {}
     batch = True
@@ -35,13 +38,6 @@ class BikaFolderContentsView(FolderContentsView):
     # the select All/Batch/None row.
     show_select_row = False
 
-    title = "Folder Contents"
-    description = ""
-
-    # setting this to a list of portal_type IDs restricts the Add New... contentactions menu.
-    # setting it to empty displays the Plone default list.
-    # setting it to None will disable the Add new... menu # XXX ?
-    allowed_content_types = []
 
     # A list of portal_types for 'Add X' buttons above the output
     content_add_buttons = []
@@ -56,6 +52,7 @@ class BikaFolderContentsView(FolderContentsView):
                'state_title': {'title': 'State', 'field':'state_title'},
               }
 
+    # Buttons for modifying selected content items
     buttons = []
 
     # Setting this enables and configures the workflow state selector.
@@ -69,7 +66,7 @@ class BikaFolderContentsView(FolderContentsView):
                                 'state_title']},
                     ]
     def __init__(self, context, request):
-        super(BikaFolderContentsView, self).__init__(context, request)
+        super(BikaListView, self).__init__(context, request)
         if self.show_editable_border: request.set('enable_border', 1)
         if not self.show_editable_border: request.set('disable_border', 1)
         self.context.allowed_content_types = self.allowed_content_types
