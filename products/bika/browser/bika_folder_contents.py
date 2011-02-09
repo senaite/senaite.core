@@ -56,7 +56,14 @@ class BikaFolderContentsView(FolderContentsView):
                'state_title': {'title': 'State', 'field':'state_title'},
               }
 
-    buttons = []
+    # Not automatically inserted into subclasses.
+    default_buttons = {
+                       'delete': {'cssclass': 'context',
+                                  'title': 'Delete',
+                                  'url': 'folder_delete:method'},
+                      }
+
+    buttons = {}
 
     # Setting this enables and configures the workflow state selector.
     # At the very least, the 'All' workflow state is required.

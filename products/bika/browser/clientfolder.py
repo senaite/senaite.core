@@ -25,19 +25,13 @@ class ClientFolderContentsView(BikaFolderContentsView):
                'getFax': {'title': 'Fax', 'field':'getFax'},
               }
 
-    buttons = {
-               'delete': {'cssclass': 'context',
-                          'title': 'Delete',
-                          'url': 'folder_delete:method'},
-              }
-
     wflist_states = [
                     {'title': 'All', 'id':'all',
                      'columns':['title_or_id',
                                 'getEmailAddress',
                                 'getPhone',
                                 'getFax', ],
-                     'buttons':[buttons['delete']]},
+                     'buttons':[BikaFolderContentsView.default_buttons['delete']]},
                     ]
 
     def folderitems(self):

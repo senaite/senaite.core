@@ -217,10 +217,3 @@ class BikaSettings(BrowserDefaultMixin, folder.ATFolder):
             return True
 
 registerType(BikaSettings, PROJECTNAME)
-
-def modify_fti(fti):
-    for a in fti['actions']:
-        if a['id'] in ('view', 'syndication', 'references', 'metadata',
-                       'localroles'):
-            a['visible'] = 0
-    return fti

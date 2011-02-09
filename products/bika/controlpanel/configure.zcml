@@ -8,7 +8,7 @@
       for="Products.bika.interfaces.tools.IBikaSettings"
       name="bika_analysis_categories"
       class=".bika_categories.AnalysisCategories"
-      permission="zope.Public"
+      permission="bika.ManageBika"
       layer="Products.bika.interfaces.IBikaLIMSLayer"
     />
 

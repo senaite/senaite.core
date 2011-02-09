@@ -8,27 +8,28 @@ from zope.interface.declarations import implements
 
 class AnalysisCategories(BikaFolderContentsView):
     implements(IFolderContentsView)
-    allowed_content_types = ['AnalysisCategory']
     contentFilter = {'portal_type': 'AnalysisCategory'}
+    content_add_buttons = ['AnalysisCategory']
     batch = True
     b_size = 100
     full_objects = False
     wflist_states = []
     columns = {
-               'title': {'title': 'Title'},
+               'CategoryDescription': {'title': 'CategoryDescription'},
+               'Department': {'title': 'Department'},
               }
     wflist_states = [
                     {'title': 'All', 'id':'all',
-                     'columns': ['title']},
+                     'columns': ['CategoryDescription', 'Department'],
+                     'buttons':[BikaFolderContentsView.default_buttons['delete']]},
                     ]
-
-    def __init__(self, context, request):
-        super(BikaFolderContentsView, self).__init__(context, request)
-        self.context.allowed_content_types = self.allowed_content_types
 
     def folderitems(self):
         items = BikaFolderContentsView.folderitems(self)
         for x in range(len(items)):
-            items[x]['links'] = {'title': items[x]['url']}
+            obj = items[x].getObject()
+            items[x]['CategoryDescription'] = obj.CategoryDescription()
+            items[x]['Department'] = obj.Department()
+            items[x]['links'] = {'Department': items[x]['url']}
 
         return items
