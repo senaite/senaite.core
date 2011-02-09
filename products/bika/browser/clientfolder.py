@@ -1,14 +1,16 @@
 from Products.CMFCore.utils import getToolByName
 from Products.bika import logger
-from Products.bika.browser.bika_list import BikaListView
+from Products.bika.browser.bika_folder_contents import BikaFolderContentsView
 from Products.bika.interfaces import IClientFolderView
 from zope.interface import implements
 
-class ClientFolderContentsView(BikaListView):
+class ClientFolderContentsView(BikaFolderContentsView):
     implements(IClientFolderView)
 
-    title = "Clients"
-    description = ""
+    def __init__(self, context, request):
+        super(ClientFolderContentsView, self).__init__(context, request)
+
+    allowed_content_types = ['Client', ]
     content_add_buttons = ['Client', ]
     contentFilter = {'portal_type': 'Client'}
     batch = True
@@ -39,7 +41,7 @@ class ClientFolderContentsView(BikaListView):
                     ]
 
     def folderitems(self):
-        items = BikaListView.folderitems(self)
+        items = BikaFolderContentsView.folderitems(self)
         for x in range(len(items)):
             items[x]['links'] = {'title_or_id': items[x]['url']}
 

@@ -1,6 +1,6 @@
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser import BrowserView
-from Products.bika.browser.bika_list import BikaListView
+from Products.bika.browser.bika_folder_contents import BikaFolderContentsView
 from plone.app.content.browser.interfaces import IFolderContentsView
 from zope.interface import implements
 
@@ -20,12 +20,10 @@ from zope.interface import implements
 #    def __call__(self):
 #        self.request.RESPONSE.redirect(self.context.absolute_url() + "/edit")
 
-class ClientAnalysisRequestsView(BikaListView):
+class ClientAnalysisRequestsView(BikaFolderContentsView):
     implements(IFolderContentsView)
     allowed_content_types = ['AnalysisRequest']
     contentFilter = {'portal_type': 'AnalysisRequest'}
-    title = "Analysis Requests"
-    description = ""
     batch = True
     b_size = 100
     full_objects = False
@@ -110,7 +108,7 @@ class ClientAnalysisRequestsView(BikaListView):
                     ]
 
     def folderitems(self):
-        items = BikaListView.folderitems(self)
+        items = BikaFolderContentsView.folderitems(self)
         for x in range(len(items)):
             sample = items[x]['obj'].Sample
             items[x]['SampleType'] = sample.getSampleType().Title()
@@ -122,12 +120,10 @@ class ClientAnalysisRequestsView(BikaListView):
 
         return items
 
-class ClientSamplesView(BikaListView):
+class ClientSamplesView(BikaFolderContentsView):
     implements(IFolderContentsView)
     allowed_content_types = ['Sample']
     contentFilter = {'portal_type': 'Sample'}
-    title = "Samples"
-    description = ""
     batch = True
     b_size = 100
     full_objects = False
@@ -191,7 +187,7 @@ class ClientSamplesView(BikaListView):
                     ]
 
     def folderitems(self):
-        items = BikaListView.folderitems(self)
+        items = BikaFolderContentsView.folderitems(self)
         for x in range(len(items)):
             items[x]['Requests'] = items[x]['obj'].getAnalysisRequests()
             items[x]['SampleType'] = items[x]['obj'].getSampleType().Title()
@@ -201,12 +197,10 @@ class ClientSamplesView(BikaListView):
 
         return items
 
-class ClientARImportsView(BikaListView):
+class ClientARImportsView(BikaFolderContentsView):
     implements(IFolderContentsView)
     allowed_content_types = ['ARImport']
     contentFilter = {'portal_type': 'ARImport'}
-    title = "Analysis Request Imports"
-    description = ""
     batch = True
     b_size = 100
     full_objects = False
@@ -237,18 +231,16 @@ class ClientARImportsView(BikaListView):
                     ]
 
     def folderitems(self):
-        items = BikaListView.folderitems(self)
+        items = BikaFolderContentsView.folderitems(self)
         for x in range(len(items)):
             items[x]['links'] = {'title_or_id': items[x]['url']}
 
         return items
 
-class ClientARProfilesView(BikaListView):
+class ClientARProfilesView(BikaFolderContentsView):
     implements(IFolderContentsView)
     allowed_content_types = ['ARProfile']
     contentFilter = {'portal_type': 'ARProfile'}
-    title = "Analysis Request Profiles"
-    description = ""
     batch = True
     b_size = 100
     full_objects = False
@@ -264,18 +256,16 @@ class ClientARProfilesView(BikaListView):
                     ]
 
     def folderitems(self):
-        items = BikaListView.folderitems(self)
+        items = BikaFolderContentsView.folderitems(self)
         for x in range(len(items)):
             items[x]['links'] = {'getProfileTitle': items[x]['url']}
 
         return items
 
-class ClientAnalysisSpecsView(BikaListView):
+class ClientAnalysisSpecsView(BikaFolderContentsView):
     implements(IFolderContentsView)
     allowed_content_types = ['AnalysisSpec']
     contentFilter = {'portal_type': 'AnalysisSpec'}
-    title = "Analysis Specs"
-    description = ""
     batch = True
     b_size = 100
     full_objects = False
@@ -289,18 +279,16 @@ class ClientAnalysisSpecsView(BikaListView):
                     ]
 
     def folderitems(self):
-        items = BikaListView.folderitems(self)
+        items = BikaFolderContentsView.folderitems(self)
         for x in range(len(items)):
             items[x]['links'] = {'getSampleType': items[x]['url']}
 
         return items
 
-class ClientAttachmentsView(BikaListView):
+class ClientAttachmentsView(BikaFolderContentsView):
     implements(IFolderContentsView)
     allowed_content_types = ['Attachment']
     contentFilter = {'portal_type': 'AnalysisSpec'}
-    title = "Attachments"
-    description = ""
     batch = True
     b_size = 100
     full_objects = False
@@ -332,7 +320,7 @@ class ClientAttachmentsView(BikaListView):
             return name
 
     def folderitems(self):
-        items = BikaListView.folderitems(self)
+        items = BikaFolderContentsView.folderitems(self)
         for x in range(len(items)):
             obj = items[x]['obj']
             obj_url = obj.absolute_url()
@@ -350,12 +338,10 @@ class ClientAttachmentsView(BikaListView):
                                  'AttachmentFile': "%s/at_download/AttachmentFile" % obj_url}
         return items
 
-class ClientOrdersView(BikaListView):
+class ClientOrdersView(BikaFolderContentsView):
     implements(IFolderContentsView)
     allowed_content_types = ['Orders', ]
     contentFilter = {'portal_type': 'Orders'}
-    title = "Orders"
-    description = ""
     batch = True
     b_size = 100
     full_objects = False
@@ -382,7 +368,7 @@ class ClientOrdersView(BikaListView):
                     ]
 
     def folderitems(self):
-        items = BikaListView.folderitems(self)
+        items = BikaFolderContentsView.folderitems(self)
         for x in range(len(items)):
             obj = items[x]['obj']
             items[x]['OrderNumber'] = obj.getOrderNumber()
@@ -393,12 +379,10 @@ class ClientOrdersView(BikaListView):
 
         return items
 
-class ClientContactsView(BikaListView):
+class ClientContactsView(BikaFolderContentsView):
     implements(IFolderContentsView)
     allowed_content_types = ['Contact']
     contentFilter = {'portal_type': 'Contact'}
-    title = "Contacts"
-    description = ""
     batch = True
     b_size = 100
     full_objects = False
@@ -420,9 +404,11 @@ class ClientContactsView(BikaListView):
                     ]
 
     def folderitems(self):
-        items = BikaListView.folderitems(self)
+        items = BikaFolderContentsView.folderitems(self)
         for x in range(len(items)):
             items[x]['links'] = {'getFullName': items[x]['url']}
 
         return items
+
+
 
