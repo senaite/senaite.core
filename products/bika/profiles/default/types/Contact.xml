@@ -3,16 +3,8 @@
    meta_type="Factory-based Type Information with dynamic views"
    xmlns:i18n="http://xml.zope.org/namespaces/i18n">
  <property name="title">Contact</property>
- <property name="description">
-  Mixin class to support instance-based schemas
-  Attention: must be before BaseFolder or BaseContent in
-  the inheritance list, e.g:
-  
-  class Blorf(VariableSchemaSupport, BaseContent):
-  def getSchema():
-  return some schema definition...
-  </property>
- <property name="icon_expr">string:${portal_url}/contact.png</property>
+ <property name="description"></property>
+ <property name="icon_expr">string:${portal_url}/images/contact.png</property>
  <property name="content_meta_type">Contact</property>
  <property name="product">bika</property>
  <property name="factory">addContact</property>
@@ -46,26 +38,9 @@
     visible="True">
   <permission value="Modify portal content"/>
  </action>
- <action title="Properties" action_id="metadata" category="object"
-    condition_expr="" icon_expr="" link_target=""
-    url_expr="string:${object_url}/base_metadata" visible="False">
-  <permission value="Modify portal content"/>
- </action>
- <action title="References" action_id="references" category="object"
-    condition_expr="object/archetype_tool/has_graphviz" icon_expr=""
-    link_target="" url_expr="string:${object_url}/reference_graph"
-    visible="False">
-  <permission value="Modify portal content"/>
-  <permission value="Review portal content"/>
- </action>
  <action title="Folder Listing" action_id="folderlisting" category="folder"
     condition_expr="object/isPrincipiaFolderish" icon_expr="" link_target=""
     url_expr="string:${folder_url}/view" visible="False">
   <permission value="View"/>
- </action>
- <action title="Login details" action_id="access" category="object"
-    condition_expr="" icon_expr="" link_target=""
-    url_expr="string:${object_url}/contact_login_details" visible="True">
-  <permission value="BIKA: Manage Clients"/>
  </action>
 </object>

@@ -4,26 +4,10 @@ from Products.bika.browser.bika_folder_contents import BikaFolderContentsView
 from plone.app.content.browser.interfaces import IFolderContentsView
 from zope.interface import implements
 
-#class RedirectToActions(BrowserView):
-#    def __init__(self, context, request):
-#        self.context = context
-#        self.request = request
-#        request.SESSION.set('client_setup_state', 'actions')
-#    def __call__(self):
-#        self.request.RESPONSE.redirect(self.context.absolute_url())
-#
-#class RedirectToSetup(BrowserView):
-#    def __init__(self, context, request):
-#        self.context = context
-#        self.request = request
-#        request.SESSION.set('client_setup_state', 'setup')
-#    def __call__(self):
-#        self.request.RESPONSE.redirect(self.context.absolute_url() + "/edit")
-
 class ClientAnalysisRequestsView(BikaFolderContentsView):
     implements(IFolderContentsView)
-    allowed_content_types = ['AnalysisRequest']
     contentFilter = {'portal_type': 'AnalysisRequest'}
+    content_add_buttons = ['AnalysisRequest']
     batch = True
     b_size = 100
     full_objects = False
@@ -50,7 +34,8 @@ class ClientAnalysisRequestsView(BikaFolderContentsView):
                                 'SamplePoint',
                                 'getDateReceived',
                                 'getDatePublished',
-                                'wf_state']},
+                                'wf_state'],
+                     'buttons':[BikaFolderContentsView.default_buttons['delete']]},
                     {'title': 'Sample due', 'id':'sample_due',
                      'columns':['getRequestID',
                                 'getContact',
@@ -58,7 +43,8 @@ class ClientAnalysisRequestsView(BikaFolderContentsView):
                                 'ClientReference',
                                 'ClientSampleID',
                                 'SampleType',
-                                'SamplePoint']},
+                                'SamplePoint'],
+                     'buttons':[BikaFolderContentsView.default_buttons['delete']]},
                     {'title': 'Sample received', 'id':'sample_received',
                      'columns':['getRequestID',
                                 'getContact',
@@ -67,7 +53,8 @@ class ClientAnalysisRequestsView(BikaFolderContentsView):
                                 'ClientSampleID',
                                 'SampleType',
                                 'SamplePoint',
-                                'getDateReceived']},
+                                'getDateReceived'],
+                     'buttons':[BikaFolderContentsView.default_buttons['delete']]},
                     {'title': 'Assigned to Worksheet', 'id':'assigned',
                      'columns':['getRequestID',
                                 'getContact',
@@ -122,8 +109,8 @@ class ClientAnalysisRequestsView(BikaFolderContentsView):
 
 class ClientSamplesView(BikaFolderContentsView):
     implements(IFolderContentsView)
-    allowed_content_types = ['Sample']
     contentFilter = {'portal_type': 'Sample'}
+    content_add_buttons = ['Sample']
     batch = True
     b_size = 100
     full_objects = False
@@ -199,8 +186,8 @@ class ClientSamplesView(BikaFolderContentsView):
 
 class ClientARImportsView(BikaFolderContentsView):
     implements(IFolderContentsView)
-    allowed_content_types = ['ARImport']
     contentFilter = {'portal_type': 'ARImport'}
+    content_add_buttons = ['ARImport']
     batch = True
     b_size = 100
     full_objects = False
@@ -239,8 +226,8 @@ class ClientARImportsView(BikaFolderContentsView):
 
 class ClientARProfilesView(BikaFolderContentsView):
     implements(IFolderContentsView)
-    allowed_content_types = ['ARProfile']
     contentFilter = {'portal_type': 'ARProfile'}
+    content_add_buttons = ['ARProfile']
     batch = True
     b_size = 100
     full_objects = False
@@ -264,7 +251,7 @@ class ClientARProfilesView(BikaFolderContentsView):
 
 class ClientAnalysisSpecsView(BikaFolderContentsView):
     implements(IFolderContentsView)
-    allowed_content_types = ['AnalysisSpec']
+    content_add_buttons = ['AnalysisSpec']
     contentFilter = {'portal_type': 'AnalysisSpec'}
     batch = True
     b_size = 100
@@ -287,8 +274,8 @@ class ClientAnalysisSpecsView(BikaFolderContentsView):
 
 class ClientAttachmentsView(BikaFolderContentsView):
     implements(IFolderContentsView)
-    allowed_content_types = ['Attachment']
-    contentFilter = {'portal_type': 'AnalysisSpec'}
+    contentFilter = {'portal_type': 'Attachment'}
+    content_add_buttons = ['Attachment']
     batch = True
     b_size = 100
     full_objects = False
@@ -340,8 +327,8 @@ class ClientAttachmentsView(BikaFolderContentsView):
 
 class ClientOrdersView(BikaFolderContentsView):
     implements(IFolderContentsView)
-    allowed_content_types = ['Orders', ]
-    contentFilter = {'portal_type': 'Orders'}
+    contentFilter = {'portal_type': 'Order'}
+    content_add_buttons = ['Order']
     batch = True
     b_size = 100
     full_objects = False
@@ -381,8 +368,8 @@ class ClientOrdersView(BikaFolderContentsView):
 
 class ClientContactsView(BikaFolderContentsView):
     implements(IFolderContentsView)
-    allowed_content_types = ['Contact']
     contentFilter = {'portal_type': 'Contact'}
+    content_add_buttons = ['Contact']
     batch = True
     b_size = 100
     full_objects = False
@@ -396,7 +383,7 @@ class ClientContactsView(BikaFolderContentsView):
               }
     wflist_states = [
                     {'title': 'All', 'id':'all',
-                     'columns': ['getFullName',
+                     'columns': ['getFullname',
                                  'getEmailAddress',
                                  'getBusinessPhone',
                                  'getMobilePhone',
@@ -406,7 +393,7 @@ class ClientContactsView(BikaFolderContentsView):
     def folderitems(self):
         items = BikaFolderContentsView.folderitems(self)
         for x in range(len(items)):
-            items[x]['links'] = {'getFullName': items[x]['url']}
+            items[x]['links'] = {'getFullname': items[x]['url']}
 
         return items
 

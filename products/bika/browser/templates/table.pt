@@ -86,8 +86,7 @@
 	          <tal:items tal:repeat="item view/batch">
 	            <tr tal:attributes="class item/table_row_class;
 	                                id string:folder-contents-item-${item/id};" >
-	
-	
+		
 	              <td tal:condition="view/show_sort_column" class="draggable">
 	                <a href=""
 	                   title="Move item up"
@@ -103,6 +102,7 @@
 	                  &#9660;
 	                </a>
 	              </td>
+
 	              <td class="notDraggable">
 	                <input type="checkbox"
 	                       class="noborder"
@@ -127,20 +127,20 @@
 	                  <a tal:condition="python:item['links'].has_key(column)" href="#" 
 	                     tal:attributes="href python:item['links'][column];
 	                                     class string: ${item/state_class} ${item/type_class};">
-	                    <strong tal:content="python:item.get(column)"/>
                         <img tal:condition="python:view.columns[column].has_key('icon')" 
                              tal:attributes="src python:'images/'+view.columns[column]['icon']" />
+                        <strong tal:content="python:item.get(column)"/>
 	                  </a>
-
-<!--
-	                  <span tal:condition="python:item['is_expired'] and view.columns[column]['title'] == 'Title'" 
-	                      class="state-expired"
-	                      i18n:translate="time_expired">expired</span>
--->
 
 	                  <span  tal:condition="python:not item['links'].has_key(column)"
 	                        tal:content="python:item.get(column)"
 	                        tal:attributes="class item/state_class">&nbsp</span>
+
+
+
+                      <!--- xxx   This is where notification/other icons/links go   -->
+
+
 
 	              </td>
 

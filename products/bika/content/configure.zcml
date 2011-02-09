@@ -4,6 +4,6 @@
     xmlns:grok="http://namespaces.zope.org/grok"
     xmlns:i18n="http://namespaces.zope.org/i18n"
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
-    i18n_domain="bika.lims">
+    i18n_domain="bika">
 
 </configure>

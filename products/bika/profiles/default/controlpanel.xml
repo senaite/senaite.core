@@ -2,33 +2,48 @@
 
 <object name="portal_controlpanel" meta_type="Plone Control Panel Tool">
 
- <configlet title="Laboratory Information" action_id="bika_labinfo"
+ <configlet title="Bika Settings" action_id="bika_settings"
     appId="bika" category="Products" condition_expr=""
-    icon_expr="string:lab.png" url_expr="string:$portal_url/bika_labinfo"
+    icon_expr="string:$portal_url/images/setup.png" 
+	url_expr="string:$portal_url/bika_settings"
     visible="True">
   <permission>BIKA: Manage Bika</permission>
  </configlet>
 
- <configlet title="Analysis Categories" action_id="bika_analysis_categories"
+ <configlet title="Laboratory Information" action_id="bika_labinfo"
     appId="bika" category="Products" condition_expr=""
-    icon_expr="string:category.png"
-    url_expr="string:$portal_url/bika_settings/@@bika_analysis_categories" visible="True">
+    icon_expr="string:$portal_url/images/lab.png" 
+	url_expr="string:$portal_url/bika_settings/laboratory/edit"
+    visible="True">
   <permission>BIKA: Manage Bika</permission>
  </configlet>
 
  <configlet title="Lab Departments" action_id="bika_departments"
     appId="bika" category="Products" condition_expr=""
-    icon_expr="string:department.png"
-    url_expr="string:$portal_url/bika_departments" visible="True">
+    icon_expr="string:$portal_url/images/department.png"
+    url_expr="string:$portal_url/bika_settings/bika_departments" 
+	visible="True">
   <permission>BIKA: Manage Bika</permission>
  </configlet>
 
  <configlet title="Lab Contacts" action_id="bika_labcontacts"
     appId="bika" category="Products" condition_expr=""
-    icon_expr="string:contact.png"
-    url_expr="string:$portal_url/bika_labcontacts" visible="True">
+    icon_expr="string:$portal_url/images/contact.png"
+    url_expr="string:$portal_url/bika_settings/bika_labcontacts" 
+	visible="True">
   <permission>BIKA: Manage Bika</permission>
  </configlet>
+
+ <configlet title="Analysis Categories" action_id="bika_analysis_categories"
+    appId="bika" category="Products" condition_expr=""
+    icon_expr="string:$portal_url/images/category.png"
+    url_expr="string:$portal_url/bika_settings/bika_analysis_categories" 
+    visible="True">
+  <permission>BIKA: Manage Bika</permission>
+ </configlet>
+
+
+
 
  <configlet title="Attachment Types" action_id="bika_attachmenttypes"
     appId="bika" category="Products" condition_expr=""
@@ -44,12 +59,6 @@
   <permission>BIKA: Manage Bika</permission>
  </configlet>
 
- <configlet title="Bika Settings" action_id="bika_settings"
-    appId="bika" category="Products" condition_expr=""
-    icon_expr="string:setup.png" url_expr="string:$portal_url/bika_settings"
-    visible="True">
-  <permission>BIKA: Manage Bika</permission>
- </configlet>
 
  <configlet title="Analysis Services" action_id="bika_services"
     appId="bika" category="Products" condition_expr=""

@@ -2,19 +2,30 @@
     xmlns="http://namespaces.zope.org/zope"
     xmlns:browser="http://namespaces.zope.org/browser"
     xmlns:i18n="http://namespaces.zope.org/i18n"
-    i18n_domain="bika.lims">
+    i18n_domain="bika">
 
     <browser:page
       for="Products.bika.interfaces.tools.IBikaSettings"
-      name="bika_analysis_categories"
-      class=".bika_categories.AnalysisCategories"
+      name="bika_departments"
+      class=".bika_departments.DepartmentsView"
       permission="bika.ManageBika"
       layer="Products.bika.interfaces.IBikaLIMSLayer"
     />
 
-    <!-- Magic so we can traverse these @@views from TAL -->
-    <class class="ZPublisher.BaseRequest.BaseRequest">
-      <implements interface="zope.annotation.interfaces.IAttributeAnnotatable" />
-    </class>
-  
+    <browser:page
+      for="Products.bika.interfaces.tools.IBikaSettings"
+      name="bika_labcontacts"
+      class=".bika_labcontacts.LabContactsView"
+      permission="bika.ManageBika"
+      layer="Products.bika.interfaces.IBikaLIMSLayer"
+    />
+
+    <browser:page
+      for="Products.bika.interfaces.tools.IBikaSettings"
+      name="bika_analysis_categories"
+      class=".bika_analysis_categories.AnalysisCategoriesView"
+      permission="bika.ManageBika"
+      layer="Products.bika.interfaces.IBikaLIMSLayer"
+    />
+
 </configure>

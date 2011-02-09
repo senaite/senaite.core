@@ -7,19 +7,15 @@ from zope.interface import implements
 class ClientFolderContentsView(BikaFolderContentsView):
     implements(IClientFolderView)
 
-    def __init__(self, context, request):
-        super(ClientFolderContentsView, self).__init__(context, request)
-
-    allowed_content_types = ['Client', ]
-    content_add_buttons = ['Client', ]
     contentFilter = {'portal_type': 'Client'}
+    content_add_buttons = ['Client', ]
     batch = True
     b_size = 100
     full_objects = False
     show_editable_border = False
 
     columns = {
-               'title_or_id': {'title': 'Name', 'field': 'title_or_id'},
+               'title_or_id': {'title': 'Name', 'field': 'title_or_id', 'icon': 'client.png'},
                'getEmailAddress': {'title': 'Email Address', 'field':'getEmailAddress'},
                'getPhone': {'title': 'Phone', 'field':'getPhone'},
                'getFax': {'title': 'Fax', 'field':'getFax'},

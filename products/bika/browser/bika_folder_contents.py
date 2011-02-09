@@ -38,19 +38,17 @@ class BikaFolderContentsView(FolderContentsView):
     title = "Folder Contents"
     description = ""
 
-    # setting this to a list of portal_type IDs restricts the Add New... contentactions menu.
-    # setting it to empty displays the Plone default list.
-    # setting it to None will disable the Add new... menu # XXX ?
-    allowed_content_types = []
-
     # A list of portal_types for 'Add X' buttons above the output
     content_add_buttons = []
 
     # The fields listed must be in the catalog metadata
     # or folderitems() must be overridden to provide them
     # if they are not in brains.
+    # the icon specified here is printed _before_ the text of the cell;
+    # it is just an icon.  For state specific icons or link icons, 
+    # we override folderitems()
     columns = {
-               'title_or_id': {'title': 'Title', 'field': 'title_or_id'},
+               'title_or_id': {'title': 'Title', 'field': 'title_or_id', 'icon':'thing.png'},
                'size': {'title': 'Size', 'field':'size'},
                'modified': {'title': 'Modified', 'field':'modified'},
                'state_title': {'title': 'State', 'field':'state_title'},
@@ -62,8 +60,6 @@ class BikaFolderContentsView(FolderContentsView):
                                   'title': 'Delete',
                                   'url': 'folder_delete:method'},
                       }
-
-    buttons = {}
 
     # Setting this enables and configures the workflow state selector.
     # At the very least, the 'All' workflow state is required.
@@ -79,7 +75,6 @@ class BikaFolderContentsView(FolderContentsView):
         super(BikaFolderContentsView, self).__init__(context, request)
         if self.show_editable_border: request.set('enable_border', 1)
         if not self.show_editable_border: request.set('disable_border', 1)
-        self.context.allowed_content_types = self.allowed_content_types
         self.portal_types = getToolByName(context, 'portal_types')
 
     def getFolderContents(self):
@@ -224,7 +219,6 @@ class BikaFolderContentsView(FolderContentsView):
                                         getFolderContents = self.getFolderContents,
                                         folderitems = self.folderitems,
                                         columns = self.columns,
-                                        buttons = self.buttons,
                                         wflist_states = self.wflist_states,
                                         pagesize = self.b_size,
                                         show_sort_column = self.show_sort_column,
@@ -246,7 +240,6 @@ class BikaFolderContentsTable(FolderContentsTable):
                  getFolderContents,
                  folderitems,
                  columns,
-                 buttons,
                  wflist_states,
                  pagesize,
                  show_sort_column,
@@ -264,7 +257,6 @@ class BikaFolderContentsTable(FolderContentsTable):
                            wflist_states,
                            show_sort_column = show_sort_column,
                            show_select_row = show_select_row,
-                           buttons = buttons,
                            pagesize = pagesize)
 
     def render(self):
@@ -280,7 +272,6 @@ class Table(tableview.Table):
                  wflist_states,
                  show_sort_column,
                  show_select_row,
-                 buttons,
                  pagesize):
 
         tableview.Table.__init__(self,
@@ -289,7 +280,6 @@ class Table(tableview.Table):
                                  view_url,
                                  items,
                                  show_sort_column = show_sort_column,
-                                 buttons = buttons,
                                  pagesize = pagesize)
 
         self.columns = columns

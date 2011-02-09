@@ -17,6 +17,10 @@
 
   <i18n:registerTranslations directory="i18n" />
 
+  <!-- Magic so we can traverse @@views from TAL -->
+  <class class="ZPublisher.BaseRequest.BaseRequest">
+    <implements interface="zope.annotation.interfaces.IAttributeAnnotatable" />
+  </class>
 
 </configure>
 

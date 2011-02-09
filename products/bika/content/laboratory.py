@@ -86,35 +86,12 @@ IdField.widget.visible = {'edit':'hidden', 'view': 'invisible'}
 
 class Laboratory(BrowserDefaultMixin, UniqueObject, Organisation.Organisation):
     security = ClassSecurityInfo()
-    archetype_name = 'Laboratory'
     schema = schema
-    content_icon = 'client.png'
-    allowed_content_types = ('Address',)
-    default_view = 'tool_base_edit'
-    immediate_view = 'tool_base_edit'
-    use_folder_tabs = 0
-    global_allow = 0
-    filter_content_types = 0
-    id = 'laboratory'
+
     # XXX: Temporary workaround to enable importing of exported bika
     # instance. If '__replaceable__' is not set we get BadRequest, The
     # id is invalid - it is already in use.
     __replaceable__ = 1
-
-    actions = (
-       {'id': 'edit',
-        'name': 'Edit',
-        'action': 'string:${object_url}/tool_base_edit',
-        'permissions': (ModifyPortalContent,),
-        },
-       # Make view action the same as edit
-       {'id': 'view',
-        'name': 'View',
-        'action': 'string:${object_url}/tool_base_edit',
-        'permissions': (ModifyPortalContent,),
-        },
-    )
-
 
     security.declareProtected(View, 'getSchema')
     def getSchema(self):
@@ -122,9 +99,3 @@ class Laboratory(BrowserDefaultMixin, UniqueObject, Organisation.Organisation):
 
 registerType(Laboratory, PROJECTNAME)
 
-def modify_fti(fti):
-    for a in fti['actions']:
-        if a['id'] in ('view', 'syndication', 'references', 'metadata',
-                       'localroles'):
-            a['visible'] = 0
-    return fti

@@ -8,12 +8,9 @@ from bika_attachmenttypes import bika_attachmenttypes
 from bika_calctypes import bika_calctypes
 from bika_client_categories import bika_client_categories
 from bika_client_status import bika_client_status
-from bika_departments import bika_departments
 from bika_instrument_import import bika_instrument_import
 from bika_instruments import bika_instruments
 from bika_invoice_prefs import bika_invoice_prefs
-from bika_labcontacts import bika_labcontacts
-from bika_labinfo import bika_labinfo
 from bika_methods import bika_methods
 from bika_pdf_build import bika_pdf_build
 from bika_portal_ids import bika_portal_ids

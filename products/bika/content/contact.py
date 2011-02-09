@@ -59,30 +59,7 @@ TitleField.widget.visible = False
 
 class Contact(VariableSchemaSupport, BrowserDefaultMixin, Person):
     security = ClassSecurityInfo()
-    archetype_name = 'Contact'
     schema = schema
-    allowed_content_types = ('Address',)
-    content_icon = 'contact.png'
-    default_view = 'base_edit'
-    immediate_view = 'base_edit'
-    global_allow = 0
-    filter_content_types = 0
-    use_folder_tabs = 0
-
-    actions = (
-        # Make view action the same as edit
-        {'id': 'view',
-         'name': 'View',
-         'action': 'string:${object_url}/base_edit',
-         'permissions': (permissions.View,),
-        },
-
-        {'id': 'access',
-         'name': 'Login details',
-         'action': 'string:${object_url}/contact_login_details',
-         'permissions': (ManageClients,),
-        },
-    )
 
     security.declareProtected(ManageClients, 'hasUser')
     def hasUser(self):
@@ -101,10 +78,3 @@ class Contact(VariableSchemaSupport, BrowserDefaultMixin, Person):
         return DisplayList(pairs)
 
 registerType(Contact, PROJECTNAME)
-
-def modify_fti(fti):
-    for a in fti['actions']:
-        if a['id'] in ('view', 'syndication', 'references', 'metadata',
-                       'localroles'):
-            a['visible'] = 0
-    return fti

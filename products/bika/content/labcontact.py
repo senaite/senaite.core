@@ -36,35 +36,6 @@ TitleField.widget.visible = False
 
 class LabContact(VariableSchemaSupport, BrowserDefaultMixin, Person):
     security = ClassSecurityInfo()
-    archetype_name = 'LabContact'
     schema = schema
-    allowed_content_types = ('Address',)
-    content_icon = 'contact.png'
-    default_view = 'tool_base_edit'
-    immediate_view = 'tool_base_edit'
-    global_allow = 0
-    filter_content_types = 0
-    use_folder_tabs = 0
-
-    actions = (
-        # Make view action the same as edit
-        {'id': 'view',
-         'name': 'View',
-         'action': 'string:${object_url}/tool_base_edit',
-         'permissions': (permissions.ModifyPortalContent,),
-        },
-        {'id': 'edit',
-         'name': 'Edit',
-         'action': 'string:${object_url}/tool_base_edit',
-         'permissions': (permissions.ModifyPortalContent,),
-        },
-    )
 
 registerType(LabContact, PROJECTNAME)
-
-def modify_fti(fti):
-    for a in fti['actions']:
-        if a['id'] in ('view', 'syndication', 'references', 'metadata',
-                       'localroles'):
-            a['visible'] = 0
-    return fti

@@ -20,7 +20,6 @@ ploneMessageFactory = MessageFactory('plone')
 from content import *
 import AccessControl
 import AnalysisRequest
-import Contact
 import Sample
 import Attachment
 import Analysis
@@ -40,8 +39,6 @@ import StandardSample
 import StandardAnalysis
 import SupplierContact
 import AnalysisService
-import Department
-import LabContact
 import CalculationType
 import AttachmentType
 import Instrument
@@ -57,7 +54,6 @@ import StandardManufacturer
 import SamplePoint
 import StandardStock
 import WorksheetTemplate
-import Laboratory
 import FixedPointField
 import AnalysesField
 import AnalysesWidget
