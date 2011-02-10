@@ -5,14 +5,13 @@ $Id: SupplierContact.py 639 2007-03-20 09:35:32Z anneline $
 from AccessControl import ClassSecurityInfo
 from AccessControl.Permissions import manage_users
 from Products.Archetypes.public import *
-from Products.BikaMembers.Person import Person
-from Products.BikaMembers.references import SymmetricalReference
+from Products.bika.Person import Person
 from Products.CMFCore import permissions
 from Products.CMFCore.utils import getToolByName
 from Products.CMFDynamicViewFTI.browserdefault import BrowserDefaultMixin
 from Products.bika.config import ManageClients, PUBLICATION_PREFS, PROJECTNAME
 
-schema = Person.schema.copy() 
+schema = Person.schema.copy()
 
 
 schema['JobTitle'].schemata = 'default'

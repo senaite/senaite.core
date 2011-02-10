@@ -6,21 +6,20 @@ from plone.app.folder.folder import ATFolder
 from Products.bika.browser.bika_folder_contents import BikaFolderContentsView
 from zope.interface.declarations import implements
 
-class DepartmentsView(BikaFolderContentsView):
+class SamplePointsView(BikaFolderContentsView):
     implements(IFolderContentsView)
-    contentFilter = {'portal_type': 'Department'}
-    content_add_buttons = ['Department']
+    contentFilter = {'portal_type': 'SamplePoint'}
+    content_add_buttons = ['SamplePoint']
     batch = True
     b_size = 100
     full_objects = False
     columns = {
-               'title_or_id': {'title': 'Title', 'icon':'category.png', 'icon':'department.png'},
-               'DepartmentDescription': {'title': 'DepartmentDescription'},
-               'Manager': {'title': 'Manager'},
+               'title_or_id': {'title': 'Title', 'icon':'samplepoint.png'},
+               'SamplePointDescription': {'title': 'SamplePointDescription'},
               }
     wflist_states = [
-                    {'title': 'All', 'id':'all',
-                     'columns': ['title_or_id', 'DepartmentDescription', 'Manager'],
+                    {'title_or_id': 'All', 'id':'all',
+                     'columns': ['title_or_id', 'SamplePointDescription'],
                      'buttons':[BikaFolderContentsView.default_buttons['delete']]},
                     ]
 
@@ -28,8 +27,7 @@ class DepartmentsView(BikaFolderContentsView):
         items = BikaFolderContentsView.folderitems(self)
         for x in range(len(items)):
             obj = items[x]['obj'].getObject()
-            items[x]['DepartmentDescription'] = obj.DepartmentDescription()
-            items[x]['Manager'] = obj.ManagerName()
+            items[x]['SamplePointDescription'] = obj.SamplePointDescription()
             items[x]['links'] = {'title_or_id': items[x]['url'] + "/edit"}
 
         return items

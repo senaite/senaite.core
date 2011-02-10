@@ -7,8 +7,7 @@ from AccessControl.Permissions import manage_users
 from Products.CMFCore import permissions
 from Products.CMFCore.utils import getToolByName
 from Products.Archetypes.public import *
-from Products.BikaMembers.Person import Person
-from Products.BikaMembers.references import SymmetricalReference
+from Products.bika.Person import Person
 from Products.bika.config import ManageClients, PUBLICATION_PREFS, PROJECTNAME
 from Products.CMFDynamicViewFTI.browserdefault import \
     BrowserDefaultMixin

@@ -14,14 +14,14 @@ class LabContactsView(BikaFolderContentsView):
     b_size = 100
     full_objects = False
     columns = {
-               'title': {'title': 'Title', 'icon':'contact.png'},
+               'title_or_id': {'title_or_id': 'Title', 'icon':'contact.png'},
                'BusinessPhone': {'title': 'BusinessPhone'},
                'MobilePhone': {'title': 'MobilePhone'},
                'EmailAddress': {'title': 'EmailAddress'},
               }
     wflist_states = [
                     {'title': 'All', 'id':'all',
-                     'columns': ['title', 'BusinessPhone', 'MobilePhone', 'EmailAddress'],
+                     'columns': ['title_or_id', 'BusinessPhone', 'MobilePhone', 'EmailAddress'],
                      'buttons':[BikaFolderContentsView.default_buttons['delete']]},
                     ]
 
@@ -32,6 +32,6 @@ class LabContactsView(BikaFolderContentsView):
             items[x]['BusinessPhone'] = obj.BusinessPhone()
             items[x]['MobilePhone'] = obj.MobilePhone()
             items[x]['EmailAddress'] = obj.EmailAddress()
-            items[x]['links'] = {'title': items[x]['url']}
+            items[x]['links'] = {'title_or_id': items[x]['url'] + "/edit"}
 
         return items

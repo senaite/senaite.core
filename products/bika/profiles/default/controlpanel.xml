@@ -42,6 +42,30 @@
   <permission>BIKA: Manage Bika</permission>
  </configlet>
 
+ <configlet title="Sample Types" action_id="bika_sampletypes"
+    appId="bika" category="Products" condition_expr=""
+    icon_expr="string:$portal_url/images/sampletype.png"
+    url_expr="string:$portal_url/bika_settings/bika_sampletypes" 
+	visible="True">
+  <permission>BIKA: Manage Bika</permission>
+ </configlet>
+
+ <configlet title="Sample Points" action_id="bika_samplepoints"
+    appId="bika" category="Products" condition_expr=""
+    icon_expr="string:$portal_url/images/samplepoint.png"
+    url_expr="string:$portal_url/bika_settings/bika_samplepoints" 
+	visible="True">
+  <permission>BIKA: Manage Bika</permission>
+ </configlet>
+
+ <configlet title="Analysis Specs" action_id="bika_analysisspecs"
+    appId="bika" category="Products" condition_expr=""
+    icon_expr="string:$portal_url/images/service.png"
+    url_expr="string:$portal_url/bika_settings/bika_analysisspecs" 
+    visible="True">
+  <permission>BIKA: Manage Bika</permission>
+ </configlet>
+
 
 
 
@@ -80,13 +104,6 @@
   <permission>BIKA: Manage Bika</permission>
  </configlet>
 
- <configlet title="Analysis Specs" action_id="bika_analysisspecs"
-    appId="bika" category="Products" condition_expr=""
-    icon_expr="string:service.png"
-    url_expr="string:$portal_url/bika_analysisspecs" visible="True">
-  <permission>BIKA: Manage Bika</permission>
- </configlet>
-
  <configlet title="Analysis Profiles" action_id="bika_arprofiles"
     appId="bika" category="Products" condition_expr=""
     icon_expr="string:service.png"
@@ -100,12 +117,6 @@
   <permission>BIKA: Manage Bika</permission>
  </configlet>
 
- <configlet title="Sample Types" action_id="bika_sampletypes"
-    appId="bika" category="Products" condition_expr=""
-    icon_expr="string:sampletype.png"
-    url_expr="string:$portal_url/bika_sampletypes" visible="True">
-  <permission>BIKA: Manage Bika</permission>
- </configlet>
 
  <configlet title="Standard Manufacturers"
     action_id="bika_standardmanufacturers" appId="bika"
@@ -122,12 +133,6 @@
   <permission>BIKA: Manage Bika</permission>
  </configlet>
 
- <configlet title="Sample Points" action_id="bika_samplepoints"
-    appId="bika" category="Products" condition_expr=""
-    icon_expr="string:samplepoint.png"
-    url_expr="string:$portal_url/bika_samplepoints" visible="True">
-  <permission>BIKA: Manage Bika</permission>
- </configlet>
 
  <configlet title="Worksheet Templates" action_id="bika_worksheettemplates"
     appId="bika" category="Products" condition_expr=""

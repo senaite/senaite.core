@@ -11,7 +11,7 @@ from Products.CMFCore import permissions
 from Products.Archetypes.public import *
 from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.Archetypes.utils import DisplayList
-from Products.BikaMembers import Organisation
+from Products.bika.Organisation import Organisation
 from Products.bika.config import ManageStandardSuppliers, ManageStandard
 from Products.CMFDynamicViewFTI.browserdefault import \
     BrowserDefaultMixin
@@ -38,8 +38,7 @@ IdField = schema['id']
 IdField.widget.visible = {'edit':'hidden', 'view': 'invisible'}
 TitleField = schema['title']
 
-class StandardSupplier(VariableSchemaSupport, BrowserDefaultMixin,
-             Organisation.Organisation):
+class StandardSupplier(VariableSchemaSupport, BrowserDefaultMixin, Organisation):
     security = ClassSecurityInfo()
     archetype_name = 'StandardSupplier'
     schema = schema

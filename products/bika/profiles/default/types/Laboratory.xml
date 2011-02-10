@@ -6,7 +6,7 @@
  <property name="description">
  	Laboratory information includes the name of the laboratory, contact numbers, physical and postal address, email address and the laboratory personnel and their contact details
  </property>
- <property name="icon_expr">string:${portal_url}/lab.png</property>
+ <property name="icon_expr">string:${portal_url}/images/lab.png</property>
  <property name="content_meta_type">Laboratory</property>
  <property name="product">bika</property>
  <property name="factory">addLaboratory</property>
@@ -19,7 +19,7 @@
   <element value="Address"/>
  </property>
  <property name="allow_discussion">False</property>
- <property name="default_view">base_view</property>
+ <property name="default_view">base_edit</property>
  <property name="view_methods">
   <element value="base_view"/>
  </property>
@@ -31,7 +31,7 @@
  <alias from="properties" to="base_metadata"/>
  <alias from="sharing" to="folder_localrole_form"/>
  <action title="View" action_id="view" category="object" condition_expr=""
-    icon_expr="" link_target="" url_expr="string:${object_url}/base_view"
+    icon_expr="" link_target="" url_expr="string:${object_url}/base_edit"
     visible="False">
   <permission value="View"/>
  </action>

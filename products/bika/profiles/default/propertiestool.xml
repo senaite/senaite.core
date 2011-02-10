@@ -1,12 +1,8 @@
 <?xml version="1.0"?>
+
 <object name="portal_properties" meta_type="Plone Properties Tool">
- <object name="site_properties" meta_type="Plone Property Sheet">
-  <property name="visible_ids" type="boolean">False</property>
-  <property name="exposeDCMetaTags" type="boolean">False</property>
-  <property name="disable_folder_sections" type="boolean">True</property>
-  <property name="disable_nonfolderish_sections" type="boolean">True</property>
- </object>
- <object name="navtree_properties" meta_type="Plone Property Sheet">
+
+<object name="navtree_properties" meta_type="Plone Property Sheet">
   <property name="title">NavigationTree properties</property>
   <property name="sortAttribute" type="string">sortable_title</property>
   <property name="sortOrder" type="string">asc</property>
@@ -20,44 +16,50 @@
   <property name="showAllParents" type="boolean">False</property>
   <property name="idsNotToList" type="lines"/>
   <property name="parentMetaTypesNotToQuery" type="lines">
-   <element value="TempFolder"/>
-   <element value="Large Plone Folder"/>
+    <element value="TempFolder"/>
+    <element value="Large Plone Folder"/>
   </property>
   <property name="metaTypesNotToList" type="lines">
-   <element value="AnalysisRequest"/>
-   <element value="Sample"/>
-   <element value="Analysis"/>
-   <element value="Client"/>
-   <element value="SamplePoint"/>
-   <element value="SampleType"/>
-   <element value="StandardManufacturer"/>
-   <element value="StandardStock"/>
-   <element value="StandardSupplier"/>
-   <element value="StandardSample"/>
-   <element value="StandardAnalysis"/>
-   <element value="LabProduct"/>
-   <element value="Attachment"/>
-   <element value="AnalysisService"/>
-   <element value="AnalysisSpec"/>
-   <element value="LabAnalysisSpec"/>
-   <element value="ARProfile"/>
-   <element value="LabARProfile"/>
-   <element value="Address"/>
-   <element value="Worksheet"/>
-   <element value="DuplicateAnalysis"/>
-   <element value="RejectAnalysis"/>
-   <element value="Order"/>
-   <element value="OrderItem"/>
-   <element value="ARImport"/>
-   <element value="ARImportItem"/>
-   <element value="InvoiceLineItem"/>
-   <element value="PricelistLineItem"/>
-   <element value="MethodLogEntry"/>
-   <element value="Instrument"/>
-   <element value="WorksheetTemplate"/>
-   <element value="BikaSettings"/>
+    <element value="AnalysisRequest"/>
+    <element value="Sample"/>
+    <element value="Analysis"/>
+    <element value="Client"/>
+    <element value="SamplePoint"/>
+    <element value="SampleType"/>
+    <element value="StandardManufacturer"/>
+    <element value="StandardStock"/>
+    <element value="StandardSupplier"/>
+    <element value="StandardSample"/>
+    <element value="StandardAnalysis"/>
+    <element value="LabProduct"/>
+    <element value="Attachment"/>
+    <element value="AnalysisService"/>
+    <element value="AnalysisSpec"/>
+    <element value="LabAnalysisSpec"/>
+    <element value="ARProfile"/>
+    <element value="LabARProfile"/>
+    <element value="Address"/>
+    <element value="Worksheet"/>
+    <element value="DuplicateAnalysis"/>
+    <element value="RejectAnalysis"/>
+    <element value="Order"/>
+    <element value="OrderItem"/>
+    <element value="ARImport"/>
+    <element value="ARImportItem"/>
+    <element value="InvoiceLineItem"/>
+    <element value="PricelistLineItem"/>
+    <element value="MethodLogEntry"/>
+    <element value="Instrument"/>
+    <element value="WorksheetTemplate"/>
+    <element value="BikaSettings"/>
   </property>
-  <property name="enable_wf_state_filtering" type="boolean">False</property>
-  <property name="wf_states_to_show" type="lines"/>
- </object>
+</object>
+
+<object name="site_properties" meta_type="Plone Property Sheet">
+  <property name="visible_ids" type="boolean">False</property>
+  <property name="exposeDCMetaTags" type="boolean">False</property>
+  <property name="disable_folder_sections" type="boolean">True</property>
+  <property name="disable_nonfolderish_sections" type="boolean">True</property>
+</object>
+
 </object>

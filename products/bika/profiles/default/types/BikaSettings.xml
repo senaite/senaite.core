@@ -16,6 +16,9 @@
  <property name="allowed_content_types">
   <element value="Department"/>
   <element value="AnalysisCategory"/>
+  <element value="SamplePoint"/>
+  <element value="SampleType"/>
+  <element value="AnalysisSpec"/>
  </property>
  <property name="allow_discussion">False</property>
  <property name="default_view">base_view</property>

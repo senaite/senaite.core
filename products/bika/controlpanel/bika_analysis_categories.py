@@ -14,12 +14,13 @@ class AnalysisCategoriesView(BikaFolderContentsView):
     b_size = 100
     full_objects = False
     columns = {
-               'CategoryDescription': {'title': 'CategoryDescription', 'icon':'category.png'},
+               'title_or_id': {'title': 'Title', 'icon':'category.png'},
+               'CategoryDescription': {'title': 'CategoryDescription'},
                'Department': {'title': 'Department'},
               }
     wflist_states = [
                     {'title': 'All', 'id':'all',
-                     'columns': ['CategoryDescription', 'Department'],
+                     'columns': ['title_or_id', 'CategoryDescription', 'Department'],
                      'buttons':[BikaFolderContentsView.default_buttons['delete']]},
                     ]
 
@@ -29,7 +30,7 @@ class AnalysisCategoriesView(BikaFolderContentsView):
             obj = items[x]['obj'].getObject()
             items[x]['CategoryDescription'] = obj.CategoryDescription()
             items[x]['Department'] = obj.getDepartment().Title()
-            items[x]['links'] = {'CategoryDescription': items[x]['url'],
-                                 'Department': obj.getDepartment().absolute_url()}
+            items[x]['links'] = {'title_or_id': items[x]['url'] + "/edit",
+                                 'Department': obj.getDepartment().absolute_url() + "/edit"}
 
         return items

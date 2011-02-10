@@ -15,13 +15,13 @@ logger = logging.getLogger('Products.bika')
 
 class BikaGenerator:
 
-    def installProducts(self, p):
-        """QuickInstaller install of required Products"""
-        qi_tool = getToolByName(p, 'portal_quickinstaller')
-        logger.info("Installing required products")
-        qi_tool.installProducts(
-            ['BikaMembers', ]
-        )
+    def setupPropertiesTool(self, portal):
+        ptool = getToolByName(portal, 'portal_properties')
+        if not getattr(ptool, 'bika_properties', None):
+            ptool.addPropertySheet('bika_properties', 'Bika Properties')
+            ps = getattr(ptool, 'bika_properties')
+            ps._properties = ps._properties + ({'id':'country_names', 'type':'lines', 'mode':'w'},)
+            ps._updateProperty('country_names', COUNTRY_NAMES)
 
     def setupPortalContent(self, portal):
         """ Setup Bika site structure """
@@ -39,11 +39,6 @@ class BikaGenerator:
             obj = portal._getOb(obj_id)
             obj.reindexObject()
 
-        ## Disable implicit adding of Organisation and Person
-#        typesTool = getToolByName(portal, 'portal_types')
-#        getattr(typesTool, 'Organisation').global_allow = False
-#        getattr(typesTool, 'Person').global_allow = False
-#
         # Move calendar and user action to bika
 #        for action in portal.portal_controlpanel.listActions():
 #            if action.id in ('UsersGroups', 'UsersGroups2', 'bika_calendar_tool'):
@@ -300,6 +295,8 @@ class BikaGenerator:
         script = portal.portal_workflow.bika_standardanalysis_workflow.scripts.default
         script.manage_proxy(roles = ('Manager',))
 
+
+
 def importFinalSteps(context):
     """
     Final Bika import steps.
@@ -309,7 +306,7 @@ def importFinalSteps(context):
 
     site = context.getSite()
     gen = BikaGenerator()
-    gen.installProducts(site)
+    gen.setupPropertiesTool(site)
     gen.setupPortalContent(site)
     gen.setupControlPanel(site)
     gen.setupGroupsAndRoles(site)

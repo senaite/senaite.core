@@ -18,12 +18,14 @@ bikaMessageFactory = MessageFactory('bika')
 ploneMessageFactory = MessageFactory('plone')
 
 from content import *
+
+import Organisation
+import Person
 import AccessControl
 import AnalysisRequest
 import Sample
 import Attachment
 import Analysis
-import AnalysisSpec
 import ARProfile
 import ARImport
 import ARImportItem
@@ -49,9 +51,7 @@ import ClientCategory
 import ClientStatus
 import ClientPublicationPreference
 import ClientInvoicePreference
-import SampleType
 import StandardManufacturer
-import SamplePoint
 import StandardStock
 import WorksheetTemplate
 import FixedPointField

@@ -1,8 +1,18 @@
-import sys
 from AccessControl import ClassSecurityInfo
+from Products.ATExtensions.Extensions.utils import makeDisplayList
+from Products.ATExtensions.ateapi import RecordField, RecordsField
 from Products.Archetypes.Registry import registerField
 from Products.Archetypes.public import *
-from Products.ATExtensions.ateapi import RecordsField
+from Products.CMFCore.utils import getToolByName
+from Products.bika.config import COUNTRY_NAMES
+from Products.validation import validation
+from Products.validation.validators.RegexValidator import RegexValidator
+import sys
+
+validation.register(
+    RegexValidator('isNumber', r'^([+-])?[0-9 ]+$', title = 'XXX',
+                    description = 'XXX', errmsg = 'is not a valid number.')
+)
 
 class AnalysisSpecField(RecordsField):
     """a list of in-range analysis result specifications """
@@ -19,8 +29,8 @@ class AnalysisSpecField(RecordsField):
     security = ClassSecurityInfo()
 
 registerField(AnalysisSpecField,
-              title="Analysis Result Specification",
-              description="Used for storing analysis results specifications",
+              title = "Analysis Result Specification",
+              description = "Used for storing analysis results specifications",
               )
 
 class StandardResultField(RecordsField):
@@ -38,8 +48,8 @@ class StandardResultField(RecordsField):
     security = ClassSecurityInfo()
 
 registerField(StandardResultField,
-              title="Standard Results",
-              description="Used for storing standard results",
+              title = "Standard Results",
+              description = "Used for storing standard results",
               )
 
 class TemplatePositionField(RecordsField):
@@ -56,8 +66,8 @@ class TemplatePositionField(RecordsField):
     security = ClassSecurityInfo()
 
 registerField(TemplatePositionField,
-              title="Template Position",
-              description="Used for storing worksheet layout",
+              title = "Template Position",
+              description = "Used for storing worksheet layout",
               )
 
 class WorksheetAnalysesField(RecordsField):
@@ -76,6 +86,35 @@ class WorksheetAnalysesField(RecordsField):
     security = ClassSecurityInfo()
 
 registerField(WorksheetAnalysesField,
-              title="Worksheet Analyses",
-              description="Used for storing worksheet analyses",
+              title = "Worksheet Analyses",
+              description = "Used for storing worksheet analyses",
               )
+
+
+# XXX some provision for default country for this lims
+#  probably from bika_settings/laboratory
+
+class AddressField(RecordField):
+    """ dedicated address field"""
+    _properties = RecordField._properties.copy()
+    _properties.update({
+        'type' : 'address',
+        'subfields' : ('address', 'city', 'zip', 'state', 'country'),
+        'subfield_labels':{'zip':'Postal code'},
+        'subfield_vocabularies' :{'country':'CountryNames'},
+        'outerJoin':'<br />',
+        })
+    security = ClassSecurityInfo()
+
+    security.declarePublic("CountryNames")
+    def CountryNames(self, instance = None):
+        if not instance:
+            instance = self
+        return COUNTRY_NAMES
+
+
+registerField(AddressField,
+              title = "Address",
+              description = "Used for storing address information",
+              )
+

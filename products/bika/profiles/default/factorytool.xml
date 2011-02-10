@@ -6,5 +6,8 @@
   <type portal_type="Department"/>
   <type portal_type="LabContact"/>
   <type portal_type="AnalysisCategory"/>
+  <type portal_type="AnalysisSpec"/>
+  <type portal_type="SamplePoint"/>
+  <type portal_type="SampleType"/>
  </factorytypes>
 </object>

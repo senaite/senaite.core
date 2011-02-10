@@ -7,7 +7,7 @@ from Products.CMFDynamicViewFTI.browserdefault import \
     BrowserDefaultMixin
 from plone.app import folder
 from Products.Archetypes.public import *
-from Products.BikaMembers import Organisation
+from Products.bika import Organisation
 from Products.bika.config import ManageBika, I18N_DOMAIN, PROJECTNAME
 
 schema = Organisation.schema.copy() + Schema((

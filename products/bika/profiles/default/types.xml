@@ -2,11 +2,14 @@
 <object name="portal_types" meta_type="Plone Types Tool">
  <property name="title">Controls the available content types in your portal</property>
  <object name="ClientFolder" meta_type="Factory-based Type Information with dynamic views"/>
- <object name="Client" meta_type="Factory-based Type Information with dynamic views"/>
+ <object name="Organisation" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="ClientCategory" meta_type="Factory-based Type Information with dynamic views"/>
+ <object name="Client" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="ClientInvoicePreference" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="ClientPublicationPreference" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="ClientStatus" meta_type="Factory-based Type Information with dynamic views"/>
+ <object name="Person" meta_type="Factory-based Type Information with dynamic views"/>
+ <object name="Contact" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="Analysis" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="AnalysisRequest" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="AnalysisService" meta_type="Factory-based Type Information with dynamic views"/>
@@ -15,7 +18,6 @@
  <object name="ARImportItem" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="ARProfile" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="BikaSettings" meta_type="Factory-based Type Information with dynamic views"/>
- <object name="Contact" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="AnalysisCategory" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="Department" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="LabContact" meta_type="Factory-based Type Information with dynamic views"/>

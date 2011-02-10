@@ -1,6 +1,5 @@
 from toolfolder import ToolFolder
 from bika_analysis_reset import bika_analysis_reset
-from bika_analysisspecs import bika_analysisspecs
 from bika_ar_export import bika_ar_export
 from bika_ar_import import bika_ar_import
 from bika_arprofiles import bika_arprofiles
@@ -17,8 +16,6 @@ from bika_portal_ids import bika_portal_ids
 from bika_products import bika_products
 from bika_profiles_export import bika_profiles_export
 from bika_publication_prefs import bika_publication_prefs
-from bika_samplepoints import bika_samplepoints
-from bika_sampletypes import bika_sampletypes
 from bika_services_export import bika_services_export
 from bika_services import bika_services
 from bika_standardmanufacturers import bika_standardmanufacturers

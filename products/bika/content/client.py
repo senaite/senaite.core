@@ -8,11 +8,10 @@ from DateTime import DateTime
 from Products.ATContentTypes.content import schemata
 from Products.Archetypes import atapi
 from Products.Archetypes.utils import DisplayList
-from Products.BikaMembers import Organisation
 from Products.CMFCore import permissions
 from Products.CMFCore.utils import getToolByName
 from Products.CMFDynamicViewFTI.browserdefault import BrowserDefaultMixin
-from Products.bika import bikaMessageFactory as _
+from Products.bika import Organisation, bikaMessageFactory as _
 from Products.bika.config import *
 from Products.bika.interfaces import IClient
 from zope.interface import implements
@@ -57,20 +56,20 @@ schema = Organisation.schema.copy() + atapi.Schema((
             i18n_domain = I18N_DOMAIN,
         ),
     ),
-#    atapi.ReferenceField('DefaultCategory',
-#        schemata = 'preferences',
-#        required = 0,
-#        multiValued = 1,
-#        vocabulary_display_path_bound = sys.maxint,
-#        allowed_types = ('AnalysisCategory',),
-#        relationship = 'ClientAnalysisCategory',
-#        widget = atapi.ReferenceWidget(
-#            checkbox_bound = 1,
-#            label = 'Default analysis categories',
-#            label_msgid = 'label_default_categories',
-#            i18n_domain = I18N_DOMAIN,
-#        ),
-#    ),
+    atapi.ReferenceField('DefaultCategory',
+        schemata = 'preferences',
+        required = 0,
+        multiValued = 1,
+        vocabulary_display_path_bound = sys.maxint,
+        allowed_types = ('AnalysisCategory',),
+        relationship = 'ClientAnalysisCategory',
+        widget = atapi.ReferenceWidget(
+            checkbox_bound = 1,
+            label = 'Default analysis categories',
+            label_msgid = 'label_default_categories',
+            i18n_domain = I18N_DOMAIN,
+        ),
+    ),
     atapi.BooleanField('RestrictCategories',
         default = False,
         schemata = 'preferences',

@@ -28,4 +28,28 @@
       layer="Products.bika.interfaces.IBikaLIMSLayer"
     />
 
+    <browser:page
+      for="Products.bika.interfaces.tools.IBikaSettings"
+      name="bika_samplepoints"
+      class=".bika_samplepoints.SamplePointsView"
+      permission="bika.ManageBika"
+      layer="Products.bika.interfaces.IBikaLIMSLayer"
+    />
+
+    <browser:page
+      for="Products.bika.interfaces.tools.IBikaSettings"
+      name="bika_sampletypes"
+      class=".bika_sampletypes.SampleTypesView"
+      permission="bika.ManageBika"
+      layer="Products.bika.interfaces.IBikaLIMSLayer"
+    />
+
+    <browser:page
+      for="Products.bika.interfaces.tools.IBikaSettings"
+      name="bika_analysisspecs"
+      class=".bika_analysisspecs.AnalysisSpecsView"
+      permission="bika.ManageBika"
+      layer="Products.bika.interfaces.IBikaLIMSLayer"
+    />
+
 </configure>
