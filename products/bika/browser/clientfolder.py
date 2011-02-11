@@ -13,10 +13,10 @@ class ClientFolderContentsView(BikaFolderContentsView):
     show_editable_border = False
 
     columns = {
-               'title_or_id': {'title': 'Name', 'field': 'title_or_id', 'icon': 'client.png'},
-               'getEmailAddress': {'title': 'Email Address', 'field':'getEmailAddress'},
-               'getPhone': {'title': 'Phone', 'field':'getPhone'},
-               'getFax': {'title': 'Fax', 'field':'getFax'},
+               'title_or_id': {'title': 'Name'},
+               'getEmailAddress': {'title': 'Email Address'},
+               'getPhone': {'title': 'Phone'},
+               'getFax': {'title': 'Fax'},
               }
 
     wflist_states = [
