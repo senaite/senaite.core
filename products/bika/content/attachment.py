@@ -1,13 +1,15 @@
 from AccessControl import ClassSecurityInfo
 from DateTime import DateTime
-from Products.ATExtensions.ateapi import DateTimeField, DateTimeWidget, RecordsField
+from Products.ATExtensions.ateapi import DateTimeField, DateTimeWidget, \
+    RecordsField
 from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.Archetypes.public import *
 from Products.CMFCore.permissions import ListFolderContents, View
 from Products.CMFCore.utils import getToolByName
 from Products.CMFDynamicViewFTI.browserdefault import BrowserDefaultMixin
 from Products.bika.BikaContent import BikaSchema
-from Products.bika.config import I18N_DOMAIN, PROJECTNAME, ManageBika, ManageAnalysisRequest
+from Products.bika.config import I18N_DOMAIN, PROJECTNAME, ManageBika, \
+    ManageAnalysisRequest
 from Products.bika.fixedpoint import FixedPoint
 
 schema = BikaSchema.copy() + Schema((
@@ -80,33 +82,7 @@ TitleField.widget.visible = {'edit': 'hidden', 'view': 'invisible'}
 
 class Attachment(BrowserDefaultMixin, BaseFolder):
     security = ClassSecurityInfo()
-    archetype_name = 'Attachment'
     schema = schema
-    allowed_content_types = ()
-    default_view = 'attachment_edit'
-    content_icon = 'attachment.png'
-    global_allow = 0
-    filter_content_types = 1
-    use_folder_tabs = 0
-
-    actions = (
-        {'id': 'edit',
-         'name': 'Edit',
-         'action': 'string:${object_url}/attachment_edit',
-         'permissions': (ManageAnalysisRequest,),
-        },
-        {'id': 'view',
-         'name': 'View',
-         'action': 'string:${object_url}/attachment_view',
-         'permissions': (View,),
-        },
-        {'id': 'log',
-         'name': 'Log',
-         'action': 'string:${object_url}/status_log',
-         'permissions': (ManageBika,),
-        },
-
-    )
 
     def Title(self):
         """ Return the Id """
@@ -152,7 +128,7 @@ class Attachment(BrowserDefaultMixin, BaseFolder):
             return ar.getRequestID()
         else:
             return None
-    
+
     def getAnalysis(self):
         """ Return the analysis to which this is linked """
         """  it may not be linked to an analysis """
@@ -180,7 +156,7 @@ class Attachment(BrowserDefaultMixin, BaseFolder):
             if len(uids) == 1:
                 reference = uids[0]
                 parent = tool.lookupObject(reference.sourceUID)
-
+        wf_tool = getToolByName(self, 'portal_workflow')
         return wf_tool.getInfoFor(parent, 'review_state', '')
 
     security.declarePublic('current_date')
@@ -189,10 +165,3 @@ class Attachment(BrowserDefaultMixin, BaseFolder):
         return DateTime()
 
 registerType(Attachment, PROJECTNAME)
-
-def modify_fti(fti):
-    for a in fti['actions']:
-        if a['id'] in ('syndication', 'references', 'metadata',
-                       'localroles'):
-            a['visible'] = 0
-    return fti

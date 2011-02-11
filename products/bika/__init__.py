@@ -24,7 +24,6 @@ import Person
 import AccessControl
 import AnalysisRequest
 import Sample
-import Attachment
 import Analysis
 import ARProfile
 import ARImport
@@ -40,10 +39,6 @@ import StandardSupplier
 import StandardSample
 import StandardAnalysis
 import SupplierContact
-import AnalysisService
-import CalculationType
-import AttachmentType
-import Instrument
 import LabAnalysisSpec
 import LabARProfile
 import LabProduct
@@ -63,7 +58,6 @@ import InvoiceBatch
 import Invoice
 import InvoiceLineItem
 import MethodFolder
-import Method
 import MethodLogEntry
 import PricelistFolder
 import Pricelist

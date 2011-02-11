@@ -12,7 +12,6 @@
   <include file="genericsetup.zcml" />
   <include file="permissions.zcml" />
   <include package=".browser"/>
-  <include package=".content"/>
   <include package=".controlpanel"/>
 
   <i18n:registerTranslations directory="i18n" />

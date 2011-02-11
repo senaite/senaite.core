@@ -52,4 +52,28 @@
       layer="Products.bika.interfaces.IBikaLIMSLayer"
     />
 
+    <browser:page
+      for="Products.bika.interfaces.tools.IBikaSettings"
+      name="bika_instruments"
+      class=".bika_instruments.InstrumentsView"
+      permission="bika.ManageBika"
+      layer="Products.bika.interfaces.IBikaLIMSLayer"
+    />
+
+    <browser:page
+      for="Products.bika.interfaces.tools.IBikaSettings"
+      name="bika_methods"
+      class=".bika_methods.MethodsView"
+      permission="bika.ManageBika"
+      layer="Products.bika.interfaces.IBikaLIMSLayer"
+    />
+
+    <browser:page
+      for="Products.bika.interfaces.tools.IBikaSettings"
+      name="bika_attachmenttypes"
+      class=".bika_attachmenttypes.AttachmentTypesView"
+      permission="bika.ManageBika"
+      layer="Products.bika.interfaces.IBikaLIMSLayer"
+    />
+
 </configure>

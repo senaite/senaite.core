@@ -19,6 +19,11 @@
   <element value="SamplePoint"/>
   <element value="SampleType"/>
   <element value="AnalysisSpec"/>
+  <element value="Method"/>
+  <element value="Instrument"/>
+  <element value="AttachmentType"/>
+  <element value="CalculationType"/>
+  <element value="AnalysisService"/>
  </property>
  <property name="allow_discussion">False</property>
  <property name="default_view">base_view</property>
@@ -29,8 +34,6 @@
  <alias from="(Default)" to="(dynamic view)"/>
  <alias from="edit" to="base_edit"/>
  <alias from="index.html" to="(dynamic view)"/>
- <alias from="properties" to="base_metadata"/>
- <alias from="sharing" to="folder_localrole_form"/>
  <alias from="view" to="(selected layout)"/>
  <action title="View" action_id="view" category="object" condition_expr=""
     icon_expr="" link_target="" url_expr="string:${object_url}/base_view"
@@ -41,17 +44,5 @@
     icon_expr="" link_target="" url_expr="string:${object_url}/base_edit"
     visible="True">
   <permission value="Modify portal content"/>
- </action>
- <action title="Properties" action_id="metadata" category="object"
-    condition_expr="" icon_expr="" link_target=""
-    url_expr="string:${object_url}/base_metadata" visible="False">
-  <permission value="Modify portal content"/>
- </action>
- <action title="References" action_id="references" category="object"
-    condition_expr="object/archetype_tool/has_graphviz" icon_expr=""
-    link_target="" url_expr="string:${object_url}/reference_graph"
-    visible="False">
-  <permission value="Modify portal content"/>
-  <permission value="Review portal content"/>
  </action>
 </object>

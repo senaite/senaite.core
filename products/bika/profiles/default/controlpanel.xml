@@ -66,43 +66,50 @@
   <permission>BIKA: Manage Bika</permission>
  </configlet>
 
+ <configlet title="Instruments" action_id="bika_instruments"
+    appId="bika" category="Products" condition_expr=""
+    icon_expr="string:$portal_url/images/instrument.png"
+    url_expr="string:$portal_url/bika_settings/bika_instruments" 
+    visible="True">
+  <permission>BIKA: Manage Bika</permission>
+ </configlet>
 
-
+ <configlet title="Methods" action_id="bika_methods"
+    appId="bika" category="Products" condition_expr=""
+    icon_expr="string:$portal_url/images/method.png"
+    url_expr="string:$portal_url/bika_settings/bika_methods" 
+    visible="True">
+  <permission>BIKA: Manage Bika</permission>
+ </configlet>
 
  <configlet title="Attachment Types" action_id="bika_attachmenttypes"
     appId="bika" category="Products" condition_expr=""
-    icon_expr="string:attachment.png"
-    url_expr="string:$portal_url/bika_attachmenttypes" visible="True">
+    icon_expr="string:$portal_url/images/attachment.png"
+    url_expr="string:$portal_url/bika_settings/bika_attachmenttypes" 
+    visible="True">
   <permission>BIKA: Manage Bika</permission>
  </configlet>
 
  <configlet title="Calculation Types" action_id="bika_calctypes"
     appId="bika" category="Products" condition_expr=""
-    icon_expr="string:calculation.png"
-    url_expr="string:$portal_url/bika_calctypes" visible="True">
-  <permission>BIKA: Manage Bika</permission>
- </configlet>
-
-
- <configlet title="Analysis Services" action_id="bika_services"
-    appId="bika" category="Products" condition_expr=""
-    icon_expr="string:service.png" url_expr="string:$portal_url/bika_services"
+    icon_expr="string:$portal_url/images/calculation.png"
+    url_expr="string:$portal_url/bika_settings/bika_calctypes" 
     visible="True">
   <permission>BIKA: Manage Bika</permission>
  </configlet>
 
- <configlet title="Methods" action_id="bika_methods" appId="bika"
-    category="Products" condition_expr="" icon_expr="string:method.png"
-    url_expr="string:$portal_url/bika_methods" visible="True">
+ <configlet title="Analysis Services" action_id="bika_services"
+    appId="bika" category="Products" condition_expr=""
+    icon_expr="string:$portal_url/images/service.png" 
+    url_expr="string:$portal_url/bika_settings/bika_services"
+    visible="True">
   <permission>BIKA: Manage Bika</permission>
  </configlet>
 
- <configlet title="Instruments" action_id="bika_instruments"
-    appId="bika" category="Products" condition_expr=""
-    icon_expr="string:instrument.png"
-    url_expr="string:$portal_url/bika_instruments" visible="True">
-  <permission>BIKA: Manage Bika</permission>
- </configlet>
+
+
+
+
 
  <configlet title="Analysis Profiles" action_id="bika_arprofiles"
     appId="bika" category="Products" condition_expr=""
@@ -116,7 +123,6 @@
     url_expr="string:$portal_url/bika_products" visible="True">
   <permission>BIKA: Manage Bika</permission>
  </configlet>
-
 
  <configlet title="Standard Manufacturers"
     action_id="bika_standardmanufacturers" appId="bika"
@@ -132,7 +138,6 @@
     url_expr="string:$portal_url/bika_standardstocks" visible="True">
   <permission>BIKA: Manage Bika</permission>
  </configlet>
-
 
  <configlet title="Worksheet Templates" action_id="bika_worksheettemplates"
     appId="bika" category="Products" condition_expr=""

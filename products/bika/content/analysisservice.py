@@ -303,24 +303,7 @@ schema = BikaSchema.copy() + Schema((
 
 class AnalysisService(VariableSchemaSupport, BrowserDefaultMixin, BaseContent):
     security = ClassSecurityInfo()
-    archetype_name = 'AnalysisService'
     schema = schema
-    allowed_content_types = ()
-    default_view = 'analysisservice_edit'
-    immediate_view = 'analysisservice_edit'
-    content_icon = 'service.png'
-
-    actions = (
-       {'id': 'edit',
-        'name': 'Edit',
-        'action': 'string:${object_url}/analysisservice_edit',
-        'permissions': (ModifyPortalContent,),
-        },
-    )
-
-    factory_type_information = {
-        'title': 'Analysis service'
-    }
 
     security.declarePublic('getResultOptionsSorted')
     def getResultOptionsSorted(self):
@@ -455,10 +438,3 @@ class AnalysisService(VariableSchemaSupport, BrowserDefaultMixin, BaseContent):
         return dup_id
 
 registerType(AnalysisService, PROJECTNAME)
-
-def modify_fti(fti):
-    for a in fti['actions']:
-        if a['id'] in ('syndication', 'references', 'metadata',
-                       'localroles'):
-            a['visible'] = 0
-    return fti

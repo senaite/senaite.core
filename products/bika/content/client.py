@@ -209,12 +209,6 @@ class Client(BrowserDefaultMixin, Organisation.Organisation):
             sampletypes.append((st.UID, st.Title))
         return DisplayList(sampletypes)
 
-    def allowedContentTypes(self):
-        if getattr(self, "allowed_content_types"):
-            allowed_content_types = self.allowed_content_types
-        else:
-            allowed_content_types = None
-
         portal_types = getToolByName(self, 'portal_types')
         myType = portal_types.getTypeInfo(self)
         result = portal_types.listTypeInfo()
