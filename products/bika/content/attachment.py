@@ -1,15 +1,15 @@
+from Products.ATContentTypes.content import schemata
+from Products.Archetypes import atapi
 from AccessControl import ClassSecurityInfo
 from DateTime import DateTime
-from Products.ATExtensions.ateapi import DateTimeField, DateTimeWidget, \
-    RecordsField
+from Products.ATExtensions.ateapi import DateTimeField, DateTimeWidget, RecordsField
 from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.Archetypes.public import *
 from Products.CMFCore.permissions import ListFolderContents, View
 from Products.CMFCore.utils import getToolByName
 from Products.CMFDynamicViewFTI.browserdefault import BrowserDefaultMixin
 from Products.bika.BikaContent import BikaSchema
-from Products.bika.config import I18N_DOMAIN, PROJECTNAME, ManageBika, \
-    ManageAnalysisRequest
+from Products.bika.config import I18N_DOMAIN, PROJECTNAME, ManageBika, ManageAnalysisRequest
 from Products.bika.fixedpoint import FixedPoint
 
 schema = BikaSchema.copy() + Schema((
@@ -83,6 +83,7 @@ TitleField.widget.visible = {'edit': 'hidden', 'view': 'invisible'}
 class Attachment(BrowserDefaultMixin, BaseFolder):
     security = ClassSecurityInfo()
     schema = schema
+    displayContentsTab = False
 
     def Title(self):
         """ Return the Id """
@@ -156,7 +157,7 @@ class Attachment(BrowserDefaultMixin, BaseFolder):
             if len(uids) == 1:
                 reference = uids[0]
                 parent = tool.lookupObject(reference.sourceUID)
-        wf_tool = getToolByName(self, 'portal_workflow')
+
         return wf_tool.getInfoFor(parent, 'review_state', '')
 
     security.declarePublic('current_date')
@@ -164,4 +165,5 @@ class Attachment(BrowserDefaultMixin, BaseFolder):
         """ return current date """
         return DateTime()
 
-registerType(Attachment, PROJECTNAME)
+
+atapi.registerType(Attachment, PROJECTNAME)
