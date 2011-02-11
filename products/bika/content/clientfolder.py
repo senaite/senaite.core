@@ -18,7 +18,6 @@ schema['title'].widget.visible = {'edit':'hidden', 'view': 'invisible'}
 class ClientFolder(folder.ATFolder):
     implements(ILims)
     schema = schema
-#    canSetConstrainTypes = False
     displayContentsTab = False
 
 

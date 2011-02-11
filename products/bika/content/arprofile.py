@@ -1,3 +1,5 @@
+from Products.ATContentTypes.content import schemata
+from Products.Archetypes import atapi
 from AccessControl import ClassSecurityInfo
 from DateTime import DateTime
 from Products.ATExtensions.ateapi import DateTimeField, DateTimeWidget
@@ -86,6 +88,7 @@ TitleField.widget.visible = {'edit': 'hidden', 'view': 'invisible'}
 class ARProfile(VariableSchemaSupport, BrowserDefaultMixin, BaseFolder):
     security = ClassSecurityInfo()
     schema = schema
+    displayContentsTab = False
 
     def Title(self):
         """ Return the profile title as title """
@@ -104,4 +107,4 @@ class ARProfile(VariableSchemaSupport, BrowserDefaultMixin, BaseFolder):
                    'services': services}
         return results
 
-registerType(ARProfile, PROJECTNAME)
+atapi.registerType(ARProfile, PROJECTNAME)

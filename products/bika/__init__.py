@@ -22,13 +22,6 @@ from content import *
 import Organisation
 import Person
 import AccessControl
-import AnalysisRequest
-import Sample
-import Analysis
-import ARImport
-import ARImportItem
-import Order
-import OrderItem
 import Worksheet
 import WorksheetFolder
 import DuplicateAnalysis

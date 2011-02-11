@@ -100,11 +100,8 @@ schema['location'].widget.visible = False
 class Client(BrowserDefaultMixin, Organisation.Organisation):
     implements(IClient)
     security = ClassSecurityInfo()
-
     schema = schema
-#    canSetConstrainTypes = False
     displayContentsTab = False
-
     setup_state = False
 
     def Title(self):

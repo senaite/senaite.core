@@ -2,6 +2,8 @@
 
 $Id: AnalysisSpec.py 443 2006-12-13 23:19:39Z anneline $
 """
+from Products.ATContentTypes.content import schemata
+from Products.Archetypes import atapi
 from AccessControl import ClassSecurityInfo
 from AccessControl.Permissions import delete_objects
 from Products.Archetypes.config import REFERENCE_CATALOG
@@ -54,6 +56,7 @@ TitleField.widget.visible = {'edit': 'hidden', 'view': 'invisible'}
 class AnalysisSpec(VariableSchemaSupport, BrowserDefaultMixin, BaseFolder):
     security = ClassSecurityInfo()
     schema = schema
+    displayContentsTab = False
 
     def Title(self):
         """ Return the SampleType as title """
@@ -116,4 +119,5 @@ class AnalysisSpec(VariableSchemaSupport, BrowserDefaultMixin, BaseFolder):
 
         return sorted_specs
 
-registerType(AnalysisSpec, PROJECTNAME)
+
+atapi.registerType(AnalysisSpec, PROJECTNAME)

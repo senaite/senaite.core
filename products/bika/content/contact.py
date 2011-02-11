@@ -2,6 +2,8 @@
 
 $Id: Contact.py 2242 2010-04-08 22:17:03Z campbellbasset $
 """
+from Products.ATContentTypes.content import schemata
+from Products.Archetypes import atapi
 from AccessControl import ClassSecurityInfo
 from AccessControl.Permissions import manage_users
 from Products.CMFCore import permissions
@@ -59,6 +61,7 @@ TitleField.widget.visible = False
 class Contact(VariableSchemaSupport, BrowserDefaultMixin, Person):
     security = ClassSecurityInfo()
     schema = schema
+    displayContentsTab = False
 
     security.declareProtected(ManageClients, 'hasUser')
     def hasUser(self):
@@ -76,4 +79,5 @@ class Contact(VariableSchemaSupport, BrowserDefaultMixin, Person):
                 pairs.append((item[0], item[1]))
         return DisplayList(pairs)
 
-registerType(Contact, PROJECTNAME)
+
+atapi.registerType(Contact, PROJECTNAME)
