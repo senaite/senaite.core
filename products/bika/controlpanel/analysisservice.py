@@ -6,7 +6,7 @@ from plone.app.folder.folder import ATFolder
 from Products.bika.browser.bika_folder_contents import BikaFolderContentsView
 from zope.interface.declarations import implements
 
-class AnalysisRequestsView(BikaFolderContentsView):
+class AnalysisServicesView(BikaFolderContentsView):
     implements(IFolderContentsView)
     contentFilter = {'portal_type': 'AnalysisRequest'}
     content_add_buttons = ['AnalysisRequest']

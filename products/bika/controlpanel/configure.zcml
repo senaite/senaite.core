@@ -76,4 +76,12 @@
       layer="Products.bika.interfaces.IBikaLIMSLayer"
     />
 
+    <browser:page
+      for="Products.bika.interfaces.tools.IBikaSettings"
+      name="bika_services"
+      class=".analysisservice.AnalysisServicesView"
+      permission="bika.ManageBika"
+      layer="Products.bika.interfaces.IBikaLIMSLayer"
+    />
+
 </configure>
