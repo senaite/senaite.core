@@ -7,7 +7,7 @@
     <include file="viewlets.zcml"/>
 
     <browser:page
-      for="Products.bika.interfaces.IClientFolder"
+      for="Products.bika.interfaces.ILims"
       name="clientfolder_contents"
       class="Products.bika.browser.clientfolder.ClientFolderContentsView"
       permission="bika.ManageClients"

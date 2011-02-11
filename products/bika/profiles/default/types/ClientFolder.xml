@@ -28,22 +28,4 @@
  <alias from="properties" to="base_metadata"/>
  <alias from="sharing" to="folder_localrole_form"/>
  <alias from="view" to="(selected layout)"/>
- <action title="Copy" action_id="copy" category="folder_buttons"
-    condition_expr="" icon_expr="" link_target="" url_expr=""
-    visible="False"/>
- <action title="Cut" action_id="cut" category="folder_buttons"
-    condition_expr="" icon_expr="" link_target="" url_expr=""
-    visible="False"/>
- <action title="Paste" action_id="paste" category="folder_buttons"
-    condition_expr="" icon_expr="" link_target="" url_expr=""
-    visible="False"/>
- <action title="Rename" action_id="rename" category="folder_buttons"
-    condition_expr="" icon_expr="" link_target="" url_expr=""
-    visible="False"/>
- <action title="Change State" action_id="change_state"
-    category="folder_buttons" condition_expr="" icon_expr="" link_target=""
-    url_expr="" visible="False"/>
- <action title="Properties" action_id="metadata" category="object"
-    condition_expr="" icon_expr="" link_target=""
-    url_expr="string:${object_url}/base_metadata" visible="False"/>
-</object>
+ </object>

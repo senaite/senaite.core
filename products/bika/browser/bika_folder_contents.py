@@ -26,7 +26,6 @@ class BikaFolderContentsView(FolderContentsView):
     contentFilter = {}
     batch = True
     b_size = 20
-    full_objects = False
     show_editable_border = True
 
     # the draggable bit for re-ordering rows manually
@@ -41,19 +40,6 @@ class BikaFolderContentsView(FolderContentsView):
     # A list of portal_types for 'Add X' buttons above the output
     content_add_buttons = []
 
-    # The fields listed must be in the catalog metadata
-    # or folderitems() must be overridden to provide them
-    # if they are not in brains.
-    # the icon specified here is printed _before_ the text of the cell;
-    # it is just an icon.  For state specific icons or link icons, 
-    # we override folderitems()
-    columns = {
-               'title_or_id': {'title': 'Title', 'field': 'title_or_id', 'icon':'thing.png'},
-               'size': {'title': 'Size', 'field':'size'},
-               'modified': {'title': 'Modified', 'field':'modified'},
-               'state_title': {'title': 'State', 'field':'state_title'},
-              }
-
     # Not automatically inserted into subclasses.
     default_buttons = {
                        'delete': {'cssclass': 'context',
@@ -61,16 +47,6 @@ class BikaFolderContentsView(FolderContentsView):
                                   'url': 'folder_delete:method'},
                       }
 
-    # Setting this enables and configures the workflow state selector.
-    # At the very least, the 'All' workflow state is required.
-    # if only All is specified, the workflow selector will not be rendered 
-    wflist_states = [
-                    {'title': 'All', 'id':'all',
-                     'columns':['title_or_id',
-                                'size',
-                                'modified',
-                                'state_title']},
-                    ]
     def __init__(self, context, request):
         super(BikaFolderContentsView, self).__init__(context, request)
         if self.show_editable_border: request.set('enable_border', 1)
@@ -99,9 +75,6 @@ class BikaFolderContentsView(FolderContentsView):
 
         contents = portal_catalog.queryCatalog(self.contentFilter, show_all = 1, show_inactive = show_inactive)
 
-        if self.full_objects:
-            contents = [b.getObject() for b in contents]
-
         if self.batch:
             from Products.CMFPlone.PloneBatch import Batch
             b_start = context.REQUEST.get('b_start', 0)
@@ -121,7 +94,6 @@ class BikaFolderContentsView(FolderContentsView):
         site_properties = portal_properties.site_properties
 
         use_view_action = site_properties.getProperty('typesUseViewActionInListings', ())
-        browser_default = plone_utils.browserDefault(context)
 
         show_all = self.request.get('show_all', '').lower() == 'true'
         pagesize = 20
@@ -173,9 +145,6 @@ class BikaFolderContentsView(FolderContentsView):
             else:
                 view_url = url
 
-            is_browser_default = len(browser_default[1]) == 1 and (
-                obj.id == browser_default[1][0])
-
             results_dict = dict(
                 obj = obj,
                 url = url,
@@ -192,7 +161,6 @@ class BikaFolderContentsView(FolderContentsView):
                 wf_state = review_state,
                 state_title = portal_workflow.getTitleForStateOnType(review_state, obj_type),
                 state_class = state_class,
-                is_browser_default = is_browser_default,
                 folderish = obj.is_folderish,
                 relative_url = relative_url,
                 view_url = view_url,

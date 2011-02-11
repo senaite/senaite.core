@@ -7,8 +7,8 @@ from Products.Archetypes import atapi
 from Products.CMFCore import permissions
 from Products.CMFCore.utils import getToolByName
 from Products.bika.config import PROJECTNAME
-from Products.bika.interfaces import IClientFolder
 from plone.app.folder import folder
+from Products.bika.interfaces import ILims
 from zope.interface import implements
 
 schema = folder.ATFolderSchema.copy()
@@ -16,7 +16,7 @@ schema['id'].widget.visible = {'edit':'hidden', 'view': 'invisible'}
 schema['title'].widget.visible = {'edit':'hidden', 'view': 'invisible'}
 
 class ClientFolder(folder.ATFolder):
-    implements(IClientFolder)
+    implements(ILims)
     schema = schema
 #    canSetConstrainTypes = False
     displayContentsTab = False

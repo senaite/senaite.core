@@ -1,17 +1,15 @@
 from Products.CMFCore.utils import getToolByName
 from Products.bika import logger
 from Products.bika.browser.bika_folder_contents import BikaFolderContentsView
-from Products.bika.interfaces import IClientFolderView
+from plone.app.content.browser.interfaces import IFolderContentsView
 from zope.interface import implements
 
 class ClientFolderContentsView(BikaFolderContentsView):
-    implements(IClientFolderView)
-
+    implements(IFolderContentsView)
     contentFilter = {'portal_type': 'Client'}
     content_add_buttons = ['Client', ]
     batch = True
     b_size = 100
-    full_objects = False
     show_editable_border = False
 
     columns = {

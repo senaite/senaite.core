@@ -10,7 +10,6 @@ class ClientAnalysisRequestsView(BikaFolderContentsView):
     content_add_buttons = ['AnalysisRequest']
     batch = True
     b_size = 100
-    full_objects = False
     columns = {
                'getRequestID': {'title': 'Request ID'},
                'getContact': {'title': 'Contact'},
@@ -113,7 +112,6 @@ class ClientSamplesView(BikaFolderContentsView):
     content_add_buttons = ['Sample']
     batch = True
     b_size = 100
-    full_objects = False
     columns = {
                'getSampleID': {'title': 'Sample ID'},
                'Requests': {'title': 'Requests'},
@@ -190,7 +188,6 @@ class ClientARImportsView(BikaFolderContentsView):
     content_add_buttons = ['ARImport']
     batch = True
     b_size = 100
-    full_objects = False
     wflist_states = []
     columns = {
                'title_or_id': {'title': 'Import'},
@@ -230,7 +227,6 @@ class ClientARProfilesView(BikaFolderContentsView):
     content_add_buttons = ['ARProfile']
     batch = True
     b_size = 100
-    full_objects = False
     wflist_states = []
     columns = {
                'getProfileTitle': {'title': 'Title'},
@@ -255,7 +251,6 @@ class ClientAnalysisSpecsView(BikaFolderContentsView):
     contentFilter = {'portal_type': 'AnalysisSpec'}
     batch = True
     b_size = 100
-    full_objects = False
     wflist_states = []
     columns = {
                'getSampleType': {'title': 'Sample  Type'},
@@ -278,7 +273,6 @@ class ClientAttachmentsView(BikaFolderContentsView):
     content_add_buttons = ['Attachment']
     batch = True
     b_size = 100
-    full_objects = False
     wflist_states = []
     columns = {
                'getTextTitle': {'title': 'Request ID'},
@@ -372,7 +366,6 @@ class ClientContactsView(BikaFolderContentsView):
     content_add_buttons = ['Contact']
     batch = True
     b_size = 100
-    full_objects = False
     wflist_states = []
     columns = {
                'getFullname': {'title': 'Full Name'},
