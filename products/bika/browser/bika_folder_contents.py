@@ -48,7 +48,6 @@ class BikaFolderContentsView(FolderContentsView):
         super(BikaFolderContentsView, self).__init__(context, request)
         if self.show_editable_border: request.set('enable_border', 1)
         if not self.show_editable_border: request.set('disable_border', 1)
-        self.context.allowed_content_types = self.allowed_content_types
         self.portal_types = getToolByName(context, 'portal_types')
 
     def getFolderContents(self):

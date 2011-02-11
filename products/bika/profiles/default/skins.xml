@@ -4,8 +4,6 @@
    request_varname="plone_skin">
  <object name="ATContentTypes" meta_type="Filesystem Directory View"
     directory="Products.ATContentTypes:skins/ATContentTypes"/>
- <object name="BikaMembers" meta_type="Filesystem Directory View"
-    directory="Products.BikaMembers:skins/BikaMembers"/>
  <object name="CMFEditions" meta_type="Filesystem Directory View"
     directory="Products.CMFEditions:skins/CMFEditions"/>
  <object name="LanguageTool" meta_type="Filesystem Directory View"
@@ -76,7 +74,6 @@
   <layer name="archetypes_kss"/>
   <layer name="mimetypes_icons"/>
   <layer name="bika"/>
-  <layer name="BikaMembers"/>
   <layer name="classic_styles"/>
   <layer name="classic_ecmascript"/>
   <layer name="tinymce"/>
@@ -109,7 +106,6 @@
   <layer name="archetypes_kss"/>
   <layer name="mimetypes_icons"/>
   <layer name="bika"/>
-  <layer name="BikaMembers"/>
   <layer name="tinymce"/>
   <layer name="referencebrowser"/>
   <layer name="cmfeditions_views"/>
@@ -140,7 +136,6 @@
   <layer name="archetypes_kss"/>
   <layer name="mimetypes_icons"/>
   <layer name="bika"/>
-  <layer name="BikaMembers"/>
   <layer name="sunburst_images"/>
   <layer name="sunburst_templates"/>
   <layer name="sunburst_styles"/>
