@@ -8,8 +8,11 @@ from zope.interface.declarations import implements
 
 class AnalysisServicesView(BikaFolderContentsView):
     implements(IFolderContentsView)
-    contentFilter = {'portal_type': 'AnalysisRequest'}
-    content_add_buttons = ['AnalysisRequest']
+    contentFilter = {'portal_type': 'AnalysisService'}
+    content_add_buttons = ['AnalysisService']
+    title = "Analysis Services"
+    description = ""
+    show_editable_border = False
     batch = True
     b_size = 100
     full_objects = False

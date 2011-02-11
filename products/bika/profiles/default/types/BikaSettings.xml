@@ -24,6 +24,11 @@
   <element value="AttachmentType"/>
   <element value="CalculationType"/>
   <element value="AnalysisService"/>
+  <element value="ARProfile"/>
+  <element value="LabProduct"/>
+  <element value="StandardManufacturer"/>
+  <element value="StandardStock"/>
+  <element value="WorksheetTemplate"/>
  </property>
  <property name="allow_discussion">False</property>
  <property name="default_view">base_view</property>

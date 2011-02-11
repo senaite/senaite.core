@@ -8,6 +8,9 @@ class ClientAnalysisRequestsView(BikaFolderContentsView):
     implements(IFolderContentsView)
     contentFilter = {'portal_type': 'AnalysisRequest'}
     content_add_buttons = ['AnalysisRequest']
+    title = "Analysis Requests"
+    description = ""
+    show_editable_border = False
     batch = True
     b_size = 100
     columns = {
@@ -110,6 +113,9 @@ class ClientSamplesView(BikaFolderContentsView):
     implements(IFolderContentsView)
     contentFilter = {'portal_type': 'Sample'}
     content_add_buttons = ['Sample']
+    title = "Samples"
+    description = ""
+    show_editable_border = False
     batch = True
     b_size = 100
     columns = {
@@ -186,6 +192,9 @@ class ClientARImportsView(BikaFolderContentsView):
     implements(IFolderContentsView)
     contentFilter = {'portal_type': 'ARImport'}
     content_add_buttons = ['ARImport']
+    title = "Analysis Request Imports"
+    description = ""
+    show_editable_border = False
     batch = True
     b_size = 100
     wflist_states = []
@@ -225,6 +234,9 @@ class ClientARProfilesView(BikaFolderContentsView):
     implements(IFolderContentsView)
     contentFilter = {'portal_type': 'ARProfile'}
     content_add_buttons = ['ARProfile']
+    title = "Analysis Request Profiles"
+    description = ""
+    show_editable_border = False
     batch = True
     b_size = 100
     wflist_states = []
@@ -249,6 +261,9 @@ class ClientAnalysisSpecsView(BikaFolderContentsView):
     implements(IFolderContentsView)
     content_add_buttons = ['AnalysisSpec']
     contentFilter = {'portal_type': 'AnalysisSpec'}
+    title = "Analysis Specifications"
+    description = ""
+    show_editable_border = False
     batch = True
     b_size = 100
     wflist_states = []
@@ -271,6 +286,9 @@ class ClientAttachmentsView(BikaFolderContentsView):
     implements(IFolderContentsView)
     contentFilter = {'portal_type': 'Attachment'}
     content_add_buttons = ['Attachment']
+    title = "Attachments"
+    description = ""
+    show_editable_border = False
     batch = True
     b_size = 100
     wflist_states = []
@@ -323,6 +341,9 @@ class ClientOrdersView(BikaFolderContentsView):
     implements(IFolderContentsView)
     contentFilter = {'portal_type': 'Order'}
     content_add_buttons = ['Order']
+    title = "Orders"
+    description = ""
+    show_editable_border = False
     batch = True
     b_size = 100
     full_objects = False
@@ -364,6 +385,9 @@ class ClientContactsView(BikaFolderContentsView):
     implements(IFolderContentsView)
     contentFilter = {'portal_type': 'Contact'}
     content_add_buttons = ['Contact']
+    title = "Contacts"
+    description = ""
+    show_editable_border = False
     batch = True
     b_size = 100
     wflist_states = []
@@ -389,6 +413,3 @@ class ClientContactsView(BikaFolderContentsView):
             items[x]['links'] = {'getFullname': items[x]['url']}
 
         return items
-
-
-

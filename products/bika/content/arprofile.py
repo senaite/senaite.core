@@ -78,37 +78,14 @@ IdField = schema['id']
 TitleField = schema['title']
 TitleField.required = 0
 TitleField.widget.visible = {'edit': 'hidden', 'view': 'invisible'}
-    
+
 """
     AnalysisRequests often use the same configurations.
     ARProfile is used to save these common configurations (templates).
 """
 class ARProfile(VariableSchemaSupport, BrowserDefaultMixin, BaseFolder):
     security = ClassSecurityInfo()
-    archetype_name = 'ARProfile'
     schema = schema
-    immediate_view = 'base_view'
-    default_view = 'base_view'
-    content_icon = 'arprofile.png' 
-    use_folder_tabs = 0
-    global_allow = 0
-    filter_content_types = 1
-    factory_type_information = {
-        'title': 'Analysis request profile'
-    }
-    actions = (
-        { 'id': 'view',
-          'name': 'View',
-          'action': 'string:${object_url}/',
-          'permissions': (View,),
-          'visible': True,
-        },
-        { 'id': 'edit',
-          'name': 'Edit',
-          'action': 'string:${object_url}/arprofile_edit',
-          'permissions': (ListFolderContents,),
-        },
-    )
 
     def Title(self):
         """ Return the profile title as title """
@@ -128,12 +105,3 @@ class ARProfile(VariableSchemaSupport, BrowserDefaultMixin, BaseFolder):
         return results
 
 registerType(ARProfile, PROJECTNAME)
-
-def modify_fti(fti):
-    for a in fti['actions']:
-        if a['id'] == 'view':
-            a['visible'] = 1
-        if a['id'] in ('syndication', 'references', 'metadata',
-                       'localroles'):
-            a['visible'] = 0
-    return fti

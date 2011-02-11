@@ -10,6 +10,9 @@ class SampleTypesView(BikaFolderContentsView):
     implements(IFolderContentsView)
     contentFilter = {'portal_type': 'SampleType'}
     content_add_buttons = ['SampleType']
+    title = "Sample Types"
+    description = ""
+    show_editable_border = False
     batch = True
     b_size = 100
     full_objects = False

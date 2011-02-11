@@ -17,7 +17,6 @@ ploneMessageFactory = MessageFactory('plone')
 
 class BikaFolderContentsView(FolderContentsView):
     implements(IFolderContentsView)
-    allowed_content_types = []
     template = ViewPageTemplateFile("templates/bika_folder_contents.pt")
     wflist = ViewPageTemplateFile("templates/wflist.pt")
 

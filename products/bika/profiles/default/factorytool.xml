@@ -15,5 +15,10 @@
   <type portal_type="Attachment"/>
   <type portal_type="CalculationType"/>
   <type portal_type="AnalysisService"/>
+  <type portal_type="ARProfile"/>
+  <type portal_type="LabProduct"/>
+  <type portal_type="StandardManufacturer"/>
+  <type portal_type="StandardStock"/>
+  <type portal_type="WorksheetTemplate"/>
  </factorytypes>
 </object>

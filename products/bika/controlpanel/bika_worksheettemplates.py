@@ -6,23 +6,23 @@ from plone.app.folder.folder import ATFolder
 from Products.bika.browser.bika_folder_contents import BikaFolderContentsView
 from zope.interface.declarations import implements
 
-class SamplePointsView(BikaFolderContentsView):
+class WorksheetTemplatesView(BikaFolderContentsView):
     implements(IFolderContentsView)
-    contentFilter = {'portal_type': 'SamplePoint'}
-    content_add_buttons = ['SamplePoint']
-    title = "Sample Points"
+    contentFilter = {'portal_type': 'WorksheetTemplate'}
+    content_add_buttons = ['WorksheetTemplate']
+    title = "Worksheet Templates"
     description = ""
     show_editable_border = False
     batch = True
     b_size = 100
     full_objects = False
     columns = {
-               'title_or_id': {'title': 'Title', 'icon':'samplepoint.png'},
-               'SamplePointDescription': {'title': 'SamplePointDescription'},
+               'title_or_id': {'title': 'Title'},
+               'WorksheetTemplateDescription': {'title': 'Description'},
               }
     wflist_states = [
-                    {'title_or_id': 'All', 'id':'all',
-                     'columns': ['title_or_id', 'SamplePointDescription'],
+                    {'title': 'All', 'id':'all',
+                     'columns': ['title_or_id', 'WorksheetTemplateDescription'],
                      'buttons':[BikaFolderContentsView.default_buttons['delete']]},
                     ]
 
@@ -30,7 +30,7 @@ class SamplePointsView(BikaFolderContentsView):
         items = BikaFolderContentsView.folderitems(self)
         for x in range(len(items)):
             obj = items[x]['obj'].getObject()
-            items[x]['SamplePointDescription'] = obj.SamplePointDescription()
+            items[x]['WorksheetTemplateDescription'] = obj.WorksheetTemplateDescription()
             items[x]['links'] = {'title_or_id': items[x]['url'] + "/edit"}
 
         return items

@@ -84,4 +84,47 @@
       layer="Products.bika.interfaces.IBikaLIMSLayer"
     />
 
+    <browser:page
+      for="Products.bika.interfaces.tools.IBikaSettings"
+      name="bika_arprofiles"
+      class=".bika_arprofiles.ARProfilesView"
+      permission="bika.ManageBika"
+      layer="Products.bika.interfaces.IBikaLIMSLayer"
+    />
+
+    <browser:page
+      for="Products.bika.interfaces.tools.IBikaSettings"
+      name="bika_products"
+      class=".bika_products.LabProductsView"
+      permission="bika.ManageBika"
+      layer="Products.bika.interfaces.IBikaLIMSLayer"
+    />
+
+    <browser:page
+      for="Products.bika.interfaces.tools.IBikaSettings"
+      name="bika_standardmanufacturers"
+      class=".bika_standardmanufacturers.StandardManufacturersView"
+      permission="bika.ManageBika"
+      layer="Products.bika.interfaces.IBikaLIMSLayer"
+    />
+
+    <browser:page
+      for="Products.bika.interfaces.tools.IBikaSettings"
+      name="bika_standardstocks"
+      class=".bika_standardstocks.StandardStocksView"
+      permission="bika.ManageBika"
+      layer="Products.bika.interfaces.IBikaLIMSLayer"
+    />
+
+    <browser:page
+      for="Products.bika.interfaces.tools.IBikaSettings"
+      name="bika_worksheettemplates"
+      class=".bika_worksheettemplates.WorksheetTemplatesView"
+      permission="bika.ManageBika"
+      layer="Products.bika.interfaces.IBikaLIMSLayer"
+    />
+
+
+
+
 </configure>

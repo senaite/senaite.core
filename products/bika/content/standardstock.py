@@ -1,19 +1,17 @@
 """StandardStock represents a standard stock or sample type used for 
     quality control testing
 """
+from AccessControl import ClassSecurityInfo
+from DateTime import DateTime
+from Products.ATExtensions.ateapi import DateTimeField, DateTimeWidget
+from Products.Archetypes.public import *
+from Products.CMFCore.permissions import View, ModifyPortalContent
+from Products.CMFDynamicViewFTI.browserdefault import BrowserDefaultMixin
+from Products.bika.BikaContent import BikaSchema
+from Products.bika.CustomFields import StandardResultField
+from Products.bika.config import I18N_DOMAIN, PROJECTNAME
 import sys
 import time
-from DateTime import DateTime
-from AccessControl import ClassSecurityInfo
-from Products.CMFCore.permissions import View, \
-    ModifyPortalContent
-from Products.CMFDynamicViewFTI.browserdefault import \
-    BrowserDefaultMixin
-from Products.Archetypes.public import *
-from Products.ATExtensions.ateapi import DateTimeField, DateTimeWidget
-from Products.bika.BikaContent import BikaSchema
-from Products.bika.config import I18N_DOMAIN, PROJECTNAME
-from Products.bika.CustomFields import StandardResultField
 
 schema = BikaSchema.copy() + Schema((
     TextField('StandardStockDescription',
@@ -59,27 +57,7 @@ TitleField.widget.visible = {'edit': 'hidden', 'view': 'invisible'}
 
 class StandardStock(BrowserDefaultMixin, BaseContent):
     security = ClassSecurityInfo()
-    archetype_name = 'StandardStock'
     schema = schema
-    allowed_content_types = ()
-    immediate_view = 'standardstock_edit'
-    default_view = 'standardstock_edit'
-    content_icon = 'standardstock.png'
-    global_allow = 0
-    filter_content_types = 0
-    use_folder_tabs = 0
-
-    actions = (
-       {'id': 'edit',
-        'name': 'Edit',
-        'action': 'string:${object_url}/standardstock_edit',
-        'permissions': (ModifyPortalContent,),
-        },
-    )
-
-    factory_type_information = {
-        'title': 'Standard Stock'
-    }  
 
     security.declarePublic('current_date')
     def current_date(self):
@@ -87,8 +65,8 @@ class StandardStock(BrowserDefaultMixin, BaseContent):
         return DateTime()
 
     security.declarePublic('getResultsRangeDict')
-    def getResultsRangeDict(self): 
-        results = {} 
+    def getResultsRangeDict(self):
+        results = {}
         for spec in self.getStandardResults():
             uid = spec['service']
             results[uid] = {}
@@ -104,10 +82,3 @@ class StandardStock(BrowserDefaultMixin, BaseContent):
         return results
 
 registerType(StandardStock, PROJECTNAME)
-
-def modify_fti(fti):
-    for a in fti['actions']:
-        if a['id'] in ('view', 'syndication', 'references', 'metadata',
-                       'localroles'):
-            a['visible'] = 0
-    return fti

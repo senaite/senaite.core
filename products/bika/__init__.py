@@ -25,7 +25,6 @@ import AccessControl
 import AnalysisRequest
 import Sample
 import Analysis
-import ARProfile
 import ARImport
 import ARImportItem
 import Order
@@ -41,14 +40,10 @@ import StandardAnalysis
 import SupplierContact
 import LabAnalysisSpec
 import LabARProfile
-import LabProduct
 import ClientCategory
 import ClientStatus
 import ClientPublicationPreference
 import ClientInvoicePreference
-import StandardManufacturer
-import StandardStock
-import WorksheetTemplate
 import FixedPointField
 import AnalysesField
 import AnalysesWidget

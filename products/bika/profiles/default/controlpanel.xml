@@ -106,43 +106,41 @@
   <permission>BIKA: Manage Bika</permission>
  </configlet>
 
-
-
-
-
-
  <configlet title="Analysis Profiles" action_id="bika_arprofiles"
     appId="bika" category="Products" condition_expr=""
-    icon_expr="string:service.png"
-    url_expr="string:$portal_url/bika_arprofiles" visible="True">
+    icon_expr="string:$portal_url/images/service.png"
+    url_expr="string:$portal_url/bika_arprofiles" 
+    visible="True">
   <permission>BIKA: Manage Bika</permission>
  </configlet>
 
  <configlet title="Products" action_id="bika_products" appId="bika"
-    category="Products" condition_expr="" icon_expr="string:product.png"
-    url_expr="string:$portal_url/bika_products" visible="True">
+    category="Products" condition_expr="" 
+    icon_expr="string:$portal_url/images/product.png"
+    url_expr="string:$portal_url/bika_settings/bika_products" 
+    visible="True">
   <permission>BIKA: Manage Bika</permission>
  </configlet>
 
  <configlet title="Standard Manufacturers"
     action_id="bika_standardmanufacturers" appId="bika"
     category="Products" condition_expr=""
-    icon_expr="string:standardmanufacturer.png"
-    url_expr="string:$portal_url/bika_standardmanufacturers" visible="True">
+    icon_expr="string:$portal_url/images/standardmanufacturer.png"
+    url_expr="string:$portal_url/bika_settings/bika_standardmanufacturers" visible="True">
   <permission>BIKA: Manage Bika</permission>
  </configlet>
 
  <configlet title="Standard Stocks" action_id="bika_standardstocks"
     appId="bika" category="Products" condition_expr=""
-    icon_expr="string:standardstock.png"
-    url_expr="string:$portal_url/bika_standardstocks" visible="True">
+    icon_expr="string:$portal_url/images/standardstock.png"
+    url_expr="string:$portal_url/bika_settings/bika_standardstocks" visible="True">
   <permission>BIKA: Manage Bika</permission>
  </configlet>
 
  <configlet title="Worksheet Templates" action_id="bika_worksheettemplates"
     appId="bika" category="Products" condition_expr=""
-    icon_expr="string:worksheettemplate.png"
-    url_expr="string:$portal_url/bika_worksheettemplates" visible="True">
+    icon_expr="string:$portal_url/images/worksheettemplate.png"
+    url_expr="string:$portal_url/bika_settings/bika_worksheettemplates" visible="True">
   <permission>BIKA: Manage Bika</permission>
  </configlet>
 </object>

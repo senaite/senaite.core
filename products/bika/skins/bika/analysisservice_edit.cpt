@@ -29,9 +29,11 @@
         >Analysis service</span>
 </h1>
 
+<!--
 <div metal:use-macro="here/document_actions/macros/document_actions">
     Document actions (print, sendto etc)
 </div>
+-->
 
 <form name="edit_form"
     method="post"
@@ -229,8 +231,7 @@ The analysis identifier
     tal:attributes="value attachment;
         checked python:attachment == here.getAttachmentOption()"/>
 
-<label i18n:translate="value"
-    tal:content="python:here.translate(attachments.getMsgId(attachment), default=attachments.getValue(attachment))"></label>
+<label tal:content="python:here.translate(attachments.getValue(attachment))"></label>
 
 <br />
 </tal:options>

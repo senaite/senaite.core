@@ -66,28 +66,7 @@ schema = BikaSchema.copy() + Schema((
 
 class LabProduct(BrowserDefaultMixin, BaseContent):
     security = ClassSecurityInfo()
-    archetype_name = 'LabProduct'
     schema = schema
-    allowed_content_types = ()
-    default_view = 'tool_base_edit'
-    immediate_view = 'tool_base_edit'
-    content_icon = 'product.png'
-    global_allow = 0
-    filter_content_types = 0
-    use_folder_tabs = 0
-
-    actions = (
-
-       {'id': 'edit',
-        'name': 'Edit',
-        'action': 'string:${object_url}/tool_base_edit',
-        'permissions': (ModifyPortalContent,),
-        },
-    )
-
-    factory_type_information = {
-        'title': 'Product'
-    }
 
     def getTotalPrice(self):
         """ compute total price """
@@ -115,10 +94,3 @@ class LabProduct(BrowserDefaultMixin, BaseContent):
             return 0
 
 registerType(LabProduct, PROJECTNAME)
-
-def modify_fti(fti):
-    for a in fti['actions']:
-        if a['id'] in ('syndication', 'references', 'metadata',
-                       'localroles'):
-            a['visible'] = 0
-    return fti

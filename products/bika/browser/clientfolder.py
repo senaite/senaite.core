@@ -8,6 +8,9 @@ class ClientFolderContentsView(BikaFolderContentsView):
     implements(IFolderContentsView)
     contentFilter = {'portal_type': 'Client'}
     content_add_buttons = ['Client', ]
+    title = "Clients"
+    description = ""
+    show_editable_border = False
     batch = True
     b_size = 100
     show_editable_border = False
