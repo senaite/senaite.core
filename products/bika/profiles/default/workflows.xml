@@ -50,7 +50,6 @@
   <type type_id="AttachmentType"/>
   <type type_id="CalculationType"/>
   <type type_id="Client"/>
-  <type type_id="ClientCategory"/>
   <type type_id="ClientFolder"/>
   <type type_id="ClientInvoicePreference"/>
   <type type_id="ClientPublicationPreference"/>

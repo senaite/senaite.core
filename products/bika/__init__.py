@@ -33,7 +33,6 @@ import StandardAnalysis
 import SupplierContact
 import LabAnalysisSpec
 import LabARProfile
-import ClientCategory
 import ClientStatus
 import ClientPublicationPreference
 import ClientInvoicePreference
@@ -51,7 +50,6 @@ import PricelistFolder
 import Pricelist
 import PricelistLineItem
 import logging
-import tools
 
 
 

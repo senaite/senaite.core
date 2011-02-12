@@ -8,7 +8,6 @@ validators =
 action.success = redirect_to_action:string:view
 action.success.AnalysisCategory = redirect_to:string:..
 action.success.AnalysisService = redirect_to:string:..
-action.success.ClientCategory = redirect_to:string:..
 action.success.ClientStatus = redirect_to:string:..
 action.success.ClientPublicationPreference = redirect_to:string:..
 action.success.ClientInvoicePreference = redirect_to:string:..

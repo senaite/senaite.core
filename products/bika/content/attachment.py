@@ -157,7 +157,7 @@ class Attachment(BrowserDefaultMixin, BaseFolder):
             if len(uids) == 1:
                 reference = uids[0]
                 parent = tool.lookupObject(reference.sourceUID)
-
+        wf_tool = getToolByName(self, 'portal_workflow')
         return wf_tool.getInfoFor(parent, 'review_state', '')
 
     security.declarePublic('current_date')

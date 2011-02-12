@@ -6,10 +6,8 @@
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
     i18n_domain="bika">
 
-<!--
   <include package="five.grok" />
   <grok:grok package="." />
--->
 
   <include file="genericsetup.zcml" />
   <include file="permissions.zcml" />
