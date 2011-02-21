@@ -5,7 +5,7 @@
     i18n_domain="bika">
 
     <browser:page
-      for="Products.bika.interfaces.tools.IBikaSettings"
+      for="*"
       name="bika_departments"
       class=".bika_departments.DepartmentsView"
       permission="bika.ManageBika"
@@ -13,7 +13,7 @@
     />
 
     <browser:page
-      for="Products.bika.interfaces.tools.IBikaSettings"
+      for="*"
       name="bika_labcontacts"
       class=".bika_labcontacts.LabContactsView"
       permission="bika.ManageBika"
@@ -21,7 +21,7 @@
     />
 
     <browser:page
-      for="Products.bika.interfaces.tools.IBikaSettings"
+      for="*"
       name="bika_analysis_categories"
       class=".bika_analysis_categories.AnalysisCategoriesView"
       permission="bika.ManageBika"
@@ -29,7 +29,7 @@
     />
 
     <browser:page
-      for="Products.bika.interfaces.tools.IBikaSettings"
+      for="*"
       name="bika_samplepoints"
       class=".bika_samplepoints.SamplePointsView"
       permission="bika.ManageBika"
@@ -37,7 +37,7 @@
     />
 
     <browser:page
-      for="Products.bika.interfaces.tools.IBikaSettings"
+      for="*"
       name="bika_sampletypes"
       class=".bika_sampletypes.SampleTypesView"
       permission="bika.ManageBika"
@@ -45,7 +45,7 @@
     />
 
     <browser:page
-      for="Products.bika.interfaces.tools.IBikaSettings"
+      for="*"
       name="bika_analysisspecs"
       class=".bika_analysisspecs.AnalysisSpecsView"
       permission="bika.ManageBika"
@@ -53,7 +53,7 @@
     />
 
     <browser:page
-      for="Products.bika.interfaces.tools.IBikaSettings"
+      for="*"
       name="bika_instruments"
       class=".bika_instruments.InstrumentsView"
       permission="bika.ManageBika"
@@ -61,7 +61,7 @@
     />
 
     <browser:page
-      for="Products.bika.interfaces.tools.IBikaSettings"
+      for="*"
       name="bika_methods"
       class=".bika_methods.MethodsView"
       permission="bika.ManageBika"
@@ -69,7 +69,7 @@
     />
 
     <browser:page
-      for="Products.bika.interfaces.tools.IBikaSettings"
+      for="*"
       name="bika_attachmenttypes"
       class=".bika_attachmenttypes.AttachmentTypesView"
       permission="bika.ManageBika"
@@ -77,7 +77,7 @@
     />
 
     <browser:page
-      for="Products.bika.interfaces.tools.IBikaSettings"
+      for="*"
       name="bika_services"
       class=".analysisservice.AnalysisServicesView"
       permission="bika.ManageBika"
@@ -85,7 +85,7 @@
     />
 
     <browser:page
-      for="Products.bika.interfaces.tools.IBikaSettings"
+      for="*"
       name="bika_arprofiles"
       class=".bika_arprofiles.ARProfilesView"
       permission="bika.ManageBika"
@@ -93,7 +93,7 @@
     />
 
     <browser:page
-      for="Products.bika.interfaces.tools.IBikaSettings"
+      for="*"
       name="bika_products"
       class=".bika_products.LabProductsView"
       permission="bika.ManageBika"
@@ -101,7 +101,7 @@
     />
 
     <browser:page
-      for="Products.bika.interfaces.tools.IBikaSettings"
+      for="*"
       name="bika_standardmanufacturers"
       class=".bika_standardmanufacturers.StandardManufacturersView"
       permission="bika.ManageBika"
@@ -109,7 +109,7 @@
     />
 
     <browser:page
-      for="Products.bika.interfaces.tools.IBikaSettings"
+      for="*"
       name="bika_standardstocks"
       class=".bika_standardstocks.StandardStocksView"
       permission="bika.ManageBika"
@@ -117,7 +117,7 @@
     />
 
     <browser:page
-      for="Products.bika.interfaces.tools.IBikaSettings"
+      for="*"
       name="bika_worksheettemplates"
       class=".bika_worksheettemplates.WorksheetTemplatesView"
       permission="bika.ManageBika"

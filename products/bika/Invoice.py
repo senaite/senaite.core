@@ -6,7 +6,7 @@ from Products.CMFDynamicViewFTI.browserdefault import \
     BrowserDefaultMixin
 from Products.Archetypes.public import *
 from Products.ATExtensions.ateapi import DateTimeField, DateTimeWidget
-from Products.bika.BikaContent import BikaSchema
+from Products.bika.content.bikaschema import BikaSchema
 from Products.bika.config import I18N_DOMAIN, ManageInvoices, ManageBika, PROJECTNAME
 
 schema = BikaSchema.copy() + Schema((

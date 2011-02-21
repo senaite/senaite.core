@@ -4,7 +4,7 @@ from Products.CMFCore.permissions import View, \
 from Products.CMFDynamicViewFTI.browserdefault import \
     BrowserDefaultMixin
 from Products.Archetypes.public import *
-from Products.bika.BikaContent import BikaSchema
+from Products.bika.content.bikaschema import BikaSchema
 from Products.bika.config import PROJECTNAME
 
 schema = BikaSchema.copy()

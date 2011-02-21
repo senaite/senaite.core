@@ -5,7 +5,7 @@ from Products.CMFCore.permissions import View, \
     ModifyPortalContent
 from Products.Archetypes.public import *
 from Products.Archetypes.references import HoldingReference
-from Products.bika.BikaContent import BikaSchema
+from Products.bika.content.bikaschema import BikaSchema
 from Products.bika.config import I18N_DOMAIN, PROJECTNAME
 from Products.bika.FixedPointField import FixedPointField
 

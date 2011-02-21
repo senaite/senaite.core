@@ -4,14 +4,14 @@ $Id: Client.py 2298 2010-05-19 09:18:43Z anneline $
 """
 
 from AccessControl import ClassSecurityInfo
-from DateTime import DateTime
 from Products.ATContentTypes.content import schemata
 from Products.Archetypes import atapi
 from Products.Archetypes.utils import DisplayList
 from Products.CMFCore import permissions
 from Products.CMFCore.utils import getToolByName
 from Products.CMFDynamicViewFTI.browserdefault import BrowserDefaultMixin
-from Products.bika import Organisation, bikaMessageFactory as _
+from Products.bika.content.organisation import Organisation
+from Products.bika import bikaMessageFactory as _
 from Products.bika.config import *
 from Products.bika.interfaces import IClient
 from zope.interface import implements
@@ -82,22 +82,10 @@ schema = Organisation.schema.copy() + atapi.Schema((
 
 
 schema['AccountNumber'].write_permission = ManageClients
-schema['id'].widget.visible = False
 schema['title'].widget.visible = False
 schema['description'].widget.visible = False
-schema['allowDiscussion'].widget.visible = False
-schema['excludeFromNav'].widget.visible = False
-schema['nextPreviousEnabled'].widget.visible = False
-schema['creators'].widget.visible = False
-schema['contributors'].widget.visible = False
-schema['rights'].widget.visible = False
-schema['effectiveDate'].widget.visible = False
-schema['expirationDate'].widget.visible = False
-schema['subject'].widget.visible = False
-schema['language'].widget.visible = False
-schema['location'].widget.visible = False
 
-class Client(BrowserDefaultMixin, Organisation.Organisation):
+class Client(BrowserDefaultMixin, Organisation):
     implements(IClient)
     security = ClassSecurityInfo()
     schema = schema
@@ -221,4 +209,3 @@ class Client(BrowserDefaultMixin, Organisation.Organisation):
 schemata.finalizeATCTSchema(schema, folderish = True, moveDiscussion = False)
 
 atapi.registerType(Client, PROJECTNAME)
-

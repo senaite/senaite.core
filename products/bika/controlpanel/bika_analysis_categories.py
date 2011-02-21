@@ -12,6 +12,7 @@ class AnalysisCategoriesView(BikaFolderContentsView):
     content_add_buttons = ['AnalysisCategory']
     batch = True
     b_size = 100
+    show_editable_border = False
     full_objects = False
     columns = {
                'title_or_id': {'title': 'Title', 'icon':'category.png'},

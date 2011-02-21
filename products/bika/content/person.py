@@ -3,12 +3,13 @@ from AccessControl import ClassSecurityInfo
 from Products.CMFCore import permissions as CMFCorePermissions
 from Products.CMFCore.utils import getToolByName
 from Products.Archetypes.public import *
+from Products.bika.content.bikaschema import BikaSchema
 from Products.ATExtensions.ateapi import RecordWidget
 from archetypes.referencebrowserwidget import ReferenceBrowserWidget
 from Products.bika.config import GENDERS, PROJECTNAME
 from Products.bika.CustomFields import AddressField
 
-schema = BaseSchema.copy() + Schema((
+schema = BikaSchema.copy() + Schema((
     StringField('Salutation',
         widget = StringWidget(
             label = 'Title',

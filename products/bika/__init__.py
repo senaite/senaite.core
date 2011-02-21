@@ -19,8 +19,6 @@ ploneMessageFactory = MessageFactory('plone')
 
 from content import *
 
-import Organisation
-import Person
 import AccessControl
 import Worksheet
 import WorksheetFolder
@@ -51,23 +49,7 @@ import Pricelist
 import PricelistLineItem
 import logging
 
-
-
 logger = logging.getLogger('Bika')
-
-
-
-#OrderWorkflow
-#AnalysisWorkflow
-#SampleWorkflow
-#StandardSampleWorkflow
-#ARImportWorkflow
-#WorksheetWorkflow
-#WorksheetAnalysisWorkflow
-#StandardAnalysisWorkflow
-
-
-#ModuleSecurityInfo('Products.bika.Extensions.post_plone_install').declarePublic('run')
 
 registerDirectory(SKINS_DIR, GLOBALS)
 

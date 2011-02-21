@@ -1,5 +1,4 @@
 from Products.CMFCore.utils import getToolByName
-from Products.Five.browser import BrowserView
 from Products.bika.browser.bika_folder_contents import BikaFolderContentsView
 from plone.app.content.browser.interfaces import IFolderContentsView
 from zope.interface import implements
@@ -10,7 +9,7 @@ class ClientAnalysisRequestsView(BikaFolderContentsView):
     content_add_buttons = ['AnalysisRequest']
     title = "Analysis Requests"
     description = ""
-    show_editable_border = False
+    show_editable_border = True
     batch = True
     b_size = 100
     columns = {
@@ -115,7 +114,7 @@ class ClientSamplesView(BikaFolderContentsView):
     content_add_buttons = ['Sample']
     title = "Samples"
     description = ""
-    show_editable_border = False
+    show_editable_border = True
     batch = True
     b_size = 100
     columns = {
@@ -194,7 +193,7 @@ class ClientARImportsView(BikaFolderContentsView):
     content_add_buttons = ['ARImport']
     title = "Analysis Request Imports"
     description = ""
-    show_editable_border = False
+    show_editable_border = True
     batch = True
     b_size = 100
     wflist_states = []
@@ -236,7 +235,7 @@ class ClientARProfilesView(BikaFolderContentsView):
     content_add_buttons = ['ARProfile']
     title = "Analysis Request Profiles"
     description = ""
-    show_editable_border = False
+    show_editable_border = True
     batch = True
     b_size = 100
     wflist_states = []
@@ -263,7 +262,7 @@ class ClientAnalysisSpecsView(BikaFolderContentsView):
     contentFilter = {'portal_type': 'AnalysisSpec'}
     title = "Analysis Specifications"
     description = ""
-    show_editable_border = False
+    show_editable_border = True
     batch = True
     b_size = 100
     wflist_states = []
@@ -288,7 +287,7 @@ class ClientAttachmentsView(BikaFolderContentsView):
     content_add_buttons = ['Attachment']
     title = "Attachments"
     description = ""
-    show_editable_border = False
+    show_editable_border = True
     batch = True
     b_size = 100
     wflist_states = []
@@ -343,7 +342,7 @@ class ClientOrdersView(BikaFolderContentsView):
     content_add_buttons = ['Order']
     title = "Orders"
     description = ""
-    show_editable_border = False
+    show_editable_border = True
     batch = True
     b_size = 100
     full_objects = False
@@ -387,7 +386,7 @@ class ClientContactsView(BikaFolderContentsView):
     content_add_buttons = ['Contact']
     title = "Contacts"
     description = ""
-    show_editable_border = False
+    show_editable_border = True
     batch = True
     b_size = 100
     wflist_states = []

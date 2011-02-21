@@ -1,5 +1,3 @@
-from Products.CMFCore.utils import getToolByName
-from Products.bika import logger
 from Products.bika.browser.bika_folder_contents import BikaFolderContentsView
 from plone.app.content.browser.interfaces import IFolderContentsView
 from zope.interface import implements

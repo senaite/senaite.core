@@ -7,7 +7,7 @@ from AccessControl import ClassSecurityInfo
 from Products.CMFCore  import permissions
 from Products.Archetypes.public import *
 from Products.bika.config import PostInvoiceBatch, ManageInvoices, PROJECTNAME
-from Products.bika.BikaContent import BikaSchema
+from Products.bika.content.bikaschema import BikaSchema
 from Products.CMFDynamicViewFTI.browserdefault import \
     BrowserDefaultMixin
 

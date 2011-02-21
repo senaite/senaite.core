@@ -1,3 +1,0 @@
-[actions]
-action.success=traverse_to:string:index_html
-action.failure=traverse_to:string:login_failed

@@ -1,18 +1,49 @@
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser import BrowserView
+from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from Products.bika import logger
 from Products.bika.interfaces import ILims
-from zope.interface import implements
+from zope.browser.interfaces import IBrowserView
 from zope.interface import implements
 
 class LoadSetupData(BrowserView):
-    implements(ILims)
+    implements(IBrowserView)
 
-    def __init__(self, context, request):
-        super(BrowserView, self).__init__(context, request)
-        self.context = context
-        self.request = request
+    def LabContact(self):
+        contacts = (
+            ('John', 'Smith', 'john@scapp.co.za', '021 5551234', '021 5551233'),
+            ('Mary', 'Makoeba', 'mary@scapp.co.za', '021 5551236', '021 5551233'),
+        )
+        bika_settings = self.context.bika_settings
+        for firstname, surname, email, tel, fax in contacts:
+            labcontact_id = bika_settings.generateUniqueId('LabContact')
+            bika_settings.invokeFactory(id = labcontact_id, type_name = 'LabContact')
+            labcontact = bika_settings[labcontact_id]
+            labcontact.edit(Firstname = firstname,
+                            Surname = surname,
+                            EmailAddress = email,
+                            Phone = tel,
+                            Fax = fax)
 
+    def Department(self):
+        depts = (
+            ('Microbiology', 'Microbiology department'),
+            ('Chemistry', 'Analytical chemistry department'),
+        )
+        labcontact = self.context.bika_settings.portal_catalog(portal_type = 'LabContact')[0].getObject()
+        bika_settings = self.context.bika_settings
+        for title, descr in depts:
+            dept_id = bika_settings.generateUniqueId('Department')
+            bika_settings.invokeFactory(id = dept_id, type_name = 'Department')
+            dept = bika_settings[dept_id]
+            dept.edit(title = title,
+                      DepartmentDescription = descr,
+                      Manager = labcontact)
+
+    def __call__(self):
+        self.LabContact()
+        self.Department()
+        return "Ok."
 
 #    # Setup client status
 #    folder = context.bika_client_status
@@ -398,19 +429,6 @@ class LoadSetupData(BrowserView):
 #
 #
 #
-#    # Setup departments
-#    # title, description
-#    # 
-#    depts = (
-#    ('Microbiology', 'Microbiology department'),
-#    ('Chemistry', 'Analytical chemistry department'),
-#        )
-#    for title, descr in depts:
-#        dept_id = context.bika_departments.generateUniqueId('Department')
-#        context.bika_departments.invokeFactory(id = dept_id, type_name = 'Department')
-#        dept = context.bika_departments[dept_id]
-#        dept.edit(title = title, DepartmentDescription = descr,
-#                  Manager = labcontact)
 #
 #    # Setup attachment types
 #    # title, description

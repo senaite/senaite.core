@@ -7,7 +7,7 @@ from Products.CMFDynamicViewFTI.browserdefault import \
     BrowserDefaultMixin
 from plone.app import folder
 from Products.Archetypes.public import *
-from Products.bika import Organisation
+from Products.bika.content.organisation import Organisation
 from Products.bika.config import ManageBika, I18N_DOMAIN, PROJECTNAME
 
 schema = Organisation.schema.copy() + Schema((
@@ -84,7 +84,7 @@ schema = Organisation.schema.copy() + Schema((
 IdField = schema['id']
 IdField.widget.visible = {'edit':'hidden', 'view': 'invisible'}
 
-class Laboratory(BrowserDefaultMixin, UniqueObject, Organisation.Organisation):
+class Laboratory(BrowserDefaultMixin, UniqueObject, Organisation):
     security = ClassSecurityInfo()
     schema = schema
 

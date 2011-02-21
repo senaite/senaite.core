@@ -11,7 +11,7 @@ from Products.CMFCore import permissions
 from Products.Archetypes.public import *
 from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.Archetypes.utils import DisplayList
-from Products.bika.Organisation import Organisation
+from Products.bika.content.organisation import Organisation
 from Products.bika.config import ManageStandardSuppliers, ManageStandard
 from Products.CMFDynamicViewFTI.browserdefault import \
     BrowserDefaultMixin

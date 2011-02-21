@@ -12,3 +12,4 @@ class IBikaLIMSLayer(Interface):
         Viewlets, etc, are specified for this layer
         if they are modified for or specific to the product 
     """
+

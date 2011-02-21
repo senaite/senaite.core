@@ -8,7 +8,7 @@ from zope.interface.declarations import implements
 
 class LabContactsView(BikaFolderContentsView):
     implements(IFolderContentsView)
-    contentFilter = {'portal_type': 'LabContact'}
+    contentFilter = {'portal_type': 'LabContact', 'path': {'query': '/Plone/bika_settings', 'depth': 1}}
     content_add_buttons = ['LabContact']
     batch = True
     b_size = 100

@@ -7,7 +7,7 @@ from Products.ATExtensions.ateapi import DateTimeField, DateTimeWidget
 from Products.Archetypes.public import *
 from Products.CMFCore.permissions import View, ModifyPortalContent
 from Products.CMFDynamicViewFTI.browserdefault import BrowserDefaultMixin
-from Products.bika.BikaContent import BikaSchema
+from Products.bika.content.bikaschema import BikaSchema
 from Products.bika.CustomFields import StandardResultField
 from Products.bika.config import I18N_DOMAIN, PROJECTNAME
 import sys

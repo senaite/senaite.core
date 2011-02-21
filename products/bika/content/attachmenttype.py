@@ -6,7 +6,7 @@ from AccessControl import ClassSecurityInfo
 from Products.Archetypes.public import *
 from Products.CMFCore.permissions import ModifyPortalContent
 from Products.CMFDynamicViewFTI.browserdefault import BrowserDefaultMixin
-from Products.bika.BikaContent import BikaSchema
+from Products.bika.content.bikaschema import BikaSchema
 from Products.bika.config import I18N_DOMAIN, PROJECTNAME
 import sys
 

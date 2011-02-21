@@ -12,7 +12,7 @@ from Products.CMFCore import permissions
 from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFCore.utils import getToolByName, getToolByName
 from Products.CMFDynamicViewFTI.browserdefault import BrowserDefaultMixin
-from Products.bika.BikaContent import BikaSchema
+from Products.bika.content.bikaschema import BikaSchema
 from Products.bika.config import I18N_DOMAIN, ManageBika, PROJECTNAME
 from Products.bika.utils import sortable_title
 import sys

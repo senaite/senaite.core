@@ -6,16 +6,6 @@
 
     <include file="viewlets.zcml"/>
 
-
-    <browser:page
-      for="Products.bika.interfaces.ILims"
-      name="load_setup_data"
-      class="Products.bika.browser.load_setup_data.LoadSetupData"
-      permission="bika.ManageBika"
-      layer="Products.bika.interfaces.IBikaLIMSLayer"
-    />
-
-
     <browser:page
       for="Products.bika.interfaces.ILims"
       name="clientfolder_contents"

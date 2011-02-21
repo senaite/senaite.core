@@ -7,8 +7,9 @@ from Products.CMFDynamicViewFTI.browserdefault import BrowserDefaultMixin
 from Products.bika.FixedPointField import FixedPointField
 from Products.bika.config import I18N_DOMAIN, ATTACHMENT_OPTIONS, \
     ARIMPORT_OPTIONS, PROJECTNAME
-from plone.app.folder import folder
+from Products.bika.content.bikaschema import BikaFolderSchema
 from Products.bika.interfaces.tools import IBikaSettings
+from plone.app.folder import folder
 from zope.interface import implements
 import sys
 
@@ -25,7 +26,7 @@ class PrefixesField(RecordsField):
         })
     security = ClassSecurityInfo()
 
-schema = folder.ATFolderSchema.copy() + Schema((
+schema = BikaFolderSchema.copy() + Schema((
     IntegerField('PasswordLifetime',
         required = 1,
         default = 0,

@@ -7,7 +7,7 @@ from AccessControl.Permissions import manage_users
 from Products.CMFCore import permissions
 from Products.CMFCore.utils import getToolByName
 from Products.Archetypes.public import *
-from Products.bika.Person import Person
+from Products.bika.content.person import Person
 from Products.bika.config import ManageClients, PUBLICATION_PREFS, PROJECTNAME
 from Products.CMFDynamicViewFTI.browserdefault import \
     BrowserDefaultMixin
@@ -21,17 +21,10 @@ schema = Person.schema.copy() + Schema((
     ),
 ))
 
+# Don't make title required - it will be computed from the Person's Fullname
+schema['title'].required = 0
+schema['title'].widget.visible = False
 schema['JobTitle'].schemata = 'default'
-
-IdField = schema['id']
-IdField.schemata = 'default'
-IdField.widget.visible = False
-# Don't make title required - it will be computed from the Person's
-# Fullname
-TitleField = schema['title']
-TitleField.schemata = 'default'
-TitleField.required = 0
-TitleField.widget.visible = False
 
 class LabContact(VariableSchemaSupport, BrowserDefaultMixin, Person):
     security = ClassSecurityInfo()

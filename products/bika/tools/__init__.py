@@ -2,7 +2,6 @@ from toolfolder import ToolFolder
 from bika_analysis_reset import bika_analysis_reset
 from bika_ar_export import bika_ar_export
 from bika_ar_import import bika_ar_import
-from bika_client_categories import bika_client_categories
 from bika_client_status import bika_client_status
 from bika_instrument_import import bika_instrument_import
 from bika_invoice_prefs import bika_invoice_prefs

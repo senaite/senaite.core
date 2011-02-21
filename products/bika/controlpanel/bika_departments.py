@@ -10,9 +10,12 @@ class DepartmentsView(BikaFolderContentsView):
     implements(IFolderContentsView)
     contentFilter = {'portal_type': 'Department'}
     content_add_buttons = ['Department']
+    title = "Lab Departments"
+    description = ""
     batch = True
     b_size = 100
     full_objects = False
+    show_editable_border = False
     columns = {
                'title_or_id': {'title': 'Title', 'icon':'category.png', 'icon':'department.png'},
                'DepartmentDescription': {'title': 'DepartmentDescription'},

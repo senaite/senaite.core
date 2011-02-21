@@ -1,0 +1,31 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xml:lang="en" lang="en"
+      i18n:domain="plone"
+      metal:use-macro="here/main_template/macros/master">
+
+  <head>
+    <metal:block fill-slot="top_slot">
+    </metal:block>
+  </head>
+
+  <body>
+    <metal:content-title fill-slot="content-title">
+      <h1 class="documentFirstHeading" tal:content="Load Setup Data"/>
+    </metal:content-title>
+
+    <metal:content-core fill-slot="content-core">
+
+	<p tal:content="view/LabContact"/>
+	<p tal:content="view/LabDepartment"/>
+
+    </metal:content-core>
+
+  </body>
+</html>
+
+
+
+

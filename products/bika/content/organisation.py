@@ -5,10 +5,11 @@ from Products.bika.CustomFields import AddressField
 from Products.bika import PROJECTNAME
 from Products.CMFCore import permissions as CMFCorePermissions
 from Products.CMFCore.utils import getToolByName
+from Products.bika.content.bikaschema import BikaSchema,BikaFolderSchema
 from archetypes.referencebrowserwidget import ReferenceBrowserWidget
-from plone.app.folder.folder import ATFolder, ATFolderSchema
+from plone.app.folder.folder import ATFolder
 
-schema = ATFolderSchema.copy() + BaseSchema.copy() + ManagedSchema((
+schema = BikaFolderSchema.copy() + BikaSchema.copy() + ManagedSchema((
     StringField('Name',
         required = 1,
         searchable = '1'
