@@ -1,16 +1,21 @@
-from Products.ATContentTypes.content import schemata
-from Products.Archetypes import atapi
+"""
+    AnalysisRequests often use the same configurations.
+    ARProfile is used to save these common configurations (templates).
+"""
+
 from AccessControl import ClassSecurityInfo
 from DateTime import DateTime
+from Products.ATContentTypes.content import schemata
 from Products.ATExtensions.ateapi import DateTimeField, DateTimeWidget
+from Products.Archetypes import atapi
 from Products.Archetypes.public import *
 from Products.Archetypes.references import HoldingReference
 from Products.Archetypes.utils import DisplayList
 from Products.CMFCore.permissions import View, ListFolderContents
 from Products.CMFCore.utils import getToolByName
 from Products.CMFDynamicViewFTI.browserdefault import BrowserDefaultMixin
-from Products.bika.content.bikaschema import BikaSchema
 from Products.bika.config import I18N_DOMAIN, ManageBika, PROJECTNAME
+from Products.bika.content.bikaschema import BikaSchema
 
 schema = BikaSchema.copy() + Schema((
     StringField('ProfileTitle',
@@ -32,7 +37,7 @@ schema = BikaSchema.copy() + Schema((
             description_msgid = 'help_profile_keyword',
         ),
     ),
-    StringField('CostCode', #TODO (dropdown like SampleTypes)
+    StringField('CostCode', #XXX CostCode gets dropdown like SampleTypes
         searchable = True,
         widget = StringWidget(
             label = 'Cost code',
@@ -40,7 +45,7 @@ schema = BikaSchema.copy() + Schema((
             i18n_domain = I18N_DOMAIN,
         ),
     ),
-    StringField('TextInclusions', #TODO (dropdown like SampleTypes)
+    StringField('TextInclusions', #XXX TextInclusions gets dropdown like SampleTypes
         searchable = True,
         widget = StringWidget(
             label = 'Text Inclusions',
@@ -76,15 +81,9 @@ schema = BikaSchema.copy() + Schema((
 ),
 )
 
-IdField = schema['id']
-TitleField = schema['title']
-TitleField.required = 0
-TitleField.widget.visible = {'edit': 'hidden', 'view': 'invisible'}
+schema['title'].required = False
 
-"""
-    AnalysisRequests often use the same configurations.
-    ARProfile is used to save these common configurations (templates).
-"""
+
 class ARProfile(VariableSchemaSupport, BrowserDefaultMixin, BaseFolder):
     security = ClassSecurityInfo()
     schema = schema

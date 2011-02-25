@@ -4,6 +4,13 @@ from tools import *
 class IClient(Interface):
     """Client marker interface"""
 
+class IAnalysisServicesWidgetHelper(Interface):
+    """AnalysisServicesWidget helper functions """
+
+    def getAnalysisCategories():
+        """ """
+
+
 class ILims(Interface):
     """Lims marker interface"""
 

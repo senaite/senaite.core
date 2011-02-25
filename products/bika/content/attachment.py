@@ -73,12 +73,8 @@ schema = BikaSchema.copy() + Schema((
 ),
 )
 
-IdField = schema['id']
-IdField.required = 0
-IdField.widget.visible = False
-TitleField = schema['title']
-TitleField.required = 0
-TitleField.widget.visible = {'edit': 'hidden', 'view': 'invisible'}
+schema['id'].required = False
+schema['title'].required = False
 
 class Attachment(BrowserDefaultMixin, BaseFolder):
     security = ClassSecurityInfo()

@@ -233,7 +233,7 @@ schema = BikaSchema.copy() + Schema((
             i18n_domain = I18N_DOMAIN,
         ),
     ),
-    ReferenceField('AnalysisCategory',
+    ReferenceField('Category',
         required = 1,
         vocabulary_display_path_bound = sys.maxint,
         allowed_types = ('AnalysisCategory',),
@@ -283,7 +283,7 @@ schema = BikaSchema.copy() + Schema((
     ),
     ComputedField('CategoryName',
         index = 'FieldIndex',
-        expression = 'context.getAnalysisCategory().Title()',
+        expression = "context.getCategory() and context.getCategory().Title() or ''",
         widget = ComputedWidget(
             label = "Analysis category",
             visible = {'edit':'hidden', }
@@ -291,7 +291,7 @@ schema = BikaSchema.copy() + Schema((
     ),
     ComputedField('CategoryUID',
         index = 'FieldIndex',
-        expression = 'context.getAnalysisCategory().UID()',
+        expression = "context.getCategory() and context.getCategory().UID() or ''",
         widget = ComputedWidget(
             label = "Analysis category",
             visible = {'edit':'hidden', }

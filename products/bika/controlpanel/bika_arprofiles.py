@@ -1,17 +1,16 @@
-from AccessControl import ClassSecurityInfo
-from Products.CMFCore import permissions
-from Products.Five.browser import BrowserView
-from Products.bika.browser.bika_folder_contents import BikaFolderContentsView
 from plone.app.content.browser.interfaces import IFolderContentsView
-from plone.app.folder.folder import ATFolder
+from Products.bika.browser.bika_folder_contents import BikaFolderContentsView
 from zope.interface.declarations import implements
 
 class ARProfilesView(BikaFolderContentsView):
     implements(IFolderContentsView)
-    contentFilter = {'portal_type': 'ARProfile'}
-    content_add_buttons = ['ARProfile']
+    contentFilter = {'portal_type': 'LabARProfile'}
+    content_add_buttons = ['LabARProfile']
+    title = "Analysis Request Templates"
+    description = ""
     batch = True
     b_size = 100
+    show_editable_border = False
     full_objects = False
     columns = {
                'title_or_id': {'title': 'Title'},
@@ -19,7 +18,7 @@ class ARProfilesView(BikaFolderContentsView):
               }
     wflist_states = [
                     {'title_or_id': 'All', 'id':'all',
-                     'columns': ['title_or_id', 'Profile Key'],
+                     'columns': ['title_or_id', 'ProfileKey'],
                      'buttons':[BikaFolderContentsView.default_buttons['delete']]},
                     ]
 

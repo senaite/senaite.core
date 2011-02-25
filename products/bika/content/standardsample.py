@@ -151,54 +151,9 @@ schema = BikaSchema.copy() + Schema((
 ),
 )
 
-IdField = schema['id']
-
 class StandardSample(VariableSchemaSupport, BrowserDefaultMixin, BaseFolder):
     security = ClassSecurityInfo()
-    archetype_name = 'StandardSample'
     schema = schema
-    allowed_content_types = ('StandardAnalysis')
-    content_icon = 'standardsample.png'
-    immediate_view = 'base_view'
-    default_view = 'base_view'
-    use_folder_tabs = 0
-    global_allow = 0
-    filter_content_types = 1
-    factory_type_information = {
-        'title': 'Standard Sample'
-    }
-    actions = (
-        { 'id': 'view',
-          'name': 'View',
-          'action': 'string:${object_url}/',
-          'permissions': (permissions.View,),
-          'visible': True,
-        },
-        { 'id': 'edit',
-          'name': 'Edit',
-          'action': 'string:${object_url}/standardsample_edit',
-          'permissions': (permissions.ModifyPortalContent,),
-          'visible': True,
-        },
-        { 'id': 'log',
-          'name': 'Log',
-          'action': 'string:${object_url}/status_log',
-          'permissions': (ManageBika,),
-        },
-        { 'id': 'qc',
-          'name': 'QC',
-          'action': 'string:${object_url}/report_standardqc_view',
-          'permissions': (permissions.View,),
-        },
-        # document actions
-        {'id': 'sticker',
-         'name': 'Sticker',
-         'action': 'string:${object_url}/standard_sticker',
-         'permissions': (View,),
-         'category': 'document_actions',
-        },
-
-    )
 
     def Title(self):
         """ Return the Standard ID as title """
@@ -210,7 +165,7 @@ class StandardSample(VariableSchemaSupport, BrowserDefaultMixin, BaseFolder):
         return DateTime()
 
     security.declarePublic('getSpecCategories')
-    def getSpecCategories(self): 
+    def getSpecCategories(self):
         tool = getToolByName(self, REFERENCE_CATALOG)
         categories = []
         for spec in self.getResults():
@@ -220,18 +175,18 @@ class StandardSample(VariableSchemaSupport, BrowserDefaultMixin, BaseFolder):
         return categories
 
     security.declarePublic('getResultsRangeDict')
-    def getResultsRangeDict(self): 
-        specs = {} 
+    def getResultsRangeDict(self):
+        specs = {}
         for spec in self.getResults():
             uid = spec['service']
             specs[uid] = {}
-            specs[uid]['result'] = spec['result'] 
-            specs[uid]['min'] = spec['min'] 
-            specs[uid]['max'] = spec['max'] 
+            specs[uid]['result'] = spec['result']
+            specs[uid]['min'] = spec['min']
+            specs[uid]['max'] = spec['max']
         return specs
 
     security.declarePublic('getResultsRangeSorted')
-    def getResultsRangeSorted(self): 
+    def getResultsRangeSorted(self):
         tool = getToolByName(self, REFERENCE_CATALOG)
 
         cats = {}
@@ -253,7 +208,7 @@ class StandardSample(VariableSchemaSupport, BrowserDefaultMixin, BaseFolder):
 
         cat_keys = cats.keys()
         cat_keys.sort(lambda x, y:cmp(x.lower(), y.lower()))
-        sorted_specs = [] 
+        sorted_specs = []
         for cat in cat_keys:
             services = cats[cat]
             service_keys = services.keys()
@@ -292,7 +247,7 @@ class StandardSample(VariableSchemaSupport, BrowserDefaultMixin, BaseFolder):
     def addStandardAnalysis(self, service_uid, standard_type):
         """ add an analysis to the sample """
         rc = getToolByName(self, REFERENCE_CATALOG)
-        service = rc.lookupObject(service_uid) 
+        service = rc.lookupObject(service_uid)
 
         analysis_id = self.generateUniqueId('StandardAnalysis')
         self.invokeFactory(id = analysis_id, type_name = 'StandardAnalysis')
@@ -337,12 +292,3 @@ class StandardSample(VariableSchemaSupport, BrowserDefaultMixin, BaseFolder):
         self.reindexObject()
 
 registerType(StandardSample, PROJECTNAME)
-
-def modify_fti(fti):
-    for a in fti['actions']:
-        if a['id'] == 'view':
-            a['visible'] = 1
-        if a['id'] in ('syndication', 'references', 'metadata',
-                       'localroles'):
-            a['visible'] = 0
-    return fti

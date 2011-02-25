@@ -22,8 +22,8 @@
 
     <browser:page
       for="*"
-      name="bika_analysis_categories"
-      class=".bika_analysis_categories.AnalysisCategoriesView"
+      name="bika_analysiscategories"
+      class=".bika_analysiscategories.AnalysisCategoriesView"
       permission="bika.ManageBika"
       layer="Products.bika.interfaces.IBikaLIMSLayer"
     />
@@ -79,7 +79,7 @@
     <browser:page
       for="*"
       name="bika_services"
-      class=".analysisservice.AnalysisServicesView"
+      class=".bika_analysisservices.AnalysisServicesView"
       permission="bika.ManageBika"
       layer="Products.bika.interfaces.IBikaLIMSLayer"
     />

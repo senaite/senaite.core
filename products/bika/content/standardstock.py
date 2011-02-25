@@ -50,10 +50,7 @@ schema = BikaSchema.copy() + Schema((
     ),
 ))
 
-IdField = schema['id']
-TitleField = schema['title']
-TitleField.required = 0
-TitleField.widget.visible = {'edit': 'hidden', 'view': 'invisible'}
+schema['title'].required = False
 
 class StandardStock(BrowserDefaultMixin, BaseContent):
     security = ClassSecurityInfo()

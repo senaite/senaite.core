@@ -1,0 +1,47 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      i18n:domain="plone">
+  <head><title></title></head>
+  <body>
+
+    <!-- AnalysisServices Widget -->
+
+    <metal:view_macro define-macro="view">
+      <tal:define define="
+        helper nocall:here/analysisserviceswidget_helper;
+        categories helper/Categories;">
+        <ul>
+          <span tal:omit-tag tal:repeat="category python:categories">
+            <li class="analysiscategory" tal:content="category/Title"/>
+          </span>
+        </ul>
+      </tal:define>
+    </metal:view_macro>
+
+    <metal:edit_macro define-macro="edit">
+      <metal:use use-macro="field_macro | context/widgets/field/macros/edit">
+        <metal:body_macro fill-slot="widget_body">
+          <span id="analysisserviceswidget" tal:define="helper nocall:here/analysisserviceswidget_helper;">
+            <fieldset class="initial" tal:attributes="name category/UID" tal:repeat="category helper/Categories" >
+              <legend tal:content="category/Title"/>
+              <span tal:attributes="id string:${category/UID}" class="analysisservices"/>
+            </fieldset>
+          </span>
+        </metal:body_macro>
+      </metal:use>
+    </metal:edit_macro>
+
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+

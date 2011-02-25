@@ -17,15 +17,6 @@
 
   <i18n:registerTranslations directory="i18n" />
 
-  <browser:page
-    for="*"
-    name="load_setup_data"
-    class="Products.bika.load_setup_data.LoadSetupData"
-    permission="bika.ManageBika"
-    layer="Products.bika.interfaces.IBikaLIMSLayer"
-  />
-
-
   <!-- Magic so we can traverse @@views from TAL -->
   <class class="ZPublisher.BaseRequest.BaseRequest">
     <implements interface="zope.annotation.interfaces.IAttributeAnnotatable" />

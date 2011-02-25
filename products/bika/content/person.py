@@ -53,6 +53,7 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     StringField('BusinessPhone',
+        index = "FieldIndex:Brains",
         widget = StringWidget(
             label = 'Phone (business)',
             label_msgid = 'label_phone_business',
@@ -107,10 +108,7 @@ schema = BikaSchema.copy() + Schema((
 ),
 )
 
-IdField = schema['id']
-TitleField = schema['title']
-TitleField.required = 0
-TitleField.widget.visible = False
+schema['title'].required = False
 
 class Person(VariableSchemaSupport, BaseFolder):
     security = ClassSecurityInfo()

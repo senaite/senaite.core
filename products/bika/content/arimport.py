@@ -219,10 +219,7 @@ schema = BikaSchema.copy() + Schema((
 ),
 )
 
-IdField = schema['id']
-TitleField = schema['title']
-TitleField.required = 0
-TitleField.widget.visible = False
+schema['title'].required = False
 
 class ARImport(VariableSchemaSupport, BrowserDefaultMixin, BaseFolder):
     security = ClassSecurityInfo()

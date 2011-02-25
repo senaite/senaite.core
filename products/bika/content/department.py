@@ -2,18 +2,13 @@
 
 $Id: Department.py 1000 2007-12-03 11:53:04Z anneline $
 """
-import sys
-from AccessControl import ClassSecurityInfo
-from Products.CMFCore.utils import getToolByName
-from Products.CMFCore.permissions import View, \
-    ModifyPortalContent
-from Products.CMFDynamicViewFTI.browserdefault import \
-    BrowserDefaultMixin
 from Products.Archetypes.public import *
 from Products.Archetypes.references import HoldingReference
-from Products.Archetypes.config import REFERENCE_CATALOG
-from Products.bika.content.bikaschema import BikaSchema
+from Products.CMFDynamicViewFTI.browserdefault import BrowserDefaultMixin
 from Products.bika.config import I18N_DOMAIN, PROJECTNAME
+from Products.bika.content.bikaschema import BikaSchema
+from AccessControl import ClassSecurityInfo
+import sys
 
 schema = BikaSchema.copy() + Schema((
     TextField('DepartmentDescription',

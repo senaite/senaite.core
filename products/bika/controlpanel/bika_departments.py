@@ -1,9 +1,5 @@
-from AccessControl import ClassSecurityInfo
-from Products.CMFCore import permissions
-from Products.Five.browser import BrowserView
-from plone.app.content.browser.interfaces import IFolderContentsView
-from plone.app.folder.folder import ATFolder
 from Products.bika.browser.bika_folder_contents import BikaFolderContentsView
+from plone.app.content.browser.interfaces import IFolderContentsView
 from zope.interface.declarations import implements
 
 class DepartmentsView(BikaFolderContentsView):
@@ -17,13 +13,15 @@ class DepartmentsView(BikaFolderContentsView):
     full_objects = False
     show_editable_border = False
     columns = {
-               'title_or_id': {'title': 'Title', 'icon':'category.png', 'icon':'department.png'},
-               'DepartmentDescription': {'title': 'DepartmentDescription'},
+               'title_or_id': {'title': 'Title'},
+               'DepartmentDescription': {'title': 'Department Description'},
                'Manager': {'title': 'Manager'},
+               'ManagerPhone': {'title': 'Manager Phone'},
+               'ManagerEmail': {'title': 'Manager Email'},
               }
     wflist_states = [
                     {'title': 'All', 'id':'all',
-                     'columns': ['title_or_id', 'DepartmentDescription', 'Manager'],
+                     'columns': ['title_or_id', 'DepartmentDescription', 'Manager', 'ManagerPhone', 'ManagerEmail'],
                      'buttons':[BikaFolderContentsView.default_buttons['delete']]},
                     ]
 
@@ -32,7 +30,16 @@ class DepartmentsView(BikaFolderContentsView):
         for x in range(len(items)):
             obj = items[x]['obj'].getObject()
             items[x]['DepartmentDescription'] = obj.DepartmentDescription()
-            items[x]['Manager'] = obj.ManagerName()
-            items[x]['links'] = {'title_or_id': items[x]['url'] + "/edit"}
+            items[x]['Manager'] = obj.getManagerName()
+            if items[x]['Manager']:
+                items[x]['ManagerPhone'] = obj.getManager().BusinessPhone
+                items[x]['ManagerEmail'] = obj.getManager().EmailAddress
+            else:
+                items[x]['ManagerPhone'] = ""
+                items[x]['ManagerEmail'] = ""
+
+            items[x]['links'] = {'title_or_id': items[x]['url'] + "/edit",
+                                 'Manager': obj.getManager().absolute_url() + "/edit",
+                                 'ManagerEmail': "mailto:%s" % (items[x]['ManagerEmail'])}
 
         return items

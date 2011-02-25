@@ -12,7 +12,7 @@
  <property name="factory">addAnalysisService</property>
  <property name="add_view_expr"></property>
  <property name="link_target"></property>
- <property name="immediate_view">analysisservice_edit</property>
+ <property name="immediate_view">base_edit</property>
  <property name="global_allow">False</property>
  <property name="filter_content_types">False</property>
  <property name="allowed_content_types"/>
@@ -30,5 +30,10 @@
     icon_expr="" link_target=""
     url_expr="string:${object_url}/analysisservice_edit" visible="True">
   <permission value="Modify portal content"/>
+ </action>
+ <action title="View" action_id="view" category="object" condition_expr=""
+    icon_expr="" link_target="" url_expr="string:${object_url}/base_view"
+    visible="True">
+  <permission value="View"/>
  </action>
 </object>

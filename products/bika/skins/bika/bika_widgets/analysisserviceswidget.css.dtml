@@ -1,0 +1,13 @@
+#analysisserviceswidget fieldset{
+	padding: 0px 0px 0px 1em;
+	margin: 0px;
+}
+#analysisserviceswidget fieldset legend{
+	padding: 0px 0px 0px 1em;
+	margin: 0px;
+    cursor: pointer;
+    color:blue
+}
+class invisible{
+	display:none;
+}

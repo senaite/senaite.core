@@ -1,0 +1,14 @@
+$(document).ready(function(){
+
+	$('.initial').click(function(){
+		target = $('#'+$(this).attr("name"));
+		if($(this).hasClass("expanded")){
+			target.toggle();
+		} else {
+			$(this).removeClass("initial");
+			$(this).addClass("expanded");
+			target.load("&dtml-portal_url;/analysisserviceswidget_analysisservices?categoryUID="+$(this).attr("name"));
+		}
+	});
+});
+

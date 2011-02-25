@@ -15,5 +15,5 @@ BikaSchema['language'].widget.visible = False
 BikaSchema['location'].widget.visible = False
 
 BikaFolderSchema = ATFolderSchema.copy()
-BikaFolderSchema['excludeFromNav'].widget.visible = True
+BikaFolderSchema['excludeFromNav'].widget.visible = False
 BikaFolderSchema['nextPreviousEnabled'].widget.visible = False

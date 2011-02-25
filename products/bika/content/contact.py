@@ -46,13 +46,8 @@ schema = Person.schema.copy() + Schema((
 
 schema['JobTitle'].schemata = 'default'
 schema['Department'].schemata = 'default'
-schema['description'].widget.visible=False
-# Don't make title required - it will be computed from the Person's
-# Fullname
-TitleField = schema['title']
-TitleField.schemata = 'default'
-TitleField.required = 0
-TitleField.widget.visible = False
+# Don't make title required - it will be computed from the Person's Fullname
+schema['title'].required = 0
 
 class Contact(VariableSchemaSupport, BrowserDefaultMixin, Person):
     security = ClassSecurityInfo()

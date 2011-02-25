@@ -26,6 +26,7 @@
   <element value="CalculationType"/>
   <element value="AnalysisService"/>
   <element value="ARProfile"/>
+  <element value="LabARProfile"/>
   <element value="LabProduct"/>
   <element value="StandardManufacturer"/>
   <element value="StandardStock"/>

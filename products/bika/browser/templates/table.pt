@@ -76,7 +76,7 @@
 	          <th class="nosort">&nbsp;</th>
 	          <th class="nosort column" tal:repeat="column column_list"
 	              id="string:foldercontents-${columns/column/title}-column"
-	              >&nbsp;<span i18n:translate="python:'listingheader_' + view.columns[ column ]['title']"><span tal:content="python:view.columns[  column  ]['title']"/></span>&nbsp;
+	              ><span i18n:translate="python:'listingheader_' + view.columns[ column ]['title']"><span tal:content="python:view.columns[  column  ]['title']"/></span>
 	           </th>
 	        </tr>
 	      </thead>

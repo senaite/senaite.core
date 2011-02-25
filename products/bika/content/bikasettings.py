@@ -181,9 +181,7 @@ schema = BikaFolderSchema.copy() + Schema((
 ))
 
 
-TitleField = schema['title']
-TitleField.required = 0
-TitleField.widget.visible = {'edit': 'hidden', 'view': 'invisible'}
+schema['title'].required = False
 
 class BikaSettings(BrowserDefaultMixin, folder.ATFolder):
     security = ClassSecurityInfo()

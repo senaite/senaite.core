@@ -1,7 +1,0 @@
-[default]
-title=Add or edit analysis services
-proxy=Manager,Anonymous
-
-[actions]
-action.failure=traverse_to:string:content_edit
-action.success=redirect_to:string:..

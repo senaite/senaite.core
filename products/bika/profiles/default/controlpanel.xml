@@ -34,10 +34,10 @@
   <permission>BIKA: Manage Bika</permission>
  </configlet>
 
- <configlet title="Analysis Categories" action_id="bika_analysis_categories"
+ <configlet title="Analysis Categories" action_id="bika_analysiscategories"
     appId="bika" category="Products" condition_expr=""
     icon_expr="string:$portal_url/images/category.png"
-    url_expr="string:$portal_url/bika_settings/bika_analysis_categories" 
+    url_expr="string:$portal_url/bika_settings/bika_analysiscategories" 
     visible="True">
   <permission>BIKA: Manage Bika</permission>
  </configlet>
@@ -109,7 +109,7 @@
  <configlet title="Analysis Profiles" action_id="bika_arprofiles"
     appId="bika" category="Products" condition_expr=""
     icon_expr="string:$portal_url/images/service.png"
-    url_expr="string:$portal_url/bika_arprofiles" 
+    url_expr="string:$portal_url/bika_settings/bika_arprofiles" 
     visible="True">
   <permission>BIKA: Manage Bika</permission>
  </configlet>

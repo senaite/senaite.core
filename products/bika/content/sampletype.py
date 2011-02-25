@@ -39,7 +39,7 @@ class SampleType(BrowserDefaultMixin, BaseContent):
 
     def getDefaultLifetime(self):
         """ get the default retention period """
-        settings = getToolByName(self, 'bika_settings').settings
+        settings = getToolByName(self, 'bika_settings')
         return settings.getDefaultSampleLifetime()
 
 registerType(SampleType, PROJECTNAME)
