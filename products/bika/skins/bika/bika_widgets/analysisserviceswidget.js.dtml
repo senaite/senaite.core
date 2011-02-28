@@ -1,14 +1,46 @@
+function expand_analysisservices(categoryUID, fieldName){
+	html = "<table cellpadding='0' cellborder='0' cellspacing='0' border='0'>";
+	selected = $("#selectedservices_"+categoryUID+":first").attr("value");
+	allUID = $("#allservices_"+categoryUID+":first").attr("value").split(',');
+	allTitle = $("#allservices_"+categoryUID+":first").attr("name").split(',');
+	for(i in allUID){
+		uid = allUID[i];
+		title = allTitle[i];
+		if(selected.indexOf(uid) > -1){
+			html = html + "<tr><td>" +
+				"<input type='checkbox' name='"+fieldName+":list:ignore-empty' value='"+uid+"' checked='checked'/></td>" +
+				"<td>"+title+"</td>";
+		}else{
+			html = html + "<tr><td>" +
+				"<input type='checkbox' name='"+fieldName+":list:ignore-empty' value='"+uid+"'/></td>" +
+				"<td>"+title+"</td>";
+		}
+	}
+	html = html + "</tr></table>";
+	return html;
+}
+
 $(document).ready(function(){
 
-	$('.initial').click(function(){
+	$('legend[class^="initial"]').click(function(){
 		target = $('#'+$(this).attr("name"));
+		fieldName = $(this).attr("id");
 		if($(this).hasClass("expanded")){
 			target.toggle();
 		} else {
 			$(this).removeClass("initial");
 			$(this).addClass("expanded");
-			target.load("&dtml-portal_url;/analysisserviceswidget_analysisservices?categoryUID="+$(this).attr("name"));
+			target.html(expand_analysisservices($(this).attr("name"), fieldName));
 		}
 	});
+
+	$.each($('legend[class$="prefill"]'), function() {
+		target = $('#'+$(this).attr("name"));
+		fieldName = $(this).attr("id");
+		$(this).removeClass("initial");
+		$(this).addClass("expanded");
+			target.html(expand_analysisservices($(this).attr("name"), fieldName));
+	});
+
 });
 

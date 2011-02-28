@@ -111,7 +111,7 @@ class LoadSetupData(BrowserView):
     def Clients(self):
         folder = self.context.clients
         client_list = (
-                    ('320', 'Norton Feeds', '1', 'norton@scapp.co.za', '021 5552050', '0215552192', 'Carl', 'Bennett', 'cbennett', 'cbennett@scapp.co.za', 'email'),
+            ('320', 'Norton Feeds', '1', 'norton@scapp.co.za', '021 5552050', '0215552192', 'Carl', 'Bennett', 'cbennett', 'cbennett@scapp.co.za', 'email'),
             ('330', 'Ostrich Products Inc', '0', 'ostriches@scapp.co.za', '021 5551150', '0215551504', 'Karen', 'Leonard', 'karen', 'karen@scapp.co.za', 'email'),
             ('370', 'Ruff Dog Food', '1', 'ruff@scapp.co.za', '021 5551705', '0215551705', 'Chris', 'Ruffian', 'chris', 'chris@scapp.co.za', 'email'),
             ('470', 'Morton Chickens', '1', 'morton@scapp.co.za', '021 5555264', '0215554557', 'Alfie', 'Faraday', 'alfie', 'faraday@scapp.co.za', 'fax'),
@@ -514,7 +514,7 @@ class LoadSetupData(BrowserView):
             obj.edit(Uncertainties = uc_out,
                      CalculationType = ctype,
                      CalcDependancy = deps,
-                     AnalysisCategory = category)
+                     Category = category)
             obj.reindexObject()
             self.service_objs[keyword] = obj.UID()
 

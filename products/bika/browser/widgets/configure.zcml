@@ -4,18 +4,5 @@
     xmlns:i18n="http://namespaces.zope.org/i18n"
     i18n_domain="bika">
 
-	<!-- AnalysisServicesWidget main helper view -->
-    <browser:page
-        name="analysisserviceswidget_helper"
-        permission="zope2.View"
-        for="*"
-        class=".analysisserviceswidget_views.AnalysisServicesWidgetHelper"/>
 
-	<!-- AnalysisServicesWidget ajax for lists of services in each category -->
-    <browser:page
-        name="analysisserviceswidget_analysisservices"
-        permission="zope2.View"
-        for="*"
-        class=".analysisserviceswidget_views.AnalysisServicesWidget_AnalysisServices"/>
-    
 </configure>

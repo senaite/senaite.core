@@ -51,7 +51,7 @@ schema = BikaSchema.copy() + Schema((
         allowed_types = ('AnalysisService',),
         relationship = 'ARProfileAnalysisService',
         widget = AnalysisServicesWidget(
-            label = 'Analyses',
+            label = 'Analysis Services',
             label_msgid = 'label_analyses',
             i18n_domain = I18N_DOMAIN,
         )

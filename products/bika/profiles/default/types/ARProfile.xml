@@ -7,7 +7,7 @@
      AnalysisRequests often use the same configurations. 
      ARProfile is used to save these common configurations (templates).
  </property>
- <property name="content_icon">arprofile.png</property>
+ <property name="content_icon">string:${portal_url}/images/arprofile.png</property>
  <property name="content_meta_type">ARProfile</property>
  <property name="product">bika</property>
  <property name="factory">addARProfile</property>
