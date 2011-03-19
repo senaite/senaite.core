@@ -1,13 +1,10 @@
 from AccessControl import ClassSecurityInfo
-from Products.CMFCore.permissions import View, \
-    ModifyPortalContent
-from Products.CMFDynamicViewFTI.browserdefault import \
-    BrowserDefaultMixin
 from Products.Archetypes.public import *
-from Products.bika.content.bikaschema import BikaSchema
-from Products.bika.FixedPointField import FixedPointField
+from Products.CMFCore.permissions import View, ModifyPortalContent
+from Products.CMFDynamicViewFTI.browserdefault import BrowserDefaultMixin
 from Products.bika.config import I18N_DOMAIN, PROJECTNAME
-from Products.bika.fixedpoint import FixedPoint
+from Products.bika.content.bikaschema import BikaSchema
+from decimal import Decimal
 
 schema = BikaSchema.copy() + Schema((
     TextField('ProductDescription',
@@ -80,9 +77,9 @@ class LabProduct(BrowserDefaultMixin, BaseContent):
         """ return default VAT from bika_settings """
         try:
             vat = self.bika_settings.getVAT()
-            return FixedPoint(vat)
+            return Decimal(vat)
         except ValueError:
-            return FixedPoint('0')
+            return Decimal('0')
 
     security.declarePublic('getVATAmount')
     def getVATAmount(self):

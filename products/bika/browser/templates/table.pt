@@ -84,7 +84,8 @@
 	      <metal:block tal:condition="view/batch">
 	        <tbody>
 	          <tal:items tal:repeat="item view/batch">
-	            <tr tal:attributes="class item/table_row_class;
+	            <tr tal:condition="python:item.has_key('id')"
+	                tal:attributes="class item/table_row_class;
 	                                id string:folder-contents-item-${item/id};" >
 		
 	              <td tal:condition="view/show_sort_column" class="draggable">

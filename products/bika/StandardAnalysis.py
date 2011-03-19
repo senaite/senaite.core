@@ -13,7 +13,6 @@ from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.ATExtensions.ateapi import DateTimeField, DateTimeWidget
 from Products.bika.content.bikaschema import BikaSchema
 from Products.bika.config import I18N_DOMAIN, STD_TYPES, PROJECTNAME
-from Products.bika.FixedPointField import FixedPointField
 from Products.CMFDynamicViewFTI.browserdefault import \
     BrowserDefaultMixin
 
@@ -278,7 +277,7 @@ class StandardAnalysis(VariableSchemaSupport, BrowserDefaultMixin, BaseContent):
             self.setInterim(TV = ' ')
         else:
             self.setInterim(TV = value)
-        return 
+        return
 
     def getTitrationFactor(self):
         if self.getCalcType() in ['t']:
@@ -292,7 +291,7 @@ class StandardAnalysis(VariableSchemaSupport, BrowserDefaultMixin, BaseContent):
             self.setInterim(TF = ' ')
         else:
             self.setInterim(TF = value)
-        return 
+        return
 
 
     def getSampleMass(self):
@@ -307,7 +306,7 @@ class StandardAnalysis(VariableSchemaSupport, BrowserDefaultMixin, BaseContent):
             self.setInterim(SM = ' ')
         else:
             self.setInterim(SM = value)
-        return 
+        return
 
     def getGrossMass(self):
         if self.getCalcType() in ['rw', 'wl']:
@@ -321,7 +320,7 @@ class StandardAnalysis(VariableSchemaSupport, BrowserDefaultMixin, BaseContent):
             self.setInterim(GM = ' ')
         else:
             self.setInterim(GM = value)
-        return 
+        return
 
     def getNetMass(self):
         if self.getCalcType() in ['rw', 'rwt', 'wl', 'wlt']:
@@ -335,7 +334,7 @@ class StandardAnalysis(VariableSchemaSupport, BrowserDefaultMixin, BaseContent):
             self.setInterim(NM = ' ')
         else:
             self.setInterim(NM = value)
-        return 
+        return
 
     def getVesselMass(self):
         if self.getCalcType() in ['rw', 'rwt', 'wl', 'wlt']:
@@ -349,7 +348,7 @@ class StandardAnalysis(VariableSchemaSupport, BrowserDefaultMixin, BaseContent):
             self.setInterim(VM = ' ')
         else:
             self.setInterim(VM = value)
-        return 
+        return
 
     security.declarePublic('current_date')
     def current_date(self):

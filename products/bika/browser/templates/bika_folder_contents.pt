@@ -28,24 +28,19 @@
 
     <metal:content-core fill-slot="content-core">
 
-      <tal:comment replace="nothing"> 
-      <!-- XXX Yes this is one form per add button and yes this is gross.
-             folder_factories:method doesn't work the way it did in 2.5 apparently, 
-             or I can't figure it out. -->
-      </tal:comment>
-      <tal:add_buttons repeat="add_type view/content_add_buttons">
+      <tal:add_buttons repeat="add_item python:view.content_add_buttons.keys()">
           <form 
             name="folderContentsForm"
             method="post"
-            action="folder_object"
-            tal:attributes="action string:${context/absolute_url}/createObject?type_name=${add_type}">
+            action=""
+            tal:attributes="action python:'%s/%s'%(context.absolute_url(), view.content_add_buttons[add_item])">
             <input 
               class="standalone add"
               type="submit"
               name=""
               i18n:attributes="value"
-              tal:attributes="value string:Add ${add_type};
-                              name string:add_${add_type}"/>
+              tal:attributes="value string:Add ${add_item};
+                              name string:add_${add_item}"/>
           </form>
       </tal:add_buttons>
 

@@ -6,7 +6,6 @@ from AccessControl import ClassSecurityInfo
 from DateTime import DateTime
 from Products.Archetypes.public import *
 from Products.bika.config import I18N_DOMAIN, PROJECTNAME
-from Products.bika.FixedPointField import FixedPointField
 
 schema = BaseSchema.copy() + Schema((
     TextField('ItemDescription',

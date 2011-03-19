@@ -6,7 +6,7 @@ from zope.interface import implements
 class ClientAnalysisRequestsView(BikaFolderContentsView):
     implements(IFolderContentsView)
     contentFilter = {'portal_type': 'AnalysisRequest'}
-    content_add_buttons = ['AnalysisRequest']
+    content_add_buttons = {'Analysis Request': "createObject?type_name=AnalysisRequest"}
     title = "Analysis Requests"
     description = ""
     show_editable_border = True
@@ -111,7 +111,7 @@ class ClientAnalysisRequestsView(BikaFolderContentsView):
 class ClientSamplesView(BikaFolderContentsView):
     implements(IFolderContentsView)
     contentFilter = {'portal_type': 'Sample'}
-    content_add_buttons = ['Sample']
+    content_add_buttons = {'Sample': "createObject?type_name=Sample"}
     title = "Samples"
     description = ""
     show_editable_border = True
@@ -190,7 +190,7 @@ class ClientSamplesView(BikaFolderContentsView):
 class ClientARImportsView(BikaFolderContentsView):
     implements(IFolderContentsView)
     contentFilter = {'portal_type': 'ARImport'}
-    content_add_buttons = ['ARImport']
+    content_add_buttons = {'AR Import': "createObject?type_name=ARImport"}
     title = "Analysis Request Imports"
     description = ""
     show_editable_border = True
@@ -232,7 +232,7 @@ class ClientARImportsView(BikaFolderContentsView):
 class ClientARProfilesView(BikaFolderContentsView):
     implements(IFolderContentsView)
     contentFilter = {'portal_type': 'ARProfile'}
-    content_add_buttons = ['ARProfile']
+    content_add_buttons = {'AR Profile': "createObject?type_name=ARProfile"}
     title = "Analysis Request Profiles"
     description = ""
     show_editable_border = True
@@ -258,8 +258,8 @@ class ClientARProfilesView(BikaFolderContentsView):
 
 class ClientAnalysisSpecsView(BikaFolderContentsView):
     implements(IFolderContentsView)
-    content_add_buttons = ['AnalysisSpec']
     contentFilter = {'portal_type': 'AnalysisSpec'}
+    content_add_buttons = {'Analysis Spec': "createObject?type_name=AnalysisSpec"}
     title = "Analysis Specifications"
     description = ""
     show_editable_border = True
@@ -284,7 +284,7 @@ class ClientAnalysisSpecsView(BikaFolderContentsView):
 class ClientAttachmentsView(BikaFolderContentsView):
     implements(IFolderContentsView)
     contentFilter = {'portal_type': 'Attachment'}
-    content_add_buttons = ['Attachment']
+    content_add_buttons = {'Attachment': "createObject?type_name=Attachment"}
     title = "Attachments"
     description = ""
     show_editable_border = True
@@ -339,7 +339,7 @@ class ClientAttachmentsView(BikaFolderContentsView):
 class ClientOrdersView(BikaFolderContentsView):
     implements(IFolderContentsView)
     contentFilter = {'portal_type': 'Order'}
-    content_add_buttons = ['Order']
+    content_add_buttons = {'Order': "createObject?type_name=Order"}
     title = "Orders"
     description = ""
     show_editable_border = True
@@ -383,7 +383,7 @@ class ClientOrdersView(BikaFolderContentsView):
 class ClientContactsView(BikaFolderContentsView):
     implements(IFolderContentsView)
     contentFilter = {'portal_type': 'Contact'}
-    content_add_buttons = ['Contact']
+    content_add_buttons = {'Contact': "createObject?type_name=Contact"}
     title = "Contacts"
     description = ""
     show_editable_border = True

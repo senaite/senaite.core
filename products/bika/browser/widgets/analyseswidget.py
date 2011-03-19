@@ -7,12 +7,12 @@ from Products.Archetypes.Registry import registerWidget
 class AnalysesWidget(TypesWidget):
     _properties = TypesWidget._properties.copy()
     _properties.update({
-        'macro' : "custom_bika_widgets/analyseswidget",
-        'helper_js': ('custom_bika_widgets/analyseswidget.js',
-                      'dhtml.js'),
+        'macro' : "bika_widgets/analyseswidget",
+        'helper_js': ('bika_widgets/analyseswidget.js',
+                      'bika_widgets/dhtml.js'),
         })
 
-    security  = ClassSecurityInfo()
+    security = ClassSecurityInfo()
 
     security.declarePublic('Checked')
     def Checked(self, service, value):
@@ -24,8 +24,8 @@ class AnalysesWidget(TypesWidget):
             if service.UID() == analyses.getService().UID():
                 return 'checked'
 
-    def process_form(self, instance, field, form, empty_marker=None,
-                     emptyReturnsMarker=False):
+    def process_form(self, instance, field, form, empty_marker = None,
+                     emptyReturnsMarker = False):
         """ handle analyses input """
         value = form.get(field.getName(), empty_marker)
         if value is empty_marker:
@@ -34,8 +34,8 @@ class AnalysesWidget(TypesWidget):
 
 
 registerWidget(AnalysesWidget,
-               title='Analyses',
-               description=('Renders a widget for analyses'),
-               used_for=('Products.bika.AnalysesField.AnalysesField',)
+               title = 'Analyses',
+               description = ('Renders a widget for analyses'),
+               used_for = ('Products.bika.AnalysesField.AnalysesField',)
                )
 

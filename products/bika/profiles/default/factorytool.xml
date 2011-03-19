@@ -9,7 +9,9 @@
   <type portal_type="ARImport"/>
   <type portal_type="ARImportItem"/>
   <type portal_type="ARProfile"/>
+  <type portal_type="LabARProfile"/>
   <type portal_type="AnalysisSpec"/>
+  <type portal_type="LabAnalysisSpec"/>
   <type portal_type="Attachment"/>
   <type portal_type="Order"/>
   <type portal_type="OrderItem"/>

@@ -1,1 +1,4 @@
-#
+from serviceswidget import ServicesWidget
+from specwidget import SpecWidget
+from analyseswidget import AnalysesWidget
+from wstemplateanalyseswidget import WSTemplateAnalysesWidget

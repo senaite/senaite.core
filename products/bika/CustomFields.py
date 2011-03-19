@@ -14,24 +14,6 @@ validation.register(
                     description = 'XXX', errmsg = 'is not a valid number.')
 )
 
-class AnalysisSpecField(RecordsField):
-    """a list of in-range analysis result specifications """
-    _properties = RecordsField._properties.copy()
-    _properties.update({
-        'type' : 'analysisspec',
-        'subfields' : ('service', 'min', 'max', 'error'),
-        'required_subfields' : ('service', 'min', 'max', 'error'),
-        'subfield_labels':{'service': 'Analysis Service',
-                           'min': 'Min',
-                           'max': 'Max',
-                           'error': '% Error'},
-        })
-    security = ClassSecurityInfo()
-
-registerField(AnalysisSpecField,
-              title = "Analysis Result Specification",
-              description = "Used for storing analysis results specifications",
-              )
 
 class StandardResultField(RecordsField):
     """a list of standard sample results """
@@ -50,24 +32,6 @@ class StandardResultField(RecordsField):
 registerField(StandardResultField,
               title = "Standard Results",
               description = "Used for storing standard results",
-              )
-
-class TemplatePositionField(RecordsField):
-    """a list of worksheet template rows """
-    _properties = RecordsField._properties.copy()
-    _properties.update({
-        'type' : 'templateposition',
-        'subfields' : ('pos', 'type', 'sub'),
-        'required_subfields' : ('pos', 'type'),
-        'subfield_labels':{'pos': 'Position',
-                           'type': 'Type',
-                           'sub': 'Subtype'},
-        })
-    security = ClassSecurityInfo()
-
-registerField(TemplatePositionField,
-              title = "Template Position",
-              description = "Used for storing worksheet layout",
               )
 
 class WorksheetAnalysesField(RecordsField):

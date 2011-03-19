@@ -46,60 +46,42 @@ class BikaGenerator:
 
         # XXX This should be handled in tools/bika_settings.py
         # but genericsetup import step dependencies are unsatisfied at that point
-#        bs = getToolByName(portal, 'bika_settings')
-#        bs.invokeFactory(id = 'settings', type_name = 'BikaSettings')
-#        bs.settings.setTitle('Bika settings')
-#        bs.settings.setPrefixes([
-#            {'portal_type': 'AnalysisRequest',
-#             'prefix': 'AR-',
-#             'padding': '2',
-#            },
-#            {'portal_type': 'Sample',
-#             'prefix': 'S-',
-#             'padding': '5',
-#            },
-#            {'portal_type': 'Worksheet',
-#             'prefix': 'WS-',
-#             'padding': '5',
-#            },
-#            {'portal_type': 'Order',
-#             'prefix': 'O-',
-#             'padding': '4',
-#            },
-#            {'portal_type': 'Invoice',
-#             'prefix': 'I-',
-#             'padding': '4',
-#            },
-#            {'portal_type': 'ARImport',
-#             'prefix': 'B-',
-#             'padding': '4',
-#            },
-#            {'portal_type': 'StandardSample',
-#             'prefix': 'SS-',
-#             'padding': '4',
-#            },
-#            {'portal_type': 'StandardAnalysis',
-#             'prefix': 'SA-',
-#             'padding': '4',
-#            },
-#        ])
+        bs = getToolByName(portal, 'bika_settings')
+        bs.setPrefixes([
+            {'portal_type': 'AnalysisRequest',
+             'prefix': 'AR-',
+             'padding': '2',
+            },
+            {'portal_type': 'Sample',
+             'prefix': 'S-',
+             'padding': '5',
+            },
+            {'portal_type': 'Worksheet',
+             'prefix': 'WS-',
+             'padding': '5',
+            },
+            {'portal_type': 'Order',
+             'prefix': 'O-',
+             'padding': '4',
+            },
+            {'portal_type': 'Invoice',
+             'prefix': 'I-',
+             'padding': '4',
+            },
+            {'portal_type': 'ARImport',
+             'prefix': 'B-',
+             'padding': '4',
+            },
+            {'portal_type': 'StandardSample',
+             'prefix': 'SS-',
+             'padding': '4',
+            },
+            {'portal_type': 'StandardAnalysis',
+             'prefix': 'SA-',
+             'padding': '4',
+            },
+        ])
 
-
-    def setupControlPanel(self, portal):
-        # Configure the control panel groups so that Bika is before Products.
-#        groups = portal.portal_controlpanel.group
-#        if 'Bika' not in [g[0] for g in groups['site']]:
-#            site_groups = groups['site']   # [g for g in groups['site'] if g[0] != 'Products']
-#            site_groups.append(('Bika', _(u'Bika Configuration')))
-#            #site_groups.append(('Products', PloneMessageFactory(u'Add-on Configuration')))
-#            groups['site'] = site_groups
-#            portal.portal_controlpanel.manage_changeProperties(groups = groups)
-#        # Move portal_templates action to bika
-#        for action in portal.portal_types.listActions():
-#            if action.id in ('PortalTransport_mailtemplates'):
-#                action.category = 'Bika'
-#                action.permissions = (ManageBika,)
-        pass
 
     def setupGroupsAndRoles(self, portal):
         # add roles
@@ -308,7 +290,6 @@ def importFinalSteps(context):
     gen = BikaGenerator()
     gen.setupPropertiesTool(site)
     gen.setupPortalContent(site)
-    gen.setupControlPanel(site)
     gen.setupGroupsAndRoles(site)
     gen.setupPermissions(site)
     gen.setupProxyRoles(site)

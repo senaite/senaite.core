@@ -5,13 +5,12 @@ from zope.interface import implements
 class ClientFolderContentsView(BikaFolderContentsView):
     implements(IFolderContentsView)
     contentFilter = {'portal_type': 'Client'}
-    content_add_buttons = ['Client', ]
+    content_add_buttons = {'Client': "createObject?type_name=Client"}
     title = "Clients"
     description = ""
     show_editable_border = False
     batch = True
     b_size = 100
-    show_editable_border = False
 
     columns = {
                'title_or_id': {'title': 'Name'},
@@ -32,7 +31,10 @@ class ClientFolderContentsView(BikaFolderContentsView):
     def folderitems(self):
         items = BikaFolderContentsView.folderitems(self)
         for x in range(len(items)):
-            items[x]['links'] = {'title_or_id': items[x]['url']}
+            items[x]['links'] = {
+                'title_or_id': items[x]['url'],
+                'getEmailAddress': items[x]['getEmailAddress'] and 'mailto:%s' % items[x]['getEmailAddress'] or "",
+            }
 
         return items
 

@@ -25,7 +25,5 @@
  <alias from="(Default)" to="(dynamic view)"/>
  <alias from="edit" to="base_edit"/>
  <alias from="index.html" to="(dynamic view)"/>
- <alias from="properties" to="base_metadata"/>
- <alias from="sharing" to="folder_localrole_form"/>
  <alias from="view" to="(selected layout)"/>
  </object>

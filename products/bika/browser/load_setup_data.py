@@ -26,7 +26,7 @@ class LoadSetupData(BrowserView):
         logger.info("load_setup_data: Standard Suppliers: %s" % self.StandardSuppliers())
         logger.info("load_setup_data: Attachment Types: %s" % self.AttachmentTypes())
         logger.info("load_setup_data: Products: %s" % self.Products())
-        logger.info("load_setup_data: Worksheet Templates: %s" % self.WorksheetTemplates())
+#        logger.info("load_setup_data: Worksheet Templates: %s" % self.WorksheetTemplates())
         logger.info("load_setup_data: Standard Manufacturers: %s" % self.StandardManufacturers())
 
         self.context.plone_utils.addPortalMessage(
@@ -83,15 +83,18 @@ class LoadSetupData(BrowserView):
         )
         for fullname, username, password, email, role in members:
             fullname = fullname.decode('latin-1').encode('utf-8').strip()
-            pr.addMember(username,
+            try:
+                pr.addMember(username,
                          password,
                          properties = {'username': username,
                                        'email': email,
                                        'fullname': fullname}
-            )
-            group_id = '%ss' % role
-            group = pg.getGroupById(group_id)
-            group.addMember(username)
+                )
+                group_id = '%ss' % role
+                group = pg.getGroupById(group_id)
+                group.addMember(username)
+            except:
+                pass
 
             # verifiers and publishers get their normal permissions from a standard lab 
             # group. Verifying and publishing permissions are added to this.
@@ -170,7 +173,7 @@ class LoadSetupData(BrowserView):
             ('John', 'Smith', 'john@scapp.co.za', '021 5551234', '021 5551233', '0825559910'),
             ('Mary', 'Makoeba', 'mary@scapp.co.za', '021 5551236', '021 5551233', '0835558108'),
         )
-        folder = self.context.bika_settings
+        folder = self.context.bika_settings.bika_labcontacts
         for firstname, surname, email, tel, fax, mobile in contacts:
             labcontact_id = folder.generateUniqueId('LabContact')
             folder.invokeFactory(id = labcontact_id, type_name = 'LabContact')
@@ -191,7 +194,7 @@ class LoadSetupData(BrowserView):
             ('Chemistry', 'Analytical chemistry department'),
         )
         labcontact = self.context.bika_settings.portal_catalog(portal_type = 'LabContact')[0].getObject()
-        folder = self.context.bika_settings
+        folder = self.context.bika_settings.bika_departments
         for title, descr in depts:
             dept_id = folder.generateUniqueId('Department')
             folder.invokeFactory(id = dept_id, type_name = 'Department')
@@ -202,7 +205,7 @@ class LoadSetupData(BrowserView):
             self.departments.append(dept)
 
     def Instruments(self):
-        folder = self.context.bika_settings
+        folder = self.context.bika_settings.bika_instruments
         instruments = (
             ('Spectrometer', 'Spectrometer', 'Digital', 'Spectronic', '20', '5556545', '', ''),
             ('pH Meter', 'Digital pH meter uses an electrode to measure pH of a solution', 'Digital', 'XBrand', 'Xmodel', '76879878', '', ''),
@@ -224,7 +227,7 @@ class LoadSetupData(BrowserView):
                      CalibrationExpiryDate = calibrationexpiry)
 
     def SamplePoints(self):
-        folder = self.context.bika_settings
+        folder = self.context.bika_settings.bika_samplepoints
         samplepoints = (
             ('Plant', 'Production point'),
             ('Bag', 'Retail sample'),
@@ -237,7 +240,7 @@ class LoadSetupData(BrowserView):
             obj.edit(title = title, SamplePointDescription = description)
 
     def SampleTypes(self):
-        folder = self.context.bika_settings
+        folder = self.context.bika_settings.bika_sampletypes
         sampletypes = (
             ('Aartappel/Potato', '', False),
             ('Appelpulp/Apple Pulp', '', False),
@@ -380,7 +383,7 @@ class LoadSetupData(BrowserView):
             ('Dependant calculation', 'Dependant on a number of other results', 'dep'),
         )
         self.calctypes = {}
-        folder = self.context.bika_settings
+        folder = self.context.bika_settings.bika_calculationtypes
         for title, descr, code in calcs:
             calc_id = folder.generateUniqueId('CalculationType')
             folder.invokeFactory(id = calc_id, type_name = 'CalculationType')
@@ -411,7 +414,7 @@ class LoadSetupData(BrowserView):
         depgen = depgen()
 
         self.categories = {}
-        folder = self.context.bika_settings
+        folder = self.context.bika_settings.bika_analysiscategories
         for title, descr in cats:
             cat_id = folder.generateUniqueId('AnalysisCategory')
             folder.invokeFactory(id = cat_id, type_name = 'AnalysisCategory')
@@ -468,7 +471,7 @@ class LoadSetupData(BrowserView):
             ('Non-Structural Carbohydrates', '% DM', 5, 9, '', False, 'NSC is used for dairy cattle', 'NSC', 'NSC', 10, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'NSC% (DM) = 100 - [FibreNDF% + ProteinCrude% + FatCrudeEtherExtraction% + Ash%]', 0, 'dep', ['FibreNDF', 'ProteinCrude', 'FatCrudeEtherExtraction', 'Ash'], False, 'General'),
             ('Digestible Energy', 'MJ/kg', 5, 9, '', False, 'DE is used for pig feeds', 'DE', 'DE', 10, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'DE MJ/kg = 17.38 + 0.105 ProteinCrude% + 0.114 FatCrudeEtherExtraction% -0.317 FibreCrude% -0.402 Ash%', 0, 'dep', ['ProteinCrude', 'FatCrudeEtherExtraction', 'FibreCrude', 'Ash'], False, 'General'),
         )
-        folder = self.context.bika_settings
+        folder = self.context.bika_settings.bika_analysisservices
         price = 15
         corporateprice = 12
         for title, unit, min, max, titration_unit, accred, description, instr_kw, keyword, maxhours, uncertainties, instructions, dup_variation, calctype, dependancies, dry_matter, cat in services:
@@ -523,7 +526,7 @@ class LoadSetupData(BrowserView):
             ('pH measure', '<p>Remove bottle with storage solution, rinse electrode, blot dry</p><p>Measure pH of 4 buffer, which is pink</p><p>Adjust meter to read 4 with Cal 1 knob</p>'),
             ('Titration', '<p>A titration is a method of analysis that will allow you to determine the precise endpoint of a reaction and therefore the precise quantity of reactant in the titration flask. A buret is used to deliver the second reactant to the flask and an indicator of pH Meter is used to detect the endpoint of the reaction</p>')
         )
-        folder = self.context.bika_settings
+        folder = self.context.bika_settings.bika_methods
         for title, description in methods:
             id = folder.generateUniqueId('Method')
             folder.invokeFactory(id = id, type_name = 'Method')
@@ -541,7 +544,7 @@ class LoadSetupData(BrowserView):
             ('distilled water', 'distilled water', False),
             ('Acid standard', 'HCl 3%', True),
         )
-        folder = self.context.bika_settings
+        folder = self.context.bika_settings.bika_standardstocks
         for title, description, hazardous in standardstocks:
             id = folder.generateUniqueId('StandardStock')
             folder.invokeFactory(id = id, type_name = 'StandardStock')
@@ -585,7 +588,7 @@ class LoadSetupData(BrowserView):
             ('Spectrograph', 'Spectrograph image'),
             ('Photograph', 'Photographic image'),
         )
-        folder = self.context.bika_settings
+        folder = self.context.bika_settings.bika_attachmenttypes
         for title, descr in attachments:
             attach_id = folder.generateUniqueId('AttachmentType')
             folder.invokeFactory(id = attach_id, type_name = 'AttachmentType')
@@ -594,48 +597,28 @@ class LoadSetupData(BrowserView):
 
 
     def Products(self):
-        folder = self.context.bika_settings
+        folder = self.context.bika_settings.bika_labproducts
         products = (
-            ('NaOH', 'N/100', 2, 'l', '56'),
-            ('Gedistilleerde water', 'Eie kan', 5, 'l', '20'),
-            ('Ethanol - Aangesuur (Pepsien)', '', 1, 'l', '30'),
-            ('pH Buffer', 'pH 7', 500, 'ml', '35'),
-            ('Iodine Indikator', 'Iotect', 100, 'g', '55'),
-            ('Ethanol', '96%', 1000, 'ml', '30'),
-            ('Mono Propylene Glycol', '', 1000, 'ml', '22.75'),
-            ('Asetaldehied', '', 500, 'ml', '180'),
-            ('TS standaard', '', 500, 'ml', '20'),
-            ('Balling standaard', '18deg', 100, 'ml', '20'),
-            ('N Butanol', '', 2.5, 'l', '520'),
-            ('Bromo Cresol Groen', '', 5, 'g', '329'),
-            ('KI', '', 500, 'g', '250'),
-            ('Kalium Natrium Tartraat  (Roselt Sout)', '', 500, 'g', '180'),
-            ('WL Nutrient Agar', '', 500, 'g', '245'),
-            ('Wynsteen L (+) suur', '', 500, 'g', '186'),
-            ('Appelsuur', 'Byvoegings by Wyn', 1, 'kg', '20'),
-            ('Sitroensuur', 'Byvoegings by Wyn', 1, 'kg', '13.6'),
-            ('Meta Wynsteensuur', 'Byvoegings by Wyn', 1, 'kg', '90'),
-            ('Cream of Tartar   (Kremetart)', 'Byvoegings by Wyn', 1, 'kg', '35'),
-            ('Erlenmeyer Fles', '', 250, 'ml', '20.5'),
-            ('Ballingmeter', '-5 - +5deg ', '', '', '185'),
-            ('Termometer', '-10 - 110degC', '', '', '19.5'),
-            ('PVC Wasbottel', '', 1000, 'ml', '35.5'),
-            ('Glas indikator bottel', '', 50, 'ml', '48.5'),
-            ('Pipette', '', 15, 'ml', '26.5'),
-            ('Glasbeker', '', 25, 'ml', '12.3'),
-            ('PVC Beker', '', 25, 'ml', '8.5'),
-            ('Glas Maatsilinder', '', 10, 'ml', '32.5'),
-            ('PVC Maatsilinder', '', 500, 'ml', '55'),
-            ('Membraan Filters', '0.8 (Sellulose Asetaat)', 100, '', '293'),
-            ('Mettler 115 SC pH elektrode', '', '', '', '2165'),
-            ('Timer', 'Digitaal', '', '', '140'),
-            ('Termometer', 'Digitaal - Checktemp', '', '', '375'),
-            ('Magnetiese roerstafie', '', 25, 'mm', '15.5'),
-            ('Bunsen Brander', 'Blou gewone', '', '', '135'),
-            ('Termometer', 'Min/Maks. ', '', '', '65'),
-            ('Volumetriese fles', '', 5, 'l', '664'),
-            ('Retort klamp', '3 Way', '', '', '130'),
-            ('Plaatfilters 40 x 40', 'AF 30', '', '', '7.9'),
+            ('NaOH', 'N/100', '2', 'l', '56'),
+            ('Gedistilleerde water', 'Eie kan', '5', 'l', '20'),
+            ('Ethanol - Aangesuur (Pepsien)', '', '1', 'l', '30'),
+            ('pH Buffer', 'pH 7', '500', 'ml', '35'),
+            ('Iodine Indikator', 'Iotect', '100', 'g', '55'),
+            ('Ethanol', '96%', '1000', 'ml', '30'),
+            ('Mono Propylene Glycol', '', '1000', 'ml', '22.75'),
+            ('Asetaldehied', '', '500', 'ml', '180'),
+            ('TS standaard', '', '500', 'ml', '20'),
+            ('Balling standaard', '18deg', '100', 'ml', '20'),
+            ('N Butanol', '', '2.5', 'l', '520'),
+            ('Bromo Cresol Groen', '', '5', 'g', '329'),
+            ('KI', '', '500', 'g', '250'),
+            ('Kalium Natrium Tartraat  (Roselt Sout)', '', '500', 'g', '180'),
+            ('WL Nutrient Agar', '', '500', 'g', '245'),
+            ('Wynsteen L (+) suur', '', '500', 'g', '186'),
+            ('Appelsuur', 'Byvoegings by Wyn', '1', 'kg', '20'),
+            ('Sitroensuur', 'Byvoegings by Wyn', '1', 'kg', '13.6'),
+            ('Meta Wynsteensuur', 'Byvoegings by Wyn', '1', 'kg', '90'),
+            ('Cream of Tartar (Kremetart)', 'Byvoegings by Wyn', '1', 'kg', '35'),
             )
         for title, description, volume, unit, price in products:
             id = folder.generateUniqueId('LabProduct')
@@ -658,7 +641,7 @@ class LoadSetupData(BrowserView):
                                    {'pos': 5, 'type': 'd', 'sub': '3'}),
               [self.service_objs['Ash'], self.service_objs['AcidInsolubleResidue']]),
             )
-        folder = self.context.bika_settings
+        folder = self.context.bika_settings.bika_worksheettemplates
         for title, pos, serv  in templates:
             id = folder.generateUniqueId('WorksheetTemplate')
             folder.invokeFactory(id = id, type_name = 'WorksheetTemplate')
@@ -673,7 +656,7 @@ class LoadSetupData(BrowserView):
             ('Bloggs & co', 'Manufacturers of fine products since 2008'),
             ('Fred\'s Factory', '"We make stuff" is not just a promise!'),
             )
-        folder = self.context.bika_settings
+        folder = self.context.bika_settings.bika_standardmanufacturers
         for title, description in manufacturers:
             id = folder.generateUniqueId('StandardManufacturer')
             folder.invokeFactory(id = id, type_name = 'StandardManufacturer')

@@ -1,15 +1,21 @@
 from AccessControl import ClassSecurityInfo
+from Products.ATContentTypes.content import schemata
+from Products.Archetypes import atapi
+from Products.Archetypes.ArchetypeTool import registerType
 from Products.CMFCore import permissions
 from Products.Five.browser import BrowserView
-from plone.app.content.browser.interfaces import IFolderContentsView
-from plone.app.folder.folder import ATFolder
 from Products.bika.browser.bika_folder_contents import BikaFolderContentsView
+from Products.bika.config import PROJECTNAME
+from Products.bika.content.bikaschema import BikaFolderSchema
+from plone.app.content.browser.interfaces import IFolderContentsView
+from plone.app.folder.folder import ATFolder, ATFolderSchema
+from Products.bika.interfaces.controlpanel import IStandardStocks
 from zope.interface.declarations import implements
 
 class StandardStocksView(BikaFolderContentsView):
     implements(IFolderContentsView)
     contentFilter = {'portal_type': 'StandardStock'}
-    content_add_buttons = ['StandardStock']
+    content_add_buttons = {'Standard Stock': "createObject?type_name=StandardStock"}
     title = "Standard Stocks"
     description = ""
     show_editable_border = False
@@ -34,3 +40,11 @@ class StandardStocksView(BikaFolderContentsView):
             items[x]['links'] = {'title_or_id': items[x]['url'] + "/edit"}
 
         return items
+
+schema = ATFolderSchema.copy()
+class StandardStocks(ATFolder):
+    implements(IStandardStocks)
+    schema = schema
+    displayContentsTab = False
+schemata.finalizeATCTSchema(schema, folderish = True, moveDiscussion = False)
+atapi.registerType(StandardStocks, PROJECTNAME)

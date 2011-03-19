@@ -5,9 +5,7 @@ from Products.Archetypes.public import *
 from Products.CMFCore.permissions import View, ModifyPortalContent
 from Products.CMFDynamicViewFTI.browserdefault import BrowserDefaultMixin
 from Products.bika.content.bikaschema import BikaSchema
-from Products.bika.FixedPointField import FixedPointField
 from Products.bika.config import I18N_DOMAIN, PROJECTNAME
-from Products.bika.fixedpoint import FixedPoint
 
 schema = BikaSchema.copy() + Schema((
     TextField('InstrumentDescription',

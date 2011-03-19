@@ -10,7 +10,6 @@ from Products.CMFCore.utils import getToolByName
 from Products.CMFDynamicViewFTI.browserdefault import BrowserDefaultMixin
 from Products.bika.content.bikaschema import BikaSchema
 from Products.bika.config import I18N_DOMAIN, PROJECTNAME, ManageBika, ManageAnalysisRequest
-from Products.bika.fixedpoint import FixedPoint
 
 schema = BikaSchema.copy() + Schema((
     ComputedField('RequestID',

@@ -7,7 +7,6 @@ from DateTime import DateTime
 from Products.Archetypes.public import *
 from Products.bika.config import ManageInvoices
 from Products.bika.config import I18N_DOMAIN, PROJECTNAME
-from Products.bika.FixedPointField import FixedPointField
 from Products.ATExtensions.ateapi import DateTimeField, DateTimeWidget
 
 schema = BaseSchema.copy() + Schema((
@@ -37,7 +36,7 @@ schema = BaseSchema.copy() + Schema((
             i18n_domain = I18N_DOMAIN,
         ),
     ),
-    
+
     FixedPointField('Subtotal',
         required = 1,
         default = '0.0',

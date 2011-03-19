@@ -3,9 +3,10 @@ from Products.Archetypes.public import *
 from Products.Archetypes.references import HoldingReference
 from Products.CMFCore.permissions import View, ModifyPortalContent
 from Products.CMFDynamicViewFTI.browserdefault import BrowserDefaultMixin
-from Products.bika.content.bikaschema import BikaSchema
-from Products.bika.CustomFields import TemplatePositionField
+from Products.bika.browser.fields import WSTemplateAnalysesField
+from Products.bika.browser.widgets import WSTemplateAnalysesWidget
 from Products.bika.config import ANALYSIS_TYPES, I18N_DOMAIN, PROJECTNAME
+from Products.bika.content.bikaschema import BikaSchema
 
 schema = BikaSchema.copy() + Schema((
     TextField('WorksheetTemplateDescription',
@@ -15,18 +16,11 @@ schema = BikaSchema.copy() + Schema((
             i18n_domain = I18N_DOMAIN,
         ),
     ),
-    TemplatePositionField('Row',
+    WSTemplateAnalysesField('Analyses',
         required = 1,
-    ),
-    ReferenceField('Service',
-        required = 1,
-        multiValued = 1,
-        allowed_types = ('AnalysisService',),
-        relationship = 'WorksheetTemplateAnalysisService',
-        referenceClass = HoldingReference,
-        widget = ReferenceWidget(
-            label = 'Analysis service',
-            label_msgid = 'label_analysis',
+        widget = WSTemplateAnalysesWidget(
+            label = 'Analyses',
+            label_msgid = 'label_analyses',
             i18n_domain = I18N_DOMAIN,
         )
     ),

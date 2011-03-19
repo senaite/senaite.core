@@ -150,6 +150,12 @@
  <index name="getCategoryName" meta_type="FieldIndex">
   <indexed_attr value="getCategoryName"/>
  </index>
+ <index name="getProfileTitle" meta_type="FieldIndex">
+  <indexed_attr value="getProfileTitle"/>
+ </index>
+ <index name="getProfileKey" meta_type="FieldIndex">
+  <indexed_attr value="getProfileKey"/>
+ </index>
  <index name="id" meta_type="FieldIndex">
   <indexed_attr value="id"/>
  </index>
@@ -228,6 +234,8 @@
  <column value="getTextTitle"/>
  <column value="getCategoryUID"/>
  <column value="getCategoryName"/>
+ <column value="getProfileTitle"/>
+ <column value="getProfileKey"/>
  <column value="id"/>
  <column value="is_folderish"/>
  <column value="listCreators"/>

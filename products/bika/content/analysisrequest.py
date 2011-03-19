@@ -2,36 +2,32 @@
 
 $Id: AnalysisRequest.py 2567 2010-09-27 14:51:15Z anneline $
 """
-import sys
-import time
-from Products.ATContentTypes.content import schemata
-from Products.Archetypes import atapi
-from types import ListType, TupleType
-from email.Utils import formataddr
-from DateTime import DateTime
 from AccessControl import ClassSecurityInfo
 from AccessControl.Permissions import delete_objects
-from Products.CMFCore.WorkflowCore import WorkflowException
-from Products.CMFCore.permissions import View, ModifyPortalContent
-from Products.CMFCore import permissions
-from Products.CMFCore.utils import getToolByName
-from Products.CMFPlone.utils import transaction_note
+from DateTime import DateTime
+from Products.ATContentTypes.content import schemata
+from Products.ATExtensions.ateapi import DateTimeField, DateTimeWidget
+from Products.Archetypes import atapi
+from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.Archetypes.public import *
 from Products.Archetypes.references import HoldingReference
 from Products.Archetypes.utils import shasattr
-from Products.Archetypes.config import REFERENCE_CATALOG
-from Products.ATExtensions.ateapi import DateTimeField, DateTimeWidget
+from Products.CMFCore import permissions
+from Products.CMFCore.WorkflowCore import WorkflowException
+from Products.CMFCore.permissions import View, ModifyPortalContent
+from Products.CMFCore.utils import getToolByName
+from Products.CMFDynamicViewFTI.browserdefault import BrowserDefaultMixin
+from Products.CMFPlone.utils import transaction_note
+from Products.bika.browser.fields import AnalysesField
+from Products.bika.browser.widgets import AnalysesWidget
+from Products.bika.config import I18N_DOMAIN, SubmitResults, PROJECTNAME, \
+    ManageInvoices
 from Products.bika.content.bikaschema import BikaSchema
-from Products.bika.config import I18N_DOMAIN, PROJECTNAME
-from Products.bika.config import SubmitResults, ManageAnalysisRequest, \
-    ManageBika, ManageInvoices
 from Products.bika.utils import sortable_title
-from Products.bika.AnalysesField import AnalysesField
-from Products.bika.AnalysesWidget import AnalysesWidget
-from Products.bika.fixedpoint import FixedPoint
-from Products.bika.FixedPointField import FixedPointField
-from Products.CMFDynamicViewFTI.browserdefault import \
-    BrowserDefaultMixin
+from email.Utils import formataddr
+from types import ListType, TupleType
+import sys
+import time
 
 schema = BikaSchema.copy() + Schema((
     StringField('RequestID',
@@ -210,15 +206,12 @@ class AnalysisRequest(VariableSchemaSupport, BrowserDefaultMixin, BaseFolder):
     schema = schema
     displayContentsTab = False
 
-#    __implements__ = BaseFolder.__implements__ + (
-#                     BrowserDefaultMixin.__implements__,)
-
     _assigned_to_worksheet = False
     _has_dependant_calcs = False
 
     def hasBeenInvoiced(self):
         if self.getInvoice():
-    	    return True
+            return True
         else:
             return False
 
@@ -360,8 +353,8 @@ class AnalysisRequest(VariableSchemaSupport, BrowserDefaultMixin, BaseFolder):
         for cat_key in cat_keys():
             analyses = cats[cat_key]
             analyses.sort(lambda x, y:cmp(x.Title().lower(), y.Title().lower()))
-            for analyis in analyses:
-                 results.append(analysis)
+            for analysis in analyses:
+                results.append(analysis)
         return results
 
     security.declareProtected(View, 'getPublishedAnalyses')
@@ -696,7 +689,7 @@ class AnalysisRequest(VariableSchemaSupport, BrowserDefaultMixin, BaseFolder):
         self.setDatePublished(DateTime())
         self.reindexObject()
         self._delegateWorkflowAction('publish')
-        get_transaction().commit()
+        #get_transaction().commit()
         if self.REQUEST.has_key('PUBLISH_BATCH'):
             return
 
@@ -721,7 +714,7 @@ class AnalysisRequest(VariableSchemaSupport, BrowserDefaultMixin, BaseFolder):
         """ prepublish analysis request """
         """ publish verified analyses linked to this request """
         self._delegateWorkflowAction('publish')
-        get_transaction().commit()
+        #get_transaction().commit()
         if self.REQUEST.has_key('PUBLISH_BATCH'):
             return
 

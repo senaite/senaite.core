@@ -19,12 +19,14 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     StringField('Firstname',
+        required = 1,
         widget = StringWidget(
             label = 'Firstname',
             label_msgid = 'label_firstname',
         ),
     ),
     StringField('Surname',
+        required = 1,
         widget = StringWidget(
             label = 'Surname',
             label_msgid = 'label_surname',
@@ -92,7 +94,7 @@ schema = BikaSchema.copy() + Schema((
     AddressField('PhysicalAddress',
         schemata = 'Address',
         widget = RecordWidget(
-           macro = 'custom_address_widget',
+           macro = 'bika_widgets/custom_address_widget',
            label = 'Physical address',
            label_msgid = 'label_physical_address',
         ),
@@ -100,15 +102,13 @@ schema = BikaSchema.copy() + Schema((
     AddressField('PostalAddress',
         schemata = 'Address',
         widget = RecordWidget(
-           macro = 'custom_address_widget',
+           macro = 'bika_widgets/custom_address_widget',
            label = 'Postal address',
            label_msgid = 'label_postal_address',
         ),
     ),
 ),
 )
-
-schema['title'].required = False
 
 class Person(VariableSchemaSupport, BaseFolder):
     security = ClassSecurityInfo()

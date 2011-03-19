@@ -1,14 +1,13 @@
 from AccessControl import ClassSecurityInfo
 from Products.ATExtensions.ateapi import RecordsField
-from Products.Archetypes.public import *
 from Products.Archetypes.references import HoldingReference
+from Products.Archetypes.public import *
 from Products.CMFCore.permissions import View, ModifyPortalContent
 from Products.CMFDynamicViewFTI.browserdefault import BrowserDefaultMixin
-from Products.bika.FixedPointField import FixedPointField
 from Products.bika.config import I18N_DOMAIN, ATTACHMENT_OPTIONS, \
     ARIMPORT_OPTIONS, PROJECTNAME
 from Products.bika.content.bikaschema import BikaFolderSchema
-from Products.bika.interfaces.tools import IBikaSettings
+from Products.bika.interfaces.controlpanel import IBikaSettings
 from plone.app.folder import folder
 from zope.interface import implements
 import sys
@@ -180,8 +179,6 @@ schema = BikaFolderSchema.copy() + Schema((
     PrefixesField('Prefixes'),
 ))
 
-
-schema['title'].required = False
 
 class BikaSettings(BrowserDefaultMixin, folder.ATFolder):
     security = ClassSecurityInfo()

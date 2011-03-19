@@ -2,10 +2,10 @@
 
 $Id: AnalysisSpec.py 443 2006-12-13 23:19:39Z anneline $
 """
-from Products.ATContentTypes.content import schemata
-from Products.Archetypes import atapi
 from AccessControl import ClassSecurityInfo
 from AccessControl.Permissions import delete_objects
+from Products.ATContentTypes.content import schemata
+from Products.Archetypes import atapi
 from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.Archetypes.public import *
 from Products.Archetypes.references import HoldingReference
@@ -15,9 +15,10 @@ from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFCore.permissions import ListFolderContents, View
 from Products.CMFCore.utils import getToolByName
 from Products.CMFDynamicViewFTI.browserdefault import BrowserDefaultMixin
-from Products.bika.content.bikaschema import BikaSchema
-from Products.bika.CustomFields import AnalysisSpecField
+from Products.bika.browser.fields import SpecField
+from Products.bika.browser.widgets import SpecWidget
 from Products.bika.config import I18N_DOMAIN, PROJECTNAME
+from Products.bika.content.bikaschema import BikaSchema
 from types import ListType, TupleType
 import sys
 import time
@@ -30,7 +31,7 @@ schema = BikaSchema.copy() + Schema((
         relationship = 'AnalysisSpecSampleType',
         referenceClass = HoldingReference,
     ),
-    AnalysisSpecField('ResultsRange',
+    SpecField('ResultsRange',
         required = 1,
     ),
     ComputedField('ClientUID',

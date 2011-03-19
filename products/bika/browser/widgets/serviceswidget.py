@@ -8,12 +8,12 @@ from Products.bika import logger
 from archetypes.referencebrowserwidget import utils
 from types import StringType
 
-class AnalysisServicesWidget(TypesWidget):
+class ServicesWidget(TypesWidget):
     _properties = TypesWidget._properties.copy()
     _properties.update({
-        'macro': "bika_widgets/analysisserviceswidget",
-        'helper_js': ("bika_widgets/analysisserviceswidget.js",),
-        'helper_css': ("bika_widgets/analysisserviceswidget.css",),
+        'macro': "bika_widgets/serviceswidget",
+        'helper_js': ("bika_widgets/serviceswidget.js",),
+        'helper_css': ("bika_widgets/serviceswidget.css",),
     })
 
     security = ClassSecurityInfo()
@@ -62,10 +62,10 @@ class AnalysisServicesWidget(TypesWidget):
                 services.append(service)
         return services
 
-registerWidget(AnalysisServicesWidget,
+registerWidget(ServicesWidget,
                title = 'Analysis Services',
                description = ('Categorised AnalysisService selector.'),
                used_for = ('Products.Archetypes.Field.ReferenceField',)
                )
 
-#registerPropertyType('default_search_index', 'string', AnalysisServicesWidget)
+#registerPropertyType('default_search_index', 'string', ServicesWidget)

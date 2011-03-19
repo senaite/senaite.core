@@ -48,11 +48,16 @@ schema['JobTitle'].schemata = 'default'
 schema['Department'].schemata = 'default'
 # Don't make title required - it will be computed from the Person's Fullname
 schema['title'].required = 0
+schema['title'].widget.visible = False
 
 class Contact(VariableSchemaSupport, BrowserDefaultMixin, Person):
     security = ClassSecurityInfo()
     schema = schema
     displayContentsTab = False
+
+    def Title(self):
+        """ Return the contact's Fullname as title """
+        return self.getFullname()
 
     security.declareProtected(ManageClients, 'hasUser')
     def hasUser(self):

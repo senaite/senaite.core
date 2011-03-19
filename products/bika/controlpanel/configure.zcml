@@ -5,126 +5,131 @@
     i18n_domain="bika">
 
     <browser:page
-      for="*"
-      name="bika_departments"
+      for="Products.bika.interfaces.controlpanel.IDepartments"
+      name="folder_view"
       class=".bika_departments.DepartmentsView"
       permission="bika.ManageBika"
       layer="Products.bika.interfaces.IBikaLIMSLayer"
     />
 
     <browser:page
-      for="*"
-      name="bika_labcontacts"
+      for="Products.bika.interfaces.controlpanel.ILabContacts"
+      name="folder_view"
       class=".bika_labcontacts.LabContactsView"
       permission="bika.ManageBika"
       layer="Products.bika.interfaces.IBikaLIMSLayer"
     />
 
     <browser:page
-      for="*"
-      name="bika_analysiscategories"
+      for="Products.bika.interfaces.controlpanel.IAnalysisCategories"
+      name="folder_view"
       class=".bika_analysiscategories.AnalysisCategoriesView"
       permission="bika.ManageBika"
       layer="Products.bika.interfaces.IBikaLIMSLayer"
     />
 
     <browser:page
-      for="*"
-      name="bika_samplepoints"
+      for="Products.bika.interfaces.controlpanel.ISamplePoints"
+      name="folder_view"
       class=".bika_samplepoints.SamplePointsView"
       permission="bika.ManageBika"
       layer="Products.bika.interfaces.IBikaLIMSLayer"
     />
 
     <browser:page
-      for="*"
-      name="bika_sampletypes"
+      for="Products.bika.interfaces.controlpanel.ISampleTypes"
+      name="folder_view"
       class=".bika_sampletypes.SampleTypesView"
       permission="bika.ManageBika"
       layer="Products.bika.interfaces.IBikaLIMSLayer"
     />
 
     <browser:page
-      for="*"
-      name="bika_analysisspecs"
-      class=".bika_analysisspecs.AnalysisSpecsView"
+      for="Products.bika.interfaces.controlpanel.ILabAnalysisSpecs"
+      name="folder_view"
+      class=".bika_labanalysisspecs.LabAnalysisSpecsView"
       permission="bika.ManageBika"
       layer="Products.bika.interfaces.IBikaLIMSLayer"
     />
 
     <browser:page
-      for="*"
-      name="bika_instruments"
+      for="Products.bika.interfaces.controlpanel.IInstruments"
+      name="folder_view"
       class=".bika_instruments.InstrumentsView"
       permission="bika.ManageBika"
       layer="Products.bika.interfaces.IBikaLIMSLayer"
     />
 
     <browser:page
-      for="*"
-      name="bika_methods"
+      for="Products.bika.interfaces.controlpanel.ICalculationTypes"
+      name="folder_view"
+      class=".bika_calculationtypes.CalculationTypesView"
+      permission="bika.ManageBika"
+      layer="Products.bika.interfaces.IBikaLIMSLayer"
+    />
+
+    <browser:page
+      for="Products.bika.interfaces.controlpanel.IMethods"
+      name="folder_view"
       class=".bika_methods.MethodsView"
       permission="bika.ManageBika"
       layer="Products.bika.interfaces.IBikaLIMSLayer"
     />
 
     <browser:page
-      for="*"
-      name="bika_attachmenttypes"
+      for="Products.bika.interfaces.controlpanel.IAttachmentTypes"
+      name="folder_view"
       class=".bika_attachmenttypes.AttachmentTypesView"
       permission="bika.ManageBika"
       layer="Products.bika.interfaces.IBikaLIMSLayer"
     />
 
     <browser:page
-      for="*"
-      name="bika_services"
+      for="Products.bika.interfaces.controlpanel.IAnalysisServices"
+      name="folder_view"
       class=".bika_analysisservices.AnalysisServicesView"
       permission="bika.ManageBika"
       layer="Products.bika.interfaces.IBikaLIMSLayer"
     />
 
     <browser:page
-      for="*"
-      name="bika_arprofiles"
-      class=".bika_arprofiles.ARProfilesView"
+      for="Products.bika.interfaces.controlpanel.ILabARProfiles"
+      name="folder_view"
+      class=".bika_labarprofiles.LabARProfilesView"
       permission="bika.ManageBika"
       layer="Products.bika.interfaces.IBikaLIMSLayer"
     />
 
     <browser:page
-      for="*"
-      name="bika_products"
-      class=".bika_products.LabProductsView"
+      for="Products.bika.interfaces.controlpanel.ILabProducts"
+      name="folder_view"
+      class=".bika_labproducts.LabProductsView"
       permission="bika.ManageBika"
       layer="Products.bika.interfaces.IBikaLIMSLayer"
     />
 
     <browser:page
-      for="*"
-      name="bika_standardmanufacturers"
+      for="Products.bika.interfaces.controlpanel.IStandardManufacturers"
+      name="folder_view"
       class=".bika_standardmanufacturers.StandardManufacturersView"
       permission="bika.ManageBika"
       layer="Products.bika.interfaces.IBikaLIMSLayer"
     />
 
     <browser:page
-      for="*"
-      name="bika_standardstocks"
+      for="Products.bika.interfaces.controlpanel.IStandardStocks"
+      name="folder_view"
       class=".bika_standardstocks.StandardStocksView"
       permission="bika.ManageBika"
       layer="Products.bika.interfaces.IBikaLIMSLayer"
     />
 
     <browser:page
-      for="*"
-      name="bika_worksheettemplates"
+      for="Products.bika.interfaces.controlpanel.IWorksheetTemplates"
+      name="folder_view"
       class=".bika_worksheettemplates.WorksheetTemplatesView"
       permission="bika.ManageBika"
       layer="Products.bika.interfaces.IBikaLIMSLayer"
     />
-
-
-
 
 </configure>

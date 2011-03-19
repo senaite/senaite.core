@@ -3,7 +3,9 @@
    meta_type="Factory-based Type Information with dynamic views"
    xmlns:i18n="http://xml.zope.org/namespaces/i18n">
  <property name="title">AnalysisCategory</property>
- <property name="description">Analysis Categories allow Analysis Services to be grouped into manageable sections.</property>
+ <property name="description">
+ 	Configure Analysis Service Categories
+ </property>
  <property name="icon_expr">string:${portal_url}/images/category.png</property>
  <property name="content_meta_type">AnalysisCategory</property>
  <property name="product">bika</property>
@@ -27,7 +29,7 @@
  <alias from="sharing" to="folder_localrole_form"/>
  <alias from="view" to="(selected layout)"/>
  <action title="View" action_id="view" category="object" condition_expr=""
-    icon_expr="" link_target="" url_expr="string:${object_url}/base_view"
+    icon_expr="" link_target="" url_expr="string:${portal_url}/bika_settings/bika_analysiscategories"
     visible="False">
   <permission value="View"/>
  </action>

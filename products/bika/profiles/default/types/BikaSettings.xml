@@ -2,8 +2,8 @@
 <object name="BikaSettings"
    meta_type="Factory-based Type Information with dynamic views"
    xmlns:i18n="http://xml.zope.org/namespaces/i18n">
- <property name="title">Bika settings</property>
- <property name="description">Central store for Bika settings.</property>
+ <property name="title">Control Panel</property>
+ <property name="description">Central store for Bika Settigs.</property>
  <property name="icon_expr">string:${portal_url}/images/setup.png</property>
  <property name="content_meta_type">BikaSettings</property>
  <property name="product">bika</property>
@@ -14,28 +14,11 @@
  <property name="global_allow">False</property>
  <property name="filter_content_types">True</property>
  <property name="allowed_content_types">
-  <element value="LabContact"/>
-  <element value="Department"/>
-  <element value="AnalysisCategory"/>
-  <element value="SamplePoint"/>
-  <element value="SampleType"/>
-  <element value="AnalysisSpec"/>
-  <element value="Method"/>
-  <element value="Instrument"/>
-  <element value="AttachmentType"/>
-  <element value="CalculationType"/>
-  <element value="AnalysisService"/>
-  <element value="ARProfile"/>
-  <element value="LabARProfile"/>
-  <element value="LabProduct"/>
-  <element value="StandardManufacturer"/>
-  <element value="StandardStock"/>
-  <element value="WorksheetTemplate"/>
  </property>
  <property name="allow_discussion">False</property>
- <property name="default_view">base_view</property>
+ <property name="default_view">plone_control_panel</property>
  <property name="view_methods">
-  <element value="base_view"/>
+  <element value="plone_control_panel"/>
  </property>
  <property name="default_view_fallback">False</property>
  <alias from="(Default)" to="(dynamic view)"/>
@@ -43,7 +26,7 @@
  <alias from="index.html" to="(dynamic view)"/>
  <alias from="view" to="(selected layout)"/>
  <action title="View" action_id="view" category="object" condition_expr=""
-    icon_expr="" link_target="" url_expr="string:${object_url}/base_view"
+    icon_expr="" link_target="" url_expr="string:${portal_url}/plone_control_panel"
     visible="True">
   <permission value="View"/>
  </action>

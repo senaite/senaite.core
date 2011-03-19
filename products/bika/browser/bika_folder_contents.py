@@ -35,7 +35,7 @@ class BikaFolderContentsView(FolderContentsView):
     description = ""
 
     # A list of portal_types for 'Add X' buttons above the output
-    content_add_buttons = []
+    content_add_buttons = {}
 
     # Not automatically inserted into subclasses.
     default_buttons = {
@@ -100,7 +100,7 @@ class BikaFolderContentsView(FolderContentsView):
 
         results = []
         for i, obj in enumerate(self.getFolderContents()):
-            path = obj.getPath or "/".join(obj.getPhysicalPath())
+            path = obj.getPath() or "/".join(obj.getPhysicalPath())
 
             # avoid creating unnecessary info for items outside the current
             # batch;  only the path is needed for the "select all" case...
@@ -135,6 +135,8 @@ class BikaFolderContentsView(FolderContentsView):
                 obj.ModificationDate, long_format = 1)
 
             obj_type = obj.Type
+
+            # view_url is overidden for items to allow different url on successful edit
             if obj_type in use_view_action:
                 view_url = url + '/view'
             elif obj.is_folderish:
@@ -142,6 +144,7 @@ class BikaFolderContentsView(FolderContentsView):
             else:
                 view_url = url
 
+            # XXX this results_dict is still the default copied from Plone's one.
             results_dict = dict(
                 obj = obj,
                 url = url,
@@ -188,7 +191,7 @@ class BikaFolderContentsView(FolderContentsView):
                                         pagesize = self.b_size,
                                         show_sort_column = self.show_sort_column,
                                         show_select_row = self.show_select_row,
-                                        view_url = "/@@bika_folder_contents",
+                                        view_url = "/view",
                                         )
 
         return table.render()
@@ -209,7 +212,7 @@ class BikaFolderContentsTable(FolderContentsTable):
                  pagesize,
                  show_sort_column,
                  show_select_row,
-                 view_url = '/@@bika_folder_contents'):
+                 view_url = '/view'):
         self.context = context
         self.request = request
         self.getFolderContents = getFolderContents

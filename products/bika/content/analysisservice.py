@@ -9,11 +9,10 @@ from Products.Archetypes.public import *
 from Products.Archetypes.references import HoldingReference
 from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.bika.content.bikaschema import BikaSchema
-from Products.bika.FixedPointField import FixedPointField
 from Products.bika.config import I18N_DOMAIN, PROJECTNAME
-from Products.bika.fixedpoint import FixedPoint
 from Products.ATExtensions.ateapi import RecordsField
 from Products.bika.config import ATTACHMENT_OPTIONS
+from decimal import Decimal
 
 class UncertaintiesField(RecordsField):
     """a list of uncertainty values per service"""
@@ -375,9 +374,9 @@ class AnalysisService(VariableSchemaSupport, BrowserDefaultMixin, BaseContent):
         """ return default VAT from bika_settings """
         try:
             vat = self.bika_settings.getVAT()
-            return FixedPoint(vat)
+            return Decimal(vat)
         except ValueError:
-            return FixedPoint('0')
+            return Decimal('0')
 
     security.declarePublic('getVATAmount')
     def getVATAmount(self):

@@ -9,7 +9,6 @@ from Products.bika.content.bikaschema import BikaSchema
 from Products.bika.config import I18N_DOMAIN, INSTRUMENT_EXPORTS, PROJECTNAME
 from Products.bika.config import AssignAnalyses, DeleteAnalyses, \
     SubmitResults, ManageWorksheets, ManageBika
-from Products.bika.fixedpoint import FixedPoint
 from Products.ATExtensions.ateapi import RecordsField
 from Products.CMFDynamicViewFTI.browserdefault import \
     BrowserDefaultMixin
@@ -189,9 +188,9 @@ class Worksheet(BrowserDefaultMixin, BaseFolder):
         """ Export analyses from this worksheet """
         import Products.bika.InstrumentExport as InstrumentExport
         instrument = REQUEST.form['getInstrument']
-        try: 
+        try:
             func = getattr(InstrumentExport, "%s_export" % instrument)
-        except: 
+        except:
             return
         func(self, REQUEST, RESPONSE)
         return
@@ -208,7 +207,7 @@ class Worksheet(BrowserDefaultMixin, BaseFolder):
         analyses = []
         for item in self.getWorksheetLayout():
             if item['pos'] == this_pos:
-                analysis = rc.lookupObject(item['uid']) 
+                analysis = rc.lookupObject(item['uid'])
                 analyses.append(analysis)
         return analyses
 
@@ -270,7 +269,7 @@ class Worksheet(BrowserDefaultMixin, BaseFolder):
             rc = getToolByName(self, REFERENCE_CATALOG)
             assigned = []
             for uid in Analyses:
-                analysis = rc.lookupObject(uid) 
+                analysis = rc.lookupObject(uid)
                 # can only assign to worksheet if state == 'sample_received'
                 if wf_tool.getInfoFor(
                     analysis, 'review_state', '') != 'sample_received':
@@ -312,7 +311,7 @@ class Worksheet(BrowserDefaultMixin, BaseFolder):
                 std_uids.append(uid)
 
         self._delegating_workflow_action = 1
-        
+
         if real_analyses:
             wf_tool = getToolByName(self, 'portal_workflow')
             for analysis in real_analyses:
@@ -329,7 +328,7 @@ class Worksheet(BrowserDefaultMixin, BaseFolder):
 
         if dup_ids:
             self.manage_delObjects(dup_ids)
-        
+
         """ Leave analysis on Standard Sample? AVS 
         if std_analyses:
             for std_analysis in std_analyses:
@@ -415,7 +414,7 @@ class Worksheet(BrowserDefaultMixin, BaseFolder):
                     attachments.append(other.UID())
                 attachments.append(attachment.UID())
                 analysis.setAttachment(attachments)
-            
+
         if RESPONSE:
             RESPONSE.redirect('%s/worksheet_analyses' % self.absolute_url())
 
@@ -535,7 +534,7 @@ class Worksheet(BrowserDefaultMixin, BaseFolder):
                         if analysis.aq_parent.getId() not in dm_ar_ids:
                             dm_ars.append(analysis.aq_parent)
                             dm_ar_ids.append(analysis.aq_parent.getId())
-                
+
                 """ AVS omit renumbering 
                 seq = int(value.get('Pos'))
                 key = value.get('Key')
@@ -546,7 +545,7 @@ class Worksheet(BrowserDefaultMixin, BaseFolder):
                 sequence['uid'] = analysis.UID()
                 sequence['key'] = key
                 worksheet_seq.append(sequence)
-                """ 
+                """
 
         for ar in dm_ars:
             ar.setDryMatterResults()
@@ -574,13 +573,13 @@ class Worksheet(BrowserDefaultMixin, BaseFolder):
 
         for analysis in self.getStandardAnalyses():
             analyses.append(analysis)
-            
+
         for analysis in self.objectValues('DuplicateAnalysis'):
             analyses.append(analysis)
-            
+
         for analysis in self.objectValues('RejectAnalysis'):
             analyses.append(analysis)
-            
+
         return analyses
 
     security.declarePublic('getStandardPositions')
@@ -634,7 +633,7 @@ class Worksheet(BrowserDefaultMixin, BaseFolder):
                    'pos': dup_pos
                    }
 
-        return results      
+        return results
 
     security.declarePublic('getAnalysisRequests')
     def getAnalysisRequests(self):
@@ -652,7 +651,7 @@ class Worksheet(BrowserDefaultMixin, BaseFolder):
         for ar_id in ar_ids:
             results.append(ars[ar_id])
         return results
-        
+
     security.declarePublic('addDuplicateAnalysis')
     def addDuplicateAnalysis(self, REQUEST, RESPONSE):
         """ Add a duplicate analysis to the first available entry
@@ -669,10 +668,10 @@ class Worksheet(BrowserDefaultMixin, BaseFolder):
             message = self.translate('message_no_dup_assigned', default = 'No duplicate analysis assigned', domain = 'bika')
         else:
             rc = getToolByName(self, REFERENCE_CATALOG)
-            ar = rc.lookupObject(AR) 
+            ar = rc.lookupObject(AR)
             duplicates = []
             for service_uid in Service:
-                service = rc.lookupObject(service_uid) 
+                service = rc.lookupObject(service_uid)
                 service_id = service.getId()
                 analysis = ar[service_id]
                 duplicate_id = self.generateUniqueId('DuplicateAnalysis')
@@ -757,7 +756,7 @@ class Worksheet(BrowserDefaultMixin, BaseFolder):
                 other_dict[seq['pos']].append(seq)
                 continue
             if not new_dict.has_key(seq['key']):
-                new_dict[seq['key']] = [] 
+                new_dict[seq['key']] = []
             analyses = new_dict[seq['key']]
             analyses.append(seq)
             new_dict[seq['key']] = analyses
@@ -790,7 +789,7 @@ class Worksheet(BrowserDefaultMixin, BaseFolder):
                 new_seq.append(item)
             seqno += 1
 
-        self.setWorksheetLayout(new_seq) 
+        self.setWorksheetLayout(new_seq)
         RESPONSE.redirect('%s/worksheet_analyses' % self.absolute_url())
 
     def _addToSequence(self, type, position, analyses):
@@ -805,7 +804,7 @@ class Worksheet(BrowserDefaultMixin, BaseFolder):
             for seq in ws_seq:
                 used_pos.append(seq['pos'])
                 key_dict[seq['key']] = seq['pos']
-            
+
             used_pos.sort()
             first_available = 1
 
@@ -820,7 +819,7 @@ class Worksheet(BrowserDefaultMixin, BaseFolder):
                 if type == 'a':
                     if key_dict.has_key(keyvalue):
                         new_pos = key_dict[keyvalue]
-                if not new_pos: 
+                if not new_pos:
                     empty_found = False
                     new_pos = first_available
                     while not empty_found:
@@ -844,7 +843,7 @@ class Worksheet(BrowserDefaultMixin, BaseFolder):
                        'key': keyvalue}
             ws_seq.append(element)
 
-        self.setWorksheetLayout(ws_seq) 
+        self.setWorksheetLayout(ws_seq)
 
     def _removeFromSequence(self, analyses):
         """ analyses is [analysis.UID] """
@@ -855,7 +854,7 @@ class Worksheet(BrowserDefaultMixin, BaseFolder):
             if pos['uid'] not in analyses:
                 new_seq.append(pos)
 
-        self.setWorksheetLayout(new_seq) 
+        self.setWorksheetLayout(new_seq)
 
 
     def manage_beforeDelete(self, item, container):
@@ -890,7 +889,7 @@ class Worksheet(BrowserDefaultMixin, BaseFolder):
         for std_sample in std_samples:
             std_sample.manage_delObjects(std_analyses[std_sample.getId()])
         """
-            
+
         del_ids = [dup.getId() for dup in self.objectValues('DuplicateAnalysis')]
         self.manage_delObjects(del_ids)
 
@@ -898,7 +897,7 @@ class Worksheet(BrowserDefaultMixin, BaseFolder):
         del_ids = [rej.getId() for rej in self.objectValues('RejectAnalysis')]
         self.manage_delObjects(del_ids)
 
-        BaseFolder.manage_beforeDelete(self, item, container) 
+        BaseFolder.manage_beforeDelete(self, item, container)
         del self._delegating_workflow_action
 
 
@@ -1114,7 +1113,7 @@ class Worksheet(BrowserDefaultMixin, BaseFolder):
 
         new_ws.setWorksheetLayout(new_sequence)
         self.setWorksheetLayout(sequence)
-        
+
         for analysis in new_ws.getAnalyses():
             review_state = wf_tool.getInfoFor(
                 analysis, 'review_state', '')
@@ -1214,26 +1213,26 @@ class Worksheet(BrowserDefaultMixin, BaseFolder):
     def getAnalysersDisplayList(self):
         mtool = getToolByName(self, 'portal_membership')
         analysers = {}
-        pairs = [(' ', ' '), ] 
+        pairs = [(' ', ' '), ]
         analysers = mtool.searchForMembers(roles = ['LabManager', 'LabTechnician'])
         for member in analysers:
            uid = member.getId()
            fullname = member.getProperty('fullname')
            if fullname is None:
                 fullname = uid
-           pairs.append((uid, fullname)) 
+           pairs.append((uid, fullname))
         return DisplayList(pairs)
 
     # find the name of the person who performed the analysis
     security.declarePublic('getAnalyserName')
     def getAnalyserName(self):
-        uid = self.getAnalyser() 
+        uid = self.getAnalyser()
         if uid is None:
             return ' '
         mtool = getToolByName(self, 'portal_membership')
         member = mtool.getMemberById(uid)
         if member is None:
-            return uid        
+            return uid
         else:
             fullname = member.getProperty('fullname')
         if fullname is None:

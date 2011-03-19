@@ -5,11 +5,10 @@ from Products.Archetypes.public import *
 from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.Archetypes.utils import shasattr
 from Products.Archetypes.Registry import registerField
-from Products.bika.AnalysesWidget import AnalysesWidget
-from Products.bika.fixedpoint import FixedPoint
+from Products.bika.browser.widgets import AnalysesWidget
+from decimal import Decimal
 
 class AnalysesField(ObjectField):
-
     """A field that stores Analyses instances
 
     get() returns the list of Analyses contained inside the AnalysesRequest 
@@ -84,7 +83,7 @@ class AnalysesField(ObjectField):
             try:
                 float_price = float(price)
             except ValueError:
-                price = FixedPoint('0', 2)
+                price = Decimal('0', 2)
             calc_code = calc_codes[uid]
             if not shasattr(instance, service.id):
                 instance.invokeFactory(
@@ -92,7 +91,7 @@ class AnalysesField(ObjectField):
             analysis = instance._getOb(service.id)
             ar_report_dm = analysis.aq_parent.getReportDryMatter()
             vat = service.getVAT()
-            vat = vat and vat or FixedPoint('0', 2)
+            vat = vat and vat or Decimal('0', 2)
             totalprice = price + (price * vat) / 100
 
             # Using getRaw method on field rather than generated
@@ -122,9 +121,9 @@ class AnalysesField(ObjectField):
                     )
             if analysis.getCalcType() == 'dep':
                 parents[service.getAnalysisKey()] = analysis
-            if service.getAnalysisKey() in all_dependant_calcs: 
+            if service.getAnalysisKey() in all_dependant_calcs:
                 children[service.getAnalysisKey()] = analysis.UID()
-            if service.getAnalysisKey() in all_dependant_calcs: 
+            if service.getAnalysisKey() in all_dependant_calcs:
                 analysis._affects_other_analysis = True
             else:
                 analysis._affects_other_analysis = False
@@ -141,7 +140,7 @@ class AnalysesField(ObjectField):
                 wf_tool.doActionFor(analysis, 'receive')
 
         # set up the dependancies
-        
+
         if all_dependant_calcs:
             instance._has_dependant_calcs = True
         else:

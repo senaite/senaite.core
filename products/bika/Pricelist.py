@@ -5,9 +5,7 @@ from Products.Archetypes.public import *
 from Products.CMFCore import permissions
 from Products.CMFDynamicViewFTI.browserdefault import BrowserDefaultMixin
 from Products.bika.content.bikaschema import BikaSchema
-from Products.bika.FixedPointField import FixedPointField
 from Products.bika.config import I18N_DOMAIN, I18N_DOMAIN, ManagePricelists, ManageBika, PRICELIST_TYPES, CLIENT_TYPES, PROJECTNAME
-from Products.bika.fixedpoint import FixedPoint
 import sys
 
 schema = BikaSchema.copy() + Schema((
@@ -137,7 +135,7 @@ class Pricelist(BrowserDefaultMixin, BaseFolder):
                     print_detail = ' (' + str(obj.getUnit()) + ')'
                     itemTitle = obj.Title() + print_detail
                 else:
-                    itemTitle = obj.Title() 
+                    itemTitle = obj.Title()
                 if self.getDescriptions():
                     itemDescription = obj.getServiceDescription()
                 itemAccredited = obj.getAccredited()
@@ -145,7 +143,7 @@ class Pricelist(BrowserDefaultMixin, BaseFolder):
                 cat = obj.getCategoryName()
                 if self.getClientType() == 'corporate':
                     if obj.getCorporatePrice():
-                        price = obj.getCorporatePrice() 
+                        price = obj.getCorporatePrice()
                         totalprice = obj.getTotalCorporatePrice()
                         vat = totalprice - price
                     else:

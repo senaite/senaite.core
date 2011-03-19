@@ -21,13 +21,18 @@ schema = Person.schema.copy() + Schema((
     ),
 ))
 
+schema['JobTitle'].schemata = 'default'
+schema['Department'].schemata = 'default'
 # Don't make title required - it will be computed from the Person's Fullname
 schema['title'].required = 0
 schema['title'].widget.visible = False
-schema['JobTitle'].schemata = 'default'
 
 class LabContact(VariableSchemaSupport, BrowserDefaultMixin, Person):
     security = ClassSecurityInfo()
     schema = schema
+
+    def Title(self):
+        """ Return the contact's Fullname as title """
+        return self.getFullname()
 
 registerType(LabContact, PROJECTNAME)
