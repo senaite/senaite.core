@@ -1,7 +1,0 @@
-[default]
-title=Edit analysis requests
-proxy=Manager,Anonymous
-
-[actions]
-action.failure=redirect_to:string:${object/absolute_url}
-action.success=redirect_to:string:${object/absolute_url}

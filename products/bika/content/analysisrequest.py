@@ -26,6 +26,7 @@ from Products.bika.content.bikaschema import BikaSchema
 from Products.bika.utils import sortable_title
 from email.Utils import formataddr
 from types import ListType, TupleType
+from zope.app.component.hooks import getSite
 import sys
 import time
 
@@ -223,7 +224,8 @@ class AnalysisRequest(VariableSchemaSupport, BrowserDefaultMixin, BaseFolder):
         """ compute default member discount if it applies """
         if hasattr(self, 'getMemberDiscountApplies'):
             if self.getMemberDiscountApplies():
-                settings = getToolByName(self, 'bika_settings').settings
+                plone = getSite()
+                settings = plone.bika_settings
                 return settings.getMemberDiscount()
             else:
                 return 0

@@ -6,6 +6,7 @@ from Products.Archetypes.utils import shasattr
 from Products.CMFCore.utils import getToolByName
 from Products.bika import logger
 from archetypes.referencebrowserwidget import utils
+from Products.bika.config import POINTS_OF_CAPTURE
 from types import StringType
 
 class ServicesWidget(TypesWidget):
@@ -20,47 +21,47 @@ class ServicesWidget(TypesWidget):
 
     # XXX Memoize
     security.declarePublic('getCategories')
-    def getCategories(self, field, allservices = True):
-        """ Returns a list of Analysis Categories.
+    def Categories(self, field, allservices = True):
+        """ Returns a list of Analysis Categories (keyed by PointOfCapture)
             allservices - set False to return only checked services (for widget view)
+        
+            returns
+            
+            {('field', 'Field Analyses PointOfOrigin'):
+                {('general', 'General Category'):
+                   [('serviceUID','serviceTitle'),('serviceUID','serviceTitle'), ..]
+                }
+            } 
         """
-        categories = {}
+        cats = {}
+        pc = getToolByName(self, 'portal_catalog')
+        for poc in POINTS_OF_CAPTURE.keys():
+            val = POINTS_OF_CAPTURE.getValue(poc)
+            cats[(poc, val)] = {}
+
+        selectedservices = getattr(field, field.accessor)()
+        services = pc(portal_type = "AnalysisService")
+        # get all services from catalog        
         if allservices:
-            services = self.portal_catalog(portal_type = 'AnalysisService')
             for service in services:
-                if categories.has_key(service.getCategoryName):
-                    categories[service.getCategoryName].append(service)
-                else:
-                    categories[service.getCategoryName] = [service, ]
+                cat = (service.getCategoryUID, service.getCategoryName)
+                poc = (service.getPointOfCapture, POINTS_OF_CAPTURE.getValue(service.getPointOfCapture))
+                srv = (service.UID, service.Title)
+                if not cats[poc].has_key(cat): cats[poc][cat] = []
+                cats[poc][cat].append(srv)
+        # or get currently selected services from this profile
         else:
-            services = getattr(field, field.accessor)()
-            for service in services:
-                if categories.has_key(service.getCategoryName()):
-                    categories[service.getCategoryName()].append(service)
-                else:
-                    categories[service.getCategoryName()] = [service, ]
+            for service in selectedservices:
+                cat = (service.getCategoryUID(), service.getCategoryName())
+                poc = (service.getPointOfCapture(), POINTS_OF_CAPTURE.getValue(service.getPointOfCapture()))
+                srv = (service.UID(), service.Title())
+                if not cats[poc].has_key(cat): cats[poc][cat] = []
+                cats[poc][cat].append(srv)
+        return cats
 
-        return categories
-
-    security.declarePublic('getCategoryUID')
-    def getCategoryUID(self, category_title):
-        catalog = getToolByName(self, 'portal_catalog')
-        cats = catalog(portal_type = "AnalysisCategory")
-        cats = [cat.UID for cat in cats if cat.Title == category_title]
-        if cats:
-            return cats[0]
-        else:
-            return ""
-
-    security.declarePublic('SelectedServices')
-    def SelectedServices(self, field, category_title):
-        """Return a list of selected services in a category
-        """
-        services = []
-        for service in getattr(field, field.accessor)():
-            if service.getCategoryName() == category_title:
-                services.append(service)
-        return services
+    def dumpsJSON(self, object):
+        import json
+        return json.dumps(object)
 
 registerWidget(ServicesWidget,
                title = 'Analysis Services',

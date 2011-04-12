@@ -1,3 +1,0 @@
-[actions]
-action.success=redirect_to:string:analysisrequests
-action.failure=redirect_to:string:analysisrequests

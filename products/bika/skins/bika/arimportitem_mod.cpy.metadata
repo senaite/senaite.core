@@ -1,7 +1,0 @@
-[default]
-title=edit arimportitem
-proxy=Manager,Anonymous
-
-[actions]
-action.failure=redirect_to:string:${object/absolute_url}/arimport_edit
-action.success=redirect_to:string:${object/absolute_url}/arimport_edit

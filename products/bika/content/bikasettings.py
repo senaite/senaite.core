@@ -59,7 +59,7 @@ schema = BikaFolderSchema.copy() + Schema((
         ),
     ),
     FixedPointField('VAT',
-        default = '14',
+        default = '14.00',
         widget = DecimalWidget(
             label = 'VAT %',
             label_msgid = 'label_vat_percentage',

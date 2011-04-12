@@ -1,7 +1,0 @@
-[default]
-title=Add or edit attachment
-proxy=Manager,Anonymous
-
-[actions]
-action.failure=redirect_to:string:..
-action.success=redirect_to:string:..

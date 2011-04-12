@@ -6,7 +6,7 @@ from zope.interface import implements
 class ClientAnalysisRequestsView(BikaFolderContentsView):
     implements(IFolderContentsView)
     contentFilter = {'portal_type': 'AnalysisRequest'}
-    content_add_buttons = {'Analysis Request': "createObject?type_name=AnalysisRequest"}
+    content_add_buttons = {'Analysis Request': "analysisrequest_add"}
     title = "Analysis Requests"
     description = ""
     show_editable_border = True

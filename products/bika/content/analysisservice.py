@@ -1,18 +1,15 @@
-import sys
 from AccessControl import ClassSecurityInfo
-from Products.CMFCore.utils import getToolByName
-from Products.CMFCore.permissions import View, \
-    ModifyPortalContent
-from Products.CMFDynamicViewFTI.browserdefault import \
-    BrowserDefaultMixin
+from Products.ATExtensions.ateapi import RecordsField
+from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.Archetypes.public import *
 from Products.Archetypes.references import HoldingReference
-from Products.Archetypes.config import REFERENCE_CATALOG
+from Products.CMFCore.permissions import View, ModifyPortalContent
+from Products.CMFCore.utils import getToolByName
+from Products.CMFDynamicViewFTI.browserdefault import BrowserDefaultMixin
+from Products.bika.config import ATTACHMENT_OPTIONS, I18N_DOMAIN, PROJECTNAME
 from Products.bika.content.bikaschema import BikaSchema
-from Products.bika.config import I18N_DOMAIN, PROJECTNAME
-from Products.ATExtensions.ateapi import RecordsField
-from Products.bika.config import ATTACHMENT_OPTIONS
-from decimal import Decimal
+from Products.bika.config import POINTS_OF_CAPTURE
+import sys
 
 class UncertaintiesField(RecordsField):
     """a list of uncertainty values per service"""
@@ -77,6 +74,7 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     StringField('Unit',
+        index = "FieldIndex:brains",
         widget = StringWidget(
             label_msgid = 'label_unit',
         ),
@@ -90,7 +88,8 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     FixedPointField('Price',
-        default = 0,
+        index = "FieldIndex:brains",
+        default = '0.00',
         widget = DecimalWidget(
             label = 'Price excluding VAT',
             label_msgid = 'label_price_excl_vat',
@@ -98,7 +97,7 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     FixedPointField('CorporatePrice',
-        default = 0,
+        default = '0.00',
         widget = DecimalWidget(
             label = 'Corporate price excluding VAT',
             label_msgid = 'label_corporate_price_excl_vat',
@@ -232,6 +231,18 @@ schema = BikaSchema.copy() + Schema((
             i18n_domain = I18N_DOMAIN,
         ),
     ),
+    StringField('PointOfCapture',
+        required = 1,
+        index = "FieldIndex:brains",
+        default = 'lab',
+        vocabulary = POINTS_OF_CAPTURE,
+        widget = SelectionWidget(
+            format = 'flex',
+            label = 'Analysis Service Category',
+            label_msgid = 'label_pointofcapture',
+            description = "This decides when analyses are performed.  A sample's field analyses results are entered when an analysis request is created, and lab analyses are captured into existing ARs.",
+        ),
+    ),
     ReferenceField('Category',
         required = 1,
         vocabulary_display_path_bound = sys.maxint,
@@ -259,6 +270,7 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     BooleanField('Accredited',
+        index = "FieldIndex:brains",
         default = False,
         widget = BooleanWidget(
             label = "Accredited",
@@ -325,7 +337,7 @@ class AnalysisService(VariableSchemaSupport, BrowserDefaultMixin, BaseContent):
         price = price and price or 0
         discount = self.bika_settings.getMemberDiscount()
         discount = discount and discount or 0
-        return price - (price * discount) / 100
+        return float(price) - (float(price) * float(discount)) / 100
 
     security.declarePublic('getDiscountedCorporatePrice')
     def getDiscountedCorporatePrice(self):
@@ -334,7 +346,7 @@ class AnalysisService(VariableSchemaSupport, BrowserDefaultMixin, BaseContent):
         price = price and price or 0
         discount = self.bika_settings.getMemberDiscount()
         discount = discount and discount or 0
-        return price - (price * discount) / 100
+        return float(price) - (float(price) * float(discount)) / 100
 
     def getTotalPrice(self):
         """ compute total price """
@@ -342,7 +354,7 @@ class AnalysisService(VariableSchemaSupport, BrowserDefaultMixin, BaseContent):
         vat = self.getVAT()
         price = price and price or 0
         vat = vat and vat or 0
-        return price + (price * vat) / 100
+        return float(price) + (float(price) * float(vat)) / 100
 
     def getTotalCorporatePrice(self):
         """ compute total price """
@@ -350,7 +362,7 @@ class AnalysisService(VariableSchemaSupport, BrowserDefaultMixin, BaseContent):
         vat = self.getVAT()
         price = price and price or 0
         vat = vat and vat or 0
-        return price + (price * vat) / 100
+        return float(price) + (float(price) * float(vat)) / 100
 
     security.declarePublic('getTotalDiscountedPrice')
     def getTotalDiscountedPrice(self):
@@ -359,7 +371,7 @@ class AnalysisService(VariableSchemaSupport, BrowserDefaultMixin, BaseContent):
         vat = self.getVAT()
         price = price and price or 0
         vat = vat and vat or 0
-        return price + (price * vat) / 100
+        return float(price) + (float(price) * float(vat)) / 100
 
     security.declarePublic('getTotalDiscountedCorporatePrice')
     def getTotalDiscountedCorporatePrice(self):
@@ -368,24 +380,24 @@ class AnalysisService(VariableSchemaSupport, BrowserDefaultMixin, BaseContent):
         vat = self.getVAT()
         price = price and price or 0
         vat = vat and vat or 0
-        return price + (price * vat) / 100
+        return float(price) + (float(price) * float(vat)) / 100
 
     def getDefaultVAT(self):
         """ return default VAT from bika_settings """
         try:
             vat = self.bika_settings.getVAT()
-            return Decimal(vat)
+            return vat
         except ValueError:
-            return Decimal('0')
+            return "0.00"
 
     security.declarePublic('getVATAmount')
     def getVATAmount(self):
         """ Compute VATAmount
         """
         try:
-            return self.getTotalPrice() - self.getPrice()
+            return "%.2f" % (self.getTotalPrice() - self.getPrice())
         except:
-            return 0
+            return "0.00"
 
     def getCalcTitle(self):
         """ get title of applicable calculation """

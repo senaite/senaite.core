@@ -1,7 +1,0 @@
-[default]
-title=Add analysis requests
-proxy=Manager,Anonymous
-
-[actions]
-action.failure=traverse_to:string:arimport_add_form
-action.success=traverse_to:string:client_arimports

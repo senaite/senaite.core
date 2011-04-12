@@ -81,6 +81,11 @@ PUBLICATION_PREFS = DisplayList((
     ('sms', 'SMS'),
 ))
 
+POINTS_OF_CAPTURE = DisplayList((
+    ('field', 'Field Analyses'),
+    ('lab', 'Lab Analyses'),
+))
+
 PRICELIST_TYPES = DisplayList((
     ('AnalysisService', 'Analysis services'),
     ('LabProduct', 'Lab products'),

@@ -150,6 +150,18 @@
  <index name="getCategoryName" meta_type="FieldIndex">
   <indexed_attr value="getCategoryName"/>
  </index>
+ <index name="getPointOfCapture" meta_type="FieldIndex">
+  <indexed_attr value="getPointOfCapture"/>
+ </index>
+ <index name="getUnit" meta_type="FieldIndex">
+  <indexed_attr value="getUnit"/>
+ </index>
+ <index name="getPrice" meta_type="FieldIndex">
+  <indexed_attr value="getPrice"/>
+ </index>
+ <index name="getAccredited" meta_type="FieldIndex">
+  <indexed_attr value="getAccredited"/>
+ </index>
  <index name="getProfileTitle" meta_type="FieldIndex">
   <indexed_attr value="getProfileTitle"/>
  </index>
@@ -234,6 +246,10 @@
  <column value="getTextTitle"/>
  <column value="getCategoryUID"/>
  <column value="getCategoryName"/>
+ <column value="getPointOfCapture"/>
+ <column value="getUnit"/>
+ <column value="getPrice"/>
+ <column value="getAccredited"/>
  <column value="getProfileTitle"/>
  <column value="getProfileKey"/>
  <column value="id"/>

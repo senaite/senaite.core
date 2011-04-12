@@ -59,10 +59,11 @@ class AnalysisServicesView(BikaFolderContentsView):
             items[x]['AttachmentOption'] = \
                 obj.Schema()['AttachmentOption'].Vocabulary().getValue(obj.AttachmentOption)
             items[x]['Unit'] = obj.Unit
-            items[x]['Price'] = obj.Price
-            items[x]['CorporatePrice'] = obj.CorporatePrice
+            items[x]['Price'] = "%s.%02d" % (obj.Price)
+            items[x]['CorporatePrice'] = "%s.%02d" % (obj.CorporatePrice)
             items[x]['MaxHoursAllowed'] = obj.MaxHoursAllowed
-            items[x]['DuplicateVariation'] = obj.DuplicateVariation
+            if obj.DuplicateVariation is not None: items[x]['DuplicateVariation'] = "%s.%02d" % (obj.DuplicateVariation)
+            else: items[x]['DuplicateVariation'] = ""
             calc = obj.getCalculationType()
             items[x]['Calc'] = calc and calc.Title() or ''
             items[x]['links'] = {'title_or_id': items[x]['url'] + "/edit"}

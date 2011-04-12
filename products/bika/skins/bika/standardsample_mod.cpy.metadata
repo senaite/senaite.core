@@ -1,8 +1,0 @@
-[default]
-title=Add or edit standard sample
-proxy=Manager,Anonymous
-
-[actions]
-action.failure=traverse_to:string:standardsupplier_standardsamples
-action.success.StandardSupplier=traverse_to:string:standardsupplier_standardsamples
-action.success.StandardSample=redirect_to:string:${object/aq_parent/absolute_url}/standardsupplier_standardsamples

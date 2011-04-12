@@ -1,9 +1,0 @@
-[default]
-title=Please sign in
-
-[validators]
-validators = validate_login_details
-
-[actions]
-action.success = traverse_to:string:edit_login_details
-action.failure = traverse_to:string:contact_login_details
