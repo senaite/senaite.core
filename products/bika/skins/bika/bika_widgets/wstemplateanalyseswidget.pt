@@ -1,0 +1,74 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+   xmlns:tal="http://xml.zope.org/namespaces/tal"
+   xmlns:metal="http://xml.zope.org/namespaces/metal"
+   xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+   i18n:domain="plone">
+ <head><title></title></head>
+ <body>
+  <metal:view_macro define-macro="view">
+     <table class="listing nosort">
+
+     </table>
+  </metal:view_macro>
+
+  <metal:edit_macro define-macro="edit">
+   <metal:use use-macro="field_macro | context/widgets/field/macros/edit">
+    <metal:body_macro fill-slot="widget_body">
+     <span id="wstemplateanalyses"
+        tal:define="rows python:widget.getAnalyses(field)">
+      <table id='templatepositionstable' class="listing">
+       <thead>
+        <tr id="headerrow">
+         <th class="nosort colum">
+          <input type="checkbox" value="selectall" id="selectall" class="noborder">
+         </th>
+         <th class="nosort column">Pos</th>
+         <th class="nosort column" i18n:translate="label_type">Type</th>
+         <th class="nosort column" i18n:translate="label_analyses">Analyses</th>
+         <th class="nosort column" i18n:translate="label_count">Standard stock</th>
+        </tr>
+       </thead>
+
+       <tbody>
+
+        <tr class="templateposrow" tal:repeat="row rows">
+         <td tal:content="row/pos"></td>
+         <td>
+          <input type="checkbox" value="" id="" name="paths:list" class="noborder"
+              tal:attributes="value row/pos; id string:cb_${row/pos};">
+         </td>
+         <td>4</td>
+         <td>5</td>
+        </tr>
+        <tr id="lastrow"/>
+       </tbody>
+      </table>
+      <input type="button" class="context" id="addrow" value="Add Row"/>
+      <input type="button" class="context" id="delete" value="Delete" style="display:none"/>
+     </span>
+    </metal:body_macro>
+   </metal:use>
+  </metal:edit_macro>
+</body>
+</html>
+
+
+<!--
+    services python:[p.getObject() for p in here.portal_catalog(portal_type='AnalysisService')];
+    sort_on python:(('Title', 'nocase', 'asc'),);
+    services python:sequence.sort(services, sort_on);
+    standardstocks python:[p.getObject() for p in here.portal_catalog(portal_type='StandardStock')];
+    standardstocks python:sequence.sort(standardstocks, sort_on);
+    types here/getAnalysisTypes;
+    sst_types python:['c', 's', 'b'];
+    dup_types python:['d',];
+    errors options/state/getErrors;
+    num_positions request/NoOfPositions | python:0; 
+    num_positions python:int(num_positions);
+    req_rows request/Rows | nothing;
+    old_rows here/getRow | nothing;
+    current_rows python:test(req_rows, req_rows, old_rows);
+    display_rows python:here.get_template_rows(num_positions, current_rows);
+    req_analyses request/Service | python: [];
+    analyses python:test(req_rows, req_analyses, [s.UID() for s in here.getService()])">
+-->

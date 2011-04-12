@@ -1,0 +1,29 @@
+template_row = '<tr class="templateposrow" id="row_-1">'+
+'<td><input type="checkbox" value="-1" id="cb_-1" name="paths:list" class="noborder"></td>'+
+'<td>-1</td>'+
+'<td><select>'+
+'<option></option>'+
+'<option>Analysis</option>'+
+'<option>Blank</option>'+
+'<option>Control</option>'+
+'<option>Duplicate</option>'+
+'</select></td>'+
+'<td>template row</td>'+
+'<td>template row</td>'+
+'</tr>';
+
+(function($) {
+
+function tDnD_onDrop(table,row){
+	alert("dropped " + table + "  " + row);
+}
+
+$(document).ready( function() {
+	$('#addrow').click( function() {
+		txt = template_row.replace(/-1/g, $('tr[class~="templateposrow"]').length+1);
+		$('#lastrow').before(txt);
+		$("#templatepositionstable").tableDnD({onDrop: tDnD_onDrop});
+	});
+});
+
+})(jQuery);
