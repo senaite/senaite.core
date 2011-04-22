@@ -60,7 +60,14 @@ class BikaFolderContentsView(FolderContentsView):
 
         if not self.contentFilter.get('sort_on', None):
             self.contentFilter['sort_on'] = 'getObjPositionInParent'
-
+        
+        if hasattr(self, 'wflist_state'):
+            if self.wflist_state == 'all':
+                del self.wflist_state
+                del self.contentFilter['review_state']
+            else:
+                self.contentFilter['review_state'] = self.wflist_state
+        
         cur_path = '/'.join(context.getPhysicalPath())
         path = {}
         if self.contentFilter.get('path', None) is None:
@@ -71,7 +78,7 @@ class BikaFolderContentsView(FolderContentsView):
         show_inactive = portal_membership.checkPermission('Access inactive portal content', context)
 
         contents = portal_catalog.queryCatalog(self.contentFilter, show_all = 1, show_inactive = show_inactive)
-
+            
         if self.batch:
             from Products.CMFPlone.PloneBatch import Batch
             b_start = context.REQUEST.get('b_start', 0)
@@ -179,6 +186,8 @@ class BikaFolderContentsView(FolderContentsView):
         return results
 
     def __call__(self):
+        if self.request.form.has_key("wflist_state"):
+            self.wflist_state = self.request.form['wflist_state']
         return self.template()
 
     def contents_table(self):

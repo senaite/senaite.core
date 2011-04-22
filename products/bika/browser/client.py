@@ -174,9 +174,10 @@ class ClientSamplesView(BikaFolderContentsView):
     def folderitems(self):
         items = BikaFolderContentsView.folderitems(self)
         for x in range(len(items)):
-            items[x]['Requests'] = items[x]['obj'].getAnalysisRequests()
-            items[x]['SampleType'] = items[x]['obj'].getSampleType().Title()
-            items[x]['SamplePoint'] = items[x]['obj'].getSamplePoint().Title()
+            obj = items[x]['obj'].getObject()
+            items[x]['Requests'] = ",".join([o.Title() for o in obj.getAnalysisRequests()])
+            items[x]['SampleType'] = obj.getSampleType().Title()
+            items[x]['SamplePoint'] = obj.getSamplePoint().Title()
 
             items[x]['links'] = {'getSampleID': items[x]['url']}
 
