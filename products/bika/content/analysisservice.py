@@ -6,9 +6,10 @@ from Products.Archetypes.references import HoldingReference
 from Products.CMFCore.permissions import View, ModifyPortalContent
 from Products.CMFCore.utils import getToolByName
 from Products.CMFDynamicViewFTI.browserdefault import BrowserDefaultMixin
-from Products.bika.config import ATTACHMENT_OPTIONS, I18N_DOMAIN, PROJECTNAME
+from Products.bika.browser.widgets.serviceswidget import ServicesWidget
+from Products.bika.config import ATTACHMENT_OPTIONS, I18N_DOMAIN, PROJECTNAME, \
+    POINTS_OF_CAPTURE
 from Products.bika.content.bikaschema import BikaSchema
-from Products.bika.config import POINTS_OF_CAPTURE
 import sys
 
 class UncertaintiesField(RecordsField):
@@ -123,6 +124,7 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     FixedPointField('VAT',
+        index = 'FieldIndex:brains',
         default_method = 'getDefaultVAT',
         widget = DecimalWidget(
             label = 'VAT %',
@@ -158,8 +160,7 @@ schema = BikaSchema.copy() + Schema((
         allowed_types = ('AnalysisService',),
         relationship = 'AnalysisServiceAnalysisService',
         referenceClass = HoldingReference,
-        widget = ReferenceWidget(
-            checkbox_bound = 1,
+        widget = ServicesWidget(
             label = 'Dependant Analyses',
             label_msgid = 'label_dependants',
             i18n_domain = I18N_DOMAIN,
@@ -238,7 +239,7 @@ schema = BikaSchema.copy() + Schema((
         vocabulary = POINTS_OF_CAPTURE,
         widget = SelectionWidget(
             format = 'flex',
-            label = 'Analysis Service Category',
+            label = 'Analysis Point of Capture',
             label_msgid = 'label_pointofcapture',
             description = "This decides when analyses are performed.  A sample's field analyses results are entered when an analysis request is created, and lab analyses are captured into existing ARs.",
         ),
@@ -275,6 +276,14 @@ schema = BikaSchema.copy() + Schema((
         widget = BooleanWidget(
             label = "Accredited",
             label_msgid = "label_accredited"
+        ),
+    ),
+    ComputedField('CalcDependancyUIDS',
+        index = "FieldIndex:brains",
+        expression = 'context.getDependancyUIDS()',
+        widget = ComputedWidget(
+            label = "Calc",
+            visible = {'edit':'hidden', }
         ),
     ),
     ComputedField('CalcName',
@@ -414,6 +423,11 @@ class AnalysisService(VariableSchemaSupport, BrowserDefaultMixin, BaseContent):
             return calctype.getCalcTypeCode()
         else:
             return ''
+
+    def getDependancyUIDS(self):
+        """ get CalcDependancy, and send back a list of UIDS """
+        deps = self.getCalcDependancy()
+        return [d.UID() for d in deps]
 
     def duplicateService(self, context):
         """ Create a copy of the service and return the copy's id """

@@ -1,16 +1,22 @@
+// XXX price recalc is sometimes over agressive, does a few re-recalcs.
+
 function recalc_prices(column){
 	if(column){
-		vat_amount = parseFloat(jq("#vat_amount").val());
 		subtotal = 0.00;
 		vat = 0.00;
 		total = 0.00;
+		discount = parseFloat(jq("#member_discount").val());
 		jq.each(jq('input[name^="ar\\.'+column+'\\.Analyses"]'), function(){
 			if(jq(this).attr("checked")){
 				serviceUID = this.id.split("_")[4];
 				price = parseFloat(jq("input[name^='Prices\\."+serviceUID+"']").val());
+				vat_amount = parseFloat(jq("input[name^='VAT\\."+serviceUID+"']").val());
+				if(discount){
+					price = price - ((price / 100) * discount);
+				}
 				subtotal += price;
 				vat += ((price / 100) * vat_amount);
-				total += (price + ((price / 100) * vat_amount));
+				total += price + ((price / 100) * vat_amount);
 			}
 		});
 		jq('#ar_'+column+'_subtotal').val(subtotal.toFixed(2));
@@ -26,125 +32,207 @@ function recalc_prices(column){
 	}
 };
 
-function service_checkbox_click(){
-	column = jq(this).attr("name").split(".")[1];
-	if(jq("#ar_"+column+"_ARProfile").val() != ""){
-		jq("#ar_"+column+"_ARProfile").val("");
-	}
-	recalc_prices(column);
-};
-
-function service_price_change(){
-	//XXX entire recalc not necessary
-	recalc_prices();
-}
-
-/*
- * 
- *function setARTemplate(thisid, col){
-
-    Data = document.getElementById(ourvalue).value.split("__");
-    SampleType    = Data[0];
-    SamplePoint   = Data[1];
-    ProfileUID    = Data[2];
-    Preservations = Data[3].split(";");
-    Containers    = Data[4].split(";");
-
-    document.getElementById("ar." + col + ".SampleType").value = SampleType;
-    document.getElementById("ar." + col + ".SamplePoint").value = SamplePoint;
-
-    setComposite(col);
-
-    Pselect = document.getElementById("ar." + col + ".Preservation");
-    options = Pselect.options;
-    for(o=0;o<options.length;o++){
-        if(Index(Preservations, options[o].value)>-1){
-            options[o].selected = true;
-        } else {
-            options[o].selected = false;
-        }
-    }
-    Pselect.scrollTop = 0;
-
-    Cselect = document.getElementById("ar." + col + ".Unpreserved");
-    options = Cselect.options;
-    for(o=0;o<options.length;o++){
-        if(Index(Containers, options[o].value)>-1){
-            options[o].selected = true;
-        } else {
-            options[o].selected = false;
-        }
-    }
-    Cselect.scrollTop = 0;
-
-}
-*/
-
-function toggleCat(header_element, selectedservices, column){
+function toggleCat(header_ID, selectedservices, column){
 	// selectedservices and column are optional. They are used when AR Profile is selected.
-	name = jq(header_element).attr("name");
+	name = jq('#'+header_ID).attr("name");
 	tbody = jq('#'+name+"_tbody");
 	categoryUID = name.split("_")[0];
 	poc = name.split("_")[1];
-	if(jq(header_element).hasClass("expanded")){
+
+	if(jq('#'+header_ID).hasClass("expanded")){
 		// displaying and completing an an already expanded category
 		// for an ARProfile selection; price recalc happens in setARProfile()
 		if(selectedservices){
-			tbody.toggle(true);
 			jq.each(jq('input[id^="ar_'+column+'_'+categoryUID+'_'+poc+'_"]'), function(){
 				if(selectedservices.indexOf(jq(this).attr("id").split("_")[4]) > -1){
 					jq(this).attr("checked", "checked");
 				}
 			});
-			recalc_prices();
+			recalc_prices(column);
+			tbody.toggle(true); 
 		} else { 
 			tbody.toggle(); 
 		}
 	} else {
 		if(!selectedservices) selectedservices = [];
 		if(!column) { column = ""; }
-		jq(header_element).addClass("expanded");
+		jq('#'+header_ID).addClass("expanded");
 		tbody.load("analysisrequest_analysisservices", 
-					{'selectedservices': String(selectedservices),
-					'categoryUID': categoryUID,
-					'column': column,
-					'col_count': jq("#col_count").attr('value'),
-					'poc': poc},
-					function(){
-						// changing the  price of a service
-						jq("input[class='price']").unbind();
-						jq("input[class='price']").bind('change', service_price_change);
-						// analysis service checkboxes
-						jq('input[name*="Analyses"]').unbind();
-						jq('input[name*="Analyses"]').bind('change', service_checkbox_click);
-						if(selectedservices!=[]){
-							recalc_prices(column);
-						}
-					}
+			{'selectedservices': selectedservices.join(","),
+			'categoryUID': categoryUID,
+			'column': column,
+			'col_count': jq("#col_count").attr('value'),
+			'poc': poc},
+			function(){
+				// changing the  price of a service
+				jq("input[class='price']").unbind();
+				jq("input[class='price']").bind('change', service_price_change);
+				// analysis service checkboxes
+				jq('input[name*="Analyses"]').unbind();
+				jq('input[name*="Analyses"]').bind('change', service_checkbox_change);
+				if(selectedservices!=[]){
+					recalc_prices(column);
+				}
+			}
 		);
 	}
+}
+
+function calcdependencies(elements){
+	unexpanded_cats_ = [];
+	expanded_cats_ = [];
+	unchecked_depIDs_ = [];
+	unchecked_depUIDs_ = []
+
+	antes = [];
+
+	jq.each(elements, function(e,element){
+		column = element.attr("id").split("_")[1];
+		if (element.attr("checked") == true){
+			// selecting a service; discover services it depends on.
+			depcatIDs_ = element.attr("depcatids").split(",");
+			depUIDs_ = element.attr("depuids").split(",");
+
+			if(depcatIDs_[0] != ''){
+				jq.each(depcatIDs_, function(c,depcatID){
+					if(jq('#'+depcatID).attr('class').indexOf("expanded") > -1){
+						expanded_cats_.push(depcatID);
+					} else{
+						unexpanded_cats_.push(depcatID);
+					}
+					jq.each(depUIDs_, function(u,depUID){
+						e = jq('#ar_'+column+"_"+depcatID+"_"+depUID);
+						if((e.attr('id')==undefined) || !(e.attr("checked"))){
+							unchecked_depIDs_.push('ar_'+column+"_"+depcatID+"_"+depUID);
+							unchecked_depUIDs_.push(depUID);
+						}
+					});
+				});
+			}
+		} else {
+			// unselecting a service; discover checked antecedents
+			things = element.attr("id").split("_");
+			UID = things[4];
+			jq.each(jq('input[id*="ar_'+things[1]+'"]'), function(i,v){
+				if((jq(v).attr("depuids") != undefined) && (jq(v).attr("depuids").indexOf(UID) > -1)){
+					if(jq(v).attr("checked")){
+						antes.push(jq(v).attr("id"));
+					}
+				}
+			});
+		}
+	});
+
+	// unique lists
+	unexpanded_cats = [];
+	expanded_cats = [];
+	unchecked_depIDs = [];
+	unchecked_depUIDs = [];
+	jq.each(unexpanded_cats_, function(i,v){ if(unexpanded_cats.indexOf(v) == -1) unexpanded_cats.push(v); });
+	jq.each(expanded_cats_, function(i,v){ if(expanded_cats.indexOf(v) == -1) expanded_cats.push(v); });
+	jq.each(unchecked_depIDs_, function(i,v){ if(unchecked_depIDs.indexOf(v) == -1) unchecked_depIDs.push(v); });
+	jq.each(unchecked_depUIDs_, function(i,v){ if(unchecked_depUIDs.indexOf(v) == -1) unchecked_depUIDs.push(v); });
+
+	if (unchecked_depIDs.length > 0){
+		jq("#confirm_add_deps").dialog({width:450, resizable:false, closeOnEscape: false, buttons:{
+			'Yes': function(){
+				jq.each(elements, function(i,element){
+					jq.each(unexpanded_cats, function(i,e){
+						// expand untouched categories.  This is done async, so the checkbox values
+						// are set in the toggle function.  Toggle is called once for each affected column
+						col = element.attr("id").split("_")[1];
+						toggleCat(e,unchecked_depUIDs, col);
+					});
+				});
+				jq.each(expanded_cats, function(i,e){
+					// make sure all expanded categories are visible
+					name = jq('#'+e).attr("name");
+					tbody = jq('#'+name+"_tbody");
+					tbody.toggle(true);
+				});
+				jq.each(unchecked_depIDs, function(i,e){
+					// check all dependent checkbox IDs that exist and are unchecked
+					if( !(jq('#'+e).attr("checked")==true) ){
+						jq('#'+e).attr("checked", true);
+					}
+				});
+				recalc_prices();
+				jq(this).dialog("close");
+			},
+			'No':function(){
+				jq.each(elements, function(i,element){
+					element.attr("checked", false);
+					column = element.attr("id").split("_")[1];
+					recalc_prices(column);
+				});
+				jq(this).dialog("close");
+			}
+		}});
+	}
+
+	if (antes.length > 0){
+		jq("#confirm_remove_antes").dialog({width:450, resizable:false, closeOnEscape: false, buttons:{
+			'Yes': function(){
+				jq.each(antes, function(i,e){
+					// check all dependent checkbox IDs that exist and are unchecked
+					if( (jq('#'+e).attr("checked")==true) ){
+						jq('#'+e).attr("checked", false);
+					}
+				});
+				recalc_prices();
+				jq(this).dialog("close");
+			},
+			'No':function(){
+				jq.each(elements, function(i,element){
+					element.attr("checked", true);
+					column = element.attr("id").split("_")[1];
+					recalc_prices(column);
+				});
+				jq(this).dialog("close");
+			}
+		}});
+	}
+}
+
+function service_checkbox_change(){
+	column = jq(this).attr("name").split(".")[1];
+	element = jq(this);
+	if(jq("#ar_"+column+"_ARProfile").val() != ""){
+		jq("#ar_"+column+"_ARProfile").val("");
+	}
+	calcdependencies([element]);
+	recalc_prices(column);
+};
+
+function service_price_change(){
+	recalc_prices();
 }
 
 function copyButton(){
 	field_name = jq(this).attr("name");
 	// analysis service checkboxes
-	if (this.id.split("_").length == 4) {
+	if (this.id.split("_").length == 4) { // ar_(catid)_(poc)_(serviceid)
 		things = this.id.split("_");
 		first_val = jq('#ar_0_'+things[1]+'_'+things[2]+'_'+things[3]).attr("checked");
-		for (col=1; col<parseInt(jq("#col_count").val()); col++) {
+		affected_elements = [];
+		// col starts at 1 here; we don't copy into the the first row
+		for (col=1; col<parseInt(jq("#col_count").val()); col++) { 
 			other_elem = jq('#ar_'+col+'_'+things[1]+'_'+things[2]+'_'+things[3]);
-			if (!(other_elem.disabled)) {
+			if (!(other_elem.disabled) && !(other_elem.attr("checked")==first_val)) {
 				other_elem.attr("checked", first_val?true:false);
-				other_elem.change();
+				affected_elements.push(other_elem);
 			}
 		}
+		calcdependencies(affected_elements);
+		recalc_prices();
 	}
 	// other checkboxes
 	else if (jq('input[name^="ar\\.0\\.'+field_name+'"]').attr("type") == "checkbox") { 
 		first_val = jq('input[name^="ar\\.0\\.'+field_name+'"]').attr("checked");
-		for (col=0; col<parseInt(jq("#col_count").val()); col++) {
+		// col starts at 1 here; we don't copy into the the first row
+		for (col=1; col<parseInt(jq("#col_count").val()); col++) {
 			other_elem = jq('#ar_' + col + '_' + field_name);
-			if (!(other_elem.attr("disabled"))) {
+			if (!(other_elem.disabled) && !(other_elem.attr("checked")==first_val)) {
 				other_elem.attr("checked", first_val?true:false);
 				other_elem.change();
 			}
@@ -152,7 +240,8 @@ function copyButton(){
 	}
 	else{
 		first_val = jq('input[name^="ar\\.0\\.'+field_name+'"]').val();
-		for (col=0; col<parseInt(jq("#col_count").val()); col++) {
+		// col starts at 1 here; we don't copy into the the first row
+		for (col=1; col<parseInt(jq("#col_count").val()); col++) {
 			other_elem = jq('#ar_' + col + '_' + field_name);
 			if (!(other_elem.attr("disabled"))) {
 				other_elem.val(first_val);
@@ -182,15 +271,18 @@ function unsetARProfile(column){
 function setARProfile(){
 	profileUID = jq(this).val();
 	column = jq(this).attr("id").split("_")[1];
-	// if "None" profile is selected, do nothing
 	if(profileUID == "") return;
-	// uncheck all checks in this column
 	unsetARProfile(column);
+	selected_elements = []
 	jq.getJSON('analysisrequest_profileservices', {'profileUID':profileUID}, function(data,textStatus){
 		jq.each(data, function(categoryUID_poc, selectedservices){
-			toggleCat(jq('#'+categoryUID_poc), selectedservices, column);
+			toggleCat(categoryUID_poc, selectedservices, column);
+			jq.each(selectedservices, function(i,uid){
+				selected_elements.push(jq("#ar_"+column+"_"+categoryUID_poc+"_"+uid));
+			});
 		});
 	}, "json");
+	calcdependencies(selected_elements);
 	recalc_prices(column);
 }
 
@@ -208,7 +300,7 @@ function autocomplete_samplepoint(request,callback){
 
 jq(document).ready(function(){
 	// jquery-ui date picker
-	jq('input[id$="_DateSampled"]').datepicker();
+	jq('input[id$="_DateSampled"]').datepicker({'dateFormat': 'yy-mm-dd'});
 
 	// copy buttons
 	jq(".copyButton").live('click', copyButton);
@@ -218,7 +310,7 @@ jq(document).ready(function(){
 
 	// service category expanding rows
 	jq('th[class^="analysiscategory"]').click(function(){
-		toggleCat(this);
+		toggleCat(jq(this).attr("id"));
 	});
 
 	// service category pre-expanded rows
@@ -229,6 +321,26 @@ jq(document).ready(function(){
 			recalc_prices();
 		}
 	}
+
+	// Contact dropdown changes
+	jq("#contact").live('change', function(){
+		jq.ajax({
+			type: 'POST',
+			url: 'analysisrequest_contact_ccs',
+			data: jq(this).val(),
+			success: function(data,textStatus,jqXHR){
+				jq('#cc_uids').attr("value", data[0]);
+				jq('#cc_titles').val(data[1]);
+			},
+			dataType: "json"
+		});
+	});
+	jq("#contact").change();
+
+	// recalculate when price elements' values are changed
+	jq("input[name^='Price']").live('change', function(){
+		recalc_prices();
+	});
 
 	// A button in the AR form displays the CC browser window (select_cc.pt)
 	jq('#open_cc_browser').click(function(){
@@ -273,10 +385,21 @@ jq(document).ready(function(){
 		window.close();
 	});
 
-	jq(".sampletype").autocomplete({ minLength: 0,
-		                source: autocomplete_sampletype});
-	jq(".samplepoint").autocomplete({ minLength: 0,
-		                source: autocomplete_samplepoint});
+    jq(".sampletype").autocomplete({ minLength: 0, source: autocomplete_sampletype});
+    jq(".samplepoint").autocomplete({ minLength: 0, source: autocomplete_samplepoint});
+
+	// ADD form sumbit
+	jq("#analysisrequest_add_form").submit(function(){
+		$.ajax({
+			type: 'POST',
+			url: 'analysisrequest_add_validate',
+			data: this,
+			success: function(data, textStatus, jqXHR){
+				alert("submit textstatus: " + textStatus);
+			},
+			dataType: "json"
+		});
+	});
 
 });
  

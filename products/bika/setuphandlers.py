@@ -44,45 +44,6 @@ class BikaGenerator:
 #            if action.id in ('UsersGroups', 'UsersGroups2', 'bika_calendar_tool'):
 #                action.permissions = (ManageBika,)
 
-        # XXX This should be handled in tools/bika_settings.py
-        # but genericsetup import step dependencies are unsatisfied at that point
-        bs = getToolByName(portal, 'bika_settings')
-        bs.setPrefixes([
-            {'portal_type': 'AnalysisRequest',
-             'prefix': 'AR-',
-             'padding': '2',
-            },
-            {'portal_type': 'Sample',
-             'prefix': 'S-',
-             'padding': '5',
-            },
-            {'portal_type': 'Worksheet',
-             'prefix': 'WS-',
-             'padding': '5',
-            },
-            {'portal_type': 'Order',
-             'prefix': 'O-',
-             'padding': '4',
-            },
-            {'portal_type': 'Invoice',
-             'prefix': 'I-',
-             'padding': '4',
-            },
-            {'portal_type': 'ARImport',
-             'prefix': 'B-',
-             'padding': '4',
-            },
-            {'portal_type': 'StandardSample',
-             'prefix': 'SS-',
-             'padding': '4',
-            },
-            {'portal_type': 'StandardAnalysis',
-             'prefix': 'SA-',
-             'padding': '4',
-            },
-        ])
-
-
     def setupGroupsAndRoles(self, portal):
         # add roles
         for role in ('LabManager', 'LabClerk', 'LabTechnician', 'Verifier',

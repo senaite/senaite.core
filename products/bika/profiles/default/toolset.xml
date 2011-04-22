@@ -1,6 +1,5 @@
 <?xml version="1.0"?>
 <tool-setup>
- <required tool_id="bika_portal_ids" class="Products.bika.tools.bika_portal_ids"/>
 <!--
  <required tool_id="bika_analysisspecs" class="Products.bika.tools.bika_analysisspecs"/>
  <required tool_id="bika_ar_export" class="Products.bika.tools.bika_ar_export"/>

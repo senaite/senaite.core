@@ -27,7 +27,6 @@ class ClientAnalysisRequestsView(BikaFolderContentsView):
     wflist_states = [
                     {'title': 'All', 'id':'all',
                      'columns':['getRequestID',
-                                'getContact',
                                 'getClientOrderNumber',
                                 'ClientReference',
                                 'ClientSampleID',
@@ -35,11 +34,10 @@ class ClientAnalysisRequestsView(BikaFolderContentsView):
                                 'SamplePoint',
                                 'getDateReceived',
                                 'getDatePublished',
-                                'wf_state'],
+                                'state_title'],
                      'buttons':[BikaFolderContentsView.default_buttons['delete']]},
                     {'title': 'Sample due', 'id':'sample_due',
                      'columns':['getRequestID',
-                                'getContact',
                                 'getClientOrderNumber',
                                 'ClientReference',
                                 'ClientSampleID',
@@ -48,7 +46,6 @@ class ClientAnalysisRequestsView(BikaFolderContentsView):
                      'buttons':[BikaFolderContentsView.default_buttons['delete']]},
                     {'title': 'Sample received', 'id':'sample_received',
                      'columns':['getRequestID',
-                                'getContact',
                                 'getClientOrderNumber',
                                 'ClientReference',
                                 'ClientSampleID',
@@ -67,7 +64,6 @@ class ClientAnalysisRequestsView(BikaFolderContentsView):
                                 'getDateReceived']},
                     {'title': 'To be verified', 'id':'to_be_verified',
                      'columns':['getRequestID',
-                                'getContact',
                                 'getClientOrderNumber',
                                 'ClientReference',
                                 'ClientSampleID',
@@ -76,7 +72,6 @@ class ClientAnalysisRequestsView(BikaFolderContentsView):
                                 'getDateReceived']},
                     {'title': 'Verified', 'id':'verified',
                      'columns':['getRequestID',
-                                'getContact',
                                 'getClientOrderNumber',
                                 'ClientReference',
                                 'ClientSampleID',
@@ -85,7 +80,6 @@ class ClientAnalysisRequestsView(BikaFolderContentsView):
                                 'getDateReceived']},
                     {'title': 'Published', 'id':'published',
                      'columns':['getRequestID',
-                                'getContact',
                                 'getClientOrderNumber',
                                 'ClientReference',
                                 'ClientSampleID',
@@ -98,7 +92,8 @@ class ClientAnalysisRequestsView(BikaFolderContentsView):
     def folderitems(self):
         items = BikaFolderContentsView.folderitems(self)
         for x in range(len(items)):
-            sample = items[x]['obj'].Sample
+            obj = items[x]['obj'].getObject()
+            sample = obj.getSample()
             items[x]['SampleType'] = sample.getSampleType().Title()
             items[x]['SamplePoint'] = sample.getSamplePoint().Title()
             items[x]['ClientReference'] = sample.getClientReference()
@@ -386,7 +381,7 @@ class ClientContactsView(BikaFolderContentsView):
     content_add_buttons = {'Contact': "createObject?type_name=Contact"}
     title = "Contacts"
     description = ""
-    show_editable_border = True
+    show_editable_border = False
     batch = True
     b_size = 100
     wflist_states = []
@@ -409,6 +404,6 @@ class ClientContactsView(BikaFolderContentsView):
     def folderitems(self):
         items = BikaFolderContentsView.folderitems(self)
         for x in range(len(items)):
-            items[x]['links'] = {'getFullname': items[x]['url']}
+            items[x]['links'] = {'getFullname': items[x]['url'] + "/edit"}
 
         return items

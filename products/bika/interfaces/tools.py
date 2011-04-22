@@ -5,9 +5,6 @@ class IBikaSettings(Interface):
     """
 
 
-
-
-
 class  IToolFolder(Interface):
     """
     """
@@ -97,9 +94,6 @@ class Ibika_labcontacts(Interface):
     """
 
 
-class Ibika_portal_ids(Interface):
-    """
-    """
 
 class Ibika_instrument_import(Interface):
     """

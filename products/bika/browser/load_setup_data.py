@@ -31,6 +31,7 @@ class LoadSetupData(BrowserView):
         logger.info("load_setup_data: Products: %s" % self.Products())
 #        logger.info("load_setup_data: Worksheet Templates: %s" % self.WorksheetTemplates())
         logger.info("load_setup_data: Standard Manufacturers: %s" % self.StandardManufacturers())
+        logger.info("load_setup_data: Prefixes: %s" % self.Prefixes())
 
         self.context.plone_utils.addPortalMessage(
                         _(u'Setup data loaded.'), 'info')
@@ -667,3 +668,16 @@ class LoadSetupData(BrowserView):
             obj = folder[id]
             obj.edit(title = title,
                      StandardManufacturerDescription = description)
+
+    def Prefixes(self):
+        bs = getToolByName(self.context, 'bika_settings')
+        bs.setPrefixes([
+            {'portal_type': 'AnalysisRequest', 'prefix': 'AR-', 'padding': '2'},
+            {'portal_type': 'Sample', 'prefix': 'S-','padding': '5'},
+            {'portal_type': 'Worksheet', 'prefix': 'WS-','padding': '5'},
+            {'portal_type': 'Order', 'prefix': 'O-', 'padding': '4',},
+            {'portal_type': 'Invoice', 'prefix': 'I-', 'padding': '4'},
+            {'portal_type': 'ARImport', 'prefix': 'B-', 'padding': '4'},
+            {'portal_type': 'StandardSample', 'prefix': 'SS-', 'padding': '4'},
+            {'portal_type': 'StandardAnalysis', 'prefix': 'SA-', 'padding': '4'},
+        ])

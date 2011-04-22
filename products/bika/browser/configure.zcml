@@ -143,6 +143,14 @@
       layer="Products.bika.interfaces.IBikaLIMSLayer"
     />
 
+    <browser:page
+      for="Products.bika.interfaces.IClient"
+      name="analysisrequest_contact_ccs"
+      class="Products.bika.browser.analysisrequest.AnalysisRequestContactCCs"
+      permission="zope.Public"
+      layer="Products.bika.interfaces.IBikaLIMSLayer"
+    />
+
     <browser:resource
       name="analysisrequest.js"
       file="analysisrequest.js"

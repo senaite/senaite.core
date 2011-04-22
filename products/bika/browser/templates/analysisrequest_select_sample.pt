@@ -37,7 +37,7 @@
   <tal:block 
     tal:define="
       all_results python:view.Samples(client);
-      all_uids python:[sample.UID() for sample in all_results];
+      all_uids python:[sample.UID for sample in all_results];
       batch python: Batch(all_results, b_size, int(b_start), orphan=1)">
   
     <div style="border-top:1px solid black;border-bottom:1px solid black;"

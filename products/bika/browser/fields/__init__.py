@@ -1,3 +1,3 @@
 from specfield import SpecField
-from analysesfield import AnalysesField
+from aranalysesfield import ARAnalysesField
 from wstemplateanalysesfield import WSTemplateAnalysesField

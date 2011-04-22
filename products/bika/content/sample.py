@@ -21,7 +21,7 @@ import time
 schema = BikaSchema.copy() + Schema((
     StringField('SampleID',
         required = 1,
-        index = 'FieldIndex',
+        index = 'FieldIndex:brains',
         searchable = True,
         widget = StringWidget(
             label = 'Sample ID',

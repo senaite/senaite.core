@@ -9,393 +9,383 @@
 <head>
   <metal:jshead fill-slot="javascript_head_slot">
     <script type="text/javascript" src="++resource++analysisrequest.js"></script>
-    <script type="text/javascript" src="jquery-ui.js"></script>
   </metal:jshead>
-  <metal:csshead fill-slot="style_slot">
-    <link rel="stylesheet" type="text/css" media="all" href="jquery-ui.css"/>
-  </metal:csshead>
 </head>
 
 <body>
 
   <div metal:fill-slot="main" 
     tal:define="
-      cc_contacts here/getCCContacts;
       portal context/@@plone_portal_state/portal">
 
     <h1 i18n:translate="heading_request_new_analyses">Request new analyses</h1>
-      <form name="analysisrequest_add_form" method="POST">
-        <input type="hidden" name="submitted" value="1" />
-  
-        <!-- col_count goes here for the jquery expanding services rows to know how to print themselves -->
-        <input type="hidden" id="col_count" tal:attributes="value view/col_count" />
 
-        <!-- VAT for javascript price calculation -->
-        <input type="hidden" id="vat_amount" tal:attributes="value python:context.bika_settings.getVAT()" />
-  
-        <!-- hidden field data for CC contacts -->
-        <div tal:repeat="cc cc_contacts">
-          <tal:ccs tal:define="i repeat/cc/index; uid python:cc[0]">
-            <input type="hidden" tal:attributes="id string:ccu$uid; value python:cc[1]">
-            <input type="hidden" tal:attributes="id string:ccn$uid; value python:cc[2]">
-          </tal:ccs>
-        </div>
-  
-        <table cellpadding="0" cellspacing="0" class="analysisrequest">
-          <thead>
-            <tr>
-              <!-- Contact -->
-              <th colspan="2" class="rowheader">
-                <span i18n:translate="label_contact_person">Contact person</span>
-                <span class="fieldRequired"/>
-              </th>
-              <td>&nbsp;</td>
-              <td class="contact" 
-                  tal:attributes="colspan view/col_count"
-                  tal:define="this_contact python:request.get('Contact', here.getContactUIDForUser());">
-                <select name="Contact" id="contact" tal:attributes="onchange string:getCC();">
-                  <tal:item 
-                    tal:define="vocab here/getContactsDisplayList"
-                    tal:repeat="item vocab">
-                    <option
-                      tal:define="
-                        no_ref python:item == '';
-                        this_selected python: item in (this_contact, '') and 'selected' or '';
-                        global num_selected python:this_selected and repeat['item'].index;"
-                      tal:attributes="
-                        value item;
-                        selected this_selected"
-                      tal:content="python:here.translate(vocab.getValue(item), default=vocab.getValue(item))">
-                    </option>
-                  </tal:item>
-                </select>
-                <tal:ccs
-                  tal:define="
-                    selected python:num_selected or 0;
-                    ccs python:cc_contacts[selected];
-                    cc_uids python:ccs[1];
-                    cc_titles python:ccs[2]"
-                  tal:condition="ccs">
-                  <input type="button" 
-                    id="open_cc_browser"
-                    class="actionButton" 
-                    value="cc" 
-                    i18n:attributes="value" 
-                    i18n:domain="bika"/>
-                  <input DISABLED class="noborder" size="60%" value="" id="cc_titles" tal:attributes="value cc_titles">
-                  <input type="hidden" value="" id="cc_uids" name="CCContact" tal:attributes="value cc_uids">
-                </tal:ccs>
-              </td>
-            </tr>
-            <!-- CC Emails -->
-            <tr>
-              <th colspan="2" i18n:translate="label_cc_email">cc emails</th>
-              <td>&nbsp;</td>
-              <td class="contact" tal:attributes="colspan view/col_count">
-                <input size="80%" type="text" id="cc_emails" name="CCEmails" tal:attributes="value python:request.get('CCEmails');"/>
-              </td>
-            </tr>
-            <!-- AR Profile -->
-            <tr tal:define="field_name string:ARProfile">
-              <th colspan="2" i18n:translate="label_arprofiles">Profile</th>
-              <td>&nbsp;</td>
-              <tal:block repeat="column python:range(view.col_count)">
-                <td tal:define="input_name string:ar.${column}.${field_name}:ignore_empty:record;
-                                input_id string:ar_${column}_${field_name}">
-                  <select tal:attributes="class field_name;id input_id; name input_name;">
-                    <option value="">None</option>
-                    <tal:profile repeat="profile view/arprofiles">
-                      <option
-                        tal:content="string:${profile/Title}"
-                        tal:attributes="
-                          value profile/UID;
-                          selected python:request.get(input_id, '') == profile.UID() and 'selected' or ''">Title</option>
-                    </tal:profile>
-                  </select>
-                </td>
-              </tal:block>
-            </tr>
-            <!-- Sample -->
-            <tr tal:define="field_name string:SampleID">
-              <th colspan="2"></th>
-              <td class="center">
-                <image class="deleteSampleButton" 
-                  tal:attributes="src string:${portal/absolute_url}/images/delete.png"/>
-              </td>
-              <tal:linksample repeat="column python:range(view.col_count)">
-                <td class="center"
-                  tal:define="input_name string:ar.${column}.${field_name}:ignore_empty:record;
+    <form id="analysisrequest_add_form" name="analysisrequest_add_form" method="POST">
+
+      <input type="hidden" name="submitted" value="1" />
+
+      <!-- member discount percentage if applicable -->
+      <input type="hidden" id="member_discount" name="member_discount"
+             tal:attributes="value here/bika_settings/getMemberDiscount"
+             tal:condition="here/getMemberDiscountApplies"/> 
+
+      <!-- col_count goes here for the jquery expanding services rows to know how to print themselves -->
+      <input type="hidden" id="col_count" name="col_count" 
+             tal:attributes="value view/col_count" />
+
+      <!-- jquery dialogs -->
+      <div id="confirm_add_deps" style="display:none" title="Service dependencies">
+        This selection requires additional services.<br/>
+        Do you want to select them now?
+      </div>
+      <div id="confirm_remove_antes" style="display:none" title="Service dependencies">
+        Other selections depend on this service.<br/>
+        Do you want these also to be unselected now?
+      </div>
+
+      <table cellpadding="0" cellspacing="0" class="analysisrequest">
+        <thead>
+          <tr>
+            <!-- Contact -->
+            <th colspan="2" class="rowheader">
+              <span i18n:translate="label_contact_person">Contact person</span>
+              <span class="fieldRequired"/>
+            </th>
+            <td>&nbsp;</td>
+            <td class="contact"
+                tal:attributes="colspan view/col_count"
+                tal:define="this_contact python:request.get('Contact', here.getContactUIDForUser());">
+              <select name="Contact" id="contact">
+                <tal:item 
+                  tal:define="vocab here/getContactsDisplayList"
+                  tal:repeat="item vocab">
+                  <option 
+                    tal:attributes="
+                      value item;
+                      selected python: item in (this_contact, ) and 'selected' or '';"
+                    tal:content="python:here.translate(vocab.getValue(item), default=vocab.getValue(item))">
+                  </option>
+                </tal:item>
+              </select>
+              <!-- Contact CCs-->
+              <input type="button" 
+                id="open_cc_browser"
+                value="cc" 
+                i18n:attributes="value" 
+                i18n:domain="bika"/>
+              <input DISABLED class="noborder" size="60%" value="" id="cc_titles"/>
+              <input type="hidden" id="cc_uids" name="cc_uids" value=""/>
+            </td>
+          </tr>
+          <!-- CC Emails -->
+          <tr>
+            <th colspan="2" i18n:translate="label_cc_email">cc emails</th>
+            <td>&nbsp;</td>
+            <td class="contact" tal:attributes="colspan view/col_count">
+              <input size="80%" type="text" id="cc_emails" name="CCEmails" tal:attributes="value python:request.get('CCEmails');"/>
+            </td>
+          </tr>
+          <!-- AR Profile -->
+          <tr tal:define="field_name string:ARProfile">
+            <th colspan="2" i18n:translate="label_arprofiles">Profile</th>
+            <td>&nbsp;</td>
+            <tal:block repeat="column python:range(view.col_count)">
+              <td tal:define="input_name string:ar.${column}.${field_name}:ignore_empty:record;
                               input_id string:ar_${column}_${field_name}">
-                  <input type="button" value="Select Sample" 
-                    i18n:attributes="value" i18n:domain="bika"
-                    tal:attributes="id input_id; name input_name"/>
-                </td>
-              </tal:linksample>
-            </tr>
-            <!-- Client Order ID -->
-            <tr tal:define="field_name string:ClientOrderNumber">
-              <th colspan="2" i18n:translate="label_client_order_id">Client Order ID</th>
-              <td>
-                <image class="copyButton" 
-                  tal:attributes="name field_name;src string:${portal/absolute_url}/images/copy.png"/>
+                <select tal:attributes="class field_name;id input_id; name input_name;">
+                  <option value="">None</option>
+                  <tal:profile repeat="profile view/arprofiles">
+                    <option
+                      tal:content="string:${profile/Title}"
+                      tal:attributes="
+                        value profile/UID;
+                        selected python:request.get(input_id, '') == profile.UID() and 'selected' or ''">Title</option>
+                  </tal:profile>
+                </select>
               </td>
-              <tal:block repeat="column python:range(view.col_count)">
-                <td tal:define="input_name string:ar.${column}.${field_name}:ignore_empty:record;
-                                input_id string:ar_${column}_${field_name}">
-                  <input size="10" type='text'
-                    tal:attributes="
-                      id input_id;name input_name;
-                      value python:request.get(input_name, '');"/>
-                </td>
-              </tal:block>
-            </tr>
-            <!-- Client Reference -->
-            <tr tal:define="field_name string:ClientReference">
-              <th colspan="2" i18n:translate="label_clientreference">Client Reference</th>
-              <td>
-                <image class="copyButton" 
-                  tal:attributes="name field_name;src string:${portal/absolute_url}/images/copy.png"/>
+            </tal:block>
+          </tr>
+          <!-- Sample -->
+          <tr tal:define="field_name string:SampleID">
+            <th colspan="2"></th>
+            <td class="center">
+              <image class="deleteSampleButton" 
+                tal:attributes="src string:${portal/absolute_url}/images/delete.png"/>
+            </td>
+            <tal:linksample repeat="column python:range(view.col_count)">
+              <td class="center"
+                tal:define="input_name string:ar.${column}.${field_name}:ignore_empty:record;
+                            input_id string:ar_${column}_${field_name}">
+                <input type="button" value="Select Sample" 
+                  i18n:attributes="value" i18n:domain="bika"
+                  tal:attributes="id input_id; name input_name"/>
               </td>
-              <tal:block repeat="column python:range(view.col_count)">
-                <td tal:define="input_name string:ar.${column}.${field_name}:ignore_empty:record;
-                                input_id string:ar_${column}_${field_name}">
-                  <input size="10" type='text'
-                    tal:attributes="
-                      id input_id;name input_name;
-                      value python:request.get(input_name, '');"/>
-                </td>
-              </tal:block>
-            </tr>
-            <!-- Client Sample ID -->
-            <tr tal:define="field_name string:ClientSampleID">
-              <th colspan="2" i18n:translate="label_clientsampleid">Client Sample ID</th>
-              <td>
-                <image class="copyButton" 
-                  tal:attributes="name field_name;src string:${portal/absolute_url}/images/copy.png"/>
+            </tal:linksample>
+          </tr>
+          <!-- Client Order ID -->
+          <tr tal:define="field_name string:ClientOrderNumber">
+            <th colspan="2" i18n:translate="label_client_order_id">Client Order ID</th>
+            <td>
+              <image class="copyButton" 
+                tal:attributes="name field_name;src string:${portal/absolute_url}/images/copy.png"/>
+            </td>
+            <tal:block repeat="column python:range(view.col_count)">
+              <td tal:define="input_name string:ar.${column}.${field_name}:ignore_empty:record;
+                              input_id string:ar_${column}_${field_name}">
+                <input size="10" type='text'
+                  tal:attributes="
+                    id input_id;name input_name;
+                    value python:request.get(input_name, '');"/>
               </td>
-              <tal:block repeat="column python:range(view.col_count)">
-                <td tal:define="input_name string:ar.${column}.${field_name}:ignore_empty:record;
-                                input_id string:ar_${column}_${field_name}">
-                  <input size="10" type='text'
-                    tal:attributes="
-                      id input_id;name input_name;
-                      value python:request.get(input_name, '');"/>
-                </td>
-              </tal:block>
-            </tr>
-            <!-- Date Sampled -->
-            <tr tal:define="field_name string:DateSampled">
-              <th colspan="2" i18n:translate="label_datesampled">Date sampled</th>
-              <td>
-                <image class="copyButton" 
-                  tal:attributes="name field_name;src string:${portal/absolute_url}/images/copy.png"/>
+            </tal:block>
+          </tr>
+          <!-- Client Reference -->
+          <tr tal:define="field_name string:ClientReference">
+            <th colspan="2" i18n:translate="label_clientreference">Client Reference</th>
+            <td>
+              <image class="copyButton" 
+                tal:attributes="name field_name;src string:${portal/absolute_url}/images/copy.png"/>
+            </td>
+            <tal:block repeat="column python:range(view.col_count)">
+              <td tal:define="input_name string:ar.${column}.${field_name}:ignore_empty:record;
+                              input_id string:ar_${column}_${field_name}">
+                <input size="10" type='text'
+                  tal:attributes="
+                    id input_id;name input_name;
+                    value python:request.get(input_name, '');"/>
               </td>
-              <tal:block repeat="column python:range(view.col_count)">
-                <td tal:define="input_name string:ar.${column}.${field_name}:ignore_empty:record;
-                                input_id string:ar_${column}_${field_name}">
-                  <input size="10" type='text'
-                    tal:attributes="
-                      id input_id;name input_name;
-                      value python:request.get(input_name, '');"/>
-                </td>
-              </tal:block>
-            </tr>
-            <!-- Sample Type -->
-            <tr tal:define="field_name string:SampleType">
-              <th colspan="2"><span id="" i18n:translate="label_sampletype">Sample type</span></th>
-              <td>
-                <image class="copyButton" 
-                  tal:attributes="name field_name;src string:${portal/absolute_url}/images/copy.png"/>
+            </tal:block>
+          </tr>
+          <!-- Client Sample ID -->
+          <tr tal:define="field_name string:ClientSampleID">
+            <th colspan="2" i18n:translate="label_clientsampleid">Client Sample ID</th>
+            <td>
+              <image class="copyButton" 
+                tal:attributes="name field_name;src string:${portal/absolute_url}/images/copy.png"/>
+            </td>
+            <tal:block repeat="column python:range(view.col_count)">
+              <td tal:define="input_name string:ar.${column}.${field_name}:ignore_empty:record;
+                              input_id string:ar_${column}_${field_name}">
+                <input size="10" type='text'
+                  tal:attributes="
+                    id input_id;name input_name;
+                    value python:request.get(input_name, '');"/>
               </td>
-              <tal:block repeat="column python:range(view.col_count)">
-                <td tal:define="input_name string:ar.${column}.${field_name}:ignore_empty:record;
-                                input_id string:ar_${column}_${field_name}">
-                  <input size="10" type='text' class='sampletype'
-                    tal:attributes="
-                      id input_id;name input_name;
-                      value python:request.get(input_name, '');"/>
-                </td>
-              </tal:block>
-            </tr>
-            <!-- Sample Point -->
-            <tr tal:define="field_name string:SamplePoint">
-              <th colspan="2"><span id="" i18n:translate="label_samplepoint">Sample Point</span></th>
-              <td>
-                <image class="copyButton" 
-                  tal:attributes="name field_name;src string:${portal/absolute_url}/images/copy.png"/>
+            </tal:block>
+          </tr>
+          <!-- Date Sampled -->
+          <tr tal:define="field_name string:DateSampled">
+            <th colspan="2" i18n:translate="label_datesampled">Date sampled</th>
+            <td>
+              <image class="copyButton" 
+                tal:attributes="name field_name;src string:${portal/absolute_url}/images/copy.png"/>
+            </td>
+            <tal:block repeat="column python:range(view.col_count)">
+              <td tal:define="input_name string:ar.${column}.${field_name}:ignore_empty:record;
+                              input_id string:ar_${column}_${field_name}">
+                <input size="10" type='text'
+                  tal:attributes="
+                    id input_id;name input_name;
+                    value python:request.get(input_name, '');"/>
               </td>
-              <tal:block repeat="column python:range(view.col_count)">
-                <td tal:define="input_name string:ar.${column}.${field_name}:ignore_empty:record;
-                                input_id string:ar_${column}_${field_name}">
-                  <input size="10" type='text' class="samplepoint"
-                    tal:attributes="
-                      id input_id;name input_name;
-                      value python:request.get(input_name, '');"/>
-                </td>
-              </tal:block>
-            </tr>
-            <!-- Dry Matter -->
-            <tr tal:define="field_name string:ReportDryMatter">
-              <th colspan="2" i18n:translate="label_report_dm">Report as Dry Matter</th>
-              <td>
-                <image class="copyButton" 
-                  tal:attributes="name field_name;src string:${portal/absolute_url}/images/copy.png"/>
+            </tal:block>
+          </tr>
+          <!-- Sample Type -->
+          <tr tal:define="field_name string:SampleType">
+            <th colspan="2"><span id="" i18n:translate="label_sampletype">Sample type</span></th>
+            <td>
+              <image class="copyButton" 
+                tal:attributes="name field_name;src string:${portal/absolute_url}/images/copy.png"/>
+            </td>
+            <tal:block repeat="column python:range(view.col_count)">
+              <td tal:define="input_name string:ar.${column}.${field_name}:ignore_empty:record;
+                              input_id string:ar_${column}_${field_name}">
+                <input size="10" type='text' class='sampletype'
+                  tal:attributes="
+                    id input_id;name input_name;
+                    value python:request.get(input_name, '');"/>
               </td>
-              <tal:block repeat="column python:range(view.col_count)">
-                <td tal:define="input_name string:ar.${column}.${field_name}:ignore_empty:record;
-                                input_id string:ar_${column}_${field_name}">
-                  <input type="checkbox" 
-                    class="cb"
-                    value="checked"
-                    tal:attributes="
-                      checked python:request.get(input_name, '');
-                      name input_name;
-                      id input_id;"/>
-                </td>
-              </tal:block>
-            </tr>
-            <!-- Exclude from Invoice -->
-            <tr tal:define="field_name string:InvoiceExclude">
-              <th colspan="2" i18n:translate="label_invoice_exclude">Exclude from invoice</th>
-              <td>
-                <image class="copyButton" 
-                  tal:attributes="name field_name;src string:${portal/absolute_url}/images/copy.png"/>
+            </tal:block>
+          </tr>
+          <!-- Sample Point -->
+          <tr tal:define="field_name string:SamplePoint">
+            <th colspan="2"><span id="" i18n:translate="label_samplepoint">Sample Point</span></th>
+            <td>
+              <image class="copyButton" 
+                tal:attributes="name field_name;src string:${portal/absolute_url}/images/copy.png"/>
+            </td>
+            <tal:block repeat="column python:range(view.col_count)">
+              <td tal:define="input_name string:ar.${column}.${field_name}:ignore_empty:record;
+                              input_id string:ar_${column}_${field_name}">
+                <input size="10" type='text' class="samplepoint"
+                  tal:attributes="
+                    id input_id;name input_name;
+                    value python:request.get(input_name, '');"/>
               </td>
-              <tal:block repeat="column python:range(view.col_count)">
-                <td tal:define="input_name string:ar.${column}.${field_name}:ignore_empty:record;
-                                input_id string:ar_${column}_${field_name}">
-                  <input type="checkbox" 
-                    class="cb"
-                    value="checked"
-                    tal:attributes="
-                      checked python:request.get(input_name, '');
-                      name input_name;
-                      id input_id;"/>
-                </td>
-              </tal:block>
+            </tal:block>
+          </tr>
+          <!-- Dry Matter -->
+          <tr tal:define="field_name string:ReportDryMatter">
+            <th colspan="2" i18n:translate="label_report_dm">Report as Dry Matter</th>
+            <td>
+              <image class="copyButton" 
+                tal:attributes="name field_name;src string:${portal/absolute_url}/images/copy.png"/>
+            </td>
+            <tal:block repeat="column python:range(view.col_count)">
+              <td tal:define="input_name string:ar.${column}.${field_name}:ignore_empty:record;
+                              input_id string:ar_${column}_${field_name}">
+                <input type="checkbox" 
+                  class="cb"
+                  value="checked"
+                  tal:attributes="
+                    checked python:request.get(input_name, '');
+                    name input_name;
+                    id input_id;"/>
+              </td>
+            </tal:block>
+          </tr>
+          <!-- Exclude from Invoice -->
+          <tr tal:define="field_name string:InvoiceExclude">
+            <th colspan="2" i18n:translate="label_invoice_exclude">Exclude from invoice</th>
+            <td>
+              <image class="copyButton" 
+                tal:attributes="name field_name;src string:${portal/absolute_url}/images/copy.png"/>
+            </td>
+            <tal:block repeat="column python:range(view.col_count)">
+              <td tal:define="input_name string:ar.${column}.${field_name}:ignore_empty:record;
+                              input_id string:ar_${column}_${field_name}">
+                <input type="checkbox" 
+                  class="cb"
+                  value="checked"
+                  tal:attributes="
+                    checked python:request.get(input_name, '');
+                    name input_name;
+                    id input_id;"/>
+              </td>
+            </tal:block>
+          </tr>
+        </thead>
+      
+        <tbody
+          tal:define="cats view/Categories">
+      
+          <!-- -- -- Analyses -- -- -->
+      
+          <tal:pointofcapture repeat="poc python:cats.keys()">
+      
+            <tr class="PointOfCapture">
+             <th colspan="3"><b tal:content="python:modules['Products.bika.config'].POINTS_OF_CAPTURE.getValue(poc)">Analyses</b></th>
+             <th tal:attributes="colspan view/col_count"></th>
             </tr>
-          </thead>
-        
-          <tbody
-            tal:define="cats view/Categories">
-        
-            <!-- -- -- Analyses -- -- -->
-        
-            <tal:pointofcapture repeat="poc python:cats.keys()">
-        
-              <tr class="PointOfCapture">
-               <th colspan="3"><b tal:content="python:modules['Products.bika.config'].POINTS_OF_CAPTURE.getValue(poc)">Analyses</b></th>
-               <th tal:attributes="colspan view/col_count"></th>
-              </tr>
 
-              <tal:categories repeat="cat python:cats[poc]">
-                <thead>
-                  <tr>
-                    <th class="analysiscategory" 
-                      tal:attributes="name python:cat[1]+'_'+poc;
-                                      id python:cat[1]+'_'+poc;
-                                      colspan python:view.col_count+3">
-                      <a tal:content="python:cat[0]">Category Title</a>
-                    </th>
-                  </tr>
-                </thead>
-                <tbody tal:attributes="id python:cat[1]+'_'+poc+'_tbody'" class="analysisservices"><tr></tr></tbody>
-              </tal:categories>
-        
-            </tal:pointofcapture>
-        
-          </tbody>
+            <tal:categories repeat="cat python:cats[poc]">
+              <thead>
+                <tr>
+                  <th class="analysiscategory" 
+                    tal:attributes="name python:cat[1]+'_'+poc;
+                                    id python:cat[1]+'_'+poc;
+                                    colspan python:view.col_count+3">
+                    <a tal:content="python:cat[0]">Category Title</a>
+                  </th>
+                </tr>
+              </thead>
+              <tbody tal:attributes="id python:cat[1]+'_'+poc+'_tbody'" class="analysisservices"><tr></tr></tbody>
+            </tal:categories>
       
-          <tfoot>
+          </tal:pointofcapture>
       
-            <tr>
-              <th colspan="2"><b i18n:translate="label_subtotal">Subtotal</b></th>
-              <th style="text-align:center" i18n:translate="label_currency_abbreviation">R</th>
-              <tal:block repeat="column python:range(view.col_count)">
-                <td tal:define="input_id string:ar_${column}_subtotal;
-                                input_name string:ar.${column}.subtotal">
-                  <input class="price" size="5" disabled="disabled"
-                    tal:attributes="id string:${input_id}_display;
-                                    value python:request.get(input_name, '0.00');"/>
-                  <input type="hidden"
-                    tal:attributes="
-                      id input_id;
-                      name string:${input_name}:ignore_empty:record;
-                      value python:request.get(input_name, '');"/>
-                </td>
-              </tal:block>
-            </tr>
+        </tbody>
+    
+        <tfoot>
+    
+          <tr>
+            <th colspan="2"><b i18n:translate="label_subtotal">Subtotal</b></th>
+            <th style="text-align:center" i18n:translate="label_currency_abbreviation">R</th>
+            <tal:block repeat="column python:range(view.col_count)">
+              <td tal:define="input_id string:ar_${column}_subtotal;
+                              input_name string:ar.${column}.subtotal">
+                <input class="price noborder" size="5" disabled="disabled"
+                  tal:attributes="id string:${input_id}_display;
+                                  value python:request.get(input_name, '0.00');"/>
+                <input type="hidden"
+                  tal:attributes="
+                    id input_id;
+                    name string:${input_name}:ignore_empty:record;
+                    value python:request.get(input_name, '');"/>
+              </td>
+            </tal:block>
+          </tr>
  
             <tr>
-              <th colspan="2"><b i18n:translate="label_vat">VAT</b></th>
-              <th style="text-align:center" i18n:translate="label_currency_abbreviation">R</th>
-              <tal:block repeat="column python:range(view.col_count)">
-                <td tal:define="input_id string:ar_${column}_vat;
-                                input_name string:ar.${column}.vat">
-                  <input class="price" size="5" disabled="disabled"
-                    tal:attributes="id string:${input_id}_display;
-                                    value python:request.get(input_name, '0.00');"/>
-                  <input type="hidden"
-                    tal:attributes="
-                      id input_id;
-                      name string:${input_name}:ignore_empty:record;
-                      value python:request.get(input_name, '');"/>
-                </td>
-              </tal:block>
-            </tr>
+            <th colspan="2"><b i18n:translate="label_vat">VAT</b></th>
+            <th style="text-align:center" i18n:translate="label_currency_abbreviation">R</th>
+            <tal:block repeat="column python:range(view.col_count)">
+              <td tal:define="input_id string:ar_${column}_vat;
+                              input_name string:ar.${column}.vat">
+                <input class="price noborder" size="5" disabled="disabled"
+                  tal:attributes="id string:${input_id}_display;
+                                  value python:request.get(input_name, '0.00');"/>
+                <input type="hidden"
+                  tal:attributes="
+                    id input_id;
+                    name string:${input_name}:ignore_empty:record;
+                    value python:request.get(input_name, '');"/>
+              </td>
+            </tal:block>
+          </tr>
 
-            <tr>
-              <th colspan="2"><b i18n:translate="label_total">Total</b></th>
-              <th style="text-align:center" i18n:translate="label_currency_abbreviation">R</th>
-              <tal:block repeat="column python:range(view.col_count)">
-                <td tal:define="input_id string:ar_${column}_total;
-                                input_name string:ar.${column}.total">
-                  <input class="price" size="5" disabled="disabled"
-                    tal:attributes="id string:${input_id}_display;
-                                    value python:request.get(input_name, '0.00');"/>
-                  <input type="hidden"
-                    tal:attributes="
-                      id input_id;
-                      name string:${input_name}:ignore_empty:record;
-                      value python:request.get(input_name, '');"/>
-                </td>
-              </tal:block>
-            </tr>
+          <tr>
+            <th colspan="2"><b i18n:translate="label_total">Total</b></th>
+            <th style="text-align:center" i18n:translate="label_currency_abbreviation">R</th>
+            <tal:block repeat="column python:range(view.col_count)">
+              <td tal:define="input_id string:ar_${column}_total;
+                              input_name string:ar.${column}.total">
+                <input class="price noborder" size="5" disabled="disabled"
+                  tal:attributes="id string:${input_id}_display;
+                                  value python:request.get(input_name, '0.00');"/>
+                <input type="hidden"
+                  tal:attributes="
+                    id input_id;
+                    name string:${input_name}:ignore_empty:record;
+                    value python:request.get(input_name, '');"/>
+              </td>
+            </tal:block>
+          </tr>
 
-            <tr>
-              <th colspan="3" i18n:translate="label_saveprofile">Save profile</th>
-              <tal:save repeat="column python:range(view.col_count)">
-                <td>
-                  <input type="text" size="10"
-                    tal:define="
-                      input_name string:ar_${column}.profileTitle"
-                    tal:attributes="
-                      id input_name;
-                      name string:${input_name}:ignore_empty:record;
-                      value python:request.get(input_name, '');"/>
+          <tr>
+            <th colspan="3" i18n:translate="label_saveprofile">Save profile</th>
+            <tal:save repeat="column python:range(view.col_count)">
+              <td>
+                <input type="text" size="10"
+                  tal:define="
+                    input_name string:ar_${column}.profileTitle"
+                  tal:attributes="
+                    id input_name;
+                    name string:${input_name}:ignore_empty:record;
+                    value python:request.get(input_name, '');"/>
               </td>
             </tal:save>
           </tr>
         </tfoot>
 
       </table>
-      
+    
       <input class="context" 
              type="submit" 
              value="Submit"/>
-      
-      
+
       <br/>
       <br/>
-      
-      <div class="discreeter">
+
+      <div class="discreeter"
+           tal:define="portal context/@@plone_portal_state/portal">
         <!--<p tal:condition="dry_matter">
         <img src="" tal:attributes="src string:${view/portal/absolute_url}/dry.png">
         <span i18n:translate="disclaimer_can_be_dry">
         Can be reported as dry matter</span>
         </p>-->
         <p tal:condition="python:context.bika_settings.laboratory.getLaboratoryAccredited()">
-          <img src="" tal:attributes="src string:images/accredited.png">
+          <img src="" tal:attributes="src string:${portal/absolute_url}/images/accredited.png">
           <span i18n:translate="disclaimer_accred">
             Methods included in the <tal:block replace="here/bika_settings/laboratory/AccreditationBody" i18n:name="accreditation_body"/> 
             schedule of Accreditation for this Laboratory. Analysis remarks are not accredited
@@ -407,7 +397,11 @@
           </span>
         </p>
       </div>
+
     </form>
   </div>
 </body>
 </html>
+
+
+

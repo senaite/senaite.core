@@ -159,8 +159,14 @@
  <index name="getPrice" meta_type="FieldIndex">
   <indexed_attr value="getPrice"/>
  </index>
+ <index name="getVAT" meta_type="FieldIndex">
+  <indexed_attr value="getVAT"/>
+ </index>
  <index name="getAccredited" meta_type="FieldIndex">
   <indexed_attr value="getAccredited"/>
+ </index>
+ <index name="getCalcDependancyUIDS" meta_type="FieldIndex">
+  <indexed_attr value="getCalcDependancyUIDS"/>
  </index>
  <index name="getProfileTitle" meta_type="FieldIndex">
   <indexed_attr value="getProfileTitle"/>
@@ -249,7 +255,9 @@
  <column value="getPointOfCapture"/>
  <column value="getUnit"/>
  <column value="getPrice"/>
+ <column value="getVAT"/>
  <column value="getAccredited"/>
+ <column value="getCalcDependancyUIDS"/>
  <column value="getProfileTitle"/>
  <column value="getProfileKey"/>
  <column value="id"/>

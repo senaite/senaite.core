@@ -6,7 +6,6 @@ from bika_client_status import bika_client_status
 from bika_instrument_import import bika_instrument_import
 from bika_invoice_prefs import bika_invoice_prefs
 from bika_pdf_build import bika_pdf_build
-from bika_portal_ids import bika_portal_ids
 from bika_profiles_export import bika_profiles_export
 from bika_publication_prefs import bika_publication_prefs
 from bika_services_export import bika_services_export

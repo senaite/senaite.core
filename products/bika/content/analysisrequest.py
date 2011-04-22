@@ -7,6 +7,7 @@ from AccessControl.Permissions import delete_objects
 from DateTime import DateTime
 from Products.ATContentTypes.content import schemata
 from Products.ATExtensions.ateapi import DateTimeField, DateTimeWidget
+from Products.ATExtensions.widget.records import RecordsWidget
 from Products.Archetypes import atapi
 from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.Archetypes.public import *
@@ -14,11 +15,12 @@ from Products.Archetypes.references import HoldingReference
 from Products.Archetypes.utils import shasattr
 from Products.CMFCore import permissions
 from Products.CMFCore.WorkflowCore import WorkflowException
+from decimal import Decimal
 from Products.CMFCore.permissions import View, ModifyPortalContent
 from Products.CMFCore.utils import getToolByName
 from Products.CMFDynamicViewFTI.browserdefault import BrowserDefaultMixin
 from Products.CMFPlone.utils import transaction_note
-from Products.bika.browser.fields import AnalysesField
+from Products.bika.browser.fields import ARAnalysesField
 from Products.bika.browser.widgets import AnalysesWidget
 from Products.bika.config import I18N_DOMAIN, SubmitResults, PROJECTNAME, \
     ManageInvoices
@@ -80,6 +82,13 @@ schema = BikaSchema.copy() + Schema((
         allowed_types = ('Sample',),
         referenceClass = HoldingReference,
         relationship = 'AnalysisRequestSample',
+    ),
+    ARAnalysesField('Analyses',
+        required=1,
+        widget=AnalysesWidget(
+            label='Analyses',
+            label_msgid='label_analyses',
+        ),
     ),
     StringField('ClientOrderNumber',
         index = 'FieldIndex',
@@ -150,13 +159,6 @@ schema = BikaSchema.copy() + Schema((
     TextField('Notes',
         widget = TextAreaWidget(
             label = 'Notes'
-        ),
-    ),
-    AnalysesField('Analyses',
-        required = 1,
-        widget = AnalysesWidget(
-            label = 'Analyses',
-            label_msgid = 'label_analyses',
         ),
     ),
     FixedPointField('MemberDiscount',
@@ -322,19 +324,20 @@ class AnalysisRequest(VariableSchemaSupport, BrowserDefaultMixin, BaseFolder):
     def getSubtotal(self):
         """ Compute Subtotal """
         return sum(
-            [obj.getPrice() \
+            [Decimal(obj.getPrice()) \
             for obj in self.getBillableItems()])
 
     security.declareProtected(View, 'getVAT')
     def getVAT(self):
         """ Compute VAT """
-        return self.getTotalPrice() - self.getSubtotal()
+        return Decimal(self.getTotalPrice()) - Decimal(self.getSubtotal())
+
 
     security.declareProtected(View, 'getTotalPrice')
     def getTotalPrice(self):
         """ Compute TotalPrice """
         return sum(
-            [obj.getTotalPrice() \
+            [Decimal(obj.getTotalPrice()) \
             for obj in self.getBillableItems()])
     getTotal = getTotalPrice
 

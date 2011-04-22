@@ -2,7 +2,8 @@
 
 $Id: Client.py 2298 2010-05-19 09:18:43Z anneline $
 """
-
+from Products.bika import interfaces
+from zope.component import getUtility
 from AccessControl import ClassSecurityInfo
 from Products.ATContentTypes.content import schemata
 from Products.Archetypes import atapi
@@ -103,6 +104,51 @@ class Client(BrowserDefaultMixin, Organisation):
         else:
             self.setup_state = False
         return False
+
+    security.declarePublic('generateUniqueId')
+    def generateUniqueId (self, type_name, batch_size=None):
+        """Generate a unique ID for sub objects of the client
+        """
+        IdServer = getUtility(interfaces.IIdServer)()
+        
+        # get prefix
+        prefixes = self.bika_settings.getPrefixes()
+        type_name.replace(' ', '')
+        for d in prefixes:
+            if type_name != d['portal_type']: continue
+            prefix, padding = d['prefix'], d['padding']
+            if batch_size:
+                next_id = str(IdServer.generate_id(prefix, batch_size=batch_size))
+            else:
+                next_id = str(IdServer.generate_id(prefix))
+            if padding:
+                next_id = next_id.zfill(int(padding))
+            return '%s%s' % ( prefix, next_id )
+
+        if batch_size:
+            next_id = str(IdServer.generate_id(type_name,batch_size=batch_size))
+        else:
+            next_id = str(IdServer.generate_id(type_name))
+        return '%s_%s'% ( type_name.lower(), next_id )
+
+    security.declarePublic('generateARUniqueId')
+    def generateARUniqueId (self, type_name, sample_id, ar_number):
+        """Generate a unique ID for new ARs
+            Analysisrequests are numbered as subnumbers of the associated sample,
+        """
+        # get prefix
+        prefixes = self.bika_settings.getPrefixes()
+        type_name = type_name.replace(' ', '')
+        for d in prefixes:
+            if type_name == d['portal_type']:
+                padding = int(d['padding'])
+                prefix  = d['prefix']
+                break
+
+        sample_number = sample_id.split('-')[1]
+        ar_id = prefix + sample_number + '-' + str(ar_number).zfill(padding)
+        
+        return ar_id
 
     security.declarePublic('getContactsDisplayList')
     def getContactsDisplayList(self):
