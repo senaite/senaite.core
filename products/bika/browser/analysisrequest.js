@@ -38,7 +38,7 @@ function toggleCat(header_ID, selectedservices, column){
 	tbody = jq('#'+name+"_tbody");
 	categoryUID = name.split("_")[0];
 	poc = name.split("_")[1];
-
+    if(!column && column != 0) { column = ""; }
 	if(jq('#'+header_ID).hasClass("expanded")){
 		// displaying and completing an an already expanded category
 		// for an ARProfile selection; price recalc happens in setARProfile()
@@ -55,7 +55,6 @@ function toggleCat(header_ID, selectedservices, column){
 		}
 	} else {
 		if(!selectedservices) selectedservices = [];
-		if(!column) { column = ""; }
 		jq('#'+header_ID).addClass("expanded");
 		tbody.load("analysisrequest_analysisservices", 
 			{'selectedservices': selectedservices.join(","),
@@ -299,28 +298,31 @@ function autocomplete_samplepoint(request,callback){
 }
 
 jq(document).ready(function(){
-	// jquery-ui date picker
 	jq('input[id$="_DateSampled"]').datepicker({'dateFormat': 'yy-mm-dd'});
-
-	// copy buttons
 	jq(".copyButton").live('click', copyButton);
-
-	// any changes to ARProfile dropdown
+    jq(".sampletype").autocomplete({ minLength: 0, source: autocomplete_sampletype});
+    jq(".samplepoint").autocomplete({ minLength: 0, source: autocomplete_samplepoint});
 	jq("select[class='ARProfile']").change(setARProfile);
 
-	// service category expanding rows
-	jq('th[class^="analysiscategory"]').click(function(){
+	// service category expanding rows for all AR forms
+	jq('tr[class^="analysiscategory"]').click(function(){
 		toggleCat(jq(this).attr("id"));
 	});
 
 	// service category pre-expanded rows
-	prefill = jq('tr[class$="prefill"]');
-	for(i=0;i<prefill.length;i++){
-		toggleCat(this);
-		if(i==prefill.length-1){ 
-			recalc_prices();
-		}
-	}
+	// These are in AR Edit, not AR Add
+    selected_elements = []
+    prefilled = false;
+    selected_services = jq("#selectedservices").val().split(",");
+    jq.each(jq('tr[class$="prefill"]'), function(i,e){
+       prefilled = true;
+       toggleCat(jq(e).attr("id"), selected_services, 0); // AR Edit has only column 0
+       selected_elements.push(jq(e));
+     });
+     if (prefilled){
+          calcdependencies(selected_elements);
+          recalc_prices();
+     }
 
 	// Contact dropdown changes
 	jq("#contact").live('change', function(){
@@ -335,7 +337,8 @@ jq(document).ready(function(){
 			dataType: "json"
 		});
 	});
-	jq("#contact").change();
+    jq("#contact").change();
+	 
 
 	// recalculate when price elements' values are changed
 	jq("input[name^='Price']").live('change', function(){
@@ -385,21 +388,4 @@ jq(document).ready(function(){
 		window.close();
 	});
 
-    jq(".sampletype").autocomplete({ minLength: 0, source: autocomplete_sampletype});
-    jq(".samplepoint").autocomplete({ minLength: 0, source: autocomplete_samplepoint});
-
-	// ADD form sumbit
-	jq("#analysisrequest_add_form").submit(function(){
-		$.ajax({
-			type: 'POST',
-			url: 'analysisrequest_add_validate',
-			data: this,
-			success: function(data, textStatus, jqXHR){
-				alert("submit textstatus: " + textStatus);
-			},
-			dataType: "json"
-		});
-	});
-
 });
- 

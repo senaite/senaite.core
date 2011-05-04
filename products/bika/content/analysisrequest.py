@@ -15,20 +15,22 @@ from Products.Archetypes.references import HoldingReference
 from Products.Archetypes.utils import shasattr
 from Products.CMFCore import permissions
 from Products.CMFCore.WorkflowCore import WorkflowException
-from decimal import Decimal
 from Products.CMFCore.permissions import View, ModifyPortalContent
 from Products.CMFCore.utils import getToolByName
 from Products.CMFDynamicViewFTI.browserdefault import BrowserDefaultMixin
 from Products.CMFPlone.utils import transaction_note
 from Products.bika.browser.fields import ARAnalysesField
 from Products.bika.browser.widgets import AnalysesWidget
+from Products.bika.interfaces import IAnalysisRequest
 from Products.bika.config import I18N_DOMAIN, SubmitResults, PROJECTNAME, \
     ManageInvoices
 from Products.bika.content.bikaschema import BikaSchema
 from Products.bika.utils import sortable_title
+from decimal import Decimal
 from email.Utils import formataddr
 from types import ListType, TupleType
 from zope.app.component.hooks import getSite
+from zope.interface import implements
 import sys
 import time
 
@@ -205,6 +207,7 @@ schema = BikaSchema.copy() + Schema((
 schema['title'].required = False
 
 class AnalysisRequest(VariableSchemaSupport, BrowserDefaultMixin, BaseFolder):
+    implements(IAnalysisRequest)
     security = ClassSecurityInfo()
     schema = schema
     displayContentsTab = False

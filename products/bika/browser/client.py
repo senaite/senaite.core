@@ -98,6 +98,8 @@ class ClientAnalysisRequestsView(BikaFolderContentsView):
             items[x]['SamplePoint'] = sample.getSamplePoint().Title()
             items[x]['ClientReference'] = sample.getClientReference()
             items[x]['ClientSampleID'] = sample.getClientSampleID()
+            items[x]['getDateReceived'] = self.context.toLocalizedTime(obj.getDateReceived(), long_format=0)
+            items[x]['getDatePublished'] = self.context.toLocalizedTime(obj.getDatePublished(), long_format=0)
 
             items[x]['links'] = {'getRequestID': items[x]['url']}
 
@@ -382,7 +384,7 @@ class ClientContactsView(BikaFolderContentsView):
     content_add_buttons = {'Contact': "createObject?type_name=Contact"}
     title = "Contacts"
     description = ""
-    show_editable_border = False
+    show_editable_border = True
     batch = True
     b_size = 100
     wflist_states = []

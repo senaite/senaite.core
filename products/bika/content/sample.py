@@ -1,10 +1,10 @@
 """Sample represents a physical sample submitted for testing
 """
-from Products.ATContentTypes.content import schemata
-from Products.Archetypes import atapi
 from AccessControl import ClassSecurityInfo
 from DateTime import DateTime
+from Products.ATContentTypes.content import schemata
 from Products.ATExtensions.ateapi import DateTimeField, DateTimeWidget
+from Products.Archetypes import atapi
 from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.Archetypes.public import *
 from Products.Archetypes.references import HoldingReference
@@ -12,8 +12,8 @@ from Products.CMFCore import permissions
 from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFCore.utils import getToolByName, getToolByName
 from Products.CMFDynamicViewFTI.browserdefault import BrowserDefaultMixin
-from Products.bika.content.bikaschema import BikaSchema
 from Products.bika.config import I18N_DOMAIN, ManageBika, PROJECTNAME
+from Products.bika.content.bikaschema import BikaSchema
 from Products.bika.utils import sortable_title
 import sys
 import time
@@ -182,7 +182,7 @@ class Sample(VariableSchemaSupport, BrowserDefaultMixin, BaseFolder):
         portal = self.portal_url.getPortalObject()
         rs = self.portal_catalog(
             portal_type = 'SampleType',
-            sortable_title = sortable_title(portal, value)
+            Title = value
         )
         value = rs[0].UID
 

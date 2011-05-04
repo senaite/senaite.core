@@ -11,36 +11,36 @@ def analysisrequest_add_submit(context, request):
     portal = getToolByName(context, 'portal_url').getPortalObject()
     rc = getToolByName(context, 'reference_catalog')
     pc = getToolByName(context, 'portal_catalog')
+    came_from = form.has_key('came_from') and form['came_from'] or 'add'
+
+    import pprint
+    pprint.pprint(request.form)
 
     errors = {}
-    def error(field=None, column=None,message = None):
+    def error(field = None, column = None, message = None):
         if not message:
             message = context.translate('message_input_required',
-                                        default = 'Input is required but no input given.', 
+                                        default = 'Input is required but no input given.',
                                         domain = 'bika')
-        colstr = column != None and "%s."%column or ""
+        colstr = column != None and "%s." % column or ""
         fieldstr = field != None and field or ""
         error_key = "%s%s" % (colstr, field) or 'Form error'
         try: errors[error_key].append(message)
         except: errors[error_key] = [message, ]
 
-    came_from = form.has_key('came_from') and form['came_from'] or 'Add'
-
-    import pprint
-    pprint.pprint(request.form)
-
     # first some basic validation
 
-    required = ('Analyses', 'SampleType', 'DateSampled')
-    fields = ('SampleID', 'ClientOrderNumber', 'ClientReference', 
-              'ClientSampleID', 'DateSampled', 'SampleType', 'SamplePoint', 
+    required = ['Analyses']
+    if came_from == "add": required += ['SampleType', 'DateSampled']
+    fields = ('SampleID', 'ClientOrderNumber', 'ClientReference',
+              'ClientSampleID', 'DateSampled', 'SampleType', 'SamplePoint',
               'ReportDryMatter', 'InvoiceExclude', 'Analyses')
-   
+
     try:
         prices = form['Prices']
         vat = form['VAT']
     except KeyError:
-        return error(message="No analyses selected.")
+        return error(message = "No analyses selected.")
 
     for column in range(int(form['col_count'])):
         if not form.has_key("ar.%s" % column):
@@ -60,17 +60,17 @@ def analysisrequest_add_submit(context, request):
             if not ar.has_key(field):
                 continue
 
-            if field == "SampleID":
+            if came_from == "add" and field == "SampleID":
                 if not pc(portal_type = 'Sample',
                           getSampleID = ar[field]):
                     error(column, field, '%s is not a valid sample ID' % ar[field])
 
-            elif field == "SampleType":
+            elif came_from == "add" and field == "SampleType":
                 if not pc(portal_type = 'SampleType',
                           Title = ar[field]):
                     error(column, field, '%s is not a valid sample type' % ar[field])
 
-            elif field == "SamplePoint":
+            elif came_from == "add" and field == "SamplePoint":
                 if not pc(portal_type = 'SamplePoint',
                           Title = ar[field]):
                     error(column, field, '%s is not a valid sample point' % ar[field])
@@ -128,17 +128,20 @@ def analysisrequest_add_submit(context, request):
             sample.edit(LastARNumber = ar_number)
             sample.reindexObject()
         else:
-            # Primary AR
-            sample_id = context.generateUniqueId('Sample')
-            context.invokeFactory(id = sample_id, type_name = 'Sample')
-            sample = context[sample_id]
-            sample.edit(
-                SampleID = sample_id,
-                LastARNumber = ar_number,
-                DateSubmitted = DateTime(),
-                SubmittedByUser = sample.current_user(),
-                **dict(values)
-            )
+            # Primary AR or AR Edit both come here
+            if came_from == "add":
+                sample_id = context.generateUniqueId('Sample')
+                context.invokeFactory(id = sample_id, type_name = 'Sample')
+                sample = context[sample_id]
+                sample.edit(
+                    SampleID = sample_id,
+                    LastARNumber = ar_number,
+                    DateSubmitted = DateTime(),
+                    SubmittedByUser = sample.current_user(),
+                    **dict(values)
+                )
+            else:
+                sample = context.getSample()
             sample_uid = sample.UID()
             dis_date = sample.disposal_date()
             sample.setDisposalDate(dis_date)
@@ -148,23 +151,32 @@ def analysisrequest_add_submit(context, request):
         Analyses = values['Analyses']
         del values['Analyses']
 
-        ar_id = context.generateARUniqueId('AnalysisRequest', sample_id, ar_number)
-        context.invokeFactory(id = ar_id, type_name = 'AnalysisRequest')
-        ar = context[ar_id]
-        ar.edit(
-            RequestID = ar_id,
-            DateRequested = DateTime(),
-            Contact = form['Contact'],
-            CCContact = form['cc_uids'].split(","),
-            CCEmails = form['CCEmails'],
-            Sample = sample_uid,
-            Analyses = [ '%s:%s'%(a,prices[a]) for a in Analyses ] ,
-            Profile = profile,
-            **dict(values)
-            )
+        if came_from == "add":
+            ar_id = context.generateARUniqueId('AnalysisRequest', sample_id, ar_number)
+            context.invokeFactory(id = ar_id, type_name = 'AnalysisRequest')
+            ar = context[ar_id]
+            ar.edit(
+                RequestID = ar_id,
+                DateRequested = DateTime(),
+                Contact = form['Contact'],
+                CCContact = form['cc_uids'].split(","),
+                CCEmails = form['CCEmails'],
+                Sample = sample_uid,
+                Profile = profile,
+                **dict(values)
+             )
+        else:
+            ar_id = context.getRequestID()
+            ar = context
+            ar.edit(
+                Contact = form['Contact'],
+                CCContact = form['cc_uids'].split(","),
+                CCEmails = form['CCEmails'],
+                Profile = profile,
+                **dict(values)
+             )
 
-        # create Analysis objects
-        # ar.setAnalyses(Analyses)
+        ar.setAnalyses(['%s:%s' % (a, prices[a]) for a in Analyses])
 
         if (values.has_key('profileTitle')):
             profile_id = context.generateUniqueId('ARProfile')
@@ -183,29 +195,264 @@ def analysisrequest_add_submit(context, request):
 
     # AVS check sample_state and promote the AR is > 'due'
 
-    return "Successfully created new AR%s" % (len(ARs) > 1 and 's' or '')
+    if came_from == "add":
+        return "Successfully created new AR%s" % (len(ARs) > 1 and 's' or '')
+    else:
+        return "Changes Saved"
+
+
+
+class AnalysisRequestViewView(BrowserView):
+    """ AR View form
+    """
+    template = ViewPageTemplateFile("templates/analysisrequest_view.pt")
+
+    #def __init__(self, context, request):
+    #    super(BrowserView, self).__init__(context, request)
+    #    request.set('disable_border', 1)
+
+    def __call__(self):
+        return self.template()
+
+    def tabindex(self):
+        i = 0
+        while True:
+            i += 1
+            yield i
+
+    def now(self):
+        return DateTime()
+
+    def Categories(self):
+        """ Dictionary keys: field/lab
+            Dictionary values: (Category Title,category UID)
+            This returns only cats which have analyses selected in the current AR
+        """
+        pc = getToolByName(self.context, 'portal_catalog')
+        cats = {}
+        for analysis in pc(portal_type = "Analysis"):
+            analysis = analysis.getObject()
+            service = analysis.getService()
+            poc = service.getPointOfCapture()
+            if not cats.has_key(poc): cats[poc] = []
+            cat = (service.getCategoryName(), service.getCategoryUID())
+            if cat not in cats[poc]: cats[poc].append(cat)
+        return cats
+
+    def result_in_range(self, analysis, sampletype_uid, specification):
+        ## Script (Python) "result_in_range"
+        ##bind container=container
+        ##bind context=context
+        ##bind namespace=
+        ##bind script=script
+        ##bind subpath=traverse_subpath
+        ##parameters=analysis, sampletype_uid, specification
+        ##title=Check if result in range
+        ##
+        from decimal import Decimal
+        result_class = ''
+        result = analysis.getResult()
+        try:
+            result = Decimal(result)
+        except:
+            # if it is not an integer result we assume it is in range
+            return ''
+
+        service = analysis.getService()
+        aservice = service.UID()
+
+        if analysis.portal_type in ['Analysis', 'RejectAnalysis']:
+            if analysis.portal_type == 'RejectAnalysis':
+                client_uid = analysis.getRequest().getClientUID()
+            else:
+                client_uid = analysis.getClientUID()
+
+            if specification == 'lab':
+                a = self.context.portal_catalog(portal_type = 'LabAnalysisSpec',
+                                            getSampleTypeUID = sampletype_uid)
+            else:
+                a = self.context.portal_catalog(portal_type = 'AnalysisSpec',
+                                            getSampleTypeUID = sampletype_uid,
+                                            getClientUID = client_uid)
+
+            if a:
+                spec_obj = a[0].getObject()
+                spec = spec_obj.getResultsRangeDict()
+            else:
+                return ''
+
+            result_class = 'out_of_range'
+            if spec.has_key(aservice):
+                spec_min = float(spec[aservice]['min'])
+                spec_max = float(spec[aservice]['max'])
+                if spec_min <= result <= spec_max:
+                    result_class = ''
+                #else:
+                #    """ check if in error range """
+                #    error_amount = result * float(spec[aservice]['error']) / 100
+                #    error_min = result - error_amount
+                #    error_max = result + error_amount
+                #    if ((result < spec_min) and (error_max >= spec_min)) or \
+                #       ((result > spec_max) and (error_min <= spec_max)):
+                #        result_class = 'in_error_range'
+            else:
+                result_class = ''
+
+        elif analysis.portal_type == 'StandardAnalysis':
+            result_class = ''
+            specs = analysis.aq_parent.getResultsRangeDict()
+            if specs.has_key(aservice):
+                spec = specs[aservice]
+                if (result < float(spec['min'])) or (result > float(spec['max'])):
+                    result_class = 'out_of_range'
+            return specs
+
+        elif analysis.portal_type == 'DuplicateAnalysis':
+            service = analysis.getService()
+            service_id = service.getId()
+            service_uid = service.UID()
+            wf_tool = self.context.portal_workflow
+            if wf_tool.getInfoFor(analysis, 'review_state', '') == 'rejected':
+                ws_uid = self.context.UID()
+                for orig in self.context.portal_catalog(portal_type = 'RejectAnalysis',
+                                              getWorksheetUID = ws_uid,
+                                              getServiceUID = service_uid):
+                    orig_analysis = orig.getObject()
+                    if orig_analysis.getRequest().getRequestID() == analysis.getRequest().getRequestID():
+                        break
+            else:
+                ar = analysis.getRequest()
+                orig_analysis = ar[service_id]
+            orig_result = orig_analysis.getResult()
+            try:
+                orig_result = float(orig_result)
+            except ValueError:
+                return ''
+            dup_variation = service.getDuplicateVariation()
+            dup_variation = dup_variation and dup_variation or 0
+            range_min = result - (result * dup_variation / 100)
+            range_max = result + (result * dup_variation / 100)
+            if range_min <= orig_result <= range_max:
+                result_class = ''
+            else:
+                result_class = 'out_of_range'
+
+        return result_class
+
+    def get_calc_columns(self, batch):
+        ##
+        ##title=Determine which calculation columns are required
+        ##
+        vm = False # vessel mass
+        sm = False # sample mass
+        nm = False # nett mass
+        gm = False # nett mass
+        tv = False # titration vol
+        tf = False # titration factor
+
+        for analysis in batch:
+            calc_type = analysis.getCalcType()
+            if calc_type == None:
+                continue
+            if calc_type in ['wl', 'rw']:
+                gm = True
+                vm = True
+                nm = True
+            if calc_type in ['wlt', 'rwt']:
+                vm = True
+                sm = True
+                nm = True
+            if calc_type in ['t', ]:
+                tv = True
+                tf = True
+        cols = []
+        if vm: cols.append('vm')
+        if sm: cols.append('sm')
+        if gm: cols.append('gm')
+        if nm: cols.append('nm')
+        if tv: cols.append('tv')
+        if tf: cols.append('tf')
+
+        return cols
+
+    def get_requested_analyses(self):
+        ##
+        ##title=Get requested analyses
+        ##
+        wf_tool = getToolByName(self.context, 'portal_workflow')
+        result = []
+        cats = {}
+        for analysis in self.context.getAnalyses():
+            if wf_tool.getInfoFor(analysis, 'review_state', '') == 'not_requested':
+                continue
+            if not cats.has_key(analysis.getService().getCategoryName()):
+                cats[analysis.getService().getCategoryName()] = {}
+            analyses = cats[analysis.getService().getCategoryName()]
+            analyses[analysis.Title()] = analysis
+            cats[analysis.getService().getCategoryName()] = analyses
+
+        cat_keys = cats.keys()
+        cat_keys.sort(lambda x, y:cmp(x.lower(), y.lower()))
+
+        for cat_key in cat_keys:
+            analyses = cats[cat_key]
+            analysis_keys = analyses.keys()
+            analysis_keys.sort(lambda x, y:cmp(x.lower(), y.lower()))
+            for analysis_key in analysis_keys:
+                result.append(analyses[analysis_key])
+
+        return result
+
+    def get_analysisrequest_verifier(self, analysisrequest):
+        ## Script (Python) "get_analysisrequest_verifier"
+        ##bind container=container
+        ##bind context=context
+        ##bind namespace=
+        ##bind script=script
+        ##bind subpath=traverse_subpath
+        ##parameters=analysisrequest
+        ##title=Get analysis workflow states
+        ##
+
+        ## get the name of the member who last verified this AR
+        ##  (better to reverse list and get first!)
+
+        wtool = getToolByName(self.context, 'portal_workflow')
+        mtool = getToolByName(self.context, 'portal_membership')
+
+        verifier = None
+        try:
+            review_history = wtool.getInfoFor(analysisrequest, 'review_history')
+        except:
+            return 'access denied'
+
+        [review for review in review_history if review.get('action', '')]
+        if not review_history:
+            return 'no history'
+        for items in  review_history:
+            action = items.get('action')
+            if action != 'verify':
+                continue
+            actor = items.get('actor')
+            member = mtool.getMemberById(actor)
+            verifier = member.getProperty('fullname')
+            if verifier is None or verifier == '':
+                verifier = actor
+        return verifier
+
 
 class AnalysisRequestAddView(BrowserView):
     """ The main AR Add form
     """
-    template = ViewPageTemplateFile("templates/analysisrequest_add.pt")
-
+    template = ViewPageTemplateFile("templates/analysisrequest_edit.pt")
     col_count = 4
-
-    def __init__(self, context, request):
-        super(BrowserView, self).__init__(context, request)
-        request.set('disable_border', 1)
+    came_from = "add"
 
     def __call__(self):
-        import pprint
         if self.request.form.has_key("submitted"):
             analysisrequest_add_submit(self.context, self.request)
         else:
             return self.template()
-
-    def portal(self):
-        portal_url = getToolByName(self, 'portal_url')
-        return portal_url.absolute_url()
 
     def arprofiles(self):
         """ Return applicable client and Lab ARProfile records
@@ -233,6 +480,54 @@ class AnalysisRequestAddView(BrowserView):
             if cat not in cats[poc]: cats[poc].append(cat)
         return cats
 
+class AnalysisRequestEditView(AnalysisRequestAddView):
+    template = ViewPageTemplateFile("templates/analysisrequest_edit.pt")
+    col_count = 1
+    came_from = "edit"
+
+    def SelectedServices(self):
+        """ res is a list of lists.  [[category uid, service uid],...]
+            for each service selected
+        """
+        pc = getToolByName(self.context, 'portal_catalog')
+        res = []
+        for analysis in pc(portal_type = "Analysis", RequestID = self.context.RequestID):
+            analysis = analysis.getObject() # XXX getObject
+            service = analysis.getService()
+            res.append([service.getCategoryUID(), service.UID(), service.getPointOfCapture()])
+        return res
+
+class AnalysisRequestManageResultsView(AnalysisRequestViewView):
+    template = ViewPageTemplateFile("templates/analysisrequest_analyses.pt")
+
+    def __call__(self):
+        return self.template()
+
+    def get_analysis_request_actions(self):
+        ## Script (Python) "get_analysis_request_actions"
+        ##bind container=container
+        ##bind context=context
+        ##bind namespace=
+        ##bind script=script
+        ##bind subpath=traverse_subpath
+        ##parameters=
+        ##title=
+        ##
+        wf_tool = self.context.portal_workflow
+        actions_tool = self.context.portal_actions
+
+        actions = {}
+        for analysis in self.context.getAnalyses():
+            review_state = wf_tool.getInfoFor(analysis, 'review_state', '')
+            if review_state in ('not_requested', 'to_be_verified', 'verified'):
+                a = actions_tool.listFilteredActionsFor(analysis)
+                for action in a['workflow']:
+                    if actions.has_key(action['id']):
+                        continue
+                    actions[action['id']] = action
+
+        return actions.values()
+
 class AnalysisRequestContactCCs(BrowserView):
     """ Returns lists of UID/Title for preconfigured CC contacts 
         When a client contact is selected from the #contact dropdown,
@@ -256,7 +551,6 @@ class AnalysisRequestSelectCCView(BrowserView):
     template = ViewPageTemplateFile("templates/analysisrequest_select_cc.pt")
     def __call__(self):
         return self.template()
-
 
 class AnalysisRequestSelectSampleView(BrowserView):
     """ The Sample Selector popup window uses this view
@@ -337,5 +631,3 @@ class AnalysisRequest_SamplePoints(BrowserView):
         term = self.request.get('term', '')
         items = [s.Title for s in pc(portal_type = "SamplePoint") if s.Title.find(term) > -1]
         return json.dumps(items)
-
-
