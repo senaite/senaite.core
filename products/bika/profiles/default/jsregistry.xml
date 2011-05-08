@@ -1,6 +1,24 @@
 <?xml version="1.0"?>
 <object name="portal_javascripts">
-    <javascript id="jquery-ui.js"
-                cacheable="True" compression="safe" cookable="True"
-                enabled="True" expression=""  inline="False" insert-after="*"/>
+	<javascript id="jquery-ui.js"
+				cacheable="True" compression="safe" cookable="True"
+				enabled="True" expression=""  inline="False" insert-after="*"/>
+	<javascript authenticated="0" 
+				cacheable="True" 
+				compression="safe" 
+				conditionalcomment="" 
+				cookable="True" 
+				enabled="on" 
+				expression="" 
+				id="++resource++globautils.js" 
+				inline="False"/>
+	<javascript authenticated="False" 
+				cacheable="True" 
+				compression="safe" 
+				conditionalcomment="" 
+				cookable="True" 
+				enabled="on" 
+				expression="python:here.portal_type in ['AnalysisRequest']" 
+				id="++resource++analysisrequest.js" 
+				inline="False"/>
 </object>

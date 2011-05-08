@@ -1,8 +1,11 @@
 /*
  */
  
+
 <dtml-with base_properties>
 <dtml-call "REQUEST.set('portal_url', portal_url())">
+
+
 
 /*
  * Remove boring whitespace in sunburst
@@ -54,6 +57,10 @@ table.invisible td, table.invisible th, table.plain td, table.plain th, table.li
     padding-top: 0.25em;
     vertical-align: top;
 }
+
+
+
+
 /*
  * ( make the global NAV bar smaller
  */
@@ -74,6 +81,8 @@ div.width-1\3a 4 { width: 16.5%; } /* .width-1:4 */
 div.width-3\3a 4 { width: 80.2%; } /* .width-1:4 */
 div.position-1\3a 4 {margin-left:    -81.5%;} /* .position-1:4 */
 
+
+
 /* jquery Table DnD
  */
 
@@ -81,6 +90,11 @@ div.position-1\3a 4 {margin-left:    -81.5%;} /* .position-1:4 */
     border: 1px dotted &dtml-globalBorderColor;;
     background-color: &dtml-globalBackgroundColor;;
 }
+
+
+
+
+
 
 /*
  * Analysis Request tables
@@ -135,7 +149,8 @@ div.position-1\3a 4 {margin-left:    -81.5%;} /* .position-1:4 */
     border-left: &dtml-borderWidth; &dtml-borderStyle; &dtml-globalBorderColor;;
     font-weight: bold;
     cursor:pointer;
-    text-align: center;
+    margin-left:2em;
+    text-align: left;
 }
 
 .analysisrequest .price {
@@ -159,6 +174,28 @@ div.position-1\3a 4 {margin-left:    -81.5%;} /* .position-1:4 */
     text-align: left;
 }
 
+.analysisrequest .unit {
+	font-size:80%;
+	font-color: #ccc;
+}
+
+.delAttachmentButton {
+    background: &dtml-globalBackgroundColor; url(&dtml-portal_url;/images/delete.png) center center no-repeat;
+    border: &dtml-borderWidth; &dtml-borderStyle; &dtml-globalBorderColor; ! important;
+    cursor: pointer;
+    height: 15px;
+    width: 15px;
+
+}
+.removeButton {
+    background: &dtml-globalBackgroundColor; url(&dtml-portal_url;/images/delete.png) center center no-repeat;
+    border: &dtml-borderWidth; &dtml-borderStyle; &dtml-globalBorderColor; ! important;
+    cursor: pointer;
+    height: 15px;
+    width: 15px;
+    visibility: hidden;
+}
+
 .copyButton{
 	cursor: pointer;
 }
@@ -175,6 +212,21 @@ div.position-1\3a 4 {margin-left:    -81.5%;} /* .position-1:4 */
     background-color: transparent;
 }
 
+
+
+
+
+/*          ********* hide  ContentActions on custom folder types */
+
+.portaltype-analysisrequest #plone-contentmenu-actions {
+	display: none;
+}
+.portaltype-analysisrequest #plone-contentmenu-display {
+	display: none;
+}
+.portaltype-analysisrequest #plone-contentmenu-factories {
+	display: none;
+}
 
 
 
@@ -350,23 +402,6 @@ select.worksheet {
     background: #B6C0D1;;
 }
 
-.delAttachmentButton {
-    background: &dtml-globalBackgroundColor; url(&dtml-portal_url;/delete.png) center center no-repeat;
-    border: &dtml-borderWidth; &dtml-borderStyle; &dtml-globalBorderColor; ! important;
-    cursor: pointer;
-    height: 15px;
-    width: 15px;
-
-}
-.removeButton {
-    background: &dtml-globalBackgroundColor; url(&dtml-portal_url;/delete.png) center center no-repeat;
-    border: &dtml-borderWidth; &dtml-borderStyle; &dtml-globalBorderColor; ! important;
-    cursor: pointer;
-    height: 15px;
-    width: 15px;
-    visibility: hidden;
-
-}
 
 
 .actionButton {

@@ -1,0 +1,101 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:i18n="http://namespaces.zope.org/i18n"
+    i18n_domain="bika">
+
+    <browser:page
+      for="Products.bika.interfaces.IAnalysisRequest"
+      name="base_view"
+      class="Products.bika.browser.analysisrequest.AnalysisRequestViewView"
+      permission="zope.Public"
+      layer="Products.bika.interfaces.IBikaLIMSLayer"
+    />
+
+    <browser:page
+      for="Products.bika.interfaces.IClient"
+      name="analysisrequest_add"
+      class="Products.bika.browser.analysisrequest.AnalysisRequestAddView"
+      permission="zope.Public"
+      layer="Products.bika.interfaces.IBikaLIMSLayer"
+    />
+
+    <browser:page
+      for="Products.bika.interfaces.IAnalysisRequest"
+      name="base_edit"
+      class="Products.bika.browser.analysisrequest.AnalysisRequestEditView"
+      permission="zope.Public"
+      layer="Products.bika.interfaces.IBikaLIMSLayer"
+    />
+
+    <browser:page
+      for="Products.bika.interfaces.IAnalysisRequest"
+      name="analysisrequest_analyses"
+      class="Products.bika.browser.analysisrequest.AnalysisRequestManageResultsView"
+      permission="zope.Public"
+      layer="Products.bika.interfaces.IBikaLIMSLayer"
+    />
+
+    <browser:page
+      for="*"
+      name="analysisrequest_analysisservices"
+      class="Products.bika.browser.analysisrequest.AnalysisRequest_AnalysisServices"
+      permission="zope.Public"
+      layer="Products.bika.interfaces.IBikaLIMSLayer"
+    />
+
+    <browser:page
+      for="*"
+      name="analysisrequest_profileservices"
+      class="Products.bika.browser.analysisrequest.AnalysisRequest_ProfileServices"
+      permission="zope.Public"
+      layer="Products.bika.interfaces.IBikaLIMSLayer"
+    />
+
+    <browser:page
+      for="*"
+      name="analysisrequest_samplepoints"
+      class="Products.bika.browser.analysisrequest.AnalysisRequest_SamplePoints"
+      permission="zope.Public"
+      layer="Products.bika.interfaces.IBikaLIMSLayer"
+    />
+
+    <browser:page
+      for="*"
+      name="analysisrequest_sampletypes"
+      class="Products.bika.browser.analysisrequest.AnalysisRequest_SampleTypes"
+      permission="zope.Public"
+      layer="Products.bika.interfaces.IBikaLIMSLayer"
+    />
+
+    <browser:page
+      for="* "
+      name="analysisrequest_select_cc"
+      class="Products.bika.browser.analysisrequest.AnalysisRequestSelectCCView"
+      permission="zope.Public"
+      layer="Products.bika.interfaces.IBikaLIMSLayer"
+    />
+
+    <browser:page
+      for="*"
+      name="analysisrequest_select_sample"
+      class="Products.bika.browser.analysisrequest.AnalysisRequestSelectSampleView"
+      permission="zope.Public"
+      layer="Products.bika.interfaces.IBikaLIMSLayer"
+    />
+
+    <browser:page
+      for="*"
+      name="analysisrequest_contact_ccs"
+      class="Products.bika.browser.analysisrequest.AnalysisRequestContactCCs"
+      permission="zope.Public"
+      layer="Products.bika.interfaces.IBikaLIMSLayer"
+    />
+
+    <browser:resource
+      name="analysisrequest.js"
+      file="analysisrequest.js"
+      layer="Products.bika.interfaces.IBikaLIMSLayer"
+    />
+
+</configure>

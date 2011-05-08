@@ -367,7 +367,7 @@
               global out_of_range python:result_class == 'out_of_range' and 1 or out_of_range">
       
       <td tal:condition="may_view_result"
-          tal:attributes="class result_class">
+          tal:attributes="class result_class" style="white-space: nowrap;">
       <tal:result tal:condition="result">
       <span tal:content="result">10</span>
       <img tal:condition="python:result_class == 'out_of_range'"
@@ -376,7 +376,7 @@
             tal:condition="analysis/getRetested"
             i18n:translate="retested">retested</div>
       </tal:result>
-      <span tal:content="analysis/getUnit">%vol</span>
+      <span class="unit" tal:content="analysis/getUnit">%vol</span>
       </td>
       
       <td tal:condition="python:not may_view_result">
@@ -392,13 +392,13 @@
           tal:content="analysis/getUncertainty">0.8</span>
       </td>
       
-      <td tal:condition="dry_matter">
+      <td tal:condition="dry_matter" style="white-space: nowrap;">
       <tal:service_dry tal:condition="service/getReportDryMatter">
       
       <tal:showdry tal:condition="may_view_result">
       <span tal:condition="analysis/getResultDM" 
             tal:content="analysis/getResultDM">10</span>
-      <span tal:content="analysis/getUnit">%vol</span>
+      <span class="unit" tal:content="analysis/getUnit">%vol</span>
       </tal:showdry>
       
       <tal:notyet tal:condition="python:not may_view_result">

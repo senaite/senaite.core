@@ -8,7 +8,6 @@
 
 <head>
   <metal:jshead fill-slot="javascript_head_slot">
-    <script type="text/javascript" src="++resource++analysisrequest.js"></script>
   </metal:jshead>
 </head>
 
@@ -92,14 +91,15 @@ Up one level
 <img src="" tal:attributes="src string:${portal/absolute_url}/images/hazardous.png">
 </p:hazardous>
 </td></tr></table>
-<form name="folderContentsForm"
+
+<form id="analysisrequest_analyses_form" 
+      name="analysisrequest_analyses_form"
     method="post">
 
   
 <script type="text/javascript" src="ar_form.js"></script>
 <script type="text/javascript" src="utils.js"></script>
 <script type="text/javascript" src="calcs.js"></script>
-<input type="hidden" id="selectedservices" value=""/>
 
 <p tal:condition="not: batch"
     i18n:translate="analysisrequest_no_analyses">
@@ -111,7 +111,7 @@ This request contains no analyses
     summary="Content listing"
     cellpadding="0" cellspacing="0"
     tal:define="
-        colspan python:6;
+            colspan python:6;
         colspan python:any_tv and (colspan + 1) or colspan;
         colspan python:any_tf and (colspan + 1) or colspan;
         colspan python:any_vm and (colspan + 1) or colspan;
@@ -338,18 +338,18 @@ Alcohol
     tal:define="calc_reqd python:item.getCalcType() is not None">
 
 <div tal:condition="python:review_state in ('sample_received', 'assigned')">
-<td tal:condition="calc_reqd">
-<input READONLY class="calculated" size="10" name="" value="10" tabindex="-1"
+<td tal:condition="calc_reqd" class="left" style="white-space: nowrap;">
+<input READONLY class="calculated" size="6" name="" value="10" tabindex="-1"
     tal:condition="python:review_state in ('sample_received', 'assigned')"
     tal:attributes="
         value result;
         name string:results.${item/getId}.Result:record"/>
-<span tal:content="item/getUnit">ml</span>
+<span class="unit" tal:content="item/getUnit">ml</span>
 
 </td>
 
-<td tal:condition="python:not calc_reqd">
-<input size="10" name="" value="10"
+<td tal:condition="python:not calc_reqd" class="left" style="white-space: nowrap;">
+<input size="6" name="" value="10"
     tal:condition="python:review_state in ('sample_received', 'assigned') and not optionstrings"
     tal:attributes="
         value result;
@@ -368,7 +368,7 @@ tal:attributes="
                 >Title</option>
     </tal:opts>
 </select>
-<span tal:content="item/getUnit">ml</span>
+<span class="unit" tal:content="item/getUnit">ml</span>
 </td>
 </div>
 
@@ -377,13 +377,13 @@ tal:attributes="
     tal:define="
         result_class python:view.result_in_range(item, sampletype.UID(), specification);
         global out_of_range python:result_class == 'out_of_range' and 1 or out_of_range">
-<td tal:attributes="class result_class">
+<td tal:attributes="class result_class"  style="white-space: nowrap;">
 <span tal:content="result">10.00</span>
 <tal:dry tal:condition="item/getResultDM">
 <span tal:define="dry_result string:(${item/getResultDM})"
     tal:content="dry_result">10</span>
 </tal:dry>
-<span tal:content="item/getUnit">ml</span>
+<span class="unit" tal:content="item/getUnit">ml</span>
 <img tal:condition="python:result_class == 'out_of_range'"
     src="" tal:attributes="src string:${portal/absolute_url}/images/exclamation.png">
 </td>
@@ -454,8 +454,7 @@ tal:attributes="
 
 </table>
 
-
-<tal:buttons tal:repeat="button actions/folder_buttons|nothing">
+<tal:buttons repeat="button python:context.portal_actions.listFilteredActionsFor(context)['folder_buttons'] or None">
 <input
     class="context"
     type="submit"
@@ -465,7 +464,7 @@ tal:attributes="
     tal:condition="python:batch and button['id'] in ('delete', 'submit_results')"
     i18n:attributes="value"
     tal:attributes="
-        value button/name;
+        value button/id;
         name button/url;
         tabindex tabindex/next" />
 </tal:buttons>

@@ -86,10 +86,10 @@ schema = BikaSchema.copy() + Schema((
         relationship = 'AnalysisRequestSample',
     ),
     ARAnalysesField('Analyses',
-        required=1,
-        widget=AnalysesWidget(
-            label='Analyses',
-            label_msgid='label_analyses',
+        required = 1,
+        widget = AnalysesWidget(
+            label = 'Analyses',
+            label_msgid = 'label_analyses',
         ),
     ),
     StringField('ClientOrderNumber',

@@ -1,8 +1,10 @@
 <?xml version="1.0"?>
 <object xmlns:i18n="http://xml.zope.org/namespaces/i18n" name="portal_actions" meta_type="Plone Actions Tool">
 	<action-provider name="portal_actions"/>
+
 	<!-- hide the "sharing" tab on a list of types.
-     This is here to avoid hiding the sharing tab -->
+     This is here to avoid hiding the sharing tab globally -->
+
 	<object name="object" meta_type="CMF Action Category">
 		<property name="title"/>
 		<object name="local_roles" meta_type="CMF Action" i18n:domain="plone">
@@ -17,6 +19,7 @@
 			<property name="visible">False</property>
 		</object>
 	</object>
+
 	<object name="portal_tabs" meta_type="CMF Action Category">
 		<property name="title"/>
 		<object name="index_html" meta_type="CMF Action" i18n:domain="plone">

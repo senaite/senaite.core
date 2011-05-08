@@ -1,7 +1,6 @@
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-import datetime
 from DateTime import DateTime
 import json
 
@@ -501,7 +500,115 @@ class AnalysisRequestManageResultsView(AnalysisRequestViewView):
     template = ViewPageTemplateFile("templates/analysisrequest_analyses.pt")
 
     def __call__(self):
-        return self.template()
+        if self.request.form.has_key("submitted"):
+            """ Submit results
+            """
+            wf_tool = getToolByName(self, 'portal_workflow')
+
+            for key, value in self.request.form.items():
+                if key.startswith('results'):
+                    id = key.split('.')[-1]
+                    analysis = self._getOb(id)
+                    if analysis.getCalcType() == 'dep':
+                        continue
+                    result = value.get('Result')
+                    if result:
+                        if result.strip() == '':
+                            result = None
+                    else:
+                        result = None
+
+                    retested = value.get('Retested')
+
+                    uncertainty = None
+                    service = analysis.getService()
+
+                    if result:
+                        precision = service.getPrecision()
+                        if precision:
+                            result = self.get_precise_result(result, precision)
+
+                        uncertainty = self.get_uncertainty(result, service)
+
+                    titrationvolume = value.get('TitrationVolume')
+                    if titrationvolume:
+                        if titrationvolume.strip() == '':
+                            titrationvolume = None
+                    else:
+                        titrationvolume = None
+
+                    titrationfactor = value.get('TitrationFactor')
+                    if titrationfactor:
+                        if titrationfactor.strip() == '':
+                            titrationfactor = None
+                    else:
+                        titrationfactor = None
+
+                    grossmass = value.get('GrossMass')
+                    if grossmass:
+                        if grossmass.strip() == '':
+                            grossmass = None
+                    else:
+                        grossmass = None
+
+                    netmass = value.get('NetMass')
+                    if netmass:
+                        if netmass.strip() == '':
+                            netmass = None
+                    else:
+                        netmass = None
+
+                    vesselmass = value.get('VesselMass')
+                    if vesselmass:
+                        if vesselmass.strip() == '':
+                            vesselmass = None
+                    else:
+                        vesselmass = None
+
+                    samplemass = value.get('SampleMass')
+                    if samplemass:
+                        if samplemass.strip() == '':
+                            samplemass = None
+                    else:
+                        samplemass = None
+
+                    analysis.setTitrationVolume(titrationvolume)
+                    analysis.setTitrationFactor(titrationfactor)
+                    analysis.setGrossMass(grossmass)
+                    analysis.setNetMass(netmass)
+                    analysis.setVesselMass(vesselmass)
+                    analysis.setSampleMass(samplemass)
+
+                    analysis.edit(
+                        Result = result,
+                        Retested = retested,
+                        Uncertainty = uncertainty,
+                        Unit = service.getUnit()
+                    )
+
+                    if analysis._affects_other_analysis:
+                        self.get_dependant_results(analysis)
+                    if result is None:
+                        continue
+
+                    wf_tool.doActionFor(analysis, 'submit')
+                    transaction_note('Changed status of %s at %s' % (
+                        analysis.title_or_id(), analysis.absolute_url()))
+
+            if self.getReportDryMatter():
+                self.setDryMatterResults()
+
+            review_state = wf_tool.getInfoFor(self, 'review_state', '')
+            if review_state == 'to_be_verified':
+                self.request.RESPONSE.redirect(self.absolute_url())
+            else:
+                self.request.RESPONSE.redirect(
+                    '%s/analysisrequest_analyses' % self.absolute_url())
+        else:
+            return self.template()
+
+    def submitResults(self):
+        print "asdfasdf SUBMITRESULTS"
 
     def get_analysis_request_actions(self):
         ## Script (Python) "get_analysis_request_actions"

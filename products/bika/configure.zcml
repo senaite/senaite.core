@@ -17,10 +17,20 @@
 
   <i18n:registerTranslations directory="i18n" />
 
+
+
+  <browser:resource
+    name="globalutils.js"
+    file="browser/globalutils.js"
+    layer="Products.bika.interfaces.IBikaLIMSLayer"
+  />
+
+
   <!-- Magic so we can traverse @@views from TAL -->
   <class class="ZPublisher.BaseRequest.BaseRequest">
     <implements interface="zope.annotation.interfaces.IAttributeAnnotatable" />
   </class>
+
 
 </configure>
 
