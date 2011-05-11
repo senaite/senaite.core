@@ -6,11 +6,6 @@
       metal:use-macro="here/main_template/macros/master"
       i18n:domain="bika">
 
-<head>
-  <metal:jshead fill-slot="javascript_head_slot">
-  </metal:jshead>
-</head>
-
 <body>
 
 <div metal:fill-slot="main"
@@ -96,11 +91,9 @@ Up one level
       name="analysisrequest_analyses_form"
     method="post">
 
-  
-<script type="text/javascript" src="ar_form.js"></script>
-<script type="text/javascript" src="utils.js"></script>
-<script type="text/javascript" src="calcs.js"></script>
+      <input type="hidden" name="submitted" value="1" />
 
+  
 <p tal:condition="not: batch"
     i18n:translate="analysisrequest_no_analyses">
 This request contains no analyses
@@ -458,14 +451,14 @@ tal:attributes="
 <input
     class="context"
     type="submit"
-    name=""
+    name="button/id"
     value=""
     tabindex=""
-    tal:condition="python:batch and button['id'] in ('delete', 'submit_results')"
+    tal:condition="python:batch and button['id'] in ('submit_results')"
     i18n:attributes="value"
     tal:attributes="
-        value button/id;
-        name button/url;
+    	name button/id;
+        value button/title;
         tabindex tabindex/next" />
 </tal:buttons>
 
@@ -487,7 +480,7 @@ tal:attributes="
     tal:condition="python:transition['id'] not in  ['assign', 'republish', 'prepublish']"
     i18n:attributes="value"
     tal:attributes="
-        value transition/name;
+        value transition/title;
         tabindex tabindex/next;
         onclick string:this.form.workflow_action.value = '${transition/id}'" />
 </tal:buttons>

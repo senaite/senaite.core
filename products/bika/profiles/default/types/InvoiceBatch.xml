@@ -4,7 +4,7 @@
    xmlns:i18n="http://xml.zope.org/namespaces/i18n">
  <property name="title">Invoice batch</property>
  <property name="description">Container for Invoice instances </property>
- <property name="icon_expr">string:${portal_url}/invoice.png</property>
+ <property name="icon_expr">string:${portal_url}/images/invoice.png</property>
  <property name="content_meta_type">InvoiceBatch</property>
  <property name="product">bika</property>
  <property name="factory">addInvoiceBatch</property>

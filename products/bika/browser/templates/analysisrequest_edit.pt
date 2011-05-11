@@ -6,17 +6,12 @@
       metal:use-macro="here/main_template/macros/master"
       i18n:domain="bika">
 
-<head>
-  <metal:jshead fill-slot="javascript_head_slot">
-    <script type="text/javascript" src="++resource++analysisrequest.js"></script>
-  </metal:jshead>
-</head>
-
 <body>
 
   <div metal:fill-slot="main" 
     tal:define="portal context/@@plone_portal_state/portal;
                 plone_view context/@@plone;
+                tabindex view/tabindex;
                 edit python:view.came_from == 'edit' and True or False;
                 review_state python:edit and context.portal_workflow.getInfoFor(view.context, 'review_state') or ''">
 
@@ -57,7 +52,7 @@
             </th>
             <td>&nbsp;</td>
             <td class="contact"
-                tal:attributes="colspan view/col_count"
+                tal:attributes="colspan view/col_count;tabindex tabindex/next;"
                 tal:define="this_contact python:edit and context.getContactUID() or request.get('Contact', here.getContactUIDForUser());">
               <select name="Contact" id="contact">
                 <tal:item 
@@ -76,7 +71,8 @@
                 id="open_cc_browser"
                 value="cc" 
                 i18n:attributes="value" 
-                i18n:domain="bika"/>
+                i18n:domain="bika"
+                tal:attributes="tabindex tabindex/next;"/>
               <input DISABLED class="noborder" value="" id="cc_titles"
                 tal:attributes="value python:edit and ','.join([c.Title() for c in context.getCCContact()]) or request.get('cc_titles', '')"/>
               <input type="hidden" id="cc_uids" name="cc_uids"
@@ -89,7 +85,8 @@
             <td>&nbsp;</td>
             <td class="contact" tal:attributes="colspan view/col_count">
               <input style="width:98%" type="text" id="cc_emails" name="CCEmails" 
-                tal:attributes="value python:hasattr(context, 'CCEmails') and context.CCEmails or request.get('CCEmails', '');"/>
+                tal:attributes="value python:hasattr(context, 'CCEmails') and context.CCEmails or request.get('CCEmails', '');
+                                tabindex tabindex/next;"/>
             </td>
           </tr>
           <!-- AR Profile -->
@@ -99,14 +96,14 @@
             <tal:block repeat="column python:range(view.col_count)">
               <td tal:define="input_name string:ar.${column}.${field_name}:ignore_empty:record;
                               input_id string:ar_${column}_${field_name}">
-                <select
-                        tal:attributes="class field_name;id input_id; name input_name;">
+                <select tal:attributes="class field_name;id input_id; name input_name;">
                   <option value="">None</option>
                   <tal:profile repeat="profile view/arprofiles">
                     <option
                       tal:content="string:${profile/Title}"
                       tal:attributes="
                         value profile/UID;
+                        tabindex python:column*100+tabindex.next();
                         selected python:request.get(input_id, '') == profile.UID() and 'selected' or ''">Title</option>
                   </tal:profile>
                 </select>
@@ -126,7 +123,9 @@
                             input_id string:ar_${column}_${field_name}">
                 <input type="button" value="Select Sample"
                   i18n:attributes="value" i18n:domain="bika"
-                  tal:attributes="id input_id; name input_name"/>
+                  tal:attributes="id input_id; 
+                                  name input_name;
+                                  tabindex python:column*100+tabindex.next();"/>
               </td>
             </tal:linksample>
           </tr>
@@ -143,7 +142,8 @@
                 <input size="10" type='text' tal:condition="not: edit"
                   tal:attributes="
                     id input_id;name input_name;
-                    value python:request.get(input_name, '');"/>
+                    value python:request.get(input_name, '');
+                    tabindex python:column*100+tabindex.next();"/>
                 <span tal:condition="python:edit"
                   tal:content="python:here.ClientOrderNumber"/>
               </td>
@@ -162,7 +162,8 @@
                 <input size="10" type='text' tal:condition="not: edit"
                   tal:attributes="
                     id input_id;name input_name;
-                    value python:request.get(input_name, '');"/>
+                    value python:request.get(input_name, '');
+                    tabindex python:column*100+tabindex.next();"/>
                 <span tal:condition="python:edit"
                   tal:content="python:here.getSample().getClientReference()"/>
               </td>
@@ -181,7 +182,8 @@
                 <input size="10" type='text' tal:condition="not: edit"
                   tal:attributes="
                     id input_id;name input_name;
-                    value python:request.get(input_name, '');"/>
+                    value python:request.get(input_name, '');
+                    tabindex python:column*100+tabindex.next();"/>
                 <span tal:condition="python:edit"
                   tal:content="python:here.getSample().getClientSampleID()"/>
               </td>
@@ -200,7 +202,8 @@
                 <input size="10" type='text' tal:condition="not: edit"
                   tal:attributes="
                     id input_id;name input_name;
-                    value python:request.get(input_name, '');"/>
+                    value python:request.get(input_name, '');
+                    tabindex python:column*100+tabindex.next();"/>
                 <span tal:condition="python:edit"
                   tal:content="python:plone_view.toLocalizedTime(here.getSample().getDateSampled(), long_format=0)"/>
               </td>
@@ -250,7 +253,8 @@
                 <input size="10" type='text' class='sampletype' tal:condition="not: edit"
                   tal:attributes="
                     id input_id;name input_name;
-                    value python:request.get(input_name, '');"/>
+                    value python:request.get(input_name, '');
+                    tabindex python:column*100+tabindex.next();"/>
                 <span tal:condition="edit"
                   tal:content="python:here.getSample().getSampleType().Title()"/>
               </td>
@@ -269,7 +273,8 @@
                 <input size="10" type='text' class="samplepoint" tal:condition="not: edit"
                   tal:attributes="
                     id input_id;name input_name;
-                    value python:request.get(input_name, '');"/>
+                    value python:request.get(input_name, '');
+                    tabindex python:column*100+tabindex.next();"/>
                 <span tal:condition="edit"
                   tal:content="python:here.getSample().getSamplePoint().Title()"/>
               </td>
@@ -291,7 +296,8 @@
                   tal:attributes="
                     checked python:edit and context.ReportDryMatter or request.get(input_name, '');
                     name input_name;
-                    id input_id;"/>
+                    id input_id;
+                    tabindex python:column*100+tabindex.next();"/>
               </td>
             </tal:block>
           </tr>
@@ -311,7 +317,8 @@
                   tal:attributes="
                     checked python:edit and context.InvoiceExclude or request.get(input_name, '');
                     name input_name;
-                    id input_id;"/>
+                    id input_id;
+                    tabindex python:column*100+tabindex.next();"/>
               </td>
             </tal:block>
           </tr>

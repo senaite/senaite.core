@@ -11,7 +11,7 @@
   object's id as a default_page (acting in the same way as index_html)
   
   Note: folderish content types should overwrite HEAD like ATContentTypes</property>
- <property name="icon_expr">string:${portal_url}/pricelist.png</property>
+ <property name="icon_expr">string:${portal_url}/images/pricelist.png</property>
  <property name="content_meta_type">Pricelist</property>
  <property name="product">bika</property>
  <property name="factory">addPricelist</property>

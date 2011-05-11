@@ -6,7 +6,7 @@
  <property name="description">
  	Set up templates for new worksheets
  </property>
- <property name="icon_expr">string:${portal_url}/worksheettemplate.png</property>
+ <property name="icon_expr">string:${portal_url}/images/worksheettemplate.png</property>
  <property name="content_meta_type">WorksheetTemplate</property>
  <property name="product">bika</property>
  <property name="factory">addWorksheetTemplate</property>

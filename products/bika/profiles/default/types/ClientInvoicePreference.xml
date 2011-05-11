@@ -3,14 +3,7 @@
    meta_type="Factory-based Type Information with dynamic views"
    xmlns:i18n="http://xml.zope.org/namespaces/i18n">
  <property name="title">Invoice preference</property>
- <property
-    name="description">Mixin class for content types using the dynamic view FTI
-  
-  Allow the user to select a layout template (in the same way as
-  TemplateMixin in Archetypes does), and/or to set a contained
-  object's id as a default_page (acting in the same way as index_html)
-  
-  Note: folderish content types should overwrite HEAD like ATContentTypes</property>
+ <property name="description">Invoice Preferences </property>
  <property name="icon_expr">string:${portal_url}/client.png</property>
  <property name="content_meta_type">ClientInvoicePreference</property>
  <property name="product">bika</property>

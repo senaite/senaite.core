@@ -1,7 +1,10 @@
+from DateTime import DateTime
+from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFCore.utils import getToolByName
+from Products.CMFPlone.utils import transaction_note
 from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from DateTime import DateTime
+from decimal import Decimal
 import json
 
 def analysisrequest_add_submit(context, request):
@@ -282,13 +285,13 @@ class AnalysisRequestViewView(BrowserView):
 
             result_class = 'out_of_range'
             if spec.has_key(aservice):
-                spec_min = float(spec[aservice]['min'])
-                spec_max = float(spec[aservice]['max'])
+                spec_min = Decimal(spec[aservice]['min'])
+                spec_max = Decimal(spec[aservice]['max'])
                 if spec_min <= result <= spec_max:
                     result_class = ''
                 #else:
                 #    """ check if in error range """
-                #    error_amount = result * float(spec[aservice]['error']) / 100
+                #    error_amount = result * Decimal(spec[aservice]['error']) / 100
                 #    error_min = result - error_amount
                 #    error_max = result + error_amount
                 #    if ((result < spec_min) and (error_max >= spec_min)) or \
@@ -302,7 +305,7 @@ class AnalysisRequestViewView(BrowserView):
             specs = analysis.aq_parent.getResultsRangeDict()
             if specs.has_key(aservice):
                 spec = specs[aservice]
-                if (result < float(spec['min'])) or (result > float(spec['max'])):
+                if (result < Decimal(spec['min'])) or (result > Decimal(spec['max'])):
                     result_class = 'out_of_range'
             return specs
 
@@ -453,6 +456,12 @@ class AnalysisRequestAddView(BrowserView):
         else:
             return self.template()
 
+    def tabindex(self):
+        i = 0
+        while True:
+            i += 1
+            yield i
+
     def arprofiles(self):
         """ Return applicable client and Lab ARProfile records
         """
@@ -494,7 +503,7 @@ class AnalysisRequestEditView(AnalysisRequestAddView):
             analysis = analysis.getObject() # XXX getObject
             service = analysis.getService()
             res.append([service.getCategoryUID(), service.UID(), service.getPointOfCapture()])
-        return res
+        return resX
 
 class AnalysisRequestManageResultsView(AnalysisRequestViewView):
     template = ViewPageTemplateFile("templates/analysisrequest_analyses.pt")
@@ -503,12 +512,17 @@ class AnalysisRequestManageResultsView(AnalysisRequestViewView):
         if self.request.form.has_key("submitted"):
             """ Submit results
             """
-            wf_tool = getToolByName(self, 'portal_workflow')
+
+            import pprint
+            pprint.pprint(self.request.form)
+
+            wf_tool = getToolByName(self.context, 'portal_workflow')
+            pc = getToolByName(self.context, 'portal_catalog')
 
             for key, value in self.request.form.items():
                 if key.startswith('results'):
-                    id = key.split('.')[-1]
-                    analysis = self._getOb(id)
+                    id = key.split('results.')[-1]
+                    analysis = pc(id = id, path = { "query": [self.context.id], "level" : 3 })[0].getObject()
                     if analysis.getCalcType() == 'dep':
                         continue
                     result = value.get('Result')
@@ -591,24 +605,286 @@ class AnalysisRequestManageResultsView(AnalysisRequestViewView):
                     if result is None:
                         continue
 
-                    wf_tool.doActionFor(analysis, 'submit')
-                    transaction_note('Changed status of %s at %s' % (
-                        analysis.title_or_id(), analysis.absolute_url()))
-
-            if self.getReportDryMatter():
-                self.setDryMatterResults()
+                    try:
+                        wf_tool.doActionFor(analysis, 'submit')
+                        transaction_note('Changed status of %s at %s' % (
+                            analysis.title_or_id(), analysis.absolute_url()))
+                    except WorkflowException:
+                        pass
+            if self.context.getReportDryMatter():
+                self.context.setDryMatterResults()
 
             review_state = wf_tool.getInfoFor(self, 'review_state', '')
             if review_state == 'to_be_verified':
-                self.request.RESPONSE.redirect(self.absolute_url())
+                self.request.RESPONSE.redirect(self.context.absolute_url())
             else:
                 self.request.RESPONSE.redirect(
-                    '%s/analysisrequest_analyses' % self.absolute_url())
+                    '%s/analysisrequest_analyses' % self.context.absolute_url())
         else:
             return self.template()
 
-    def submitResults(self):
-        print "asdfasdf SUBMITRESULTS"
+    def get_dependant_results(self, this_child):
+        ##bind container=container
+        ##bind context=context
+        ##bind namespace=
+        ##bind script=script
+        ##bind subpath=traverse_subpath
+        ##parameters=this_child
+        ##title=Get analysis results dependant on other analyses results
+        ##
+        results = {}
+
+        def test_reqs(reqd_calcs):
+            all_results = True
+            for reqd in reqds:
+                if results[reqd] == None:
+                    all_results = False
+                    break
+            return all_results
+
+        def update_data(parent, result_in):
+            if result_in == None:
+                result = None
+            else:
+                result = '%.2f' % result_in
+            service = parent.getService()
+
+            uncertainty = self.get_uncertainty(result, service)
+            parent.edit(
+                Result = result,
+                Uncertainty = uncertainty,
+                Unit = service.getUnit()
+            )
+            return
+
+
+        rc = getToolByName(self, 'reference_catalog');
+        parents = [uid for uid in
+            rc.getBackReferences(this_child, 'AnalysisAnalysis')]
+        for p in parents:
+            parent = rc.lookupObject(p.sourceUID)
+
+            parent_keyword = parent.getAnalysisKey()
+            for child in parent.getDependantAnalysis():
+                keyword = child.getAnalysisKey()
+                try:
+                    results[keyword] = Decimal(child.getResult())
+                except:
+                    results[keyword] = None
+
+            result = None
+            if parent_keyword[0:3] == 'AME':
+                protein_type = parent_keyword[3:len(parent_keyword)]
+                protein_keyword = 'ProteinCrude%s' % protein_type
+                reqds = [protein_keyword, 'FatCrudeEtherExtraction', 'Starch', 'Sugars']
+                if  test_reqs(reqds):
+                    ProteinCrude = results[protein_keyword]
+                    FatCrudeEtherExtraction = results['FatCrudeEtherExtraction']
+                    Starch = results['Starch']
+                    Sugars = results['Sugars']
+                    result = (Decimal('0.1551') * ProteinCrude) + \
+                             (Decimal('0.3431') * FatCrudeEtherExtraction) + \
+                             (Decimal('0.1669') * Starch) + (Decimal('0.1301') * Sugars)
+                else:
+                    result = None
+                update_data(parent, result)
+
+            if parent_keyword[0:2] == 'ME':
+                protein_type = parent_keyword[2:len(parent_keyword)]
+                protein_keyword = 'ProteinCrude%s' % protein_type
+                reqds = [protein_keyword, 'FatCrudeEtherExtraction', 'FibreCrude', 'Ash']
+                if test_reqs(reqds):
+                    ProteinCrude = results[protein_keyword]
+                    FatCrudeEtherExtraction = results['FatCrudeEtherExtraction']
+                    FibreCrude = results['FibreCrude']
+                    Ash = results['Ash']
+                    result = 12 + (Decimal('0.008') * ProteinCrude) + \
+                             (Decimal('0.023') * FatCrudeEtherExtraction) - (Decimal('0.018') * FibreCrude) + \
+                             (Decimal('0.012') * Ash)
+                else:
+                    result = None
+                update_data(parent, result)
+
+            if parent_keyword[0:3] == 'TDN':
+                ME_type = parent_keyword[3:len(parent_keyword)]
+                ME_keyword = 'ME%s' % ME_type
+                reqds = [ME_keyword, ]
+                if test_reqs(reqds):
+                    ME = results[ME_keyword]
+                    result = Decimal('6.67') * ME
+                else:
+                    result = None
+                update_data(parent, result)
+
+            if parent_keyword[0:3] == 'NSC':
+                protein_type = parent_keyword[3:len(parent_keyword)]
+                protein_keyword = 'ProteinCrude%s' % protein_type
+                reqds = ['FibreNDF', protein_keyword, 'FatCrudeEtherExtraction', 'Ash']
+                if test_reqs(reqds):
+                    FibreNDF = results['FibreNDF']
+                    ProteinCrude = results[protein_keyword]
+                    FatCrudeEtherExtraction = results['FatCrudeEtherExtraction']
+                    Ash = results['Ash']
+                    result = 100 - (FibreNDF + ProteinCrude + \
+                             FatCrudeEtherExtraction + Ash)
+                else:
+                    result = None
+                update_data(parent, result)
+
+            if parent_keyword[0:2] == 'DE':
+                protein_type = parent_keyword[2:len(parent_keyword)]
+                protein_keyword = 'ProteinCrude%s' % protein_type
+                reqds = [protein_keyword, 'FatCrudeEtherExtraction', 'FibreCrude', 'Ash']
+                if test_reqs(reqds):
+                    ProteinCrude = results[protein_keyword]
+                    FatCrudeEtherExtraction = results['FatCrudeEtherExtraction']
+                    FibreCrude = results['FibreCrude']
+                    Ash = results['Ash']
+                    result = Decimal('17.38') + (Decimal('0.105') * ProteinCrude) + \
+                             (Decimal('0.114') * FatCrudeEtherExtraction) - (Decimal('0.317') * FibreCrude) - \
+                             (Decimal('0.402') * Ash)
+                else:
+                    result = None
+                update_data(parent, result)
+                update_data(parent, result)
+
+            drymatter = self.context.bika_settings.getDryMatterService()
+            if parent.getServiceUID() == (hasattr(drymatter, 'UID') and drymatter.UID() or None):
+                moisture = self.context.bika_settings.getMoistureService()
+                moisture_key = moisture.getAnalysisKey()
+                reqds = [moisture_key, ]
+                if test_reqs(reqds):
+                    Moisture = results[moisture_key]
+                    result = Decimal('100') - Moisture
+                else:
+                    result = None
+                update_data(parent, result)
+
+            if parent_keyword == 'DryMatterWet':
+                reqds = ['MoistureTotal', ]
+                if test_reqs(reqds):
+                    MoistureTotal = results['MoistureTotal']
+                    result = Decimal('100') - MoistureTotal
+                else:
+                    result = None
+                update_data(parent, result)
+
+            if parent_keyword == 'MoistureTotal':
+                reqds = ['MoistureWet', 'MoistureDry']
+                if test_reqs(reqds):
+                    MoistureWet = results['MoistureWet']
+                    MoistureDry = results['MoistureDry']
+                    result = MoistureWet + (MoistureDry * ((Decimal('100') - MoistureWet) / Decimal('100')))
+                else:
+                    result = None
+                update_data(parent, result)
+
+            if parent_keyword == 'ProteinKOH':
+                if results.has_key('ProteinCrudeDumas'):
+                    protein_keyword = 'ProteinCrudeDumas'
+                else:
+                    if results.has_key('ProteinCrudeKjeldahl'):
+                        protein_keyword = 'ProteinCrudeKjeldahl'
+                    else:
+                        protein_keyword = 'ProteinCrude'
+                reqds = [protein_keyword]
+                if test_reqs(reqds):
+                    ProteinCrude = results[protein_keyword]
+                    Corrected = parent.getInterimResult('Corrected')
+                    SKCorrFactor = parent.getInterimResult('SKCorrFactor')
+                    if ProteinCrude and Corrected and SKCorrFactor:
+                        Corrected = float(Corrected)
+                        SKCorrFactor = float(SKCorrFactor)
+                        parent.setInterimResult(protein_keyword, ProteinCrude)
+                        result = Corrected / ProteinCrude * 100 * SKCorrFactor
+                    else:
+                        result = None
+                        parent.setInterimResult(protein_keyword, None)
+                update_data(parent, result)
+
+            if parent_keyword == 'ProteinSoluble':
+                if results.has_key('ProteinCrudeDumas'):
+                    protein_keyword = 'ProteinCrudeDumas'
+                else:
+                    if results.has_key('ProteinCrudeKjeldahl'):
+                        protein_keyword = 'ProteinCrudeKjeldahl'
+                    else:
+                        protein_keyword = 'ProteinCrude'
+                reqds = [protein_keyword]
+                if test_reqs(reqds):
+                    ProteinCrude = results[protein_keyword]
+                    Unadjusted = parent.getInterimResult('Unadjusted')
+                    SKCorrFactor = parent.getInterimResult('SKCorrFactor')
+                    if ProteinCrude and Unadjusted:
+                        Unadjusted = float(Unadjusted)
+                        parent.setInterimResult(protein_keyword, ProteinCrude)
+                        result = ProteinCrude - Unadjusted
+                    else:
+                        result = None
+                        parent.setInterimResult(protein_keyword, None)
+                update_data(parent, result)
+
+            if parent.checkHigherDependancies():
+                self.get_dependant_results(parent)
+
+        return
+
+    def get_uncertainty(self, result, service):
+        ##bind container=container
+        ##bind context=context
+        ##bind namespace=
+        ##bind script=script
+        ##bind subpath=traverse_subpath
+        ##parameters=result, service
+        ##title=Get result uncertainty
+        ##
+        if result is None:
+            return None
+
+        uncertainties = service.getUncertainties()
+        if uncertainties:
+            try:
+                result = float(result)
+            except ValueError:
+                # if it is not an float we assume no measure of uncertainty
+                return None
+
+            for d in uncertainties:
+                if float(d['intercept_min']) <= result < float(d['intercept_max']):
+                    return d['errorvalue']
+            return None
+        else:
+            return None
+
+    def get_precise_result(self, result, precision):
+        ##bind container=container
+        ##bind context=context
+        ##bind namespace=
+        ##bind script=script
+        ##bind subpath=traverse_subpath
+        ##parameters=result, precision
+        ##title=Return result as a string with the correct precision
+        ##
+        try:
+            float_result = Decimal(result)
+        except ValueError:
+            return result
+
+        if precision == None or precision == '':
+            precision == 0
+        if precision == 0:
+            precise_result = '%.0f' % float_result
+        if precision == 1:
+            precise_result = '%.1f' % float_result
+        if precision == 2:
+            precise_result = '%.2f' % float_result
+        if precision == 3:
+            precise_result = '%.3f' % float_result
+        if precision == 4:
+            precise_result = '%.4f' % float_result
+        if precision > 4:
+            precise_result = '%.5f' % float_result
+        return precise_result
 
     def get_analysis_request_actions(self):
         ## Script (Python) "get_analysis_request_actions"

@@ -25,7 +25,7 @@ from Products.bika.interfaces import IAnalysisRequest
 from Products.bika.config import I18N_DOMAIN, SubmitResults, PROJECTNAME, \
     ManageInvoices
 from Products.bika.content.bikaschema import BikaSchema
-from Products.bika.utils import sortable_title
+from Products.bika.utils import sortable_title, generateUniqueId
 from decimal import Decimal
 from email.Utils import formataddr
 from types import ListType, TupleType
@@ -225,6 +225,10 @@ class AnalysisRequest(VariableSchemaSupport, BrowserDefaultMixin, BaseFolder):
         """ Return the Request ID as title """
         return self.getRequestID()
 
+    security.declarePublic('generateUniqueId')
+    def generateUniqueId (self, type_name, batch_size = None):
+        return generateUniqueId(self, type_name, batch_size)
+
     def getDefaultMemberDiscount(self):
         """ compute default member discount if it applies """
         if hasattr(self, 'getMemberDiscountApplies'):
@@ -380,21 +384,21 @@ class AnalysisRequest(VariableSchemaSupport, BrowserDefaultMixin, BaseFolder):
         """ get results of analysis requiring DryMatter reporting """
         analyses = []
         DryMatter = None
-        settings = getToolByName(self, 'bika_settings').settings
+        settings = getToolByName(self, 'bika_settings')
         dry_service = settings.getDryMatterService()
         for analysis in self.getAnalyses():
             if analysis.getReportDryMatter():
                 analyses.append(analysis)
-            if analysis.getServiceUID() == dry_service.UID():
-                try:
-                    DryMatter = float(analysis.getResult())
-                except:
-                    DryMatter = None
+            try:
+                if analysis.getServiceUID() == dry_service.UID():
+                    DryMatter = Decimal(analysis.getResult())
+            except:
+                DryMatter = None
 
         for analysis in analyses:
             if DryMatter:
                 try:
-                    wet_result = float(analysis.getResult())
+                    wet_result = Decimal(analysis.getResult())
                 except:
                     wet_result = None
             if DryMatter and wet_result:
@@ -802,7 +806,7 @@ class AnalysisRequest(VariableSchemaSupport, BrowserDefaultMixin, BaseFolder):
                 from zLOG import LOG; LOG('INFO', 0, '', msg)
                 pass
 
-            # sample._delegateWorkflowAction('receive')
+            #sample._delegateWorkflowAction('receive')
 
         del self._delegating_workflow_action
 

@@ -6,7 +6,7 @@
  <property name="description">
     Set up the laboratory analysis service results specifications
  </property>
- <property name="icon_expr">string:${portal_url}/analysisspec.png</property>
+ <property name="icon_expr">string:${portal_url}/images/analysisspec.png</property>
  <property name="content_meta_type">AnalysisSpec</property>
  <property name="product">bika</property>
  <property name="factory">addAnalysisSpec</property>

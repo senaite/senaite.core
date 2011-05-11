@@ -4,15 +4,9 @@
    xmlns:i18n="http://xml.zope.org/namespaces/i18n">
  <property name="title">Contact</property>
  <property name="description">
-  Mixin class to support instance-based schemas
-  Attention: must be before BaseFolder or BaseContent in
-  the inheritance list, e.g:
-  
-  class Blorf(VariableSchemaSupport, BaseContent):
-  def getSchema():
-  return some schema definition...
+	Contact
   </property>
- <property name="icon_expr">string:${portal_url}/contact.png</property>
+ <property name="icon_expr">string:${portal_url}/images/contact.png</property>
  <property name="content_meta_type">SupplierContact</property>
  <property name="product">bika</property>
  <property name="factory">addSupplierContact</property>

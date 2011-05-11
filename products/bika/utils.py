@@ -1,8 +1,10 @@
-import re
-import copy
-from email.Utils import formataddr
 from AccessControl import ModuleSecurityInfo, allow_module
+from Products.bika import interfaces
 from Products.bika.config import PublishSample
+from email.Utils import formataddr
+from zope.component._api import getUtility
+import copy
+import re
 
 ModuleSecurityInfo('email.Utils').declarePublic('formataddr')
 allow_module('csv')
@@ -34,13 +36,13 @@ def printfile(portal, from_addr, to_addrs, msg):
     """
     pass
 
-    
+
 
 # encode_header function copied from roundup's rfc2822 package.
 hqre = re.compile(r'^[A-z0-9!"#$%%&\'()*+,-./:;<=>?@\[\]^_`{|}~ ]+$')
 
 ModuleSecurityInfo('Products.bika.utils').declarePublic('encode_header')
-def encode_header(header, charset='utf-8'):
+def encode_header(header, charset = 'utf-8'):
     """ Will encode in quoted-printable encoding only if header
     contains non latin characters
     """
@@ -99,3 +101,31 @@ def sortable_title(portal, title):
             sortabletitle = sortabletitle[:30]
             break
     return sortabletitle
+
+ModuleSecurityInfo('Products.bika.utils').declarePublic('generateUniqueId')
+def generateUniqueId (self, type_name, batch_size = None):
+    """Generate a unique ID for sub objects of the client
+    """
+    IdServer = getUtility(interfaces.IIdServer)()
+
+    # get prefix
+    prefixes = self.bika_settings.getPrefixes()
+    type_name.replace(' ', '')
+    for d in prefixes:
+        if type_name != d['portal_type']: continue
+        prefix, padding = d['prefix'], d['padding']
+        if batch_size:
+            next_id = str(IdServer.generate_id(prefix, batch_size = batch_size))
+        else:
+            next_id = str(IdServer.generate_id(prefix))
+        if padding:
+            next_id = next_id.zfill(int(padding))
+        return '%s%s' % (prefix, next_id)
+
+    if batch_size:
+        next_id = str(IdServer.generate_id(type_name, batch_size = batch_size))
+    else:
+        next_id = str(IdServer.generate_id(type_name))
+    return '%s_%s' % (type_name.lower(), next_id)
+
+

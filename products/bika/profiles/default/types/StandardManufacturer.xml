@@ -6,7 +6,7 @@
  <property name="description">
  	Standard Manufacturers
  </property>
- <property name="icon_expr">string:${portal_url}/standardmanufacturer.png</property>
+ <property name="icon_expr">string:${portal_url}/images/standardmanufacturer.png</property>
  <property name="content_meta_type">StandardManufacturer</property>
  <property name="product">bika</property>
  <property name="factory">addStandardManufacturer</property>

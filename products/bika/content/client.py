@@ -15,6 +15,7 @@ from Products.bika.content.organisation import Organisation
 from Products.bika import bikaMessageFactory as _
 from Products.bika.config import *
 from Products.bika.interfaces import IClient
+from Products.bika.utils import generateUniqueId
 from zope.interface import implements
 from zope.interface.declarations import alsoProvides
 import sys
@@ -106,30 +107,8 @@ class Client(BrowserDefaultMixin, Organisation):
         return False
 
     security.declarePublic('generateUniqueId')
-    def generateUniqueId (self, type_name, batch_size=None):
-        """Generate a unique ID for sub objects of the client
-        """
-        IdServer = getUtility(interfaces.IIdServer)()
-        
-        # get prefix
-        prefixes = self.bika_settings.getPrefixes()
-        type_name.replace(' ', '')
-        for d in prefixes:
-            if type_name != d['portal_type']: continue
-            prefix, padding = d['prefix'], d['padding']
-            if batch_size:
-                next_id = str(IdServer.generate_id(prefix, batch_size=batch_size))
-            else:
-                next_id = str(IdServer.generate_id(prefix))
-            if padding:
-                next_id = next_id.zfill(int(padding))
-            return '%s%s' % ( prefix, next_id )
-
-        if batch_size:
-            next_id = str(IdServer.generate_id(type_name,batch_size=batch_size))
-        else:
-            next_id = str(IdServer.generate_id(type_name))
-        return '%s_%s'% ( type_name.lower(), next_id )
+    def generateUniqueId (self, type_name, batch_size = None):
+        return generateUniqueId(self, type_name, batch_size)
 
     security.declarePublic('generateARUniqueId')
     def generateARUniqueId (self, type_name, sample_id, ar_number):
@@ -142,12 +121,12 @@ class Client(BrowserDefaultMixin, Organisation):
         for d in prefixes:
             if type_name == d['portal_type']:
                 padding = int(d['padding'])
-                prefix  = d['prefix']
+                prefix = d['prefix']
                 break
 
         sample_number = sample_id.split('-')[1]
         ar_id = prefix + sample_number + '-' + str(ar_number).zfill(padding)
-        
+
         return ar_id
 
     security.declarePublic('getContactsDisplayList')

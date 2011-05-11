@@ -3,15 +3,9 @@
    meta_type="Factory-based Type Information with dynamic views"
    xmlns:i18n="http://xml.zope.org/namespaces/i18n">
  <property name="title">Worksheet</property>
- <property
-    name="description">Mixin class for content types using the dynamic view FTI
-  
-  Allow the user to select a layout template (in the same way as
-  TemplateMixin in Archetypes does), and/or to set a contained
-  object's id as a default_page (acting in the same way as index_html)
-  
-  Note: folderish content types should overwrite HEAD like ATContentTypes</property>
- <property name="icon_expr">string:${portal_url}/worksheet.png</property>
+ <property name="description">Worksheet
+  </property>
+ <property name="icon_expr">string:${portal_url}/images/worksheet.png</property>
  <property name="content_meta_type">Worksheet</property>
  <property name="product">bika</property>
  <property name="factory">addWorksheet</property>

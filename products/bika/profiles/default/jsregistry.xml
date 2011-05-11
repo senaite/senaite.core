@@ -10,7 +10,7 @@
 				cookable="True" 
 				enabled="on" 
 				expression="" 
-				id="++resource++globautils.js" 
+				id="++resource++globalutils.js" 
 				inline="False"/>
 	<javascript authenticated="False" 
 				cacheable="True" 
