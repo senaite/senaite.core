@@ -93,7 +93,7 @@ Up one level
 
       <input type="hidden" name="submitted" value="1" />
 
-  
+
 <p tal:condition="not: batch"
     i18n:translate="analysisrequest_no_analyses">
 This request contains no analyses
@@ -457,7 +457,7 @@ tal:attributes="
     tal:condition="python:batch and button['id'] in ('submit_results')"
     i18n:attributes="value"
     tal:attributes="
-    	name button/id;
+        name button/id;
         value button/title;
         tabindex tabindex/next" />
 </tal:buttons>
@@ -465,26 +465,28 @@ tal:attributes="
 <tal:ar_actions
     condition="batch"
     define="ar_workflow_actions python: view.get_analysis_request_actions()">
-
-<input type="hidden" id="workflow_action" name="workflow_action" value=""/>
-<input type="hidden" id="AnalysisAttachment" name="AnalysisAttachment" value=""/>
-
-<tal:buttons tal:repeat="transition ar_workflow_actions">
-
-<input
-    class="context"
-    type="submit"
-    name="folder_publish:method"
-    value=""
-    tabindex=""
-    tal:condition="python:transition['id'] not in  ['assign', 'republish', 'prepublish']"
-    i18n:attributes="value"
-    tal:attributes="
-        value transition/title;
-        tabindex tabindex/next;
-        onclick string:this.form.workflow_action.value = '${transition/id}'" />
-</tal:buttons>
+    
+    <input type="hidden" id="workflow_action" name="workflow_action" value=""/>
+    <input type="hidden" id="AnalysisAttachment" name="AnalysisAttachment" value=""/>
+    
+    <tal:buttons tal:repeat="transition ar_workflow_actions">
+        <input
+            class="context"
+            type="submit"
+            name=""
+            value=""
+            tabindex=""
+            tal:condition="python:transition['id'] not in  ['assign', 'republish', 'prepublish']"
+            i18n:attributes="value"
+            tal:attributes="
+                name transition/id;
+                value transition/title;
+                tabindex tabindex/next;
+                onclick string:this.form.workflow_action.value = '${transition/id}'" />
+    </tal:buttons>
 </tal:ar_actions>
+
+
 <!-- Navigation -->
 <div metal:use-macro="here/batch_macros/macros/navigation" />
 

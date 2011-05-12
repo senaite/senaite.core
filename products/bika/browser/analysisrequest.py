@@ -503,26 +503,74 @@ class AnalysisRequestEditView(AnalysisRequestAddView):
             analysis = analysis.getObject() # XXX getObject
             service = analysis.getService()
             res.append([service.getCategoryUID(), service.UID(), service.getPointOfCapture()])
-        return resX
+        return res
 
 class AnalysisRequestManageResultsView(AnalysisRequestViewView):
     template = ViewPageTemplateFile("templates/analysisrequest_analyses.pt")
 
     def __call__(self):
-        if self.request.form.has_key("submitted"):
-            """ Submit results
-            """
 
-            import pprint
-            pprint.pprint(self.request.form)
+        form = self.request.form
 
-            wf_tool = getToolByName(self.context, 'portal_workflow')
-            pc = getToolByName(self.context, 'portal_catalog')
+        #import pprint
+        #pprint.pprint(form)
 
-            for key, value in self.request.form.items():
+        wf_tool = getToolByName(self.context, 'portal_workflow')
+        pc = getToolByName(self.context, 'portal_catalog')
+
+        if form.has_key('workflow_action') and form['workflow_action'] and form.has_key('ids'):
+            success = {}
+            workflow_action = form['workflow_action']
+            ids = form['ids']
+
+            for id in ids:
+                analysis = pc(path = { "query": [self.context.id], "level" : 3 },
+                              id = id)[0].getObject()
+                try:
+                    wf_tool.doActionFor(analysis, workflow_action)
+                    success[id] = workflow_action
+                except:
+                    # Since we can have mixed statuses on selected analyses it can occur
+                    # quite easily that the workflow_action doesn't work for some objects
+                    # but we need to keep on going.
+                    pass
+
+            # if only some analyses were published we still send an email
+            if workflow_action in ['publish', 'republish', 'prepublish'] and \
+                    self.context.portal_type == 'AnalysisRequest' and \
+                    len(success.keys()) > 0:
+                contact = self.context.getContact()
+                analysis_requests = [self.context]
+                contact.publish_analysis_requests(self.context, contact, analysis_requests, None)
+                # cc contacts
+                for cc_contact in self.context.getCCContact():
+                    contact.publish_analysis_requests(self.context, cc_contact, analysis_requests, None)
+                # cc emails
+                cc_emails = self.context.getCCEmails()
+                if cc_emails:
+                    contact.publish_analysis_requests(self.context, None, analysis_requests, cc_emails)
+
+            transaction_note(str(ids) + ' transitioned ' + workflow_action)
+
+            # It is necessary to set the context to override context from content_status_modify
+            portal_message = 'Content has been changed'
+            # Determine whether only partial content has been changed
+            if self.context.REQUEST.form.has_key('GuardError'):
+                guard_error = self.context.REQUEST['GuardError']
+                if guard_error == 'Fail':
+                    portal_message = 'Content has not been changed'
+                elif guard_error == 'Partial':
+                    portal_message = 'Some content has been changed'
+
+            self.request.RESPONSE.redirect(self.context.absolute_url() + "/analysisrequest_analyses")
+
+        elif form.has_key("submitted"):
+
+            for key, value in form.items():
                 if key.startswith('results'):
                     id = key.split('results.')[-1]
-                    analysis = pc(id = id, path = { "query": [self.context.id], "level" : 3 })[0].getObject()
+                    analysis = pc(path = { "query": [self.context.id], "level" : 3 },
+                                  id = id)[0].getObject()
                     if analysis.getCalcType() == 'dep':
                         continue
                     result = value.get('Result')
@@ -613,8 +661,8 @@ class AnalysisRequestManageResultsView(AnalysisRequestViewView):
                         pass
             if self.context.getReportDryMatter():
                 self.context.setDryMatterResults()
-
-            review_state = wf_tool.getInfoFor(self, 'review_state', '')
+            print "----------------------------------"
+            review_state = wf_tool.getInfoFor(self.context, 'review_state', '')
             if review_state == 'to_be_verified':
                 self.request.RESPONSE.redirect(self.context.absolute_url())
             else:

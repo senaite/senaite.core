@@ -18,7 +18,7 @@
 				conditionalcomment="" 
 				cookable="True" 
 				enabled="on" 
-				expression="python:here.portal_type in ['AnalysisRequest']" 
+				expression="python:here.portal_type in ['AnalysisRequest', 'Client']" 
 				id="++resource++analysisrequest.js" 
 				inline="False"/>
 </object>
