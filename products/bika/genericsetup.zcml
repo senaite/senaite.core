@@ -30,19 +30,18 @@
       description="Create required tools, replacing any of the wrong class, and remove forbidden ones."
       handler="Products.GenericSetup.tool.importToolset">
     <depends name="bika-typeinfo"/>
-    <depends name="typeinfo"/>
   </genericsetup:importStep>
 
   <genericsetup:importStep name="bika-skins" title="Skins Tool"
       description="Import skins tool's filesystem directory views and skin path definitions."
       handler="Products.CMFCore.exportimport.skins.importSkinsTool">
-    <depends name="toolset"/>
+    <depends name="bika-toolset"/>
   </genericsetup:importStep>
 
   <genericsetup:importStep name="bika-actions" title="Action Providers"
       description="Import actions tool's action providers and their actions."
       handler="Products.CMFCore.exportimport.actions.importActionProviders">
-    <depends name="toolset"/>
+    <depends name="bika-toolset"/>
   </genericsetup:importStep>
 
   <genericsetup:importStep name="bika-catalog" title="Catalog Tool"
@@ -53,29 +52,28 @@
   <genericsetup:importStep name="bika-propertiestool" title="Site Properties"
       description="Import Plone properties tool and subobjects"
       handler="Products.CMFPlone.exportimport.propertiestool.importPloneProperties">
-    <depends name="toolset"/>
+    <depends name="bika-toolset"/>
   </genericsetup:importStep>
 
   <genericsetup:importStep name="bika-workflow" title="Workflow Tool"
       description="Import workflow tool's workflow definitions and supporting scripts."
       handler="Products.CMFCore.exportimport.workflow.importWorkflowTool">
-    <depends name="toolset"/>
-    <depends name="typeinfo"/>
+    <depends name="bika-toolset"/>
+    <depends name="bika-typeinfo"/>
   </genericsetup:importStep>
 
   <genericsetup:importStep name="bika-content" title="Content"
       description="Import the site's structure and content."
       handler="Products.CMFCore.exportimport.content.importSiteStructure">
-    <depends name="toolset"/>
-    <depends name="workflow"/>
-    <depends name="catalog"/>
-    <depends name="rolemap"/>
+    <depends name="bika-toolset"/>
+    <depends name="bika-workflow"/>
+    <depends name="bika-catalog"/>
+    <depends name="bika-rolemap"/>
   </genericsetup:importStep>
 
   <genericsetup:importStep name="bika-final" title="Bika Configuration"
       description="Custom Bika configuration"
       handler="Products.bika.setuphandlers.importFinalSteps">
-    <depends name="content"/>
     <depends name="bika-content"/>
   </genericsetup:importStep>
 
