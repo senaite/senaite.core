@@ -3,18 +3,22 @@
       xmlns:tal="http://xml.zope.org/namespaces/tal"
       xmlns:metal="http://xml.zope.org/namespaces/metal"
       xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      metal:use-macro="here/main_template/macros/master"
       i18n:domain="bika">
 
 <head><title></title></head>
 
 <body>
 
-<metal:body_macro metal:define-macro="body"
-    tal:define="errors options/state/getErrors">
+<div metal:fill-slot="main"
+    tal:define="
+                tabindex view/tabindex;
+                portal context/@@plone_portal_state/portal">
 
-<script type="text/javascript" src="dhtml.js"></script>
-<script type="text/javascript" src="utils.js"></script>
-
+  <h1>
+      <img src="" tal:attributes="src string:${portal/absolute_url}/images/sample.png"/>
+      <span tal:content="title_string | here/title_or_id" />
+  </h1>
 
 <form name="edit_form"
     method="post"
@@ -61,8 +65,6 @@
     <tal:item 
         tal:define="
             vocab python:here.portal_catalog(portal_type='SampleType');
-            sort_on python:(('Title', 'nocase', 'asc'),);
-            vocab python:sequence.sort(vocab, sort_on);
             current here/getSampleType;
             sampletype current/Title"
         tal:repeat="item vocab">
@@ -83,8 +85,6 @@
         tal:attributes="tabindex tabindex/next;"
         tal:define="
             samplepoints python:here.portal_catalog(portal_type='SamplePoint');
-            sort_on python:(('Title', 'nocase', 'asc'),);
-            samplepoints python:sequence.sort(samplepoints, sort_on);
             sp here/getSamplePoint;
             samplepoint sp/Title | nothing">
     <option value=""
@@ -111,7 +111,7 @@
     inputname id;
     formname string:search;
     value request/getDateSampled | here/getDateSampled;
-    inputvalue python:test(value!='None', value, '');
+    inputvalue python:value!='None' and value or '';
     show_hm python:False">
 <metal:use use-macro="here/calendar_macros/macros/calendarDatePickerBox">
     a calendar, hopefully
@@ -128,7 +128,7 @@
     >2005-01-01 10:00</td>
 </tr>
 <tal:state 
-    define="review_state python:wtool.getInfoFor(here, 'review_state', '')">
+    define="review_state python:context.portal_workflow.getInfoFor(here, 'review_state', '')">
 <tr tal:condition="python:review_state != 'due'">
 <th i18n:translate="label_datereceived">Date received
 </th>
@@ -190,10 +190,8 @@
 
 </form>
 
-</metal:body_macro>
-
+</div>
 </body>
-
 </html>
 
 
