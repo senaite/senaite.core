@@ -17,6 +17,8 @@ from Products.bika.content.bikaschema import BikaSchema
 from Products.bika.utils import sortable_title
 import sys
 import time
+from zope.interface import implements
+from Products.bika.interfaces import ISample
 
 schema = BikaSchema.copy() + Schema((
     StringField('SampleID',
@@ -168,6 +170,7 @@ schema = BikaSchema.copy() + Schema((
 schema['title'].required = False
 
 class Sample(VariableSchemaSupport, BrowserDefaultMixin, BaseFolder):
+    implements(ISample)
     security = ClassSecurityInfo()
     schema = schema
     displayContentsTab = False

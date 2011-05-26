@@ -1,0 +1,202 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      lang="en"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      i18n:domain="bika">
+
+<head><title></title></head>
+
+<body>
+
+<metal:body_macro metal:define-macro="body"
+    tal:define="errors options/state/getErrors">
+
+<script type="text/javascript" src="dhtml.js"></script>
+<script type="text/javascript" src="utils.js"></script>
+
+
+<form name="edit_form"
+    method="post"
+    enctype="multipart/form-data"
+    action=""
+    tal:attributes="action python:here.absolute_url()+'/'+template.id"
+    autocomplete="off">
+
+<input type="hidden" name="form.submitted" value="1" />
+
+<br/>
+<table cellpadding="3">
+<tr> <td valign="top">
+<table
+    summary="Sample edit"
+    class="analysisrequest"
+    cellpadding="0" cellspacing="0">
+
+<thead>
+
+<tr>
+<th id="" i18n:translate="label_clientreference">Client Reference</th>
+<td align="center">
+<input size="10" name="ClientReference"
+    tal:attributes="value request/ClientReference | here/getClientReference"/>
+</td>
+</tr>
+
+<tr>
+<th id="" i18n:translate="label_clientsampleid">Client Sample ID</th>
+<td align="center">
+<input size="10" name="ClientSampleID"
+    tal:attributes="value request/ClientSampleID | here/getClientSampleID"/>
+</td>
+</tr>
+
+<tr>
+<th>
+<span id="" i18n:translate="label_sampletype">Sample Type</span>
+</th>
+<td>
+    <select name="SampleType" 
+        tal:attributes="tabindex tabindex/next;">
+    <tal:item 
+        tal:define="
+            vocab python:here.portal_catalog(portal_type='SampleType');
+            sort_on python:(('Title', 'nocase', 'asc'),);
+            vocab python:sequence.sort(vocab, sort_on);
+            current here/getSampleType;
+            sampletype current/Title"
+        tal:repeat="item vocab">
+    <option selected="selected"
+        tal:attributes="value item/Title;
+            selected python:item.Title == sampletype"
+        tal:content="item/Title"></option>
+    </tal:item>
+
+    </select>
+</td>
+</tr>
+
+<tr>
+<th id="" i18n:translate="label_samplepoint">Sample point</th>
+<td>
+    <select name="SamplePoint" 
+        tal:attributes="tabindex tabindex/next;"
+        tal:define="
+            samplepoints python:here.portal_catalog(portal_type='SamplePoint');
+            sort_on python:(('Title', 'nocase', 'asc'),);
+            samplepoints python:sequence.sort(samplepoints, sort_on);
+            sp here/getSamplePoint;
+            samplepoint sp/Title | nothing">
+    <option value=""
+        tal:attributes="
+            value python:None;
+            selected python:samplepoint and False or True"></option>
+    <tal:item 
+        tal:repeat="item samplepoints">
+    <option selected="selected"
+        tal:attributes="value item/Title;
+            selected python:item.Title == samplepoint"
+        tal:content="item/Title"></option>
+    </tal:item>
+
+    </select>
+</td>
+</tr>
+
+<tr>
+<th id="" i18n:translate="label_datesampled">Date sampled</th>
+<td align="center">
+<tal:define define="
+    id string:DateSampled;
+    inputname id;
+    formname string:search;
+    value request/getDateSampled | here/getDateSampled;
+    inputvalue python:test(value!='None', value, '');
+    show_hm python:False">
+<metal:use use-macro="here/calendar_macros/macros/calendarDatePickerBox">
+    a calendar, hopefully
+</metal:use>
+</tal:define>
+</td>
+</tr>
+<tr>
+<th i18n:translate="label_datesubmitted">Date submitted
+</th>
+<td class="left" 
+    tal:define="date_submitted here/getDateSubmitted"
+    tal:content="python:plone_view.toLocalizedTime(date_submitted, long_format=1)"
+    >2005-01-01 10:00</td>
+</tr>
+<tal:state 
+    define="review_state python:wtool.getInfoFor(here, 'review_state', '')">
+<tr tal:condition="python:review_state != 'due'">
+<th i18n:translate="label_datereceived">Date received
+</th>
+<td class="left">
+<span
+    tal:define="date_received here/getDateReceived"
+    tal:condition="date_received"
+    tal:content="python:plone_view.toLocalizedTime(date_received, long_format=1)"
+    >2005-01-01 10:00
+</span></td>
+</tr>
+
+<tr>
+<th i18n:translate="label_disposal_date">Disposal date
+</th>
+<td class="left">
+<span
+    tal:define="disposal_date here/getDisposalDate"
+    tal:condition="disposal_date"
+    tal:content="python:plone_view.toLocalizedTime(disposal_date, long_format=1)"
+    >2005-01-01 10:00
+</span></td>
+</tr>
+
+<tr tal:condition="python:review_state in ['expired', 'disposed']">
+<th i18n:translate="label_dateexpired">Date expired
+</th>
+<td class="left">
+<span
+    tal:define="date_expired here/getDateExpired"
+    tal:condition="date_expired"
+    tal:content="python:plone_view.toLocalizedTime(date_expired, long_format=1)"
+    >2005-01-01 10:00
+</span></td>
+</tr>
+
+</tal:state>
+
+</table>
+<br/>
+
+<input class="context"
+        tabindex=""
+        type="submit"
+        name="form_submit"
+        value="Save"
+        i18n:attributes="value"
+        tal:attributes="tabindex tabindex/next"
+        />
+<input class="standalone"
+        tabindex=""
+        type="submit"
+        name="form.button.cancel"
+        value="Cancel"
+        i18n:attributes="value"
+        tal:attributes="tabindex tabindex/next"
+        />
+
+
+</form>
+
+</metal:body_macro>
+
+</body>
+
+</html>
+
+
+
+
+

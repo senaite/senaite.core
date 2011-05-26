@@ -5,12 +5,7 @@
       xmlns:i18n="http://xml.zope.org/namespaces/i18n"
       metal:use-macro="here/main_template/macros/master"
       i18n:domain="bika">
-<head>
-  <metal:jshead fill-slot="javascript_head_slot">
-    <script type="text/javascript" src="++resource++analysisrequest.js"></script>
-    <script type="text/javascript" src="utils.js"></script>
-  </metal:jshead>
-</head>
+<head><title></title></head>
 
 <body>
 

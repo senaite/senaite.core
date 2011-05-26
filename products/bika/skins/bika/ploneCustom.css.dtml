@@ -1,6 +1,22 @@
 /*
  */
- 
+
+
+/*          ********* hide  ContentActions on custom folder types */
+
+.portaltype-analysisrequest #plone-contentmenu-actions,
+.portaltype-sample #plone-contentmenu-actions
+   {display: none;}
+   
+.portaltype-analysisrequest #plone-contentmenu-display,
+.portaltype-sample #plone-contentmenu-display
+   {display: none;}
+   
+.portaltype-analysisrequest #plone-contentmenu-factories
+   {display: none;}
+
+
+
 
 <dtml-with base_properties>
 <dtml-call "REQUEST.set('portal_url', portal_url())">
@@ -220,21 +236,6 @@ div.position-1\3a 4 {margin-left:    -81.5%;} /* .position-1:4 */
     background-color: transparent;
 }
 
-
-
-
-
-/*          ********* hide  ContentActions on custom folder types */
-
-.portaltype-analysisrequest #plone-contentmenu-actions {
-	display: none;
-}
-.portaltype-analysisrequest #plone-contentmenu-display {
-	display: none;
-}
-.portaltype-analysisrequest #plone-contentmenu-factories {
-	display: none;
-}
 
 
 

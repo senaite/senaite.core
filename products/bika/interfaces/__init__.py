@@ -17,6 +17,9 @@ class IAnalysisRequest(Interface):
     """
     """
 
+class ISample(Interface):
+    """
+    """
 
 class IIdServer(Interface):
     """ Interface for ID server """
