@@ -13,8 +13,10 @@
     tal:attributes="lang lang;">
 
 <head>
+ <!--  XXX htmlhead.x here, scripts at bottom, use RR for js  -->
   <div tal:replace="structure provider:plone.htmlhead" />
   <link tal:replace="structure provider:plone.htmlhead.links" />
+  
   <script type="text/javascript" src="++resource++analysisrequest.js"></script>
 </head>
 
@@ -53,33 +55,22 @@
     </tal:noresults>
 
     <tal:list>
-      <table class="group" width="100%" cellspacing="0" cellpadding="2" tal:condition="batch">
+      <table width="100%" cellspacing="0" cellpadding="0" class="analysisrequest" tal:condition="batch">
         <tbody>
+          <tr>
+            <th>Sample ID</th>
+            <th>Requests</th>
+            <th>&nbsp;</th>
+          </tr>
           <tal:results tal:repeat="item batch">
-            <tal:row 
-              define="
-                uid item/UID|string:'';
-                title item/Title|string:'';
-                color here/base_properties/discreetColor;
-                color string:rgb(175,175,175);
-                input_string title;
-                input_uid uid; 
-                input_title title;">
-
+            <tal:row >
               <tr tal:define="oddrow repeat/item/odd"
                   tal:attributes="class python: oddrow and 'even' or 'odd'">
-                <td width="50%">
-
-                  <input type="checkbox" class="noborder"
-                         name="Sample_visible"
-                         value="on"
-                         tal:define="input_id string:Sample.${repeat/item/index}"
-                         tal:attributes="id input_id;
-                                         selected_uid uid;
-                                         selected_title title;"/>
-                  <strong tal:content="item/title_or_id">Title</strong>
-                </td>
-                <td width="25%" nowrap="nowrap" style="text-align:right">
+                <td id="sample_browser_submit" 
+                    tal:content="item/Title"
+                    tal:attributes="column python:request.get('column');SampleID item/Title"/>
+                <td tal:content="python:','.join([t.Title() for t in item.getObject().getAnalysisRequests()])"/>
+                <td width="25%">
                   <a href="" target="_blank"
                       tal:attributes="href python:item.absolute_url()+'/edit';">
                     <strong i18n:translate="referencebrowser_view">view</strong>
@@ -88,15 +79,6 @@
               </tr>
             </tal:row>
           </tal:results>
-          <tr>
-            <td></td>
-            <td style="text-align:right;"><br/><br/>
-              <input type="button"
-                     id="sample_browser_submit"
-                     value="Done"
-                     class="actionButton"/>
-            </td>
-          </tr>
         </tbody>
       </table>
     <div metal:use-macro="here/batch_macros/macros/navigation" />

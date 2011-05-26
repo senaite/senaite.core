@@ -50,8 +50,12 @@
         name="folderContentsForm"
         method="post"
         action="folder_object"
-        tal:attributes="action context/absolute_url"
+        tal:attributes="action python: request.get('URL', context.absolute_url())"
         class="kssattr-serveraction-foldercontents_update_table">
+
+		<input type="hidden" name="submitted" id="submitted" value="1"/>
+		<input type="hidden" name="absolute_view_url" id="absolute_view_url" 
+		       tal:attributes="action python: request.get('URL', context.absolute_url())"/>
 
         <tal:wflist condition="python: len(view.wflist_states)>1">
           <span i18n:translate="label_wfstates" tal:omit-tag="">States:<span tal:omit-tag="" tal:content="structure view/wflist"/></span>

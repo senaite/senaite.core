@@ -144,11 +144,13 @@ div.position-1\3a 4 {margin-left:    -81.5%;} /* .position-1:4 */
     text-align: center;
 }
 
+.analysisrequest tr.analysiscategory {
+  cursor:pointer;
+}
 .analysisrequest th.analysiscategory {
     background: &dtml-globalBackgroundColor;;
     border-left: &dtml-borderWidth; &dtml-borderStyle; &dtml-globalBorderColor;;
     font-weight: bold;
-    cursor:pointer;
     margin-left:2em;
     text-align: left;
 }
@@ -194,6 +196,12 @@ div.position-1\3a 4 {margin-left:    -81.5%;} /* .position-1:4 */
     height: 15px;
     width: 15px;
     visibility: hidden;
+}
+
+#sample_browser_submit {
+    color: &dtml-linkColor;;
+    font-weight:bold;
+    cursor: pointer;
 }
 
 .copyButton{
@@ -284,6 +292,7 @@ div.position-1\3a 4 {margin-left:    -81.5%;} /* .position-1:4 */
 .analysisrequest .drybody {
     background-color: #dae0f0;
 }
+
 
 *
 */
@@ -443,6 +452,8 @@ select.worksheet {
     background: &dtml-backgroundColor;;
     cursor: pointer;
 }
+
+
 
 .invoice {
     border-collapse: collapse;

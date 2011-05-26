@@ -7,11 +7,11 @@ class IBikaLIMSLayer(Interface):
         if they are modified for or specific to the product 
     """
 
+class IClientFolder(Interface):
+    """Mark client folder"""
+
 class IClient(Interface):
     """Client marker interface"""
-
-class ILims(Interface):
-    """Lims marker interface"""
 
 class IAnalysisRequest(Interface):
     """

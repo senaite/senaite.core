@@ -17,7 +17,7 @@
     />
 
     <browser:page
-      for="Products.bika.interfaces.ILims"
+      for="Products.bika.interfaces.IClientFolder"
       name="clientfolder_contents"
       class="Products.bika.browser.clientfolder.ClientFolderContentsView"
       permission="bika.ManageClients"

@@ -1,4 +1,5 @@
 from Products.bika.browser.bika_folder_contents import BikaFolderContentsView
+from Products.bika.interfaces import IClientFolder
 from plone.app.content.browser.interfaces import IFolderContentsView
 from zope.interface import implements
 

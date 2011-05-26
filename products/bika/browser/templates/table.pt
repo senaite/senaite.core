@@ -1,6 +1,5 @@
 <div id="folderlisting-main-table"
-     i18n:domain="bika"
-	 tal:define="wflist_state python:request.get('wflist_state', 'all')">
+     i18n:domain="bika">
   <input type="hidden" name="sort_on"
          tal:attributes="value request/sort_on|string:getObjPositionInParent"
          />
@@ -27,7 +26,9 @@
     <div tal:replace="structure view/batching"
 	     tal:condition="not:view/show_all"/>
     <tal:wflist_state
-        tal:define="wflist_state python: [t for t in view.wflist_states if t['id'] == wflist_state][0]">
+        tal:define="
+        	requeststate python:request.get('wflist_state', 'all');
+        	wflist_state python:[t for t in view.wflist_states if t['id'] == requeststate][0]">
 	    <table class="listing"
 	           id="listing-table"
 	           summary="Content listing"

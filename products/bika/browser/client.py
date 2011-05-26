@@ -11,7 +11,7 @@ class ClientAnalysisRequestsView(BikaFolderContentsView):
     description = ""
     show_editable_border = True
     batch = True
-    b_size = 100
+    b_size = 10
     columns = {
                'getRequestID': {'title': 'Request ID'},
                'getContact': {'title': 'Contact'},
@@ -95,11 +95,11 @@ class ClientAnalysisRequestsView(BikaFolderContentsView):
             obj = items[x]['obj'].getObject()
             sample = obj.getSample()
             items[x]['SampleType'] = sample.getSampleType().Title()
-            items[x]['SamplePoint'] = sample.getSamplePoint().Title()
+            items[x]['SamplePoint'] = sample.getSamplePoint() and sample.getSamplePoint().Title() or ''
             items[x]['ClientReference'] = sample.getClientReference()
             items[x]['ClientSampleID'] = sample.getClientSampleID()
-            items[x]['getDateReceived'] = self.context.toLocalizedTime(obj.getDateReceived(), long_format=0)
-            items[x]['getDatePublished'] = self.context.toLocalizedTime(obj.getDatePublished(), long_format=0)
+            items[x]['getDateReceived'] = obj.getDateReceived() and self.context.toLocalizedTime(obj.getDateReceived(), long_format = 0) or ''
+            items[x]['getDatePublished'] = obj.getDatePublished() and self.context.toLocalizedTime(obj.getDatePublished(), long_format = 0) or ''
 
             items[x]['links'] = {'getRequestID': items[x]['url']}
 
@@ -108,7 +108,7 @@ class ClientAnalysisRequestsView(BikaFolderContentsView):
 class ClientSamplesView(BikaFolderContentsView):
     implements(IFolderContentsView)
     contentFilter = {'portal_type': 'Sample'}
-    content_add_buttons = {'Sample': "createObject?type_name=Sample"}
+    content_add_buttons = {}
     title = "Samples"
     description = ""
     show_editable_border = True
@@ -140,9 +140,7 @@ class ClientSamplesView(BikaFolderContentsView):
                                  'getClientReference',
                                  'getClientSampleID',
                                  'SampleType',
-                                 'SamplePoint',
-                                 'getDateReceived',
-                                 'state_title']},
+                                 'SamplePoint']},
                     {'title': 'Received', 'id':'received',
                      'columns': ['getSampleID',
                                  'Requests',
@@ -150,8 +148,7 @@ class ClientSamplesView(BikaFolderContentsView):
                                  'getClientSampleID',
                                  'SampleType',
                                  'SamplePoint',
-                                 'getDateReceived',
-                                 'state_title']},
+                                 'getDateReceived']},
                     {'title': 'Expired', 'id':'expired',
                      'columns': ['getSampleID',
                                  'Requests',
@@ -159,8 +156,7 @@ class ClientSamplesView(BikaFolderContentsView):
                                  'getClientSampleID',
                                  'SampleType',
                                  'SamplePoint',
-                                 'getDateReceived',
-                                 'state_title']},
+                                 'getDateReceived']},
                     {'title': 'Disposed', 'id':'disposed',
                      'columns': ['getSampleID',
                                  'Requests',
@@ -168,8 +164,7 @@ class ClientSamplesView(BikaFolderContentsView):
                                  'getClientSampleID',
                                  'SampleType',
                                  'SamplePoint',
-                                 'getDateReceived',
-                                 'state_title']},
+                                 'getDateReceived']},
 
                     ]
 
@@ -180,6 +175,7 @@ class ClientSamplesView(BikaFolderContentsView):
             items[x]['Requests'] = ",".join([o.Title() for o in obj.getAnalysisRequests()])
             items[x]['SampleType'] = obj.getSampleType().Title()
             items[x]['SamplePoint'] = obj.getSamplePoint().Title()
+            items[x]['getDateReceived'] = obj.getDateReceived() and self.context.toLocalizedTime(obj.getDateReceived(), long_format = 0) or ''
 
             items[x]['links'] = {'getSampleID': items[x]['url']}
 

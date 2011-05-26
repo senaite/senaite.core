@@ -4,6 +4,7 @@ from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import transaction_note
 from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from Products.bika import bikaMessageFactory as _
 from decimal import Decimal
 import json
 
@@ -16,7 +17,7 @@ def analysisrequest_add_submit(context, request):
     came_from = form.has_key('came_from') and form['came_from'] or 'add'
 
     import pprint
-    pprint.pprint(request.form)
+    pprint.pprint(form)
 
     errors = {}
     def error(field = None, column = None, message = None):
@@ -24,13 +25,20 @@ def analysisrequest_add_submit(context, request):
             message = context.translate('message_input_required',
                                         default = 'Input is required but no input given.',
                                         domain = 'bika')
-        colstr = column != None and "%s." % column or ""
-        fieldstr = field != None and field or ""
-        error_key = "%s%s" % (colstr, field) or 'Form error'
+        column = column or ""
+        field = field or ""
+        error_key = field and column and "%s.%s" % (column, field) or 'errors'
         try: errors[error_key].append(message)
         except: errors[error_key] = [message, ]
 
     # first some basic validation
+
+    if not form.has_key('Prices'):
+        error(message = _("No analyses have been selected."))
+        return json.dumps({'errors':errors})
+
+    prices = form['Prices']
+    vat = form['VAT']
 
     required = ['Analyses']
     if came_from == "add": required += ['SampleType', 'DateSampled']
@@ -38,23 +46,17 @@ def analysisrequest_add_submit(context, request):
               'ClientSampleID', 'DateSampled', 'SampleType', 'SamplePoint',
               'ReportDryMatter', 'InvoiceExclude', 'Analyses')
 
-    try:
-        prices = form['Prices']
-        vat = form['VAT']
-    except KeyError:
-        return error(message = "No analyses selected.")
-
     for column in range(int(form['col_count'])):
+        column = "%01d" % column
         if not form.has_key("ar.%s" % column):
             continue
         ar = form["ar.%s" % column]
-        if len(ar.keys()) == 3:
+        if len(ar.keys()) == 3: # three empty price fields
             continue
-
         # check that required fields have values
         for field in required:
             if not ar.has_key(field):
-                error(column, field)
+                error(field, column)
 
         # validate all field values
         for field in fields:
@@ -65,17 +67,17 @@ def analysisrequest_add_submit(context, request):
             if came_from == "add" and field == "SampleID":
                 if not pc(portal_type = 'Sample',
                           getSampleID = ar[field]):
-                    error(column, field, '%s is not a valid sample ID' % ar[field])
+                    error(field, column, '%s is not a valid sample ID' % ar[field])
 
             elif came_from == "add" and field == "SampleType":
                 if not pc(portal_type = 'SampleType',
                           Title = ar[field]):
-                    error(column, field, '%s is not a valid sample type' % ar[field])
+                    error(field, column, '%s is not a valid sample type' % ar[field])
 
             elif came_from == "add" and field == "SamplePoint":
                 if not pc(portal_type = 'SamplePoint',
                           Title = ar[field]):
-                    error(column, field, '%s is not a valid sample point' % ar[field])
+                    error(field, column, '%s is not a valid sample point' % ar[field])
 
             #elif field == "ReportDryMatter":
             #elif field == "InvoiceExclude":
@@ -87,7 +89,7 @@ def analysisrequest_add_submit(context, request):
 
     if errors:
         print "errors: ", errors
-        return json.dumps(errors)
+        return json.dumps({'errors':errors})
 
     ARs = []
     services = {} # UID:service
@@ -197,12 +199,21 @@ def analysisrequest_add_submit(context, request):
 
     # AVS check sample_state and promote the AR is > 'due'
 
-    if came_from == "add":
-        return "Successfully created new AR%s" % (len(ARs) > 1 and 's' or '')
+#if primaryArUIDs:
+#   context.REQUEST.SESSION.set('uids', primaryArUIDs)
+#   return state.set(status='print')
+
+    if len(ARs) > 1:
+        message = context.translate('message_ars_created',
+                                    default = 'Analysis requests ${ARs} were successfully created.',
+                                    mapping = {'ARs': ', '.join(ARs)}, domain = 'bika')
     else:
-        return "Changes Saved"
+        message = context.translate('message_ar_created',
+                                    default = 'Analysis request ${AR} was successfully created.',
+                                    mapping = {'AR': ', '.join(ARs)}, domain = 'bika')
 
-
+    return json.dumps('success')
+    context.plone_utils.addPortalMessage(message, 'info')
 
 class AnalysisRequestViewView(BrowserView):
     """ AR View form
@@ -967,7 +978,9 @@ class AnalysisRequestContactCCs(BrowserView):
     """
     def __call__(self):
         rc = getToolByName(self.context, 'reference_catalog')
-        uid = self.request.form.keys()[0]
+        uid = self.request.form.keys() and self.request.form.keys()[0] or None
+	if not uid:
+            return
         contact = rc.lookupObject(uid)
         cc_uids = []
         cc_titles = []
@@ -989,7 +1002,7 @@ class AnalysisRequestSelectSampleView(BrowserView):
     template = ViewPageTemplateFile("templates/analysisrequest_select_sample.pt")
     def Samples(self, client):
         pc = getToolByName(self.context, 'portal_catalog')
-        return pc(portal_type = "Sample", getClient = client)
+        return pc(portal_type = "Sample", getClientId = self.context.id)
 
     def __call__(self):
         return self.template()

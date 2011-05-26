@@ -24,13 +24,6 @@
     tal:attributes="src string:${portal/absolute_url}/images/no_invoice.png">
 </h1>
 
-<a href="" class="link-parent"
-    tal:define="parent_url python:here.navigationParent(here, template.getId())"
-    tal:condition="parent_url"
-    tal:attributes="href parent_url"
-    i18n:translate="go_to_parent_url">
-Up one level
-</a>
 <div
     tal:define="
         b_size python:100;

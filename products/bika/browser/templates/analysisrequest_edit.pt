@@ -18,7 +18,10 @@
     <h1 i18n:translate="heading_request_new_analyses" tal:condition="python:not edit">Request new analyses</h1>
     <h1 tal:content="here/title_or_id" tal:condition="edit"/>
 
-    <form id="analysisrequest_edit_form" name="analysisrequest_edit_form" method="POST">
+    <form id="analysisrequest_edit_form" 
+          name="analysisrequest_edit_form" 
+          tal:attributes="action python:request.get('URL',context.absolute_url());"
+          method="POST">
 
       <input type="hidden" name="submitted" value="1" />
       <input type="hidden" name="came_from" tal:attributes="value view/came_from" />

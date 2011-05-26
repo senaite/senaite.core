@@ -1352,6 +1352,9 @@ msgstr "Date dispatched"
 
 # to be translated
 msgid "message_ar_created"
+msgstr "Analysis Request ${AR} was successfully created."
+
+msgid "message_ars_created"
 msgstr "Analysis Requests ${ARs} were successfully created."
 
 # to be translated

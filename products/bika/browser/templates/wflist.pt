@@ -6,6 +6,7 @@
          tal:define="state_id state/id" 
 		 tal:attributes="
 		   value state_id;
+		   id string:state/id;
            checked python:request.get('wflist_state', 'all') == state_id and 'checked' or None"/>
-  <span tal:content="state/title" i18n:translate=""/>
+  <label tal:attributes="for state/id;" tal:content="state/title" i18n:translate=""/>
 </tal:x>

@@ -64,7 +64,8 @@ class BikaFolderContentsView(FolderContentsView):
         if hasattr(self, 'wflist_state'):
             if self.wflist_state == 'all':
                 del self.wflist_state
-                del self.contentFilter['review_state']
+                if self.contentFilter.has_key('review_state'):
+                    del self.contentFilter['review_state']
             else:
                 self.contentFilter['review_state'] = self.wflist_state
         
