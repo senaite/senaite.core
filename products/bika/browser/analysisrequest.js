@@ -621,36 +621,57 @@ jQuery( function($) {
 			window.opener.select_sample($(this).attr('column'), $(this).attr('SampleID'));
 			window.close();
 		});
-	
-		// AR Add / AR Edit form submission
-		$('#analysisrequest_edit_form').submit(function(){
-			$("input[class~='context']").attr('disabled',true);
-			$.post("analysisrequest_add", 
-					$(this).formToArray(), 
-					function(data){
-						$("input[class~='context']").removeAttr('disabled');
-		 				$('dl[class^="portalMessage"]').remove();
-		 				errors = $("errors", this);
-		 				if (errors.indexOf('errors')){
-							// general form errors
-							str = "<dl class='portalMessage error'>"+
-								"<dt i18n:translate='error'>Error</dt>"+
-								"<dd><ul>";
-							$.each(errors['errors'], function(i,error){
-								str = str + "<li>" + error + "</li>";
-							});
-							str = str + "</ul></dd></dl>";
-							$(str).appendTo('#viewlet-above-content');
-		 				}
-					}
-			); 
-			return false;
-		});
-	
+
+		function portalMessage(message){
+			str = "<dl class='portalMessage error'>"+
+					"<dt i18n:translate='error'>Error</dt>"+
+					"<dd><ul>" + message +
+					"</ul></dd></dl>";
+					$('.portalMessage').remove();
+					$(str).appendTo('#viewlet-above-content');
+					$(str).appendTo('#viewlet-below-content');
+		}
+		
+		// AR Add/Edit ajax form submits
+		var options = { 
+			url: 'analysisrequest_add',
+			dataType:  'json', 
+			data: $(this).formToArray(),
+			beforeSubmit: function(formData, jqForm, options) {
+				$("input[class~='context']").attr('disabled',true);
+			},
+			complete: function(XMLHttpRequest, textStatus) {
+				$("input[class~='context']").removeAttr('disabled');
+			},
+			success: function(responseText, statusText, xhr, $form)  {  
+				if(responseText['success'] != undefined){
+					window.location.replace(window.location.href.replace("/analysisrequest_add",""));
+				}
+				msg = ""
+				if(responseText['errors'] != undefined){
+					for(error in responseText['errors']){
+						x = error.split(".");
+						if (x.length == 2){
+							e = x[1] + " (Column " + x[0] + "): ";
+						} else {
+							e = "";
+						}
+						msg = msg + e + responseText['errors'][error] + "<br/>";
+					};
+					portalMessage(msg);
+				}
+			},
+			error: function(XMLHttpRequest, statusText, errorThrown) {
+				portalMessage(statusText);
+			},
+		};
+		$('#analysisrequest_edit_form').ajaxForm(options);
+
+
 		// these go here so that popup windows can access them in our context
 		window.select_cc = select_cc;
 		window.select_sample = select_sample;
-		
+
 	});
 
 });

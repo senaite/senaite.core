@@ -16,8 +16,8 @@ def analysisrequest_add_submit(context, request):
     pc = getToolByName(context, 'portal_catalog')
     came_from = form.has_key('came_from') and form['came_from'] or 'add'
 
-    import pprint
-    pprint.pprint(form)
+#    import pprint
+#    pprint.pprint(form)
 
     errors = {}
     def error(field = None, column = None, message = None):
@@ -27,15 +27,14 @@ def analysisrequest_add_submit(context, request):
                                         domain = 'bika')
         column = column or ""
         field = field or ""
-        error_key = field and column and "%s.%s" % (column, field) or 'errors'
-        try: errors[error_key].append(message)
-        except: errors[error_key] = [message, ]
+        error_key = field and column and "%s.%s" % (column, field) or 'form error'
+        errors[error_key] = message
 
     # first some basic validation
 
     if not form.has_key('Prices'):
         error(message = _("No analyses have been selected."))
-        return json.dumps({'errors':errors})
+        return json.dumps({'errors': errors})
 
     prices = form['Prices']
     vat = form['VAT']
@@ -88,7 +87,7 @@ def analysisrequest_add_submit(context, request):
             #elif field == "ClientSampleID":
 
     if errors:
-        print "errors: ", errors
+        print errors
         return json.dumps({'errors':errors})
 
     ARs = []
@@ -212,8 +211,8 @@ def analysisrequest_add_submit(context, request):
                                     default = 'Analysis request ${AR} was successfully created.',
                                     mapping = {'AR': ', '.join(ARs)}, domain = 'bika')
 
-    return json.dumps('success')
     context.plone_utils.addPortalMessage(message, 'info')
+    return json.dumps({'success':message})
 
 class AnalysisRequestViewView(BrowserView):
     """ AR View form
@@ -463,7 +462,7 @@ class AnalysisRequestAddView(BrowserView):
 
     def __call__(self):
         if self.request.form.has_key("submitted"):
-            analysisrequest_add_submit(self.context, self.request)
+            return analysisrequest_add_submit(self.context, self.request)
         else:
             return self.template()
 

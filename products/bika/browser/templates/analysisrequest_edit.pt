@@ -20,7 +20,6 @@
 
     <form id="analysisrequest_edit_form" 
           name="analysisrequest_edit_form" 
-          tal:attributes="action python:request.get('URL',context.absolute_url());"
           method="POST">
 
       <input type="hidden" name="submitted" value="1" />
@@ -433,7 +432,7 @@
 
       </table>
     
-      <input class="context" 
+      <input class="context allowMultiSubmit"
              type="submit" 
              value="Submit"/>
 

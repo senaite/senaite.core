@@ -51,6 +51,10 @@
     font-weight: normal;
 }
 
+dl.portalMessage {
+    margin-top:0;
+}
+
 dl.portlet ul.navTreeLevel0 > .navTreeItem {
     padding: 0.25em 0.25em;
 }
