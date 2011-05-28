@@ -9,7 +9,7 @@
   <head>
     <metal:block fill-slot="top_slot">
       <style type="text/css">
-        /*To hide the 'Add new' dropdown in the edit bar XXX cbb - kills the rounded border */
+        <!-- /* XXX inline style however functional is still inline style. */ -->
         #plone-contentmenu-factories {display:none;}
       </style>
     </metal:block>
@@ -29,7 +29,7 @@
     <metal:content-core fill-slot="content-core">
 
       <tal:add_buttons repeat="add_item python:view.content_add_buttons.keys()">
-          <form 
+          <form
             name="folderContentsForm"
             method="post"
             action=""
@@ -53,17 +53,14 @@
         tal:attributes="action python: request.get('URL', context.absolute_url())"
         class="kssattr-serveraction-foldercontents_update_table">
 
-		<input type="hidden" name="submitted" id="submitted" value="1"/>
-		<input type="hidden" name="absolute_view_url" id="absolute_view_url" 
-		       tal:attributes="action python: request.get('URL', context.absolute_url())"/>
-
-        <tal:wflist condition="python: len(view.wflist_states)>1">
-          <span i18n:translate="label_wfstates" tal:omit-tag="">States:<span tal:omit-tag="" tal:content="structure view/wflist"/></span>
-        </tal:wflist>
+        <input type="hidden" name="submitted" id="submitted" value="1"/>
 
         <div class="visualClear" id="clear-space-before-navigation"><!-- --></div>
 
+        <span tal:omit-tag="" tal:content="structure view/wflist"/>
+
         <div tal:replace="structure view/contents_table"></div>
+
         <input tal:replace="structure context/@@authenticator/authenticator" />
 
       </form>

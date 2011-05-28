@@ -221,7 +221,6 @@ class Sample(VariableSchemaSupport, BrowserDefaultMixin, BaseFolder):
         tool = getToolByName(self, REFERENCE_CATALOG)
         ar = ''
         ars = []
-        #XXX too much waking up
         uids = [uid for uid in
                 tool.getBackReferences(self, 'AnalysisRequestSample')]
         for uid in uids:

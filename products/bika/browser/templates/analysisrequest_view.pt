@@ -128,14 +128,11 @@
         <td class="left" 
             tal:attributes="colspan colspan1"
             tal:content="here/getClientOrderNumber|nothing">123</td>
-        <th tal:attributes="colspan colspan2" i18n:translate="label_requestid">Request ID</th>
+        <th tal:attributes="colspan colspan2" i18n:translate="label_sampleid">Sample</th>
         <td class="left" 
             tal:attributes="colspan colspan3">
-          <span tal:content="here/getRequestID">AR-001</span>
           <a tal:attributes="href sample/absolute_url">
-            <img src="" 
-                alt="Sample"
-                tal:attributes="src string:${portal/absolute_url}/images/sample_small.png">
+              <span tal:content="sample/Title">S-00001</span>
           </a>
         </td>
       </tr>

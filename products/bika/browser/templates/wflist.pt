@@ -1,4 +1,5 @@
-<tal:x repeat="state view/wflist_states">
+<tal:x condition="python: len(view.wflist_states)>1"
+       repeat="state view/wflist_states">
   <input class="noborder" 
          type="radio" 
 		 name="wflist_state" 
@@ -6,7 +7,7 @@
          tal:define="state_id state/id" 
 		 tal:attributes="
 		   value state_id;
-		   id string:state/id;
+		   id state/id;
            checked python:request.get('wflist_state', 'all') == state_id and 'checked' or None"/>
   <label tal:attributes="for state/id;" tal:content="state/title" i18n:translate=""/>
 </tal:x>

@@ -16,9 +16,6 @@ def analysisrequest_add_submit(context, request):
     pc = getToolByName(context, 'portal_catalog')
     came_from = form.has_key('came_from') and form['came_from'] or 'add'
 
-#    import pprint
-#    pprint.pprint(form)
-
     errors = {}
     def error(field = None, column = None, message = None):
         if not message:
@@ -87,7 +84,6 @@ def analysisrequest_add_submit(context, request):
             #elif field == "ClientSampleID":
 
     if errors:
-        print errors
         return json.dumps({'errors':errors})
 
     ARs = []
@@ -126,8 +122,7 @@ def analysisrequest_add_submit(context, request):
             sample = sample_proxy[0].getObject()
             ar_number = sample.getLastARNumber() + 1
             wf_tool = context.portal_workflow
-            sample_state = wf_tool.getInfoFor(sample,
-                                              'review_state', '')
+            sample_state = wf_tool.getInfoFor(sample, 'review_state', '')
             sample.edit(LastARNumber = ar_number)
             sample.reindexObject()
         else:
@@ -145,6 +140,13 @@ def analysisrequest_add_submit(context, request):
                 )
             else:
                 sample = context.getSample()
+                sample.edit(
+                    **dict(values)
+                )
+
+
+
+
             sample_uid = sample.UID()
             dis_date = sample.disposal_date()
             sample.setDisposalDate(dis_date)
@@ -202,14 +204,17 @@ def analysisrequest_add_submit(context, request):
 #   context.REQUEST.SESSION.set('uids', primaryArUIDs)
 #   return state.set(status='print')
 
-    if len(ARs) > 1:
-        message = context.translate('message_ars_created',
+    if came_from == "add":
+        if len(ARs) > 1:
+            message = context.translate('message_ars_created',
                                     default = 'Analysis requests ${ARs} were successfully created.',
                                     mapping = {'ARs': ', '.join(ARs)}, domain = 'bika')
-    else:
-        message = context.translate('message_ar_created',
+        else:
+            message = context.translate('message_ar_created',
                                     default = 'Analysis request ${AR} was successfully created.',
                                     mapping = {'AR': ', '.join(ARs)}, domain = 'bika')
+    else:
+        message = "Changes Saved."
 
     context.plone_utils.addPortalMessage(message, 'info')
     return json.dumps({'success':message})
@@ -242,7 +247,7 @@ class AnalysisRequestViewView(BrowserView):
         """
         pc = getToolByName(self.context, 'portal_catalog')
         cats = {}
-        for analysis in pc(portal_type = "Analysis"):
+        for analysis in pc(portal_type = "Analysis", getRequestID = self.context.id):
             analysis = analysis.getObject()
             service = analysis.getService()
             poc = service.getPointOfCapture()
@@ -509,7 +514,7 @@ class AnalysisRequestEditView(AnalysisRequestAddView):
         """
         pc = getToolByName(self.context, 'portal_catalog')
         res = []
-        for analysis in pc(portal_type = "Analysis", RequestID = self.context.RequestID):
+        for analysis in pc(portal_type = "Analysis", getRequestID = self.context.RequestID):
             analysis = analysis.getObject() # XXX getObject
             service = analysis.getService()
             res.append([service.getCategoryUID(), service.UID(), service.getPointOfCapture()])
@@ -1000,8 +1005,30 @@ class AnalysisRequestSelectSampleView(BrowserView):
     """
     template = ViewPageTemplateFile("templates/analysisrequest_select_sample.pt")
     def Samples(self, client):
+        """ Returns a list of samples owned by the client in the context
+        """
         pc = getToolByName(self.context, 'portal_catalog')
         return pc(portal_type = "Sample", getClientId = self.context.id)
+
+    def FieldAnalyses(self, sample):
+        """ Returns a dictionary of lists reflecting Field Analyses
+            linked to this sample.
+            XXX
+            For secondary ARs field analyses and their values are 
+            read/written from the first AR.
+            {category_uid: [service_uid, service_uid], ... }
+        """
+        res = {}
+        ars = sample.getAnalysisRequests()
+        if len(ars) > 0:
+            for analysis in ars[0].getAnalyses():
+                if analysis.getService().getPointOfCapture() == 'field':
+                    catuid = analysis.getService().getCategoryUID()
+                    if res.has_key(catuid):
+                        res[catuid].append(analysis.getService().UID())
+                    else:
+                        res[catuid] = [analysis.getService().UID()]
+        return json.dumps(res)
 
     def __call__(self):
         return self.template()

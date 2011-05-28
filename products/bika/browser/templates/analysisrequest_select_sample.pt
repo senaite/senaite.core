@@ -13,11 +13,7 @@
     tal:attributes="lang lang;">
 
 <head>
- <!--  XXX htmlhead.x here, scripts at bottom, use RR for js  -->
   <div tal:replace="structure provider:plone.htmlhead" />
-  <link tal:replace="structure provider:plone.htmlhead.links" />
-  
-  <script type="text/javascript" src="++resource++analysisrequest.js"></script>
 </head>
 
 <body onload="focus();self.name='referencebrowser_popup'" style="margin: 4px;padding:0.5em;" 
@@ -68,7 +64,17 @@
                   tal:attributes="class python: oddrow and 'even' or 'odd'">
                 <td id="sample_browser_submit" 
                     tal:content="item/Title"
-                    tal:attributes="column python:request.get('column');SampleID item/Title"/>
+                    tal:define="sample item/getObject;"
+                    tal:attributes="
+                        column python:request.get('column');
+                        SampleID item/Title;
+                        ClientReference item/getClientReference;
+                        ClientSampleID item/getClientSampleID;
+                        DateSampled sample/getDateSampled;
+                        SampleType python:sample.getSampleType() and sample.getSampleType().Title() or '';
+                        SamplePoint python:sample.getSamplePoint() and sample.getSamplePoint().Title() or '';
+                        field_analyses python:view.FieldAnalyses(sample);
+                        "/>
                 <td tal:content="python:','.join([t.Title() for t in item.getObject().getAnalysisRequests()])"/>
                 <td width="25%">
                   <a href="" target="_blank"

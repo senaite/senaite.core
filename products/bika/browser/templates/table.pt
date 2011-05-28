@@ -6,6 +6,7 @@
   <input type="hidden" name="pagenumber" tal:attributes="value view/batch/pagenumber"/>
   <input type="hidden" name="show_all" tal:attributes="value view/show_all"/>
   <input type="hidden" name="orig_template" tal:attributes="value view/viewname"/>
+
   <tal:block condition="view/selectall">
     <input type="hidden" name="paths:list"
            tal:repeat="item view/batch/items_not_on_page"
@@ -25,6 +26,7 @@
 
     <div tal:replace="structure view/batching"
 	     tal:condition="not:view/show_all"/>
+
     <tal:wflist_state
         tal:define="
         	requeststate python:request.get('wflist_state', 'all');
