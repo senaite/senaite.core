@@ -1,8 +1,9 @@
-/*
- */
+<dtml-with base_properties>
+<dtml-call "REQUEST.set('portal_url', portal_url())">
 
 
 /*          ********* hide  ContentActions on custom folder types */
+
 
 .portaltype-analysisrequest #plone-contentmenu-actions,
 .portaltype-sample #plone-contentmenu-actions
@@ -14,13 +15,6 @@
    
 .portaltype-analysisrequest #plone-contentmenu-factories
    {display: none;}
-
-
-
-
-<dtml-with base_properties>
-<dtml-call "REQUEST.set('portal_url', portal_url())">
-
 
 
 /*
@@ -85,7 +79,7 @@ table.invisible td, table.invisible th, table.plain td, table.plain th, table.li
  * ( make the global NAV bar smaller
  */
 #portal-globalnav li a {
-	padding: 0.2em 1em 0.2em 1em;
+	padding: 0.2em 1em 0.2em 1em ! important;
 	min-width:2em;
 	font-size: 90%;
 }
@@ -181,7 +175,8 @@ div.position-1\3a 4 {margin-left:    -81.5%;} /* .position-1:4 */
 }
 
 .analysisrequest input {
-//    border: 1px solid &dtml-globalBackgroundColor;;  
+    border: 1px solid &dtml-globalBackgroundColor;;
+    margin:1px;
 }
 
 .analysisrequest .noborder {
@@ -198,7 +193,7 @@ div.position-1\3a 4 {margin-left:    -81.5%;} /* .position-1:4 */
 
 .analysisrequest .unit {
 	font-size:80%;
-	font-color: #ccc;
+	color: #ccc;
 }
 
 .delAttachmentButton {
@@ -235,16 +230,13 @@ div.position-1\3a 4 {margin-left:    -81.5%;} /* .position-1:4 */
 /*
  *  General Form Elements
  */
-.cb,
+.cb {
     border: none;
     background-color: transparent;
 }
 
-
-
-
-
-/*.analysisrequest .top {
+/*
+.analysisrequest .top {
     border-left: &dtml-borderWidth; &dtml-borderStyle; &dtml-backgroundColor;;
     border-top: &dtml-borderWidth; &dtml-borderStyle; &dtml-backgroundColor; ! important;
     border-right: &dtml-borderWidth; &dtml-borderStyle; &dtml-backgroundColor; ! important;

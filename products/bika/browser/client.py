@@ -2,17 +2,20 @@ from Products.CMFCore.utils import getToolByName
 from Products.bika.browser.bika_folder_contents import BikaFolderContentsView
 from plone.app.content.browser.interfaces import IFolderContentsView
 from zope.interface import implements
+from Products.bika import bikaMessageFactory as _
 
 class ClientAnalysisRequestsView(BikaFolderContentsView):
     implements(IFolderContentsView)
-    contentFilter = {'portal_type': 'AnalysisRequest'}
-    content_add_buttons = {'Analysis Request': "analysisrequest_add"}
-    title = "Analysis Requests"
-    description = ""
-    show_editable_border = True
-    batch = True
-    b_size = 10
-    columns = {
+    def __init__(self, context, request):
+        super(ClientAnalysisRequestsView, self).__init__(context, request)
+        self.contentFilter = {'portal_type': 'AnalysisRequest'}
+        self.content_add_buttons = {'Analysis Request': "analysisrequest_add"}
+        self.title = "%s: %s" % (self.context.Title(), _("Analysis Requests"))
+        self.description = ""
+        self.show_editable_border = True
+        self.batch = True
+        self.b_size = 10
+        self.columns = {
                'getRequestID': {'title': 'Request ID'},
                'getContact': {'title': 'Contact'},
                'getClientOrderNumber': {'title': 'Client Order'},
@@ -24,7 +27,7 @@ class ClientAnalysisRequestsView(BikaFolderContentsView):
                'getDatePublished': {'title': 'Date Published'},
                'state_title': {'title': 'State'},
               }
-    wflist_states = [
+        self.wflist_states = [
                     {'title': 'All', 'id':'all',
                      'columns':['getRequestID',
                                 'getClientOrderNumber',
@@ -107,14 +110,16 @@ class ClientAnalysisRequestsView(BikaFolderContentsView):
 
 class ClientSamplesView(BikaFolderContentsView):
     implements(IFolderContentsView)
-    contentFilter = {'portal_type': 'Sample'}
-    content_add_buttons = {}
-    title = "Samples"
-    description = ""
-    show_editable_border = True
-    batch = True
-    b_size = 100
-    columns = {
+    def __init__(self, context, request):
+        super(ClientSamplesView, self).__init__(context, request)
+        self.contentFilter = {'portal_type': 'Sample'}
+        self.content_add_buttons = {}
+        self.title = "%s: %s" % (self.context.Title(), _("Samples"))
+        self.description = ""
+        self.show_editable_border = True
+        self.batch = True
+        self.b_size = 100
+        self.columns = {
                'getSampleID': {'title': 'Sample ID'},
                'Requests': {'title': 'Requests'},
                'getClientReference': {'title':'Client Ref'},
@@ -124,7 +129,7 @@ class ClientSamplesView(BikaFolderContentsView):
                'getDateReceived': {'title': 'Date Received'},
                'state_title': {'title': 'State'},
               }
-    wflist_states = [
+        self.wflist_states = [
                     {'title': 'All', 'id':'all',
                      'columns': ['getSampleID',
                                  'Requests',
@@ -183,22 +188,23 @@ class ClientSamplesView(BikaFolderContentsView):
 
 class ClientARImportsView(BikaFolderContentsView):
     implements(IFolderContentsView)
-    contentFilter = {'portal_type': 'ARImport'}
-    content_add_buttons = {'AR Import': "createObject?type_name=ARImport"}
-    title = "Analysis Request Imports"
-    description = ""
-    show_editable_border = True
-    batch = True
-    b_size = 100
-    wflist_states = []
-    columns = {
+    def __init__(self, context, request):
+        super(ClientARImportsView, self).__init__(context, request)
+        self.contentFilter = {'portal_type': 'ARImport'}
+        self.content_add_buttons = {'AR Import': "createObject?type_name=ARImport"}
+        self.title = "%s: %s" % (self.context.Title(), _("Analysis Request Imports"))
+        self.description = ""
+        self.show_editable_border = True
+        self.batch = True
+        self.b_size = 100
+        self.columns = {
                'title_or_id': {'title': 'Import'},
                'getDateImported': {'title': 'Date Imported'},
                'getStatus': {'title':'Validity'},
                'getDateApplied': {'title':'Date Submitted'},
                'state_title': {'title': 'State'},
               }
-    wflist_states = [
+        self.wflist_states = [
                     {'title': 'All', 'id':'all',
                      'columns': ['title_or_id',
                                  'getDateImported',
@@ -225,20 +231,21 @@ class ClientARImportsView(BikaFolderContentsView):
 
 class ClientARProfilesView(BikaFolderContentsView):
     implements(IFolderContentsView)
-    contentFilter = {'portal_type': 'ARProfile'}
-    content_add_buttons = {'AR Profile': "createObject?type_name=ARProfile"}
-    title = "Analysis Request Profiles"
-    description = ""
-    show_editable_border = True
-    batch = True
-    b_size = 100
-    wflist_states = []
-    columns = {
+    def __init__(self, context, request):
+        super(ClientARProfilesView, self).__init__(context, request)
+        self.contentFilter = {'portal_type': 'ARProfile'}
+        self.content_add_buttons = {'AR Profile': "createObject?type_name=ARProfile"}
+        self.title = "%s: %s" % (self.context.Title(), _("Analysis Request Profiles"))
+        self.description = ""
+        self.show_editable_border = True
+        self.batch = True
+        self.b_size = 100
+        self.columns = {
                'getProfileTitle': {'title': 'Title'},
                'getProfileKey': {'title': 'Profile Key'},
               }
-    wflist_states = [
-                    {'title': 'All', 'id':'all',
+        self.wflist_states = [
+                    {'title': _('All'), 'id':'all',
                      'columns': ['getProfileTitle',
                                  'getProfileKey']},
                     ]
@@ -252,18 +259,19 @@ class ClientARProfilesView(BikaFolderContentsView):
 
 class ClientAnalysisSpecsView(BikaFolderContentsView):
     implements(IFolderContentsView)
-    contentFilter = {'portal_type': 'AnalysisSpec'}
-    content_add_buttons = {'Analysis Spec': "createObject?type_name=AnalysisSpec"}
-    title = "Analysis Specifications"
-    description = ""
-    show_editable_border = True
-    batch = True
-    b_size = 100
-    wflist_states = []
-    columns = {
+    def __init__(self, context, request):
+        super(ClientAnalysisSpecsView, self).__init__(context, request)
+        self.contentFilter = {'portal_type': 'AnalysisSpec'}
+        self.content_add_buttons = {'Analysis Spec': "createObject?type_name=AnalysisSpec"}
+        self.title = "%s: %s" % (self.context.Title(), _("Analysis Specifications"))
+        self.description = ""
+        self.show_editable_border = True
+        self.batch = True
+        self.b_size = 100
+        self.columns = {
                'getSampleType': {'title': 'Sample  Type'},
               }
-    wflist_states = [
+        self.wflist_states = [
                     {'title': 'All', 'id':'all',
                      'columns': ['getSampleType']},
                     ]
@@ -277,15 +285,16 @@ class ClientAnalysisSpecsView(BikaFolderContentsView):
 
 class ClientAttachmentsView(BikaFolderContentsView):
     implements(IFolderContentsView)
-    contentFilter = {'portal_type': 'Attachment'}
-    content_add_buttons = {'Attachment': "createObject?type_name=Attachment"}
-    title = "Attachments"
-    description = ""
-    show_editable_border = True
-    batch = True
-    b_size = 100
-    wflist_states = []
-    columns = {
+    def __init__(self, context, request):
+        super(ClientAttachmentsView, self).__init__(context, request)
+        self.contentFilter = {'portal_type': 'Attachment'}
+        self.content_add_buttons = {'Attachment': "createObject?type_name=Attachment"}
+        self.title = "%s: %s" % (self.context.Title(), _("Attachments"))
+        self.description = ""
+        self.show_editable_border = True
+        self.batch = True
+        self.b_size = 100
+        self.columns = {
                'getTextTitle': {'title': 'Request ID'},
                'AttachmentFile': {'title': 'File'},
                'AttachmentType': {'title': 'Attachment Type'},
@@ -293,7 +302,7 @@ class ClientAttachmentsView(BikaFolderContentsView):
                'FileSize': {'title': 'Size'},
                'DateLoaded': {'title': 'Date Loaded'},
               }
-    wflist_states = [
+        self.wflist_states = [
                     {'title': 'All', 'id':'all',
                      'columns': ['getTextTitle',
                                  'AttachmentFile',
@@ -332,22 +341,23 @@ class ClientAttachmentsView(BikaFolderContentsView):
 
 class ClientOrdersView(BikaFolderContentsView):
     implements(IFolderContentsView)
-    contentFilter = {'portal_type': 'Order'}
-    content_add_buttons = {'Order': "createObject?type_name=Order"}
-    title = "Orders"
-    description = ""
-    show_editable_border = True
-    batch = True
-    b_size = 100
-    full_objects = False
-    wflist_states = []
-    columns = {
+    def __init__(self, context, request):
+        super(ClientOrdersView, self).__init__(context, request)
+        self.contentFilter = {'portal_type': 'Order'}
+        self.content_add_buttons = {'Order': "createObject?type_name=Order"}
+        self.title = "%s: %s" % (self.context.Title(), _("Orders"))
+        self.description = ""
+        self.show_editable_border = True
+        self.batch = True
+        self.b_size = 100
+        self.full_objects = False
+        self.columns = {
                'OrderNumber': {'title': 'Order Number'},
                'OrderDate': {'title': 'Order Date'},
                'DateDispatched': {'title':'Date dispatched'},
                'state_title': {'title':'State'},
               }
-    wflist_states = [
+        self.wflist_states = [
                     {'title': 'All', 'id':'all',
                      'columns': ['OrderNumber',
                                  'OrderDate',
@@ -376,22 +386,23 @@ class ClientOrdersView(BikaFolderContentsView):
 
 class ClientContactsView(BikaFolderContentsView):
     implements(IFolderContentsView)
-    contentFilter = {'portal_type': 'Contact'}
-    content_add_buttons = {'Contact': "createObject?type_name=Contact"}
-    title = "Contacts"
-    description = ""
-    show_editable_border = True
-    batch = True
-    b_size = 100
-    wflist_states = []
-    columns = {
+    def __init__(self, context, request):
+        super(ClientContactsView, self).__init__(context, request)
+        self.contentFilter = {'portal_type': 'Contact'}
+        self.content_add_buttons = {'Contact': "createObject?type_name=Contact"}
+        self.title = "%s: %s" % (self.context.Title(), _("Contacts"))
+        self.description = ""
+        self.show_editable_border = True
+        self.batch = True
+        self.b_size = 100
+        self.columns = {
                'getFullname': {'title': 'Full Name'},
                'getEmailAddress': {'title': 'Email Address'},
                'getBusinessPhone': {'title':'Business Phone'},
                'getMobilePhone': {'title':'Mobile Phone'},
                'getFax': {'title': 'Fax'},
               }
-    wflist_states = [
+        self.wflist_states = [
                     {'title': 'All', 'id':'all',
                      'columns': ['getFullname',
                                  'getEmailAddress',

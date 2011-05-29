@@ -246,7 +246,7 @@ msgid "go_to_parent_url"
 msgstr "DE_one level up"
 
 msgid "description_no_visible_items_add_paste"
-msgstr "DE_Click on add below to add new items"
+msgstr "DE_There are no visible items"
 
 msgid "label_add_item"
 msgstr "DE_Select an item to add"

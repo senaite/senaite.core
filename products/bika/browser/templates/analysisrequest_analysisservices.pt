@@ -25,19 +25,32 @@
 </td>
 <tal:block repeat="column python:range(int(view.request['col_count']))">
 <td class="cb" tal:define="
+ disable python:int(view.request.get('disable', '-1'));
  input_id string:ar_${column}_${categoryUID}_${poc}_${service/UID};
  input_name string:ar.${column}.Analyses:list:ignore_empty:record;
  selected python:view.request['column'] != '' and column == int(view.request['column']) and view.request['selectedservices'] or '';
  serviceUID service/UID;
  deps python:view.CalcDependancy(column, serviceUID)">
 
- <input class="cb" type="checkbox" tal:attributes="
+ <input tal:condition="python: disable > -1 and disable == column"
+  disabled="disabled"
+  class="cb" type="checkbox" tal:attributes="
   id input_id;
   name input_name;
   value serviceUID;
   checked python:(selected.find(serviceUID)>-1 or request.get(input_name, [])) and 'checked' or None;
   depuids python:','.join(deps['serviceUIDs']);
   depcatids python:','.join(deps['categoryIDs']);"/>
+
+ <input tal:condition="python: disable != column"
+  class="cb" type="checkbox" tal:attributes="
+  id input_id;
+  name input_name;
+  value serviceUID;
+  checked python:(selected.find(serviceUID)>-1 or request.get(input_name, [])) and 'checked' or None;
+  depuids python:','.join(deps['serviceUIDs']);
+  depcatids python:','.join(deps['categoryIDs']);"/>
+
 </td>
 </tal:block>
 </tr>

@@ -480,7 +480,7 @@ msgid "go_to_parent_url"
 msgstr "one level up"
 
 msgid "description_no_visible_items_add_paste"
-msgstr "Click on add below to add new items"
+msgstr "There are no visible items"
 
 msgid "label_add_item"
 msgstr "Select an item to add"

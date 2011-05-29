@@ -16,6 +16,9 @@ def analysisrequest_add_submit(context, request):
     pc = getToolByName(context, 'portal_catalog')
     came_from = form.has_key('came_from') and form['came_from'] or 'add'
 
+#    import pprint
+#    pprint.pprint(form)
+
     errors = {}
     def error(field = None, column = None, message = None):
         if not message:
@@ -28,8 +31,12 @@ def analysisrequest_add_submit(context, request):
         errors[error_key] = message
 
     # first some basic validation
-
-    if not form.has_key('Prices'):
+    has_analyses = False
+    for column in range(int(form['col_count'])):
+        column = "%01d" % column
+        if form.has_key("ar.%s" % column) and form["ar.%s" % column].has_key("Analyses"):
+            has_analyses = True
+    if not has_analyses or not form.has_key('Prices'):
         error(message = _("No analyses have been selected."))
         return json.dumps({'errors': errors})
 
@@ -115,7 +122,6 @@ def analysisrequest_add_submit(context, request):
         if values.has_key('SampleID'):
             # Secondary AR
             sample_id = values['SampleID']
-            sample_uid = values['SampleUID']
             sample_proxy = pc(portal_type = 'Sample',
                               getSampleID = sample_id)
             assert len(sample_proxy) == 1
@@ -143,13 +149,9 @@ def analysisrequest_add_submit(context, request):
                 sample.edit(
                     **dict(values)
                 )
-
-
-
-
-            sample_uid = sample.UID()
             dis_date = sample.disposal_date()
             sample.setDisposalDate(dis_date)
+        sample_uid = sample.UID()
 
         # create AR
 
@@ -934,7 +936,7 @@ class AnalysisRequestManageResultsView(AnalysisRequestViewView):
             return result
 
         if precision == None or precision == '':
-            precision == 0
+            precision = 0
         if precision == 0:
             precise_result = '%.0f' % float_result
         if precision == 1:
@@ -983,7 +985,7 @@ class AnalysisRequestContactCCs(BrowserView):
     def __call__(self):
         rc = getToolByName(self.context, 'reference_catalog')
         uid = self.request.form.keys() and self.request.form.keys()[0] or None
-	if not uid:
+        if not uid:
             return
         contact = rc.lookupObject(uid)
         cc_uids = []

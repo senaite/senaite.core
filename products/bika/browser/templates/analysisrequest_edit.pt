@@ -121,15 +121,19 @@
                 tal:define="input_name string:ar.${column}.${field_name}:ignore_empty:record;
                             input_id string:ar_${column}_${field_name}">
                 <!-- Contains translated button text for sample remove button js -->
-                <input type="hidden" value="Select Sample" 
-                  i18n:attributes="value" i18n:domain="bika" 
+                <input type="hidden" value="Select Sample"
+                  i18n:attributes="value" i18n:domain="bika"
                   tal:attributes="id string:${input_id}_default;"/>
+                <!-- Actual value for form is stored in hidden field -->
+                <input type="hidden"
+                  tal:attributes="id input_id;
+                                  name input_name;"/>
                 <input type="button" value="Select Sample"
                   i18n:attributes="value" i18n:domain="bika"
-                  tal:attributes="id input_id; 
-                                  name input_name;
+                  tal:attributes="id string:${input_id}_button;
+                                  name string:${input_name}_button;
                                   tabindex python:column*100+tabindex.next();"/>
-                <image class="deleteSampleButton" 
+                <image class="deleteSampleButton"
                        style="display:none"
                        tal:attributes="
                             id string:deleteSampleButton_${column};
