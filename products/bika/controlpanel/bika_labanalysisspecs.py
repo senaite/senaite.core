@@ -1,13 +1,10 @@
 from AccessControl import ClassSecurityInfo
-from App.class_init import InitializeClass
 from Products.ATContentTypes.content import schemata
 from Products.Archetypes import atapi
 from Products.CMFCore import permissions
-from Products.Five.browser import BrowserView
-from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from Products.bika.browser.bika_folder_contents import BikaFolderContentsView
+from Products.bika.browser.bika_listing import BikaListingView
 from Products.bika.config import PROJECTNAME
-from Products.bika.content.bikaschema import BikaFolderSchema
+from Products.bika import bikaMessageFactory as _
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.folder.folder import ATFolder, ATFolderSchema
 from Products.bika.interfaces.controlpanel import ILabAnalysisSpecs
@@ -15,25 +12,31 @@ from zope.interface.declarations import implements
 
 #XXX multiple additions in one add_form.
 
-class LabAnalysisSpecsView(BikaFolderContentsView):
+class LabAnalysisSpecsView(BikaListingView):
     implements(IFolderContentsView)
     contentFilter = {'portal_type': 'LabAnalysisSpec'}
-    content_add_buttons = {'Analysis Specification': "createObject?type_name=LabAnalysisSpec"}
-    title = "Analysis Specs"
-    description = "Set up the laboratory analysis service results specifications"
+    content_add_buttons = {_('Analysis Specification'): "createObject?type_name=LabAnalysisSpec"}
+    title = _("Analysis Specs")
+    description = _("Set up the laboratory analysis service results specifications")
     show_editable_border = False
+    show_table_only = False
+    show_sort_column = False
+    show_select_row = True
+    show_select_column = False
     batch = True
-    b_size = 100
-    full_objects = False
+    pagesize = 20
+
     columns = {
-               'SampleType': {'title': 'SampleType'},
+               'SampleType': {'title': _('SampleType')},
               }
-    wflist_states = [
-                     {'title': 'All', 'id':'all',
+    review_states = [
+                     {'title': _('All'), 'id':'all',
                       'columns': ['SampleType'],
-                      'buttons':[BikaFolderContentsView.default_buttons['delete'],
+                      'buttons':[{'cssclass': 'context',
+                                  'title': _('Delete'),
+                                  'url': 'folder_delete:method'},
                                  {'cssclass':'context',
-                                  'title': 'Duplicate',
+                                  'title': _('Duplicate'),
                                   'url': 'duplicate_labanalysisspec:method', # XXX Duplicate LabAnalysisSpec
                                  }
                                 ],
@@ -41,14 +44,11 @@ class LabAnalysisSpecsView(BikaFolderContentsView):
                     ]
 
     def folderitems(self):
-        items = BikaFolderContentsView.folderitems(self)
+        items = BikaListingView.folderitems(self)
         for x in range(len(items)):
-            obj = items[x]['obj'].getObject()
-
-            st = obj.getSampleType()
-            if st: items[x]['SampleType'] = st.Title()
-            else: items[x]['SampleType'] = "None"
-
+            if not items[x].has_key('brain'): continue
+            obj = items[x]['brain'].getObject()
+            items[x]['SampleType'] = obj.getSampleType() and obj.getSampleType().Title()
             items[x]['links'] = {'SampleType': items[x]['url'] + "/edit"}
 
         return items

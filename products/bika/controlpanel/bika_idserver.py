@@ -4,6 +4,7 @@ from App.class_init import InitializeClass
 from OFS.SimpleItem import SimpleItem
 from Products.CMFCore import permissions
 from Products.CMFCore.utils import getToolByName
+from Products.bika import bikaMessageFactory as _
 from Products.bika.interfaces import IIdServer
 from Products.bika.tools import ToolFolder
 from zope.interface.declarations import implements
@@ -50,5 +51,5 @@ class bika_idserver(object):
             from sys import exc_info
             info = exc_info()
             import zLOG; zLOG.LOG('INFO', 0, '', 'generate_id raised exception: %s, %s \n idserver_url: %s' % (info[0], info[1], idserver_url))
-            raise IDServerUnavailable('ID Server unavailable')
+            raise IDServerUnavailable(_('ID Server unavailable'))
         return id

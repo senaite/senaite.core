@@ -4,38 +4,46 @@ from Products.Archetypes import atapi
 from Products.Archetypes.ArchetypeTool import registerType
 from Products.CMFCore import permissions
 from Products.Five.browser import BrowserView
-from Products.bika.browser.bika_folder_contents import BikaFolderContentsView
+from Products.bika.browser.bika_listing import BikaListingView
 from Products.bika.config import PROJECTNAME
+from Products.bika import bikaMessageFactory as _
 from Products.bika.content.bikaschema import BikaFolderSchema
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.folder.folder import ATFolder, ATFolderSchema
 from Products.bika.interfaces.controlpanel import IStandardStocks
 from zope.interface.declarations import implements
 
-class StandardStocksView(BikaFolderContentsView):
+class StandardStocksView(BikaListingView):
     implements(IFolderContentsView)
     contentFilter = {'portal_type': 'StandardStock'}
-    content_add_buttons = {'Standard Stock': "createObject?type_name=StandardStock"}
-    title = "Standard Stocks"
+    content_add_buttons = {_('Standard Stock'): "createObject?type_name=StandardStock"}
+    title = _("Standard Stocks")
     description = ""
     show_editable_border = False
+    show_table_only = False
+    show_sort_column = False
+    show_select_row = True
+    show_select_column = True
     batch = True
-    b_size = 100
-    full_objects = False
+    pagesize = 20
+
     columns = {
-               'title_or_id': {'title': 'Title'},
-               'StandardStockDescription': {'title': 'Description'},
+               'title_or_id': {'title': _('Title')},
+               'StandardStockDescription': {'title': _('Description')},
               }
-    wflist_states = [
-                    {'title': 'All', 'id':'all',
+    review_states = [
+                    {'title': _('All'), 'id':'all',
                      'columns': ['title_or_id', 'StandardStockDescription'],
-                     'buttons':[BikaFolderContentsView.default_buttons['delete']]},
+                     'buttons':[{'cssclass': 'context',
+                                 'title': _('Delete'),
+                                 'url': 'folder_delete:method'}]},
                     ]
 
     def folderitems(self):
-        items = BikaFolderContentsView.folderitems(self)
+        items = BikaListingView.folderitems(self)
         for x in range(len(items)):
-            obj = items[x]['obj'].getObject()
+            if not items[x].has_key('brain'): continue
+            obj = items[x]['brain'].getObject()
             items[x]['StandardStockDescription'] = obj.StandardStockDescription()
             items[x]['links'] = {'title_or_id': items[x]['url'] + "/edit"}
 

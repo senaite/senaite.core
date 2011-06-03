@@ -1,38 +1,46 @@
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from Products.ATContentTypes.content import schemata
 from Products.Archetypes import atapi
-from Products.bika.browser.bika_folder_contents import BikaFolderContentsView
+from Products.bika.browser.bika_listing import BikaListingView
 from Products.bika.config import PROJECTNAME
+from Products.bika import bikaMessageFactory as _
 from Products.bika.interfaces.controlpanel import IAnalysisCategories
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.folder.folder import ATFolderSchema, ATFolder
 from zope.interface.declarations import implements
 
-class AnalysisCategoriesView(BikaFolderContentsView):
+class AnalysisCategoriesView(BikaListingView):
     implements(IFolderContentsView)
     contentFilter = {'portal_type': 'AnalysisCategory'}
-    content_add_buttons = {'Analysis Category': "createObject?type_name=AnalysisCategory"}
-    title = "Analysis Categories"
+    content_add_buttons = {_('Analysis Category'): "createObject?type_name=AnalysisCategory"}
+    title = _("Analysis Categories")
     description = ""
     show_editable_border = False
+    show_table_only = False
+    show_sort_column = False
+    show_select_row = True
+    show_select_column = False
     batch = True
-    b_size = 100
-    full_objects = False
+    pagesize = 20
+
     columns = {
-               'title_or_id': {'title': 'Title'},
-               'CategoryDescription': {'title': 'Category Description'},
-               'Department': {'title': 'Department'},
+               'title_or_id': {'title': _('Title')},
+               'CategoryDescription': {'title': _('Category Description')},
+               'Department': {'title': _('Department')},
               }
-    wflist_states = [
-                    {'title': 'All', 'id':'all',
+    review_states = [
+                    {'title': _('All'), 'id':'all',
                      'columns': ['title_or_id', 'CategoryDescription', 'Department'],
-                     'buttons':[BikaFolderContentsView.default_buttons['delete']]},
+                     'buttons':[{'cssclass': 'context',
+                                 'title': _('Delete'),
+                                 'url': 'folder_delete:method'}]},
                     ]
 
     def folderitems(self):
-        items = BikaFolderContentsView.folderitems(self)
+        items = BikaListingView.folderitems(self)
         for x in range(len(items)):
-            obj = items[x]['obj'].getObject()
+            if not items[x].has_key('brain'): continue
+            obj = items[x]['brain'].getObject()
             items[x]['CategoryDescription'] = obj.CategoryDescription()
             items[x]['Department'] = obj.getDepartment().Title()
             items[x]['links'] = {'title_or_id': items[x]['url'] + "/base_edit",

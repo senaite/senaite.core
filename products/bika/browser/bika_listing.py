@@ -8,6 +8,7 @@ from plone.app.content.browser import tableview
 from plone.app.content.browser.foldercontents import FolderContentsView, \
     FolderContentsTable
 from plone.app.content.browser.interfaces import IFolderContentsView
+from Products.bika import bikaMessageFactory as _
 from zope.component._api import getMultiAdapter
 from zope.i18n import translate
 from zope.i18nmessageid import MessageFactory
@@ -15,80 +16,43 @@ from zope.interface import implements
 import urllib
 ploneMessageFactory = MessageFactory('plone')
 
-class BikaFolderContentsView(FolderContentsView):
+class BikaListingView(FolderContentsView):
     implements(IFolderContentsView)
-    template = ViewPageTemplateFile("templates/bika_folder_contents.pt")
-    wflist = ViewPageTemplateFile("templates/wflist.pt")
+    template = ViewPageTemplateFile("templates/bika_listing.pt")
+    review_state_filter = ViewPageTemplateFile("templates/bika_listing_review_state_filter.pt")
 
     contentFilter = {}
-    batch = True
-    b_size = 20
-    show_editable_border = True
-
-    # the draggable bit for re-ordering rows manually
-    show_sort_column = False
-
-    # the select All/Batch/None row.
-    show_select_row = False
-
-    title = "Folder Contents"
-    description = ""
-
-    # A list of portal_types for 'Add X' buttons above the output
     content_add_buttons = {}
 
-    # Not automatically inserted into subclasses.
-    default_buttons = {
-                       'delete': {'cssclass': 'context',
-                                  'title': 'Delete',
-                                  'url': 'folder_delete:method'},
-                      }
+    title = _("Folder Contents")
+    description = ""
+
+    show_editable_border = True
+    show_table_only = False
+    show_sort_column = True
+    show_select_row = True
+    show_select_column = True
+    batch = True
+    pagesize = 20
 
     def __init__(self, context, request):
-        super(BikaFolderContentsView, self).__init__(context, request)
+        super(BikaListingView, self).__init__(context, request)
         if self.show_editable_border: request.set('enable_border', 1)
         if not self.show_editable_border: request.set('disable_border', 1)
         self.portal_types = getToolByName(context, 'portal_types')
 
-    def getFolderContents(self):
-        """ Lifted from CMFPlone/skins/plone_skins/getFolderContents.py
-        """
-        context = aq_inner(self.context)
-
-        portal_catalog = getToolByName(context, 'portal_catalog')
-        portal_membership = getToolByName(context, 'portal_membership')
-
-        if not self.contentFilter.get('sort_on', None):
-            self.contentFilter['sort_on'] = 'getObjPositionInParent'
-        
-        if hasattr(self, 'wflist_state'):
-            if self.wflist_state == 'all':
-                del self.wflist_state
+    def __call__(self):
+        if self.request.form.has_key("review_state"):
+            if self.request['review_state'] == 'all':
                 if self.contentFilter.has_key('review_state'):
-                    del self.contentFilter['review_state']
+                    del(self.contentFilter['review_state'])
             else:
-                self.contentFilter['review_state'] = self.wflist_state
-        
-        cur_path = '/'.join(context.getPhysicalPath())
-        path = {}
-        if self.contentFilter.get('path', None) is None:
-            path['query'] = cur_path
-            path['depth'] = 1
-            self.contentFilter['path'] = path
-
-        show_inactive = portal_membership.checkPermission('Access inactive portal content', context)
-
-        contents = portal_catalog.queryCatalog(self.contentFilter, show_all = 1, show_inactive = show_inactive)
-            
-        if self.batch:
-            from Products.CMFPlone.PloneBatch import Batch
-            b_start = context.REQUEST.get('b_start', 0)
-            batch = Batch(contents, self.b_size, int(b_start), orphan = 0)
-            return batch
-
-        return contents
+                self.contentFilter['review_state'] = self.request.form['review_state']
+        return self.template()
 
     def folderitems(self):
+        """
+        """
         context = aq_inner(self.context)
         plone_utils = getToolByName(context, 'plone_utils')
         plone_view = getMultiAdapter((context, self.request), name = u'plone')
@@ -99,16 +63,19 @@ class BikaFolderContentsView(FolderContentsView):
         site_properties = portal_properties.site_properties
 
         use_view_action = site_properties.getProperty('typesUseViewActionInListings', ())
+        browser_default = plone_utils.browserDefault(context)
+
+        contentsMethod = self.context.getFolderContents
 
         show_all = self.request.get('show_all', '').lower() == 'true'
-        pagesize = 20
+        pagesize = self.pagesize
         pagenumber = int(self.request.get('pagenumber', 1))
         start = (pagenumber - 1) * pagesize
         end = start + pagesize
 
         results = []
-        for i, obj in enumerate(self.getFolderContents()):
-            path = obj.getPath() or "/".join(obj.getPhysicalPath())
+        for i, obj in enumerate(contentsMethod(self.contentFilter)):
+            path = obj.getPath or "/".join(obj.getPhysicalPath())
 
             # avoid creating unnecessary info for items outside the current
             # batch;  only the path is needed for the "select all" case...
@@ -122,7 +89,7 @@ class BikaFolderContentsView(FolderContentsView):
                 table_row_class = "draggable odd"
 
             url = obj.getURL()
-            icon = plone_layout.getIcon(obj);
+            icon = plone_layout.getIcon(obj)
             type_class = 'contenttype-' + plone_utils.normalizeString(
                 obj.portal_type)
 
@@ -143,18 +110,18 @@ class BikaFolderContentsView(FolderContentsView):
                 obj.ModificationDate, long_format = 1)
 
             obj_type = obj.Type
-
-            # view_url is overidden for items to allow different url on successful edit
-            if obj_type in use_view_action:
+            if obj.portal_type in use_view_action:
                 view_url = url + '/view'
             elif obj.is_folderish:
                 view_url = url + "/folder_contents"
             else:
                 view_url = url
 
-            # XXX this results_dict is still the default copied from Plone's one.
+            is_browser_default = len(browser_default[1]) == 1 and (
+                obj.id == browser_default[1][0])
+
             results_dict = dict(
-                obj = obj,
+                brain = obj,
                 url = url,
                 url_href_title = url_href_title,
                 id = obj.getId,
@@ -166,75 +133,61 @@ class BikaFolderContentsView(FolderContentsView):
                 modified = modified,
                 icon = icon.html_tag(),
                 type_class = type_class,
-                wf_state = review_state,
-                state_title = portal_workflow.getTitleForStateOnType(review_state, obj_type),
+                review_state = review_state,
+                state_title = portal_workflow.getTitleForStateOnType(review_state,
+                                                           obj_type),
                 state_class = state_class,
+                is_browser_default = is_browser_default,
                 folderish = obj.is_folderish,
                 relative_url = relative_url,
                 view_url = view_url,
                 table_row_class = table_row_class,
                 is_expired = isExpired(obj),
-                links = {},
             )
-
             # Insert all fields from the schema, if they are in the brains
             for field in obj.schema():
                 if not results_dict.get(field):
                     results_dict[field] = getattr(obj, field)
 
             results.append(results_dict)
-
         return results
 
-    def __call__(self):
-        if self.request.form.has_key("wflist_state"):
-            self.wflist_state = self.request.form['wflist_state']
-        return self.template()
-
     def contents_table(self):
-        table = BikaFolderContentsTable(aq_inner(self.context),
-                                        self.request,
-                                        getFolderContents = self.getFolderContents,
-                                        folderitems = self.folderitems,
-                                        columns = self.columns,
-                                        wflist_states = self.wflist_states,
-                                        pagesize = self.b_size,
-                                        show_sort_column = self.show_sort_column,
-                                        show_select_row = self.show_select_row,
-                                        view_url = "/view",
-                                        )
-
+        table = BikaListingTable(aq_inner(self.context),
+                                 self.request,
+                                 folderitems = self.folderitems,
+                                 columns = self.columns,
+                                 review_states = self.review_states,
+                                 pagesize = self.pagesize,
+                                 show_sort_column = self.show_sort_column,
+                                 show_select_row = self.show_select_row,
+                                 show_select_column = self.show_select_column)
         return table.render()
 
 
-class BikaFolderContentsTable(FolderContentsTable):
-    """
-    """
-    implements(IFolderContentsView)
-
+class BikaListingTable(FolderContentsTable):
     def __init__(self,
                  context,
                  request,
-                 getFolderContents,
                  folderitems,
                  columns,
-                 wflist_states,
+                 review_states,
                  pagesize,
                  show_sort_column,
                  show_select_row,
-                 view_url = '/view'):
+                 show_select_column):
         self.context = context
         self.request = request
-        self.getFolderContents = getFolderContents
         url = context.absolute_url()
         self.table = Table(request,
                            url,
-                           url + view_url,
+                           url + "/view",
                            folderitems(),
                            columns,
-                           wflist_states,
+                           review_states,
                            show_sort_column = show_sort_column,
                            show_select_row = show_select_row,
+                           show_select_column = show_select_column,
                            pagesize = pagesize)
 
     def render(self):
@@ -247,9 +200,10 @@ class Table(tableview.Table):
                  view_url,
                  items,
                  columns,
-                 wflist_states,
+                 review_states,
                  show_sort_column,
                  show_select_row,
+                 show_select_column,
                  pagesize):
 
         tableview.Table.__init__(self,
@@ -257,12 +211,15 @@ class Table(tableview.Table):
                                  base_url,
                                  view_url,
                                  items,
+                                 show_select_column = show_select_column,
                                  show_sort_column = show_sort_column,
                                  pagesize = pagesize)
 
         self.columns = columns
+        self.show_sort_column = show_sort_column
         self.show_select_row = show_select_row
-        self.wflist_states = wflist_states
+        self.show_select_column = show_select_column
+        self.review_states = review_states
 
-    render = ViewPageTemplateFile("templates/table.pt")
-    batching = ViewPageTemplateFile("templates/batching.pt")
+    render = ViewPageTemplateFile("templates/bika_listing_table.pt")
+    batching = ViewPageTemplateFile("templates/bika_listing_batching.pt")

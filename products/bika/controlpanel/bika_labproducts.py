@@ -4,45 +4,50 @@ from Products.Archetypes import atapi
 from Products.Archetypes.ArchetypeTool import registerType
 from Products.CMFCore import permissions
 from Products.Five.browser import BrowserView
-from Products.bika.browser.bika_folder_contents import BikaFolderContentsView
+from Products.bika.browser.bika_listing import BikaListingView
 from Products.bika.config import PROJECTNAME
+from Products.bika import bikaMessageFactory as _
 from Products.bika.content.bikaschema import BikaFolderSchema
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.folder.folder import ATFolder, ATFolderSchema
 from Products.bika.interfaces.controlpanel import ILabProducts
 from zope.interface.declarations import implements
 
-class LabProductsView(BikaFolderContentsView):
+class LabProductsView(BikaListingView):
     implements(IFolderContentsView)
     contentFilter = {'portal_type': 'LabProduct'}
-    content_add_buttons = {'Product': "createObject?type_name=LabProduct"}
-    title = "Lab Products"
+    content_add_buttons = {_('Product'): "createObject?type_name=LabProduct"}
+    title = _("Lab Products")
     description = ""
     show_editable_border = False
+    show_table_only = False
+    show_sort_column = False
+    show_select_row = True
+    show_select_column = False
     batch = True
-    b_size = 100
-    full_objects = False
+    pagesize = 20
 
     columns = {
-               'title_or_id': {'title': 'Title'},
-               'Volume': {'title': 'Volume'},
-               'Unit': {'title': 'Unit'},
-               'Price': {'title': 'Price'},
-               'VATAmount': {'title': 'VAT Amount'},
-               'TotalPrice': {'title': 'Total Price'},
+               'title_or_id': {'title': _('Title')},
+               'Volume': {'title': _('Volume')},
+               'Unit': {'title': _('Unit')},
+               'Price': {'title': _('Price')},
+               'VATAmount': {'title': _('VAT Amount')},
+               'TotalPrice': {'title': _('Total Price')},
               }
-    wflist_states = [
-                    {'title': 'All', 'id':'all',
+    review_states = [
+                    {'title': _('All'), 'id':'all',
                      'columns': ['title_or_id', 'Volume', 'Unit', 'Price', 'VATAmount', 'TotalPrice'],
-                     'buttons':[BikaFolderContentsView.default_buttons['delete']]},
+                     'buttons':[{'cssclass': 'context',
+                                 'title': _('Delete'),
+                                 'url': 'folder_delete:method'}]},
                     ]
 
     def folderitems(self):
-        items = BikaFolderContentsView.folderitems(self)
+        items = BikaListingView.folderitems(self)
         for x in range(len(items)):
-            # XXX some extra objects in items: {path: xxx}.  where from?  what are they?
-            try: obj = items[x]['obj'].getObject()
-            except KeyError: continue
+            if not items[x].has_key('brain'): continue
+            obj = items[x]['brain'].getObject()
             items[x]['Volume'] = obj.Volume
             items[x]['Unit'] = obj.Unit
             items[x]['Price'] = obj.Price

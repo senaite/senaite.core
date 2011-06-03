@@ -57,7 +57,7 @@
 
         <div class="visualClear" id="clear-space-before-navigation"><!-- --></div>
 
-        <span tal:omit-tag="" tal:content="structure view/wflist"/>
+        <span tal:omit-tag="" tal:content="structure view/review_state_filter"/>
 
         <div tal:replace="structure view/contents_table"></div>
 

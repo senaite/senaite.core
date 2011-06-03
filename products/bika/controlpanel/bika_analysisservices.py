@@ -2,58 +2,63 @@ from AccessControl.SecurityInfo import ClassSecurityInfo
 from Products.ATContentTypes.content import schemata
 from Products.Archetypes import atapi
 from Products.Archetypes.ArchetypeTool import registerType
-from Products.bika.browser.bika_folder_contents import BikaFolderContentsView
+from Products.bika.browser.bika_listing import BikaListingView
 from Products.bika.config import PROJECTNAME
+from Products.bika import bikaMessageFactory as _
 from Products.bika.content.bikaschema import BikaFolderSchema
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.folder.folder import ATFolder, ATFolderSchema
 from Products.bika.interfaces.controlpanel import IAnalysisServices
 from zope.interface.declarations import implements
 
-class AnalysisServicesView(BikaFolderContentsView):
+class AnalysisServicesView(BikaListingView):
     implements(IFolderContentsView)
     contentFilter = {'portal_type': 'AnalysisService'}
-    content_add_buttons = {'Analysis Service': "createObject?type_name=AnalysisService"}
-    title = "Analysis Services"
-    description = ""
+    content_add_buttons = {_('Analysis Service'): "createObject?type_name=AnalysisService"}
+    title = _("Analysis Services")
     show_editable_border = False
+    show_table_only = False
+    show_sort_column = False
+    show_select_row = True
+    show_select_column = False
     batch = True
-    b_size = 100
-    full_objects = False
+    pagesize = 20
+
     columns = {
-               'title_or_id': {'title': 'Title'},
-               'CategoryName': {'title': 'Category'},
-               'ReportDryMatter': {'title': 'Report as dry matter'},
-               'AttachmentOption': {'title': 'Attachments'},
-               'Unit': {'title': 'Unit'},
-               'Price': {'title': 'Price excluding VAT'},
-               'CorporatePrice': {'title': 'Corporate price excluding VAT'},
-               'MaxHoursAllowed': {'title': 'Maximum Hours Allowed'},
-               'DuplicateVariation': {'title': 'Duplicate Variation'},
-               'Calc': {'title': 'Calc'},
+               'title_or_id': {'title': _('Title')},
+               'CategoryName': {'title': _('Category')},
+               'ReportDryMatter': {'title': _('Report as dry matter')},
+               'AttachmentOption': {'title': _('Attachments')},
+               'Unit': {'title': _('Unit')},
+               'Price': {'title': _('Price excluding VAT')},
+               'CorporatePrice': {'title': _('Corporate price excluding VAT')},
+               'MaxHoursAllowed': {'title': _('Maximum Hours Allowed')},
+               'DuplicateVariation': {'title': _('Duplicate Variation')},
+               'Calc': {'title': _('Calc')},
               }
-    wflist_states = [
-                     {'title_or_id': 'All', 'id':'all',
+    review_states = [
+                     {'title_or_id': _('All'), 'id':'all',
                       'columns': ['title_or_id', 'CategoryName', 'ReportDryMatter',
                                   'AttachmentOption', 'Unit', 'Price', 'CorporatePrice',
                                   'MaxHoursAllowed', 'DuplicateVariation', 'Calc',
                                  ],
-                      'buttons':[BikaFolderContentsView.default_buttons['delete'],
+                      'buttons':[{'cssclass': 'context',
+                                  'title': _('Delete'),
+                                  'url': 'folder_delete:method'},
                                  {'cssclass':'context',
-                                  'title': 'Duplicate',
+                                  'title': _('Duplicate'),
                                   'url': 'duplicate_services:method', # XXX Duplicate Analysis Service
                                  }
-                                ],
+                               ],
                      },
                     ]
 
     def folderitems(self):
-        items = BikaFolderContentsView.folderitems(self)
+        items = BikaListingView.folderitems(self)
         out = []
         for x in range(len(items)):
-            # XXX some extra objects in items: {path: xxx}.
-            try: obj = items[x]['obj'].getObject()
-            except KeyError: continue
+            if not items[x].has_key('brain'): continue
+            obj = items[x]['brain'].getObject()
             items[x]['CategoryName'] = obj.getCategoryName()
             items[x]['ReportDryMatter'] = obj.ReportDryMatter
             items[x]['AttachmentOption'] = \

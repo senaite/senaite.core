@@ -2,41 +2,49 @@ from AccessControl.SecurityInfo import ClassSecurityInfo
 from Products.ATContentTypes.content import schemata
 from Products.Archetypes import atapi
 from Products.Archetypes.ArchetypeTool import registerType
-from Products.bika.browser.bika_folder_contents import BikaFolderContentsView
+from Products.bika.browser.bika_listing import BikaListingView
 from Products.bika.config import PROJECTNAME
+from Products.bika import bikaMessageFactory as _
 from Products.bika.content.bikaschema import BikaFolderSchema
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.folder.folder import ATFolder, ATFolderSchema
 from Products.bika.interfaces.controlpanel import IDepartments
 from zope.interface.declarations import implements
 
-class DepartmentsView(BikaFolderContentsView):
+class DepartmentsView(BikaListingView):
     implements(IFolderContentsView)
     contentFilter = {'portal_type': 'Department'}
-    content_add_buttons = {'Department': "createObject?type_name=Department"}
-    title = "Lab Departments"
+    content_add_buttons = {_('Department'): "createObject?type_name=Department"}
+    title = _("Lab Departments")
     description = ""
     show_editable_border = False
+    show_table_only = False
+    show_sort_column = False
+    show_select_row = True
+    show_select_column = False
     batch = True
-    b_size = 100
-    full_objects = False
+    pagesize = 20
+
     columns = {
-               'title_or_id': {'title': 'Title'},
-               'DepartmentDescription': {'title': 'Department Description'},
-               'Manager': {'title': 'Manager'},
-               'ManagerPhone': {'title': 'Manager Phone'},
-               'ManagerEmail': {'title': 'Manager Email'},
+               'title_or_id': {'title': _('Title')},
+               'DepartmentDescription': {'title': _('Department Description')},
+               'Manager': {'title': _('Manager')},
+               'ManagerPhone': {'title': _('Manager Phone')},
+               'ManagerEmail': {'title': _('Manager Email')},
               }
-    wflist_states = [
-                    {'title': 'All', 'id':'all',
+    review_states = [
+                    {'title': _('All'), 'id':'all',
                      'columns': ['title_or_id', 'DepartmentDescription', 'Manager', 'ManagerPhone', 'ManagerEmail'],
-                     'buttons':[BikaFolderContentsView.default_buttons['delete']]},
+                     'buttons':[{'cssclass': 'context',
+                                 'title': _('Delete'),
+                                 'url': 'folder_delete:method'}]},
                     ]
 
     def folderitems(self):
-        items = BikaFolderContentsView.folderitems(self)
+        items = BikaListingView.folderitems(self)
         for x in range(len(items)):
-            obj = items[x]['obj'].getObject()
+            if not items[x].has_key('brain'): continue
+            obj = items[x]['brain'].getObject()
             items[x]['DepartmentDescription'] = obj.DepartmentDescription()
             items[x]['Manager'] = obj.getManagerName()
             if items[x]['Manager']:

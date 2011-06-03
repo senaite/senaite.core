@@ -27,18 +27,18 @@
     <div tal:replace="structure view/batching"
 	     tal:condition="not:view/show_all"/>
 
-    <tal:wflist_state
+    <tal:review_state
         tal:define="
-        	requeststate python:request.get('wflist_state', 'all');
-        	wflist_state python:[t for t in view.wflist_states if t['id'] == requeststate][0]">
+        	requeststate python:request.get('review_state', 'all');
+        	review_state python:[t for t in view.review_states if t['id'] == requeststate][0]">
 	    <table class="listing"
 	           id="listing-table"
 	           summary="Content listing"
 	           i18n:attributes="summary summary_content_listing;"
 	           tal:condition="view/items"
-	           tal:define="colspan python:str(len(wflist_state['columns'])+2);
+	           tal:define="colspan python:str(len(review_state['columns'])+2);
 			               columns view/columns;
-						   column_list python:wflist_state['columns']">
+						   column_list python:review_state['columns']">
 	      <thead>
 
 
@@ -127,7 +127,7 @@
 	                </label>
 	              </td>
 
-	              <td tal:repeat="column wflist_state/columns">
+	              <td tal:repeat="column review_state/columns">
 
 	                  <a tal:condition="python:item['links'].has_key(column)" href="#" 
 	                     tal:attributes="href python:item['links'][column];
@@ -154,14 +154,14 @@
 	        </tbody>
 	        <tfoot tal:condition="not:view/within_batch_size">
 	          <tr tal:condition="not:view/show_all">
-	            <th colspan="6" class="nosort">
+	            <th class="nosort" tal:attributes="colspan colspan">
 	              <a tal:attributes="href view/show_all_url"
 	                 i18n:translate="label_show_all"
 	                 id="foldercontents-show-all">Show all items</a>
 	            </th>
 	          </tr>
 	          <tr tal:condition="view/show_all">
-	            <th colspan="6" class="nosort">
+	            <th class="nosort" tal:attributes="colspan colspan">
 	              <a tal:attributes="href view/view_url"
 	                 i18n:translate="label_show_batched"
 	                 id="foldercontents-show-batched">Show batched</a>
@@ -172,8 +172,8 @@
 	    </table>
       <div tal:replace="structure view/batching" tal:condition="not:view/show_all"/>
       <tal:buttons
-	    tal:condition="python: wflist_state.has_key('buttons') and view.items"
-	    tal:repeat="button wflist_state/buttons">
+	    tal:condition="python: review_state.has_key('buttons') and view.items"
+	    tal:repeat="button review_state/buttons">
         <input class="context"
              type="submit"
              name=""
@@ -181,6 +181,6 @@
              i18n:attributes="value"
              tal:attributes="value button/title; name button/url; class button/cssclass" />
       </tal:buttons>
-    </tal:wflist_state>
+    </tal:review_state>
   </metal:listing>
 </div>

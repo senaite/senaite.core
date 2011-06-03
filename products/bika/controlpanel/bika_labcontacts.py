@@ -3,8 +3,9 @@ from Products.ATContentTypes.content import schemata
 from Products.Archetypes import atapi
 from Products.Archetypes.ArchetypeTool import registerType
 from Products.CMFCore import permissions
-from Products.bika.browser.bika_folder_contents import BikaFolderContentsView
+from Products.bika.browser.bika_listing import BikaListingView
 from Products.bika.config import PROJECTNAME
+from Products.bika import bikaMessageFactory as _
 from Products.bika.content.bikaschema import BikaFolderSchema
 from Products.bika.content.labcontact import LabContact
 from plone.app.content.browser.interfaces import IFolderContentsView
@@ -12,11 +13,11 @@ from plone.app.folder.folder import ATFolder, ATFolderSchema
 from Products.bika.interfaces.controlpanel import ILabContacts
 from zope.interface.declarations import implements
 
-class LabContactsView(BikaFolderContentsView):
+class LabContactsView(BikaListingView):
     implements(IFolderContentsView)
     contentFilter = {'portal_type': 'LabContact'}
-    content_add_buttons = {'Lab Contact': "createObject?type_name=LabContact"}
-    title = "Lab Contacts"
+    content_add_buttons = {_('Lab Contact'): "createObject?type_name=LabContact"}
+    title = _("Lab Contacts")
     description = ""
     show_editable_border = False
     batch = True
@@ -25,23 +26,26 @@ class LabContactsView(BikaFolderContentsView):
     show_editable_border = False
 
     columns = {
-               'getFullname': {'title': 'Full Name'},
-               'Department': {'title': 'Department'},
-               'BusinessPhone': {'title': 'Phone'},
-               'Fax': {'title': 'Fax'},
-               'MobilePhone': {'title': 'Mobile Phone'},
-               'EmailAddress': {'title': 'Email Address'},
+               'getFullname': {'title': _('Full Name')},
+               'Department': {'title': _('Department')},
+               'BusinessPhone': {'title': _('Phone')},
+               'Fax': {'title': _('Fax')},
+               'MobilePhone': {'title': _('Mobile Phone')},
+               'EmailAddress': {'title': _('Email Address')},
               }
-    wflist_states = [
-                    {'title': 'All', 'id':'all',
+    review_states = [
+                    {'title': _('All'), 'id':'all',
                      'columns': ['getFullname', 'Department', 'BusinessPhone', 'Fax', 'MobilePhone', 'EmailAddress'],
-                     'buttons':[BikaFolderContentsView.default_buttons['delete']]},
+                     'buttons':[{'cssclass': 'context',
+                                 'title': _('Delete'),
+                                 'url': 'folder_delete:method'}]},
                     ]
 
     def folderitems(self):
-        items = BikaFolderContentsView.folderitems(self)
+        items = BikaListingView.folderitems(self)
         for x in range(len(items)):
-            obj = items[x]['obj'].getObject()
+            if not items[x].has_key('brain'): continue
+            obj = items[x]['brain'].getObject()
             items[x]['Department'] = obj.Department
             items[x]['BusinessPhone'] = obj.BusinessPhone
             items[x]['Fax'] = obj.BusinessFax

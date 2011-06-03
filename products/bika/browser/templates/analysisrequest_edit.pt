@@ -198,8 +198,11 @@
           </tr>
           <!-- Date Sampled -->
           <tr tal:define="field_name string:DateSampled">
-            <th colspan="2"><span i18n:translate="label_datesampled">Date sampled</span>
-            &nbsp;<span class="fieldRequired"/></th>
+            <th colspan="2">
+              <span i18n:translate="label_datesampled">Date sampled</span>&nbsp;
+              <span class="fieldRequired" 
+                    tal:condition="python:not edit"/>
+            </th>
             <td>
               <image class="copyButton" tal:condition="not: edit"
                 tal:attributes="name field_name;src string:${portal/absolute_url}/images/copy.png"/>
