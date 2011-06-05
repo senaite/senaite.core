@@ -3,6 +3,7 @@ from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import transaction_note
 from Products.Five.browser import BrowserView
+from Products.bika.browser.bika_listing import BikaListingView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from Products.bika import bikaMessageFactory as _
 from decimal import Decimal
@@ -995,22 +996,105 @@ class AnalysisRequestContactCCs(BrowserView):
             cc_titles.append(cc.Title())
         return json.dumps([",".join(cc_uids), ",".join(cc_titles)])
 
-class AnalysisRequestSelectCCView(BrowserView):
-    """ The CC Selector popup window uses this view
-    """
-    template = ViewPageTemplateFile("templates/analysisrequest_select_cc.pt")
-    def __call__(self):
-        return self.template()
+class AnalysisRequestSelectCCView(BikaListingView):
+    """ The CC Selector popup window uses this view"""
+    contentFilter = {'portal_type': 'Contact'}
+    content_add_buttons = {}
+    title = "Contacts to CC"
+    description = ''
+    show_editable_border = False
+    show_table_only = True
+    show_sort_column = False
+    show_select_row = False
+    show_select_column = True
+    batch = False
+    pagesize = 20
 
-class AnalysisRequestSelectSampleView(BrowserView):
-    """ The Sample Selector popup window uses this view
-    """
-    template = ViewPageTemplateFile("templates/analysisrequest_select_sample.pt")
-    def Samples(self, client):
-        """ Returns a list of samples owned by the client in the context
-        """
-        pc = getToolByName(self.context, 'portal_catalog')
-        return pc(portal_type = "Sample", getClientId = self.context.id)
+    columns = {
+           'getFullname': {'title': _('Full Name')},
+           'getEmailAddress': {'title': _('Email Address')},
+           'getBusinessPhone': {'title': _('Business Phone')},
+           'getMobilePhone': {'title': _('Mobile Phone')},
+          }
+    review_states = [
+                {'title': 'All', 'id':'all',
+                 'columns': ['getFullname',
+                             'getEmailAddress',
+                             'getBusinessPhone',
+                             'getMobilePhone'],
+                 'buttons':[{'cssclass': 'context select_cc_select',
+                             'title': _('Add to CC list'),
+                             'url': ''}]},
+                ]
+
+    def folderitems(self):
+        items = BikaListingView.folderitems(self)
+        out = []
+        for x in range(len(items)):
+            if not items[x].has_key('brain'): continue
+            if items[x]['UID'] in self.request.get('hide_uids', ''): continue
+            if items[x]['UID'] in self.request.get('selected_uids', ''):
+                items[x]['checked'] = True
+            out.append(items[x])
+        return out
+
+class AnalysisRequestSelectSampleView(BikaListingView):
+    contentFilter = {'portal_type': 'Sample'}
+    content_add_buttons = {}
+    show_editable_border = False
+    show_table_only = True
+    show_sort_column = False
+    show_select_row = False
+    show_select_column = False
+    batch = True
+    pagesize = 50
+
+    columns = {
+           'getSampleID': {'title': _('Sample ID'), 'cssclass':'select_sample_select'},
+           'getClientReference': {'title': _('Client Ref')},
+           'getClientSampleID': {'title': _('Client SID')},
+           'SampleType': {'title': _('Sample Type')},
+           'SamplePoint': {'title': _('Sample Point')},
+           'getDateReceived': {'title': _('Date Received')},
+          }
+    review_states = [
+                {'title': _('Due'), 'id':'due',
+                 'columns': ['getSampleID',
+                             'Requests',
+                             'getClientReference',
+                             'getClientSampleID',
+                             'SampleType',
+                             'SamplePoint']},
+                {'title': _('Received'), 'id':'received',
+                 'columns': ['getSampleID',
+                             'Requests',
+                             'getClientReference',
+                             'getClientSampleID',
+                             'SampleType',
+                             'SamplePoint',
+                             'getDateReceived']},
+                ]
+
+    def __init__(self, context, request):
+        super(AnalysisRequestSelectSampleView, self).__init__(context, request)
+        self.title = "%s: %s" % (self.context.Title(), _("Samples"))
+        self.description = ""
+
+    def folderitems(self):
+        items = BikaListingView.folderitems(self)
+        out = []
+        for x in range(len(items)):
+            if not items[x].has_key('brain'): continue
+            obj = items[x]['brain']
+            if items[x]['UID'] in self.request.get('hide_uids', ''): continue
+            if items[x]['UID'] in self.request.get('selected_uids', ''):
+                items[x]['checked'] = True
+            items[x]['SampleType'] = obj.getSampleType().Title()
+            items[x]['SamplePoint'] = obj.getSamplePoint() and obj.getSamplePoint().Title()
+            items[x]['getDateReceived'] = obj.getDateReceived() and self.context.toLocalizedTime(obj.getDateReceived(), long_format = 0) or ''
+            items[x]['links'] = {'getSampleID': items[x]['url']}
+            out.append(items[x])
+        return out
 
     def FieldAnalyses(self, sample):
         """ Returns a dictionary of lists reflecting Field Analyses

@@ -3,178 +3,178 @@ jQuery( function($) {
 	
 	function autofill(analysisService)
 	{
-	    fieldName = '';
-	    if (document.getElementById('copyTF').checked) {
-	        analysisType = analysisService.split('.')[0];
-	        initValue=document.getElementById(analysisService).value;
-	        for (var i=1;i<999;i++) {
-	            otherElem=analysisType + '.' + i;
-	            if (document.getElementById(otherElem) == undefined) {
-	                break
-	            }
-	            document.getElementById(otherElem).value = initValue;
-	            /* need to calculate result, as the value changed */
-	            fieldName = getFieldName(otherElem);
-	            calcT(fieldName);
-	        }
-	    }
-	    else {
-	        /* still need to calculate result, as the value changed */
-	        fieldName = getFieldName(analysisService);
-	        calcT(fieldName);
-	    }
+		fieldName = '';
+		if (document.getElementById('copyTF').checked) {
+			analysisType = analysisService.split('.')[0];
+			initValue=document.getElementById(analysisService).value;
+			for (var i=1;i<999;i++) {
+				otherElem=analysisType + '.' + i;
+				if (document.getElementById(otherElem) == undefined) {
+					break
+				}
+				document.getElementById(otherElem).value = initValue;
+				/* need to calculate result, as the value changed */
+				fieldName = getFieldName(otherElem);
+				calcT(fieldName);
+			}
+		}
+		else {
+			/* still need to calculate result, as the value changed */
+			fieldName = getFieldName(analysisService);
+			calcT(fieldName);
+		}
 	}
 
 	function getFieldName(fieldID)
 	{
-	    changedField = document.getElementById(fieldID);
-	    fieldName = changedField.attributes.getNamedItem("name").value;
-	    fieldName = fieldName.split('.')[1];
-	    return fieldName;
-	    
+		changedField = document.getElementById(fieldID);
+		fieldName = changedField.attributes.getNamedItem("name").value;
+		fieldName = fieldName.split('.')[1];
+		return fieldName;
+		
 	}
 
 	function calcResult(id)
 	{
-	    ct_id = id + '.CalcType';
-	    ct_field = document.getElementById(ct_id);
-	    calc_type = ct_field.value;
-	    if (calc_type == 't') {
-	        calcT(id)
-	    }
-	    if (calc_type == 'rw') {
-	        calcRW_WL(id, 'rw')
-	    }
-	    if (calc_type == 'rwt') {
-	        calcRWT_WLT(id, 'rwt')
-	    }
-	    if (calc_type == 'wl') {
-	        calcRW_WL(id, 'wl')
-	    }
-	    if (calc_type == 'wlt') {
-	        calcRWT_WLT(id, 'wlt')
-	    }
+		ct_id = id + '.CalcType';
+		ct_field = document.getElementById(ct_id);
+		calc_type = ct_field.value;
+		if (calc_type == 't') {
+			calcT(id)
+		}
+		if (calc_type == 'rw') {
+			calcRW_WL(id, 'rw')
+		}
+		if (calc_type == 'rwt') {
+			calcRWT_WLT(id, 'rwt')
+		}
+		if (calc_type == 'wl') {
+			calcRW_WL(id, 'wl')
+		}
+		if (calc_type == 'wlt') {
+			calcRWT_WLT(id, 'wlt')
+		}
 	}
 
 	function calcT(id)
 	{
-	    /* using element name, as element ID is used by autofill() in worksheets */
-	    tVolFieldName= 'results.' + id + '.TitrationVolume:record';
-	    tVolField = document.getElementsByName(tVolFieldName)[0];
-	    tVol = tVolField.value; 
-	    tFacFieldName = 'results.' + id + '.TitrationFactor:record';
-	    tFacField = document.getElementsByName(tFacFieldName)[0];
-	    tFac = tFacField.value; 
-	    if ((tVol == '') || (tFac == '' )) {  
-	        result = '';
-	    } else {
-	        result =  tVol* tFac;
-	        if (isNaN(result)) {
-	            result = '';
-	        } else {
-	            result =  Math.round(result*Math.pow(10,2))/Math.pow(10,2);
-	        }
-	    }
-	    resFieldName = 'results.' + id + '.Result:record';
-	    resultField = document.getElementsByName(resFieldName)[0];
-	    resultField.value = result;
+		/* using element name, as element ID is used by autofill() in worksheets */
+		tVolFieldName= 'results.' + id + '.TitrationVolume:record';
+		tVolField = document.getElementsByName(tVolFieldName)[0];
+		tVol = tVolField.value; 
+		tFacFieldName = 'results.' + id + '.TitrationFactor:record';
+		tFacField = document.getElementsByName(tFacFieldName)[0];
+		tFac = tFacField.value; 
+		if ((tVol == '') || (tFac == '' )) {  
+			result = '';
+		} else {
+			result =  tVol* tFac;
+			if (isNaN(result)) {
+				result = '';
+			} else {
+				result =  Math.round(result*Math.pow(10,2))/Math.pow(10,2);
+			}
+		}
+		resFieldName = 'results.' + id + '.Result:record';
+		resultField = document.getElementsByName(resFieldName)[0];
+		resultField.value = result;
 	}
 	function calcRW_WL(id, calctype)
 	{
-	    /* using element name, as element ID is used by autofill() in worksheets */
-	    resFieldName = 'results.' + id + '.Result:record';
-	    resultField = document.getElementsByName(resFieldName)[0];
+		/* using element name, as element ID is used by autofill() in worksheets */
+		resFieldName = 'results.' + id + '.Result:record';
+		resultField = document.getElementsByName(resFieldName)[0];
 
-	    grossFieldName= 'results.' + id + '.GrossMass:record';
-	    grossField = document.getElementsByName(grossFieldName)[0];
-	    gross = grossField.value
-	    if ((gross == '') || (isNaN(gross)) || (gross == 0)) {
-	        returnResult('', resultField)
-	        return
-	    } else {
-	        gross = parseFloat(grossField.value); 
-	    }
-	    netFieldName= 'results.' + id + '.NetMass:record';
-	    netField = document.getElementsByName(netFieldName)[0];
-	    net = netField.value
-	    if ((net == '') || (isNaN(net)) || (net == 0)) {
-	        returnResult('', resultField)
-	        return
-	    } else {
-	        net= parseFloat(netField.value); 
-	    }
-	    vesselFieldName= 'results.' + id + '.VesselMass:record';
-	    vesselField = document.getElementsByName(vesselFieldName)[0];
-	    vessel = vesselField.value
-	    if ((vessel == '')  || (isNaN(vessel)) || (vessel == 0)) {
-	        returnResult('', resultField)
-	        return
-	    } else {
-	        vessel = parseFloat(vesselField.value); 
-	    }
+		grossFieldName= 'results.' + id + '.GrossMass:record';
+		grossField = document.getElementsByName(grossFieldName)[0];
+		gross = grossField.value
+		if ((gross == '') || (isNaN(gross)) || (gross == 0)) {
+			returnResult('', resultField)
+			return
+		} else {
+			gross = parseFloat(grossField.value); 
+		}
+		netFieldName= 'results.' + id + '.NetMass:record';
+		netField = document.getElementsByName(netFieldName)[0];
+		net = netField.value
+		if ((net == '') || (isNaN(net)) || (net == 0)) {
+			returnResult('', resultField)
+			return
+		} else {
+			net= parseFloat(netField.value); 
+		}
+		vesselFieldName= 'results.' + id + '.VesselMass:record';
+		vesselField = document.getElementsByName(vesselFieldName)[0];
+		vessel = vesselField.value
+		if ((vessel == '')  || (isNaN(vessel)) || (vessel == 0)) {
+			returnResult('', resultField)
+			return
+		} else {
+			vessel = parseFloat(vesselField.value); 
+		}
 
-	    if ((gross < net) || (net < vessel) || (gross == vessel)) {
-	        result = ''
-	    } else {
-	        if (calctype == 'wl') {
-	            result = ((gross - net) / (gross - vessel)) * 100
-	        } else {
-	            result = ((net - vessel) / (gross - vessel)) * 100
-	        }
-	        result =  Math.round(result*Math.pow(10,2))/Math.pow(10,2);
-	    }
-	    returnResult(result, resultField)
+		if ((gross < net) || (net < vessel) || (gross == vessel)) {
+			result = ''
+		} else {
+			if (calctype == 'wl') {
+				result = ((gross - net) / (gross - vessel)) * 100
+			} else {
+				result = ((net - vessel) / (gross - vessel)) * 100
+			}
+			result =  Math.round(result*Math.pow(10,2))/Math.pow(10,2);
+		}
+		returnResult(result, resultField)
 	}
 
 	function calcRWT_WLT(id, calctype)
 	{
-	    /* using element name, as element ID is used by autofill() in worksheets */
-	    resFieldName = 'results.' + id + '.Result:record';
-	    resultField = document.getElementsByName(resFieldName)[0];
+		/* using element name, as element ID is used by autofill() in worksheets */
+		resFieldName = 'results.' + id + '.Result:record';
+		resultField = document.getElementsByName(resFieldName)[0];
 
-	    sampleFieldName= 'results.' + id + '.SampleMass:record';
-	    sampleField = document.getElementsByName(sampleFieldName)[0];
-	    sample = sampleField.value
-	    if ((sample == '') || (isNaN(sample)) || (sample == 0)) {
-	        returnResult('', resultField)
-	        return
-	    } else {
-	        sample = parseFloat(sampleField.value); 
-	    }
-	    netFieldName= 'results.' + id + '.NetMass:record';
-	    netField = document.getElementsByName(netFieldName)[0];
-	    net = netField.value
-	    if ((net == '') || (isNaN(net)) || (net == 0)) {
-	        returnResult('', resultField)
-	        return
-	    } else {
-	        net= parseFloat(netField.value); 
-	    }
-	    vesselFieldName= 'results.' + id + '.VesselMass:record';
-	    vesselField = document.getElementsByName(vesselFieldName)[0];
-	    vessel = vesselField.value
-	    if ((vessel == '')  || (isNaN(vessel)) || (vessel == 0)) {
-	        returnResult('', resultField)
-	        return
-	    } else {
-	        vessel = parseFloat(vesselField.value); 
-	    }
+		sampleFieldName= 'results.' + id + '.SampleMass:record';
+		sampleField = document.getElementsByName(sampleFieldName)[0];
+		sample = sampleField.value
+		if ((sample == '') || (isNaN(sample)) || (sample == 0)) {
+			returnResult('', resultField)
+			return
+		} else {
+			sample = parseFloat(sampleField.value); 
+		}
+		netFieldName= 'results.' + id + '.NetMass:record';
+		netField = document.getElementsByName(netFieldName)[0];
+		net = netField.value
+		if ((net == '') || (isNaN(net)) || (net == 0)) {
+			returnResult('', resultField)
+			return
+		} else {
+			net= parseFloat(netField.value); 
+		}
+		vesselFieldName= 'results.' + id + '.VesselMass:record';
+		vesselField = document.getElementsByName(vesselFieldName)[0];
+		vessel = vesselField.value
+		if ((vessel == '')  || (isNaN(vessel)) || (vessel == 0)) {
+			returnResult('', resultField)
+			return
+		} else {
+			vessel = parseFloat(vesselField.value); 
+		}
 
-	    if (net < vessel)  {
-	        result = ''
-	    } else {
-	        if (calctype == 'wlt') {
-	            result = ((vessel + sample - net) / sample) * 100
-	        } else {
-	            result = ((net - vessel) / sample) * 100
-	        }
-	        result =  Math.round(result*Math.pow(10,2))/Math.pow(10,2);
-	    }
-	    returnResult(result, resultField)
+		if (net < vessel)  {
+			result = ''
+		} else {
+			if (calctype == 'wlt') {
+				result = ((vessel + sample - net) / sample) * 100
+			} else {
+				result = ((net - vessel) / sample) * 100
+			}
+			result =  Math.round(result*Math.pow(10,2))/Math.pow(10,2);
+		}
+		returnResult(result, resultField)
 	}
 
 	function returnResult(result, resultField) {
-	    resultField.value = result;
+		resultField.value = result;
 	}
 
 	// XXX price recalc is sometimes over agressive, does a few re-recalcs.
@@ -188,7 +188,7 @@ jQuery( function($) {
 				disabled = $(this).attr('disabled');
 				// For some browsers, `attr` is undefined; for others, its false.  Check for both.
 				if (typeof disabled !== 'undefined' && disabled !== false) {
-				    disabled = true;
+					disabled = true;
 				} else {
 					disabled = false;
 				}
@@ -402,14 +402,6 @@ jQuery( function($) {
 		recalc_prices();
 	}
 	
-	
-	// function to return a reference from the CC popup window back into the widget 
-	function select_cc(uids, titles){
-		$("#cc_uids").val(uids);
-		$("#cc_titles").val(titles);
-	}
-	
-	
 	function unsetARProfile(column){
 		$.each($('input[name^="ar.'+column+'.Analyses"]'), function(){
 			if($(this).attr("checked")) $(this).attr("checked", "");
@@ -470,7 +462,7 @@ jQuery( function($) {
 					disabled = other_elem.attr('disabled');
 					// For some browsers, `attr` is undefined; for others, its false.  Check for both.
 					if (typeof disabled !== 'undefined' && disabled !== false) {
-					    disabled = true;
+						disabled = true;
 					} else {
 						disabled = false;
 					}
@@ -558,22 +550,22 @@ jQuery( function($) {
 		$('#open_cc_browser').click(function(){
 			contact_uid = $('#contact').attr('value');
 			cc_uids = $('#cc_uids').attr('value');
-			window.open('analysisrequest_select_cc?contact_uid=' + contact_uid + '&cc_uids=' + cc_uids, 
-				'analysisrequest_select_cc','toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=500,height=550');
+			window.open('analysisrequest_select_cc?hide_uids=' + contact_uid + '&selected_uids=' + cc_uids, 
+				'analysisrequest_select_cc','toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=600,height=550');
 		});
 
-		// analysisrequest_select_cc.pt submit button invokes this
-		$('#cc_browser_submit').click(function(){
+		// analysisrequest select CC submit button invokes this
+		$('.select_cc_select').click(function(){
 			var uids = [];
 			var titles = [];
-			$.each($('input[id^="Contact\\."]'), function() {
+			$.each($('input[name="paths:list"]'), function() {
 				if($(this).attr("checked")){
-					uids.push($(this).attr("selected_uid"));
-					titles.push($(this).attr("selected_title"));
+					uids.push($(this).attr("uid"));
+					titles.push($(this).attr("title"));
 				}
 			});
-			// we pass comma seperated strings with uids and titles
-			window.opener.select_cc(uids.join(','), titles.join(','));
+			window.opener.$("#cc_uids").val(uids.join(","));
+			window.opener.$("#cc_titles").val(titles.join(","));
 			window.close();
 		});
 
@@ -581,12 +573,12 @@ jQuery( function($) {
 		$('input[id$="_SampleID_button"]').click(function(){
 			column = this.id.split("_")[1];
 			window.open('analysisrequest_select_sample?column=' + column, 
-				'analysisrequest_select_sample','toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=500,height=550');
+				'analysisrequest_select_sample','toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=600,height=550');
 		});
 
 		// return a reference from the Sample popup window back into the widget 
 		// and populate the form with this sample's data 
-		$('#sample_browser_submit').live('click', function(){
+		$('.select_sample_select').click('click', function(){
 			column = $(this).attr('column');
 			window.opener.$("#ar_"+column+"_SampleID_button").val($(this).attr('SampleID'));
 			window.opener.$("#ar_"+column+"_SampleID").val($(this).attr('SampleID'));

@@ -19,6 +19,7 @@ ploneMessageFactory = MessageFactory('plone')
 class BikaListingView(FolderContentsView):
     implements(IFolderContentsView)
     template = ViewPageTemplateFile("templates/bika_listing.pt")
+    template_table_only = ViewPageTemplateFile("templates/bika_listing_table_only.pt")
     review_state_filter = ViewPageTemplateFile("templates/bika_listing_review_state_filter.pt")
 
     contentFilter = {}
@@ -48,7 +49,8 @@ class BikaListingView(FolderContentsView):
                     del(self.contentFilter['review_state'])
             else:
                 self.contentFilter['review_state'] = self.request.form['review_state']
-        return self.template()
+        if self.show_table_only: return self.template_table_only()
+        else:  return self.template()
 
     def folderitems(self):
         """

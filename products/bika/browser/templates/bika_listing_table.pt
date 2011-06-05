@@ -1,8 +1,7 @@
 <div id="folderlisting-main-table"
      i18n:domain="bika">
   <input type="hidden" name="sort_on"
-         tal:attributes="value request/sort_on|string:getObjPositionInParent"
-         />
+         tal:attributes="value request/sort_on|string:getObjPositionInParent"/>
   <input type="hidden" name="pagenumber" tal:attributes="value view/batch/pagenumber"/>
   <input type="hidden" name="show_all" tal:attributes="value view/show_all"/>
   <input type="hidden" name="orig_template" tal:attributes="value view/viewname"/>
@@ -25,155 +24,157 @@
     <div class="visualClear" id="clear-space-before-navigation"><!-- --></div>
 
     <div tal:replace="structure view/batching"
-	     tal:condition="not:view/show_all"/>
+         tal:condition="not:view/show_all"/>
 
     <tal:review_state
         tal:define="
-        	requeststate python:request.get('review_state', 'all');
-        	review_state python:[t for t in view.review_states if t['id'] == requeststate][0]">
-	    <table class="listing"
-	           id="listing-table"
-	           summary="Content listing"
-	           i18n:attributes="summary summary_content_listing;"
-	           tal:condition="view/items"
-	           tal:define="colspan python:str(len(review_state['columns'])+2);
-			               columns view/columns;
-						   column_list python:review_state['columns']">
-	      <thead>
+            requeststate python:request.get('review_state', 'all');
+            review_state python:[t for t in view.review_states if t['id'] == requeststate][0]">
 
+        <table class="listing"
+               id="listing-table"
+               summary="Content listing"
+               i18n:attributes="summary summary_content_listing;"
+               tal:condition="view/items"
+               tal:define="colspan python: len(review_state['columns']);
+                              colspan python: view.show_select_column and colspan + 1 or colspan;
+                              colspan python: view.show_sort_column and colspan + 1 or colspan;
+                              colspan python: str(colspan);
+                           columns view/columns;
+                           column_list python:review_state['columns']">
+          <thead>
 
             <tal:selectrow condition="view/show_select_row">
-	        <tr tal:condition="not:view/selectcurrentbatch">
-	          <th tal:attributes="colspan colspan" class="nosort">
-	          	<span i18n:translate="label_select" tal:omit-tag="">Select:</span> <a i18n:translate="label_all" tal:attributes="href view/selectscreen_url" id="foldercontents-selectall">All</a></th>
-	        </tr>
-	        <tr tal:condition="view/show_select_all_items">
-	          <th tal:attributes="colspan colspan" class="nosort">
-	            <span tal:omit-tag="" i18n:translate="tableheading_all_items_selected">
-	              All <tal:block replace="view/batch/items_on_page" i18n:name="count"/> items on this page are selected. 
-	            </span>
-	            <a tal:attributes="href view/selectall_url" 
-	               id="foldercontents-selectall-completebatch"
-	               i18n:translate="tableheading_select_all_items">Select all 
-	            <tal:block replace="view/batch/size" i18n:name="count"/> items in this folder.</a>
-	          </th>
-	        </tr>
-	        <tr tal:condition="view/selectall">
-	          <th tal:attributes="colspan colspan" class="nosort">
-	            <span tal:omit-tag="" i18n:translate="tableheading_all_items_selected_in_folder">
-	            All <tal:block replace="view/batch/size" i18n:name="count"/> items in this folder
-	            are selected. 
-	            </span>
-	            <a tal:attributes="href view/selectnone_url"  i18n:translate="tableheading_clear_selection"
-	               id="foldercontents-clearselection">Clear selection</a>
-	          </th>
-	        </tr>
+                <tr tal:condition="not:view/selectcurrentbatch">
+                  <th tal:attributes="colspan colspan" class="nosort">
+                      <span i18n:translate="label_select" tal:omit-tag="">Select:</span> <a i18n:translate="label_all" tal:attributes="href view/selectscreen_url" id="foldercontents-selectall">All</a></th>
+                </tr>
+                <tr tal:condition="view/show_select_all_items">
+                  <th tal:attributes="colspan colspan" class="nosort">
+                    <span tal:omit-tag="" i18n:translate="tableheading_all_items_selected">
+                      All <tal:block replace="view/batch/items_on_page" i18n:name="count"/> items on this page are selected. 
+                    </span>
+                    <a tal:attributes="href view/selectall_url" 
+                       id="foldercontents-selectall-completebatch"
+                       i18n:translate="tableheading_select_all_items">Select all 
+                    <tal:block replace="view/batch/size" i18n:name="count"/> items in this folder.</a>
+                  </th>
+                </tr>
+                <tr tal:condition="view/selectall">
+                  <th tal:attributes="colspan colspan" class="nosort">
+                    <span tal:omit-tag="" i18n:translate="tableheading_all_items_selected_in_folder">
+                    All <tal:block replace="view/batch/size" i18n:name="count"/> items in this folder
+                    are selected. 
+                    </span>
+                    <a tal:attributes="href view/selectnone_url"  i18n:translate="tableheading_clear_selection"
+                       id="foldercontents-clearselection">Clear selection</a>
+                  </th>
+                </tr>
             </tal:selectrow>
 
-	
-	        <tr>
-	          <th class="nosort column"
-	              id="foldercontents-order-column"
-	              tal:condition="view/show_sort_column">
-	          </th>
-	          <th class="nosort">&nbsp;</th>
-	          <th class="nosort column" tal:repeat="column column_list"
-	              id="string:foldercontents-${columns/column/title}-column"
-	              ><span i18n:translate="python:'listingheader_' + view.columns[ column ]['title']"
-	              ><span tal:content="python:view.columns[  column  ]['title']"/></span>
-	           </th>
-	        </tr>
-	      </thead>
-	
-	      <metal:block tal:condition="view/batch">
-	        <tbody>
-	          <tal:items tal:repeat="item view/batch">
-	            <tr tal:condition="python:item.has_key('id')"
-	                tal:attributes="class item/table_row_class;
-	                                id string:folder-contents-item-${item/id};" >
-		
-	              <td tal:condition="view/show_sort_column" class="draggable">
-	                <a href=""
-	                   title="Move item up"
-	                   i18n:attributes="title title_move_item_up;"
-	                   tal:attributes="href string:${view/base_url}/folder_position?position=up&amp;id=${item/quoted_id}">
-	                  &#9650;
-	                </a>
-	                &nbsp;
-	                <a href=""
-	                   title="Move item down"
-	                   i18n:attributes="title title_move_item_down;"
-	                   tal:attributes="href string:${view/base_url}/folder_position?position=down&amp;id=${item/quoted_id}">
-	                  &#9660;
-	                </a>
-	              </td>
+    
+            <tr>
+              <th class="nosort column"
+                  id="foldercontents-order-column"
+                  tal:condition="view/show_sort_column">
+              </th>
+              <th class="nosort column"
+                  tal:condition="view/show_select_column">
+              </th>
+              <th class="nosort column" tal:repeat="column column_list"
+                  id="string:foldercontents-${columns/column/title}-column"
+                  ><span i18n:translate="python:'listingheader_' + view.columns[ column ]['title']"
+                  ><span tal:content="python:view.columns[  column  ]['title']"/></span>
+               </th>
+            </tr>
+          </thead>
+    
+          <metal:block tal:condition="view/batch">
+            <tbody>
+              <tal:items tal:repeat="item view/batch">
+                <tr tal:condition="python:item.has_key('id')"
+                    tal:attributes="class item/table_row_class;
+                                    id string:folder-contents-item-${item/id};" >
+        
+                  <td tal:condition="view/show_sort_column" class="draggable">
+                    <a href=""
+                       title="Move item up"
+                       i18n:attributes="title title_move_item_up;"
+                       tal:attributes="href string:${view/base_url}/folder_position?position=up&amp;id=${item/quoted_id}">
+                      &#9650;
+                    </a>
+                    &nbsp;
+                    <a href=""
+                       title="Move item down"
+                       i18n:attributes="title title_move_item_down;"
+                       tal:attributes="href string:${view/base_url}/folder_position?position=down&amp;id=${item/quoted_id}">
+                      &#9660;
+                    </a>
+                  </td>
 
-	              <td class="notDraggable">
-	                <input type="checkbox"
-	                       class="noborder"
-	                       name="paths:list" id="#"
-	                       value="#"
-	                       tal:attributes="value   item/path;
-	                                       id      string:cb_${item/id};
-	                                       checked item/checked;
-	                                       alt     python:view.msg_select_item(item);
-	                                       title   python:view.msg_select_item(item)" />
-	                <input type="hidden" name="selected_obj_paths:list" value="#"
-	                       tal:attributes="value item/relative_url" />
-	                <label tal:content="item/title_or_id"
-	                       tal:attributes="for string:cb_${item/id}" 
-	                       class="hiddenStructure">
-	                  Item Title
-	                </label>
-	              </td>
+                  <td tal:condition="view/show_select_column" class="notDraggable">
+                    <input type="checkbox"
+                           class="noborder"
+                           name="paths:list" id="#"
+                           value="#"
+                           tal:attributes="value   item/path;
+                                           id      string:cb_${item/id};
+                                           checked item/checked;
+                                           alt     python:view.msg_select_item(item);
+                                           title   item/Title;
+                                           uid     item/UID" />
+                    <input type="hidden" name="selected_obj_paths:list" value="#"
+                           tal:attributes="value item/relative_url" />
+                    <label tal:content="item/title_or_id"
+                           tal:attributes="for string:cb_${item/id}" 
+                           class="hiddenStructure">
+                      Item Title
+                    </label>
+                  </td>
 
-	              <td tal:repeat="column review_state/columns">
+                  <tal:column tal:repeat="column review_state/columns">
+                    <td tal:attributes="class python: columns[column].has_key('cssclass') and columns[column]['cssclass'] or ''">
 
-	                  <a tal:condition="python:item['links'].has_key(column)" href="#" 
-	                     tal:attributes="href python:item['links'][column];
-	                                     class string: ${item/state_class} ${item/type_class};">
-                        <img tal:condition="python:view.columns[column].has_key('icon')" 
+                      <a tal:condition="python:item.has_key('links') and item['links'].has_key(column)" href="#" 
+                         tal:attributes="href python:item['links'][column];
+                                         class string: ${item/state_class} ${item/type_class};">
+                        <img tal:condition="python:view.columns[column].has_key('icon')"
                              tal:attributes="src python:'images/'+view.columns[column]['icon']" />
                         <strong tal:content="python:item.get(column)"/>
-	                  </a>
+                      </a>
 
-	                  <span  tal:condition="python:not item['links'].has_key(column)"
-	                        tal:content="python:item.get(column)"
-	                        tal:attributes="class item/state_class">&nbsp</span>
-
-
-
-                      <!--- xxx   This is where notification/other icons/links go   -->
+                      <span  tal:condition="python:not (item.has_key('links') and item['links'].has_key(column))"
+                            tal:content="python:item.get(column)"
+                            tal:attributes="class item/state_class">&nbsp</span>
 
 
-
-	              </td>
-
-	            </tr>
-	          </tal:items>
-	        </tbody>
-	        <tfoot tal:condition="not:view/within_batch_size">
-	          <tr tal:condition="not:view/show_all">
-	            <th class="nosort" tal:attributes="colspan colspan">
-	              <a tal:attributes="href view/show_all_url"
-	                 i18n:translate="label_show_all"
-	                 id="foldercontents-show-all">Show all items</a>
-	            </th>
-	          </tr>
-	          <tr tal:condition="view/show_all">
-	            <th class="nosort" tal:attributes="colspan colspan">
-	              <a tal:attributes="href view/view_url"
-	                 i18n:translate="label_show_batched"
-	                 id="foldercontents-show-batched">Show batched</a>
-	            </th>
-	          </tr>
-	        </tfoot>
-	      </metal:block>
-	    </table>
+                    </td>
+                  </tal:column>
+                </tr>
+              </tal:items>
+            </tbody>
+            <tfoot tal:condition="not:view/within_batch_size">
+              <tr tal:condition="not:view/show_all">
+                <th class="nosort" tal:attributes="colspan colspan">
+                  <a tal:attributes="href view/show_all_url"
+                     i18n:translate="label_show_all"
+                     id="foldercontents-show-all">Show all <tal:block replace="view/batch/size" i18n:name="count"/> items</a>
+                </th>
+              </tr>
+              <tr tal:condition="view/show_all">
+                <th class="nosort" tal:attributes="colspan colspan">
+                  <a tal:attributes="href view/view_url"
+                     i18n:translate="label_show_batched"
+                     id="foldercontents-show-batched">Show batched</a>
+                </th>
+              </tr>
+            </tfoot>
+          </metal:block>
+        </table>
       <div tal:replace="structure view/batching" tal:condition="not:view/show_all"/>
       <tal:buttons
-	    tal:condition="python: review_state.has_key('buttons') and view.items"
-	    tal:repeat="button review_state/buttons">
+        tal:condition="python: review_state.has_key('buttons') and view.items"
+        tal:repeat="button review_state/buttons">
         <input class="context"
              type="submit"
              name=""
