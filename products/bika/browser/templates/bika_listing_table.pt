@@ -94,7 +94,8 @@
               <tal:items tal:repeat="item view/batch">
                 <tr tal:condition="python:item.has_key('id')"
                     tal:attributes="class item/table_row_class;
-                                    id string:folder-contents-item-${item/id};" >
+                                    id string:folder-contents-item-${item/id};
+                                    item_data item/item_data|nothing" >
         
                   <td tal:condition="view/show_sort_column" class="draggable">
                     <a href=""
@@ -133,7 +134,7 @@
                   </td>
 
                   <tal:column tal:repeat="column review_state/columns">
-                    <td tal:attributes="class python: columns[column].has_key('cssclass') and columns[column]['cssclass'] or ''">
+                    <td tal:attributes="class python: columns[column].has_key('table_row_class') and columns[column]['table_row_class'] or ''">
 
                       <a tal:condition="python:item.has_key('links') and item['links'].has_key(column)" href="#" 
                          tal:attributes="href python:item['links'][column];

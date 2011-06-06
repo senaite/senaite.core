@@ -31,6 +31,7 @@
 </div>
 
 <div metal:define-macro="ar_attachments_list"
+     class="ar_attachments_list"
     tal:define="deleteable python:delete_attachments and ar_review_state in  ['assigned', 'sample_received', 'to_be_verified']">
     <metal:block tal:define="dummy python:request.RESPONSE.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate, post-check=0, pre-check=0')" />
 <tal:repeat tal:repeat="attachment attachments">

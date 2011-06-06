@@ -9,7 +9,6 @@
   <head>
     <metal:block fill-slot="top_slot">
       <style type="text/css">
-        <!-- /* XXX inline style however functional is still inline style. */ -->
         #plone-contentmenu-factories {display:none;}
       </style>
     </metal:block>

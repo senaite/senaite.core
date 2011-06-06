@@ -17,53 +17,58 @@
 </head>
 
 
-  <body>
+<body>
+
+  <div id="content">
 
       <tal:title condition="view/title">
         <h1 class="documentFirstHeading" tal:content="view/title"/>
       </tal:title>
-
+    
       <tal:description condition="view/description">
           <div class="documentDescription" 
                tal:content="view/description" 
                tal:condition="view/description"/>
       </tal:description>
+    
+      <div id="content-core">
+        <tal:add_buttons repeat="add_item python:view.content_add_buttons.keys()">
+              <form
+                name="folderContentsForm"
+                method="post"
+                action=""
+                tal:attributes="action python:'%s/%s'%(context.absolute_url(), view.content_add_buttons[add_item])">
+                <input 
+                  class="standalone add"
+                  type="submit"
+                  name=""
+                  i18n:attributes="value"
+                  tal:attributes="value string:Add ${add_item};
+                                  name string:add_${add_item}"/>
+              </form>
+        </tal:add_buttons>
+    
+        <form 
+    	    name="folderContentsForm"
+    	    method="post"
+    	    action="folder_object"
+    	    tal:attributes="action python: request.get('URL', context.absolute_url())"
+    	    class="kssattr-serveraction-foldercontents_update_table">
+    	
+            <div class="visualClear" id="clear-space-before-navigation"><!-- --></div>
+    
+            <span tal:omit-tag="" tal:content="structure view/review_state_filter"/>
+    
+            <div tal:replace="structure view/contents_table"></div>
+    
+            <input tal:replace="structure context/@@authenticator/authenticator" />
+    	
+        </form>
+    
+      </div>
+  </div>
 
-      <tal:add_buttons repeat="add_item python:view.content_add_buttons.keys()">
-          <form
-            name="folderContentsForm"
-            method="post"
-            action=""
-            tal:attributes="action python:'%s/%s'%(context.absolute_url(), view.content_add_buttons[add_item])">
-            <input 
-              class="standalone add"
-              type="submit"
-              name=""
-              i18n:attributes="value"
-              tal:attributes="value string:Add ${add_item};
-                              name string:add_${add_item}"/>
-          </form>
-      </tal:add_buttons>
-
-	  <form 
-	    name="folderContentsForm"
-	    method="post"
-	    action="folder_object"
-	    tal:attributes="action python: request.get('URL', context.absolute_url())"
-	    class="kssattr-serveraction-foldercontents_update_table">
-	
-        <div class="visualClear" id="clear-space-before-navigation"><!-- --></div>
-
-        <span tal:omit-tag="" tal:content="structure view/review_state_filter"/>
-
-        <div tal:replace="structure view/contents_table"></div>
-
-        <input tal:replace="structure context/@@authenticator/authenticator" />
-	
-	  </form>
-
-
-  </body>
+</body>
 </html>
 
 

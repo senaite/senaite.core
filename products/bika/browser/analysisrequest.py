@@ -14,6 +14,7 @@ def analysisrequest_add_submit(context, request):
     form = request.form
     portal = getToolByName(context, 'portal_url').getPortalObject()
     rc = getToolByName(context, 'reference_catalog')
+    wftool = getToolByName(context, 'portal_workflow')
     pc = getToolByName(context, 'portal_catalog')
     came_from = form.has_key('came_from') and form['came_from'] or 'add'
 
@@ -198,6 +199,9 @@ def analysisrequest_add_submit(context, request):
                 services_array.append(a.getServiceUID())
             profile.setService(services_array)
             profile.reindexObject()
+
+        if values.has_key('SampleID') and wftool.getInfoFor(sample, 'review_state') != 'due':
+            wftool.doActionFor(ar, 'receive')
 
         ARs.append(ar_id)
 
@@ -530,8 +534,8 @@ class AnalysisRequestManageResultsView(AnalysisRequestViewView):
 
         form = self.request.form
 
-        #import pprint
-        #pprint.pprint(form)
+        import pprint
+        pprint.pprint(form)
 
         wf_tool = getToolByName(self.context, 'portal_workflow')
         pc = getToolByName(self.context, 'portal_catalog')
@@ -679,7 +683,7 @@ class AnalysisRequestManageResultsView(AnalysisRequestViewView):
                         pass
             if self.context.getReportDryMatter():
                 self.context.setDryMatterResults()
-            print "----------------------------------"
+
             review_state = wf_tool.getInfoFor(self.context, 'review_state', '')
             if review_state == 'to_be_verified':
                 self.request.RESPONSE.redirect(self.context.absolute_url())
@@ -1017,7 +1021,7 @@ class AnalysisRequestSelectCCView(BikaListingView):
            'getMobilePhone': {'title': _('Mobile Phone')},
           }
     review_states = [
-                {'title': 'All', 'id':'all',
+                {'title': _('All'), 'id':'all',
                  'columns': ['getFullname',
                              'getEmailAddress',
                              'getBusinessPhone',
@@ -1050,25 +1054,28 @@ class AnalysisRequestSelectSampleView(BikaListingView):
     pagesize = 50
 
     columns = {
-           'getSampleID': {'title': _('Sample ID'), 'cssclass':'select_sample_select'},
-           'getClientReference': {'title': _('Client Ref')},
+           'getSampleID': {'title': _('Sample ID'), 'table_row_class':'select_sample_select'},
            'getClientSampleID': {'title': _('Client SID')},
+           'getClientReference': {'title': _('Client Reference')},
            'SampleType': {'title': _('Sample Type')},
            'SamplePoint': {'title': _('Sample Point')},
            'getDateReceived': {'title': _('Date Received')},
+           'state_title': {'title': _('State')},
           }
     review_states = [
+                {'title': _('All'), 'id':'all',
+                 'columns': ['getSampleID',
+                             'getClientSampleID',
+                             'SampleType',
+                             'SamplePoint',
+                             'state_title']},
                 {'title': _('Due'), 'id':'due',
                  'columns': ['getSampleID',
-                             'Requests',
-                             'getClientReference',
                              'getClientSampleID',
                              'SampleType',
                              'SamplePoint']},
                 {'title': _('Received'), 'id':'received',
                  'columns': ['getSampleID',
-                             'Requests',
-                             'getClientReference',
                              'getClientSampleID',
                              'SampleType',
                              'SamplePoint',
@@ -1085,21 +1092,32 @@ class AnalysisRequestSelectSampleView(BikaListingView):
         out = []
         for x in range(len(items)):
             if not items[x].has_key('brain'): continue
-            obj = items[x]['brain']
+            obj = items[x]['brain'].getObject()
             if items[x]['UID'] in self.request.get('hide_uids', ''): continue
             if items[x]['UID'] in self.request.get('selected_uids', ''):
                 items[x]['checked'] = True
+            items[x]['view_url'] = obj.absolute_url() + "/view"
             items[x]['SampleType'] = obj.getSampleType().Title()
             items[x]['SamplePoint'] = obj.getSamplePoint() and obj.getSamplePoint().Title()
             items[x]['getDateReceived'] = obj.getDateReceived() and self.context.toLocalizedTime(obj.getDateReceived(), long_format = 0) or ''
-            items[x]['links'] = {'getSampleID': items[x]['url']}
+            items[x]['getDateSampled'] = obj.getDateSampled() and self.context.toLocalizedTime(obj.getDateSampled(), long_format = 0) or ''
+            items[x]['item_data'] = json.dumps({
+                'SampleID': items[x]['Title'],
+                'ClientReference': items[x]['getClientReference'],
+                'ClientSampleID': items[x]['getClientSampleID'],
+                'DateReceived': items[x]['getDateReceived'],
+                'DateSampled': items[x]['getDateSampled'],
+                'SampleType': items[x]['SampleType'],
+                'SamplePoint': items[x]['SamplePoint'],
+                'field_analyses': self.FieldAnalyses(obj),
+                'column': self.request.get('column', None),
+            })
             out.append(items[x])
         return out
 
     def FieldAnalyses(self, sample):
         """ Returns a dictionary of lists reflecting Field Analyses
             linked to this sample.
-            XXX
             For secondary ARs field analyses and their values are 
             read/written from the first AR.
             {category_uid: [service_uid, service_uid], ... }
@@ -1114,10 +1132,7 @@ class AnalysisRequestSelectSampleView(BikaListingView):
                         res[catuid].append(analysis.getService().UID())
                     else:
                         res[catuid] = [analysis.getService().UID()]
-        return json.dumps(res)
-
-    def __call__(self):
-        return self.template()
+        return res
 
 class AnalysisRequest_AnalysisServices(BrowserView):
     """ AJAX requests pull this data for insertion when category header rows are clicked.

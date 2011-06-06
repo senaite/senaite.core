@@ -369,7 +369,7 @@ class ClientAttachmentsView(BikaListingView):
         items = BikaListingView.folderitems(self)
         for x in range(len(items)):
             if not items[x].has_key('brain'): continue
-            obj = items[x]['brain']
+            obj = items[x]['brain'].getObject()
             obj_url = obj.absolute_url()
             file = obj.getAttachmentFile()
             icon = file.getBestIcon()
@@ -428,7 +428,7 @@ class ClientOrdersView(BikaListingView):
         items = BikaListingView.folderitems(self)
         for x in range(len(items)):
             if not items[x].has_key('brain'): continue
-            obj = items[x]['brain']
+            obj = items[x]['brain'].getObject()
             items[x]['OrderNumber'] = obj.getOrderNumber()
             items[x]['OrderDate'] = obj.getOrderDate()
             items[x]['DateDispatched'] = obj.getDateDispatched()

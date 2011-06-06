@@ -6,6 +6,14 @@
       metal:use-macro="here/main_template/macros/master"
       i18n:domain="bika">
 
+  <head>
+    <metal:block fill-slot="top_slot">
+      <style type="text/css">
+        #plone-contentmenu-workflow {display:inline;}
+      </style>
+    </metal:block>
+  </head>
+
 <body>
 
   <div metal:fill-slot="main" 

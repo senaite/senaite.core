@@ -569,7 +569,7 @@ jQuery( function($) {
 			window.close();
 		});
 
-		// button to display Sample browser window
+		// button in each column to display Sample browser window
 		$('input[id$="_SampleID_button"]').click(function(){
 			column = this.id.split("_")[1];
 			window.open('analysisrequest_select_sample?column=' + column, 
@@ -578,23 +578,25 @@ jQuery( function($) {
 
 		// return a reference from the Sample popup window back into the widget 
 		// and populate the form with this sample's data 
-		$('.select_sample_select').click('click', function(){
-			column = $(this).attr('column');
-			window.opener.$("#ar_"+column+"_SampleID_button").val($(this).attr('SampleID'));
-			window.opener.$("#ar_"+column+"_SampleID").val($(this).attr('SampleID'));
+		$('.select_sample_select').click(function(){
+			item_data = $.parseJSON($(this.parentNode).attr("item_data"));
+			column = item_data['column'];
+			window.opener.$("#ar_"+column+"_SampleID_button").val(item_data['SampleID']);
+			window.opener.$("#ar_"+column+"_SampleID").val(item_data['SampleID']);
 			window.opener.$("#deleteSampleButton_" + column).toggle(true);
-			window.opener.$("#ar_"+column+"_ClientReference").val($(this).attr('ClientReference')).attr('readonly', true);
-			window.opener.$("#ar_"+column+"_ClientSampleID").val($(this).attr('ClientSampleID')).attr('readonly', true);
-			window.opener.$("#ar_"+column+"_DateSampled").val($(this).attr('DateSampled').split(" ")[0]).attr('readonly', true);
-			window.opener.$('input[id$="_DateSampled"]').unbind();
-			window.opener.$("#ar_"+column+"_SampleType").val($(this).attr('SampleType')).attr('readonly', true);
-			window.opener.$("#ar_"+column+"_SamplePoint").val($(this).attr('SamplePoint')).attr('readonly', true);
+			window.opener.$("#ar_"+column+"_DateSampled").val(item_data['DateSampled']).attr('readonly', true);
+			window.opener.$("#ar_"+column+"_DateSampled").unbind();
+			window.opener.$("#ar_"+column+"_ClientReference").val(item_data['ClientReference']).attr('readonly', true);
+			window.opener.$("#ar_"+column+"_ClientSampleID").val(item_data['ClientSampleID']).attr('readonly', true);
+			window.opener.$("#ar_"+column+"_SampleType").val(item_data['SampleType']).attr('readonly', true);
+			window.opener.$("#ar_"+column+"_SamplePoint").val(item_data['SamplePoint']).attr('readonly', true);
 			// handle samples that do have field analyses
 			// field_analyses is a dict of lists: { catuid: [serviceuid,serviceuid], ... }
-			field_analyses = $.parseJSON($(this).attr('field_analyses'));
-			$.each(field_analyses, function(catuid,serviceuids){
-				window.opener.toggleCat(catuid + "_field", serviceuids, column, true, true);
-			});
+			if(item_data['field_analyses'] != null){
+				$.each(item_data['field_analyses'], function(catuid,serviceuids){
+					window.opener.toggleCat(catuid + "_field", serviceuids, column, true, true);
+				});
+			}
 			// explicitly check that field categories are expanded
 			// and disabled even if eg there are no field analyses for this sample
 			$.each(window.opener.$("tr[id*='_field']").filter(".analysiscategory"), function(){
@@ -615,11 +617,11 @@ jQuery( function($) {
 			$("#ar_"+column+"_SampleID_button").val($("#ar_"+column+"_SampleID_default").val());
 			$("#ar_"+column+"_SampleID").val('');
 			$("#ar_"+column+"_ClientReference").val('').removeAttr("readonly");
-			$("#ar_"+column+"_ClientSampleID").val('').removeAttr("readonly");
 			$("#ar_"+column+"_DateSampled").val('').removeAttr("readonly");
-			$('input[id$="_DateSampled"]').datepicker({'dateFormat': 'yy-mm-dd'});
-			$("#ar_"+column+"_SampleType").val('').removeAttr("readonly");
+			$("#ar_"+column+"_DateSampled").datepicker({'dateFormat': 'yy-mm-dd'});
+			$("#ar_"+column+"_ClientSampleID").val('').removeAttr("readonly");
 			$("#ar_"+column+"_SamplePoint").val('').removeAttr("readonly");
+			$("#ar_"+column+"_SampleType").val('').removeAttr("readonly");
 			$("#deleteSampleButton_" + column).toggle(false);
 			// uncheck and enable all visible service checkboxes
 			$("input[id*='_"+column+"_']").filter(".cb").removeAttr('disabled').attr('checked', false);
@@ -674,7 +676,6 @@ jQuery( function($) {
 		$('#analysisrequest_edit_form').ajaxForm(options);
 
 		// these go here so that popup windows can access them in our context
-		window.select_cc = select_cc;
 		window.recalc_prices = recalc_prices;
 		window.toggleCat = toggleCat;
 
