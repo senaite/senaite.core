@@ -1,21 +1,19 @@
 """
     AnalysisRequests often use the same configurations.
     ARProfile is used to save these common configurations (templates).
+    XXX It's just LabARProfile with one extra field
 """
 
 from AccessControl import ClassSecurityInfo
-from DateTime import DateTime
-from Products.ATContentTypes.content import schemata
-from Products.ATExtensions.ateapi import DateTimeField, DateTimeWidget
-from Products.Archetypes import atapi
+from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.Archetypes.public import *
 from Products.Archetypes.references import HoldingReference
-from Products.Archetypes.utils import DisplayList
-from Products.CMFCore.permissions import View, ListFolderContents
-from Products.CMFCore.utils import getToolByName
+from Products.CMFCore.permissions import View, ModifyPortalContent
 from Products.CMFDynamicViewFTI.browserdefault import BrowserDefaultMixin
-from Products.bika.config import I18N_DOMAIN, ManageBika, PROJECTNAME
+from Products.bika.browser.widgets import ServicesWidget
+from Products.bika.config import I18N_DOMAIN, PROJECTNAME
 from Products.bika.content.bikaschema import BikaSchema
+import sys
 
 schema = BikaSchema.copy() + Schema((
     StringField('ProfileTitle',
@@ -58,7 +56,7 @@ schema = BikaSchema.copy() + Schema((
         multiValued = 1,
         allowed_types = ('AnalysisService',),
         relationship = 'ARProfileAnalysisService',
-        widget = ReferenceWidget(
+        widget = ServicesWidget(
             label = 'Analyses',
             label_msgid = 'label_analyses',
             i18n_domain = I18N_DOMAIN,
@@ -81,10 +79,12 @@ schema = BikaSchema.copy() + Schema((
 ),
 )
 
-schema['title'].required = False
+IdField = schema['id']
+TitleField = schema['title']
+TitleField.required = False
+TitleField.widget.visible = False
 
-
-class ARProfile(VariableSchemaSupport, BrowserDefaultMixin, BaseFolder):
+class ARProfile(BrowserDefaultMixin, BaseContent):
     security = ClassSecurityInfo()
     schema = schema
     displayContentsTab = False
@@ -93,17 +93,4 @@ class ARProfile(VariableSchemaSupport, BrowserDefaultMixin, BaseFolder):
         """ Return the profile title as title """
         return self.getProfileTitle()
 
-    security.declareProtected(View, 'getCatAndServiceUIDs')
-    def getCatAndServiceUIDs(self):
-        """ Return the categories and services - uids"""
-        cats = []
-        services = []
-        for service in self.getService():
-            if service.getCategoryUID() not in cats:
-                cats.append(service.getCategoryUID())
-            services.append(service.UID())
-        results = {'cats': cats,
-                   'services': services}
-        return results
-
-atapi.registerType(ARProfile, PROJECTNAME)
+registerType(ARProfile, PROJECTNAME)

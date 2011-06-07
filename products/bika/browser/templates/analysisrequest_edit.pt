@@ -427,7 +427,7 @@
               <td>
                 <input type="text" size="10"
                   tal:define="
-                    input_name string:ar_${column}.profileTitle"
+                    input_name string:ar.${column}.profileTitle"
                   tal:attributes="
                     id input_name;
                     name string:${input_name}:ignore_empty:record;"/>

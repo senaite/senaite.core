@@ -187,6 +187,9 @@ def analysisrequest_add_submit(context, request):
 
         ar.setAnalyses(['%s:%s' % (a, prices[a]) for a in Analyses])
 
+        import pdb
+        pdb.set_trace()
+
         if (values.has_key('profileTitle')):
             profile_id = context.generateUniqueId('ARProfile')
             context.invokeFactory(id = profile_id, type_name = 'ARProfile')

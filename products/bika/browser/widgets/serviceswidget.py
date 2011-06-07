@@ -19,7 +19,6 @@ class ServicesWidget(TypesWidget):
 
     security = ClassSecurityInfo()
 
-    # XXX Memoize
     security.declarePublic('getCategories')
     def Categories(self, field, allservices = True):
         """ Returns a list of Analysis Categories (keyed by PointOfCapture)

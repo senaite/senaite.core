@@ -23,9 +23,9 @@ class StandardManufacturersView(BikaListingView):
     show_editable_border = False
     show_table_only = False
     show_sort_column = False
-     show_select_row = False
+    show_select_row = False
     show_select_column = True
-   batch = True
+    batch = True
     pagesize = 20
 
     columns = {

@@ -40,14 +40,5 @@
         layer="Products.bika.interfaces.IBikaLIMSLayer"
         />
 
-    <browser:viewlet
-        for="Products.bika.interfaces.IClient"
-        name="plone.path_bar"
-        manager="plone.app.layout.viewlets.interfaces.IAboveContent"
-        template="templates/blank.pt"
-        permission="zope2.View"
-        layer="Products.bika.interfaces.IBikaLIMSLayer"
-        />
-
 
 </configure>

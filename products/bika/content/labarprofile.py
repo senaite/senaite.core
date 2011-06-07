@@ -1,3 +1,8 @@
+"""
+    AnalysisRequests often use the same configurations.
+    ARProfile is used to save these common configurations (templates).
+"""
+
 from AccessControl import ClassSecurityInfo
 from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.Archetypes.public import *
@@ -76,7 +81,8 @@ class LabARProfile(BrowserDefaultMixin, BaseContent):
     schema = schema
     displayContentsTab = False
 
-    def Title(self): #XXX Please will I ever understand this?
+    def Title(self):
+        """ Return the profile title as title """
         return self.getProfileTitle()
 
 registerType(LabARProfile, PROJECTNAME)

@@ -5,6 +5,7 @@
       i18n:domain="plone">
   <head><title></title></head>
   <body>
+<!-- The view macro is untested altogether - this widget is used only for edit -->
     <metal:view_macro define-macro="view">
         <span id="serviceswidget"
               tal:define="categories python:widget.getCategories(field, allservices=False);">
