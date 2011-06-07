@@ -5,6 +5,15 @@
     i18n_domain="bika">
 
     <browser:viewlet
+        for="Products.bika.interfaces.IHaveNoByline"
+        name="plone.belowcontenttitle.documentbyline"
+        manager="plone.app.layout.viewlets.interfaces.IBelowContentTitle"
+        template="templates/blank.pt"
+        permission="zope2.View"
+        layer="Products.bika.interfaces.IBikaLIMSLayer"
+        />
+
+    <browser:viewlet
         for="Products.bika.interfaces.IClientFolder"
         name="plone.belowcontenttitle.documentbyline"
         manager="plone.app.layout.viewlets.interfaces.IBelowContentTitle"

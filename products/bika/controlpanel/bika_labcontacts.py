@@ -9,6 +9,7 @@ from Products.bika import bikaMessageFactory as _
 from Products.bika.content.bikaschema import BikaFolderSchema
 from Products.bika.content.labcontact import LabContact
 from plone.app.content.browser.interfaces import IFolderContentsView
+from Products.bika.interfaces import IHaveNoByline
 from plone.app.folder.folder import ATFolder, ATFolderSchema
 from Products.bika.interfaces.controlpanel import ILabContacts
 from zope.interface.declarations import implements
@@ -57,7 +58,7 @@ class LabContactsView(BikaListingView):
 
 schema = ATFolderSchema.copy()
 class LabContacts(ATFolder):
-    implements(ILabContacts)
+    implements(ILabContacts, IHaveNoByline)
     schema = schema
     displayContentsTab = False
 schemata.finalizeATCTSchema(schema, folderish = True, moveDiscussion = False)

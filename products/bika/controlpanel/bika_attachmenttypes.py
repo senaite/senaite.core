@@ -8,6 +8,7 @@ from Products.bika.browser.bika_listing import BikaListingView
 from Products.bika.config import PROJECTNAME
 from Products.bika import bikaMessageFactory as _
 from Products.bika.content.bikaschema import BikaFolderSchema
+from Products.bika.interfaces import IHaveNoByline
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.folder.folder import ATFolder, ATFolderSchema
 from Products.bika.interfaces.controlpanel import IAttachmentTypes
@@ -21,8 +22,8 @@ class AttachmentTypesView(BikaListingView):
     show_editable_border = False
     show_table_only = False
     show_sort_column = False
-    show_select_row = True
-    show_select_column = False
+    show_select_row = False
+    show_select_column = True
     batch = True
     pagesize = 20
 
@@ -48,7 +49,7 @@ class AttachmentTypesView(BikaListingView):
 
 schema = ATFolderSchema.copy()
 class AttachmentTypes(ATFolder):
-    implements(IAttachmentTypes)
+    implements(IAttachmentTypes, IHaveNoByline)
     schema = schema
     displayContentsTab = False
 schemata.finalizeATCTSchema(schema, folderish = True, moveDiscussion = False)

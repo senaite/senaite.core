@@ -8,6 +8,7 @@
 
 from zope.interface import Interface
 
+
 class IBikaSettings(Interface):
     ""
 

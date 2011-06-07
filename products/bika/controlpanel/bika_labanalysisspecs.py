@@ -9,6 +9,7 @@ from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.folder.folder import ATFolder, ATFolderSchema
 from Products.bika.interfaces.controlpanel import ILabAnalysisSpecs
 from zope.interface.declarations import implements
+from Products.bika.interfaces import IHaveNoByline
 
 #XXX multiple additions in one add_form.
 
@@ -21,8 +22,8 @@ class LabAnalysisSpecsView(BikaListingView):
     show_editable_border = False
     show_table_only = False
     show_sort_column = False
-    show_select_row = True
-    show_select_column = False
+    show_select_row = False
+    show_select_column = True
     batch = True
     pagesize = 20
 
@@ -55,7 +56,7 @@ class LabAnalysisSpecsView(BikaListingView):
 
 schema = ATFolderSchema.copy()
 class LabAnalysisSpecs(ATFolder):
-    implements(ILabAnalysisSpecs)
+    implements(ILabAnalysisSpecs, IHaveNoByline)
     schema = schema
     displayContentsTab = False
 schemata.finalizeATCTSchema(schema, folderish = True, moveDiscussion = False)

@@ -8,6 +8,7 @@ from Products.bika import bikaMessageFactory as _
 from Products.bika.content.bikaschema import BikaFolderSchema
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.folder.folder import ATFolder, ATFolderSchema
+from Products.bika.interfaces import IHaveNoByline
 from Products.bika.interfaces.controlpanel import IAnalysisServices
 from zope.interface.declarations import implements
 
@@ -19,8 +20,8 @@ class AnalysisServicesView(BikaListingView):
     show_editable_border = False
     show_table_only = False
     show_sort_column = False
-    show_select_row = True
-    show_select_column = False
+    show_select_row = False
+    show_select_column = True
     batch = True
     pagesize = 20
 
@@ -77,7 +78,7 @@ class AnalysisServicesView(BikaListingView):
 
 schema = ATFolderSchema.copy()
 class AnalysisServices(ATFolder):
-    implements(IAnalysisServices)
+    implements(IAnalysisServices, IHaveNoByline)
     schema = schema
     displayContentsTab = False
 schemata.finalizeATCTSchema(schema, folderish = True, moveDiscussion = False)

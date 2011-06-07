@@ -14,12 +14,13 @@ class IClient(Interface):
     """Client marker interface"""
 
 class IAnalysisRequest(Interface):
-    """
-    """
+    """Analysis Request marker interface"""
 
 class ISample(Interface):
-    """
-    """
+    """Sample marker interface"""
+
+class IHaveNoByline(Interface):
+    """Items which do not have a byline"""
 
 class IIdServer(Interface):
     """ Interface for ID server """

@@ -9,6 +9,7 @@ from Products.bika.content.bikaschema import BikaFolderSchema
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.folder.folder import ATFolder, ATFolderSchema
 from Products.bika.interfaces.controlpanel import ILabARProfiles
+from Products.bika.interfaces import IHaveNoByline
 from zope.interface.declarations import implements
 
 class LabARProfilesView(BikaListingView):
@@ -20,8 +21,8 @@ class LabARProfilesView(BikaListingView):
     show_editable_border = False
     show_table_only = False
     show_sort_column = False
-    show_select_row = True
-    show_select_column = False
+    show_select_row = False
+    show_select_column = True
     batch = True
     pagesize = 20
 
@@ -52,7 +53,7 @@ class LabARProfilesView(BikaListingView):
 
 schema = ATFolderSchema.copy()
 class LabARProfiles(ATFolder):
-    implements(ILabARProfiles)
+    implements(ILabARProfiles, IHaveNoByline)
     schema = schema
     displayContentsTab = False
 schemata.finalizeATCTSchema(schema, folderish = True, moveDiscussion = False)

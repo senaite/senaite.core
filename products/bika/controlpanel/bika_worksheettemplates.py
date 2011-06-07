@@ -7,6 +7,7 @@ from Products.Five.browser import BrowserView
 from Products.bika.browser.bika_listing import BikaListingView
 from Products.bika.config import PROJECTNAME
 from Products.bika import bikaMessageFactory as _
+from Products.bika.interfaces import IHaveNoByline
 from Products.bika.content.bikaschema import BikaFolderSchema
 from ZODB.POSException import ConflictError
 from plone.app.content.browser.interfaces import IFolderContentsView
@@ -23,8 +24,8 @@ class WorksheetTemplatesView(BikaListingView):
     show_editable_border = False
     show_table_only = False
     show_sort_column = False
-    show_select_row = True
-    show_select_column = False
+    show_select_row = False
+    show_select_column = True
     batch = True
     pagesize = 20
 
@@ -52,7 +53,7 @@ class WorksheetTemplatesView(BikaListingView):
 
 schema = ATFolderSchema.copy()
 class WorksheetTemplates(ATFolder):
-    implements(IWorksheetTemplates)
+    implements(IWorksheetTemplates, IHaveNoByline)
     schema = schema
     displayContentsTab = False
 schemata.finalizeATCTSchema(schema, folderish = True, moveDiscussion = False)

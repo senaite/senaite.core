@@ -12,6 +12,7 @@ from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.folder.folder import ATFolder, ATFolderSchema
 from Products.bika.interfaces.controlpanel import ILabProducts
 from zope.interface.declarations import implements
+from Products.bika.interfaces import IHaveNoByline
 
 class LabProductsView(BikaListingView):
     implements(IFolderContentsView)
@@ -22,8 +23,8 @@ class LabProductsView(BikaListingView):
     show_editable_border = False
     show_table_only = False
     show_sort_column = False
-    show_select_row = True
-    show_select_column = False
+    show_select_row = False
+    show_select_column = True
     batch = True
     pagesize = 20
 
@@ -59,7 +60,7 @@ class LabProductsView(BikaListingView):
 
 schema = ATFolderSchema.copy()
 class LabProducts(ATFolder):
-    implements(ILabProducts)
+    implements(ILabProducts, IHaveNoByline)
     schema = schema
     displayContentsTab = False
 schemata.finalizeATCTSchema(schema, folderish = True, moveDiscussion = False)
