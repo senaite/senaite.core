@@ -109,6 +109,16 @@ div.position-1\3a 4 {margin-left:    -81.5%;} /* .position-1:4 */
 
 
 
+fieldset.attachments {
+    color: &dtml-linkColor;;
+    font-weight:bold;
+    cursor: pointer;
+    padding: 0 1em 0 1em;
+    margin: 0;
+}
+
+
+
 
 
 /*
@@ -194,7 +204,7 @@ div.position-1\3a 4 {margin-left:    -81.5%;} /* .position-1:4 */
 
 .analysisrequest .unit {
 	font-size:80%;
-	color: #ccc;
+	color: #555;
 }
 
 .delAttachmentButton {

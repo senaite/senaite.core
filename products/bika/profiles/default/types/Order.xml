@@ -12,7 +12,7 @@
   def getSchema():
   return some schema definition...
   </property>
- <property name="icon_expr">string:${portal_url}/order.png</property>
+ <property name="icon_expr">string:${portal_url}/images/order.png</property>
  <property name="content_meta_type">Order</property>
  <property name="product">bika</property>
  <property name="factory">addOrder</property>

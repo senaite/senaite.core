@@ -298,15 +298,29 @@ class ClientAnalysisSpecsView(BikaListingView):
     contentFilter = {'portal_type': 'AnalysisSpec'}
     content_add_buttons = {_('Analysis Spec'): "createObject?type_name=AnalysisSpec"}
     show_editable_border = True
+    show_table_only = False
+    show_sort_column = False
+    show_select_row = False
+    show_select_column = True
     batch = True
-    b_size = 100
+    pagesize = 20
+
     columns = {
            'getSampleType': {'title': _('Sample  Type')},
           }
     review_states = [
-                {'title': _('All'), 'id':'all',
-                 'columns': ['getSampleType']},
-                ]
+                     {'title': _('All'), 'id':'all',
+                      'columns': ['getSampleType'],
+                      'buttons':[{'cssclass': 'context',
+                                  'title': _('Delete'),
+                                  'url': 'folder_delete:method'},
+                                 {'cssclass':'context',
+                                  'title': _('Duplicate'),
+                                  'url': 'duplicate_analysisspec:method',
+                                 }
+                                ],
+                     },
+                    ]
 
     def __init__(self, context, request):
         super(ClientAnalysisSpecsView, self).__init__(context, request)
@@ -317,9 +331,13 @@ class ClientAnalysisSpecsView(BikaListingView):
         items = BikaListingView.folderitems(self)
         for x in range(len(items)):
             if not items[x].has_key('brain'): continue
-            items[x]['links'] = {'getSampleType': items[x]['url']}
+            obj = items[x]['brain'].getObject()
+            items[x]['getSampleType'] = obj.getSampleType() and obj.getSampleType().Title()
+            items[x]['links'] = {'getSampleType': items[x]['url'] + "/edit"}
 
         return items
+
+
 
 class ClientAttachmentsView(BikaListingView):
     implements(IFolderContentsView)

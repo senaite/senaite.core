@@ -5,9 +5,9 @@
 <body>
 
 <div metal:define-macro="attachments">
-  <fieldset>
+  <fieldset class="attachments">
     <legend i18n:translate="legend_attachments">Attachments</legend>
-    <table class="attachments">
+    <table class="attachments" style="display:none">
       <tr>
         <td>
           <span i18n:translate="label_attachments">Attachments</span>:
@@ -20,6 +20,14 @@
       </tr>
     </table>
   </fieldset>
+<script type="text/javascript">
+//<!--
+jQuery( function($) {
+    $('fieldset.attachments').click(function(){
+        $('table.attachments').toggle();
+    });
+});
+//-->
 </div>
 
 <div metal:define-macro="ws_attachments">
@@ -212,9 +220,9 @@
 <div metal:define-macro="ws_attachments_update">
 <form action="." method="post" name="add_attachment"
     enctype="multipart/form-data">
-<fieldset>
+<fieldset class="attachments">
 <legend i18n:translate="legend_attachments">Attachments</legend>
-<table>
+<table class="attachments" style="display:none">
 <tr>
 <td colspan="3">
 <input type="file" name="AttachmentFile_file" id="AttachFile" size="30"

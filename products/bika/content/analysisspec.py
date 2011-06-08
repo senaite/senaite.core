@@ -33,6 +33,12 @@ schema = BikaSchema.copy() + Schema((
     ),
     SpecField('ResultsRange',
         required = 1,
+        widget = SpecWidget(
+            checkbox_bound = 1,
+            label = 'Results Range',
+            label_msgid = 'label_resultsrange',
+            i18n_domain = I18N_DOMAIN,
+        ),
     ),
     ComputedField('ClientUID',
         index = 'FieldIndex',
@@ -117,6 +123,5 @@ class AnalysisSpec(VariableSchemaSupport, BrowserDefaultMixin, BaseFolder):
                 sorted_specs.append(services[service_key])
 
         return sorted_specs
-
 
 atapi.registerType(AnalysisSpec, PROJECTNAME)

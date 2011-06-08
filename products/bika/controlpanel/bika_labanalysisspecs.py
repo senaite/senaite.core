@@ -28,17 +28,17 @@ class LabAnalysisSpecsView(BikaListingView):
     pagesize = 20
 
     columns = {
-               'SampleType': {'title': _('SampleType')},
+               'getSampleType': {'title': _('Sample Type')},
               }
     review_states = [
                      {'title': _('All'), 'id':'all',
-                      'columns': ['SampleType'],
+                      'columns': ['getSampleType'],
                       'buttons':[{'cssclass': 'context',
                                   'title': _('Delete'),
                                   'url': 'folder_delete:method'},
                                  {'cssclass':'context',
                                   'title': _('Duplicate'),
-                                  'url': 'duplicate_labanalysisspec:method', # XXX Duplicate LabAnalysisSpec
+                                  'url': 'duplicate_labanalysisspec:method',
                                  }
                                 ],
                      },
@@ -49,8 +49,8 @@ class LabAnalysisSpecsView(BikaListingView):
         for x in range(len(items)):
             if not items[x].has_key('brain'): continue
             obj = items[x]['brain'].getObject()
-            items[x]['SampleType'] = obj.getSampleType() and obj.getSampleType().Title()
-            items[x]['links'] = {'SampleType': items[x]['url'] + "/edit"}
+            items[x]['getSampleType'] = obj.getSampleType() and obj.getSampleType().Title()
+            items[x]['links'] = {'getSampleType': items[x]['url'] + "/edit"}
 
         return items
 
