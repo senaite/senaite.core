@@ -21,7 +21,7 @@
         types context/getAnalysisTypes;
         num_positions request/NoOfPositions | python:0; 
         num_positions python:int(num_positions);
-        current_rows context/getRow;
+        current_rows field/getRow;
         display_rows python:widget.get_template_rows(num_positions, current_rows);
         analyses python:[s.UID() for s in context.getService()]">
 
@@ -50,11 +50,10 @@
 
         <tr tal:repeat="row display_rows">
           <tal:type tal:define="type row/type">
-
-            <td tal:content="row/type">1</td>
-
+            <td><span tal:content="row/pos"/>
+                <input type="hidden" tal:attributes="value: row/pos" name="Row.pos:records:ignore_empty"/></td>
             <td>
-              <select name="Type" class="analysis_type" tal:attributes="pos row/pos;">
+              <select name="Row.type:records:ignore_empty" class="analysis_type" tal:attributes="pos row/pos;">
                   <tal:item 
                     tal:define="vocab types"
                     tal:repeat="item vocab">
@@ -69,23 +68,23 @@
             </td>
 
             <td>
-            <div id="">
-                <select name="SubtypeSST" 
-                        tal:attributes="class string:sst_${row/pos};
-                                        style python:row['type'] in ('b','c') and '' or 'display:none'"> 
-                <tal:item tal:repeat="sst standardstocks">
-                <option selected="selected"
-                    tal:define="
-                            sst_uid sst/UID;
-                            this_selected python:sst_uid == row['sub']"
-                    tal:attributes="
-                            value sst_uid;
-                            selected this_selected"
-                    tal:content="sst/Title"></option>
-                </tal:item>
-            
-                </select>
-            </div>
+                <div id="">
+                    <select name="Row.sub:records:ignore_empty" 
+                            tal:attributes="class string:sst_${row/pos};
+                                            style python:row['type'] in ('b','c') and '' or 'display:none'"> 
+                    <tal:item tal:repeat="sst standardstocks">
+                    <option selected="selected"
+                        tal:define="
+                                sst_uid sst/UID;
+                                this_selected python:sst_uid == row['sub']"
+                        tal:attributes="
+                                value sst_uid;
+                                selected this_selected"
+                        tal:content="sst/Title"></option>
+                    </tal:item>
+    
+                    </select>
+                </div>
             </td>
             <td>
                 <div id="" tal:define="num_rows repeat/row/length">    
@@ -111,5 +110,3 @@
   </metal:edit_macro>
 </body>
 </html>
-
-
