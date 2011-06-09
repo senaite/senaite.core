@@ -7,11 +7,12 @@ class TemplatePositionField(RecordsField):
     _properties = RecordsField._properties.copy()
     _properties.update({
         'type' : 'templateposition',
-        'subfields' : ('pos', 'type', 'sub'),
+        'subfields' : ('pos', 'type', 'sub', 'dup'),
         'required_subfields' : ('pos', 'type'),
         'subfield_labels':{'pos': 'Position',
                            'type': 'Type',
-                           'sub': 'Subtype'},
+                           'sub': 'Subtype',
+                           'dup': 'Duplicate Of'},
         })
     security = ClassSecurityInfo()
 

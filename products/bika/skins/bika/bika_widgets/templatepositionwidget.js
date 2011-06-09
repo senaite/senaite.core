@@ -1,4 +1,5 @@
-jQuery(function($){$(document).ready(function(){
+jQuery(function($){
+$(document).ready(function(){
 
 	$(".analysis_type").change(function(){
 		pos = $(this).attr('pos');
@@ -14,5 +15,6 @@ jQuery(function($){$(document).ready(function(){
 			$(".dup_" + pos).toggle(false);
 		}
 	});
-
-});});
+	
+});
+});

@@ -20,7 +20,6 @@ class TemplatePositionWidget(RecordsWidget):
 
     security.declarePublic('get_template_rows')
     def get_template_rows(self, num_positions, template_rows):
-        print template_rows
         try:
             num_pos = int(num_positions)
         except ValueError:

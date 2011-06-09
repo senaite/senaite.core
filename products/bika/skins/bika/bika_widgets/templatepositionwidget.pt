@@ -25,20 +25,19 @@
         display_rows python:widget.get_template_rows(num_positions, current_rows);
         analyses python:[s.UID() for s in context.getService()]">
 
-      <div class="field">
+       <label i18n:translate="label_numpositions">Number of Positions</label>
+       <input name="NoOfPositions" 
+              size="3" 
+              value=""
+              tal:attributes="value request/NoOfPositions | python:len(display_rows)"/>
+       <input type="submit" name="form.button.more"
+              class="context" 
+              i18n:attributes="value"
+              value="Reset" />
 
-         <label i18n:translate="label_numpositions">Number of Positions</label>
-         <input name="NoOfPositions" size="3" value=""
-                tal:attributes="value request/NoOfPositions | python:len(display_rows)"/> &nbsp
-         <input type="submit" name="form.button.more"
-                class="context" 
-                i18n:attributes="value"
-                value="Reset" />
-      </div>
       <table
             summary="Worksheet template form"
             class="analysisrequest"
-            style="margin-top:0;"
             cellpadding="0" cellspacing="0">
 
         <tr>
@@ -49,30 +48,38 @@
         </tr>
 
         <tr tal:repeat="row display_rows">
-          <tal:type tal:define="type row/type">
-            <td><span tal:content="row/pos"/>
-                <input type="hidden" tal:attributes="value: row/pos" name="Row.pos:records:ignore_empty"/></td>
-            <td>
-              <select name="Row.type:records:ignore_empty" class="analysis_type" tal:attributes="pos row/pos;">
-                  <tal:item 
-                    tal:define="vocab types"
-                    tal:repeat="item vocab">
-                    <option selected="selected"
-                      tal:define="this_selected python:item == type"
-                      tal:attributes="
-                              value item;
-                              selected this_selected"
-                      tal:content="python:context.translate(item, default=vocab.getValue(item))"></option>
-                  </tal:item>
-              </select>
-            </td>
 
-            <td>
-                <div id="">
-                    <select name="Row.sub:records:ignore_empty" 
-                            tal:attributes="class string:sst_${row/pos};
-                                            style python:row['type'] in ('b','c') and '' or 'display:none'"> 
-                    <tal:item tal:repeat="sst standardstocks">
+          <td>
+            <span tal:content="row/pos"/>
+            <input  type="hidden" 
+                    tal:attributes="value row/pos" 
+                    name="Row.pos:records:ignore_empty"/>
+          </td>
+
+          <td>
+            <select   name="Row.type:records:ignore_empty" 
+                      class="analysis_type" 
+                      tal:attributes="pos row/pos;">
+              <tal:item
+                tal:define="vocab types"
+                tal:repeat="item vocab">
+                <tal:selected_type 
+                    tal:condition="python:item == row['type']"
+                    tal:define="global selected_type row/type"/>
+                <option selected="selected"
+                  tal:define="this_selected python:item == row['type']"
+                  tal:attributes="
+                          value item;
+                          selected this_selected"
+                  tal:content="python:context.translate(item, default=vocab.getValue(item))"></option>
+              </tal:item>
+            </select>
+          </td>
+
+          <td>
+            <select name="Row.sub:records:ignore_empty"
+                    tal:attributes="style python: selected_type in ['a','d'] and 'display:none;;' or 'display:inline;;'">
+                <tal:item tal:repeat="sst standardstocks">
                     <option selected="selected"
                         tal:define="
                                 sst_uid sst/UID;
@@ -81,27 +88,27 @@
                                 value sst_uid;
                                 selected this_selected"
                         tal:content="sst/Title"></option>
+                </tal:item>
+            </select>
+          </td>
+
+          <td>
+            <div id="" tal:define="num_rows repeat/row/length">    
+                <select name="Row.dup:records:ignore_empty" 
+                        tal:attributes="style python: selected_type == 'd' and 'display:inline;;' or 'display:none;;';
+                                        class string:dup_${row/pos};"> 
+                    <tal:item tal:repeat="i python:range(1,(num_rows+1))">
+                        <option selected="selected"
+                            tal:condition="python:i <> repeat['row'].number()"
+                            tal:define="this_selected python:str(i) == row['sub']"
+                            tal:attributes="value i; selected this_selected"
+                            tal:content="i"></option>
                     </tal:item>
-    
-                    </select>
-                </div>
-            </td>
-            <td>
-                <div id="" tal:define="num_rows repeat/row/length">    
-                    <select name="SubtypeDup" 
-                            style="display:none"
-                            tal:attributes="class string:dup_${row/pos};"> 
-                        <tal:item tal:repeat="i python:range(1,(num_rows+1))">
-                            <option selected="selected"
-                                tal:condition="python:i <> repeat['row'].number()"
-                                tal:define="this_selected python:str(i) == row['sub']"
-                                tal:attributes="value i; selected this_selected"
-                                tal:content="i"></option>
-                        </tal:item>
-                    </select>
-                </div>
-            </td>
-          </tal:type>
+                </select>
+            </div>
+          </td>
+
+          <tal:selected_type tal:define="global selected_type string:a"/>
         </tr>
       </table>
 
