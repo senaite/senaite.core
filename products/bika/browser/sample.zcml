@@ -19,5 +19,12 @@
       permission="zope.Public"
       layer="Products.bika.interfaces.IBikaLIMSLayer"
     />
+    
+    <browser:resource
+      name="sample.js"
+      file="sample.js"
+      layer="Products.bika.interfaces.IBikaLIMSLayer"
+    />
+
 
 </configure>

@@ -15,16 +15,6 @@ class SampleViewView(BrowserView):
     def __call__(self):
         return self.template()
 
-    def tabindex(self):
-        i = 0
-        while True:
-            i += 1
-            yield i
-
-    def now(self):
-        return DateTime()
-
-
 
 class SampleEditView(BrowserView):
     """ Sample Edit form
@@ -41,6 +31,8 @@ class SampleEditView(BrowserView):
             i += 1
             yield i
 
-    def now(self):
-        return DateTime()
+    def fmtDateSampled(self):
+        date_sampled = self.request.form.has_key("DateSampled") and self.request.form["DateSampled"] or self.context.getDateSampled().strftime("%Y-%m-%d")
+        return date_sampled
+
 

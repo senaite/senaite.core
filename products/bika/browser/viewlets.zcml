@@ -40,5 +40,4 @@
         layer="Products.bika.interfaces.IBikaLIMSLayer"
         />
 
-
 </configure>

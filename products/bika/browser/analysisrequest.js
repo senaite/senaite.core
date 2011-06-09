@@ -439,7 +439,7 @@ jQuery( function($) {
 	}
 	
 	$(document).ready(function(){
-		$('input[id$="_DateSampled"]').datepicker({'dateFormat': 'yy-mm-dd'});
+		$('input[id$="_DateSampled"]').datepicker({'dateFormat': 'yy-mm-dd', showAnim: ''});
 		$(".sampletype").autocomplete({ minLength: 0, source: autocomplete_sampletype});
 		$(".samplepoint").autocomplete({ minLength: 0, source: autocomplete_samplepoint});
 		$("select[class='ARProfile']").change(setARProfile);
