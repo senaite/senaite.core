@@ -42,7 +42,7 @@
 <tr>
 <th id="" i18n:translate="label_clientreference">Client Reference</th>
 <td align="center">
-<input size="10" name="ClientReference"
+<input size="10" name="ClientReference" id="ClientReference"
     tal:attributes="
         value request/ClientReference | here/getClientReference;
         tabindex tabindex/next;"/>
@@ -111,7 +111,7 @@
 <th id="" i18n:translate="label_datesampled">Date sampled</th>
 <td align="center">
 	
-    <input size="10" type='text'
+    <input size="10" type='text' readonly="readonly"
         tal:attributes="
             tabindex tabindex/next;
             id string:DateSampled;
