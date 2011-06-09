@@ -27,7 +27,7 @@
  <alias from="view" to="(selected layout)"/>
  <alias from="index.html" to="(dynamic view)"/>
  <action title="View" action_id="view" category="object" condition_expr=""
-    icon_expr="" link_target="" url_expr="string:${portal_url}/bika_settings/bika_worksheetemplates"
+    icon_expr="" link_target="" url_expr="string:${portal_url}/bika_settings/bika_worksheettemplates"
     visible="True">
   <permission value="View"/>
  </action>

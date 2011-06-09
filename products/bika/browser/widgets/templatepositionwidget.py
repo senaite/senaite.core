@@ -8,12 +8,12 @@ from Products.Archetypes.utils import shasattr, DisplayList
 from Products.CMFCore.utils import getToolByName
 from archetypes.referencebrowserwidget import utils
 
-class WSTemplateAnalysesWidget(RecordsWidget):
+class TemplatePositionWidget(RecordsWidget):
     _properties = TypesWidget._properties.copy()
     _properties.update({
-        'macro': "bika_widgets/wstemplateanalyseswidget",
-        'helper_js': ("bika_widgets/wstemplateanalyseswidget.js", "jquery-tablednd.js"),
-        'helper_css': ("bika_widgets/wstemplateanalyseswidget.css",),
+        'macro': "bika_widgets/templatepositionwidget",
+        'helper_js': ("bika_widgets/templatepositionwidget.js",),
+        'helper_css': ("bika_widgets/templatepositionwidget.css",),
     })
 
     security = ClassSecurityInfo()
@@ -30,6 +30,34 @@ class WSTemplateAnalysesWidget(RecordsWidget):
             return empty_marker
         return value, {}
 
+    security.declarePublic('get_template_rows')
+    def get_template_rows(self, num_positions, template_rows):
+        print "---------------------------------------", num_positions, template_rows
+        try:
+            num_pos = int(num_positions)
+        except ValueError:
+            num_pos = 0
+        rows = []
+        i = 1
+        if template_rows:
+            for t_row in template_rows:
+                if num_pos > 0:
+                    if i > num_pos:
+                        break
+                rows.append(t_row)
+                i = i + 1
+        else:
+            if num_pos == 0:
+                num_pos = 10
+        for i in range(i, (num_pos + 1)):
+            row = {
+                'pos': i,
+                'type': 'a',
+                'sub': 1}
+            rows.append(row)
+
+        return rows
+
     security.declarePublic('getAnalyses')
     def getAnalyses(self, field):
         """
@@ -40,10 +68,10 @@ class WSTemplateAnalysesWidget(RecordsWidget):
             rows.append(row)
         return rows
 
-registerWidget(WSTemplateAnalysesWidget,
-               title = 'WS Template Analyses',
+registerWidget(TemplatePositionWidget,
+               title = 'WS Template Analyses Layout',
                description = ('Worksheet analyses layout.'),
-               used_for = ('Products.bika.browser.fields.WSTemplateAnalysesField',)
+               used_for = ('Products.bika.browser.fields.TemplatePositionField',)
                )
 
 #registerPropertyType('default_search_index', 'string', AnalysisSpecsWidget)

@@ -760,6 +760,13 @@ class AnalysisRequestManageResultsView(AnalysisRequestViewView):
 
         return actions.values()
 
+class AnalysisRequestManageResultsNotRequestedView(AnalysisRequestManageResultsView):
+    template = ViewPageTemplateFile("templates/analysisrequest_analyses_not_requested.pt")
+
+    def __call__(self):
+        return self.template()
+
+
 class AnalysisRequestContactCCs(BrowserView):
     """ Returns lists of UID/Title for preconfigured CC contacts 
         When a client contact is selected from the #contact dropdown,
@@ -1159,9 +1166,6 @@ def analysisrequest_add_submit(context, request):
              )
 
         ar.setAnalyses(['%s:%s' % (a, prices[a]) for a in Analyses])
-
-        import pdb
-        pdb.set_trace()
 
         if (values.has_key('profileTitle')):
             profile_id = context.generateUniqueId('ARProfile')

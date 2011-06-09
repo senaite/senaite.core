@@ -5,6 +5,7 @@
     i18n_domain="bika">
 
     <include file="analysisrequest.zcml"/>
+    <include file="worksheet.zcml"/>
     <include file="sample.zcml"/>
     <include file="viewlets.zcml"/>
     <include package=".widgets"/>

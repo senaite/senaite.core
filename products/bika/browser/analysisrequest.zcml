@@ -37,6 +37,14 @@
     />
 
     <browser:page
+      for="Products.bika.interfaces.IAnalysisRequest"
+      name="analysisrequest_analyses_not_requested"
+      class="Products.bika.browser.analysisrequest.AnalysisRequestManageResultsView"
+      permission="zope.Public"
+      layer="Products.bika.interfaces.IBikaLIMSLayer"
+    />
+
+    <browser:page
       for="*"
       name="analysisrequest_analysisservices"
       class="Products.bika.browser.analysisrequest.AnalysisRequest_AnalysisServices"

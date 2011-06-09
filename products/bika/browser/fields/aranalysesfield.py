@@ -5,26 +5,21 @@ from Products.Archetypes.public import *
 from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.Archetypes.utils import shasattr
 from Products.Archetypes.Registry import registerField
-from Products.bika.browser.widgets import AnalysesWidget
 from decimal import Decimal
 
 class ARAnalysesField(ObjectField):
 
     """A field that stores Analyses instances
 
-    get() returns the list of Analyses contained inside the AnalysesRequest 
-    set() converts a sequence of dictionaries to Analysis instances
-    created inside the AnalysisRequest.
     """
 
     _properties = Field._properties.copy()
     _properties.update({
         'type' : 'analyses',
         'default' : None,
-        'widget' : AnalysesWidget,
         })
 
-    security  = ClassSecurityInfo()
+    security = ClassSecurityInfo()
 
     security.declarePrivate('get')
     def get(self, instance, **kwargs):
@@ -88,24 +83,24 @@ class ARAnalysesField(ObjectField):
             calc_code = calc_codes[uid]
             if not shasattr(instance, service.id):
                 instance.invokeFactory(
-                    id=service.id, type_name='Analysis')
+                    id = service.id, type_name = 'Analysis')
             analysis = instance._getOb(service.id)
             ar_report_dm = analysis.aq_parent.getReportDryMatter()
             vat = service.getVAT()
-            vat = vat and Decimal(vat,2) or Decimal('0.00')
-            totalprice = price + (price * vat)/100
+            vat = vat and Decimal(vat, 2) or Decimal('0.00')
+            totalprice = price + (price * vat) / 100
 
             # Using getRaw method on field rather than generated
             # accessor to prevent object lookup
             if analysis.Schema()['Service'].getRaw(analysis) is None:
                 analysis.edit(
-                    Service=service,
-                    CalcType=calc_code,
-                    AnalysisKey=service.getAnalysisKey(),
-                    Price=str(price),
-                    VAT=str(vat),
-                    TotalPrice=str(totalprice),
-                    Unit=service.getUnit(),
+                    Service = service,
+                    CalcType = calc_code,
+                    AnalysisKey = service.getAnalysisKey(),
+                    Price = str(price),
+                    VAT = str(vat),
+                    TotalPrice = str(totalprice),
+                    Unit = service.getUnit(),
                 )
             else:
                 # the price or unit of an existing analysis may have changed
@@ -113,18 +108,18 @@ class ARAnalysesField(ObjectField):
                    (analysis.getUnit() != service.getUnit()) or \
                    (analysis.getCalcType() != calc_code):
                     analysis.edit(
-                        CalcType=calc_code,
-                        AnalysisKey=service.getAnalysisKey(),
-                        Price=str(price),
-                        VAT=service.getVAT(),
-                        TotalPrice=str(totalprice),
-                        Unit=service.getUnit(),
+                        CalcType = calc_code,
+                        AnalysisKey = service.getAnalysisKey(),
+                        Price = str(price),
+                        VAT = service.getVAT(),
+                        TotalPrice = str(totalprice),
+                        Unit = service.getUnit(),
                     )
             if analysis.getCalcType() == 'dep':
                 parents[service.getAnalysisKey()] = analysis
-            if service.getAnalysisKey() in all_dependant_calcs: 
+            if service.getAnalysisKey() in all_dependant_calcs:
                 children[service.getAnalysisKey()] = analysis.UID()
-            if service.getAnalysisKey() in all_dependant_calcs: 
+            if service.getAnalysisKey() in all_dependant_calcs:
                 analysis._affects_other_analysis = True
             else:
                 analysis._affects_other_analysis = False
@@ -141,7 +136,7 @@ class ARAnalysesField(ObjectField):
                 wf_tool.doActionFor(analysis, 'receive')
 
         # set up the dependancies
-        
+
         if all_dependant_calcs:
             instance._has_dependant_calcs = True
         else:
@@ -162,16 +157,16 @@ class ARAnalysesField(ObjectField):
             service_uid = analysis.Schema()['Service'].getRaw(analysis)
             if service_uid not in keep_ids:
                 delete_ids.append(analysis.getId())
-        instance.manage_delObjects(ids=delete_ids)
+        instance.manage_delObjects(ids = delete_ids)
 
 
     security.declarePublic('Vocabulary')
-    def Vocabulary(self, content_instance=None):
+    def Vocabulary(self, content_instance = None):
         """ Create a vocabulary from analysis services
         """
         vocab = []
         for service in self.Services():
-            vocab.append( (service.UID(), service.Title() ) )
+            vocab.append((service.UID(), service.Title()))
         return vocab
 
     security.declarePublic('Vocabulary')
@@ -181,12 +176,12 @@ class ARAnalysesField(ObjectField):
         if not shasattr(self, '_v_services'):
             self._v_services = [service.getObject() \
                 for service in self.portal_catalog(
-                portal_type='AnalysisService')]
+                portal_type = 'AnalysisService')]
         return self._v_services
 
 
 registerField(ARAnalysesField,
-              title='Analyses',
-              description=('Used for Analysis instances')
+              title = 'Analyses',
+              description = ('Used for Analysis instances')
               )
 

@@ -10,8 +10,9 @@ from Products.bika.config import I18N_DOMAIN, INSTRUMENT_EXPORTS, PROJECTNAME
 from Products.bika.config import AssignAnalyses, DeleteAnalyses, \
     SubmitResults, ManageWorksheets, ManageBika
 from Products.ATExtensions.ateapi import RecordsField
-from Products.CMFDynamicViewFTI.browserdefault import \
-    BrowserDefaultMixin
+from Products.CMFDynamicViewFTI.browserdefault import BrowserDefaultMixin
+from zope.interface import implements
+from Products.bika.interfaces import IWorksheet
 from Products.bika.CustomFields import WorksheetAnalysesField
 
 schema = BikaSchema.copy() + Schema((
@@ -107,54 +108,9 @@ TitleField.widget.visible = {'edit': 'hidden', 'view': 'invisible'}
 
 class Worksheet(BrowserDefaultMixin, BaseFolder):
     security = ClassSecurityInfo()
+    implements(IWorksheet)
     archetype_name = 'Worksheet'
     schema = schema
-    allowed_content_types = ('DuplicateAnalysis', 'RejectAnalysis')
-    default_view = 'worksheet_analyses'
-    immediate_view = 'worksheet_analyses'
-    content_icon = 'worksheet.png'
-    global_allow = 0
-    filter_content_types = 1
-    use_folder_tabs = 0
-
-    actions = (
-        {'id': 'edit',
-         'name': 'Edit',
-         'action': 'string:${object_url}/worksheet_edit',
-         'permissions': (ListFolderContents,),
-        },
-        # redefine view action to ensure redirects end up on the
-        # analyses page
-        {'id': 'view',
-         'name': 'View',
-         'action': 'string:${object_url}/worksheet_analyses',
-         'permissions': (ListFolderContents,),
-        },
-        {'id': 'analyses',
-         'name': 'Analyses',
-         'action': 'string:${object_url}/worksheet_analyses',
-         'permissions': (ListFolderContents,),
-        },
-        {'id': 'log',
-         'name': 'Log',
-         'action': 'string:${object_url}/status_log',
-         'permissions': (ManageBika,),
-        },
-
-        # folder buttons
-        {'id': 'delete_analyses',
-         'name': 'Delete',
-         'action': 'string:deleteAnalyses:method',
-         'permissions': (DeleteAnalyses,),
-         'category': 'folder_buttons',
-        },
-        {'id': 'submit_results',
-         'name': 'Submit',
-         'action': 'string:submitResults:method',
-         'permissions': (SubmitResults,),
-         'category': 'folder_buttons',
-        },
-    )
 
     def Title(self):
         """ Return the Number as title """
@@ -1216,11 +1172,11 @@ class Worksheet(BrowserDefaultMixin, BaseFolder):
         pairs = [(' ', ' '), ]
         analysers = mtool.searchForMembers(roles = ['LabManager', 'LabTechnician'])
         for member in analysers:
-           uid = member.getId()
-           fullname = member.getProperty('fullname')
-           if fullname is None:
+            uid = member.getId()
+            fullname = member.getProperty('fullname')
+            if fullname is None:
                 fullname = uid
-           pairs.append((uid, fullname))
+            pairs.append((uid, fullname))
         return DisplayList(pairs)
 
     # find the name of the person who performed the analysis
@@ -1240,10 +1196,3 @@ class Worksheet(BrowserDefaultMixin, BaseFolder):
         return fullname
 
 registerType(Worksheet, PROJECTNAME)
-
-def modify_fti(fti):
-    for a in fti['actions']:
-        if a['id'] in ('view', 'edit', 'syndication', 'references', 'metadata',
-                       'localroles'):
-            a['visible'] = 0
-    return fti

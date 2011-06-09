@@ -635,7 +635,6 @@ jQuery( function($) {
 					"</ul></dd></dl>";
 					$('.portalMessage').remove();
 					$(str).appendTo('#viewlet-above-content');
-					$(str).appendTo('#viewlet-below-content');
 		}
 
 		// AR Add/Edit ajax form submits
@@ -668,6 +667,7 @@ jQuery( function($) {
 					};
 					portalMessage(msg);
 				}
+				window.scroll(0,0);
 			},
 			error: function(XMLHttpRequest, statusText, errorThrown) {
 				portalMessage(statusText);

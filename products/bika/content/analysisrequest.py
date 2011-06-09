@@ -20,7 +20,6 @@ from Products.CMFCore.utils import getToolByName
 from Products.CMFDynamicViewFTI.browserdefault import BrowserDefaultMixin
 from Products.CMFPlone.utils import transaction_note
 from Products.bika.browser.fields import ARAnalysesField
-from Products.bika.browser.widgets import AnalysesWidget
 from Products.bika.interfaces import IAnalysisRequest
 from Products.bika.config import I18N_DOMAIN, SubmitResults, PROJECTNAME, \
     ManageInvoices
@@ -87,10 +86,6 @@ schema = BikaSchema.copy() + Schema((
     ),
     ARAnalysesField('Analyses',
         required = 1,
-        widget = AnalysesWidget(
-            label = 'Analyses',
-            label_msgid = 'label_analyses',
-        ),
     ),
     StringField('ClientOrderNumber',
         index = 'FieldIndex',

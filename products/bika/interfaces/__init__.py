@@ -19,6 +19,12 @@ class IAnalysisRequest(Interface):
 class ISample(Interface):
     """Sample marker interface"""
 
+class IWorksheetFolder(Interface):
+    """Mark worksheets folder"""
+
+class IWorksheet(Interface):
+    """Worksheet marker interface"""
+
 class IHaveNoByline(Interface):
     """Items which do not have a byline"""
 

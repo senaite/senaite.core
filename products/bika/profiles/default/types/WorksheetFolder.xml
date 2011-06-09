@@ -3,14 +3,7 @@
    meta_type="Factory-based Type Information with dynamic views"
    xmlns:i18n="http://xml.zope.org/namespaces/i18n">
  <property name="title">WorksheetFolder</property>
- <property
-    name="description">Mixin class for content types using the dynamic view FTI
-  
-  Allow the user to select a layout template (in the same way as
-  TemplateMixin in Archetypes does), and/or to set a contained
-  object's id as a default_page (acting in the same way as index_html)
-  
-  Note: folderish content types should overwrite HEAD like ATContentTypes</property>
+ <property  name="description"></property>
  <property name="icon_expr">string:${portal_url}/folder_icon.gif</property>
  <property name="content_meta_type">WorksheetFolder</property>
  <property name="product">bika</property>
@@ -24,9 +17,9 @@
   <element value="Worksheet"/>
  </property>
  <property name="allow_discussion">False</property>
- <property name="default_view">worksheetfolder_worksheets</property>
+ <property name="default_view">worksheets</property>
  <property name="view_methods">
-  <element value="worksheetfolder_worksheets"/>
+  <element value="worksheets"/>
  </property>
  <property name="default_view_fallback">False</property>
  <alias from="(Default)" to="(dynamic view)"/>
@@ -45,18 +38,6 @@
     visible="False">
   <permission value="Modify portal content"/>
  </action>
- <action title="Properties" action_id="metadata" category="object"
-    condition_expr="" icon_expr="" link_target=""
-    url_expr="string:${object_url}/base_metadata" visible="False">
-  <permission value="Modify portal content"/>
- </action>
- <action title="References" action_id="references" category="object"
-    condition_expr="object/archetype_tool/has_graphviz" icon_expr=""
-    link_target="" url_expr="string:${object_url}/reference_graph"
-    visible="False">
-  <permission value="Modify portal content"/>
-  <permission value="Review portal content"/>
- </action>
  <action title="Folder Listing" action_id="folderlisting" category="folder"
     condition_expr="object/isPrincipiaFolderish" icon_expr="" link_target=""
     url_expr="string:${folder_url}/view" visible="False">
@@ -64,7 +45,7 @@
  </action>
  <action title="Worksheets" action_id="worksheets" category="object"
     condition_expr="" icon_expr="" link_target=""
-    url_expr="string:${object_url}/worksheetfolder_worksheets" visible="True">
+    url_expr="string:${object_url}/worksheets" visible="True">
   <permission value="BIKA: Manage Worksheets"/>
  </action>
 </object>

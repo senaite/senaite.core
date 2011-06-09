@@ -41,8 +41,6 @@ from controlpanel.bika_standardstocks import StandardStocks
 from controlpanel.bika_worksheettemplates import WorksheetTemplates
 
 import AccessControl
-import Worksheet
-import WorksheetFolder
 import DuplicateAnalysis
 import RejectAnalysis
 import StandardAnalysis
