@@ -18,21 +18,9 @@ class TemplatePositionWidget(RecordsWidget):
 
     security = ClassSecurityInfo()
 
-    security.declarePublic('process_form')
-    def process_form(self, instance, field, form, empty_marker = None,
-                     emptyReturnsMarker = False):
-        """
-        """
-        value = form.get(field.getName(), empty_marker)
-        if value is empty_marker:
-            return empty_marker
-        if emptyReturnsMarker and value == '':
-            return empty_marker
-        return value, {}
-
     security.declarePublic('get_template_rows')
     def get_template_rows(self, num_positions, template_rows):
-        print "---------------------------------------", num_positions, template_rows
+        print template_rows
         try:
             num_pos = int(num_positions)
         except ValueError:
@@ -58,20 +46,7 @@ class TemplatePositionWidget(RecordsWidget):
 
         return rows
 
-    security.declarePublic('getAnalyses')
-    def getAnalyses(self, field):
-        """
-        """
-        rows = []
-        for row in getattr(field, field.accessor)():
-            print row
-            rows.append(row)
-        return rows
-
 registerWidget(TemplatePositionWidget,
                title = 'WS Template Analyses Layout',
                description = ('Worksheet analyses layout.'),
-               used_for = ('Products.bika.browser.fields.TemplatePositionField',)
                )
-
-#registerPropertyType('default_search_index', 'string', AnalysisSpecsWidget)
