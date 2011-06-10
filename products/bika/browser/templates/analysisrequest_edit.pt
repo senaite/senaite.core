@@ -141,7 +141,7 @@
                   tal:attributes="id string:${input_id}_button;
                                   name string:${input_name}_button;
                                   tabindex python:column*100+tabindex.next();"/>
-                <image class="deleteSampleButton"
+                <img class="deleteSampleButton"
                        style="display:none"
                        tal:attributes="
                             id string:deleteSampleButton_${column};
@@ -154,7 +154,7 @@
           <tr tal:define="field_name string:ClientOrderNumber">
             <th colspan="2" i18n:translate="label_client_order_id">Client Order ID</th>
             <td>
-              <image class="copyButton" tal:condition="not: edit"
+              <img class="copyButton" tal:condition="not: edit"
                 tal:attributes="name field_name;src string:${portal/absolute_url}/images/copy.png"/>
             </td>
             <tal:block repeat="column python:range(view.col_count)">
@@ -172,7 +172,7 @@
           <tr tal:define="field_name string:ClientReference">
             <th colspan="2" i18n:translate="label_clientreference">Client Reference</th>
             <td>
-              <image class="copyButton" tal:condition="not: edit"
+              <img class="copyButton" tal:condition="not: edit"
                 tal:attributes="name field_name;src string:${portal/absolute_url}/images/copy.png"/>
             </td>
             <tal:block repeat="column python:range(view.col_count)">
@@ -190,7 +190,7 @@
           <tr tal:define="field_name string:ClientSampleID">
             <th colspan="2" i18n:translate="label_clientsampleid">Client Sample ID</th>
             <td>
-              <image class="copyButton" tal:condition="not: edit"
+              <img class="copyButton" tal:condition="not: edit"
                 tal:attributes="name field_name;src string:${portal/absolute_url}/images/copy.png"/>
             </td>
             <tal:block repeat="column python:range(view.col_count)">
@@ -212,13 +212,13 @@
                     tal:condition="python:not edit"/>
             </th>
             <td>
-              <image class="copyButton" tal:condition="not: edit"
+              <img class="copyButton" tal:condition="not: edit"
                 tal:attributes="name field_name;src string:${portal/absolute_url}/images/copy.png"/>
             </td>
             <tal:block repeat="column python:range(view.col_count)">
               <td tal:define="input_name string:ar.${column}.${field_name}:ignore_empty:record;
                               input_id string:ar_${column}_${field_name}">
-                <input size="10" type='text' tal:condition="not: edit"
+                <input size="10" type='text' readonly="readonly" tal:condition="not: edit"
                   tal:attributes="
                     id input_id;name input_name;
                     tabindex python:column*100+tabindex.next();"/>
@@ -261,7 +261,7 @@
                 &nbsp;<span class="fieldRequired"/>
             </th>
             <td>
-              <image class="copyButton" tal:condition="not: edit"
+              <img class="copyButton" tal:condition="not: edit"
                 tal:attributes="name field_name;src string:${portal/absolute_url}/images/copy.png"/>
             </td>
             <tal:block repeat="column python:range(view.col_count)">
@@ -280,7 +280,7 @@
           <tr tal:define="field_name string:SamplePoint">
             <th colspan="2"><span id="" i18n:translate="label_samplepoint">Sample Point</span></th>
             <td>
-              <image class="copyButton" tal:condition="not: edit"
+              <img class="copyButton" tal:condition="not: edit"
                 tal:attributes="name field_name;src string:${portal/absolute_url}/images/copy.png"/>
             </td>
             <tal:block repeat="column python:range(view.col_count)">
@@ -299,7 +299,7 @@
           <tr tal:define="field_name string:ReportDryMatter">
             <th colspan="2" i18n:translate="label_report_dm">Report as Dry Matter</th>
             <td>
-              <image class="copyButton" tal:condition="not: edit"
+              <img class="copyButton" tal:condition="not: edit"
                 tal:attributes="name field_name;src string:${portal/absolute_url}/images/copy.png"/>
             </td>
             <tal:block repeat="column python:range(view.col_count)">
@@ -320,7 +320,7 @@
           <tr tal:define="field_name string:InvoiceExclude">
             <th colspan="2" i18n:translate="label_invoice_exclude">Exclude from invoice</th>
             <td>
-              <image class="copyButton" tal:condition="not: edit"
+              <img class="copyButton" tal:condition="not: edit"
                 tal:attributes="name field_name;src string:${portal/absolute_url}/images/copy.png"/>
             </td>
             <tal:block repeat="column python:range(view.col_count)">

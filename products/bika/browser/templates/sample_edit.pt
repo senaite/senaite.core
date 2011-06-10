@@ -22,12 +22,9 @@
 
 <form name="edit_form"
     method="post"
-    enctype="multipart/form-data"
-    action=""
-    tal:attributes="action python:here.absolute_url()+'/'+template.id"
-    autocomplete="off">
+    id="edit_form">
 
-<input type="hidden" name="form.submitted" value="1" />
+<input type="hidden" name="submitted" value="1" />
 
 <br/>
 <table cellpadding="3">
@@ -171,22 +168,22 @@
 </table>
 <br/>
 
-<input class="context"
+<input class="context allowMultiSubmit"
         tabindex=""
         type="submit"
-        name="form_submit"
         value="Save"
         i18n:attributes="value"
         tal:attributes="tabindex tabindex/next"
         />
-<input class="standalone"
+<input class="context"
         tabindex=""
         type="submit"
-        name="form.button.cancel"
         value="Cancel"
         i18n:attributes="value"
         tal:attributes="tabindex tabindex/next"
         />
+<span id="spinner" style="display:none">
+      <img tal:attributes="src python:portal.absolute_url()+ '/images/spinner.gif';"/></span>
 
 
 </form>
