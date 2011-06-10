@@ -206,6 +206,19 @@ class AnalysisRequestViewView(BrowserView):
 
         return result
 
+    def get_analyses_not_requested(self):
+        ##
+        ##title=Get analyses which have not been requested by the client
+        ##
+
+        wf_tool = getToolByName(self.context, 'portal_workflow')
+        result = []
+        for analysis in self.context.getAnalyses():
+            if wf_tool.getInfoFor(analysis, 'review_state', '') == 'not_requested':
+		result.append(analysis)
+
+        return result
+
     def get_analysisrequest_verifier(self, analysisrequest):
         ## Script (Python) "get_analysisrequest_verifier"
         ##bind container=container

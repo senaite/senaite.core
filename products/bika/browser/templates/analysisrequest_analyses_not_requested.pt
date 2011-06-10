@@ -9,18 +9,15 @@
 
 <div metal:fill-slot="main"
     tal:define="
+	tabindex view/tabindex;
         specification python:request.get('specification', 'lab')">
 <h1>
-<tal:block replace="structure python:getattr(here, here.getIcon(1))"/>
 <span tal:content="here/title_or_id" tal:omit-tag="">Directory Id</span>
 <img src="" 
     tal:condition="here/getInvoiceExclude"
     tal:attributes="src string:${portal/absolute_url}/no_invoice.png">
 </h1>
 
-<div metal:use-macro="here/document_actions/macros/document_actions">
-Document actions (print, sendto etc)
-</div>
 <a href="" class="link-parent"
     tal:define="parent_url python:here.navigationParent(here, template.getId())"
     tal:condition="parent_url"
@@ -28,24 +25,22 @@ Document actions (print, sendto etc)
     i18n:translate="go_to_parent_url">
 Up one level
 </a>
-
 <form name="specificationForm"
-    method="post"
-    action="."
-    tal:attributes="action string:${here_url}/analysisrequest_analyses_not_requested">
+    enctype="multipart/form-data"
+    method="post">
 
 <span i18n:translate="label_range_specification">Range Specification</span>: 
 <input class="noborder" type="radio" name="specification" value="lab"
     onclick="this.form.submit()"
     tal:attributes="
-        checked python:test(specification == 'lab',  'checked', None);
+        checked python:specification == 'lab' and 'checked' or None;
         tabindex tabindex/next"/>
 <label i18n:translate="label_lab"
     >Lab</label>
 <input class="noborder" type="radio" name="specification" value="client"
     onclick="this.form.submit()"
     tal:attributes="
-        checked python:test(specification == 'client',  'checked', None);
+        checked python:specification == 'client' and 'checked' or None;
         tabindex tabindex/next"/>
 <label i18n:translate="label_client"
     >Client</label> 
@@ -53,14 +48,12 @@ Up one level
 
 <form name="folderContentsForm"
     method="post"
-    action="."
-    tal:attributes="action here_url"
     tal:define="
         b_size python:100;
         b_start python:0;
         b_start request/b_start | b_start;
         Batch python:modules['Products.CMFPlone'].Batch;
-        batch python:Batch(here.get_analyses_not_requested(), b_size, int(b_start), orphan=1);
+        batch python:Batch(view.get_analyses_not_requested(), b_size, int(b_start), orphan=1);
         client_uid here/aq_parent/UID;
         sample python:here.getSample();
         sampletype python:sample.getSampleType()">
@@ -108,9 +101,10 @@ There are no results.
 <tr tal:define="
         oddrow repeat/item/odd;
         item_title_or_id item/title_or_id;
+	wtool python:context.portal_workflow;
         review_state python:wtool.getInfoFor(item, 'review_state', '')"
     tal:attributes="
-        class python:test(oddrow, 'even', 'odd')" >
+        class python:oddrow and 'even' or 'odd'" >
 
 <td>
 <input type="checkbox" class="noborder" name="ids:list" id="#" value="#"
@@ -134,7 +128,7 @@ There are no results.
 <div tal:condition="python:review_state not in ('sample_received', 'assigned')">
 <tal:result
     tal:define="
-        result_class python:here.result_in_range(item, sampletype.UID(), specification)">
+        result_class python:view.result_in_range(item, sampletype.UID(), specification)">
 <td tal:attributes="class result_class">
 <span tal:content="item/getResult">10.00</span>
 </td>
@@ -142,9 +136,9 @@ There are no results.
 </div>
 
 <td class="private"
-    tal:content="structure python:test(review_state, review_state, '&nbsp;')"
+    tal:content="structure python:review_state and review_state or '&nbsp;'"
     tal:attributes="
-        class python:test(review_state, 'state-'+review_state, 'state-private')"
+        class python:review_state and 'state-'+review_state or 'state-private'"
     i18n:translate="">&nbsp;
 </td>
 </tr>
@@ -176,7 +170,7 @@ There are no results.
 
 <tal:ar_actions
     condition="batch"
-    define="ar_workflow_actions python: here.get_analysis_request_actions()">
+    define="ar_workflow_actions python: view.get_analysis_request_actions()">
 
 <input type="hidden" id="workflow_action" name="workflow_action" value=""/>
 
@@ -191,7 +185,7 @@ There are no results.
     tal:condition="python:transition['id'] != 'assign'"
     i18n:attributes="value"
     tal:attributes="
-        value transition/name;
+        value transition/title;
         tabindex tabindex/next;
         onclick string:this.form.workflow_action.value = '${transition/id}'" />
 </tal:buttons>
