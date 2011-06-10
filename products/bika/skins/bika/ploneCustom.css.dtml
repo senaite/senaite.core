@@ -6,14 +6,17 @@
 
 
 .portaltype-analysisrequest #plone-contentmenu-actions,
+.portaltype-worksheet #plone-contentmenu-actions,
 .portaltype-sample #plone-contentmenu-actions
    {display: none;}
    
 .portaltype-analysisrequest #plone-contentmenu-display,
+.portaltype-worksheet #plone-contentmenu-display,
 .portaltype-sample #plone-contentmenu-display
    {display: none;}
    
-.portaltype-analysisrequest #plone-contentmenu-factories
+.portaltype-analysisrequest #plone-contentmenu-factories,
+.portaltype-worksheet #plone-contentmenu-factories
    {display: none;}
 
 

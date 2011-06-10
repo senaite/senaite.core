@@ -27,6 +27,15 @@
                 conditionalcomment="" 
                 cookable="True" 
                 enabled="on" 
+                expression="python:here.portal_type in ['WorksheetFolder','Worksheet']" 
+                id="++resource++worksheet.js" 
+                inline="False"/>
+    <javascript authenticated="False" 
+                cacheable="True" 
+                compression="safe" 
+                conditionalcomment="" 
+                cookable="True" 
+                enabled="on" 
                 expression="python:here.portal_type in ['Sample',]" 
                 id="++resource++sample.js" 
                 inline="False"/>

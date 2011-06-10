@@ -19,9 +19,9 @@
   <element value="RejectAnalysis"/>
  </property>
  <property name="allow_discussion">False</property>
- <property name="default_view">base_view</property>
+ <property name="default_view">worksheet_analyses</property>
  <property name="view_methods">
-  <element value="base_view"/>
+  <element value="worksheet_analyese"/>
  </property>
  <property name="default_view_fallback">False</property>
  <alias from="(Default)" to="(dynamic view)"/>
@@ -39,23 +39,6 @@
     icon_expr="" link_target="" url_expr="string:${object_url}/worksheet_edit"
     visible="False">
   <permission value="List folder contents"/>
- </action>
- <action title="Properties" action_id="metadata" category="object"
-    condition_expr="" icon_expr="" link_target=""
-    url_expr="string:${object_url}/base_metadata" visible="False">
-  <permission value="Modify portal content"/>
- </action>
- <action title="References" action_id="references" category="object"
-    condition_expr="object/archetype_tool/has_graphviz" icon_expr=""
-    link_target="" url_expr="string:${object_url}/reference_graph"
-    visible="False">
-  <permission value="Modify portal content"/>
-  <permission value="Review portal content"/>
- </action>
- <action title="Folder Listing" action_id="folderlisting" category="folder"
-    condition_expr="object/isPrincipiaFolderish" icon_expr="" link_target=""
-    url_expr="string:${folder_url}/view" visible="False">
-  <permission value="View"/>
  </action>
  <action title="Analyses" action_id="analyses" category="object"
     condition_expr="" icon_expr="" link_target=""

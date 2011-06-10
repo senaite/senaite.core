@@ -20,6 +20,14 @@
       layer="Products.bika.interfaces.IBikaLIMSLayer"
     />
 
+    <browser:page
+      for="Products.bika.interfaces.IWorksheet"
+      name="worksheet_analyses"
+      class="Products.bika.browser.worksheet.WorksheetAnalysesView"
+      permission="zope.Public"
+      layer="Products.bika.interfaces.IBikaLIMSLayer"
+    />
+
     <browser:resource
       name="worksheet.js"
       file="worksheet.js"

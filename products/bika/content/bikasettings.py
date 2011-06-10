@@ -1,7 +1,7 @@
 from AccessControl import ClassSecurityInfo
 from Products.ATExtensions.ateapi import RecordsField
-from Products.Archetypes.references import HoldingReference
 from Products.Archetypes.public import *
+from Products.Archetypes.references import HoldingReference
 from Products.CMFCore.permissions import View, ModifyPortalContent
 from Products.CMFDynamicViewFTI.browserdefault import BrowserDefaultMixin
 from Products.bika.config import I18N_DOMAIN, ATTACHMENT_OPTIONS, \
@@ -9,6 +9,7 @@ from Products.bika.config import I18N_DOMAIN, ATTACHMENT_OPTIONS, \
 from Products.bika.content.bikaschema import BikaFolderSchema
 from Products.bika.interfaces.controlpanel import IBikaSettings
 from plone.app.folder import folder
+from utils import generateUniqueId
 from zope.interface import implements
 import sys
 
@@ -189,6 +190,10 @@ class BikaSettings(BrowserDefaultMixin, folder.ATFolder):
     # instance. If '__replaceable__' is not set we get BadRequest, The
     # id is invalid - it is already in use.
     __replaceable__ = 1
+
+    security.declarePublic('generateUniqueId')
+    def generateUniqueId (self, type_name, batch_size = None):
+        return generateUniqueId(self, type_name, batch_size)
 
     def getAttachmentsPermitted(self):
         """ are any attachments permitted """
