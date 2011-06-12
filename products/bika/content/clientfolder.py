@@ -10,7 +10,7 @@ from Products.bika.config import PROJECTNAME
 from AccessControl import ClassSecurityInfo
 from Products.bika.interfaces import IClientFolder
 from plone.app.folder import folder
-from utils import generateUniqueId
+from Products.bika.utils import generateUniqueId
 from zope.interface import implements
 
 

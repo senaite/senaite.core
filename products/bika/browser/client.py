@@ -17,12 +17,11 @@ class ClientAnalysisRequestsView(BikaListingView):
 
     columns = {
            'getRequestID': {'title': _('Request ID')},
-           'getContact': {'title': _('Contact')},
            'getClientOrderNumber': {'title': _('Client Order')},
-           'ClientReference': {'title': _('Client Ref')},
-           'ClientSampleID': {'title': _('Client Sample')},
-           'SampleType': {'title': _('Sample Type')},
-           'SamplePoint': {'title': _('Sample Point')},
+           'getClientReference': {'title': _('Client Ref')},
+           'getClientSampleID': {'title': _('Client Sample ID')},
+           'getSampleType': {'title': _('Sample Type')},
+           'getSamplePoint': {'title': _('Sample Point')},
            'getDateReceived': {'title': _('Date Received')},
            'getDatePublished': {'title': _('Date Published')},
            'state_title': {'title': _('State')},
@@ -31,10 +30,10 @@ class ClientAnalysisRequestsView(BikaListingView):
                 {'title': _('All'), 'id':'all',
                  'columns':['getRequestID',
                             'getClientOrderNumber',
-                            'ClientReference',
-                            'ClientSampleID',
-                            'SampleType',
-                            'SamplePoint',
+                            'getClientReference',
+                            'getClientSampleID',
+                            'getSampleType',
+                            'getSamplePoint',
                             'getDateReceived',
                             'getDatePublished',
                             'state_title'],
@@ -44,20 +43,20 @@ class ClientAnalysisRequestsView(BikaListingView):
                 {'title': _('Sample due'), 'id':'sample_due',
                  'columns':['getRequestID',
                             'getClientOrderNumber',
-                            'ClientReference',
-                            'ClientSampleID',
-                            'SampleType',
-                            'SamplePoint'],
+                            'getClientReference',
+                            'getClientSampleID',
+                            'getSampleType',
+                            'getSamplePoint'],
                  'buttons':[{'cssclass': 'context',
                              'title': _('Delete'),
                              'url': 'folder_delete:method'}]},
                 {'title': _('Sample received'), 'id':'sample_received',
                  'columns':['getRequestID',
                             'getClientOrderNumber',
-                            'ClientReference',
-                            'ClientSampleID',
-                            'SampleType',
-                            'SamplePoint',
+                            'getClientReference',
+                            'getClientSampleID',
+                            'getSampleType',
+                            'getSamplePoint',
                             'getDateReceived'],
                  'buttons':[{'cssclass': 'context',
                              'title': _('Delete'),
@@ -66,34 +65,34 @@ class ClientAnalysisRequestsView(BikaListingView):
                  'columns':['getRequestID',
                             'getContact',
                             'getClientOrderNumber',
-                            'ClientReference',
-                            'ClientSampleID',
-                            'SampleType',
-                            'SamplePoint',
+                            'getClientReference',
+                            'getClientSampleID',
+                            'getSampleType',
+                            'getSamplePoint',
                             'getDateReceived']},
                 {'title': _('To be verified'), 'id':'to_be_verified',
                  'columns':['getRequestID',
                             'getClientOrderNumber',
-                            'ClientReference',
-                            'ClientSampleID',
-                            'SampleType',
-                            'SamplePoint',
+                            'getClientReference',
+                            'getClientSampleID',
+                            'getSampleType',
+                            'getSamplePoint',
                             'getDateReceived']},
                 {'title': _('Verified'), 'id':'verified',
                  'columns':['getRequestID',
                             'getClientOrderNumber',
-                            'ClientReference',
-                            'ClientSampleID',
-                            'SampleType',
-                            'SamplePoint',
+                            'getClientReference',
+                            'getClientSampleID',
+                            'getSampleType',
+                            'getSamplePoint',
                             'getDateReceived']},
                 {'title': _('Published'), 'id':'published',
                  'columns':['getRequestID',
                             'getClientOrderNumber',
-                            'ClientReference',
-                            'ClientSampleID',
-                            'SampleType',
-                            'SamplePoint',
+                            'getClientReference',
+                            'getClientSampleID',
+                            'getSampleType',
+                            'getSamplePoint',
                             'getDateReceived',
                             'getDatePublished']},
                 ]
@@ -107,18 +106,28 @@ class ClientAnalysisRequestsView(BikaListingView):
         items = BikaListingView.folderitems(self)
         for x in range(len(items)):
             if not items[x].has_key('brain'): continue
-            obj = items[x]['brain'].getObject()
-            sample = obj.getSample()
-            items[x]['SampleType'] = sample.getSampleType().Title()
-            items[x]['SamplePoint'] = sample.getSamplePoint() and sample.getSamplePoint().Title() or ''
-            items[x]['ClientReference'] = sample.getClientReference()
-            items[x]['ClientSampleID'] = sample.getClientSampleID()
-            items[x]['getDateReceived'] = obj.getDateReceived() and self.context.toLocalizedTime(obj.getDateReceived(), long_format = 0) or ''
-            items[x]['getDatePublished'] = obj.getDatePublished() and self.context.toLocalizedTime(obj.getDatePublished(), long_format = 0) or ''
-
             items[x]['links'] = {'getRequestID': items[x]['url']}
 
         return items
+
+class ClientAnalysisRequestsFilterView(ClientAnalysisRequestsView):
+    def __call__(self):
+        import pdb
+        pdb.set_trace()
+
+        # modify contentFilter with updated filters
+        form = self.request.form
+        self.contentFilter = super(ClientAnalysisRequestsFilterView, self).contentFilter
+
+        if form.has_key("review_state"):
+            if self.request['review_state'] == 'all':
+                if self.contentFilter.has_key('review_state'):
+                    del(self.contentFilter['review_state'])
+            else:
+                self.contentFilter['review_state'] = form['review_state']
+
+        return self.contents_table()
+
 
 class ClientSamplesView(BikaListingView):
     implements(IFolderContentsView)

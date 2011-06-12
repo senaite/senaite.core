@@ -25,43 +25,6 @@ jQuery( function($) {
 	    return true;
 
 	}
-	function selectAllCats(all, individual) 
-	{
-	    all_cb = document.getElementById(all);
-	    for ( var i=0;i<999;i++) {
-	        if (document.getElementById(individual + i) == undefined){
-	            break;
-	        } else {
-	            other_cb = document.getElementById(individual + i);
-	            other_cb.checked = all_cb.checked;
-	        }
-	    }
-	}
-	function returnCCs(){
-	    var uids = ''
-	    var titles = ''
-	    for ( var i=0;i<99;i++) {
-	        contact_id = 'Contact.' + i
-	        if (document.getElementById(contact_id) == undefined) {
-	            break;
-	        }
-	        contact = document.getElementById(contact_id);
-	        if (contact.checked) {
-	            selected_uid = contact.getAttribute('selected_uid');
-	            selected_title = contact.getAttribute('selected_title');
-	            if (uids == '') {
-	                uids = selected_uid;
-	                titles = selected_title;
-	            } else {
-	                uids = uids + ',' + selected_uid; 
-	                titles = titles + ',' + selected_title; 
-	            }
-	        }
-	    }
-	        
-	    window.opener.select_cc(uids, titles); 
-	    window.close();
-	}
 	function moveUp(number) {
 	    thisElem =  document.getElementById('Pos.' + number);
 	    old_value = parseInt(thisElem.value)
@@ -535,10 +498,7 @@ jQuery( function($) {
 	    resultField.value = result;
 	}
 
-	
-	
 	$(document).ready(function(){
-
 
 	});
 

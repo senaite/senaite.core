@@ -30,6 +30,7 @@ class BikaListingView(FolderContentsView):
 
     show_editable_border = True
     show_table_only = False
+    show_filters = True
     show_sort_column = True
     show_select_row = True
     show_select_column = True
@@ -43,12 +44,6 @@ class BikaListingView(FolderContentsView):
         self.portal_types = getToolByName(context, 'portal_types')
 
     def __call__(self):
-        if self.request.form.has_key("review_state"):
-            if self.request['review_state'] == 'all':
-                if self.contentFilter.has_key('review_state'):
-                    del(self.contentFilter['review_state'])
-            else:
-                self.contentFilter['review_state'] = self.request.form['review_state']
         if self.show_table_only: return self.template_table_only()
         else:  return self.template()
 
@@ -147,6 +142,7 @@ class BikaListingView(FolderContentsView):
                 is_expired = isExpired(obj),
             )
             # Insert all fields from the schema, if they are in the brains
+            # XXX LIMIT TO ONLY NECESSARY VALUES (columns displayed)
             for field in obj.schema():
                 if not results_dict.get(field):
                     results_dict[field] = getattr(obj, field)
@@ -163,9 +159,9 @@ class BikaListingView(FolderContentsView):
                                  pagesize = self.pagesize,
                                  show_sort_column = self.show_sort_column,
                                  show_select_row = self.show_select_row,
-                                 show_select_column = self.show_select_column)
+                                 show_select_column = self.show_select_column,
+                                 show_filters = self.show_filters)
         return table.render()
-
 
 class BikaListingTable(FolderContentsTable):
     def __init__(self,
@@ -177,11 +173,13 @@ class BikaListingTable(FolderContentsTable):
                  pagesize,
                  show_sort_column,
                  show_select_row,
-                 show_select_column):
+                 show_select_column,
+                 show_filters):
         self.context = context
         self.request = request
         url = context.absolute_url()
-        self.table = Table(request,
+        self.table = Table(context,
+                           request,
                            url,
                            url + "/view",
                            folderitems(),
@@ -190,6 +188,7 @@ class BikaListingTable(FolderContentsTable):
                            show_sort_column = show_sort_column,
                            show_select_row = show_select_row,
                            show_select_column = show_select_column,
+                           show_filters = show_filters,
                            pagesize = pagesize)
 
     def render(self):
@@ -197,6 +196,7 @@ class BikaListingTable(FolderContentsTable):
 
 class Table(tableview.Table):
     def __init__(self,
+                 context,
                  request,
                  base_url,
                  view_url,
@@ -206,6 +206,7 @@ class Table(tableview.Table):
                  show_sort_column,
                  show_select_row,
                  show_select_column,
+                 show_filters,
                  pagesize):
 
         tableview.Table.__init__(self,
@@ -217,10 +218,13 @@ class Table(tableview.Table):
                                  show_sort_column = show_sort_column,
                                  pagesize = pagesize)
 
+        self.context = context
+        self.request = request
         self.columns = columns
         self.show_sort_column = show_sort_column
         self.show_select_row = show_select_row
         self.show_select_column = show_select_column
+        self.show_filters = show_filters
         self.review_states = review_states
 
     render = ViewPageTemplateFile("templates/bika_listing_table.pt")

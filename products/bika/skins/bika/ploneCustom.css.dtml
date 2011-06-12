@@ -77,8 +77,6 @@ table.invisible td, table.invisible th, table.plain td, table.plain th, table.li
 }
 
 
-
-
 /*
  * ( make the global NAV bar smaller
  */
@@ -122,6 +120,13 @@ fieldset.attachments {
 
 
 
+.folderlisting-filter {
+    border: 1px solid &dtml-globalBorderColor;;
+    background-color: &dtml-evenRowBackgroundColor;;
+    margin:0px;
+    padding:0;
+    width:100%;
+}
 
 
 /*

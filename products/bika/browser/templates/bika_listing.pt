@@ -29,7 +29,7 @@
 
       <tal:add_buttons repeat="add_item python:view.content_add_buttons.keys()">
           <form
-            name="folderContentsForm"
+            name="folderContentsForm_add"
             method="post"
             action=""
             tal:attributes="action python:'%s/%s'%(context.absolute_url(), view.content_add_buttons[add_item])">
@@ -45,24 +45,7 @@
 
       <p/>
 
-      <form 
-        name="folderContentsForm"
-        method="post"
-        action="folder_object"
-        tal:attributes="action python: request.get('URL', context.absolute_url())"
-        class="kssattr-serveraction-foldercontents_update_table">
-
-        <input type="hidden" name="submitted" id="submitted" value="1"/>
-
-        <div class="visualClear" id="clear-space-before-navigation"><!-- --></div>
-
-        <span tal:omit-tag="" tal:content="structure view/review_state_filter"/>
-
-        <div tal:replace="structure view/contents_table"></div>
-
-        <input tal:replace="structure context/@@authenticator/authenticator" />
-
-      </form>
+      <div tal:replace="structure view/contents_table"></div>
 
     </metal:content-core>
 

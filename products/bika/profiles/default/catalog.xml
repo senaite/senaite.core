@@ -2,20 +2,24 @@
 <object name="portal_catalog" meta_type="Plone Catalog Tool">
  <property name="title">Indexes all content in the site</property>
  <property name="unwrapobjects" type="boolean">True</property>
+
  <object name="htmltext_lexicon" meta_type="ZCTextIndex Lexicon">
   <element name="HTML aware splitter" group="Word Splitter"/>
   <element name="Case Normalizer" group="Case Normalizer"/>
   <element name="Remove listed stop words only" group="Stop Words"/>
  </object>
+
  <object name="plaintext_lexicon" meta_type="ZCTextIndex Lexicon">
   <element name="Whitespace splitter" group="Word Splitter"/>
   <element name="Case Normalizer" group="Case Normalizer"/>
   <element name="Remove listed stop words only" group="Stop Words"/>
  </object>
+
  <object name="plone_lexicon" meta_type="ZCTextIndex Lexicon">
   <element name="Unicode Whitespace splitter" group="Word Splitter"/>
   <element name="Unicode Case Normalizer" group="Case Normalizer"/>
  </object>
+
  <index name="Creator" meta_type="FieldIndex">
   <indexed_attr value="Creator"/>
  </index>
@@ -122,6 +126,9 @@
  </index>
  <index name="getRequestID" meta_type="FieldIndex">
   <indexed_attr value="getRequestID"/>
+ </index>
+ <index name="getContact" meta_type="FieldIndex">
+  <indexed_attr value="getContact"/>
  </index>
  <index name="getSample" meta_type="FieldIndex">
   <indexed_attr value="getSample"/>

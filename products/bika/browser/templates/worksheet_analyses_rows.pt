@@ -1,0 +1,413 @@
+<metal:block define-macro="body">
+
+<metal:block tal:condition="batch|nothing">
+<table
+    class="listing"
+    summary="Content listing"
+    cellpadding="0" cellspacing="0"
+    i18n:domain="bika">
+
+<thead>
+
+<tr>
+<th class="nosort">
+<input
+    class="noborder"
+    type="checkbox"
+    src="select_all_icon.gif"
+    name="selectButton"
+    title="Select all items"
+    onClick="toggleSelect(this, 'Analyses:list');"
+    tal:attributes="src string:$portal_url/select_all_icon.gif"
+    alt="Select all items"
+    i18n:attributes="title; alt"
+    />
+</th>
+<th>pos</th>
+<th i18n:translate="label_client">Client</th>
+<th i18n:translate="label_clientorder">Order</th>
+<th i18n:translate="label_requestid">Request ID</th>
+<th i18n:translate="label_duedate">Due date</th>
+<th tal:condition="any_published"
+    i18n:translate="label_datepublished">Date published</th>
+<th i18n:translate="label_category">Category</th>
+<th i18n:translate="label_analysis">Analysis</th>
+<tal:tv condition="any_tv"> 
+<th i18n:translate="label_titrationvolume">Titration Volume</th>
+</tal:tv>
+<tal:tf condition="any_tf"> 
+<th i18n:translate="label_titrationfactor">Titration Factor</th>
+</tal:tf>
+<tal:vm condition="any_vm"> 
+<th i18n:translate="label_vesselmass">Vessel Mass</th>
+</tal:vm>
+<tal:gm condition="any_gm"> 
+<th i18n:translate="label_grossmass">Gross Mass</th>
+</tal:gm>
+<tal:sm condition="any_sm"> 
+<th i18n:translate="label_samplemass">Sample Mass</th>
+</tal:sm>
+<tal:nm condition="any_nm"> 
+<th i18n:translate="label_netmass">Net Mass</th>
+</tal:nm>
+<th i18n:translate="label_result">Result</th>
+<th i18n:translate="label_retested">Retested</th>
+<th i18n:translate="label_status">Status</th>
+<th tal:condition="analysis_attach_allowed"
+    i18n:translate="label_attachments">Attachments</th>
+</tr>
+
+</thead>
+
+<tbody
+    tal:define="global services python:[];
+                global weight_services python:[]">
+<metal:block tal:repeat="item batch">
+<tr tal:define="
+        analysis python:item['Analysis'];
+        analysis_type python:item['Type'];
+        real python:(analysis_type == 'a') or False;
+        blank python:(analysis_type == 'b') or False;
+        duplicate python:(analysis_type == 'd') or False;
+        reject python:(analysis_type == 'r') or False;
+        control python:(analysis_type == 'c') or False;
+        oddrow repeat/item/odd;
+        item_title_or_id analysis/Title;
+        review_state python:wtool.getInfoFor(analysis, 'review_state', '');
+        analysis_late python:real and review_state != 'published' and analysis.getDueDate() < now;
+        sampletype_uid item/sampletype_uid;
+        class python:test(oddrow, 'even', 'odd')"
+    tal:attributes="
+        class class" >
+
+<td style="white-space:nowrap" >
+<input type="checkbox" class="noborder" name="Analyses:list" id="#" value="#"
+    tabindex="-1"
+    tal:attributes="
+        value string:${analysis/UID};
+        id python: 'cb_'+analysis.getId();
+        alt string:Select $item_title_or_id;
+        title string:Select $item_title_or_id"/>
+</td>
+
+<tal:sequence
+    tal:define="number repeat/item/number">
+<td style="white-space:nowrap" >
+<span tal:content="item/Pos">1</span>
+<img src=""
+    tal:condition="python:not real and not reject"
+    tal:define="
+        img python:control and 'control.png' or (duplicate and 'dup.png' or (blank and 'blank.png' or None))"
+    tal:attributes="src img">
+</td>
+</tal:sequence>
+<!-- worksheet resequencing. activating these fields also submits those analyses
+which should not be submitted (verified, etc)
+<input type="hidden" name="" 
+    tal:attributes="
+        value item/Key;
+        name string:results.${analysis/UID}.Key:record"/>
+<input type="hidden" name="" 
+    tal:attributes="
+        value item/Type;
+        name string:results.${analysis/UID}.Type:record"/>
+-->
+<input DISABLED type="hidden" name="" 
+    tal:condition="python:review_state in ('sample_received', 'assigned')"
+    tal:attributes="
+        value analysis/getCalcType;
+        id string:${analysis/UID}.CalcType"/>
+<div
+    tal:define="
+        type_class python:control and 'ws_control' or (duplicate and 'ws_duplicate' or (blank and 'ws_blank' or test(oddrow, 'even', 'odd')))">
+<td>
+<a href="" tal:content="item/ParentTitle"
+    tabindex="-1"
+    tal:attributes="href item/ParentLink">parent</a>
+</td>
+<td tal:content="item/OrderID"/>
+<td>
+<a href="" tal:content="item/RequestID"
+    tabindex="-1"
+    tal:attributes="href item/absolute_url">AR-00001</a>
+</td>
+<td tal:content="item/DueDate"/>
+<td tal:condition="any_published">
+<span 
+    tal:condition="item/DatePublished"
+    tal:content="item/DatePublished"/>
+</td>
+<tal:analysis
+    define="
+         result analysis/getResult;
+         service analysis/getService;
+         optionstrings python:service.getResultOptionsSorted();
+         analysisservice service/Title;
+         category service/getCategoryName;
+         unit analysis/getUnit|nothing">
+<td tal:content="category">category </td>
+<td>
+<a  onClick=""
+    title="Click for details"
+    tal:attributes="onClick string:javascript:showMethod('$portal_url', '${analysis/getId}')"
+    tal:content="analysisservice">
+Alcohol
+</a>
+<em tal:condition="python:unit">(<span tal:replace="unit">mg/l</span>)</em>
+<tal:dry tal:condition="analysis/getResultDM | nothing">
+<img src="" 
+    tal:define="global dry_matter python:1"
+    tal:attributes="src string:${portal/absolute_url}/dry.png">
+</tal:dry>
+<tal:late tal:condition="analysis_late">
+<img src="" 
+    tal:define="global late python:1"
+    tal:attributes="src string:${portal/absolute_url}/late_small.png">
+</tal:late>
+</td>
+<td  tal:condition="any_tv">
+<div tal:condition="python:'tv' in item['Cols']">
+<input size="5" name="" value="10" class="amount" onChange=""
+    tal:condition="python:review_state == 'assigned'"
+    tal:attributes="
+        value analysis/getTitrationVolume;
+        name string:results.${analysis/UID}.TitrationVolume:record;
+        onChange string:calcResult('${analysis/UID}');
+        tabindex tabindex/next"/>
+<span class="discreet" 
+    tal:condition="python:review_state != 'assigned'"
+    tal:content="analysis/getTitrationVolume">10</span>
+</div>
+</td>
+<td  tal:condition="any_tf">
+<div tal:condition="python:'tf' in item['Cols']">
+<tal:assigned
+    condition="python:review_state == 'assigned'">
+<input size="5" name="" value="10" id="" class="amount"
+    tal:define="
+        dummy python:services.append(analysisservice);
+        service_count python:services.count(analysisservice)"
+    tal:attributes="
+        value analysis/getTitrationFactor;
+        id string:${analysis/Title}.$service_count;
+        onChange string:autofill('${analysisservice}.$service_count');
+        name string:results.${analysis/UID}.TitrationFactor:record;
+        tabindex tabindex/next"/>
+</tal:assigned>
+<span class="discreet" 
+    tal:condition="python:review_state != 'assigned'"
+    tal:content="analysis/getTitrationFactor">10</span>
+</div>
+</td>
+<!-- weight calcs -->
+<td  tal:condition="any_vm">
+<div tal:condition="python:'vm' in item['Cols']">
+<tal:assigned
+    condition="python:review_state == 'assigned'">
+<input size="5" name="" value="10" id="" class="amount"
+    tal:define="
+        dummy python:weight_services.append(analysisservice);
+        weight_service_count python:weight_services.count(analysisservice);
+        input_id string:vessel.$weight_service_count"
+    tal:attributes="
+        value analysis/getVesselMass;
+        id string:vessel.$weight_service_count;
+        onChange string:calcResult('${analysis/UID}');
+        name string:results.${analysis/UID}.VesselMass:record;
+        tabindex tabindex/next"/>
+</tal:assigned>
+<span class="discreet" 
+    tal:condition="python:review_state != 'assigned'"
+    tal:content="analysis/getVesselMass">10</span>
+</div>
+</td>
+<td  tal:condition="any_gm">
+<div tal:condition="python:'gm' in item['Cols']">
+<input size="5" name="" value="10" class="amount" onChange=""
+    tal:condition="python:review_state == 'assigned'"
+    tal:attributes="
+        value analysis/getGrossMass;
+        name string:results.${analysis/UID}.GrossMass:record;
+        onChange string:calcResult('${analysis/UID}');
+        tabindex tabindex/next"/>
+<span class="discreet" 
+    tal:condition="python:review_state != 'assigned'"
+    tal:content="analysis/getGrossMass">10</span>
+</div>
+</td>
+<td  tal:condition="any_sm">
+<div tal:condition="python:'sm' in item['Cols']">
+<tal:assigned
+    condition="python:review_state == 'assigned'">
+<input size="5" name="" value="10" id="" class="amount"
+    tal:define="
+        dummy python:weight_services.append(analysisservice);
+        weight_service_count python:weight_services.count(analysisservice);
+        input_id string:sample.$weight_service_count"
+    tal:attributes="
+        value analysis/getSampleMass;
+        id string:sample.$weight_service_count;
+        onChange string:calcResult('${analysis/UID}');
+        name string:results.${analysis/UID}.SampleMass:record;
+        tabindex tabindex/next"/>
+</tal:assigned>
+<span class="discreet" 
+    tal:condition="python:review_state != 'assigned'"
+    tal:content="analysis/getSampleMass">10</span>
+</div>
+</td>
+<td  tal:condition="any_nm">
+<div tal:condition="python:'nm' in item['Cols']">
+<input size="5" name="" value="10" id="" class="amount"
+    tal:condition="python:review_state == 'assigned'"
+    tal:attributes="
+        value analysis/getNetMass;
+        onChange string:calcResult('${analysis/UID}');
+        name string:results.${analysis/UID}.NetMass:record;
+        tabindex tabindex/next"/>
+<span class="discreet" 
+    tal:condition="python:review_state != 'assigned'"
+    tal:content="analysis/getNetMass">10</span>
+</div>
+</td>
+<!-- weight calcs -->
+<div tal:define="calc_reqd python:item['Calcd']">
+<div tal:condition="python:review_state == 'assigned'">
+<td tal:condition="calc_reqd">
+<input READONLY size="5" name="" value="10" class="calculated" tabindex="-1"
+    tal:condition="python:review_state == 'assigned'"
+    tal:attributes="
+        value result;
+        name string:results.${analysis/UID}.Result:record"/>
+</td>
+<td tal:condition="python:not calc_reqd">
+<input size="5" name="" value="10" class="amount"
+    tal:condition="python:review_state == 'assigned' and not optionstrings"
+    tal:attributes="
+        value result;
+        name string:results.${analysis/UID}.Result:record;
+        tabindex tabindex/next"/>
+
+<select tal:condition="python:review_state == 'assigned' and optionstrings"
+tal:attributes="
+    name string:results.${analysis/UID}.Result:record;
+    tabindex tabindex/next">
+    <option value=""></option>
+    <tal:opts repeat="option optionstrings">
+        <option tal:content="option"
+                tal:attributes="value option;
+                                selected python:result == option and 'selected' or ''"
+                >Title</option>
+    </tal:opts>
+</select>
+</td>
+</div>
+<div 
+    tal:condition="python:review_state != 'assigned'"
+    tal:define="
+        client_uid item/ParentUID">
+<td tal:define="
+        result_class python:here.result_in_range(analysis, sampletype_uid, specification);
+        global out_of_range python:result_class == 'out_of_range' and 1 or out_of_range"
+    tal:attributes="class result_class">
+<span tal:content="result">10</span>
+<tal:dry tal:condition="analysis/getResultDM| nothing">
+<span tal:define="
+        dry_result string:(${analysis/getResultDM})"
+    tal:content="dry_result">10</span>
+</tal:dry>
+<img tal:condition="python:result_class == 'out_of_range'"
+    src="" tal:attributes="src string:${portal/absolute_url}/exclamation.png">
+</td>
+</div>
+</div> 
+</tal:analysis>
+</div>
+<td align="center">
+<div 
+    tal:define="item_id analysis/UID"
+    tal:condition="python:review_state in ('sample_received', 'assigned')">
+<input class="noborder" type="checkbox" name="Retested_visible" 
+       value="on" id="Retested"
+       onclick=""
+       tal:define="input_id string:${item_id}.Retested"
+       tal:attributes="
+            id input_id;
+            checked analysis/getRetested;
+            onclick string:javascript:toggleBoolean('${item_id}.Retested', '${item_id}.Retested_hidden')"/>
+<input type="hidden" name=""
+       value="" id=""
+       tal:define="
+            input_name string:results.${item_id}.Retested;
+            input_id string:${item_id}.Retested_hidden"
+       tal:attributes="
+            id input_id;
+            name string:${input_name}:record;
+            value analysis/getRetested"/>
+</div>
+<div tal:condition="python:review_state not in ('sample_received', 'assigned')">
+<span class="retested"
+      tal:condition="analysis/getRetested"
+      i18n:translate="retested">retested</span>
+</div>
+</td>
+<td class="private">
+<span tal:condition="reject"
+    i18n:translate="">rejected</span>
+<span tal:condition="not:reject"
+    tal:content="structure python:test(review_state, review_state, '&nbsp;')"
+    tal:attributes="
+        class python:test(review_state, 'state-'+review_state, 'state-private')"
+    i18n:translate="">assigned</span>
+</td>
+<td tal:condition="analysis_attach_allowed">
+<div>
+<tal:attachments
+    tal:define="attachments analysis/getAttachment | nothing;">
+<metal:block use-macro="here/attachments/macros/ws_analysis_attachments_list"/>
+</tal:attachments>
+</div>
+</td>
+</tr>
+
+</metal:block>
+</tbody>
+</table>
+
+
+<tal:remarks
+    tal:define="editable python:review_state in ['open', 'to_be_verified']">
+<span i18n:translate="label_remarks">Remarks</span>:
+<p tal:condition="editable">
+<textarea name="Notes"
+    tal:content="request/Notes|here/getNotes"></textarea>
+</p>
+<p class="comment" 
+    tal:condition="not:editable"
+    tal:content="python:here.getNotes() or default">None</p>
+</tal:remarks>
+
+
+</metal:block>
+<!--
+AVS AVS
+<a href=""
+    title="Move up"
+    tal:condition="open_ws"
+    tal:attributes="href string:javascript:moveUp('${number}')">
+<img src="up.png"/>
+</a>
+<input READONLY class="noborder" size="1" name="" value="1"
+    tal:attributes="
+        value item/Pos;
+        name string:results.${analysis/UID}.Pos:record;
+        id string:Pos.${number}"/>
+<a href=""
+    title="Move down"
+    tal:condition="open_ws"
+    tal:attributes="href string:javascript:moveDown('${number}')"> 
+<img src="down.png"/>
+</a>
+-->
+</metal:block>
+

@@ -8,8 +8,8 @@ from Products.bika.config import I18N_DOMAIN, ATTACHMENT_OPTIONS, \
     ARIMPORT_OPTIONS, PROJECTNAME
 from Products.bika.content.bikaschema import BikaFolderSchema
 from Products.bika.interfaces.controlpanel import IBikaSettings
+from Products.bika.utils import generateUniqueId
 from plone.app.folder import folder
-from utils import generateUniqueId
 from zope.interface import implements
 import sys
 

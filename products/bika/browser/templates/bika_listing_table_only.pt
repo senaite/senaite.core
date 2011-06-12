@@ -16,7 +16,6 @@
   <div tal:replace="structure provider:plone.htmlhead" />
 </head>
 
-
 <body>
 
   <div id="content">

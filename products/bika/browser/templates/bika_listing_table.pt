@@ -19,17 +19,36 @@
   </p>
 
   <metal:listing define-macro="folder_listing"
-                 tal:define="nosortclass view/get_nosort_class">
+                 tal:define="nosortclass view/get_nosort_class;
+                             requeststate python:request.get('review_state', 'all');
+                             review_state python:[t for t in view.review_states if t['id'] == requeststate][0]">
 
     <div class="visualClear" id="clear-space-before-navigation"><!-- --></div>
 
+    <form 
+      name="folderContentsForm_filter"
+      class="folderContentsForm_filter"
+      method="post"
+      tal:attributes="action python: request.get('URL', view.context.absolute_url()) + '_filter'"
+      class="kssattr-serveraction-foldercontents_update_table">
+
+    <input type="hidden" name="submitted" id="submitted" value="1"/>
+
+    <tal:x condition="python: len(view.review_states)>1"
+           repeat="state view/review_states">
+      <input class="review_state_filter"
+             type="radio" 
+             name="review_state" 
+             tal:define="state_id state/id" 
+             tal:attributes="
+               value state_id;
+               id state/id;
+               checked python:request.get('review_state', 'all') == state_id and 'checked' or None"/>
+      <label tal:attributes="for state/id;" tal:content="state/title" i18n:translate=""/>
+    </tal:x>
+
     <div tal:replace="structure view/batching"
          tal:condition="not:view/show_all"/>
-
-    <tal:review_state
-        tal:define="
-            requeststate python:request.get('review_state', 'all');
-            review_state python:[t for t in view.review_states if t['id'] == requeststate][0]">
 
         <table class="listing"
                id="listing-table"
@@ -37,9 +56,9 @@
                i18n:attributes="summary summary_content_listing;"
                tal:condition="view/items"
                tal:define="colspan python: len(review_state['columns']);
-                              colspan python: view.show_select_column and colspan + 1 or colspan;
-                              colspan python: view.show_sort_column and colspan + 1 or colspan;
-                              colspan python: str(colspan);
+                           colspan python: view.show_select_column and colspan + 1 or colspan;
+                           colspan python: view.show_sort_column and colspan + 1 or colspan;
+                           colspan python: str(colspan);
                            columns view/columns;
                            column_list python:review_state['columns']">
           <thead>
@@ -72,7 +91,6 @@
                 </tr>
             </tal:selectrow>
 
-    
             <tr>
               <th class="nosort column"
                   id="foldercontents-order-column"
@@ -82,13 +100,34 @@
                   tal:condition="view/show_select_column">
               </th>
               <th class="nosort column" tal:repeat="column column_list"
-                  id="string:foldercontents-${columns/column/title}-column"
+                  tal:attributes="id string:foldercontents-${column}-column"
                   ><span i18n:translate="python:'listingheader_' + view.columns[ column ]['title']"
                   ><span tal:content="python:view.columns[  column  ]['title']"/></span>
                </th>
             </tr>
+
+            <tal:filters condition="view/show_filters">
+                <tr>
+                  <th class="nosort column"
+                      id="foldercontents-order-column"
+                      tal:condition="view/show_sort_column">
+                  </th>
+                  <th class="nosort column"
+                      tal:condition="view/show_select_column">
+                  </th>
+                  <th tal:repeat="column column_list"
+                      class="nosort column"
+                      style="margin:0;padding:0 2px 0 2px;"
+                      tal:attributes="id string:foldercontents-${column}-column-filter">
+                      <input type="text"
+                             class='folderlisting-filter'
+                             tal:attributes="id string:foldercontents-${column}-column-filter-input"/>
+                   </th>
+                </tr>
+            </tal:filters>
+
           </thead>
-    
+
           <metal:block tal:condition="view/batch">
             <tbody>
               <tal:items tal:repeat="item view/batch">
@@ -148,7 +187,6 @@
                             tal:content="python:item.get(column)"
                             tal:attributes="class item/state_class">&nbsp</span>
 
-
                     </td>
                   </tal:column>
                 </tr>
@@ -172,17 +210,21 @@
             </tfoot>
           </metal:block>
         </table>
+      </form>
       <div tal:replace="structure view/batching" tal:condition="not:view/show_all"/>
-      <tal:buttons
-        tal:condition="python: review_state.has_key('buttons') and view.items"
-        tal:repeat="button review_state/buttons">
-        <input class="context"
-             type="submit"
-             name=""
-             value=""
-             i18n:attributes="value"
-             tal:attributes="value button/title; name button/url; class button/cssclass" />
-      </tal:buttons>
-    </tal:review_state>
+
+      <form name="folderContentsForm_actions" method="post">
+        <tal:buttons
+          tal:condition="python: review_state.has_key('buttons') and view.items"
+          tal:repeat="button review_state/buttons">
+          <input class="context"
+                 type="submit"
+                 name=""
+                 value=""
+                 i18n:attributes="value"
+                 tal:attributes="value button/title; name button/url; class button/cssclass" />
+        </tal:buttons>
+      </form>
   </metal:listing>
+
 </div>

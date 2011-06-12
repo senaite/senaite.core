@@ -138,7 +138,7 @@ This worksheet contains no analyses</span>
 </div>
 <div tal:condition="not: batch">
 
-<div tal:content="view/worksheet_search"/>
+<div tal:content="structure view/worksheet_search"/>
 
 </div>
 
@@ -218,13 +218,11 @@ This worksheet contains no analyses</span>
 </div>
 
 
-<div tal:condition="python:orientation == 'vertical'">
-<div metal:use-macro="here/worksheet_analyses_columns/macros/body"/>
-</div>
+<div tal:condition="python:orientation == 'vertical'" 
+     tal:content="structure view/worksheet_analyses_columns"/>
 
-<div tal:condition="python:orientation == 'horizontal'">
-<div metal:use-macro="here/worksheet_analyses_rows/macros/body"/>
-</div>
+<div tal:condition="python:orientation == 'horizontal'"
+     tal:content="structure view/worksheet_analyses_rows"/>
 
 
 <br/>

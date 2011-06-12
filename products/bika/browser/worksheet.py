@@ -225,7 +225,9 @@ class WorksheetAddView(BrowserView):
 class WorksheetAnalysesView(BrowserView):
     template = ViewPageTemplateFile("templates/worksheet_analyses.pt")
     worksheet_search = ViewPageTemplateFile("templates/worksheet_search.pt")
+    worksheet_analyses_columns = ViewPageTemplateFile("templates/worksheet_analyses_columns.pt")
     worksheet_analyses_rows = ViewPageTemplateFile("templates/worksheet_analyses_rows.pt")
+
     sequence = sequence
     def __call__(self):
         return self.template()
