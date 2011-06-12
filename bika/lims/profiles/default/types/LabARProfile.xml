@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<object name="LabARProfile"
+   meta_type="Factory-based Type Information with dynamic views"
+   xmlns:i18n="http://xml.zope.org/namespaces/i18n">
+ <property name="title">Lab AR Profile</property>
+ <property name="description">
+ 	Configure Analysis Request templates
+ </property>
+ <property name="icon_expr">string:${portal_url}/images/arprofile.png</property>
+ <property name="content_meta_type">LabARProfile</property>
+ <property name="product">bika</property>
+ <property name="factory">addLabARProfile</property>
+ <property name="add_view_expr"></property>
+ <property name="link_target"></property>
+ <property name="immediate_view">base_edit</property>
+ <property name="global_allow">False</property>
+ <property name="filter_content_types">False</property>
+ <property name="allowed_content_types"/>
+ <property name="allow_discussion">False</property>
+ <property name="default_view">base_view</property>
+ <property name="view_methods">
+  <element value="base_view"/>
+ </property>
+ <property name="default_view_fallback">False</property>
+ <alias from="(Default)" to="(dynamic view)"/>
+ <alias from="edit" to="base_edit"/>
+ <alias from="view" to="(selected layout)"/>
+ <alias from="index.html" to="(dynamic view)"/>
+ <action title="Edit" action_id="edit" category="object" condition_expr=""
+    icon_expr="" link_target="" url_expr="string:${object_url}/base_edit"
+    visible="True">
+  <permission value="Modify portal content"/>
+ </action>
+</object>

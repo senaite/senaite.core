@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<componentregistry>
+  <utilities>
+
+    <utility
+      component="bika.lims.controlpanel.bika_idserver.bika_idserver"
+      interface="bika.lims.interfaces.IIdServer"
+      provides="bika.lims.interfaces.IIdServer"/>
+
+  </utilities>
+</componentregistry>

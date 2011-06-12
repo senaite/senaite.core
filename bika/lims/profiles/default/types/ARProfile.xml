@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<object name="ARProfile"
+   meta_type="Factory-based Type Information with dynamic views"
+   xmlns:i18n="http://xml.zope.org/namespaces/i18n">
+ <property name="title">AR Profile</property>
+ <property name="description">
+     AnalysisRequests often use the same configurations. 
+     ARProfile is used to save these common configurations (templates).
+ </property>
+ <property name="content_icon">string:${portal_url}/images/arprofile.png</property>
+ <property name="content_meta_type">ARProfile</property>
+ <property name="product">bika</property>
+ <property name="factory">addARProfile</property>
+ <property name="immediate_view">base_view</property>
+ <property name="global_allow">False</property>
+ <property name="filter_content_types">True</property>
+ <property name="allowed_content_types"></property>
+ <property name="allow_discussion">False</property>
+ <property name="default_view">base_view</property>
+ <property name="view_methods">
+  <element value="base_view"/>
+ </property>
+ <property name="default_view_fallback">False</property>
+ <alias from="(Default)" to="(dynamic view)"/>
+ <alias from="edit" to="base_edit"/>
+ <alias from="view" to="(selected layout)"/>
+ <alias from="index.html" to="(dynamic view)"/>
+ <action title="Edit" action_id="edit" category="object" condition_expr=""
+    url_expr="string:${object_url}/base_edit" visible="True">
+  <permission value="Modify portal content"/>
+ </action>
+</object>

@@ -1,0 +1,30 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:i18n="http://namespaces.zope.org/i18n"
+    i18n_domain="bika">
+
+    <browser:page
+      for="bika.lims.interfaces.ISample"
+      name="base_view"
+      class="bika.lims.browser.sample.SampleViewView"
+      permission="zope.Public"
+      layer="bika.lims.interfaces.IBikaLIMSLayer"
+    />
+
+    <browser:page
+      for="bika.lims.interfaces.ISample"
+      name="base_edit"
+      class="bika.lims.browser.sample.SampleEditView"
+      permission="zope.Public"
+      layer="bika.lims.interfaces.IBikaLIMSLayer"
+    />
+    
+    <browser:resource
+      name="sample.js"
+      file="sample.js"
+      layer="bika.lims.interfaces.IBikaLIMSLayer"
+    />
+
+
+</configure>

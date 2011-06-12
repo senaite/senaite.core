@@ -1,0 +1,205 @@
+<html
+    xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en"
+    i18n:domain="bika"
+    metal:use-macro="here/main_template/macros/master">
+
+<head> </head>
+
+<body>
+
+<div metal:fill-slot="main"
+    tal:define="
+	tabindex view/tabindex;
+        specification python:request.get('specification', 'lab')">
+<h1>
+<span tal:content="here/title_or_id" tal:omit-tag="">Directory Id</span>
+<img src="" 
+    tal:condition="here/getInvoiceExclude"
+    tal:attributes="src string:${portal/absolute_url}/no_invoice.png">
+</h1>
+
+<a href="" class="link-parent"
+    tal:define="parent_url python:here.navigationParent(here, template.getId())"
+    tal:condition="parent_url"
+    tal:attributes="href parent_url"
+    i18n:translate="go_to_parent_url">
+Up one level
+</a>
+<form name="specificationForm"
+    enctype="multipart/form-data"
+    method="post">
+
+<span i18n:translate="label_range_specification">Range Specification</span>: 
+<input class="noborder" type="radio" name="specification" value="lab"
+    onclick="this.form.submit()"
+    tal:attributes="
+        checked python:specification == 'lab' and 'checked' or None;
+        tabindex tabindex/next"/>
+<label i18n:translate="label_lab"
+    >Lab</label>
+<input class="noborder" type="radio" name="specification" value="client"
+    onclick="this.form.submit()"
+    tal:attributes="
+        checked python:specification == 'client' and 'checked' or None;
+        tabindex tabindex/next"/>
+<label i18n:translate="label_client"
+    >Client</label> 
+</form>
+
+<form name="folderContentsForm"
+    method="post"
+    tal:define="
+        b_size python:100;
+        b_start python:0;
+        b_start request/b_start | b_start;
+        Batch python:modules['Products.CMFPlone'].Batch;
+        batch python:Batch(view.get_analyses_not_requested(), b_size, int(b_start), orphan=1);
+        client_uid here/aq_parent/UID;
+        sample python:here.getSample();
+        sampletype python:sample.getSampleType()">
+
+
+
+<p tal:condition="not: batch"
+    i18n:translate="analysisrequest_no_analyses_not_requested">
+There are no results.
+</p>
+
+<table
+    class="listing"
+    summary="Content listing"
+    cellpadding="0" cellspacing="0">
+
+<thead>
+
+<metal:block tal:condition="batch|nothing">
+<tr>
+<th class="nosort"><input
+    class="noborder"
+    type="checkbox"
+    src="select_all_icon.gif"
+    name="selectButton"
+    title="Select all items"
+    onClick="toggleSelect(this);"
+    tal:attributes="src string:$portal_url/select_all_icon.gif"
+    alt="Select all items"
+    i18n:attributes="title; alt"
+    />
+</th>
+<th i18n:translate="label_analysis">Analysis</th>
+<th i18n:translate="label_unit">Unit</th>
+<th i18n:translate="label_result">Result</th>
+<th i18n:translate="label_status">Status</th>
+</tr>
+</metal:block>
+
+</thead>
+
+<metal:block tal:condition="batch|nothing">
+<tbody>
+<metal:block tal:repeat="item batch">
+<tr tal:define="
+        oddrow repeat/item/odd;
+        item_title_or_id item/title_or_id;
+	wtool python:context.portal_workflow;
+        review_state python:wtool.getInfoFor(item, 'review_state', '')"
+    tal:attributes="
+        class python:oddrow and 'even' or 'odd'" >
+
+<td>
+<input type="checkbox" class="noborder" name="ids:list" id="#" value="#"
+    tal:attributes="
+        value item/getId;
+        id python: 'cb_'+item.getId();
+        tabindex tabindex/next|nothing;
+        alt string:Select $item_title_or_id;
+        title string:Select $item_title_or_id"/>
+</td>
+
+<td tal:content="item/Title"/>
+<td tal:content="item/getUnit"/>
+<td tal:condition="python:review_state in ('sample_received', 'assigned')">
+<input size="10" name="" value="10"
+    tal:attributes="
+        value item/getResult;
+        name string:results.${item/getId}:record;
+        tabindex tabindex/next"/>
+</td>
+<div tal:condition="python:review_state not in ('sample_received', 'assigned')">
+<tal:result
+    tal:define="
+        result_class python:view.result_in_range(item, sampletype.UID(), specification)">
+<td tal:attributes="class result_class">
+<span tal:content="item/getResult">10.00</span>
+</td>
+</tal:result>
+</div>
+
+<td class="private"
+    tal:content="structure python:review_state and review_state or '&nbsp;'"
+    tal:attributes="
+        class python:review_state and 'state-'+review_state or 'state-private'"
+    i18n:translate="">&nbsp;
+</td>
+</tr>
+
+</metal:block>
+</tbody>
+</metal:block>
+
+</table>
+
+<!-- Navigation -->
+<div metal:use-macro="here/batch_macros/macros/navigation" />
+
+<tal:buttons tal:repeat="button actions/folder_buttons|nothing">
+<input
+    class="context"
+    type="submit"
+    name=""
+    value=""
+    tabindex=""
+    tal:condition="python:batch and button['id'] in ('delete', 'change_state', 'submit_results')"
+    i18n:attributes="value"
+    tal:attributes="
+        value button/name;
+        name button/url;
+        tabindex tabindex/next" />
+</tal:buttons>
+
+
+<tal:ar_actions
+    condition="batch"
+    define="ar_workflow_actions python: view.get_analysis_request_actions()">
+
+<input type="hidden" id="workflow_action" name="workflow_action" value=""/>
+
+<tal:buttons tal:repeat="transition ar_workflow_actions">
+
+<input
+    class="context"
+    type="submit"
+    name="folder_publish:method"
+    value=""
+    tabindex=""
+    tal:condition="python:transition['id'] != 'assign'"
+    i18n:attributes="value"
+    tal:attributes="
+        value transition/title;
+        tabindex tabindex/next;
+        onclick string:this.form.workflow_action.value = '${transition/id}'" />
+</tal:buttons>
+</tal:ar_actions>
+<br/>
+<p:hazardous 
+    tal:condition="sampletype/getHazardous">
+<img src="" tal:attributes="src string:${portal/absolute_url}/hazardous.png">
+</p:hazardous>
+
+</form>
+
+</div>
+
+
+</body>
+</html>

@@ -1,0 +1,54 @@
+id: index_html
+title: Welcome to Bika LIMS
+description: This is 2.9, due for release in March 2011.
+subject: 
+relatedItems: 
+location: 
+language: 
+effectiveDate: 2011/01/01 23:00:00 GMT+2
+expirationDate: None
+creation_date: 2011/01/01 23:00:00 GMT+2
+modification_date: 2011/02/01 10:59:31.194263 GMT+2
+creators: admin
+contributors: 
+rights: 
+allowDiscussion: True
+excludeFromNav: True
+presentation: False
+tableContents: False
+Content-Type: text/html
+
+<p class="documentDescription">Thank you for downloading Bika LIMS</p>
+
+<div style="z-index:-1;float:right;margin:1em;"><a href="load_setup_data">Load setup data</a></div>
+
+<h3 class="Subheading">Feedback</h3>
+<p>Please post questions, comments and suggestions to the Bika mailing lists</p>
+<p><a href="http://lists.sourceforge.net/lists/listinfo/bika-users">Join the Bika Users list</a><br /><br />
+   <a href="http://lists.sourceforge.net/lists/listinfo/bika-developers">Join the Bika Developers list</a>
+</p>
+
+<h3>Release notes</h3>
+<p>Please find more information about this release on the Bika LIMS project pages<br /><br />
+   <a href="http://www.bikalabs.com/softwarecenter/bika/releases/2.0">Bika LIMS Inkosi 2.0</a><br /><br />
+   <a href="http://www.bikalabs.com/softwarecenter/bika/releases/2.1/">Bika LIMS Inkosi 2.1</a>
+</p>
+
+<h3>Manuals</h3>
+<p>In progress, find the latest here<br /><br />
+   <a href="http://www.bikalabs.com/helpcentre/manual/bikalims20">Inkosi manual</a><br /><br />
+   <a href="http://www.bikalabs.com/helpcentre/inkosivideos">Inkosi training videos</a>
+</p>
+
+<h3>Manuals</h3>
+<p>In progress, find the latest here<br /><br />
+   <a href="http://www.bikalabs.com/helpcentre/manual/bikalims20">Inkosi manual</a><br /><br />
+   <a href="http://www.bikalabs.com/helpcentre/inkosivideos">Inkosi training videos</a>
+</p>
+
+<p>Thank you for your support</p>
+<p>The Bika team</p>
+<p align="center"><img class="image-inline" src="images/bikalabstellit.png" height="56" width="400" /></p>
+<p><br /><a href="mailto:info@bikalabs.com" target="_self">info@bikalabs.com</a></p>
+
+

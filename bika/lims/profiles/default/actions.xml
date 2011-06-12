@@ -1,0 +1,194 @@
+<?xml version="1.0"?>
+<object xmlns:i18n="http://xml.zope.org/namespaces/i18n" name="portal_actions" meta_type="Plone Actions Tool">
+	<action-provider name="portal_actions"/>
+
+	<!-- hide the "sharing" tab on a list of types.
+     This is here to avoid hiding the sharing tab globally -->
+
+	<object name="object" meta_type="CMF Action Category">
+		<property name="title"/>
+		<object name="local_roles" meta_type="CMF Action" i18n:domain="plone">
+			<property name="title" i18n:translate="">Sharing</property>
+			<property name="title" i18n:translate="">Sharing</property>
+			<property name="description" i18n:translate=""/>
+			<property name="url_expr">string:${object_url}/@@sharing</property>
+			<property name="link_target"/>
+			<property name="icon_expr"/>
+			<property name="available_expr">python:here.portal_type not in ['Client', 'ClientFolder']</property>
+			<property name="permissions"/>
+			<property name="visible">False</property>
+		</object>
+	</object>
+
+	<object name="portal_tabs" meta_type="CMF Action Category">
+		<property name="title"/>
+		<object name="index_html" meta_type="CMF Action" i18n:domain="plone">
+			<property name="title" i18n:translate="">Home</property>
+			<property name="description" i18n:translate=""/>
+			<property name="url_expr">string:${globals_view/navigationRootUrl}</property>
+			<property name="link_target"/>
+			<property name="icon_expr"/>
+			<property name="available_expr"/>
+			<property name="permissions">
+				<element value="View"/>
+			</property>
+			<property name="visible">True</property>
+		</object>
+		<object name="mystuff" meta_type="CMF Action">
+			<property name="title">LIMS</property>
+			<property name="description"/>
+			<property name="url_expr">string:$portal_url/redirect_to_client_home</property>
+			<property name="link_target"/>
+			<property name="icon_expr"/>
+			<property name="available_expr">python: member and here.member_is_client()</property>
+			<property name="permissions">
+				<element value="View"/>
+			</property>
+			<property name="visible">True</property>
+		</object>
+		<object name="clients" meta_type="CMF Action">
+			<property name="title">Clients</property>
+			<property name="description"/>
+			<property name="url_expr">string:$portal_url/clients</property>
+			<property name="link_target"/>
+			<property name="icon_expr"/>
+			<property name="available_expr"/>
+			<property name="permissions">
+				<element value="BIKA: Manage Clients"/>
+			</property>
+			<property name="visible">True</property>
+		</object>
+		<object name="samples" meta_type="CMF Action">
+			<property name="title">Samples</property>
+			<property name="description"/>
+			<property name="url_expr">string:$portal_url/samples</property>
+			<property name="link_target"/>
+			<property name="icon_expr"/>
+			<property name="available_expr"/>
+			<property name="permissions">
+				<element value="BIKA: Manage Sample"/>
+			</property>
+			<property name="visible">True</property>
+		</object>
+		<object name="analysisrequests" meta_type="CMF Action">
+			<property name="title">Analysis requests</property>
+			<property name="description"/>
+			<property name="url_expr">string:$portal_url/analysisrequests</property>
+			<property name="link_target"/>
+			<property name="icon_expr"/>
+			<property name="available_expr"/>
+			<property name="permissions">
+				<element value="BIKA: Manage AnalysisRequest"/>
+			</property>
+			<property name="visible">True</property>
+		</object>
+		<object name="worksheets" meta_type="CMF Action">
+			<property name="title">Worksheets</property>
+			<property name="description"/>
+			<property name="url_expr">string:$portal_url/worksheets</property>
+			<property name="link_target"/>
+			<property name="icon_expr"/>
+			<property name="available_expr"/>
+			<property name="permissions">
+				<element value="BIKA: Manage Worksheets"/>
+			</property>
+			<property name="visible">True</property>
+		</object>
+		<object name="orders" meta_type="CMF Action">
+			<property name="title">Orders</property>
+			<property name="description"/>
+			<property name="url_expr">string:$portal_url/orders</property>
+			<property name="link_target"/>
+			<property name="icon_expr"/>
+			<property name="available_expr"/>
+			<property name="permissions">
+				<element value="BIKA: Manage Orders"/>
+			</property>
+			<property name="visible">True</property>
+		</object>
+		<object name="standardsuppliers" meta_type="CMF Action">
+			<property name="title">Suppliers</property>
+			<property name="description"/>
+			<property name="url_expr">string:$portal_url/standardsuppliers</property>
+			<property name="link_target"/>
+			<property name="icon_expr"/>
+			<property name="available_expr"/>
+			<property name="permissions">
+				<element value="BIKA: Manage Standard Suppliers"/>
+			</property>
+			<property name="visible">True</property>
+		</object>
+		<object name="standardsamples" meta_type="CMF Action">
+			<property name="title">Standards</property>
+			<property name="description"/>
+			<property name="url_expr">string:$portal_url/standardsamples</property>
+			<property name="link_target"/>
+			<property name="icon_expr"/>
+			<property name="available_expr"/>
+			<property name="permissions">
+				<element value="BIKA: Manage Standard"/>
+			</property>
+			<property name="visible">True</property>
+		</object>
+		<object name="queries" meta_type="CMF Action">
+			<property name="title">Queries</property>
+			<property name="description"/>
+			<property name="url_expr">string:$portal_url/query_form</property>
+			<property name="link_target"/>
+			<property name="icon_expr"/>
+			<property name="available_expr"/>
+			<property name="permissions">
+				<element value="List portal members"/>
+			</property>
+			<property name="visible">True</property>
+		</object>
+		<object name="reports" meta_type="CMF Action">
+			<property name="title">Reports</property>
+			<property name="description"/>
+			<property name="url_expr">string:$portal_url/reports</property>
+			<property name="link_target"/>
+			<property name="icon_expr"/>
+			<property name="available_expr"/>
+			<property name="permissions">
+				<element value="List portal members"/>
+			</property>
+			<property name="visible">True</property>
+		</object>
+		<object name="extracts" meta_type="CMF Action">
+			<property name="title">Extracts</property>
+			<property name="description"/>
+			<property name="url_expr">string:$portal_url/extracts</property>
+			<property name="link_target"/>
+			<property name="icon_expr"/>
+			<property name="available_expr"/>
+			<property name="permissions">
+				<element value="List portal members"/>
+			</property>
+			<property name="visible">True</property>
+		</object>
+		<object name="reset_services" meta_type="CMF Action">
+			<property name="title">Prices</property>
+			<property name="description"/>
+			<property name="url_expr">string:$portal_url/setanalyses</property>
+			<property name="link_target"/>
+			<property name="icon_expr"/>
+			<property name="available_expr"/>
+			<property name="permissions">
+				<element value="List portal members"/>
+			</property>
+			<property name="visible">True</property>
+		</object>
+		<object name="import" meta_type="CMF Action">
+			<property name="title">Import instrument</property>
+			<property name="description"/>
+			<property name="url_expr">string:$portal_url/import</property>
+			<property name="link_target"/>
+			<property name="icon_expr"/>
+			<property name="available_expr"/>
+			<property name="permissions">
+				<element value="BIKA: Manage AnalysisRequest"/>
+			</property>
+			<property name="visible">True</property>
+		</object>
+	</object>
+</object>

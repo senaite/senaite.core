@@ -1,0 +1,39 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:i18n="http://namespaces.zope.org/i18n"
+    i18n_domain="bika">
+
+    <include file="client.zcml"/>
+    <include file="analysisrequest.zcml"/>
+    <include file="worksheet.zcml"/>
+    <include file="sample.zcml"/>
+    <include file="viewlets.zcml"/>
+    <include package=".widgets"/>
+
+    <includeOverrides file="overrides.zcml" />
+
+    <browser:page
+      for="*"
+      name="load_setup_data"
+      class="bika.lims.browser.load_setup_data.LoadSetupData"
+      permission="bika.ManageBika"
+      layer="bika.lims.interfaces.IBikaLIMSLayer"
+    />
+
+    <browser:page
+      for="bika.lims.interfaces.IClientFolder"
+      name="clientfolder_contents"
+      class="bika.lims.browser.clientfolder.ClientFolderContentsView"
+      permission="bika.ManageClients"
+      layer="bika.lims.interfaces.IBikaLIMSLayer"
+    />
+
+    <browser:resource
+      name="bika_listing.js"
+      file="bika_listing.js"
+      layer="bika.lims.interfaces.IBikaLIMSLayer"
+    />
+
+
+</configure>

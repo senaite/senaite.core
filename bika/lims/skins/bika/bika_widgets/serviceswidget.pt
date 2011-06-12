@@ -1,0 +1,69 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      i18n:domain="plone">
+  <head><title></title></head>
+  <body>
+<!-- The view macro is untested altogether - this widget is used only for edit -->
+    <metal:view_macro define-macro="view">
+        <span id="serviceswidget"
+              tal:define="categories python:widget.getCategories(field, allservices=False);">
+          <table class="analysisrequest">
+            <tal:repeat repeat="category python:categories.keys()">
+              <tbody>
+                <tr>
+                  <th tal:content="category"/>
+                </tr>
+                <tr tal:condition="python:categories[category]">
+                  <td tal:content="python:', '.join([service.Title() for service in categories[category]])"/>
+                </tr>
+              </tbody>
+            </tal:repeat>
+          </table>
+        </span>
+    </metal:view_macro>
+
+    <metal:edit_macro define-macro="edit">
+      <metal:use use-macro="field_macro | context/widgets/field/macros/edit">
+        <metal:body_macro fill-slot="widget_body">
+          <span id="serviceswidget"
+            tal:define="servicedata python:widget.Categories(field);
+                        selectedservices python:widget.Categories(field,allservices=False)">
+
+            <table class="analysisrequest">
+
+              <tal:pointofcapture repeat="poc python:servicedata.keys()">
+                <thead>
+                  <tr><th colspan="2"><b tal:content="python:poc[1]">Analyses</b></th></tr>
+                </thead>
+
+                <tal:category repeat="cat python:servicedata[poc]">
+
+                  <input type=hidden tal:attributes="
+                      id python:'allservices_%s_%s'%(cat[0], poc[0]);
+                      value python: widget.dumpsJSON(servicedata[poc][cat]);">
+                  <input type=hidden tal:attributes="
+                      id python:'selectedservices_%s_%s'%(cat[0], poc[0]);
+                      value python: widget.dumpsJSON(selectedservices[poc].has_key(cat) and selectedservices[poc][cat] or [])">
+
+                  <thead>
+                    <tr tal:attributes="class python:selectedservices[poc].has_key(cat) and 'initial prefill' or 'initial';
+                                        name python:'%s_%s'%(cat[0], poc[0]);
+                                        id field/getName;">
+                      <th/>
+                      <th tal:content="python:cat[1]"/>
+                    </tr>
+                  </thead>
+                  <tbody tal:attributes="id python:'%s_%s'%(cat[0], poc[0])" class="analysisservices">
+                    <tr></tr>
+                  </tbody>
+                </tal:category>
+              </tal:pointofcapture>
+            </table>
+          </span>
+        </metal:body_macro>
+      </metal:use>
+    </metal:edit_macro>
+</body>
+</html>

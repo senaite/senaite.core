@@ -1,0 +1,57 @@
+title:string=Plone's color, font, logo and border defaults
+
+plone_skin:string=Plone Default
+
+logoName:string=logo.png
+
+fontFamily:string="Lucida Grande", Verdana, Lucida, Helvetica, Arial, sans-serif
+fontBaseSize:string=69%
+fontColor:string=Black
+fontSmallSize:string=95%
+fontSmallerSize:string=80%
+
+backgroundColor:string=White
+
+linkColor:string=#436976
+linkActiveColor:string=Red
+linkVisitedColor:string=Purple
+
+borderWidth:string=1px
+borderWidthStrong:string=2px
+borderStyle:string=solid
+borderStyleAnnotations:string=dashed
+
+globalBorderColor:string=#636321
+globalBackgroundColor:string=#d3d3ad
+globalFontColor:string=#636321
+
+outOfRangeBackgroundColor:string=#ffcc99
+inErrorRangeBackgroundColor:string=#ffff99
+
+blankBackgroundColor:string=#ffc1ff
+duplicateBackgroundColor:string=#b5d8a9
+standardBackgroundColor:string=#d2d2e8
+
+headingFontFamily:string="Lucida Grande", Verdana, Lucida, Helvetica, Arial, sans-serif
+headingFontBaseSize:string=100%
+
+contentViewBorderColor:string=#636321
+contentViewBackgroundColor:string=#e2e2c7
+contentViewFontColor:string=black
+
+inputFontColor:string=Black
+
+textTransform:string=lowercase
+
+evenRowBackgroundColor:string=#f7f9fa
+oddRowBackgroundColor:string=transparent
+
+notifyBorderColor:string=#f7f32a
+notifyBackgroundColor:string=#fffd9e
+
+discreetColor:string=#76797c
+helpBackgroundColor:string=#ffffe1
+
+portalMinWidth:string=70em
+columnOneWidth:string=16em
+columnTwoWidth:string=16em

@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<tool-setup>
+<!--
+ <required tool_id="bika_analysisspecs" class="bika.lims.tools.bika_analysisspecs"/>
+ <required tool_id="bika_ar_export" class="bika.lims.tools.bika_ar_export"/>
+ <required tool_id="bika_ar_import" class="bika.lims.tools.bika_ar_import"/>
+ <required tool_id="bika_arprofiles" class="bika.lims.tools.bika_arprofiles"/>
+ <required tool_id="bika_attachmenttypes" class="bika.lims.tools.bika_attachmenttypes"/>
+ <required tool_id="bika_calctypes" class="bika.lims.tools.bika_calctypes"/>
+ <required tool_id="bika_client_categories" class="bika.lims.tools.bika_client_categories"/>
+ <required tool_id="bika_client_status" class="bika.lims.tools.bika_client_status"/>
+ <required tool_id="bika_departments" class="bika.lims.tools.bika_departments"/>
+ <required tool_id="bika_instrument_import" class="bika.lims.tools.bika_instrument_import"/>
+ <required tool_id="bika_instruments" class="bika.lims.tools.bika_instruments"/>
+ <required tool_id="bika_invoice_prefs" class="bika.lims.tools.bika_invoice_prefs"/>
+ <required tool_id="bika_labcontacts" class="bika.lims.tools.bika_labcontacts"/>
+ <required tool_id="bika_labinfo" class="bika.lims.tools.bika_labinfo"/>
+ <required tool_id="bika_methods" class="bika.lims.tools.bika_methods"/>
+ <required tool_id="bika_pdf_build" class="bika.lims.tools.bika_pdf_build"/>
+ <required tool_id="bika_products" class="bika.lims.tools.bika_products"/>
+ <required tool_id="bika_profiles_export" class="bika.lims.tools.bika_profiles_export"/>
+ <required tool_id="bika_publication_prefs" class="bika.lims.tools.bika_publication_prefs"/>
+ <required tool_id="bika_samplepoints" class="bika.lims.tools.bika_samplepoints"/>
+ <required tool_id="bika_sampletypes" class="bika.lims.tools.bika_sampletypes"/>
+ <required tool_id="bika_services" class="bika.lims.tools.bika_services"/>
+ <required tool_id="bika_services_export" class="bika.lims.tools.bika_services_export"/>
+ <required tool_id="bika_settings" class="bika.lims.tools.bika_settings"/>
+ <required tool_id="bika_standardmanufacturers" class="bika.lims.tools.bika_standardmanufacturers"/>
+ <required tool_id="bika_standardstocks" class="bika.lims.tools.bika_standardstocks"/>
+ <required tool_id="bika_worksheettemplates" class="bika.lims.tools.bika_worksheettemplates"/>
+-->
+</tool-setup>

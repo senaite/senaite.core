@@ -1,0 +1,200 @@
+<!-- XXX copy of default plone_control_panel with some small changes. -->
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      lang="en"
+      metal:use-macro="here/prefs_main_template/macros/master"
+      i18n:domain="plone">
+
+<metal:override fill-slot="top_slot"
+                tal:define="dummy python:request.set('disable_border',1);
+                            disable_column_one python:request.set('disable_plone.leftcolumn',1);
+                            disable_column_two python:request.set('disable_plone.rightcolumn',1);"/>
+
+<body>
+
+<!-- Default plone.app.controlpanel doesn't [entirely] support arbitrary groups (?!),
+     and we want a "Bika Configuration" group for Bika stuff. -->
+<metal:main fill-slot="prefs_configlet_wrapper"
+     tal:define="controlPanel context/portal_controlpanel;
+                 groups python:controlPanel.getGroups('site');
+                 groups python:[groups[0],] + [{'id': 'bika', 'title': u'Bika Configuration'},] + groups[1:]">
+
+<tal:main-macro metal:define-macro="main"
+                tal:define="mt context/portal_migration;
+                            sys mt/coreVersions;
+                            mailhost context/MailHost/smtp_host|nothing;
+                            mailfrom context/email_from_address|nothing">
+
+        <dl class="portalMessage warning"
+            tal:condition="mt/needUpgrading">
+            <dt i18n:translate="">
+                Warning
+            </dt>
+            <dd i18n:translate="">
+                The site configuration is outdated and needs to be
+                upgraded. Please
+                <a href="#"
+                   tal:attributes="href string:${context/portal_url}/@@plone-upgrade"
+                   title="Go to the upgrade page"
+                   i18n:attributes="title;"
+                   i18n:name="link_continue_with_the_upgrade"
+                   i18n:translate="">
+                  continue with the upgrade
+                </a>.
+            </dd>
+        </dl>
+        <dl class="portalMessage warning"
+            tal:condition="python:not (mailhost and mailfrom)">
+            <dt i18n:translate="">
+                Warning
+            </dt>
+            <dd i18n:translate="text_no_mailhost_configured">
+            You have not configured a mail host or a site 'From'
+            address, various features including contact forms, email
+            notification and password reset will not work. Go to the
+            <tal:link i18n:name="label_mail_control_panel_link">
+                <a href=""
+                   i18n:translate="text_no_mailhost_configured_control_panel_link"
+                   tal:attributes="href string:${context/portal_url}/@@mail-controlpanel"
+                >Mail control panel</a>
+            </tal:link>
+            to fix this.
+            </dd>
+        </dl>
+
+<!-- We want to alert the user if some [required] controlpanel data are missing.  XXX This is pretty, but utterly vaporous
+        <dl class="portalMessage warning"               
+          tal:condition="python:True">
+            <dt i18n:translate="">
+                Warning
+            </dt>
+            <dd i18n:translate="">
+            Bika LIMS configuration is incomplete; *click* for more information.
+            </dd>
+        </dl>
+-->
+
+        <dl class="portalMessage warning"
+            tal:condition="not:sys/PIL">
+            <dt i18n:translate="">
+                Warning
+            </dt>
+            <dd i18n:translate="text_no_pil_installed">
+            Warning: PIL is not installed properly, image scaling will not work.
+            </dd>
+        </dl>
+
+        <div metal:use-macro="context/global_statusmessage/macros/portal_message">
+            Portal status message
+        </div>
+
+        <div id="content">
+
+            <h1 class="documentFirstHeading"
+                i18n:translate="">Site Setup</h1>
+
+            <div class="documentDescription" i18n:translate="description_site_setup">
+              Configuration area for Plone and add-ons.
+            </div>
+
+            <div id="content-core">
+
+                <tal:configletgroup tal:repeat="group groups">
+
+                    <h2 tal:content="group/title"
+                        i18n:translate="">Plone Configlet Group Title</h2>
+
+                    <metal:configlets tal:define="allconfiglets python:controlPanel.enumConfiglets(group=group['id']);
+                                                  configlets python:here.createMultiColumnList(allconfiglets, numCols=3);">
+
+                        <metal:configletcol tal:repeat="sublist configlets">
+                            <div tal:condition="sublist"
+                                 style="float:left; margin-right: 1em; width: 29%">
+
+                                <ul class="configlets" tal:condition="sublist">
+
+                                    <tal:configlet repeat="configlet sublist">
+                                      <li tal:condition="configlet/visible"
+                                      tal:define="icon python:configlet['icon'];">
+                                            <a href=""
+                                               tal:attributes="href configlet/url;">
+                                               <img src="" alt=""
+                                                 tal:condition="not:icon"
+                                                 tal:attributes="src string:${portal_url}/maintenance_icon.png;" tal:on-error="string:" />
+                                               <img src="" alt=""
+                                                 tal:condition="icon"
+                                                 tal:attributes="src icon;" tal:on-error="string:" />
+                                            <tal:configletname tal:content="configlet/title"
+                                                               i18n:translate=""></tal:configletname>
+                                            </a>
+                                        </li>
+                                    </tal:configlet>
+
+                                </ul>
+
+                            </div>
+                        </metal:configletcol>
+
+                        <div class="discreet"
+                             tal:condition="not:allconfiglets"
+                             i18n:translate="label_no_prefs_panels_available">
+                            No preference panels available.
+                        </div>
+
+                        <div class="visualClear"><!-- --></div>
+
+                    </metal:configlets>
+
+                </tal:configletgroup>
+
+                <div class="visualClear"><!-- --></div>
+
+                <tal:versions define="mt here/portal_migration;
+                                      sys mt/coreVersions">
+                    <h2 i18n:translate="heading_version_overview">
+                        Version Overview
+                    </h2>
+
+                    <ul class="configlets">
+                        <li>Plone <span tal:replace="mt/getSoftwareVersion" /></li>
+                        <li>Zope <span tal:replace="sys/Zope" /></li>
+                        <li>Python <span tal:replace="sys/Python" /></li>
+                    </ul>
+                </tal:versions>
+
+                <tal:debugmode define="QI context/portal_quickinstaller">
+                    <p tal:condition="not:QI/isDevelopmentMode"
+                       class="discreet"
+                       i18n:translate="description_production_mode">
+                      You are running in "production mode". This is the preferred mode of
+                      operation for a live Plone site, but means that some
+                      configuration changes will not take effect until your server is
+                      restarted or a product refreshed. If this is a development instance,
+                      and you want to enable debug mode, stop the server, set 'debug-mode=on'
+                      in your buildout.cfg, re-run bin/buildout and then restart the server
+                      process.
+                    </p>
+
+                    <p tal:condition="QI/isDevelopmentMode"
+                       class="discreet"
+                       i18n:translate="description_debug_mode">
+                      You are running in "debug mode". This mode is intended for sites that
+                      are under development. This allows many configuration changes to be
+                      immediately visible, but will make your site run more slowly. To turn
+                      off debug mode, stop the server, set 'debug-mode=off' in your
+                      buildout.cfg, re-run bin/buildout and then restart the server
+                      process.
+                    </p>
+                </tal:debugmode>
+            </div>
+
+        </div>
+
+</tal:main-macro>
+
+</metal:main>
+
+</body>
+</html>

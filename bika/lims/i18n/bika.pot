@@ -1,0 +1,331 @@
+# bika message ids
+# Roché Compaan <roche@upfrontsystems.co.za>, 2005.
+msgid ""
+msgstr ""
+"Project-Id-Version: bika v 1.0\n"
+"POT-Creation-Date: 2005-02-04 21:16+0000\n"
+"PO-Revision-Date: 2005-02-04 11:18 +0200\n"
+"Last-Translator: Roché Compaan <roche@upfrontsystems.co.za>\n"
+"Language-Team: English <info@upfrontsystems.co.za>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=latin1\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0\n"
+"Language-Code: en\n"
+"Language-Name: English\n"
+"Preferred-Encodings: latin1 utf-8\n"
+"Domain: bika\n"
+
+#: ./skins/bika/worksheet_analyses.pt
+#. <input class="standalone" i18n:attributes="value" name="searchAnalyses:method" tabindex="" tal:attributes="tabindex tabindex/next|nothing" tal:condition="python: wf_state == 'open'" type="submit" value="Add Analysis"/>
+msgid "Add Analysis"
+msgstr ""
+
+
+#: ./skins/bika/worksheet_search_analysis.pt
+#. <input class="context" i18n:attributes="value" name="" tal:condition="batch" type="submit" value="Add to worksheet"/>
+msgid "Add to worksheet"
+msgstr ""
+
+
+#: ./skins/bika/colophon.pt
+#. <img alt="Powered by bika" height="18" i18n:attributes="alt title" src="" tal:attributes="src string:$portal_url/logobikalabsfooter.png" title="This lab site was built using bika lab information management system. Click for more information." width="76"/>
+msgid "Powered by bika"
+msgstr ""
+
+
+#: ./skins/bika/colophon.pt
+#. <img alt="Powered by bika" height="18" i18n:attributes="alt title" src="" tal:attributes="src string:$portal_url/logobikalabsfooter.png" title="This lab site was built using bika lab information management system. Click for more information." width="76"/>
+msgid "This lab site was built using bika lab information management system. Click for more information."
+msgstr ""
+
+
+#: ./skins/bika/analysisrequest_analyses.pt
+#. <p i18n:translate="analysisrequest_no_analysis_selected" tal:condition="not: batch">
+#. This analysis contains no analysis. Click on the add analysis button below.
+#. </p>
+msgid "analysisrequest_no_analysis_selected"
+msgstr "This analysis contains no analysis. Click on the add analysis button below."
+
+
+#: ./skins/bika/analysisrequest_add_form.cpt
+#. <p class="portalMessage" i18n:translate="ar_form_input_required">
+#. Column
+#.  ${column_nr}
+#.  .
+#.  ${field_name}
+#.  :
+#.  ${message}
+#. </p>
+msgid "ar_form_input_required"
+msgstr "Column ${column_nr} . ${field_name} : ${message}"
+
+
+#: ./skins/bika/portlet_pending_orders.pt
+#. <h5 i18n:translate="box_pending_orders">
+#.  Pending orders
+#. </h5>
+msgid "box_pending_orders"
+msgstr "Pending orders"
+
+
+#: ./skins/bika/portlet_sample_due.pt
+#. <h5 i18n:translate="box_sample_due">
+#.  Sample due
+#. </h5>
+msgid "box_sample_due"
+msgstr "Sample due"
+
+
+#: ./skins/bika/portlet_review.pt
+#. <h5 i18n:translate="box_to_be_verified">
+#.  To be verified
+#. </h5>
+msgid "box_to_be_verified"
+msgstr "To be verified"
+
+
+#: ./skins/bika/portlet_verified.pt
+#. <h5 i18n:translate="box_verified">
+#.  Verified
+#. </h5>
+msgid "box_verified"
+msgstr "Verified"
+
+
+#: ./skins/bika/analysisrequests.pt
+#. <span i18n:translate="heading_analysis_requests">
+#.  Analysis requests
+#. </span>
+msgid "heading_analysis_requests"
+msgstr "Analysis requests"
+
+
+#: ./skins/bika/query_form.pt
+#. <span i18n:translate="heading_query_analysis_requests">
+#.  Query analysis requests
+#. </span>
+msgid "heading_query_analysis_requests"
+msgstr "Query analysis requests"
+
+
+#: ./skins/bika/analysisrequest_add_form.cpt
+#. <span i18n:translate="heading_request_new_analyses" tal:omit-tag="">
+#.  Request new analyses
+#. </span>
+msgid "heading_request_new_analyses"
+msgstr "Request new analyses"
+
+
+#: ./skins/bika/worksheet_analyses.pt
+#. <p i18n:translate="worksheet_no_analysis_selected" tal:condition="not: batch">
+#. This worksheet contains no analysis. Click on the add analysis button below.
+#. </p>
+msgid "worksheet_no_analysis_selected"
+msgstr "This worksheet contains no analysis. Click on the add analysis button below."
+
+
+#: ./skins/bika/worksheet_analyses_columns.pt
+#. <th i18n:translate="label_analyses" tal:attributes="colspan python:b_size+1">
+#.  Analyses
+#. </th>
+#: ./skins/bika/analysisrequests_columns.pt
+#. <th i18n:domain="bika" i18n:translate="label_analyses" tal:attributes="colspan batch_size">
+#.  Analyses
+#. </th>
+msgid "label_analyses"
+msgstr "Analyses"
+
+
+#: ./skins/bika/worksheet_analyses_rows.pt
+#. <th i18n:translate="label_analysis">
+#.  Analysis
+#. </th>
+msgid "label_analysis"
+msgstr "Analysis"
+
+
+#: ./skins/bika/worksheet_search_analysis.pt
+#. <label i18n:translate="label_analysisservice">
+#.  Analysis
+#. </label>
+msgid "label_analysisservice"
+msgstr "Analysis"
+
+
+#: ./skins/bika/analysisrequests_columns.pt
+#. <th i18n:domain="bika" i18n:translate="label_client">
+#.  Client
+#. </th>
+#: ./skins/bika/worksheet_search_analysis.pt
+#. <label i18n:translate="label_client">
+#.  Client
+#. </label>
+#: ./skins/bika/analysisrequests.pt
+#. <th i18n:translate="label_client">
+#.  Client
+#. </th>
+msgid "label_client"
+msgstr "Client"
+
+
+#: ./skins/bika/analysisrequests.pt
+#. <th i18n:translate="label_contact">
+#.  Contact
+#. </th>
+msgid "label_contact"
+msgstr "Contact"
+
+
+#: ./skins/bika/analysisrequest_add_form.cpt
+#. <th i18n:translate="label_contact_person">
+#.  Contact person
+#.  <span class="fieldRequired"/>
+#. </th>
+#: ./skins/bika/order_edit.pt
+#. <th i18n:translate="label_contact_person">
+#.  Contact person
+#. </th>
+msgid "label_contact_person"
+msgstr "Contact person"
+
+
+#: ./skins/bika/analysisrequests.pt
+#. <th i18n:translate="label_datereceived">
+#.  Date received
+#. </th>
+msgid "label_datereceived"
+msgstr "Date received"
+
+
+#: ./skins/bika/analysisrequests.pt
+#. <th i18n:translate="label_daterequested">
+#.  Date requested
+#. </th>
+#: ./skins/bika/analysisrequest_view.pt
+#. <th i18n:translate="label_daterequested">
+#.  Date received
+#. </th>
+msgid "label_daterequested"
+msgstr "Date requested"
+
+
+#: ./skins/bika/orders.pt
+#. <th i18n:translate="label_orderdate">
+#.  Order date
+#. </th>
+#. <th i18n:translate="label_orderdate">
+#.  Dispatched on
+#. </th>
+msgid "label_orderdate"
+msgstr "Order date"
+
+
+#: ./skins/bika/orders.pt
+#. <th i18n:translate="label_ordernumber">
+#.  Order number
+#. </th>
+msgid "label_ordernumber"
+msgstr "Order number"
+
+
+#: ./skins/bika/worksheet_analyses.pt
+#. <span i18n:translate="label_orientation">Orientation</span>: 
+msgid "label_orientation"
+msgstr "Orientation"
+
+
+#: ./skins/bika/worksheet_analyses.pt
+#. <label i18n:translate="label_orientation_columns">
+#.  AR in columns
+#. </label>
+msgid "label_orientation_columns"
+msgstr "AR in columns"
+
+
+#. <label i18n:translate="label_orientation_rows">
+#.  AR in rows
+#. </label>
+msgid "label_orientation_rows"
+msgstr "AR in rows"
+
+
+#: ./skins/bika/analysisrequests_columns.pt
+#. <th i18n:domain="bika" i18n:translate="label_requestid">
+#.  Request ID
+#. </th>
+#: ./skins/bika/analysisrequests.pt
+#. <th i18n:translate="label_requestid">
+#.  Request ID
+#. </th>
+#: ./skins/bika/query_form.pt
+#. <label i18n:translate="label_requestid">
+#.  Request ID
+#. </label>
+msgid "label_requestid"
+msgstr "Request ID"
+
+
+#: ./skins/bika/worksheet_analyses_rows.pt
+#. <th i18n:translate="label_result">
+#.  Result
+#. </th>
+msgid "label_result"
+msgstr "Result"
+
+
+#: ./skins/bika/analysisrequest_add_form.cpt
+#. <th i18n:translate="label_clientreference" id="">
+#.  Client Reference
+#. </th>
+#: ./skins/bika/analysisrequests_columns.pt
+#. <th i18n:domain="bika" i18n:translate="label_clientreference">
+#.  Client Reference
+#. </th>
+#: ./skins/bika/analysisrequests.pt
+#. <th i18n:translate="label_clientreference">
+#.  Client Reference
+#. </th>
+msgid "label_clientreference"
+msgstr "Client Reference"
+
+
+#: ./skins/bika/orders.pt
+#. <th i18n:translate="label_subtotal">
+#.  Subtotal
+#. </th>
+msgid "label_subtotal"
+msgstr "Subtotal"
+
+
+#: ./skins/bika/orders.pt
+#. <th i18n:translate="label_totalprice">
+#.  Total price
+#. </th>
+msgid "label_totalprice"
+msgstr "Total price"
+
+
+#: ./skins/bika/orders.pt
+#. <th i18n:translate="label_vat">
+#.  VAT
+#. </th>
+msgid "label_vat"
+msgstr "VAT"
+
+
+#: ./skins/bika/worksheet_search_analysis.pt
+#. <legend i18n:translate="legend_search">
+#.  Search
+#. </legend>
+msgid "legend_search"
+msgstr "Search"
+
+
+#: ./skins/bika/worksheet_search_analysis.pt
+#. <p i18n:translate="no_items_found">
+#.  No items found.
+#. </p>
+msgid "no_items_found"
+msgstr "No items found."
+

@@ -1,0 +1,81 @@
+<?xml version="1.0"?>
+<object name="Client"
+   meta_type="Factory-based Type Information with dynamic views"
+   xmlns:i18n="http://xml.zope.org/namespaces/i18n">
+ <property name="title">Client</property>
+ <property name="description"></property>
+ <property name="icon_expr">string:${portal_url}/images/client.png</property>
+ <property name="content_meta_type">Client</property>
+ <property name="product">bika</property>
+ <property name="factory">addClient</property>
+ <property name="add_view_expr"></property>
+ <property name="link_target"></property>
+ <property name="immediate_view">base_edit</property>
+ <property name="global_allow">False</property>
+ <property name="filter_content_types">True</property>
+ <property name="allowed_content_types">
+  <element value="AnalysisRequest"/>
+  <element value="Sample"/>
+  <element value="Attachment"/>
+  <element value="Contact"/>
+  <element value="Order"/>
+  <element value="ARImport"/>
+  <element value="ARProfile"/>
+  <element value="AnalysisSpec"/>
+ </property>
+ <property name="allow_discussion">False</property>
+ <property name="default_view">analysisrequests</property>
+ <property name="view_methods">
+  <element value="analysisrequests"/>
+  <element value="samples"/>
+ </property>
+ <property name="default_view_fallback">False</property>
+ <alias from="(Default)" to="(dynamic view)"/>
+ <alias from="edit" to="base_edit"/>
+ <alias from="index.html" to="(dynamic view)"/>
+ <alias from="properties" to="base_metadata"/>
+ <alias from="view" to="analysisrequests"/>
+  <action title="Edit" action_id="edit" category="object"
+    condition_expr="" icon_expr="" link_target=""
+    url_expr="string:${object_url}/base_edit" visible="True"/>
+ <action title="Contacts" action_id="contacts" category="object"
+    condition_expr="" icon_expr="string:${portal_url}/images/contact.png"
+    link_target="" url_expr="string:${object_url}/contacts" visible="True">
+  <permission value="List folder contents"/>
+ </action>
+ <action title="Samples" action_id="samples" category="object"
+    condition_expr="" icon_expr="string:${portal_url}/images/sample.png"
+    link_target="" url_expr="string:${object_url}/samples" visible="True">
+  <permission value="List folder contents"/>
+ </action>
+ <action title="Requests" action_id="view" category="object" condition_expr=""
+    icon_expr="string:${portal_url}/images/ar.png" link_target=""
+    url_expr="string:${object_url}/analysisrequests" visible="True">
+  <permission value="List folder contents"/>
+ </action>
+ <action title="Imports" action_id="imports" category="object"
+    condition_expr="" icon_expr="string:${portal_url}/images/arimport.png"
+    link_target="" url_expr="string:${object_url}/arimports" visible="True">
+  <permission value="List folder contents"/>
+ </action>
+ <action title="Profiles" action_id="profiles" category="object"
+    condition_expr="" icon_expr="string:${portal_url}/images/arprofile.png"
+    link_target="" url_expr="string:${object_url}/arprofiles" visible="True">
+  <permission value="List folder contents"/>
+ </action>
+ <action title="Specs" action_id="specs" category="object" condition_expr=""
+    icon_expr="string:${portal_url}/images/analysisspec.png" link_target=""
+    url_expr="string:${object_url}/analysisspecs" visible="True">
+  <permission value="List folder contents"/>
+ </action>
+ <action title="Attachments" action_id="attachments" category="object"
+    condition_expr="" icon_expr="string:${portal_url}/images/attachment.png"
+    link_target="" url_expr="string:${object_url}/attachments" visible="True">
+  <permission value="List folder contents"/>
+ </action>
+ <action title="Orders" action_id="orders" category="object" condition_expr=""
+    icon_expr="string:${portal_url}/images/order.png" link_target=""
+    url_expr="string:${object_url}/orders" visible="True">
+  <permission value="List folder contents"/>
+ </action>
+</object>
