@@ -1,27 +1,26 @@
 jQuery( function($) {
 	$(document).ready(function(){
 
-		
-		// the filter text boxes trap the enter key and submit
 		function inplace_submit(){
-			options = {
-					target: '',
-					replaceTarget: false
-			}
-			form = $('folderContentsForm_filter');
-			form.ajaxSubmit();
+			options = {target: '#folderlisting-main-table', replaceTarget: true }
+			form = $('.folderContentsForm');
+			form.ajaxSubmit(options);
 		}
 
-		$(".folderlisting-filter").keyup(function (event) {
-			if(event.which == 13){
+		function folderlisting_filter_keyup(key){
+		}
+		
+		// the filter text boxes trap the enter key and submit
+		$(".folderlisting-filter").live('keyup', function(key){
+			if(key.which == 13) {
 				inplace_submit();
 			}
-		});
+		})
 
-		$(".review_state_filter").change(function(){
+		// review_state radio boxes submit the form
+		$(".review_state_filter").live('change', function(){
 			inplace_submit();
 		});
-
 
 	});
 });

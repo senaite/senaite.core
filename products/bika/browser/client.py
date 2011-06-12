@@ -13,13 +13,13 @@ class ClientAnalysisRequestsView(BikaListingView):
     show_select_row = False
     show_select_column = True
     batch = True
-    pagesize = 20
+    pagesize = 10
 
     columns = {
            'getRequestID': {'title': _('Request ID')},
            'getClientOrderNumber': {'title': _('Client Order')},
            'getClientReference': {'title': _('Client Ref')},
-           'getClientSampleID': {'title': _('Client Sample ID')},
+           'getClientSampleID': {'title': _('Client Sample')},
            'getSampleType': {'title': _('Sample Type')},
            'getSamplePoint': {'title': _('Sample Point')},
            'getDateReceived': {'title': _('Date Received')},
@@ -112,13 +112,9 @@ class ClientAnalysisRequestsView(BikaListingView):
 
 class ClientAnalysisRequestsFilterView(ClientAnalysisRequestsView):
     def __call__(self):
-        import pdb
-        pdb.set_trace()
-
-        # modify contentFilter with updated filters
         form = self.request.form
-        self.contentFilter = super(ClientAnalysisRequestsFilterView, self).contentFilter
 
+        # modify contentFilter with review_state radio value
         if form.has_key("review_state"):
             if self.request['review_state'] == 'all':
                 if self.contentFilter.has_key('review_state'):
@@ -126,8 +122,13 @@ class ClientAnalysisRequestsFilterView(ClientAnalysisRequestsView):
             else:
                 self.contentFilter['review_state'] = form['review_state']
 
-        return self.contents_table()
+        # modify contentFilter with text filters if specified
+        for key, value in form.items():
+            if key.endswith("column-filter-input"):
+                self.filters_are_active = True
+                self.contentFilter[key.split("-")[1]] = value
 
+        return self.contents_table()
 
 class ClientSamplesView(BikaListingView):
     implements(IFolderContentsView)

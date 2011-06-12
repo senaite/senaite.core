@@ -11,6 +11,8 @@
     <include file="viewlets.zcml"/>
     <include package=".widgets"/>
 
+    <includeOverrides file="overrides.zcml" />
+
     <browser:page
       for="*"
       name="load_setup_data"

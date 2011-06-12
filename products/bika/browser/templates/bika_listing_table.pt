@@ -1,41 +1,29 @@
-<div id="folderlisting-main-table"
-     i18n:domain="bika">
-  <input type="hidden" name="sort_on"
-         tal:attributes="value request/sort_on|string:getObjPositionInParent"/>
+<div id="folderlisting-main-table" i18n:domain="bika">
+  <input type="hidden" name="sort_on" tal:attributes="value request/sort_on|string:getObjPositionInParent"/>
   <input type="hidden" name="pagenumber" tal:attributes="value view/batch/pagenumber"/>
   <input type="hidden" name="show_all" tal:attributes="value view/show_all"/>
   <input type="hidden" name="orig_template" tal:attributes="value view/viewname"/>
 
-  <tal:block condition="view/selectall">
     <input type="hidden" name="paths:list"
+           tal:condition="view/selectall"
            tal:repeat="item view/batch/items_not_on_page"
            tal:attributes="value item/path"/>
-  </tal:block>
-
-  <p class="discreet"
-     tal:condition="not: view/batch"
-     i18n:translate="description_no_visible_items_add_paste">
-    This folder has no visible items.
-  </p>
 
   <metal:listing define-macro="folder_listing"
                  tal:define="nosortclass view/get_nosort_class;
-                             requeststate python:request.get('review_state', 'all');
-                             review_state python:[t for t in view.review_states if t['id'] == requeststate][0]">
+                             review_state python:[t for t in view.review_states if t['id'] == request.get('review_state', 'all')][0];
+                             portal context/@@plone_portal_state/portal;">
 
     <div class="visualClear" id="clear-space-before-navigation"><!-- --></div>
 
     <form 
-      name="folderContentsForm_filter"
-      class="folderContentsForm_filter"
+      name="folderContentsForm"
+      class="folderContentsForm"
       method="post"
-      tal:attributes="action python: request.get('URL', view.context.absolute_url()) + '_filter'"
+      tal:attributes="action python: request.get('URL', view.context.absolute_url()).replace('_filter','') + '_filter'"
       class="kssattr-serveraction-foldercontents_update_table">
 
-    <input type="hidden" name="submitted" id="submitted" value="1"/>
-
-    <tal:x condition="python: len(view.review_states)>1"
-           repeat="state view/review_states">
+    <tal:x condition="python: len(view.review_states)>1" repeat="state view/review_states">
       <input class="review_state_filter"
              type="radio" 
              name="review_state" 
@@ -47,6 +35,13 @@
       <label tal:attributes="for state/id;" tal:content="state/title" i18n:translate=""/>
     </tal:x>
 
+    <p class="discreet"
+       tal:condition="not: view/batch"
+       i18n:translate="description_no_visible_items_add_paste">
+      This folder has no visible items.
+      <a href='#' class="remove_filters" tal:condition="view/filters_are_active" i18n:translate="remove_filters">[remove filters]</a>
+    </p>
+
     <div tal:replace="structure view/batching"
          tal:condition="not:view/show_all"/>
 
@@ -54,7 +49,6 @@
                id="listing-table"
                summary="Content listing"
                i18n:attributes="summary summary_content_listing;"
-               tal:condition="view/items"
                tal:define="colspan python: len(review_state['columns']);
                            colspan python: view.show_select_column and colspan + 1 or colspan;
                            colspan python: view.show_sort_column and colspan + 1 or colspan;
@@ -63,68 +57,59 @@
                            column_list python:review_state['columns']">
           <thead>
 
-            <tal:selectrow condition="view/show_select_row">
-                <tr tal:condition="not:view/selectcurrentbatch">
-                  <th tal:attributes="colspan colspan" class="nosort">
-                      <span i18n:translate="label_select" tal:omit-tag="">Select:</span> <a i18n:translate="label_all" tal:attributes="href view/selectscreen_url" id="foldercontents-selectall">All</a></th>
-                </tr>
-                <tr tal:condition="view/show_select_all_items">
-                  <th tal:attributes="colspan colspan" class="nosort">
-                    <span tal:omit-tag="" i18n:translate="tableheading_all_items_selected">
-                      All <tal:block replace="view/batch/items_on_page" i18n:name="count"/> items on this page are selected. 
-                    </span>
-                    <a tal:attributes="href view/selectall_url" 
-                       id="foldercontents-selectall-completebatch"
-                       i18n:translate="tableheading_select_all_items">Select all 
-                    <tal:block replace="view/batch/size" i18n:name="count"/> items in this folder.</a>
-                  </th>
-                </tr>
-                <tr tal:condition="view/selectall">
-                  <th tal:attributes="colspan colspan" class="nosort">
-                    <span tal:omit-tag="" i18n:translate="tableheading_all_items_selected_in_folder">
-                    All <tal:block replace="view/batch/size" i18n:name="count"/> items in this folder
-                    are selected. 
-                    </span>
-                    <a tal:attributes="href view/selectnone_url"  i18n:translate="tableheading_clear_selection"
-                       id="foldercontents-clearselection">Clear selection</a>
-                  </th>
-                </tr>
+            <tal:selectrow condition="python: view.items and view.show_select_row">
+              <tr tal:condition="not:view/selectcurrentbatch">
+                <th tal:attributes="colspan colspan" class="nosort">
+                  <span i18n:translate="label_select" tal:omit-tag="">Select:</span> <a i18n:translate="label_all" tal:attributes="href view/selectscreen_url" id="foldercontents-selectall">All</a>
+                </th>
+              </tr>
+              <tr tal:condition="view/show_select_all_items">
+                <th tal:attributes="colspan colspan" class="nosort">
+                  <span tal:omit-tag="" i18n:translate="tableheading_all_items_selected">
+                    All <tal:block replace="view/batch/items_on_page" i18n:name="count"/> items on this page are selected. 
+                  </span>
+                  <a tal:attributes="href view/selectall_url" 
+                     id="foldercontents-selectall-completebatch"
+                     i18n:translate="tableheading_select_all_items">Select all 
+                  <tal:block replace="view/batch/size" i18n:name="count"/> items in this folder.</a>
+                </th>
+              </tr>
+              <tr tal:condition="view/selectall">
+                <th tal:attributes="colspan colspan" class="nosort">
+                  <span tal:omit-tag="" i18n:translate="tableheading_all_items_selected_in_folder">
+                    All <tal:block replace="view/batch/size" i18n:name="count"/> items in this folder are selected. 
+                  </span>
+                  <a tal:attributes="href view/selectnone_url" i18n:translate="tableheading_clear_selection"
+                     id="foldercontents-clearselection">Clear selection</a>
+                </th>
+              </tr>
             </tal:selectrow>
 
             <tr>
-              <th class="nosort column"
-                  id="foldercontents-order-column"
-                  tal:condition="view/show_sort_column">
-              </th>
-              <th class="nosort column"
-                  tal:condition="view/show_select_column">
-              </th>
+              <th class="nosort column" id="foldercontents-order-column" tal:condition="view/show_sort_column"></th>
+              <th class="nosort column" tal:condition="view/show_select_column"> </th>
               <th class="nosort column" tal:repeat="column column_list"
-                  tal:attributes="id string:foldercontents-${column}-column"
-                  ><span i18n:translate="python:'listingheader_' + view.columns[ column ]['title']"
-                  ><span tal:content="python:view.columns[  column  ]['title']"/></span>
-               </th>
+                  tal:attributes="id string:foldercontents-${column}-column">
+                  <span i18n:translate="python:'listingheader_' + view.columns[ column ]['title']">
+                    <span tal:content="python:view.columns[  column  ]['title']"/>
+                  </span>
+              </th>
             </tr>
 
-            <tal:filters condition="view/show_filters">
-                <tr>
-                  <th class="nosort column"
-                      id="foldercontents-order-column"
-                      tal:condition="view/show_sort_column">
-                  </th>
-                  <th class="nosort column"
-                      tal:condition="view/show_select_column">
-                  </th>
-                  <th tal:repeat="column column_list"
-                      class="nosort column"
-                      style="margin:0;padding:0 2px 0 2px;"
-                      tal:attributes="id string:foldercontents-${column}-column-filter">
-                      <input type="text"
-                             class='folderlisting-filter'
-                             tal:attributes="id string:foldercontents-${column}-column-filter-input"/>
-                   </th>
-                </tr>
-            </tal:filters>
+            <tr tal:condition="view/show_filters">
+              <th class="nosort column" id="foldercontents-order-column" tal:condition="view/show_sort_column"></th>
+              <th class="nosort column" tal:condition="view/show_select_column"></th>
+              <th tal:repeat="column column_list"
+                  class="nosort column"
+                  style="margin:0;padding:0 2px 0 2px;"
+                  tal:attributes="id string:foldercontents-${column}-column-filter">
+                  <input type="text"
+                         class='folderlisting-filter'
+                         tal:attributes="id string:foldercontents-${column}-column-filter-input;
+                                         name string:foldercontents-${column}-column-filter-input;
+                                         value python: request.get('foldercontents-'+column+'-column-filter-input', '')"/>
+              </th>
+            </tr>
 
           </thead>
 

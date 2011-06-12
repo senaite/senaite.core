@@ -5,6 +5,7 @@
 /*          ********* hide  ContentActions on custom folder types */
 
 
+/*
 .portaltype-analysisrequest #plone-contentmenu-actions,
 .portaltype-worksheet #plone-contentmenu-actions,
 .portaltype-sample #plone-contentmenu-actions
@@ -18,7 +19,7 @@
 .portaltype-analysisrequest #plone-contentmenu-factories,
 .portaltype-worksheet #plone-contentmenu-factories
    {display: none;}
-
+*/
 
 
 /*

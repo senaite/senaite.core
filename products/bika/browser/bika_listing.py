@@ -31,6 +31,7 @@ class BikaListingView(FolderContentsView):
     show_editable_border = True
     show_table_only = False
     show_filters = True
+    filters_are_active = False
     show_sort_column = True
     show_select_row = True
     show_select_column = True
@@ -160,7 +161,8 @@ class BikaListingView(FolderContentsView):
                                  show_sort_column = self.show_sort_column,
                                  show_select_row = self.show_select_row,
                                  show_select_column = self.show_select_column,
-                                 show_filters = self.show_filters)
+                                 show_filters = self.show_filters,
+                                 filters_are_active = self.filters_are_active)
         return table.render()
 
 class BikaListingTable(FolderContentsTable):
@@ -174,7 +176,8 @@ class BikaListingTable(FolderContentsTable):
                  show_sort_column,
                  show_select_row,
                  show_select_column,
-                 show_filters):
+                 show_filters,
+                 filters_are_active):
         self.context = context
         self.request = request
         url = context.absolute_url()
@@ -189,6 +192,7 @@ class BikaListingTable(FolderContentsTable):
                            show_select_row = show_select_row,
                            show_select_column = show_select_column,
                            show_filters = show_filters,
+                           filters_are_active = filters_are_active,
                            pagesize = pagesize)
 
     def render(self):
@@ -207,6 +211,7 @@ class Table(tableview.Table):
                  show_select_row,
                  show_select_column,
                  show_filters,
+                 filters_are_active,
                  pagesize):
 
         tableview.Table.__init__(self,
@@ -226,6 +231,7 @@ class Table(tableview.Table):
         self.show_select_column = show_select_column
         self.show_filters = show_filters
         self.review_states = review_states
+        self.filters_are_active = filters_are_active
 
     render = ViewPageTemplateFile("templates/bika_listing_table.pt")
     batching = ViewPageTemplateFile("templates/bika_listing_batching.pt")
