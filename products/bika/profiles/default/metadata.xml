@@ -1,8 +1,0 @@
-<?xml version="1.0"?>
-<metadata>
-  <description>Bika LIMS</description>
-  <version>1.0</version>
-  <dependencies>
-    <dependency>profile-Products.ATExtensions:default</dependency>
-  </dependencies>
-</metadata>
