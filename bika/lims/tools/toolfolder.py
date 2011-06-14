@@ -6,12 +6,12 @@ from Products.Archetypes.public import BaseSchema
 from Products.CMFCore import permissions
 from Products.CMFCore.utils import UniqueObject, getToolByName
 from bika.lims.interfaces.tools import IToolFolder
-from five import grok
+from zope.interface import implements
 
 class ToolFolder(UniqueObject, Folder):
     """ Tool Folder """
 
-    grok.implements(IToolFolder)
+    implements(IToolFolder)
 
     security = ClassSecurityInfo()
     id = 'tool_folder'

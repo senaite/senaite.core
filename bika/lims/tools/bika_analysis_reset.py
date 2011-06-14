@@ -6,13 +6,13 @@ from Products.CMFCore.utils import UniqueObject, getToolByName
 from bika.lims.config import ManageAnalysisRequest
 from bika.lims.interfaces.tools import Ibika_analysis_reset
 from bika.lims.tools import ToolFolder
-from five import grok
+from zope.interface import implements
 import csv
 
 class bika_analysis_reset(UniqueObject, SimpleItem):
     """ AnalysisResetTool """
 
-    grok.implements(Ibika_analysis_reset)
+    implements(Ibika_analysis_reset)
 
     security = ClassSecurityInfo()
     id = 'bika_analysis_reset'

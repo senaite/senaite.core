@@ -13,7 +13,7 @@
   Note: folderish content types should overwrite HEAD like ATContentTypes</property>
  <property name="icon_expr">string:${portal_url}/folder_icon.gif</property>
  <property name="content_meta_type">PricelistFolder</property>
- <property name="product">bika</property>
+ <property name="product">bika.lims</property>
  <property name="factory">addPricelistFolder</property>
  <property name="add_view_expr"></property>
  <property name="link_target"></property>
@@ -65,6 +65,6 @@
  <action title="Price lists" action_id="pricelists" category="object"
     condition_expr="" icon_expr="" link_target=""
     url_expr="string:${object_url}/pricelistfolder_pricelists" visible="True">
-  <permission value="BIKA: Manage Pricelists"/>
+  <permission value="bika.lims: Manage Pricelists"/>
  </action>
 </object>

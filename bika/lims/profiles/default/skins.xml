@@ -6,12 +6,12 @@
         default_skin="Sunburst Theme"
         request_varname="plone_skin">
 
-  <object name="bika" 
+  <object name="bika.lims" 
           meta_type="Filesystem Directory View"
           directory="bika.lims:skins/bika"/>
 
   <skin-path name="*">
-    <layer name="bika" insert-before="*"/>
+    <layer name="bika.lims" insert-before="*"/>
   </skin-path>
 
 </object>

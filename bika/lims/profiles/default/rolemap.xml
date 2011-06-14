@@ -78,152 +78,152 @@
       <role name="Manager"/>
       <role name="Member"/>
     </permission>
-    <permission name="BIKA: Assign analyses" acquire="True">
+    <permission name="bika.lims: Assign analyses" acquire="True">
       <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="LabTechnician"/>
       <role name="Manager"/>
     </permission>
-    <permission name="BIKA: Delete analyses" acquire="True">
+    <permission name="bika.lims: Delete analyses" acquire="True">
       <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="LabTechnician"/>
       <role name="Manager"/>
     </permission>
-    <permission name="BIKA: Dispatch Order" acquire="True">
+    <permission name="bika.lims: Dispatch Order" acquire="True">
       <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="Manager"/>
     </permission>
-    <permission name="BIKA: Import sample" acquire="True">
-      <role name="LabClerk"/>
-      <role name="LabManager"/>
-      <role name="LabTechnician"/>
-      <role name="Manager"/>
-    </permission>
-    <permission name="BIKA: Manage ARImport" acquire="True">
-      <role name="LabClerk"/>
-      <role name="LabManager"/>
-      <role name="Manager"/>
-    </permission>
-    <permission name="BIKA: Manage AnalysisRequest" acquire="True">
+    <permission name="bika.lims: Import sample" acquire="True">
       <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="LabTechnician"/>
       <role name="Manager"/>
     </permission>
-    <permission name="BIKA: Manage Bika" acquire="True">
-      <role name="LabManager"/>
-      <role name="Manager"/>
-    </permission>
-    <permission name="BIKA: Manage Clients" acquire="True">
+    <permission name="bika.lims: Manage ARImport" acquire="True">
       <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="Manager"/>
     </permission>
-    <permission name="BIKA: Manage Invoices" acquire="True">
+    <permission name="bika.lims: Manage AnalysisRequest" acquire="True">
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="LabTechnician"/>
+      <role name="Manager"/>
+    </permission>
+    <permission name="bika.lims: Manage Bika" acquire="True">
+      <role name="LabManager"/>
+      <role name="Manager"/>
+    </permission>
+    <permission name="bika.lims: Manage Clients" acquire="True">
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+    </permission>
+    <permission name="bika.lims: Manage Invoices" acquire="True">
       <role name="LabManager"/>
       <role name="Manager"/>
       <role name="Owner"/>
     </permission>
-    <permission name="BIKA: Manage Orders" acquire="True">
+    <permission name="bika.lims: Manage Orders" acquire="True">
       <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="Manager"/>
     </permission>
-    <permission name="BIKA: Manage Pricelists" acquire="True">
+    <permission name="bika.lims: Manage Pricelists" acquire="True">
       <role name="LabManager"/>
       <role name="Manager"/>
       <role name="Owner"/>
     </permission>
-    <permission name="BIKA: Manage Sample" acquire="True">
+    <permission name="bika.lims: Manage Sample" acquire="True">
       <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="LabTechnician"/>
       <role name="Manager"/>
     </permission>
-    <permission name="BIKA: Manage Standard" acquire="True">
+    <permission name="bika.lims: Manage Standard" acquire="True">
       <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="LabTechnician"/>
       <role name="Manager"/>
     </permission>
-    <permission name="BIKA: Manage Standard Suppliers" acquire="True">
+    <permission name="bika.lims: Manage Standard Suppliers" acquire="True">
       <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="LabTechnician"/>
       <role name="Manager"/>
     </permission>
-    <permission name="BIKA: Manage Worksheets" acquire="True">
+    <permission name="bika.lims: Manage Worksheets" acquire="True">
       <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="LabTechnician"/>
       <role name="Manager"/>
     </permission>
-    <permission name="BIKA: Post Invoice batch" acquire="True">
+    <permission name="bika.lims: Post Invoice batch" acquire="True">
       <role name="LabManager"/>
       <role name="Manager"/>
       <role name="Owner"/>
     </permission>
-    <permission name="BIKA: Publish sample" acquire="True">
+    <permission name="bika.lims: Publish sample" acquire="True">
       <role name="LabManager"/>
       <role name="Manager"/>
       <role name="Publisher"/>
       <role name="Reviewer"/>
     </permission>
-    <permission name="BIKA: Receive sample" acquire="True">
+    <permission name="bika.lims: Receive sample" acquire="True">
       <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="Manager"/>
     </permission>
-    <permission name="BIKA: Retract Worksheet" acquire="True">
+    <permission name="bika.lims: Retract Worksheet" acquire="True">
       <role name="LabManager"/>
       <role name="Manager"/>
       <role name="Reviewer"/>
       <role name="Verifier"/>
     </permission>
-    <permission name="BIKA: Retract sample" acquire="True">
+    <permission name="bika.lims: Retract sample" acquire="True">
       <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="Manager"/>
       <role name="Reviewer"/>
       <role name="Verifier"/>
     </permission>
-    <permission name="BIKA: Submit Worksheet" acquire="True">
+    <permission name="bika.lims: Submit Worksheet" acquire="True">
       <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="LabTechnician"/>
       <role name="Manager"/>
     </permission>
-    <permission name="BIKA: Submit results" acquire="True">
+    <permission name="bika.lims: Submit results" acquire="True">
       <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="LabTechnician"/>
       <role name="Manager"/>
     </permission>
-    <permission name="BIKA: Submit sample" acquire="True">
+    <permission name="bika.lims: Submit sample" acquire="True">
       <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="LabTechnician"/>
       <role name="Manager"/>
     </permission>
-    <permission name="BIKA: Verify Worksheet" acquire="True">
+    <permission name="bika.lims: Verify Worksheet" acquire="True">
       <role name="LabManager"/>
       <role name="Manager"/>
       <role name="Reviewer"/>
       <role name="Verifier"/>
     </permission>
-    <permission name="BIKA: Verify sample" acquire="True">
+    <permission name="bika.lims: Verify sample" acquire="True">
       <role name="LabManager"/>
       <role name="Manager"/>
       <role name="Reviewer"/>
       <role name="Verifier"/>
     </permission>
-    <permission name="BIKA: View Methods" acquire="True">
+    <permission name="bika.lims: View Methods" acquire="True">
       <role name="Manager"/>
       <role name="Member"/>
     </permission>
-    <permission name="BIKA: View Results" acquire="True">
+    <permission name="bika.lims: View Results" acquire="True">
       <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="Manager"/>

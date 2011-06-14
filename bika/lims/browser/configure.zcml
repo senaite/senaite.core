@@ -17,7 +17,7 @@
       for="*"
       name="load_setup_data"
       class="bika.lims.browser.load_setup_data.LoadSetupData"
-      permission="bika.ManageBika"
+      permission="bika.lims.ManageBika"
       layer="bika.lims.interfaces.IBikaLIMSLayer"
     />
 
@@ -25,7 +25,7 @@
       for="bika.lims.interfaces.IClientFolder"
       name="clientfolder_contents"
       class="bika.lims.browser.clientfolder.ClientFolderContentsView"
-      permission="bika.ManageClients"
+      permission="bika.lims.ManageClients"
       layer="bika.lims.interfaces.IBikaLIMSLayer"
     />
 

@@ -300,7 +300,7 @@
               result analysis/getResult;
               review_state python:here.portal_workflow.getInfoFor(analysis, 'review_state', '');
               analysis_late python:(review_state not in ['sample_due', 'published']) and (analysis.getDueDate() < now);
-              may_view_result python:checkPermission('BIKA: View Results', analysis)">
+              may_view_result python:checkPermission('bika.lims: View Results', analysis)">
 
             <td class="left"> 
               <a  onClick="" title="Click for details"

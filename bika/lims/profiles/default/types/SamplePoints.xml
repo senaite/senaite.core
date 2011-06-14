@@ -6,7 +6,7 @@
  <property name="description"></property>
  <property name="icon_expr">string:${portal_url}/folder_icon.gif</property>
  <property name="content_meta_type">SamplePoints</property>
- <property name="product">bika</property>
+ <property name="product">bika.lims</property>
  <property name="factory">addSamplePoints</property>
  <property name="add_view_expr"></property>
  <property name="link_target"></property>

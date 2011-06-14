@@ -13,7 +13,7 @@
   Note: folderish content types should overwrite HEAD like ATContentTypes</property>
  <property name="icon_expr">string:${portal_url}/folder_icon.gif</property>
  <property name="content_meta_type">InvoiceFolder</property>
- <property name="product">bika</property>
+ <property name="product">bika.lims</property>
  <property name="factory">addInvoiceFolder</property>
  <property name="add_view_expr"></property>
  <property name="link_target"></property>
@@ -66,6 +66,6 @@
     condition_expr="" icon_expr="" link_target=""
     url_expr="string:${object_url}/invoicefolder_invoicebatches"
     visible="True">
-  <permission value="BIKA: Manage Invoices"/>
+  <permission value="bika.lims: Manage Invoices"/>
  </action>
 </object>

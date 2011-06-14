@@ -22,7 +22,6 @@ import logging
 logger = logging.getLogger('Bika')
 
 from content import *
-
 from controlpanel.bika_analysiscategories import AnalysisCategories
 from controlpanel.bika_analysisservices import AnalysisServices
 from controlpanel.bika_labarprofiles import LabARProfiles

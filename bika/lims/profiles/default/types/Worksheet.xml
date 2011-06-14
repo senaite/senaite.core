@@ -7,7 +7,7 @@
   </property>
  <property name="icon_expr">string:${portal_url}/images/worksheet.png</property>
  <property name="content_meta_type">Worksheet</property>
- <property name="product">bika</property>
+ <property name="product">bika.lims</property>
  <property name="factory">addWorksheet</property>
  <property name="add_view_expr"></property>
  <property name="link_target"></property>
@@ -48,16 +48,16 @@
  <action title="Log" action_id="log" category="object" condition_expr=""
     icon_expr="" link_target="" url_expr="string:${object_url}/status_log"
     visible="True">
-  <permission value="BIKA: Manage Bika"/>
+  <permission value="bika.lims: Manage Bika"/>
  </action>
  <action title="Delete" action_id="delete_analyses" category="folder_buttons"
     condition_expr="" icon_expr="" link_target=""
     url_expr="string:deleteAnalyses:method" visible="True">
-  <permission value="BIKA: Delete analyses"/>
+  <permission value="bika.lims: Delete analyses"/>
  </action>
  <action title="Submit" action_id="submit_results" category="folder_buttons"
     condition_expr="" icon_expr="" link_target=""
     url_expr="string:submitResults:method" visible="True">
-  <permission value="BIKA: Submit results"/>
+  <permission value="bika.lims: Submit results"/>
  </action>
 </object>

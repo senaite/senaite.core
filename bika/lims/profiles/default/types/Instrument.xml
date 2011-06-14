@@ -8,7 +8,7 @@
  </property>
  <property name="icon_expr">string:${portal_url}/images/instrument.png</property>
  <property name="content_meta_type">Instrument</property>
- <property name="product">bika</property>
+ <property name="product">bika.lims</property>
  <property name="factory">addInstrument</property>
  <property name="add_view_expr"></property>
  <property name="link_target"></property>

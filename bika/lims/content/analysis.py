@@ -19,10 +19,10 @@ from bika.lims.config import I18N_DOMAIN, PROJECTNAME
 from Products.CMFDynamicViewFTI.browserdefault import \
     BrowserDefaultMixin
 
-try:
-    from bika.limsCalendar.config import TOOL_NAME as BIKA_CALENDAR_TOOL
-except:
-    pass
+#try: XXXXXXX XXX
+#    from bika.limsCalendar.config import TOOL_NAME as BIKA_CALENDAR_TOOL
+#except:
+#    pass
 
 schema = BikaSchema.copy() + Schema((
     ReferenceField('Service',

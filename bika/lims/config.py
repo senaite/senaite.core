@@ -2,46 +2,46 @@ from Products.CMFCore.permissions import AddPortalContent
 from Products.Archetypes.public import DisplayList
 
 ADD_CONTENT_PERMISSION = AddPortalContent
-PROJECTNAME = "bika"
+PROJECTNAME = "bika.lims"
 SKINS_DIR = 'skins'
 
 GLOBALS = globals()
 
-ManageBika = 'BIKA: Manage Bika'
-ManageClients = 'BIKA: Manage Clients'
-ManageWorksheets = 'BIKA: Manage Worksheets'
-ManageOrders = 'BIKA: Manage Orders'
-ManageAnalysisRequest = 'BIKA: Manage AnalysisRequest'
-ManageSample = 'BIKA: Manage Sample'
-ManageStandardSuppliers = 'BIKA: Manage Standard Suppliers'
-ManageStandard = 'BIKA: Manage Standard'
-ManageInvoices = 'BIKA: Manage Invoices'
-ManagePricelists = 'BIKA: Manage Pricelists'
-ViewMethods = 'BIKA: View Methods'
-EditAnalyses = 'BIKA: Edit analyses'
-ViewResults = 'BIKA: View Results'
-ManageARImport = 'BIKA: Manage ARImport'
+ManageBika = 'bika.lims: Manage Bika'
+ManageClients = 'bika.lims: Manage Clients'
+ManageWorksheets = 'bika.lims: Manage Worksheets'
+ManageOrders = 'bika.lims: Manage Orders'
+ManageAnalysisRequest = 'bika.lims: Manage AnalysisRequest'
+ManageSample = 'bika.lims: Manage Sample'
+ManageStandardSuppliers = 'bika.lims: Manage Standard Suppliers'
+ManageStandard = 'bika.lims: Manage Standard'
+ManageInvoices = 'bika.lims: Manage Invoices'
+ManagePricelists = 'bika.lims: Manage Pricelists'
+ViewMethods = 'bika.lims: View Methods'
+EditAnalyses = 'bika.lims: Edit analyses'
+ViewResults = 'bika.lims: View Results'
+ManageARImport = 'bika.lims: Manage ARImport'
 
 # Workflow permissions
-ReceiveSample = 'BIKA: Receive sample'
-SubmitSample = 'BIKA: Submit sample'
-VerifySample = 'BIKA: Verify sample'
-PublishSample = 'BIKA: Publish sample'
-RetractSample = 'BIKA: Retract sample'
-ImportSample = 'BIKA: Import sample'
+ReceiveSample = 'bika.lims: Receive sample'
+SubmitSample = 'bika.lims: Submit sample'
+VerifySample = 'bika.lims: Verify sample'
+PublishSample = 'bika.lims: Publish sample'
+RetractSample = 'bika.lims: Retract sample'
+ImportSample = 'bika.lims: Import sample'
 
-SubmitWorksheet = 'BIKA: Submit Worksheet'
-VerifyWorksheet = 'BIKA: Verify Worksheet'
-RetractWorksheet = 'BIKA: Retract Worksheet'
+SubmitWorksheet = 'bika.lims: Submit Worksheet'
+VerifyWorksheet = 'bika.lims: Verify Worksheet'
+RetractWorksheet = 'bika.lims: Retract Worksheet'
 
-DispatchOrder = 'BIKA: Dispatch Order'
+DispatchOrder = 'bika.lims: Dispatch Order'
 
-PostInvoiceBatch = 'BIKA: Post Invoice batch'
+PostInvoiceBatch = 'bika.lims: Post Invoice batch'
 
 # Worksheet permissions
-AssignAnalyses = 'BIKA: Assign analyses'
-DeleteAnalyses = 'BIKA: Delete analyses'
-SubmitResults = 'BIKA: Submit results'
+AssignAnalyses = 'bika.lims: Assign analyses'
+DeleteAnalyses = 'bika.lims: Delete analyses'
+SubmitResults = 'bika.lims: Submit results'
 
 I18N_DOMAIN = 'bika'
 

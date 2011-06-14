@@ -5,10 +5,10 @@
              initial_state="open">
  <permission>Modify portal content</permission>
  <permission>Delete objects</permission>
- <permission>BIKA: Submit results</permission>
+ <permission>bika.lims: Submit results</permission>
  <state state_id="open" title="Worksheet open">
   <exit-transition transition_id="submit"/>
-  <permission-map name="BIKA: Submit results"
+  <permission-map name="bika.lims: Submit results"
                   acquired="False">
    <permission-role>Manager</permission-role>
    <permission-role>LabManager</permission-role>
@@ -36,11 +36,11 @@
   <exit-transition transition_id="verify"/>
   <exit-transition transition_id="retract"/>
   <exit-transition transition_id="reject"/>
-  <permission-map name="BIKA: Submit results"
+  <permission-map name="bika.lims: Submit results"
                   acquired="False">
    <permission-role>Manager</permission-role>
   </permission-map>
-  <permission-map name="BIKA: Verify Worksheet"
+  <permission-map name="bika.lims: Verify Worksheet"
                   acquired="False">
    <permission-role>Verifier</permission-role>
   </permission-map>
@@ -56,7 +56,7 @@
  </state>
  <state state_id="verified" title="Verified">
   <exit-transition transition_id="retract"/>
-  <permission-map name="BIKA: Submit results"
+  <permission-map name="bika.lims: Submit results"
                   acquired="False">
    <permission-role>Manager</permission-role>
   </permission-map>
@@ -71,7 +71,7 @@
   </permission-map>
  </state>
  <state state_id="rejected" title="Rejected">
-  <permission-map name="BIKA: Submit results"
+  <permission-map name="bika.lims: Submit results"
                   acquired="False">
    <permission-role>Manager</permission-role>
   </permission-map>
@@ -91,7 +91,7 @@
              after_script="default">
   <action url="" category="workflow">Reject</action>
   <guard>
-   <guard-permission>BIKA: Verify Worksheet</guard-permission>
+   <guard-permission>bika.lims: Verify Worksheet</guard-permission>
   </guard>
  </transition>
  <transition transition_id="retract"
@@ -100,7 +100,7 @@
              after_script="default">
   <action url="" category="workflow">Retract</action>
   <guard>
-   <guard-permission>BIKA: Retract Worksheet</guard-permission>
+   <guard-permission>bika.lims: Retract Worksheet</guard-permission>
   </guard>
  </transition>
  <transition transition_id="submit" title="Submit worksheet"
@@ -108,7 +108,7 @@
              before_script="" after_script="default">
   <action url="" category="workflow">Submit for verification</action>
   <guard>
-   <guard-permission>BIKA: Submit Worksheet</guard-permission>
+   <guard-permission>bika.lims: Submit Worksheet</guard-permission>
    <guard-expression>python:here.guard_submit_worksheet()</guard-expression>
   </guard>
  </transition>
@@ -117,7 +117,7 @@
              before_script="" after_script="default">
   <action url="" category="workflow">Verify worksheet</action>
   <guard>
-   <guard-permission>BIKA: Verify Worksheet</guard-permission>
+   <guard-permission>bika.lims: Verify Worksheet</guard-permission>
    <guard-expression>python:here.guard_verify_worksheet()</guard-expression>
   </guard>
  </transition>

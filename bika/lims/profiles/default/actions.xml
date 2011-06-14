@@ -54,7 +54,7 @@
 			<property name="icon_expr"/>
 			<property name="available_expr"/>
 			<property name="permissions">
-				<element value="BIKA: Manage Clients"/>
+				<element value="bika.lims: Manage Clients"/>
 			</property>
 			<property name="visible">True</property>
 		</object>
@@ -66,7 +66,7 @@
 			<property name="icon_expr"/>
 			<property name="available_expr"/>
 			<property name="permissions">
-				<element value="BIKA: Manage Sample"/>
+				<element value="bika.lims: Manage Sample"/>
 			</property>
 			<property name="visible">True</property>
 		</object>
@@ -78,7 +78,7 @@
 			<property name="icon_expr"/>
 			<property name="available_expr"/>
 			<property name="permissions">
-				<element value="BIKA: Manage AnalysisRequest"/>
+				<element value="bika.lims: Manage AnalysisRequest"/>
 			</property>
 			<property name="visible">True</property>
 		</object>
@@ -90,7 +90,7 @@
 			<property name="icon_expr"/>
 			<property name="available_expr"/>
 			<property name="permissions">
-				<element value="BIKA: Manage Worksheets"/>
+				<element value="bika.lims: Manage Worksheets"/>
 			</property>
 			<property name="visible">True</property>
 		</object>
@@ -102,7 +102,7 @@
 			<property name="icon_expr"/>
 			<property name="available_expr"/>
 			<property name="permissions">
-				<element value="BIKA: Manage Orders"/>
+				<element value="bika.lims: Manage Orders"/>
 			</property>
 			<property name="visible">True</property>
 		</object>
@@ -114,7 +114,7 @@
 			<property name="icon_expr"/>
 			<property name="available_expr"/>
 			<property name="permissions">
-				<element value="BIKA: Manage Standard Suppliers"/>
+				<element value="bika.lims: Manage Standard Suppliers"/>
 			</property>
 			<property name="visible">True</property>
 		</object>
@@ -126,7 +126,7 @@
 			<property name="icon_expr"/>
 			<property name="available_expr"/>
 			<property name="permissions">
-				<element value="BIKA: Manage Standard"/>
+				<element value="bika.lims: Manage Standard"/>
 			</property>
 			<property name="visible">True</property>
 		</object>
@@ -186,7 +186,7 @@
 			<property name="icon_expr"/>
 			<property name="available_expr"/>
 			<property name="permissions">
-				<element value="BIKA: Manage AnalysisRequest"/>
+				<element value="bika.lims: Manage AnalysisRequest"/>
 			</property>
 			<property name="visible">True</property>
 		</object>

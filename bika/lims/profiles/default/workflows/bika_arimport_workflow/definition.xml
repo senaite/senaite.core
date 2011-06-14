@@ -38,7 +38,7 @@
              before_script="" after_script="default">
   <action url="" category="workflow">Submit</action>
   <guard>
-   <guard-permission>BIKA: Manage ARImport</guard-permission>
+   <guard-permission>bika.lims: Manage ARImport</guard-permission>
    <guard-expression>python:here.guard_submit_arimport()</guard-expression>
   </guard>
  </transition>

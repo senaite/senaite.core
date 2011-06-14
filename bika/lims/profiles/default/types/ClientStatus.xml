@@ -13,7 +13,7 @@
   Note: folderish content types should overwrite HEAD like ATContentTypes</property>
  <property name="icon_expr">string:${portal_url}/images/client.png</property>
  <property name="content_meta_type">ClientStatus</property>
- <property name="product">bika</property>
+ <property name="product">bika.lims</property>
  <property name="factory">addClientStatus</property>
  <property name="add_view_expr"></property>
  <property name="link_target"></property>

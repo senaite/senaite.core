@@ -7,12 +7,12 @@ from bika.lims.config import ManageAnalysisRequest
 from bika.lims.tools import ToolFolder
 import csv
 from bika.lims.interfaces.tools import Ibika_instrument_import
-from five import grok
+from zope.interface import implements
 
 class bika_instrument_import(UniqueObject, SimpleItem):
     """ InstrumentImportTool """
 
-    grok.implements(Ibika_instrument_import)
+    implements(Ibika_instrument_import)
 
     security = ClassSecurityInfo()
     id = 'bika_instrument_import'
@@ -26,7 +26,7 @@ class bika_instrument_import(UniqueObject, SimpleItem):
         prefixes = self.bika_settings.getPrefixes()
         ws_prefix = 'WS-'
         for d in prefixes:
-            if d['portal_type'] == 'Worksheet': 
+            if d['portal_type'] == 'Worksheet':
                 ws_prefix = d['prefix']
                 break
 
@@ -116,13 +116,13 @@ class bika_instrument_import(UniqueObject, SimpleItem):
                     if (as_state in ['assigned']):
                         if (analysis.getResult() is None) or (analysis.getResult() == ''):
                             pass
-                        else: 
+                        else:
                             results[sample_id]['errors'].append('%s has a result - not updated' % (service_title))
                             continue
-                        
-                         
+
+
                     if (as_state not in updateable_states):
-                        results[sample_id]['errors'].append('%s in %s status ' 
+                        results[sample_id]['errors'].append('%s in %s status '
                                    '- not updated' % (service_title, as_state))
                         continue
                     results[sample_id]['analyses'].append(service_title)

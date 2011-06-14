@@ -14,7 +14,7 @@
   </property>
  <property name="icon_expr">string:${portal_url}/document_icon.gif</property>
  <property name="content_meta_type">Analysis</property>
- <property name="product">bika</property>
+ <property name="product">bika.lims</property>
  <property name="factory">addAnalysis</property>
  <property name="add_view_expr"></property>
  <property name="link_target"></property>

@@ -38,7 +38,7 @@
              before_script="" after_script="default">
   <action url="" category="workflow">Dispatch</action>
   <guard>
-   <guard-permission>BIKA: Dispatch Order</guard-permission>
+   <guard-permission>bika.lims: Dispatch Order</guard-permission>
   </guard>
  </transition>
  <worklist worklist_id="reviewer_queue" title="">

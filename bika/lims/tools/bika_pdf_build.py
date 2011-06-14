@@ -21,12 +21,12 @@ import csv
 import string
 import tempfile
 from bika.lims.interfaces.tools import Ibika_pdf_build
-from five import grok
+from zope.interface import implements
 
 class bika_pdf_build(UniqueObject, SimpleItem):
     """ PDFBuildTool """
 
-    grok.implements(Ibika_pdf_build)
+    implements(Ibika_pdf_build)
 
     security = ClassSecurityInfo()
     id = 'bika_pdf_build'

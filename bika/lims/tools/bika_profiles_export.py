@@ -7,12 +7,12 @@ from bika.lims.tools import ToolFolder
 from cStringIO import StringIO
 import csv
 from bika.lims.interfaces.tools import Ibika_profiles_export
-from five import grok
+from zope.interface import implements
 
 class bika_profiles_export(UniqueObject, SimpleItem):
     """ ProfilesExportTool """
 
-    grok.implements(Ibika_profiles_export)
+    implements(Ibika_profiles_export)
 
     security = ClassSecurityInfo()
     id = 'bika_profiles_export'
@@ -33,7 +33,7 @@ class bika_profiles_export(UniqueObject, SimpleItem):
 
         # header labels
         header = ['Profile', 'Key', 'Owner' ]
-        rows.append(header)    
+        rows.append(header)
 
         proxies = []
 

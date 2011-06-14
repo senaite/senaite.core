@@ -9,7 +9,7 @@
  </property>
  <property name="content_icon">string:${portal_url}/images/arprofile.png</property>
  <property name="content_meta_type">ARProfile</property>
- <property name="product">bika</property>
+ <property name="product">bika.lims</property>
  <property name="factory">addARProfile</property>
  <property name="immediate_view">base_view</property>
  <property name="global_allow">False</property>

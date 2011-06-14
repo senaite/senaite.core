@@ -6,7 +6,7 @@
  <property name="description">StandardSample represents a standard sample used for quality control testing</property>
  <property name="icon_expr">string:${portal_url}/images/standardsample.png</property>
  <property name="content_meta_type">StandardSample</property>
- <property name="product">bika</property>
+ <property name="product">bika.lims</property>
  <property name="factory">addStandardSample</property>
  <property name="add_view_expr"></property>
  <property name="link_target"></property>
@@ -39,7 +39,7 @@
  <action title="Log" action_id="log" category="object" condition_expr=""
     icon_expr="" link_target="" url_expr="string:${object_url}/status_log"
     visible="True">
-  <permission value="BIKA: Manage Bika"/>
+  <permission value="bika.lims: Manage Bika"/>
  </action>
  <action title="Sticker" action_id="sticker" category="document_actions"
     condition_expr="" icon_expr="" link_target=""

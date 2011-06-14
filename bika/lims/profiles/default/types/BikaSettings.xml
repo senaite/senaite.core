@@ -6,7 +6,7 @@
  <property name="description">Central store for Bika Settigs.</property>
  <property name="icon_expr">string:${portal_url}/images/setup.png</property>
  <property name="content_meta_type">BikaSettings</property>
- <property name="product">bika</property>
+ <property name="product">bika.lims</property>
  <property name="factory">addBikaSettings</property>
  <property name="add_view_expr"></property>
  <property name="link_target"></property>

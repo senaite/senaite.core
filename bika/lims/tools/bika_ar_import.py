@@ -7,12 +7,12 @@ from bika.lims.config import ManageAnalysisRequest
 from bika.lims.tools import ToolFolder
 import csv
 from bika.lims.interfaces.tools import Ibika_ar_import
-from five import grok
+from zope.interface import implements
 
 class bika_ar_import(UniqueObject, SimpleItem):
     """ ARImportTool """
 
-    grok.implements(Ibika_ar_import)
+    implements(Ibika_ar_import)
 
     security = ClassSecurityInfo()
     id = 'bika_ar_import'
@@ -72,7 +72,7 @@ class bika_ar_import(UniqueObject, SimpleItem):
                     msg = 'Actual filename, %s, does not match entered filename, %s' % (actual_name, row[2])
 #                    transaction_note(msg)
                     return state.set(status = 'failure', portal_status_message = msg)
-                
+
                 batch_headers = row[0:]
                 arimport_id = self.generateUniqueId('ARImport')
                 client.invokeFactory(id = arimport_id, type_name = 'ARImport')
@@ -90,7 +90,7 @@ class bika_ar_import(UniqueObject, SimpleItem):
                 continue
 
             samples.append(row)
-        
+
         pad = 8192 * ' '
         REQUEST = self.REQUEST
         REQUEST.RESPONSE.write(self.progress_bar(REQUEST = REQUEST))
@@ -124,7 +124,7 @@ class bika_ar_import(UniqueObject, SimpleItem):
                     PickingSlip = sample[5],
                     ReportDryMatter = sample[6],
                     )
-            
+
                 aritem.setRemarks(item_remarks)
                 aritem.setAnalyses(analyses)
                 next_num += 1
@@ -186,7 +186,7 @@ class bika_ar_import(UniqueObject, SimpleItem):
                 if row[8] == 'Temperature on Arrival:':
                     temp_row = True
                     continue
-                
+
 
             if row_count > 11:
                 if row[0] == '':
@@ -229,7 +229,7 @@ class bika_ar_import(UniqueObject, SimpleItem):
 
             if not in_footers:
                 samples.append(row)
-        
+
         pad = 8192 * ' '
         REQUEST = self.REQUEST
         REQUEST.RESPONSE.write(self.progress_bar(REQUEST = REQUEST))
@@ -265,7 +265,7 @@ class bika_ar_import(UniqueObject, SimpleItem):
                 AnalysisProfile = profiles,
                 Analyses = analyses,
                 )
-            
+
 
         arimport.edit(
             ImportOption = 's',

@@ -10,7 +10,7 @@
                 cookable="True" 
                 enabled="on" 
                 expression="" 
-                id="++resource++globalutils.js" 
+                id="++resource++bika.lims.browser/globalutils.js" 
                 inline="False"/>
     <javascript authenticated="0" 
                 cacheable="True" 
@@ -19,7 +19,7 @@
                 cookable="True" 
                 enabled="on" 
                 expression="" 
-                id="++resource++bika_listing.js" 
+                id="++resource++bika.lims.browser/bika_listing.js"
                 inline="False"/>
     <javascript authenticated="False" 
                 cacheable="True" 
@@ -28,7 +28,7 @@
                 cookable="True" 
                 enabled="on" 
                 expression="python:here.portal_type in ['AnalysisRequest', 'Client']" 
-                id="++resource++analysisrequest.js" 
+                id="++resource++bika.lims.browser/analysisrequest.js" 
                 inline="False"/>
     <javascript authenticated="False" 
                 cacheable="True" 
@@ -37,7 +37,7 @@
                 cookable="True" 
                 enabled="on" 
                 expression="python:here.portal_type in ['WorksheetFolder','Worksheet']" 
-                id="++resource++worksheet.js" 
+                id="++resource++bika.lims.browser/worksheet.js" 
                 inline="False"/>
     <javascript authenticated="False" 
                 cacheable="True" 
@@ -46,6 +46,6 @@
                 cookable="True" 
                 enabled="on" 
                 expression="python:here.portal_type in ['Sample',]" 
-                id="++resource++sample.js" 
+                id="++resource++bika.lims.browser/sample.js" 
                 inline="False"/>
 </object>

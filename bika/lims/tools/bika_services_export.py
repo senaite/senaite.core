@@ -7,12 +7,12 @@ from bika.lims.tools import ToolFolder
 from cStringIO import StringIO
 import csv
 from bika.lims.interfaces.tools import Ibika_services_export
-from five import grok
+from zope.interface import implements
 
 class bika_services_export(UniqueObject, SimpleItem):
     """ ServicesExportTool """
 
-    grok.implements(Ibika_services_export)
+    implements(Ibika_services_export)
 
     security = ClassSecurityInfo()
     id = 'bika_services_export'
@@ -33,7 +33,7 @@ class bika_services_export(UniqueObject, SimpleItem):
 
         # header labels
         header = ['Analysis Category', 'Analysis Service', 'KeyWord', 'InstrumentKey', 'Price', 'Corporate Price']
-        rows.append(header)    
+        rows.append(header)
 
         for s in self.portal_catalog(portal_type = 'AnalysisService',
                                      sort_on = 'sortable_title'):

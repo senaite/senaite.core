@@ -6,7 +6,7 @@
  <property name="description"></property>
  <property name="icon_expr">string:${portal_url}/folder_icon.gif</property>
  <property name="content_meta_type">Departments</property>
- <property name="product">bika</property>
+ <property name="product">bika.lims</property>
  <property name="factory">addDepartments</property>
  <property name="global_allow">False</property>
  <property name="filter_content_types">True</property>

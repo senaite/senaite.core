@@ -16,10 +16,10 @@ from bika.lims.config import I18N_DOMAIN, STD_TYPES, PROJECTNAME
 from Products.CMFDynamicViewFTI.browserdefault import \
     BrowserDefaultMixin
 
-try:
-    from bika.limsCalendar.config import TOOL_NAME as BIKA_CALENDAR_TOOL
-except:
-    pass
+#try: XXXXXX XXX
+#    from BikaCalendar.config import TOOL_NAME as BIKA_CALENDAR_TOOL
+#except:
+#    pass
 
 schema = BikaSchema.copy() + Schema((
     StringField('StandardAnalysisID',

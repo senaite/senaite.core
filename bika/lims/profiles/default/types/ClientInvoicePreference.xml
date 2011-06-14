@@ -6,7 +6,7 @@
  <property name="description">Invoice Preferences </property>
  <property name="icon_expr">string:${portal_url}/client.png</property>
  <property name="content_meta_type">ClientInvoicePreference</property>
- <property name="product">bika</property>
+ <property name="product">bika.lims</property>
  <property name="factory">addClientInvoicePreference</property>
  <property name="add_view_expr"></property>
  <property name="link_target"></property>

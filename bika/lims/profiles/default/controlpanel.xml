@@ -3,7 +3,7 @@
 <object name="portal_controlpanel" meta_type="Plone Control Panel Tool">
 
  <configlet title="Bika Settings" action_id="bika_settings"
-    appId="bika" category="bika" condition_expr=""
+    appId="bika.lims" category="bika" condition_expr=""
     icon_expr="string:$portal_url/images/setup.png" 
 	url_expr="string:$portal_url/bika_settings/edit"
     visible="True">
@@ -11,7 +11,7 @@
  </configlet>
 
  <configlet title="Laboratory Information" action_id="bika_labinfo"
-    appId="bika" category="bika" condition_expr=""
+    appId="bika.lims" category="bika" condition_expr=""
     icon_expr="string:$portal_url/images/lab.png" 
 	url_expr="string:$portal_url/bika_settings/laboratory/edit"
     visible="True">
@@ -19,7 +19,7 @@
  </configlet>
 
  <configlet title="Lab Departments" action_id="bika_departments"
-    appId="bika" category="bika" condition_expr=""
+    appId="bika.lims" category="bika" condition_expr=""
     icon_expr="string:$portal_url/images/department.png"
     url_expr="string:$portal_url/bika_settings/bika_departments"
 	visible="True">
@@ -27,7 +27,7 @@
  </configlet>
 
  <configlet title="Lab Contacts" action_id="bika_labcontacts"
-    appId="bika" category="bika" condition_expr=""
+    appId="bika.lims" category="bika" condition_expr=""
     icon_expr="string:$portal_url/images/contact.png"
     url_expr="string:$portal_url/bika_settings/bika_labcontacts"
 	visible="True">
@@ -35,7 +35,7 @@
  </configlet>
 
  <configlet title="Analysis Categories" action_id="bika_analysiscategories"
-    appId="bika" category="bika" condition_expr=""
+    appId="bika.lims" category="bika" condition_expr=""
     icon_expr="string:$portal_url/images/category.png"
     url_expr="string:$portal_url/bika_settings/bika_analysiscategories"
     visible="True">
@@ -43,7 +43,7 @@
  </configlet>
 
  <configlet title="Analysis Services" action_id="bika_analysisservices"
-    appId="bika" category="bika" condition_expr=""
+    appId="bika.lims" category="bika" condition_expr=""
     icon_expr="string:$portal_url/images/service.png" 
     url_expr="string:$portal_url/bika_settings/bika_analysisservices"
     visible="True">
@@ -51,7 +51,7 @@
  </configlet>
 
  <configlet title="Analysis Specs" action_id="bika_labanalysisspecs"
-    appId="bika" category="bika" condition_expr=""
+    appId="bika.lims" category="bika" condition_expr=""
     icon_expr="string:$portal_url/images/service.png"
     url_expr="string:$portal_url/bika_settings/bika_labanalysisspecs"
     visible="True">
@@ -59,7 +59,7 @@
  </configlet>
 
  <configlet title="Sample Types" action_id="bika_sampletypes"
-    appId="bika" category="bika" condition_expr=""
+    appId="bika.lims" category="bika" condition_expr=""
     icon_expr="string:$portal_url/images/sampletype.png"
     url_expr="string:$portal_url/bika_settings/bika_sampletypes"
 	visible="True">
@@ -67,7 +67,7 @@
  </configlet>
 
  <configlet title="Sample Points" action_id="bika_samplepoints"
-    appId="bika" category="bika" condition_expr=""
+    appId="bika.lims" category="bika" condition_expr=""
     icon_expr="string:$portal_url/images/samplepoint.png"
     url_expr="string:$portal_url/bika_settings/bika_samplepoints"
 	visible="True">
@@ -75,7 +75,7 @@
  </configlet>
 
  <configlet title="Instruments" action_id="bika_instruments"
-    appId="bika" category="bika" condition_expr=""
+    appId="bika.lims" category="bika" condition_expr=""
     icon_expr="string:$portal_url/images/instrument.png"
     url_expr="string:$portal_url/bika_settings/bika_instruments"
     visible="True">
@@ -83,7 +83,7 @@
  </configlet>
 
  <configlet title="Methods" action_id="bika_methods"
-    appId="bika" category="bika" condition_expr=""
+    appId="bika.lims" category="bika" condition_expr=""
     icon_expr="string:$portal_url/images/method.png"
     url_expr="string:$portal_url/bika_settings/bika_methods"
     visible="True">
@@ -91,7 +91,7 @@
  </configlet>
 
  <configlet title="Attachment Types" action_id="bika_attachmenttypes"
-    appId="bika" category="bika" condition_expr=""
+    appId="bika.lims" category="bika" condition_expr=""
     icon_expr="string:$portal_url/images/attachment.png"
     url_expr="string:$portal_url/bika_settings/bika_attachmenttypes"
     visible="True">
@@ -99,7 +99,7 @@
  </configlet>
 
  <configlet title="Calculation Types" action_id="bika_calculationtypes"
-    appId="bika" category="bika" condition_expr=""
+    appId="bika.lims" category="bika" condition_expr=""
     icon_expr="string:$portal_url/images/calculation.png"
     url_expr="string:$portal_url/bika_settings/bika_calculationtypes"
     visible="True">
@@ -107,7 +107,7 @@
  </configlet>
 
  <configlet title="Analysis Profiles" action_id="bika_labarprofiles"
-    appId="bika" category="bika" condition_expr=""
+    appId="bika.lims" category="bika" condition_expr=""
     icon_expr="string:$portal_url/images/service.png"
     url_expr="string:$portal_url/bika_settings/bika_labarprofiles"
     visible="True">
@@ -115,7 +115,7 @@
  </configlet>
 
  <configlet title="Products" action_id="bika_labproducts" appId="bika"
-    category="bika" condition_expr="" 
+    category="bika.lims" condition_expr="" 
     icon_expr="string:$portal_url/images/product.png"
     url_expr="string:$portal_url/bika_settings/bika_labproducts"
     visible="True">
@@ -124,7 +124,7 @@
 
  <configlet title="Standard Manufacturers"
     action_id="bika_standardmanufacturers" appId="bika"
-    category="bika" condition_expr=""
+    category="bika.lims" condition_expr=""
     icon_expr="string:$portal_url/images/standardmanufacturer.png"
     url_expr="string:$portal_url/bika_settings/bika_standardmanufacturers"
     visible="True">
@@ -132,7 +132,7 @@
  </configlet>
 
  <configlet title="Standard Stocks" action_id="bika_standardstocks"
-    appId="bika" category="bika" condition_expr=""
+    appId="bika.lims" category="bika" condition_expr=""
     icon_expr="string:$portal_url/images/standardstock.png"
     url_expr="string:$portal_url/bika_settings/bika_standardstocks"
     visible="True">
@@ -140,7 +140,7 @@
  </configlet>
 
  <configlet title="Worksheet Templates" action_id="bika_worksheettemplates"
-    appId="bika" category="bika" condition_expr=""
+    appId="bika.lims" category="bika" condition_expr=""
     icon_expr="string:$portal_url/images/worksheettemplate.png"
     url_expr="string:$portal_url/bika_settings/bika_worksheettemplates"
     visible="True">

@@ -8,12 +8,12 @@ from bika.lims.tools import ToolFolder
 from cStringIO import StringIO
 import csv
 from bika.lims.interfaces.tools import Ibika_ar_export
-from five import grok
+from zope.interface import implements
 
 class bika_ar_export(UniqueObject, SimpleItem):
     """ ARExportTool """
 
-    grok.implements(Ibika_ar_export)
+    implements(Ibika_ar_export)
 
     security = ClassSecurityInfo()
     id = 'bika_ar_export'

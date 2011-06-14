@@ -23,9 +23,8 @@ setup(name='bika.lims',
       install_requires=[
           'setuptools',
           # -*- Extra requirements: -*-
-          'PIL==1.1.6',
           'Products.ATExtensions',
-          'five.grok',
+#          'five.grok',
           'reportlab',
       ],
       entry_points="""
