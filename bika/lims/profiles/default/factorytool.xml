@@ -1,6 +1,7 @@
 <?xml version="1.0"?>
 <object name="portal_factory" meta_type="Plone Factory Tool">
  <factorytypes>
+  <type portal_type="BikaSettings"/>
   <type portal_type="Client"/>
   <type portal_type="Contact"/>
   <type portal_type="Sample"/>

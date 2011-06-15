@@ -14,6 +14,8 @@
  <property name="global_allow">False</property>
  <property name="filter_content_types">True</property>
  <property name="allowed_content_types">
+  <element value="SampleType"/>
+  <element value="SampleType"/>
  </property>
  <property name="allow_discussion">False</property>
  <property name="default_view">plone_control_panel</property>
