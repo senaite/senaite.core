@@ -1,4 +1,5 @@
 <?xml version="1.0"?>
-<layers>
- <layer name="bika" interface="bika.lims.interfaces.IBikaLIMS"/>
+<layers name="" meta_type="ComponentRegistry">
+ <layer name="bika"
+    interface="bika.lims.interfaces.IBikaLIMS"/>
 </layers>

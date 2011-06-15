@@ -34,18 +34,6 @@
 			</property>
 			<property name="visible">True</property>
 		</object>
-		<object name="mystuff" meta_type="CMF Action">
-			<property name="title">LIMS</property>
-			<property name="description"/>
-			<property name="url_expr">string:$portal_url/redirect_to_client_home</property>
-			<property name="link_target"/>
-			<property name="icon_expr"/>
-			<property name="available_expr">python: member and here.member_is_client()</property>
-			<property name="permissions">
-				<element value="View"/>
-			</property>
-			<property name="visible">True</property>
-		</object>
 		<object name="clients" meta_type="CMF Action">
 			<property name="title">Clients</property>
 			<property name="description"/>

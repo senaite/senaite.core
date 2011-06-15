@@ -1,34 +1,17 @@
 <?xml version="1.0"?>
-<!-- This file holds the setup configuration for the portal_skins tool -->
+<object name="portal_skins" 
+        meta_type="Plone Skins Tool" 
+        allow_any="False"
+        cookie_persistence="False" 
+        default_skin="Sunburst Theme"
+        request_varname="plone_skin">
 
-<!-- Change the value of these parameters to modify portal_skins behavior:
-     - allow_any: change it to True if you want users to be able to select the
-       skin to use from their personal preferences management page. In the
-       ZMI, this value is known as 'Skin flexibility'.
-     - cookie_persistence: change it to True if you want to make the skin cookie
-       persist indefinitely. In the ZMI, this value is known as 'Skin Cookie
-       persistence'.
-       -->
-<object name="portal_skins" allow_any="False" cookie_persistence="False"
-   default_skin="bika">
+  <object name="bika" 
+          meta_type="Filesystem Directory View"
+          directory="bika.lims:skins/bika"/>
 
- <object name="bika" meta_type="Filesystem Directory View"
-    directory="bika.lims:skins/bika"/>
-
- <!-- A skin-path in this file corresponds to a Skin Selection in the
-     'Properties' tab of the portal_skins tool, in the ZMI.
-     You can define for each new skin path the layers that it holds. A new
-     skin can be based on another existing one by using the 'based-on'
-     attribute.
-     The definition of a layer accepts these parameters:
-       - name: quite self explanatory, the name of the layer.
-       - insert-before: name of the layer before which it must be added.
-       - insert-after: name of the layer after which it must be added.
-       Note: insert-before (and -after) accepts the value "*" which means
-       "all".
-       -->
- <skin-path name="bika" based-on="Plone Default">
-  <layer name="bika" insert-after="custom"/>
- </skin-path>
+  <skin-path name="*">
+    <layer name="bika" insert-before="*"/>
+  </skin-path>
 
 </object>
