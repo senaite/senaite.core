@@ -10,9 +10,8 @@ from bika.lims import bikaMessageFactory as _
 from bika.lims.content.bikaschema import BikaFolderSchema
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.folder.folder import ATFolder, ATFolderSchema
-from bika.lims.interfaces.controlpanel import ILabProducts
 from zope.interface.declarations import implements
-from bika.lims.interfaces import IHaveNoByline
+from bika.lims.interfaces import IHaveNoByline, ILabProducts
 
 class LabProductsView(BikaListingView):
     implements(IFolderContentsView)

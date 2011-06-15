@@ -6,7 +6,6 @@ from Products.CMFCore import permissions
 from Products.CMFCore.utils import getToolByName
 from bika.lims import bikaMessageFactory as _
 from bika.lims.interfaces import IIdServer
-from bika.lims.tools import ToolFolder
 from zope.interface.declarations import implements
 import os
 import sys

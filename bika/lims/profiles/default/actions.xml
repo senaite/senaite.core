@@ -3,7 +3,7 @@
 	<action-provider name="portal_actions"/>
 
 	<!-- hide the "sharing" tab on a list of types.
-     This is here to avoid hiding the sharing tab globally -->
+             This is here to avoid hiding the sharing tab globally -->
 
 	<object name="object" meta_type="CMF Action Category">
 		<property name="title"/>

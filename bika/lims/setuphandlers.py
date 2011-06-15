@@ -1,11 +1,9 @@
-""" Bika setup handlers. """
-
 from Products.CMFCore import permissions
 from Products.CMFCore.utils import getToolByName
 from bika.lims import bikaMessageFactory as _
 from Products.CMFPlone import PloneMessageFactory
 from bika.lims.config import *
-from bika.lims.mailtemplates import templates
+#from bika.lims.mailtemplates import templates
 import logging
 
 #from Products.PortalTransport.utils import install_mail_templates
@@ -14,7 +12,7 @@ import logging
 logger = logging.getLogger('bika.lims')
 
 class BikaGenerator:
-
+    
     def setupPropertiesTool(self, portal):
         ptool = getToolByName(portal, 'portal_properties')
         if not getattr(ptool, 'bika_properties', None):
@@ -238,15 +236,17 @@ class BikaGenerator:
         script = portal.portal_workflow.bika_standardanalysis_workflow.scripts.default
         script.manage_proxy(roles = ('Manager',))
 
+def setupVarious(context):
 
+    # Ordinarily, GenericSetup handlers check for the existence of XML files.
+    # Here, we are not parsing an XML file, but we use this text file as a
+    # flag to check that we actually meant for this import step to be run.
+    # The file is found in profiles/default.
 
-def importFinalSteps(context):
-    """
-    Final Bika import steps.
-    """
-    if context.readDataFile('bika.txt') is None:
+    if context.readDataFile('bika.lims_various.txt') is None:
         return
 
+    # Add additional setup code here
     site = context.getSite()
     gen = BikaGenerator()
     gen.setupPropertiesTool(site)
@@ -254,55 +254,3 @@ def importFinalSteps(context):
     gen.setupGroupsAndRoles(site)
     gen.setupPermissions(site)
     gen.setupProxyRoles(site)
-
-
-#    # install mail templates
-#    install_mail_templates(self, portal, templates, out)
-#
-#    if 'PortalTransport' in portal.objectIds():
-#        portal.portal_mailtemplates.manage_delObjects(
-#            ids = ['PortalTransport'])
-#
-#    # import charts
-#    if 'charts' not in portal.objectIds():
-#        filepath = '%s/charts.zexp' % package_home(GLOBALS)
-#        portal._importObjectFromFile(filepath, set_owner = 1)
-#
-#    # Move checksetup to be first action of Client
-#    actions = []
-#    indices = []
-#    idx = 0
-#    for action in self.portal_types['Client'].listActions():
-#        if action.id not in ['checkstate', ]:
-#            actions.append(action)
-#            indices.append(idx)
-#        idx += 1
-#
-#    del_idx = tuple(indices)
-#    self.portal_types['Client'].deleteActions(del_idx)
-#    for action in actions:
-#        self.portal_types['Client'].addAction(
-#             action.id,
-#             name = action.Title(),
-#             action = action.getActionExpression(),
-#             condition = action.getCondition(),
-#             permission = action.getPermissions(),
-#             category = action.getCategory(),
-#             visible = action.getVisibility(),
-#                        )
-
-
-#    # Add UID index
-#    catalog_indexes = (
-#        { 'name'  : 'UID',
-#          'type'  : 'FieldIndex'
-#          },
-#                        )
-#    cat = portal.portal_catalog
-#    for idx in catalog_indexes:
-#        if idx['name'] in cat.indexes():
-#            pass
-#        else:
-#            cat.addIndex(**idx)
-#            cat.reindexIndex('UID', portal)
-

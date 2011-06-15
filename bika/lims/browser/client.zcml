@@ -4,19 +4,31 @@
     xmlns:i18n="http://namespaces.zope.org/i18n"
     i18n_domain="bika">
 
+    <!-- Client Folder -->
+
+    <browser:page
+      for="bika.lims.interfaces.IClientFolder"
+      name="clientfolder_contents"
+      class="bika.lims.browser.clientfolder.ClientFolderContentsView"
+      permission="bika.lims.ManageClients"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
+    <!-- Individual Client Pages -->
+
     <browser:page
       for="bika.lims.interfaces.IClient"
       name="analysisrequests"
       class="bika.lims.browser.client.ClientAnalysisRequestsView"
       permission="zope.Public"
-      layer="bika.lims.interfaces.IBikaLIMSLayer"
+      layer="bika.lims.interfaces.IBikaLIMS"
     />
     <browser:page
       for="bika.lims.interfaces.IClient"
       name="analysisrequests_filter"
       class="bika.lims.browser.client.ClientAnalysisRequestsFilterView"
       permission="zope.Public"
-      layer="bika.lims.interfaces.IBikaLIMSLayer"
+      layer="bika.lims.interfaces.IBikaLIMS"
     />
 
     <browser:page
@@ -24,7 +36,7 @@
       name="samples"
       class="bika.lims.browser.client.ClientSamplesView"
       permission="zope.Public"
-      layer="bika.lims.interfaces.IBikaLIMSLayer"
+      layer="bika.lims.interfaces.IBikaLIMS"
     />
 
     <browser:page
@@ -32,7 +44,7 @@
       name="arimports"
       class="bika.lims.browser.client.ClientARImportsView"
       permission="zope.Public"
-      layer="bika.lims.interfaces.IBikaLIMSLayer"
+      layer="bika.lims.interfaces.IBikaLIMS"
     />
 
     <browser:page
@@ -40,7 +52,7 @@
       name="arprofiles"
       class="bika.lims.browser.client.ClientARProfilesView"
       permission="zope.Public"
-      layer="bika.lims.interfaces.IBikaLIMSLayer"
+      layer="bika.lims.interfaces.IBikaLIMS"
     />
 
     <browser:page
@@ -48,7 +60,7 @@
       name="analysisspecs"
       class="bika.lims.browser.client.ClientAnalysisSpecsView"
       permission="zope.Public"
-      layer="bika.lims.interfaces.IBikaLIMSLayer"
+      layer="bika.lims.interfaces.IBikaLIMS"
     />
 
     <browser:page
@@ -56,7 +68,7 @@
       name="attachments"
       class="bika.lims.browser.client.ClientAttachmentsView"
       permission="zope.Public"
-      layer="bika.lims.interfaces.IBikaLIMSLayer"
+      layer="bika.lims.interfaces.IBikaLIMS"
     />
 
     <browser:page
@@ -64,7 +76,7 @@
       name="orders"
       class="bika.lims.browser.client.ClientOrdersView"
       permission="zope.Public"
-      layer="bika.lims.interfaces.IBikaLIMSLayer"
+      layer="bika.lims.interfaces.IBikaLIMS"
     />
 
     <browser:page
@@ -72,7 +84,7 @@
       name="contacts"
       class="bika.lims.browser.client.ClientContactsView"
       permission="zope.Public"
-      layer="bika.lims.interfaces.IBikaLIMSLayer"
+      layer="bika.lims.interfaces.IBikaLIMS"
     />
 
 

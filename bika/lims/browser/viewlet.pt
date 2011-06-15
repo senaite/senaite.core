@@ -1,0 +1,12 @@
+<!--
+  'view' refers to the MyViewlet class in viewlets.py
+  If you do not need anything fancy where python code might help,
+  like just a viewlet that displays '<h1>Hello World</h1>',
+  then you can remove anything else from this page template, remove
+  viewlets.py and change the viewlet registration in configure.zcml:
+  replace
+     class=".viewlets.MyViewlet"
+  with 
+     template="viewlet.pt"
+  -->
+<div tal:content="view/computed_value|nothing"/>

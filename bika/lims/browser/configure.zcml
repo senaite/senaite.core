@@ -1,38 +1,72 @@
 <configure
     xmlns="http://namespaces.zope.org/zope"
     xmlns:browser="http://namespaces.zope.org/browser"
-    xmlns:i18n="http://namespaces.zope.org/i18n"
-    i18n_domain="bika">
+    i18n_domain="bika.lims">
 
     <include file="client.zcml"/>
     <include file="analysisrequest.zcml"/>
     <include file="worksheet.zcml"/>
     <include file="sample.zcml"/>
     <include file="viewlets.zcml"/>
+    <include package=".fields"/>
     <include package=".widgets"/>
 
-    <includeOverrides file="overrides.zcml" />
-
+  <!-- 'bika' Zope 3 browser layer
+    Register views, viewlets and resources for this layer to make sure
+    they only apply to the 'bika' theme.
+    You can also use this layer to override default Plone browser views
+    and viewlets only within the 'bika' theme.
+  -->
+  <interface
+      interface="bika.lims.interfaces.IBikaLIMS"
+      type="zope.publisher.interfaces.browser.IBrowserSkinType"
+      name="bika"
+      />
+ 
     <browser:page
       for="*"
       name="load_setup_data"
       class="bika.lims.browser.load_setup_data.LoadSetupData"
       permission="bika.lims.ManageBika"
-      layer="bika.lims.interfaces.IBikaLIMSLayer"
+      layer="bika.lims.interfaces.IBikaLIMS"
     />
 
-    <browser:page
-      for="bika.lims.interfaces.IClientFolder"
-      name="clientfolder_contents"
-      class="bika.lims.browser.clientfolder.ClientFolderContentsView"
-      permission="bika.lims.ManageClients"
-      layer="bika.lims.interfaces.IBikaLIMSLayer"
-    />
+  <!-- Zope 3 browser resources -->
+
+  <!-- Resource directory for images
+    See bika/lims/browser/images/README.txt
+    for more information about registering images as Zope 3 browser
+    resources.  -->
+  <browser:resourceDirectory
+      name="bika.lims.images"
+      directory="images"
+      layer="bika.lims.interfaces.IBikaLIMS"
+      />
+
+  <!-- Resource directory for stylesheets
+    See bika/lims/browser/css/README.txt
+    for more information about registering stylesheets as Zope 3 browser
+    resources.  -->
+  <browser:resourceDirectory
+      name="bika.lims.css"
+      directory="css"
+      layer="bika.lims.interfaces.IBikaLIMS"
+      />
+
+  <!-- Resource directory for javascripts
+    See bika/lims/browser/js/README.txt
+    for more information about registering javascripts as Zope 3 browser
+    resources.  -->
+  <browser:resourceDirectory
+      name="bika.lims.js"
+      directory="js"
+      layer="bika.lims.interfaces.IBikaLIMS"
+      />
 
     <browser:resource
-      name="bika_listing.js"
-      file="bika_listing.js"
-      layer="bika.lims.interfaces.IBikaLIMSLayer"
+      name="utils.js"
+      file="js/utils.js"
+      layer="bika.lims.interfaces.IBikaLIMS"
     />
 
 

@@ -1,5 +1,4 @@
 <?xml version="1.0"?>
 <layers>
- <layer name="bika.lims"
-    interface="bika.lims.interfaces.IBikaLIMSLayer"/>
+ <layer name="bika" interface="bika.lims.interfaces.IBikaLIMS"/>
 </layers>

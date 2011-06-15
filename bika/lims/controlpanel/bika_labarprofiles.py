@@ -8,8 +8,7 @@ from bika.lims import bikaMessageFactory as _
 from bika.lims.content.bikaschema import BikaFolderSchema
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.folder.folder import ATFolder, ATFolderSchema
-from bika.lims.interfaces.controlpanel import ILabARProfiles
-from bika.lims.interfaces import IHaveNoByline
+from bika.lims.interfaces import IHaveNoByline, ILabARProfiles
 from zope.interface.declarations import implements
 
 class LabARProfilesView(BikaListingView):

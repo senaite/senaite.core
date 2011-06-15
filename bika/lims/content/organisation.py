@@ -1,13 +1,13 @@
 from AccessControl import ClassSecurityInfo
 from Products.ATExtensions.ateapi import RecordWidget
 from Products.Archetypes.public import *
-from bika.lims.CustomFields import AddressField
 from bika.lims import PROJECTNAME
 from Products.CMFCore import permissions as CMFCorePermissions
 from Products.CMFCore.utils import getToolByName
 from bika.lims.content.bikaschema import BikaSchema, BikaFolderSchema
 from archetypes.referencebrowserwidget import ReferenceBrowserWidget
 from plone.app.folder.folder import ATFolder
+from bika.lims.browser.fields import AddressField
 
 schema = BikaFolderSchema.copy() + BikaSchema.copy() + ManagedSchema((
     StringField('Name',

@@ -11,40 +11,40 @@
     They are duplicated in config.py for Products.CMFCore.utils.ContentInit()
 /-->
 
-<permission id = "bika.lims.ManageBika" title = "bika.lims: Manage Bika"/>
-<permission id = "bika.lims.ManageClients" title = "bika.lims: Manage Clients"/>
-<permission id = "bika.lims.ManageWorksheets" title = "bika.lims: Manage Worksheets"/>
-<permission id = "bika.lims.ManageOrders" title = "bika.lims: Manage Orders"/>
-<permission id = "bika.lims.ManageAnalysisRequest" title = "bika.lims: Manage AnalysisRequest"/>
-<permission id = "bika.lims.ManageSample" title = "bika.lims: Manage Sample"/>
-<permission id = "bika.lims.ManageStandardSuppliers" title = "bika.lims: Manage Standard Suppliers"/>
-<permission id = "bika.lims.ManageStandard" title = "bika.lims: Manage Standard"/>
-<permission id = "bika.lims.ManageInvoices" title = "bika.lims: Manage Invoices"/>
-<permission id = "bika.lims.ManagePricelists" title = "bika.lims: Manage Pricelists"/>
-<permission id = "bika.lims.ViewMethods" title = "bika.lims: View Methods"/>
-<permission id = "bika.lims.EditAnalyses" title = "bika.lims: Edit analyses"/>
-<permission id = "bika.lims.ViewResults" title = "bika.lims: View Results"/>
-<permission id = "bika.lims.ManageARImport" title = "bika.lims: Manage ARImport"/>
+<permission id="bika.lims.ManageBika" title="bika.lims: Manage Bika"/>
+<permission id="bika.lims.ManageClients" title="bika.lims: Manage Clients"/>
+<permission id="bika.lims.ManageWorksheets" title="bika.lims: Manage Worksheets"/>
+<permission id="bika.lims.ManageOrders" title="bika.lims: Manage Orders"/>
+<permission id="bika.lims.ManageAnalysisRequest" title="bika.lims: Manage AnalysisRequest"/>
+<permission id="bika.lims.ManageSample" title="bika.lims: Manage Sample"/>
+<permission id="bika.lims.ManageStandardSuppliers" title="bika.lims: Manage Standard Suppliers"/>
+<permission id="bika.lims.ManageStandard" title="bika.lims: Manage Standard"/>
+<permission id="bika.lims.ManageInvoices" title="bika.lims: Manage Invoices"/>
+<permission id="bika.lims.ManagePricelists" title="bika.lims: Manage Pricelists"/>
+<permission id="bika.lims.ViewMethods" title="bika.lims: View Methods"/>
+<permission id="bika.lims.EditAnalyses" title="bika.lims: Edit analyses"/>
+<permission id="bika.lims.ViewResults" title="bika.lims: View Results"/>
+<permission id="bika.lims.ManageARImport" title="bika.lims: Manage ARImport"/>
 
 # Workflow permissions
-<permission id = "bika.lims.ReceiveSample" title = "bika.lims: Receive sample"/>
-<permission id = "bika.lims.SubmitSample" title = "bika.lims: Submit sample"/>
-<permission id = "bika.lims.VerifySample" title = "bika.lims: Verify sample"/>
-<permission id = "bika.lims.PublishSample" title = "bika.lims: Publish sample"/>
-<permission id = "bika.lims.RetractSample" title = "bika.lims: Retract sample"/>
-<permission id = "bika.lims.ImportSample" title = "bika.lims: Import sample"/>
+<permission id="bika.lims.ReceiveSample" title="bika.lims: Receive sample"/>
+<permission id="bika.lims.SubmitSample" title="bika.lims: Submit sample"/>
+<permission id="bika.lims.VerifySample" title="bika.lims: Verify sample"/>
+<permission id="bika.lims.PublishSample" title="bika.lims: Publish sample"/>
+<permission id="bika.lims.RetractSample" title="bika.lims: Retract sample"/>
+<permission id="bika.lims.ImportSample" title="bika.lims: Import sample"/>
 
-<permission id = "bika.lims.SubmitWorksheet" title = "bika.lims: Submit Worksheet"/>
-<permission id = "bika.lims.VerifyWorksheet" title = "bika.lims: Verify Worksheet"/>
-<permission id = "bika.lims.RetractWorksheet" title = "bika.lims: Retract Worksheet"/>
+<permission id="bika.lims.SubmitWorksheet" title="bika.lims: Submit Worksheet"/>
+<permission id="bika.lims.VerifyWorksheet" title="bika.lims: Verify Worksheet"/>
+<permission id="bika.lims.RetractWorksheet" title="bika.lims: Retract Worksheet"/>
 
-<permission id = "bika.lims.DispatchOrder" title = "bika.lims: Dispatch Order"/>
+<permission id="bika.lims.DispatchOrder" title="bika.lims: Dispatch Order"/>
 
-<permission id = "bika.lims.PostInvoiceBatch" title = "bika.lims: Post Invoice batch"/>
+<permission id="bika.lims.PostInvoiceBatch" title="bika.lims: Post Invoice batch"/>
 
 # Worksheet permissions
-<permission id = "bika.lims.AssignAnalyses" title = "bika.lims: Assign analyses"/>
-<permission id = "bika.lims.DeleteAnalyses" title = "bika.lims: Delete analyses"/>
-<permission id = "bika.lims.SubmitResults" title = "bika.lims: Submit results"/>
+<permission id="bika.lims.AssignAnalyses" title="bika.lims: Assign analyses"/>
+<permission id="bika.lims.DeleteAnalyses" title="bika.lims: Delete analyses"/>
+<permission id="bika.lims.SubmitResults" title="bika.lims: Submit results"/>
 
 </configure>

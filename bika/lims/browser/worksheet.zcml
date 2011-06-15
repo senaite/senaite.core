@@ -9,7 +9,7 @@
       name="worksheets"
       class="bika.lims.browser.worksheet.WorksheetFolderView"
       permission="zope.Public"
-      layer="bika.lims.interfaces.IBikaLIMSLayer"
+      layer="bika.lims.interfaces.IBikaLIMS"
     />
 
     <browser:page
@@ -17,7 +17,7 @@
       name="worksheet_add"
       class="bika.lims.browser.worksheet.WorksheetAddView"
       permission="zope.Public"
-      layer="bika.lims.interfaces.IBikaLIMSLayer"
+      layer="bika.lims.interfaces.IBikaLIMS"
     />
 
     <browser:page
@@ -25,13 +25,13 @@
       name="worksheet_analyses"
       class="bika.lims.browser.worksheet.WorksheetAnalysesView"
       permission="zope.Public"
-      layer="bika.lims.interfaces.IBikaLIMSLayer"
+      layer="bika.lims.interfaces.IBikaLIMS"
     />
 
     <browser:resource
       name="worksheet.js"
-      file="worksheet.js"
-      layer="bika.lims.interfaces.IBikaLIMSLayer"
+      file="js/worksheet.js"
+      layer="bika.lims.interfaces.IBikaLIMS"
     />
 
 </configure>

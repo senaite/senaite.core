@@ -72,11 +72,11 @@ class AnalysisRequestViewView(BrowserView):
 
             if specification == 'lab':
                 a = self.context.portal_catalog(portal_type = 'LabAnalysisSpec',
-                                            getSampleTypeUID = sampletype_uid)
+                                                getSampleTypeUID = sampletype_uid)
             else:
                 a = self.context.portal_catalog(portal_type = 'AnalysisSpec',
-                                            getSampleTypeUID = sampletype_uid,
-                                            getClientUID = client_uid)
+                                                getSampleTypeUID = sampletype_uid,
+                                                getClientUID = client_uid)
 
             if a:
                 spec_obj = a[0].getObject()
@@ -118,8 +118,8 @@ class AnalysisRequestViewView(BrowserView):
             if wf_tool.getInfoFor(analysis, 'review_state', '') == 'rejected':
                 ws_uid = self.context.UID()
                 for orig in self.context.portal_catalog(portal_type = 'RejectAnalysis',
-                                              getWorksheetUID = ws_uid,
-                                              getServiceUID = service_uid):
+                                                        getWorksheetUID = ws_uid,
+                                                        getServiceUID = service_uid):
                     orig_analysis = orig.getObject()
                     if orig_analysis.getRequest().getRequestID() == analysis.getRequest().getRequestID():
                         break
@@ -215,7 +215,7 @@ class AnalysisRequestViewView(BrowserView):
         result = []
         for analysis in self.context.getAnalyses():
             if wf_tool.getInfoFor(analysis, 'review_state', '') == 'not_requested':
-		result.append(analysis)
+                result.append(analysis)
 
         return result
 
@@ -326,8 +326,8 @@ class AnalysisRequestManageResultsView(AnalysisRequestViewView):
 
         form = self.request.form
 
-       # import pprint
-       # pprint.pprint(form)
+    # import pprint
+    # pprint.pprint(form)
 
         wf_tool = getToolByName(self.context, 'portal_workflow')
         pc = getToolByName(self.context, 'portal_catalog')
@@ -351,8 +351,8 @@ class AnalysisRequestManageResultsView(AnalysisRequestViewView):
 
             # if only some analyses were published we still send an email
             if workflow_action in ['publish', 'republish', 'prepublish'] and \
-                    self.context.portal_type == 'AnalysisRequest' and \
-                    len(success.keys()) > 0:
+               self.context.portal_type == 'AnalysisRequest' and \
+               len(success.keys()) > 0:
                 contact = self.context.getContact()
                 analysis_requests = [self.context]
                 contact.publish_analysis_requests(self.context, contact, analysis_requests, None)
@@ -522,7 +522,7 @@ class AnalysisRequestManageResultsView(AnalysisRequestViewView):
 
         rc = getToolByName(self, 'reference_catalog');
         parents = [uid for uid in
-            rc.getBackReferences(this_child, 'AnalysisAnalysis')]
+                   rc.getBackReferences(this_child, 'AnalysisAnalysis')]
         for p in parents:
             parent = rc.lookupObject(p.sourceUID)
 
@@ -545,8 +545,8 @@ class AnalysisRequestManageResultsView(AnalysisRequestViewView):
                     Starch = results['Starch']
                     Sugars = results['Sugars']
                     result = (Decimal('0.1551') * ProteinCrude) + \
-                             (Decimal('0.3431') * FatCrudeEtherExtraction) + \
-                             (Decimal('0.1669') * Starch) + (Decimal('0.1301') * Sugars)
+                           (Decimal('0.3431') * FatCrudeEtherExtraction) + \
+                           (Decimal('0.1669') * Starch) + (Decimal('0.1301') * Sugars)
                 else:
                     result = None
                 update_data(parent, result)
@@ -561,8 +561,8 @@ class AnalysisRequestManageResultsView(AnalysisRequestViewView):
                     FibreCrude = results['FibreCrude']
                     Ash = results['Ash']
                     result = 12 + (Decimal('0.008') * ProteinCrude) + \
-                             (Decimal('0.023') * FatCrudeEtherExtraction) - (Decimal('0.018') * FibreCrude) + \
-                             (Decimal('0.012') * Ash)
+                           (Decimal('0.023') * FatCrudeEtherExtraction) - (Decimal('0.018') * FibreCrude) + \
+                           (Decimal('0.012') * Ash)
                 else:
                     result = None
                 update_data(parent, result)
@@ -588,7 +588,7 @@ class AnalysisRequestManageResultsView(AnalysisRequestViewView):
                     FatCrudeEtherExtraction = results['FatCrudeEtherExtraction']
                     Ash = results['Ash']
                     result = 100 - (FibreNDF + ProteinCrude + \
-                             FatCrudeEtherExtraction + Ash)
+                                    FatCrudeEtherExtraction + Ash)
                 else:
                     result = None
                 update_data(parent, result)
@@ -603,8 +603,8 @@ class AnalysisRequestManageResultsView(AnalysisRequestViewView):
                     FibreCrude = results['FibreCrude']
                     Ash = results['Ash']
                     result = Decimal('17.38') + (Decimal('0.105') * ProteinCrude) + \
-                             (Decimal('0.114') * FatCrudeEtherExtraction) - (Decimal('0.317') * FibreCrude) - \
-                             (Decimal('0.402') * Ash)
+                           (Decimal('0.114') * FatCrudeEtherExtraction) - (Decimal('0.317') * FibreCrude) - \
+                           (Decimal('0.402') * Ash)
                 else:
                     result = None
                 update_data(parent, result)
@@ -814,21 +814,21 @@ class AnalysisRequestSelectCCView(BikaListingView):
     pagesize = 20
 
     columns = {
-           'getFullname': {'title': _('Full Name')},
-           'getEmailAddress': {'title': _('Email Address')},
-           'getBusinessPhone': {'title': _('Business Phone')},
-           'getMobilePhone': {'title': _('Mobile Phone')},
-          }
+        'getFullname': {'title': _('Full Name')},
+        'getEmailAddress': {'title': _('Email Address')},
+        'getBusinessPhone': {'title': _('Business Phone')},
+        'getMobilePhone': {'title': _('Mobile Phone')},
+    }
     review_states = [
-                {'title': _('All'), 'id':'all',
-                 'columns': ['getFullname',
-                             'getEmailAddress',
-                             'getBusinessPhone',
-                             'getMobilePhone'],
-                 'buttons':[{'cssclass': 'context select_cc_select',
-                             'title': _('Add to CC list'),
-                             'url': ''}]},
-                ]
+        {'title': _('All'), 'id':'all',
+         'columns': ['getFullname',
+                     'getEmailAddress',
+                     'getBusinessPhone',
+                     'getMobilePhone'],
+         'buttons':[{'cssclass': 'context select_cc_select',
+                     'title': _('Add to CC list'),
+                     'url': ''}]},
+    ]
 
     def folderitems(self):
         items = BikaListingView.folderitems(self)
@@ -853,33 +853,33 @@ class AnalysisRequestSelectSampleView(BikaListingView):
     pagesize = 50
 
     columns = {
-           'getSampleID': {'title': _('Sample ID'), 'table_row_class':'select_sample_select'},
-           'getClientSampleID': {'title': _('Client SID')},
-           'getClientReference': {'title': _('Client Reference')},
-           'SampleType': {'title': _('Sample Type')},
-           'SamplePoint': {'title': _('Sample Point')},
-           'getDateReceived': {'title': _('Date Received')},
-           'state_title': {'title': _('State')},
-          }
+        'getSampleID': {'title': _('Sample ID'), 'table_row_class':'select_sample_select'},
+        'getClientSampleID': {'title': _('Client SID')},
+        'getClientReference': {'title': _('Client Reference')},
+        'SampleType': {'title': _('Sample Type')},
+        'SamplePoint': {'title': _('Sample Point')},
+        'getDateReceived': {'title': _('Date Received')},
+        'state_title': {'title': _('State')},
+    }
     review_states = [
-                {'title': _('All'), 'id':'all',
-                 'columns': ['getSampleID',
-                             'getClientSampleID',
-                             'SampleType',
-                             'SamplePoint',
-                             'state_title']},
-                {'title': _('Due'), 'id':'due',
-                 'columns': ['getSampleID',
-                             'getClientSampleID',
-                             'SampleType',
-                             'SamplePoint']},
-                {'title': _('Received'), 'id':'received',
-                 'columns': ['getSampleID',
-                             'getClientSampleID',
-                             'SampleType',
-                             'SamplePoint',
-                             'getDateReceived']},
-                ]
+        {'title': _('All'), 'id':'all',
+         'columns': ['getSampleID',
+                     'getClientSampleID',
+                     'SampleType',
+                     'SamplePoint',
+                     'state_title']},
+        {'title': _('Due'), 'id':'due',
+         'columns': ['getSampleID',
+                     'getClientSampleID',
+                     'SampleType',
+                     'SamplePoint']},
+        {'title': _('Received'), 'id':'received',
+         'columns': ['getSampleID',
+                     'getClientSampleID',
+                     'SampleType',
+                     'SamplePoint',
+                     'getDateReceived']},
+    ]
 
     def __init__(self, context, request):
         super(AnalysisRequestSelectSampleView, self).__init__(context, request)
@@ -1166,7 +1166,7 @@ def analysisrequest_add_submit(context, request):
                 Sample = sample_uid,
                 Profile = profile,
                 **dict(values)
-             )
+            )
         else:
             ar_id = context.getRequestID()
             ar = context
@@ -1176,7 +1176,7 @@ def analysisrequest_add_submit(context, request):
                 CCEmails = form['CCEmails'],
                 Profile = profile,
                 **dict(values)
-             )
+            )
 
         ar.setAnalyses(['%s:%s' % (a, prices[a]) for a in Analyses])
 
@@ -1207,12 +1207,12 @@ def analysisrequest_add_submit(context, request):
     if came_from == "add":
         if len(ARs) > 1:
             message = context.translate('message_ars_created',
-                                    default = 'Analysis requests ${ARs} were successfully created.',
-                                    mapping = {'ARs': ', '.join(ARs)}, domain = 'bika')
+                                        default = 'Analysis requests ${ARs} were successfully created.',
+                                        mapping = {'ARs': ', '.join(ARs)}, domain = 'bika')
         else:
             message = context.translate('message_ar_created',
-                                    default = 'Analysis request ${AR} was successfully created.',
-                                    mapping = {'AR': ', '.join(ARs)}, domain = 'bika')
+                                        default = 'Analysis request ${AR} was successfully created.',
+                                        mapping = {'AR': ', '.join(ARs)}, domain = 'bika')
     else:
         message = "Changes Saved."
 

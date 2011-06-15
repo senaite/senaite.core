@@ -7,7 +7,7 @@ from bika.lims.content.bikaschema import BikaSchema
 from Products.ATExtensions.ateapi import RecordWidget
 from archetypes.referencebrowserwidget import ReferenceBrowserWidget
 from bika.lims.config import GENDERS, PROJECTNAME
-from bika.lims.CustomFields import AddressField
+from bika.lims.browser.fields import AddressField
 
 schema = BikaSchema.copy() + Schema((
     StringField('Salutation',

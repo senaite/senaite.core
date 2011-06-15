@@ -7,9 +7,8 @@ from bika.lims.config import PROJECTNAME
 from bika.lims import bikaMessageFactory as _
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.folder.folder import ATFolder, ATFolderSchema
-from bika.lims.interfaces.controlpanel import ILabAnalysisSpecs
+from bika.lims.interfaces import IHaveNoByline, ILabAnalysisSpecs
 from zope.interface.declarations import implements
-from bika.lims.interfaces import IHaveNoByline
 
 #XXX multiple additions in one add_form.
 

@@ -1,5 +1,29 @@
 <?xml version="1.0"?>
+<!-- This file holds the setup configuration for the portal_javascripts tool.
+     -->
+
 <object name="portal_javascripts">
+
+ <!-- Javascript files that will be registered with the
+      portal_javascripts tool are defined here. You can also specify values
+      for existing resources if you need to modify some of their properties.
+      Javascript elements accept these parameters:
+      - 'id' (required): same rules as for stylesheets (see
+        'cssregistry.xml').
+      - 'expression' (optional - default: ''): a tal condition.
+      - 'inline' (optional - default: False)
+      - 'enabled' (optional - default: True): boolean
+      - 'cookable' (optional - default: True): boolean (aka 'merging allowed')
+      See registerScript() arguments in ResourceRegistries/tools/JSRegistry.py
+      for the latest list of all available keys and default values.
+      -->
+<!-- EXAMPLE (UNCOMMENT TO MAKE AVAILABLE):
+ <javascript
+    id="++resource++bika.lims.javascripts/something.js"
+    cacheable="False" compression="safe" cookable="False"
+    enabled="True" expression=""  inline="False"/>
+-->
+
     <javascript id="jquery-ui.js"
                 cacheable="True" compression="safe" cookable="True"
                 enabled="True" expression=""  inline="False" insert-after="*"/>
@@ -10,7 +34,7 @@
                 cookable="True" 
                 enabled="on" 
                 expression="" 
-                id="++resource++bika.lims.browser/globalutils.js" 
+                id="++resource++bika.lims.browser.js/jquery-ui.js" 
                 inline="False"/>
     <javascript authenticated="0" 
                 cacheable="True" 
@@ -19,7 +43,16 @@
                 cookable="True" 
                 enabled="on" 
                 expression="" 
-                id="++resource++bika.lims.browser/bika_listing.js"
+                id="++resource++bika.lims.browser.js/utils.js" 
+                inline="False"/>
+    <javascript authenticated="0" 
+                cacheable="True" 
+                compression="safe" 
+                conditionalcomment="" 
+                cookable="True" 
+                enabled="on" 
+                expression="" 
+                id="++resource++bika.lims.browser.js/bika_listing.js"
                 inline="False"/>
     <javascript authenticated="False" 
                 cacheable="True" 
@@ -28,7 +61,7 @@
                 cookable="True" 
                 enabled="on" 
                 expression="python:here.portal_type in ['AnalysisRequest', 'Client']" 
-                id="++resource++bika.lims.browser/analysisrequest.js" 
+                id="++resource++bika.lims.browser.js/analysisrequest.js" 
                 inline="False"/>
     <javascript authenticated="False" 
                 cacheable="True" 
@@ -37,7 +70,7 @@
                 cookable="True" 
                 enabled="on" 
                 expression="python:here.portal_type in ['WorksheetFolder','Worksheet']" 
-                id="++resource++bika.lims.browser/worksheet.js" 
+                id="++resource++bika.lims.browser.js/worksheet.js" 
                 inline="False"/>
     <javascript authenticated="False" 
                 cacheable="True" 
@@ -46,6 +79,6 @@
                 cookable="True" 
                 enabled="on" 
                 expression="python:here.portal_type in ['Sample',]" 
-                id="++resource++bika.lims.browser/sample.js" 
+                id="++resource++bika.lims.browser.js/sample.js" 
                 inline="False"/>
 </object>

@@ -4,8 +4,7 @@ from Products.Archetypes import atapi
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.config import PROJECTNAME
-from bika.lims.interfaces import IHaveNoByline
-from bika.lims.interfaces.controlpanel import IAnalysisCategories
+from bika.lims.interfaces import IHaveNoByline, IAnalysisCategories
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.folder.folder import ATFolderSchema, ATFolder
 from zope.interface.declarations import implements

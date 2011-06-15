@@ -8,10 +8,9 @@ from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.config import PROJECTNAME
 from bika.lims import bikaMessageFactory as _
 from bika.lims.content.bikaschema import BikaFolderSchema
-from bika.lims.interfaces import IHaveNoByline
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.folder.folder import ATFolder, ATFolderSchema
-from bika.lims.interfaces.controlpanel import IStandardManufacturers
+from bika.lims.interfaces import IHaveNoByline, IStandardManufacturers
 from zope.interface.declarations import implements
 
 class StandardManufacturersView(BikaListingView):

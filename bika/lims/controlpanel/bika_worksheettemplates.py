@@ -7,12 +7,11 @@ from Products.Five.browser import BrowserView
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.config import PROJECTNAME
 from bika.lims import bikaMessageFactory as _
-from bika.lims.interfaces import IHaveNoByline
 from bika.lims.content.bikaschema import BikaFolderSchema
 from ZODB.POSException import ConflictError
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.folder.folder import ATFolder, ATFolderSchema
-from bika.lims.interfaces.controlpanel import IWorksheetTemplates
+from bika.lims.interfaces import IHaveNoByline, IWorksheetTemplates
 from zope.interface.declarations import implements
 
 class WorksheetTemplatesView(BikaListingView):

@@ -1,6 +1,38 @@
 <?xml version="1.0"?>
-<object name="portal_css" meta_type="Stylesheets Registry">
- <stylesheet title="" cacheable="True" compression="safe" cookable="True"
-    enabled="1" expression="" id="jquery-ui.css" media="screen"
-    rel="stylesheet" rendering="import"/>
+<!-- This file holds the setup configuration for the portal_css tool. -->
+
+<object name="portal_css">
+
+ <!-- Stylesheets that will be registered with the portal_css tool are defined
+      here. You can also specify values for existing resources if you need to
+      modify some of their properties.
+      Stylesheet elements accept these parameters:
+      - 'id' (required): it must respect the name of the css or DTML file
+        (case sensitive). '.dtml' suffixes must be ignored.
+      - 'expression' (optional - default: ''): a tal condition.
+      - 'media' (optional - default: ''): possible values: 'screen', 'print',
+        'projection', 'handheld'...
+      - 'rel' (optional - default: 'stylesheet')
+      - 'title' (optional - default: '')
+      - 'rendering' (optional - default: 'import'): 'import', 'link' or
+        'inline'.
+      - 'enabled' (optional - default: True): boolean
+      - 'cookable' (optional - default: True): boolean (aka 'merging allowed')
+      - 'insert_before', 'insert_after' (optional - default: '') resource id
+      See registerStylesheet() arguments in
+      ResourceRegistries/tools/CSSRegistry.py for the latest list of all
+      available keys and default values.
+      -->
+ 
+<stylesheet 
+    title="" 
+    cacheable="True" 
+    compression="safe" 
+    cookable="True"
+    enabled="1" 
+    expression="" 
+    id="++resource++bika.lims.js/jquery-ui.css" 
+    media="screen"
+    rel="stylesheet" 
+    rendering="import"/>
 </object>

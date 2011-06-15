@@ -1,3 +1,4 @@
+from addressfield import AddressField
 from specfield import SpecField
 from templatepositionfield import TemplatePositionField
 from worksheetanalysesfield import WorksheetAnalysesField

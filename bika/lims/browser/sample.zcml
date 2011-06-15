@@ -9,7 +9,7 @@
       name="base_view"
       class="bika.lims.browser.sample.SampleViewView"
       permission="zope.Public"
-      layer="bika.lims.interfaces.IBikaLIMSLayer"
+      layer="bika.lims.interfaces.IBikaLIMS"
     />
 
     <browser:page
@@ -17,13 +17,13 @@
       name="base_edit"
       class="bika.lims.browser.sample.SampleEditView"
       permission="zope.Public"
-      layer="bika.lims.interfaces.IBikaLIMSLayer"
+      layer="bika.lims.interfaces.IBikaLIMS"
     />
     
     <browser:resource
       name="sample.js"
-      file="sample.js"
-      layer="bika.lims.interfaces.IBikaLIMSLayer"
+      file="js/sample.js"
+      layer="bika.lims.interfaces.IBikaLIMS"
     />
 
 

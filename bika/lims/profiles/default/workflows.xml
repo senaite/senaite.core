@@ -23,27 +23,32 @@
   <type type_id="ARImport">
    <bound-workflow workflow_id="bika_arimport_workflow"/>
   </type>
-  <type type_id="ARProfile"/>
-  <type type_id="ATBooleanCriterion"/>
-  <type type_id="ATCurrentAuthorCriterion"/>
-  <type type_id="ATDateCriteria"/>
-  <type type_id="ATDateRangeCriterion"/>
-  <type type_id="ATListCriterion"/>
-  <type type_id="ATPathCriterion"/>
-  <type type_id="ATPortalTypeCriterion"/>
-  <type type_id="ATReferenceCriterion"/>
-  <type type_id="ATRelativePathCriterion"/>
-  <type type_id="ATSelectionCriterion"/>
-  <type type_id="ATSimpleIntCriterion"/>
-  <type type_id="ATSimpleStringCriterion"/>
-  <type type_id="ATSortCriterion"/>
   <type type_id="Analysis">
    <bound-workflow workflow_id="bika_analysis_workflow"/>
   </type>
-  <type type_id="AnalysisCategory"/>
   <type type_id="AnalysisRequest">
    <bound-workflow workflow_id="bika_analysis_workflow"/>
   </type>
+  <type type_id="DuplicateAnalysis">
+   <bound-workflow workflow_id="bika_worksheetanalysis_workflow"/>
+  </type>
+  <type type_id="Order">
+   <bound-workflow workflow_id="bika_order_workflow"/>
+  </type>
+  <type type_id="Sample">
+   <bound-workflow workflow_id="bika_sample_workflow"/>
+  </type>
+  <type type_id="StandardAnalysis">
+   <bound-workflow workflow_id="bika_standardanalysis_workflow"/>
+  </type>
+  <type type_id="StandardSample">
+   <bound-workflow workflow_id="bika_standardsample_workflow"/>
+  </type>
+  <type type_id="Worksheet">
+   <bound-workflow workflow_id="bika_worksheet_workflow"/>
+  </type>
+  <type type_id="AnalysisCategory"/>
+  <type type_id="ARProfile"/>
   <type type_id="AnalysisService"/>
   <type type_id="AnalysisSpec"/>
   <type type_id="Attachment"/>
@@ -57,13 +62,6 @@
   <type type_id="Contact"/>
   <type type_id="Department"/>
   <type type_id="Discussion Item"/>
-  <type type_id="DuplicateAnalysis">
-   <bound-workflow workflow_id="bika_worksheetanalysis_workflow"/>
-  </type>
-  <type type_id="File"/>
-  <type type_id="Folder">
-   <bound-workflow workflow_id="folder_workflow"/>
-  </type>
   <type type_id="Image"/>
   <type type_id="Instrument"/>
   <type type_id="Invoice"/>
@@ -73,42 +71,18 @@
   <type type_id="LabARProfile"/>
   <type type_id="LabAnalysisSpec"/>
   <type type_id="LabContact"/>
-  <type type_id="Large Plone Folder">
-   <bound-workflow workflow_id="folder_workflow"/>
-  </type>
   <type type_id="Method"/>
   <type type_id="MethodFolder"/>
-  <type type_id="Order">
-   <bound-workflow workflow_id="bika_order_workflow"/>
-  </type>
-  <type type_id="PT_MailCategory"/>
-  <type type_id="PT_MailTemplate"/>
-  <type type_id="Plone Site"/>
   <type type_id="Pricelist"/>
   <type type_id="PricelistFolder"/>
   <type type_id="PricelistLineItem"/>
-  <type type_id="Sample">
-   <bound-workflow workflow_id="bika_sample_workflow"/>
-  </type>
   <type type_id="SamplePoint"/>
   <type type_id="SampleType"/>
-  <type type_id="StandardAnalysis">
-   <bound-workflow workflow_id="bika_standardanalysis_workflow"/>
-  </type>
   <type type_id="StandardManufacturer"/>
-  <type type_id="StandardSample">
-   <bound-workflow workflow_id="bika_standardsample_workflow"/>
-  </type>
   <type type_id="StandardStock"/>
   <type type_id="StandardSupplier"/>
   <type type_id="StandardSupplierFolder"/>
   <type type_id="SupplierContact"/>
-  <type type_id="Topic">
-   <bound-workflow workflow_id="folder_workflow"/>
-  </type>
-  <type type_id="Worksheet">
-   <bound-workflow workflow_id="bika_worksheet_workflow"/>
-  </type>
   <type type_id="WorksheetFolder"/>
  </bindings>
 </object>

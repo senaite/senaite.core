@@ -10,7 +10,7 @@
         manager="plone.app.layout.viewlets.interfaces.IBelowContentTitle"
         template="templates/blank.pt"
         permission="zope2.View"
-        layer="bika.lims.interfaces.IBikaLIMSLayer"
+        layer="bika.lims.interfaces.IBikaLIMS"
         />
 
     <browser:viewlet
@@ -19,7 +19,7 @@
         manager="plone.app.layout.viewlets.interfaces.IBelowContentTitle"
         template="templates/blank.pt"
         permission="zope2.View"
-        layer="bika.lims.interfaces.IBikaLIMSLayer"
+        layer="bika.lims.interfaces.IBikaLIMS"
         />
 
     <browser:viewlet
@@ -28,7 +28,7 @@
         manager="plone.app.layout.viewlets.interfaces.IAboveContent"
         template="templates/blank.pt"
         permission="zope2.View"
-        layer="bika.lims.interfaces.IBikaLIMSLayer"
+        layer="bika.lims.interfaces.IBikaLIMS"
         />
 
     <browser:viewlet
@@ -37,7 +37,7 @@
         manager="plone.app.layout.viewlets.interfaces.IBelowContentTitle"
         template="templates/blank.pt"
         permission="zope2.View"
-        layer="bika.lims.interfaces.IBikaLIMSLayer"
+        layer="bika.lims.interfaces.IBikaLIMS"
         />
 
 </configure>
