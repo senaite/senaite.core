@@ -38,7 +38,7 @@
 
 <tr>
 <th id="" i18n:translate="label_clientreference">Client Reference</th>
-<td align="center">
+<td class="left">
 <input size="10" name="ClientReference" id="ClientReference"
     tal:attributes="
         value request/ClientReference | here/getClientReference;
@@ -48,7 +48,7 @@
 
 <tr>
 <th id="" i18n:translate="label_clientsampleid">Client Sample ID</th>
-<td align="center">
+<td class="left">
 <input size="10" name="ClientSampleID"
     tal:attributes="
         value request/ClientSampleID | here/getClientSampleID;
@@ -57,10 +57,22 @@
 </tr>
 
 <tr>
+<th i18n:translate="label_requests">Requests</th>
+<td class="left">
+<tal:requests
+    tal:define="ars python:here.getAnalysisRequests()"
+    tal:repeat="ar ars">
+<a href="" tal:content="ar/Title"
+    tal:attributes="href ar/absolute_url">AR-00001</a>
+</tal:requests>
+</td>
+</tr>
+
+<tr>
 <th>
 <span id="" i18n:translate="label_sampletype">Sample Type</span>
 </th>
-<td>
+<td class="left">
     <select name="SampleType" 
         tal:attributes="tabindex tabindex/next;">
     <tal:item 
@@ -81,7 +93,7 @@
 
 <tr>
 <th id="" i18n:translate="label_samplepoint">Sample point</th>
-<td>
+<td class="left">
     <select name="SamplePoint" 
         tal:attributes="tabindex tabindex/next;"
         tal:define="
@@ -106,7 +118,7 @@
 
 <tr>
 <th id="" i18n:translate="label_datesampled">Date sampled</th>
-<td align="center">
+<td class="left">
 	
     <input size="10" type='text' readonly="readonly"
         tal:attributes="
@@ -171,6 +183,7 @@
 <input class="context allowMultiSubmit"
         tabindex=""
         type="submit"
+        name="save_button"
         value="Save"
         i18n:attributes="value"
         tal:attributes="tabindex tabindex/next"
@@ -178,6 +191,7 @@
 <input class="context"
         tabindex=""
         type="submit"
+        name="cancel_button"
         value="Cancel"
         i18n:attributes="value"
         tal:attributes="tabindex tabindex/next"

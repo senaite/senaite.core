@@ -22,30 +22,12 @@ jQuery( function($) {
                 $("input[class~='context']").attr('disabled',true);
                 $("#spinner").toggle(true);
             },
-            complete: function(XMLHttpRequest, textStatus) {
-                $("input[class~='context']").removeAttr('disabled');
-                $("#spinner").toggle(false);
-            },
             success: function(responseText, statusText, xhr, $form)  {  
-                if(responseText['success'] != undefined){
-                    window.location.replace(window.location.href.replace("/base_edit","/base_view"));
-                }
-                msg = ""
-                if(responseText['errors'] != undefined){
-                    for(error in responseText['errors']){
-                        x = error.split(".");
-                        if (x.length == 2){
-                            e = x[1] + " (Column " + x[0] + "): ";
-                        } else {
-                            e = "";
-                        }
-                        msg = msg + e + responseText['errors'][error] + "<br/>";
-                    };
-                    portalMessage(msg);
-                }
-                window.scroll(0,0);
+                window.location.replace(window.location.href.replace("/base_edit","/base_view"));
             },
             error: function(XMLHttpRequest, statusText, errorThrown) {
+                $("input[class~='context']").removeAttr('disabled');
+                $("#spinner").toggle(false);
                 portalMessage(statusText);
             },
         };

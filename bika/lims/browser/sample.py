@@ -1,10 +1,5 @@
-from DateTime import DateTime
-from Products.CMFCore.WorkflowCore import WorkflowException
-from Products.CMFCore.utils import getToolByName
-from Products.CMFPlone.utils import transaction_note
 from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from decimal import Decimal
 import json
 
 class SampleViewView(BrowserView):
@@ -39,7 +34,22 @@ class SampleEditView(BrowserView):
         return date_sampled
 
 def sample_edit_submit(context, request):
-    context.plone_utils.addPortalMessage("that might have worked", 'info')
-    return json.dumps({'success':"xxx"})
 
+    form = request.form
+    sample = context
+
+    if form.has_key("save_button"):
+        sample.edit(
+            ClientReference = form['ClientReference'],
+            ClientSampleID = form['ClientSampleID'],
+            SampleType = form['SampleType'],
+            SamplePoint = form['SamplePoint'],
+            DateSampled = form['DateSampled']
+        )
+        sample.reindexObject()
+        message = "Changes Saved."
+    else:
+        message = "Changes Cancelled."
+    context.plone_utils.addPortalMessage(message, 'info')
+    return json.dumps({'success':message})
 
