@@ -15,41 +15,7 @@ import logging
 logger = logging.getLogger('Bika')
 
 from content import *
-from controlpanel.bika_analysiscategories import AnalysisCategories
-from controlpanel.bika_analysisservices import AnalysisServices
-from controlpanel.bika_labarprofiles import LabARProfiles
-from controlpanel.bika_attachmenttypes import AttachmentTypes
-from controlpanel.bika_calculationtypes import CalculationTypes
-from controlpanel.bika_departments import Departments
-from controlpanel.bika_instruments import Instruments
-from controlpanel.bika_labanalysisspecs import LabAnalysisSpecs
-from controlpanel.bika_labcontacts import LabContacts
-from controlpanel.bika_methods import Methods
-from controlpanel.bika_labproducts import LabProducts
-from controlpanel.bika_samplepoints import SamplePoints
-from controlpanel.bika_sampletypes import SampleTypes
-from controlpanel.bika_standardmanufacturers import StandardManufacturers
-from controlpanel.bika_standardstocks import StandardStocks
-from controlpanel.bika_worksheettemplates import WorksheetTemplates
-
-#import AccessControl
-#import DuplicateAnalysis
-#import RejectAnalysis
-#import StandardAnalysis
-#import SupplierContact
-#import ClientStatus
-#import ClientPublicationPreference
-#import ClientInvoicePreference
-#import ReferenceBrowserListingWidget
-#import InvoiceFolder
-#import InvoiceBatch
-#import Invoice
-#import InvoiceLineItem
-#import MethodFolder
-#import MethodLogEntry
-#import PricelistFolder
-#import Pricelist
-#import PricelistLineItem
+from controlpanel import *
 
 #registerDirectory(SKINS_DIR, GLOBALS)
 
@@ -68,7 +34,7 @@ def initialize(context):
         PROJECTNAME)
 
     ContentInit(
-        PROJECTNAME + ' Content',
+        PROJECTNAME,
         content_types = content_types,
         permission = ADD_CONTENT_PERMISSION,
         extra_constructors = constructors,

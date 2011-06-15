@@ -8,7 +8,7 @@ from Products.Archetypes.public import *
 from Products.CMFCore.permissions import View, ModifyPortalContent
 from Products.CMFDynamicViewFTI.browserdefault import BrowserDefaultMixin
 from bika.lims.content.bikaschema import BikaSchema
-from bika.lims.CustomFields import StandardResultField
+from bika.lims.browser.fields import StandardResultField
 from bika.lims.config import I18N_DOMAIN, PROJECTNAME
 import sys
 import time

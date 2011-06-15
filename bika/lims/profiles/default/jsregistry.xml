@@ -34,7 +34,7 @@
                 cookable="True" 
                 enabled="on" 
                 expression="" 
-                id="++resource++bika.lims.browser.js/jquery-ui.js" 
+                id="++resource++jquery-ui.js" 
                 inline="False"/>
     <javascript authenticated="0" 
                 cacheable="True" 
@@ -43,7 +43,7 @@
                 cookable="True" 
                 enabled="on" 
                 expression="" 
-                id="++resource++bika.lims.browser.js/utils.js" 
+                id="++resource++utils.js" 
                 inline="False"/>
     <javascript authenticated="0" 
                 cacheable="True" 
@@ -52,7 +52,7 @@
                 cookable="True" 
                 enabled="on" 
                 expression="" 
-                id="++resource++bika.lims.browser.js/bika_listing.js"
+                id="++resource++bika_listing.js"
                 inline="False"/>
     <javascript authenticated="False" 
                 cacheable="True" 
@@ -61,7 +61,7 @@
                 cookable="True" 
                 enabled="on" 
                 expression="python:here.portal_type in ['AnalysisRequest', 'Client']" 
-                id="++resource++bika.lims.browser.js/analysisrequest.js" 
+                id="++resource++analysisrequest.js" 
                 inline="False"/>
     <javascript authenticated="False" 
                 cacheable="True" 
@@ -70,7 +70,7 @@
                 cookable="True" 
                 enabled="on" 
                 expression="python:here.portal_type in ['WorksheetFolder','Worksheet']" 
-                id="++resource++bika.lims.browser.js/worksheet.js" 
+                id="++resource++worksheet.js" 
                 inline="False"/>
     <javascript authenticated="False" 
                 cacheable="True" 
@@ -79,6 +79,6 @@
                 cookable="True" 
                 enabled="on" 
                 expression="python:here.portal_type in ['Sample',]" 
-                id="++resource++bika.lims.browser.js/sample.js" 
+                id="++resource++sample.js" 
                 inline="False"/>
 </object>

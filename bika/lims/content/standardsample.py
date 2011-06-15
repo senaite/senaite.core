@@ -17,7 +17,7 @@ from Products.CMFDynamicViewFTI.browserdefault import \
     BrowserDefaultMixin
 from bika.lims.config import ManageStandard, ManageBika
 from bika.lims.utils import sortable_title
-from bika.lims.CustomFields import StandardResultField
+from bika.lims.browser.fields import StandardResultField
 from Products.CMFCore.permissions import View
 
 schema = BikaSchema.copy() + Schema((

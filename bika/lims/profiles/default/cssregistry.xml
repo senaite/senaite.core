@@ -31,7 +31,7 @@
     cookable="True"
     enabled="1" 
     expression="" 
-    id="++resource++bika.lims.js/jquery-ui.css" 
+    id="++resource++jquery-ui.css" 
     media="screen"
     rel="stylesheet" 
     rendering="import"/>

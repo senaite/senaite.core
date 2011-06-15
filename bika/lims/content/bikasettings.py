@@ -7,7 +7,7 @@ from Products.CMFDynamicViewFTI.browserdefault import BrowserDefaultMixin
 from bika.lims.config import I18N_DOMAIN, ATTACHMENT_OPTIONS, \
     ARIMPORT_OPTIONS, PROJECTNAME
 from bika.lims.content.bikaschema import BikaFolderSchema
-from bika.lims.interfaces.controlpanel import IBikaSettings
+from bika.lims.interfaces import IBikaSettings
 from bika.lims.utils import generateUniqueId
 from plone.app.folder import folder
 from zope.interface import implements

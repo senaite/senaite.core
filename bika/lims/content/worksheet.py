@@ -13,7 +13,7 @@ from Products.ATExtensions.ateapi import RecordsField
 from Products.CMFDynamicViewFTI.browserdefault import BrowserDefaultMixin
 from zope.interface import implements
 from bika.lims.interfaces import IWorksheet
-from bika.lims.CustomFields import WorksheetAnalysesField
+from bika.lims.browser.fields import WorksheetAnalysesField
 
 schema = BikaSchema.copy() + Schema((
     StringField('Number',
