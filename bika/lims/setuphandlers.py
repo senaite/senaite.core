@@ -1,10 +1,11 @@
+""" Bika setup handlers. """
+
 from Products.CMFCore import permissions
 from Products.CMFCore.utils import getToolByName
 from bika.lims import bikaMessageFactory as _
 from Products.CMFPlone import PloneMessageFactory
 from bika.lims.config import *
-from Products.CMFPlone.utils import _createObjectByType
-#from bika.lims.mailtemplates import templates
+from bika.lims.mailtemplates import templates
 import logging
 
 #from Products.PortalTransport.utils import install_mail_templates
@@ -12,42 +13,36 @@ import logging
 
 logger = logging.getLogger('bika.lims')
 
-def createObjects(parent, children):
-    """This will create new objects, or modify existing ones if id's and type match."""
-    parent.plone_log("Creating %s in %s" % (children, parent))
-    existing = parent.objectIds()
-    parent.plone_log("Existing ids: %s" % existing)
-    for new_object in children:
-        if new_object['id'] in existing:
-            parent.plone_log("%s exists, skipping" % new_object['id'])
-        else:
-            _createObjectByType(new_object['type'], parent, \
-                id=new_object['id'], title=new_object['title'], \
-                description=new_object['description'])
-        parent.plone_log("Now to modify the new_object...")
-        obj = parent.get(new_object['id'], None)
-        if obj is None:
-            parent.plone_log("can't get new_object %s to modify it!" % new_object['id'])
-        else:
-            if obj.Type() != new_object['type']:
-                parent.plone_log("types don't match!")
-            else:
-                obj.setLayout(new_object['layout'])
-                obj.reindexObject()
-                children = new_object.get('children',[])
-                if len(children) > 0:
-                    createObjects(obj, children)
+class BikaGenerator:
 
-def BikaGenerator():
-
-    ### setup properties tool
-    def setupPropertiesTool(self,portal):
+    def setupPropertiesTool(self, portal):
         ptool = getToolByName(portal, 'portal_properties')
         if not getattr(ptool, 'bika_properties', None):
             ptool.addPropertySheet('bika_properties', 'Bika Properties')
             ps = getattr(ptool, 'bika_properties')
             ps._properties = ps._properties + ({'id':'country_names', 'type':'lines', 'mode':'w'},)
             ps._updateProperty('country_names', COUNTRY_NAMES)
+
+    def setupPortalContent(self, portal):
+        """ Setup Bika site structure """
+
+        # remove undesired content objects
+        del_ids = []
+        for obj_id in ['index_html', 'Members', 'front-page', 'news', 'events']:
+            if obj_id in portal.objectIds():
+                del_ids.append(obj_id)
+        if del_ids:
+            portal.manage_delObjects(ids = del_ids)
+
+        # index objects - importing through GenericSetup doesn't
+        for obj_id in ('clients', 'standardsuppliers', 'invoices', 'methods', 'pricelists', 'worksheets'):
+            obj = portal._getOb(obj_id)
+            obj.reindexObject()
+
+        # Move calendar and user action to bika
+#        for action in portal.portal_controlpanel.listActions():
+#            if action.id in ('UsersGroups', 'UsersGroups2', 'bika_calendar_tool'):
+#                action.permissions = (ManageBika,)
 
     def setupGroupsAndRoles(self, portal):
         # add roles
@@ -243,214 +238,71 @@ def BikaGenerator():
         script = portal.portal_workflow.bika_standardanalysis_workflow.scripts.default
         script.manage_proxy(roles = ('Manager',))
 
-        def reIndexCatalog(self,portal):
-            # index objects which were imported from genericsetup structure folder
-            logger.info('Updating catalog to re-index items in profiles/default/structure...' % clear )
-            catalog = portal.portal_catalog
-            err = catalog.refreshCatalog(clear=clear)
-            if not err:
-                logger.info('...done.')
-            else:
-                logger.warn('Could not update catalog.')
-
-    def setupContent(self,portal):
-        ### Setup Bika site structure
-        # remove undesired content objects - XXX rather hide them!
-        del_ids = []
-        for obj_id in ['index_html', 'Members', 'front-page', 'news', 'events']:
-            if obj_id in portal.objectIds():
-                del_ids.append(obj_id)
-        if del_ids:
-            portal.manage_delObjects(ids = del_ids)
-
-        # insert new folders
-        bika_settings = [
-            {'id': 'bika_analysiscategories',
-             'title': 'Analysis Categories',
-             'description': '',
-             'type': 'AnalysisCategories',
-             'layout': 'folder_view',
-            },
-            {'id': 'bika_attachmenttypes',
-             'title': 'Attachment Types',
-             'description': '',
-             'type': 'AttachmentTypes',
-             'layout': 'folder_view',
-            },
-            {'id': 'bika_calculationtypes',
-             'title': 'Calculation Types',
-             'description': '',
-             'type': 'Calculation Types',
-             'layout': 'folder_view',
-            },
-            {'id': 'bika_departments',
-             'title': 'Departments',
-             'description': '',
-             'type': 'Departments',
-             'layout': 'folder_view',
-            },
-            {'id': 'bika_instruments',
-             'title': 'Instruments',
-             'description': '',
-             'type': 'Instruments',
-             'layout': 'folder_view',
-            },
-            {'id': 'bika_labanalysisspecs',
-             'title': 'Analysis Specifications',
-             'description': '',
-             'type': 'LabAnalysisSpecs',
-             'layout': 'folder_view',
-            },
-            {'id': 'bika_labarprofiles',
-             'title': 'AR Profiles',
-             'description': 'Analysis Request Templates',
-             'type': 'LabARProfiles',
-             'layout': 'folder_view',
-            },
-            {'id': 'bika_labcontacts',
-            'title': 'Lab Contacts',
-            'description': '',
-            'type': 'LabContacts',
-            'layout': 'folder_view',
-            },
-            {'id': 'bika_labproducts',
-            'title': 'Lab Products',
-            'description': '',
-            'type': 'LabProducts',
-            'layout': 'folder_view',
-            },
-            {'id': 'bika_methods',
-            'title': 'Methods',
-            'description': '',
-            'type': 'Methods',
-            'layout': 'folder_view',
-            },
-            {'id': 'bika_samplepoints',
-            'title': 'Sample Points',
-            'description': '',
-            'type': 'SamplePoints',
-            'layout': 'folder_view',
-            },
-            {'id': 'bika_sampletypes',
-            'title': 'Sample Types',
-            'description': '',
-            'type': 'SampleTypes',
-            'layout': 'folder_view',
-            },
-            {'id': 'bika_analysisservices',
-            'title': 'Analysis Services',
-            'description': '',
-            'type': 'AnalysisServices',
-            'layout': 'folder_view',
-            },
-            {'id': 'bika_standardmanufacturers',
-            'title': 'Standard Manufacturers',
-            'description': '',
-            'type': 'StandardManufacturers',
-            'layout': 'folder_view',
-            },
-            {'id': 'bika_standardstocks',
-             'title': 'Standard Stocks',
-            'description': '',
-            'type': 'StandardStocks',
-            'layout': 'folder_view',
-            },
-            {'id': 'bika_worksheettemplates',
-            'title': 'WorksheetTemplates',
-            'description': '',
-            'type': 'WorksheetTemplates',
-            'layout': 'folder_view',
-            },
-            {'id': 'laboratory',
-            'title': 'Laboratory',
-            'description': '',
-            'type': 'Laboratory',
-            'layout': 'folder_view',
-            },
-        ]
-        top_folders = [
-            {'id': 'clients',
-            'title': 'Clients',
-            'description': '',
-            'type': 'ClientFolder',
-            'layout': 'clientfolder_contents',
-            },
-            {'id': 'worksheets',
-            'title': 'Worksheets',
-            'description': '',
-            'type': 'WorksheetFolder',
-            'layout': 'folder_view',
-            },
-            {'id': 'bika_settings',
-            'title': 'Bika Settings',
-            'description': '',
-            'type': 'BikaSettings',
-            'layout': 'bika_settings',
-            'children': bika_settings,
-            },
-    #        {   'id': 'invoices',
-    #            'title': 'Invoices',
-    #            'description': '',
-    #            'type': 'InvoiceFolder',
-    #            'layout': 'folder_view',
-    #            },
-            {'id': 'methods',
-            'title': 'Methods',
-            'description': '',
-            'type': 'MethodFolder',
-            'layout': 'folder_view',
-            },
-            {'id': 'standardsuppliers',
-            'title': 'Standard Suppliers',
-            'description': '',
-            'type': 'StandardSupplierFolder',
-            'layout': 'folder_view',
-            },
-            {'id': 'pricelists',
-            'title': 'Pricelists',
-            'description': '',
-            'type': 'PricelistFolder',
-            'layout': 'folder_view',
-            },
-        ]
-        createObjects(parent=portal, children=top_folders)
 
 
-        # Ordinarily, GenericSetup handlers check for the existence of XML files.
-        # Here, we are not parsing an XML file, but we use this text file as a
-        # flag to check that we actually meant for this import step to be run.
-        # The file is found in profiles/default.
-
-        if context.readDataFile('bika.lims_various.txt') is None:
-            return
-
-        # Add additional setup code here
-        site = context.getSite()
-        gen = BikaGenerator()
-        gen.setupGroupsAndRoles(site)
-        gen.setupPermissions(site)
-        gen.setupPropertiesTool(site)
-        gen.setupProxyRoles(site)
-        gen.setupPortalContent(site)
-
-def setupVarious(context):
+def importFinalSteps(context):
     """
     Final Bika import steps.
     """
-    # Ordinarily, GenericSetup handlers check for the existence of XML files.
-    # Here, we are not parsing an XML file, but we use this text file as a
-    # flag to check that we actually meant for this import step to be run.
-    # The file is found in profiles/default.
-
-    portal = context.getSite()
-
-    if context.readDataFile('bika.lims_various.txt') is None:
+    if context.readDataFile('bika.txt') is None:
         return
 
     site = context.getSite()
     gen = BikaGenerator()
-    gen.setupContent(site)
     gen.setupPropertiesTool(site)
+    gen.setupPortalContent(site)
     gen.setupGroupsAndRoles(site)
     gen.setupPermissions(site)
     gen.setupProxyRoles(site)
+
+
+#    # install mail templates
+#    install_mail_templates(self, portal, templates, out)
+#
+#    if 'PortalTransport' in portal.objectIds():
+#        portal.portal_mailtemplates.manage_delObjects(
+#            ids = ['PortalTransport'])
+#
+#    # import charts
+#    if 'charts' not in portal.objectIds():
+#        filepath = '%s/charts.zexp' % package_home(GLOBALS)
+#        portal._importObjectFromFile(filepath, set_owner = 1)
+#
+#    # Move checksetup to be first action of Client
+#    actions = []
+#    indices = []
+#    idx = 0
+#    for action in self.portal_types['Client'].listActions():
+#        if action.id not in ['checkstate', ]:
+#            actions.append(action)
+#            indices.append(idx)
+#        idx += 1
+#
+#    del_idx = tuple(indices)
+#    self.portal_types['Client'].deleteActions(del_idx)
+#    for action in actions:
+#        self.portal_types['Client'].addAction(
+#             action.id,
+#             name = action.Title(),
+#             action = action.getActionExpression(),
+#             condition = action.getCondition(),
+#             permission = action.getPermissions(),
+#             category = action.getCategory(),
+#             visible = action.getVisibility(),
+#                        )
+
+
+#    # Add UID index
+#    catalog_indexes = (
+#        { 'name'  : 'UID',
+#          'type'  : 'FieldIndex'
+#          },
+#                        )
+#    cat = portal.portal_catalog
+#    for idx in catalog_indexes:
+#        if idx['name'] in cat.indexes():
+#            pass
+#        else:
+#            cat.addIndex(**idx)
+#            cat.reindexIndex('UID', portal)
+
