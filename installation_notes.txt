@@ -1,26 +1,27 @@
 Installing plone4
 
-1. install plone 4 (I'm using 4.0.5)
-2. download the bika3 repository 
-3. edit instance/buildout.cfg adding "bika.lims" in the "eggs=" section, 
+1. Install plone 4
+2. download the bika3 repository
+3. edit instance/buildout.cfg adding "bika.lims" in the "eggs=" section,
 and "path/to/working/copy" in "develop=" section.
-4. The egg doesn't interact with the buildout cfg at all, so the 
-	IDServerURL needs to be added by inserting the following in buildout.cfg 
-	somewhere after "parts=" :
+4. The egg doesn't interact with the buildout cfg at all, so the
+      IDServerURL needs to be added by inserting the following in buildout.cfg
+      somewhere after "parts=" :
+
+      [instance]
+      environment-vars =
+      IDServerURL http://localhost:8081
 
 
-	[instance]
-
-	environment-vars =
-    		IDServerURL http://localhost:8081
 5. run bin/buildout
 6. run bin/plonectl fg
 
 7. if you get the message 'please stop it first', then delete
-	instance.lock and instance.pid in var
+     instance.lock and instance.pid in var
 
-8. Running in foreground will by default set debug mode to be on. 
-Turn off in ZMI at /portal_css  and at /portal_javascripts
+8. Running in foreground will by default set debug mode to be on.
+In windows, debugging resource registries is tragically slow; Turn
+off registry debugging in ZMI at /portal_css  and at /portal_javascripts
 
 9. Load sample data with url/load_setup_data
 

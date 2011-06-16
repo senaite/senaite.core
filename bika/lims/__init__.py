@@ -17,8 +17,7 @@ logger = logging.getLogger('Bika')
 from content import *
 from controlpanel import *
 
-#registerDirectory(SKINS_DIR, GLOBALS)
-
+allow_module('bika.lims')
 #allow_module('bika.lims.stats')
 #allow_module('bika.lims.pstat')
 #allow_module('whrandom')
