@@ -10,9 +10,10 @@
   <include package=".browser" />
   <include package=".content" />
   <include package=".controlpanel" />
-  <include file="skins.zcml" />
   <include file="profiles.zcml" />
 
   <i18n:registerTranslations directory="locales" />
+
+  <cmf:registerDirectory name="skins" directory="skins" recursive="True" />
 
 </configure>

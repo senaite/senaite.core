@@ -14,16 +14,14 @@
   <!-- 'bika' Zope 3 browser layer
     Register views, viewlets and resources for this layer to make sure
     they only apply to the 'bika' theme.
-    You can also use this layer to override default Plone browser views
-    and viewlets only within the 'bika' theme.
-  -->
   <interface
       interface="bika.lims.interfaces.IBikaLIMS"
       type="zope.publisher.interfaces.browser.IBrowserSkinType"
       name="bika"
       />
- 
-    <browser:page
+ -->
+
+  <browser:page
       for="*"
       name="load_setup_data"
       class="bika.lims.browser.load_setup_data.LoadSetupData"
@@ -33,41 +31,22 @@
 
   <!-- Zope 3 browser resources -->
 
-  <!-- Resource directory for images
-    See bika/lims/browser/images/README.txt
-    for more information about registering images as Zope 3 browser
-    resources.  -->
   <browser:resourceDirectory
       name="bika.lims.images"
       directory="images"
       layer="bika.lims.interfaces.IBikaLIMS"
       />
 
-  <!-- Resource directory for stylesheets
-    See bika/lims/browser/css/README.txt
-    for more information about registering stylesheets as Zope 3 browser
-    resources.  -->
   <browser:resourceDirectory
       name="bika.lims.css"
       directory="css"
       layer="bika.lims.interfaces.IBikaLIMS"
       />
 
-  <!-- Resource directory for javascripts
-    See bika/lims/browser/js/README.txt
-    for more information about registering javascripts as Zope 3 browser
-    resources.  -->
   <browser:resourceDirectory
       name="bika.lims.js"
       directory="js"
       layer="bika.lims.interfaces.IBikaLIMS"
       />
-
-    <browser:resource
-      name="utils.js"
-      file="js/utils.js"
-      layer="bika.lims.interfaces.IBikaLIMS"
-    />
-
 
 </configure>

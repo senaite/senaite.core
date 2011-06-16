@@ -1,8 +1,8 @@
 from plone.theme.interfaces import IDefaultPloneLayer
 from zope.interface import Interface
 
-class IBikaLIMS(IDefaultPloneLayer):
-    """Marker iddnterface that defines a Zope 3 browser layer.
+class IBikaLIMS(Interface):
+    """Marker interface that defines a Zope 3 browser layer.
        If you need to register a viewlet only for the
        "bika" theme, this interface must be its layer
        (in lims/viewlets/configure.zcml).

@@ -5,10 +5,8 @@ from Products.CMFCore.utils import getToolByName
 from bika.lims import bikaMessageFactory as _
 from Products.CMFPlone import PloneMessageFactory
 from bika.lims.config import *
-from bika.lims.mailtemplates import templates
 import logging
 
-#from Products.PortalTransport.utils import install_mail_templates
 #from Products.GroupUserFolder.GroupsToolPermissions import ManageGroups
 
 logger = logging.getLogger('bika.lims')
@@ -240,11 +238,11 @@ class BikaGenerator:
 
 
 
-def importFinalSteps(context):
+def setupVarious(context):
     """
     Final Bika import steps.
     """
-    if context.readDataFile('bika.txt') is None:
+    if context.readDataFile('bika.lims_various.txt') is None:
         return
 
     site = context.getSite()

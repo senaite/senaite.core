@@ -1,4 +1,4 @@
-<html xmlns="http://www.w3.org/1999/xhtml" 
+<html xmlns="http://www.w3.org/1999/xhtml"
     tal:define="portal_state context/@@plone_portal_state;
         context_state context/@@plone_context_state;
         plone_view context/@@plone;
@@ -23,13 +23,13 @@
       <tal:title condition="view/title">
         <h1 class="documentFirstHeading" tal:content="view/title"/>
       </tal:title>
-    
+
       <tal:description condition="view/description">
-          <div class="documentDescription" 
-               tal:content="view/description" 
+          <div class="documentDescription"
+               tal:content="view/description"
                tal:condition="view/description"/>
       </tal:description>
-    
+
       <div id="content-core">
         <tal:add_buttons repeat="add_item python:view.content_add_buttons.keys()">
               <form
@@ -37,7 +37,7 @@
                 method="post"
                 action=""
                 tal:attributes="action python:'%s/%s'%(context.absolute_url(), view.content_add_buttons[add_item])">
-                <input 
+                <input
                   class="standalone add"
                   type="submit"
                   name=""
@@ -46,24 +46,24 @@
                                   name string:add_${add_item}"/>
               </form>
         </tal:add_buttons>
-    
-        <form 
-    	    name="folderContentsForm"
-    	    method="post"
-    	    action="folder_object"
-    	    tal:attributes="action python: request.get('URL', context.absolute_url())"
-    	    class="kssattr-serveraction-foldercontents_update_table">
-    	
-            <div class="visualClear" id="clear-space-before-navigation"><!-- --></div>
-    
+
+        <form
+            name="folderContentsForm"
+            method="post"
+            action="folder_object"
+            tal:attributes="action python: request.get('URL', context.absolute_url())"
+            class="kssattr-serveraction-foldercontents_update_table">
+
+        <div class="visualClear" id="clear-space-before-navigation"><!-- --></div>
+
             <span tal:omit-tag="" tal:content="structure view/review_state_filter"/>
-    
+
             <div tal:replace="structure view/contents_table"></div>
-    
+
             <input tal:replace="structure context/@@authenticator/authenticator" />
-    	
+
         </form>
-    
+
       </div>
   </div>
 

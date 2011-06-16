@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
-<object name="portal_skins" 
-        meta_type="Plone Skins Tool" 
+<object name="portal_skins"
+        meta_type="Plone Skins Tool"
         allow_any="False"
-        cookie_persistence="False" 
+        cookie_persistence="False"
         default_skin="Sunburst Theme"
         request_varname="plone_skin">
 
-  <object name="bika" 
+  <object name="bika"
           meta_type="Filesystem Directory View"
           directory="bika.lims:skins/bika"/>
 
