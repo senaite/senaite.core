@@ -15,6 +15,7 @@ class ClientFolderContentsView(BikaListingView):
     show_sort_column = False
     show_select_row = False
     show_select_column = True
+    show_filters = False
     batch = True
     pagesize = 20
 

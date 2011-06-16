@@ -110,26 +110,6 @@ class ClientAnalysisRequestsView(BikaListingView):
 
         return items
 
-class ClientAnalysisRequestsFilterView(ClientAnalysisRequestsView):
-    def __call__(self):
-        form = self.request.form
-
-        # modify contentFilter with review_state radio value
-        if form.has_key("review_state"):
-            if self.request['review_state'] == 'all':
-                if self.contentFilter.has_key('review_state'):
-                    del(self.contentFilter['review_state'])
-            else:
-                self.contentFilter['review_state'] = form['review_state']
-
-        # modify contentFilter with text filters if specified
-        for key, value in form.items():
-            if key.endswith("column-filter-input"):
-                self.filters_are_active = True
-                self.contentFilter[key.split("-")[1]] = value
-
-        return self.contents_table()
-
 class ClientSamplesView(BikaListingView):
     implements(IFolderContentsView)
 

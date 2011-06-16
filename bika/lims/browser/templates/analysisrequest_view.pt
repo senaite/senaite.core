@@ -9,7 +9,7 @@
 
 <body>
 
-<div metal:fill-slot="main" 
+<div metal:fill-slot="main"
   tal:define="
         portal context/@@plone_portal_state/portal;
         member python:here.portal_membership.getAuthenticatedMember();
@@ -24,7 +24,8 @@
         global late python:0;
         client nocall:here/aq_parent;
         client_uid client/UID;
-        is_client here/member_is_client;
+        member_groups python: [here.portal_groups.getGroupById(group.id).getGroupName() for group in here.portal_groups.getGroupsByUserId(member.id)];
+        is_client python: 'clients' in member_groups;
         default_spec python:is_client and 'client' or 'lab';
         specification python:request.get('specification', default_spec);
         analyses python:here.getAnalyses();
@@ -62,7 +63,7 @@
   <h1>
       <img src="" tal:attributes="src string:${portal/absolute_url}/images/ar.png"/>
       <span tal:content="title_string | here/title_or_id" />
-      <img src="" 
+      <img src=""
           tal:condition="here/getInvoiceExclude"
           tal:attributes="src string:${portal/absolute_url}/images/no_invoice.png">
   </h1>
@@ -77,7 +78,7 @@
     <table width="100%">
       <tr>
         <td>
-          <span i18n:translate="label_range_specification">Range Specification</span>: 
+          <span i18n:translate="label_range_specification">Range Specification</span>:
           <input class="noborder" type="radio" name="specification" value="lab"
               onclick="this.form.submit()"
               tal:attributes="checked python: specification == 'lab' and 'checked' or None;"/>
@@ -99,9 +100,9 @@
         summary="Analysisrequest view"
         class="analysisrequest"
         cellpadding="0" cellspacing="0">
-    
+
     <thead>
-    
+
       <tr>
         <th i18n:translate="label_contact_person">Contact person</th>
         <td class="left" tal:attributes="colspan colspan">
@@ -125,11 +126,11 @@
       </tr>
       <tr>
         <th i18n:translate="label_client_order_id">Client Order ID</th>
-        <td class="left" 
+        <td class="left"
             tal:attributes="colspan colspan1"
             tal:content="here/getClientOrderNumber|nothing">123</td>
         <th tal:attributes="colspan colspan2" i18n:translate="label_sampleid">Sample</th>
-        <td class="left" 
+        <td class="left"
             tal:attributes="colspan colspan3">
           <a tal:attributes="href sample/absolute_url">
               <span tal:content="sample/Title">S-00001</span>
@@ -150,13 +151,13 @@
       </tr>
       <tr>
         <th i18n:translate="label_sampletype">Sample type</th>
-        <td class="left" 
+        <td class="left"
             tal:attributes="colspan colspan1"
             tal:content="sampletype/Title|nothing">sample type</td>
         <th tal:attributes="colspan colspan2"
             i18n:translate="label_samplepoint">Sample point
         </th>
-        <td class="left" 
+        <td class="left"
             tal:attributes="colspan colspan3"
             tal:define="samplepoint sample/getSamplePoint"
             tal:content="samplepoint/Title|nothing">sample point</td>
@@ -193,7 +194,7 @@
       <tr tal:condition="python:ar_review_state != 'sample_due'">
         <th i18n:translate="label_datereceived">Date received
         </th>
-        <td class="left" 
+        <td class="left"
             tal:attributes="colspan colspan1"
             tal:define="date_received here/getDateReceived"
             tal:content="python:context.toLocalizedTime(date_received, long_format=1)"
@@ -203,7 +204,7 @@
             i18n:translate="label_verified_by">Verified by </span></th>
         <td class="left"
             tal:attributes="colspan colspan3">
-        <span 
+        <span
             tal:condition="python:ar_review_state in ('verified', 'published')"
             tal:define="verifier python:view.get_analysisrequest_verifier(here)"
             tal:content="verifier"></span>
@@ -212,7 +213,7 @@
       <tr tal:condition="python:ar_review_state == 'published'">
         <th i18n:translate="label_datepublished">Date published
         </th>
-        <td class="left" 
+        <td class="left"
             tal:attributes="colspan colspan1"
             tal:define="date_published here/getDatePublished"
             tal:content="python:context.toLocalizedTime(date_published, long_format=1)"
@@ -223,14 +224,14 @@
       </tr>
 
     </thead>
-    
+
     <tbody
       tal:define="cats view/Categories">
-  
+
       <!-- -- -- Analyses -- -- -->
-  
+
       <tal:pointofcapture repeat="poc python:cats.keys()">
-  
+
         <tr class="PointOfCapture">
          <th tal:attributes="colspan colspan_all">
            <b tal:content="python:modules['bika.lims.config'].POINTS_OF_CAPTURE.getValue(str(poc))">Analyses</b>
@@ -273,7 +274,7 @@
           </tal:drymatter>
           <th tal:condition="analysis_attach_allowed"
               i18n:translate="label_attachments">attachments</th>
-          <!--- for calendar testing 
+          <!--- for calendar testing
           <th i18n:translate="label_maxhours">Max</th>
           <th i18n:translate="label_duedate">Due</th>
           <th i18n:translate="label_duration">dur</th>
@@ -284,7 +285,7 @@
         <tal:categories define="analyses python:view.get_requested_analyses();"
                         repeat="cat python:cats[poc]">
             <tr>
-              <th class="analysiscategory" 
+              <th class="analysiscategory"
                 tal:attributes="name python:cat[1]+'_'+poc;
                                 id python:cat[1]+'_'+poc;
                                 colspan colspan_all">
@@ -302,7 +303,7 @@
               analysis_late python:(review_state not in ['sample_due', 'published']) and (analysis.getDueDate() < now);
               may_view_result python:checkPermission('bika.lims: View Results', analysis)">
 
-            <td class="left"> 
+            <td class="left">
               <a  onClick="" title="Click for details"
                   tal:attributes="onClick string:javascript:showMethod('$portal_url', '${service/getId}')"
                   tal:content="analysis/Title">Alcohol</a>
@@ -357,7 +358,7 @@
           tal:define="
               result_class python:view.result_in_range(analysis, sampletype_uid, specification);
               global out_of_range python:result_class == 'out_of_range' and 1 or out_of_range">
-      
+
       <td tal:condition="may_view_result"
           tal:attributes="class result_class" style="white-space: nowrap;">
       <tal:result tal:condition="result">
@@ -370,37 +371,37 @@
       </tal:result>
       <span class="unit" tal:content="analysis/getUnit">%vol</span>
       </td>
-      
+
       <td tal:condition="python:not may_view_result">
-      <img src="" 
+      <img src=""
           tal:define="global tf python:1"
           tal:attributes="src string:${portal/absolute_url}/images/to_follow.png">
       </td>
-      
+
       </div:result>
       <td>
-      <span 
+      <span
           tal:condition="python:result and may_view_result"
           tal:content="analysis/getUncertainty">0.8</span>
       </td>
-      
+
       <td tal:condition="dry_matter" style="white-space: nowrap;">
       <tal:service_dry tal:condition="service/getReportDryMatter">
-      
+
       <tal:showdry tal:condition="may_view_result">
-      <span tal:condition="analysis/getResultDM" 
+      <span tal:condition="analysis/getResultDM"
             tal:content="analysis/getResultDM">10</span>
       <span class="unit" tal:content="analysis/getUnit">%vol</span>
       </tal:showdry>
-      
+
       <tal:notyet tal:condition="python:not may_view_result">
-      <img src="" 
+      <img src=""
           tal:define="global tf python:1"
           tal:attributes="src string:${portal/absolute_url}/images/to_follow.png">
       </tal:notyet>
       </tal:service_dry>
       </td>
-      
+
       <td tal:condition="analysis_attach_allowed" class="left">
       <div tal:condition="python:not service.getAttachmentOption() == 'n'">
       <tal:attachments
@@ -420,18 +421,18 @@
       <td tal:content="analysis/getDuration | nothing"></td>
       <td tal:content="analysis/getEarliness| nothing"></td>
       -->
-      
+
       </tr>
       </tal:analysis>
         </tal:analyses>
             </tal:categories>
-      
+
           </tal:pointofcapture>
-      
+
         </tbody>
 
     </table>
-    
+
     <div class="field">
       <label i18n:translate="label_remarks">Notes:</label>
       <p class="comment" tal:content="python:here.getNotes() or default">None</p>
@@ -439,7 +440,7 @@
 
     <hr class="discreet"/>
 
-    <div class="discreeter" 
+    <div class="discreeter"
          tal:define="global seq_no python:0">
       <p tal:condition="out_of_range">
         <img src="" tal:attributes="src string:${portal/absolute_url}/images/exclamation.png">
@@ -505,7 +506,7 @@
                           phone python:managers[manager]['phone']">
             <span tal:content="python:managers[manager]['name']">Joe Blogs</span>
             <span tal:condition="phone">&nbsp&nbsp</span>
-            <img src="" 
+            <img src=""
                 tal:condition="phone"
                 tal:attributes="src string:${portal/absolute_url}/telephone.jpg">
             <span tal:content="phone">011 555 1112</span>

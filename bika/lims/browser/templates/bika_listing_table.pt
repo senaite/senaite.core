@@ -20,7 +20,7 @@
       name="folderContentsForm"
       class="folderContentsForm"
       method="post"
-      tal:attributes="action python: request.get('URL', view.context.absolute_url()).replace('_filter','') + '_filter'"
+      tal:attributes="action python: request.get('URL')"
       class="kssattr-serveraction-foldercontents_update_table">
 
     <tal:x condition="python: len(view.review_states)>1" repeat="state view/review_states">

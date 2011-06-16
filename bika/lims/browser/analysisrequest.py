@@ -781,9 +781,9 @@ class AnalysisRequestManageResultsNotRequestedView(AnalysisRequestManageResultsV
 
 
 class AnalysisRequestContactCCs(BrowserView):
-    """ Returns lists of UID/Title for preconfigured CC contacts 
+    """ Returns lists of UID/Title for preconfigured CC contacts
         When a client contact is selected from the #contact dropdown,
-        the dropdown's ccuids attribute is set to the Contact UIDS 
+        the dropdown's ccuids attribute is set to the Contact UIDS
         returned here, and the #cc_titles textbox is filled with Contact Titles
     """
     def __call__(self):
@@ -917,7 +917,7 @@ class AnalysisRequestSelectSampleView(BikaListingView):
     def FieldAnalyses(self, sample):
         """ Returns a dictionary of lists reflecting Field Analyses
             linked to this sample.
-            For secondary ARs field analyses and their values are 
+            For secondary ARs field analyses and their values are
             read/written from the first AR.
             {category_uid: [service_uid, service_uid], ... }
         """
@@ -948,7 +948,7 @@ class AnalysisRequest_AnalysisServices(BrowserView):
         return pc(portal_type = "AnalysisService", getCategoryUID = CategoryUID, getPointOfCapture = poc)
 
     def CalcDependancy(self, column, serviceUID):
-        """ return {'categoryIDs': [element IDs of category TRs], 
+        """ return {'categoryIDs': [element IDs of category TRs],
                     'serviceUIDs': [dependant service UIDs]}
         """
         pc = getToolByName(self, 'portal_catalog')
@@ -989,7 +989,11 @@ class AnalysisRequest_SampleTypes(BrowserView):
     def __call__(self):
         pc = getToolByName(self, 'portal_catalog')
         term = self.request.get('term', '')
-        items = [s.Title for s in pc(portal_type = "SampleType") if s.Title.find(term) > -1]
+        items = pc(portal_type = "SampleType")
+        nr_items = len(items)
+        items = [s.Title for s in items if s.Title.lower().find(term.lower()) > -1][:10]
+        if nr_items > 10:
+            items.append(str(nr_items - 10) + _(" items not shown"))
         return json.dumps(items)
 
 class AnalysisRequest_SamplePoints(BrowserView):
@@ -999,8 +1003,13 @@ class AnalysisRequest_SamplePoints(BrowserView):
     def __call__(self):
         pc = getToolByName(self, 'portal_catalog')
         term = self.request.get('term', '')
-        items = [s.Title for s in pc(portal_type = "SamplePoint") if s.Title.find(term) > -1]
+        items = pc(portal_type = "SamplePoints")
+        nr_items = len(items)
+        items = [s.Title for s in items if s.Title.lower().find(term.lower()) > -1][:10]
+        if nr_items > 10:
+            items.append(str(nr_items - 10) + _(" items not shown"))
         return json.dumps(items)
+
 
 def analysisrequest_add_submit(context, request):
 

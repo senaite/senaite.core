@@ -11,6 +11,7 @@ from plone.app.content.browser.interfaces import IFolderContentsView
 from bika.lims import bikaMessageFactory as _
 from zope.component._api import getMultiAdapter
 from zope.i18n import translate
+from Products.Five.browser import BrowserView
 from zope.i18nmessageid import MessageFactory
 from zope.interface import implements
 import urllib
@@ -44,8 +45,43 @@ class BikaListingView(FolderContentsView):
         self.portal_types = getToolByName(context, 'portal_types')
 
     def __call__(self):
+        form = self.request.form
+        if form.has_key('review_state'):
+            # modify contentFilter with review_state radio value
+            if form.has_key("review_state"):
+                if self.request['review_state'] == 'all':
+                    if self.contentFilter.has_key('review_state'):
+                        del(self.contentFilter['review_state'])
+                else:
+                    self.contentFilter['review_state'] = form['review_state']
+            # modify contentFilter with text filters if specified
+            for key, value in form.items():
+                if key.endswith("column-filter-input"):
+                    self.filters_are_active = True
+                    self.contentFilter[key.split("-")[1]] = value
+            return self.contents_table()
+
         if self.show_table_only: return self.template_table_only()
         else:  return self.template()
+
+    def content_filter(self):
+        form = self.request.form
+
+        # modify contentFilter with review_state radio value
+        if form.has_key("review_state"):
+            if self.request['review_state'] == 'all':
+                if self.contentFilter.has_key('review_state'):
+                    del(self.contentFilter['review_state'])
+            else:
+                self.contentFilter['review_state'] = form['review_state']
+
+        # modify contentFilter with text filters if specified
+        for key, value in form.items():
+            if key.endswith("column-filter-input"):
+                self.filters_are_active = True
+                self.contentFilter[key.split("-")[1]] = value
+
+        return self.contents_table()
 
     def folderitems(self):
         """
@@ -143,6 +179,7 @@ class BikaListingView(FolderContentsView):
             )
             # Insert all fields from the schema, if they are in the brains
             # XXX LIMIT TO ONLY NECESSARY VALUES (columns displayed)
+
             for field in obj.schema():
                 if not results_dict.get(field):
                     results_dict[field] = getattr(obj, field)
