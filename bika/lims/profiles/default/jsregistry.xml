@@ -24,14 +24,6 @@
     enabled="True" expression=""  inline="False"/>
 -->
 
-    <javascript id="jquery-ui.js"
-                cacheable="True"
-                compression="safe"
-                cookable="True"
-                enabled="True"
-                expression=""
-                inline="False"
-                insert-after="*"/>
     <javascript authenticated="0"
                 cacheable="True"
                 compression="safe"
@@ -42,6 +34,7 @@
                 id="++resource++bika.lims.js/jquery-ui.js"
                 inline="False"
                 insert-after="*"/>
+
     <javascript authenticated="0"
                 cacheable="True"
                 compression="safe"
@@ -52,6 +45,7 @@
                 id="++resource++bika.lims.js/utils.js"
                 inline="False"
                 insert-after="*"/>
+
     <javascript authenticated="0"
                 cacheable="True"
                 compression="safe"
@@ -62,6 +56,7 @@
                 id="++resource++bika.lims.js/bika_listing.js"
                 inline="False"
                 insert-after="*"/>
+
     <javascript authenticated="False"
                 cacheable="True"
                 compression="safe"
@@ -72,6 +67,7 @@
                 id="++resource++bika.lims.js/analysisrequest.js"
                 inline="False"
                 insert-after="*"/>
+
     <javascript authenticated="False"
                 cacheable="True"
                 compression="safe"
@@ -82,6 +78,7 @@
                 id="++resource++bika.lims.js/worksheet.js"
                 inline="False"
                 insert-after="*"/>
+
     <javascript authenticated="False"
                 cacheable="True"
                 compression="safe"

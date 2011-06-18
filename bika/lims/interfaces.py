@@ -20,7 +20,6 @@ class IAnalysisRequest(Interface):
 class ISample(Interface):
     """Sample"""
 
-
 class IWorksheetFolder(Interface):
     """WorksheetFolder"""
 

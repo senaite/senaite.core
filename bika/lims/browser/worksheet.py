@@ -4,6 +4,7 @@ from Products.CMFCore.utils import getToolByName
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
+from bika.lims.interfaces import IWorksheet
 from plone.app.content.browser.interfaces import IFolderContentsView
 from zope.interface import implements
 from zope.publisher.browser import BrowserView
@@ -92,22 +93,21 @@ class WorksheetFolderView(BikaListingView):
         return items
 
 class WorksheetAddView(BrowserView):
-    """ This creates a new WS and redirects to it.
+    """ This creates a new Worksheet and redirects to it.
+        If a template was selected, the worksheet is pre-populated here.
     """
     def __call__(self):
-        req = self.context.REQUEST.form
+        form = self.request.form
         ws_id = self.context.generateUniqueId('Worksheet')
         self.context.invokeFactory(id = ws_id, type_name = 'Worksheet')
         ws = self.context[ws_id]
-        ws.edit(
-            Number = ws_id
-            )
+        ws.edit(Number = ws_id)
 
         analyses = []
         analysis_uids = []
-        if req.has_key('WorksheetTemplate'):
-            if not req['WorksheetTemplate'] == 'None':
-                uid = req['WorksheetTemplate']
+        if form.has_key('WorksheetTemplate'):
+            if not form['WorksheetTemplate'] == 'None':
+                uid = form['WorksheetTemplate']
                 rc = self.context.reference_catalog
                 wst = rc.lookupObject(uid)
                 rows = wst.getRow()
@@ -219,314 +219,231 @@ class WorksheetAddView(BrowserView):
         ws.reindexObject()
 
         dest = ws.absolute_url()
-        self.context.REQUEST.RESPONSE.redirect(dest)
+        self.request.RESPONSE.redirect(dest)
 
+class WorksheetView(BrowserView):
+    template = ViewPageTemplateFile("templates/worksheet.pt")
 
-class WorksheetAnalysesView(BrowserView):
-    template = ViewPageTemplateFile("templates/worksheet_analyses.pt")
-    worksheet_search = ViewPageTemplateFile("templates/worksheet_search.pt")
-    worksheet_analyses_columns = ViewPageTemplateFile("templates/worksheet_analyses_columns.pt")
-    worksheet_analyses_rows = ViewPageTemplateFile("templates/worksheet_analyses_rows.pt")
-
-    sequence = sequence
     def __call__(self):
         return self.template()
+
+    def tabindex(self):
+        i = 0
+        while True:
+            i += 1
+            yield i
 
     def now(self):
         return DateTime()
 
-    def sort_analyses_on_requestid(self, analyses):
-        r = {}
-        for a in analyses:
-            ar_id = a.aq_parent.getRequestID()
-            l = r.get(ar_id, [])
-            l.append(a)
-            r[ar_id] = l
+class WorksheetManageResultsView(BrowserView):
+    template = ViewPageTemplateFile("templates/worksheet_manage_results.pt")
 
-        k = r.keys()
-        k.sort()
-        result = []
-        for ar_id in k:
-            result += r[ar_id]
+    def __call__(self):
+        return self.template()
 
-        return result
+    def tabindex(self):
+        i = 0
+        while True:
+            i += 1
+            yield i
+
+    def now(self):
+        return DateTime()
+
+class WorksheetAddAnalysisView(BikaListingView):
+    content_add_buttons = {}
+    show_editable_border = False
+    show_table_only = True
+    show_sort_column = False
+    show_select_row = False
+    show_select_column = True
+    show_filters = True
+    batch = True
+    pagesize = 50
+
+    columns = {
+        'Client': {'title': _('Client')},
+        'Order': {'title': _('Order')},
+        'RequestID': {'title': _('Request ID')},
+        'Category': {'title': _('Category')},
+        'Analysis': {'title': _('Analysis')},
+        'DateReceived': {'title': _('Analysis')},
+        'Due': {'title': _('Analysis')},
+    }
+    review_states = [
+        {'title': _('All'), 'id':'all',
+         'columns':['Client',
+                    'Order',
+                    'RequestID',
+                    'Category',
+                    'Analysis',
+                    'DateReceived',
+                    'Due'],
+         'buttons':[{'cssclass': 'context',
+                     'title': _('Add to worksheet'),
+                     'url': ''}]
+        },
+    ]
+
+    def folderitems(self):
+        items = BikaListingView.folderitems(self)
+        for x in range(len(items)):
+            if not items[x].has_key('brain'): continue
+            obj = items[x]['brain'].getObject()
+            items[x]['getNumber'] = obj.getNumber()
+            items[x]['getOwnerUserID'] = obj.getOwnerUserID()
+            items[x]['CreationDate'] = obj.CreationDate() and self.context.toLocalizedTime(obj.CreationDate(), long_format = 0) or ''
+            items[x]['getLinkedWorksheet'] = obj.getLinkedWorksheet() and ",".join(obj.getLinkedWorksheet()) or ''
+            items[x]['links'] = {'getNumber': items[x]['url']}
+
+        return items
+
+class WorksheetAddBlankView(BikaListingView):
+    contentFilter = {'portal_type': 'Analysis', 'review_state':'sample_received'}
+    content_add_buttons = {}
+    show_editable_border = False
+    show_table_only = True
+    show_sort_column = False
+    show_select_row = False
+    show_select_column = True
+    show_filters = True
+    batch = True
+    pagesize = 50
+
+    columns = {
+        'Client': {'title': _('Client')},
+        'Order': {'title': _('Order')},
+        'RequestID': {'title': _('Request ID')},
+        'Category': {'title': _('Category')},
+        'Analysis': {'title': _('Analysis')},
+        'DateReceived': {'title': _('Analysis')},
+        'Due': {'title': _('Analysis')},
+    }
+    review_states = [
+        {'title': _('All'), 'id':'all',
+         'columns':['Client',
+                    'Order',
+                    'RequestID',
+                    'Category',
+                    'Analysis',
+                    'DateReceived',
+                    'Due'],
+         'buttons':[{'cssclass': 'context',
+                     'title': _('Add to worksheet'),
+                     'url': ''}]
+        },
+    ]
+
+    def folderitems(self):
+        items = BikaListingView.folderitems(self)
+        for x in range(len(items)):
+            if not items[x].has_key('brain'): continue
+            obj = items[x]['brain'].getObject()
+            items[x]['getNumber'] = obj.getNumber()
+            items[x]['getOwnerUserID'] = obj.getOwnerUserID()
+            items[x]['CreationDate'] = obj.CreationDate() and self.context.toLocalizedTime(obj.CreationDate(), long_format = 0) or ''
+            items[x]['getLinkedWorksheet'] = obj.getLinkedWorksheet() and ",".join(obj.getLinkedWorksheet()) or ''
+            items[x]['links'] = {'getNumber': items[x]['url']}
+
+        return items
+
+class WorksheetAddControlView(BikaListingView):
+    contentFilter = {'portal_type': 'Analysis', 'review_state':'sample_received'}
+    content_add_buttons = {}
+    show_editable_border = False
+    show_table_only = True
+    show_sort_column = False
+    show_select_row = False
+    show_select_column = True
+    show_filters = True
+    batch = True
+    pagesize = 50
+
+    columns = {
+        'Client': {'title': _('Client')},
+        'Order': {'title': _('Order')},
+        'RequestID': {'title': _('Request ID')},
+        'Category': {'title': _('Category')},
+        'Analysis': {'title': _('Analysis')},
+        'DateReceived': {'title': _('Analysis')},
+        'Due': {'title': _('Analysis')},
+    }
+    review_states = [
+        {'title': _('All'), 'id':'all',
+         'columns':['Client',
+                    'Order',
+                    'RequestID',
+                    'Category',
+                    'Analysis',
+                    'DateReceived',
+                    'Due'],
+         'buttons':[{'cssclass': 'context',
+                     'title': _('Add to worksheet'),
+                     'url': ''}]
+        },
+    ]
+
+    def folderitems(self):
+        items = BikaListingView.folderitems(self)
+        for x in range(len(items)):
+            if not items[x].has_key('brain'): continue
+            obj = items[x]['brain'].getObject()
+            items[x]['getNumber'] = obj.getNumber()
+            items[x]['getOwnerUserID'] = obj.getOwnerUserID()
+            items[x]['CreationDate'] = obj.CreationDate() and self.context.toLocalizedTime(obj.CreationDate(), long_format = 0) or ''
+            items[x]['getLinkedWorksheet'] = obj.getLinkedWorksheet() and ",".join(obj.getLinkedWorksheet()) or ''
+            items[x]['links'] = {'getNumber': items[x]['url']}
+
+        return items
+
+class WorksheetAddDuplicateView(BikaListingView):
+    contentFilter = {'portal_type': 'Analysis', 'review_state':'sample_received'}
+    content_add_buttons = {}
+    show_editable_border = False
+    show_table_only = True
+    show_sort_column = False
+    show_select_row = False
+    show_select_column = True
+    show_filters = True
+    batch = True
+    pagesize = 50
+
+    columns = {
+        'Client': {'title': _('Client')},
+        'Order': {'title': _('Order')},
+        'RequestID': {'title': _('Request ID')},
+        'Category': {'title': _('Category')},
+        'Analysis': {'title': _('Analysis')},
+        'DateReceived': {'title': _('Analysis')},
+        'Due': {'title': _('Analysis')},
+    }
+    review_states = [
+        {'title': _('All'), 'id':'all',
+         'columns':['Client',
+                    'Order',
+                    'RequestID',
+                    'Category',
+                    'Analysis',
+                    'DateReceived',
+                    'Due'],
+         'buttons':[{'cssclass': 'context',
+                     'title': _('Add to worksheet'),
+                     'url': ''}]
+        },
+    ]
+
+    def folderitems(self):
+        items = BikaListingView.folderitems(self)
+        for x in range(len(items)):
+            if not items[x].has_key('brain'): continue
+            obj = items[x]['brain'].getObject()
+            items[x]['getNumber'] = obj.getNumber()
+            items[x]['getOwnerUserID'] = obj.getOwnerUserID()
+            items[x]['CreationDate'] = obj.CreationDate() and self.context.toLocalizedTime(obj.CreationDate(), long_format = 0) or ''
+            items[x]['getLinkedWorksheet'] = obj.getLinkedWorksheet() and ",".join(obj.getLinkedWorksheet()) or ''
+            items[x]['links'] = {'getNumber': items[x]['url']}
+
+        return items
 
 
-    def group_analyses_by_request(self, batch):
-        plone_view = self.context.restrictedTraverse('@@plone')
-        any_titr_vol_reqd = False
-        any_weight_calc_reqd = False
-
-        r = {}
-        for analysis in batch:
-            ar = analysis.aq_parent
-            ar_id = ar.getId()
-            sample = ar.getSample()
-            sampletype = sample.getSampleType()
-            samplepoint = sample.getSamplePoint() and sample.getSamplePoint().Title()
-            if not r.has_key(ar_id):
-                date_received = ar.getDateReceived()
-                date_published = ar.getDatePublished()
-                if date_published:
-                    date_published = plone_view.toLocalizedTime(date_published, long_format = 1)
-                r[ar_id] = { 'id': ar_id,
-                             'RequestID': ar.getRequestID(),
-                             'absolute_url': ar.absolute_url(),
-                             'Client': ar.aq_parent,
-                             'SampleID': sample.getSampleID(),
-                             'Hazardous': sampletype.getHazardous(),
-                             'sample_absolute_url': sample.absolute_url(),
-                             'SamplePoint': samplepoint,
-                             'SampleType': sampletype.Title(),
-                             'sampletype_obj': sampletype,
-                             'ClientReference': sample.getClientReference(),
-                             'ClientSampleID': sample.getClientSampleID(),
-                             'DateRequested': plone_view.toLocalizedTime(
-                                 ar.getDateRequested(), long_format = 1
-                                 ),
-                             'DateReceived': plone_view.toLocalizedTime(
-                                 date_received, long_format = 1
-                                 ),
-                             'DatePublished': date_published,
-                             'AnyTitrReqd': False,
-                             'AnyWeightReqd': False,
-                             'Analyses': {},
-                             'AnalysisType':'A',
-                           }
-
-            d = r[ar_id]['Analyses']
-            d[analysis.getId()] = analysis
-            if analysis.getTitrationRequired():
-                r[ar_id]['AnyTitrReqd'] = True
-            if analysis.getWeightRequired():
-                r[ar_id]['AnyWeightReqd'] = True
-
-        l = r.keys()
-        l.sort()
-        result_set = {}
-        result_set['results'] = [r[ar_id] for ar_id in l]
-        result_set['titr_reqd'] = any_titr_vol_reqd
-        result_set['weight_reqd'] = any_weight_calc_reqd
-        return result_set
-
-    def group_analyses_for_worksheet(self):
-        def checkCalcType(calctype):
-            cols = []
-            if calctype in ['wl', 'rw']:
-                cols.append('gm')
-                cols.append('vm')
-                cols.append('nm')
-                return cols
-            if calctype in ['wlt', 'rwt']:
-                cols.append('vm')
-                cols.append('sm')
-                cols.append('nm')
-                return cols
-            if calctype in ['t', ]:
-                cols.append('tv')
-                cols.append('tf')
-                return cols
-            return cols
-
-        plone_view = self.context.restrictedTraverse('@@plone')
-        analyses = self.context.getAnalyses()
-        sort_on = (('Title', 'nocase', 'asc'),)
-        analyses = sequence.sort(analyses, sort_on)
-
-        duplicates = self.context.objectValues('DuplicateAnalysis')
-        standards_and_blanks = self.context.getStandardAnalyses()
-        rejects = self.context.objectValues('RejectAnalysis')
-
-        any_cols = []
-        any_published = False
-
-        seq = {}
-        keys = {}
-        for item in self.context.getWorksheetLayout():
-            seq[item['uid']] = item['pos']
-            keys[item['uid']] = item['key']
-
-        results = {}
-        sub_results = {}
-
-        for analysis in duplicates:
-            ws = analysis.aq_parent
-            ar = analysis.getRequest()
-            copy_analysis = ar[analysis.getService().getId()]
-            due_date = copy_analysis.getDueDate()
-            sample = ar.getSample()
-            sampletype = sample.getSampleType()
-            copy_id = '(%s)' % (ar.getId())
-            pos = seq[analysis.UID()]
-            calctype = analysis.getCalcType()
-            cols = checkCalcType(calctype)
-            if cols:
-                any_cols.extend(cols)
-            if len(cols) > 0 or calctype == 'dep':
-                calcd = True
-            else:
-                calcd = False
-            parent_link = "%s/base_edit" % (ar.aq_parent.absolute_url())
-            sub_results = {
-                         'RequestID': copy_id,
-                         'OrderID': ar.getClientOrderNumber(),
-                         'absolute_url': ar.absolute_url(),
-                         'ParentTitle': ar.aq_parent.Title(),
-                         'ParentLink': parent_link,
-                         'ParentUID': ' ',
-                         'sampletype_uid': sampletype.UID(),
-                         'DueDate': plone_view.toLocalizedTime(
-                             due_date, long_format = 1
-                             ),
-                         'DatePublished': '',
-                         'Analysis': analysis,
-                         'Cols': cols,
-                         'Calcd': calcd,
-                         'Type': 'd',
-                         'Key': '',
-                         'Pos': pos,
-                       }
-            if not results.has_key(pos):
-                results[pos] = []
-            results[pos].append(sub_results)
-
-        for analysis in rejects:
-            ws = analysis.aq_parent
-            ar = analysis.getRequest()
-            real_analysis = ar[analysis.getService().getId()]
-            due_date = real_analysis.getDueDate()
-            sample = ar.getSample()
-            sampletype = sample.getSampleType()
-            copy_id = '(%s)' % (ar.getId())
-            pos = seq[analysis.UID()]
-            calctype = analysis.getCalcType()
-            cols = checkCalcType(calctype)
-            if cols:
-                any_cols.extend(cols)
-            if len(cols) > 0 or calctype == 'dep':
-                calcd = True
-            else:
-                calcd = False
-            parent_link = "%s/base_edit" % (ar.aq_parent.absolute_url())
-            sub_results = {
-                         'RequestID': copy_id,
-                         'OrderID': ar.getClientOrderNumber(),
-                         'absolute_url': ar.absolute_url(),
-                         'ParentTitle': ar.aq_parent.Title(),
-                         'ParentLink': parent_link,
-                         'ParentUID': ar.aq_parent.UID(),
-                         'sampletype_uid': sampletype.UID(),
-                         'DueDate': plone_view.toLocalizedTime(
-                             due_date, long_format = 1
-                             ),
-                         'DatePublished': '',
-                         'Analysis': analysis,
-                         'Cols': cols,
-                         'Calcd': calcd,
-                         'Type': 'r',
-                         'Key': '',
-                         'Pos': pos,
-                       }
-            if not results.has_key(pos):
-                results[pos] = []
-            results[pos].append(sub_results)
-
-        for analysis in standards_and_blanks:
-            std_sample = analysis.aq_parent
-            ss_id = std_sample.getId()
-            stock = std_sample.getStandardStock()
-            if stock:
-                stock_uid = std_sample.getStandardStock().UID()
-            else:
-                stock_uid = None;
-            pos = seq[analysis.UID()]
-            calctype = analysis.getCalcType()
-            cols = checkCalcType(calctype)
-            if cols:
-                any_cols.extend(cols)
-            if len(cols) > 0 or calctype == 'dep':
-                calcd = True
-            else:
-                calcd = False
-            ss_id = analysis.aq_parent.getStandardID()
-            parent_link = "%s/base_edit" % (std_sample.aq_parent.absolute_url())
-            sub_results = {
-                         'RequestID': analysis.aq_parent.getStandardID(),
-                         'OrderID': '',
-                         'absolute_url': std_sample.absolute_url(),
-                         'ParentTitle': std_sample.aq_parent.Title(),
-                         'ParentLink': parent_link,
-                         'ParentUID': std_sample.aq_parent.UID(),
-                         'sampletype_uid': stock_uid,
-                         'DueDate': '',
-                         'DatePublished': '',
-                         'Analysis': analysis,
-                         'Cols': cols,
-                         'Calcd': calcd,
-                         'Type': analysis.getStandardType(),
-                         'Key': '',
-                         'Pos': pos,
-                       }
-            if not results.has_key(pos):
-                results[pos] = []
-            results[pos].append(sub_results)
-
-        for analysis in analyses:
-            ar = analysis.aq_parent
-            ar_id = ar.getId()
-            sample = ar.getSample()
-            sampletype = sample.getSampleType()
-            due_date = analysis.getDueDate()
-            date_published = analysis.getDateAnalysisPublished()
-            if date_published:
-                date_published = plone_view.toLocalizedTime(date_published, long_format = 1)
-                any_published = True
-            pos = seq[analysis.UID()]
-            key = keys[analysis.UID()]
-            calctype = analysis.getCalcType()
-            cols = checkCalcType(calctype)
-            if cols:
-                any_cols.extend(cols)
-            if len(cols) > 0 or calctype == 'dep':
-                calcd = True
-            else:
-                calcd = False
-            parent_link = "%s/base_edit" % (ar.aq_parent.absolute_url())
-            sub_results = {
-                         'RequestID': ar.getRequestID(),
-                         'OrderID': ar.getClientOrderNumber(),
-                         'absolute_url': ar.absolute_url(),
-                         'ParentTitle': ar.aq_parent.Title(),
-                         'ParentLink': parent_link,
-                         'ParentUID': ar.aq_parent.UID(),
-                         'sampletype_uid': sampletype.UID(),
-                         'DueDate': plone_view.toLocalizedTime(
-                             due_date, long_format = 1
-                             ),
-                         'DatePublished': date_published,
-                         'Analysis': analysis,
-                         'Cols': cols,
-                         'Calcd': calcd,
-                         'Type': 'a',
-                         'Key': key,
-                         'Pos': pos,
-                       }
-            if not results.has_key(pos):
-                results[pos] = []
-            results[pos].append(sub_results)
-
-        l = results.keys()
-        l.sort()
-        result_set = {}
-        all_results = []
-        for pos in l:
-            all_results = all_results + results[pos]
-        any_cols.sort()
-        final_cols = []
-        for col in any_cols:
-            if col not in final_cols: final_cols.append(col)
-
-        result_set['results'] = all_results
-        result_set['any_cols'] = final_cols
-        result_set['published'] = any_published
-        return result_set

@@ -9,14 +9,6 @@ import re
 ModuleSecurityInfo('email.Utils').declarePublic('formataddr')
 allow_module('csv')
 
-def make_listing_from_schema(schema, columns):
-    listing = schema.copy()
-    field_names = copy.copy(listing.keys())
-    for key in field_names:
-        if key not in columns:
-            del listing[key]
-    return listing
-
 # Wrapper for PortalTransport's sendmail - don't know why there sendmail
 # method is marked private
 ModuleSecurityInfo('Products.bika.utils').declarePublic('sendmail')

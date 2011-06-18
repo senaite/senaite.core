@@ -1,0 +1,39 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xml:lang="en"
+  lang="en"
+  i18n:domain="bika"
+  metal:use-macro="here/main_template/macros/master">
+
+<head> </head>
+
+<body metal:fill-slot="main" tal:define="
+  tabindex view/tabindex;
+  specification python:request.get('specification', 'lab')">
+
+  <dl class="enableFormTabbing">
+
+    <dt id="fieldsetlegend-manage_results" i18n:translate="manage_results">Manage Results</dt>
+    <dd id="fieldset-manage_results"  style="display:none;"
+        tal:content="structure context/@@worksheet_manage_results"/>
+
+    <dt id="fieldsetlegend-add_analyses" i18n:translate="add_analysis">Add Analysis</dt>
+    <dd id="fieldset-add_analysis" style="display:none;"
+        tal:content="structure context/@@worksheet_add_analysis/contents_table"/>
+
+    <dt id="fieldsetlegend-add_blank" i18n:translate="add_blank">Add Blank</dt>
+    <dd id="fieldset-add_blank"  style="display:none;"
+        tal:content="structure context/@@worksheet_add_blank/contents_table"/>
+
+    <dt id="fieldsetlegend-add_control" i18n:translate="add_control">Add Control</dt>
+    <dd id="fieldset-add_control"  style="display:none;"
+        tal:content="structure context/@@worksheet_add_control/contents_table"/>
+
+    <dt id="fieldsetlegend-add_duplicate" i18n:translate="add_duplicate">Add Duplicate</dt>
+    <dd id="fieldset-add_duplicate" style="display:none;"
+        tal:content="structure context/@@worksheet_add_duplicate/contents_table"/>
+
+  </dl>
+
+</body>
+</html>

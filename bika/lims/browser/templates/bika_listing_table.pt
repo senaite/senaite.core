@@ -84,7 +84,7 @@
               </tr>
             </tal:selectrow>
 
-            <tr>
+            <tr condition="view/items">
               <th class="nosort column" id="foldercontents-order-column" tal:condition="view/show_sort_column"></th>
               <th class="nosort column" tal:condition="view/show_select_column"> </th>
               <th class="nosort column" tal:repeat="column column_list"
@@ -95,7 +95,7 @@
               </th>
             </tr>
 
-            <tr tal:condition="view/show_filters">
+            <tr tal:condition="python: view.items and view.show_filters">
               <th class="nosort column" id="foldercontents-order-column" tal:condition="view/show_sort_column"></th>
               <th class="nosort column" tal:condition="view/show_select_column"></th>
               <th tal:repeat="column column_list"

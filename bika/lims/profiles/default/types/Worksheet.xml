@@ -11,17 +11,17 @@
  <property name="factory">addWorksheet</property>
  <property name="add_view_expr"></property>
  <property name="link_target"></property>
- <property name="immediate_view">worksheet_analyses</property>
+ <property name="immediate_view">worksheet</property>
  <property name="global_allow">False</property>
- <property name="filter_content_types">False</property>
+ <property name="filter_content_tsypes">False</property>
  <property name="allowed_content_types">
   <element value="DuplicateAnalysis"/>
   <element value="RejectAnalysis"/>
  </property>
  <property name="allow_discussion">False</property>
- <property name="default_view">worksheet_analyses</property>
+ <property name="default_view">worksheet</property>
  <property name="view_methods">
-  <element value="worksheet_analyese"/>
+  <element value="worksheet"/>
  </property>
  <property name="default_view_fallback">False</property>
  <alias from="(Default)" to="(dynamic view)"/>
@@ -36,13 +36,13 @@
   <permission value="View"/>
  </action>
  <action title="Edit" action_id="edit" category="object" condition_expr=""
-    icon_expr="" link_target="" url_expr="string:${object_url}/worksheet_edit"
+    icon_expr="" link_target="" url_expr="string:${object_url}/worksheet"
     visible="False">
   <permission value="List folder contents"/>
  </action>
  <action title="Analyses" action_id="analyses" category="object"
     condition_expr="" icon_expr="" link_target=""
-    url_expr="string:${object_url}/worksheet_analyses" visible="True">
+    url_expr="string:${object_url}/worksheet" visible="True">
   <permission value="List folder contents"/>
  </action>
  <action title="Log" action_id="log" category="object" condition_expr=""
