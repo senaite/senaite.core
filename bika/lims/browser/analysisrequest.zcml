@@ -100,6 +100,15 @@
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
+    <browser:page
+      for="Products.CMFCore.interfaces.ISiteRoot"
+      name="analysisrequests"
+      class="bika.lims.browser.analysisrequest.AnalysisRequestsView"
+      permission="zope.Public"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
+
     <browser:resource
       name="analysisrequest.js"
       file="js/analysisrequest.js"

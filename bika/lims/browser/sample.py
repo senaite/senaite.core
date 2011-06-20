@@ -1,5 +1,8 @@
+from bika.lims.browser.client import ClientSamplesView
 from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from zope.interface import implements
+from plone.app.content.browser.interfaces import IFolderContentsView
 import json
 
 class SampleViewView(BrowserView):
@@ -53,3 +56,8 @@ def sample_edit_submit(context, request):
     context.plone_utils.addPortalMessage(message, 'info')
     return json.dumps({'success':message})
 
+class SamplesView(ClientSamplesView):
+    implements(IFolderContentsView)
+    contentFilter = {'portal_type':'Sample', 'path':{"query": ["/"], "level" : 0 }}
+    title = "Samples"
+    description = ""

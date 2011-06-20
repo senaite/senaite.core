@@ -1,3 +1,4 @@
+from bika.lims.browser.client import ClientAnalysisRequestsView
 from DateTime import DateTime
 from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFCore.utils import getToolByName
@@ -7,6 +8,8 @@ from bika.lims.browser.bika_listing import BikaListingView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import bikaMessageFactory as _
 from decimal import Decimal
+from zope.interface import implements
+from plone.app.content.browser.interfaces import IFolderContentsView
 import json
 
 class AnalysisRequestViewView(BrowserView):
@@ -1237,3 +1240,10 @@ def analysisrequest_add_submit(context, request):
 
     context.plone_utils.addPortalMessage(message, 'info')
     return json.dumps({'success':message})
+
+class AnalysisRequestsView(ClientAnalysisRequestsView):
+    implements(IFolderContentsView)
+    content_add_buttons = {}
+    contentFilter = {'portal_type':'AnalysisRequest', 'path':{"query": ["/"], "level" : 0 }}
+    title = "AnalysisRequests"
+    description = ""
