@@ -1,6 +1,6 @@
 
 jQuery( function($) {
-	
+
 	function autofill(analysisService)
 	{
 		fieldName = '';
@@ -31,7 +31,7 @@ jQuery( function($) {
 		fieldName = changedField.attributes.getNamedItem("name").value;
 		fieldName = fieldName.split('.')[1];
 		return fieldName;
-		
+
 	}
 
 	function calcResult(id)
@@ -61,11 +61,11 @@ jQuery( function($) {
 		/* using element name, as element ID is used by autofill() in worksheets */
 		tVolFieldName= 'results.' + id + '.TitrationVolume:record';
 		tVolField = document.getElementsByName(tVolFieldName)[0];
-		tVol = tVolField.value; 
+		tVol = tVolField.value;
 		tFacFieldName = 'results.' + id + '.TitrationFactor:record';
 		tFacField = document.getElementsByName(tFacFieldName)[0];
-		tFac = tFacField.value; 
-		if ((tVol == '') || (tFac == '' )) {  
+		tFac = tFacField.value;
+		if ((tVol == '') || (tFac == '' )) {
 			result = '';
 		} else {
 			result =  tVol* tFac;
@@ -92,7 +92,7 @@ jQuery( function($) {
 			returnResult('', resultField)
 			return
 		} else {
-			gross = parseFloat(grossField.value); 
+			gross = parseFloat(grossField.value);
 		}
 		netFieldName= 'results.' + id + '.NetMass:record';
 		netField = document.getElementsByName(netFieldName)[0];
@@ -101,7 +101,7 @@ jQuery( function($) {
 			returnResult('', resultField)
 			return
 		} else {
-			net= parseFloat(netField.value); 
+			net= parseFloat(netField.value);
 		}
 		vesselFieldName= 'results.' + id + '.VesselMass:record';
 		vesselField = document.getElementsByName(vesselFieldName)[0];
@@ -110,7 +110,7 @@ jQuery( function($) {
 			returnResult('', resultField)
 			return
 		} else {
-			vessel = parseFloat(vesselField.value); 
+			vessel = parseFloat(vesselField.value);
 		}
 
 		if ((gross < net) || (net < vessel) || (gross == vessel)) {
@@ -139,7 +139,7 @@ jQuery( function($) {
 			returnResult('', resultField)
 			return
 		} else {
-			sample = parseFloat(sampleField.value); 
+			sample = parseFloat(sampleField.value);
 		}
 		netFieldName= 'results.' + id + '.NetMass:record';
 		netField = document.getElementsByName(netFieldName)[0];
@@ -148,7 +148,7 @@ jQuery( function($) {
 			returnResult('', resultField)
 			return
 		} else {
-			net= parseFloat(netField.value); 
+			net= parseFloat(netField.value);
 		}
 		vesselFieldName= 'results.' + id + '.VesselMass:record';
 		vesselField = document.getElementsByName(vesselFieldName)[0];
@@ -157,7 +157,7 @@ jQuery( function($) {
 			returnResult('', resultField)
 			return
 		} else {
-			vessel = parseFloat(vesselField.value); 
+			vessel = parseFloat(vesselField.value);
 		}
 
 		if (net < vessel)  {
@@ -221,10 +221,8 @@ jQuery( function($) {
 		// selectedservices and column are optional.
 		// force_expand and disable are for secondary ARs
 		// They are used when selecting an AR Profile or making a secondary AR
-		
-		if(force_expand == undefined){ force_expand = false ; } 
-		if(disable == undefined){ disable = -1 ; } 
-
+		if(force_expand == undefined){ force_expand = false ; }
+		if(disable == undefined){ disable = -1 ; }
 		name = $('#'+header_ID).attr("name");
 		tbody = $('#'+name+"_tbody");
 		categoryUID = name.split("_")[0];
@@ -240,8 +238,8 @@ jQuery( function($) {
 					}
 				});
 				recalc_prices(column);
-				tbody.toggle(true); 
-			} else { 
+				tbody.toggle(true);
+			} else {
 				if (force_expand){ tbody.toggle(true); }
 				else { tbody.toggle(); }
 			}
@@ -271,22 +269,21 @@ jQuery( function($) {
 			);
 		}
 	}
-	
+
 	function calcdependencies(elements){
 		unexpanded_cats_ = [];
 		expanded_cats_ = [];
 		unchecked_depIDs_ = [];
 		unchecked_depUIDs_ = []
-	
 		antes = [];
-	
+
 		$.each(elements, function(e,element){
 			column = element.attr("id").split("_")[1];
 			if (element.attr("checked") == true){
 				// selecting a service; discover services it depends on.
 				depcatIDs_ = element.attr("depcatids").split(",");
 				depUIDs_ = element.attr("depuids").split(",");
-	
+
 				if(depcatIDs_[0] != ''){
 					$.each(depcatIDs_, function(c,depcatID){
 						if($('#'+depcatID).attr('class').indexOf("expanded") > -1){
@@ -316,7 +313,7 @@ jQuery( function($) {
 				});
 			}
 		});
-	
+
 		// unique lists
 		unexpanded_cats = [];
 		expanded_cats = [];
@@ -326,7 +323,7 @@ jQuery( function($) {
 		$.each(expanded_cats_, function(i,v){ if(expanded_cats.indexOf(v) == -1) expanded_cats.push(v); });
 		$.each(unchecked_depIDs_, function(i,v){ if(unchecked_depIDs.indexOf(v) == -1) unchecked_depIDs.push(v); });
 		$.each(unchecked_depUIDs_, function(i,v){ if(unchecked_depUIDs.indexOf(v) == -1) unchecked_depUIDs.push(v); });
-	
+
 		if (unchecked_depIDs.length > 0){
 			$("#confirm_add_deps").dialog({width:450, resizable:false, closeOnEscape: false, buttons:{
 				'Yes': function(){
@@ -363,7 +360,7 @@ jQuery( function($) {
 				}
 			}});
 		}
-	
+
 		if (antes.length > 0){
 			$("#confirm_remove_antes").dialog({width:450, resizable:false, closeOnEscape: false, buttons:{
 				'Yes': function(){
@@ -387,7 +384,7 @@ jQuery( function($) {
 			}});
 		}
 	}
-	
+
 	function service_checkbox_change(){
 		column = $(this).attr("name").split(".")[1];
 		element = $(this);
@@ -397,15 +394,9 @@ jQuery( function($) {
 		calcdependencies([element]);
 		recalc_prices(column);
 	};
-	
+
 	function service_price_change(){
 		recalc_prices();
-	}
-	
-	function unsetARProfile(column){
-		$.each($('input[name^="ar.'+column+'.Analyses"]'), function(){
-			if($(this).attr("checked")) $(this).attr("checked", "");
-		});
 	}
 
 	function setARProfile(){
@@ -425,19 +416,25 @@ jQuery( function($) {
 		calcdependencies(selected_elements);
 		recalc_prices(column);
 	}
-	
+
+	function unsetARProfile(column){
+		$.each($('input[name^="ar.'+column+'.Analyses"]'), function(){
+			if($(this).attr("checked")) $(this).attr("checked", "");
+		});
+	}
+
 	function autocomplete_sampletype(request,callback){
 		$.getJSON('analysisrequest_sampletypes', {'term':request.term}, function(data,textStatus){
 			callback(data);
 		});
 	}
-	
+
 	function autocomplete_samplepoint(request,callback){
 		$.getJSON('analysisrequest_samplepoints', {'term':request.term}, function(data,textStatus){
 			callback(data);
 		});
 	}
-	
+
 	$(document).ready(function(){
 		$('input[id$="_DateSampled"]').datepicker({'dateFormat': 'yy-mm-dd', showAnim: ''});
 		$(".sampletype").autocomplete({ minLength: 0, source: autocomplete_sampletype});
@@ -446,18 +443,19 @@ jQuery( function($) {
 
 		// clicking on the td will select the checkbox within
 		$(".cb").click(function(){
+			$(this).firstchild.click();
 		});
 
-		// 
+		//
 		$(".copyButton").live('click',  function (){
 			field_name = $(this).attr("name");
-			// analysis service checkboxes
 			if (this.id.split("_").length == 4) { // ar_(catid)_(poc)_(serviceid)
+				// analysis service checkboxes
 				things = this.id.split("_");
 				first_val = $('#ar_0_'+things[1]+'_'+things[2]+'_'+things[3]).attr("checked");
 				affected_elements = [];
 				// col starts at 1 here; row 0 is reference value
-				for (col=1; col<parseInt($("#col_count").val()); col++) { 
+				for (col=1; col<parseInt($("#col_count").val()); col++) {
 					other_elem = $('#ar_'+col+'_'+things[1]+'_'+things[2]+'_'+things[3]);
 					disabled = other_elem.attr('disabled');
 					// For some browsers, `attr` is undefined; for others, its false.  Check for both.
@@ -474,8 +472,8 @@ jQuery( function($) {
 				calcdependencies(affected_elements);
 				recalc_prices();
 			}
-			// other checkboxes
-			else if ($('input[name^="ar\\.0\\.'+field_name+'"]').attr("type") == "checkbox") { 
+			else if ($('input[name^="ar\\.0\\.'+field_name+'"]').attr("type") == "checkbox") {
+				// other checkboxes
 				first_val = $('input[name^="ar\\.0\\.'+field_name+'"]').attr("checked");
 				// col starts at 1 here; we don't copy into the the first row
 				for (col=1; col<parseInt($("#col_count").val()); col++) {
@@ -540,17 +538,17 @@ jQuery( function($) {
 			});
 		});
 		$("#contact").change();
- 
+
 		// recalculate when price elements' values are changed
 		$("input[name^='Price']").live('change', function(){
 			recalc_prices();
 		});
-	
+
 		// A button in the AR form displays the CC browser window (select_cc.pt)
 		$('#open_cc_browser').click(function(){
 			contact_uid = $('#contact').attr('value');
 			cc_uids = $('#cc_uids').attr('value');
-			window.open('analysisrequest_select_cc?hide_uids=' + contact_uid + '&selected_uids=' + cc_uids, 
+			window.open('analysisrequest_select_cc?hide_uids=' + contact_uid + '&selected_uids=' + cc_uids,
 				'analysisrequest_select_cc','toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=600,height=550');
 		});
 
@@ -572,12 +570,12 @@ jQuery( function($) {
 		// button in each column to display Sample browser window
 		$('input[id$="_SampleID_button"]').click(function(){
 			column = this.id.split("_")[1];
-			window.open('analysisrequest_select_sample?column=' + column, 
+			window.open('analysisrequest_select_sample?column=' + column,
 				'analysisrequest_select_sample','toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=600,height=550');
 		});
 
-		// return a reference from the Sample popup window back into the widget 
-		// and populate the form with this sample's data 
+		// return a reference from the Sample popup window back into the widget
+		// and populate the form with this sample's data
 		$('.select_sample_select').click(function(){
 			item_data = $.parseJSON($(this.parentNode).attr("item_data"));
 			column = item_data['column'];
@@ -611,7 +609,7 @@ jQuery( function($) {
 			window.opener.recalc_prices();
 			window.close();
 		});
-		
+
 		$(".deleteSampleButton").click(function(){
 			column = $(this).attr('column');
 			$("#ar_"+column+"_SampleID_button").val($("#ar_"+column+"_SampleID_default").val());
@@ -638,9 +636,9 @@ jQuery( function($) {
 		}
 
 		// AR Add/Edit ajax form submits
-		var options = { 
+		var options = {
 			url: window.location.href,
-			dataType:  'json', 
+			dataType:  'json',
 			data: $(this).formToArray(),
 			beforeSubmit: function(formData, jqForm, options) {
 				$("input[class~='context']").attr('disabled',true);
@@ -650,7 +648,7 @@ jQuery( function($) {
 				$("input[class~='context']").removeAttr('disabled');
 				$("#spinner").toggle(false);
 			},
-			success: function(responseText, statusText, xhr, $form)  {  
+			success: function(responseText, statusText, xhr, $form)  {
 				if(responseText['success'] != undefined){
 					window.location.replace(window.location.href.replace("/analysisrequest_add",""));
 				}

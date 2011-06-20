@@ -20,22 +20,20 @@ ploneMessageFactory = MessageFactory('plone')
 class BikaListingView(FolderContentsView):
     implements(IFolderContentsView)
     template = ViewPageTemplateFile("templates/bika_listing.pt")
-    template_table_only = ViewPageTemplateFile("templates/bika_listing_table_only.pt")
-    review_state_filter = ViewPageTemplateFile("templates/bika_listing_review_state_filter.pt")
-
     contentFilter = {}
+    _contentFilter = {}
     content_add_buttons = {}
 
-    title = _("Folder Contents")
+    title = ""
     description = ""
 
     show_editable_border = True
-    show_table_only = False
     show_filters = True
+    filters_in_use = False
     show_sort_column = True
     show_select_row = True
     show_select_column = True
-    batch = True
+    batch = []
     pagesize = 20
 
     def __init__(self, context, request):
@@ -46,7 +44,9 @@ class BikaListingView(FolderContentsView):
 
     def __call__(self):
         form = self.request.form
-        if form.has_key('review_state'):
+
+        # inserted by jquery when review_state radio is clicked
+        if form.has_key('review_state_clicked'):
             # modify contentFilter with review_state radio value
             if form.has_key("review_state"):
                 if self.request['review_state'] == 'all':
@@ -54,34 +54,28 @@ class BikaListingView(FolderContentsView):
                         del(self.contentFilter['review_state'])
                 else:
                     self.contentFilter['review_state'] = form['review_state']
+            return self.contents_table()
+
+        # inserted by jquery when filter input keypress is accepted
+        if form.has_key('filter_input_keypress'):
             # modify contentFilter with text filters if specified
             for key, value in form.items():
-                if key.endswith("column-filter-input"):
-                    self.filters_are_active = True
+                if key.endswith("column-filter-input") and value:
                     self.contentFilter[key.split("-")[1]] = value
             return self.contents_table()
 
-        if self.show_table_only: return self.template_table_only()
-        else:  return self.template()
+        # inserted by jquery [clear filters] item is clicked
+        if form.has_key('clear_filters'):
+            for key in self.columns.keys():
+                if self.contentFilter.has_key(key):
+                    del self.contentFilter[key]
+            return self.contents_table()
 
-    def content_filter(self):
-        form = self.request.form
+        # other form submits go directly to the form_submit handler of the subclass.
+        if self.request.form and hasattr(self,'form_submit'):
+            self.form_submit()
 
-        # modify contentFilter with review_state radio value
-        if form.has_key("review_state"):
-            if self.request['review_state'] == 'all':
-                if self.contentFilter.has_key('review_state'):
-                    del(self.contentFilter['review_state'])
-            else:
-                self.contentFilter['review_state'] = form['review_state']
-
-        # modify contentFilter with text filters if specified
-        for key, value in form.items():
-            if key.endswith("column-filter-input"):
-                self.filters_are_active = True
-                self.contentFilter[key.split("-")[1]] = value
-
-        return self.contents_table()
+        return self.template()
 
     def folderitems(self):
         """
@@ -185,9 +179,15 @@ class BikaListingView(FolderContentsView):
                     results_dict[field] = getattr(obj, field)
 
             results.append(results_dict)
+
         return results
 
     def contents_table(self):
+        # discover if filters are enabled in contentFilter
+        self.filters_in_use = False
+        for key in self.columns.keys():
+            if key in self.contentFilter.keys():
+                self.filters_in_use = True
         table = BikaListingTable(aq_inner(self.context),
                                  self.request,
                                  folderitems = self.folderitems,
@@ -197,7 +197,8 @@ class BikaListingView(FolderContentsView):
                                  show_sort_column = self.show_sort_column,
                                  show_select_row = self.show_select_row,
                                  show_select_column = self.show_select_column,
-                                 show_filters = self.show_filters)
+                                 show_filters = self.show_filters,
+                                 filters_in_use = self.filters_in_use)
         return table.render()
 
 class BikaListingTable(FolderContentsTable):
@@ -211,7 +212,8 @@ class BikaListingTable(FolderContentsTable):
                  show_sort_column,
                  show_select_row,
                  show_select_column,
-                 show_filters):
+                 show_filters,
+                 filters_in_use):
         self.context = context
         self.request = request
         url = context.absolute_url()
@@ -226,6 +228,7 @@ class BikaListingTable(FolderContentsTable):
                            show_select_row = show_select_row,
                            show_select_column = show_select_column,
                            show_filters = show_filters,
+                           filters_in_use = filters_in_use,
                            pagesize = pagesize)
 
     def render(self):
@@ -244,6 +247,7 @@ class Table(tableview.Table):
                  show_select_row,
                  show_select_column,
                  show_filters,
+                 filters_in_use,
                  pagesize):
 
         tableview.Table.__init__(self,
@@ -262,6 +266,7 @@ class Table(tableview.Table):
         self.show_select_row = show_select_row
         self.show_select_column = show_select_column
         self.show_filters = show_filters
+        self.filters_in_use = filters_in_use
         self.review_states = review_states
 
     render = ViewPageTemplateFile("templates/bika_listing_table.pt")

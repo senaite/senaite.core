@@ -20,10 +20,12 @@ class LabContactsView(BikaListingView):
     title = _("Lab Contacts")
     description = ""
     show_editable_border = False
+    show_filters = False
+    show_sort_column = False
+    show_select_row = False
+    show_select_column = True
     batch = True
-    b_size = 100
-    full_objects = False
-    show_editable_border = False
+    pagesize = 20
 
     columns = {
                'getFullname': {'title': _('Full Name')},

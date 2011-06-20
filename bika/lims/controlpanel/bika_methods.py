@@ -20,7 +20,7 @@ class MethodsView(BikaListingView):
     title = _("Methods")
     description = ""
     show_editable_border = False
-    show_table_only = False
+    show_filters = False
     show_sort_column = False
     show_select_row = False
     show_select_column = True

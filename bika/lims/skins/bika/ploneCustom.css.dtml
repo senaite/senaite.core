@@ -10,12 +10,12 @@
 .portaltype-worksheet #plone-contentmenu-actions,
 .portaltype-sample #plone-contentmenu-actions
    {display: none;}
-   
+
 .portaltype-analysisrequest #plone-contentmenu-display,
 .portaltype-worksheet #plone-contentmenu-display,
 .portaltype-sample #plone-contentmenu-display
    {display: none;}
-   
+
 .portaltype-analysisrequest #plone-contentmenu-factories,
 .portaltype-worksheet #plone-contentmenu-factories
    {display: none;}
@@ -24,7 +24,7 @@
 
 /*
  * Remove boring whitespace in sunburst
- */ 
+ */
 #portal-breadcrumbs{
     margin-bottom: .3em;
 }
@@ -77,6 +77,8 @@ table.invisible td, table.invisible th, table.plain td, table.plain th, table.li
     vertical-align: top;
 }
 
+.nomargin {margin:0;}
+.nopadding {padding:0;}
 
 /*
  * ( make the global NAV bar smaller
@@ -168,7 +170,7 @@ fieldset.attachments {
     text-align: left;
 }
 
-.rowheader { 
+.rowheader {
 
 }
 
@@ -247,6 +249,11 @@ fieldset.attachments {
 	cursor: pointer;
 }
 
+.link {
+    color: &dtml-linkColor;;
+    cursor: pointer;
+}
+
 
 /*
  *  General Form Elements
@@ -320,7 +327,7 @@ fieldset.attachments {
 .listing tbody td {white-space: normal; cursor: pointer; }
 .listing tfoot td {
     background: &dtml-globalBackgroundColor;;
-    border: &dtml-borderWidth; solid &dtml-globalBorderColor;;  
+    border: &dtml-borderWidth; solid &dtml-globalBorderColor;;
     text-align: left;
 }
 .listing .amount {
@@ -369,7 +376,7 @@ input.worksheet {
 }
 
 select.worksheet {
-    border: &dtml-borderWidth; solid &dtml-globalBorderColor;;  
+    border: &dtml-borderWidth; solid &dtml-globalBorderColor;;
     color: &dtml-inputFontColor;;
     vertical-align: middle;
     font-size: &dtml-fontSmallSize;;
@@ -636,7 +643,7 @@ select.worksheet {
 }
 .ws_blank {
     color: &dtml-blankBackgroundColor;;
-    border: &dtml-borderWidth; solid &dtml-blankBackgroundColor;;  
+    border: &dtml-borderWidth; solid &dtml-blankBackgroundColor;;
 
 }
 .ws_duplicate {
@@ -710,7 +717,7 @@ select.worksheet {
 }
 
 .bikatable input {
-    border: 1px solid &dtml-globalBackgroundColor;;  
+    border: 1px solid &dtml-globalBackgroundColor;;
 }
 
 .discreeter {
@@ -740,74 +747,74 @@ h1
 
 /* DOCUMENTATION ON PRE-DEFINED PROPERTIES FROM PLONE */
 
- /* You can insert colors and other variables from Plone's 
+ /* You can insert colors and other variables from Plone's
     base_properties by doing:
-    
+
     & dtml-variableName ; (without the spaces, excluded here to not make it render)
-    
+
     Example:
-    
+
     myLink {
         color: & dtml-fontColor ;   (again, without the spaces)
     }
- 
+
    This means you can generate your own elements that use Plone's defaults,
    and respect any customizations people have done. See base_properties for
    the default values.
- 
+
    These are the available properties:
-   
-   logoName - the file name of the portal logo. 
-   
+
+   logoName - the file name of the portal logo.
+
    fontFamily - the font family used for all text that is not headers
-   
+
    fontBaseSize - the base font size that everything is calculated from
-   
+
    fontColor - the main font color
-   
-   backgroundColor - the background color 
-   
+
+   backgroundColor - the background color
+
    linkColor - the color used on normal links
 
    linkActiveColor - color used on active links
 
    linkVisitedColor - color used on visited links
-   
+
    borderWidth - the width of most borders in Plone
-   
+
    borderStyle -centerthe style of the border lines, normally solid
-   
+
    borderStyleAnnotations - style of border lines on comments etc
-   
+
    globalBorderColor - the border color used on the main tabs, the portlets etc
-   
+
    globalBackgroundColor - background color for the selected tabs, portlet headings etc
-   
+
    globalFontColor - the color of the font in the tabs and in portlet headings
-   
+
    headingFontFamily - font family for h1/h2/h3/h4/h5/h6 headlines.
-   
+
    headingFontBaseSize - the base size used when calculating the different headline sizes
-   
+
    contentViewBorderColor - the content view tabs border color
-   
+
    contentViewBackgroundColor - the content view tabs background color
-   
+
    contentViewFontColor - the font color used in the content view tabs
-   
+
    textTransform - whether to lowercase text in portlets, tabs etc.
-   
+
    evenRowBackgroundColor - the background color of even rows in listings
-   
+
    oddRowBackgroundColor - the background color of even rows in listings
-   
+
    notifyBorderColor - border color of notification elements like the status message, the calendar focus
-   
+
    notifyBackgroundColor - background color of notification elements like the status message, the calendar focus
-   
+
    discreetColor:string=#999999
    helpBackgroundColor:string=#ffffe1
- 
+
  */
 
 

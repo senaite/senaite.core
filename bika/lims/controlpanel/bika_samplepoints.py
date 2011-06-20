@@ -20,7 +20,7 @@ class SamplePointsView(BikaListingView):
     title = _("Sample Points")
     description = ""
     show_editable_border = False
-    show_table_only = False
+    show_filters = True
     show_sort_column = False
     show_select_row = False
     show_select_column = True

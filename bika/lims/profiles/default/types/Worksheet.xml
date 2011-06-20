@@ -13,7 +13,7 @@
  <property name="link_target"></property>
  <property name="immediate_view">worksheet</property>
  <property name="global_allow">False</property>
- <property name="filter_content_tsypes">False</property>
+ <property name="filter_content_types">False</property>
  <property name="allowed_content_types">
   <element value="DuplicateAnalysis"/>
   <element value="RejectAnalysis"/>

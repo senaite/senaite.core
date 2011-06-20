@@ -18,7 +18,7 @@ class DepartmentsView(BikaListingView):
     title = _("Lab Departments")
     description = ""
     show_editable_border = False
-    show_table_only = False
+    show_filters = False
     show_sort_column = False
     show_select_row = False
     show_select_column = True

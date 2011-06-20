@@ -5,7 +5,6 @@
       xml:lang="en" lang="en"
       i18n:domain="plone"
       metal:use-macro="here/main_template/macros/master">
-
   <head>
     <metal:block fill-slot="top_slot">
       <style type="text/css">
@@ -13,45 +12,51 @@
       </style>
     </metal:block>
   </head>
-
   <body>
+
     <metal:content-title fill-slot="content-title">
-      <h1 class="documentFirstHeading" tal:content="view/title"/>
+      <table>
+        <tr>
+          <td style="padding-right:2em;">
+              <h1 class="documentFirstHeading" tal:content="view/title"/>
+          </td>
+          <td
+            align="right"
+            tal:repeat="add_item python:view.content_add_buttons.keys()">
+            <form method="post"
+              tal:attributes="name string:folderContentsForm_add_${add_item};
+                              id string:folderContentsForm_add_${add_item};
+                              action python: view.content_add_buttons[add_item];">
+              <input
+                class="standalone add"
+                type="submit"
+                name=""
+                i18n:attributes="value"
+                tal:attributes="value string:Add ${add_item}; name string:add_${add_item}"/>
+              <input type="hidden" name="form.submitted" value="1" />
+              <input tal:replace="structure context/@@authenticator/authenticator" />
+            </form>
+          </td>
+        </tr>
+      </table>
     </metal:content-title>
 
     <metal:content-description fill-slot="content-description">
-        <div class="documentDescription" 
-             tal:content="view/description" 
+        <div class="documentDescription"
+             tal:content="view/description"
              tal:condition="view/description"/>
     </metal:content-description>
 
     <metal:content-core fill-slot="content-core">
-
-      <tal:add_buttons repeat="add_item python:view.content_add_buttons.keys()">
-          <form
-            name="folderContentsForm_add"
-            method="post"
-            action=""
-            tal:attributes="action python:'%s/%s'%(context.absolute_url(), view.content_add_buttons[add_item])">
-            <input 
-              class="standalone add"
-              type="submit"
-              name=""
-              i18n:attributes="value"
-              tal:attributes="value string:Add ${add_item};
-                              name string:add_${add_item}"/>
-          </form>
-      </tal:add_buttons>
-
-      <p/>
-
-      <div tal:replace="structure view/contents_table"></div>
-
+      <form
+        name="folderContentsForm"
+        id="folderContentsForm"
+        class="folderContentsForm"
+        method="post"
+        action="">
+        <div tal:replace="structure view/contents_table"></div>
+      </form>
     </metal:content-core>
 
   </body>
 </html>
-
-
-
-

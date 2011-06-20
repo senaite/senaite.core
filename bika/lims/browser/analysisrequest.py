@@ -806,7 +806,6 @@ class AnalysisRequestSelectCCView(BikaListingView):
     title = "Contacts to CC"
     description = ''
     show_editable_border = False
-    show_table_only = True
     show_sort_column = False
     show_select_row = False
     show_select_column = True
@@ -829,6 +828,14 @@ class AnalysisRequestSelectCCView(BikaListingView):
                      'title': _('Add to CC list'),
                      'url': ''}]},
     ]
+
+    def __init__(self, context, request):
+        super(AnalysisRequestSelectSampleView, self).__init__(context, request)
+        self.title = "%s: %s" % (self.context.Title(), _("Contacts to CC"))
+        self.description = ""
+
+    def __call__(self):
+        return self.contents_table()
 
     def folderitems(self):
         items = BikaListingView.folderitems(self)
@@ -885,6 +892,9 @@ class AnalysisRequestSelectSampleView(BikaListingView):
         super(AnalysisRequestSelectSampleView, self).__init__(context, request)
         self.title = "%s: %s" % (self.context.Title(), _("Samples"))
         self.description = ""
+
+    def __call__(self):
+        return self.contents_table()
 
     def folderitems(self):
         items = BikaListingView.folderitems(self)
@@ -1003,7 +1013,7 @@ class AnalysisRequest_SamplePoints(BrowserView):
     def __call__(self):
         pc = getToolByName(self, 'portal_catalog')
         term = self.request.get('term', '')
-        items = pc(portal_type = "SamplePoints")
+        items = pc(portal_type = "SamplePoint")
         nr_items = len(items)
         items = [s.Title for s in items if s.Title.lower().find(term.lower()) > -1][:10]
         if nr_items > 10:

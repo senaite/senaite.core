@@ -11,16 +11,6 @@
     <include package=".fields"/>
     <include package=".widgets"/>
 
-  <!-- 'bika' Zope 3 browser layer
-    Register views, viewlets and resources for this layer to make sure
-    they only apply to the 'bika' theme.
-  <interface
-      interface="bika.lims.interfaces.IBikaLIMS"
-      type="zope.publisher.interfaces.browser.IBrowserSkinType"
-      name="bika"
-      />
- -->
-
   <browser:page
       for="*"
       name="load_setup_data"

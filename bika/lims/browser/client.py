@@ -6,9 +6,9 @@ from zope.interface import implements
 
 class ClientAnalysisRequestsView(BikaListingView):
     contentFilter = {'portal_type': 'AnalysisRequest'}
+    _contentFilter = {'portal_type': 'AnalysisRequest'}
     content_add_buttons = {_('Analysis Request'): "analysisrequest_add"}
     show_editable_border = True
-    show_table_only = False
     show_sort_column = False
     show_select_row = False
     show_select_column = True
@@ -24,8 +24,8 @@ class ClientAnalysisRequestsView(BikaListingView):
            'getSamplePoint': {'title': _('Sample Point')},
            'getDateReceived': {'title': _('Date Received')},
            'getDatePublished': {'title': _('Date Published')},
-           'state_title': {'title': _('State')},
-          }
+           'state_title': {'title': _('State'),},
+    }
     review_states = [
                 {'title': _('All'), 'id':'all',
                  'columns':['getRequestID',
@@ -36,20 +36,14 @@ class ClientAnalysisRequestsView(BikaListingView):
                             'getSamplePoint',
                             'getDateReceived',
                             'getDatePublished',
-                            'state_title'],
-                 'buttons':[{'cssclass': 'context',
-                             'title': _('Delete'),
-                             'url': 'folder_delete:method'}]},
+                            'state_title']},
                 {'title': _('Sample due'), 'id':'sample_due',
                  'columns':['getRequestID',
                             'getClientOrderNumber',
                             'getClientReference',
                             'getClientSampleID',
                             'getSampleType',
-                            'getSamplePoint'],
-                 'buttons':[{'cssclass': 'context',
-                             'title': _('Delete'),
-                             'url': 'folder_delete:method'}]},
+                            'getSamplePoint']},
                 {'title': _('Sample received'), 'id':'sample_received',
                  'columns':['getRequestID',
                             'getClientOrderNumber',
@@ -57,13 +51,9 @@ class ClientAnalysisRequestsView(BikaListingView):
                             'getClientSampleID',
                             'getSampleType',
                             'getSamplePoint',
-                            'getDateReceived'],
-                 'buttons':[{'cssclass': 'context',
-                             'title': _('Delete'),
-                             'url': 'folder_delete:method'}]},
+                            'getDateReceived']},
                 {'title': _('Assigned to Worksheet'), 'id':'assigned',
                  'columns':['getRequestID',
-                            'getContact',
                             'getClientOrderNumber',
                             'getClientReference',
                             'getClientSampleID',
@@ -102,12 +92,15 @@ class ClientAnalysisRequestsView(BikaListingView):
         self.title = "%s: %s" % (self.context.Title(), _("Analysis Requests"))
         self.description = ""
 
+    def form_submit(self):
+        form = self.request.form
+        pc = getToolByName(self.context, 'portal_catalog')
+
     def folderitems(self):
         items = BikaListingView.folderitems(self)
         for x in range(len(items)):
             if not items[x].has_key('brain'): continue
             items[x]['links'] = {'getRequestID': items[x]['url']}
-
         return items
 
 class ClientSamplesView(BikaListingView):
