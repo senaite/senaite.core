@@ -16,7 +16,7 @@ from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.ATExtensions.ateapi import DateTimeField, DateTimeWidget
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.config import I18N_DOMAIN, PROJECTNAME
-from bika.lims.browser.fields import ResultField
+from Products.ATExtensions.ateapi import RecordsField
 from Products.CMFDynamicViewFTI.browserdefault import \
     BrowserDefaultMixin
 

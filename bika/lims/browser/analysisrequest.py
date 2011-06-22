@@ -946,7 +946,7 @@ class AnalysisRequestSelectSampleView(BikaListingView):
                         res[catuid] = [analysis.getService().UID()]
         return res
 
-class AnalysisRequest_AnalysisServices(BrowserView):
+class AnalysisRequest_AnalysisServices():
     """ AJAX requests pull this data for insertion when category header rows are clicked.
         The view returns a standard pagetemplate, the entire html of which is inserted.
     """
@@ -976,7 +976,7 @@ class AnalysisRequest_AnalysisServices(BrowserView):
             depUIDs.append(depUID)
         return {'categoryIDs':depcatIDs, 'serviceUIDs':depUIDs}
 
-class AnalysisRequest_ProfileServices(BrowserView):
+class AnalysisRequest_ProfileServices():
     """ AJAX requests pull this to retrieve a list of services in an AR Profile.
         return JSON data {categoryUID: [serviceUID,serviceUID], ...}
     """
@@ -995,7 +995,7 @@ class AnalysisRequest_ProfileServices(BrowserView):
             except: services["%s_%s" % (categoryUID, poc)] = [service.UID, ]
         return json.dumps(services)
 
-class AnalysisRequest_SampleTypes(BrowserView):
+class AnalysisRequest_SampleTypes():
     """ autocomplete data source for sample types field
         return JSON data [string,string]
     """
@@ -1006,7 +1006,7 @@ class AnalysisRequest_SampleTypes(BrowserView):
         items = [s.Title for s in items if s.Title.lower().find(term.lower()) > -1]
         return json.dumps(items)
 
-class AnalysisRequest_SamplePoints(BrowserView):
+class AnalysisRequest_SamplePoints():
     """ autocomplete data source for sample points field
         return JSON data [string,string]
     """
@@ -1025,9 +1025,6 @@ def analysisrequest_add_submit(context, request):
     wftool = getToolByName(context, 'portal_workflow')
     pc = getToolByName(context, 'portal_catalog')
     came_from = form.has_key('came_from') and form['came_from'] or 'add'
-
-#    import pprint
-#    pprint.pprint(form)
 
     errors = {}
     def error(field = None, column = None, message = None):
@@ -1237,6 +1234,7 @@ def analysisrequest_add_submit(context, request):
 class AnalysisRequestsView(ClientAnalysisRequestsView):
     implements(IFolderContentsView)
     content_add_actions = {}
-    contentFilter = {'portal_type':'AnalysisRequest', 'path':{"query": ["/"], "level" : 0 }}
+    contentFilter = {'portal_type':'AnalysisRequest',
+                     'path':{"query": ["/"], "level" : 0 }}
     title = "AnalysisRequests"
     description = ""

@@ -11,7 +11,7 @@
  <property name="factory">addWorksheet</property>
  <property name="add_view_expr"></property>
  <property name="link_target"></property>
- <property name="immediate_view">worksheet</property>
+ <property name="immediate_view">manage_results</property>
  <property name="global_allow">False</property>
  <property name="filter_content_types">False</property>
  <property name="allowed_content_types">
@@ -19,9 +19,9 @@
   <element value="RejectAnalysis"/>
  </property>
  <property name="allow_discussion">False</property>
- <property name="default_view">worksheet</property>
+ <property name="default_view">manage_results</property>
  <property name="view_methods">
-  <element value="worksheet"/>
+  <element value="manage_results"/>
  </property>
  <property name="default_view_fallback">False</property>
  <alias from="(Default)" to="(dynamic view)"/>
@@ -41,39 +41,41 @@
   <permission value="List folder contents"/>
  </action>
 
- <action title="Analyses" action_id="analyses" category="object"
+ <action title="Analyses" action_id="manage_results" category="object"
     condition_expr="" icon_expr="" link_target=""
-    url_expr="string:${object_url}/worksheet/manage_results" visible="True">
+    url_expr="string:${object_url}/manage_results" visible="True">
   <permission value="bika.lims: Manage Worksheets"/>
  </action>
 
   <action title="Add Analysis" action_id="add_analyses" category="object"
     condition_expr="" icon_expr="" link_target=""
-    url_expr="string:${object_url}/worksheet/add_analysis" visible="True">
+    url_expr="string:${object_url}/add_analysis" visible="True">
   <permission value="bika.lims: Manage Worksheets"/>
  </action>
 
   <action title="Add Blank" action_id="add_blank" category="object"
     condition_expr="" icon_expr="" link_target=""
-    url_expr="string:${object_url}/worksheet/add_blank" visible="True">
+    url_expr="string:${object_url}/add_blank" visible="True">
   <permission value="bika.lims: Manage Worksheets"/>
  </action>
 
   <action title="Add Control" action_id="add_control" category="object"
     condition_expr="" icon_expr="" link_target=""
-    url_expr="string:${object_url}/worksheet/add_control" visible="True">
+    url_expr="string:${object_url}/add_control" visible="True">
   <permission value="bika.lims: Manage Worksheets"/>
  </action>
 
-  <action title="Add Duplicate" action_id="add_duplicate" category="object"
+<!--
+<action title="Add Duplicate" action_id="add_duplicate" category="object"
     condition_expr="" icon_expr="" link_target=""
-    url_expr="string:${object_url}/worksheet/add_duplicate" visible="True">
+    url_expr="string:${object_url}/add_duplicate" visible="True">
   <permission value="bika.lims: Manage Worksheets"/>
  </action>
+-->
 
-  <action title="Attachments" action_id="worksheet_attachments" category="object"
+<action title="Attachments" action_id="attachments" category="object"
     condition_expr="" icon_expr="" link_target=""
-    url_expr="string:${object_url}/worksheet/worksheet_attachments" visible="True">
+    url_expr="string:${object_url}/attachments" visible="True">
   <permission value="bika.lims: Manage Worksheets"/>
  </action>
 
