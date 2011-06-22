@@ -20,20 +20,19 @@ ploneMessageFactory = MessageFactory('plone')
 class BikaListingView(FolderContentsView):
     implements(IFolderContentsView)
     template = ViewPageTemplateFile("templates/bika_listing.pt")
+
     contentFilter = {}
-    _contentFilter = {}
-    content_add_buttons = {}
+    content_add_actions = {}
 
     title = ""
     description = ""
 
     show_editable_border = True
     show_filters = True
-    filters_in_use = False
     show_sort_column = True
     show_select_row = True
     show_select_column = True
-    batch = []
+    batching = []
     pagesize = 20
 
     def __init__(self, context, request):
@@ -44,6 +43,8 @@ class BikaListingView(FolderContentsView):
 
     def __call__(self):
         form = self.request.form
+        pc = getToolByName(self.context, 'portal_catalog')
+        wf = getToolByName(self.context, 'portal_workflow')
 
         # inserted by jquery when review_state radio is clicked
         if form.has_key('review_state_clicked'):
@@ -71,9 +72,18 @@ class BikaListingView(FolderContentsView):
                     del self.contentFilter[key]
             return self.contents_table()
 
-        # other form submits go directly to the form_submit handler of the subclass.
-        if self.request.form and hasattr(self,'form_submit'):
-            self.form_submit()
+        # workflow transition action was submitted
+        if form.has_key('transition_action_submitted'):
+            action = form['transition_action']
+            for path in form['paths']:
+                item_id = path.split("/")[-1]
+                item_path = path.replace("/"+item_id, '')
+                item = pc(id=item_id, path={'query':item_path, 'depth':1})[0].getObject()
+                wf.doActionFor(item, action)
+
+            # subclass form_submit is only called for transition actions
+            if hasattr(self, 'form_submit'):
+                self.form_submit(form)
 
         return self.template()
 

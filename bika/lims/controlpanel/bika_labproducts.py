@@ -16,7 +16,7 @@ from bika.lims.interfaces import IHaveNoByline, ILabProducts
 class LabProductsView(BikaListingView):
     implements(IFolderContentsView)
     contentFilter = {'portal_type': 'LabProduct'}
-    content_add_buttons = {_('Product'): "createObject?type_name=LabProduct"}
+    content_add_actions = {_('Product'): "createObject?type_name=LabProduct"}
     title = _("Lab Products")
     description = ""
     show_editable_border = False

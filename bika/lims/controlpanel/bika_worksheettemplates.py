@@ -17,7 +17,7 @@ from zope.interface.declarations import implements
 class WorksheetTemplatesView(BikaListingView):
     implements(IFolderContentsView)
     contentFilter = {'portal_type': 'WorksheetTemplate'}
-    content_add_buttons = {_('Worksheet Template'): "createObject?type_name=WorksheetTemplate"}
+    content_add_actions = {_('Worksheet Template'): "createObject?type_name=WorksheetTemplate"}
     title = _("Worksheet Templates")
     description = ""
     show_editable_border = False

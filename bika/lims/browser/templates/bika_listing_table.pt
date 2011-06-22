@@ -189,13 +189,13 @@
     <div tal:replace="structure view/batching"
          tal:condition="not: view/show_all"/>
 
-    <tal:buttons
-      tal:condition="python: review_state.has_key('buttons') and view.items"
-      tal:repeat="button review_state/buttons">
-      <input class="context"
+    <tal:transitions
+      tal:condition="python: review_state.has_key('transitions') and view.items"
+      tal:repeat="transition review_state/transitions">
+      <input class="context transition_action"
              type="submit"
-             i18n:attributes="value"
-             tal:attributes="value button/title; name button/title;" />
-    </tal:buttons>
+             name="transition_action"
+             tal:attributes="value transition;" />
+    </tal:transitions>
   </metal:listing>
 </div>

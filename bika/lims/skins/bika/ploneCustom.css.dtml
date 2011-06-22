@@ -197,7 +197,7 @@ fieldset.attachments {
 }
 
 .analysisrequest input {
-    border: 1px solid &dtml-globalBackgroundColor;;
+    border: 1px solid &dtml-globalBorderColor;;
     margin:1px;
 }
 

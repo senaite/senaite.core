@@ -16,7 +16,7 @@ from zope.interface.declarations import implements
 class MethodsView(BikaListingView):
     implements(IFolderContentsView)
     contentFilter = {'portal_type': 'Method'}
-    content_add_buttons = {_('Method'): "createObject?type_name=Method"}
+    content_add_actions = {_('Method'): "createObject?type_name=Method"}
     title = _("Methods")
     description = ""
     show_editable_border = False

@@ -14,7 +14,7 @@ from zope.interface.declarations import implements
 class LabARProfilesView(BikaListingView):
     implements(IFolderContentsView)
     contentFilter = {'portal_type': 'LabARProfile'}
-    content_add_buttons = {_('Lab AR Profile'): "createObject?type_name=LabARProfile"}
+    content_add_actions = {_('Lab AR Profile'): "createObject?type_name=LabARProfile"}
     title = _("Analysis Request Templates")
     description = ""
     show_editable_border = False

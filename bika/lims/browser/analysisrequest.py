@@ -805,14 +805,14 @@ class AnalysisRequestContactCCs(BrowserView):
 class AnalysisRequestSelectCCView(BikaListingView):
     """ The CC Selector popup window uses this view"""
     contentFilter = {'portal_type': 'Contact'}
-    content_add_buttons = {}
+    content_add_actions = {}
     title = "Contacts to CC"
     description = ''
     show_editable_border = False
     show_sort_column = False
     show_select_row = False
     show_select_column = True
-    batch = False
+    batching = True
     pagesize = 20
 
     columns = {
@@ -853,7 +853,7 @@ class AnalysisRequestSelectCCView(BikaListingView):
 
 class AnalysisRequestSelectSampleView(BikaListingView):
     contentFilter = {'portal_type': 'Sample'}
-    content_add_buttons = {}
+    content_add_actions = {}
     show_editable_border = False
     show_table_only = True
     show_sort_column = False
@@ -1003,10 +1003,7 @@ class AnalysisRequest_SampleTypes(BrowserView):
         pc = getToolByName(self, 'portal_catalog')
         term = self.request.get('term', '')
         items = pc(portal_type = "SampleType")
-        nr_items = len(items)
-        items = [s.Title for s in items if s.Title.lower().find(term.lower()) > -1][:10]
-        if nr_items > 10:
-            items.append(str(nr_items - 10) + _(" items not shown"))
+        items = [s.Title for s in items if s.Title.lower().find(term.lower()) > -1]
         return json.dumps(items)
 
 class AnalysisRequest_SamplePoints(BrowserView):
@@ -1017,12 +1014,8 @@ class AnalysisRequest_SamplePoints(BrowserView):
         pc = getToolByName(self, 'portal_catalog')
         term = self.request.get('term', '')
         items = pc(portal_type = "SamplePoint")
-        nr_items = len(items)
-        items = [s.Title for s in items if s.Title.lower().find(term.lower()) > -1][:10]
-        if nr_items > 10:
-            items.append(str(nr_items - 10) + _(" items not shown"))
+        items = [s.Title for s in items if s.Title.lower().find(term.lower()) > -1]
         return json.dumps(items)
-
 
 def analysisrequest_add_submit(context, request):
 
@@ -1243,7 +1236,7 @@ def analysisrequest_add_submit(context, request):
 
 class AnalysisRequestsView(ClientAnalysisRequestsView):
     implements(IFolderContentsView)
-    content_add_buttons = {}
+    content_add_actions = {}
     contentFilter = {'portal_type':'AnalysisRequest', 'path':{"query": ["/"], "level" : 0 }}
     title = "AnalysisRequests"
     description = ""

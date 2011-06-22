@@ -12,7 +12,7 @@ from bika.lims.config import AssignAnalyses, DeleteAnalyses, \
 from Products.ATExtensions.ateapi import RecordsField
 from Products.CMFDynamicViewFTI.browserdefault import BrowserDefaultMixin
 from zope.interface import implements
-from bika.lims.interfaces import IWorksheet
+from bika.lims.interfaces import IWorksheet,IHaveNoByline
 from bika.lims.browser.fields import WorksheetAnalysesField
 
 schema = BikaSchema.copy() + Schema((
@@ -81,6 +81,7 @@ schema = BikaSchema.copy() + Schema((
     StringField('Analyser',
         vocabulary = 'getAnalysersDisplayList',
     ),
+
     IntegerField('MaxPositions',
         widget = IntegerWidget(
             label = "Maximum Positions Allowed",
@@ -108,7 +109,7 @@ TitleField.widget.visible = {'edit': 'hidden', 'view': 'invisible'}
 
 class Worksheet(BrowserDefaultMixin, BaseFolder):
     security = ClassSecurityInfo()
-    implements(IWorksheet)
+    implements(IWorksheet, IHaveNoByline)
     archetype_name = 'Worksheet'
     schema = schema
 
@@ -290,6 +291,7 @@ class Worksheet(BrowserDefaultMixin, BaseFolder):
             for std_analysis in std_analyses:
                 standard_sample = std_analysis.aq_parent
                 standard_sample.manage_delObjects(std_analysis.getId())
+
         
         """
         if std_uids:
@@ -491,7 +493,7 @@ class Worksheet(BrowserDefaultMixin, BaseFolder):
                             dm_ars.append(analysis.aq_parent)
                             dm_ar_ids.append(analysis.aq_parent.getId())
 
-                """ AVS omit renumbering 
+                """ AVS omit renumbering
                 seq = int(value.get('Pos'))
                 key = value.get('Key')
                 type = value.get('Type')
@@ -839,7 +841,7 @@ class Worksheet(BrowserDefaultMixin, BaseFolder):
             if not std_analyses.has_key(parent_uid):
                 std_samples.append(std_analysis.aq_parent)
                 std_analyses[parent_uid] = []
-                
+
             std_analyses[parent_uid].append(std_analysis.getID())
 
         for std_sample in std_samples:
@@ -928,14 +930,14 @@ class Worksheet(BrowserDefaultMixin, BaseFolder):
 
     def workflow_script_reject(self, state_info):
         """ reject sample  """
-        """ 
+        """
             copy real analyses to RejectAnalysis, with link to real
-            create a new worksheet, with the original analyses, and new 
-            duplicates and standards to match the rejected 
+            create a new worksheet, with the original analyses, and new
+            duplicates and standards to match the rejected
             worksheet.
         """
         utils = getToolByName(self, 'plone_utils')
-        # create a new worksheet 
+        # create a new worksheet
         if getattr(self, '_escalating_workflow_action', None):
             return
 
@@ -1016,7 +1018,7 @@ class Worksheet(BrowserDefaultMixin, BaseFolder):
             new_links.append(link.UID())
         self.setLinkedWorksheet(new_links)
 
-        # Standard analyses 
+        # Standard analyses
         assigned = []
         std_analyses = self.getStandardAnalyses()
         for std_analysis in std_analyses:

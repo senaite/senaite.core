@@ -1,11 +1,26 @@
-<html xmlns="http://www.w3.org/1999/xhtml"
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
   xml:lang="en"
   lang="en"
-  i18n:domain="bika">
+  i18n:domain="bika"
+  metal:use-macro="here/main_template/macros/master">
+
 <head> </head>
 <body>
 
-Hi there.
 
+<metal:content fill-slot="content-core">
+hi... this template gets deleted soon.
+
+<ul>
+  <li tal:repeat="record view/WorksheetLayout">
+    POS: <span tal:content="record/pos"/> &nbsp;
+    Key: <span tal:content="record/key"/> &nbsp;
+    UID: <span tal:content="record/uid"/> &nbsp;
+    Type: <span tal:content="record/type"/>
+  </li>
+</ul>
+
+</metal:content>
 </body>
 </html>

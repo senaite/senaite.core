@@ -6,8 +6,7 @@ from zope.interface import implements
 
 class ClientAnalysisRequestsView(BikaListingView):
     contentFilter = {'portal_type': 'AnalysisRequest'}
-    _contentFilter = {'portal_type': 'AnalysisRequest'}
-    content_add_buttons = {_('Analysis Request'): "analysisrequest_add"}
+    content_add_actions = {_('Analysis Request'): "analysisrequest_add"}
     show_editable_border = True
     show_sort_column = False
     show_select_row = False
@@ -38,6 +37,7 @@ class ClientAnalysisRequestsView(BikaListingView):
                             'getDatePublished',
                             'state_title']},
                 {'title': _('Sample due'), 'id':'sample_due',
+                 'transitions': ['cancel', 'receive'],
                  'columns':['getRequestID',
                             'getClientOrderNumber',
                             'getClientReference',
@@ -45,6 +45,7 @@ class ClientAnalysisRequestsView(BikaListingView):
                             'getSampleType',
                             'getSamplePoint']},
                 {'title': _('Sample received'), 'id':'sample_received',
+                 'transitions': ['cancel'],
                  'columns':['getRequestID',
                             'getClientOrderNumber',
                             'getClientReference',
@@ -53,6 +54,7 @@ class ClientAnalysisRequestsView(BikaListingView):
                             'getSamplePoint',
                             'getDateReceived']},
                 {'title': _('Assigned to Worksheet'), 'id':'assigned',
+                 'transitions': ['cancel'],
                  'columns':['getRequestID',
                             'getClientOrderNumber',
                             'getClientReference',
@@ -61,6 +63,7 @@ class ClientAnalysisRequestsView(BikaListingView):
                             'getSamplePoint',
                             'getDateReceived']},
                 {'title': _('To be verified'), 'id':'to_be_verified',
+                 'transitions': ['cancel', 'verify'],
                  'columns':['getRequestID',
                             'getClientOrderNumber',
                             'getClientReference',
@@ -69,6 +72,7 @@ class ClientAnalysisRequestsView(BikaListingView):
                             'getSamplePoint',
                             'getDateReceived']},
                 {'title': _('Verified'), 'id':'verified',
+                 'transitions': ['cancel', 'publish'],
                  'columns':['getRequestID',
                             'getClientOrderNumber',
                             'getClientReference',
@@ -92,10 +96,6 @@ class ClientAnalysisRequestsView(BikaListingView):
         self.title = "%s: %s" % (self.context.Title(), _("Analysis Requests"))
         self.description = ""
 
-    def form_submit(self):
-        form = self.request.form
-        pc = getToolByName(self.context, 'portal_catalog')
-
     def folderitems(self):
         items = BikaListingView.folderitems(self)
         for x in range(len(items)):
@@ -107,7 +107,7 @@ class ClientSamplesView(BikaListingView):
     implements(IFolderContentsView)
 
     contentFilter = {'portal_type': 'Sample'}
-    content_add_buttons = {}
+    content_add_actions = {}
     show_editable_border = True
     show_table_only = False
     show_sort_column = False
@@ -192,7 +192,7 @@ class ClientARImportsView(BikaListingView):
     implements(IFolderContentsView)
 
     contentFilter = {'portal_type': 'ARImport'}
-    content_add_buttons = {_('AR Import'): "createObject?type_name=ARImport"}
+    content_add_actions = {_('AR Import'): "createObject?type_name=ARImport"}
     show_editable_border = True
     show_table_only = False
     show_sort_column = False
@@ -243,7 +243,7 @@ class ClientARProfilesView(BikaListingView):
     implements(IFolderContentsView)
 
     contentFilter = {'portal_type': 'ARProfile'}
-    content_add_buttons = {_('AR Profile'): "createObject?type_name=ARProfile"}
+    content_add_actions = {_('AR Profile'): "createObject?type_name=ARProfile"}
     show_editable_border = True
     show_table_only = False
     show_sort_column = False
@@ -279,7 +279,7 @@ class ClientAnalysisSpecsView(BikaListingView):
     implements(IFolderContentsView)
 
     contentFilter = {'portal_type': 'AnalysisSpec'}
-    content_add_buttons = {_('Analysis Spec'): "createObject?type_name=AnalysisSpec"}
+    content_add_actions = {_('Analysis Spec'): "createObject?type_name=AnalysisSpec"}
     show_editable_border = True
     show_table_only = False
     show_sort_column = False
@@ -326,7 +326,7 @@ class ClientAttachmentsView(BikaListingView):
     implements(IFolderContentsView)
 
     contentFilter = {'portal_type': 'Attachment'}
-    content_add_buttons = {_('Attachment'): "createObject?type_name=Attachment"}
+    content_add_actions = {_('Attachment'): "createObject?type_name=Attachment"}
     show_editable_border = True
     show_table_only = False
     show_sort_column = False
@@ -390,7 +390,7 @@ class ClientOrdersView(BikaListingView):
     implements(IFolderContentsView)
 
     contentFilter = {'portal_type': 'Order'}
-    content_add_buttons = {_('Order'): "createObject?type_name=Order"}
+    content_add_actions = {_('Order'): "createObject?type_name=Order"}
     show_editable_border = True
     show_table_only = False
     show_sort_column = False
@@ -442,7 +442,7 @@ class ClientContactsView(BikaListingView):
     implements(IFolderContentsView)
 
     contentFilter = {'portal_type': 'Contact'}
-    content_add_buttons = {_('Contact'): "createObject?type_name=Contact"}
+    content_add_actions = {_('Contact'): "createObject?type_name=Contact"}
     show_editable_border = True
     show_table_only = False
     show_sort_column = False

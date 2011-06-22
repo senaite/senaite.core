@@ -13,7 +13,7 @@ from zope.interface import alsoProvides
 class AnalysisCategoriesView(BikaListingView):
     implements(IFolderContentsView)
     contentFilter = {'portal_type': 'AnalysisCategory'}
-    content_add_buttons = {_('Analysis Category'): "createObject?type_name=AnalysisCategory"}
+    content_add_actions = {_('Analysis Category'): "createObject?type_name=AnalysisCategory"}
     title = _("Analysis Categories")
     description = ""
     show_editable_border = False

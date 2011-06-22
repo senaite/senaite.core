@@ -16,7 +16,7 @@ from zope.interface.declarations import implements
 class CalculationTypesView(BikaListingView):
     implements(IFolderContentsView)
     contentFilter = {'portal_type': 'CalculationType'}
-    content_add_buttons = {_('Calculation Type'): "createObject?type_name=CalculationType"}
+    content_add_actions = {_('Calculation Type'): "createObject?type_name=CalculationType"}
     title = _("Calculation Types")
     description = ""
     show_editable_border = False

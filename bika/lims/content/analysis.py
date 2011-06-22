@@ -16,6 +16,7 @@ from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.ATExtensions.ateapi import DateTimeField, DateTimeWidget
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.config import I18N_DOMAIN, PROJECTNAME
+from bika.lims.browser.fields import ResultField
 from Products.CMFDynamicViewFTI.browserdefault import \
     BrowserDefaultMixin
 
@@ -107,7 +108,7 @@ schema = BikaSchema.copy() + Schema((
             i18n_domain = I18N_DOMAIN,
         )
     ),
-    StringField('InterimCalcs',
+    RecordsField('InterimCalcs',
         widget = StringWidget(
             label = 'Interim Calculations',
             label_msgid = 'label_interim',
@@ -129,9 +130,23 @@ schema = BikaSchema.copy() + Schema((
             i18n_domain = I18N_DOMAIN,
         )
     ),
+    ComputedField('Category',
+        index = 'FieldIndex:brains',
+        expression = 'context.Service.getCategoryName()',
+        widget = ComputedWidget(
+            visible = False,
+        ),
+    ),
     ComputedField('ClientUID',
         index = 'FieldIndex',
         expression = 'context.aq_parent.aq_parent.UID()',
+        widget = ComputedWidget(
+            visible = False,
+        ),
+    ),
+    ComputedField('ClientName',
+        index = 'FieldIndex:brains',
+        expression = 'context.aq_parent.aq_parent.Title()',
         widget = ComputedWidget(
             visible = False,
         ),
@@ -143,9 +158,37 @@ schema = BikaSchema.copy() + Schema((
             visible = False,
         ),
     ),
+    ComputedField('DateReceived',
+        index = 'FieldIndex:brains',
+        expression = 'context.aq_parent.getDateReceived()',
+        widget = ComputedWidget(
+            visible = False,
+        ),
+    ),
+    ComputedField('ClientOrderNumber',
+        index = 'FieldIndex:brains',
+        expression = 'context.aq_parent.getClientOrderNumber()',
+        widget = ComputedWidget(
+            visible = False,
+        ),
+    ),
     ComputedField('ServiceUID',
-        index = 'FieldIndex',
-        expression = 'context.getService().UID()',
+        index = 'FieldIndex:brains',
+        expression = 'context.getService() and context.getService.UID()',
+        widget = ComputedWidget(
+            visible = False,
+        ),
+    ),
+    ComputedField('ServiceName',
+        index = 'FieldIndex:brains',
+        expression = 'context.getService() and context.getService().Title()',
+        widget = ComputedWidget(
+            visible = False,
+        ),
+    ),
+    ComputedField('CategoryName',
+        index = 'FieldIndex:brains',
+        expression = 'context.getService() and context.getService().getCategoryName()',
         widget = ComputedWidget(
             visible = False,
         ),
@@ -164,7 +207,7 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     DateTimeField('DueDate',
-        index = 'DateIndex',
+        index = 'DateIndex:brains',
         widget = DateTimeWidget(
             label = 'Due Date'
         ),
@@ -201,209 +244,205 @@ class Analysis(VariableSchemaSupport, BrowserDefaultMixin, BaseContent):
         s = self.getService()
         return s and s.Title() or ''
 
-    def computeClientName(self):
-        """ Get the name of the client """
-        return self.aq_parent.aq_parent.getName()
+    #def getInterim(self):
+        #""" InterimCalcs field is a self-defining field to cater for
+            #the number of different types of calculations performed on
+            #analyses.
+            #Previously the following specific fields held data for some
+            #of the calculations. With the increase in complexity and
+            #variety, these values are now embedded with others, into the
+            #InterimCalcs field.
+            #TitrationRequired',
+            #TitrationVolume',
+            #TitrationFactor',
+            #WeightRequired',
+            #GrossWeight',
+            #NetWeight',
+            #ContainerWeight',
+            #The Calculation Types are stored in the CalculationType
+            #records, to facilitate addition of new types of calculations
+            #without having to reload the data.
+        #"""
+        #interim = {'tv': None,
+                   #'tf': None,
+                   #'sm': None,
+                   #'nm': None,
+                   #'gm': None,
+                   #'vm': None, }
 
-    def getInterim(self):
-        """ InterimCalcs field is a self-defining field to cater for 
-            the number of different types of calculations performed on 
-            analyses. 
-            Previously the following specific fields held data for some
-            of the calculations. With the increase in complexity and 
-            variety, these values are now embedded with others, into the
-            InterimCalcs field.
-            TitrationRequired',
-            TitrationVolume',
-            TitrationFactor',
-            WeightRequired',
-            GrossWeight',
-            NetWeight',
-            ContainerWeight',
-            The Calculation Types are stored in the CalculationType 
-            records, to facilitate addition of new types of calculations 
-            without having to reload the data.
-        """
-        interim = {'tv': None,
-                   'tf': None,
-                   'sm': None,
-                   'nm': None,
-                   'gm': None,
-                   'vm': None, }
+        #calctype = self.getCalcType()
+        #if calctype == 't':
+            #""" 'vol:fac' """
+            #if self.getInterimCalcs():
+                #temp = self.getInterimCalcs().split(':')
+                #interim['tv'] = temp[0]
+                #interim['tf'] = temp[1]
+        #if calctype in ['wlt', 'rwt']:
+            #""" 'vessel:sample:net' """
+            #if self.getInterimCalcs():
+                #temp = self.getInterimCalcs().split(':')
+                #interim['vm'] = temp[0]
+                #interim['sm'] = temp[1]
+                #interim['nm'] = temp[2]
+        #if calctype in ['wl', 'rw']:
+            #""" 'gross:vessel:net' """
+            #if self.getInterimCalcs():
+                #temp = self.getInterimCalcs().split(':')
+                #interim['gm'] = temp[0]
+                #interim['vm'] = temp[1]
+                #interim['nm'] = temp[2]
 
-        calctype = self.getCalcType()
-        if calctype == 't':
-            """ 'vol:fac' """
-            if self.getInterimCalcs():
-                temp = self.getInterimCalcs().split(':')
-                interim['tv'] = temp[0]
-                interim['tf'] = temp[1]
-        if calctype in ['wlt', 'rwt']:
-            """ 'vessel:sample:net' """
-            if self.getInterimCalcs():
-                temp = self.getInterimCalcs().split(':')
-                interim['vm'] = temp[0]
-                interim['sm'] = temp[1]
-                interim['nm'] = temp[2]
-        if calctype in ['wl', 'rw']:
-            """ 'gross:vessel:net' """
-            if self.getInterimCalcs():
-                temp = self.getInterimCalcs().split(':')
-                interim['gm'] = temp[0]
-                interim['vm'] = temp[1]
-                interim['nm'] = temp[2]
+        #return interim
 
-        return interim
+    #def setInterim(self, TV = None, TF = None, VM = None, SM = None, NM = None, GM = None):
+        #"""
+        #"""
+        #calctype = self.getCalcType()
+        #interim = {}
+        #if calctype == 't':
+            #""" 'vol:fac' """
+            #if self.getInterimCalcs():
+                #temp = self.getInterimCalcs().split(':')
+                #interim['tv'] = temp[0]
+                #interim['tf'] = temp[1]
+            #else:
+                #interim['tv'] = ''
+                #interim['tf'] = ''
+            #if TV:
+                #interim['tv'] = str(TV)
+            #if TF:
+                #interim['tf'] = str(TF)
+            #interim_values = interim['tv'] + ':' + interim['tf']
+            #self.setInterimCalcs(interim_values)
 
-    def setInterim(self, TV = None, TF = None, VM = None, SM = None, NM = None, GM = None):
-        """ 
-        """
-        calctype = self.getCalcType()
-        interim = {}
-        if calctype == 't':
-            """ 'vol:fac' """
-            if self.getInterimCalcs():
-                temp = self.getInterimCalcs().split(':')
-                interim['tv'] = temp[0]
-                interim['tf'] = temp[1]
-            else:
-                interim['tv'] = ''
-                interim['tf'] = ''
-            if TV:
-                interim['tv'] = str(TV)
-            if TF:
-                interim['tf'] = str(TF)
-            interim_values = interim['tv'] + ':' + interim['tf']
-            self.setInterimCalcs(interim_values)
+        #if calctype in ['wlt', 'rwt']:
+            #""" 'vessel:sample:net' """
+            #if self.getInterimCalcs():
+                #temp = self.getInterimCalcs().split(':')
+                #interim['vm'] = temp[0]
+                #interim['sm'] = temp[1]
+                #interim['nm'] = temp[2]
+            #else:
+                #interim['vm'] = ''
+                #interim['sm'] = ''
+                #interim['nm'] = ''
+            #if VM:
+                #interim['vm'] = str(VM)
+            #if SM:
+                #interim['sm'] = str(SM)
+            #if NM:
+                #interim['nm'] = str(NM)
 
-        if calctype in ['wlt', 'rwt']:
-            """ 'vessel:sample:net' """
-            if self.getInterimCalcs():
-                temp = self.getInterimCalcs().split(':')
-                interim['vm'] = temp[0]
-                interim['sm'] = temp[1]
-                interim['nm'] = temp[2]
-            else:
-                interim['vm'] = ''
-                interim['sm'] = ''
-                interim['nm'] = ''
-            if VM:
-                interim['vm'] = str(VM)
-            if SM:
-                interim['sm'] = str(SM)
-            if NM:
-                interim['nm'] = str(NM)
+            #interim_values = interim['vm'] + ':' + interim['sm'] + \
+                            #':' + interim['nm']
+            #self.setInterimCalcs(interim_values)
 
-            interim_values = interim['vm'] + ':' + interim['sm'] + \
-                            ':' + interim['nm']
-            self.setInterimCalcs(interim_values)
+        #if calctype in ['rw', 'wl']:
+            #""" 'gross:vessel:net' """
+            #if self.getInterimCalcs():
+                #temp = self.getInterimCalcs().split(':')
+                #interim['gm'] = temp[0]
+                #interim['vm'] = temp[1]
+                #interim['nm'] = temp[2]
+            #else:
+                #interim['gm'] = ''
+                #interim['vm'] = ''
+                #interim['nm'] = ''
+            #if GM:
+                #interim['gm'] = str(GM)
+            #if VM:
+                #interim['vm'] = str(VM)
+            #if NM:
+                #interim['nm'] = str(NM)
 
-        if calctype in ['rw', 'wl']:
-            """ 'gross:vessel:net' """
-            if self.getInterimCalcs():
-                temp = self.getInterimCalcs().split(':')
-                interim['gm'] = temp[0]
-                interim['vm'] = temp[1]
-                interim['nm'] = temp[2]
-            else:
-                interim['gm'] = ''
-                interim['vm'] = ''
-                interim['nm'] = ''
-            if GM:
-                interim['gm'] = str(GM)
-            if VM:
-                interim['vm'] = str(VM)
-            if NM:
-                interim['nm'] = str(NM)
+            #interim_values = interim['gm'] + ':' + interim['vm'] + \
+                            #':' + interim['nm']
+            #self.setInterimCalcs(interim_values)
 
-            interim_values = interim['gm'] + ':' + interim['vm'] + \
-                            ':' + interim['nm']
-            self.setInterimCalcs(interim_values)
+    #def getTitrationVolume(self):
+        #if self.getCalcType() in ['t']:
+            #interim = self.getInterim()
+            #return interim['tv']
+        #else:
+            #return None
 
-    def getTitrationVolume(self):
-        if self.getCalcType() in ['t']:
-            interim = self.getInterim()
-            return interim['tv']
-        else:
-            return None
+    #def setTitrationVolume(self, value):
+        #if value is None:
+            #self.setInterim(TV = ' ')
+        #else:
+            #self.setInterim(TV = value)
+        #return
 
-    def setTitrationVolume(self, value):
-        if value is None:
-            self.setInterim(TV = ' ')
-        else:
-            self.setInterim(TV = value)
-        return
+    #def getTitrationFactor(self):
+        #if self.getCalcType() in ['t']:
+            #interim = self.getInterim()
+            #return interim['tf']
+        #else:
+            #return None
 
-    def getTitrationFactor(self):
-        if self.getCalcType() in ['t']:
-            interim = self.getInterim()
-            return interim['tf']
-        else:
-            return None
-
-    def setTitrationFactor(self, value):
-        if value is None:
-            self.setInterim(TF = ' ')
-        else:
-            self.setInterim(TF = value)
-        return
+    #def setTitrationFactor(self, value):
+        #if value is None:
+            #self.setInterim(TF = ' ')
+        #else:
+            #self.setInterim(TF = value)
+        #return
 
 
-    def getSampleMass(self):
-        if self.getCalcType() in ['rwt', 'wlt']:
-            interim = self.getInterim()
-            return interim['sm']
-        else:
-            return None
+    #def getSampleMass(self):
+        #if self.getCalcType() in ['rwt', 'wlt']:
+            #interim = self.getInterim()
+            #return interim['sm']
+        #else:
+            #return None
 
-    def setSampleMass(self, value):
-        if value is None:
-            self.setInterim(SM = ' ')
-        else:
-            self.setInterim(SM = value)
-        return
+    #def setSampleMass(self, value):
+        #if value is None:
+            #self.setInterim(SM = ' ')
+        #else:
+            #self.setInterim(SM = value)
+        #return
 
-    def getGrossMass(self):
-        if self.getCalcType() in ['rw', 'wl']:
-            interim = self.getInterim()
-            return interim['gm']
-        else:
-            return None
+    #def getGrossMass(self):
+        #if self.getCalcType() in ['rw', 'wl']:
+            #interim = self.getInterim()
+            #return interim['gm']
+        #else:
+            #return None
 
-    def setGrossMass(self, value):
-        if value is None:
-            self.setInterim(GM = ' ')
-        else:
-            self.setInterim(GM = value)
-        return
+    #def setGrossMass(self, value):
+        #if value is None:
+            #self.setInterim(GM = ' ')
+        #else:
+            #self.setInterim(GM = value)
+        #return
 
-    def getNetMass(self):
-        if self.getCalcType() in ['rw', 'rwt', 'wl', 'wlt']:
-            interim = self.getInterim()
-            return interim['nm']
-        else:
-            return None
+    #def getNetMass(self):
+        #if self.getCalcType() in ['rw', 'rwt', 'wl', 'wlt']:
+            #interim = self.getInterim()
+            #return interim['nm']
+        #else:
+            #return None
 
-    def setNetMass(self, value):
-        if value is None:
-            self.setInterim(NM = ' ')
-        else:
-            self.setInterim(NM = value)
-        return
+    #def setNetMass(self, value):
+        #if value is None:
+            #self.setInterim(NM = ' ')
+        #else:
+            #self.setInterim(NM = value)
+        #return
 
-    def getVesselMass(self):
-        if self.getCalcType() in ['rw', 'rwt', 'wl', 'wlt']:
-            interim = self.getInterim()
-            return interim['vm']
-        else:
-            return None
+    #def getVesselMass(self):
+        #if self.getCalcType() in ['rw', 'rwt', 'wl', 'wlt']:
+            #interim = self.getInterim()
+            #return interim['vm']
+        #else:
+            #return None
 
-    def setVesselMass(self, value):
-        if value is None:
-            self.setInterim(VM = ' ')
-        else:
-            self.setInterim(VM = value)
-        return
+    #def setVesselMass(self, value):
+        #if value is None:
+            #self.setInterim(VM = ' ')
+        #else:
+            #self.setInterim(VM = value)
+        #return
 
     def checkHigherDependancies(self):
         if self._affects_other_analysis:

@@ -14,7 +14,7 @@ from zope.interface.declarations import implements
 class DepartmentsView(BikaListingView):
     implements(IFolderContentsView)
     contentFilter = {'portal_type': 'Department'}
-    content_add_buttons = {_('Department'): "createObject?type_name=Department"}
+    content_add_actions = {_('Department'): "createObject?type_name=Department"}
     title = _("Lab Departments")
     description = ""
     show_editable_border = False

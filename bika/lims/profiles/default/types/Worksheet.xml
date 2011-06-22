@@ -40,24 +40,47 @@
     visible="False">
   <permission value="List folder contents"/>
  </action>
+
  <action title="Analyses" action_id="analyses" category="object"
     condition_expr="" icon_expr="" link_target=""
-    url_expr="string:${object_url}/worksheet" visible="True">
-  <permission value="List folder contents"/>
+    url_expr="string:${object_url}/worksheet/manage_results" visible="True">
+  <permission value="bika.lims: Manage Worksheets"/>
  </action>
+
+  <action title="Add Analysis" action_id="add_analyses" category="object"
+    condition_expr="" icon_expr="" link_target=""
+    url_expr="string:${object_url}/worksheet/add_analysis" visible="True">
+  <permission value="bika.lims: Manage Worksheets"/>
+ </action>
+
+  <action title="Add Blank" action_id="add_blank" category="object"
+    condition_expr="" icon_expr="" link_target=""
+    url_expr="string:${object_url}/worksheet/add_blank" visible="True">
+  <permission value="bika.lims: Manage Worksheets"/>
+ </action>
+
+  <action title="Add Control" action_id="add_control" category="object"
+    condition_expr="" icon_expr="" link_target=""
+    url_expr="string:${object_url}/worksheet/add_control" visible="True">
+  <permission value="bika.lims: Manage Worksheets"/>
+ </action>
+
+  <action title="Add Duplicate" action_id="add_duplicate" category="object"
+    condition_expr="" icon_expr="" link_target=""
+    url_expr="string:${object_url}/worksheet/add_duplicate" visible="True">
+  <permission value="bika.lims: Manage Worksheets"/>
+ </action>
+
+  <action title="Attachments" action_id="worksheet_attachments" category="object"
+    condition_expr="" icon_expr="" link_target=""
+    url_expr="string:${object_url}/worksheet/worksheet_attachments" visible="True">
+  <permission value="bika.lims: Manage Worksheets"/>
+ </action>
+
  <action title="Log" action_id="log" category="object" condition_expr=""
     icon_expr="" link_target="" url_expr="string:${object_url}/status_log"
     visible="True">
   <permission value="bika.lims: Manage Bika"/>
  </action>
- <action title="Delete" action_id="delete_analyses" category="folder_buttons"
-    condition_expr="" icon_expr="" link_target=""
-    url_expr="string:deleteAnalyses:method" visible="True">
-  <permission value="bika.lims: Delete analyses"/>
- </action>
- <action title="Submit" action_id="submit_results" category="folder_buttons"
-    condition_expr="" icon_expr="" link_target=""
-    url_expr="string:submitResults:method" visible="True">
-  <permission value="bika.lims: Submit results"/>
- </action>
+
 </object>

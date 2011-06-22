@@ -14,7 +14,7 @@ from zope.interface.declarations import implements
 class AnalysisServicesView(BikaListingView):
     implements(IFolderContentsView)
     contentFilter = {'portal_type': 'AnalysisService'}
-    content_add_buttons = {_('Analysis Service'): "createObject?type_name=AnalysisService"}
+    content_add_actions = {_('Analysis Service'): "createObject?type_name=AnalysisService"}
     title = _("Analysis Services")
     show_editable_border = False
     show_filters = False

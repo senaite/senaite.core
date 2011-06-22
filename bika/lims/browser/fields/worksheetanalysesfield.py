@@ -19,5 +19,5 @@ class WorksheetAnalysesField(RecordsField):
 
 registerField(WorksheetAnalysesField,
               title = "Worksheet Analyses",
-              description = "Used for storing worksheet analyses",
+              description = "Used for storing worksheet analyses layout",
               )

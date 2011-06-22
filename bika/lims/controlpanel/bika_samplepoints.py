@@ -16,7 +16,7 @@ from zope.interface.declarations import implements
 class SamplePointsView(BikaListingView):
     implements(IFolderContentsView)
     contentFilter = {'portal_type': 'SamplePoint'}
-    content_add_buttons = {_('Sample Point'): "createObject?type_name=SamplePoint"}
+    content_add_actions = {_('Sample Point'): "createObject?type_name=SamplePoint"}
     title = _("Sample Points")
     description = ""
     show_editable_border = False

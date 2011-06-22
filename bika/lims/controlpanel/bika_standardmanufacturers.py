@@ -16,7 +16,7 @@ from zope.interface.declarations import implements
 class StandardManufacturersView(BikaListingView):
     implements(IFolderContentsView)
     contentFilter = {'portal_type': 'StandardManufacturer'}
-    content_add_buttons = {_('Standard Manufacturer'): "createObject?type_name=StandardManufacturer"}
+    content_add_actions = {_('Standard Manufacturer'): "createObject?type_name=StandardManufacturer"}
     title = _("Standard Manufacturers")
     description = ""
     show_editable_border = False

@@ -2,16 +2,16 @@ from DateTime import DateTime
 from DocumentTemplate import sequence
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from Products.Five.browser import BrowserView
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.interfaces import IWorksheet
 from plone.app.content.browser.interfaces import IFolderContentsView
 from zope.interface import implements
-from zope.publisher.browser import BrowserView
 
 class WorksheetFolderView(BikaListingView):
     contentFilter = {'portal_type': 'Worksheet'}
-    content_add_buttons = {_('Worksheet'): "worksheet_add"}
+    content_add_actions = {_('Worksheet'): "worksheet_add"}
     show_editable_border = False
     show_table_only = False
     show_sort_column = False
@@ -88,7 +88,7 @@ class WorksheetFolderView(BikaListingView):
             items[x]['getOwnerUserID'] = obj.getOwnerUserID()
             items[x]['CreationDate'] = obj.CreationDate() and self.context.toLocalizedTime(obj.CreationDate(), long_format = 0) or ''
             items[x]['getLinkedWorksheet'] = obj.getLinkedWorksheet() and ",".join(obj.getLinkedWorksheet()) or ''
-            items[x]['links'] = {'getNumber': items[x]['url']}
+            items[x]['links'] = {'getNumber': items[x]['url'] + "/manage_results"}
 
         return items
 
@@ -221,21 +221,6 @@ class WorksheetAddView(BrowserView):
         dest = ws.absolute_url()
         self.request.RESPONSE.redirect(dest)
 
-class WorksheetView(BrowserView):
-    template = ViewPageTemplateFile("templates/worksheet.pt")
-
-    def __call__(self):
-        return self.template()
-
-    def tabindex(self):
-        i = 0
-        while True:
-            i += 1
-            yield i
-
-    def now(self):
-        return DateTime()
-
 class WorksheetManageResultsView(BrowserView):
     template = ViewPageTemplateFile("templates/worksheet_manage_results.pt")
 
@@ -251,38 +236,43 @@ class WorksheetManageResultsView(BrowserView):
     def now(self):
         return DateTime()
 
+    def WorksheetLayout(self):
+        return self.context.getWorksheetLayout()
+
 class WorksheetAddAnalysisView(BikaListingView):
-    content_add_buttons = {}
-    show_editable_border = False
-    show_table_only = True
-    show_sort_column = False
+    content_add_actions = {}
+    contentFilter = {'portal_type': 'Analysis',
+                     'review_state':'sample_received',
+                     'path':{'query': '/', 'depth':10}, # XXX path should not be needed?
+						# XXX limit resultset
+                     }
+    show_editable_border = True
+    show_sort_column = True
     show_select_row = False
     show_select_column = True
     show_filters = True
     batch = True
-    pagesize = 50
+    pagesize = 20
 
     columns = {
-        'Client': {'title': _('Client')},
-        'Order': {'title': _('Order')},
-        'RequestID': {'title': _('Request ID')},
-        'Category': {'title': _('Category')},
-        'Analysis': {'title': _('Analysis')},
-        'DateReceived': {'title': _('Analysis')},
-        'Due': {'title': _('Analysis')},
+        'getClientName': {'title': _('Client')},
+        'getClientOrderNumber': {'title': _('Order')},
+        'getRequestID': {'title': _('Request ID')},
+        'getCategoryName': {'title': _('Category')},
+        'getServiceName': {'title': _('Analysis')},
+        'getDateReceived': {'title': _('Date Received')},
+        'getDueDate': {'title': _('Due Date')},
     }
     review_states = [
         {'title': _('All'), 'id':'all',
-         'columns':['Client',
-                    'Order',
-                    'RequestID',
-                    'Category',
-                    'Analysis',
-                    'DateReceived',
-                    'Due'],
-         'buttons':[{'cssclass': 'context',
-                     'title': _('Add to worksheet'),
-                     'url': ''}]
+         'transitions': ['assign'],
+         'columns':['getClientName',
+                    'getClientOrderNumber',
+                    'getRequestID',
+                    'getCategoryName',
+                    'getServiceName',
+                    'getDateReceived',
+                    'getDueDate'],
         },
     ]
 
@@ -290,26 +280,40 @@ class WorksheetAddAnalysisView(BikaListingView):
         items = BikaListingView.folderitems(self)
         for x in range(len(items)):
             if not items[x].has_key('brain'): continue
-            obj = items[x]['brain'].getObject()
-            items[x]['getNumber'] = obj.getNumber()
-            items[x]['getOwnerUserID'] = obj.getOwnerUserID()
-            items[x]['CreationDate'] = obj.CreationDate() and self.context.toLocalizedTime(obj.CreationDate(), long_format = 0) or ''
-            items[x]['getLinkedWorksheet'] = obj.getLinkedWorksheet() and ",".join(obj.getLinkedWorksheet()) or ''
-            items[x]['links'] = {'getNumber': items[x]['url']}
-
+            items[x]['getDateReceived'] = self.context.toLocalizedTime(items[x]['getDateReceived'], long_format = 0)
+            items[x]['getDueDate'] = self.context.toLocalizedTime(items[x]['getDueDate'], long_format = 0)
         return items
+
+    def form_submit(self, form):
+        # the analyses have been set to 'assigned' before this function is invoked.
+        # here, we just want to add the affected analyses to our worksheet
+        pc = getToolByName(self.context, 'portal_catalog')
+        for path in form['paths']:
+            # get selected analysis object from catalog
+            item_id = path.split("/")[-1]
+            item_path = path.replace("/"+item_id, '')
+            analysis = pc(id=item_id, path={'query':item_path, 'depth':1})[0].getObject()
+            # add this item to worksheet Analyses reference field
+            analyses = self.context.getAnalyses()
+            analyses.append(analysis)
+            self.context.setAnalyses(analyses)
+            # add this item to WorksheetLayout field in the next available slot
+            layout = self.context.getWorksheetLayout()
+            layout.append({'uid':analysis.UID(), 'type':'a', 'pos':len(layout), 'key':analysis.getAnalysisKey()})
+            self.context.setWorksheetLayout(layout)
+        self.request.RESPONSE.redirect(self.context.absolute_url() + "/worksheet_manage_results")
 
 class WorksheetAddBlankView(BikaListingView):
     contentFilter = {'portal_type': 'Analysis', 'review_state':'sample_received'}
-    content_add_buttons = {}
-    show_editable_border = False
+    content_add_actions = {}
+    show_editable_border = True
     show_table_only = True
     show_sort_column = False
     show_select_row = False
     show_select_column = True
     show_filters = True
     batch = True
-    pagesize = 50
+    pagesize = 20
 
     columns = {
         'Client': {'title': _('Client')},
@@ -350,15 +354,15 @@ class WorksheetAddBlankView(BikaListingView):
 
 class WorksheetAddControlView(BikaListingView):
     contentFilter = {'portal_type': 'Analysis', 'review_state':'sample_received'}
-    content_add_buttons = {}
-    show_editable_border = False
+    content_add_actions = {}
+    show_editable_border = True
     show_table_only = True
     show_sort_column = False
     show_select_row = False
     show_select_column = True
     show_filters = True
     batch = True
-    pagesize = 50
+    pagesize = 20
 
     columns = {
         'Client': {'title': _('Client')},
@@ -399,15 +403,15 @@ class WorksheetAddControlView(BikaListingView):
 
 class WorksheetAddDuplicateView(BikaListingView):
     contentFilter = {'portal_type': 'Analysis', 'review_state':'sample_received'}
-    content_add_buttons = {}
-    show_editable_border = False
+    content_add_actions = {}
+    show_editable_border = True
     show_table_only = True
     show_sort_column = False
     show_select_row = False
     show_select_column = True
     show_filters = True
     batch = True
-    pagesize = 50
+    pagesize = 20
 
     columns = {
         'Client': {'title': _('Client')},

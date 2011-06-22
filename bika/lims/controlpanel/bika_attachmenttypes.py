@@ -16,7 +16,7 @@ from zope.interface.declarations import implements
 class AttachmentTypesView(BikaListingView):
     implements(IFolderContentsView)
     contentFilter = {'portal_type': 'AttachmentType'}
-    content_add_buttons = {_('Attachment Type'): "createObject?type_name=AttachmentType"}
+    content_add_actions = {_('Attachment Type'): "createObject?type_name=AttachmentType"}
     title = _("Attachment Types")
     show_editable_border = False
     show_filters = False

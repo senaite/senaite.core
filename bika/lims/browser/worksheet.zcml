@@ -22,15 +22,7 @@
 
     <browser:page
       for="bika.lims.interfaces.IWorksheet"
-      name="worksheet"
-      class="bika.lims.browser.worksheet.WorksheetView"
-      permission="zope.Public"
-      layer="bika.lims.interfaces.IBikaLIMS"
-    />
-
-    <browser:page
-      for="bika.lims.interfaces.IWorksheet"
-      name="worksheet_manage_results"
+      name="manage_results"
       class="bika.lims.browser.worksheet.WorksheetManageResultsView"
       permission="zope.Public"
       layer="bika.lims.interfaces.IBikaLIMS"
@@ -38,7 +30,7 @@
 
     <browser:page
       for="bika.lims.interfaces.IWorksheet"
-      name="worksheet_add_analysis"
+      name="add_analysis"
       class="bika.lims.browser.worksheet.WorksheetAddAnalysisView"
       permission="zope.Public"
       layer="bika.lims.interfaces.IBikaLIMS"
@@ -46,7 +38,7 @@
 
     <browser:page
       for="bika.lims.interfaces.IWorksheet"
-      name="worksheet_add_blank"
+      name="add_blank"
       class="bika.lims.browser.worksheet.WorksheetAddBlankView"
       permission="zope.Public"
       layer="bika.lims.interfaces.IBikaLIMS"
@@ -54,7 +46,7 @@
 
     <browser:page
       for="bika.lims.interfaces.IWorksheet"
-      name="worksheet_add_control"
+      name="add_control"
       class="bika.lims.browser.worksheet.WorksheetAddControlView"
       permission="zope.Public"
       layer="bika.lims.interfaces.IBikaLIMS"
@@ -62,7 +54,7 @@
 
     <browser:page
       for="bika.lims.interfaces.IWorksheet"
-      name="worksheet_add_duplicate"
+      name="add_duplicate"
       class="bika.lims.browser.worksheet.WorksheetAddDuplicateView"
       permission="zope.Public"
       layer="bika.lims.interfaces.IBikaLIMS"

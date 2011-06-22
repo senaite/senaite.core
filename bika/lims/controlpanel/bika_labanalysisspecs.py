@@ -15,7 +15,7 @@ from zope.interface.declarations import implements
 class LabAnalysisSpecsView(BikaListingView):
     implements(IFolderContentsView)
     contentFilter = {'portal_type': 'LabAnalysisSpec'}
-    content_add_buttons = {_('Analysis Specification'): "createObject?type_name=LabAnalysisSpec"}
+    content_add_actions = {_('Analysis Specification'): "createObject?type_name=LabAnalysisSpec"}
     title = _("Analysis Specs")
     description = _("Set up the laboratory analysis service results specifications")
     show_editable_border = False

@@ -100,6 +100,9 @@
  <index name="getDateReceieved" meta_type="FieldIndex">
   <indexed_attr value="getDateReceived"/>
  </index>
+ <index name="getDueDate" meta_type="FieldIndex">
+  <indexed_attr value="getDueDate"/>
+ </index>
  <index name="getEmailAddress" meta_type="FieldIndex">
   <indexed_attr value="getEmailAddress"/>
  </index>
@@ -156,6 +159,9 @@
  </index>
  <index name="getCategoryName" meta_type="FieldIndex">
   <indexed_attr value="getCategoryName"/>
+ </index>
+ <index name="getServiceName" meta_type="FieldIndex">
+  <indexed_attr value="getServiceName"/>
  </index>
  <index name="getPointOfCapture" meta_type="FieldIndex">
   <indexed_attr value="getPointOfCapture"/>
@@ -234,6 +240,7 @@
  <column value="expires"/>
  <column value="getBusinessPhone"/>
  <column value="getClientID"/>
+ <column value="getClientName"/>
  <column value="getClientOrderNumber"/>
  <column value="getClientReference"/>
  <column value="getClientSampleID"/>
@@ -241,6 +248,7 @@
  <column value="getDateImported"/>
  <column value="getDatePublished"/>
  <column value="getDateReceived"/>
+ <column value="getDueDate"/>
  <column value="getEmailAddress"/>
  <column value="getFax"/>
  <column value="getFullname"/>
@@ -259,6 +267,7 @@
  <column value="getTextTitle"/>
  <column value="getCategoryUID"/>
  <column value="getCategoryName"/>
+ <column value="getServiceName"/>
  <column value="getPointOfCapture"/>
  <column value="getUnit"/>
  <column value="getPrice"/>

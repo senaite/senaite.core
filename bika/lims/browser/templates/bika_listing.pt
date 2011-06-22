@@ -22,11 +22,11 @@
           </td>
           <td
             align="right"
-            tal:repeat="add_item python:view.content_add_buttons.keys()">
+            tal:repeat="add_item python:view.content_add_actions.keys()">
             <form method="post"
               tal:attributes="name string:folderContentsForm_add_${add_item};
                               id string:folderContentsForm_add_${add_item};
-                              action python: view.content_add_buttons[add_item];">
+                              action python: view.content_add_actions[add_item];">
               <input
                 class="standalone add"
                 type="submit"
