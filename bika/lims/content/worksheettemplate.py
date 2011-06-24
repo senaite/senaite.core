@@ -21,19 +21,18 @@ class WorksheetTemplateLayoutWidget(RecordsWidget):
     })
 
     security.declarePublic('get_template_rows')
-    def get_template_rows(self, num_positions, template_rows):
-        try:
-            num_pos = int(num_positions)
-        except ValueError:
-            num_pos = 0
+    def get_template_rows(self, num_positions, current_field_value):
+        try: num_pos = int(num_positions)
+        except ValueError: num_pos = 0
+
         rows = []
         i = 1
-        if template_rows:
-            for t_row in template_rows:
+        if current_field_value:
+            for row in current_field_value:
                 if num_pos > 0:
                     if i > num_pos:
                         break
-                rows.append(t_row)
+                rows.append(row)
                 i = i + 1
         else:
             if num_pos == 0:

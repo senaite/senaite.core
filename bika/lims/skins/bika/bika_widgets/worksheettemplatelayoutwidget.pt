@@ -15,23 +15,26 @@
    <metal:use use-macro="field_macro | context/widgets/field/macros/edit">
     <metal:body_macro fill-slot="widget_body"
       tal:define="
+        fieldname python: field.getName();
+        field python: context.Schema()[fieldname];
+        accessor python: field.getAccessor(context);
+        current_field_value accessor;
         sort_on python:(('Title', 'nocase', 'asc'),);
         standardstocks python:[p.getObject() for p in context.portal_catalog(portal_type='StandardStock')];
         standardstocks python:sequence.sort(standardstocks, sort_on);
         types context/getAnalysisTypes;
-        num_positions request/NoOfPositions | python:0; 
+        num_positions request/NoOfPositions | python:0;
         num_positions python:int(num_positions);
-        current_rows field/getRow;
-        display_rows python:widget.get_template_rows(num_positions, current_rows);
+        display_rows python:widget.get_template_rows(num_positions, current_field_value);
         analyses python:[s.UID() for s in context.getService()]">
 
        <label i18n:translate="label_numpositions">Number of Positions</label>
-       <input name="NoOfPositions" 
-              size="3" 
+       <input name="NoOfPositions"
+              size="3"
               value=""
               tal:attributes="value request/NoOfPositions | python:len(display_rows)"/>
        <input type="submit" name="form.button.more"
-              class="context" 
+              class="context"
               i18n:attributes="value"
               value="Reset" />
 
@@ -51,19 +54,19 @@
 
           <td>
             <span tal:content="row/pos"/>
-            <input  type="hidden" 
-                    tal:attributes="value row/pos" 
+            <input  type="hidden"
+                    tal:attributes="value row/pos"
                     name="Row.pos:records:ignore_empty"/>
           </td>
 
           <td>
-            <select   name="Row.type:records:ignore_empty" 
-                      class="analysis_type" 
+            <select name="Row.type:records:ignore_empty"
+                      class="analysis_type"
                       tal:attributes="pos row/pos;">
               <tal:item
                 tal:define="vocab types"
                 tal:repeat="item vocab">
-                <tal:selected_type 
+                <tal:selected_type
                     tal:condition="python:item == row['type']"
                     tal:define="global selected_type row/type"/>
                 <option selected="selected"
@@ -93,10 +96,10 @@
           </td>
 
           <td>
-            <div id="" tal:define="num_rows repeat/row/length">    
-                <select name="Row.dup:records:ignore_empty" 
+            <div id="" tal:define="num_rows repeat/row/length">
+                <select name="Row.dup:records:ignore_empty"
                         tal:attributes="style python: selected_type == 'd' and 'display:inline;;' or 'display:none;;';
-                                        class string:dup_${row/pos};"> 
+                                        class string:dup_${row/pos};">
                     <tal:item tal:repeat="i python:range(1,(num_rows+1))">
                         <option selected="selected"
                             tal:condition="python:i <> repeat['row'].number()"

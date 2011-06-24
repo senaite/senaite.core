@@ -90,21 +90,18 @@
             <th i18n:translate="label_clientreference">Client Reference</th>
             <td class="left"
                 tal:content="sample/getClientReference">R001</td>
-            <th i18n:translate="label_clientsampleid">Client Sample ID
-            </th>
+            <th i18n:translate="label_clientsampleid">Client Sample ID</th>
             <td class="left"
                 tal:content="sample/getClientSampleID">S001</td>
           </tr>
+
           <tr>
             <th i18n:translate="label_sampletype">Sample type</th>
-            <td class="left"
-                tal:content="sampletype/Title|nothing">sample type</td>
-            <th i18n:translate="label_samplepoint">Sample point
-            </th>
-            <td class="left"
-                tal:define="samplepoint sample/getSamplePoint"
-                tal:content="samplepoint/Title|nothing">sample point</td>
+            <td class="left" tal:content="context/getSampleTypeTitle">sample type</td>
+            <th i18n:translate="label_samplepoint">Sample point</th>
+            <td class="left" tal:content="context/getSamplePointTitle">sample point</td>
           </tr>
+
           <tr>
             <th i18n:translate="label_status">Status
             </th>

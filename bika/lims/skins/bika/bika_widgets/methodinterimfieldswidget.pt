@@ -1,10 +1,10 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
-   xmlns:tal="http://xml.zope.org/namespaces/tal"
-   xmlns:metal="http://xml.zope.org/namespaces/metal"
-   xmlns:i18n="http://xml.zope.org/namespaces/i18n"
-   i18n:domain="plone">
- <head><title></title></head>
- <body>
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  i18n:domain="plone">
+<head><title></title></head>
+<body>
   <metal:view_macro define-macro="view">
      <table class="listing nosort">
 
@@ -14,7 +14,11 @@
   <metal:edit_macro define-macro="edit">
     <metal:use use-macro="field_macro | context/widgets/field/macros/edit">
       <metal:body_macro fill-slot="widget_body"
-        tal:define="interim_fields field/getInterimFields">
+        tal:define="
+        fieldname python: field.getName();
+        field python: context.Schema()[fieldname];
+        accessor python: field.getAccessor(context);
+        current_field_value accessor;"
 
         <table class="listing">
 
@@ -26,16 +30,29 @@
             </tr>
           </thead>
 
-          <tbody tal:repeat="interim_field interim_fields">
-            <tr tal:attributes="id string:interim_field_${interim_field/name}">
-              <td><input type="text" name="interim_field_name:list" tal:attributes="value interim_field/name"/></td>
-              <td><input type="text" name="interim_field_type:list" tal:attributes="value interim_field/type"/></td>
-              <td><input type="text" name="interim_field_default:list" tal:attributes="value interim_field/default"/></td>
+          <tbody id="interim_fields_tbody">
+            <tr tal:repeat="interimfield current_field_value"
+                class="interimfield">
+              <td>
+                <input type="text" tal:attributes="
+                    value interimfield/name;
+                    name string:${fieldname}.name:records:ignore_empty"/>
+              </td>
+              <td>
+                <input type="text" tal:attributes="
+                    value interimfield/type;
+                    name string:${fieldname}.type:records:ignore_empty"/>
+              </td>
+              <td>
+                <input type="text" tal:attributes="
+                    value interimfield/default;
+                    name string:${fieldname}.default:records:ignore_empty"/>
+              </td>
             </tr>
-            <tr id="interim_field_new">
-              <td><input type="text" name="interim_field_name:list"/></td>
-              <td><input type="text" name="interim_field_type:list"/></td>
-              <td><input type="text" name="interim_field_default:list"/></td>
+            <tr class="interimfield">
+              <td><input type="text" tal:attributes="name string:${fieldname}.name:records:ignore_empty"/></td>
+              <td><input type="text" tal:attributes="name string:${fieldname}.type:records:ignore_empty"/></td>
+              <td><input type="text" tal:attributes="name string:${fieldname}.default:records:ignore_empty"/></td>
             </tr>
           </tbody>
 

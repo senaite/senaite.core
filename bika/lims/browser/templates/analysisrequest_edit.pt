@@ -16,7 +16,7 @@
 
 <body>
 
-  <div metal:fill-slot="main" 
+  <div metal:fill-slot="main"
     tal:define="portal context/@@plone_portal_state/portal;
                 plone_view context/@@plone;
                 tabindex view/tabindex;
@@ -26,8 +26,8 @@
     <h1 i18n:translate="heading_request_new_analyses" tal:condition="python:not edit">Request new analyses</h1>
     <h1 tal:content="here/title_or_id" tal:condition="edit"/>
 
-    <form id="analysisrequest_edit_form" 
-          name="analysisrequest_edit_form" 
+    <form id="analysisrequest_edit_form"
+          name="analysisrequest_edit_form"
           method="POST">
 
       <input type="hidden" name="submitted" value="1" />
@@ -37,10 +37,10 @@
       <!-- member discount percentage if applicable -->
       <input type="hidden" id="member_discount" name="member_discount"
              tal:attributes="value here/bika_settings/getMemberDiscount"
-             tal:condition="here/getMemberDiscountApplies"/> 
+             tal:condition="here/getMemberDiscountApplies"/>
 
       <!-- col_count goes here for the jquery expanding services rows to know how to print themselves -->
-      <input type="hidden" id="col_count" name="col_count" 
+      <input type="hidden" id="col_count" name="col_count"
              tal:attributes="value view/col_count" />
 
       <!-- jquery dialogs -->
@@ -66,10 +66,10 @@
                 tal:attributes="colspan view/col_count;tabindex tabindex/next;"
                 tal:define="this_contact python:edit and context.getContactUID();">
               <select name="Contact" id="contact">
-                <tal:item 
+                <tal:item
                   tal:define="vocab here/getContactsDisplayList"
                   tal:repeat="item vocab">
-                  <option 
+                  <option
                     tal:attributes="
                       value item;
                       selected python: item in (this_contact, ) and 'selected' or '';"
@@ -78,10 +78,10 @@
                 </tal:item>
               </select>
               <!-- Contact CCs-->
-              <input type="button" 
+              <input type="button"
                 id="open_cc_browser"
-                value="cc" 
-                i18n:attributes="value" 
+                value="cc"
+                i18n:attributes="value"
                 i18n:domain="bika"
                 tal:attributes="tabindex tabindex/next;"/>
               <input DISABLED class="noborder" value="" id="cc_titles"
@@ -95,7 +95,7 @@
             <th colspan="2" i18n:translate="label_cc_email">cc emails</th>
             <td>&nbsp;</td>
             <td class="contact" tal:attributes="colspan view/col_count">
-              <input style="width:98%" type="text" id="cc_emails" name="CCEmails" 
+              <input style="width:98%" type="text" id="cc_emails" name="CCEmails"
                 tal:attributes="value python:hasattr(context, 'CCEmails') and context.CCEmails or '';
                                 tabindex tabindex/next;"/>
             </td>
@@ -160,7 +160,7 @@
             <tal:block repeat="column python:range(view.col_count)">
               <td tal:define="input_name string:ar.${column}.${field_name}:ignore_empty:record;
                               input_id string:ar_${column}_${field_name}">
-                <input size="10" type='text' 
+                <input size="10" type='text'
                   tal:attributes="
                     id input_id;name input_name;
                     tabindex python:column*100+tabindex.next();
@@ -208,7 +208,7 @@
           <tr tal:define="field_name string:DateSampled">
             <th colspan="2">
               <span i18n:translate="label_datesampled">Date sampled</span>&nbsp;
-              <span class="fieldRequired" 
+              <span class="fieldRequired"
                     tal:condition="python:not edit"/>
             </th>
             <td>
@@ -248,7 +248,7 @@
             <tal:block repeat="column python:range(view.col_count)">
               <td tal:define="input_name string:ar.${column}.${field_name}:ignore_empty:record;
                               input_id string:ar_${column}_${field_name}">
-                <a href="" 
+                <a href=""
                     tal:attributes="href sample/getSampleID"
                     tal:content="sample/getSampleID">S-00001</a>
               </td>
@@ -272,7 +272,7 @@
                     id input_id;name input_name;
                     tabindex python:column*100+tabindex.next();"/>
                 <span tal:condition="edit"
-                  tal:content="python:here.getSample().getSampleType().Title()"/>
+                  tal:content="python:context.getSamplePointTitle()"/>
               </td>
             </tal:block>
           </tr>
@@ -291,7 +291,7 @@
                     id input_id;name input_name;
                     tabindex python:column*100+tabindex.next();"/>
                 <span tal:condition="edit"
-                  tal:content="python:here.getSample().getSamplePoint().Title()"/>
+                  tal:content="python:context.getSamplePointTitle()"/>
               </td>
             </tal:block>
           </tr>
@@ -305,7 +305,7 @@
             <tal:block repeat="column python:range(view.col_count)">
               <td tal:define="input_name string:ar.${column}.${field_name}:ignore_empty:record;
                               input_id string:ar_${column}_${field_name}">
-                <input type="checkbox" 
+                <input type="checkbox"
                   class="cb"
                   value="checked"
                   tal:attributes="
@@ -326,7 +326,7 @@
             <tal:block repeat="column python:range(view.col_count)">
               <td tal:define="input_name string:ar.${column}.${field_name}:ignore_empty:record;
                               input_id string:ar_${column}_${field_name}">
-                <input type="checkbox" 
+                <input type="checkbox"
                   class="cb"
                   value="checked"
                   tal:attributes="
@@ -339,7 +339,7 @@
           </tr>
         </thead>
 
-        <tbody tal:define="cats view/Categories; 
+        <tbody tal:define="cats view/Categories;
                            selectedservices python:edit and view.SelectedServices() or '';">
 
           <input type="hidden" id="selectedservices" tal:attributes="value python:','.join([s[1] for s in selectedservices]);"/>
@@ -388,7 +388,7 @@
               </td>
             </tal:block>
           </tr>
- 
+
             <tr>
             <th colspan="2"><b i18n:translate="label_vat">VAT</b></th>
             <th style="text-align:center" i18n:translate="label_currency_abbreviation">R</th>
@@ -437,10 +437,10 @@
         </tfoot>
 
       </table>
-    
+
       <table><tr><td>
         <input class="context allowMultiSubmit"
-               type="submit" 
+               type="submit"
                value="Submit"/>
       </td><td>
         <span id="spinner" style="display:none">
@@ -459,7 +459,7 @@
         <p tal:condition="python:context.bika_settings.laboratory.getLaboratoryAccredited()">
           <img src="" tal:attributes="src string:${portal/absolute_url}/images/accredited.png">
           <span i18n:translate="disclaimer_accred">
-            Methods included in the <tal:block replace="here/bika_settings/laboratory/AccreditationBody" i18n:name="accreditation_body"/> 
+            Methods included in the <tal:block replace="here/bika_settings/laboratory/AccreditationBody" i18n:name="accreditation_body"/>
             schedule of Accreditation for this Laboratory. Analysis remarks are not accredited
           </span>
         </p>
