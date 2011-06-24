@@ -6,6 +6,7 @@ from Products.ATContentTypes.content import schemata
 from Products.ATExtensions.ateapi import DateTimeField, DateTimeWidget
 from Products.Archetypes import atapi
 from Products.Archetypes.config import REFERENCE_CATALOG
+from Products.CMFDynamicViewFTI.browserdefault import BrowserDefaultMixin
 from Products.Archetypes.public import *
 from Products.Archetypes.references import HoldingReference
 from Products.CMFCore import permissions
@@ -180,7 +181,8 @@ schema = BikaSchema.copy() + Schema((
 
 schema['title'].required = False
 
-class Sample(BaseFolder):
+class Sample(BrowserDefaultMixin, BaseFolder):
+    # XXX Why does sample require BrowserDefaultMixin?
     implements(ISample)
     security = ClassSecurityInfo()
     schema = schema

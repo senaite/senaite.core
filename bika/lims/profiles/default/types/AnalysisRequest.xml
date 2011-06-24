@@ -1,3 +1,5 @@
+<!-- XXX hideContentsFolder should be in xml NOT python module. -->
+
 <?xml version="1.0"?>
 <object name="AnalysisRequest"
    meta_type="Factory-based Type Information with dynamic views"
