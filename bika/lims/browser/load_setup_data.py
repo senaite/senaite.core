@@ -538,7 +538,7 @@ class LoadSetupData(BrowserView):
             obj = folder[id]
             obj.edit(title = title,
                      MethodDescription = description)
-            obj.create_log_entry()
+#xxx            obj.create_log_entry()
 
     def StandardStocks(self):
         self.std_stocks = []
@@ -673,9 +673,9 @@ class LoadSetupData(BrowserView):
         bs = getToolByName(self.context, 'bika_settings')
         bs.setPrefixes([
             {'portal_type': 'AnalysisRequest', 'prefix': 'AR-', 'padding': '2'},
-            {'portal_type': 'Sample', 'prefix': 'S-','padding': '5'},
-            {'portal_type': 'Worksheet', 'prefix': 'WS-','padding': '5'},
-            {'portal_type': 'Order', 'prefix': 'O-', 'padding': '4',},
+            {'portal_type': 'Sample', 'prefix': 'S-', 'padding': '5'},
+            {'portal_type': 'Worksheet', 'prefix': 'WS-', 'padding': '5'},
+            {'portal_type': 'Order', 'prefix': 'O-', 'padding': '4', },
             {'portal_type': 'Invoice', 'prefix': 'I-', 'padding': '4'},
             {'portal_type': 'ARImport', 'prefix': 'B-', 'padding': '4'},
             {'portal_type': 'StandardSample', 'prefix': 'SS-', 'padding': '4'},

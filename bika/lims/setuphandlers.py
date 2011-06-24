@@ -33,7 +33,7 @@ class BikaGenerator:
             portal.manage_delObjects(ids = del_ids)
 
         # index objects - importing through GenericSetup doesn't
-        for obj_id in ('clients', 'standardsuppliers', 'invoices', 'methods', 'pricelists', 'worksheets'):
+        for obj_id in ('clients', 'standardsuppliers', 'invoices', 'pricelists', 'worksheets'):
             obj = portal._getOb(obj_id)
             obj.reindexObject()
 
@@ -120,8 +120,6 @@ class BikaGenerator:
             ['Manager', 'LabManager', 'Owner'], 1)
         mp(ManagePricelists,
             ['Manager', 'LabManager', 'Owner'], 1)
-        mp(ViewMethods,
-            ['Manager', 'Member'], 1)
         mp(PostInvoiceBatch,
             ['Manager', 'LabManager', 'Owner'], 1)
 
@@ -208,11 +206,6 @@ class BikaGenerator:
         mp(permissions.View,
             ['Manager', 'LabManager'], 0)
         portal.pricelists.reindexObject()
-
-        mp = portal.methods.manage_permission
-        mp(permissions.ListFolderContents, ['Manager', 'Member'], 1)
-        mp(permissions.View, ['Manager', 'Member'], 0)
-        portal.methods.reindexObject()
 
 
     def setupProxyRoles(self, portal):
