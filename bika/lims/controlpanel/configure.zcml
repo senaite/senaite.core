@@ -132,4 +132,20 @@
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
+    <browser:page
+      for="*"
+      name="json_samplepoints"
+      class="bika.lims.controlpanel.bika_samplepoints.JSON_SamplePoints"
+      permission="zope.Public"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
+      for="*"
+      name="json_sampletypes"
+      class="bika.lims.controlpanel.bika_sampletypes.JSON_SampleTypes"
+      permission="zope.Public"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
 </configure>

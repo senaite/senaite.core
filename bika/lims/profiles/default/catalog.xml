@@ -139,11 +139,11 @@
  <index name="getSampleID" meta_type="FieldIndex">
   <indexed_attr value="getSampleID"/>
  </index>
- <index name="getSamplePoint" meta_type="FieldIndex">
-  <indexed_attr value="getSamplePoint"/>
+ <index name="getSamplePointTitle" meta_type="FieldIndex">
+  <indexed_attr value="getSamplePointTitle"/>
  </index>
- <index name="getSampleType" meta_type="FieldIndex">
-  <indexed_attr value="getSampleType"/>
+ <index name="getSampleTypeTitle" meta_type="FieldIndex">
+  <indexed_attr value="getSampleTypeTitle"/>
  </index>
  <index name="getStatus" meta_type="FieldIndex">
   <indexed_attr value="getStatus"/>
@@ -261,8 +261,8 @@
  <column value="getRequestID"/>
  <column value="getSample"/>
  <column value="getSampleID"/>
- <column value="getSamplePoint"/>
- <column value="getSampleType"/>
+ <column value="getSamplePointTitle"/>
+ <column value="getSampleTypeTitle"/>
  <column value="getStatus"/>
  <column value="getTextTitle"/>
  <column value="getCategoryUID"/>

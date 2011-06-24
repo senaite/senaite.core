@@ -3,6 +3,7 @@ from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from zope.interface import implements
 from plone.app.content.browser.interfaces import IFolderContentsView
+from Products.CMFCore.utils import getToolByName
 import json
 
 class SampleViewView(BrowserView):
@@ -41,15 +42,31 @@ def sample_edit_submit(context, request):
     form = request.form
     sample = context
 
+
     if form.has_key("save_button"):
+        sampleType = form['SampleType']
+        samplePoint = form['SamplePoint']
+        errors = {}
+        pc = getToolByName(context, 'portal_catalog')
+        if not pc(portal_type = 'SampleType', Title = sampleType):
+            errors['SampleType'] = sampleType + ' is not a valid sample type'
+        if samplePoint != "":
+            if not pc(portal_type = 'SamplePoint', Title = samplePoint):
+                errors['SamplePoint'] = samplePoint + ' is not a valid sample point'
+        if errors:
+            return json.dumps({'errors':errors})
+
         sample.edit(
             ClientReference = form['ClientReference'],
             ClientSampleID = form['ClientSampleID'],
-            SampleType = form['SampleType'],
-            SamplePoint = form['SamplePoint'],
+            SampleType = sampleType,
+            SamplePoint = samplePoint,
             DateSampled = form['DateSampled']
         )
         sample.reindexObject()
+        ars = sample.getAnalysisRequests()
+        for ar in ars:
+            ar.reindexObject()
         message = "Changes Saved."
     else:
         message = "Changes Cancelled."
@@ -57,7 +74,7 @@ def sample_edit_submit(context, request):
     return json.dumps({'success':message})
 
 class SamplesView(ClientSamplesView):
-    implements(IFolderContentsView)
     contentFilter = {'portal_type':'Sample', 'path':{"query": ["/"], "level" : 0 }}
     title = "Samples"
     description = ""
+

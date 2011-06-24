@@ -17,7 +17,7 @@
 
   <h1>
       <img src="" tal:attributes="src string:${portal/absolute_url}/images/sample.png"/>
-      <span tal:content="title_string | here/title_or_id" />
+      <span tal:content="here/title_or_id" />
   </h1>
 
 <form name="edit_form"
@@ -41,7 +41,7 @@
 <td class="left">
 <input size="10" name="ClientReference" id="ClientReference"
     tal:attributes="
-        value request/ClientReference | here/getClientReference;
+        value here/getClientReference;
         tabindex tabindex/next;"/>
 </td>
 </tr>
@@ -51,7 +51,7 @@
 <td class="left">
 <input size="10" name="ClientSampleID"
     tal:attributes="
-        value request/ClientSampleID | here/getClientSampleID;
+        value here/getClientSampleID;
 	    tabindex tabindex/next;"/>
 </td>
 </tr>
@@ -69,66 +69,49 @@
 </tr>
 
 <tr>
-<th>
-<span id="" i18n:translate="label_sampletype">Sample Type</span>
-</th>
-<td class="left">
-    <select name="SampleType" 
-        tal:attributes="tabindex tabindex/next;">
-    <tal:item 
+    <th>
+        <span i18n:translate="label_sampletype">Sample Type</span>&nbsp;
+        <span class="fieldRequired"/>
+    </th>
+    <td class="left">
+        <input size="25" type='text' name="SampleType" id="SampleType"
         tal:define="
-            vocab python:here.portal_catalog(portal_type='SampleType');
-            current here/getSampleType;
-            sampletype current/Title"
-        tal:repeat="item vocab">
-    <option selected="selected"
-        tal:attributes="value item/Title;
-            selected python:item.Title == sampletype"
-        tal:content="item/Title"></option>
-    </tal:item>
-
-    </select>
-</td>
+            st here/getSampleType;
+            stTitle st/Title"
+        tal:attributes="
+            value stTitle;
+            tabindex tabindex/next;"/>
+    </td>
 </tr>
 
 <tr>
 <th id="" i18n:translate="label_samplepoint">Sample point</th>
 <td class="left">
-    <select name="SamplePoint" 
-        tal:attributes="tabindex tabindex/next;"
-        tal:define="
-            samplepoints python:here.portal_catalog(portal_type='SamplePoint');
-            sp here/getSamplePoint;
-            samplepoint sp/Title | nothing">
-    <option value=""
-        tal:attributes="
-            value python:None;
-            selected python:samplepoint and False or True"></option>
-    <tal:item 
-        tal:repeat="item samplepoints">
-    <option selected="selected"
-        tal:attributes="value item/Title;
-            selected python:item.Title == samplepoint"
-        tal:content="item/Title"></option>
-    </tal:item>
-
-    </select>
+    <input size="25" type='text' name="SamplePoint" id="SamplePoint"
+    tal:define="
+        sp here/getSamplePoint;
+        spTitle sp/Title | nothing"
+    tal:attributes="
+        value spTitle;
+        tabindex tabindex/next;"/>
 </td>
 </tr>
 
 <tr>
-<th id="" i18n:translate="label_datesampled">Date sampled</th>
-<td class="left">
-	
-    <input size="10" type='text' readonly="readonly"
-        tal:attributes="
-            tabindex tabindex/next;
-            id string:DateSampled;
-            name string:DateSampled;
-            value view/fmtDateSampled"/>
-
-</td>
+    <th>
+        <span i18n:translate="label_datesampled">Date sampled</span>&nbsp;
+        <span class="fieldRequired"/>
+    </th>
+    <td class="left">
+        <input size="10" type='text' readonly="readonly"
+            tal:attributes="
+                tabindex tabindex/next;
+                id string:DateSampled;
+                name string:DateSampled;
+                value view/fmtDateSampled"/>
+    </td>
 </tr>
+
 <tr>
 <th i18n:translate="label_datesubmitted">Date submitted
 </th>
@@ -137,6 +120,7 @@
     tal:content="python:plone_view.toLocalizedTime(date_submitted, long_format=1)"
     >2005-01-01 10:00</td>
 </tr>
+
 <tal:state 
     define="review_state python:context.portal_workflow.getInfoFor(here, 'review_state', '')">
 <tr tal:condition="python:review_state != 'due'">

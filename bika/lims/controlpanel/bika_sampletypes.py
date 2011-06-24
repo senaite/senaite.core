@@ -12,6 +12,8 @@ from bika.lims.interfaces import IHaveNoByline, ISampleTypes
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.folder.folder import ATFolder, ATFolderSchema
 from zope.interface.declarations import implements
+from Products.CMFCore.utils import getToolByName
+import json
 
 class SampleTypesView(BikaListingView):
     implements(IFolderContentsView)
@@ -50,9 +52,23 @@ class SampleTypesView(BikaListingView):
         return items
 
 schema = ATFolderSchema.copy()
+
 class SampleTypes(ATFolder):
     implements(ISampleTypes, IHaveNoByline)
     schema = schema
     displayContentsTab = False
 schemata.finalizeATCTSchema(schema, folderish = True, moveDiscussion = False)
 atapi.registerType(SampleTypes, PROJECTNAME)
+
+class JSON_SampleTypes():
+    """ autocomplete data source for sample types field
+        return JSON data [string,string]
+    """
+    def __call__(self):
+        pc = getToolByName(self, 'portal_catalog')
+        term = self.request.get('term', '')
+        items = pc(portal_type = "SampleType")
+        nr_items = len(items)
+        items = [s.Title for s in items if s.Title.lower().find(term.lower()) > -1]
+        return json.dumps(items)
+

@@ -61,22 +61,6 @@
     />
 
     <browser:page
-      for="*"
-      name="analysisrequest_samplepoints"
-      class="bika.lims.browser.analysisrequest.AnalysisRequest_SamplePoints"
-      permission="zope.Public"
-      layer="bika.lims.interfaces.IBikaLIMS"
-    />
-
-    <browser:page
-      for="*"
-      name="analysisrequest_sampletypes"
-      class="bika.lims.browser.analysisrequest.AnalysisRequest_SampleTypes"
-      permission="zope.Public"
-      layer="bika.lims.interfaces.IBikaLIMS"
-    />
-
-    <browser:page
       for="* "
       name="analysisrequest_select_cc"
       class="bika.lims.browser.analysisrequest.AnalysisRequestSelectCCView"

@@ -24,7 +24,7 @@ class AnalysisRequestAnalysesView(BikaListingView):
     show_select_column = False
     pagesize = 1000
 
-    def __init__(self, context, request, PointOfCapture=None):
+    def __init__(self, context, request, PointOfCapture = None):
         self.contentFilter = {'portal_type': 'Analysis', 'getPointOfCapture': PointOfCapture}
         super(AnalysisRequestAnalysesView, self).__init__(context, request)
         self.PointOfCapture = PointOfCapture
@@ -61,7 +61,7 @@ class AnalysisRequestAnalysesView(BikaListingView):
             for ir in obj['InterimResults']:
                 import pdb
                 pdb.set_trace()
-                for key,value in ir.items():
+                for key, value in ir.items():
                     if key not in self.interim_fields:
                         self.interim_fields.append(key)
                     item[key] = value
@@ -95,7 +95,7 @@ class AnalysisRequestAnalysesView(BikaListingView):
                 munged_states.append(state)
                 continue
             for key in interim_fields:
-                state['columns'].insert(pos,key)
+                state['columns'].insert(pos, key)
         self.review_states = munged_states
 
         items = []
@@ -115,10 +115,10 @@ class AnalysisRequestViewView(BrowserView):
     """
     template = ViewPageTemplateFile("templates/analysisrequest_view.pt")
 
-    def __init__(self,context,request):
-        super(AnalysisRequestViewView, self).__init__(context,request)
-        self.FieldAnalysesView = AnalysisRequestAnalysesView(context,request,PointOfCapture='field')
-        self.LabAnalysesView = AnalysisRequestAnalysesView(context,request,PointOfCapture='lab')
+    def __init__(self, context, request):
+        super(AnalysisRequestViewView, self).__init__(context, request)
+        self.FieldAnalysesView = AnalysisRequestAnalysesView(context, request, PointOfCapture = 'field')
+        self.LabAnalysesView = AnalysisRequestAnalysesView(context, request, PointOfCapture = 'lab')
 
     def __call__(self):
         return self.template()
@@ -1118,28 +1118,6 @@ class AnalysisRequest_ProfileServices():
             except: services["%s_%s" % (categoryUID, poc)] = [service.UID, ]
         return json.dumps(services)
 
-class AnalysisRequest_SampleTypes():
-    """ autocomplete data source for sample types field
-        return JSON data [string,string]
-    """
-    def __call__(self):
-        pc = getToolByName(self, 'portal_catalog')
-        term = self.request.get('term', '')
-        items = pc(portal_type = "SampleType")
-        items = [s.Title for s in items if s.Title.lower().find(term.lower()) > -1]
-        return json.dumps(items)
-
-class AnalysisRequest_SamplePoints():
-    """ autocomplete data source for sample points field
-        return JSON data [string,string]
-    """
-    def __call__(self):
-        pc = getToolByName(self, 'portal_catalog')
-        term = self.request.get('term', '')
-        items = pc(portal_type = "SamplePoint")
-        items = [s.Title for s in items if s.Title.lower().find(term.lower()) > -1]
-        return json.dumps(items)
-
 def analysisrequest_add_submit(context, request):
 
     form = request.form
@@ -1355,7 +1333,6 @@ def analysisrequest_add_submit(context, request):
     return json.dumps({'success':message})
 
 class AnalysisRequestsView(ClientAnalysisRequestsView):
-    implements(IFolderContentsView)
     content_add_actions = {}
     contentFilter = {'portal_type':'AnalysisRequest',
                      'path':{"query": ["/"], "level" : 0 }}

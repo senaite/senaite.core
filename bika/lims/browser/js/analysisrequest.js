@@ -424,13 +424,13 @@ jQuery( function($) {
 	}
 
 	function autocomplete_sampletype(request,callback){
-		$.getJSON('analysisrequest_sampletypes', {'term':request.term}, function(data,textStatus){
+		$.getJSON('json_sampletypes', {'term':request.term}, function(data,textStatus){
 			callback(data);
 		});
 	}
 
 	function autocomplete_samplepoint(request,callback){
-		$.getJSON('analysisrequest_samplepoints', {'term':request.term}, function(data,textStatus){
+		$.getJSON('json_samplepoints', {'term':request.term}, function(data,textStatus){
 			callback(data);
 		});
 	}
@@ -631,8 +631,8 @@ jQuery( function($) {
 					"<dt i18n:translate='error'>Error</dt>"+
 					"<dd><ul>" + message +
 					"</ul></dd></dl>";
-					$('.portalMessage').remove();
-					$(str).appendTo('#viewlet-above-content');
+			$('.portalMessage').remove();
+			$(str).appendTo('#viewlet-above-content');
 		}
 
 		// AR Add/Edit ajax form submits
@@ -644,31 +644,31 @@ jQuery( function($) {
 				$("input[class~='context']").attr('disabled',true);
 				$("#spinner").toggle(true);
 			},
-			complete: function(XMLHttpRequest, textStatus) {
-				$("input[class~='context']").removeAttr('disabled');
-				$("#spinner").toggle(false);
-			},
 			success: function(responseText, statusText, xhr, $form)  {
 				if(responseText['success'] != undefined){
 					window.location.replace(window.location.href.replace("/analysisrequest_add",""));
-				}
-				msg = ""
-				if(responseText['errors'] != undefined){
+				} else {
+                    msg = ""
 					for(error in responseText['errors']){
 						x = error.split(".");
 						if (x.length == 2){
-							e = x[1] + " (Column " + x[0] + "): ";
+							e = x[1] + " (Column " + (+x[0] + 1) + "): ";
 						} else {
 							e = "";
 						}
 						msg = msg + e + responseText['errors'][error] + "<br/>";
 					};
 					portalMessage(msg);
+                    window.scroll(0,0);
+                    $("input[class~='context']").removeAttr('disabled');
+                    $("#spinner").toggle(false);
 				}
-				window.scroll(0,0);
 			},
 			error: function(XMLHttpRequest, statusText, errorThrown) {
-				portalMessage(statusText);
+                portalMessage(statusText);
+                window.scroll(0,0);
+                $("input[class~='context']").removeAttr('disabled');
+                $("#spinner").toggle(false);
 			},
 		};
 		$('#analysisrequest_edit_form').ajaxForm(options);

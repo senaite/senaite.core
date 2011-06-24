@@ -188,15 +188,13 @@ schema = BikaSchema.copy() + Schema((
             visible = False,
         ),
     ),
-    ComputedField('SampleType',
-        index = 'FieldIndex:brains',
+    ComputedField('SampleTypeTitle',
         expression = "here.getSample() and here.getSample().getSampleType() and here.getSample().getSampleType().Title() or ''",
         widget = ComputedWidget(
             visible = False,
         ),
     ),
-    ComputedField('SamplePoint',
-        index = 'FieldIndex:brains',
+    ComputedField('SamplePointTitle',
         expression = "here.getSample() and here.getSample().getSamplePoint() and here.getSample().getSamplePoint().Title() or ''",
         widget = ComputedWidget(
             visible = False,
