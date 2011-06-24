@@ -36,7 +36,6 @@
  <object name="InvoiceLineItem" meta_type="Factory-based Type Information"/>
  <object name="Methods" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="Method" meta_type="Factory-based Type Information with dynamic views"/>
- <object name="MethodFolder" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="MethodLogEntry" meta_type="Factory-based Type Information"/>
  <object name="LabContacts" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="LabContact" meta_type="Factory-based Type Information with dynamic views"/>

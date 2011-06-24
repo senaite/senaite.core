@@ -1,15 +1,13 @@
 from AccessControl import ClassSecurityInfo
 from Products.CMFCore.permissions import View, \
     ModifyPortalContent
-from Products.CMFDynamicViewFTI.browserdefault import \
-    BrowserDefaultMixin
 from Products.Archetypes.public import *
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.config import PROJECTNAME
 
 schema = BikaSchema.copy()
 
-class ClientStatus(BrowserDefaultMixin, BaseContent):
+class ClientStatus(BaseContent):
     security = ClassSecurityInfo()
     archetype_name = 'ClientStatus'
     schema = schema
@@ -21,7 +19,7 @@ class ClientStatus(BrowserDefaultMixin, BaseContent):
     use_folder_tabs = 0
 
     actions = (
-    
+
        {'id': 'edit',
         'name': 'Edit',
         'action': 'string:${object_url}/tool_base_edit',

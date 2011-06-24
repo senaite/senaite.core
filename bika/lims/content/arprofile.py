@@ -1,7 +1,6 @@
 """
     AnalysisRequests often use the same configurations.
     ARProfile is used to save these common configurations (templates).
-    XXX It's just LabARProfile with one extra field
 """
 
 from AccessControl import ClassSecurityInfo
@@ -9,7 +8,6 @@ from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.Archetypes.public import *
 from Products.Archetypes.references import HoldingReference
 from Products.CMFCore.permissions import View, ModifyPortalContent
-from Products.CMFDynamicViewFTI.browserdefault import BrowserDefaultMixin
 from bika.lims.browser.widgets import ServicesWidget
 from bika.lims.config import I18N_DOMAIN, PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
@@ -84,7 +82,7 @@ TitleField = schema['title']
 TitleField.required = False
 TitleField.widget.visible = False
 
-class ARProfile(BrowserDefaultMixin, BaseContent):
+class ARProfile(BaseContent):
     security = ClassSecurityInfo()
     schema = schema
     displayContentsTab = False

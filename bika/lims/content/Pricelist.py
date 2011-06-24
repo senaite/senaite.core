@@ -3,7 +3,6 @@ from DateTime import DateTime
 from Products.ATExtensions.ateapi import DateTimeField, DateTimeWidget
 from Products.Archetypes.public import *
 from Products.CMFCore import permissions
-from Products.CMFDynamicViewFTI.browserdefault import BrowserDefaultMixin
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.config import I18N_DOMAIN, I18N_DOMAIN, ManagePricelists, ManageBika, PRICELIST_TYPES, CLIENT_TYPES, PROJECTNAME
 import sys
@@ -73,7 +72,7 @@ schema = BikaSchema.copy() + Schema((
 ),
 )
 
-class Pricelist(BrowserDefaultMixin, BaseFolder):
+class Pricelist(BaseFolder):
     security = ClassSecurityInfo()
     archetype_name = 'Pricelist'
     schema = schema
@@ -83,8 +82,6 @@ class Pricelist(BrowserDefaultMixin, BaseFolder):
     use_folder_tabs = 0
     global_allow = 0
     filter_content_types = 1
-#    __implements__ = BaseFolder.__implements__ + (
-#                     BrowserDefaultMixin.__implements__,)
 
     actions = (
 

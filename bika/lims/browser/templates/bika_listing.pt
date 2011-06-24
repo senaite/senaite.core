@@ -15,30 +15,7 @@
   <body>
 
     <metal:content-title fill-slot="content-title">
-      <table>
-        <tr>
-          <td style="padding-right:2em;">
-              <h1 class="documentFirstHeading" tal:content="view/title"/>
-          </td>
-          <td
-            align="right"
-            tal:repeat="add_item python:view.content_add_actions.keys()">
-            <form method="post"
-              tal:attributes="name string:folderContentsForm_add_${add_item};
-                              id string:folderContentsForm_add_${add_item};
-                              action python: view.content_add_actions[add_item];">
-              <input
-                class="standalone add"
-                type="submit"
-                name=""
-                i18n:attributes="value"
-                tal:attributes="value string:Add ${add_item}; name string:add_${add_item}"/>
-              <input type="hidden" name="form.submitted" value="1" />
-              <input tal:replace="structure context/@@authenticator/authenticator" />
-            </form>
-          </td>
-        </tr>
-      </table>
+      <h1 class="documentFirstHeading" tal:content="view/title"/>
     </metal:content-title>
 
     <metal:content-description fill-slot="content-description">
@@ -48,6 +25,25 @@
     </metal:content-description>
 
     <metal:content-core fill-slot="content-core">
+
+      <tal:add_actions repeat="add_item python:view.content_add_actions.keys()">
+        <form method="post"
+          tal:attributes="name string:folderContentsForm_add_${add_item};
+                          id string:folderContentsForm_add_${add_item};
+                          action python: view.content_add_actions[add_item];">
+          <input
+            class="standalone add"
+            type="submit"
+            name=""
+            i18n:attributes="value"
+            tal:attributes="value string:Add ${add_item}; name string:add_${add_item}"/>
+          <input type="hidden" name="form.submitted" value="1" />
+          <input tal:replace="structure context/@@authenticator/authenticator" />
+        </form>
+      </tal:add_actions>
+
+      <br/>
+
       <form
         name="folderContentsForm"
         id="folderContentsForm"

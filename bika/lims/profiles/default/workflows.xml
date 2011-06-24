@@ -72,7 +72,6 @@
   <type type_id="LabAnalysisSpec"/>
   <type type_id="LabContact"/>
   <type type_id="Method"/>
-  <type type_id="MethodFolder"/>
   <type type_id="Pricelist"/>
   <type type_id="PricelistFolder"/>
   <type type_id="PricelistLineItem"/>

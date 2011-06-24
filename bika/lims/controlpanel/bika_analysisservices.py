@@ -47,7 +47,7 @@ class AnalysisServicesView(BikaListingView):
                                   'url': 'folder_delete:method'},
                                  {'cssclass':'context',
                                   'title': _('Duplicate'),
-                                  'url': 'duplicate_services:method', # XXX Duplicate Analysis Service
+                                  'url': 'duplicate_services:method',
                                  }
                                ],
                      },

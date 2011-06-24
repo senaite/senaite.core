@@ -8,8 +8,6 @@ from Products.CMFCore  import permissions
 from Products.Archetypes.public import *
 from bika.lims.config import PostInvoiceBatch, ManageInvoices, PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
-from Products.CMFDynamicViewFTI.browserdefault import \
-    BrowserDefaultMixin
 
 schema = BikaSchema.copy() + Schema((
     DateTimeField('BatchStartDate',
@@ -35,7 +33,7 @@ schema = BikaSchema.copy() + Schema((
 
 schema['title'].default = DateTime().strftime('%b %Y')
 
-class InvoiceBatch(BrowserDefaultMixin, BaseFolder):
+class InvoiceBatch( BaseFolder):
     """ Container for Invoice instances """
     security = ClassSecurityInfo()
     schema = schema
@@ -89,13 +87,13 @@ class InvoiceBatch(BrowserDefaultMixin, BaseFolder):
         from cStringIO import StringIO
         delimiter = ','
         filename = 'batch.txt'
-        
+
         container = self.unrestrictedTraverse(REQUEST.get('current_path'))
         assert(container)
 
         container.plone_log("Exporting InvoiceBatch to CSV format for PASTEL")
         invoices = container.listFolderContents()
-        
+
         if (not len(invoices)):
             container.plone_log("InvoiceBatch contains no entries")
 
@@ -103,12 +101,12 @@ class InvoiceBatch(BrowserDefaultMixin, BaseFolder):
         _ordNum = 'starting at none'
         for invoice in invoices:
             new_invoice = True
-            _invNum = "%s" % invoice.getInvoiceNumber()[:8] 
+            _invNum = "%s" % invoice.getInvoiceNumber()[:8]
             _clientNum = "%s" % invoice.getClient().getAccountNumber()
             _invDate = "%s" % invoice.getInvoiceDate().strftime('%d/%m/%Y')
             _monthNum = invoice.getInvoiceDate().month()
             if _monthNum < 7:
-                _periodNum = _monthNum + 6 
+                _periodNum = _monthNum + 6
             else:
                 _periodNum = _monthNum - 6
             _periodNum = "%s" % _monthNum
@@ -137,16 +135,16 @@ class InvoiceBatch(BrowserDefaultMixin, BaseFolder):
                     rows.append(header)
 
 
-                _quant = 1  
-                _unitp = line.getSubtotal()  
+                _quant = 1
+                _unitp = line.getSubtotal()
                 _inclp = line.getTotal()
                 _item = line.getItemDescription()
                 _desc = "Analysis: %s" % _item[:40]
                 if _item.startswith('Water') or _item.startswith('water'):
-                    _icode = "002"  
+                    _icode = "002"
                 else:
-                    _icode = "001"  
-                _ltype = "4"  
+                    _icode = "001"
+                _ltype = "4"
                 _ccode = ""
 
                 #create detail csv entry as a list
@@ -223,7 +221,7 @@ class InvoiceBatch(BrowserDefaultMixin, BaseFolder):
             for p in rs:
                 obj = p.getObject()
                 if obj.hasBeenInvoiced():
-                    continue 
+                    continue
                 client_uid = obj.aq_parent.UID()
                 l = clients.get(client_uid, [])
                 l.append(obj)
@@ -271,7 +269,7 @@ class InvoiceBatch(BrowserDefaultMixin, BaseFolder):
             lineitem.setVAT(item.getVAT())
             lineitem.setTotal(item.getTotal())
             lineitem.reindexObject()
-            item.setInvoice(invoice) 
+            item.setInvoice(invoice)
         invoice.reindexObject()
 
         return

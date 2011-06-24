@@ -11,7 +11,6 @@ from Products.Archetypes.references import HoldingReference
 from Products.CMFCore import permissions
 from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFCore.utils import getToolByName, getToolByName
-from Products.CMFDynamicViewFTI.browserdefault import BrowserDefaultMixin
 from bika.lims.config import I18N_DOMAIN, ManageBika, PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.utils import sortable_title
@@ -169,7 +168,7 @@ schema = BikaSchema.copy() + Schema((
 
 schema['title'].required = False
 
-class Sample(VariableSchemaSupport, BrowserDefaultMixin, BaseFolder):
+class Sample(BaseFolder):
     implements(ISample)
     security = ClassSecurityInfo()
     schema = schema
@@ -273,7 +272,7 @@ class Sample(VariableSchemaSupport, BrowserDefaultMixin, BaseFolder):
             ar = tool.lookupObject(reference.sourceUID)
             review_state = wf_tool.getInfoFor(ar, 'review_state', '')
             if review_state != 'sample_due':
-                #from zLOG import LOG, WARNING; LOG('bika', WARNING, 
+                #from zLOG import LOG, WARNING; LOG('bika', WARNING,
                 #'Escalate workflow action sample receive. ',
                 #'Analysis request %s in state: %s' % (self.getId(), review_state))
                 continue

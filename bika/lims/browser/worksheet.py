@@ -247,11 +247,10 @@ class WorksheetAddAnalysisView(BikaListingView):
 						# XXX limit resultset
                      }
     show_editable_border = True
-    show_sort_column = True
+    show_sort_column = False
     show_select_row = False
     show_select_column = True
     show_filters = True
-    batch = True
     pagesize = 20
 
     columns = {

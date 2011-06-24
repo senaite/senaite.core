@@ -1,4 +1,4 @@
-"""StandardSupplier. 
+"""StandardSupplier.
 
 $Id: StandardSupplier.py 639 2007-03-20 09:35:32Z anneline $
 """
@@ -11,7 +11,6 @@ from Products.Archetypes.utils import DisplayList
 from Products.CMFCore import permissions
 from Products.CMFCore.permissions import ListFolderContents, ModifyPortalContent
 from Products.CMFCore.utils import getToolByName
-from Products.CMFDynamicViewFTI.browserdefault import BrowserDefaultMixin
 from bika.lims.config import I18N_DOMAIN, PROJECTNAME, \
     ManageStandardSuppliers
 from bika.lims.content.organisation import Organisation
@@ -30,7 +29,7 @@ schema = Organisation.schema.copy() + Schema((
 
 schema['AccountNumber'].write_permission = ManageStandardSuppliers
 
-class StandardSupplier(VariableSchemaSupport, BrowserDefaultMixin, Organisation):
+class StandardSupplier(Organisation):
     security = ClassSecurityInfo()
     schema = schema
 

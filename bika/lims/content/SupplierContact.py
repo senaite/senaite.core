@@ -8,7 +8,6 @@ from Products.Archetypes.public import *
 from bika.lims.content.person import Person
 from Products.CMFCore import permissions
 from Products.CMFCore.utils import getToolByName
-from Products.CMFDynamicViewFTI.browserdefault import BrowserDefaultMixin
 from bika.lims.config import ManageClients, PUBLICATION_PREFS, PROJECTNAME
 
 schema = Person.schema.copy()
@@ -27,7 +26,7 @@ TitleField.schemata = 'default'
 TitleField.required = 0
 TitleField.widget.visible = False
 
-class SupplierContact(VariableSchemaSupport, BrowserDefaultMixin, Person):
+class SupplierContact(Person):
     security = ClassSecurityInfo()
     archetype_name = 'SupplierContact'
     schema = schema

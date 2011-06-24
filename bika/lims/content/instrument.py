@@ -3,7 +3,6 @@ from DateTime import DateTime
 from Products.ATExtensions.ateapi import DateTimeField, DateTimeWidget
 from Products.Archetypes.public import *
 from Products.CMFCore.permissions import View, ModifyPortalContent
-from Products.CMFDynamicViewFTI.browserdefault import BrowserDefaultMixin
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.config import I18N_DOMAIN, PROJECTNAME
 
@@ -52,7 +51,7 @@ schema = BikaSchema.copy() + Schema((
     ),
 ))
 
-class Instrument(BrowserDefaultMixin, BaseContent):
+class Instrument(BaseContent):
     security = ClassSecurityInfo()
     schema = schema
 

@@ -12,10 +12,113 @@ from zope.interface import implements
 from plone.app.content.browser.interfaces import IFolderContentsView
 import json
 
+class AnalysisRequestAnalysesView(BikaListingView):
+    """ Display a list of Analyses
+        AnalysisRequestAnalysesView(context, request, PointOfCapture)
+        if PointOfCapture is omitted, all analyses are displayed
+    """
+    content_add_actions = {}
+    show_filters = False
+    show_sort_column = False
+    show_select_row = False
+    show_select_column = False
+    pagesize = 1000
+
+    def __init__(self, context, request, PointOfCapture=None):
+        self.contentFilter = {'portal_type': 'Analysis', 'getPointOfCapture': PointOfCapture}
+        super(AnalysisRequestAnalysesView, self).__init__(context, request)
+        self.PointOfCapture = PointOfCapture
+        self.contentsMethod = self.getFolderContents
+        self.interim_fields = []  # list of strings referring to InterimResults keys
+
+    columns = {
+        'getServiceName': {'title': _('Analysis')},
+        'Worksheet': {'title': _('Worksheet')},
+        'Result': {'title': _('Result')},
+        'Uncertainty': {'title': _('+-')},
+        'Attachments': {'title': _('Attachments')},
+        'state_title': {'title': _('State')},
+    }
+    review_states = [
+        {'title': _('All'), 'id':'all',
+         'columns':['getServiceName',
+                    'state_title',
+                    'Worksheet',
+                    'Result',
+                    'Uncertainty',
+                    'Attachments'],
+        },
+    ]
+
+    def getFolderContents(self, contentFilter):
+        """ This overrides the default self.context.getFolderContents().
+            The result is the same, but it has InterimResult values inserted into each record.
+            It also sets the self.interim_fields value, for later reference
+    	"""
+        folder_contents = []
+        for item in self.context.getFolderContents(contentFilter):
+            obj = item.getObject()
+            for ir in obj['InterimResults']:
+                import pdb
+                pdb.set_trace()
+                for key,value in ir.items():
+                    if key not in self.interim_fields:
+                        self.interim_fields.append(key)
+                    item[key] = value
+            folder_contents.append(item)
+        return folder_contents
+
+    def folderitems(self):
+        """ This folderitems also inserts the columns from InterimResults on all analyses
+            into self.columns, and populates them where possible.
+            The InterimResults columns are inserted before the column called 'Results'.
+            This insertion will take effect in all review_states column listings
+		"""
+        analyses = BikaListingView.folderitems(self)
+
+        interim_fields = self.interim_fields
+        interim_fields.reverse()
+
+        # munge self.columns
+        for key in interim_fields:
+            import pdb
+            pdb.set_trace()
+            # How does this work for proper titles?
+            self.columns[key] = {'title': key}
+
+        # munge self.review_states
+        munged_states = []
+        for state in self.review_states:
+            pos = state['columns'].index('Result')
+            if not pos:
+                # no change
+                munged_states.append(state)
+                continue
+            for key in interim_fields:
+                state['columns'].insert(pos,key)
+        self.review_states = munged_states
+
+        items = []
+        for item in analyses:
+            if not item.has_key('brain'): continue
+            obj = item['brain'].getObject()
+            item['WorksheetNumber'] = obj.getWorksheet()
+            item['Uncertainty'] = obj.getUncertainty()
+            item['Attachments'] = ", ".join([a.Title() for a in obj.getAttachment()])
+
+            items.append(item)
+        return items
+
 class AnalysisRequestViewView(BrowserView):
     """ AR View form
+        The AR fields are printed in a table, using analysisrequest_view.py
     """
     template = ViewPageTemplateFile("templates/analysisrequest_view.pt")
+
+    def __init__(self,context,request):
+        super(AnalysisRequestViewView, self).__init__(context,request)
+        self.FieldAnalysesView = AnalysisRequestAnalysesView(context,request,PointOfCapture='field')
+        self.LabAnalysesView = AnalysisRequestAnalysesView(context,request,PointOfCapture='lab')
 
     def __call__(self):
         return self.template()
@@ -30,9 +133,12 @@ class AnalysisRequestViewView(BrowserView):
         return DateTime()
 
     def Categories(self):
-        """ Dictionary keys: field/lab
+        """ Returns a dictionary with a list of field analyses and a list of lab analyses.
+            This returns only categories which have analyses selected in the current AR.
+  			Categories which are not used by analyses in this AR are omitted
+
+            Dictionary keys: field/lab
             Dictionary values: (Category Title,category UID)
-            This returns only cats which have analyses selected in the current AR
         """
         pc = getToolByName(self.context, 'portal_catalog')
         cats = {}
@@ -44,6 +150,60 @@ class AnalysisRequestViewView(BrowserView):
             cat = (service.getCategoryName(), service.getCategoryUID())
             if cat not in cats[poc]: cats[poc].append(cat)
         return cats
+
+    def getDefaultSpec(self):
+        """ Returns 'lab' or 'client' to set the initial value of the specification radios
+        """
+        mt = getToolByName(self.context, 'portal_membership')
+        pg = getToolByName(self.context, 'portal_groups')
+        member = mt.getAuthenticatedMember();
+        member_groups = [pg.getGroupById(group.id).getGroupName() for group in pg.getGroupsByUserId(member.id)]
+        default_spec = ('clients' in member_groups) and 'client' or 'lab'
+        return default_spec
+
+    @property
+    def review_state(self):
+        return self.context.portal_workflow.getInfoFor(self.context, 'review_state', '')
+
+    def getARProfileTitle(self):
+        return self.context.getProfile() and here.getProfile().getProfileTitle() or '';
+
+
+
+
+        #member python:here.portal_membership.getAuthenticatedMember();
+        #lab_accredited python:context.bika_settings.laboratory.getLaboratoryAccredited();
+        #sample here/getSample;
+        #sampletype sample/getSampleType;
+        #sampletype_uid sampletype/UID;
+        #profile python:here.getProfile() and here.getProfile().getProfileTitle() or '';
+        #global tf python:0;
+        #global out_of_range python:0;
+        #global dry_matter python:here.getReportDryMatter() and 1 or 0;
+        #global late python:0;
+        #client nocall:here/aq_parent;
+        #client_uid client/UID;
+        #member_groups python: [here.portal_groups.getGroupById(group.id).getGroupName() for group in here.portal_groups.getGroupsByUserId(member.id)];
+        #is_client python: 'clients' in member_groups;
+        #default_spec python:is_client and 'client' or 'lab';
+        #specification python:request.get('specification', default_spec);
+        #analyses python:here.getAnalyses();
+        #any_tv python:'tv' in calc_cols;
+        #any_tf python:'tf' in calc_cols;
+        #any_vm python:'vm' in calc_cols;
+        #any_sm python:'sm' in calc_cols;
+        #any_nm python:'nm' in calc_cols;
+        #any_gm python:'gm' in calc_cols;
+        #view_worksheets python:member.has_role(('Manager', 'LabManager', 'LabClerk', 'LabTechnician'));
+        #attachments_allowed here/bika_settings/getAttachmentsPermitted;
+        #ar_attach_allowed here/bika_settings/getARAttachmentsPermitted;
+        #analysis_attach_allowed here/bika_settings/getAnalysisAttachmentsPermitted;
+        #ar_review_state python:context.portal_workflow.getInfoFor(here, 'review_state', '');
+        #now view/now;
+        #attachments here/getAttachment | nothing;
+        #delete_attachments python:False;
+        #update_attachments python:False">
+
 
     def result_in_range(self, analysis, sampletype_uid, specification):
         ## Script (Python) "result_in_range"
@@ -144,42 +304,6 @@ class AnalysisRequestViewView(BrowserView):
                 result_class = 'out_of_range'
 
         return result_class
-
-    def get_calc_columns(self, batch):
-        ##
-        ##title=Determine which calculation columns are required
-        ##
-        vm = False # vessel mass
-        sm = False # sample mass
-        nm = False # nett mass
-        gm = False # nett mass
-        tv = False # titration vol
-        tf = False # titration factor
-
-        for analysis in batch:
-            calc_type = analysis.getCalcType()
-            if calc_type == None:
-                continue
-            if calc_type in ['wl', 'rw']:
-                gm = True
-                vm = True
-                nm = True
-            if calc_type in ['wlt', 'rwt']:
-                vm = True
-                sm = True
-                nm = True
-            if calc_type in ['t', ]:
-                tv = True
-                tf = True
-        cols = []
-        if vm: cols.append('vm')
-        if sm: cols.append('sm')
-        if gm: cols.append('gm')
-        if nm: cols.append('nm')
-        if tv: cols.append('tv')
-        if tf: cols.append('tf')
-
-        return cols
 
     def get_requested_analyses(self):
         ##
@@ -812,7 +936,6 @@ class AnalysisRequestSelectCCView(BikaListingView):
     show_sort_column = False
     show_select_row = False
     show_select_column = True
-    batching = True
     pagesize = 20
 
     columns = {
@@ -1092,7 +1215,7 @@ def analysisrequest_add_submit(context, request):
             #elif field == "ReportDryMatter":
             #elif field == "InvoiceExclude":
             # elif field == "DateSampled":
-            # XXX Should we check that these three are unique? :
+            # XXX Should we check that ClientOrderNumber ClientReference and ClientSampleID are unique
             #elif field == "ClientOrderNumber":
             #elif field == "ClientReference":
             #elif field == "ClientSampleID":

@@ -23,23 +23,22 @@ class BikaListingView(FolderContentsView):
 
     contentFilter = {}
     content_add_actions = {}
-
-    title = ""
-    description = ""
-
     show_editable_border = True
     show_filters = True
     show_sort_column = True
     show_select_row = True
     show_select_column = True
-    batching = []
-    pagesize = 20
+    pagesize = 0
+
+    title = ""
+    description = ""
 
     def __init__(self, context, request):
         super(BikaListingView, self).__init__(context, request)
         if self.show_editable_border: request.set('enable_border', 1)
         if not self.show_editable_border: request.set('disable_border', 1)
         self.portal_types = getToolByName(context, 'portal_types')
+        self.contentsMethod = self.context.getFolderContents
 
     def __call__(self):
         form = self.request.form
@@ -102,8 +101,6 @@ class BikaListingView(FolderContentsView):
         use_view_action = site_properties.getProperty('typesUseViewActionInListings', ())
         browser_default = plone_utils.browserDefault(context)
 
-        contentsMethod = self.context.getFolderContents
-
         show_all = self.request.get('show_all', '').lower() == 'true'
         pagesize = self.pagesize
         pagenumber = int(self.request.get('pagenumber', 1))
@@ -111,7 +108,7 @@ class BikaListingView(FolderContentsView):
         end = start + pagesize
 
         results = []
-        for i, obj in enumerate(contentsMethod(self.contentFilter)):
+        for i, obj in enumerate(self.contentsMethod(self.contentFilter)):
             path = obj.getPath or "/".join(obj.getPhysicalPath())
 
             # avoid creating unnecessary info for items outside the current

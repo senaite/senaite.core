@@ -4,7 +4,6 @@ from Products.Archetypes.public import *
 from Products.Archetypes.references import HoldingReference
 from Products.CMFCore.permissions import View, ModifyPortalContent
 from Products.CMFCore.utils import getToolByName
-from Products.CMFDynamicViewFTI.browserdefault import BrowserDefaultMixin
 from bika.lims.browser.fields import SpecField
 from bika.lims.browser.widgets import SpecWidget
 from bika.lims.config import I18N_DOMAIN, PROJECTNAME
@@ -46,7 +45,7 @@ schema = BikaSchema.copy() + Schema((
 schema['title'].required = False
 schema['title'].widget.visible = False
 
-class LabAnalysisSpec(BrowserDefaultMixin, BaseContent):
+class LabAnalysisSpec(BaseContent):
     security = ClassSecurityInfo()
     schema = schema
 

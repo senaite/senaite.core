@@ -110,7 +110,7 @@ TitleField = schema['title']
 TitleField.required = 0
 TitleField.widget.visible = {'edit': 'hidden', 'view': 'invisible'}
 
-class Organisation(VariableSchemaSupport, ATFolder):
+class Organisation(ATFolder):
     security = ClassSecurityInfo()
     schema = schema
 

@@ -30,7 +30,7 @@ class SpecWidget(RecordsWidget):
         if emptyReturnsMarker and value == '':
             return empty_marker
 
-        for idx in range(len(value) - 1, -1, -1): #  XXX this can't be right.. - signals bad data (batching machine in folder view)
+        for idx in range(len(value) - 1, -1, -1): #  XXX wtf  (batching machine returns single 'path' elements - this relates?)
             if len(value[idx].keys()) == 1: del value[idx]
         return value, {}
 

@@ -35,8 +35,6 @@
       <span i18n:translate="clear_filters" class="link">[clear filters]</span>
     </p>
 
-    <div tal:replace="structure view/batching" tal:condition="not: view/show_all"/>
-
     <table class="listing"
           tal:condition="view/items"
            id="listing-table"
@@ -101,7 +99,7 @@
                      class='folderlisting-filter'
                      tal:attributes="id string:foldercontents-${column}-column-filter-input;
                                      name string:foldercontents-${column}-column-filter-input;
-                                     value python: view.filters_in_use and request.get('foldercontents-'+column+'-column-filter-input', '') or ''"/>
+                                     value python: view.request.get('foldercontents-'+column+'-column-filter-input', '')"/>
           </th>
         </tr>
       </thead>
@@ -187,7 +185,7 @@
     </table>
 
     <div tal:replace="structure view/batching"
-         tal:condition="not: view/show_all"/>
+         tal:condition="python: not view.show_all"/>
 
     <tal:transitions
       tal:condition="python: review_state.has_key('transitions') and view.items"

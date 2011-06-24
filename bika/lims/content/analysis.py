@@ -20,8 +20,10 @@ from Products.ATExtensions.ateapi import RecordsField
 from Products.CMFDynamicViewFTI.browserdefault import \
     BrowserDefaultMixin
 
-#try: XXXXXXX XXX
-#    from bika.limsCalendar.config import TOOL_NAME as BIKA_CALENDAR_TOOL
+# XXX XXX tune Analysis indexes and all kinds of other performance things
+
+#try:
+#    from bika.limsCalendar.config import TOOL_NAME as BIKA_CALENDAR_TOOL # XXX
 #except:
 #    pass
 
@@ -108,12 +110,8 @@ schema = BikaSchema.copy() + Schema((
             i18n_domain = I18N_DOMAIN,
         )
     ),
-    RecordsField('InterimCalcs',
-        widget = StringWidget(
-            label = 'Interim Calculations',
-            label_msgid = 'label_interim',
-            i18n_domain = I18N_DOMAIN,
-        )
+    # InterimResults keys are defined by the AnalysisService's selected Method.
+    RecordsField('InterimResults',
     ),
     BooleanField('Retested',
         default = False,
@@ -189,6 +187,13 @@ schema = BikaSchema.copy() + Schema((
     ComputedField('CategoryName',
         index = 'FieldIndex:brains',
         expression = 'context.getService() and context.getService().getCategoryName()',
+        widget = ComputedWidget(
+            visible = False,
+        ),
+    ),
+    ComputedField('PointOfCapture',
+        index = 'FieldIndex:brains',
+        expression = 'context.getService() and context.getService().getPointOfCapture()',
         widget = ComputedWidget(
             visible = False,
         ),

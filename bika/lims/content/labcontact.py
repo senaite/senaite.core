@@ -9,8 +9,6 @@ from Products.CMFCore.utils import getToolByName
 from Products.Archetypes.public import *
 from bika.lims.content.person import Person
 from bika.lims.config import ManageClients, PUBLICATION_PREFS, PROJECTNAME
-from Products.CMFDynamicViewFTI.browserdefault import \
-    BrowserDefaultMixin
 
 schema = Person.schema.copy() + Schema((
     ImageField('Signature',
@@ -27,7 +25,7 @@ schema['Department'].schemata = 'default'
 schema['title'].required = 0
 schema['title'].widget.visible = False
 
-class LabContact(VariableSchemaSupport, BrowserDefaultMixin, Person):
+class LabContact(Person):
     security = ClassSecurityInfo()
     schema = schema
 

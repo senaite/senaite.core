@@ -13,8 +13,6 @@ from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.ATExtensions.ateapi import DateTimeField, DateTimeWidget
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.config import I18N_DOMAIN, PROJECTNAME
-from Products.CMFDynamicViewFTI.browserdefault import \
-    BrowserDefaultMixin
 
 schema = BikaSchema.copy() + Schema((
     ReferenceField('Service',
@@ -97,7 +95,7 @@ schema = BikaSchema.copy() + Schema((
 ),
 )
 
-class RejectAnalysis(VariableSchemaSupport, BrowserDefaultMixin, BaseContent):
+class RejectAnalysis(BaseContent):
     security = ClassSecurityInfo()
     archetype_name = 'RejectAnalysis'
     schema = schema
@@ -107,8 +105,6 @@ class RejectAnalysis(VariableSchemaSupport, BrowserDefaultMixin, BaseContent):
     filter_content_types = 0
     use_folder_tabs = 0
     actions = ()
-#    __implements__ = BaseContent.__implements__ + (
-#                     BrowserDefaultMixin.__implements__,)
 
 
     _assigned_to_worksheet = False
@@ -119,9 +115,9 @@ class RejectAnalysis(VariableSchemaSupport, BrowserDefaultMixin, BaseContent):
         return s and s.Title() or ''
 
     def getInterim(self):
-        """ InterimCalcs field is a self-defining field to cater for 
-            the number of different types of calculations performed on 
-            analyses. 
+        """ InterimCalcs field is a self-defining field to cater for
+            the number of different types of calculations performed on
+            analyses.
         """
         interim = {'tv': None,
                    'tf': None,
@@ -155,7 +151,7 @@ class RejectAnalysis(VariableSchemaSupport, BrowserDefaultMixin, BaseContent):
         return interim
 
     def setInterim(self, TV = None, TF = None, VM = None, SM = None, NM = None, GM = None):
-        """ 
+        """
         """
         calctype = self.getCalcType()
         interim = {}

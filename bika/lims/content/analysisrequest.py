@@ -17,10 +17,9 @@ from Products.CMFCore import permissions
 from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFCore.permissions import View, ModifyPortalContent
 from Products.CMFCore.utils import getToolByName
-from Products.CMFDynamicViewFTI.browserdefault import BrowserDefaultMixin
 from Products.CMFPlone.utils import transaction_note
 from bika.lims.browser.fields import ARAnalysesField
-from bika.lims.interfaces import IAnalysisRequest
+from bika.lims.interfaces import IAnalysisRequest, IHaveNoByline
 from bika.lims.config import I18N_DOMAIN, SubmitResults, PROJECTNAME, \
     ManageInvoices
 from bika.lims.content.bikaschema import BikaSchema
@@ -229,8 +228,8 @@ schema = BikaSchema.copy() + Schema((
 
 schema['title'].required = False
 
-class AnalysisRequest(VariableSchemaSupport, BrowserDefaultMixin, BaseFolder):
-    implements(IAnalysisRequest)
+class AnalysisRequest(BaseFolder):
+    implements(IAnalysisRequest,IHaveNoByline)
     security = ClassSecurityInfo()
     schema = schema
     displayContentsTab = False
@@ -784,7 +783,7 @@ class AnalysisRequest(VariableSchemaSupport, BrowserDefaultMixin, BaseFolder):
 
     def _delegateWorkflowAction(self, action_id):
         """ if analysisrequest is 'received', that actually means that
-            the sample is received. Delegate received status to sample, 
+            the sample is received. Delegate received status to sample,
             which will delegate it to all other linked analysisrequests
         """
         if getattr(self, '_escalating_workflow_action', None):

@@ -7,8 +7,6 @@ from Products.Archetypes.public import *
 from Products.Archetypes.references import HoldingReference
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.config import I18N_DOMAIN, PROJECTNAME
-from Products.CMFDynamicViewFTI.browserdefault import \
-    BrowserDefaultMixin
 
 schema = BikaSchema.copy() + Schema((
     ReferenceField('Product',
@@ -50,7 +48,7 @@ schema = BikaSchema.copy() + Schema((
 ),
 )
 
-class OrderItem(BrowserDefaultMixin, BaseContent):
+class OrderItem( BaseContent):
     security = ClassSecurityInfo()
     schema = schema
     displayContentsTab = False

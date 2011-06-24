@@ -1,4 +1,4 @@
-"""CalculationType - the department in the laboratory. 
+"""CalculationType - the department in the laboratory.
 
 $Id: CalculationType.py 1000 2007-12-03 11:53:04Z anneline $
 """
@@ -8,7 +8,6 @@ from Products.Archetypes.public import *
 from Products.Archetypes.references import HoldingReference
 from Products.CMFCore.permissions import View, ModifyPortalContent
 from Products.CMFCore.utils import getToolByName
-from Products.CMFDynamicViewFTI.browserdefault import BrowserDefaultMixin
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.config import I18N_DOMAIN, PROJECTNAME
 import sys
@@ -30,7 +29,7 @@ schema = BikaSchema.copy() + Schema((
     ),
 ))
 
-class CalculationType(VariableSchemaSupport, BrowserDefaultMixin, BaseContent):
+class CalculationType(BaseContent):
     security = ClassSecurityInfo()
     schema = schema
 

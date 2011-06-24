@@ -48,7 +48,6 @@ from InvoiceFolder import InvoiceFolder
 from InvoiceBatch import InvoiceBatch
 from Invoice import Invoice
 from InvoiceLineItem import InvoiceLineItem
-from MethodFolder import MethodFolder
 from MethodLogEntry import MethodLogEntry
 from PricelistFolder import PricelistFolder
 from Pricelist import Pricelist

@@ -7,7 +7,6 @@ from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.Archetypes.public import *
 from Products.CMFCore.permissions import ListFolderContents, View
 from Products.CMFCore.utils import getToolByName
-from Products.CMFDynamicViewFTI.browserdefault import BrowserDefaultMixin
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.config import I18N_DOMAIN, PROJECTNAME, ManageBika, ManageAnalysisRequest
 
@@ -75,7 +74,7 @@ schema = BikaSchema.copy() + Schema((
 schema['id'].required = False
 schema['title'].required = False
 
-class Attachment(BrowserDefaultMixin, BaseFolder):
+class Attachment(BaseFolder):
     security = ClassSecurityInfo()
     schema = schema
     displayContentsTab = False

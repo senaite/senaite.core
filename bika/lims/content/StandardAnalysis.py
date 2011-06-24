@@ -13,11 +13,9 @@ from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.ATExtensions.ateapi import DateTimeField, DateTimeWidget
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.config import I18N_DOMAIN, STD_TYPES, PROJECTNAME
-from Products.CMFDynamicViewFTI.browserdefault import \
-    BrowserDefaultMixin
 
-#try: XXXXXX XXX
-#    from BikaCalendar.config import TOOL_NAME as BIKA_CALENDAR_TOOL
+#try:
+#    from BikaCalendar.config import TOOL_NAME as BIKA_CALENDAR_TOOL # XXX
 #except:
 #    pass
 
@@ -138,7 +136,7 @@ schema = BikaSchema.copy() + Schema((
 ),
 )
 
-class StandardAnalysis(VariableSchemaSupport, BrowserDefaultMixin, BaseContent):
+class StandardAnalysis(BaseContent):
     security = ClassSecurityInfo()
     archetype_name = 'StandardAnalysis'
     schema = schema
@@ -165,9 +163,9 @@ class StandardAnalysis(VariableSchemaSupport, BrowserDefaultMixin, BaseContent):
         return worksheet
 
     def getInterim(self):
-        """ InterimCalcs field is a self-defining field to cater for 
-            the number of different types of calculations performed on 
-            analyses. 
+        """ InterimCalcs field is a self-defining field to cater for
+            the number of different types of calculations performed on
+            analyses.
         """
         interim = {'tv': None,
                    'tf': None,
@@ -201,7 +199,7 @@ class StandardAnalysis(VariableSchemaSupport, BrowserDefaultMixin, BaseContent):
         return interim
 
     def setInterim(self, TV = None, TF = None, VM = None, SM = None, NM = None, GM = None):
-        """ 
+        """
         """
         calctype = self.getCalcType()
         interim = {}

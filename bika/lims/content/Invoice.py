@@ -2,8 +2,6 @@ import sys
 from DateTime import DateTime
 from AccessControl import ClassSecurityInfo
 from Products.CMFCore.permissions import View
-from Products.CMFDynamicViewFTI.browserdefault import \
-    BrowserDefaultMixin
 from Products.Archetypes.public import *
 from Products.ATExtensions.ateapi import DateTimeField, DateTimeWidget
 from bika.lims.content.bikaschema import BikaSchema
@@ -89,7 +87,7 @@ TitleField = schema['title']
 TitleField.required = 0
 TitleField.widget.visible = False
 
-class Invoice(BrowserDefaultMixin, BaseFolder):
+class Invoice(BaseFolder):
     security = ClassSecurityInfo()
     archetype_name = 'Invoice'
     schema = schema

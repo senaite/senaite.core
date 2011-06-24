@@ -3,7 +3,6 @@ from Products.ATExtensions.ateapi import RecordsField
 from Products.Archetypes.public import *
 from Products.Archetypes.references import HoldingReference
 from Products.CMFCore.permissions import View, ModifyPortalContent
-from Products.CMFDynamicViewFTI.browserdefault import BrowserDefaultMixin
 from bika.lims.config import I18N_DOMAIN, ATTACHMENT_OPTIONS, \
     ARIMPORT_OPTIONS, PROJECTNAME
 from bika.lims.content.bikaschema import BikaFolderSchema
@@ -181,7 +180,7 @@ schema = BikaFolderSchema.copy() + Schema((
 ))
 
 
-class BikaSettings(BrowserDefaultMixin, folder.ATFolder):
+class BikaSettings(folder.ATFolder):
     security = ClassSecurityInfo()
     schema = schema
     implements(IBikaSettings)

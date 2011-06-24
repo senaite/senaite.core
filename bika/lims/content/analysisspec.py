@@ -14,7 +14,6 @@ from Products.CMFCore import permissions
 from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFCore.permissions import ListFolderContents, View
 from Products.CMFCore.utils import getToolByName
-from Products.CMFDynamicViewFTI.browserdefault import BrowserDefaultMixin
 from bika.lims.browser.fields import SpecField
 from bika.lims.browser.widgets import SpecWidget
 from bika.lims.config import I18N_DOMAIN, PROJECTNAME
@@ -58,7 +57,7 @@ schema = BikaSchema.copy() + Schema((
 
 schema['title'].required = False
 
-class AnalysisSpec(VariableSchemaSupport, BrowserDefaultMixin, BaseFolder):
+class AnalysisSpec(BaseFolder):
     security = ClassSecurityInfo()
     schema = schema
     displayContentsTab = False

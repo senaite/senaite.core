@@ -5,15 +5,14 @@ from Products.CMFCore.utils import getToolByName
 #from Products.CMFPlone import transaction_note
 from Products.Archetypes.public import *
 from Products.Archetypes.config import REFERENCE_CATALOG
+from Products.Archetypes.Registry import registerField
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.config import I18N_DOMAIN, INSTRUMENT_EXPORTS, PROJECTNAME
 from bika.lims.config import AssignAnalyses, DeleteAnalyses, \
     SubmitResults, ManageWorksheets, ManageBika
 from Products.ATExtensions.ateapi import RecordsField
-from Products.CMFDynamicViewFTI.browserdefault import BrowserDefaultMixin
 from zope.interface import implements
 from bika.lims.interfaces import IWorksheet,IHaveNoByline
-from bika.lims.browser.fields import WorksheetAnalysesField
 
 schema = BikaSchema.copy() + Schema((
     StringField('Number',
@@ -74,8 +73,16 @@ schema = BikaSchema.copy() + Schema((
             label = 'Notes'
         ),
     ),
-    # The physical sequence of the analyses in the tray 
-    WorksheetAnalysesField('WorksheetLayout',
+    # The physical sequence of the analyses in the tray
+    RecordsField('WorksheetLayout',
+        type = 'worksheetanalyses',
+        subfields = ('uid', 'type', 'pos', 'key'),
+        subfield_types = {'pos':'int'},
+        required_subfields = ('uid', 'type', 'pos', 'key'),
+        subfield_labels = {'uid': 'UID',
+                           'type': 'Type',
+                           'pos': 'Position',
+                           'key': 'Key value'},
     ),
     # The lab personnel who performed the analysis
     StringField('Analyser',
@@ -107,7 +114,7 @@ TitleField = schema['title']
 TitleField.required = 0
 TitleField.widget.visible = {'edit': 'hidden', 'view': 'invisible'}
 
-class Worksheet(BrowserDefaultMixin, BaseFolder):
+class Worksheet(BaseFolder):
     security = ClassSecurityInfo()
     implements(IWorksheet, IHaveNoByline)
     archetype_name = 'Worksheet'
@@ -286,13 +293,13 @@ class Worksheet(BrowserDefaultMixin, BaseFolder):
         if dup_ids:
             self.manage_delObjects(dup_ids)
 
-        """ Leave analysis on Standard Sample? AVS 
+        """ Leave analysis on Standard Sample? AVS
         if std_analyses:
             for std_analysis in std_analyses:
                 standard_sample = std_analysis.aq_parent
                 standard_sample.manage_delObjects(std_analysis.getId())
 
-        
+
         """
         if std_uids:
             wf_tool = getToolByName(self, 'portal_workflow')

@@ -5,7 +5,6 @@ from Products.Archetypes.public import *
 from Products.Archetypes.references import HoldingReference
 from Products.CMFCore.permissions import View, ModifyPortalContent
 from Products.CMFCore.utils import getToolByName
-from Products.CMFDynamicViewFTI.browserdefault import BrowserDefaultMixin
 from bika.lims.browser.widgets.serviceswidget import ServicesWidget
 from bika.lims.config import ATTACHMENT_OPTIONS, I18N_DOMAIN, PROJECTNAME, \
     POINTS_OF_CAPTURE
@@ -47,13 +46,6 @@ schema = BikaSchema.copy() + Schema((
         widget = TextAreaWidget(
             label = 'Description',
             label_msgid = 'label_description',
-            i18n_domain = I18N_DOMAIN,
-        ),
-    ),
-    TextField('Instructions',
-        widget = TextAreaWidget(
-            label = 'Instructions',
-            label_msgid = 'label_instructions',
             i18n_domain = I18N_DOMAIN,
         ),
     ),
@@ -181,7 +173,6 @@ schema = BikaSchema.copy() + Schema((
     ),
     ReferenceField('Method',
         required = 0,
-        multiValued = 1,
         vocabulary_display_path_bound = sys.maxint,
         allowed_types = ('Method',),
         relationship = 'AnalysisServiceMethod',
@@ -321,7 +312,7 @@ schema = BikaSchema.copy() + Schema((
     ResultOptionsField('ResultOptions'),
 ))
 
-class AnalysisService(VariableSchemaSupport, BrowserDefaultMixin, BaseContent):
+class AnalysisService(BaseContent):
     security = ClassSecurityInfo()
     schema = schema
 

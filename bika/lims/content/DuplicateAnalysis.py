@@ -13,8 +13,6 @@ from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.ATExtensions.ateapi import DateTimeField, DateTimeWidget
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.config import I18N_DOMAIN, PROJECTNAME
-from Products.CMFDynamicViewFTI.browserdefault import \
-    BrowserDefaultMixin
 
 schema = BikaSchema.copy() + Schema((
     ReferenceField('Request',
@@ -106,7 +104,7 @@ schema = BikaSchema.copy() + Schema((
 ),
 )
 
-class DuplicateAnalysis(VariableSchemaSupport, BrowserDefaultMixin, BaseContent):
+class DuplicateAnalysis(BaseContent):
     security = ClassSecurityInfo()
     archetype_name = 'DuplicateAnalysis'
     schema = schema
@@ -126,9 +124,9 @@ class DuplicateAnalysis(VariableSchemaSupport, BrowserDefaultMixin, BaseContent)
         return s and s.Title() or ''
 
     def getInterim(self):
-        """ InterimCalcs field is a self-defining field to cater for 
-            the number of different types of calculations performed on 
-            analyses. 
+        """ InterimCalcs field is a self-defining field to cater for
+            the number of different types of calculations performed on
+            analyses.
         """
         interim = {'tv': None,
                    'tf': None,
@@ -162,7 +160,7 @@ class DuplicateAnalysis(VariableSchemaSupport, BrowserDefaultMixin, BaseContent)
         return interim
 
     def setInterim(self, TV = None, TF = None, VM = None, SM = None, NM = None, GM = None):
-        """ 
+        """
         """
         calctype = self.getCalcType()
         interim = {}

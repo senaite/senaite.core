@@ -13,8 +13,6 @@ from Products.Archetypes.references import HoldingReference
 from Products.ATExtensions.ateapi import DateTimeField, DateTimeWidget
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.config import I18N_DOMAIN, ManageBika, PROJECTNAME
-from Products.CMFDynamicViewFTI.browserdefault import \
-    BrowserDefaultMixin
 
 schema = BikaSchema.copy() + Schema((
     StringField('ImportOption',
@@ -221,7 +219,7 @@ schema = BikaSchema.copy() + Schema((
 
 schema['title'].required = False
 
-class ARImport(VariableSchemaSupport, BrowserDefaultMixin, BaseFolder):
+class ARImport(BaseFolder):
     security = ClassSecurityInfo()
     schema = schema
     displayContentsTab = False

@@ -1,10 +1,9 @@
-"""Department - the department in the laboratory. 
+"""Department - the department in the laboratory.
 
 $Id: Department.py 1000 2007-12-03 11:53:04Z anneline $
 """
 from Products.Archetypes.public import *
 from Products.Archetypes.references import HoldingReference
-from Products.CMFDynamicViewFTI.browserdefault import BrowserDefaultMixin
 from bika.lims.config import I18N_DOMAIN, PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from AccessControl import ClassSecurityInfo
@@ -34,7 +33,7 @@ schema = BikaSchema.copy() + Schema((
     ),
 ))
 
-class Department(VariableSchemaSupport, BrowserDefaultMixin, BaseContent):
+class Department(BaseContent):
     security = ClassSecurityInfo()
     schema = schema
 

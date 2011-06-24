@@ -110,7 +110,7 @@ schema = BikaSchema.copy() + Schema((
 ),
 )
 
-class Person(VariableSchemaSupport, BaseFolder):
+class Person(BaseFolder):
     security = ClassSecurityInfo()
     schema = schema
 

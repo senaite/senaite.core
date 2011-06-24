@@ -13,8 +13,6 @@ from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.ATExtensions.ateapi import DateTimeField, DateTimeWidget
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.config import I18N_DOMAIN, PROJECTNAME
-from Products.CMFDynamicViewFTI.browserdefault import \
-    BrowserDefaultMixin
 from bika.lims.config import ManageStandard, ManageBika
 from bika.lims.utils import sortable_title
 from bika.lims.browser.fields import StandardResultField
@@ -151,7 +149,7 @@ schema = BikaSchema.copy() + Schema((
 ),
 )
 
-class StandardSample(VariableSchemaSupport, BrowserDefaultMixin, BaseFolder):
+class StandardSample(BaseFolder):
     security = ClassSecurityInfo()
     schema = schema
 

@@ -1,4 +1,4 @@
-"""Client - the main organisational entity in bika. 
+"""Client - the main organisational entity in bika.
 
 $Id: Client.py 2298 2010-05-19 09:18:43Z anneline $
 """
@@ -10,7 +10,6 @@ from Products.Archetypes import atapi
 from Products.Archetypes.utils import DisplayList
 from Products.CMFCore import permissions
 from Products.CMFCore.utils import getToolByName
-from Products.CMFDynamicViewFTI.browserdefault import BrowserDefaultMixin
 from bika.lims.content.organisation import Organisation
 from bika.lims import bikaMessageFactory as _
 from bika.lims.config import *
@@ -87,7 +86,7 @@ schema['AccountNumber'].write_permission = ManageClients
 schema['title'].widget.visible = False
 schema['description'].widget.visible = False
 
-class Client(BrowserDefaultMixin, Organisation):
+class Client(Organisation):
     implements(IClient)
     security = ClassSecurityInfo()
     schema = schema
@@ -148,7 +147,7 @@ class Client(BrowserDefaultMixin, Organisation):
     security.declarePublic('getCCContacts')
     def getCCContacts(self):
         # for every contact, get the list of CC Contacts
-        # using comma delimited strings in arrays so that it can 
+        # using comma delimited strings in arrays so that it can
         # be manipulated in javascript
         client_ccs = []
         cc_data = {}

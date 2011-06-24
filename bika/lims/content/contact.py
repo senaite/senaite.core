@@ -9,7 +9,6 @@ from Products.Archetypes import atapi
 from Products.Archetypes.public import *
 from Products.CMFCore import permissions
 from Products.CMFCore.utils import getToolByName
-from Products.CMFDynamicViewFTI.browserdefault import BrowserDefaultMixin
 from bika.lims.config import ManageClients, PUBLICATION_PREFS, PROJECTNAME
 from bika.lims.content.person import Person
 
@@ -50,7 +49,7 @@ schema['Department'].schemata = 'default'
 schema['title'].required = 0
 schema['title'].widget.visible = False
 
-class Contact(VariableSchemaSupport, BrowserDefaultMixin, Person):
+class Contact(Person):
     security = ClassSecurityInfo()
     schema = schema
     displayContentsTab = False

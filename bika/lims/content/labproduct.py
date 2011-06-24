@@ -1,7 +1,6 @@
 from AccessControl import ClassSecurityInfo
 from Products.Archetypes.public import *
 from Products.CMFCore.permissions import View, ModifyPortalContent
-from Products.CMFDynamicViewFTI.browserdefault import BrowserDefaultMixin
 from bika.lims.config import I18N_DOMAIN, PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 
@@ -60,7 +59,7 @@ schema = BikaSchema.copy() + Schema((
     ),
 ))
 
-class LabProduct(BrowserDefaultMixin, BaseContent):
+class LabProduct(BaseContent):
     security = ClassSecurityInfo()
     schema = schema
 

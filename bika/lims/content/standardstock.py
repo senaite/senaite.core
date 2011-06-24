@@ -1,4 +1,4 @@
-"""StandardStock represents a standard stock or sample type used for 
+"""StandardStock represents a standard stock or sample type used for
     quality control testing
 """
 from AccessControl import ClassSecurityInfo
@@ -6,7 +6,6 @@ from DateTime import DateTime
 from Products.ATExtensions.ateapi import DateTimeField, DateTimeWidget
 from Products.Archetypes.public import *
 from Products.CMFCore.permissions import View, ModifyPortalContent
-from Products.CMFDynamicViewFTI.browserdefault import BrowserDefaultMixin
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.browser.fields import StandardResultField
 from bika.lims.config import I18N_DOMAIN, PROJECTNAME
@@ -52,7 +51,7 @@ schema = BikaSchema.copy() + Schema((
 
 schema['title'].required = False
 
-class StandardStock(BrowserDefaultMixin, BaseContent):
+class StandardStock(BaseContent):
     security = ClassSecurityInfo()
     schema = schema
 

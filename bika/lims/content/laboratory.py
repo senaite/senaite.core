@@ -3,8 +3,6 @@ from AccessControl import ClassSecurityInfo
 from Products.CMFCore.utils import UniqueObject
 from Products.CMFCore.permissions import ListFolderContents, \
     ModifyPortalContent, View
-from Products.CMFDynamicViewFTI.browserdefault import \
-    BrowserDefaultMixin
 from plone.app import folder
 from Products.Archetypes.public import *
 from bika.lims.content.organisation import Organisation
@@ -84,7 +82,7 @@ schema = Organisation.schema.copy() + Schema((
 IdField = schema['id']
 IdField.widget.visible = {'edit':'hidden', 'view': 'invisible'}
 
-class Laboratory(BrowserDefaultMixin, UniqueObject, Organisation):
+class Laboratory(UniqueObject, Organisation):
     security = ClassSecurityInfo()
     schema = schema
 

@@ -1,4 +1,4 @@
-"""Analysis Category - the category of the analysis service 
+"""Analysis Category - the category of the analysis service
 
 $Id: AnalysisCategory.py $
 """
@@ -7,8 +7,6 @@ from AccessControl import ClassSecurityInfo
 from Products.CMFCore.utils import getToolByName
 from Products.CMFCore.permissions import View, \
     ModifyPortalContent
-from Products.CMFDynamicViewFTI.browserdefault import \
-    BrowserDefaultMixin
 from Products.Archetypes.public import *
 from Products.Archetypes.references import HoldingReference
 from Products.Archetypes.config import REFERENCE_CATALOG
@@ -38,7 +36,7 @@ schema = BikaSchema.copy() + Schema((
     ),
 ))
 
-class AnalysisCategory(VariableSchemaSupport, BrowserDefaultMixin, BaseContent):
+class AnalysisCategory(BaseContent):
     security = ClassSecurityInfo()
     schema = schema
 

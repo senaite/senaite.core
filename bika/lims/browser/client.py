@@ -100,6 +100,7 @@ class ClientAnalysisRequestsView(BikaListingView):
         items = BikaListingView.folderitems(self)
         for x in range(len(items)):
             if not items[x].has_key('brain'): continue
+            items[x]['getDateReceived'] = self.context.toLocalizedTime(items[x]['getDateReceived'], long_format = 0)
             items[x]['links'] = {'getRequestID': items[x]['url']}
         return items
 

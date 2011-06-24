@@ -44,34 +44,40 @@
     url_expr="string:${object_url}/analysisrequest_analyses" visible="True">
   <permission value="bika.lims: Manage AnalysisRequest"/>
  </action>
+
  <action title="Results not requested" action_id="analyses_not_requested"
     category="object" condition_expr="" icon_expr="" link_target=""
     url_expr="string:${object_url}/analysisrequest_analyses_not_requested"
     visible="True">
   <permission value="bika.lims: Manage Bika"/>
  </action>
+
  <action title="Log" action_id="log" category="object" condition_expr=""
     icon_expr="" link_target="" url_expr="string:${object_url}/status_log"
     visible="True">
   <permission value="bika.lims: Manage Bika"/>
  </action>
+
  <action title="Submit results" action_id="submit_results"
     category="folder_buttons" condition_expr="" icon_expr="" link_target=""
     url_expr="string:submitResults:method" visible="True">
   <permission value="bika.lims: Submit results"/>
  </action>
+
  <action title="Invoice" action_id="issue_invoice" category="folder_buttons"
     condition_expr="python:not here.getInvoice() and not here.getInvoiceExclude()"
     icon_expr="" link_target="" url_expr="string:issueInvoice:method"
     visible="True">
   <permission value="bika.lims: Manage Invoices"/>
  </action>
+
  <action title="Print Invoice" action_id="print_invoice"
     category="folder_buttons" condition_expr="python:here.getInvoice()"
     icon_expr="" link_target="" url_expr="string:printInvoice:method"
     visible="True">
   <permission value="View"/>
  </action>
+
  <action title="Large Sticker" action_id="sticker_lrg"
     category="document_actions" condition_expr="" icon_expr="" link_target=""
     url_expr="string:${object_url}/analysisrequest_sticker" visible="True">
@@ -82,9 +88,5 @@
     url_expr="string:${object_url}/analysisrequest_sticker" visible="True">
   <permission value="View"/>
  </action>
- <action title="Folder Listing" action_id="folderlisting" category="folder"
-    condition_expr="object/isPrincipiaFolderish" icon_expr="" link_target=""
-    url_expr="string:${folder_url}/view" visible="False">
-  <permission value="View"/>
- </action>
+
 </object>

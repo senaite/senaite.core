@@ -5,7 +5,6 @@ $Id: AttachmentType.py 1000 2007-12-03 11:53:04Z anneline $
 from AccessControl import ClassSecurityInfo
 from Products.Archetypes.public import *
 from Products.CMFCore.permissions import ModifyPortalContent
-from Products.CMFDynamicViewFTI.browserdefault import BrowserDefaultMixin
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.config import I18N_DOMAIN, PROJECTNAME
 import sys
@@ -20,7 +19,7 @@ schema = BikaSchema.copy() + Schema((
     ),
 ))
 
-class AttachmentType(VariableSchemaSupport, BrowserDefaultMixin, BaseContent):
+class AttachmentType(BaseContent):
     security = ClassSecurityInfo()
     schema = schema
 

@@ -5,6 +5,15 @@
      manager="plone.leftcolumn"
      category="context"
      key="/"
+     type="portlets.Login"
+     name="login"
+     visible="True"
+     />
+
+ <assignment
+     manager="plone.leftcolumn"
+     category="context"
+     key="/"
      type="portlets.Navigation"
      visible="True"
      name="navigation">
@@ -16,14 +25,5 @@
   <property name="bottomLevel">0</property>
   <property name="root">/</property>
  </assignment>
-
- <assignment
-     manager="plone.leftcolumn"
-     category="context"
-     key="/"
-     type="portlets.Login"
-     name="login"
-     visible="True"
-     />
 
 </portlets>
