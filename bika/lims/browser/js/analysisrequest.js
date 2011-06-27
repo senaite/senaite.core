@@ -646,7 +646,9 @@ jQuery( function($) {
 			},
 			success: function(responseText, statusText, xhr, $form)  {
 				if(responseText['success'] != undefined){
-					window.location.replace(window.location.href.replace("/analysisrequest_add",""));
+                    destination = window.location.href.replace("/analysisrequest_add","");
+                    destination = destination.replace("/base_edit", "/base_view");
+                    window.location.replace(destination);
 				} else {
                     msg = ""
 					for(error in responseText['errors']){

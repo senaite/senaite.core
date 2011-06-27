@@ -16,14 +16,8 @@
   <element value="LabAnalysisSpec"/>
  </property>
  <property name="allow_discussion">False</property>
- <property name="immediate_view">folder_view</property>
- <property name="default_view">folder_view</property>
- <property name="view_methods">
-  <element value="folder_view"/>
- </property>
  <property name="default_view_fallback">False</property>
- <alias from="(Default)" to="(dynamic view)"/>
+ <alias from="(Default)" to="folder_view"/>
+ <alias from="view" to="folder_view"/>
  <alias from="edit" to="base_edit"/>
- <alias from="index.html" to="(dynamic view)"/>
- <alias from="view" to="(selected layout)"/>
 </object>

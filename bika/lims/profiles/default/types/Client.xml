@@ -10,7 +10,6 @@
  <property name="factory">addClient</property>
  <property name="add_view_expr"></property>
  <property name="link_target"></property>
- <property name="immediate_view">base_edit</property>
  <property name="global_allow">False</property>
  <property name="filter_content_types">True</property>
  <property name="allowed_content_types">
@@ -24,17 +23,10 @@
   <element value="AnalysisSpec"/>
  </property>
  <property name="allow_discussion">False</property>
- <property name="default_view">analysisrequests</property>
- <property name="view_methods">
-  <element value="analysisrequests"/>
-  <element value="samples"/>
- </property>
  <property name="default_view_fallback">False</property>
- <alias from="(Default)" to="(dynamic view)"/>
- <alias from="edit" to="base_edit"/>
- <alias from="index.html" to="(dynamic view)"/>
- <alias from="properties" to="base_metadata"/>
+ <alias from="(Default)" to="analysisrequests"/>
  <alias from="view" to="analysisrequests"/>
+ <alias from="edit" to="base_edit"/>
   <action title="Edit" action_id="edit" category="object"
     condition_expr="" icon_expr="" link_target=""
     url_expr="string:${object_url}/base_edit" visible="True"/>

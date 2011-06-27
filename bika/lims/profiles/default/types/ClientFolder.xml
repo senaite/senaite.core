@@ -10,20 +10,14 @@
  <property name="factory">addClientFolder</property>
  <property name="add_view_expr"></property>
  <property name="link_target"></property>
- <property name="immediate_view">clientfolder_contents</property>
  <property name="global_allow">False</property>
  <property name="filter_content_types">True</property>
  <property name="allowed_content_types">
   <element value="Client"/>
  </property>
  <property name="allow_discussion">False</property>
- <property name="default_view">clientfolder_contents</property>
- <property name="view_methods">
-  <element value="clientfolder_contents"/>
- </property>
  <property name="default_view_fallback">False</property>
- <alias from="(Default)" to="(dynamic view)"/>
+ <alias from="(Default)" to="clientfolder_contents"/>
+ <alias from="view" to="clientfolder_contents"/>
  <alias from="edit" to="base_edit"/>
- <alias from="index.html" to="(dynamic view)"/>
- <alias from="view" to="(selected layout)"/>
  </object>

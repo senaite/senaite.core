@@ -9,11 +9,11 @@
  <property name="content_meta_type">ARImportItem</property>
  <property name="product">bika.lims</property>
  <property name="factory">addARImportItem</property>
- <property name="immediate_view">base_edit</property>
  <property name="global_allow">False</property>
  <property name="filter_content_types">True</property>
  <property name="allowed_content_types"/>
  <property name="allow_discussion">False</property>
+ <alias from="(Default)" to="base_edit"/>
  <alias from="edit" to="base_edit"/>
  <action title="View" action_id="view" category="object" condition_expr=""
     url_expr="string:${object_url}/base_view" visible="False">

@@ -272,7 +272,7 @@
                     id input_id;name input_name;
                     tabindex python:column*100+tabindex.next();"/>
                 <span tal:condition="edit"
-                  tal:content="python:context.getSamplePointTitle()"/>
+                  tal:content="python:context.getSampleTypeTitle()"/>
               </td>
             </tal:block>
           </tr>
