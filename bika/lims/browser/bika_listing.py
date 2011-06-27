@@ -28,7 +28,7 @@ class BikaListingView(FolderContentsView):
     show_sort_column = True
     show_select_row = True
     show_select_column = True
-    pagesize = 0
+    pagesize = 20
 
     title = ""
     description = ""
@@ -78,7 +78,13 @@ class BikaListingView(FolderContentsView):
                 item_id = path.split("/")[-1]
                 item_path = path.replace("/"+item_id, '')
                 item = pc(id=item_id, path={'query':item_path, 'depth':1})[0].getObject()
+                #try: # XXX in our folder views at the moment, we don't allow mixed types for submit?
                 wf.doActionFor(item, action)
+                #except:
+                    # Since we could theoritically end up with items of mixed status selected,
+                    # it can occur quite easily that the workflow_action doesn't work for some
+                    # objects but we need to keep on going.
+                    #pass
 
             # subclass form_submit is only called for transition actions
             if hasattr(self, 'form_submit'):

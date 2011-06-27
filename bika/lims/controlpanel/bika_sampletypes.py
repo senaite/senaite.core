@@ -60,7 +60,7 @@ class SampleTypes(ATFolder):
 schemata.finalizeATCTSchema(schema, folderish = True, moveDiscussion = False)
 atapi.registerType(SampleTypes, PROJECTNAME)
 
-class JSON_SampleTypes():
+class AJAX_SampleTypes():
     """ autocomplete data source for sample types field
         return JSON data [string,string]
     """

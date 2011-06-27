@@ -1,5 +1,4 @@
 jQuery( function($) {
-
 	function showMethod(path, service )
 	{
 	    window.open(path + '/bika_services/' + service + '/analysis_method','analysismethod', 'toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=400,height=400');
@@ -12,7 +11,7 @@ jQuery( function($) {
 	    element=document.getElementById(tagID)
 	    element.style.visibility = "hidden";
 	}
-	function toggleBoolean(visibleCheckbox, hiddenBoolean) 
+	function toggleBoolean(visibleCheckbox, hiddenBoolean)
 	{
 	 // this function turns a checkbox into a radio button... sort of
 	    vis = document.getElementById(visibleCheckbox);
@@ -36,7 +35,7 @@ jQuery( function($) {
 	        otherName= 'Pos.' + i;
 	        if (document.getElementById(otherName) == undefined) {
 	            break
-	        }    
+	        }
 	        otherElem = document.getElementById(otherName);
 	        item_value = parseInt(otherElem.value)
 	        if (item_value == old_value) {
@@ -57,7 +56,7 @@ jQuery( function($) {
 	        otherName= 'Pos.' + i;
 	        if (document.getElementById(otherName) == undefined) {
 	            break
-	        }    
+	        }
 	        otherElem = document.getElementById(otherName);
 	        item_value = parseInt(otherElem.value)
 	        if (item_value == old_value) {
@@ -208,7 +207,7 @@ jQuery( function($) {
 	    day.value = DateArray[2];
 	    date = document.getElementById('search_ExpiryDate_None');
 	    date.value = expiry;
-	        
+
 	    return
 	}
 	function toggleResults(uid) {
@@ -251,7 +250,7 @@ jQuery( function($) {
 	    } else {
 	        valid = false
 	    }
-	    
+
 	    elem = document.getElementById(uid + '.error');
 	    if (elem.value) {
 	        if (isNaN(elem.value)) {
@@ -263,7 +262,7 @@ jQuery( function($) {
 	        valid = false
 	    }
 
-	    
+
 	    min = document.getElementById(uid + '.min');
 	    max = document.getElementById(uid + '.max');
 	    if (valid) {
@@ -318,7 +317,7 @@ jQuery( function($) {
 	            document.getElementById('addButton').disabled = true
 	        }
 	    }
-	    
+
 	    return
 	}
 
@@ -352,7 +351,7 @@ jQuery( function($) {
 	    fieldName = changedField.attributes.getNamedItem("name").value;
 	    fieldName = fieldName.split('.')[1];
 	    return fieldName;
-	    
+
 	}
 
 	function calcResult(id)
@@ -382,11 +381,11 @@ jQuery( function($) {
 	    /* using element name, as element ID is used by autofill() in worksheets */
 	    tVolFieldName= 'results.' + id + '.TitrationVolume:record';
 	    tVolField = document.getElementsByName(tVolFieldName)[0];
-	    tVol = tVolField.value; 
+	    tVol = tVolField.value;
 	    tFacFieldName = 'results.' + id + '.TitrationFactor:record';
 	    tFacField = document.getElementsByName(tFacFieldName)[0];
-	    tFac = tFacField.value; 
-	    if ((tVol == '') || (tFac == '' )) {  
+	    tFac = tFacField.value;
+	    if ((tVol == '') || (tFac == '' )) {
 	        result = '';
 	    } else {
 	        result =  tVol* tFac;
@@ -413,7 +412,7 @@ jQuery( function($) {
 	        returnResult('', resultField)
 	        return
 	    } else {
-	        gross = parseFloat(grossField.value); 
+	        gross = parseFloat(grossField.value);
 	    }
 	    netFieldName= 'results.' + id + '.NetMass:record';
 	    netField = document.getElementsByName(netFieldName)[0];
@@ -422,7 +421,7 @@ jQuery( function($) {
 	        returnResult('', resultField)
 	        return
 	    } else {
-	        net= parseFloat(netField.value); 
+	        net= parseFloat(netField.value);
 	    }
 	    vesselFieldName= 'results.' + id + '.VesselMass:record';
 	    vesselField = document.getElementsByName(vesselFieldName)[0];
@@ -431,7 +430,7 @@ jQuery( function($) {
 	        returnResult('', resultField)
 	        return
 	    } else {
-	        vessel = parseFloat(vesselField.value); 
+	        vessel = parseFloat(vesselField.value);
 	    }
 
 	    if ((gross < net) || (net < vessel) || (gross == vessel)) {
@@ -460,7 +459,7 @@ jQuery( function($) {
 	        returnResult('', resultField)
 	        return
 	    } else {
-	        sample = parseFloat(sampleField.value); 
+	        sample = parseFloat(sampleField.value);
 	    }
 	    netFieldName= 'results.' + id + '.NetMass:record';
 	    netField = document.getElementsByName(netFieldName)[0];
@@ -469,7 +468,7 @@ jQuery( function($) {
 	        returnResult('', resultField)
 	        return
 	    } else {
-	        net= parseFloat(netField.value); 
+	        net= parseFloat(netField.value);
 	    }
 	    vesselFieldName= 'results.' + id + '.VesselMass:record';
 	    vesselField = document.getElementsByName(vesselFieldName)[0];
@@ -478,7 +477,7 @@ jQuery( function($) {
 	        returnResult('', resultField)
 	        return
 	    } else {
-	        vessel = parseFloat(vesselField.value); 
+	        vessel = parseFloat(vesselField.value);
 	    }
 
 	    if (net < vessel)  {
@@ -499,6 +498,14 @@ jQuery( function($) {
 	}
 
 	$(document).ready(function(){
+
+		// All jquery autocomplete widgets get a down-arrow keypress when clicked
+	//	this is terrible
+	//	$("input[class~='ui-autocomplete-input']").live('click', function(){
+	//		$(this).trigger({type:'keydown', which:40});
+	//		$(this).trigger({type:'keyup', which:40});
+	//	});
+
 
 	});
 

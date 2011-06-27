@@ -13,9 +13,10 @@ from plone.app.content.browser.interfaces import IFolderContentsView
 import json
 
 class AnalysisRequestAnalysesView(BikaListingView):
-    """ Display a list of Analyses
-        AnalysisRequestAnalysesView(context, request, PointOfCapture)
-        if PointOfCapture is omitted, all analyses are displayed
+    """ Display a list of AR Analyses with all possible InterimResult columns
+        (for all selected analyses) inserted into each row.
+        AnalysisRequestAnalysesView(context, request, **kwargs-->portal_catalog)
+        **kwargs is obviously restricted to indexed metadata fields
     """
     content_add_actions = {}
     show_filters = False
@@ -24,12 +25,11 @@ class AnalysisRequestAnalysesView(BikaListingView):
     show_select_column = False
     pagesize = 1000
 
-    def __init__(self, context, request, PointOfCapture = None):
-        self.contentFilter = {'portal_type': 'Analysis', 'getPointOfCapture': PointOfCapture}
+    def __init__(self, context, request, **kwargs):
+        self.contentFilter = dict(kwargs)
+        self.contentFilter['portal_type'] = 'Analysis'
         super(AnalysisRequestAnalysesView, self).__init__(context, request)
-        self.PointOfCapture = PointOfCapture
         self.contentsMethod = self.getFolderContents
-        self.interim_fields = []  # list of strings referring to InterimResults keys
 
     columns = {
         'getServiceName': {'title': _('Analysis')},
@@ -52,26 +52,23 @@ class AnalysisRequestAnalysesView(BikaListingView):
 
     def getFolderContents(self, contentFilter):
         """ This overrides the default self.context.getFolderContents().
-            The result is the same, but it has InterimResult values inserted into each record.
+            The result has InterimResult key/values inserted into each record.
             It also sets the self.interim_fields value, for later reference
     	"""
+        self.interim_fields = []
         folder_contents = []
         for item in self.context.getFolderContents(contentFilter):
             obj = item.getObject()
-            for ir in obj['InterimResults']:
-                import pdb
-                pdb.set_trace()
-                for key, value in ir.items():
-                    if key not in self.interim_fields:
-                        self.interim_fields.append(key)
-                    item[key] = value
+            for ir in obj.getInterimFields():
+                if ir['name'] not in self.interim_fields:
+                    self.interim_fields.append(ir['name'])
             folder_contents.append(item)
         return folder_contents
 
     def folderitems(self):
-        """ This folderitems also inserts the columns from InterimResults on all analyses
+        """ This folderitems also inserts the columns from InterimFields from all analyses
             into self.columns, and populates them where possible.
-            The InterimResults columns are inserted before the column called 'Results'.
+            The InterimFields columns are inserted before the column called 'Results'.
             This insertion will take effect in all review_states column listings
 		"""
         analyses = BikaListingView.folderitems(self)
@@ -81,21 +78,20 @@ class AnalysisRequestAnalysesView(BikaListingView):
 
         # munge self.columns
         for key in interim_fields:
-            import pdb
-            pdb.set_trace()
-            # How does this work for proper titles?
-            self.columns[key] = {'title': key}
+            key = key.replace("_"," ")
+            if key not in self.columns:
+                self.columns[key.replace("_"," ")] = {'title': key}
 
         # munge self.review_states
         munged_states = []
         for state in self.review_states:
             pos = state['columns'].index('Result')
-            if not pos:
-                # no change
-                munged_states.append(state)
-                continue
+            if not pos: pos = len(state['columns'])
             for key in interim_fields:
-                state['columns'].insert(pos, key)
+                key = key.replace("_"," ")
+                if key not in state['columns']:
+                    state['columns'].insert(pos, key)
+            munged_states.append(state)
         self.review_states = munged_states
 
         items = []
@@ -105,7 +101,6 @@ class AnalysisRequestAnalysesView(BikaListingView):
             item['WorksheetNumber'] = obj.getWorksheet()
             item['Uncertainty'] = obj.getUncertainty()
             item['Attachments'] = ", ".join([a.Title() for a in obj.getAttachment()])
-
             items.append(item)
         return items
 
@@ -117,8 +112,8 @@ class AnalysisRequestViewView(BrowserView):
 
     def __init__(self, context, request):
         super(AnalysisRequestViewView, self).__init__(context, request)
-        self.FieldAnalysesView = AnalysisRequestAnalysesView(context, request, PointOfCapture = 'field')
-        self.LabAnalysesView = AnalysisRequestAnalysesView(context, request, PointOfCapture = 'lab')
+        self.FieldAnalysesView = AnalysisRequestAnalysesView(context, request, getPointOfCapture = 'field')
+        self.LabAnalysesView = AnalysisRequestAnalysesView(context, request, getPointOfCapture = 'lab')
 
     def __call__(self):
         return self.template()
@@ -447,170 +442,152 @@ class AnalysisRequestEditView(AnalysisRequestAddView):
         return res
 
 class AnalysisRequestManageResultsView(AnalysisRequestViewView):
-    template = ViewPageTemplateFile("templates/analysisrequest_analyses.pt")
+    template = ViewPageTemplateFile("templates/analysisrequest_manage_results.pt")
+
+    def __init__(self, context, request):
+        super(AnalysisRequestViewView, self).__init__(context, request)
+        self.FieldAnalysesView = AnalysisRequestAnalysesView(context, request, getPointOfCapture = 'field')
+        self.LabAnalysesView = AnalysisRequestAnalysesView(context, request, getPointOfCapture = 'lab')
 
     def __call__(self):
-
-        form = self.request.form
-
-    # import pprint
-    # pprint.pprint(form)
-
         wf_tool = getToolByName(self.context, 'portal_workflow')
         pc = getToolByName(self.context, 'portal_catalog')
 
-        if form.has_key('workflow_action') and form['workflow_action'] and form.has_key('ids'):
-            success = {}
-            workflow_action = form['workflow_action']
-            ids = form['ids']
+        form = self.request.form
+        if form.has_key("submitted"):
+            import pprint
+            pprint.pprint(form)
 
-            for id in ids:
-                analysis = pc(path = { "query": [self.context.id], "level" : 3 },
-                              id = id)[0].getObject()
-                try:
-                    wf_tool.doActionFor(analysis, workflow_action)
-                    success[id] = workflow_action
-                except:
-                    # Since we can have mixed statuses on selected analyses it can occur
-                    # quite easily that the workflow_action doesn't work for some objects
-                    # but we need to keep on going.
-                    pass
+        return self.template()
 
-            # if only some analyses were published we still send an email
-            if workflow_action in ['publish', 'republish', 'prepublish'] and \
-               self.context.portal_type == 'AnalysisRequest' and \
-               len(success.keys()) > 0:
-                contact = self.context.getContact()
-                analysis_requests = [self.context]
-                contact.publish_analysis_requests(self.context, contact, analysis_requests, None)
-                # cc contacts
-                for cc_contact in self.context.getCCContact():
-                    contact.publish_analysis_requests(self.context, cc_contact, analysis_requests, None)
-                # cc emails
-                cc_emails = self.context.getCCEmails()
-                if cc_emails:
-                    contact.publish_analysis_requests(self.context, None, analysis_requests, cc_emails)
+    def getHazardous(self):
+        return self.context.getSample().getSampleType().getHazardous()
 
-            transaction_note(str(ids) + ' transitioned ' + workflow_action)
+    def getInterimFields(self,PointOfCapture):
+        # Return all interim fields for all analyses in the self.`PointOfCapture`.
+        if PointOfCapture == 'field': return self.FieldAnalysesView.interim_fields
+        else: return self.LabAnalysesView.interim_fields
 
-            # It is necessary to set the context to override context from content_status_modify
-            portal_message = 'Content has been changed'
-            # Determine whether only partial content has been changed
-            if self.context.REQUEST.form.has_key('GuardError'):
-                guard_error = self.context.REQUEST['GuardError']
-                if guard_error == 'Fail':
-                    portal_message = 'Content has not been changed'
-                elif guard_error == 'Partial':
-                    portal_message = 'Some content has been changed'
+        # XXX event subscriber for AR publish
+        #if only some analyses were published we still send an email
+        #if workflow_action in ['publish', 'republish', 'prepublish'] and \
+           #self.context.portal_type == 'AnalysisRequest' and \
+           #len(success.keys()) > 0:
+            #contact = self.context.getContact()
+            #analysis_requests = [self.context]
+            #contact.publish_analysis_requests(self.context, contact, analysis_requests, None)
+            ## cc contacts
+            #for cc_contact in self.context.getCCContact():
+                #contact.publish_analysis_requests(self.context, cc_contact, analysis_requests, None)
+            ## cc emails
+            #cc_emails = self.context.getCCEmails()
+            #if cc_emails:
+                #contact.publish_analysis_requests(self.context, None, analysis_requests, cc_emails)
+        #transaction_note(str(ids) + ' transitioned ' + workflow_action)
 
-            self.request.RESPONSE.redirect(self.context.absolute_url() + "/analysisrequest_analyses")
 
-        elif form.has_key("submitted"):
+            #for key, value in form.items():
+                #if key.startswith('results'):
+                    #id = key.split('results.')[-1]
+                    #analysis = pc(path = { "query": [self.context.id], "level" : 3 },
+                                  #id = id)[0].getObject()
+                    #if analysis.getCalcType() == 'dep':
+                        #continue
+                    #result = value.get('Result')
+                    #if result:
+                        #if result.strip() == '':
+                            #result = None
+                    #else:
+                        #result = None
 
-            for key, value in form.items():
-                if key.startswith('results'):
-                    id = key.split('results.')[-1]
-                    analysis = pc(path = { "query": [self.context.id], "level" : 3 },
-                                  id = id)[0].getObject()
-                    if analysis.getCalcType() == 'dep':
-                        continue
-                    result = value.get('Result')
-                    if result:
-                        if result.strip() == '':
-                            result = None
-                    else:
-                        result = None
+                    #retested = value.get('Retested')
 
-                    retested = value.get('Retested')
+                    #uncertainty = None
+                    #service = analysis.getService()
 
-                    uncertainty = None
-                    service = analysis.getService()
+                    #if result:
+                        #precision = service.getPrecision()
+                        #if precision:
+                            #result = self.get_precise_result(result, precision)
 
-                    if result:
-                        precision = service.getPrecision()
-                        if precision:
-                            result = self.get_precise_result(result, precision)
+                        #uncertainty = self.get_uncertainty(result, service)
 
-                        uncertainty = self.get_uncertainty(result, service)
+                    #titrationvolume = value.get('TitrationVolume')
+                    #if titrationvolume:
+                        #if titrationvolume.strip() == '':
+                            #titrationvolume = None
+                    #else:
+                        #titrationvolume = None
 
-                    titrationvolume = value.get('TitrationVolume')
-                    if titrationvolume:
-                        if titrationvolume.strip() == '':
-                            titrationvolume = None
-                    else:
-                        titrationvolume = None
+                    #titrationfactor = value.get('TitrationFactor')
+                    #if titrationfactor:
+                        #if titrationfactor.strip() == '':
+                            #titrationfactor = None
+                    #else:
+                        #titrationfactor = None
 
-                    titrationfactor = value.get('TitrationFactor')
-                    if titrationfactor:
-                        if titrationfactor.strip() == '':
-                            titrationfactor = None
-                    else:
-                        titrationfactor = None
+                    #grossmass = value.get('GrossMass')
+                    #if grossmass:
+                        #if grossmass.strip() == '':
+                            #grossmass = None
+                    #else:
+                        #grossmass = None
 
-                    grossmass = value.get('GrossMass')
-                    if grossmass:
-                        if grossmass.strip() == '':
-                            grossmass = None
-                    else:
-                        grossmass = None
+                    #netmass = value.get('NetMass')
+                    #if netmass:
+                        #if netmass.strip() == '':
+                            #netmass = None
+                    #else:
+                        #netmass = None
 
-                    netmass = value.get('NetMass')
-                    if netmass:
-                        if netmass.strip() == '':
-                            netmass = None
-                    else:
-                        netmass = None
+                    #vesselmass = value.get('VesselMass')
+                    #if vesselmass:
+                        #if vesselmass.strip() == '':
+                            #vesselmass = None
+                    #else:
+                        #vesselmass = None
 
-                    vesselmass = value.get('VesselMass')
-                    if vesselmass:
-                        if vesselmass.strip() == '':
-                            vesselmass = None
-                    else:
-                        vesselmass = None
+                    #samplemass = value.get('SampleMass')
+                    #if samplemass:
+                        #if samplemass.strip() == '':
+                            #samplemass = None
+                    #else:
+                        #samplemass = None
 
-                    samplemass = value.get('SampleMass')
-                    if samplemass:
-                        if samplemass.strip() == '':
-                            samplemass = None
-                    else:
-                        samplemass = None
+                    #analysis.setTitrationVolume(titrationvolume)
+                    #analysis.setTitrationFactor(titrationfactor)
+                    #analysis.setGrossMass(grossmass)
+                    #analysis.setNetMass(netmass)
+                    #analysis.setVesselMass(vesselmass)
+                    #analysis.setSampleMass(samplemass)
 
-                    analysis.setTitrationVolume(titrationvolume)
-                    analysis.setTitrationFactor(titrationfactor)
-                    analysis.setGrossMass(grossmass)
-                    analysis.setNetMass(netmass)
-                    analysis.setVesselMass(vesselmass)
-                    analysis.setSampleMass(samplemass)
+                    #analysis.edit(
+                        #Result = result,
+                        #Retested = retested,
+                        #Uncertainty = uncertainty,
+                        #Unit = service.getUnit()
+                    #)
 
-                    analysis.edit(
-                        Result = result,
-                        Retested = retested,
-                        Uncertainty = uncertainty,
-                        Unit = service.getUnit()
-                    )
+                    #if analysis._affects_other_analysis:
+                        #self.get_dependant_results(analysis)
+                    #if result is None:
+                        #continue
 
-                    if analysis._affects_other_analysis:
-                        self.get_dependant_results(analysis)
-                    if result is None:
-                        continue
+                    #try:
+                        #wf_tool.doActionFor(analysis, 'submit')
+                        #transaction_note('Changed status of %s at %s' % (
+                            #analysis.title_or_id(), analysis.absolute_url()))
+                    #except WorkflowException:
+                        #pass
+            #if self.context.getReportDryMatter():
+                #self.context.setDryMatterResults()
 
-                    try:
-                        wf_tool.doActionFor(analysis, 'submit')
-                        transaction_note('Changed status of %s at %s' % (
-                            analysis.title_or_id(), analysis.absolute_url()))
-                    except WorkflowException:
-                        pass
-            if self.context.getReportDryMatter():
-                self.context.setDryMatterResults()
-
-            review_state = wf_tool.getInfoFor(self.context, 'review_state', '')
-            if review_state == 'to_be_verified':
-                self.request.RESPONSE.redirect(self.context.absolute_url())
-            else:
-                self.request.RESPONSE.redirect(
-                    '%s/analysisrequest_analyses' % self.context.absolute_url())
-        else:
-            return self.template()
+            #review_state = wf_tool.getInfoFor(self.context, 'review_state', '')
+            #if review_state == 'to_be_verified':
+                #self.request.RESPONSE.redirect(self.context.absolute_url())
+            #else:
+                #self.request.RESPONSE.redirect(
+                    #'%s/analysisrequest_analyses' % self.context.absolute_url())
 
     def get_dependant_results(self, this_child):
         ##bind container=container
@@ -900,7 +877,7 @@ class AnalysisRequestManageResultsView(AnalysisRequestViewView):
 
         return actions.values()
 
-class AnalysisRequestManageResultsNotRequestedView(AnalysisRequestManageResultsView):
+class AnalysisRequestResultsNotRequestedView(AnalysisRequestManageResultsView):
     template = ViewPageTemplateFile("templates/analysisrequest_analyses_not_requested.pt")
 
     def __call__(self):
@@ -1069,9 +1046,8 @@ class AnalysisRequestSelectSampleView(BikaListingView):
                         res[catuid] = [analysis.getService().UID()]
         return res
 
-class AnalysisRequest_AnalysisServices():
-    """ AJAX requests pull this data for insertion when category header rows are clicked.
-        The view returns a standard pagetemplate, the entire html of which is inserted.
+class AJAX_ExpandCategoryView(BikaListingView):
+    """ AJAX requests pull this view for insertion when category header rows are clicked/expanded.
     """
     template = ViewPageTemplateFile("templates/analysisrequest_analysisservices.pt")
     def __call__(self):
@@ -1083,8 +1059,9 @@ class AnalysisRequest_AnalysisServices():
         pc = getToolByName(self, 'portal_catalog')
         return pc(portal_type = "AnalysisService", getCategoryUID = CategoryUID, getPointOfCapture = poc)
 
-    def CalcDependancy(self, column, serviceUID):
-        """ return {'categoryIDs': [element IDs of category TRs],
+    def getDependancies(self, serviceUID):
+        """ Return a list of services we depend on.
+            return {'categoryIDs': [element IDs of category TRs],
                     'serviceUIDs': [dependant service UIDs]}
         """
         pc = getToolByName(self, 'portal_catalog')
@@ -1092,11 +1069,11 @@ class AnalysisRequest_AnalysisServices():
         service = rc.lookupObject(serviceUID)
         depcatIDs = []
         depUIDs = []
-        for depUID in service.getCalcDependancyUIDS():
-            dep_service = rc.lookupObject(depUID)
-            depcat_id = dep_service.getCategoryUID() + "_" + dep_service.PointOfCapture
+        method_deps = service.getMethod() and service.getMethod().getDependentAnalyses() or []
+        for service in method_deps:
+            depcat_id = service.getCategoryUID() + "_" + service.PointOfCapture
             if depcat_id not in depcatIDs: depcatIDs.append(depcat_id)
-            depUIDs.append(depUID)
+            depUIDs.append(service.UID())
         return {'categoryIDs':depcatIDs, 'serviceUIDs':depUIDs}
 
 class AnalysisRequest_ProfileServices():
@@ -1311,7 +1288,8 @@ def analysisrequest_add_submit(context, request):
             if values.has_key('SampleID') and wftool.getInfoFor(sample, 'review_state') != 'due':
                 wftool.doActionFor(ar, 'receive')
 
-            ARs.append(ar_id)
+        # Then setAnalyses (ARAnalysesField) to create Analysis objects
+        ar.setAnalyses(Analyses, prices=prices)
 
     # AVS check sample_state and promote the AR is > 'due'
 
@@ -1337,6 +1315,8 @@ def analysisrequest_add_submit(context, request):
     return json.dumps({'success':message})
 
 class AnalysisRequestsView(ClientAnalysisRequestsView):
+    """ The main portal Analysis Requests action tab
+    """
     content_add_actions = {}
     contentFilter = {'portal_type':'AnalysisRequest',
                      'path':{"query": ["/"], "level" : 0 }}

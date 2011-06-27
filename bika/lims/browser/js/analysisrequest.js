@@ -424,13 +424,13 @@ jQuery( function($) {
 	}
 
 	function autocomplete_sampletype(request,callback){
-		$.getJSON('json_sampletypes', {'term':request.term}, function(data,textStatus){
+		$.getJSON('ajax_sampletypes', {'term':request.term}, function(data,textStatus){
 			callback(data);
 		});
 	}
 
 	function autocomplete_samplepoint(request,callback){
-		$.getJSON('json_samplepoints', {'term':request.term}, function(data,textStatus){
+		$.getJSON('ajax_samplepoints', {'term':request.term}, function(data,textStatus){
 			callback(data);
 		});
 	}
@@ -442,8 +442,8 @@ jQuery( function($) {
 		$("select[class='ARProfile']").change(setARProfile);
 
 		// clicking on the td will select the checkbox within
-		$(".cb").click(function(){
-			$(this).firstchild.click();
+		$("td.cb").click(function(){
+			$(this.children[0]).click();
 		});
 
 		//

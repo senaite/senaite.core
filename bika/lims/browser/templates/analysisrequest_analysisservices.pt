@@ -1,57 +1,56 @@
 <tal:define define="categoryUID python:view.request['categoryUID'];poc python:view.request['poc'];">
-<tr tal:repeat="service python:view.Services(categoryUID, poc)" tal:define="portal context/@@plone_portal_state/portal">
-<th>
- <span tal:content="service/Title"/>
- <em style="white-space:nowrap;" tal:condition="service/getUnit">(<span tal:replace="service/getUnit">mg/l</span>)</em>
- <img tal:condition="python:context.bika_settings.laboratory.getLaboratoryAccredited() and service.getAccredited" tal:attributes="src string:${portal/absolute_url}/images/accredited.png"/>
-</th>
-<td>
- <input class="price noborder" type="text" size="5" 
-  tal:attributes="
-   value service/getPrice;
-   id string:ar_${categoryUID}_${poc}_${service/UID}_price;
-   name string:Prices.${service/UID}:record;
-   vat_amount string:${service/getVAT}"/>
- <input class="vat" type="hidden"
-  tal:attributes="
-   value service/getVAT;
-   id string:ar_${categoryUID}_${poc}_${service/UID}_vat;
-   name string:VAT.${service/UID}:record;"/>
-</td>
-<td>
-  <image class="copyButton" tal:condition="python:int(view.request['col_count']) > 1"
-    tal:attributes="id string:ar_${categoryUID}_${poc}_${service/UID}; 
-                    src string:${portal/absolute_url}/images/copy.png"/>
-</td>
-<tal:block repeat="column python:range(int(view.request['col_count']))">
-<td class="cb" tal:define="
- disable python:int(view.request.get('disable', '-1'));
- input_id string:ar_${column}_${categoryUID}_${poc}_${service/UID};
- input_name string:ar.${column}.Analyses:list:ignore_empty:record;
- selected python:view.request['column'] != '' and column == int(view.request['column']) and view.request['selectedservices'] or '';
- serviceUID service/UID;
- deps python:view.CalcDependancy(column, serviceUID)">
-
- <input tal:condition="python: disable > -1 and disable == column"
-  disabled="disabled"
-  class="cb" type="checkbox" tal:attributes="
-  id input_id;
-  name input_name;
-  value serviceUID;
-  checked python:(selected.find(serviceUID)>-1 or request.get(input_name, [])) and 'checked' or None;
-  depuids python:','.join(deps['serviceUIDs']);
-  depcatids python:','.join(deps['categoryIDs']);"/>
-
- <input tal:condition="python: disable != column"
-  class="cb" type="checkbox" tal:attributes="
-  id input_id;
-  name input_name;
-  value serviceUID;
-  checked python:(selected.find(serviceUID)>-1 or request.get(input_name, [])) and 'checked' or None;
-  depuids python:','.join(deps['serviceUIDs']);
-  depcatids python:','.join(deps['categoryIDs']);"/>
-
-</td>
-</tal:block>
-</tr>
+  <tr tal:repeat="service python:view.Services(categoryUID, poc)" tal:define="portal context/@@plone_portal_state/portal">
+    <th>
+      <span tal:content="service/Title"/>
+      <em style="white-space:nowrap;" tal:condition="service/getUnit">(<span tal:replace="service/getUnit">mg/l</span>)</em>
+      <img tal:condition="python:context.bika_settings.laboratory.getLaboratoryAccredited() and service.getAccredited" tal:attributes="src string:${portal/absolute_url}/images/accredited.png"/>
+    </th>
+    <td>
+      <input class="price noborder" type="text" size="5"
+        tal:attributes="
+         value service/getPrice;
+         id string:ar_${categoryUID}_${poc}_${service/UID}_price;
+         name string:Prices.${service/UID}:record;
+         vat_amount string:${service/getVAT}"/>
+      <input class="vat" type="hidden"
+        tal:attributes="
+        value service/getVAT;
+        id string:ar_${categoryUID}_${poc}_${service/UID}_vat;
+        name string:VAT.${service/UID}:record;"/>
+    </td>
+    <td>
+      <image class="copyButton" tal:condition="python:int(view.request['col_count']) > 1"
+        tal:attributes="id string:ar_${categoryUID}_${poc}_${service/UID};
+                        src string:${portal/absolute_url}/images/copy.png"/>
+    </td>
+    <tal:define define="
+      serviceUID service/UID;
+      deps python:view.getDependancies(serviceUID)">
+      <tal:block repeat="column python:range(int(view.request['col_count']))">
+        <td class="cb" tal:define="
+          disable python:int(view.request.get('disable', '-1'));
+          input_id string:ar_${column}_${categoryUID}_${poc}_${service/UID};
+          input_name string:ar.${column}.Analyses:list:ignore_empty:record;
+          selected python:view.request['column'] != '' and column == int(view.request['column']) and view.request['selectedservices'] or '';">
+          <input tal:condition="python: disable > -1 and disable == column"
+            disabled="disabled"
+            class="cb" type="checkbox" tal:attributes="
+            id input_id;
+            name input_name;
+            value serviceUID;
+            checked python:(selected.find(serviceUID)>-1 or request.get(input_name, [])) and 'checked' or None;
+            depuids python:','.join(deps['serviceUIDs']);
+            depcatids python:','.join(deps['categoryIDs']);"/>
+          <input tal:condition="python: disable != column"
+            class="cb" type="checkbox" tal:attributes="
+            id input_id;
+            name input_name;
+            value serviceUID;
+            checked python:(selected.find(serviceUID)>-1 or request.get(input_name, [])) and 'checked' or None;
+            depuids python:','.join(deps['serviceUIDs']);
+            depcatids python:','.join(deps['categoryIDs']);"/>
+        </td>
+      </tal:block>
+    </tal:define>
+  </tr>
 </tal:define>

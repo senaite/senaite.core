@@ -1,13 +1,13 @@
 jQuery( function($) {
 
     function autocomplete_sampletype(request,callback){
-        $.getJSON('json_sampletypes', {'term':request.term}, function(data,textStatus){
+        $.getJSON('ajax_sampletypes', {'term':request.term}, function(data,textStatus){
             callback(data);
         });
     }
 
     function autocomplete_samplepoint(request,callback){
-        $.getJSON('json_samplepoints', {'term':request.term}, function(data,textStatus){
+        $.getJSON('ajax_samplepoints', {'term':request.term}, function(data,textStatus){
             callback(data);
         });
     }
@@ -28,9 +28,9 @@ jQuery( function($) {
         }
 
         // Sample Edit ajax form submits
-        var options = { 
+        var options = {
             url: window.location.href,
-            dataType:  'json', 
+            dataType:  'json',
             data: $(this).formToArray(),
             beforeSubmit: function(formData, jqForm, options) {
                 $("input[class~='context']").attr('disabled',true);

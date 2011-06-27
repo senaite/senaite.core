@@ -5,41 +5,11 @@ from Products.Archetypes.public import *
 from Products.Archetypes.references import HoldingReference
 from Products.CMFCore.permissions import View, ModifyPortalContent
 from Products.CMFCore.utils import getToolByName
-from bika.lims.browser.widgets.serviceswidget import ServicesWidget
+from bika.lims.browser.widgets import ServicesWidget, RecordsWidget
 from bika.lims.config import ATTACHMENT_OPTIONS, I18N_DOMAIN, PROJECTNAME, \
     POINTS_OF_CAPTURE
 from bika.lims.content.bikaschema import BikaSchema
 import sys
-
-class UncertaintiesField(RecordsField):
-    """a list of uncertainty values per service"""
-    _properties = RecordsField._properties.copy()
-    _properties.update({
-        'type' : 'uncertainties',
-        'subfields' : ('intercept_min', 'intercept_max', 'errorvalue'),
-        'required_subfields' : ('intercept_min', 'intercept_max', 'errorvalue'),
-        'subfield_sizes': {'intercept_min': 10,
-                           'intercept_max': 10,
-                           'errorvalue': 10,
-                           },
-        'subfield_labels':{'intercept_min': 'Min',
-                           'intercept_max': 'Max',
-                           'errorvalue': 'Actual value',
-                           },
-        })
-    security = ClassSecurityInfo()
-
-class ResultOptionsField(RecordsField):
-    """an explicit list of possible analysis results per service"""
-    _properties = RecordsField._properties.copy()
-    _properties.update({
-        'type' : 'resultsoptions',
-        'subfields' : ('Seq', 'Result',),
-        'required_subfields' : ('Seq', 'Result',),
-        'subfield_types': {'Seq':'int' },
-        'subfield_labels':{'Result': 'Option Text' },
-        })
-    security = ClassSecurityInfo()
 
 schema = BikaSchema.copy() + Schema((
     TextField('ServiceDescription',
@@ -145,19 +115,6 @@ schema = BikaSchema.copy() + Schema((
             description_msgid = 'help_import_keyword',
         ),
     ),
-    ReferenceField('CalcDependancy',
-        required = 0,
-        multiValued = 1,
-        vocabulary_display_path_bound = sys.maxint,
-        allowed_types = ('AnalysisService',),
-        relationship = 'AnalysisServiceAnalysisService',
-        referenceClass = HoldingReference,
-        widget = ServicesWidget(
-            label = 'Dependant Analyses',
-            label_msgid = 'label_dependants',
-            i18n_domain = I18N_DOMAIN,
-        ),
-    ),
     ReferenceField('Instrument',
         required = 0,
         vocabulary_display_path_bound = sys.maxint,
@@ -194,19 +151,7 @@ schema = BikaSchema.copy() + Schema((
             description_msgid = 'help_max_hours_allowed',
         ),
     ),
-    ReferenceField('CalculationType',
-        required = 0,
-        vocabulary_display_path_bound = sys.maxint,
-        allowed_types = ('CalculationType',),
-        relationship = 'AnalysisServiceCalculationType',
-        referenceClass = HoldingReference,
-        widget = ReferenceWidget(
-            checkbox_bound = 1,
-            label = 'CalculationType',
-            label_msgid = 'label_calculationtype',
-            i18n_domain = I18N_DOMAIN,
-        ),
-    ),
+    # XXX TitrationUnit goes into InterimFields?
     StringField('TitrationUnit',
         default = 'ml',
         widget = StringWidget(
@@ -269,29 +214,6 @@ schema = BikaSchema.copy() + Schema((
             label_msgid = "label_accredited"
         ),
     ),
-    ComputedField('CalcDependancyUIDS',
-        index = "FieldIndex:brains",
-        expression = 'context.getDependancyUIDS()',
-        widget = ComputedWidget(
-            label = "Calc",
-            visible = {'edit':'hidden', }
-        ),
-    ),
-    ComputedField('CalcName',
-        expression = 'context.getCalcTitle()',
-        widget = ComputedWidget(
-            label = "Calc",
-            visible = {'edit':'hidden', }
-        ),
-    ),
-    ComputedField('CalcType',
-        index = 'FieldIndex',
-        expression = 'context.getCalcCode()',
-        widget = ComputedWidget(
-            label = "Calc code",
-            visible = {'edit':'hidden', }
-        ),
-    ),
     ComputedField('CategoryName',
         index = 'FieldIndex',
         expression = "context.getCategory() and context.getCategory().Title() or ''",
@@ -308,8 +230,36 @@ schema = BikaSchema.copy() + Schema((
             visible = {'edit':'hidden', }
         ),
     ),
-    UncertaintiesField('Uncertainties'),
-    ResultOptionsField('ResultOptions'),
+    RecordsField('Uncertainties',
+        type = 'uncertainties',
+        subfields = ('intercept_min', 'intercept_max', 'errorvalue'),
+        required_subfields = ('intercept_min', 'intercept_max', 'errorvalue'),
+        subfield_sizes = {'intercept_min': 10,
+                           'intercept_max': 10,
+                           'errorvalue': 10,
+                           },
+        subfield_labels = {'intercept_min': 'Min',
+                           'intercept_max': 'Max',
+                           'errorvalue': 'Actual value',
+                           },
+        #widget = RecordsWidget(
+        #    label = 'Uncertainties',
+        #    label_msgid = 'label_uncertainties',
+        #    i18n_domain = I18N_DOMAIN,
+        #),
+    ),
+    RecordsField('ResultOptions',
+        type = 'resultsoptions',
+        subfields = ('Seq', 'Result',),
+        required_subfields = ('Seq', 'Result',),
+        subfield_types = {'Seq':'int'},
+        subfield_labels = {'Result': 'Option Text'},
+        #widget = RecordsWidget(
+        #    label = 'Result Options',
+        #    label_msgid = 'label_result_options',
+        #    i18n_domain = I18N_DOMAIN,
+        #),
+    ),
 ))
 
 class AnalysisService(BaseContent):

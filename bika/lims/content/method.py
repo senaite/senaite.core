@@ -2,27 +2,12 @@ from AccessControl import ClassSecurityInfo
 from Products.CMFCore.permissions import ModifyPortalContent, View
 from Products.Archetypes.public import *
 from Products.Archetypes.references import HoldingReference
-from Products.Archetypes.Registry import registerWidget
-from Products.ATExtensions.ateapi import RecordsField
-from Products.ATExtensions.widget import RecordsWidget
+from Products.ATExtensions.ateapi import RecordsField as RecordsField
+from bika.lims.browser.widgets import RecordsWidget
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.config import I18N_DOMAIN, PROJECTNAME
 from bika.lims import bikaMessageFactory as _
 import sys
-
-class MethodInterimFieldsWidget(RecordsWidget):
-    security = ClassSecurityInfo()
-    _properties = RecordsWidget._properties.copy()
-    _properties.update({
-        'macro': "bika_widgets/methodinterimfieldswidget",
-        'helper_js': ("bika_widgets/methodinterimfieldswidget.js",),
-        'helper_css': ("bika_widgets/methodinterimfieldswidget.css",),
-    })
-
-registerWidget(MethodInterimFieldsWidget,
-               title = 'Interim Fields',
-               description = ('Possible Interim Result fields created in analyses that use this method.'),
-               )
 
 schema = BikaSchema.copy() + Schema((
     TextField('MethodDescription',
@@ -47,10 +32,12 @@ schema = BikaSchema.copy() + Schema((
         )
     ),
     RecordsField('InterimFields',
-        type = 'interimfields',
-        subfields = ('name', 'type', 'default'),
-        required_subfields = ('name','type'),
-        widget = MethodInterimFieldsWidget(
+        # subfield values must be the identical twin of Analysis.InterimFields.
+        type = 'InterimFields',
+        subfields = ('name', 'type', 'value', 'unit', 'collapse'),
+        subfield_labels = {'name':'Name', 'type':'Type', 'value':'Default', 'unit':'Unit', 'collapse':'Collapse'},
+        required_subfields = ('name',),
+        widget = RecordsWidget(
             label = 'Method Interim Fields',
             label_msgid = 'label_interim_fields',
             i18n_domain = I18N_DOMAIN,
@@ -61,7 +48,7 @@ schema = BikaSchema.copy() + Schema((
         multiValued = 1,
         vocabulary_display_path_bound = sys.maxint,
         allowed_types = ('AnalysisService',),
-        relationship = 'AnalysisServiceAnalysisService',
+        relationship = 'MethodAnalysisService',
         referenceClass = HoldingReference,
         widget = ReferenceWidget(
             checkbox_bound = 1,
@@ -70,18 +57,11 @@ schema = BikaSchema.copy() + Schema((
             i18n_domain = I18N_DOMAIN,
         ),
     ),
-    StringField('CalculationTitle',
-        widget = StringWidget(
-            label = 'Calculation Title',
-            label_msgid = 'label_calculation_title',
-            i18n_domain = I18N_DOMAIN,
-        )
-    ),
     TextField('Calculation',
         widget = TextAreaWidget(
             label = 'Calculation',
             label_msgid = 'label_method_description',
-            description = 'Type the calculation formula here.  XXX XXX %x markers for dependent analyses results and InterimField field values...',
+            description = 'The formula you type here will be dynamically calculated when an analysis using this method is displayed.',
             description_msgid = 'help_vat_percentage',
             i18n_domain = I18N_DOMAIN,
         )

@@ -13,14 +13,12 @@ from Products.CMFCore.permissions import View, \
 from Products.Archetypes.public import *
 from Products.Archetypes.references import HoldingReference
 from Products.Archetypes.config import REFERENCE_CATALOG
-from Products.ATExtensions.ateapi import DateTimeField, DateTimeWidget
+from Products.ATExtensions.ateapi import DateTimeField, DateTimeWidget, RecordsField
+from bika.lims.browser.widgets import RecordsWidget
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.config import I18N_DOMAIN, PROJECTNAME
-from Products.ATExtensions.ateapi import RecordsField
-from Products.CMFDynamicViewFTI.browserdefault import \
-    BrowserDefaultMixin
 
-# XXX XXX tune Analysis indexes and all kinds of other performance things
+# XXX XXX tune up
 
 #try:
 #    from bika.limsCalendar.config import TOOL_NAME as BIKA_CALENDAR_TOOL # XXX
@@ -73,7 +71,10 @@ schema = BikaSchema.copy() + Schema((
             i18n_domain = I18N_DOMAIN,
         )
     ),
-    StringField('CalcType',
+    ReferenceField('Method',
+        allowed_types = ('Method',),
+        relationship = 'AnalysisMethod',
+        referenceClass = HoldingReference,
     ),
     StringField('AnalysisKey',
     ),
@@ -82,72 +83,40 @@ schema = BikaSchema.copy() + Schema((
         allowed_types = ('Analysis',),
         relationship = 'AnalysisAnalysis',
         referenceClass = HoldingReference,
-        widget = ReferenceWidget(
-            label = 'Analysis',
-            label_msgid = 'label_analysis',
-            i18n_domain = I18N_DOMAIN,
-        )
     ),
     BooleanField('ReportDryMatter',
         default = False,
-        widget = BooleanWidget(
-            label = "Report Dry Matter",
-            label_msgid = "label_report_dm",
+    ),
+    RecordsField('InterimFields',
+        # subfield values must be the identical twin of Methods.InterimFields.
+        type = 'InterimFields',
+        subfields = ('name', 'type', 'value', 'unit', 'collapse'),
+        subfield_labels = {'name':'Name', 'type':'Type', 'value':'Default', 'unit':'Unit', 'collapse':'Collapse'},
+        required_subfields = ('name',),
+        widget = RecordsWidget(
+            label = 'Method Interim Fields',
+            label_msgid = 'label_interim_fields',
             i18n_domain = I18N_DOMAIN,
-        ),
+        )
     ),
     StringField('Result',
-        widget = StringWidget(
-            label = 'Result',
-            label_msgid = 'label_result',
-            i18n_domain = I18N_DOMAIN,
-        )
-    ),
-    StringField('ResultDM',
-        widget = StringWidget(
-            label = 'Result (dry)',
-            label_msgid = 'label_result_dry_matter',
-            i18n_domain = I18N_DOMAIN,
-        )
-    ),
-    # InterimResults keys are defined by the AnalysisService's selected Method.
-    RecordsField('InterimResults',
     ),
     BooleanField('Retested',
         default = False,
-        widget = BooleanWidget(
-            label = "Retested",
-            label_msgid = "label_retested",
-            i18n_domain = I18N_DOMAIN,
-        ),
     ),
     StringField('Uncertainty',
-        widget = StringWidget(
-            label = 'Uncertainty',
-            label_msgid = 'label_uncertainty',
-            i18n_domain = I18N_DOMAIN,
-        )
     ),
     ComputedField('Category',
         index = 'FieldIndex:brains',
         expression = 'context.Service.getCategoryName()',
-        widget = ComputedWidget(
-            visible = False,
-        ),
     ),
     ComputedField('ClientUID',
         index = 'FieldIndex',
         expression = 'context.aq_parent.aq_parent.UID()',
-        widget = ComputedWidget(
-            visible = False,
-        ),
     ),
     ComputedField('ClientName',
         index = 'FieldIndex:brains',
         expression = 'context.aq_parent.aq_parent.Title()',
-        widget = ComputedWidget(
-            visible = False,
-        ),
     ),
     ComputedField('RequestID',
         index = 'FieldIndex:brains',
@@ -236,7 +205,7 @@ schema = BikaSchema.copy() + Schema((
 ),
 )
 
-class Analysis(VariableSchemaSupport, BrowserDefaultMixin, BaseContent):
+class Analysis(BaseContent):
     security = ClassSecurityInfo()
     schema = schema
     displayContentsTab = False

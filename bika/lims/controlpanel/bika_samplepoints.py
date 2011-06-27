@@ -60,7 +60,7 @@ class SamplePoints(ATFolder):
 schemata.finalizeATCTSchema(schema, folderish = True, moveDiscussion = False)
 atapi.registerType(SamplePoints, PROJECTNAME)
 
-class JSON_SamplePoints():
+class AJAX_SamplePoints():
     """ autocomplete data source for sample points field
         return JSON data [string,string]
     """

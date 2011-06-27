@@ -247,7 +247,7 @@ fieldset.attachments {
 /*
  *  General Form Elements
  */
-.cb {
+input.cb {
     border: none;
     background-color: transparent;
 }

@@ -21,8 +21,7 @@ class AnalysisServicesView(BikaListingView):
     show_sort_column = False
     show_select_row = False
     show_select_column = True
-    batch = True
-    pagesize = 20
+    pagesize = 50
 
     columns = {
                'title_or_id': {'title': _('Title')},
@@ -34,22 +33,14 @@ class AnalysisServicesView(BikaListingView):
                'CorporatePrice': {'title': _('Corporate price excluding VAT')},
                'MaxHoursAllowed': {'title': _('Maximum Hours Allowed')},
                'DuplicateVariation': {'title': _('Duplicate Variation')},
-               'Calc': {'title': _('Calc')},
+               'Method': {'title': _('Method')},
               }
     review_states = [
                      {'title_or_id': _('All'), 'id':'all',
                       'columns': ['title_or_id', 'CategoryName', 'ReportDryMatter',
                                   'AttachmentOption', 'Unit', 'Price', 'CorporatePrice',
-                                  'MaxHoursAllowed', 'DuplicateVariation', 'Calc',
+                                  'MaxHoursAllowed', 'DuplicateVariation', 'Method',
                                  ],
-                      'buttons':[{'cssclass': 'context',
-                                  'title': _('Delete'),
-                                  'url': 'folder_delete:method'},
-                                 {'cssclass':'context',
-                                  'title': _('Duplicate'),
-                                  'url': 'duplicate_services:method',
-                                 }
-                               ],
                      },
                     ]
 
@@ -69,8 +60,8 @@ class AnalysisServicesView(BikaListingView):
             items[x]['MaxHoursAllowed'] = obj.MaxHoursAllowed
             if obj.DuplicateVariation is not None: items[x]['DuplicateVariation'] = "%s.%02d" % (obj.DuplicateVariation)
             else: items[x]['DuplicateVariation'] = ""
-            calc = obj.getCalculationType()
-            items[x]['Calc'] = calc and calc.Title() or ''
+            method = obj.getMethod()
+            items[x]['Method'] = method and method.Title() or ''
             items[x]['links'] = {'title_or_id': items[x]['url'] + "/edit"}
             out.append(items[x])
         return out

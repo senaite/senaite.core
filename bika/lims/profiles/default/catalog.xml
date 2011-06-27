@@ -178,9 +178,6 @@
  <index name="getAccredited" meta_type="FieldIndex">
   <indexed_attr value="getAccredited"/>
  </index>
- <index name="getCalcDependancyUIDS" meta_type="FieldIndex">
-  <indexed_attr value="getCalcDependancyUIDS"/>
- </index>
  <index name="getProfileTitle" meta_type="FieldIndex">
   <indexed_attr value="getProfileTitle"/>
  </index>
@@ -273,7 +270,6 @@
  <column value="getPrice"/>
  <column value="getVAT"/>
  <column value="getAccredited"/>
- <column value="getCalcDependancyUIDS"/>
  <column value="getProfileTitle"/>
  <column value="getProfileKey"/>
  <column value="id"/>

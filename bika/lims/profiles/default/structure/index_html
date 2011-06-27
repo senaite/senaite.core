@@ -1,17 +1,17 @@
 id: index_html
 title: Welcome to Bika LIMS 3 Pre-Release
 description: This is a prerelease of 3.0, due for release in June 2011.
-subject: 
-relatedItems: 
-location: 
-language: 
+subject:
+relatedItems:
+location:
+language:
 effectiveDate: 2011/01/01 23:00:00 GMT+2
 expirationDate: None
 creation_date: 2011/01/01 23:00:00 GMT+2
 modification_date: 2011/02/01 10:59:31.194263 GMT+2
 creators: admin
-contributors: 
-rights: 
+contributors:
+rights:
 allowDiscussion: True
 excludeFromNav: True
 presentation: False
@@ -28,12 +28,21 @@ Content-Type: text/html
 
 <p>The id-server process has to be running before the LIMS data can be added.</p>
 <p>The id-server port used (default 8081) must not be the same as the Zope
-port (default 8080) and must be specified in the Environment section of etc/zope.conf</p>
+port (default 8080) and must be specified in the Environment section of etc/zope.conf.
+If you are using a buildout-based install, you will need to add the following to
+[instance] in buildout.cfg:</p>
+
+<pre>
+[instance]
+environment-vars =
+    IDServerURL http://localhost:8081
+</pre>
+
 <p>Ensure write permissions are valid for the  ./var/log and ./var directories.
 
 You can start the id-server with a script as below and run it in the background.
 <pre>
-PYTHON=/usr/bin/python  ## MODIFY FOR YOUR PYTHON 
+PYTHON=/usr/bin/python  ## MODIFY FOR YOUR PYTHON
 #MODIFY FOR YOUR SOURCE DIRECTORY
 $PYTHON bika3/bika/lims/scripts/id-server.py \
         -f var/id.counter -p 8081 T \
@@ -41,7 +50,7 @@ $PYTHON bika3/bika/lims/scripts/id-server.py \
 </pre>
 <p>
 To test if the ID Server is running, use a web browser on the
-URL, eg <a href="http://localhost:8081">http://localhost:8081</a>  -- 
+URL, eg <a href="http://localhost:8081">http://localhost:8081</a>  --
 you should see an increasing integer count when you reload.
 <p>
 

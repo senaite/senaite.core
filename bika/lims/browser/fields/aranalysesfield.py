@@ -1,4 +1,4 @@
-from types import ListType, TupleType
+from types import ListType, TupleType, DictType
 from AccessControl import ClassSecurityInfo
 from Products.CMFCore.utils import getToolByName
 from Products.Archetypes.public import *
@@ -11,6 +11,9 @@ class ARAnalysesField(ObjectField):
 
     """A field that stores Analyses instances
 
+    get() returns the list of Analyses contained inside the AnalysesRequest
+    set() converts a sequence of dictionaries to Analysis instances
+    created inside the AnalysisRequest.
     """
 
     _properties = Field._properties.copy()
@@ -19,7 +22,7 @@ class ARAnalysesField(ObjectField):
         'default' : None,
         })
 
-    security = ClassSecurityInfo()
+    security  = ClassSecurityInfo()
 
     security.declarePrivate('get')
     def get(self, instance, **kwargs):
@@ -28,137 +31,78 @@ class ARAnalysesField(ObjectField):
         return instance.objectValues('Analysis')
 
     security.declarePrivate('set')
-    def set(self, instance, value, **kwargs):
-        """ value must be a sequence of uid:price
+    def set(self, instance, service_uids, prices=None, **kwargs):
+        """ service_uids are the services selected on the AR Add/Edit form.
+            prices is a service_uid keyed dictionary containing the prices entered on the form.
         """
-        if not value:
+        if not service_uids:
             return
 
-        assert type(value) in (ListType, TupleType)
+        assert type(service_uids) in (ListType, TupleType)
+        assert prices
 
-        # one can only edit Analyses if the AR is 'sample_received'
-        # created state is for sample in the interlab skin    
-        wf_tool = instance.portal_workflow
-        ar_state = wf_tool.getInfoFor(instance, 'review_state', '')
-        assert ar_state in ('created', 'sample_due', 'sample_received', 'assigned')
+        wf = instance.portal_workflow
+        # one can only edit Analyses up to a certain state.
+        ar_state = wf.getInfoFor(instance, 'review_state', '')
+        assert ar_state in ('sample_due', 'sample_received', 'assigned')
 
-        # add new analyses
-        rc = getToolByName(instance, REFERENCE_CATALOG)
-        keep_ids = []
-        dependancies = {}
         services = {}
-        prices = {}
-        parents = {}
-        children = {}
-        calc_codes = {}
-        all_dependant_calcs = []
-        for item in value:
-            uid = item.split(':')[0]
-            keep_ids.append(uid)
-            price = item.split(':')[1]
-            service = rc.lookupObject(uid)
-            services[uid] = service
-            prices[uid] = price
-            calc_type = service.getCalculationType()
-            if calc_type:
-                calc_code = calc_type.getCalcTypeCode()
-            else:
-                calc_code = None
-            calc_codes[uid] = calc_code
-            if calc_code == 'dep':
-                analysis_key = service.getAnalysisKey()
-                dependancies[analysis_key] = []
-                for s in service.getCalcDependancy():
-                    dependancies[analysis_key].append(s.getAnalysisKey())
-                    all_dependant_calcs.append(s.getAnalysisKey())
+        rc = getToolByName(instance, REFERENCE_CATALOG)
+        for service_uid in service_uids:
+            service = rc.lookupObject(service_uid)
+            services[service_uid] = service
+            price = prices[service_uid]
+            vat = Decimal(service.getVAT())
 
-        analyses = services.keys()
-        for uid in analyses:
-            service = services[uid]
-            price = prices[uid]
-            try:
-                price = Decimal(price, 2)
-            except ValueError:
-                price = Decimal('0.00')
-            calc_code = calc_codes[uid]
-            if not shasattr(instance, service.id):
-                instance.invokeFactory(
-                    id = service.id, type_name = 'Analysis')
+            #create the analysis if it doesn't exist
+            if not hasattr(instance, service.id):
+                instance.invokeFactory(id = service.id, type_name = 'Analysis')
             analysis = instance._getOb(service.id)
-            ar_report_dm = analysis.aq_parent.getReportDryMatter()
-            vat = service.getVAT()
-            vat = vat and Decimal(vat, 2) or Decimal('0.00')
-            totalprice = price + (price * vat) / 100
+
+            interim_fields = service.getMethod() and service.getMethod().getInterimFields() or []
 
             # Using getRaw method on field rather than generated
             # accessor to prevent object lookup
             if analysis.Schema()['Service'].getRaw(analysis) is None:
+            # "if Service field of AR doesn't know about us yet"
                 analysis.edit(
                     Service = service,
-                    CalcType = calc_code,
+                    Method = service.getMethod(),
+                    InterimFields = interim_fields,
                     AnalysisKey = service.getAnalysisKey(),
                     Price = str(price),
                     VAT = str(vat),
-                    TotalPrice = str(totalprice),
+                    TotalPrice = str(Decimal(prices[service_uid]) * vat),
                     Unit = service.getUnit(),
                 )
+
             else:
                 # the price or unit of an existing analysis may have changed
                 if (analysis.getPrice() != price) or \
-                   (analysis.getUnit() != service.getUnit()) or \
-                   (analysis.getCalcType() != calc_code):
+                   (analysis.getUnit() != service.getUnit()):
+                   # XXX if method changes?  Calculation was here when it was on service.  or (analysis.getMethod() != service.getMethod()):
                     analysis.edit(
-                        CalcType = calc_code,
+                        #Method = service.getMethod(),
                         AnalysisKey = service.getAnalysisKey(),
                         Price = str(price),
-                        VAT = service.getVAT(),
-                        TotalPrice = str(totalprice),
+                        VAT = str(vat),
+                        TotalPrice = str(Decimal(prices[service_uid]) * vat),
                         Unit = service.getUnit(),
                     )
-            if analysis.getCalcType() == 'dep':
-                parents[service.getAnalysisKey()] = analysis
-            if service.getAnalysisKey() in all_dependant_calcs:
-                children[service.getAnalysisKey()] = analysis.UID()
-            if service.getAnalysisKey() in all_dependant_calcs:
-                analysis._affects_other_analysis = True
-            else:
-                analysis._affects_other_analysis = False
-            if ar_report_dm:
-                if service.getReportDryMatter():
-                    analysis.setReportDryMatter(True)
-                else:
-                    analysis.setReportDryMatter(False)
 
 
-            review_state = wf_tool.getInfoFor(analysis, 'review_state', '')
+            review_state = wf.getInfoFor(analysis, 'review_state', '')
             if ar_state in ('sample_received', 'assigned') and \
-               review_state == 'sample_due':
+                review_state == 'sample_due':
                 wf_tool.doActionFor(analysis, 'receive')
-
-        # set up the dependancies
-
-        if all_dependant_calcs:
-            instance._has_dependant_calcs = True
-        else:
-            instance._has_dependant_calcs = False
-
-        dep_calcs = dependancies.keys()
-        for dep in dep_calcs:
-            parent = parents[dep]
-            dependant_uids = []
-            for item in dependancies[dep]:
-                dependant_uids.append(children[item])
-            parent.setDependantAnalysis(dependant_uids)
-
 
         # delete analyses
         delete_ids = []
         for analysis in instance.objectValues('Analysis'):
             service_uid = analysis.Schema()['Service'].getRaw(analysis)
-            if service_uid not in keep_ids:
+            if service_uid not in service_uids:
                 delete_ids.append(analysis.getId())
-        instance.manage_delObjects(ids = delete_ids)
-
+        instance.manage_delObjects(ids=delete_ids)
 
     security.declarePublic('Vocabulary')
     def Vocabulary(self, content_instance = None):

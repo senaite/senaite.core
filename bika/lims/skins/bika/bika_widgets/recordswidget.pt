@@ -1,0 +1,52 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  i18n:domain="plone">
+<head><title></title></head>
+<body>
+  <metal:view_macro define-macro="view">
+     <table class="listing nosort">
+
+     </table>
+  </metal:view_macro>
+
+  <metal:edit_macro define-macro="edit">
+    <metal:use use-macro="field_macro | context/widgets/field/macros/edit">
+      <metal:body_macro fill-slot="widget_body" tal:define="
+        fieldname python: field.getName();
+        subfields python: field.subfields;
+        subfield_labels python: field.subfield_labels;
+        field python: context.Schema()[fieldname];
+        accessor python: field.getAccessor(context);
+        current_field_value accessor;">
+
+        <input type="hidden" id="fieldname" tal:attributes="value fieldname"/>
+        <input type="hidden" id="fieldtype" tal:attributes="value field/type"/>
+        <input type="hidden" id="subfields" tal:attributes="value subfields"/>
+
+        <table class="listing nosort">
+
+          <thead>
+              <th tal:repeat="subfield subfields"
+                  tal:content="python: subfield_labels[subfield]"/>
+          </thead>
+
+          <tbody tal:attributes="id string:${field/type}_tbody">
+            <tr tal:attributes="class field/type" tal:repeat="record current_field_value">
+              <td tal:repeat="subfield subfields">
+                <input type="text"
+                    tal:attributes="value python: record[subfield];
+                                    class string:${field/type}_input;
+                                    name string:${fieldname}.${subfield}:records"/>
+              </td>
+            </tr>
+          </tbody>
+
+        </table>
+
+    </metal:body_macro>
+   </metal:use>
+  </metal:edit_macro>
+</body>
+</html>

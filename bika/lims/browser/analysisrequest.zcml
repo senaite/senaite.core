@@ -5,17 +5,17 @@
     i18n_domain="bika">
 
     <browser:page
-      for="bika.lims.interfaces.IAnalysisRequest"
-      name="base_view"
-      class="bika.lims.browser.analysisrequest.AnalysisRequestViewView"
+      for="bika.lims.interfaces.IClient"
+      name="analysisrequest_add"
+      class="bika.lims.browser.analysisrequest.AnalysisRequestAddView"
       permission="zope.Public"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
     <browser:page
-      for="bika.lims.interfaces.IClient"
-      name="analysisrequest_add"
-      class="bika.lims.browser.analysisrequest.AnalysisRequestAddView"
+      for="bika.lims.interfaces.IAnalysisRequest"
+      name="base_view"
+      class="bika.lims.browser.analysisrequest.AnalysisRequestViewView"
       permission="zope.Public"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
@@ -30,7 +30,7 @@
 
     <browser:page
       for="bika.lims.interfaces.IAnalysisRequest"
-      name="analysisrequest_analyses"
+      name="manage_results"
       class="bika.lims.browser.analysisrequest.AnalysisRequestManageResultsView"
       permission="zope.Public"
       layer="bika.lims.interfaces.IBikaLIMS"
@@ -38,8 +38,8 @@
 
     <browser:page
       for="bika.lims.interfaces.IAnalysisRequest"
-      name="analysisrequest_analyses_not_requested"
-      class="bika.lims.browser.analysisrequest.AnalysisRequestManageResultsNotRequestedView"
+      name="not_requested"
+      class="bika.lims.browser.analysisrequest.AnalysisRequestResultsNotRequestedView"
       permission="zope.Public"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
@@ -47,7 +47,7 @@
     <browser:page
       for="*"
       name="analysisrequest_analysisservices"
-      class="bika.lims.browser.analysisrequest.AnalysisRequest_AnalysisServices"
+      class="bika.lims.browser.analysisrequest.AJAX_ExpandCategoryView"
       permission="zope.Public"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
