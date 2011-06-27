@@ -303,7 +303,8 @@
                 tal:attributes="name field_name;src string:${portal/absolute_url}/images/copy.png"/>
             </td>
             <tal:block repeat="column python:range(view.col_count)">
-              <td tal:define="input_name string:ar.${column}.${field_name}:ignore_empty:record;
+              <td class="cb"
+                  tal:define="input_name string:ar.${column}.${field_name}:ignore_empty:record;
                               input_id string:ar_${column}_${field_name}">
                 <input type="checkbox"
                   class="cb"
@@ -324,7 +325,8 @@
                 tal:attributes="name field_name;src string:${portal/absolute_url}/images/copy.png"/>
             </td>
             <tal:block repeat="column python:range(view.col_count)">
-              <td tal:define="input_name string:ar.${column}.${field_name}:ignore_empty:record;
+              <td class="cb"
+                  tal:define="input_name string:ar.${column}.${field_name}:ignore_empty:record;
                               input_id string:ar_${column}_${field_name}">
                 <input type="checkbox"
                   class="cb"
