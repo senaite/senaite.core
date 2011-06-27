@@ -1270,7 +1270,7 @@ def analysisrequest_add_submit(context, request):
                     **dict(values)
                 )
 
-            ar.setAnalyses(['%s:%s' % (a, prices[a]) for a in Analyses])
+            ar.setAnalyses(Analyses, prices=prices)
 
             if (values.has_key('profileTitle')):
                 profile_id = context.generateUniqueId('ARProfile')
