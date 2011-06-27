@@ -40,10 +40,9 @@ class SampleEditView(BrowserView):
 def sample_edit_submit(context, request):
 
     form = request.form
-    sample = context
-
 
     if form.has_key("save_button"):
+        sample = context
         sampleType = form['SampleType']
         samplePoint = form['SamplePoint']
         errors = {}
