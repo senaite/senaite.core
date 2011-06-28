@@ -62,9 +62,9 @@
     />
 
     <browser:page
-      for="bika.lims.interfaces.ICalculationTypes"
+      for="bika.lims.interfaces.ICalculations"
       name="folder_view"
-      class=".bika_calculationtypes.CalculationTypesView"
+      class=".bika_calculations.CalculationsView"
       permission="bika.lims.ManageBika"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
@@ -87,7 +87,7 @@
 
     <browser:page
       for="bika.lims.interfaces.IAnalysisServices"
-      name="folder_view"
+      name="base_view"
       class=".bika_analysisservices.AnalysisServicesView"
       permission="bika.lims.ManageBika"
       layer="bika.lims.interfaces.IBikaLIMS"

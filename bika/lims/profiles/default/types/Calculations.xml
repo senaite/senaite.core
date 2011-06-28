@@ -1,19 +1,19 @@
 <?xml version="1.0"?>
-<object name="CalculationTypes"
+<object name="Calculations"
    meta_type="Factory-based Type Information with dynamic views"
    xmlns:i18n="http://xml.zope.org/namespaces/i18n">
- <property name="title">Calculation Types</property>
+ <property name="title">Calculations</property>
  <property name="description"></property>
  <property name="icon_expr">string:${portal_url}/folder_icon.gif</property>
- <property name="content_meta_type">CalculationTypes</property>
+ <property name="content_meta_type">Calculations</property>
  <property name="product">bika.lims</property>
- <property name="factory">addCalculationTypes</property>
+ <property name="factory">addCalculations</property>
  <property name="add_view_expr"></property>
  <property name="link_target"></property>
  <property name="global_allow">False</property>
  <property name="filter_content_types">True</property>
  <property name="allowed_content_types">
-  <element value="CalculationType"/>
+  <element value="Calculation"/>
  </property>
  <property name="allow_discussion">False</property>
  <property name="default_view_fallback">False</property>

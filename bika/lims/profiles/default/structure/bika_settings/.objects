@@ -2,7 +2,7 @@ laboratory,Laboratory
 bika_analysiscategories,AnalysisCategories
 bika_analysisservices,AnalysisServices
 bika_attachmenttypes,AttachmentTypes
-bika_calculationtypes,CalculationTypes
+bika_calculations,Calculations
 bika_departments,Departments
 bika_instruments,Instruments
 bika_labanalysisspecs,LabAnalysisSpecs

@@ -19,6 +19,7 @@ schema = BikaSchema.copy() + Schema((
             i18n_domain = I18N_DOMAIN,
         ),
     ),
+
     BooleanField('ReportDryMatter',
         default = False,
         widget = BooleanWidget(
@@ -128,15 +129,15 @@ schema = BikaSchema.copy() + Schema((
             i18n_domain = I18N_DOMAIN,
         ),
     ),
-    ReferenceField('Method',
+    ReferenceField('Calculation',
         required = 0,
         vocabulary_display_path_bound = sys.maxint,
-        allowed_types = ('Method',),
-        relationship = 'AnalysisServiceMethod',
+        allowed_types = ('Calculation',),
+        relationship = 'AnalysisServiceCalculation',
         referenceClass = HoldingReference,
         widget = ReferenceWidget(
             checkbox_bound = 1,
-            label = 'Method',
+            label = 'Calculation',
             label_msgid = 'label_method',
             i18n_domain = I18N_DOMAIN,
         ),
@@ -351,7 +352,7 @@ class AnalysisService(BaseContent):
 
     def getCalcTitle(self):
         """ get title of applicable calculation """
-        calctype = self.getCalculationType()
+        calctype = self.getCalculation()
         if calctype:
             return calctype.Title()
         else:
@@ -391,7 +392,7 @@ class AnalysisService(BaseContent):
             Instrument = self.getInstrument(),
             Method = self.getMethod(),
             MaxHoursAllowed = self.getMaxHoursAllowed(),
-            CalculationType = self.getCalculationType(),
+            Calculation = self.getCalculation(),
             TitrationUnit = self.getTitrationUnit(),
             DuplicateVariation = self.getDuplicateVariation(),
             AnalysisCategory = self.getAnalysisCategory(),

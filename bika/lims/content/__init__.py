@@ -10,7 +10,7 @@ from attachment import Attachment
 from attachmenttype import AttachmentType
 from bikaschema import BikaSchema
 from bikasettings import BikaSettings
-from calculationtype import CalculationType
+from calculation import Calculation
 from client import Client
 from clientfolder import ClientFolder
 from contact import Contact

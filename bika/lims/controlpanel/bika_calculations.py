@@ -8,16 +8,16 @@ from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.config import PROJECTNAME
 from bika.lims import bikaMessageFactory as _
 from bika.lims.content.bikaschema import BikaFolderSchema
-from bika.lims.interfaces import IHaveNoByline, ICalculationTypes
+from bika.lims.interfaces import IHaveNoByline, ICalculations
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.folder.folder import ATFolder, ATFolderSchema
 from zope.interface.declarations import implements
 
-class CalculationTypesView(BikaListingView):
+class CalculationsView(BikaListingView):
     implements(IFolderContentsView)
-    contentFilter = {'portal_type': 'CalculationType'}
-    content_add_actions = {_('Calculation Type'): "createObject?type_name=CalculationType"}
-    title = _("Calculation Types")
+    contentFilter = {'portal_type': 'Calculation'}
+    content_add_actions = {_('Calculation Type'): "createObject?type_name=Calculation"}
+    title = _("Calculations")
     description = ""
     show_editable_border = False
     show_filters = False
@@ -29,11 +29,11 @@ class CalculationTypesView(BikaListingView):
 
     columns = {
                'title_or_id': {'title': _('Title')},
-               'CalculationTypeDescription': {'title': _('Calculation Type Description')},
+               'CalculationDescription': {'title': _('Calculation Description')},
               }
     review_states = [
                     {'title_or_id': _('All'), 'id':'all',
-                     'columns': ['title_or_id', 'CalculationTypeDescription'],
+                     'columns': ['title_or_id', 'CalculationDescription'],
                      'buttons':[{'cssclass': 'context',
                                  'title': _('Delete'),
                                  'url': 'folder_delete:method'}]},
@@ -48,9 +48,9 @@ class CalculationTypesView(BikaListingView):
         return items
 
 schema = ATFolderSchema.copy()
-class CalculationTypes(ATFolder):
-    implements(ICalculationTypes, IHaveNoByline)
+class Calculations(ATFolder):
+    implements(ICalculations, IHaveNoByline)
     schema = schema
     displayContentsTab = False
 schemata.finalizeATCTSchema(schema, folderish = True, moveDiscussion = False)
-atapi.registerType(CalculationTypes, PROJECTNAME)
+atapi.registerType(Calculations, PROJECTNAME)

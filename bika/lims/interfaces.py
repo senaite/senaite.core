@@ -46,7 +46,7 @@ class IAnalysisServices(Interface):
     ""
 class IAttachmentTypes(Interface):
     ""
-class ICalculationTypes(Interface):
+class ICalculations(Interface):
     ""
 class IDepartments(Interface):
     ""

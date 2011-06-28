@@ -25,8 +25,8 @@
  <object name="Attachment" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="AttachmentTypes" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="AttachmentType" meta_type="Factory-based Type Information with dynamic views"/>
- <object name="CalculationTypes" meta_type="Factory-based Type Information with dynamic views"/>
- <object name="CalculationType" meta_type="Factory-based Type Information with dynamic views"/>
+ <object name="Calculations" meta_type="Factory-based Type Information with dynamic views"/>
+ <object name="Calculation" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="DuplicateAnalysis" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="Instruments" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="Instrument" meta_type="Factory-based Type Information with dynamic views"/>

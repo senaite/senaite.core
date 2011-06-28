@@ -178,7 +178,7 @@
                 <tal:is_editable condition="is_editable">
                   <tal:is_interim condition="is_interim">
                     <input type="text" size="7" tal:attributes="
-                      name string:analysis_${item/UID}_${column}
+                      name python: 'analysis_%s_%s'%(item['UID'], item[column]['id']);
                       value python: item[column]['value'];
                       type python: item[column]['type'];"/>
                     <span class='discreet' tal:content="python: item[column]['unit']"/>

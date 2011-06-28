@@ -13,10 +13,11 @@ from plone.app.content.browser.interfaces import IFolderContentsView
 import json
 
 class AnalysisRequestAnalysesView(BikaListingView):
-    """ Display a list of AR Analyses with all possible InterimResult columns
-        (for all selected analyses) inserted into each row.
-        AnalysisRequestAnalysesView(context, request, **kwargs-->portal_catalog)
-        **kwargs is obviously restricted to indexed metadata fields
+    """ Displays a list of Analyses in a table.
+        All InterimFields from all analyses are added to self.columns[].
+        allow_edit boolean decides if edit is possible, but each analysis
+        can be editable or not, depending on it's review_state.
+        Keyword arguments are passed directly to portal_catalog.
     """
     content_add_actions = {}
     show_filters = False
@@ -45,22 +46,19 @@ class AnalysisRequestAnalysesView(BikaListingView):
     ]
 
     def __init__(self, context, request, allow_edit=False, **kwargs):
-        # allow_edit passes to bika_listing_table.pt along with method data (deps, calc),
-        # and allows editing of the result field, or of the interim fields leading to it.
         super(AnalysisRequestAnalysesView, self).__init__(context, request)
         self.allow_edit = allow_edit
         self.contentFilter = dict(kwargs)
         self.contentFilter['portal_type'] = 'Analysis'
 
     def folderitems(self):
-        """ This folderitems also inserts the columns from InterimFields from all analyses
-            into self.columns, inserted before the column called 'Result'.
+        """ InterimFields are inserted into self.columns before the column called 'Result',
+            not specifically ordered but vaguely predictable.
     	"""
         analyses = BikaListingView.folderitems(self)
 
         items = []
-        self.interim_fields = []
-
+        self.interim_fields = {}
         for item in analyses:
             if not item.has_key('brain'): continue
             obj = item['brain'].getObject()
@@ -69,39 +67,34 @@ class AnalysisRequestAnalysesView(BikaListingView):
             item['Unit'] = obj.getUnit()
             item['Result'] = obj.getResult()
             item['Attachments'] = ", ".join([a.Title() for a in obj.getAttachment()])
+            item['_allow_edit'] = self.allow_edit or False
+            item['_calculation'] = obj.getCalculation() or False
 
-            # Check that all InterimField names are in self.interim_fields
+            # Add this analysis' interim fields to the list
             for i in obj.getInterimFields():
-                if i['name'] not in self.interim_fields:
-                    self.interim_fields.append(i['name'])
-                # insert matching InterimField dict from this analysis into the item.
-                item[i['name']] = i
-
-            # flag for table view to insert edit widgets
-            if self.allow_edit: item['_allow_edit'] = True
-
-            # also insert the whole method in there for calculation, dependancies....
-            item['_calculation'] = obj.getMethod() or False
+                if i['id'] not in self.interim_fields.keys():
+                    self.interim_fields[i['id']] = i['title']
+                # This InterimField dictionary is the item's column value.
+                item[i['id']] = i
 
             items.append(item)
 
-        self.interim_fields.reverse()
+        interim_keys = self.interim_fields.keys()
+        interim_keys.reverse()
 
         # munge self.columns
-        for key in self.interim_fields:
-#            key = key.replace("_"," ")
-            if key not in self.columns:
-                self.columns[key] = {'title': key}
+        for col_id in interim_keys:
+            if col_id not in self.columns:
+                self.columns[col_id] = {'title': interim_keys[col_id]}
 
         # munge self.review_states
         munged_states = []
         for state in self.review_states:
             pos = state['columns'].index('Result')
             if not pos: pos = len(state['columns'])
-            for key in self.interim_fields:
-#                key = key.replace("_"," ")
-                if key not in state['columns']:
-                    state['columns'].insert(pos, key)
+            for col_id in interim_keys:
+                if col_id not in state['columns']:
+                    state['columns'].insert(pos, col_id)
             munged_states.append(state)
         self.review_states = munged_states
 
@@ -798,32 +791,6 @@ class AnalysisRequestManageResultsView(AnalysisRequestViewView):
 
         return
 
-    def get_uncertainty(self, result, service):
-        ##bind container=container
-        ##bind context=context
-        ##bind namespace=
-        ##bind script=script
-        ##bind subpath=traverse_subpath
-        ##parameters=result, service
-        ##title=Get result uncertainty
-        ##
-        if result is None:
-            return None
-
-        uncertainties = service.getUncertainties()
-        if uncertainties:
-            try:
-                result = float(result)
-            except ValueError:
-                # if it is not an float we assume no measure of uncertainty
-                return None
-
-            for d in uncertainties:
-                if float(d['intercept_min']) <= result < float(d['intercept_max']):
-                    return d['errorvalue']
-            return None
-        else:
-            return None
 
     def get_precise_result(self, result, precision):
         ##bind container=container

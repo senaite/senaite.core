@@ -33,7 +33,7 @@ class AnalysisServicesView(BikaListingView):
                'CorporatePrice': {'title': _('Corporate price excluding VAT')},
                'MaxHoursAllowed': {'title': _('Maximum Hours Allowed')},
                'DuplicateVariation': {'title': _('Duplicate Variation')},
-               'Method': {'title': _('Method')},
+               'Calculation': {'title': _('Calculation')},
               }
     review_states = [
                      {'title_or_id': _('All'), 'id':'all',
@@ -58,10 +58,11 @@ class AnalysisServicesView(BikaListingView):
             items[x]['Price'] = "%s.%02d" % (obj.Price)
             items[x]['CorporatePrice'] = "%s.%02d" % (obj.CorporatePrice)
             items[x]['MaxHoursAllowed'] = obj.MaxHoursAllowed
-            if obj.DuplicateVariation is not None: items[x]['DuplicateVariation'] = "%s.%02d" % (obj.DuplicateVariation)
+            if obj.DuplicateVariation is not None:
+                items[x]['DuplicateVariation'] = "%s.%02d" % (obj.DuplicateVariation)
             else: items[x]['DuplicateVariation'] = ""
-            method = obj.getMethod()
-            items[x]['Method'] = method and method.Title() or ''
+            calculation = obj.getCalculation()
+            items[x]['Calculation'] = calculation and calculation.Title() or ''
             items[x]['links'] = {'title_or_id': items[x]['url'] + "/edit"}
             out.append(items[x])
         return out

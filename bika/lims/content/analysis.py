@@ -37,6 +37,11 @@ schema = BikaSchema.copy() + Schema((
             i18n_domain = I18N_DOMAIN,
         )
     ),
+    ComputedField('Category',
+        index = 'FieldIndex:brains',
+        expression = 'context.Service.getCategoryName()',
+    ),
+
     ReferenceField('Attachment',
         multiValued = 1,
         allowed_types = ('Attachment',),
@@ -56,45 +61,45 @@ schema = BikaSchema.copy() + Schema((
             label_msgid = 'label_unit',
         ),
     ),
-    FixedPointField('VAT',
-        widget = DecimalWidget(
-            label = 'VAT %',
-            label_msgid = 'label_vat',
-            description = 'Enter percentage value eg. 14'
-        ),
-    ),
-    FixedPointField('TotalPrice',
-        required = 1,
-        widget = DecimalWidget(
-            label = 'Total price',
-            label_msgid = 'label_totalprice',
-            i18n_domain = I18N_DOMAIN,
-        )
-    ),
-    ReferenceField('Method',
-        allowed_types = ('Method',),
-        relationship = 'AnalysisMethod',
+    #FixedPointField('VAT',
+        #widget = DecimalWidget(
+            #label = 'VAT %',
+            #label_msgid = 'label_vat',
+            #description = 'Enter percentage value eg. 14'
+        #),
+    #),
+    #FixedPointField('TotalPrice',
+        #required = 1,
+        #widget = DecimalWidget(
+            #label = 'Total price',
+            #label_msgid = 'label_totalprice',
+            #i18n_domain = I18N_DOMAIN,
+        #)
+    #),
+    ReferenceField('Calculation',
+        allowed_types = ('Calculation',),
+        relationship = 'AnalysisCalculation',
         referenceClass = HoldingReference,
     ),
     StringField('AnalysisKey',
     ),
-    ReferenceField('DependantAnalysis',
-        multiValued = 1,
-        allowed_types = ('Analysis',),
-        relationship = 'AnalysisAnalysis',
-        referenceClass = HoldingReference,
-    ),
+    #ReferenceField('DependantAnalysis',
+        #multiValued = 1,
+        #allowed_types = ('Analysis',),
+        #relationship = 'AnalysisAnalysis',
+        #referenceClass = HoldingReference,
+    #),
     BooleanField('ReportDryMatter',
         default = False,
     ),
     RecordsField('InterimFields',
-        # subfield values must be the identical twin of Methods.InterimFields.
+        # subfield values must be the identical twin of Calculation.InterimFields.
         type = 'InterimFields',
-        subfields = ('name', 'type', 'value', 'unit', 'collapse'),
-        subfield_labels = {'name':'Name', 'type':'Type', 'value':'Default', 'unit':'Unit', 'collapse':'Collapse'},
-        required_subfields = ('name',),
+        subfields = ('id', 'title', 'type', 'value', 'unit'),
+        subfield_labels = {'id':'Field ID', 'title':'Field Title', 'type':'Type', 'value':'Default', 'unit':'Unit'},
+        required_subfields = ('id','name',),
         widget = RecordsWidget(
-            label = 'Method Interim Fields',
+            label = 'Calculation Interim Fields',
             label_msgid = 'label_interim_fields',
             i18n_domain = I18N_DOMAIN,
         )
@@ -104,65 +109,15 @@ schema = BikaSchema.copy() + Schema((
     BooleanField('Retested',
         default = False,
     ),
-    StringField('Uncertainty',
-    ),
-    ComputedField('Category',
-        index = 'FieldIndex:brains',
-        expression = 'context.Service.getCategoryName()',
-    ),
-    ComputedField('ClientUID',
-        index = 'FieldIndex',
-        expression = 'context.aq_parent.aq_parent.UID()',
-    ),
-    ComputedField('ClientName',
-        index = 'FieldIndex:brains',
-        expression = 'context.aq_parent.aq_parent.Title()',
-    ),
-    ComputedField('RequestID',
-        index = 'FieldIndex:brains',
-        expression = 'context.aq_parent.getRequestID()',
-        widget = ComputedWidget(
-            visible = False,
-        ),
-    ),
+    #StringField('Uncertainty',
+    #),
+    #ComputedField('Category',
+        #index = 'FieldIndex:brains',
+        #expression = 'context.Service.getCategoryName()',
+    #),
     ComputedField('DateReceived',
         index = 'FieldIndex:brains',
         expression = 'context.aq_parent.getDateReceived()',
-        widget = ComputedWidget(
-            visible = False,
-        ),
-    ),
-    ComputedField('ClientOrderNumber',
-        index = 'FieldIndex:brains',
-        expression = 'context.aq_parent.getClientOrderNumber()',
-        widget = ComputedWidget(
-            visible = False,
-        ),
-    ),
-    ComputedField('ServiceUID',
-        index = 'FieldIndex:brains',
-        expression = 'context.getService() and context.getService.UID()',
-        widget = ComputedWidget(
-            visible = False,
-        ),
-    ),
-    ComputedField('ServiceName',
-        index = 'FieldIndex:brains',
-        expression = 'context.getService() and context.getService().Title()',
-        widget = ComputedWidget(
-            visible = False,
-        ),
-    ),
-    ComputedField('CategoryName',
-        index = 'FieldIndex:brains',
-        expression = 'context.getService() and context.getService().getCategoryName()',
-        widget = ComputedWidget(
-            visible = False,
-        ),
-    ),
-    ComputedField('PointOfCapture',
-        index = 'FieldIndex:brains',
-        expression = 'context.getService() and context.getService().getPointOfCapture()',
         widget = ComputedWidget(
             visible = False,
         ),
@@ -202,6 +157,27 @@ schema = BikaSchema.copy() + Schema((
             i18n_domain = I18N_DOMAIN,
         )
     ),
+
+    ###
+
+    ComputedField('ClientUID',
+        index = 'FieldIndex',
+        expression = 'context.aq_parent.aq_parent.UID()',
+    ),
+    ComputedField('RequestID',
+        index = 'FieldIndex:brains',
+        expression = 'context.aq_parent.getRequestID()',
+        widget = ComputedWidget(
+            visible = False,
+        ),
+    ),
+    ComputedField('PointOfCapture',
+        index = 'FieldIndex',
+        expression = 'context.getService() and context.getService().getPointOfCapture()',
+        widget = ComputedWidget(
+            visible = False,
+        ),
+    ),
 ),
 )
 
@@ -215,8 +191,27 @@ class Analysis(BaseContent):
 
     def Title(self):
         """ Return the service title as title """
-        s = self.getService()
-        return s and s.Title() or ''
+        return self.getService().Title()
+
+    def getUncertainty(self):
+        """ The uncertainty value is calculated from the Service. """
+        result = self.getResult()
+        uncertainties = self.getService().getUncertainties()
+
+        if not (result and uncertainties):
+            return None
+
+        try:
+            result = float(result)
+        except ValueError:
+            # if it is not a float we assume no measure of uncertainty
+            return None
+
+        for d in uncertainties:
+            if float(d['intercept_min']) <= result < float(d['intercept_max']):
+                return d['errorvalue']
+        return None
+
 
     #def getInterim(self):
         #""" InterimCalcs field is a self-defining field to cater for
@@ -417,6 +412,8 @@ class Analysis(BaseContent):
         #else:
             #self.setInterim(VM = value)
         #return
+
+
 
     def checkHigherDependancies(self):
         if self._affects_other_analysis:

@@ -7,34 +7,33 @@ from zope.component import getMultiAdapter
 from zope.interface import implements
 
 class LoadSetupData(BrowserView):
-    implements(IBrowserView)
-
-#    def index_html_link(self):
-#        
 
     def __call__(self):
-        logger.info("load_setup_data: Laboratory: %s" % self.Laboratory())
-        logger.info("load_setup_data: Members and Groups: %s" % self.MembersAndGroups())
-        logger.info("load_setup_data: Lab Contacts: %s" % self.LabContacts())
-        logger.info("load_setup_data: Clients: %s" % self.Clients())
-        logger.info("load_setup_data: Departments: %s" % self.Departments())
-        logger.info("load_setup_data: Instruments: %s" % self.Instruments())
-        logger.info("load_setup_data: Sample Points: %s" % self.SamplePoints())
-        logger.info("load_setup_data: Sample Types: %s" % self.SampleTypes())
-        logger.info("load_setup_data: Calculation Types: %s" % self.CalculationTypes())
-        logger.info("load_setup_data: Analysis Categories: %s" % self.AnalysisCategories())
-        logger.info("load_setup_data: Analysis Services: %s" % self.AnalysisServices())
-        logger.info("load_setup_data: Methods: %s" % self.Methods())
-        logger.info("load_setup_data: Standard Stocks: %s" % self.StandardStocks())
-        logger.info("load_setup_data: Standard Suppliers: %s" % self.StandardSuppliers())
-        logger.info("load_setup_data: Attachment Types: %s" % self.AttachmentTypes())
-        logger.info("load_setup_data: Products: %s" % self.Products())
-#        logger.info("load_setup_data: Worksheet Templates: %s" % self.WorksheetTemplates())
-        logger.info("load_setup_data: Standard Manufacturers: %s" % self.StandardManufacturers())
-        logger.info("load_setup_data: Prefixes: %s" % self.Prefixes())
+        logger.info("load_setup_data: Laboratory"); self.Laboratory()
+        logger.info("load_setup_data: Members and Groups"); self.MembersAndGroups()
+        logger.info("load_setup_data: Lab Contacts"); self.LabContacts()
+        logger.info("load_setup_data: Clients"); self.Clients()
+        logger.info("load_setup_data: Departments"); self.Departments()
+        logger.info("load_setup_data: Instruments"); self.Instruments()
+        logger.info("load_setup_data: Sample Points"); self.SamplePoints()
+        logger.info("load_setup_data: Sample Types"); self.SampleTypes()
+        logger.info("load_setup_data: Analysis Categories"); self.AnalysisCategories()
+        logger.info("load_setup_data: Calculations"); self.Calculations1()
+        logger.info("load_setup_data: Analysis Services"); self.AnalysisServices1()
+        logger.info("load_setup_data: More Calculations"); self.Calculations2()
+        logger.info("load_setup_data: More Analysis Services"); self.AnalysisServices2()
+        logger.info("load_setup_data: More Calculations"); self.Calculations3()
+        logger.info("load_setup_data: More Analysis Services"); self.AnalysisServices3()
+        logger.info("load_setup_data: Methods"); self.Methods()
+        logger.info("load_setup_data: Standard Stocks"); self.StandardStocks()
+        logger.info("load_setup_data: Standard Suppliers"); self.StandardSuppliers()
+        logger.info("load_setup_data: Attachment Types"); self.AttachmentTypes()
+        logger.info("load_setup_data: Products"); self.Products()
+#        logger.info("load_setup_data: Worksheet Templates"); self.WorksheetTemplates()
+        logger.info("load_setup_data: Standard Manufacturers"); self.StandardManufacturers()
+        logger.info("load_setup_data: Prefixes"); self.Prefixes()
 
-        self.context.plone_utils.addPortalMessage(
-                        _(u'Setup data loaded.'), 'info')
+        self.context.plone_utils.addPortalMessage(_(u'Setup data loaded.'), 'info')
 
         plone = getMultiAdapter((self, self.request), name = "plone_portal_state").portal()
         self.request.response.redirect(plone.absolute_url())
@@ -100,7 +99,7 @@ class LoadSetupData(BrowserView):
             except:
                 pass
 
-            # verifiers and publishers get their normal permissions from a standard lab 
+            # verifiers and publishers get their normal permissions from a standard lab
             # group. Verifying and publishing permissions are added to this.
             if fullname == 'verifier':
                 group = pg.getGroupById('verifiers')
@@ -167,7 +166,7 @@ class LoadSetupData(BrowserView):
                 pm.setLocalRoles(obj = contact.aq_parent, member_ids = [cusername],
                     member_role = 'Owner')
 
-                # add user to clients group 
+                # add user to clients group
                 group = self.context.portal_groups.getGroupById('clients')
                 group.addMember(cusername)
                 contact.reindexObject()
@@ -377,24 +376,110 @@ class LoadSetupData(BrowserView):
                      SampleTypeDescription = description,
                      Hazardous = hazardous)
 
-    def CalculationTypes(self):
-        calcs = (
-            ('Titration', 'Titration standard: TV * TF', 't'),
-            ('Weight loss(tare)', 'Weight loss tare as % moisture: ((VM + SM - NM)/SM) * 100', 'wlt'),
-            ('Weight loss', 'Weight loss as % moisture: (GM - NM)/(GM - VM) * 100', 'wl'),
-            ('Residual weight(tare)', 'Residual weight(tare) as % ash: ((NM - VM)/SM) * 100', 'rwt'),
-            ('Residual weight', 'Residual weight as % ash: ((NM - VM)/(GM - VM) * 100', 'rw'),
-            ('Dependant calculation', 'Dependant on a number of other results', 'dep'),
-        )
-        self.calctypes = {}
-        folder = self.context.bika_settings.bika_calculationtypes
-        for title, descr, code in calcs:
-            calc_id = folder.generateUniqueId('CalculationType')
-            folder.invokeFactory(id = calc_id, type_name = 'CalculationType')
+    def CreateCalculationObjects(self,calcs):
+        if not hasattr(self, 'calculations'):
+            self.calculations = {'':None}
+        folder = self.context.bika_settings.bika_calculations
+        for title, CalculationDescription, DependentAnalyses, InterimFields, Formula in calcs:
+            calc_id = folder.generateUniqueId('Calculation')
+            folder.invokeFactory(id = calc_id, type_name = 'Calculation')
             calc = folder[calc_id]
-            calc.edit(title = title, CalculationTypeDescription = descr,
-                      CalcTypeCode = code)
-            self.calctypes[code] = calc
+            calc.edit(title = title,
+                      CalculationDescription = CalculationDescription,
+                      DependentAnalyses = [self.service_objs[a] for a in DependentAnalyses],
+                      InterimFields = InterimFields,
+                      Formula = Formula)
+            self.calculations[title] = calc
+
+    def Calculations1(self):
+        calcs = (
+            ('Titration',
+             'Titration Standard',
+             [],
+             [{'id':'TV', 'title':'Titr Vol', 'type':'int', 'value':0, 'unit':'g'},
+              {'id':'TF', 'title':'Titr Fact', 'type':'int', 'value':0, 'unit':''}],
+             '%(TV)d * %(TF)d',
+            ),
+            ('Weight Loss',
+             'Weight loss as % moisture',
+             [],
+             [{'id':'GM', 'title':'Gross Mass', 'type':'int', 'value':0, 'unit':'g'},
+              {'id':'NM', 'title':'Nett Mass', 'type':'int', 'value':0, 'unit':'g'},
+              {'id':'VM', 'title':'Vessel Mass', 'type':'int', 'value':0, 'unit':'g'}],
+             '( %(GM)d - %(NM)d ) / ( %(GM)d - %(VM)d ) * 100',
+            ),
+            ('Weight Loss (tare)',
+             'Weight loss (tare) as % moisture',
+             [],
+             [{'id':'SM', 'title':'Sample Mass', 'type':'int', 'value':0, 'unit':'g'},
+              {'id':'NM', 'title':'Nett Mass', 'type':'int', 'value':0, 'unit':'g'},
+              {'id':'VM', 'title':'Vessel Mass', 'type':'int', 'value':0, 'unit':'g'}],
+             '(( %(VM)d + %(SM)d - %(NM)d ) / %(SM)d ) * 100',
+            ),
+            ('Residual Weight',
+             'Residual Weight as % ash',
+             [],
+             [{'id':'GM', 'title':'Gross Mass', 'type':'int', 'value':0, 'unit':'g'},
+              {'id':'NM', 'title':'Nett Mass', 'type':'int', 'value':0, 'unit':'g'},
+              {'id':'VM', 'title':'Vessel Mass', 'type':'int', 'value':0, 'unit':'g'}],
+             '(( %(NM)d - %(VM)d ) / ( %(GM)d - %(VM) ) * 100',
+            ),
+            ('Residual Weight (tare)',
+             'Residual Weight (tare) as % ash',
+             [],
+             [{'id':'SM', 'title':'Sample Mass', 'type':'int', 'value':0, 'unit':'g'},
+              {'id':'NM', 'title':'Nett Mass', 'type':'int', 'value':0, 'unit':'g'},
+              {'id':'VM', 'title':'Vessel Mass', 'type':'int', 'value':0, 'unit':'g'}],
+             '(( %(NM)d - %(VM)d ) / %(SM)d ) * 100',
+            ),
+        )
+        self.CreateCalculationObjects(calcs)
+
+    def Calculations2(self):
+        calcs = (
+            ('Dry Matter',
+             'Percentage dry matter. Dependent on Moisture Analysis',
+             ['Moisture'],
+             [],
+             '100 - %(Moisture)d',
+            ),
+            ('Apparent Metabolizable Energy',
+             'AME used for poultry feed as no correction is made for faecal or endogenous energy losses',
+             ['Protein Crude', 'Ether Extract', 'Starch', 'Sugars'],
+             [],
+             'AME (MJ/kg) = 0.1551 ProteinCrude% + 0.3431 FatCrudeEtherExtraction% + 0.1669 Starch% + 0.1301 Sugars %',
+            ),
+            ('Metabolizable Energy',
+             'ME used for ruminant feeds',
+             ['Protein Crude', 'Ether Extract', 'Fibre - Crude', 'Ash'],
+             [],
+             'ME (MJ/kg DM) = 12 + [0.008 ProteinCrude + 0.023 FatCrudeEtherExtraction] - 0.018 FibreCrude + 0.012 Ash]',
+            ),
+            ('Non-Structural Carbohydrates',
+             'NSC is used for dairy cattle',
+             ['Fibre - NDF', 'Protein Crude', 'Ether Extract', 'Ash'],
+             [],
+             "NSC% (DM) = 100 - [FibreNDF% + ProteinCrude% + FatCrudeEtherExtraction% + Ash%]'",
+            ),
+            ('Digestible Energy',
+             'DE is used for pig feeds',
+             ['Protein Crude', 'Ether Extract', 'Fibre - Crude', 'Ash'],
+             [],
+             "DE MJ/kg = 17.38 + 0.105 ProteinCrude% + 0.114 FatCrudeEtherExtraction% -0.317 FibreCrude% -0.402 Ash%",
+            ),
+        )
+        self.CreateCalculationObjects(calcs)
+
+    def Calculations3(self):
+        calcs = (
+            ('Total Digestible Nutrients',
+             'TDN % is used for ruminant feeds',
+             ['Metabolizable Energy'],
+             [],
+             'TDN% (DM) = ME MJ/kg DM * 6.67',
+            ),
+        )
+        self.CreateCalculationObjects(calcs)
 
     def AnalysisCategories(self):
         cats = (
@@ -426,66 +511,20 @@ class LoadSetupData(BrowserView):
             cat.edit(title = title, CategoryDescription = descr, Department = depgen.next())
             self.categories[title] = cat
 
-    def AnalysisServices(self):
-        self.service_objs = {}
-        services = (
-            ('field', 'Temperature', 'Deg. C', 0, 99, '', False, 'Temperature at time of sample capture', 'Temp', 'Tempterature', 0, [], 'Simple temperature measurement', '1.00', '', [], False, 'General'),
-            ('field', 'pH (field)', '', 2, 7, '', False, 'pH measured at sample capture', 'pH', 'pH', 2, '', 'Instructions for ph Field', '5.00', '', [], False, 'General'),
-            ('lab', 'Aflatoxins Total', 'mg/l', 2, 11, '', False, 'Description for Aflatoxins Total', 'Aflatox', 'Aflatoxins', 1, [[0, 8, 0.4], [8, 12, 0.6], [12, 999, 0.8]], 'Instructions for Aflatoxins', '5.00', '', [], False, 'Biogas'),
-            ('lab', 'Ash', '%', 15, 30, '', False, 'Description for total ash analysis', 'Ash', 'Ash', 2, [[0, 20, 1], [20, 40, 2], [40, 999, 3]], 'Instructions for Ash', '5.00', 'rw', [], True, 'Mold'),
-            ('lab', 'Calcium', 'mg/l', 5, 10, 'ml', False, 'Description for calcium determination', 'Ca', 'Calcium', 3, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'Instructions for Calcium', '0.00', 't', [], False, 'Water'),
-            ('lab', 'Chlorides', 'mg/l', 3, 10, '', False, 'Description for Chloride analysis', 'Clide', 'Chlorides', 1, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'Instructions for Chlorides', '0.00', '', [], False, 'Water'),
-            ('lab', 'Chlorine residual', 'mg/l', 2, 4, 'ml', False, 'Description for residual chlorine testing', 'Cl', 'Chlorine', 2, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'Instructions for Chlorine residual', '0.00', 't', [], False, 'Oil'),
-            ('lab', 'COD ', 'mg/l', 1, 99, '', False, 'Description for COD', 'COD', 'COD', 3, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'Instructions for COD', None, '', [], False, 'Soil'),
-            ('lab', 'Conductivity @ 25 deg C', 'mS/m', 3, 10, '', False, 'Description for testing ', '', 'Conductivity', 4, '', 'Instructions for Conductivity @ 25deg C', None, '', [], False, 'Soil'),
-            ('lab', 'Copper', 'mg/l', 2, 6, 'ml', False, 'Description for copper as Cu', 'Cu', 'Copper', 6, '', 'Instructions for Copper', None, '', [], False, 'Soil'),
-            ('lab', 'Ether Extract', '%', 2, 6, '', False, 'Ether extract/crude fat', 'EE', 'FatCrudeEtherExtraction', 6, '', 'Instructions for ether extract', None, '', [], False, 'Oil'),
-            ('lab', 'Fat Crude', '%', 2, 45, '', False, 'Description for crude fat', 'FatCrude', 'FatCrude', 1, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'Instructions for Fat Crude', '5.00', 'wlt', [], True, 'Mold'),
-            ('lab', 'Fibre - ADF', '%', 10, 50, '', True, 'Description for fibre testing (ADF)', 'FibADF', 'FibreADF', 2, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'Instructions for Fibre ADF', '1.00', 'wl', [], True, 'Air'),
-            ('lab', 'Fibre - Crude', '%', 3, 30, '', True, 'Description for crude fibre testing', 'CF', 'FibreCrude', 3, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'Instructions for crude fibre', '1.00', '', [], True, 'General'),
-            ('lab', 'Fibre - NDF', '%', 3, 7, '', False, 'Description for NDF fibre', 'NDF', 'FibreNDF', 4, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'Instructions for NDF fibre', '0.00', 'rwt', [], True, 'Water'),
-            ('lab', 'Fluoride', 'mg/l', 2, 10, 'ml', False, 'Description for flouride', 'F', 'Fluoride', 5, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'Instructions for Flouride', None, '', [], False, 'Mold'),
-            ('lab', 'Iron', 'mg/l', 5, 10, '', False, 'Description for iron as Fe', 'Fe', 'Iron', 1, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'Instructions for iron', None, '', [], False, 'Biogas'),
-            ('lab', 'Lignin', 'mg/l', 5, 10, '', True, 'Description for Lignin', 'Lignin', 'Lignin', 2, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'Instructions for lignin', None, 'rw', [], False, 'Mold'),
-            ('lab', 'Magnesium', 'mg/l', 5, 10, '', False, 'Description for magnesium', 'Mg', 'Magnesium', 3, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'Instructions for magnesium', None, '', [], False, 'General'),
-            ('lab', 'Manganese', 'mg/l', 3, 11, '', False, 'Description for manganese', 'Mn', 'Manganese', 4, '', 'Instructions for manganese', None, '', [], False, 'Soil'),
-            ('lab', 'Moisture', '%', 5, 35, '', False, 'Description for percentage moisture testing. The mass of the wet sample, dry sample and container are captured. The result is determined by the formula: (wet sample - dry sample) / (wet sample - container)', 'Moist', 'Moisture', 5, [[0, 10, 1], [10, 20, 2], [20, 30, 3], [30, 100, 4]], 'Instructions for moisture', None, 'wl', [], False, 'Water'),
-            ('lab', 'Dry Matter', '%', 5, 35, '', False, 'Description for percentage dry matter. Dependant on Moisture', 'DM', 'DryMatter', 5, [[0, 10, 1], [10, 20, 2], [20, 30, 3], [30, 100, 4]], 'DM (%) = 100 - Moisture %', None, 'dep', ['Moisture'], False, 'Biogas'),
-            ('lab', 'Nitrates & Nitrites', 'mg/l', 5, 10, '', False, 'Description for nitrates and nitrites', 'N', 'Nitrates', 6, '', 'Instructions for nitrates & nitrites', None, '', [], False, 'Water'),
-            ('lab', 'Phosphorus', 'mg/l', 5, 10, '', False, 'Description for phosphorus testing', 'Phos', 'Phosphorus', 1, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'Instructions for phosphorus', '5.00', '', [], False, 'Air'),
-            ('lab', 'pH (laboratory)', '', 2, 7, '', False, 'Laboratory method for pH', 'pH', 'pH', 2, '', 'Instructions for ph Lab', '5.00', '', [], False, 'Air'),
-            ('lab', 'Phosphorus Total', 'mg/l', 5, 10, '', False, 'Description for total phosphorus', 'PhosTot', 'PhosphorusTotal', 3, '', 'Instructions for total phosphorus', None, '', [], False, 'Mold'),
-            ('lab', 'Protein - ADIP', 'mg/l', 5, 10, '', False, 'Description for ADIP protein', '', 'ProteinADIP', 3, '', 'Instructions for protein', None, '', [], False, 'Soil'),
-            ('lab', 'Protein - NDIP', 'mg/l', 5, 10, '', False, 'Description for NDIP protein', '', 'ProteinNDIP', 4, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'Instructions for NDIP protein', None, 't', [], False, 'Mold'),
-            ('lab', 'Protein (KOH Solubility)', 'mg/l', 5, 10, '', False, 'KOH solubility method for testing protein', '', 'ProteinKOH', 5, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'Instructions for KOH soluble protein', None, '', [], False, 'Water'),
-            ('lab', 'Protein (Soluble) ', 'mg/l', 5, 10, '', False, 'Description for testing soluble protein', '', 'ProteinSoluble', 6, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'Instructions for soluble protein', None, '', [], False, 'Water'),
-            ('lab', 'Protein Crude', 'mg/l', 5, 10, '', False, 'Description for crude protein', 'CP', 'ProteinCrude', 7, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'Instructions for crude protein', None, '', [], False, 'Water'),
-            ('lab', 'Sodium', 'mg/l', 5, 10, '', False, 'Description for Na', 'Na', 'Sodium', 8, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'Instructions for sodium', None, '', [], False, 'Soil'),
-            ('lab', 'Starch', '%', 5, 10, '', False, '', 'STA', 'Starch', 24, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'Instructions for starch', None, '', [], False, 'Mold'),
-            ('lab', 'Sugars', '%', 5, 10, '', False, 'Total sugars as invert sugar', 'SUG', 'Sugars', 48, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'Instructions for sugars', None, '', [], False, 'Water'),
-            ('lab', 'Sulphate', 'mg/l', 5, 10, '', False, 'Description for SO4 testing', 'SO4', 'Sulphate', 4, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'Instructions for sulphate', '10.00', '', [], False, 'Water'),
-            ('lab', 'Suspended solids', 'mg/l', 5, 10, '', True, 'Suspended solid testing methods', '', 'SuspendedSolids', 2, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'Instructions for suspended solids', '2.00', '', [], False, 'Soil'),
-            ('lab', 'TDS (calculated)', 'mg/l', 5, 10, '', False, 'Description for TDS', '', 'TDSCalculated', 1, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'Instructions for calculated TDS', '2.00', '', [], False, 'Soil'),
-            ('lab', 'Tot. Alkalinity (CaCO3)', 'mg/l', 5, 10, '', False, 'Description for determining the total alkalinity, or CaCO3 of a sample', 'CaCO3', 'TotalAlkalinityCaCO3', 2, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'Instructions for total alkalinity', '0.00', '', [], False, 'Mold'),
-            ('lab', 'Tot. Hardness (CaCO3)', 'mg/l', 4, 16, '', False, 'Description for testing hardness - CaCO3', '', 'TotalHardnessCaCO3', 3, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'Instructions for total hardness', '0.00', '', [], False, 'Water'),
-            ('lab', 'Urea ', 'mg/l', 2, 8, '', False, 'Description for urea testing', 'Urea', 'Urea', 4, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'Instructions for urea', '0.00', '', [], False, 'Mold'),
-            ('lab', 'Zinc', 'mg/l', 5, 9, '', False, 'Description for zinc testing', 'Zn', 'Zinc', 10, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'Instructions for zinc', '0.00', '', [], False, 'Soil'),
-            ('lab', 'Apparent Metabolizable Energy', 'MJ/kg', 5, 9, '', False, 'AME used for poultry feed as no correction is made for faecal or endogenous energy losses', 'AME', 'AME', 10, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'AME (MJ/kg) = 0.1551 ProteinCrude% + 0.3431 FatCrudeEtherExtraction% + 0.1669 Starch% + 0.1301 Sugars %', '0.00', 'dep', ['ProteinCrude', 'FatCrudeEtherExtraction', 'Starch', 'Sugars'], True, 'General'),
-            ('lab', 'Metabolizable Energy', 'MJ/kg DM', 5, 9, '', False, 'ME used for ruminant feeds', 'ME', 'ME', 10, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'ME (MJ/kg DM) = 12 + [0.008 ProteinCrude + 0.023 FatCrudeEtherExtraction] - 0.018 FibreCrude + 0.012 Ash]', '0.00', 'dep', ['ProteinCrude', 'FatCrudeEtherExtraction', 'FibreCrude', 'Ash'], True, 'General'),
-            ('lab', 'Total Digestible Nutrients', '% DM', 5, 9, '', False, 'TDN % is used for ruminant feeds', 'TDN', 'TDN', 10, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'TDN% (DM) = ME MJ/kg DM * 6.67', '0.00', 'dep', ['ME', ], False, 'General'),
-            ('lab', 'Non-Structural Carbohydrates', '% DM', 5, 9, '', False, 'NSC is used for dairy cattle', 'NSC', 'NSC', 10, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'NSC% (DM) = 100 - [FibreNDF% + ProteinCrude% + FatCrudeEtherExtraction% + Ash%]', '0.00', 'dep', ['FibreNDF', 'ProteinCrude', 'FatCrudeEtherExtraction', 'Ash'], False, 'General'),
-            ('lab', 'Digestible Energy', 'MJ/kg', 5, 9, '', False, 'DE is used for pig feeds', 'DE', 'DE', 10, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'DE MJ/kg = 17.38 + 0.105 ProteinCrude% + 0.114 FatCrudeEtherExtraction% -0.317 FibreCrude% -0.402 Ash%', '0.00', 'dep', ['ProteinCrude', 'FatCrudeEtherExtraction', 'FibreCrude', 'Ash'], False, 'General'),
-        )
+    def CreateServiceObjects(self,services):
+        if not hasattr(self, 'service_objs'):
+            self.service_objs = {'':None}
         folder = self.context.bika_settings.bika_analysisservices
         price = '15.00'
         corporateprice = '12.00'
-        for PointOfCapture, title, unit, min, max, titration_unit, accred, description, instr_kw, keyword, maxhours, uncertainties, instructions, dup_variation, calctype, dependancies, dry_matter, cat in services:
+        for PointOfCapture, title, unit, min, max, titration_unit, accred, description, instr_kw, keyword, maxhours, uncertainties, instructions, dup_variation, calculation, dry_matter, cat in services:
             id = folder.generateUniqueId('AnalysisService')
             folder.invokeFactory(id = id, type_name = 'AnalysisService')
             obj = folder[id]
             obj.edit(PointOfCapture = PointOfCapture,
                      title = title,
                      Unit = unit,
+                     Calculation = self.calculations[calculation],
                      Price = price,
                      CorporatePrice = corporateprice,
                      VAT = '14.0',
@@ -502,29 +541,77 @@ class LoadSetupData(BrowserView):
 
             uc_out = []
             for item in uncertainties:
-                uc_out.append({'intercept_min' : item[0],
-                               'intercept_max' : item[1],
-                               'errorvalue' : item[2]})
+                uc_out.append({'intercept_min' : item[0], 'intercept_max' : item[1], 'errorvalue' : item[2]})
 
             category = None
             if self.categories.has_key(cat):
                 category = self.categories[cat]
 
-            ctype = ''
-            if self.calctypes.has_key(calctype):
-                ctype = self.calctypes[calctype]
-
-            deps = []
-            for item in dependancies:
-                if self.service_objs.has_key(item):
-                    deps.append(self.service_objs[item])
-
             obj.edit(Uncertainties = uc_out,
-                     CalculationType = ctype,
-                     CalcDependancy = deps,
                      Category = category)
             obj.reindexObject()
-            self.service_objs[keyword] = obj.UID()
+            self.service_objs[title] = obj.UID()
+
+    def AnalysisServices1(self):
+        services = (
+            ('field', 'Temperature', 'Deg. C', 0, 99, '', False, 'Temperature at time of sample capture', 'Temp', 'Tempterature', 0, [], 'Simple temperature measurement', '1.00', '', False, 'General'),
+            ('field', 'pH (field)', '', 2, 7, '', False, 'pH measured at sample capture', 'pH', 'pH', 2, '', 'Instructions for ph Field', '5.00', '', False, 'General'),
+            ('lab', 'Aflatoxins Total', 'mg/l', 2, 11, '', False, 'Description for Aflatoxins Total', 'Aflatox', 'Aflatoxins', 1, [[0, 8, 0.4], [8, 12, 0.6], [12, 999, 0.8]], 'Instructions for Aflatoxins', '5.00', '', False, 'Biogas'),
+            ('lab', 'Ash', '%', 15, 30, '', False, 'Description for total ash analysis', 'Ash', 'Ash', 2, [[0, 20, 1], [20, 40, 2], [40, 999, 3]], 'Instructions for Ash', '5.00', 'Residual Weight', True, 'Mold'),
+            ('lab', 'Calcium', 'mg/l', 5, 10, 'ml', False, 'Description for calcium determination', 'Ca', 'Calcium', 3, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'Instructions for Calcium', '0.00', 'Titration', False, 'Water'),
+            ('lab', 'Chlorides', 'mg/l', 3, 10, '', False, 'Description for Chloride analysis', 'Clide', 'Chlorides', 1, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'Instructions for Chlorides', '0.00', '', False, 'Water'),
+            ('lab', 'Chlorine residual', 'mg/l', 2, 4, 'ml', False, 'Description for residual chlorine testing', 'Cl', 'Chlorine', 2, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'Instructions for Chlorine residual', '0.00', 'Titration', False, 'Oil'),
+            ('lab', 'COD ', 'mg/l', 1, 99, '', False, 'Description for COD', 'COD', 'COD', 3, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'Instructions for COD', None, '', False, 'Soil'),
+            ('lab', 'Conductivity @ 25 deg C', 'mS/m', 3, 10, '', False, 'Description for testing ', '', 'Conductivity', 4, '', 'Instructions for Conductivity @ 25deg C', None, '',  False, 'Soil'),
+            ('lab', 'Copper', 'mg/l', 2, 6, 'ml', False, 'Description for copper as Cu', 'Cu', 'Copper', 6, '', 'Instructions for Copper', None, '', False, 'Soil'),
+            ('lab', 'Ether Extract', '%', 2, 6, '', False, 'Ether extract/crude fat', 'EE', 'FatCrudeEtherExtraction', 6, '', 'Instructions for ether extract', None, '', False, 'Oil'),
+            ('lab', 'Fat Crude', '%', 2, 45, '', False, 'Description for crude fat', 'FatCrude', 'FatCrude', 1, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'Instructions for Fat Crude', '5.00', 'Weight Loss (tare)', True, 'Mold'),
+            ('lab', 'Fibre - ADF', '%', 10, 50, '', True, 'Description for fibre testing (ADF)', 'FibADF', 'FibreADF', 2, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'Instructions for Fibre ADF', '1.00', 'Weight Loss', True, 'Air'),
+            ('lab', 'Fibre - Crude', '%', 3, 30, '', True, 'Description for crude fibre testing', 'CF', 'FibreCrude', 3, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'Instructions for crude fibre', '1.00', '', True, 'General'),
+            ('lab', 'Fibre - NDF', '%', 3, 7, '', False, 'Description for NDF fibre', 'NDF', 'FibreNDF', 4, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'Instructions for NDF fibre', '0.00', 'Residual Weight (tare)', True, 'Water'),
+            ('lab', 'Fluoride', 'mg/l', 2, 10, 'ml', False, 'Description for flouride', 'F', 'Fluoride', 5, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'Instructions for Flouride', None, '', False, 'Mold'),
+            ('lab', 'Iron', 'mg/l', 5, 10, '', False, 'Description for iron as Fe', 'Fe', 'Iron', 1, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'Instructions for iron', None, '', False, 'Biogas'),
+            ('lab', 'Lignin', 'mg/l', 5, 10, '', True, 'Description for Lignin', 'Lignin', 'Lignin', 2, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'Instructions for lignin', None, 'Residual Weight', False, 'Mold'),
+            ('lab', 'Magnesium', 'mg/l', 5, 10, '', False, 'Description for magnesium', 'Mg', 'Magnesium', 3, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'Instructions for magnesium', None, '', False, 'General'),
+            ('lab', 'Manganese', 'mg/l', 3, 11, '', False, 'Description for manganese', 'Mn', 'Manganese', 4, '', 'Instructions for manganese', None, '', False, 'Soil'),
+            ('lab', 'Moisture', '%', 5, 35, '', False, 'Description for percentage moisture testing. The mass of the wet sample, dry sample and container are captured. The result is determined by the formula: (wet sample - dry sample) / (wet sample - container)', 'Moist', 'Moisture', 5, [[0, 10, 1], [10, 20, 2], [20, 30, 3], [30, 100, 4]], 'Instructions for moisture', None, 'Weight Loss', False, 'Water'),
+            ('lab', 'Nitrates & Nitrites', 'mg/l', 5, 10, '', False, 'Description for nitrates and nitrites', 'N', 'Nitrates', 6, '', 'Instructions for nitrates & nitrites', None, '', False, 'Water'),
+            ('lab', 'Phosphorus', 'mg/l', 5, 10, '', False, 'Description for phosphorus testing', 'Phos', 'Phosphorus', 1, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'Instructions for phosphorus', '5.00', '', False, 'Air'),
+            ('lab', 'pH (laboratory)', '', 2, 7, '', False, 'Laboratory method for pH', 'pH', 'pH', 2, '', 'Instructions for ph Lab', '5.00', '', False, 'Air'),
+            ('lab', 'Phosphorus Total', 'mg/l', 5, 10, '', False, 'Description for total phosphorus', 'PhosTot', 'PhosphorusTotal', 3, '', 'Instructions for total phosphorus', None, '', False, 'Mold'),
+            ('lab', 'Protein - ADIP', 'mg/l', 5, 10, '', False, 'Description for ADIP protein', '', 'ProteinADIP', 3, '', 'Instructions for protein', None, '', False, 'Soil'),
+            ('lab', 'Protein - NDIP', 'mg/l', 5, 10, '', False, 'Description for NDIP protein', '', 'ProteinNDIP', 4, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'Instructions for NDIP protein', None, 'Titration', False, 'Mold'),
+            ('lab', 'Protein (KOH Solubility)', 'mg/l', 5, 10, '', False, 'KOH solubility method for testing protein', '', 'ProteinKOH', 5, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'Instructions for KOH soluble protein', None, '', False, 'Water'),
+            ('lab', 'Protein (Soluble) ', 'mg/l', 5, 10, '', False, 'Description for testing soluble protein', '', 'ProteinSoluble', 6, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'Instructions for soluble protein', None, '', False, 'Water'),
+            ('lab', 'Protein Crude', 'mg/l', 5, 10, '', False, 'Description for crude protein', 'CP', 'ProteinCrude', 7, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'Instructions for crude protein', None, '', False, 'Water'),
+            ('lab', 'Sodium', 'mg/l', 5, 10, '', False, 'Description for Na', 'Na', 'Sodium', 8, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'Instructions for sodium', None, '', False, 'Soil'),
+            ('lab', 'Starch', '%', 5, 10, '', False, '', 'STA', 'Starch', 24, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'Instructions for starch', None, '', False, 'Mold'),
+            ('lab', 'Sugars', '%', 5, 10, '', False, 'Total sugars as invert sugar', 'SUG', 'Sugars', 48, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'Instructions for sugars', None, '', False, 'Water'),
+            ('lab', 'Sulphate', 'mg/l', 5, 10, '', False, 'Description for SO4 testing', 'SO4', 'Sulphate', 4, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'Instructions for sulphate', '10.00', '', False, 'Water'),
+            ('lab', 'Suspended solids', 'mg/l', 5, 10, '', True, 'Suspended solid testing methods', '', 'SuspendedSolids', 2, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'Instructions for suspended solids', '2.00', '', False, 'Soil'),
+            ('lab', 'TDS (calculated)', 'mg/l', 5, 10, '', False, 'Description for TDS', '', 'TDSCalculated', 1, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'Instructions for calculated TDS', '2.00', '', False, 'Soil'),
+            ('lab', 'Tot. Alkalinity (CaCO3)', 'mg/l', 5, 10, '', False, 'Description for determining the total alkalinity, or CaCO3 of a sample', 'CaCO3', 'TotalAlkalinityCaCO3', 2, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'Instructions for total alkalinity', '0.00', '', False, 'Mold'),
+            ('lab', 'Tot. Hardness (CaCO3)', 'mg/l', 4, 16, '', False, 'Description for testing hardness - CaCO3', '', 'TotalHardnessCaCO3', 3, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'Instructions for total hardness', '0.00', '', False, 'Water'),
+            ('lab', 'Urea ', 'mg/l', 2, 8, '', False, 'Description for urea testing', 'Urea', 'Urea', 4, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'Instructions for urea', '0.00', '', False, 'Mold'),
+            ('lab', 'Zinc', 'mg/l', 5, 9, '', False, 'Description for zinc testing', 'Zn', 'Zinc', 10, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'Instructions for zinc', '0.00', '', False, 'Soil'),
+        )
+        self.CreateServiceObjects(services)
+
+    def AnalysisServices2(self):
+        services = (
+            ('lab', 'Dry Matter', '%', 5, 35, '', False, 'Description for percentage dry matter. Dependant on Moisture', 'DM', 'DryMatter', 5, [[0, 10, 1], [10, 20, 2], [20, 30, 3], [30, 100, 4]], 'DM (%) = 100 - Moisture %', None, 'Dry Matter', False, 'Biogas'),
+            ('lab', 'Apparent Metabolizable Energy', 'MJ/kg', 5, 9, '', False, 'AME used for poultry feed as no correction is made for faecal or endogenous energy losses', 'AME', 'AME', 10, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'AME (MJ/kg) = 0.1551 ProteinCrude% + 0.3431 FatCrudeEtherExtraction% + 0.1669 Starch% + 0.1301 Sugars %', '0.00', 'Apparent Metabolizable Energy', True, 'General'),
+            ('lab', 'Metabolizable Energy', 'MJ/kg DM', 5, 9, '', False, 'ME used for ruminant feeds', 'ME', 'ME', 10, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'ME (MJ/kg DM) = 12 + [0.008 ProteinCrude + 0.023 FatCrudeEtherExtraction] - 0.018 FibreCrude + 0.012 Ash]', '0.00', 'Metabolizable Energy', True, 'General'),
+            ('lab', 'Non-Structural Carbohydrates', '% DM', 5, 9, '', False, 'NSC is used for dairy cattle', 'NSC', 'NSC', 10, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'NSC% (DM) = 100 - [FibreNDF% + ProteinCrude% + FatCrudeEtherExtraction% + Ash%]', '0.00', 'Non-Structural Carbohydrates', False, 'General'),
+            ('lab', 'Digestible Energy', 'MJ/kg', 5, 9, '', False, 'DE is used for pig feeds', 'DE', 'DE', 10, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'DE MJ/kg = 17.38 + 0.105 ProteinCrude% + 0.114 FatCrudeEtherExtraction% -0.317 FibreCrude% -0.402 Ash%', '0.00', 'Digestible Energy', False, 'General'),
+        )
+        self.CreateServiceObjects(services)
+
+    def AnalysisServices3(self):
+        services = (
+            ('lab', 'Total Digestible Nutrients', '% DM', 5, 9, '', False, 'TDN % is used for ruminant feeds', 'TDN', 'TDN', 10, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'TDN% (DM) = ME MJ/kg DM * 6.67', '0.00', 'Total Digestible Nutrients', False, 'General'),
+        )
+        self.CreateServiceObjects(services)
 
     def Methods(self):
         methods = (
@@ -536,9 +623,7 @@ class LoadSetupData(BrowserView):
             id = folder.generateUniqueId('Method')
             folder.invokeFactory(id = id, type_name = 'Method')
             obj = folder[id]
-            obj.edit(title = title,
-                     MethodDescription = description)
-#xxx            obj.create_log_entry()
+            obj.edit(title = title, MethodDescription = description)
 
     def StandardStocks(self):
         self.std_stocks = []
@@ -600,7 +685,6 @@ class LoadSetupData(BrowserView):
             attachment = folder[attach_id]
             attachment.edit(title = title, AttachmentTypeDescription = descr)
 
-
     def Products(self):
         folder = self.context.bika_settings.bika_labproducts
         products = (
@@ -655,7 +739,6 @@ class LoadSetupData(BrowserView):
                      Row = pos,
                      Service = serv)
 
-#    # Setup standard manufacturers 
     def StandardManufacturers(self):
         manufacturers = (
             ('Bloggs & co', 'Manufacturers of fine products since 2008'),
