@@ -25,15 +25,9 @@ class AnalysisRequestAnalysesView(BikaListingView):
     show_select_column = False
     pagesize = 1000
 
-    def __init__(self, context, request, **kwargs):
-        self.contentFilter = dict(kwargs)
-        self.contentFilter['portal_type'] = 'Analysis'
-        super(AnalysisRequestAnalysesView, self).__init__(context, request)
-        self.contentsMethod = self.getFolderContents
-
     columns = {
         'getServiceName': {'title': _('Analysis')},
-        'Worksheet': {'title': _('Worksheet')},
+        'WorksheetNumber': {'title': _('Worksheet')},
         'Result': {'title': _('Result')},
         'Uncertainty': {'title': _('+-')},
         'Attachments': {'title': _('Attachments')},
@@ -43,65 +37,74 @@ class AnalysisRequestAnalysesView(BikaListingView):
         {'title': _('All'), 'id':'all',
          'columns':['getServiceName',
                     'state_title',
-                    'Worksheet',
+                    'WorksheetNumber',
                     'Result',
                     'Uncertainty',
                     'Attachments'],
         },
     ]
 
-    def getFolderContents(self, contentFilter):
-        """ This overrides the default self.context.getFolderContents().
-            The result has InterimResult key/values inserted into each record.
-            It also sets the self.interim_fields value, for later reference
-    	"""
-        self.interim_fields = []
-        folder_contents = []
-        for item in self.context.getFolderContents(contentFilter):
-            obj = item.getObject()
-            for ir in obj.getInterimFields():
-                if ir['name'] not in self.interim_fields:
-                    self.interim_fields.append(ir['name'])
-            folder_contents.append(item)
-        return folder_contents
+    def __init__(self, context, request, allow_edit=False, **kwargs):
+        # allow_edit passes to bika_listing_table.pt along with method data (deps, calc),
+        # and allows editing of the result field, or of the interim fields leading to it.
+        super(AnalysisRequestAnalysesView, self).__init__(context, request)
+        self.allow_edit = allow_edit
+        self.contentFilter = dict(kwargs)
+        self.contentFilter['portal_type'] = 'Analysis'
 
     def folderitems(self):
         """ This folderitems also inserts the columns from InterimFields from all analyses
-            into self.columns, and populates them where possible.
-            The InterimFields columns are inserted before the column called 'Results'.
-            This insertion will take effect in all review_states column listings
-		"""
+            into self.columns, inserted before the column called 'Result'.
+    	"""
         analyses = BikaListingView.folderitems(self)
 
-        interim_fields = self.interim_fields
-        interim_fields.reverse()
+        items = []
+        self.interim_fields = []
+
+        for item in analyses:
+            if not item.has_key('brain'): continue
+            obj = item['brain'].getObject()
+            item['WorksheetNumber'] = obj.getWorksheet()
+            item['Uncertainty'] = obj.getUncertainty()
+            item['Unit'] = obj.getUnit()
+            item['Result'] = obj.getResult()
+            item['Attachments'] = ", ".join([a.Title() for a in obj.getAttachment()])
+
+            # Check that all InterimField names are in self.interim_fields
+            for i in obj.getInterimFields():
+                if i['name'] not in self.interim_fields:
+                    self.interim_fields.append(i['name'])
+                # insert matching InterimField dict from this analysis into the item.
+                item[i['name']] = i
+
+            # flag for table view to insert edit widgets
+            if self.allow_edit: item['_allow_edit'] = True
+
+            # also insert the whole method in there for calculation, dependancies....
+            item['_calculation'] = obj.getMethod() or False
+
+            items.append(item)
+
+        self.interim_fields.reverse()
 
         # munge self.columns
-        for key in interim_fields:
-            key = key.replace("_"," ")
+        for key in self.interim_fields:
+#            key = key.replace("_"," ")
             if key not in self.columns:
-                self.columns[key.replace("_"," ")] = {'title': key}
+                self.columns[key] = {'title': key}
 
         # munge self.review_states
         munged_states = []
         for state in self.review_states:
             pos = state['columns'].index('Result')
             if not pos: pos = len(state['columns'])
-            for key in interim_fields:
-                key = key.replace("_"," ")
+            for key in self.interim_fields:
+#                key = key.replace("_"," ")
                 if key not in state['columns']:
                     state['columns'].insert(pos, key)
             munged_states.append(state)
         self.review_states = munged_states
 
-        items = []
-        for item in analyses:
-            if not item.has_key('brain'): continue
-            obj = item['brain'].getObject()
-            item['WorksheetNumber'] = obj.getWorksheet()
-            item['Uncertainty'] = obj.getUncertainty()
-            item['Attachments'] = ", ".join([a.Title() for a in obj.getAttachment()])
-            items.append(item)
         return items
 
 class AnalysisRequestViewView(BrowserView):
@@ -404,11 +407,11 @@ class AnalysisRequestAddView(BrowserView):
         profiles = []
         pc = getToolByName(self.context, 'portal_catalog')
         for proxy in pc(portal_type = 'ARProfile', getClientUID = self.context.UID(), sort_on = 'sortable_title'):
-            profiles.append(proxy.getObject()) #XXX getObject()
+            profiles.append(proxy.getObject())
         for proxy in pc(portal_type = 'LabARProfile', sort_on = 'sortable_title'):
             profile = proxy.getObject()
             profile.setTitle("Lab: %s" % profile.Title())
-            profiles.append(proxy.getObject()) #XXX getObject()
+            profiles.append(proxy.getObject())
         return profiles
 
     def Categories(self):
@@ -446,8 +449,8 @@ class AnalysisRequestManageResultsView(AnalysisRequestViewView):
 
     def __init__(self, context, request):
         super(AnalysisRequestViewView, self).__init__(context, request)
-        self.FieldAnalysesView = AnalysisRequestAnalysesView(context, request, getPointOfCapture = 'field')
-        self.LabAnalysesView = AnalysisRequestAnalysesView(context, request, getPointOfCapture = 'lab')
+        self.FieldAnalysesView = AnalysisRequestAnalysesView(context, request, allow_edit=True, getPointOfCapture = 'field')
+        self.LabAnalysesView = AnalysisRequestAnalysesView(context, request, allow_edit=True, getPointOfCapture = 'lab')
 
     def __call__(self):
         wf_tool = getToolByName(self.context, 'portal_workflow')

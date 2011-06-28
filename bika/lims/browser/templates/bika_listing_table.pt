@@ -1,4 +1,4 @@
-<div id="folderlisting-main-table" i18n:domain="bika">
+<div class="folderlisting-main-table" i18n:domain="bika">
   <input type="hidden" name="sort_on" tal:attributes="value request/sort_on|string:getObjPositionInParent"/>
   <input type="hidden" name="pagenumber" tal:attributes="value view/batch/pagenumber"/>
   <input type="hidden" name="show_all" tal:attributes="value view/show_all"/>
@@ -147,19 +147,84 @@
             </td>
 
             <tal:column tal:repeat="column review_state/columns">
-              <td tal:attributes="class python: columns[column].has_key('table_row_class') and columns[column]['table_row_class'] or ''">
 
-                <a tal:condition="python:item.has_key('links') and item['links'].has_key(column)" href="#"
-                   tal:attributes="href python:item['links'][column];
-                                   class string: ${item/state_class} ${item/type_class};">
-                  <img tal:condition="python:view.columns[column].has_key('icon')"
-                       tal:attributes="src python:'images/'+view.columns[column]['icon']" />
-                  <strong tal:content="python:item.get(column)"/>
-                </a>
+              <tal:comment tal:replace="nothing">
+                Is the Row editable?
+                Yes
+                    Is this item an interim field?
+                    Yes
+                        Print widget
+                    No
+                        Is it called 'Result'?
+                        Yes
+                            Does the Analysis have a Calculation defined?
+                            Yes:
+                                  Result text widget is readonly
+                            No
+                                  Print text input widget
+                        No
+                            Print item[column]
+                No
+                    print item[column]
+              </tal:comment>
 
-                <span  tal:condition="python:not (item.has_key('links') and item['links'].has_key(column))"
-                      tal:content="python:item.get(column)"
-                      tal:attributes="class item/state_class">&nbsp</span>
+              <td tal:attributes="class python: columns[column].has_key('table_row_class') and columns[column]['table_row_class'] or ''"
+                  tal:define="
+                  is_editable python: item.has_key('_allow_edit') and item['_allow_edit'] or False;
+                  is_interim python: item.has_key(column) and type(item[column]) == type({}) or False;
+                  is_result python: column == 'Result';
+                  ">
+
+                <tal:is_editable condition="is_editable">
+                  <tal:is_interim condition="is_interim">
+                    <input type="text" size="7" tal:attributes="
+                      name string:analysis_${item/UID}_${column}
+                      value python: item[column]['value'];
+                      type python: item[column]['type'];"/>
+                    <span class='discreet' tal:content="python: item[column]['unit']"/>
+                  </tal:is_interim>
+                  <tal:is_not_interim condition="not: is_interim">
+                    <tal:is_result tal:condition="is_result">
+                      <input tal:condition="python: item['_calculation']" readonly="readonly"
+                        type="text" size="7" tal:attributes="value python: item['Result'];name string:analysis_${item/UID}_Result"/>
+                      <input tal:condition="python: not item['_calculation']"
+                        type="text" size="7" tal:attributes="value python: item['Result'];name string:analysis_${item/UID}_Result"/>
+                      <span class='discreet' tal:content="python: item['Unit']"/>
+                    </tal:is_result>
+                    <tal:is_not_result tal:condition="not: is_result">
+
+                        <a tal:condition="python:item.has_key('links') and item['links'].has_key(column)" href="#"
+                           tal:attributes="href python:item['links'][column]; class string: ${item/state_class} ${item/type_class};">
+                          <img tal:condition="python:view.columns[column].has_key('icon')" tal:attributes="src python:'images/'+view.columns[column]['icon']" />
+                          <strong tal:content="python: item.get(column, '-')"/>
+                        </a>
+                        <span tal:condition="python:not (item.has_key('links') and item['links'].has_key(column))"
+                              tal:content="python:item.get(column)"
+                              tal:attributes="class item/state_class">&nbsp
+                        </span>
+
+                    </tal:is_not_result>
+                  </tal:is_not_interim>
+                </tal:is_editable>
+                <tal:is_not_editable condition="not: is_editable">
+
+                        <a tal:condition="python:item.has_key('links') and item['links'].has_key(column)" href="#"
+                           tal:attributes="href python:item['links'][column]; class string: ${item/state_class} ${item/type_class};">
+                          <img tal:condition="python:view.columns[column].has_key('icon')" tal:attributes="src python:'images/'+view.columns[column]['icon']" />
+                          <strong tal:content="python: item.get(column, '-')"/>
+                        </a>
+                        <span tal:condition="python:not (item.has_key('links') and item['links'].has_key(column))"
+                              tal:content="python:item.get(column)"
+                              tal:attributes="class item/state_class">&nbsp
+                        </span>
+
+                </tal:is_not_editable>
+
+                <tal:comment tal:replace="nothing">
+                  Everyone gets unit, if one is specified, plus late analysis icon etc...
+                </tal:comment>
+
+                <tal >
 
               </td>
             </tal:column>
