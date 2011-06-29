@@ -37,9 +37,16 @@ class AnalysisServicesView(BikaListingView):
               }
     review_states = [
                      {'title_or_id': _('All'), 'id':'all',
-                      'columns': ['title_or_id', 'CategoryName', 'ReportDryMatter',
-                                  'AttachmentOption', 'Unit', 'Price', 'CorporatePrice',
-                                  'MaxHoursAllowed', 'DuplicateVariation', 'Method',
+                      'columns': ['title_or_id',
+                                  'CategoryName',
+                                  'ReportDryMatter',
+                                  'AttachmentOption',
+                                  'Unit',
+                                  'Price',
+                                  'CorporatePrice',
+                                  'MaxHoursAllowed',
+                                  'DuplicateVariation',
+                                  'Calculation',
                                  ],
                      },
                     ]

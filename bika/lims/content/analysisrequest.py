@@ -294,6 +294,7 @@ class AnalysisRequest(BaseFolder):
         mngr_info['dict'] = managers
 
         return mngr_info
+
     security.declareProtected(View, 'getResponsible')
     def getManagers(self):
         """ Return all managers of responsible departments """
@@ -335,7 +336,6 @@ class AnalysisRequest(BaseFolder):
                 return True
         return False
 
-
     security.declareProtected(View, 'getBillableItems')
     def getBillableItems(self):
         """ Return all items except those in 'not_requested' state """
@@ -351,7 +351,7 @@ class AnalysisRequest(BaseFolder):
     def getSubtotal(self):
         """ Compute Subtotal """
         return sum(
-            [Decimal(obj.getPrice()) \
+            [Decimal(obj.getPrice() or 0) \
             for obj in self.getBillableItems()])
 
     security.declareProtected(View, 'getVAT')
@@ -359,13 +359,17 @@ class AnalysisRequest(BaseFolder):
         """ Compute VAT """
         return Decimal(self.getTotalPrice()) - Decimal(self.getSubtotal())
 
-
     security.declareProtected(View, 'getTotalPrice')
     def getTotalPrice(self):
         """ Compute TotalPrice """
-        return sum(
-            [Decimal(obj.getTotalPrice()) \
-            for obj in self.getBillableItems()])
+        billable = self.getBillableItems()
+        TotalPrice = Decimal(0, 2)
+        for item in billable:
+            itemPrice = Decimal(item.getPrice() or 0)
+            service = item.getService()
+            VAT = service and Decimal(service.getVAT() or 0) or Decimal(0)
+            TotalPrice += Decimal(itemPrice) * (Decimal(1,2) + VAT)
+        return TotalPrice
     getTotal = getTotalPrice
 
     security.declareProtected(View, 'getCatAnalyses')
@@ -679,7 +683,6 @@ class AnalysisRequest(BaseFolder):
         """ recalculate state from remaining analyses """
         BaseFolder.manage_delObjects(self, ids, REQUEST)
         self._escalateWorkflowAction()
-
 
     # workflow methods
     #

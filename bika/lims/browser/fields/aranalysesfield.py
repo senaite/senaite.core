@@ -59,7 +59,9 @@ class ARAnalysesField(ObjectField):
                 instance.invokeFactory(id = service.id, type_name = 'Analysis')
             analysis = instance._getOb(service.id)
 
-            interim_fields = service.getMethod() and service.getMethod().getInterimFields() or []
+            calc = service.getCalculation()
+            interim_fields = calc and calc.getInterimFields() or []
+            print service.Title(), calc, interim_fields
 
             # Using getRaw method on field rather than generated
             # accessor to prevent object lookup
@@ -67,12 +69,10 @@ class ARAnalysesField(ObjectField):
             # "if Service field of AR doesn't know about us yet"
                 analysis.edit(
                     Service = service,
-                    Method = service.getMethod(),
                     InterimFields = interim_fields,
+                    #XXX AnalysisKey remains?
                     AnalysisKey = service.getAnalysisKey(),
                     Price = str(price),
-                    VAT = str(vat),
-                    TotalPrice = str(Decimal(prices[service_uid]) * vat),
                     Unit = service.getUnit(),
                 )
 
@@ -80,13 +80,10 @@ class ARAnalysesField(ObjectField):
                 # the price or unit of an existing analysis may have changed
                 if (analysis.getPrice() != price) or \
                    (analysis.getUnit() != service.getUnit()):
-                   # XXX if method changes?  Calculation was here when it was on service.  or (analysis.getMethod() != service.getMethod()):
+                   # XXX this needs a good scrutinification?
                     analysis.edit(
-                        #Method = service.getMethod(),
                         AnalysisKey = service.getAnalysisKey(),
                         Price = str(price),
-                        VAT = str(vat),
-                        TotalPrice = str(Decimal(prices[service_uid]) * vat),
                         Unit = service.getUnit(),
                     )
 

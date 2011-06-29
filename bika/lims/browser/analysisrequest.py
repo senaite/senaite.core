@@ -27,7 +27,7 @@ class AnalysisRequestAnalysesView(BikaListingView):
     pagesize = 1000
 
     columns = {
-        'getServiceName': {'title': _('Analysis')},
+        'Service': {'title': _('Analysis')},
         'WorksheetNumber': {'title': _('Worksheet')},
         'Result': {'title': _('Result')},
         'Uncertainty': {'title': _('+-')},
@@ -36,7 +36,7 @@ class AnalysisRequestAnalysesView(BikaListingView):
     }
     review_states = [
         {'title': _('All'), 'id':'all',
-         'columns':['getServiceName',
+         'columns':['Service',
                     'state_title',
                     'WorksheetNumber',
                     'Result',
@@ -62,13 +62,14 @@ class AnalysisRequestAnalysesView(BikaListingView):
         for item in analyses:
             if not item.has_key('brain'): continue
             obj = item['brain'].getObject()
+            item['Service'] = obj.getService().Title()
             item['WorksheetNumber'] = obj.getWorksheet()
             item['Uncertainty'] = obj.getUncertainty()
             item['Unit'] = obj.getUnit()
             item['Result'] = obj.getResult()
             item['Attachments'] = ", ".join([a.Title() for a in obj.getAttachment()])
             item['_allow_edit'] = self.allow_edit or False
-            item['_calculation'] = obj.getCalculation() or False
+            item['_calculation'] = obj.getService().getCalculation() or False
 
             # Add this analysis' interim fields to the list
             for i in obj.getInterimFields():
@@ -85,7 +86,7 @@ class AnalysisRequestAnalysesView(BikaListingView):
         # munge self.columns
         for col_id in interim_keys:
             if col_id not in self.columns:
-                self.columns[col_id] = {'title': interim_keys[col_id]}
+                self.columns[col_id] = {'title': self.interim_fields[col_id]}
 
         # munge self.review_states
         munged_states = []
@@ -97,7 +98,6 @@ class AnalysisRequestAnalysesView(BikaListingView):
                     state['columns'].insert(pos, col_id)
             munged_states.append(state)
         self.review_states = munged_states
-
         return items
 
 class AnalysisRequestViewView(BrowserView):
@@ -1039,7 +1039,8 @@ class AJAX_ExpandCategoryView(BikaListingView):
         service = rc.lookupObject(serviceUID)
         depcatIDs = []
         depUIDs = []
-        method_deps = service.getMethod() and service.getMethod().getDependentAnalyses() or []
+        calc = service.getCalculation()
+        method_deps = calc and calc.getDependentAnalyses() or []
         for service in method_deps:
             depcat_id = service.getCategoryUID() + "_" + service.PointOfCapture
             if depcat_id not in depcatIDs: depcatIDs.append(depcat_id)

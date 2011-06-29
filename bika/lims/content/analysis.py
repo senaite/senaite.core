@@ -191,7 +191,10 @@ class Analysis(BaseContent):
 
     def Title(self):
         """ Return the service title as title """
-        return self.getService().Title()
+        # We construct the analyses manually in ar_add_submit,
+        # and they are without Service attribute for a moment.
+        s = self.getService()
+        if s: return s.Title()
 
     def getUncertainty(self):
         """ The uncertainty value is calculated from the Service. """

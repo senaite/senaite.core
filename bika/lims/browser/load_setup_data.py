@@ -383,13 +383,14 @@ class LoadSetupData(BrowserView):
         for title, CalculationDescription, DependentAnalyses, InterimFields, Formula in calcs:
             calc_id = folder.generateUniqueId('Calculation')
             folder.invokeFactory(id = calc_id, type_name = 'Calculation')
-            calc = folder[calc_id]
-            calc.edit(title = title,
+            obj = folder[calc_id]
+            obj.edit(title = title,
                       CalculationDescription = CalculationDescription,
                       DependentAnalyses = [self.service_objs[a] for a in DependentAnalyses],
                       InterimFields = InterimFields,
                       Formula = Formula)
-            self.calculations[title] = calc
+            obj.reindexObject()
+            self.calculations[title] = obj.UID()
 
     def Calculations1(self):
         calcs = (
