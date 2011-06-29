@@ -124,6 +124,8 @@
       handler="bika.lims.setuphandlers.setupVarious">
     <depends name="bika-skins"/>
     <depends name="bika-content"/>
+    <depends name="bika-properties"/>
+    <depends name="bika-propertiestool"/>
   </genericsetup:importStep>
 
 </configure>

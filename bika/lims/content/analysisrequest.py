@@ -19,10 +19,10 @@ from Products.CMFCore.permissions import View, ModifyPortalContent
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import transaction_note
 from bika.lims.browser.fields import ARAnalysesField
-from bika.lims.interfaces import IAnalysisRequest, IHaveNoByline
 from bika.lims.config import I18N_DOMAIN, SubmitResults, PROJECTNAME, \
     ManageInvoices
 from bika.lims.content.bikaschema import BikaSchema
+from bika.lims.interfaces import IAnalysisRequest
 from bika.lims.utils import sortable_title, generateUniqueId
 from decimal import Decimal
 from email.Utils import formataddr
@@ -227,7 +227,7 @@ schema = BikaSchema.copy() + Schema((
 schema['title'].required = False
 
 class AnalysisRequest(BaseFolder):
-    implements(IAnalysisRequest,IHaveNoByline)
+    implements(IAnalysisRequest)
     security = ClassSecurityInfo()
     schema = schema
     displayContentsTab = False

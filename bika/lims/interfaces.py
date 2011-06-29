@@ -26,17 +26,19 @@ class IWorksheetFolder(Interface):
 class IWorksheet(Interface):
     """Worksheet"""
 
+class IStandardSupplierFolder(Interface):
+    """WorksheetFolder"""
 
+class IInvoiceFolder(Interface):
+    """StandardSupplierFolder"""
 
-class IHaveNoByline(Interface):
-    """Items which do not have a byline"""
+class IHaveNoBreadCrumbs(Interface):
+    """Items which do not display breadcrumbs"""
 
 class IIdServer(Interface):
     """ Interface for ID server """
-
     def generate_id(self, portal_type, batch_size = None):
         """ Generate a new id for 'portal_type' """
-
 
 class IBikaSettings(Interface):
     ""

@@ -8,7 +8,7 @@ from Products.CMFCore import permissions
 from Products.CMFCore.utils import getToolByName
 from bika.lims.config import PROJECTNAME
 from AccessControl import ClassSecurityInfo
-from bika.lims.interfaces import IClientFolder
+from bika.lims.interfaces import IClientFolder, IHaveNoBreadCrumbs
 from plone.app.folder import folder
 from bika.lims.utils import generateUniqueId
 from zope.interface import implements
@@ -19,7 +19,7 @@ schema['id'].widget.visible = {'edit':'hidden', 'view': 'invisible'}
 schema['title'].widget.visible = {'edit':'hidden', 'view': 'invisible'}
 
 class ClientFolder(folder.ATFolder):
-    implements(IClientFolder)
+    implements(IClientFolder, IHaveNoBreadCrumbs)
     schema = schema
     security = ClassSecurityInfo()
     displayContentsTab = False

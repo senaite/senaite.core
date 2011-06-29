@@ -73,6 +73,9 @@ def sample_edit_submit(context, request):
     return json.dumps({'success':message})
 
 class SamplesView(ClientSamplesView):
+    """ The main portal Samples action tab
+    """
+    show_editable_border = False
     contentFilter = {'portal_type':'Sample', 'path':{"query": ["/"], "level" : 0 }}
     title = "Samples"
     description = ""

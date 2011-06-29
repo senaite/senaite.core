@@ -7,7 +7,7 @@ from Products.Five.browser import BrowserView
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.config import PROJECTNAME
 from bika.lims import bikaMessageFactory as _
-from bika.lims.interfaces import IHaveNoByline, ISamplePoints
+from bika.lims.interfaces import ISamplePoints
 from bika.lims.content.bikaschema import BikaFolderSchema
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.folder.folder import ATFolder, ATFolderSchema
@@ -54,7 +54,7 @@ class SamplePointsView(BikaListingView):
 schema = ATFolderSchema.copy()
 
 class SamplePoints(ATFolder):
-    implements(ISamplePoints, IHaveNoByline)
+    implements(ISamplePoints)
     schema = schema
     displayContentsTab = False
 schemata.finalizeATCTSchema(schema, folderish = True, moveDiscussion = False)

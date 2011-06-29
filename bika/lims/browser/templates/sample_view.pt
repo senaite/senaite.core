@@ -15,10 +15,7 @@
 				portal context/@@plone_portal_state/portal;
                 sampletype here/getSampleType">
 
-  <h1>
-      <img src="" tal:attributes="src string:${portal/absolute_url}/images/sample.png"/>
-      <span tal:content="title_string | here/title_or_id" />
-  </h1>
+    <h1 tal:content="here/title_or_id"/>
 
 
 <table

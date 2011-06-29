@@ -1288,6 +1288,7 @@ def analysisrequest_add_submit(context, request):
 class AnalysisRequestsView(ClientAnalysisRequestsView):
     """ The main portal Analysis Requests action tab
     """
+    show_editable_border = False
     content_add_actions = {}
     contentFilter = {'portal_type':'AnalysisRequest',
                      'path':{"query": ["/"], "level" : 0 }}

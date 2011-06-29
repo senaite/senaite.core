@@ -4,7 +4,7 @@ from Products.Archetypes import atapi
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.config import PROJECTNAME
-from bika.lims.interfaces import IHaveNoByline, IAnalysisCategories
+from bika.lims.interfaces import IAnalysisCategories
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.folder.folder import ATFolderSchema, ATFolder
 from zope.interface.declarations import implements
@@ -50,7 +50,7 @@ class AnalysisCategoriesView(BikaListingView):
 
 schema = ATFolderSchema.copy()
 class AnalysisCategories(ATFolder):
-    implements(IAnalysisCategories, IHaveNoByline)
+    implements(IAnalysisCategories)
     schema = schema
     displayContentsTab = False
 schemata.finalizeATCTSchema(schema, folderish = True, moveDiscussion = False)

@@ -7,7 +7,7 @@ from bika.lims.config import PROJECTNAME
 from bika.lims import bikaMessageFactory as _
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.folder.folder import ATFolder, ATFolderSchema
-from bika.lims.interfaces import IHaveNoByline, ILabAnalysisSpecs
+from bika.lims.interfaces import ILabAnalysisSpecs
 from zope.interface.declarations import implements
 
 #XXX multiple additions in one add_form.
@@ -55,7 +55,7 @@ class LabAnalysisSpecsView(BikaListingView):
 
 schema = ATFolderSchema.copy()
 class LabAnalysisSpecs(ATFolder):
-    implements(ILabAnalysisSpecs, IHaveNoByline)
+    implements(ILabAnalysisSpecs)
     schema = schema
     displayContentsTab = False
 schemata.finalizeATCTSchema(schema, folderish = True, moveDiscussion = False)

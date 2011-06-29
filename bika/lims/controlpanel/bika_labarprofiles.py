@@ -8,7 +8,7 @@ from bika.lims import bikaMessageFactory as _
 from bika.lims.content.bikaschema import BikaFolderSchema
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.folder.folder import ATFolder, ATFolderSchema
-from bika.lims.interfaces import IHaveNoByline, ILabARProfiles
+from bika.lims.interfaces import ILabARProfiles
 from zope.interface.declarations import implements
 
 class LabARProfilesView(BikaListingView):
@@ -52,7 +52,7 @@ class LabARProfilesView(BikaListingView):
 
 schema = ATFolderSchema.copy()
 class LabARProfiles(ATFolder):
-    implements(ILabARProfiles, IHaveNoByline)
+    implements(ILabARProfiles)
     schema = schema
     displayContentsTab = False
 schemata.finalizeATCTSchema(schema, folderish = True, moveDiscussion = False)

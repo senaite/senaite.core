@@ -8,7 +8,7 @@ from bika.lims import bikaMessageFactory as _
 from bika.lims.content.bikaschema import BikaFolderSchema
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.folder.folder import ATFolder, ATFolderSchema
-from bika.lims.interfaces import IHaveNoByline, IAnalysisServices
+from bika.lims.interfaces import IAnalysisServices
 from zope.interface.declarations import implements
 
 class AnalysisServicesView(BikaListingView):
@@ -76,7 +76,7 @@ class AnalysisServicesView(BikaListingView):
 
 schema = ATFolderSchema.copy()
 class AnalysisServices(ATFolder):
-    implements(IAnalysisServices, IHaveNoByline)
+    implements(IAnalysisServices)
     schema = schema
     displayContentsTab = False
 schemata.finalizeATCTSchema(schema, folderish = True, moveDiscussion = False)

@@ -12,7 +12,7 @@ from bika.lims.config import AssignAnalyses, DeleteAnalyses, \
     SubmitResults, ManageWorksheets, ManageBika
 from Products.ATExtensions.ateapi import RecordsField
 from zope.interface import implements
-from bika.lims.interfaces import IWorksheet,IHaveNoByline
+from bika.lims.interfaces import IWorksheet
 
 schema = BikaSchema.copy() + Schema((
     StringField('Number',
@@ -116,7 +116,7 @@ TitleField.widget.visible = {'edit': 'hidden', 'view': 'invisible'}
 
 class Worksheet(BaseFolder):
     security = ClassSecurityInfo()
-    implements(IWorksheet, IHaveNoByline)
+    implements(IWorksheet)
     archetype_name = 'Worksheet'
     schema = schema
 

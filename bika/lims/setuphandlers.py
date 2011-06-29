@@ -6,6 +6,8 @@ from bika.lims import bikaMessageFactory as _
 from Products.CMFPlone import PloneMessageFactory
 from bika.lims.config import *
 import logging
+from zope.interface import alsoProvides
+from bika.lims.interfaces import IHaveNoBreadCrumbs
 
 #from Products.GroupUserFolder.GroupsToolPermissions import ManageGroups
 
@@ -24,9 +26,16 @@ class BikaGenerator:
     def setupPortalContent(self, portal):
         """ Setup Bika site structure """
 
+        #apply IPloneSiteRoot interface to index_html
+        print "********************  Hello  ***************************"
+        obj = portal._getOb('index_html')
+        print "********************" + str(obj) + "***************************"
+        alsoProvides(obj, IHaveNoBreadCrumbs)
+        print "********************  Hello 2  ***************************"
+
         # remove undesired content objects
         del_ids = []
-        for obj_id in ['index_html', 'Members', 'front-page', 'news', 'events']:
+        for obj_id in ['Members', 'front-page', 'news', 'events']:
             if obj_id in portal.objectIds():
                 del_ids.append(obj_id)
         if del_ids:

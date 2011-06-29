@@ -4,26 +4,9 @@
     xmlns:i18n="http://namespaces.zope.org/i18n"
     i18n_domain="bika">
 
+    <!-- Hide BreadCrumbs for root views -->
     <browser:viewlet
-        for="bika.lims.interfaces.IHaveNoByline"
-        name="plone.belowcontenttitle.documentbyline"
-        manager="plone.app.layout.viewlets.interfaces.IBelowContentTitle"
-        template="templates/blank.pt"
-        permission="zope2.View"
-        layer="bika.lims.interfaces.IBikaLIMS"
-        />
-
-    <browser:viewlet
-        for="bika.lims.interfaces.IClientFolder"
-        name="plone.belowcontenttitle.documentbyline"
-        manager="plone.app.layout.viewlets.interfaces.IBelowContentTitle"
-        template="templates/blank.pt"
-        permission="zope2.View"
-        layer="bika.lims.interfaces.IBikaLIMS"
-        />
-
-    <browser:viewlet
-        for="bika.lims.interfaces.IClientFolder"
+        for="Products.CMFPlone.interfaces.IPloneSiteRoot"
         name="plone.path_bar"
         manager="plone.app.layout.viewlets.interfaces.IAboveContent"
         template="templates/blank.pt"
@@ -31,8 +14,21 @@
         layer="bika.lims.interfaces.IBikaLIMS"
         />
 
+    <!-- Hide BreadCrumbs for other stuff -->
+    <!-- Initially used for ClientFolder, WorksheetFolder, StandardSupplierFolder and InvoiceFolder -->
+    <!-- ... and also index_html (see setuphandlers.py) -->
     <browser:viewlet
-        for="bika.lims.interfaces.IClient"
+        for="bika.lims.interfaces.IHaveNoBreadCrumbs"
+        name="plone.path_bar"
+        manager="plone.app.layout.viewlets.interfaces.IAboveContent"
+        template="templates/blank.pt"
+        permission="zope2.View"
+        layer="bika.lims.interfaces.IBikaLIMS"
+        />
+
+    <!-- Hide ByLine for everything -->
+    <browser:viewlet
+        for="*"
         name="plone.belowcontenttitle.documentbyline"
         manager="plone.app.layout.viewlets.interfaces.IBelowContentTitle"
         template="templates/blank.pt"

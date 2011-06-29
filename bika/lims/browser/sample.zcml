@@ -20,14 +20,6 @@
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
-    <browser:page
-      for="Products.CMFCore.interfaces.ISiteRoot"
-      name="samples"
-      class="bika.lims.browser.sample.SamplesView"
-      permission="zope.Public"
-      layer="bika.lims.interfaces.IBikaLIMS"
-    />
-
     <browser:resource
       name="sample.js"
       file="js/sample.js"

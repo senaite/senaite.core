@@ -437,25 +437,21 @@
             </tal:save>
           </tr>
         </tfoot>
-
       </table>
 
-      <table><tr><td>
-        <input class="context allowMultiSubmit"
-               type="submit"
-               name="save_button"
-               value="Save"/>
-      </td><td>
-        <input class="context"
-               type="submit"
-               name="cancel_button"
-               value="Cancel"/>
-      </td><td>
-        <span id="spinner" style="display:none">
-          <img tal:attributes="src python:portal.absolute_url()+ '/images/spinner.gif';"/></span>
-      </td></tr></table>
+      <input class="context allowMultiSubmit"
+             type="submit"
+             name="save_button"
+             value="Save"/>
+      <input class="context"
+             type="submit"
+             name="cancel_button"
+             value="Cancel"/>
+      <span id="spinner" style="display:none">
+          <img tal:attributes="src python:portal.absolute_url()+ '/images/spinner.gif';"/>
+      </span>
 
-      <br/>
+      <br/>&nbsp;
 
       <div class="discreeter"
            tal:define="portal context/@@plone_portal_state/portal">

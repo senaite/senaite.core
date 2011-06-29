@@ -15,6 +15,7 @@ from Products.Five.browser import BrowserView
 from zope.i18nmessageid import MessageFactory
 from zope.interface import implements
 import urllib
+
 ploneMessageFactory = MessageFactory('plone')
 
 class BikaListingView(FolderContentsView):
@@ -76,8 +77,8 @@ class BikaListingView(FolderContentsView):
             action = form['transition_action']
             for path in form['paths']:
                 item_id = path.split("/")[-1]
-                item_path = path.replace("/"+item_id, '')
-                item = pc(id=item_id, path={'query':item_path, 'depth':1})[0].getObject()
+                item_path = path.replace("/" + item_id, '')
+                item = pc(id = item_id, path = {'query':item_path, 'depth':1})[0].getObject()
                 #try: # XXX in our folder views at the moment, we don't allow mixed types for submit?
                 wf.doActionFor(item, action)
                 #except:

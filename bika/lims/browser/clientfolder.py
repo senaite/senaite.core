@@ -53,13 +53,3 @@ class ClientFolderContentsView(BikaListingView):
     def __call__(self):
         return self.template()
 
-class Clients(BrowserView):
-    """ autocomplete data source for clients
-        return JSON data [string,string]
-    """
-    def __call__(self):
-        pc = getToolByName(self, 'portal_catalog')
-        term = self.request.get('term', '')
-        items = pc(portal_type = "Client")
-        items = [s.Title for s in items if s.Title.lower().find(term.lower()) > -1]
-        return json.dumps(items)

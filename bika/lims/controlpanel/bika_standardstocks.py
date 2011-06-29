@@ -10,7 +10,7 @@ from bika.lims import bikaMessageFactory as _
 from bika.lims.content.bikaschema import BikaFolderSchema
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.folder.folder import ATFolder, ATFolderSchema
-from bika.lims.interfaces import IHaveNoByline, IStandardStocks
+from bika.lims.interfaces import IStandardStocks
 from zope.interface.declarations import implements
 
 class StandardStocksView(BikaListingView):
@@ -51,7 +51,7 @@ class StandardStocksView(BikaListingView):
 
 schema = ATFolderSchema.copy()
 class StandardStocks(ATFolder):
-    implements(IStandardStocks, IHaveNoByline)
+    implements(IStandardStocks)
     schema = schema
     displayContentsTab = False
 schemata.finalizeATCTSchema(schema, folderish = True, moveDiscussion = False)

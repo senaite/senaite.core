@@ -11,7 +11,7 @@ from bika.lims.content.bikaschema import BikaFolderSchema
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.folder.folder import ATFolder, ATFolderSchema
 from zope.interface.declarations import implements
-from bika.lims.interfaces import IHaveNoByline, ILabProducts
+from bika.lims.interfaces import ILabProducts
 
 class LabProductsView(BikaListingView):
     implements(IFolderContentsView)
@@ -59,7 +59,7 @@ class LabProductsView(BikaListingView):
 
 schema = ATFolderSchema.copy()
 class LabProducts(ATFolder):
-    implements(ILabProducts, IHaveNoByline)
+    implements(ILabProducts)
     schema = schema
     displayContentsTab = False
 schemata.finalizeATCTSchema(schema, folderish = True, moveDiscussion = False)

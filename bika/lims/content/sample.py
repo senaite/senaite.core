@@ -181,8 +181,7 @@ schema = BikaSchema.copy() + Schema((
 
 schema['title'].required = False
 
-class Sample(BrowserDefaultMixin, BaseFolder):
-    # XXX Why does sample require BrowserDefaultMixin?
+class Sample(BaseFolder):
     implements(ISample)
     security = ClassSecurityInfo()
     schema = schema

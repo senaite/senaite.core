@@ -8,7 +8,7 @@ from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.config import PROJECTNAME
 from bika.lims import bikaMessageFactory as _
 from bika.lims.content.bikaschema import BikaFolderSchema
-from bika.lims.interfaces import IHaveNoByline, ICalculations
+from bika.lims.interfaces import ICalculations
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.folder.folder import ATFolder, ATFolderSchema
 from zope.interface.declarations import implements
@@ -49,7 +49,7 @@ class CalculationsView(BikaListingView):
 
 schema = ATFolderSchema.copy()
 class Calculations(ATFolder):
-    implements(ICalculations, IHaveNoByline)
+    implements(ICalculations)
     schema = schema
     displayContentsTab = False
 schemata.finalizeATCTSchema(schema, folderish = True, moveDiscussion = False)
