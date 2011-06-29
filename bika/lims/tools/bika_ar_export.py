@@ -3,7 +3,7 @@ from App.class_init import InitializeClass
 from OFS.SimpleItem import SimpleItem
 from Products.CMFCore import permissions
 from Products.CMFCore.utils import UniqueObject, getToolByName
-from bika.lims.config import ManageAnalysisRequest
+from bika.lims.config import ManageAnalysisRequests
 from bika.lims.tools import ToolFolder
 from cStringIO import StringIO
 import csv
@@ -21,7 +21,7 @@ class bika_ar_export(UniqueObject, SimpleItem):
     description = 'Exports Analysis Request Data.'
     meta_type = 'AR Export Tool'
 
-    security.declareProtected(ManageAnalysisRequest, 'export_file')
+    security.declareProtected(ManageAnalysisRequests, 'export_file')
     def export_file(self, info):
         plone_view = self.restrictedTraverse('@@plone')
 
@@ -62,7 +62,7 @@ class bika_ar_export(UniqueObject, SimpleItem):
 
 
             analyses = {}
-            # extract the list of analyses in this batch    
+            # extract the list of analyses in this batch
             for analysis in ar.getPublishedAnalyses():
                 ars[ar_id]['Price'] += analysis.getPrice()
                 ars[ar_id]['Count'] += 1
@@ -121,7 +121,7 @@ class bika_ar_export(UniqueObject, SimpleItem):
                   '']
         rows.append(header)
 
-        # category headers    
+        # category headers
         s_array = []
         header = ['', '', '', '', '', '', '', '', '', '', '']
         for cat_name in c_array:
@@ -136,7 +136,7 @@ class bika_ar_export(UniqueObject, SimpleItem):
             s_array.extend(service_array)
         rows.append(header)
 
-        # column headers    
+        # column headers
         header = ['Samples', 'Order ID', 'Client Reference', 'Client Sample ID', 'Sample Type', \
                   'Sample Point', 'Sampling Date', 'Bika Sample ID', \
                   'Bika AR ID', 'Date Received', 'Date Published']
@@ -164,7 +164,7 @@ class bika_ar_export(UniqueObject, SimpleItem):
         rows.append(header)
 
 
-        # detail lines 
+        # detail lines
         total_count = 0
         total_price = 0
         count = 1

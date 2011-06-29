@@ -115,7 +115,7 @@ class BikaGenerator:
             ['Manager', 'LabManager', 'LabClerk', 'LabTechnician'], 1)
         mp(ManageOrders,
             ['Manager', 'LabManager', 'LabClerk'], 1)
-        mp(ManageAnalysisRequest,
+        mp(ManageAnalysisRequests,
             ['Manager', 'LabManager', 'LabClerk', 'LabTechnician'], 1)
         mp(ManageSample,
             ['Manager', 'LabManager', 'LabClerk', 'LabTechnician'], 1)

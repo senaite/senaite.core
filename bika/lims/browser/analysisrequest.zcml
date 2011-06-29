@@ -8,7 +8,7 @@
       for="bika.lims.interfaces.IClient"
       name="analysisrequest_add"
       class="bika.lims.browser.analysisrequest.AnalysisRequestAddView"
-      permission="zope.Public"
+      permission="bika.lims.ManageAnalysisRequests"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
@@ -24,7 +24,7 @@
       for="bika.lims.interfaces.IAnalysisRequest"
       name="base_edit"
       class="bika.lims.browser.analysisrequest.AnalysisRequestEditView"
-      permission="zope.Public"
+      permission="bika.lims.ManageAnalysisRequests"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
@@ -32,7 +32,7 @@
       for="bika.lims.interfaces.IAnalysisRequest"
       name="manage_results"
       class="bika.lims.browser.analysisrequest.AnalysisRequestManageResultsView"
-      permission="zope.Public"
+      permission="bika.lims.ManageAnalysisRequests"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
@@ -40,7 +40,7 @@
       for="bika.lims.interfaces.IAnalysisRequest"
       name="not_requested"
       class="bika.lims.browser.analysisrequest.AnalysisRequestResultsNotRequestedView"
-      permission="zope.Public"
+      permission="bika.lims.ManageAnalysisRequests"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
@@ -48,7 +48,7 @@
       for="*"
       name="analysisrequest_analysisservices"
       class="bika.lims.browser.analysisrequest.AJAX_ExpandCategoryView"
-      permission="zope.Public"
+      permission="bika.lims.ManageAnalysisRequests"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
@@ -56,7 +56,7 @@
       for="*"
       name="analysisrequest_profileservices"
       class="bika.lims.browser.analysisrequest.AnalysisRequest_ProfileServices"
-      permission="zope.Public"
+      permission="bika.lims.ManageAnalysisRequests"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
@@ -64,7 +64,7 @@
       for="* "
       name="analysisrequest_select_cc"
       class="bika.lims.browser.analysisrequest.AnalysisRequestSelectCCView"
-      permission="zope.Public"
+      permission="bika.lims.ManageAnalysisRequests"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
@@ -72,7 +72,7 @@
       for="*"
       name="analysisrequest_select_sample"
       class="bika.lims.browser.analysisrequest.AnalysisRequestSelectSampleView"
-      permission="zope.Public"
+      permission="bika.lims.ManageAnalysisRequests"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
@@ -80,7 +80,7 @@
       for="*"
       name="analysisrequest_contact_ccs"
       class="bika.lims.browser.analysisrequest.AnalysisRequestContactCCs"
-      permission="zope.Public"
+      permission="bika.lims.ManageAnalysisRequests"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 

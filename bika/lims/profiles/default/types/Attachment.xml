@@ -4,7 +4,7 @@
    xmlns:i18n="http://xml.zope.org/namespaces/i18n">
  <property name="title">Attachment</property>
  <property name="description">
-     
+
  </property>
  <property name="icon_expr">string:${portal_url}/images/attachment.png</property>
  <property name="content_meta_type">Attachment</property>
@@ -23,7 +23,7 @@
  <action title="Edit" action_id="edit" category="object" condition_expr=""
     icon_expr="" link_target=""
     url_expr="string:${object_url}/attachment_edit" visible="True">
-  <permission value="bika.lims: Manage AnalysisRequest"/>
+  <permission value="bika.lims: Manage Analysis Requests"/>
  </action>
  <action title="View" action_id="view" category="object" condition_expr=""
     icon_expr="" link_target=""

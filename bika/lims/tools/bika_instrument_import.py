@@ -3,7 +3,7 @@ from App.class_init import InitializeClass
 from OFS.SimpleItem import SimpleItem
 from Products.CMFCore import permissions
 from Products.CMFCore.utils import UniqueObject, getToolByName
-from bika.lims.config import ManageAnalysisRequest
+from bika.lims.config import ManageAnalysisRequests
 from bika.lims.tools import ToolFolder
 import csv
 from bika.lims.interfaces.tools import Ibika_instrument_import
@@ -20,7 +20,7 @@ class bika_instrument_import(UniqueObject, SimpleItem):
     description = 'Imports Instrument Data.'
     meta_type = 'Instrument Import Tool'
 
-    security.declareProtected(ManageAnalysisRequest, 'import_file')
+    security.declareProtected(ManageAnalysisRequests, 'import_file')
     def import_file(self, csvfile):
         wf_tool = getToolByName(self, 'portal_workflow')
         prefixes = self.bika_settings.getPrefixes()
@@ -62,7 +62,7 @@ class bika_instrument_import(UniqueObject, SimpleItem):
                 worksheet = True
                 ws_id = sample_id.split('/')[0]
                 pos = sample_id.split('/')[1]
-            if worksheet:   # this is a worksheet 
+            if worksheet:   # this is a worksheet
                 r = self.portal_catalog(portal_type = 'Worksheet',
                     id = ws_id)
                 if len(r) == 0:

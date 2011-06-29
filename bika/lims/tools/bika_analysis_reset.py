@@ -3,7 +3,7 @@ from App.class_init import InitializeClass
 from OFS.SimpleItem import SimpleItem
 from Products.CMFCore import permissions
 from Products.CMFCore.utils import UniqueObject, getToolByName
-from bika.lims.config import ManageAnalysisRequest
+from bika.lims.config import ManageAnalysisRequests
 from bika.lims.interfaces.tools import Ibika_analysis_reset
 from bika.lims.tools import ToolFolder
 from zope.interface import implements
@@ -20,7 +20,7 @@ class bika_analysis_reset(UniqueObject, SimpleItem):
     description = 'Resets Analysis Data.'
     meta_type = 'Analysis Reset Tool'
 
-    security.declareProtected(ManageAnalysisRequest, 'import_file')
+    security.declareProtected(ManageAnalysisRequests, 'import_file')
     def import_file(self, csvfile):
         msgs = []
         sfolder = self.bika_services

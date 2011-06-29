@@ -11,7 +11,7 @@ ManageBika = 'bika.lims: Manage Bika'
 ManageClients = 'bika.lims: Manage Clients'
 ManageWorksheets = 'bika.lims: Manage Worksheets'
 ManageOrders = 'bika.lims: Manage Orders'
-ManageAnalysisRequest = 'bika.lims: Manage AnalysisRequest'
+ManageAnalysisRequests = 'bika.lims: Manage Analysis Requests'
 ManageSample = 'bika.lims: Manage Sample'
 ManageStandardSuppliers = 'bika.lims: Manage Standard Suppliers'
 ManageStandard = 'bika.lims: Manage Standard'
@@ -50,7 +50,7 @@ BIKA_PERMISSIONS = (
     (ManageClients, ()),
     (ManageWorksheets, ()),
     (ManageOrders, ()),
-    (ManageAnalysisRequest, ()),
+    (ManageAnalysisRequests, ()),
     (ManageSample, ()),
     (ManageStandardSuppliers, ()),
     (ManageStandard, ()),

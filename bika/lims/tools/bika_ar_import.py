@@ -3,7 +3,7 @@ from App.class_init import InitializeClass
 from OFS.SimpleItem import SimpleItem
 from Products.CMFCore import permissions
 from Products.CMFCore.utils import UniqueObject, getToolByName
-from bika.lims.config import ManageAnalysisRequest
+from bika.lims.config import ManageAnalysisRequests
 from bika.lims.tools import ToolFolder
 import csv
 from bika.lims.interfaces.tools import Ibika_ar_import
@@ -149,7 +149,7 @@ class bika_ar_import(UniqueObject, SimpleItem):
         REQUEST.RESPONSE.write('<script>document.location.href="%s/client_arimports?portal_status_message=%s%%20imported"</script>' % (client.absolute_url(), arimport_id))
 
 
-    security.declareProtected(ManageAnalysisRequest, 'import_file_s')
+    security.declareProtected(ManageAnalysisRequests, 'import_file_s')
     def import_file_s(self, csvfile, client_id, state):
 
         log = []
