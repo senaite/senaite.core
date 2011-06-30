@@ -27,11 +27,8 @@ class BikaGenerator:
         """ Setup Bika site structure """
 
         #apply IPloneSiteRoot interface to index_html
-        print "********************  Hello  ***************************"
         obj = portal._getOb('index_html')
-        print "********************" + str(obj) + "***************************"
         alsoProvides(obj, IHaveNoBreadCrumbs)
-        print "********************  Hello 2  ***************************"
 
         # remove undesired content objects
         del_ids = []
