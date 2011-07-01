@@ -350,27 +350,6 @@ class AnalysisService(BaseContent):
         except:
             return "0.00"
 
-    def getCalcTitle(self):
-        """ get title of applicable calculation """
-        calctype = self.getCalculation()
-        if calctype:
-            return calctype.Title()
-        else:
-            return ''
-
-    def getCalcCode(self):
-        """ get title of applicable calculation """
-        calctype = self.getCalculationType()
-        if calctype:
-            return calctype.getCalcTypeCode()
-        else:
-            return ''
-
-    def getDependancyUIDS(self):
-        """ get CalcDependancy, and send back a list of UIDS """
-        deps = self.getCalcDependancy()
-        return [d.UID() for d in deps]
-
     def duplicateService(self, context):
         """ Create a copy of the service and return the copy's id """
         dup_id = context.generateUniqueId(type_name = 'AnalysisService')

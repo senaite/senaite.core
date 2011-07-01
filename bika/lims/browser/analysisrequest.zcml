@@ -47,16 +47,32 @@
     <browser:page
       for="*"
       name="analysisrequest_analysisservices"
-      class="bika.lims.browser.analysisrequest.AJAX_ExpandCategoryView"
-      permission="bika.lims.ManageAnalysisRequests"
+      class="bika.lims.browser.analysisrequest.AJAXExpandCategory"
+      permission="zope.Public"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
     <browser:page
       for="*"
       name="analysisrequest_profileservices"
-      class="bika.lims.browser.analysisrequest.AnalysisRequest_ProfileServices"
-      permission="bika.lims.ManageAnalysisRequests"
+      class="bika.lims.browser.analysisrequest.AJAXProfileServices"
+      permission="zope.Public"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
+      for="*"
+      name="get_service_dependencies"
+      class=".analysisrequest.AJAXgetServiceDependencies"
+      permission="zope.Public"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
+      for="*"
+      name="get_back_references"
+      class=".analysisrequest.AJAXgetBackReferences"
+      permission="zope.Public"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 

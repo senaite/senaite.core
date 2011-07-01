@@ -1,190 +1,15 @@
 
 jQuery( function($) {
 
-	function autofill(analysisService)
-	{
-		fieldName = '';
-		if (document.getElementById('copyTF').checked) {
-			analysisType = analysisService.split('.')[0];
-			initValue=document.getElementById(analysisService).value;
-			for (var i=1;i<999;i++) {
-				otherElem=analysisType + '.' + i;
-				if (document.getElementById(otherElem) == undefined) {
-					break
-				}
-				document.getElementById(otherElem).value = initValue;
-				/* need to calculate result, as the value changed */
-				fieldName = getFieldName(otherElem);
-				calcT(fieldName);
-			}
-		}
-		else {
-			/* still need to calculate result, as the value changed */
-			fieldName = getFieldName(analysisService);
-			calcT(fieldName);
-		}
-	}
-
-	function getFieldName(fieldID)
-	{
-		changedField = document.getElementById(fieldID);
-		fieldName = changedField.attributes.getNamedItem("name").value;
-		fieldName = fieldName.split('.')[1];
-		return fieldName;
-
-	}
-
-	function calcResult(id)
-	{
-		ct_id = id + '.CalcType';
-		ct_field = document.getElementById(ct_id);
-		calc_type = ct_field.value;
-		if (calc_type == 't') {
-			calcT(id)
-		}
-		if (calc_type == 'rw') {
-			calcRW_WL(id, 'rw')
-		}
-		if (calc_type == 'rwt') {
-			calcRWT_WLT(id, 'rwt')
-		}
-		if (calc_type == 'wl') {
-			calcRW_WL(id, 'wl')
-		}
-		if (calc_type == 'wlt') {
-			calcRWT_WLT(id, 'wlt')
-		}
-	}
-
-	function calcT(id)
-	{
-		/* using element name, as element ID is used by autofill() in worksheets */
-		tVolFieldName= 'results.' + id + '.TitrationVolume:record';
-		tVolField = document.getElementsByName(tVolFieldName)[0];
-		tVol = tVolField.value;
-		tFacFieldName = 'results.' + id + '.TitrationFactor:record';
-		tFacField = document.getElementsByName(tFacFieldName)[0];
-		tFac = tFacField.value;
-		if ((tVol == '') || (tFac == '' )) {
-			result = '';
-		} else {
-			result =  tVol* tFac;
-			if (isNaN(result)) {
-				result = '';
-			} else {
-				result =  Math.round(result*Math.pow(10,2))/Math.pow(10,2);
-			}
-		}
-		resFieldName = 'results.' + id + '.Result:record';
-		resultField = document.getElementsByName(resFieldName)[0];
-		resultField.value = result;
-	}
-	function calcRW_WL(id, calctype)
-	{
-		/* using element name, as element ID is used by autofill() in worksheets */
-		resFieldName = 'results.' + id + '.Result:record';
-		resultField = document.getElementsByName(resFieldName)[0];
-
-		grossFieldName= 'results.' + id + '.GrossMass:record';
-		grossField = document.getElementsByName(grossFieldName)[0];
-		gross = grossField.value
-		if ((gross == '') || (isNaN(gross)) || (gross == 0)) {
-			returnResult('', resultField)
-			return
-		} else {
-			gross = parseFloat(grossField.value);
-		}
-		netFieldName= 'results.' + id + '.NetMass:record';
-		netField = document.getElementsByName(netFieldName)[0];
-		net = netField.value
-		if ((net == '') || (isNaN(net)) || (net == 0)) {
-			returnResult('', resultField)
-			return
-		} else {
-			net= parseFloat(netField.value);
-		}
-		vesselFieldName= 'results.' + id + '.VesselMass:record';
-		vesselField = document.getElementsByName(vesselFieldName)[0];
-		vessel = vesselField.value
-		if ((vessel == '')  || (isNaN(vessel)) || (vessel == 0)) {
-			returnResult('', resultField)
-			return
-		} else {
-			vessel = parseFloat(vesselField.value);
-		}
-
-		if ((gross < net) || (net < vessel) || (gross == vessel)) {
-			result = ''
-		} else {
-			if (calctype == 'wl') {
-				result = ((gross - net) / (gross - vessel)) * 100
-			} else {
-				result = ((net - vessel) / (gross - vessel)) * 100
-			}
-			result =  Math.round(result*Math.pow(10,2))/Math.pow(10,2);
-		}
-		returnResult(result, resultField)
-	}
-
-	function calcRWT_WLT(id, calctype)
-	{
-		/* using element name, as element ID is used by autofill() in worksheets */
-		resFieldName = 'results.' + id + '.Result:record';
-		resultField = document.getElementsByName(resFieldName)[0];
-
-		sampleFieldName= 'results.' + id + '.SampleMass:record';
-		sampleField = document.getElementsByName(sampleFieldName)[0];
-		sample = sampleField.value
-		if ((sample == '') || (isNaN(sample)) || (sample == 0)) {
-			returnResult('', resultField)
-			return
-		} else {
-			sample = parseFloat(sampleField.value);
-		}
-		netFieldName= 'results.' + id + '.NetMass:record';
-		netField = document.getElementsByName(netFieldName)[0];
-		net = netField.value
-		if ((net == '') || (isNaN(net)) || (net == 0)) {
-			returnResult('', resultField)
-			return
-		} else {
-			net= parseFloat(netField.value);
-		}
-		vesselFieldName= 'results.' + id + '.VesselMass:record';
-		vesselField = document.getElementsByName(vesselFieldName)[0];
-		vessel = vesselField.value
-		if ((vessel == '')  || (isNaN(vessel)) || (vessel == 0)) {
-			returnResult('', resultField)
-			return
-		} else {
-			vessel = parseFloat(vesselField.value);
-		}
-
-		if (net < vessel)  {
-			result = ''
-		} else {
-			if (calctype == 'wlt') {
-				result = ((vessel + sample - net) / sample) * 100
-			} else {
-				result = ((net - vessel) / sample) * 100
-			}
-			result =  Math.round(result*Math.pow(10,2))/Math.pow(10,2);
-		}
-		returnResult(result, resultField)
-	}
-
-	function returnResult(result, resultField) {
-		resultField.value = result;
-	}
-
-	// XXX price recalc is sometimes over agressive, does a few re-recalcs.
 	function recalc_prices(column){
 		if(column){
+			// recalculate just this column
 			subtotal = 0.00;
+			discount_amount = 0.00;
 			vat = 0.00;
 			total = 0.00;
 			discount = parseFloat($("#member_discount").val());
-			$.each($('input[name^="ar\\.'+column+'\\.Analyses"]'), function(){
+			$.each($('input[column="'+column+'"]'), function(){
 				disabled = $(this).attr('disabled');
 				// For some browsers, `attr` is undefined; for others, its false.  Check for both.
 				if (typeof disabled !== 'undefined' && disabled !== false) {
@@ -193,72 +18,71 @@ jQuery( function($) {
 					disabled = false;
 				}
 				if(!(disabled) && $(this).attr("checked")){
-					serviceUID = this.id.split("_")[4];
-					price = parseFloat($("input[name^='Prices\\."+serviceUID+"']").val());
-					vat_amount = parseFloat($("input[name^='VAT\\."+serviceUID+"']").val());
+					serviceUID = this.id;
+					form_price = parseFloat($("#"+serviceUID+"_price").val());
+					vat_amount = parseFloat($("#"+serviceUID+"_price").attr("vat_amount"));
 					if(discount){
-						price = price - ((price / 100) * discount);
+						price = form_price - ((form_price / 100) * discount);
 					}
 					subtotal += price;
+					discount_amount += ((form_price / 100) * discount);
 					vat += ((price / 100) * vat_amount);
 					total += price + ((price / 100) * vat_amount);
 				}
 			});
 			$('#ar_'+column+'_subtotal').val(subtotal.toFixed(2));
 			$('#ar_'+column+'_subtotal_display').val(subtotal.toFixed(2));
+			$('#ar_'+column+'_discount').val(discount_amount.toFixed(2));
 			$('#ar_'+column+'_vat').val(vat.toFixed(2));
 			$('#ar_'+column+'_vat_display').val(vat.toFixed(2));
 			$('#ar_'+column+'_total').val(total.toFixed(2));
 			$('#ar_'+column+'_total_display').val(total.toFixed(2));
 		} else {
+			// recalculate the entire form
 			for (col=0; col<parseInt($("#col_count").val()); col++) {
 				recalc_prices(String(col));
 			}
 		}
 	};
 
-	function toggleCat(header_ID, selectedservices, column, force_expand, disable){
+	function toggleCat(poc, category_uid, column, selectedservices, force_expand, disable){
 		// selectedservices and column are optional.
 		// force_expand and disable are for secondary ARs
 		// They are used when selecting an AR Profile or making a secondary AR
 		if(force_expand == undefined){ force_expand = false ; }
 		if(disable == undefined){ disable = -1 ; }
-		name = $('#'+header_ID).attr("name");
-		tbody = $('#'+name+"_tbody");
-		categoryUID = name.split("_")[0];
-		poc = name.split("_")[1];
 		if(!column && column != 0) { column = ""; }
-		if($('#'+header_ID).hasClass("expanded")){
-			// displaying and completing an an already expanded category
-			// for an ARProfile selection; price recalc happens in setARProfile()
+
+		tbody = $("tbody[poc='"+poc+"']").filter("#"+category_uid)[0];
+
+		if($(tbody).hasClass("expanded")){
+			// displaying an already expanded category
 			if(selectedservices){
-				$.each($('input[id^="ar_'+column+'_'+categoryUID+'_'+poc+'_"]'), function(){
-					if(selectedservices.indexOf($(this).attr("id").split("_")[4]) > -1){
+				for(service in tbody.children){
+					service_uid = service.id;
+					if(selectedservices.indexOf(service_uid) > -1){
 						$(this).attr("checked", "checked");
 					}
-				});
+				}
 				recalc_prices(column);
-				tbody.toggle(true);
+			$(tbody).toggle(true);
 			} else {
-				if (force_expand){ tbody.toggle(true); }
-				else { tbody.toggle(); }
+				if (force_expand){ $(tbody).toggle(true); }
+				else { $(tbody).toggle(); }
 			}
 		} else {
 			if(!selectedservices) selectedservices = [];
-			$('#'+header_ID).addClass("expanded");
-			var options ={
+			$(tbody).addClass("expanded");
+			var options = {
 					'selectedservices': selectedservices.join(","),
-					'categoryUID': categoryUID,
+					'categoryUID': category_uid,
 					'column': column,
 					'disable': disable > -1 ? column : -1,
 					'col_count': $("#col_count").attr('value'),
 					'poc': poc
 			};
-			tbody.load("analysisrequest_analysisservices", options,
+			$(tbody).load("analysisrequest_analysisservices", options,
 				function(){
-					// changing the  price of a service
-					$("input[class='price']").unbind();
-					$("input[class='price']").bind('change', service_price_change);
 					// analysis service checkboxes
 					$('input[name*="Analyses"]').unbind();
 					$('input[name*="Analyses"]').bind('change', service_checkbox_change);
@@ -270,134 +94,152 @@ jQuery( function($) {
 		}
 	}
 
-	function calcdependencies(elements){
-		unexpanded_cats_ = [];
-		expanded_cats_ = [];
-		unchecked_depIDs_ = [];
-		unchecked_depUIDs_ = []
-		antes = [];
-
-		$.each(elements, function(e,element){
-			column = element.attr("id").split("_")[1];
-			if (element.attr("checked") == true){
-				// selecting a service; discover services it depends on.
-				depcatIDs_ = element.attr("depcatids").split(",");
-				depUIDs_ = element.attr("depuids").split(",");
-
-				if(depcatIDs_[0] != ''){
-					$.each(depcatIDs_, function(c,depcatID){
-						if($('#'+depcatID).attr('class').indexOf("expanded") > -1){
-							expanded_cats_.push(depcatID);
-						} else{
-							unexpanded_cats_.push(depcatID);
-						}
-						$.each(depUIDs_, function(u,depUID){
-							e = $('#ar_'+column+"_"+depcatID+"_"+depUID);
-							if((e.attr('id')==undefined) || !(e.attr("checked"))){
-								unchecked_depIDs_.push('ar_'+column+"_"+depcatID+"_"+depUID);
-								unchecked_depUIDs_.push(depUID);
+	function calcdependencies(elements) {
+		// elements is a list of jquery checkbox objects
+		// it's got one element in it when a single checkbox was changed,
+		// and one from each column when a copy button was clicked.
+		var element = elements.shift();
+		var column = $(element).attr('column');
+		var remaining_columns = [];
+		for(var i = 0; i<elements.length; i++){
+			remaining_columns.push($(elements[i]).attr('column'));
+		}
+		options = {
+			type: 'POST',
+			async: false,
+			data: {
+				'uid': $(element).attr('id'),
+				'_authenticator': $('input[name="_authenticator"]').val()},
+			dataType: "json"
+		}
+		if ($(element).attr("checked") == true){
+			// selecting a service; discover services it depends on.
+			var affected_services = [];
+			var affected_titles = [];
+			// actions are discovered and stored in dep_args, until confirmation dialog->Yes.
+			var dep_args = [];
+			options.url = 'get_service_dependencies';
+			options.success = function(pocdata,textStatus,$XHR){
+				if (pocdata == null) { return; }
+				$.each(pocdata, function(pocid_poctitle, catdata){
+					var poc = pocid_poctitle.split("_");
+					$.each(catdata, function(catid_cattitle, servicedata){
+						var cat = catid_cattitle.split("_");
+						var services = [];
+						$.each(servicedata, function(i, serviceuid_servicetitle){
+							service = serviceuid_servicetitle.split("_");
+							// if the service is already checked, skip it.
+							if (! $('input[column="'+column+'"]').filter('#'+service[0]).attr("checked") ){
+								// this one is for the current category
+								services.push(service[0]);
+								// and this one decides if the confirmation box gets shown at all.
+								affected_services.push(service[0]);
+								// this one is for the pretty message box.
+								affected_titles.push(service[1] + " ("+cat[1]+")");
 							}
 						});
-					});
-				}
-			} else {
-				// unselecting a service; discover checked antecedents
-				things = element.attr("id").split("_");
-				UID = things[4];
-				$.each($('input[id*="ar_'+things[1]+'"]'), function(i,v){
-					if(($(v).attr("depuids") != undefined) && ($(v).attr("depuids").indexOf(UID) > -1)){
-						if($(v).attr("checked")){
-							antes.push($(v).attr("id"));
+						// we want to confirm, then process these all at once
+						if(services.length > 0){
+							dep_args.push([poc[0], cat[0], column, services]);
 						}
-					}
+					});
 				});
-			}
-		});
-
-		// unique lists
-		unexpanded_cats = [];
-		expanded_cats = [];
-		unchecked_depIDs = [];
-		unchecked_depUIDs = [];
-		$.each(unexpanded_cats_, function(i,v){ if(unexpanded_cats.indexOf(v) == -1) unexpanded_cats.push(v); });
-		$.each(expanded_cats_, function(i,v){ if(expanded_cats.indexOf(v) == -1) expanded_cats.push(v); });
-		$.each(unchecked_depIDs_, function(i,v){ if(unchecked_depIDs.indexOf(v) == -1) unchecked_depIDs.push(v); });
-		$.each(unchecked_depUIDs_, function(i,v){ if(unchecked_depUIDs.indexOf(v) == -1) unchecked_depUIDs.push(v); });
-
-		if (unchecked_depIDs.length > 0){
-			$("#confirm_add_deps").dialog({width:450, resizable:false, closeOnEscape: false, buttons:{
-				'Yes': function(){
-					$.each(elements, function(i,element){
-						$.each(unexpanded_cats, function(i,e){
-							// expand untouched categories.  This is done async, so the checkbox values
-							// are set in the toggle function.  Toggle is called once for each affected column
-							col = element.attr("id").split("_")[1];
-							toggleCat(e,unchecked_depUIDs, col);
-						});
-					});
-					$.each(expanded_cats, function(i,e){
-						// make sure all expanded categories are visible
-						name = $('#'+e).attr("name");
-						tbody = $('#'+name+"_tbody");
-						tbody.toggle(true);
-					});
-					$.each(unchecked_depIDs, function(i,e){
-						// check all dependent checkbox IDs that exist and are unchecked
-						if( !($('#'+e).attr("checked")==true) ){
-							$('#'+e).attr("checked", true);
+				if (affected_services.length > 0) {
+					$("#confirm_add_deps").after(
+						"<div id='messagebox' style='display:none' title='Service dependencies'>"+
+						$("#confirm_add_deps").html()
+							.replace("_SERVICE_", $(element).attr('title'))
+							.replace("_DEPS_", affected_titles.join("<br/>"))+"</div>");
+					$("#messagebox").dialog({width:450, resizable:false, closeOnEscape: true, buttons:{
+						'Yes': function(){
+							$.each(dep_args, function(i,args){
+								tbody = $("tbody[poc='"+args[0]+"']").filter('#'+args[1]);
+								if ($(tbody).hasClass("expanded")) {
+									// if cat is already expanded, we toggle(true) it and manually select service checkboxes
+									$(tbody).toggle(true);
+									$.each(args[3], function(x,serviceUID){
+										$('input[column="'+args[2]+'"]').filter('#'+serviceUID).attr("checked", true);
+										// if elements from more than one column were passed, set all columns to be the same.
+										for(col in remaining_columns){
+											$('input[column="'+remaining_columns[col]+'"]').filter('#'+serviceUID).attr("checked", true);
+										}
+									});
+								} else {
+									// otherwise, toggleCat will take care of everything for us
+									toggleCat(args[0], args[1], args[2], args[3]);
+								}
+							});
+							recalc_prices();
+							$(this).dialog("close");
+							$('#messagebox').remove()
+						},
+						'No':function(){
+							$(element).attr("checked", false);
+							recalc_prices(column);
+							$(this).dialog("close");
+							$('#messagebox').remove()
 						}
-					});
-					recalc_prices();
-					$(this).dialog("close");
-				},
-				'No':function(){
-					$.each(elements, function(i,element){
-						element.attr("checked", false);
-						column = element.attr("id").split("_")[1];
-						recalc_prices(column);
-					});
-					$(this).dialog("close");
+					}});
 				}
-			}});
+			},
+			$.ajax(options);
 		}
-
-		if (antes.length > 0){
-			$("#confirm_remove_antes").dialog({width:450, resizable:false, closeOnEscape: false, buttons:{
-				'Yes': function(){
-					$.each(antes, function(i,e){
-						// check all dependent checkbox IDs that exist and are unchecked
-						if( ($('#'+e).attr("checked")==true) ){
-							$('#'+e).attr("checked", false);
+		else {
+			// unselecting a service; discover back dependencies
+			affected_titles = [];
+			affected_services = [];
+			options.url = 'get_back_references';
+			options.success = function(service_uids,textStatus,$XHR){
+				if (service_uids.length > 0){
+					$.each(service_uids, function(i, serviceUID){
+						cb = $('input[column="'+column+'"]').filter('#'+serviceUID);
+						if (cb.attr("checked")){
+							affected_services.push(serviceUID);
+							affected_titles.push(cb.attr('title'));
 						}
 					});
-					recalc_prices();
-					$(this).dialog("close");
-				},
-				'No':function(){
-					$.each(elements, function(i,element){
-						element.attr("checked", true);
-						column = element.attr("id").split("_")[1];
-						recalc_prices(column);
-					});
-					$(this).dialog("close");
+					$("#confirm_remove_deps").after(
+						"<div id='messagebox' style='display:none' title='Service dependencies'>"+
+						$("#confirm_remove_deps").html()
+							.replace("_SERVICE_", $(element).attr('title'))
+							.replace("_DEPS_", affected_titles.join("<br/>"))+"</div>");
+					if (affected_services.length > 0) {
+						$("#messagebox").dialog({width:450, resizable:false, closeOnEscape: true, buttons:{
+							'Yes': function(){
+								$.each(affected_services, function(i,serviceUID){
+									cb = $('input[column="'+column+'"]').filter('#'+serviceUID).attr('checked', false);
+									// if elements from more than one column were passed, set all columns to be the same.
+									for(col in remaining_columns){
+										$('input[column="'+remaining_columns[col]+'"]').filter('#'+serviceUID).attr("checked", false);
+									}
+								});
+								recalc_prices();
+								$(this).dialog("close");
+								$('#messagebox').remove()
+							},
+							'No':function(){
+								$(element).attr("checked", true);
+								recalc_prices(column);
+								$(this).dialog("close");
+								$('#messagebox').remove()
+							}
+						}});
+					}
 				}
-			}});
+			},
+			$.ajax(options);
 		}
 	}
 
 	function service_checkbox_change(){
-		column = $(this).attr("name").split(".")[1];
+		column = $(this).attr("column");
 		element = $(this);
 		if($("#ar_"+column+"_ARProfile").val() != ""){
 			$("#ar_"+column+"_ARProfile").val("");
 		}
 		calcdependencies([element]);
-		recalc_prices(column);
-	};
-
-	function service_price_change(){
 		recalc_prices();
-	}
+	};
 
 	function setARProfile(){
 		profileUID = $(this).val();
@@ -405,9 +247,9 @@ jQuery( function($) {
 		if(profileUID == "") return;
 		unsetARProfile(column);
 		selected_elements = []
-		$.getJSON('analysisrequest_profileservices', {'profileUID':profileUID}, function(data,textStatus){
+		$.getJSON('aXXXnalysisrequest_profileservices', {'profileUID':profileUID}, function(data,textStatus){
 			$.each(data, function(categoryUID_poc, selectedservices){
-				toggleCat(categoryUID_poc, selectedservices, column);
+				toggleCat(XXXpoc, XXXcategoryUID, selectedservices, column);
 				$.each(selectedservices, function(i,uid){
 					selected_elements.push($("#ar_"+column+"_"+categoryUID_poc+"_"+uid));
 				});
@@ -441,22 +283,14 @@ jQuery( function($) {
 		$(".samplepoint").autocomplete({ minLength: 0, source: autocomplete_samplepoint});
 		$("select[class='ARProfile']").change(setARProfile);
 
-		// clicking on the td will select the checkbox within
-		$("td.cb").click(function(){
-			$(this.children[0]).click();
-		});
-
-		//
 		$(".copyButton").live('click',  function (){
 			field_name = $(this).attr("name");
-			if (this.id.split("_").length == 4) { // ar_(catid)_(poc)_(serviceid)
-				// analysis service checkboxes
-				things = this.id.split("_");
-				first_val = $('#ar_0_'+things[1]+'_'+things[2]+'_'+things[3]).attr("checked");
+			if ($(this).parent().attr('class') == 'service'){ // Analysis service checkbox
+				first_val = $('input[column="0"]').filter('#'+this.id).attr("checked");
 				affected_elements = [];
-				// col starts at 1 here; row 0 is reference value
+				// 0 is the first column; we only want to change cols 1 onward.
 				for (col=1; col<parseInt($("#col_count").val()); col++) {
-					other_elem = $('#ar_'+col+'_'+things[1]+'_'+things[2]+'_'+things[3]);
+					other_elem = $('input[column="'+col+'"]').filter('#'+this.id);
 					disabled = other_elem.attr('disabled');
 					// For some browsers, `attr` is undefined; for others, its false.  Check for both.
 					if (typeof disabled !== 'undefined' && disabled !== false) {
@@ -497,9 +331,9 @@ jQuery( function($) {
 			}
 		});
 
-		// service category expanding rows for all AR forms
-		$('tr[class^="analysiscategory"]').click(function(){
-			toggleCat($(this).attr("id"));
+		// Clicking the category name will expand the services list for that category
+		$('.analysiscategory').click(function(){
+			toggleCat($(this).attr("poc"), $(this).attr("id")); // id is a category uid
 		});
 
 		// service category pre-expanded rows
@@ -514,7 +348,7 @@ jQuery( function($) {
 		}
 		$.each($('tr[class$="prefill"]'), function(i,e){
 			prefilled = true;
-			toggleCat($(e).attr("id"), selected_services, 0); // AR Edit has only column 0
+			toggleCat($(e).attr("poc"), $(e).attr("id"), selected_services, 0); // AR Edit has only column 0
 			selected_elements.push($(e));
 		});
 		if (prefilled){
@@ -592,13 +426,13 @@ jQuery( function($) {
 			// field_analyses is a dict of lists: { catuid: [serviceuid,serviceuid], ... }
 			if(item_data['field_analyses'] != null){
 				$.each(item_data['field_analyses'], function(catuid,serviceuids){
-					window.opener.toggleCat(catuid + "_field", serviceuids, column, true, true);
+					window.opener.toggleCat("field", catuid, serviceuids, column, true, true);
 				});
 			}
 			// explicitly check that field categories are expanded
 			// and disabled even if eg there are no field analyses for this sample
 			$.each(window.opener.$("tr[id*='_field']").filter(".analysiscategory"), function(){
-				window.opener.toggleCat(this.id, false, column, true, true);
+				window.opener.toggleCat($(this).attr('poc'), this.id, false, column, true, true);
 			});
 
 			$.each(window.opener.$('input[id*="_field_"]').filter(".cb"), function(i,e){

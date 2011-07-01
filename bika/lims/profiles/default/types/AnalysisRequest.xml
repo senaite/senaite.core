@@ -35,7 +35,7 @@
 
  <action title="Manage results" action_id="analyses" category="object"
     condition_expr="" icon_expr="" link_target=""
-    url_expr="string:${object_url}/analysisrequest_analyses" visible="True">
+    url_expr="string:${object_url}/manage_results" visible="True">
   <permission value="bika.lims: Manage Analysis Requests"/>
  </action>
 

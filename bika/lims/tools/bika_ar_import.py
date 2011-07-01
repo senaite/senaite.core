@@ -20,7 +20,7 @@ class bika_ar_import(UniqueObject, SimpleItem):
     description = 'Imports Analysis Request Data.'
     meta_type = 'AR Import Tool'
 
-    security.declareProtected(ManageAnalysisRequest, 'import_file')
+    security.declareProtected(ManageAnalysisRequests, 'import_file')
     def import_file(self, csvfile, filename, client_id, state):
         slash = filename.rfind('\\')
         full_name = filename[slash + 1:]

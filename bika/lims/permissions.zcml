@@ -15,7 +15,7 @@
 <permission id="bika.lims.ManageClients" title="bika.lims: Manage Clients"/>
 <permission id="bika.lims.ManageWorksheets" title="bika.lims: Manage Worksheets"/>
 <permission id="bika.lims.ManageOrders" title="bika.lims: Manage Orders"/>
-<permission id="bika.lims.ManageAnalysisRequests" title="bika.lims: Manage Analysis Requestss"/>
+<permission id="bika.lims.ManageAnalysisRequests" title="bika.lims: Manage Analysis Requests"/>
 <permission id="bika.lims.ManageSample" title="bika.lims: Manage Sample"/>
 <permission id="bika.lims.ManageStandardSuppliers" title="bika.lims: Manage Standard Suppliers"/>
 <permission id="bika.lims.ManageStandard" title="bika.lims: Manage Standard"/>

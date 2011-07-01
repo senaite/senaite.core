@@ -20,17 +20,17 @@ class ServicesWidget(TypesWidget):
     security = ClassSecurityInfo()
 
     security.declarePublic('getCategories')
-    def Categories(self, field, allservices = True):
+    def getCategories(self, field, allservices = True):
         """ Returns a list of Analysis Categories (keyed by PointOfCapture)
             allservices - set False to return only checked services (for widget view)
-        
+
             returns
-            
+
             {('field', 'Field Analyses PointOfOrigin'):
                 {('general', 'General Category'):
                    [('serviceUID','serviceTitle'),('serviceUID','serviceTitle'), ..]
                 }
-            } 
+            }
         """
         cats = {}
         pc = getToolByName(self, 'portal_catalog')
@@ -40,7 +40,7 @@ class ServicesWidget(TypesWidget):
 
         selectedservices = getattr(field, field.accessor)()
         services = pc(portal_type = "AnalysisService")
-        # get all services from catalog        
+        # get all services from catalog
         if allservices:
             for service in services:
                 cat = (service.getCategoryUID, service.getCategoryName)

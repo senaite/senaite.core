@@ -61,7 +61,6 @@ class ARAnalysesField(ObjectField):
 
             calc = service.getCalculation()
             interim_fields = calc and calc.getInterimFields() or []
-            print service.Title(), calc, interim_fields
 
             # Using getRaw method on field rather than generated
             # accessor to prevent object lookup

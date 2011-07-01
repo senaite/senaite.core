@@ -29,7 +29,7 @@ schema = BikaSchema.copy() + Schema((
             i18n_domain = I18N_DOMAIN,
         )
     ),
-    ReferenceField('DependentAnalyses',
+    ReferenceField('DependentServices',
         required = 0,
         multiValued = 1,
         vocabulary_display_path_bound = sys.maxint,
@@ -57,5 +57,24 @@ schema = BikaSchema.copy() + Schema((
 class Calculation(BaseFolder):
     security = ClassSecurityInfo()
     schema = schema
+
+    def getCalculationDependencies(self):
+        """ Recursively calculates all dependencies of this calculation.
+            The return value is dictionary of dictionaries (of dictionaries....)
+
+            {service_UID1:
+                {service_UID2:
+                    {service_UID3: {},
+                     service_UID4: {},
+                    },
+                },
+            }
+        """
+        deps = {}
+        for service in self.getDependentServices():
+            try: deps[service.UID()] = service.getCalculation().getCalculationDependencies()
+            except AttributeError: deps[service.UID()] = {}
+        return deps
+
 
 registerType(Calculation, PROJECTNAME)

@@ -2,10 +2,10 @@
 <dtml-call "REQUEST.set('portal_url', portal_url())">
 
 
-/*          ********* hide  ContentActions on custom folder types */
-
 
 /*
+         XXX see menu.py  -  ContentActions on custom folder types
+
 .portaltype-analysisrequest #plone-contentmenu-actions,
 .portaltype-worksheet #plone-contentmenu-actions,
 .portaltype-sample #plone-contentmenu-actions
@@ -19,12 +19,14 @@
 .portaltype-analysisrequest #plone-contentmenu-factories,
 .portaltype-worksheet #plone-contentmenu-factories
    {display: none;}
+
 */
 
 
 /*
  * Remove boring whitespace in sunburst
  */
+
 #portal-breadcrumbs{
     margin-bottom: .3em;
 }
@@ -38,26 +40,21 @@
     line-height: 1em;
     margin: 0 0.25em 1em;
 }
-
 dl.portalMessage {
     margin-top:0;
 }
-
 dl.portlet ul.navTreeLevel0 > .navTreeItem {
     padding: 0.25em 0.25em;
 }
-
 dl.portlet ul.navTreeLevel1 .navTreeItem {
     padding: 0.25em 0.25em;
 }
-
 dl.portlet ul.navTree .navTreeCurrentItem {
     background-color: #ddd;
     border-left: 1em solid #ddd;
     margin-left: -0.25em;
     margin-right: -0.25em;
 }
-
 table.invisible td, table.invisible th, table.plain td, table.plain th, table.listing td, table.listing th {
     padding-bottom: 0.25em;
     padding-left: 0.5em;
@@ -65,42 +62,21 @@ table.invisible td, table.invisible th, table.plain td, table.plain th, table.li
     padding-top: 0.25em;
     vertical-align: top;
 }
-
 .nomargin {margin:0;}
 .nopadding {padding:0;}
-
-/*
- * ( make the global NAV bar smaller
- */
 #portal-globalnav li a {
 	padding: 0.2em 1em 0.2em 1em ! important;
 	min-width:2em;
 	font-size: 90%;
 }
-
-/* shrink the navtree vertically */
 dl.portlet ul.navTreeLevel0 > .navTreeItem {
 	line-height: 1.5em;
 }
-
 /* Shrink and expand theme columns (from columns.css)
  */
 div.width-1\3a 4 { width: 16.5%; } /* .width-1:4 */
 div.width-3\3a 4 { width: 80.2%; } /* .width-1:4 */
 div.position-1\3a 4 {margin-left:    -81.5%;} /* .position-1:4 */
-
-
-
-/* jquery Table DnD
- */
-
-.tDnD_whileDrag{
-    border: 1px dotted &dtml-globalBorderColor;;
-    background-color: &dtml-globalBackgroundColor;;
-}
-
-
-
 
 fieldset.attachments {
     color: &dtml-linkColor;;
@@ -110,8 +86,6 @@ fieldset.attachments {
     margin: 0;
 }
 
-
-
 .folderlisting-filter {
     border: 1px solid &dtml-globalBorderColor;;
     background-color: &dtml-evenRowBackgroundColor;;
@@ -120,92 +94,60 @@ fieldset.attachments {
     width:100%;
 }
 
-
 /*
  * Analysis Request tables
  */
 
-.analysisrequest {
-    border-collapse: collapse;
-    border-top: &dtml-borderWidth; &dtml-borderStyle; &dtml-globalBorderColor;;
-    font-size: &dtml-fontSmallSize;;
-    margin: 1em 0em 1em 0em;
+table.analysisrequest {
+	border-top: 1px solid #dddddd;
 }
 
-.analysisrequest tr {
-    border-left: &dtml-borderWidth; &dtml-borderStyle; &dtml-globalBorderColor;;
-    border-right: &dtml-borderWidth; &dtml-borderStyle; &dtml-globalBorderColor;;
-    border-bottom: &dtml-borderWidth; &dtml-borderStyle; &dtml-globalBorderColor;;
-}
-
-.analysisrequest tr.PointOfCapture{
-    border-left: none;
-    border-right: none;
-    background: #fff;
-    border-bottom: &dtml-borderWidth; &dtml-borderStyle; &dtml-globalBorderColor;;
-}
-
-.analysisrequest tr.PointOfCapture th{
-    background: #fff;
-    border-left: 0;
-    padding: 5px 0 5px 0;
-}
-
-.analysisrequest th {
-    background: &dtml-globalBackgroundColor;;
-    border-left: &dtml-borderWidth; &dtml-borderStyle; &dtml-globalBorderColor;;
-    font-weight: normal;
-    padding: 0em .25em 0em .25em;
-    text-align: left;
-}
-
-.rowheader {
-
-}
-
-.analysisrequest td {
-    padding: 0em 0em 0em 0em;
-    border-left: &dtml-borderWidth; &dtml-borderStyle; &dtml-globalBorderColor;;
+table.analysisrequest td {
     text-align: center;
 }
 
-.analysisrequest tr.analysiscategory {
-  cursor:pointer;
-}
-.analysisrequest th.analysiscategory {
-    background: &dtml-globalBackgroundColor;;
-    border-left: &dtml-borderWidth; &dtml-borderStyle; &dtml-globalBorderColor;;
-    font-weight: bold;
-    margin-left:2em;
-    text-align: left;
+table.analysisrequest .pointofcapture th {
+    background: #fff;
+    border-left: 0;
+	border-right:0;
+	text-align:center;
+    background: #fff;
+	font-size:1.1em;
 }
 
-.analysisrequest .price {
+/* silly table border games */
+table.analysisrequest .pointofcapture tr{ border-left: 0; }
+table.analysisrequest { border-left: 0; }
+table.analysisrequest tr { border-left: 1px solid #DDDDDD; }
+table.analysisrequest .topborder { border-top:1px solid #DDDDDD; }
+table.analysisrequest .noleftborder { border-left: 0; }
+table.analysisrequest th { border-color: #DDDDDD; }
+
+table.analysisrequest .listing thead.analysiscategory {
+    cursor:pointer;
+    text-color: &dtml-linkColor;;
+    font-weight:bold;
+}
+
+table.analysisrequest .price {
+	border: 0;
+	background:transparent;
     text-align: right;
-    padding-right: 1em;
+    padding: none;
 }
 
-.analysisrequest input {
-    border: 1px solid &dtml-globalBorderColor;;
-    margin:1px;
+table.analysisrequest .unit {
+	font-size:80%;
+	color: #555;
 }
 
-.analysisrequest .noborder {
-    background: transparent;;
-    border: none
-}
-.analysisrequest td.left {
-    text-align: left;
-    padding: 0 .5em 0 .5em;
+table.analysisrequest input {
+    margin:0;
 }
 .analysisrequest td.contact {
     text-align: left;
 }
 
-.analysisrequest .unit {
-	font-size:80%;
-	color: #555;
-}
 
 .delAttachmentButton {
     background: &dtml-globalBackgroundColor; url(&dtml-portal_url;/images/delete.png) center center no-repeat;

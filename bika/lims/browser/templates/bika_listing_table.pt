@@ -183,7 +183,7 @@
 				name python: 'analysis_%s_%s'%(item['UID'], item[column]['id']);
 				value python: item[column]['value'];
 				type python: item[column]['type'];"/>
-			<span class='discreet' tal:content="python: item[column]['unit']"/>
+			<em class="discreet" style="white-space:nowrap;" tal:content="python: item[column]['unit']"/>
 		</tal:i>
 		<tal:i condition="not: is_interim">
 			<tal:i tal:condition="is_result">
@@ -191,7 +191,7 @@
 					type="text" tal:attributes="value python: item['Result'];name string:analysis_${item/UID}_Result;size input_width"/>
 				<input tal:condition="python: not item['_calculation']"
 					type="text" tal:attributes="value python: item['Result'];name string:analysis_${item/UID}_Result; size input_width"/>
-				<span class='discreet' tal:content="python: item['Unit']"/>
+				<em class="discreet" style="white-space:nowrap;" tal:content="python: item[column]['unit']"/>
 			</tal:i>
 			<tal:i tal:condition="not: is_result">
 				<a tal:condition="python:item.has_key('links') and item['links'].has_key(column)" href="#"
@@ -210,7 +210,8 @@
 	<tal:i condition="not: is_editable">
 		<a tal:condition="python:item.has_key('links') and item['links'].has_key(column)" href="#"
 			tal:attributes="href python:item['links'][column]; class string: ${item/state_class} ${item/type_class};">
-		<img tal:condition="python:view.columns[column].has_key('icon')" tal:attributes="src python:'images/'+view.columns[column]['icon']" />
+		<img tal:condition="python:view.columns[column].has_key('icon')"
+			tal:attributes="src python:'images/'+view.columns[column]['icon']" />
 		<strong tal:content="python: item.get(column, '-')"/>
 		</a>
 		<span tal:condition="python:not (item.has_key('links') and item['links'].has_key(column))"

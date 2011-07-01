@@ -28,8 +28,8 @@
       <metal:use use-macro="field_macro | context/widgets/field/macros/edit">
         <metal:body_macro fill-slot="widget_body">
           <span id="serviceswidget"
-            tal:define="servicedata python:widget.Categories(field);
-                        selectedservices python:widget.Categories(field,allservices=False)">
+            tal:define="servicedata python:widget.getCategories(field);
+                        selectedservices python:widget.getCategories(field,allservices=False)">
 
             <table class="analysisrequest">
 

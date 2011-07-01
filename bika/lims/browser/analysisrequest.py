@@ -1,3 +1,4 @@
+from AccessControl import Unauthorized
 from bika.lims.browser.client import ClientAnalysisRequestsView
 from DateTime import DateTime
 from Products.CMFCore.WorkflowCore import WorkflowException
@@ -5,11 +6,15 @@ from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import transaction_note
 from Products.Five.browser import BrowserView
 from bika.lims.browser.bika_listing import BikaListingView
+from bika.lims.config import POINTS_OF_CAPTURE
+from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import bikaMessageFactory as _
+from zope.component import getMultiAdapter
 from decimal import Decimal
 from zope.interface import implements
 from plone.app.content.browser.interfaces import IFolderContentsView
+#from plone.protect import CheckAuthenticator
 import json
 
 class AnalysisRequestAnalysesView(BikaListingView):
@@ -25,7 +30,6 @@ class AnalysisRequestAnalysesView(BikaListingView):
     show_select_row = False
     show_select_column = False
     pagesize = 1000
-
     columns = {
         'Service': {'title': _('Analysis')},
         'WorksheetNumber': {'title': _('Worksheet')},
@@ -44,13 +48,11 @@ class AnalysisRequestAnalysesView(BikaListingView):
                     'Attachments'],
         },
     ]
-
     def __init__(self, context, request, allow_edit=False, **kwargs):
         super(AnalysisRequestAnalysesView, self).__init__(context, request)
         self.allow_edit = allow_edit
         self.contentFilter = dict(kwargs)
         self.contentFilter['portal_type'] = 'Analysis'
-
     def folderitems(self):
         """ InterimFields are inserted into self.columns before the column called 'Result',
             not specifically ordered but vaguely predictable.
@@ -161,12 +163,7 @@ class AnalysisRequestViewView(BrowserView):
 
 
 
-
-        #member python:here.portal_membership.getAuthenticatedMember();
         #lab_accredited python:context.bika_settings.laboratory.getLaboratoryAccredited();
-        #sample here/getSample;
-        #sampletype sample/getSampleType;
-        #sampletype_uid sampletype/UID;
         #profile python:here.getProfile() and here.getProfile().getProfileTitle() or '';
         #global tf python:0;
         #global out_of_range python:0;
@@ -178,23 +175,14 @@ class AnalysisRequestViewView(BrowserView):
         #is_client python: 'clients' in member_groups;
         #default_spec python:is_client and 'client' or 'lab';
         #specification python:request.get('specification', default_spec);
-        #analyses python:here.getAnalyses();
-        #any_tv python:'tv' in calc_cols;
-        #any_tf python:'tf' in calc_cols;
-        #any_vm python:'vm' in calc_cols;
-        #any_sm python:'sm' in calc_cols;
-        #any_nm python:'nm' in calc_cols;
-        #any_gm python:'gm' in calc_cols;
         #view_worksheets python:member.has_role(('Manager', 'LabManager', 'LabClerk', 'LabTechnician'));
         #attachments_allowed here/bika_settings/getAttachmentsPermitted;
         #ar_attach_allowed here/bika_settings/getARAttachmentsPermitted;
         #analysis_attach_allowed here/bika_settings/getAnalysisAttachmentsPermitted;
         #ar_review_state python:context.portal_workflow.getInfoFor(here, 'review_state', '');
-        #now view/now;
         #attachments here/getAttachment | nothing;
         #delete_attachments python:False;
         #update_attachments python:False">
-
 
     def result_in_range(self, analysis, sampletype_uid, specification):
         ## Script (Python) "result_in_range"
@@ -374,13 +362,17 @@ class AnalysisRequestViewView(BrowserView):
                 verifier = actor
         return verifier
 
-
 class AnalysisRequestAddView(BrowserView):
     """ The main AR Add form
     """
     template = ViewPageTemplateFile("templates/analysisrequest_edit.pt")
-    col_count = 4
-    came_from = "add"
+
+    def __init__(self, context, request):
+        self.context = context
+        self.request = request
+        self.col_count = 4
+        self.came_from = "add"
+        self.DryMatterService = self.context.bika_settings.getDryMatterService()
 
     def __call__(self):
         if self.request.form.has_key("submitted"):
@@ -408,16 +400,19 @@ class AnalysisRequestAddView(BrowserView):
         return profiles
 
     def Categories(self):
-        """ Dictionary keys: field/lab
-            Dictionary values: (Category Title,category UID)
+        """ Dictionary keys: poc
+            Dictionary values: (Category UID,category Title)
         """
         pc = getToolByName(self.context, 'portal_catalog')
         cats = {}
         for service in pc(portal_type = "AnalysisService"):
-            poc = service.getPointOfCapture
+            service = service.getObject()
+            poc = service.getPointOfCapture()
             if not cats.has_key(poc): cats[poc] = []
-            cat = (service.getCategoryName, service.getCategoryUID)
-            if cat not in cats[poc]: cats[poc].append(cat)
+            category = service.getCategory()
+            cat = (category.UID(), category.Title())
+            if cat not in cats[poc]:
+                cats[poc].append(cat)
         return cats
 
 class AnalysisRequestEditView(AnalysisRequestAddView):
@@ -426,13 +421,15 @@ class AnalysisRequestEditView(AnalysisRequestAddView):
     came_from = "edit"
 
     def SelectedServices(self):
-        """ res is a list of lists.  [[category uid, service uid],...]
-            for each service selected
+        """ return information about services currently selected in the context AR.
+        [[category uid, service uid, PointOfCapture],
+         [category uid, service uid, PointOfCapture],
+         ...]
         """
         pc = getToolByName(self.context, 'portal_catalog')
         res = []
         for analysis in pc(portal_type = "Analysis", getRequestID = self.context.RequestID):
-            analysis = analysis.getObject() # XXX getObject
+            analysis = analysis.getObject()
             service = analysis.getService()
             res.append([service.getCategoryUID(), service.UID(), service.getPointOfCapture()])
         return res
@@ -596,200 +593,199 @@ class AnalysisRequestManageResultsView(AnalysisRequestViewView):
         ##
         results = {}
 
-        def test_reqs(reqd_calcs):
-            all_results = True
-            for reqd in reqds:
-                if results[reqd] == None:
-                    all_results = False
-                    break
-            return all_results
+        #def test_reqs(reqd_calcs):
+            #all_results = True
+            #for reqd in reqds:
+                #if results[reqd] == None:
+                    #all_results = False
+                    #break
+            #return all_results
 
-        def update_data(parent, result_in):
-            if result_in == None:
-                result = None
-            else:
-                result = '%.2f' % result_in
-            service = parent.getService()
+        #def update_data(parent, result_in):
+            #if result_in == None:
+                #result = None
+            #else:
+                #result = '%.2f' % result_in
+            #service = parent.getService()
 
-            uncertainty = self.get_uncertainty(result, service)
-            parent.edit(
-                Result = result,
-                Uncertainty = uncertainty,
-                Unit = service.getUnit()
-            )
-            return
+            #uncertainty = self.get_uncertainty(result, service)
+            #parent.edit(
+                #Result = result,
+                #Uncertainty = uncertainty,
+                #Unit = service.getUnit()
+            #)
+            #return
 
 
-        rc = getToolByName(self, 'reference_catalog');
-        parents = [uid for uid in
-                   rc.getBackReferences(this_child, 'AnalysisAnalysis')]
-        for p in parents:
-            parent = rc.lookupObject(p.sourceUID)
+        #rc = getToolByName(self, 'reference_catalog');
+        #parents = [uid for uid in
+                   #rc.getBackReferences(this_child, 'AnalysisAnalysis')]
+        #for p in parents:
+            #parent = rc.lookupObject(p.sourceUID)
 
-            parent_keyword = parent.getAnalysisKey()
-            for child in parent.getDependantAnalysis():
-                keyword = child.getAnalysisKey()
-                try:
-                    results[keyword] = Decimal(child.getResult())
-                except:
-                    results[keyword] = None
+            #parent_keyword = parent.getAnalysisKey()
+            #for child in parent.getDependantAnalysis():
+                #keyword = child.getAnalysisKey()
+                #try:
+                    #results[keyword] = Decimal(child.getResult())
+                #except:
+                    #results[keyword] = None
 
-            result = None
-            if parent_keyword[0:3] == 'AME':
-                protein_type = parent_keyword[3:len(parent_keyword)]
-                protein_keyword = 'ProteinCrude%s' % protein_type
-                reqds = [protein_keyword, 'FatCrudeEtherExtraction', 'Starch', 'Sugars']
-                if  test_reqs(reqds):
-                    ProteinCrude = results[protein_keyword]
-                    FatCrudeEtherExtraction = results['FatCrudeEtherExtraction']
-                    Starch = results['Starch']
-                    Sugars = results['Sugars']
-                    result = (Decimal('0.1551') * ProteinCrude) + \
-                           (Decimal('0.3431') * FatCrudeEtherExtraction) + \
-                           (Decimal('0.1669') * Starch) + (Decimal('0.1301') * Sugars)
-                else:
-                    result = None
-                update_data(parent, result)
+            #result = None
+            #if parent_keyword[0:3] == 'AME':
+                #protein_type = parent_keyword[3:len(parent_keyword)]
+                #protein_keyword = 'ProteinCrude%s' % protein_type
+                #reqds = [protein_keyword, 'FatCrudeEtherExtraction', 'Starch', 'Sugars']
+                #if  test_reqs(reqds):
+                    #ProteinCrude = results[protein_keyword]
+                    #FatCrudeEtherExtraction = results['FatCrudeEtherExtraction']
+                    #Starch = results['Starch']
+                    #Sugars = results['Sugars']
+                    #result = (Decimal('0.1551') * ProteinCrude) + \
+                           #(Decimal('0.3431') * FatCrudeEtherExtraction) + \
+                           #(Decimal('0.1669') * Starch) + (Decimal('0.1301') * Sugars)
+                #else:
+                    #result = None
+                #update_data(parent, result)
 
-            if parent_keyword[0:2] == 'ME':
-                protein_type = parent_keyword[2:len(parent_keyword)]
-                protein_keyword = 'ProteinCrude%s' % protein_type
-                reqds = [protein_keyword, 'FatCrudeEtherExtraction', 'FibreCrude', 'Ash']
-                if test_reqs(reqds):
-                    ProteinCrude = results[protein_keyword]
-                    FatCrudeEtherExtraction = results['FatCrudeEtherExtraction']
-                    FibreCrude = results['FibreCrude']
-                    Ash = results['Ash']
-                    result = 12 + (Decimal('0.008') * ProteinCrude) + \
-                           (Decimal('0.023') * FatCrudeEtherExtraction) - (Decimal('0.018') * FibreCrude) + \
-                           (Decimal('0.012') * Ash)
-                else:
-                    result = None
-                update_data(parent, result)
+            #if parent_keyword[0:2] == 'ME':
+                #protein_type = parent_keyword[2:len(parent_keyword)]
+                #protein_keyword = 'ProteinCrude%s' % protein_type
+                #reqds = [protein_keyword, 'FatCrudeEtherExtraction', 'FibreCrude', 'Ash']
+                #if test_reqs(reqds):
+                    #ProteinCrude = results[protein_keyword]
+                    #FatCrudeEtherExtraction = results['FatCrudeEtherExtraction']
+                    #FibreCrude = results['FibreCrude']
+                    #Ash = results['Ash']
+                    #result = 12 + (Decimal('0.008') * ProteinCrude) + \
+                           #(Decimal('0.023') * FatCrudeEtherExtraction) - (Decimal('0.018') * FibreCrude) + \
+                           #(Decimal('0.012') * Ash)
+                #else:
+                    #result = None
+                #update_data(parent, result)
 
-            if parent_keyword[0:3] == 'TDN':
-                ME_type = parent_keyword[3:len(parent_keyword)]
-                ME_keyword = 'ME%s' % ME_type
-                reqds = [ME_keyword, ]
-                if test_reqs(reqds):
-                    ME = results[ME_keyword]
-                    result = Decimal('6.67') * ME
-                else:
-                    result = None
-                update_data(parent, result)
+            #if parent_keyword[0:3] == 'TDN':
+                #ME_type = parent_keyword[3:len(parent_keyword)]
+                #ME_keyword = 'ME%s' % ME_type
+                #reqds = [ME_keyword, ]
+                #if test_reqs(reqds):
+                    #ME = results[ME_keyword]
+                    #result = Decimal('6.67') * ME
+                #else:
+                    #result = None
+                #update_data(parent, result)
 
-            if parent_keyword[0:3] == 'NSC':
-                protein_type = parent_keyword[3:len(parent_keyword)]
-                protein_keyword = 'ProteinCrude%s' % protein_type
-                reqds = ['FibreNDF', protein_keyword, 'FatCrudeEtherExtraction', 'Ash']
-                if test_reqs(reqds):
-                    FibreNDF = results['FibreNDF']
-                    ProteinCrude = results[protein_keyword]
-                    FatCrudeEtherExtraction = results['FatCrudeEtherExtraction']
-                    Ash = results['Ash']
-                    result = 100 - (FibreNDF + ProteinCrude + \
-                                    FatCrudeEtherExtraction + Ash)
-                else:
-                    result = None
-                update_data(parent, result)
+            #if parent_keyword[0:3] == 'NSC':
+                #protein_type = parent_keyword[3:len(parent_keyword)]
+                #protein_keyword = 'ProteinCrude%s' % protein_type
+                #reqds = ['FibreNDF', protein_keyword, 'FatCrudeEtherExtraction', 'Ash']
+                #if test_reqs(reqds):
+                    #FibreNDF = results['FibreNDF']
+                    #ProteinCrude = results[protein_keyword]
+                    #FatCrudeEtherExtraction = results['FatCrudeEtherExtraction']
+                    #Ash = results['Ash']
+                    #result = 100 - (FibreNDF + ProteinCrude + \
+                                    #FatCrudeEtherExtraction + Ash)
+                #else:
+                    #result = None
+                #update_data(parent, result)
 
-            if parent_keyword[0:2] == 'DE':
-                protein_type = parent_keyword[2:len(parent_keyword)]
-                protein_keyword = 'ProteinCrude%s' % protein_type
-                reqds = [protein_keyword, 'FatCrudeEtherExtraction', 'FibreCrude', 'Ash']
-                if test_reqs(reqds):
-                    ProteinCrude = results[protein_keyword]
-                    FatCrudeEtherExtraction = results['FatCrudeEtherExtraction']
-                    FibreCrude = results['FibreCrude']
-                    Ash = results['Ash']
-                    result = Decimal('17.38') + (Decimal('0.105') * ProteinCrude) + \
-                           (Decimal('0.114') * FatCrudeEtherExtraction) - (Decimal('0.317') * FibreCrude) - \
-                           (Decimal('0.402') * Ash)
-                else:
-                    result = None
-                update_data(parent, result)
-                update_data(parent, result)
+            #if parent_keyword[0:2] == 'DE':
+                #protein_type = parent_keyword[2:len(parent_keyword)]
+                #protein_keyword = 'ProteinCrude%s' % protein_type
+                #reqds = [protein_keyword, 'FatCrudeEtherExtraction', 'FibreCrude', 'Ash']
+                #if test_reqs(reqds):
+                    #ProteinCrude = results[protein_keyword]
+                    #FatCrudeEtherExtraction = results['FatCrudeEtherExtraction']
+                    #FibreCrude = results['FibreCrude']
+                    #Ash = results['Ash']
+                    #result = Decimal('17.38') + (Decimal('0.105') * ProteinCrude) + \
+                           #(Decimal('0.114') * FatCrudeEtherExtraction) - (Decimal('0.317') * FibreCrude) - \
+                           #(Decimal('0.402') * Ash)
+                #else:
+                    #result = None
+                #update_data(parent, result)
+                #update_data(parent, result)
 
-            drymatter = self.context.bika_settings.getDryMatterService()
-            if parent.getServiceUID() == (hasattr(drymatter, 'UID') and drymatter.UID() or None):
-                moisture = self.context.bika_settings.getMoistureService()
-                moisture_key = moisture.getAnalysisKey()
-                reqds = [moisture_key, ]
-                if test_reqs(reqds):
-                    Moisture = results[moisture_key]
-                    result = Decimal('100') - Moisture
-                else:
-                    result = None
-                update_data(parent, result)
+            #drymatter = self.context.bika_settings.getDryMatterService()
+            #if parent.getServiceUID() == (hasattr(drymatter, 'UID') and drymatter.UID() or None):
+                #moisture = self.context.bika_settings.getMoistureService()
+                #moisture_key = moisture.getAnalysisKey()
+                #reqds = [moisture_key, ]
+                #if test_reqs(reqds):
+                    #Moisture = results[moisture_key]
+                    #result = Decimal('100') - Moisture
+                #else:
+                    #result = None
+                #update_data(parent, result)
 
-            if parent_keyword == 'DryMatterWet':
-                reqds = ['MoistureTotal', ]
-                if test_reqs(reqds):
-                    MoistureTotal = results['MoistureTotal']
-                    result = Decimal('100') - MoistureTotal
-                else:
-                    result = None
-                update_data(parent, result)
+            #if parent_keyword == 'DryMatterWet':
+                #reqds = ['MoistureTotal', ]
+                #if test_reqs(reqds):
+                    #MoistureTotal = results['MoistureTotal']
+                    #result = Decimal('100') - MoistureTotal
+                #else:
+                    #result = None
+                #update_data(parent, result)
 
-            if parent_keyword == 'MoistureTotal':
-                reqds = ['MoistureWet', 'MoistureDry']
-                if test_reqs(reqds):
-                    MoistureWet = results['MoistureWet']
-                    MoistureDry = results['MoistureDry']
-                    result = MoistureWet + (MoistureDry * ((Decimal('100') - MoistureWet) / Decimal('100')))
-                else:
-                    result = None
-                update_data(parent, result)
+            #if parent_keyword == 'MoistureTotal':
+                #reqds = ['MoistureWet', 'MoistureDry']
+                #if test_reqs(reqds):
+                    #MoistureWet = results['MoistureWet']
+                    #MoistureDry = results['MoistureDry']
+                    #result = MoistureWet + (MoistureDry * ((Decimal('100') - MoistureWet) / Decimal('100')))
+                #else:
+                    #result = None
+                #update_data(parent, result)
 
-            if parent_keyword == 'ProteinKOH':
-                if results.has_key('ProteinCrudeDumas'):
-                    protein_keyword = 'ProteinCrudeDumas'
-                else:
-                    if results.has_key('ProteinCrudeKjeldahl'):
-                        protein_keyword = 'ProteinCrudeKjeldahl'
-                    else:
-                        protein_keyword = 'ProteinCrude'
-                reqds = [protein_keyword]
-                if test_reqs(reqds):
-                    ProteinCrude = results[protein_keyword]
-                    Corrected = parent.getInterimResult('Corrected')
-                    SKCorrFactor = parent.getInterimResult('SKCorrFactor')
-                    if ProteinCrude and Corrected and SKCorrFactor:
-                        Corrected = float(Corrected)
-                        SKCorrFactor = float(SKCorrFactor)
-                        parent.setInterimResult(protein_keyword, ProteinCrude)
-                        result = Corrected / ProteinCrude * 100 * SKCorrFactor
-                    else:
-                        result = None
-                        parent.setInterimResult(protein_keyword, None)
-                update_data(parent, result)
+            #if parent_keyword == 'ProteinKOH':
+                #if results.has_key('ProteinCrudeDumas'):
+                    #protein_keyword = 'ProteinCrudeDumas'
+                #else:
+                    #if results.has_key('ProteinCrudeKjeldahl'):
+                        #protein_keyword = 'ProteinCrudeKjeldahl'
+                    #else:
+                        #protein_keyword = 'ProteinCrude'
+                #reqds = [protein_keyword]
+                #if test_reqs(reqds):
+                    #ProteinCrude = results[protein_keyword]
+                    #Corrected = parent.getInterimResult('Corrected')
+                    #SKCorrFactor = parent.getInterimResult('SKCorrFactor')
+                    #if ProteinCrude and Corrected and SKCorrFactor:
+                        #Corrected = float(Corrected)
+                        #SKCorrFactor = float(SKCorrFactor)
+                        #parent.setInterimResult(protein_keyword, ProteinCrude)
+                        #result = Corrected / ProteinCrude * 100 * SKCorrFactor
+                    #else:
+                        #result = None
+                        #parent.setInterimResult(protein_keyword, None)
+                #update_data(parent, result)
 
-            if parent_keyword == 'ProteinSoluble':
-                if results.has_key('ProteinCrudeDumas'):
-                    protein_keyword = 'ProteinCrudeDumas'
-                else:
-                    if results.has_key('ProteinCrudeKjeldahl'):
-                        protein_keyword = 'ProteinCrudeKjeldahl'
-                    else:
-                        protein_keyword = 'ProteinCrude'
-                reqds = [protein_keyword]
-                if test_reqs(reqds):
-                    ProteinCrude = results[protein_keyword]
-                    Unadjusted = parent.getInterimResult('Unadjusted')
-                    SKCorrFactor = parent.getInterimResult('SKCorrFactor')
-                    if ProteinCrude and Unadjusted:
-                        Unadjusted = float(Unadjusted)
-                        parent.setInterimResult(protein_keyword, ProteinCrude)
-                        result = ProteinCrude - Unadjusted
-                    else:
-                        result = None
-                        parent.setInterimResult(protein_keyword, None)
-                update_data(parent, result)
+            #if parent_keyword == 'ProteinSoluble':
+                #if results.has_key('ProteinCrudeDumas'):
+                    #protein_keyword = 'ProteinCrudeDumas'
+                #else:
+                    #if results.has_key('ProteinCrudeKjeldahl'):
+                        #protein_keyword = 'ProteinCrudeKjeldahl'
+                    #else:
+                        #protein_keyword = 'ProteinCrude'
+                #reqds = [protein_keyword]
+                #if test_reqs(reqds):
+                    #ProteinCrude = results[protein_keyword]
+                    #Unadjusted = parent.getInterimResult('Unadjusted')
+                    #SKCorrFactor = parent.getInterimResult('SKCorrFactor')
+                    #if ProteinCrude and Unadjusted:
+                        #Unadjusted = float(Unadjusted)
+                        #parent.setInterimResult(protein_keyword, ProteinCrude)
+                        #result = ProteinCrude - Unadjusted
+                    #else:
+                        #result = None
+                        #parent.setInterimResult(protein_keyword, None)
+                #update_data(parent, result)
 
-            if parent.checkHigherDependancies():
-                self.get_dependant_results(parent)
-
-        return
+            #if parent.checkHigherDependancies():
+                #self.get_dependant_results(parent)
+        #return
 
 
     def get_precise_result(self, result, precision):
@@ -853,7 +849,6 @@ class AnalysisRequestResultsNotRequestedView(AnalysisRequestManageResultsView):
     def __call__(self):
         return self.template()
 
-
 class AnalysisRequestContactCCs(BrowserView):
     """ Returns lists of UID/Title for preconfigured CC contacts
         When a client contact is selected from the #contact dropdown,
@@ -903,7 +898,7 @@ class AnalysisRequestSelectCCView(BikaListingView):
     ]
 
     def __init__(self, context, request):
-        super(AnalysisRequestSelectSampleView, self).__init__(context, request)
+        super(AnalysisRequestSelectCCView, self).__init__(context, request)
         self.title = "%s: %s" % (self.context.Title(), _("Contacts to CC"))
         self.description = ""
 
@@ -1016,44 +1011,82 @@ class AnalysisRequestSelectSampleView(BikaListingView):
                         res[catuid] = [analysis.getService().UID()]
         return res
 
-class AJAX_ExpandCategoryView(BikaListingView):
-    """ AJAX requests pull this view for insertion when category header rows are clicked/expanded.
+def getServiceDependencies(context,service_uid):
+    """ Calculates the service dependencies, and returns them
+        keyed by PointOfCapture and AnalysisCategory, in a
+        funny little dictionary suitable for JSON/javascript
+        consumption:
+        {'pointofcapture_Point Of Capture':
+            {  'categoryUID_categoryTitle':
+                [ 'serviceUID_serviceTitle', 'serviceUID_serviceTitle', ...]
+            }
+        }
     """
-    template = ViewPageTemplateFile("templates/analysisrequest_analysisservices.pt")
+    rc = getToolByName(context, 'reference_catalog')
+    if not service_uid: return None
+    service = rc.lookupObject(service_uid)
+    if not service: return None
+    calc = service.getCalculation()
+    if not calc: return None
+    deps = calc.getCalculationDependencies()
+
+    result = {}
+
+    def walk(deps):
+        for service_uid,service_deps in deps.items():
+            service = rc.lookupObject(service_uid)
+            category = service.getCategory()
+            cat = '%s_%s' % (category.UID(), category.Title())
+            poc = '%s_%s' % (service.getPointOfCapture(), POINTS_OF_CAPTURE.getValue(service.getPointOfCapture()))
+            srv = '%s_%s' % (service.UID(), service.Title())
+            if not result.has_key(poc): result[poc] = {}
+            if not result[poc].has_key(cat): result[poc][cat] = []
+            result[poc][cat].append(srv)
+            if service_deps:
+                walk(service_deps)
+    walk(deps)
+    return result
+
+class AJAXgetServiceDependencies():
+    """ Return json(getServiceDependencies) """
+
+    def __init__(self,context,request):
+        self.context = context
+        self.request = request
+
     def __call__(self):
+        authenticator=getMultiAdapter((self.context, self.request), name=u"authenticator")
+#        if not authenticator.verify(): raise Unauthorized
+        result = getServiceDependencies(self.context, self.request.get('uid',''))
+        if (not result) or (len(result.keys()) == 0):
+            result = None
+        return json.dumps(result)
+
+class AJAXExpandCategory(BikaListingView):
+    """ AJAX requests pull this view for insertion when category header rows are clicked/expanded. """
+    template = ViewPageTemplateFile("templates/analysisrequest_analysisservices.pt")
+
+    def __call__(self):
+        authenticator=getMultiAdapter((self.context, self.request), name=u"authenticator")
+#        if not authenticator.verify(): raise Unauthorized
         return self.template()
 
-    def Services(self, CategoryUID, poc):
-        """ return a list of brains
-        """
+    def Services(self, poc, CategoryUID):
+        """ return a list of services brains """
         pc = getToolByName(self, 'portal_catalog')
-        return pc(portal_type = "AnalysisService", getCategoryUID = CategoryUID, getPointOfCapture = poc)
+        services = pc(portal_type = "AnalysisService", getPointOfCapture = poc, getCategoryUID = CategoryUID)
+        return services
 
-    def getDependancies(self, serviceUID):
-        """ Return a list of services we depend on.
-            return {'categoryIDs': [element IDs of category TRs],
-                    'serviceUIDs': [dependant service UIDs]}
-        """
-        pc = getToolByName(self, 'portal_catalog')
-        rc = getToolByName(self, 'reference_catalog')
-        service = rc.lookupObject(serviceUID)
-        depcatIDs = []
-        depUIDs = []
-        calc = service.getCalculation()
-        method_deps = calc and calc.getDependentAnalyses() or []
-        for service in method_deps:
-            depcat_id = service.getCategoryUID() + "_" + service.PointOfCapture
-            if depcat_id not in depcatIDs: depcatIDs.append(depcat_id)
-            depUIDs.append(service.UID())
-        return {'categoryIDs':depcatIDs, 'serviceUIDs':depUIDs}
-
-class AnalysisRequest_ProfileServices():
+class AJAXProfileServices(BrowserView):
     """ AJAX requests pull this to retrieve a list of services in an AR Profile.
         return JSON data {categoryUID: [serviceUID,serviceUID], ...}
     """
     def __call__(self):
+#        authenticator=getMultiAdapter((self.context, self.request), name=u"authenticator")
+#        if not authenticator.verify(): raise Unauthorized
         rc = getToolByName(self, 'reference_catalog')
         pc = getToolByName(self, 'portal_catalog')
+
         profile = rc.lookupObject(self.request['profileUID'])
         if not profile: return
 
@@ -1064,10 +1097,48 @@ class AnalysisRequest_ProfileServices():
             poc = service.getPointOfCapture
             try: services["%s_%s" % (categoryUID, poc)].append(service.UID)
             except: services["%s_%s" % (categoryUID, poc)] = [service.UID, ]
+
         return json.dumps(services)
 
-def analysisrequest_add_submit(context, request):
+def getBackReferences(context,service_uid):
+    """ Recursively discover Calculation/DependentService backreferences from here.
+        returns a list of Analysis Service objects
 
+    """
+    rc = getToolByName(context, REFERENCE_CATALOG)
+    if not service_uid: return None
+    service = rc.lookupObject(service_uid)
+    if not service: return None
+
+    services = []
+
+    def walk(items):
+        for item in items:
+            if item.portal_type == 'AnalysisService':
+                services.append(item)
+            walk(item.getBackReferences())
+    walk([service,])
+
+    return services
+
+class AJAXgetBackReferences():
+    """ Return json(getBackReferences) """
+
+    def __init__(self,context,request):
+        self.context = context
+        self.request = request
+
+    def __call__(self):
+        authenticator=getMultiAdapter((self.context, self.request), name=u"authenticator")
+#        if not authenticator.verify(): raise Unauthorized
+        result = getBackReferences(self.context, self.request.get('uid',''))
+        if (not result) or (len(result) == 0):
+            result = []
+        return json.dumps([r.UID() for r in result])
+
+def analysisrequest_add_submit(context, request):
+ #   authenticator=getMultiAdapter((context, request), name=u"authenticator")
+ #   if not authenticator.verify(): raise Unauthorized
     form = request.form
 
     if form.has_key("save_button"):
@@ -1085,10 +1156,9 @@ def analysisrequest_add_submit(context, request):
                                             domain = 'bika')
             column = column or ""
             field = field or ""
-            error_key = field and column and "%s.%s" % (column, field) or 'form error'
             errors[error_key] = message
 
-    # first some basic validation
+        # first some basic validation
         has_analyses = False
         for column in range(int(form['col_count'])):
             column = "%01d" % column
@@ -1114,12 +1184,12 @@ def analysisrequest_add_submit(context, request):
             ar = form["ar.%s" % column]
             if len(ar.keys()) == 3: # three empty price fields
                 continue
-        # check that required fields have values
+            # check that required fields have values
             for field in required:
                 if not ar.has_key(field):
                     error(field, column)
 
-        # validate all field values
+            # validate all field values
             for field in fields:
                 # ignore empty field values
                 if not ar.has_key(field):
@@ -1142,8 +1212,7 @@ def analysisrequest_add_submit(context, request):
 
             #elif field == "ReportDryMatter":
             #elif field == "InvoiceExclude":
-            # elif field == "DateSampled":
-            # XXX Should we check that ClientOrderNumber ClientReference and ClientSampleID are unique
+            #elif field == "DateSampled":
             #elif field == "ClientOrderNumber":
             #elif field == "ClientReference":
             #elif field == "ClientSampleID":
@@ -1154,7 +1223,7 @@ def analysisrequest_add_submit(context, request):
         ARs = []
         services = {} # UID:service
 
-    # The actual submission
+        # The actual submission
 
         for column in range(int(form['col_count'])):
             if not form.has_key("ar.%s" % column):
@@ -1211,7 +1280,7 @@ def analysisrequest_add_submit(context, request):
                 sample.setDisposalDate(dis_date)
             sample_uid = sample.UID()
 
-        # create AR
+            # create AR
 
             Analyses = values['Analyses']
             del values['Analyses']
@@ -1259,14 +1328,8 @@ def analysisrequest_add_submit(context, request):
             if values.has_key('SampleID') and wftool.getInfoFor(sample, 'review_state') != 'due':
                 wftool.doActionFor(ar, 'receive')
 
-        # Then setAnalyses (ARAnalysesField) to create Analysis objects
+        # XXX ARAnalysesField must move to content.analysis
         ar.setAnalyses(Analyses, prices=prices)
-
-    # AVS check sample_state and promote the AR is > 'due'
-
-#if primaryArUIDs:
-#   context.REQUEST.SESSION.set('uids', primaryArUIDs)
-#   return state.set(status='print')
 
         if came_from == "add":
             if len(ARs) > 1:
