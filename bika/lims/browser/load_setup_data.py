@@ -380,13 +380,13 @@ class LoadSetupData(BrowserView):
         if not hasattr(self, 'calculations'):
             self.calculations = {'':None}
         folder = self.context.bika_settings.bika_calculations
-        for title, CalculationDescription, DependentAnalyses, InterimFields, Formula in calcs:
+        for title, CalculationDescription, DependentServices, InterimFields, Formula in calcs:
             calc_id = folder.generateUniqueId('Calculation')
             folder.invokeFactory(id = calc_id, type_name = 'Calculation')
             obj = folder[calc_id]
             obj.edit(title = title,
                       CalculationDescription = CalculationDescription,
-                      DependentAnalyses = [self.service_objs[a] for a in DependentAnalyses],
+                      DependentServices = [self.service_objs[a] for a in DependentServices],
                       InterimFields = InterimFields,
                       Formula = Formula)
             obj.reindexObject()

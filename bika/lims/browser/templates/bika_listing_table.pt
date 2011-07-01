@@ -8,257 +8,257 @@
 		tal:repeat="item view/batch/items_not_on_page"
 		tal:attributes="value item/path"/>
 
-	<metal:listing define-macro="folder_listing"
-		tal:define="nosortclass view/get_nosort_class;
-			review_state python:[t for t in view.review_states if t['id'] == request.get('review_state', 'all')][0];
+<metal:listing define-macro="folder_listing"
+	tal:define="nosortclass view/get_nosort_class;
+		review_state python:[t for t in view.review_states if t['id'] == request.get('review_state', 'all')][0];
 			portal context/@@plone_portal_state/portal;">
 
-	<tal:review_states condition="python: len(view.review_states)>1" repeat="state view/review_states">
-		<input class="review_state_filter"
-			type="radio"
+<tal:review_states condition="python: len(view.review_states)>1" repeat="state view/review_states">
+	<input class="review_state_filter"
+		type="radio"
 			name="review_state"
 			tal:define="state_id state/id"
 			tal:attributes="
-				value state_id;
+			value state_id;
 				id state/id;
 				checked python:request.get('review_state', 'all') == state_id and 'checked' or None"/>
-		<label tal:attributes="for state/id;" tal:content="state/title" i18n:translate=""/>
-	</tal:review_states>
+				<label tal:attributes="for state/id;" tal:content="state/title" i18n:translate=""/>
+		</tal:review_states>
 
-	<p class="discreet"
-		tal:condition="not: view/batch"
+<p class="discreet"
+	tal:condition="not: view/batch"
 		i18n:translate="description_no_visible_items_add_paste">
-	There are no items to display.
+		There are no items to display.
 	</p>
 
-	<p class="discreet" id="clear_filters" tal:condition="view/filters_in_use">
-		<span i18n:translate="clear_filters" class="link">[clear filters]</span>
-	</p>
+<p class="discreet" id="clear_filters" tal:condition="view/filters_in_use">
+	<span i18n:translate="clear_filters" class="link">[clear filters]</span>
+		</p>
 
-	<table class="listing"
-		tal:condition="view/items"
-			id="listing-table"
+<table class="listing"
+	tal:condition="view/items"
+		id="listing-table"
 			summary="Content listing"
 			i18n:attributes="summary summary_content_listing;"
 			tal:define="colspan python: len(review_state['columns']);
-				colspan python: view.show_select_column and colspan + 1 or colspan;
+			colspan python: view.show_select_column and colspan + 1 or colspan;
 				colspan python: view.show_sort_column and colspan + 1 or colspan;
 				colspan python: str(colspan);
 				columns view/columns;
 				column_list python:review_state['columns']">
 
-	<thead>
+<thead>
 
-	<tal:selectrow condition="python: view.items and view.show_select_row">
-		<tr tal:condition="not:view/selectcurrentbatch">
-			<th tal:attributes="colspan colspan" class="nosort">
-				<span i18n:translate="label_select" tal:omit-tag="">Select:</span> <a i18n:translate="label_all" tal:attributes="href view/selectscreen_url" id="foldercontents-selectall">All</a>
-			</th>
-		</tr>
+<tal:selectrow condition="python: view.items and view.show_select_row">
+	<tr tal:condition="not:view/selectcurrentbatch">
+		<th tal:attributes="colspan colspan" class="nosort">
+			<span i18n:translate="label_select" tal:omit-tag="">Select:</span> <a i18n:translate="label_all" tal:attributes="href view/selectscreen_url" id="foldercontents-selectall">All</a>
+				</th>
+			</tr>
 		<tr tal:condition="view/show_select_all_items">
-			<th tal:attributes="colspan colspan" class="nosort">
-				<span tal:omit-tag="" i18n:translate="tableheading_all_items_selected">
-					All <tal:block replace="view/batch/items_on_page" i18n:name="count"/> items on this page are selected.
-				</span>
+		<th tal:attributes="colspan colspan" class="nosort">
+			<span tal:omit-tag="" i18n:translate="tableheading_all_items_selected">
+				All <tal:block replace="view/batch/items_on_page" i18n:name="count"/> items on this page are selected.
+					</span>
 				<a tal:attributes="href view/selectall_url"
-					id="foldercontents-selectall-completebatch"
+				id="foldercontents-selectall-completebatch"
 					i18n:translate="tableheading_select_all_items">Select all
-				<tal:block replace="view/batch/size" i18n:name="count"/> items in this folder.</a>
-			</th>
-		</tr>
+					<tal:block replace="view/batch/size" i18n:name="count"/> items in this folder.</a>
+				</th>
+			</tr>
 		<tr tal:condition="view/selectall">
-			<th tal:attributes="colspan colspan" class="nosort">
-				<span tal:omit-tag="" i18n:translate="tableheading_all_items_selected_in_folder">
-					All <tal:block replace="view/batch/size" i18n:name="count"/> items in this folder are selected.
-				</span>
+		<th tal:attributes="colspan colspan" class="nosort">
+			<span tal:omit-tag="" i18n:translate="tableheading_all_items_selected_in_folder">
+				All <tal:block replace="view/batch/size" i18n:name="count"/> items in this folder are selected.
+					</span>
 				<a tal:attributes="href view/selectnone_url" i18n:translate="tableheading_clear_selection"
-					id="foldercontents-clearselection">Clear selection</a>
-			</th>
-		</tr>
-	</tal:selectrow>
+				id="foldercontents-clearselection">Clear selection</a>
+					</th>
+			</tr>
+		</tal:selectrow>
 
-	<tr condition="view/items">
-		<th class="nosort column" id="foldercontents-order-column" tal:condition="view/show_sort_column"></th>
+<tr condition="view/items">
+	<th class="nosort column" id="foldercontents-order-column" tal:condition="view/show_sort_column"></th>
 		<th class="nosort column" tal:condition="view/show_select_column"> </th>
 		<th class="nosort column" tal:repeat="column column_list"
-			tal:attributes="id string:foldercontents-${column}-column">
+		tal:attributes="id string:foldercontents-${column}-column">
 			<span i18n:translate="python:'listingheader_' + view.columns[ column ]['title']">
-				<span tal:content="python:view.columns[  column  ]['title']"/>
-			</span>
-		</th>
-	</tr>
+			<span tal:content="python:view.columns[  column  ]['title']"/>
+				</span>
+			</th>
+		</tr>
 
-	<tr tal:condition="python: view.items and view.show_filters">
-		<th class="nosort column" id="foldercontents-order-column" tal:condition="view/show_sort_column"></th>
+<tr tal:condition="python: view.items and view.show_filters">
+	<th class="nosort column" id="foldercontents-order-column" tal:condition="view/show_sort_column"></th>
 		<th class="nosort column" tal:condition="view/show_select_column"></th>
 		<th tal:repeat="column column_list"
-			class="nosort column"
+		class="nosort column"
 			style="margin:0;padding:0 2px 0 2px;"
 			tal:attributes="id string:foldercontents-${column}-column-filter">
 			<input type="text"
-				class='folderlisting-filter'
+			class='folderlisting-filter'
 				tal:attributes="id string:foldercontents-${column}-column-filter-input;
-					name string:foldercontents-${column}-column-filter-input;
+				name string:foldercontents-${column}-column-filter-input;
 					value python: view.request.get('foldercontents-'+column+'-column-filter-input', '')"/>
-		</th>
-	</tr>
-</thead>
+					</th>
+		</tr>
+	</thead>
 <tbody>
-	<tal:items tal:repeat="item view/batch">
-		<tr tal:condition="python:item.has_key('id')"
-			tal:attributes="class item/table_row_class;
-				id string:folder-contents-item-${item/id};
+<tal:items tal:repeat="item view/batch">
+	<tr tal:condition="python:item.has_key('id')"
+		tal:attributes="class item/table_row_class;
+			id string:folder-contents-item-${item/id};
 				item_data item/item_data|nothing" >
 
-	<td tal:condition="view/show_sort_column" class="draggable">
-		<a href=""
-			title="Move item up"
+<td tal:condition="view/show_sort_column" class="draggable">
+	<a href=""
+		title="Move item up"
 			i18n:attributes="title title_move_item_up;"
 			tal:attributes="href string:${view/base_url}/folder_position?position=up&amp;id=${item/quoted_id}">
-		&#9650;
+			&#9650;
 		</a>
 		&nbsp;
 		<a href=""
-			title="Move item down"
+		title="Move item down"
 			i18n:attributes="title title_move_item_down;"
 			tal:attributes="href string:${view/base_url}/folder_position?position=down&amp;id=${item/quoted_id}">
-		&#9660;
+			&#9660;
 		</a>
-	</td>
+		</td>
 
-	<td tal:condition="view/show_select_column" class="notDraggable">
-		<input type="checkbox"
-			class="noborder"
+<td tal:condition="view/show_select_column" class="notDraggable">
+	<input type="checkbox"
+		class="noborder"
 			name="paths:list" id="#"
 			value="#"
 			tal:attributes="value   item/path;
-				id      string:cb_${item/id};
+			id      string:cb_${item/id};
 				checked item/checked;
 				alt     python:view.msg_select_item(item);
 				title   item/Title;
 				uid     item/UID" />
-		<input type="hidden" name="selected_obj_paths:list" value="#"
-			tal:attributes="value item/relative_url" />
-		<label tal:content="item/title_or_id"
-			tal:attributes="for string:cb_${item/id}"
+				<input type="hidden" name="selected_obj_paths:list" value="#"
+		tal:attributes="value item/relative_url" />
+			<label tal:content="item/title_or_id"
+		tal:attributes="for string:cb_${item/id}"
 			class="hiddenStructure">
-		Item Title
+			Item Title
 		</label>
-	</td>
+		</td>
 
-	<tal:column tal:repeat="column review_state/columns">
+<tal:column tal:repeat="column review_state/columns">
 
-	<tal:comment tal:replace="nothing">
-		Is the Row editable?
+<tal:comment tal:replace="nothing">
+	Is the Row editable?
 		Yes
-			Is this item an interim field?
+		Is this item an interim field?
 			Yes
-				Print widget
-			No
-				Is it called 'Result'?
-				Yes
-					Does the Analysis have a Calculation defined?
-					Yes:
-						Result text widget is readonly
-					No
-						Print text input widget
+			Print widget
 				No
-					Print item[column]
-		No
-			print item[column]
-	</tal:comment>
+			Is it called 'Result'?
+				Yes
+				Does the Analysis have a Calculation defined?
+					Yes:
+					Result text widget is readonly
+						No
+					Print text input widget
+						No
+				Print item[column]
+					No
+		print item[column]
+			</tal:comment>
 
-	<td tal:attributes="class python: columns[column].has_key('table_row_class') and columns[column]['table_row_class'] or ''"
-		style="white-space: nowrap;"
+<td tal:attributes="class python: columns[column].has_key('table_row_class') and columns[column]['table_row_class'] or ''"
+	style="white-space: nowrap;"
 		tal:define="
 		input_width python:6;
 		is_editable python: item.has_key('_allow_edit') and item['_allow_edit'] or False;
 		is_interim python: item.has_key(column) and type(item[column]) == type({}) or False;
 		is_result python: column == 'Result';
 		">
-	<tal:i condition="is_editable">
-		<tal:i condition="is_interim">
-			<input type="text" tal:attributes="
-				size input_width;
+		<tal:i condition="is_editable">
+	<tal:i condition="is_interim">
+		<input type="text" tal:attributes="
+			size input_width;
 				name python: 'analysis_%s_%s'%(item['UID'], item[column]['id']);
 				value python: item[column]['value'];
 				type python: item[column]['type'];"/>
-			<em class="discreet" style="white-space:nowrap;" tal:content="python: item[column]['unit']"/>
-		</tal:i>
-		<tal:i condition="not: is_interim">
-			<tal:i tal:condition="is_result">
-				<input tal:condition="python: item['_calculation']" readonly="readonly"
-					type="text" tal:attributes="value python: item['Result'];name string:analysis_${item/UID}_Result;size input_width"/>
-				<input tal:condition="python: not item['_calculation']"
-					type="text" tal:attributes="value python: item['Result'];name string:analysis_${item/UID}_Result; size input_width"/>
 				<em class="discreet" style="white-space:nowrap;" tal:content="python: item[column]['unit']"/>
 			</tal:i>
+		<tal:i condition="not: is_interim">
+		<tal:i tal:condition="is_result">
+			<input tal:condition="python: item['_calculation']" readonly="readonly"
+				type="text" tal:attributes="value python: item['Result'];name string:analysis_${item/UID}_Result;size input_width"/>
+					<input tal:condition="python: not item['_calculation']"
+				type="text" tal:attributes="value python: item['Result'];name string:analysis_${item/UID}_Result; size input_width"/>
+					<em class="discreet" style="white-space:nowrap;" tal:content="python: item[column]['unit']"/>
+				</tal:i>
 			<tal:i tal:condition="not: is_result">
-				<a tal:condition="python:item.has_key('links') and item['links'].has_key(column)" href="#"
-					tal:attributes="href python:item['links'][column]; class string: ${item/state_class} ${item/type_class};">
-				<img tal:condition="python:view.columns[column].has_key('icon')" tal:attributes="src python:'images/'+view.columns[column]['icon']" />
+			<a tal:condition="python:item.has_key('links') and item['links'].has_key(column)" href="#"
+				tal:attributes="href python:item['links'][column]; class string: ${item/state_class} ${item/type_class};">
+					<img tal:condition="python:view.columns[column].has_key('icon')" tal:attributes="src python:'images/'+view.columns[column]['icon']" />
 				<strong tal:content="python: item.get(column, '-')"/>
 				</a>
 				<span tal:condition="python:not (item.has_key('links') and item['links'].has_key(column))"
-					tal:content="python:item.get(column)"
+				tal:content="python:item.get(column)"
 					tal:attributes="class item/state_class">&nbsp
-				</span>
+					</span>
+				</tal:i>
 			</tal:i>
 		</tal:i>
-	</tal:i>
 
-	<tal:i condition="not: is_editable">
-		<a tal:condition="python:item.has_key('links') and item['links'].has_key(column)" href="#"
-			tal:attributes="href python:item['links'][column]; class string: ${item/state_class} ${item/type_class};">
-		<img tal:condition="python:view.columns[column].has_key('icon')"
-			tal:attributes="src python:'images/'+view.columns[column]['icon']" />
-		<strong tal:content="python: item.get(column, '-')"/>
+<tal:i condition="not: is_editable">
+	<a tal:condition="python:item.has_key('links') and item['links'].has_key(column)" href="#"
+		tal:attributes="href python:item['links'][column]; class string: ${item/state_class} ${item/type_class};">
+			<img tal:condition="python:view.columns[column].has_key('icon')"
+		tal:attributes="src python:'images/'+view.columns[column]['icon']" />
+			<strong tal:content="python: item.get(column, '-')"/>
 		</a>
 		<span tal:condition="python:not (item.has_key('links') and item['links'].has_key(column))"
-			tal:content="python:item.get(column)"
+		tal:content="python:item.get(column)"
 			tal:attributes="class item/state_class">&nbsp
-		</span>
-	</tal:i>
+			</span>
+		</tal:i>
 
-	<tal:comment tal:replace="nothing">
-		Everyone gets unit, if one is specified, plus late analysis icon etc...
-	</tal:comment>
+<tal:comment tal:replace="nothing">
+	Everyone gets unit, if one is specified, plus late analysis icon etc...
+		</tal:comment>
 
-	<tal >
+<tal >
 
-	</td>
-</tal:column>
+</td>
+	</tal:column>
 </tr>
 </tal:items>
 </tbody>
 <tfoot tal:condition="not:view/within_batch_size">
-	<tr tal:condition="not:view/show_all">
-		<th class="nosort" tal:attributes="colspan colspan">
-			<a tal:attributes="href view/show_all_url"
-				i18n:translate="label_show_all"
+<tr tal:condition="not:view/show_all">
+	<th class="nosort" tal:attributes="colspan colspan">
+		<a tal:attributes="href view/show_all_url"
+			i18n:translate="label_show_all"
 				id="foldercontents-show-all">Show all <tal:block replace="view/batch/size" i18n:name="count"/> items</a>
-		</th>
-	</tr>
+				</th>
+		</tr>
 	<tr tal:condition="view/show_all">
-		<th class="nosort" tal:attributes="colspan colspan">
-			<a tal:attributes="href view/view_url"
-				i18n:translate="label_show_batched"
+	<th class="nosort" tal:attributes="colspan colspan">
+		<a tal:attributes="href view/view_url"
+			i18n:translate="label_show_batched"
 				id="foldercontents-show-batched">Show batched</a>
-		</th>
-	</tr>
-</tfoot>
+				</th>
+		</tr>
+	</tfoot>
 </table>
 
-	<div tal:replace="structure view/batching"
-		tal:condition="python: not view.show_all"/>
+<div tal:replace="structure view/batching"
+	tal:condition="python: not view.show_all"/>
 
-	<tal:transitions
-		tal:condition="python: review_state.has_key('transitions') and view.items"
+<tal:transitions
+	tal:condition="python: review_state.has_key('transitions') and view.items"
 		tal:repeat="transition review_state/transitions">
 		<input class="context transition_action"
-			type="submit"
+		type="submit"
 			name="transition_action"
 			tal:attributes="value transition;" />
-	</tal:transitions>
-</metal:listing>
+			</tal:transitions>
+	</metal:listing>
 </div>

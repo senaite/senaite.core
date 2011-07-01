@@ -23,6 +23,8 @@ jQuery( function($) {
 					vat_amount = parseFloat($("#"+serviceUID+"_price").attr("vat_amount"));
 					if(discount){
 						price = form_price - ((form_price / 100) * discount);
+					} else {
+						price = form_price;
 					}
 					subtotal += price;
 					discount_amount += ((form_price / 100) * discount);
@@ -53,46 +55,46 @@ jQuery( function($) {
 		if(disable == undefined){ disable = -1 ; }
 		if(!column && column != 0) { column = ""; }
 
-		tbody = $("tbody[poc='"+poc+"']").filter("#"+category_uid)[0];
+	tbody = $("tbody[poc='"+poc+"']").filter("#"+category_uid)[0];
 
-		if($(tbody).hasClass("expanded")){
-			// displaying an already expanded category
-			if(selectedservices){
-				for(service in tbody.children){
-					service_uid = service.id;
-					if(selectedservices.indexOf(service_uid) > -1){
-						$(this).attr("checked", "checked");
-					}
+	if($(tbody).hasClass("expanded")){
+		// displaying an already expanded category
+		if(selectedservices){
+			for(service in tbody.children){
+				service_uid = service.id;
+				if(selectedservices.indexOf(service_uid) > -1){
+					$(this).attr("checked", "checked");
 				}
-				recalc_prices(column);
-			$(tbody).toggle(true);
-			} else {
-				if (force_expand){ $(tbody).toggle(true); }
-				else { $(tbody).toggle(); }
 			}
+			recalc_prices(column);
+		$(tbody).toggle(true);
 		} else {
-			if(!selectedservices) selectedservices = [];
-			$(tbody).addClass("expanded");
-			var options = {
-					'selectedservices': selectedservices.join(","),
-					'categoryUID': category_uid,
-					'column': column,
-					'disable': disable > -1 ? column : -1,
-					'col_count': $("#col_count").attr('value'),
-					'poc': poc
-			};
-			$(tbody).load("analysisrequest_analysisservices", options,
-				function(){
-					// analysis service checkboxes
-					$('input[name*="Analyses"]').unbind();
-					$('input[name*="Analyses"]').bind('change', service_checkbox_change);
-					if(selectedservices!=[]){
-						recalc_prices(column);
-					}
-				}
-			);
+			if (force_expand){ $(tbody).toggle(true); }
+			else { $(tbody).toggle(); }
 		}
+	} else {
+		if(!selectedservices) selectedservices = [];
+		$(tbody).addClass("expanded");
+		var options = {
+			'selectedservices': selectedservices.join(","),
+			'categoryUID': category_uid,
+			'column': column,
+			'disable': disable > -1 ? column : -1,
+			'col_count': $("#col_count").attr('value'),
+			'poc': poc
+		};
+		$(tbody).load("analysisrequest_analysisservices", options,
+			function(){
+				// analysis service checkboxes
+				$('input[name*="Analyses"]').unbind();
+				$('input[name*="Analyses"]').bind('change', service_checkbox_change);
+				if(selectedservices!=[]){
+					recalc_prices(column);
+				}
+			}
+		);
 	}
+}
 
 	function calcdependencies(elements) {
 		// elements is a list of jquery checkbox objects
@@ -278,240 +280,243 @@ jQuery( function($) {
 	}
 
 	$(document).ready(function(){
-		$('input[id$="_DateSampled"]').datepicker({'dateFormat': 'yy-mm-dd', showAnim: ''});
+		// DateSampled field is readonly to prevent invalid data entry, so
+		// clicking date_sampled field clears existing values.
+		$('input[id$="_DateSampled"]').datepicker({'dateFormat': 'yy-mm-dd', showAnim: ''})
+			.click(function(){$(this).attr('value', '');});
 		$(".sampletype").autocomplete({ minLength: 0, source: autocomplete_sampletype});
 		$(".samplepoint").autocomplete({ minLength: 0, source: autocomplete_samplepoint});
 		$("select[class='ARProfile']").change(setARProfile);
 
-		$(".copyButton").live('click',  function (){
-			field_name = $(this).attr("name");
-			if ($(this).parent().attr('class') == 'service'){ // Analysis service checkbox
-				first_val = $('input[column="0"]').filter('#'+this.id).attr("checked");
-				affected_elements = [];
-				// 0 is the first column; we only want to change cols 1 onward.
-				for (col=1; col<parseInt($("#col_count").val()); col++) {
-					other_elem = $('input[column="'+col+'"]').filter('#'+this.id);
-					disabled = other_elem.attr('disabled');
-					// For some browsers, `attr` is undefined; for others, its false.  Check for both.
-					if (typeof disabled !== 'undefined' && disabled !== false) {
-						disabled = true;
-					} else {
-						disabled = false;
-					}
-					if (!disabled && !(other_elem.attr("checked")==first_val)) {
-						other_elem.attr("checked", first_val?true:false);
-						affected_elements.push(other_elem);
-					}
-				}
-				calcdependencies(affected_elements);
-				recalc_prices();
-			}
-			else if ($('input[name^="ar\\.0\\.'+field_name+'"]').attr("type") == "checkbox") {
-				// other checkboxes
-				first_val = $('input[name^="ar\\.0\\.'+field_name+'"]').attr("checked");
-				// col starts at 1 here; we don't copy into the the first row
-				for (col=1; col<parseInt($("#col_count").val()); col++) {
-					other_elem = $('#ar_' + col + '_' + field_name);
-					if (!(other_elem.attr("checked")==first_val)) {
-						other_elem.attr("checked", first_val?true:false);
-						other_elem.change();
-					}
-				}
-			}
-			else{
-				first_val = $('input[name^="ar\\.0\\.'+field_name+'"]').val();
-				// col starts at 1 here; we don't copy into the the first row
-				for (col=1; col<parseInt($("#col_count").val()); col++) {
-					other_elem = $('#ar_' + col + '_' + field_name);
-					if (!(other_elem.attr("disabled"))) {
-						other_elem.val(first_val);
-						other_elem.change();
-					}
-				}
-			}
-		});
-
-		// Clicking the category name will expand the services list for that category
-		$('.analysiscategory').click(function(){
-			toggleCat($(this).attr("poc"), $(this).attr("id")); // id is a category uid
-		});
-
-		// service category pre-expanded rows
-		// These are in AR Edit only
-		selected_elements = [];
-		prefilled = false;
-		selected_services = $("#selectedservices").val();
-		if(selected_services == undefined){
-			selected_services = "";
-		} else {
-			selected_services = selected_services.split(",");
-		}
-		$.each($('tr[class$="prefill"]'), function(i,e){
-			prefilled = true;
-			toggleCat($(e).attr("poc"), $(e).attr("id"), selected_services, 0); // AR Edit has only column 0
-			selected_elements.push($(e));
-		});
-		if (prefilled){
-			calcdependencies(selected_elements);
-			recalc_prices();
-		}
-
-		// Contact dropdown changes
-		$("#contact").live('change', function(){
-			$.ajax({
-				type: 'POST',
-				url: 'analysisrequest_contact_ccs',
-				data: $(this).val(),
-				success: function(data,textStatus,$XHR){
-					if (data == null)
-						return;
-					$('#cc_uids').attr("value", data[0]);
-					$('#cc_titles').val(data[1]);
-				},
-				dataType: "json"
-			});
-		});
-		$("#contact").change();
-
-		// recalculate when price elements' values are changed
-		$("input[name^='Price']").live('change', function(){
-			recalc_prices();
-		});
-
-		// A button in the AR form displays the CC browser window (select_cc.pt)
-		$('#open_cc_browser').click(function(){
-			contact_uid = $('#contact').attr('value');
-			cc_uids = $('#cc_uids').attr('value');
-			window.open('analysisrequest_select_cc?hide_uids=' + contact_uid + '&selected_uids=' + cc_uids,
-				'analysisrequest_select_cc','toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=600,height=550');
-		});
-
-		// analysisrequest select CC submit button invokes this
-		$('.select_cc_select').click(function(){
-			var uids = [];
-			var titles = [];
-			$.each($('input[name="paths:list"]'), function() {
-				if($(this).attr("checked")){
-					uids.push($(this).attr("uid"));
-					titles.push($(this).attr("title"));
-				}
-			});
-			window.opener.$("#cc_uids").val(uids.join(","));
-			window.opener.$("#cc_titles").val(titles.join(","));
-			window.close();
-		});
-
-		// button in each column to display Sample browser window
-		$('input[id$="_SampleID_button"]').click(function(){
-			column = this.id.split("_")[1];
-			window.open('analysisrequest_select_sample?column=' + column,
-				'analysisrequest_select_sample','toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=600,height=550');
-		});
-
-		// return a reference from the Sample popup window back into the widget
-		// and populate the form with this sample's data
-		$('.select_sample_select').click(function(){
-			item_data = $.parseJSON($(this.parentNode).attr("item_data"));
-			column = item_data['column'];
-			window.opener.$("#ar_"+column+"_SampleID_button").val(item_data['SampleID']);
-			window.opener.$("#ar_"+column+"_SampleID").val(item_data['SampleID']);
-			window.opener.$("#deleteSampleButton_" + column).toggle(true);
-			window.opener.$("#ar_"+column+"_DateSampled").val(item_data['DateSampled']).attr('readonly', true);
-			window.opener.$("#ar_"+column+"_DateSampled").unbind();
-			window.opener.$("#ar_"+column+"_ClientReference").val(item_data['ClientReference']).attr('readonly', true);
-			window.opener.$("#ar_"+column+"_ClientSampleID").val(item_data['ClientSampleID']).attr('readonly', true);
-			window.opener.$("#ar_"+column+"_SampleType").val(item_data['SampleType']).attr('readonly', true);
-			window.opener.$("#ar_"+column+"_SamplePoint").val(item_data['SamplePoint']).attr('readonly', true);
-			// handle samples that do have field analyses
-			// field_analyses is a dict of lists: { catuid: [serviceuid,serviceuid], ... }
-			if(item_data['field_analyses'] != null){
-				$.each(item_data['field_analyses'], function(catuid,serviceuids){
-					window.opener.toggleCat("field", catuid, serviceuids, column, true, true);
-				});
-			}
-			// explicitly check that field categories are expanded
-			// and disabled even if eg there are no field analyses for this sample
-			$.each(window.opener.$("tr[id*='_field']").filter(".analysiscategory"), function(){
-				window.opener.toggleCat($(this).attr('poc'), this.id, false, column, true, true);
-			});
-
-			$.each(window.opener.$('input[id*="_field_"]').filter(".cb"), function(i,e){
-				if ($(e).attr('id').indexOf('_'+column+'_') > -1){
-					$(e).attr('disabled', true);
-				}
-			});
-			window.opener.recalc_prices();
-			window.close();
-		});
-
-		$(".deleteSampleButton").click(function(){
-			column = $(this).attr('column');
-			$("#ar_"+column+"_SampleID_button").val($("#ar_"+column+"_SampleID_default").val());
-			$("#ar_"+column+"_SampleID").val('');
-			$("#ar_"+column+"_ClientReference").val('').removeAttr("readonly");
-			$("#ar_"+column+"_DateSampled").val('').removeAttr("readonly");
-			$("#ar_"+column+"_DateSampled").datepicker({'dateFormat': 'yy-mm-dd'});
-			$("#ar_"+column+"_ClientSampleID").val('').removeAttr("readonly");
-			$("#ar_"+column+"_SamplePoint").val('').removeAttr("readonly");
-			$("#ar_"+column+"_SampleType").val('').removeAttr("readonly");
-			$("#deleteSampleButton_" + column).toggle(false);
-			// uncheck and enable all visible service checkboxes
-			$("input[id*='_"+column+"_']").filter(".cb").removeAttr('disabled').attr('checked', false);
-			recalc_prices();
-		});
-
-		function portalMessage(message){
-			str = "<dl class='portalMessage error'>"+
-					"<dt i18n:translate='error'>Error</dt>"+
-					"<dd><ul>" + message +
-					"</ul></dd></dl>";
-			$('.portalMessage').remove();
-			$(str).appendTo('#viewlet-above-content');
-		}
-
-		// AR Add/Edit ajax form submits
-		var options = {
-			url: window.location.href,
-			dataType:  'json',
-			data: $(this).formToArray(),
-			beforeSubmit: function(formData, jqForm, options) {
-				$("input[class~='context']").attr('disabled',true);
-				$("#spinner").toggle(true);
-			},
-			success: function(responseText, statusText, xhr, $form)  {
-				if(responseText['success'] != undefined){
-                    destination = window.location.href.replace("/analysisrequest_add","");
-                    destination = destination.replace("/base_edit", "/base_view");
-                    window.location.replace(destination);
+	$(".copyButton").live('click',  function (){
+		field_name = $(this).attr("name");
+		if ($(this).parent().attr('class') == 'service'){ // Analysis service checkbox
+			first_val = $('input[column="0"]').filter('#'+this.id).attr("checked");
+			affected_elements = [];
+			// 0 is the first column; we only want to change cols 1 onward.
+			for (col=1; col<parseInt($("#col_count").val()); col++) {
+				other_elem = $('input[column="'+col+'"]').filter('#'+this.id);
+				disabled = other_elem.attr('disabled');
+				// For some browsers, `attr` is undefined; for others, its false.  Check for both.
+				if (typeof disabled !== 'undefined' && disabled !== false) {
+					disabled = true;
 				} else {
-                    msg = ""
-					for(error in responseText['errors']){
-						x = error.split(".");
-						if (x.length == 2){
-							e = x[1] + " (Column " + (+x[0] + 1) + "): ";
-						} else {
-							e = "";
-						}
-						msg = msg + e + responseText['errors'][error] + "<br/>";
-					};
-					portalMessage(msg);
-                    window.scroll(0,0);
-                    $("input[class~='context']").removeAttr('disabled');
-                    $("#spinner").toggle(false);
+					disabled = false;
 				}
-			},
-			error: function(XMLHttpRequest, statusText, errorThrown) {
-                portalMessage(statusText);
-                window.scroll(0,0);
-                $("input[class~='context']").removeAttr('disabled');
-                $("#spinner").toggle(false);
-			},
-		};
-		$('#analysisrequest_edit_form').ajaxForm(options);
+				if (!disabled && !(other_elem.attr("checked")==first_val)) {
+					other_elem.attr("checked", first_val?true:false);
+					affected_elements.push(other_elem);
+				}
+			}
+			calcdependencies(affected_elements);
+			recalc_prices();
+		}
+		else if ($('input[name^="ar\\.0\\.'+field_name+'"]').attr("type") == "checkbox") {
+			// other checkboxes
+			first_val = $('input[name^="ar\\.0\\.'+field_name+'"]').attr("checked");
+			// col starts at 1 here; we don't copy into the the first row
+			for (col=1; col<parseInt($("#col_count").val()); col++) {
+				other_elem = $('#ar_' + col + '_' + field_name);
+				if (!(other_elem.attr("checked")==first_val)) {
+					other_elem.attr("checked", first_val?true:false);
+					other_elem.change();
+				}
+			}
+		}
+		else{
+			first_val = $('input[name^="ar\\.0\\.'+field_name+'"]').val();
+			// col starts at 1 here; we don't copy into the the first row
+			for (col=1; col<parseInt($("#col_count").val()); col++) {
+				other_elem = $('#ar_' + col + '_' + field_name);
+				if (!(other_elem.attr("disabled"))) {
+					other_elem.val(first_val);
+					other_elem.change();
+				}
+			}
+		}
+	});
 
-		// these go here so that popup windows can access them in our context
-		window.recalc_prices = recalc_prices;
-		window.toggleCat = toggleCat;
+	// Clicking the category name will expand the services list for that category
+	$('.analysiscategory').click(function(){
+		toggleCat($(this).attr("poc"), $(this).attr("id")); // id is a category uid
+	});
+
+	// service category pre-expanded rows
+	// These are in AR Edit only
+	selected_elements = [];
+	prefilled = false;
+	selected_services = $("#selectedservices").val();
+	if(selected_services == undefined){
+		selected_services = "";
+	} else {
+		selected_services = selected_services.split(",");
+	}
+	$.each($('tr[class$="prefill"]'), function(i,e){
+		prefilled = true;
+		toggleCat($(e).attr("poc"), $(e).attr("id"), selected_services, 0); // AR Edit has only column 0
+		selected_elements.push($(e));
+	});
+	if (prefilled){
+		calcdependencies(selected_elements);
+		recalc_prices();
+	}
+
+	// Contact dropdown changes
+	$("#contact").live('change', function(){
+		$.ajax({
+			type: 'POST',
+			url: 'analysisrequest_contact_ccs',
+			data: $(this).val(),
+			success: function(data,textStatus,$XHR){
+				if (data == null)
+					return;
+				$('#cc_uids').attr("value", data[0]);
+				$('#cc_titles').val(data[1]);
+			},
+			dataType: "json"
+		});
+	});
+	$("#contact").change();
+
+	// recalculate when price elements' values are changed
+	$("input[name^='Price']").live('change', function(){
+		recalc_prices();
+	});
+
+	// A button in the AR form displays the CC browser window (select_cc.pt)
+	$('#open_cc_browser').click(function(){
+		contact_uid = $('#contact').attr('value');
+		cc_uids = $('#cc_uids').attr('value');
+		window.open('analysisrequest_select_cc?hide_uids=' + contact_uid + '&selected_uids=' + cc_uids,
+			'analysisrequest_select_cc','toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=600,height=550');
+	});
+
+	// analysisrequest select CC submit button invokes this
+	$('.select_cc_select').click(function(){
+		var uids = [];
+		var titles = [];
+		$.each($('input[name="paths:list"]'), function() {
+			if($(this).attr("checked")){
+				uids.push($(this).attr("uid"));
+				titles.push($(this).attr("title"));
+			}
+		});
+		window.opener.$("#cc_uids").val(uids.join(","));
+		window.opener.$("#cc_titles").val(titles.join(","));
+		window.close();
+	});
+
+	// button in each column to display Sample browser window
+	$('input[id$="_SampleID_button"]').click(function(){
+		column = this.id.split("_")[1];
+		window.open('analysisrequest_select_sample?column=' + column,
+			'analysisrequest_select_sample','toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=600,height=550');
+	});
+
+	// return a reference from the Sample popup window back into the widget
+	// and populate the form with this sample's data
+	$('.select_sample_select').click(function(){
+		item_data = $.parseJSON($(this.parentNode).attr("item_data"));
+		column = item_data['column'];
+		window.opener.$("#ar_"+column+"_SampleID_button").val(item_data['SampleID']);
+		window.opener.$("#ar_"+column+"_SampleID").val(item_data['SampleID']);
+		window.opener.$("#deleteSampleButton_" + column).toggle(true);
+		window.opener.$("#ar_"+column+"_DateSampled").val(item_data['DateSampled']).attr('readonly', true);
+		window.opener.$("#ar_"+column+"_DateSampled").unbind();
+		window.opener.$("#ar_"+column+"_ClientReference").val(item_data['ClientReference']).attr('readonly', true);
+		window.opener.$("#ar_"+column+"_ClientSampleID").val(item_data['ClientSampleID']).attr('readonly', true);
+		window.opener.$("#ar_"+column+"_SampleType").val(item_data['SampleType']).attr('readonly', true);
+		window.opener.$("#ar_"+column+"_SamplePoint").val(item_data['SamplePoint']).attr('readonly', true);
+		// handle samples that do have field analyses
+		// field_analyses is a dict of lists: { catuid: [serviceuid,serviceuid], ... }
+		if(item_data['field_analyses'] != null){
+			$.each(item_data['field_analyses'], function(catuid,serviceuids){
+				window.opener.toggleCat("field", catuid, serviceuids, column, true, true);
+			});
+		}
+		// explicitly check that field categories are expanded
+		// and disabled even if eg there are no field analyses for this sample
+		$.each(window.opener.$("tr[id*='_field']").filter(".analysiscategory"), function(){
+			window.opener.toggleCat($(this).attr('poc'), this.id, false, column, true, true);
+		});
+
+	$.each(window.opener.$('input[id*="_field_"]').filter(".cb"), function(i,e){
+		if ($(e).attr('id').indexOf('_'+column+'_') > -1){
+			$(e).attr('disabled', true);
+		}
+	});
+	window.opener.recalc_prices();
+	window.close();
+});
+
+	$(".deleteSampleButton").click(function(){
+		column = $(this).attr('column');
+		$("#ar_"+column+"_SampleID_button").val($("#ar_"+column+"_SampleID_default").val());
+		$("#ar_"+column+"_SampleID").val('');
+		$("#ar_"+column+"_ClientReference").val('').removeAttr("readonly");
+		$("#ar_"+column+"_DateSampled").val('').removeAttr("readonly");
+		$("#ar_"+column+"_DateSampled").datepicker({'dateFormat': 'yy-mm-dd'});
+		$("#ar_"+column+"_ClientSampleID").val('').removeAttr("readonly");
+		$("#ar_"+column+"_SamplePoint").val('').removeAttr("readonly");
+		$("#ar_"+column+"_SampleType").val('').removeAttr("readonly");
+		$("#deleteSampleButton_" + column).toggle(false);
+		// uncheck and enable all visible service checkboxes
+		$("input[id*='_"+column+"_']").filter(".cb").removeAttr('disabled').attr('checked', false);
+		recalc_prices();
+	});
+
+	function portalMessage(message){
+		str = "<dl class='portalMessage error'>"+
+			"<dt i18n:translate='error'>Error</dt>"+
+			"<dd><ul>" + message +
+			"</ul></dd></dl>";
+		$('.portalMessage').remove();
+		$(str).appendTo('#viewlet-above-content');
+	}
+
+	// AR Add/Edit ajax form submits
+	var options = {
+		url: window.location.href,
+		dataType:  'json',
+		data: $(this).formToArray(),
+		beforeSubmit: function(formData, jqForm, options) {
+			$("input[class~='context']").attr('disabled',true);
+			$("#spinner").toggle(true);
+		},
+		success: function(responseText, statusText, xhr, $form)  {
+			if(responseText['success'] != undefined){
+				destination = window.location.href.replace("/analysisrequest_add","");
+				destination = destination.replace("/base_edit", "/base_view");
+				window.location.replace(destination);
+			} else {
+				msg = ""
+				for(error in responseText['errors']){
+					x = error.split(".");
+					if (x.length == 2){
+						e = x[1] + " (Column " + (+x[0] + 1) + "): ";
+					} else {
+						e = "";
+					}
+					msg = msg + e + responseText['errors'][error] + "<br/>";
+				};
+				portalMessage(msg);
+				window.scroll(0,0);
+				$("input[class~='context']").removeAttr('disabled');
+				$("#spinner").toggle(false);
+			}
+		},
+		error: function(XMLHttpRequest, statusText, errorThrown) {
+			portalMessage(statusText);
+			window.scroll(0,0);
+			$("input[class~='context']").removeAttr('disabled');
+			$("#spinner").toggle(false);
+		},
+	};
+	$('#analysisrequest_edit_form').ajaxForm(options);
+
+	// these go here so that popup windows can access them in our context
+	window.recalc_prices = recalc_prices;
+	window.toggleCat = toggleCat;
 
 	});
 
