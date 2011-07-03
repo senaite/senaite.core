@@ -69,7 +69,7 @@
 			uid python: dms.getUID();"/>
 </tal:i>
 
-<table cellpadding="0" cellspacing="0" class="analysisrequest listing nosort">
+<table cellpadding="0" cellspacing="0" class="listing analysisrequest add nosort">
 <thead>
 	<!-- Contact -->
 	<tr>
@@ -378,16 +378,15 @@
 			</tr>
 		</thead>
 
-	<tal:comment replace="nothing">
-		cat: [category_uid, category_title] </tal:comment>
 	<tal:i repeat="cat python:cats[poc]">
-		<thead tal:attributes="
-			id python:cat[0];
-			poc poc;
-			class python: 'analysiscategory%s' % (edit and [cat[0],poc] in [[s[0],s[2]] for s in selectedservices] and ' prefill' or '')">
+		<thead>
 			<tr>
-				<th tal:attributes="colspan python:view.col_count + 3"
-					tal:content="python:cat[1]"/>
+				<th tal:content="python:cat[1]"
+					tal:attributes="
+						id python:cat[0];
+						colspan python:view.col_count + 3;
+						poc poc;
+						class python: 'analysiscategory%s' % (edit and [cat[0],poc] in [[s[0],s[2]] for s in selectedservices] and ' prefill' or '')"/>
 			</tr>
 		</thead>
 		<tbody class="analysisservices" tal:attributes="
@@ -405,7 +404,9 @@
 		<b i18n:translate="label_discount">Discount</b>
 		<span class="discreet">(<tal:i content="here/bika_settings/getMemberDiscount"/>%)</span>
 	</th>
-	<th class="topborder noleftborder" style="text-align:center" i18n:translate="label_currency_abbreviation">R</th>
+	<th class="topborder noleftborder"
+		style="text-align:center"
+		i18n:translate="label_currency_abbreviation">R</th>
 	<tal:block repeat="column python:range(view.col_count)">
 		<td class="topborder" tal:define="input_id string:ar_${column}_discount;">
 			<input class="price noborder" size="10" disabled="disabled" value="0.00"
@@ -416,7 +417,9 @@
 
 <tr>
 	<th class="topborder" colspan="2"><b i18n:translate="label_subtotal">Subtotal</b></th>
-	<th class="topborder noleftborder" style="text-align:center" i18n:translate="label_currency_abbreviation">R</th>
+	<th class="topborder noleftborder"
+		style="text-align:center"
+		i18n:translate="label_currency_abbreviation">R</th>
 	<tal:block repeat="column python:range(view.col_count)">
 		<td class="topborder" tal:define="input_id string:ar_${column}_subtotal;
 			input_name string:ar.${column}.subtotal">
@@ -432,7 +435,9 @@
 
 <tr>
 	<th colspan="2" class="topborder"><b i18n:translate="label_vat">VAT</b></th>
-	<th class="topborder noleftborder" style="text-align:center" i18n:translate="label_currency_abbreviation">R</th>
+	<th class="topborder noleftborder"
+		style="text-align:center"
+		i18n:translate="label_currency_abbreviation">R</th>
 	<tal:block repeat="column python:range(view.col_count)">
 		<td class="topborder" tal:define="input_id string:ar_${column}_vat;
 			input_name string:ar.${column}.vat">
@@ -448,7 +453,9 @@
 
 <tr>
 	<th class="topborder" colspan="2"><b i18n:translate="label_total">Total</b></th>
-	<th class="topborder noleftborder" style="text-align:center" i18n:translate="label_currency_abbreviation">R</th>
+	<th class="topborder noleftborder"
+		style="text-align:center"
+		i18n:translate="label_currency_abbreviation">R</th>
 	<tal:block repeat="column python:range(view.col_count)">
 		<td class="topborder" tal:define="
 			input_id string:ar_${column}_total;
@@ -503,7 +510,10 @@
 	<p tal:condition="python:context.bika_settings.laboratory.getLaboratoryAccredited()">
 		<img src="" tal:attributes="src string:${portal/absolute_url}/images/accredited.png">
 		<span i18n:translate="disclaimer_accred">
-			Methods included in the <tal:block replace="here/bika_settings/laboratory/AccreditationBody" i18n:name="accreditation_body"/>
+			Methods included in the
+				<tal:block
+					replace="here/bika_settings/laboratory/AccreditationBody"
+					i18n:name="accreditation_body"/>
 			schedule of Accreditation for this Laboratory. Analysis remarks are not accredited
 		</span>
 	</p>

@@ -102,7 +102,11 @@ table.analysisrequest {
 	border-top: 1px solid #dddddd;
 }
 
-table.analysisrequest td {
+table.analysisrequest td .center{
+    text-align: center;
+}
+
+table.add td {
     text-align: center;
 }
 
@@ -147,7 +151,6 @@ table.analysisrequest input {
 .analysisrequest td.contact {
     text-align: left;
 }
-
 
 .delAttachmentButton {
     background: &dtml-globalBackgroundColor; url(&dtml-portal_url;/images/delete.png) center center no-repeat;

@@ -9,23 +9,23 @@
 
 <body>
 
-  <metal:content-core fill-slot="main"
-    tal:define="
-      portal context/@@plone_portal_state/portal;
-      specification python:request.get('specification', view.getDefaultSpec());
-      sample here/getSample;
-      colspan python:10;">
+<metal:content-core fill-slot="content-core" tal:define="
+    portal context/@@plone_portal_state/portal;
+    specification python:request.get('specification', view.getDefaultSpec());
+    sample here/getSample;
+    colspan python:10;
+    ar_attach_allowed here/bika_settings/getARAttachmentsPermitted;
+    ar_review_state python: context.portal_workflow.getInfoFor(context, 'review_state');
+    analysis_attach_allowed here/bika_settings/getAnalysisAttachmentsPermitted;
+    attachments_allowed here/bika_settings/getAttachmentsPermitted;
+    attachments here/getAttachment | nothing;
+    delete_attachments python:True;
+    update_attachments python:True">
 
-    <h1 tal:content="here/title_or_id"/>
-
-    <br/>
-    <div tal:condition="here/bika_settings/getAttachmentsPermitted"
-         tal:define="attachments here/getAttachment | nothing;
-                     delete_attachments python:False;
-                     update_attachments python:False">
-      <span i18n:translate="label_attachments">Attachments</span>:
-      <metal:block use-macro="here/attachments/macros/ar_attachments_list"/>
+    <div tal:condition="attachments_allowed">
+      <metal:block use-macro="here/attachments/macros/attachments"/>
     </div>
+
 
     <form id="analysisrequest_edit_form"
           name="analysisrequest_edit_form"
@@ -55,12 +55,12 @@
 
       <table
           summary="Analysisrequest view"
-          class="listing"
+          class="listing analysisrequest nosort"
           cellpadding="0" cellspacing="0">
         <thead>
           <tr>
             <th i18n:translate="label_contact_person">Contact person</th>
-            <td class="left">
+            <td colspan="3">
               <a tal:define="contact here/getContact"
                 tal:condition="nocall:contact"
                 tal:attributes="href contact/absolute_url"
@@ -75,15 +75,15 @@
           <tr>
           <th i18n:translate="label_cc_emails">cc (email)
           </th>
-          <td class="left"
+          <td colspan="3"
               tal:content="here/getCCEmails">a@b.com</td>
           </tr>
           <tr>
             <th i18n:translate="label_client_order_id">Client Order ID</th>
-            <td class="left"
+            <td
                 tal:content="here/getClientOrderNumber|nothing">123</td>
             <th i18n:translate="label_sampleid">Sample</th>
-            <td class="left">
+            <td >
               <a tal:attributes="href sample/absolute_url">
                   <span tal:content="sample/Title">S-00001</span>
               </a>
@@ -91,32 +91,32 @@
           </tr>
           <tr>
             <th i18n:translate="label_clientreference">Client Reference</th>
-            <td class="left"
+            <td
                 tal:content="sample/getClientReference">R001</td>
             <th i18n:translate="label_clientsampleid">Client Sample ID</th>
-            <td class="left"
+            <td
                 tal:content="sample/getClientSampleID">S001</td>
           </tr>
 
           <tr>
             <th i18n:translate="label_sampletype">Sample type</th>
-            <td class="left" tal:content="context/getSampleTypeTitle">sample type</td>
+            <td  tal:content="context/getSampleTypeTitle">sample type</td>
             <th i18n:translate="label_samplepoint">Sample point</th>
-            <td class="left" tal:content="context/getSamplePointTitle">sample point</td>
+            <td  tal:content="context/getSamplePointTitle">sample point</td>
           </tr>
 
           <tr>
             <th i18n:translate="label_status">Status
             </th>
-            <td class="left"
+            <td
                 tal:content="view/review_state">received</td>
             <th i18n:translate="label_arprofiles">Profile</th>
-            <td class="left"
+            <td
                 tal:content="view/getARProfileTitle">pr01</td>
           </tr>
           <tr>
             <th i18n:translate="label_datesampled">Date sampled</th>
-            <td class="left">
+            <td >
             <span
                 tal:define="date_sampled sample/getDateSampled"
                 tal:condition="date_sampled"
@@ -124,7 +124,7 @@
                 >2005-01-01</span>
             </td>
             <th i18n:translate="label_daterequested">Date requested</th>
-            <td class="left">
+            <td >
             <span
                 tal:define="date_requested here/getDateRequested"
                 tal:condition="date_requested"
@@ -135,14 +135,14 @@
           <tr tal:condition="python:view.review_state != 'sample_due'">
             <th i18n:translate="label_datereceived">Date received
             </th>
-            <td class="left"
+            <td
                 tal:define="date_received here/getDateReceived"
                 tal:content="python:context.toLocalizedTime(date_received, long_format=1)"
                 >2005-01-01 10:00</td>
             <th>
             <span tal:condition="python:view.review_state in ('verified', 'published')"
                 i18n:translate="label_verified_by">Verified by </span></th>
-            <td class="left">
+            <td >
             <span
                 tal:condition="python:view.review_state in ('verified', 'published')"
                 tal:define="verifier python:view.get_analysisrequest_verifier(here)"
@@ -152,7 +152,7 @@
           <tr tal:condition="python:view.review_state == 'published'">
             <th i18n:translate="label_datepublished">Date published
             </th>
-            <td class="left"
+            <td
                 tal:define="date_published here/getDatePublished"
                 tal:content="python:context.toLocalizedTime(date_published, long_format=1)"
                 i18n:translate=""

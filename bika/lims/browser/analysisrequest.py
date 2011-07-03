@@ -46,17 +46,18 @@ class AnalysisRequestAnalysesView(BikaListingView):
                     'Result',
                     'Uncertainty',
                     'Attachments'],
-        },
+         },
     ]
     def __init__(self, context, request, allow_edit=False, **kwargs):
         super(AnalysisRequestAnalysesView, self).__init__(context, request)
         self.allow_edit = allow_edit
         self.contentFilter = dict(kwargs)
         self.contentFilter['portal_type'] = 'Analysis'
+
     def folderitems(self):
         """ InterimFields are inserted into self.columns before the column called 'Result',
             not specifically ordered but vaguely predictable.
-    	"""
+        """
         analyses = BikaListingView.folderitems(self)
 
         items = []
@@ -106,12 +107,35 @@ class AnalysisRequestViewView(BrowserView):
     """ AR View form
         The AR fields are printed in a table, using analysisrequest_view.py
     """
+#lab_accredited python:context.bika_settings.laboratory.getLaboratoryAccredited();
+#profile python:here.getProfile() and here.getProfile().getProfileTitle() or '';
+#global tf python:0;
+#global out_of_range python:0;
+#global dry_matter python:here.getReportDryMatter() and 1 or 0;
+#global late python:0;
+#client nocall:here/aq_parent;
+#client_uid client/UID;
+#member_groups python: [here.portal_groups.getGroupById(group.id).getGroupName() for group in here.portal_groups.getGroupsByUserId(member.id)];
+#is_client python: 'clients' in member_groups;
+#default_spec python:is_client and 'client' or 'lab';
+#specification python:request.get('specification', default_spec);
+#view_worksheets python:member.has_role(('Manager', 'LabManager', 'LabClerk', 'LabTechnician'));
+#attachments_allowed here/bika_settings/getAttachmentsPermitted;
+#ar_attach_allowed here/bika_settings/getARAttachmentsPermitted;
+#analysis_attach_allowed here/bika_settings/getAnalysisAttachmentsPermitted;
+#ar_review_state python:context.portal_workflow.getInfoFor(here, 'review_state', '');
+#attachments here/getAttachment | nothing;
+#delete_attachments python:False;
+#update_attachments python:False">
+
     template = ViewPageTemplateFile("templates/analysisrequest_view.pt")
 
     def __init__(self, context, request):
         super(AnalysisRequestViewView, self).__init__(context, request)
-        self.FieldAnalysesView = AnalysisRequestAnalysesView(context, request, getPointOfCapture = 'field')
-        self.LabAnalysesView = AnalysisRequestAnalysesView(context, request, getPointOfCapture = 'lab')
+        self.FieldAnalysesView = AnalysisRequestAnalysesView(
+                                context, request, getPointOfCapture = 'field')
+        self.LabAnalysesView = AnalysisRequestAnalysesView(
+                                context, request, getPointOfCapture = 'lab')
 
     def __call__(self):
         return self.template()
@@ -128,8 +152,7 @@ class AnalysisRequestViewView(BrowserView):
     def Categories(self):
         """ Returns a dictionary with a list of field analyses and a list of lab analyses.
             This returns only categories which have analyses selected in the current AR.
-  			Categories which are not used by analyses in this AR are omitted
-
+            Categories which are not used by analyses in this AR are omitted
             Dictionary keys: field/lab
             Dictionary values: (Category Title,category UID)
         """
@@ -145,8 +168,7 @@ class AnalysisRequestViewView(BrowserView):
         return cats
 
     def getDefaultSpec(self):
-        """ Returns 'lab' or 'client' to set the initial value of the specification radios
-        """
+        """ Returns 'lab' or 'client' to set the initial value of the specification radios """
         mt = getToolByName(self.context, 'portal_membership')
         pg = getToolByName(self.context, 'portal_groups')
         member = mt.getAuthenticatedMember();
@@ -161,28 +183,6 @@ class AnalysisRequestViewView(BrowserView):
     def getARProfileTitle(self):
         return self.context.getProfile() and here.getProfile().getProfileTitle() or '';
 
-
-
-        #lab_accredited python:context.bika_settings.laboratory.getLaboratoryAccredited();
-        #profile python:here.getProfile() and here.getProfile().getProfileTitle() or '';
-        #global tf python:0;
-        #global out_of_range python:0;
-        #global dry_matter python:here.getReportDryMatter() and 1 or 0;
-        #global late python:0;
-        #client nocall:here/aq_parent;
-        #client_uid client/UID;
-        #member_groups python: [here.portal_groups.getGroupById(group.id).getGroupName() for group in here.portal_groups.getGroupsByUserId(member.id)];
-        #is_client python: 'clients' in member_groups;
-        #default_spec python:is_client and 'client' or 'lab';
-        #specification python:request.get('specification', default_spec);
-        #view_worksheets python:member.has_role(('Manager', 'LabManager', 'LabClerk', 'LabTechnician'));
-        #attachments_allowed here/bika_settings/getAttachmentsPermitted;
-        #ar_attach_allowed here/bika_settings/getARAttachmentsPermitted;
-        #analysis_attach_allowed here/bika_settings/getAnalysisAttachmentsPermitted;
-        #ar_review_state python:context.portal_workflow.getInfoFor(here, 'review_state', '');
-        #attachments here/getAttachment | nothing;
-        #delete_attachments python:False;
-        #update_attachments python:False">
 
     def result_in_range(self, analysis, sampletype_uid, specification):
         ## Script (Python) "result_in_range"
@@ -417,14 +417,16 @@ class AnalysisRequestAddView(BrowserView):
 
 class AnalysisRequestEditView(AnalysisRequestAddView):
     template = ViewPageTemplateFile("templates/analysisrequest_edit.pt")
-    col_count = 1
-    came_from = "edit"
+
+    def __init__(self, context, request):
+        super(AnalysisRequestEditView, self).__init__(context, request)
+        self.col_count = 1
+        self.came_from = "edit"
 
     def SelectedServices(self):
         """ return information about services currently selected in the context AR.
-        [[category uid, service uid, PointOfCapture],
-         [category uid, service uid, PointOfCapture],
-         ...]
+            [[category uid, service uid, PointOfCapture],
+             [category uid, service uid, PointOfCapture], ...]
         """
         pc = getToolByName(self.context, 'portal_catalog')
         res = []
@@ -439,8 +441,10 @@ class AnalysisRequestManageResultsView(AnalysisRequestViewView):
 
     def __init__(self, context, request):
         super(AnalysisRequestViewView, self).__init__(context, request)
-        self.FieldAnalysesView = AnalysisRequestAnalysesView(context, request, allow_edit=True, getPointOfCapture = 'field')
-        self.LabAnalysesView = AnalysisRequestAnalysesView(context, request, allow_edit=True, getPointOfCapture = 'lab')
+        self.FieldAnalysesView = AnalysisRequestAnalysesView(
+                               context, request, allow_edit=True, getPointOfCapture = 'field')
+        self.LabAnalysesView = AnalysisRequestAnalysesView(
+                               context, request, allow_edit=True, getPointOfCapture = 'lab')
 
     def __call__(self):
         wf_tool = getToolByName(self.context, 'portal_workflow')
@@ -456,336 +460,336 @@ class AnalysisRequestManageResultsView(AnalysisRequestViewView):
     def getHazardous(self):
         return self.context.getSample().getSampleType().getHazardous()
 
-    def getInterimFields(self,PointOfCapture):
-        # Return all interim fields for all analyses in the self.`PointOfCapture`.
-        if PointOfCapture == 'field': return self.FieldAnalysesView.interim_fields
-        else: return self.LabAnalysesView.interim_fields
+##    def getInterimFields(self,PointOfCapture):
+##        # Return all interim fields for all analyses in the self.`PointOfCapture`.
+##        if PointOfCapture == 'field': return self.FieldAnalysesView.interim_fields
+##        else: return self.LabAnalysesView.interim_fields
+##
+##         XXX event subscriber for AR publish
+##        if only some analyses were published we still send an email
+##        if workflow_action in ['publish', 'republish', 'prepublish'] and \
+##            self.context.portal_type == 'AnalysisRequest' and \
+##            len(success.keys()) > 0:
+##            contact = self.context.getContact()
+##            analysis_requests = [self.context]
+##            contact.publish_analysis_requests(self.context, contact, analysis_requests, None)
+##            # cc contacts
+##            for cc_contact in self.context.getCCContact():
+##                contact.publish_analysis_requests(self.context, cc_contact, analysis_requests, None)
+##            # cc emails
+##            cc_emails = self.context.getCCEmails()
+##            if cc_emails:
+##                contact.publish_analysis_requests(self.context, None, analysis_requests, cc_emails)
+##        transaction_note(str(ids) + ' transitioned ' + workflow_action)
+##
+##
+##            for key, value in form.items():
+##                if key.startswith('results'):
+##                    id = key.split('results.')[-1]
+##                    analysis = pc(path = { "query": [self.context.id], "level" : 3 },
+##                                    id = id)[0].getObject()
+##                    if analysis.getCalcType() == 'dep':
+##                        continue
+##                    result = value.get('Result')
+##                    if result:
+##                        if result.strip() == '':
+##                            result = None
+##                    else:
+##                        result = None
+##
+##                    retested = value.get('Retested')
+##
+##                    uncertainty = None
+##                    service = analysis.getService()
+##
+##                    if result:
+##                        precision = service.getPrecision()
+##                        if precision:
+##                            result = self.get_precise_result(result, precision)
+##
+##                        uncertainty = self.get_uncertainty(result, service)
+##
+##                    titrationvolume = value.get('TitrationVolume')
+##                    if titrationvolume:
+##                        if titrationvolume.strip() == '':
+##                            titrationvolume = None
+##                    else:
+##                        titrationvolume = None
+##
+##                    titrationfactor = value.get('TitrationFactor')
+##                    if titrationfactor:
+##                        if titrationfactor.strip() == '':
+##                            titrationfactor = None
+##                    else:
+##                        titrationfactor = None
+##
+##                    grossmass = value.get('GrossMass')
+##                    if grossmass:
+##                        if grossmass.strip() == '':
+##                            grossmass = None
+##                    else:
+##                        grossmass = None
+##
+##                    netmass = value.get('NetMass')
+##                    if netmass:
+##                        if netmass.strip() == '':
+##                            netmass = None
+##                    else:
+##                        netmass = None
+##
+##                    vesselmass = value.get('VesselMass')
+##                    if vesselmass:
+##                        if vesselmass.strip() == '':
+##                            vesselmass = None
+##                    else:
+##                        vesselmass = None
+##
+##                    samplemass = value.get('SampleMass')
+##                    if samplemass:
+##                        if samplemass.strip() == '':
+##                            samplemass = None
+##                    else:
+##                        samplemass = None
+##
+##                    analysis.setTitrationVolume(titrationvolume)
+##                    analysis.setTitrationFactor(titrationfactor)
+##                    analysis.setGrossMass(grossmass)
+##                    analysis.setNetMass(netmass)
+##                    analysis.setVesselMass(vesselmass)
+##                    analysis.setSampleMass(samplemass)
+##
+##                    analysis.edit(
+##                        Result = result,
+##                        Retested = retested,
+##                        Uncertainty = uncertainty,
+##                        Unit = service.getUnit()
+##                    )
+##
+##                    if analysis._affects_other_analysis:
+##                        self.get_dependant_results(analysis)
+##                    if result is None:
+##                        continue
+##
+##                    try:
+##                        wf_tool.doActionFor(analysis, 'submit')
+##                        transaction_note('Changed status of %s at %s' % (
+##                            analysis.title_or_id(), analysis.absolute_url()))
+##                    except WorkflowException:
+##                        pass
+##            if self.context.getReportDryMatter():
+##                self.context.setDryMatterResults()
+##
+##            review_state = wf_tool.getInfoFor(self.context, 'review_state', '')
+##            if review_state == 'to_be_verified':
+##                self.request.RESPONSE.redirect(self.context.absolute_url())
+##            else:
+##                self.request.RESPONSE.redirect(
+##                    '%s/analysisrequest_analyses' % self.context.absolute_url())
 
-        # XXX event subscriber for AR publish
-        #if only some analyses were published we still send an email
-        #if workflow_action in ['publish', 'republish', 'prepublish'] and \
-           #self.context.portal_type == 'AnalysisRequest' and \
-           #len(success.keys()) > 0:
-            #contact = self.context.getContact()
-            #analysis_requests = [self.context]
-            #contact.publish_analysis_requests(self.context, contact, analysis_requests, None)
-            ## cc contacts
-            #for cc_contact in self.context.getCCContact():
-                #contact.publish_analysis_requests(self.context, cc_contact, analysis_requests, None)
-            ## cc emails
-            #cc_emails = self.context.getCCEmails()
-            #if cc_emails:
-                #contact.publish_analysis_requests(self.context, None, analysis_requests, cc_emails)
-        #transaction_note(str(ids) + ' transitioned ' + workflow_action)
+##    def get_dependant_results(self, this_child):
+##        ##bind container=container
+##        ##bind context=context
+##        ##bind namespace=
+##        ##bind script=script
+##        ##bind subpath=traverse_subpath
+##        ##parameters=this_child
+##        ##title=Get analysis results dependant on other analyses results
+##        ##
+##        results = {}
 
-
-            #for key, value in form.items():
-                #if key.startswith('results'):
-                    #id = key.split('results.')[-1]
-                    #analysis = pc(path = { "query": [self.context.id], "level" : 3 },
-                                  #id = id)[0].getObject()
-                    #if analysis.getCalcType() == 'dep':
-                        #continue
-                    #result = value.get('Result')
-                    #if result:
-                        #if result.strip() == '':
-                            #result = None
-                    #else:
-                        #result = None
-
-                    #retested = value.get('Retested')
-
-                    #uncertainty = None
-                    #service = analysis.getService()
-
-                    #if result:
-                        #precision = service.getPrecision()
-                        #if precision:
-                            #result = self.get_precise_result(result, precision)
-
-                        #uncertainty = self.get_uncertainty(result, service)
-
-                    #titrationvolume = value.get('TitrationVolume')
-                    #if titrationvolume:
-                        #if titrationvolume.strip() == '':
-                            #titrationvolume = None
-                    #else:
-                        #titrationvolume = None
-
-                    #titrationfactor = value.get('TitrationFactor')
-                    #if titrationfactor:
-                        #if titrationfactor.strip() == '':
-                            #titrationfactor = None
-                    #else:
-                        #titrationfactor = None
-
-                    #grossmass = value.get('GrossMass')
-                    #if grossmass:
-                        #if grossmass.strip() == '':
-                            #grossmass = None
-                    #else:
-                        #grossmass = None
-
-                    #netmass = value.get('NetMass')
-                    #if netmass:
-                        #if netmass.strip() == '':
-                            #netmass = None
-                    #else:
-                        #netmass = None
-
-                    #vesselmass = value.get('VesselMass')
-                    #if vesselmass:
-                        #if vesselmass.strip() == '':
-                            #vesselmass = None
-                    #else:
-                        #vesselmass = None
-
-                    #samplemass = value.get('SampleMass')
-                    #if samplemass:
-                        #if samplemass.strip() == '':
-                            #samplemass = None
-                    #else:
-                        #samplemass = None
-
-                    #analysis.setTitrationVolume(titrationvolume)
-                    #analysis.setTitrationFactor(titrationfactor)
-                    #analysis.setGrossMass(grossmass)
-                    #analysis.setNetMass(netmass)
-                    #analysis.setVesselMass(vesselmass)
-                    #analysis.setSampleMass(samplemass)
-
-                    #analysis.edit(
-                        #Result = result,
-                        #Retested = retested,
-                        #Uncertainty = uncertainty,
-                        #Unit = service.getUnit()
-                    #)
-
-                    #if analysis._affects_other_analysis:
-                        #self.get_dependant_results(analysis)
-                    #if result is None:
-                        #continue
-
-                    #try:
-                        #wf_tool.doActionFor(analysis, 'submit')
-                        #transaction_note('Changed status of %s at %s' % (
-                            #analysis.title_or_id(), analysis.absolute_url()))
-                    #except WorkflowException:
-                        #pass
-            #if self.context.getReportDryMatter():
-                #self.context.setDryMatterResults()
-
-            #review_state = wf_tool.getInfoFor(self.context, 'review_state', '')
-            #if review_state == 'to_be_verified':
-                #self.request.RESPONSE.redirect(self.context.absolute_url())
-            #else:
-                #self.request.RESPONSE.redirect(
-                    #'%s/analysisrequest_analyses' % self.context.absolute_url())
-
-    def get_dependant_results(self, this_child):
-        ##bind container=container
-        ##bind context=context
-        ##bind namespace=
-        ##bind script=script
-        ##bind subpath=traverse_subpath
-        ##parameters=this_child
-        ##title=Get analysis results dependant on other analyses results
-        ##
-        results = {}
-
-        #def test_reqs(reqd_calcs):
-            #all_results = True
-            #for reqd in reqds:
-                #if results[reqd] == None:
-                    #all_results = False
-                    #break
-            #return all_results
-
-        #def update_data(parent, result_in):
-            #if result_in == None:
-                #result = None
-            #else:
-                #result = '%.2f' % result_in
-            #service = parent.getService()
-
-            #uncertainty = self.get_uncertainty(result, service)
-            #parent.edit(
-                #Result = result,
-                #Uncertainty = uncertainty,
-                #Unit = service.getUnit()
-            #)
-            #return
-
-
-        #rc = getToolByName(self, 'reference_catalog');
-        #parents = [uid for uid in
-                   #rc.getBackReferences(this_child, 'AnalysisAnalysis')]
-        #for p in parents:
-            #parent = rc.lookupObject(p.sourceUID)
-
-            #parent_keyword = parent.getAnalysisKey()
-            #for child in parent.getDependantAnalysis():
-                #keyword = child.getAnalysisKey()
-                #try:
-                    #results[keyword] = Decimal(child.getResult())
-                #except:
-                    #results[keyword] = None
-
-            #result = None
-            #if parent_keyword[0:3] == 'AME':
-                #protein_type = parent_keyword[3:len(parent_keyword)]
-                #protein_keyword = 'ProteinCrude%s' % protein_type
-                #reqds = [protein_keyword, 'FatCrudeEtherExtraction', 'Starch', 'Sugars']
-                #if  test_reqs(reqds):
-                    #ProteinCrude = results[protein_keyword]
-                    #FatCrudeEtherExtraction = results['FatCrudeEtherExtraction']
-                    #Starch = results['Starch']
-                    #Sugars = results['Sugars']
-                    #result = (Decimal('0.1551') * ProteinCrude) + \
-                           #(Decimal('0.3431') * FatCrudeEtherExtraction) + \
-                           #(Decimal('0.1669') * Starch) + (Decimal('0.1301') * Sugars)
-                #else:
-                    #result = None
-                #update_data(parent, result)
-
-            #if parent_keyword[0:2] == 'ME':
-                #protein_type = parent_keyword[2:len(parent_keyword)]
-                #protein_keyword = 'ProteinCrude%s' % protein_type
-                #reqds = [protein_keyword, 'FatCrudeEtherExtraction', 'FibreCrude', 'Ash']
-                #if test_reqs(reqds):
-                    #ProteinCrude = results[protein_keyword]
-                    #FatCrudeEtherExtraction = results['FatCrudeEtherExtraction']
-                    #FibreCrude = results['FibreCrude']
-                    #Ash = results['Ash']
-                    #result = 12 + (Decimal('0.008') * ProteinCrude) + \
-                           #(Decimal('0.023') * FatCrudeEtherExtraction) - (Decimal('0.018') * FibreCrude) + \
-                           #(Decimal('0.012') * Ash)
-                #else:
-                    #result = None
-                #update_data(parent, result)
-
-            #if parent_keyword[0:3] == 'TDN':
-                #ME_type = parent_keyword[3:len(parent_keyword)]
-                #ME_keyword = 'ME%s' % ME_type
-                #reqds = [ME_keyword, ]
-                #if test_reqs(reqds):
-                    #ME = results[ME_keyword]
-                    #result = Decimal('6.67') * ME
-                #else:
-                    #result = None
-                #update_data(parent, result)
-
-            #if parent_keyword[0:3] == 'NSC':
-                #protein_type = parent_keyword[3:len(parent_keyword)]
-                #protein_keyword = 'ProteinCrude%s' % protein_type
-                #reqds = ['FibreNDF', protein_keyword, 'FatCrudeEtherExtraction', 'Ash']
-                #if test_reqs(reqds):
-                    #FibreNDF = results['FibreNDF']
-                    #ProteinCrude = results[protein_keyword]
-                    #FatCrudeEtherExtraction = results['FatCrudeEtherExtraction']
-                    #Ash = results['Ash']
-                    #result = 100 - (FibreNDF + ProteinCrude + \
-                                    #FatCrudeEtherExtraction + Ash)
-                #else:
-                    #result = None
-                #update_data(parent, result)
-
-            #if parent_keyword[0:2] == 'DE':
-                #protein_type = parent_keyword[2:len(parent_keyword)]
-                #protein_keyword = 'ProteinCrude%s' % protein_type
-                #reqds = [protein_keyword, 'FatCrudeEtherExtraction', 'FibreCrude', 'Ash']
-                #if test_reqs(reqds):
-                    #ProteinCrude = results[protein_keyword]
-                    #FatCrudeEtherExtraction = results['FatCrudeEtherExtraction']
-                    #FibreCrude = results['FibreCrude']
-                    #Ash = results['Ash']
-                    #result = Decimal('17.38') + (Decimal('0.105') * ProteinCrude) + \
-                           #(Decimal('0.114') * FatCrudeEtherExtraction) - (Decimal('0.317') * FibreCrude) - \
-                           #(Decimal('0.402') * Ash)
-                #else:
-                    #result = None
-                #update_data(parent, result)
-                #update_data(parent, result)
-
-            #drymatter = self.context.bika_settings.getDryMatterService()
-            #if parent.getServiceUID() == (hasattr(drymatter, 'UID') and drymatter.UID() or None):
-                #moisture = self.context.bika_settings.getMoistureService()
-                #moisture_key = moisture.getAnalysisKey()
-                #reqds = [moisture_key, ]
-                #if test_reqs(reqds):
-                    #Moisture = results[moisture_key]
-                    #result = Decimal('100') - Moisture
-                #else:
-                    #result = None
-                #update_data(parent, result)
-
-            #if parent_keyword == 'DryMatterWet':
-                #reqds = ['MoistureTotal', ]
-                #if test_reqs(reqds):
-                    #MoistureTotal = results['MoistureTotal']
-                    #result = Decimal('100') - MoistureTotal
-                #else:
-                    #result = None
-                #update_data(parent, result)
-
-            #if parent_keyword == 'MoistureTotal':
-                #reqds = ['MoistureWet', 'MoistureDry']
-                #if test_reqs(reqds):
-                    #MoistureWet = results['MoistureWet']
-                    #MoistureDry = results['MoistureDry']
-                    #result = MoistureWet + (MoistureDry * ((Decimal('100') - MoistureWet) / Decimal('100')))
-                #else:
-                    #result = None
-                #update_data(parent, result)
-
-            #if parent_keyword == 'ProteinKOH':
-                #if results.has_key('ProteinCrudeDumas'):
-                    #protein_keyword = 'ProteinCrudeDumas'
-                #else:
-                    #if results.has_key('ProteinCrudeKjeldahl'):
-                        #protein_keyword = 'ProteinCrudeKjeldahl'
-                    #else:
-                        #protein_keyword = 'ProteinCrude'
-                #reqds = [protein_keyword]
-                #if test_reqs(reqds):
-                    #ProteinCrude = results[protein_keyword]
-                    #Corrected = parent.getInterimResult('Corrected')
-                    #SKCorrFactor = parent.getInterimResult('SKCorrFactor')
-                    #if ProteinCrude and Corrected and SKCorrFactor:
-                        #Corrected = float(Corrected)
-                        #SKCorrFactor = float(SKCorrFactor)
-                        #parent.setInterimResult(protein_keyword, ProteinCrude)
-                        #result = Corrected / ProteinCrude * 100 * SKCorrFactor
-                    #else:
-                        #result = None
-                        #parent.setInterimResult(protein_keyword, None)
-                #update_data(parent, result)
-
-            #if parent_keyword == 'ProteinSoluble':
-                #if results.has_key('ProteinCrudeDumas'):
-                    #protein_keyword = 'ProteinCrudeDumas'
-                #else:
-                    #if results.has_key('ProteinCrudeKjeldahl'):
-                        #protein_keyword = 'ProteinCrudeKjeldahl'
-                    #else:
-                        #protein_keyword = 'ProteinCrude'
-                #reqds = [protein_keyword]
-                #if test_reqs(reqds):
-                    #ProteinCrude = results[protein_keyword]
-                    #Unadjusted = parent.getInterimResult('Unadjusted')
-                    #SKCorrFactor = parent.getInterimResult('SKCorrFactor')
-                    #if ProteinCrude and Unadjusted:
-                        #Unadjusted = float(Unadjusted)
-                        #parent.setInterimResult(protein_keyword, ProteinCrude)
-                        #result = ProteinCrude - Unadjusted
-                    #else:
-                        #result = None
-                        #parent.setInterimResult(protein_keyword, None)
-                #update_data(parent, result)
-
-            #if parent.checkHigherDependancies():
-                #self.get_dependant_results(parent)
-        #return
+##        def test_reqs(reqd_calcs):
+##            all_results = True
+##            for reqd in reqds:
+##                if results[reqd] == None:
+##                    all_results = False
+##                    break
+##            return all_results
+##
+##        def update_data(parent, result_in):
+##            if result_in == None:
+##                result = None
+##            else:
+##                result = '%.2f' % result_in
+##            service = parent.getService()
+##
+##            uncertainty = self.get_uncertainty(result, service)
+##            parent.edit(
+##                Result = result,
+##                Uncertainty = uncertainty,
+##                Unit = service.getUnit()
+##            )
+##            return
+##
+##
+##        rc = getToolByName(self, 'reference_catalog');
+##        parents = [uid for uid in
+##                    rc.getBackReferences(this_child, 'AnalysisAnalysis')]
+##        for p in parents:
+##            parent = rc.lookupObject(p.sourceUID)
+##
+##            parent_keyword = parent.getAnalysisKey()
+##            for child in parent.getDependantAnalysis():
+##                keyword = child.getAnalysisKey()
+##                try:
+##                    results[keyword] = Decimal(child.getResult())
+##                except:
+##                    results[keyword] = None
+##
+##            result = None
+##            if parent_keyword[0:3] == 'AME':
+##                protein_type = parent_keyword[3:len(parent_keyword)]
+##                protein_keyword = 'ProteinCrude%s' % protein_type
+##                reqds = [protein_keyword, 'FatCrudeEtherExtraction', 'Starch', 'Sugars']
+##                if  test_reqs(reqds):
+##                    ProteinCrude = results[protein_keyword]
+##                    FatCrudeEtherExtraction = results['FatCrudeEtherExtraction']
+##                    Starch = results['Starch']
+##                    Sugars = results['Sugars']
+##                    result = (Decimal('0.1551') * ProteinCrude) + \
+##                            (Decimal('0.3431') * FatCrudeEtherExtraction) + \
+##                            (Decimal('0.1669') * Starch) + (Decimal('0.1301') * Sugars)
+##                else:
+##                    result = None
+##                update_data(parent, result)
+##
+##            if parent_keyword[0:2] == 'ME':
+##                protein_type = parent_keyword[2:len(parent_keyword)]
+##                protein_keyword = 'ProteinCrude%s' % protein_type
+##                reqds = [protein_keyword, 'FatCrudeEtherExtraction', 'FibreCrude', 'Ash']
+##                if test_reqs(reqds):
+##                    ProteinCrude = results[protein_keyword]
+##                    FatCrudeEtherExtraction = results['FatCrudeEtherExtraction']
+##                    FibreCrude = results['FibreCrude']
+##                    Ash = results['Ash']
+##                    result = 12 + (Decimal('0.008') * ProteinCrude) + \
+##                            (Decimal('0.023') * FatCrudeEtherExtraction) - (Decimal('0.018') * FibreCrude) + \
+##                            (Decimal('0.012') * Ash)
+##                else:
+##                    result = None
+##                update_data(parent, result)
+##
+##            if parent_keyword[0:3] == 'TDN':
+##                ME_type = parent_keyword[3:len(parent_keyword)]
+##                ME_keyword = 'ME%s' % ME_type
+##                reqds = [ME_keyword, ]
+##                if test_reqs(reqds):
+##                    ME = results[ME_keyword]
+##                    result = Decimal('6.67') * ME
+##                else:
+##                    result = None
+##                update_data(parent, result)
+##
+##            if parent_keyword[0:3] == 'NSC':
+##                protein_type = parent_keyword[3:len(parent_keyword)]
+##                protein_keyword = 'ProteinCrude%s' % protein_type
+##                reqds = ['FibreNDF', protein_keyword, 'FatCrudeEtherExtraction', 'Ash']
+##                if test_reqs(reqds):
+##                    FibreNDF = results['FibreNDF']
+##                    ProteinCrude = results[protein_keyword]
+##                    FatCrudeEtherExtraction = results['FatCrudeEtherExtraction']
+##                    Ash = results['Ash']
+##                    result = 100 - (FibreNDF + ProteinCrude + \
+##                                    FatCrudeEtherExtraction + Ash)
+##                else:
+##                    result = None
+##                update_data(parent, result)
+##
+##            if parent_keyword[0:2] == 'DE':
+##                protein_type = parent_keyword[2:len(parent_keyword)]
+##                protein_keyword = 'ProteinCrude%s' % protein_type
+##                reqds = [protein_keyword, 'FatCrudeEtherExtraction', 'FibreCrude', 'Ash']
+##                if test_reqs(reqds):
+##                    ProteinCrude = results[protein_keyword]
+##                    FatCrudeEtherExtraction = results['FatCrudeEtherExtraction']
+##                    FibreCrude = results['FibreCrude']
+##                    Ash = results['Ash']
+##                    result = Decimal('17.38') + (Decimal('0.105') * ProteinCrude) + \
+##                            (Decimal('0.114') * FatCrudeEtherExtraction) - (Decimal('0.317') * FibreCrude) - \
+##                            (Decimal('0.402') * Ash)
+##                else:
+##                    result = None
+##                update_data(parent, result)
+##                update_data(parent, result)
+##
+##            drymatter = self.context.bika_settings.getDryMatterService()
+##            if parent.getServiceUID() == (hasattr(drymatter, 'UID') and drymatter.UID() or None):
+##                moisture = self.context.bika_settings.getMoistureService()
+##                moisture_key = moisture.getAnalysisKey()
+##                reqds = [moisture_key, ]
+##                if test_reqs(reqds):
+##                    Moisture = results[moisture_key]
+##                    result = Decimal('100') - Moisture
+##                else:
+##                    result = None
+##                update_data(parent, result)
+##
+##            if parent_keyword == 'DryMatterWet':
+##                reqds = ['MoistureTotal', ]
+##                if test_reqs(reqds):
+##                    MoistureTotal = results['MoistureTotal']
+##                    result = Decimal('100') - MoistureTotal
+##                else:
+##                    result = None
+##                update_data(parent, result)
+##
+##            if parent_keyword == 'MoistureTotal':
+##                reqds = ['MoistureWet', 'MoistureDry']
+##                if test_reqs(reqds):
+##                    MoistureWet = results['MoistureWet']
+##                    MoistureDry = results['MoistureDry']
+##                    result = MoistureWet + (MoistureDry * ((Decimal('100') - MoistureWet) / Decimal('100')))
+##                else:
+##                    result = None
+##                update_data(parent, result)
+##
+##            if parent_keyword == 'ProteinKOH':
+##                if results.has_key('ProteinCrudeDumas'):
+##                    protein_keyword = 'ProteinCrudeDumas'
+##                else:
+##                    if results.has_key('ProteinCrudeKjeldahl'):
+##                        protein_keyword = 'ProteinCrudeKjeldahl'
+##                    else:
+##                        protein_keyword = 'ProteinCrude'
+##                reqds = [protein_keyword]
+##                if test_reqs(reqds):
+##                    ProteinCrude = results[protein_keyword]
+##                    Corrected = parent.getInterimResult('Corrected')
+##                    SKCorrFactor = parent.getInterimResult('SKCorrFactor')
+##                    if ProteinCrude and Corrected and SKCorrFactor:
+##                        Corrected = float(Corrected)
+##                        SKCorrFactor = float(SKCorrFactor)
+##                        parent.setInterimResult(protein_keyword, ProteinCrude)
+##                        result = Corrected / ProteinCrude * 100 * SKCorrFactor
+##                    else:
+##                        result = None
+##                        parent.setInterimResult(protein_keyword, None)
+##                update_data(parent, result)
+##
+##            if parent_keyword == 'ProteinSoluble':
+##                if results.has_key('ProteinCrudeDumas'):
+##                    protein_keyword = 'ProteinCrudeDumas'
+##                else:
+##                    if results.has_key('ProteinCrudeKjeldahl'):
+##                        protein_keyword = 'ProteinCrudeKjeldahl'
+##                    else:
+##                        protein_keyword = 'ProteinCrude'
+##                reqds = [protein_keyword]
+##                if test_reqs(reqds):
+##                    ProteinCrude = results[protein_keyword]
+##                    Unadjusted = parent.getInterimResult('Unadjusted')
+##                    SKCorrFactor = parent.getInterimResult('SKCorrFactor')
+##                    if ProteinCrude and Unadjusted:
+##                        Unadjusted = float(Unadjusted)
+##                        parent.setInterimResult(protein_keyword, ProteinCrude)
+##                        result = ProteinCrude - Unadjusted
+##                    else:
+##                        result = None
+##                        parent.setInterimResult(protein_keyword, None)
+##                update_data(parent, result)
+##
+##            if parent.checkHigherDependancies():
+##                self.get_dependant_results(parent)
+##        return
 
 
     def get_precise_result(self, result, precision):
@@ -1130,15 +1134,15 @@ class AJAXgetBackReferences():
 
     def __call__(self):
         authenticator=getMultiAdapter((self.context, self.request), name=u"authenticator")
-#        if not authenticator.verify(): raise Unauthorized
+        #if not authenticator.verify(): raise Unauthorized
         result = getBackReferences(self.context, self.request.get('uid',''))
         if (not result) or (len(result) == 0):
             result = []
         return json.dumps([r.UID() for r in result])
 
 def analysisrequest_add_submit(context, request):
- #   authenticator=getMultiAdapter((context, request), name=u"authenticator")
- #   if not authenticator.verify(): raise Unauthorized
+    authenticator=getMultiAdapter((context, request), name=u"authenticator")
+    #if not authenticator.verify(): raise Unauthorized
     form = request.form
 
     if form.has_key("save_button"):
@@ -1154,9 +1158,9 @@ def analysisrequest_add_submit(context, request):
                 message = context.translate('message_input_required',
                                             default = 'Input is required but no input given.',
                                             domain = 'bika')
-            column = column or ""
-            field = field or ""
-            errors[error_key] = message
+            if (column or field):
+                error_key = " column: %s: %s" % (int(column)+1, field or '')
+            errors["Error"] = error_key + " " + message
 
         # first some basic validation
         has_analyses = False

@@ -70,20 +70,20 @@
     </table>
 
     <form id="analysisrequest_manage_results_form"
-          name="analysisrequest_manage_results_form"
-          method="post">
+        name="analysisrequest_manage_results_form"
+        method="post">
 
-      <input type="hidden" name="submitted" value="1" />
+        <input type="hidden" name="submitted" value="1"/>
 
-      <tal:field_analyses>
-        <h3 tal:content="python: modules['bika.lims.config'].POINTS_OF_CAPTURE.getValue('field')"/>
-        <span tal:replace="structure python: view.FieldAnalysesView.contents_table()"/>
-      </tal:field_analyses>
+        <tal:field_analyses>
+          <h3 tal:content="python: modules['bika.lims.config'].POINTS_OF_CAPTURE.getValue('field')"/>
+          <span tal:replace="structure python: view.FieldAnalysesView.contents_table()"/>
+        </tal:field_analyses>
 
-      <tal:lab_analyses>
-        <h3 tal:content="python: modules['bika.lims.config'].POINTS_OF_CAPTURE.getValue('lab')"/>
-        <span tal:replace="structure python: view.LabAnalysesView.contents_table()"/>
-      </tal:lab_analyses>
+        <tal:lab_analyses>
+          <h3 tal:content="python: modules['bika.lims.config'].POINTS_OF_CAPTURE.getValue('lab')"/>
+          <span tal:replace="structure python: view.LabAnalysesView.contents_table()"/>
+        </tal:lab_analyses>
     </form>
 
   </metal:content-core>

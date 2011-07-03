@@ -42,14 +42,6 @@ schema = BikaSchema.copy() + Schema((
             i18n_domain = I18N_DOMAIN,
         ),
     ),
-    StringField('TextInclusions', #XXX TextInclusions gets dropdown like SampleTypes
-        searchable = True,
-        widget = StringWidget(
-            label = 'Text Inclusions',
-            label_msgid = 'label_textinclusions',
-            i18n_domain = I18N_DOMAIN,
-        ),
-    ),
     ReferenceField('Service',
         required = 1,
         multiValued = 1,
