@@ -24,7 +24,7 @@
     enabled="True" expression=""  inline="False"/>
 -->
 
-    <javascript authenticated="0"
+    <javascript authenticated="False"
                 cacheable="True"
                 compression="safe"
                 conditionalcomment=""
@@ -35,7 +35,7 @@
                 inline="False"
                 insert-after="*"/>
 
-    <javascript authenticated="0"
+    <javascript authenticated="False"
                 cacheable="True"
                 compression="safe"
                 conditionalcomment=""
@@ -46,7 +46,7 @@
                 inline="False"
                 insert-after="*"/>
 
-    <javascript authenticated="0"
+    <javascript authenticated="False"
                 cacheable="True"
                 compression="safe"
                 conditionalcomment=""
@@ -57,36 +57,48 @@
                 inline="False"
                 insert-after="*"/>
 
-    <javascript authenticated="False"
+    <javascript authenticated="True"
                 cacheable="True"
                 compression="safe"
                 conditionalcomment=""
                 cookable="True"
                 enabled="on"
-                expression="python:here.portal_type in ['AnalysisRequest', 'Client']"
+                expression=""
                 id="++resource++bika.lims.js/analysisrequest.js"
                 inline="False"
                 insert-after="*"/>
 
-    <javascript authenticated="False"
+    <javascript authenticated="True"
                 cacheable="True"
                 compression="safe"
                 conditionalcomment=""
                 cookable="True"
                 enabled="on"
-                expression="python:here.portal_type in ['WorksheetFolder','Worksheet']"
+                expression=""
                 id="++resource++bika.lims.js/worksheet.js"
                 inline="False"
                 insert-after="*"/>
 
-    <javascript authenticated="False"
+    <javascript authenticated="True"
                 cacheable="True"
                 compression="safe"
                 conditionalcomment=""
                 cookable="True"
                 enabled="on"
-                expression="python:here.portal_type in ['Sample',]"
+                expression=""
                 id="++resource++bika.lims.js/sample.js"
                 inline="False"
                 insert-after="*"/>
+
+    <javascript authenticated="True"
+                cacheable="True"
+                compression="safe"
+                conditionalcomment=""
+                cookable="True"
+                enabled="on"
+                expression=""
+                id="++resource++bika.lims.js/calculation.js"
+                inline="False"
+                insert-after="*"/>
+
 </object>

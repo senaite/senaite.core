@@ -163,24 +163,17 @@
 
 <tal:column tal:repeat="column review_state/columns">
 
-<tal:comment tal:replace="nothing">
-  Is the Row editable?
-    Yes
-    Is this item an interim field?
-      Yes
-      Print widget
-        No
-      Is it called 'Result'?
-        Yes
-        Does the Analysis have a Calculation defined?
-          Yes:
-          Result text widget is readonly
-            No
-          Print text input widget
-            No
-        Print item[column]
-          No
-    print item[column]
+<tal:comment replace="nothing">
+This section repeats for each column in this row.
+Javascript lives in bika_listing_table.js.
+
+0 Not interim column or Result column: just print value.
+1 interim and editable - input
+2 interim not editable - readonly input
+3 'Result' and calculation - readonly input
+4 'Result' not calculation - input
+* Interim OR Result: Unit
+
 </tal:comment>
 
 <td
@@ -197,9 +190,11 @@
     <tal:i condition="is_interim">
       <input
         type="text"
+        class="analysis_entry"
         tal:attributes="
           size input_width;
-          name python: 'analysis_%s_%s'%(item['UID'], item[column]['id']);
+          analysis string:${item/UID};
+          field python:item[column]['id'];
           value python: item[column]['value'];
           type python: item[column]['type'];"/>
       <em class="discreet" style="white-space:nowrap;" tal:content="python: item[column]['unit']"/>
@@ -211,14 +206,15 @@
           type="text"
           tal:attributes="
             size input_width;
-            name string:analysis_${item/UID}_Result;
             value python: item['Result'];"/>
         <input
           tal:condition="python: not item['_calculation']"
           type="text"
+          class="analysis_entry"
           tal:attributes="
             size input_width;
-            name string:analysis_${item/UID}_Result;
+            analysis string:${item/UID};
+            field string:Result;
             value python: item['Result'];"/>
         <em class="discreet" style="white-space:nowrap;" tal:content="python: item['Unit']"/>
       </tal:i>
@@ -264,10 +260,6 @@
         </span>
     </tal:i>
   </tal:i>
-
-  <tal:comment tal:replace="nothing">
-    Everyone gets unit, if one is specified, plus late analysis icon etc...
-  </tal:comment>
 
 </td>
 </tal:column>

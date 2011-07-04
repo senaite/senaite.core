@@ -425,15 +425,15 @@ class AnalysisRequestEditView(AnalysisRequestAddView):
 
     def SelectedServices(self):
         """ return information about services currently selected in the context AR.
-            [[category uid, service uid, PointOfCapture],
-             [category uid, service uid, PointOfCapture], ...]
+            [[PointOfCapture, category uid, service uid],
+             [PointOfCapture, category uid, service uid], ...]
         """
         pc = getToolByName(self.context, 'portal_catalog')
         res = []
         for analysis in pc(portal_type = "Analysis", getRequestID = self.context.RequestID):
             analysis = analysis.getObject()
             service = analysis.getService()
-            res.append([service.getCategoryUID(), service.UID(), service.getPointOfCapture()])
+            res.append([service.getPointOfCapture(), service.getCategoryUID(), service.UID()])
         return res
 
 class AnalysisRequestManageResultsView(AnalysisRequestViewView):

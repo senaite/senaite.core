@@ -19,12 +19,12 @@
       permission="zope.Public"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
-
+<!--
     <browser:resource
       name="sample.js"
       file="js/sample.js"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
-
+-->
 
 </configure>

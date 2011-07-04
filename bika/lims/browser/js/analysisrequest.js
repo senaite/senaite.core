@@ -356,15 +356,10 @@ jQuery( function($) {
 		// These are in AR Edit only
 		selected_elements = [];
 		prefilled = false;
-		selected_services = $("#selectedservices").val();
-		if(selected_services == undefined){
-			selected_services = "";
-		} else {
-			selected_services = selected_services.split(",");
-		}
-		$.each($('tr[class$="prefill"]'), function(i,e){
+		$.each($('th[class$="prefill"]'), function(i,e){
 			prefilled = true;
-			toggleCat($(e).attr("poc"), $(e).attr("id"), selected_services, 0); // AR Edit has only column 0
+			selectedservices = $(e).attr("selectedservices").split(",");
+			toggleCat($(e).attr("poc"), $(e).attr("id"), 0, selectedservices); // AR Edit has only column 0
 			selected_elements.push($(e));
 		});
 		if (prefilled){

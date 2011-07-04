@@ -100,10 +100,12 @@
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
+<!--
     <browser:resource
       name="analysisrequest.js"
       file="js/analysisrequest.js"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
+-->
 
 </configure>

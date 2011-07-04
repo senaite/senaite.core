@@ -357,18 +357,14 @@
 
 <tal:comment replace="nothing">
 	cats: {poc: (category_uid, category_title)
-	selectedservices: [[category_uid, service_uid, poc]. [...], ]
+	selectedservices: [[poc, category_uid, service_uid]. [...], ]
 </tal:comment>
 
 <!-- -- -- Analyses -- -- -->
 <tal:i define="
 	cats view/Categories;
 	POINTS_OF_CAPTURE python: modules['bika.lims.config'].POINTS_OF_CAPTURE;
-	selectedservices python:edit and view.SelectedServices() or '';">
-	<input
-		type="hidden"
-		id="selectedservices"
-		tal:attributes="value python:','.join([s[1] for s in selectedservices]);"/>
+	ViewSelectedServices python:edit and view.SelectedServices() or '';">
 	<tal:i repeat="poc python:cats.keys()">
 		<thead class="pointofcapture"
 			tal:attributes="id poc">
@@ -386,7 +382,8 @@
 						id python:cat[0];
 						colspan python:view.col_count + 3;
 						poc poc;
-						class python: 'analysiscategory%s' % (edit and [cat[0],poc] in [[s[0],s[2]] for s in selectedservices] and ' prefill' or '')"/>
+						selectedservices python: ','.join([s[2] for s in ViewSelectedServices if s[1] == cat[0]]);
+						class python: 'analysiscategory%s' % (edit and [poc,cat[0]] in [[s[0],s[1]] for s in ViewSelectedServices] and ' prefill' or '')"/>
 			</tr>
 		</thead>
 		<tbody class="analysisservices" tal:attributes="
