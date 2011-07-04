@@ -1,11 +1,10 @@
-function services_html(categoryUID_poc, fieldName){
+function services_html(poc, cat, allservices, selectedservices, fieldName){
 	html = "";
-	services = jq.parseJSON(jq("#allservices_"+categoryUID_poc).val());
-	selected = jq("#selectedservices_"+categoryUID_poc).val();
-	for(i=0;i<services.length;i++){
-		UID = services[i][0];
-		Title = services[i][1];
-		if(selected.search(UID) > -1){
+	allservices = jq.parseJSON(allservices);
+	for(i=0;i<allservices.length;i++){
+		UID = allservices[i][0];
+		Title = allservices[i][1];
+		if(selectedservices.search(UID) > -1){
 			html = html + "<tr><td>" +
 				"<input type='checkbox' id='"+UID+"' name='"+fieldName+":list:ignore-empty' value='"+UID+"' checked='checked'/></td>" +
 				"<td><label for='"+UID+"'>"+Title+"</label></td></tr>";
@@ -21,22 +20,32 @@ function services_html(categoryUID_poc, fieldName){
 
 $(document).ready(function(){
 
-	$('tr[class^="initial"]').click(function(){
-		tbody = $('#'+$(this).attr("name"));
+	$('th[class^="initial"]').click(function(){
+		poc = $(this).attr("poc");
+		cat = $(this).attr("cat");
+		allservices = $(this).attr("allservices");
+		selectedservices = $(this).attr("selectedservices");
+		targetname =  poc + "_" + cat;
+		target = $("#"+targetname);
 		fieldName = $(this).attr("id");
 		if($(this).hasClass("expanded")){
-			tbody.toggle();
+			target.toggle();
 		} else {
 			$(this).addClass("expanded");
-			tbody.append(services_html($(this).attr("name"), fieldName));
+			target.append(services_html(poc, cat, allservices, selectedservices, fieldName));
 		}
 	});
 
-	$.each($('tr[class$="prefill"]'), function() {
-		tbody = $('#'+$(this).attr("name"));
+	$.each($('th[class$="prefill"]'), function() {
+		poc = $(this).attr("poc");
+		cat = $(this).attr("cat");
+		allservices = $(this).attr("allservices");
+		selectedservices = $(this).attr("selectedservices");
+		targetname =  poc + "_" + cat;
+		target = $("#"+targetname);
 		fieldName = $(this).attr("id");
 		$(this).addClass("expanded");
-		tbody.append(services_html($(this).attr("name"), fieldName));
+		target.append(services_html(poc, cat, allservices, selectedservices, fieldName));
 	});
 
 });

@@ -251,20 +251,25 @@ jQuery( function($) {
 
 	function setARProfile(){
 		profileUID = $(this).val();
-		column = $(this).attr("id").split("_")[1];
-		if(profileUID == "") return;
+		column = $(this).attr("column");
 		unsetARProfile(column);
+		if(profileUID == "") return;
 		selected_elements = []
-		$.getJSON('aXXXnalysisrequest_profileservices', {'profileUID':profileUID}, function(data,textStatus){
-			$.each(data, function(categoryUID_poc, selectedservices){
-				toggleCat(XXXpoc, XXXcategoryUID, selectedservices, column);
-				$.each(selectedservices, function(i,uid){
-					selected_elements.push($("#ar_"+column+"_"+categoryUID_poc+"_"+uid));
-				});
+		$.getJSON('analysisrequest_profileservices', {'profileUID':profileUID}, function(data,textStatus){
+			$.each(data, function(poc_categoryUID, selectedservices){
+				p_c = poc_categoryUID.split("_");
+				if( $("tbody[class*='expanded']").filter("#"+p_c[1]).length > 0 ){
+					$.each(selectedservices, function(i,uid){
+						$.each($("input[column='"+column+"']").filter("#"+uid), function(x, e){
+							$(e).attr('checked', true);
+						});
+						recalc_prices(column);
+					});
+				} else {
+					toggleCat(p_c[0], p_c[1], column, selectedservices);
+				}
 			});
 		}, "json");
-		calcdependencies(selected_elements);
-		recalc_prices(column);
 	}
 
 	function unsetARProfile(column){

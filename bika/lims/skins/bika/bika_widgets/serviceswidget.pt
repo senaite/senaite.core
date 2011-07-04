@@ -3,67 +3,64 @@
       xmlns:metal="http://xml.zope.org/namespaces/metal"
       xmlns:i18n="http://xml.zope.org/namespaces/i18n"
       i18n:domain="plone">
-  <head><title></title></head>
-  <body>
-<!-- The view macro is untested altogether - this widget is used only for edit -->
-    <metal:view_macro define-macro="view">
-        <span id="serviceswidget"
-              tal:define="categories python:widget.getCategories(field, allservices=False);">
-          <table class="analysisrequest">
-            <tal:repeat repeat="category python:categories.keys()">
-              <tbody>
-                <tr>
-                  <th tal:content="category"/>
-                </tr>
-                <tr tal:condition="python:categories[category]">
-                  <td tal:content="python:', '.join([service.Title() for service in categories[category]])"/>
-                </tr>
-              </tbody>
-            </tal:repeat>
-          </table>
-        </span>
-    </metal:view_macro>
+<head><title></title></head>
+<body>
 
-    <metal:edit_macro define-macro="edit">
-      <metal:use use-macro="field_macro | context/widgets/field/macros/edit">
-        <metal:body_macro fill-slot="widget_body">
-          <span id="serviceswidget"
-            tal:define="servicedata python:widget.getCategories(field);
-                        selectedservices python:widget.getCategories(field,allservices=False)">
+<metal:view_macro define-macro="view">
+    <span id="serviceswidget"
+          tal:define="categories python:widget.getCategories(field, selected_only=True);">
+      <table class="listing analysisrequest nosort">
+        <tal:repeat repeat="category python:categories.keys()">
+          <tbody>
+            <tr>
+              <th tal:content="category"/>
+            </tr>
+            <tr tal:condition="python:categories[category]">
+              <td tal:content="python:', '.join([service.Title() for service in categories[category]])"/>
+            </tr>
+          </tbody>
+        </tal:repeat>
+      </table>
+    </span>
+</metal:view_macro>
 
-            <table class="analysisrequest">
+<metal:edit_macro define-macro="edit">
+<metal:use use-macro="field_macro | context/widgets/field/macros/edit">
 
-              <tal:pointofcapture repeat="poc python:servicedata.keys()">
-                <thead>
-                  <tr><th colspan="2"><b tal:content="python:poc[1]">Analyses</b></th></tr>
-                </thead>
+  <metal:body_macro fill-slot="widget_body" tal:define="
+      allservices python:widget.getServices(field);
+      selectedservices python:widget.getServices(field,selected_only=True)">
+    <table class="analysisrequest listing nosort">
 
-                <tal:category repeat="cat python:servicedata[poc]">
+      <tal:i repeat="poc python:allservices.keys()">
 
-                  <input type=hidden tal:attributes="
-                      id python:'allservices_%s_%s'%(cat[0], poc[0]);
-                      value python: widget.dumpsJSON(servicedata[poc][cat]);">
-                  <input type=hidden tal:attributes="
-                      id python:'selectedservices_%s_%s'%(cat[0], poc[0]);
-                      value python: widget.dumpsJSON(selectedservices[poc].has_key(cat) and selectedservices[poc][cat] or [])">
+        <thead class="pointofcapture">
+          <tr><th colspan="2"><b tal:content="python:poc[1]">Analyses</b></th></tr>
+        </thead>
 
-                  <thead>
-                    <tr tal:attributes="class python:selectedservices[poc].has_key(cat) and 'initial prefill' or 'initial';
-                                        name python:'%s_%s'%(cat[0], poc[0]);
-                                        id field/getName;">
-                      <th/>
-                      <th tal:content="python:cat[1]"/>
-                    </tr>
-                  </thead>
-                  <tbody tal:attributes="id python:'%s_%s'%(cat[0], poc[0])" class="analysisservices">
-                    <tr></tr>
-                  </tbody>
-                </tal:category>
-              </tal:pointofcapture>
-            </table>
-          </span>
-        </metal:body_macro>
-      </metal:use>
-    </metal:edit_macro>
+        <tal:i repeat="cat python:allservices[poc].keys()">
+
+          <thead><tr>
+            <th colspan="2" tal:content="python:cat[1]" tal:attributes="
+              id field/getName;
+              class python:selectedservices[poc].has_key(cat) and 'initial prefill' or 'initial';
+              allservices python:widget.dumpsJSON(allservices[poc].has_key(cat) and [(s[0],s[1]) for s in allservices[poc][cat]] or []);
+              selectedservices python:widget.dumpsJSON(selectedservices[poc].has_key(cat) and [s[0] for s in selectedservices[poc][cat]] or []);
+              poc python:poc[0];
+              cat python:cat[0];"/>
+          </tr></thead>
+
+          <tbody class="analysisservices"
+                 tal:attributes="id python:'%s_%s'%(poc[0], cat[0])" >
+             <tr></tr>
+          </tbody>
+
+        </tal:i>
+      </tal:i>
+    </table>
+  </metal:body_macro>
+</metal:use>
+</metal:edit_macro>
+
 </body>
 </html>

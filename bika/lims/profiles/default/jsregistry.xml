@@ -75,6 +75,17 @@
                 cookable="True"
                 enabled="on"
                 expression=""
+                id="++resource++bika.lims.js/calcs.js"
+                inline="False"
+                insert-after="*"/>
+
+    <javascript authenticated="True"
+                cacheable="True"
+                compression="safe"
+                conditionalcomment=""
+                cookable="True"
+                enabled="on"
+                expression=""
                 id="++resource++bika.lims.js/worksheet.js"
                 inline="False"
                 insert-after="*"/>
@@ -87,17 +98,6 @@
                 enabled="on"
                 expression=""
                 id="++resource++bika.lims.js/sample.js"
-                inline="False"
-                insert-after="*"/>
-
-    <javascript authenticated="True"
-                cacheable="True"
-                compression="safe"
-                conditionalcomment=""
-                cookable="True"
-                enabled="on"
-                expression=""
-                id="++resource++bika.lims.js/calculation.js"
                 inline="False"
                 insert-after="*"/>
 

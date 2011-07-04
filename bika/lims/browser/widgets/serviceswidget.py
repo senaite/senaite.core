@@ -20,43 +20,31 @@ class ServicesWidget(TypesWidget):
     security = ClassSecurityInfo()
 
     security.declarePublic('getCategories')
-    def getCategories(self, field, allservices = True):
-        """ Returns a list of Analysis Categories (keyed by PointOfCapture)
-            allservices - set False to return only checked services (for widget view)
+    def getServices(self, field, selected_only = False):
+        """ Returns a list of Analysis Services keyed by POC and Category
+            selected_only - set this to return only checked services (for view widget)
 
             returns
 
-            {('field', 'Field Analyses PointOfOrigin'):
-                {('general', 'General Category'):
-                   [('serviceUID','serviceTitle'),('serviceUID','serviceTitle'), ..]
+            {('poc_id', 'Point Of Capture'):
+                {('cat_id', 'Category Title'): [('serviceUID','service Title'), ..]
                 }
             }
         """
-        cats = {}
         pc = getToolByName(self, 'portal_catalog')
-        for poc in POINTS_OF_CAPTURE.keys():
-            val = POINTS_OF_CAPTURE.getValue(poc)
-            cats[(poc, val)] = {}
-
+        allservices = (p.getObject() for p in pc(portal_type = "AnalysisService"))
         selectedservices = getattr(field, field.accessor)()
-        services = pc(portal_type = "AnalysisService")
-        # get all services from catalog
-        if allservices:
-            for service in services:
-                cat = (service.getCategoryUID, service.getCategoryName)
-                poc = (service.getPointOfCapture, POINTS_OF_CAPTURE.getValue(service.getPointOfCapture))
-                srv = (service.UID, service.Title)
-                if not cats[poc].has_key(cat): cats[poc][cat] = []
-                cats[poc][cat].append(srv)
-        # or get currently selected services from this profile
-        else:
-            for service in selectedservices:
-                cat = (service.getCategoryUID(), service.getCategoryName())
-                poc = (service.getPointOfCapture(), POINTS_OF_CAPTURE.getValue(service.getPointOfCapture()))
-                srv = (service.UID(), service.Title())
-                if not cats[poc].has_key(cat): cats[poc][cat] = []
-                cats[poc][cat].append(srv)
-        return cats
+        res = {}
+        for poc_id in POINTS_OF_CAPTURE.keys():
+            poc_title = POINTS_OF_CAPTURE.getValue(poc_id)
+            res[(poc_id, poc_title)] = {}
+        for service in (selected_only and selectedservices or allservices):
+            cat = (service.getCategory().UID(), service.getCategory().Title())
+            poc = (service.getPointOfCapture(), POINTS_OF_CAPTURE.getValue(service.getPointOfCapture()))
+            srv = (service.UID(), service.Title())
+            if not res[poc].has_key(cat): res[poc][cat] = []
+            res[poc][cat].append(srv)
+        return res
 
     def dumpsJSON(self, object):
         import json

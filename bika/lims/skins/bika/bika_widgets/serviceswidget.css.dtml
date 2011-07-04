@@ -1,23 +1,16 @@
-#serviceswidget table {
-	margin:0;
-	padding:0;
-}
-#serviceswidget table th{
-	margin:0;
-	padding:2px 5px 2px 5px;
-}
-#serviceswidget table th{
+.pointofcapture { border-top:0;}
+table.analysisrequest { border;left:none; border-top:0}
+table.analysisrequest th { border-top:0}
+table.analysisrequest tr { border-left:0}
+table.analysisrequest td { border-left:0;border-right:0;}
+
+.initial{
 	cursor:pointer;
 	margin:0;
 	padding:2px 5px 2px 5px;
 }
-#serviceswidget table td{
-	margin:0;
-	padding:0px 5px 0px 5px;
-}
-#serviceswidget label {
+
+label {
 	font-weight:normal;
 }
-#serviceswidget table td input[type='checkbox'] {
-	margin-top:2px;
-}
+

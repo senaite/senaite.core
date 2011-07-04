@@ -193,7 +193,7 @@ Javascript lives in bika_listing_table.js.
         class="analysis_entry"
         tal:attributes="
           size input_width;
-          analysis string:${item/UID};
+          uid string:${item/UID};
           field python:item[column]['id'];
           value python: item[column]['value'];
           type python: item[column]['type'];"/>
@@ -213,7 +213,7 @@ Javascript lives in bika_listing_table.js.
           class="analysis_entry"
           tal:attributes="
             size input_width;
-            analysis string:${item/UID};
+            uid string:${item/UID};
             field string:Result;
             value python: item['Result'];"/>
         <em class="discreet" style="white-space:nowrap;" tal:content="python: item['Unit']"/>

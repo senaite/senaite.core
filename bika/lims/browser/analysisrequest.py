@@ -1083,7 +1083,7 @@ class AJAXExpandCategory(BikaListingView):
 
 class AJAXProfileServices(BrowserView):
     """ AJAX requests pull this to retrieve a list of services in an AR Profile.
-        return JSON data {categoryUID: [serviceUID,serviceUID], ...}
+        return JSON data {poc_categoryUID: [serviceUID,serviceUID], ...}
     """
     def __call__(self):
 #        authenticator=getMultiAdapter((self.context, self.request), name=u"authenticator")
@@ -1099,8 +1099,8 @@ class AJAXProfileServices(BrowserView):
             service = pc(portal_type = "AnalysisService", UID = service.UID())[0]
             categoryUID = service.getCategoryUID
             poc = service.getPointOfCapture
-            try: services["%s_%s" % (categoryUID, poc)].append(service.UID)
-            except: services["%s_%s" % (categoryUID, poc)] = [service.UID, ]
+            try: services["%s_%s" % (poc,categoryUID)].append(service.UID)
+            except: services["%s_%s" % (poc,categoryUID)] = [service.UID, ]
 
         return json.dumps(services)
 
