@@ -56,9 +56,6 @@
   <type type_id="Calculation"/>
   <type type_id="Client"/>
   <type type_id="ClientFolder"/>
-  <type type_id="ClientInvoicePreference"/>
-  <type type_id="ClientPublicationPreference"/>
-  <type type_id="ClientStatus"/>
   <type type_id="Contact"/>
   <type type_id="Department"/>
   <type type_id="Discussion Item"/>

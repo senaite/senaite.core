@@ -41,9 +41,6 @@ from DuplicateAnalysis import DuplicateAnalysis
 from RejectAnalysis import RejectAnalysis
 from StandardAnalysis import StandardAnalysis
 from SupplierContact import SupplierContact
-from ClientStatus import ClientStatus
-from ClientPublicationPreference import ClientPublicationPreference
-from ClientInvoicePreference import ClientInvoicePreference
 from InvoiceFolder import InvoiceFolder
 from InvoiceBatch import InvoiceBatch
 from Invoice import Invoice

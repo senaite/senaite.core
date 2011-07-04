@@ -4,9 +4,6 @@
  <object name="ClientFolder" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="Organisation" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="Client" meta_type="Factory-based Type Information with dynamic views"/>
- <object name="ClientInvoicePreference" meta_type="Factory-based Type Information with dynamic views"/>
- <object name="ClientPublicationPreference" meta_type="Factory-based Type Information with dynamic views"/>
- <object name="ClientStatus" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="Person" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="Contact" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="Analysis" meta_type="Factory-based Type Information with dynamic views"/>

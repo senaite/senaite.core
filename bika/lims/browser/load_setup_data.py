@@ -38,31 +38,6 @@ class LoadSetupData(BrowserView):
         plone = getMultiAdapter((self, self.request), name = "plone_portal_state").portal()
         self.request.response.redirect(plone.absolute_url())
 
-#    # Setup client status
-#    folder = context.bika_client_status
-#    for title in ('Premier', 'Standard', 'Historic'):
-#        id = folder.generateUniqueId('ClientStatus')
-#        folder.invokeFactory(id = id, type_name = 'ClientStatus')
-#        obj = folder[id]
-#        obj.edit(title = title)
-#
-#
-#    # Setup invoice prefs
-#    folder = context.bika_invoice_prefs
-#    for title in ('email', 'fax'):
-#        id = folder.generateUniqueId('ClientInvoicePreference')
-#        folder.invokeFactory(id = id, type_name = 'ClientInvoicePreference')
-#        obj = folder[id]
-#        obj.edit(title = title)
-#
-#
-#    # Setup publication prefs
-#    folder = context.bika_publication_prefs
-#    for title in ('email', 'fax', 'file', 'pdf', 'print', 'sms'):
-#        id = folder.generateUniqueId('ClientPublicationPreference')
-#        folder.invokeFactory(id = id, type_name = 'ClientPublicationPreference')
-#        obj = folder[id]
-#        obj.edit(title = title)
 
     def Laboratory(self):
         name = 'Bika Laboratory'
@@ -376,7 +351,7 @@ class LoadSetupData(BrowserView):
                      SampleTypeDescription = description,
                      Hazardous = hazardous)
 
-    def CreateCalculationObjects(self,calcs):
+    def CreateCalculationObjects(self, calcs):
         if not hasattr(self, 'calculations'):
             self.calculations = {'':None}
         folder = self.context.bika_settings.bika_calculations
@@ -512,7 +487,7 @@ class LoadSetupData(BrowserView):
             cat.edit(title = title, CategoryDescription = descr, Department = depgen.next())
             self.categories[title] = cat
 
-    def CreateServiceObjects(self,services):
+    def CreateServiceObjects(self, services):
         if not hasattr(self, 'service_objs'):
             self.service_objs = {'':None}
         folder = self.context.bika_settings.bika_analysisservices
@@ -563,7 +538,7 @@ class LoadSetupData(BrowserView):
             ('lab', 'Chlorides', 'mg/l', 3, 10, '', False, 'Description for Chloride analysis', 'Clide', 'Chlorides', 1, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'Instructions for Chlorides', '0.00', '', False, 'Water'),
             ('lab', 'Chlorine residual', 'mg/l', 2, 4, 'ml', False, 'Description for residual chlorine testing', 'Cl', 'Chlorine', 2, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'Instructions for Chlorine residual', '0.00', 'Titration', False, 'Oil'),
             ('lab', 'COD ', 'mg/l', 1, 99, '', False, 'Description for COD', 'COD', 'COD', 3, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'Instructions for COD', None, '', False, 'Soil'),
-            ('lab', 'Conductivity @ 25 deg C', 'mS/m', 3, 10, '', False, 'Description for testing ', '', 'Conductivity', 4, '', 'Instructions for Conductivity @ 25deg C', None, '',  False, 'Soil'),
+            ('lab', 'Conductivity @ 25 deg C', 'mS/m', 3, 10, '', False, 'Description for testing ', '', 'Conductivity', 4, '', 'Instructions for Conductivity @ 25deg C', None, '', False, 'Soil'),
             ('lab', 'Copper', 'mg/l', 2, 6, 'ml', False, 'Description for copper as Cu', 'Cu', 'Copper', 6, '', 'Instructions for Copper', None, '', False, 'Soil'),
             ('lab', 'Ether Extract', '%', 2, 6, '', False, 'Ether extract/crude fat', 'EE', 'FatCrudeEtherExtraction', 6, '', 'Instructions for ether extract', None, '', False, 'Oil'),
             ('lab', 'Fat Crude', '%', 2, 45, '', False, 'Description for crude fat', 'FatCrude', 'FatCrude', 1, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'Instructions for Fat Crude', '5.00', 'Weight Loss (tare)', True, 'Mold'),
