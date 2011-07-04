@@ -47,6 +47,8 @@ def sample_edit_submit(context, request):
         samplePoint = form['SamplePoint']
         errors = {}
         pc = getToolByName(context, 'portal_catalog')
+        if sampleType == '':
+            errors['SampleType'] = 'Sample Type is required'
         if not pc(portal_type = 'SampleType', Title = sampleType):
             errors['SampleType'] = sampleType + ' is not a valid sample type'
         if samplePoint != "":
