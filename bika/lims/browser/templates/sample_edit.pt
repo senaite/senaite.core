@@ -27,7 +27,7 @@
 <tr> <td valign="top">
 <table
     summary="Sample edit"
-    class="analysisrequest"
+    class="analysisrequest listing nosort"
     cellpadding="0" cellspacing="0">
 
 <thead>
@@ -111,13 +111,13 @@
 <tr>
 <th i18n:translate="label_datesubmitted">Date submitted
 </th>
-<td class="left" 
+<td class="left"
     tal:define="date_submitted here/getDateSubmitted"
     tal:content="python:plone_view.toLocalizedTime(date_submitted, long_format=1)"
     >2005-01-01 10:00</td>
 </tr>
 
-<tal:state 
+<tal:state
     define="review_state python:context.portal_workflow.getInfoFor(here, 'review_state', '')">
 <tr tal:condition="python:review_state != 'due'">
 <th i18n:translate="label_datereceived">Date received

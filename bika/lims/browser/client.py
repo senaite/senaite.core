@@ -42,8 +42,8 @@ class ClientAnalysisRequestsView(BikaListingView):
                             'getClientOrderNumber',
                             'getClientReference',
                             'getClientSampleID',
-                            'getSampleType',
-                            'getSamplePoint']},
+                            'getSampleTypeTitle',
+                            'getSamplePointTitle']},
                 {'title': _('Sample received'), 'id':'sample_received',
                  'transitions': ['cancel'],
                  'columns':['getRequestID',
@@ -100,7 +100,8 @@ class ClientAnalysisRequestsView(BikaListingView):
         items = BikaListingView.folderitems(self)
         for x in range(len(items)):
             if not items[x].has_key('brain'): continue
-            items[x]['getDateReceived'] = items[x]['getDateReceived'] and self.context.toLocalizedTime(items[x]['getDateReceived'], long_format = 0) or ''
+            items[x]['getDateReceived'] = items[x]['getDateReceived'] and \
+                self.context.toLocalizedTime(items[x]['getDateReceived'], long_format = 0) or ''
             items[x]['links'] = {'getRequestID': items[x]['url']}
         return items
 
@@ -179,7 +180,8 @@ class ClientSamplesView(BikaListingView):
             if not items[x].has_key('brain'): continue
             obj = items[x]['brain'].getObject()
             items[x]['Requests'] = ",".join([o.Title() for o in obj.getAnalysisRequests()])
-            items[x]['getDateReceived'] = items[x]['getDateReceived'] and self.context.toLocalizedTime(items[x]['getDateReceived'], long_format = 0) or ''
+            items[x]['getDateReceived'] = items[x]['getDateReceived'] and \
+                 self.context.toLocalizedTime(items[x]['getDateReceived'], long_format = 0) or ''
             items[x]['links'] = {'getSampleID': items[x]['url']}
 
         return items
