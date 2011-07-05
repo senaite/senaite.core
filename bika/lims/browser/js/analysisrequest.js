@@ -55,7 +55,7 @@ jQuery( function($) {
 		if(disable == undefined){ disable = -1 ; }
 		if(!column && column != 0) { column = ""; }
 
-	tbody = $("tbody[poc='"+poc+"']").filter("#"+category_uid)[0];
+	tbody = $("#"+poc+"_"+category_uid);
 
 	if($(tbody).hasClass("expanded")){
 		// displaying an already expanded category
@@ -354,7 +354,7 @@ jQuery( function($) {
 
 		// Clicking the category name will expand the services list for that category
 		$('th[class^="analysiscategory"]').click(function(){
-			toggleCat($(this).attr("poc"), $(this).attr("id")); // id is a category uid
+			toggleCat($(this).attr("poc"), $(this).attr("cat")); // cat is a category uid
 		});
 
 		// service category pre-expanded rows
@@ -364,7 +364,7 @@ jQuery( function($) {
 		$.each($('th[class$="prefill"]'), function(i,e){
 			prefilled = true;
 			selectedservices = $(e).attr("selectedservices").split(",");
-			toggleCat($(e).attr("poc"), $(e).attr("id"), 0, selectedservices); // AR Edit has only column 0
+			toggleCat($(e).attr("poc"), $(e).attr("cat"), 0, selectedservices); // AR Edit has only column 0
 			selected_elements.push($(e));
 		});
 		if (prefilled){

@@ -383,16 +383,15 @@
 			<tr>
 				<th tal:content="python:cat[1]"
 					tal:attributes="
-						id python:cat[0];
 						colspan python:view.col_count + 3;
 						poc poc;
+						cat python:cat[0];
 						selectedservices python: ','.join([s[2] for s in ViewSelectedServices if s[1] == cat[0]]);
 						class python: 'analysiscategory%s' % (edit and [poc,cat[0]] in [[s[0],s[1]] for s in ViewSelectedServices] and ' prefill' or '')"/>
 			</tr>
 		</thead>
 		<tbody class="analysisservices" tal:attributes="
-			id python:cat[0];
-			poc poc;">
+			id python:poc + '_' + cat[0]">
 			<tr></tr>
 		</tbody>
 	</tal:i>
