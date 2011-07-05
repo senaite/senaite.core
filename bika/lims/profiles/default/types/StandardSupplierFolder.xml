@@ -22,6 +22,7 @@
   <element value="standardsupplierfolder_contents"/>
  </property>
  <property name="default_view_fallback">False</property>
+ 
  <alias from="(Default)" to="base_edit"/>
  <alias from="view" to="standardsupplierfolder_contents"/>
  <alias from="edit" to="base_edit"/>

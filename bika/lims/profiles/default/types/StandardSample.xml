@@ -17,6 +17,7 @@
  </property>
  <property name="allow_discussion">False</property>
  <property name="default_view_fallback">False</property>
+ 
  <alias from="(Default)" to="base_view"/>
  <alias from="view" to="base_view"/>
  <alias from="edit" to="base_edit"/>
@@ -32,11 +33,6 @@
   <permission value="Modify portal content"/>
  </action>
 
- <action title="Log" action_id="log" category="object" condition_expr=""
-    icon_expr="" link_target="" url_expr="string:${object_url}/status_log"
-    visible="True">
-  <permission value="bika.lims: Manage Bika"/>
- </action>
  <action title="Sticker" action_id="sticker" category="document_actions"
     condition_expr="" icon_expr="" link_target=""
     url_expr="string:${object_url}/standard_sticker" visible="True">

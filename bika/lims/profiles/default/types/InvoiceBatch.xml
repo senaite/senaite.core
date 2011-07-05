@@ -17,9 +17,11 @@
  </property>
  <property name="allow_discussion">False</property>
  <property name="default_view_fallback">False</property>
+ 
  <alias from="(Default)" to="invoicebatch_invoices"/>
  <alias from="view" to="invoicebatch_invoices"/>
  <alias from="edit" to="base_edit"/>
+ 
  <action title="Invoices" action_id="invoices" category="object"
     condition_expr="" icon_expr="" link_target=""
     url_expr="string:${object_url}/invoicebatch_invoices" visible="True">

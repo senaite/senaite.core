@@ -30,9 +30,4 @@
     url_expr="string:${object_url}/attachment_view" visible="True">
   <permission value="View"/>
  </action>
- <action title="Log" action_id="log" category="object" condition_expr=""
-    icon_expr="" link_target="" url_expr="string:${object_url}/status_log"
-    visible="True">
-  <permission value="bika.lims: Manage Bika"/>
- </action>
 </object>
