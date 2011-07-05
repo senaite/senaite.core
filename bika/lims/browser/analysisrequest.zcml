@@ -77,7 +77,7 @@
     />
 
     <browser:page
-      for="* "
+      for="*"
       name="analysisrequest_select_cc"
       class="bika.lims.browser.analysisrequest.AnalysisRequestSelectCCView"
       permission="bika.lims.ManageAnalysisRequests"

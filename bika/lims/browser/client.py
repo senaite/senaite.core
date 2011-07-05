@@ -308,7 +308,7 @@ class ClientAnalysisSpecsView(BikaListingView):
             if not items[x].has_key('brain'): continue
             obj = items[x]['brain'].getObject()
             items[x]['getSampleType'] = obj.getSampleType() and obj.getSampleType().Title()
-            items[x]['links'] = {'getSampleType': items[x]['url'] + "/edit"}
+            items[x]['links'] = {'getSampleType': items[x]['url']}
 
         return items
 

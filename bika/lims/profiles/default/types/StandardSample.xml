@@ -12,7 +12,9 @@
  <property name="link_target"></property>
  <property name="global_allow">False</property>
  <property name="filter_content_types">False</property>
- <property name="allowed_content_types"/>
+ <property name="allowed_content_types">
+  <element value="StandardAnalysis"/>
+ </property>
  <property name="allow_discussion">False</property>
  <property name="default_view_fallback">False</property>
  <alias from="(Default)" to="base_view"/>
