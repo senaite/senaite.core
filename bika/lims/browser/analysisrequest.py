@@ -1169,6 +1169,8 @@ class AJAXAnalysisRequestSubmit():
                                                 domain = 'bika')
                 if (column or field):
                     error_key = " column: %s: %s" % (int(column)+1, field or '')
+                else:
+                    error_key = "Form Error"
                 errors["Error"] = error_key + " " + message
 
             # first some basic validation
