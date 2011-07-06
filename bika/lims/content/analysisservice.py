@@ -152,21 +152,20 @@ schema = BikaSchema.copy() + Schema((
             description_msgid = 'help_max_hours_allowed',
         ),
     ),
-    # XXX TitrationUnit goes into InterimFields?
-    StringField('TitrationUnit',
-        default = 'ml',
-        widget = StringWidget(
-            size = 10,
-            label = "Titration Volume Unit",
-            label_msgid = 'label_titrationunit',
-        ),
-    ),
     FixedPointField('DuplicateVariation',
         widget = DecimalWidget(
             label = 'Duplicate Variation',
             label_msgid = 'label_duplicate_variation',
             description = 'Enter duplicate variation permitted as percentage',
             i18n_domain = I18N_DOMAIN,
+        ),
+    ),
+    BooleanField('Accredited',
+        index = "FieldIndex:brains",
+        default = False,
+        widget = BooleanWidget(
+            label = "Accredited",
+            label_msgid = "label_accredited"
         ),
     ),
     StringField('PointOfCapture',
@@ -205,14 +204,6 @@ schema = BikaSchema.copy() + Schema((
             label = 'Department',
             label_msgid = 'label_department',
             i18n_domain = I18N_DOMAIN,
-        ),
-    ),
-    BooleanField('Accredited',
-        index = "FieldIndex:brains",
-        default = False,
-        widget = BooleanWidget(
-            label = "Accredited",
-            label_msgid = "label_accredited"
         ),
     ),
     ComputedField('CategoryName',

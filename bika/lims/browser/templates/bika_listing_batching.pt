@@ -40,25 +40,10 @@
         </span>
     </span>
 
-    <!-- Pagelist with quantum leap links to previous pages for quick navigation -->
-    <!--
-    <span tal:repeat="linklist python:batch.navurls(request.form, batch.leapback)"
-          tal:condition="batch/leapback"
-          tal:omit-tag="" >
-        <a href=""
-           tal:define="page python:linklist[0];
-                       query python:linklist[1];"
-           tal:content="page"
-           tal:attributes="href python: '%s?%s' % (url,query)" >
-        </a>
-        ...
-    </span>
-    -->
-
     <!-- Pagelist with links to previous pages for quick navigation -->
     <span tal:repeat="pagenumber batch/previous_pages"
           tal:omit-tag="" >
-      <a href="" tal:content="pagenumber" 
+      <a href="" tal:content="pagenumber"
          tal:attributes="href string:${view/url}?pagenumber=$pagenumber&amp;sort_on=${request/sort_on|string:getObjPositionInParent}"/>
     </span>
 
@@ -71,24 +56,9 @@
     <!-- Pagelist with links to next pages for quick navigation -->
     <span tal:repeat="pagenumber batch/next_pages"
           tal:omit-tag="" >
-      <a href="" tal:content="pagenumber" 
+      <a href="" tal:content="pagenumber"
          tal:attributes="href string:${view/url}?pagenumber=$pagenumber&amp;sort_on=${request/sort_on|string:getObjPositionInParent}"/>
     </span>
-
-    <!-- Pagelist with quantum leap links to next pages for quick navigation -->
-    <!--
-    <span tal:repeat="linklist python:batch.navurls(request.form, batch.leapforward)"
-          tal:condition="batch/leapforward"
-          tal:omit-tag="" >
-        ...
-        <a href=""
-           tal:define="page python:linklist[0];
-                       query python:linklist[1];"
-           tal:content="page"
-           tal:attributes="href python: '%s?%s' % (url,query)" >
-        </a>
-    </span>
-    -->
 
     <!-- Link to last -->
     <span tal:condition="batch/show_link_to_last">

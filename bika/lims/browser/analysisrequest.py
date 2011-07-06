@@ -33,17 +33,13 @@ class AnalysisRequestAnalysesView(BikaListingView):
     pagesize = 1000
     columns = {
         'Service': {'title': _('Analysis')},
-        'WorksheetNumber': {'title': _('Worksheet')},
         'Result': {'title': _('Result')},
         'Uncertainty': {'title': _('+-')},
         'Attachments': {'title': _('Attachments')},
-        'state_title': {'title': _('State')},
     }
     review_states = [
         {'title': _('All'), 'id':'all',
          'columns':['Service',
-                    'state_title',
-                    'WorksheetNumber',
                     'Result',
                     'Uncertainty',
                     'Attachments'],
@@ -67,13 +63,12 @@ class AnalysisRequestAnalysesView(BikaListingView):
             if not item.has_key('brain'): continue
             obj = item['brain'].getObject()
             item['Service'] = obj.getService().Title()
-            item['WorksheetNumber'] = obj.getWorksheet()
             item['Uncertainty'] = obj.getUncertainty()
             item['Unit'] = obj.getUnit()
             item['Result'] = obj.getResult()
             item['Attachments'] = ", ".join([a.Title() for a in obj.getAttachment()])
             item['_allow_edit'] = self.allow_edit or False
-            item['_calculation'] = obj.getService().getCalculation() or False
+            item['_calculation'] = obj.getService().getCalculation() and True or False
             interim_fields = obj.getInterimFields()
             item['item_data'] = json.dumps(interim_fields)
 
@@ -371,8 +366,7 @@ class AnalysisRequestAddView(BrowserView):
     template = ViewPageTemplateFile("templates/analysisrequest_edit.pt")
 
     def __init__(self, context, request):
-        self.context = context
-        self.request = request
+        BrowserView.__init__(self, context, request)
         self.col_count = 4
         self.came_from = "add"
         self.DryMatterService = self.context.bika_settings.getDryMatterService()
@@ -585,7 +579,6 @@ class AnalysisRequestManageResultsView(AnalysisRequestViewView):
 ##            else:
 ##                self.request.RESPONSE.redirect(
 ##                    '%s/analysisrequest_analyses' % self.context.absolute_url())
-
 ##    def get_dependant_results(self, this_child):
 ##        ##bind container=container
 ##        ##bind context=context
@@ -596,7 +589,6 @@ class AnalysisRequestManageResultsView(AnalysisRequestViewView):
 ##        ##title=Get analysis results dependant on other analyses results
 ##        ##
 ##        results = {}
-
 ##        def test_reqs(reqd_calcs):
 ##            all_results = True
 ##            for reqd in reqds:
@@ -1059,8 +1051,8 @@ class AJAXgetServiceDependencies():
         self.request = request
 
     def __call__(self):
-        authenticator = getMultiAdapter((self.context, self.request), name = u"authenticator")
-#        if not authenticator.verify(): raise Unauthorized
+        plone.protect.CheckAuthenticator(self.request)
+        plone.protect.PostOnly(self.request)
         result = getServiceDependencies(self.context, self.request.get('uid', ''))
         if (not result) or (len(result.keys()) == 0):
             result = None
@@ -1071,8 +1063,8 @@ class AJAXExpandCategory(BikaListingView):
     template = ViewPageTemplateFile("templates/analysisrequest_analysisservices.pt")
 
     def __call__(self):
-        authenticator = getMultiAdapter((self.context, self.request), name = u"authenticator")
-#        if not authenticator.verify(): raise Unauthorized
+        plone.protect.CheckAuthenticator(self.request.form)
+        plone.protect.PostOnly(self.request.form)
         return self.template()
 
     def Services(self, poc, CategoryUID):
@@ -1086,8 +1078,8 @@ class AJAXProfileServices(BrowserView):
         return JSON data {poc_categoryUID: [serviceUID,serviceUID], ...}
     """
     def __call__(self):
-#        authenticator=getMultiAdapter((self.context, self.request), name=u"authenticator")
-#        if not authenticator.verify(): raise Unauthorized
+        plone.protect.CheckAuthenticator(self.request)
+        plone.protect.PostOnly(self.request)
         rc = getToolByName(self, 'reference_catalog')
         pc = getToolByName(self, 'portal_catalog')
 
@@ -1133,8 +1125,8 @@ class AJAXgetBackReferences():
         self.request = request
 
     def __call__(self):
-        authenticator = getMultiAdapter((self.context, self.request), name = u"authenticator")
-        #if not authenticator.verify(): raise Unauthorized
+        plone.protect.CheckAuthenticator(self.request)
+        plone.protect.PostOnly(self.request)
         result = getBackReferences(self.context, self.request.get('uid', ''))
         if (not result) or (len(result) == 0):
             result = []
@@ -1372,7 +1364,7 @@ class AnalysisRequestsView(ClientAnalysisRequestsView):
     description = ""
 
     def __init__(self, context, request):
-        ClientAnalysisRequestsView.__init__(context, request)
+        super(AnalysisRequestsView, self).__init__(context, request)
 
         self.columns['Client'] = {'title': 'Client'}
 
@@ -1382,11 +1374,10 @@ class AnalysisRequestsView(ClientAnalysisRequestsView):
             new_states.append(x)
         self.review_states = new_states
 
+
     def folderitems(self):
         items = ClientAnalysisRequestsView.folderitems(self)
         for x in range(len(items)):
             if not items[x].has_key('brain'): continue
             items[x]['Client'] = items[x]['brain'].getObject().aq_parent.Title()
         return items
-
-

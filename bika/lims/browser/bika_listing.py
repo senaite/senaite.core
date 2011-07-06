@@ -19,20 +19,18 @@ import urllib
 ploneMessageFactory = MessageFactory('plone')
 
 class BikaListingView(FolderContentsView):
-    implements(IFolderContentsView)
     template = ViewPageTemplateFile("templates/bika_listing.pt")
-
-    contentFilter = {}
-    content_add_actions = {}
-    show_editable_border = True
-    show_filters = True
-    show_sort_column = True
-    show_select_row = True
-    show_select_column = True
-    pagesize = 20
 
     title = ""
     description = ""
+    contentFilter = {}
+    content_add_actions = {}
+    show_editable_border = True
+    show_filters = False
+    show_sort_column = False
+    show_select_row = False
+    show_select_column = False
+    pagesize = 20
 
     def __init__(self, context, request):
         super(BikaListingView, self).__init__(context, request)
@@ -40,6 +38,7 @@ class BikaListingView(FolderContentsView):
         if not self.show_editable_border: request.set('disable_border', 1)
         self.portal_types = getToolByName(context, 'portal_types')
         self.contentsMethod = self.context.getFolderContents
+
 
     def __call__(self):
         form = self.request.form

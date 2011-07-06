@@ -42,6 +42,17 @@
                 cookable="True"
                 enabled="on"
                 expression=""
+                id="++resource++bika.lims.js/jquery.json.js"
+                inline="False"
+                insert-after="*"/>
+
+    <javascript authenticated="False"
+                cacheable="True"
+                compression="safe"
+                conditionalcomment=""
+                cookable="True"
+                enabled="on"
+                expression=""
                 id="++resource++bika.lims.js/utils.js"
                 inline="False"
                 insert-after="*"/>
