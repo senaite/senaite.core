@@ -21,7 +21,6 @@ jQuery( function($) {
 			if(key.which == 13) {
 				$('#folderContentsForm').append("<input type='hidden' value='1' name='filter_input_keypress' id='filter_input_keypress'/>");
 				inplace_submit();
-				key.prevent_default();
 				return false;
 			}
 		})

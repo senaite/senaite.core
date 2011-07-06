@@ -159,7 +159,7 @@
             tal:content="item/title_or_id"
             tal:attributes="for string:cb_${item/id}"
             class="hiddenStructure">Item Title</label>
-    </td>
+        </td>
 
 <tal:column tal:repeat="column review_state/columns">
 
@@ -198,6 +198,7 @@ Javascript lives in bika_listing_table.js.
           value python: item[column]['value'];
           type python: item[column]['type'];"/>
       <em class="discreet" style="white-space:nowrap;" tal:content="python: item[column]['unit']"/>
+      <span tal:attributes="uid python:item['UID'];field python:item[column]['id']"/>
     </tal:i>
     <tal:i condition="not: is_interim">
       <tal:i tal:condition="is_result">
@@ -217,14 +218,16 @@ Javascript lives in bika_listing_table.js.
             field string:Result;
             value python: item['Result'];"/>
         <em class="discreet" style="white-space:nowrap;" tal:content="python: item['Unit']"/>
+        <span tal:attributes="uid python:item['UID']; field string:Result;"/>
       </tal:i>
       <tal:i tal:condition="not: is_result">
         <a tal:condition="python:item.has_key('links') and item['links'].has_key(column)" href="#"
            tal:attributes="
              href python:item['links'][column];
              class string: ${item/state_class} ${item/type_class};">
-          <img tal:condition="python:view.columns[column].has_key('icon')"
-               tal:attributes="src python:'images/'+view.columns[column]['icon']" />
+          <!--          <img tal:condition="python:view.columns[column].has_key('icon')"
+                         tal:attributes="src python:'images/'+view.columns[column]['icon']" />
+            -->
           <strong tal:content="python: item.get(column, '-')"/>
         </a>
         <span
@@ -248,9 +251,10 @@ Javascript lives in bika_listing_table.js.
         <a
           tal:condition="python:item.has_key('links') and item['links'].has_key(column)" href="#"
           tal:attributes="href python:item['links'][column]; class string: ${item/state_class} ${item/type_class};">
+          <!--
           <img
             tal:condition="python:view.columns[column].has_key('icon')"
-            tal:attributes="src python:'images/'+view.columns[column]['icon']" />
+            tal:attributes="src python:'images/'+view.columns[column]['icon']" /> -->
           <strong tal:content="python: item.get(column, '-')"/>
         </a>
         <span

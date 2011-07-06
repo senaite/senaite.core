@@ -38,7 +38,7 @@
     <browser:page
       for="*"
       name="analysis_entry"
-      class="bika.lims.browser.calcs.CalculateAnalysisEntry"
+      class="bika.lims.browser.calcs.AJAXCalculateAnalysisEntry"
       permission="zope.Public"
       layer="bika.lims.interfaces.IBikaLIMS"
     />

@@ -2,14 +2,12 @@ jQuery(function($){
 $(document).ready(function(){
 
 	fieldname = $("#fieldname").val();
-	fieldtype = $("#fieldtype").val();
 
 	new_row = '<tr class="'+fieldtype+'">\
-		<td><input type="text" class="'+fieldtype+'_input" name="'+fieldname+'.name:records"/></td>\
-		<td><input type="text" class="'+fieldtype+'_input" name="'+fieldname+'.type:records"/></td>\
-		<td><input type="text" class="'+fieldtype+'_input" name="'+fieldname+'.value:records"/></td>\
-		<td><input type="text" class="'+fieldtype+'_input" name="'+fieldname+'.unit:records"/></td>\
-		<td><input type="text" class="'+fieldtype+'_input" name="'+fieldname+'.collapse:records"/></td>\
+		<td><input type="text" class="analysis_input" name="'+fieldname+'.id:records"/></td>\
+		<td><input type="text" class="analysis_input" name="'+fieldname+'.title:records"/></td>\
+		<td><input type="text" class="analysis_input" name="'+fieldname+'.value:records"/></td>\
+		<td><input type="text" class="analysis_input" name="'+fieldname+'.unit:records"/></td>\
 	</tr>';
 
 	function remove_blank_rows(){
@@ -17,8 +15,7 @@ $(document).ready(function(){
 			if($(this.children[0].children[0]).val().replace(" ","") == "" &&
 			   $(this.children[1].children[0]).val().replace(" ","") == "" &&
 			   $(this.children[2].children[0]).val().replace(" ","") == "" &&
-			   $(this.children[3].children[0]).val().replace(" ","") == "" &&
-			   $(this.children[4].children[0]).val().replace(" ","") == ""){
+			   $(this.children[3].children[0]).val().replace(" ","") == ""){
 					$(this).remove();
 			}
 		});

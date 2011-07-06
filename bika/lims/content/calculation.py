@@ -20,8 +20,8 @@ schema = BikaSchema.copy() + Schema((
     RecordsField('InterimFields',
         # subfield values must be the identical twin of Analysis.InterimFields.
         type = 'InterimFields',
-        subfields = ('id', 'title', 'type', 'value', 'unit'),
-        subfield_labels = {'id':'Field ID', 'title':'Field Title', 'type':'Type', 'value':'Default', 'unit':'Unit'},
+        subfields = ('id', 'title', 'value', 'unit'),
+        subfield_labels = {'id':'Field ID', 'title':'Field Title', 'value':'Default', 'unit':'Unit'},
         required_subfields = ('id','name',),
         widget = RecordsWidget(
             label = 'Calculation Interim Fields',

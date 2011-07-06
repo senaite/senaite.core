@@ -22,7 +22,6 @@
         current_field_value accessor;">
 
         <input type="hidden" id="fieldname" tal:attributes="value fieldname"/>
-        <input type="hidden" id="fieldtype" tal:attributes="value field/type"/>
         <input type="hidden" id="subfields" tal:attributes="value subfields"/>
 
         <table class="listing nosort">
@@ -32,12 +31,12 @@
                   tal:content="python: subfield_labels[subfield]"/>
           </thead>
 
-          <tbody tal:attributes="id string:${field/type}_tbody">
-            <tr tal:attributes="class field/type" tal:repeat="record current_field_value">
+          <tbody>
+            <tr tal:repeat="record current_field_value">
               <td tal:repeat="subfield subfields">
                 <input type="text"
                     tal:attributes="value python: record[subfield];
-                                    class string:${field/type}_input;
+                                    class string:analysis_input;
                                     name string:${fieldname}.${subfield}:records"/>
               </td>
             </tr>
