@@ -127,10 +127,14 @@ table.analysisrequest .topborder { border-top:1px solid #DDDDDD; }
 table.analysisrequest .noleftborder { border-left: 0; }
 table.analysisrequest th { border-color: #DDDDDD; }
 
-table.analysisrequest .listing thead.analysiscategory {
+table.analysisrequest th.analysiscategory {
     cursor:pointer;
     text-color: &dtml-linkColor;;
     font-weight:bold;
+	border:1px solid #CCCCCC;
+}
+
+table.analysisrequest tr.analysiscategory {
 }
 
 table.analysisrequest .price {

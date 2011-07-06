@@ -380,7 +380,7 @@
 
 	<tal:i repeat="cat python:cats[poc]">
 		<thead>
-			<tr>
+			<tr class="analysiscategory">
 				<th tal:content="python:cat[1]"
 					tal:attributes="
 						colspan python:view.col_count + 3;
@@ -397,6 +397,10 @@
 	</tal:i>
 </tal:i>
 </tal:i>
+
+<!-- Pretty blank row -->
+<thead class="pointofcapture"><tr><th tal:attributes="colspan python:view.col_count + 3">&nbsp;</th></tr></thead>
+
 <tfoot>
 
 <tr tal:condition="here/getMemberDiscountApplies">
