@@ -49,7 +49,7 @@ class AnalysisRequestAnalysesView(BikaListingView):
                     'Attachments'],
          },
     ]
-    def __init__(self, context, request, allow_edit=False, **kwargs):
+    def __init__(self, context, request, allow_edit = False, **kwargs):
         super(AnalysisRequestAnalysesView, self).__init__(context, request)
         self.allow_edit = allow_edit
         self.contentFilter = dict(kwargs)
@@ -378,10 +378,7 @@ class AnalysisRequestAddView(BrowserView):
         self.DryMatterService = self.context.bika_settings.getDryMatterService()
 
     def __call__(self):
-        if self.request.form.has_key("submitted"):
-            return AJAXAnalysisRequestSubmit(self.context, self.request)()
-        else:
-            return self.template()
+        return self.template()
 
     def tabindex(self):
         i = 0
@@ -445,9 +442,9 @@ class AnalysisRequestManageResultsView(AnalysisRequestViewView):
     def __init__(self, context, request):
         super(AnalysisRequestViewView, self).__init__(context, request)
         self.FieldAnalysesView = AnalysisRequestAnalysesView(
-                               context, request, allow_edit=True, getPointOfCapture = 'field')
+                               context, request, allow_edit = True, getPointOfCapture = 'field')
         self.LabAnalysesView = AnalysisRequestAnalysesView(
-                               context, request, allow_edit=True, getPointOfCapture = 'lab')
+                               context, request, allow_edit = True, getPointOfCapture = 'lab')
 
     def __call__(self):
         wf_tool = getToolByName(self.context, 'portal_workflow')
@@ -1018,7 +1015,7 @@ class AnalysisRequestSelectSampleView(BikaListingView):
                         res[catuid] = [analysis.getService().UID()]
         return res
 
-def getServiceDependencies(context,service_uid):
+def getServiceDependencies(context, service_uid):
     """ Calculates the service dependencies, and returns them
         keyed by PointOfCapture and AnalysisCategory, in a
         funny little dictionary suitable for JSON/javascript
@@ -1040,7 +1037,7 @@ def getServiceDependencies(context,service_uid):
     result = {}
 
     def walk(deps):
-        for service_uid,service_deps in deps.items():
+        for service_uid, service_deps in deps.items():
             service = rc.lookupObject(service_uid)
             category = service.getCategory()
             cat = '%s_%s' % (category.UID(), category.Title())
@@ -1057,14 +1054,14 @@ def getServiceDependencies(context,service_uid):
 class AJAXgetServiceDependencies():
     """ Return json(getServiceDependencies) """
 
-    def __init__(self,context,request):
+    def __init__(self, context, request):
         self.context = context
         self.request = request
 
     def __call__(self):
-        authenticator=getMultiAdapter((self.context, self.request), name=u"authenticator")
+        authenticator = getMultiAdapter((self.context, self.request), name = u"authenticator")
 #        if not authenticator.verify(): raise Unauthorized
-        result = getServiceDependencies(self.context, self.request.get('uid',''))
+        result = getServiceDependencies(self.context, self.request.get('uid', ''))
         if (not result) or (len(result.keys()) == 0):
             result = None
         return json.dumps(result)
@@ -1074,7 +1071,7 @@ class AJAXExpandCategory(BikaListingView):
     template = ViewPageTemplateFile("templates/analysisrequest_analysisservices.pt")
 
     def __call__(self):
-        authenticator=getMultiAdapter((self.context, self.request), name=u"authenticator")
+        authenticator = getMultiAdapter((self.context, self.request), name = u"authenticator")
 #        if not authenticator.verify(): raise Unauthorized
         return self.template()
 
@@ -1102,12 +1099,12 @@ class AJAXProfileServices(BrowserView):
             service = pc(portal_type = "AnalysisService", UID = service.UID())[0]
             categoryUID = service.getCategoryUID
             poc = service.getPointOfCapture
-            try: services["%s_%s" % (poc,categoryUID)].append(service.UID)
-            except: services["%s_%s" % (poc,categoryUID)] = [service.UID, ]
+            try: services["%s_%s" % (poc, categoryUID)].append(service.UID)
+            except: services["%s_%s" % (poc, categoryUID)] = [service.UID, ]
 
         return json.dumps(services)
 
-def getBackReferences(context,service_uid):
+def getBackReferences(context, service_uid):
     """ Recursively discover Calculation/DependentService backreferences from here.
         returns a list of Analysis Service objects
 
@@ -1124,28 +1121,28 @@ def getBackReferences(context,service_uid):
             if item.portal_type == 'AnalysisService':
                 services.append(item)
             walk(item.getBackReferences())
-    walk([service,])
+    walk([service, ])
 
     return services
 
 class AJAXgetBackReferences():
     """ Return json(getBackReferences) """
 
-    def __init__(self,context,request):
+    def __init__(self, context, request):
         self.context = context
         self.request = request
 
     def __call__(self):
-        authenticator=getMultiAdapter((self.context, self.request), name=u"authenticator")
+        authenticator = getMultiAdapter((self.context, self.request), name = u"authenticator")
         #if not authenticator.verify(): raise Unauthorized
-        result = getBackReferences(self.context, self.request.get('uid',''))
+        result = getBackReferences(self.context, self.request.get('uid', ''))
         if (not result) or (len(result) == 0):
             result = []
         return json.dumps([r.UID() for r in result])
 
 class AJAXAnalysisRequestSubmit():
 
-    def __init__(self,context,request):
+    def __init__(self, context, request):
         self.context = context
         self.request = request
 
@@ -1168,7 +1165,7 @@ class AJAXAnalysisRequestSubmit():
                                                 default = 'Input is required but no input given.',
                                                 domain = 'bika')
                 if (column or field):
-                    error_key = " column: %s: %s" % (int(column)+1, field or '')
+                    error_key = " column: %s: %s" % (int(column) + 1, field or '')
                 else:
                     error_key = "Form Error"
                 errors["Error"] = error_key + " " + message
@@ -1314,6 +1311,7 @@ class AJAXAnalysisRequestSubmit():
                         Profile = profile,
                         **dict(values)
                     )
+                    ARs.append(ar_id)
                 else:
                     ar_id = self.context.getRequestID()
                     ar = self.context
@@ -1325,7 +1323,7 @@ class AJAXAnalysisRequestSubmit():
                         **dict(values)
                     )
 
-                ar.setAnalyses(Analyses, prices=prices)
+                ar.setAnalyses(Analyses, prices = prices)
 
                 if (values.has_key('profileTitle')):
                     profile_id = self.context.generateUniqueId('ARProfile')
@@ -1344,7 +1342,7 @@ class AJAXAnalysisRequestSubmit():
                     wftool.doActionFor(ar, 'receive')
 
             # XXX ARAnalysesField must move to content.analysis
-            ar.setAnalyses(Analyses, prices=prices)
+            ar.setAnalyses(Analyses, prices = prices)
 
             if came_from == "add":
                 if len(ARs) > 1:

@@ -30,6 +30,7 @@ jQuery( function($) {
         // Sample Edit ajax form submits
         var options = {
             url: window.location.href,
+			url: window.location.href.replace("/base_edit","/sample_submit"),
             dataType:  'json',
             data: $(this).formToArray(),
             beforeSubmit: function(formData, jqForm, options) {

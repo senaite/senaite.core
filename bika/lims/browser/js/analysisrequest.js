@@ -488,6 +488,7 @@ jQuery( function($) {
 		// AR Add/Edit ajax form submits
 		var options = {
 			url: window.location.href.replace("/analysisrequest_add","/analysisrequest_submit"),
+			url: window.location.href.replace("/base_edit","/analysisrequest_submit"),
 			dataType: 'json',
 			data: $(this).formToArray(),
 			beforeSubmit: function(formData, jqForm, options) {
@@ -497,7 +498,7 @@ jQuery( function($) {
 			success: function(responseText, statusText, xhr, $form)  {
 				if(responseText['success'] != undefined){
 					$("#spinner").toggle(false);
-					destination = window.location.href.replace("/analysisrequest_submit","");
+					destination = window.location.href.replace("/analysisrequest_add","");
 					destination = destination.replace("/base_edit", "/base_view");
 					window.location.replace(destination);
 				} else {
