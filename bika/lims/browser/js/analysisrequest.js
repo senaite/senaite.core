@@ -155,7 +155,7 @@ jQuery( function($) {
 					$("#messagebox").dialog({width:450, resizable:false, closeOnEscape: false, buttons:{
 						'Yes': function(){
 							$.each(dep_args, function(i,args){
-								tbody = $("tbody[poc='"+args[0]+"']").filter('#'+args[1]);
+								tbody = $("#"+args[0]+"_"+args[1]);
 								if ($(tbody).hasClass("expanded")) {
 									// if cat is already expanded, we toggle(true) it and manually select service checkboxes
 									$(tbody).toggle(true);
@@ -451,14 +451,14 @@ jQuery( function($) {
 				window.opener.toggleCat($(this).attr('poc'), this.id, false, column, true, true);
 			});
 
-		$.each(window.opener.$('input[id*="_field_"]').filter(".cb"), function(i,e){
-			if ($(e).attr('id').indexOf('_'+column+'_') > -1){
-				$(e).attr('disabled', true);
-			}
+			$.each(window.opener.$('input[id*="_field_"]').filter(".cb"), function(i,e){
+				if ($(e).attr('id').indexOf('_'+column+'_') > -1){
+					$(e).attr('disabled', true);
+				}
+			});
+			window.opener.recalc_prices();
+			window.close();
 		});
-		window.opener.recalc_prices();
-		window.close();
-	});
 
 		$(".deleteSampleButton").click(function(){
 			column = $(this).attr('column');
@@ -486,10 +486,9 @@ jQuery( function($) {
 		}
 
 		// AR Add/Edit ajax form submits
-		newurl = window.location.href.replace("/analysisrequest_add","/analysisrequest_submit");
-		newurl = newurl.replace("/base_edit","/analysisrequest_submit");
 		var options = {
-			url: newurl,
+			url: window.location.href.replace("/analysisrequest_add","/analysisrequest_submit").
+				 replace("/base_edit","/analysisrequest_submit"),
 			dataType: 'json',
 			data: $(this).formToArray(),
 			beforeSubmit: function(formData, jqForm, options) {

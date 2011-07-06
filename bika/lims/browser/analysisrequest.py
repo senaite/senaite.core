@@ -14,6 +14,7 @@ from zope.component import getMultiAdapter
 from decimal import Decimal
 from zope.interface import implements
 from plone.app.content.browser.interfaces import IFolderContentsView
+from operator import itemgetter
 import plone
 #from plone.protect import CheckAuthenticator
 import json
@@ -68,7 +69,8 @@ class AnalysisRequestAnalysesView(BikaListingView):
             item['Result'] = obj.getResult()
             item['Attachments'] = ", ".join([a.Title() for a in obj.getAttachment()])
             item['_allow_edit'] = self.allow_edit or False
-            item['_calculation'] = obj.getService().getCalculation() and True or False
+            calculation = obj.getService().getCalculation()
+            item['_calculation'] = calculation and True or False
             interim_fields = obj.getInterimFields()
             item['item_data'] = json.dumps(interim_fields)
 
@@ -80,6 +82,9 @@ class AnalysisRequestAnalysesView(BikaListingView):
                 item[i['id']] = i
 
             items.append(item)
+        items = sorted(items, key=itemgetter('Service'))
+        for i in range(len(items)):
+            items[i]['table_row_class'] = ((i + 1) % 2 == 0) and "draggable even" or "draggable odd"
 
         interim_keys = self.interim_fields.keys()
         interim_keys.reverse()
@@ -619,9 +624,9 @@ class AnalysisRequestManageResultsView(AnalysisRequestViewView):
 ##        for p in parents:
 ##            parent = rc.lookupObject(p.sourceUID)
 ##
-##            parent_keyword = parent.getAnalysisKey()
+##            parent_keyword = parent.getKeyword()
 ##            for child in parent.getDependantAnalysis():
-##                keyword = child.getAnalysisKey()
+##                keyword = child.getKeyword()
 ##                try:
 ##                    results[keyword] = Decimal(child.getResult())
 ##                except:
@@ -706,7 +711,7 @@ class AnalysisRequestManageResultsView(AnalysisRequestViewView):
 ##            drymatter = self.context.bika_settings.getDryMatterService()
 ##            if parent.getServiceUID() == (hasattr(drymatter, 'UID') and drymatter.UID() or None):
 ##                moisture = self.context.bika_settings.getMoistureService()
-##                moisture_key = moisture.getAnalysisKey()
+##                moisture_key = moisture.getKeyword()
 ##                reqds = [moisture_key, ]
 ##                if test_reqs(reqds):
 ##                    Moisture = results[moisture_key]

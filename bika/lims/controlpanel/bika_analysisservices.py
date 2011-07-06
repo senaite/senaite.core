@@ -24,7 +24,7 @@ class AnalysisServicesView(BikaListingView):
     pagesize = 50
 
     columns = {
-               'title_or_id': {'title': _('Title')},
+               'getServiceName': {'title': _('Title')},
                'CategoryName': {'title': _('Category')},
                'ReportDryMatter': {'title': _('Report as dry matter')},
                'AttachmentOption': {'title': _('Attachments')},
@@ -37,7 +37,7 @@ class AnalysisServicesView(BikaListingView):
               }
     review_states = [
                      {'title_or_id': _('All'), 'id':'all',
-                      'columns': ['title_or_id',
+                      'columns': ['getServiceName',
                                   'CategoryName',
                                   'ReportDryMatter',
                                   'AttachmentOption',
@@ -72,6 +72,9 @@ class AnalysisServicesView(BikaListingView):
             items[x]['Calculation'] = calculation and calculation.Title() or ''
             items[x]['links'] = {'title_or_id': items[x]['url'] + "/edit"}
             out.append(items[x])
+        out = sorted(out, key=itemgetter('getServiceName'))
+        for i in range(len(out)):
+            out[i]['table_row_class'] = ((i + 1) % 2 == 0) and "draggable even" or "draggable odd"
         return out
 
 schema = ATFolderSchema.copy()

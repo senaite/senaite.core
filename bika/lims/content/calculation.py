@@ -3,7 +3,7 @@ from Products.CMFCore.permissions import ModifyPortalContent, View
 from Products.Archetypes.public import *
 from Products.Archetypes.references import HoldingReference
 from Products.ATExtensions.ateapi import RecordsField as RecordsField
-from bika.lims.browser.widgets import RecordsWidget
+from bika.lims.browser.widgets import RecordsWidget as BikaRecordsWidget
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.config import I18N_DOMAIN, PROJECTNAME
 from bika.lims import bikaMessageFactory as _
@@ -22,8 +22,8 @@ schema = BikaSchema.copy() + Schema((
         type = 'InterimFields',
         subfields = ('id', 'title', 'value', 'unit'),
         subfield_labels = {'id':'Field ID', 'title':'Field Title', 'value':'Default', 'unit':'Unit'},
-        required_subfields = ('id','name',),
-        widget = RecordsWidget(
+        required_subfields = ('id','title',),
+        widget = BikaRecordsWidget(
             label = 'Calculation Interim Fields',
             label_msgid = 'label_interim_fields',
             i18n_domain = I18N_DOMAIN,

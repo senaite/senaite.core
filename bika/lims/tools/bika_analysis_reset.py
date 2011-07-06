@@ -92,7 +92,7 @@ class bika_analysis_reset(UniqueObject, SimpleItem):
                 continue
 
             s_proxies = self.portal_catalog(portal_type = 'AnalysisService',
-                                            getAnalysisKey = keyword)
+                                            getKeyword = keyword)
 
             if len(s_proxies) > 1:
                 msgs.append('%s %s %s: duplicate key %s' % (counter, cat, service, keyword))

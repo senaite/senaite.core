@@ -57,11 +57,18 @@ class AJAXCalculateAnalysisEntry():
                 item_data.append(i)
             ret['item_data'] = item_data
             # check if all dependent analyses in this AR have results
+            unsatisfied = []
             for dep in dependencies:
+                dep_uid = dep.getUID()
                 for a in analyses:
                     if a.getService().getUID() == dep.getUID():
-                        if not a.getResult(): return None # nop
+                        if not a.getResult():
+                            unsatisfied.append(dep_uid)
                         mapping[i['id']] = i['value']
+            # return unsatisfied dependencies
+            if unsatisfied:
+                ret['unsatisfied'] = unsatisfied
+                return json.dumps(ret)
 
             formula = calculation.getFormula()
             try:

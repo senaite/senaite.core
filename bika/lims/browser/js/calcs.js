@@ -30,6 +30,11 @@ $(document).ready(function(){
 					// error: remove value from result field
 					$("input[uid='"+uid+"']").filter("input[field='Result']").val('');
 				}
+				if('unsatisfied' in data){
+					$("span[uid='"+uid+"']")
+					  .filter("span[name='unsatisfied'']")
+					  .append("<img src='++resource++bika.lims.images/dependencies.png' title='"+data.unsatisfied.join(", ")+"'/>");
+				}
 				if('result' in data){
 					$("input[uid='"+uid+"']").filter("input[field='Result']").val(data.result);
 					if('formula' in data){

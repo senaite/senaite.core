@@ -298,7 +298,7 @@ class WorksheetAddAnalysisView(BikaListingView):
             self.context.setAnalyses(analyses)
             # add this item to WorksheetLayout field in the next available slot
             layout = self.context.getWorksheetLayout()
-            layout.append({'uid':analysis.UID(), 'type':'a', 'pos':len(layout), 'key':analysis.getAnalysisKey()})
+            layout.append({'uid':analysis.UID(), 'type':'a', 'pos':len(layout), 'key':analysis.getKeyword()})
             self.context.setWorksheetLayout(layout)
         self.request.RESPONSE.redirect(self.context.absolute_url() + "/worksheet_manage_results")
 

@@ -69,8 +69,7 @@ class ARAnalysesField(ObjectField):
                 analysis.edit(
                     Service = service,
                     InterimFields = interim_fields,
-                    #XXX AnalysisKey remains?
-                    AnalysisKey = service.getAnalysisKey(),
+                    Keyword = service.getKeyword(),
                     Price = str(price),
                     Unit = service.getUnit(),
                 )
@@ -79,9 +78,8 @@ class ARAnalysesField(ObjectField):
                 # the price or unit of an existing analysis may have changed
                 if (analysis.getPrice() != price) or \
                    (analysis.getUnit() != service.getUnit()):
-                   # XXX this needs a good scrutinification?
                     analysis.edit(
-                        AnalysisKey = service.getAnalysisKey(),
+                        Keyword = service.getKeyword(),
                         Price = str(price),
                         Unit = service.getUnit(),
                     )

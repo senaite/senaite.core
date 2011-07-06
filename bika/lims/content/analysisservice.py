@@ -12,6 +12,16 @@ from bika.lims.content.bikaschema import BikaSchema
 import sys
 
 schema = BikaSchema.copy() + Schema((
+    TextField('ServiceName',
+        required = 1,
+        widget = TextAreaWidget(
+            label = 'Service Name',
+            label_msgid = 'label_description',
+            description = "The name of the analysis service",
+            description_msgid = 'help_service_name',
+            i18n_domain = I18N_DOMAIN,
+        ),
+    ),
     TextField('ServiceDescription',
         widget = TextAreaWidget(
             label = 'Description',
@@ -19,7 +29,6 @@ schema = BikaSchema.copy() + Schema((
             i18n_domain = I18N_DOMAIN,
         ),
     ),
-
     BooleanField('ReportDryMatter',
         default = False,
         widget = BooleanWidget(
@@ -97,23 +106,13 @@ schema = BikaSchema.copy() + Schema((
             i18n_domain = I18N_DOMAIN,
         ),
     ),
-    StringField('InstrumentKeyword',
-        index = 'FieldIndex',
-        widget = StringWidget(
-            label = 'Instrument Import Keyword',
-            label_msgid = 'label_import_keyword',
-            description = 'This is the name of the service in the CSV file exported by the analytic instrument',
-            description_msgid = 'help_import_keyword',
-        ),
-    ),
-    StringField('AnalysisKey',
-        default_method = 'getInstrumentKeyword',
-        index = 'FieldIndex',
+    StringField('Keyword',
+        required = 1,
+        index = 'FieldIndex:brains',
         widget = StringWidget(
             label = 'Analysis Keyword',
             label_msgid = 'label_analysis_keyword',
-            description = 'The analysis identifier',
-            description_msgid = 'help_import_keyword',
+            description = 'This is the name of the service in instrument exports and AR imports.  It is also the service identifier used in user defined calculations.',
         ),
     ),
     ReferenceField('Instrument',
@@ -142,7 +141,6 @@ schema = BikaSchema.copy() + Schema((
             i18n_domain = I18N_DOMAIN,
         ),
     ),
-
     IntegerField('MaxHoursAllowed',
         widget = IntegerWidget(
             label = "Maximum Hours Allowed",
@@ -258,6 +256,11 @@ class AnalysisService(BaseContent):
     security = ClassSecurityInfo()
     schema = schema
 
+    def Title(self):
+        """ Return the Service Name and Keyword as it's Title """
+        return "%s (%s)" %(self.getField('ServiceName').get(self),
+                           self.getField('Keyword').get(self))
+
     security.declarePublic('getResultOptionsSorted')
     def getResultOptionsSorted(self):
         """ return the result options in the correct sequence """
@@ -356,8 +359,7 @@ class AnalysisService(BaseContent):
             Price = self.getPrice(),
             CorporatePrice = self.getCorporatePrice(),
             VAT = self.getVAT(),
-            InstrumentKeyword = self.getInstrumentKeyword(),
-            AnalysisKey = self.getAnalysisKey(),
+            Keyword = self.getKeyword(),
             Instrument = self.getInstrument(),
             Calculation = self.getCalculation(),
             MaxHoursAllowed = self.getMaxHoursAllowed(),

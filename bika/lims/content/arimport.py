@@ -275,7 +275,7 @@ class ARImport(BaseFolder):
         for service in self.portal_catalog(
                 portal_type = 'AnalysisService'):
             obj = service.getObject()
-            keyword = obj.getAnalysisKey()
+            keyword = obj.getKeyword()
             if keyword:
                 services[keyword] = '%s:%s' % (obj.UID(), obj.getPrice())
 
@@ -385,7 +385,7 @@ class ARImport(BaseFolder):
         for service in self.portal_catalog(
                 portal_type = 'AnalysisService'):
             obj = service.getObject()
-            keyword = obj.getAnalysisKey()
+            keyword = obj.getKeyword()
             if keyword:
                 services[keyword] = '%s:%s' % (obj.UID(), obj.getPrice())
             service_uids[obj.UID()] = '%s:%s' % (obj.UID(), obj.getPrice())
@@ -439,7 +439,7 @@ class ARImport(BaseFolder):
                 for analysis in profile:
                     if not service_uids.has_key(analysis):
                         service = tool.lookupObject(analysis)
-                        keyword = service.getAnalysisKey()
+                        keyword = service.getKeyword()
                         service_uids[obj.UID()] = '%s:%s' % (obj.UID(), obj.getPrice())
                         if keyword:
                             services[keyword] = '%s:%s' % (obj.UID(), obj.getPrice())
@@ -454,7 +454,7 @@ class ARImport(BaseFolder):
                 if not services.has_key(analysis):
                     for service in self.portal_catalog(
                             portal_type = 'AnalysisService',
-                            getAnalysisKey = analysis):
+                            getKeyword = analysis):
                         obj = service.getObject()
                         services[analysis] = '%s:%s' % (obj.UID(), obj.getPrice())
                         service_uids[obj.UID()] = '%s:%s' % (obj.UID(), obj.getPrice())

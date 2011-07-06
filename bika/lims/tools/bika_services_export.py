@@ -40,7 +40,7 @@ class bika_services_export(UniqueObject, SimpleItem):
             service = s.getObject()
 
             # create detail line
-            detail = [service.getCategoryName(), service.Title(), service.getAnalysisKey(), service.getInstrumentKeyword(), service.getPrice(), service.getCorporatePrice()]
+            detail = [service.getCategoryName(), service.Title(), service.getKeyword(), service.getInstrumentKeyword(), service.getPrice(), service.getCorporatePrice()]
             rows.append(detail)
 
 

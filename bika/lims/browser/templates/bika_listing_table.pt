@@ -269,6 +269,8 @@ Result column
               <span tal:attributes="
                   uid python:item['UID'];
                   field string:Result;"></span>
+              <span name='dependencies'
+                    tal:attributes="uid python:item['UID'];"></span>
               <span name='formula'
                     tal:condition="python: item['_calculation']"
                     tal:attributes="uid python:item['UID'];"></span>
@@ -276,8 +278,11 @@ Result column
           </tal:not_interim>
         </tal:editable>
 
-
 <!----------------- Not Editable ----------------->
+
+<tal:comment replace="nothing">***************
+The rest is simple; just display column values;
+******************************* </tal:comment>
 
         <tal:not_editable condition="not: is_editable">
           <tal:interim condition="is_interim">
