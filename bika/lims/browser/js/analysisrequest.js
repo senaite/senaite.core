@@ -486,9 +486,10 @@ jQuery( function($) {
 		}
 
 		// AR Add/Edit ajax form submits
+		newurl = window.location.href.replace("/analysisrequest_add","/analysisrequest_submit");
+		newurl = newurl.replace("/base_edit","/analysisrequest_submit");
 		var options = {
-			url: window.location.href.replace("/analysisrequest_add","/analysisrequest_submit"),
-			url: window.location.href.replace("/base_edit","/analysisrequest_submit"),
+			url: newurl,
 			dataType: 'json',
 			data: $(this).formToArray(),
 			beforeSubmit: function(formData, jqForm, options) {
