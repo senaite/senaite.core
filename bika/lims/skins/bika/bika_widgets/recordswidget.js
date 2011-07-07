@@ -1,37 +1,25 @@
 jQuery(function($){
 $(document).ready(function(){
 
-	fieldname = $("#fieldname").val();
+    $("input[id$='_more']").click(function(i,e){
+        fieldname = $(this).attr("id").split("_")[0];
+        table = $('#'+fieldname+"_table");
+        row = $($(".records_row_"+fieldname)[0]).clone();
+        for(i=0; i<$(row).children().length; i++){
+            td = $(row).children()[i];
+            input = $(td).children()[0];
+            $(input).val('');
+        }
+        $(row).appendTo($(table));
+    });
 
-	// XXX Need to make this generic - it's stuck to InterimFields values atm.
-	new_row = '<tr class="'+fieldtype+'">\
-		<td><input type="text" class="analysis_input" name="'+fieldname+'.id:records:ignore_empty"/></td>\
-		<td><input type="text" class="analysis_input" name="'+fieldname+'.title:records:ignore_empty"/></td>\
-		<td><input type="text" class="analysis_input" name="'+fieldname+'.value:records:ignore_empty"/></td>\
-		<td><input type="text" class="analysis_input" name="'+fieldname+'.unit:records:ignore_empty"/></td>\
-	</tr>';
-
-	function remove_blank_rows(){
-		$.each($("tr."+fieldtype), function(i,row){
-			if($(this.children[0].children[0]).val().replace(" ","") == "" &&
-			   $(this.children[1].children[0]).val().replace(" ","") == "" &&
-			   $(this.children[2].children[0]).val().replace(" ","") == "" &&
-			   $(this.children[3].children[0]).val().replace(" ","") == ""){
-					$(this).remove();
-			}
-		});
-	}
-
-	$("."+fieldtype+"_input").live('change', function(){
-		remove_blank_rows();
-		$("#"+fieldtype+"_tbody").append(new_row);
-	});
-	$("#"+fieldtype+"_tbody").append(new_row);
-
-	// just to be sure blank rows aren't interfering
-//	$("input[name='form\\.button\\.save']").click(function(){
-//		remove_blank_rows();
-//	});
+    $("input[name*='_delete_']").click(function(i,e){
+        $(this).attr('checked', false);
+        fieldname = $(this).attr("id").split("_")[0];
+        rows = $(".records_row_"+fieldname).length;
+        if (rows < 2) return;
+        $(this).parent().parent().remove();
+    });
 
 });
 });

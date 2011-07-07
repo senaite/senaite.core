@@ -232,11 +232,11 @@ schema = BikaSchema.copy() + Schema((
                            'intercept_max': 'Max',
                            'errorvalue': 'Actual value',
                            },
-        #widget = RecordsWidget(
-        #    label = 'Uncertainties',
-        #    label_msgid = 'label_uncertainties',
-        #    i18n_domain = I18N_DOMAIN,
-        #),
+        widget = RecordsWidget(
+            label = 'Uncertainties',
+            label_msgid = 'label_uncertainties',
+            i18n_domain = I18N_DOMAIN,
+        ),
     ),
     RecordsField('ResultOptions',
         type = 'resultsoptions',
@@ -244,11 +244,11 @@ schema = BikaSchema.copy() + Schema((
         required_subfields = ('Seq', 'Result',),
         subfield_types = {'Seq':'int'},
         subfield_labels = {'Result': 'Option Text'},
-        #widget = RecordsWidget(
-        #    label = 'Result Options',
-        #    label_msgid = 'label_result_options',
-        #    i18n_domain = I18N_DOMAIN,
-        #),
+        widget = RecordsWidget(
+            label = 'Result Options',
+            label_msgid = 'label_result_options',
+            i18n_domain = I18N_DOMAIN,
+        ),
     ),
 ))
 

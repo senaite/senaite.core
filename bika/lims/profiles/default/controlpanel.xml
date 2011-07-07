@@ -100,7 +100,7 @@
 
  <configlet title="Calculations" action_id="bika_calculations"
     appId="bika.lims" category="bika" condition_expr=""
-    icon_expr="string:$portal_url/images/calculation.png"
+    icon_expr="string:++resource++bika.lims.images/calculation.png"
     url_expr="string:$portal_url/bika_settings/bika_calculations"
     visible="True">
   <permission>BIKA: Manage Bika</permission>

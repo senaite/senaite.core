@@ -1,51 +1,162 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
-  xmlns:tal="http://xml.zope.org/namespaces/tal"
-  xmlns:metal="http://xml.zope.org/namespaces/metal"
-  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
-  i18n:domain="plone">
-<head><title></title></head>
-<body>
-  <metal:view_macro define-macro="view">
-     <table class="listing nosort">
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      i18n:domain="plone">
+  <head><title></title></head>
+  <body>
 
-     </table>
-  </metal:view_macro>
+<tal:comment tal:replace="nothing">
+<!--- Records Widgets -->
+XXX jquery dropdown to select existing fields
+XXX validation: if field ID is same as existing field ID, rest of field values must match the original
+</tal:comment>
+    <metal:view_macro define-macro="view"
+            tal:define="kssClassesView context/@@kss_field_decorator_view;
+                        getKssClasses nocall:kssClassesView/getKssClassesInlineEditable;">
+       <span metal:define-macro="records-field-view"
+            tal:define="kss_class python:getKssClasses(fieldName,
+                              templateId='records_widget', macro='records-field-view');"
+            tal:attributes="class kss_class;
+                            id string:parent-fieldname-$fieldName">
+      <tal:block metal:define-slot="inside"
+       tal:repeat="idx python:range(field.getSize(here))"
+       tal:define="outerJoin field/outerJoin;
+                   innerJoin field/innerJoin;"><span
+       tal:define="subfieldValues python:[field.getViewFor(here,idx,key,innerJoin) for key in field.getSubfields()]"
+       tal:replace="structure python:innerJoin.join(subfieldValues)" /><span
+       tal:replace="structure outerJoin"
+       tal:condition="not: repeat/idx/end" />
+      </tal:block>
+      </span>
+    </metal:view_macro>
 
-  <metal:edit_macro define-macro="edit">
-    <metal:use use-macro="field_macro | context/widgets/field/macros/edit">
-      <metal:body_macro fill-slot="widget_body" tal:define="
-        fieldname python: field.getName();
-        subfields python: field.subfields;
-        subfield_labels python: field.subfield_labels;
-        field python: context.Schema()[fieldname];
-        accessor python: field.getAccessor(context);
-        current_field_value accessor;">
+    <metal:define define-macro="edit">
+      <metal:use use-macro="here/widgets/field/macros/edit">
+       <tal:block metal:fill-slot="widget_body">
+       <fieldset style="border:0;"
+                 tal:define="values python:field.getEditAccessor(here)();
+                             session_values python:here.session_restore_value(fieldName, values);
+                             cached_values python:request.get(fieldName,session_values);
+                             values python:cached_values or values;
+                             i18n_domain field/widget/i18n_domain|context/i18n_domain|string:plone">
+       <table tal:attributes="id string:${fieldName}_table" class="listing nosort" style="margin-bottom:5px;">
+        <tr>
+	<tal:block repeat="key python:field.getSubfields()">
+	<th tal:condition="python:field.testSubfieldCondition(key,here,portal,template)"
+            tal:content="structure python: here.translate(domain=i18n_domain, msgid=field.getSubfieldLabel(key), default=field.getSubfieldLabel(key))">
+	Label
+	</th>
+	</tal:block>
+	<th>
+            <span i18n:translate="delete_this_entry"
+                  id="delete_this_entry">
+             delete</span>
+	</th>
+	</tr>
+	<tr tal:attributes="class string:records_row_${fieldName}"
+		tal:repeat="idx python:range(field.getEditSize(here))">
+	<tal:keys tal:repeat="key python:field.getSubfields()">
+        <td tal:condition="python:field.testSubfieldCondition(key,here,portal,template)">
+	<tal:block define="type python:field.getSubfieldType(key)">
+	<tal:string condition="python: type == 'string' and not field.isSelection(key)">
+	<input type="text"
+	       name=""
+	       value=""
+	       size="30"
+	       tabindex="#"
+	       tal:attributes="name string:${fieldName}.${key}:records:ignore_empty;
+	       value python:field.getSubfieldValue(values, idx, key);
+	       size python:field.getSubfieldSize(key);
+	       maxlength python:field.getSubfieldMaxlength(key);
+	       tabindex tabindex/next|nothing;"
+	       />
+	</tal:string>
+	<tal:selection condition="python: field.isSelection(key)">
+	<tal:block tal:define="value python:field.getSubfieldValue(values, idx, key);
+                               vocab python:field.getVocabularyFor(key, here)">
+	   <select tal:attributes="name string:${fieldName}.${key}:records:ignore_empty;
+                                   id fieldName;
+		                   tabindex tabindex/next|nothing;"
+                   i18n:domain="python:i18n_domain">
+	      <option tal:repeat="item vocab"
+		      tal:attributes="value item;
+		      selected python:test(here.checkSelected(item, value), 'selected', None);"
+		      tal:content="python: vocab.getValue(item)"
+		      i18n:translate=""
+		      />
+	    </select>
+	  </tal:block>
+	</tal:selection>
+	<tal:text condition="python: type == 'lines'">
+	<textarea name=""
+		  cols="30"
+		  rows="5"
+		  tabindex="#"
+		  tal:attributes="name string:${fieldName}.${key}:records:ignore_empty:lines;
+        	                  tabindex tabindex/next|nothing;"
+		  tal:content="python:'\n'.join(field.getSubfieldValue(values, idx, key, []))" >
+	</textarea>
+	</tal:text>
+	<tal:date condition="python:type == 'datetime'">
+	<div tal:define="id string:${fieldName}_${key}_${idx};
+               value python:field.getSubfieldValue(values, idx, key);
+	       show_hm    widget/show_hm;
+	       inputname  string:${fieldName}.${key}:ignore_empty:records;
+	       formname   string:edit_form;
+	       inputvalue python: test(value, value, '');
+	       tabindex tabindex/next|nothing;"
+	       tal:omit-tag="">
+	    <div metal:use-macro="here/calendar_macros/macros/calendarDatePickerBox|here/calendar_slot/macros/calendarDatePickerBox">
+	      a pop-up calendar
+        </div>
+	</div>
+	</tal:date>
+	<tal:number condition="python: type in ['float', 'int', 'long']">
+	<input type="text"
+	       name=""
+	       value=""
+	       size="10"
+	       tabindex="#"
+	       tal:attributes="name string:${fieldName}.${key}:${type}:records:ignore_empty;
+	       value python:field.getSubfieldValue(values, idx, key);
+	       size python:field.getSubfieldSize(key);
+	       maxlength python:field.getSubfieldMaxlength(key);
+	       tabindex tabindex/next|nothing;"
+	       />
+	</tal:number>
+	</tal:block>
+	</td>
+  </tal:keys>
+	<td>
+	    <input class="noborder"
+                   type="checkbox"
+                   value="off"
+                   tabindex=""
+                   tal:attributes="tabindex tabindex/next|nothing;
+                       name string:${fieldName}_delete_${idx};
+                       id string:${fieldName}_checkbox_${idx};"
+		     />
+	</td>
+	</tr>
+       </table>
+       <input
+        type="button"
+        class="context"
+        tal:condition="python: field.showMore(values)"
+        tal:attributes="id string:${fieldName}_more;tabindex tabindex/next|nothing"
+        i18n:attributes="value more_entries" />
+       </fieldset>
+       </tal:block>
+      </metal:use>
+    </metal:define>
 
-        <input type="hidden" id="fieldname" tal:attributes="value fieldname"/>
-        <input type="hidden" id="subfields" tal:attributes="value subfields"/>
+    <div metal:define-macro="search">
+      <div metal:use-macro="here/widgets/string/macros/edit">
+      </div>
+    </div>
 
-        <table class="listing nosort">
+  </body>
 
-          <thead>
-              <th tal:repeat="subfield subfields"
-                  tal:content="python: subfield_labels[subfield]"/>
-          </thead>
-
-          <tbody>
-            <tr tal:repeat="record current_field_value">
-              <td tal:repeat="subfield subfields">
-                <input type="text"
-                    tal:attributes="value python: record[subfield];
-                                    class string:analysis_input;
-                                    name string:${fieldname}.${subfield}:records"/>
-              </td>
-            </tr>
-          </tbody>
-
-        </table>
-
-    </metal:body_macro>
-   </metal:use>
-  </metal:edit_macro>
-</body>
 </html>
+

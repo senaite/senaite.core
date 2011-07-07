@@ -10,6 +10,7 @@ from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.folder.folder import ATFolder, ATFolderSchema
 from bika.lims.interfaces import IAnalysisServices
 from zope.interface.declarations import implements
+from operator import itemgetter
 
 class AnalysisServicesView(BikaListingView):
     implements(IFolderContentsView)

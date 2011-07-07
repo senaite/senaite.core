@@ -72,7 +72,7 @@ schema = BikaSchema.copy() + Schema((
         default = False,
     ),
     RecordsField('InterimFields',
-        # subfield values must be the identical twin of Calculation.InterimFields.
+        # 'subfields' must be the identical twin of Calculation.InterimFields.
         type = 'InterimFields',
         subfields = ('id', 'title', 'value', 'unit'),
         subfield_labels = {'id':'Field ID', 'title':'Field Title', 'value':'Default', 'unit':'Unit'},
