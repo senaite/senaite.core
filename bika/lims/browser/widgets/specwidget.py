@@ -40,7 +40,7 @@ class SpecWidget(RecordsWidget):
         """
         specs = {}
         for spec in self.getResultsRange():
-            keyword = spec['service_keyword']
+            keyword = spec['keyword']
             specs[keyword] = {}
             specs[keyword]['min'] = spec['min']
             specs[keyword]['max'] = spec['max']
@@ -54,7 +54,7 @@ class SpecWidget(RecordsWidget):
         """
         categories = {}
         services = self.portal_catalog(portal_type = 'AnalysisService')
-        tool = getToolByName(self, REFERENCE_CATALOG)
+        pc = getToolByName(self, 'portal_catalog')
 
         if allservices:
             for service in services:
@@ -65,7 +65,8 @@ class SpecWidget(RecordsWidget):
         else:
             records = getattr(field, field.accessor)()
             for record in records:
-                service = tool.lookupObject(record['service_keyword'])
+                service = pc(portal_type='AnalysisService',
+                             getKeyword=record['keyword'])[0].getObject()
                 if categories.has_key(service.getCategoryName()):
                     categories[service.getCategoryName()].append(service)
                 else:
@@ -77,31 +78,34 @@ class SpecWidget(RecordsWidget):
     def getSpecCategories(self, field):
         """list of Category UIDS for services specified in ResultsRange
         """
-        tool = getToolByName(self, REFERENCE_CATALOG)
+        pc = getToolByName(self, 'portal_catalog')
         categories = []
 
         for spec in field.getResultsRange():
-            service = tool.lookupObject(spec['service_keyword'])
+            service = pc(portal_type='AnalysisService',
+                         getKeyword=spec['keyword'])[0].getObject()
             if service.getCategoryUID() not in categories:
-                categories.append({'UID': service.getCategoryUID(), 'Title': service.getCategoryName()})
+                categories.append({'UID': service.getCategoryUID(),
+                                   'Title': service.getCategoryName()})
         return categories
 
     security.declarePublic('getCategorySpecs')
     def getCategorySpecs(self, field, category_title):
         """Return a list of services with specs in a category
         """
-        tool = getToolByName(self, REFERENCE_CATALOG)
+        pc = getToolByName(self, 'portal_catalog')
         services = []
         for spec in field.getResultsRange():
-            service = tool.lookupObject(spec['service_keyword'])
+            service = pc(portal_type='AnalysisService',
+                         getKeyword=spec['keyword'])[0].getObject()
             if service.getCategoryName() == category_title:
                 services.append(spec)
         return services
 
     security.declarePublic('getCategoryUID')
     def getCategoryUID(self, category_title):
-        catalog = getToolByName(self, 'portal_catalog')
-        cats = catalog(portal_type = "AnalysisCategory")
+        pc = getToolByName(self, 'portal_catalog')
+        cats = pc(portal_type = "AnalysisCategory")
         cats = [cat.UID for cat in cats if cat.Title == category_title]
         if cats:
             return cats[0]

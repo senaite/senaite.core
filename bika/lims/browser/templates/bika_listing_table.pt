@@ -129,10 +129,12 @@ Table data rows start here
 ********************************</tal:comment>
     <tal:items tal:repeat="item view/batch">
       <tr tal:condition="python:item.has_key('id')"
+          tal:define="keyword python:item.has_key('Keyword') and item['Keyword'] or ''"
           tal:attributes="class item/table_row_class;
             id string:folder-contents-item-${item/UID};
             uid item/UID;
-            keyword python:item.has_key('Keyword') and item['Keyword'] or ''">
+            specs item/specs|nothing;
+            keyword keyword;">
         <input type="hidden" tal:attributes="
             name string:InterimFields.${item/UID}:records:ignore_empty;
             id string:${item/UID}_item_data;

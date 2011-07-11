@@ -59,18 +59,17 @@ class AnalysisRequestAnalysesView(BikaListingView):
         pc = getToolByName(self.context, 'portal_catalog')
         analyses = BikaListingView.folderitems(self)
 
-        # calculate specs - they are stored in the form, for validation of inputs.
-        client_specs = {}
-        lab_specs = {}
-        specs = pc(portal_type = 'AnalysisSpec',
-                   getSampleTypeUID = self.context.getSample().getSampleType().UID())
-        for spec in specs:
+        # calculate specs - they are stored in the form
+        specs = {'client':{}, 'lab':{}}
+        for spec in pc(portal_type = 'AnalysisSpec',
+                       getSampleTypeUID = self.context.getSample().getSampleType().UID()):
             spec = spec.getObject()
             client_or_lab = ""
             if spec.getClientUID() == self.context.getClientUID(): client_or_lab = 'client'
-            elif spec.getClientUID() == None: client_or_lab == 'lab'
+            elif spec.getClientUID() == None: client_or_lab = 'lab'
             else: continue
-            results_range = spec.getResultsRangeDict()
+            for keyword, results_range in spec.getResultsRangeDict().items():
+                specs[client_or_lab][keyword] = results_range
 
         items = []
         self.interim_fields = {}
@@ -78,6 +77,7 @@ class AnalysisRequestAnalysesView(BikaListingView):
             if not item.has_key('brain'): continue
 
             obj = item['brain'].getObject()
+            uid = obj.UID()
             result = obj.getResult()
             service = obj.getService()
             keyword = service.getKeyword()
@@ -85,18 +85,17 @@ class AnalysisRequestAnalysesView(BikaListingView):
             choices = service.getResultOptions()
             item_data = obj.getInterimFields()
 
-
             item['Service'] = service.Title()
-            item['Keyword'] = service.getKeyword()
+            item['Keyword'] = keyword
             item['Result'] = result
             item['Unit'] = obj.getUnit()
             item['Uncertainty'] = obj.getUncertainty(result)
+            item['specs'] = {'client': specs['client'].has_key(keyword) and specs['client'][keyword] or [],
+                             'lab': specs['lab'].has_key(keyword) and specs['lab'][keyword] or [],}
             item['Attachments'] = ", ".join([a.Title() for a in obj.getAttachment()])
             item['item_data'] = json.dumps(item_data)
             item['_allow_edit'] = self.allow_edit or False
             item['_calculation'] = calculation and True or False
-#            item['specs']{'client':all_client_specs for sampletype,
-#                          'lab':all lab specs for sample type}
             if choices: item['ResultOptions'] = choices
 
             # Add this analysis' interim fields to the list

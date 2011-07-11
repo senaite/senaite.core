@@ -1,117 +1,121 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
-  lang="en"
-  xmlns:tal="http://xml.zope.org/namespaces/tal"
-  xmlns:metal="http://xml.zope.org/namespaces/metal"
-  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
-  metal:use-macro="here/main_template/macros/master"
-  i18n:domain="bika">
+	lang="en"
+	xmlns:tal="http://xml.zope.org/namespaces/tal"
+	xmlns:metal="http://xml.zope.org/namespaces/metal"
+	xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+	metal:use-macro="here/main_template/macros/master"
+	i18n:domain="bika">
 
 <body tal:define="
-  portal context/@@plone_portal_state/portal;
-  specification python:request.get('specification', 'lab');
-  global out_of_range python:0;
-  global late python:0;
-  tabindex view/tabindex;
-  now view/now">
+	portal context/@@plone_portal_state/portal;
+	specification python:request.get('specification', 'lab');
+	global out_of_range python:0;
+	global late python:0;
+	tabindex view/tabindex;
+	now view/now">
 
-  <metal:content-title fill-slot="content-title">
-    <h1 class="documentFirstHeading" tal:content="context/title_or_id"/>
-    <img src=""
-      tal:condition="here/getInvoiceExclude"
-      tal:attributes="src string:${portal/absolute_url}/images/no_invoice.png"/>
-  </metal:content-title>
+	<metal:content-title fill-slot="content-title">
+		<h1 class="documentFirstHeading" tal:content="context/title_or_id"/>
+		<img src=""
+			tal:condition="here/getInvoiceExclude"
+			tal:attributes="src string:${portal/absolute_url}/images/no_invoice.png"/>
+	</metal:content-title>
 
-  <metal:content-description fill-slot="content-description">
-  </metal:content-description>
+	<metal:content-description fill-slot="content-description">
+	</metal:content-description>
 
-  <metal:content-core fill-slot="content-core"
-    tal:define="
-      tabindex view/tabindex;
-      portal context/@@plone_portal_state/portal;
-      specification python: request.get('specification', view.getDefaultSpec());
-      ar_attach_allowed here/bika_settings/getARAttachmentsPermitted;
-      ar_review_state python: context.portal_workflow.getInfoFor(context, 'review_state');
-      analysis_attach_allowed here/bika_settings/getAnalysisAttachmentsPermitted;
-      attachments_allowed here/bika_settings/getAttachmentsPermitted;
-      attachments here/getAttachment | nothing;
-      delete_attachments python:True;
-      update_attachments python:True">
+	<metal:content-core fill-slot="content-core"
+		tal:define="
+			tabindex view/tabindex;
+			portal context/@@plone_portal_state/portal;
+			specification python: request.get('specification', view.getDefaultSpec());
+			ar_attach_allowed here/bika_settings/getARAttachmentsPermitted;
+			ar_review_state python: context.portal_workflow.getInfoFor(context, 'review_state');
+			analysis_attach_allowed here/bika_settings/getAnalysisAttachmentsPermitted;
+			attachments_allowed here/bika_settings/getAttachmentsPermitted;
+			attachments here/getAttachment | nothing;
+			delete_attachments python:True;
+			update_attachments python:True">
 
-    <div tal:condition="attachments_allowed">
-      <metal:block use-macro="here/attachments/macros/attachments"/>
-    </div>
+	<div tal:condition="attachments_allowed">
+		<metal:block use-macro="here/attachments/macros/attachments"/>
+	</div>
 
-    <table width="100%">
-      <tr>
-        <td>
-          <form name="specificationForm"
-            enctype="multipart/form-data"
-            method="post">
-            <span i18n:translate="label_range_specification">Range Specification</span>:
-            <input class="noborder" type="radio" name="specification" value="lab"
-            onclick="this.form.submit()"
-            tal:attributes="
-              checked python:specification == 'lab' and 'checked' or None;
-              tabindex tabindex/next"/>
-            <label i18n:translate="label_lab">Lab</label>
-            <input class="noborder" type="radio" name="specification" value="client"
-            onclick="this.form.submit()"
-            tal:attributes="
-              checked python:specification == 'client' and 'checked' or None;
-              tabindex tabindex/next"/>
-            <label i18n:translate="label_client">Client</label>
-          </form>
-        </td>
-        <td align="right">
-          <img tal:condition="view/getHazardous"
-               src="" tal:attributes="src string:${portal/absolute_url}/images/hazardous.png">
-        </td>
-      </tr>
-    </table>
+	<table width="100%">
+		<tr>
+			<td>
+				<form name="specificationForm"
+					enctype="multipart/form-data"
+					method="post">
+				<span i18n:translate="label_range_specification">Range Specification</span>
+				<input class="noborder"
+					type="radio"
+					name="specification"
+					value="lab"
+					tal:attributes="
+						checked python:specification == 'lab' and 'checked' or None;
+						tabindex tabindex/next"/>
+				<label i18n:translate="label_lab">Lab</label>
+				<input class="noborder"
+					type="radio"
+					name="specification"
+					value="client"
+					tal:attributes="
+						checked python:specification == 'client' and 'checked' or None;
+						tabindex tabindex/next"/>
+				<label i18n:translate="label_client">Client</label>
+				</form>
+			</td>
+			<td align="right">
+				<img tal:condition="view/getHazardous"
+					src="" tal:attributes="src string:${portal/absolute_url}/images/hazardous.png">
+			</td>
+		</tr>
+	</table>
 
-    <form id="analysisrequest_manage_results_form"
-        name="analysisrequest_manage_results_form"
-        method="post">
+	<form id="analysisrequest_manage_results_form"
+		name="analysisrequest_manage_results_form"
+		method="post">
 
-        <input type="hidden" name="sort_on" tal:attributes="value request/sort_on|string:getObjPositionInParent"/>
-        <input type="hidden" name="pagenumber" value="1"/>
-        <input type="hidden" name="show_all" value="True"/>
+	<input type="hidden" name="sort_on" tal:attributes="value request/sort_on|string:getObjPositionInParent"/>
+	<input type="hidden" name="pagenumber" value="1"/>
+	<input type="hidden" name="show_all" value="True"/>
 
-		<input type="hidden" name="submitted" value="1"/>
-        <input tal:replace="structure context/@@authenticator/authenticator" />
+	<input type="hidden" name="submitted" value="1"/>
+	<input tal:replace="structure context/@@authenticator/authenticator" />
 
-        <tal:field_analyses>
-          <h3 tal:content="python: modules['bika.lims.config'].POINTS_OF_CAPTURE.getValue('field')"/>
-          <span tal:replace="structure python: view.FieldAnalysesView.contents_table()"/>
-        </tal:field_analyses>
+	<tal:field_analyses>
+		<h3 tal:content="python: modules['bika.lims.config'].POINTS_OF_CAPTURE.getValue('field')"/>
+		<span tal:replace="structure python: view.FieldAnalysesView.contents_table()"/>
+	</tal:field_analyses>
 
-        <tal:lab_analyses>
-          <h3 tal:content="python: modules['bika.lims.config'].POINTS_OF_CAPTURE.getValue('lab')"/>
-          <span tal:replace="structure python: view.LabAnalysesView.contents_table()"/>
-        </tal:lab_analyses>
+	<tal:lab_analyses>
+		<h3 tal:content="python: modules['bika.lims.config'].POINTS_OF_CAPTURE.getValue('lab')"/>
+		<span tal:replace="structure python: view.LabAnalysesView.contents_table()"/>
+	</tal:lab_analyses>
 
-        <input class="context allowMultiSubmit"
-                tabindex=""
-                type="submit"
-                name="save_button"
-                value="Save"
-                i18n:attributes="value"
-                tal:attributes="tabindex tabindex/next"
-                />
-        <input class="context"
-                tabindex=""
-                type="submit"
-                name="cancel_button"
-                value="Cancel"
-                i18n:attributes="value"
-                tal:attributes="tabindex tabindex/next"
-                />
-        <span id="spinner" style="display:none">
-            <img tal:attributes="src python:portal.absolute_url()+ '/images/spinner.gif';"/>
+	<input class="context allowMultiSubmit"
+		tabindex=""
+		type="submit"
+		name="save_button"
+		value="Save"
+		i18n:attributes="value"
+		tal:attributes="tabindex tabindex/next"
+		/>
+	<input class="context"
+		tabindex=""
+		type="submit"
+		name="cancel_button"
+		value="Cancel"
+		i18n:attributes="value"
+		tal:attributes="tabindex tabindex/next"
+		/>
+	<span id="spinner" style="display:none">
+		<img tal:attributes="src python:portal.absolute_url()+ '/images/spinner.gif';"/>
 
-    </form>
+	</form>
 
-  </metal:content-core>
+	</metal:content-core>
 
 </body>
 </html>

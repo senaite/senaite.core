@@ -1,29 +1,33 @@
 function expand_analysisservices(categoryUID, fieldName){
 	html = "";
 	/*
-	 * XXX hidden form variables, quite hideous.
+	 * XXX generally quite hideous... bika table edit can do this.. even records widgets can.
+	 * XXX JSON XXX plone.protect
 	 */
 	selectedUID = $("#selectedservices_"+categoryUID).attr("value").split(',');
+	selectedKeyword = $("#selectedservices_"+categoryUID).attr("keyword").split(',');
 	selectedMin = $("#selectedservices_"+categoryUID).attr("min").split(',');
 	selectedMax = $("#selectedservices_"+categoryUID).attr("max").split(',');
 	selectedError = $("#selectedservices_"+categoryUID).attr("error").split(',');
 	allUID = $("#allservices_"+categoryUID).attr("value").split(',');
 	allTitle = $("#allservices_"+categoryUID).attr("name").split(',');
+	allKeyword = $("#allservices_"+categoryUID).attr("keyword").split(',');
 	for(i in allUID){
 		uid = allUID[i];
+		keyword = allKeyword[i];
 		title = allTitle[i];
-		selected_i = selectedUID.indexOf(uid);
+		selected_i = selectedKeyword.indexOf(keyword);
 		if(selected_i > -1){
 			html = html + "<tr>" +
-				"<td><label for='"+uid+"'>"+title+"</label></td>"+
-				"<td><input name='ResultsRange.service_keyword:records:ignore_empty' type='hidden' value='"+uid+"'/>"+
+				"<td><label for='"+keyword+"'>"+title+"</label></td>"+
+				"<td><input name='ResultsRange.keyword:records:ignore_empty' type='hidden' value='"+keyword+"'/>"+
 				"<input name='ResultsRange.min:records:ignore_empty' type='text' size='6' value='"+selectedMin[selected_i]+"'/></td>"+
 				"<td><input name='ResultsRange.max:records:ignore_empty' type='text' size='6' value='"+selectedMax[selected_i]+"'/></td>"+
 				"<td><input name='ResultsRange.error:records:ignore_empty' type='text' size='6' value='"+selectedError[selected_i]+"'/></td>";
 		}else{
 			html = html + "<tr>" +
 				"<td><label for='"+uid+"'>"+title+"</label></td>"+
-				"<td><input name='ResultsRange.service_keyword:records:ignore_empty' type='hidden' value='"+uid+"'/>"+
+				"<td><input name='ResultsRange.keyword:records:ignore_empty' type='hidden' value='"+keyword+"'/>"+
 				"<input name='ResultsRange.min:records:ignore_empty' type='text' size='6'/></td>"+
 				"<td><input name='ResultsRange.max:records:ignore_empty' type='text' size='6'/></td>"+
 				"<td><input name='ResultsRange.error:records:ignore_empty' type='text' size='6'/></td>";

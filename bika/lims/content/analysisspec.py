@@ -33,9 +33,9 @@ schema = BikaSchema.copy() + Schema((
     RecordsField('ResultsRange',
         required = 1,
         type = 'analysisspec',
-        subfields = ('service_keyword', 'min', 'max', 'error'),
-        required_subfields = ('service_keyword', 'min', 'max', 'error'),
-        subfield_labels = {'service_keyword': 'Analysis Service',
+        subfields = ('keyword', 'min', 'max', 'error'),
+        required_subfields = ('keyword', 'min', 'max', 'error'),
+        subfield_labels = {'keyword': 'Analysis Service',
                            'min': 'Min',
                            'max': 'Max',
                            'error': '% Error'},
@@ -83,7 +83,7 @@ class AnalysisSpec(BaseFolder):
         tool = getToolByName(self, REFERENCE_CATALOG)
         categories = []
         for spec in self.getResultsRange():
-            keyword = spec['service_keyword']
+            keyword = spec['keyword']
             service = pc(portal_type="AnalysisService",
                          getKeyword = keyword)
             if service.getCategoryUID() not in categories:
@@ -94,7 +94,7 @@ class AnalysisSpec(BaseFolder):
     def getResultsRangeDict(self):
         specs = {}
         for spec in self.getResultsRange():
-            keyword = spec['service_keyword']
+            keyword = spec['keyword']
             specs[keyword] = {}
             specs[keyword]['min'] = spec['min']
             specs[keyword]['max'] = spec['max']
