@@ -169,47 +169,32 @@ class Analysis(BaseContent):
         s = self.getService()
         if s: return s.Title()
 
-    def getUncertainty(self):
-        """ The uncertainty value is calculated from the Service. """
-        result = self.getResult()
-        uncertainties = self.getService().getUncertainties()
-
-        if not (result and uncertainties):
-            return None
-
-        try:
-            result = float(result)
-        except:
-            # if float()ing it fails for whatever reason,
-            # we assume no measure of uncertainty
-            return None
-
-        for d in uncertainties:
-            if float(d['intercept_min']) <= result < float(d['intercept_max']):
-                return d['errorvalue']
-        return None
-
-    def result_in_range(self, sampletype_uid, specification):
-        """ Check if a results is in range for any specs defined on it's service/sample type.
+    def getUncertainty(self, result=None):
+        """ Calls self.Service.getUncertainty with either the provided result value or self.Result
         """
-        result = self.getResult()
+        return self.getService().getUncertainty(result and result or self.getResult())
+
+    def result_in_range(self, result=None, client_uid=None):
+        """ Check if a result is "in range".
+            if result is None, self.getResult() is called for the result value.
+            If client_uid is None, use AnalysisSpec objects without ClientUID value:
+                - these should be only the ones in bika_settings/bika_analysisspecs
+        """
+
+        client_uid = client_uid and client_uid or self.getClientUID()
+        result = result and result or self.getResult()
+
         try:
             result = float(result)
         except:
-            # if it is not a number we assume it is in range
+            # XXX if it is not a number we assume it is in range
             return True
 
         service = self.getService()
         keyword = service.getKeyword()
 
         if self.portal_type in ['Analysis', 'RejectAnalysis']:
-            client_uid = self.getRequest().getClientUID()
-
-            if specification == 'lab':
-                a = self.context.portal_catalog(portal_type = 'AnalysisSpec',
-                                                getSampleTypeUID = sampletype_uid)
-            else:
-                a = self.context.portal_catalog(portal_type = 'AnalysisSpec',
+            a = self.context.portal_catalog(portal_type = 'AnalysisSpec',
                                                 getSampleTypeUID = sampletype_uid,
                                                 getClientUID = client_uid)
 
@@ -224,8 +209,6 @@ class Analysis(BaseContent):
                 spec_max = float(spec[keyword]['max'])
                 if spec_min <= result <= spec_max:
                     return True
-                else:
-                    return False
                 #else:
                 #    """ XXX check if in 'shoulder' error range -
                 #        not yet supported nicely in the tal """
@@ -237,6 +220,8 @@ class Analysis(BaseContent):
                 #        result_class = 'in_error_range'
             else:
                 return True
+
+            return False
 
 ##        elif analysis.portal_type == 'StandardAnalysis':
 ##            result_class = ''
@@ -276,8 +261,6 @@ class Analysis(BaseContent):
 ##                result_class = ''
 ##            else:
 ##                result_class = 'out_of_range'
-
-        return result_class
 
 
     # workflow methods

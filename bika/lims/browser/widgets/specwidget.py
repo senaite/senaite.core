@@ -30,7 +30,7 @@ class SpecWidget(RecordsWidget):
         if emptyReturnsMarker and value == '':
             return empty_marker
 
-        for idx in range(len(value) - 1, -1, -1): #  XXX wtf  (batching machine returns single 'path' elements - this relates?)
+        for idx in range(len(value) - 1, -1, -1):
             if len(value[idx].keys()) == 1: del value[idx]
         return value, {}
 
@@ -40,11 +40,11 @@ class SpecWidget(RecordsWidget):
         """
         specs = {}
         for spec in self.getResultsRange():
-            uid = spec['service']
-            specs[uid] = {}
-            specs[uid]['min'] = spec['min']
-            specs[uid]['max'] = spec['max']
-            specs[uid]['error'] = spec['error']
+            keyword = spec['service_keyword']
+            specs[keyword] = {}
+            specs[keyword]['min'] = spec['min']
+            specs[keyword]['max'] = spec['max']
+            specs[keyword]['error'] = spec['error']
         return specs
 
     # XXX Memoize
@@ -65,7 +65,7 @@ class SpecWidget(RecordsWidget):
         else:
             records = getattr(field, field.accessor)()
             for record in records:
-                service = tool.lookupObject(record['service'])
+                service = tool.lookupObject(record['service_keyword'])
                 if categories.has_key(service.getCategoryName()):
                     categories[service.getCategoryName()].append(service)
                 else:
@@ -81,7 +81,7 @@ class SpecWidget(RecordsWidget):
         categories = []
 
         for spec in field.getResultsRange():
-            service = tool.lookupObject(spec['service'])
+            service = tool.lookupObject(spec['service_keyword'])
             if service.getCategoryUID() not in categories:
                 categories.append({'UID': service.getCategoryUID(), 'Title': service.getCategoryName()})
         return categories
@@ -93,7 +93,7 @@ class SpecWidget(RecordsWidget):
         tool = getToolByName(self, REFERENCE_CATALOG)
         services = []
         for spec in field.getResultsRange():
-            service = tool.lookupObject(spec['service'])
+            service = tool.lookupObject(spec['service_keyword'])
             if service.getCategoryName() == category_title:
                 services.append(spec)
         return services

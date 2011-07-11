@@ -56,26 +56,48 @@ class AnalysisRequestAnalysesView(BikaListingView):
         """ InterimFields are inserted into self.columns before the column called 'Result',
             not specifically ordered but vaguely predictable.
         """
+        pc = getToolByName(self.context, 'portal_catalog')
         analyses = BikaListingView.folderitems(self)
+
+        # calculate specs - they are stored in the form, for validation of inputs.
+        client_specs = {}
+        lab_specs = {}
+        specs = pc(portal_type = 'AnalysisSpec',
+                   getSampleTypeUID = self.context.getSample().getSampleType().UID())
+        for spec in specs:
+            spec = spec.getObject()
+            client_or_lab = ""
+            if spec.getClientUID() == self.context.getClientUID(): client_or_lab = 'client'
+            elif spec.getClientUID() == None: client_or_lab == 'lab'
+            else: continue
+            results_range = spec.getResultsRangeDict()
 
         items = []
         self.interim_fields = {}
         for item in analyses:
             if not item.has_key('brain'): continue
+
             obj = item['brain'].getObject()
-            item['Service'] = obj.getService().Title()
-            item['Uncertainty'] = obj.getUncertainty()
-            item['Unit'] = obj.getUnit()
-            item['Keyword'] = obj.getService().Keyword
-            item['Result'] = obj.getResult()
-            item['Attachments'] = ", ".join([a.Title() for a in obj.getAttachment()])
-            item['_allow_edit'] = self.allow_edit or False
-            calculation = obj.getService().getCalculation()
-            item['_calculation'] = calculation and True or False
-            options = obj.getService().getResultOptions()
-            if options: item['ResultOptions'] = options
+            result = obj.getResult()
+            service = obj.getService()
+            keyword = service.getKeyword()
+            calculation = service.getCalculation()
+            choices = service.getResultOptions()
             item_data = obj.getInterimFields()
+
+
+            item['Service'] = service.Title()
+            item['Keyword'] = service.getKeyword()
+            item['Result'] = result
+            item['Unit'] = obj.getUnit()
+            item['Uncertainty'] = obj.getUncertainty(result)
+            item['Attachments'] = ", ".join([a.Title() for a in obj.getAttachment()])
             item['item_data'] = json.dumps(item_data)
+            item['_allow_edit'] = self.allow_edit or False
+            item['_calculation'] = calculation and True or False
+#            item['specs']{'client':all_client_specs for sampletype,
+#                          'lab':all lab specs for sample type}
+            if choices: item['ResultOptions'] = choices
 
             # Add this analysis' interim fields to the list
             for i in item_data:
@@ -174,29 +196,6 @@ class AnalysisRequestViewView(BrowserView):
         member_groups = [pg.getGroupById(group.id).getGroupName() for group in pg.getGroupsByUserId(member.id)]
         default_spec = ('clients' in member_groups) and 'client' or 'lab'
         return default_spec
-
-    def getUncertainty(self, service, result):
-        """ checks result against analysis.Service.Uncertainties
-            and returns the applicable uncertainty value
-        """
-        if result is None:
-            return None
-
-        uncertainties = service.getUncertainties()
-        if uncertainties:
-            try:
-                result = float(result)
-            except:
-                # if float()ing it fails for whatever reason,
-                # we assume no measure of uncertainty
-                return None
-
-            for d in uncertainties:
-                if float(d['intercept_min']) <= result < float(d['intercept_max']):
-                    return d['errorvalue']
-            return None
-        else:
-            return None
 
     @property
     def review_state(self):

@@ -5,6 +5,7 @@ $Id: AnalysisSpec.py 443 2006-12-13 23:19:39Z anneline $
 from AccessControl import ClassSecurityInfo
 from AccessControl.Permissions import delete_objects
 from Products.ATContentTypes.content import schemata
+from Products.ATExtensions.field.records import RecordsField
 from Products.Archetypes import atapi
 from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.Archetypes.public import *
@@ -14,7 +15,6 @@ from Products.CMFCore import permissions
 from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFCore.permissions import ListFolderContents, View
 from Products.CMFCore.utils import getToolByName
-from bika.lims.browser.fields import SpecField
 from bika.lims.browser.widgets import SpecWidget
 from bika.lims.config import I18N_DOMAIN, PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
@@ -30,8 +30,15 @@ schema = BikaSchema.copy() + Schema((
         relationship = 'AnalysisSpecSampleType',
         referenceClass = HoldingReference,
     ),
-    SpecField('ResultsRange',
+    RecordsField('ResultsRange',
         required = 1,
+        type = 'analysisspec',
+        subfields = ('service_keyword', 'min', 'max', 'error'),
+        required_subfields = ('service_keyword', 'min', 'max', 'error'),
+        subfield_labels = {'service_keyword': 'Analysis Service',
+                           'min': 'Min',
+                           'max': 'Max',
+                           'error': '% Error'},
         widget = SpecWidget(
             checkbox_bound = 1,
             label = 'Results Range',
@@ -41,7 +48,7 @@ schema = BikaSchema.copy() + Schema((
     ),
     ComputedField('ClientUID',
         index = 'FieldIndex',
-        expression = 'here.aq_parent.UID()',
+        expression = "here.aq_parent.portal_type == 'Client' and here.aq_parent.UID() or None",
         widget = ComputedWidget(
             visible = False,
         ),
@@ -76,8 +83,9 @@ class AnalysisSpec(BaseFolder):
         tool = getToolByName(self, REFERENCE_CATALOG)
         categories = []
         for spec in self.getResultsRange():
-            uid = spec['service']
-            service = tool.lookupObject(spec['service'])
+            keyword = spec['service_keyword']
+            service = pc(portal_type="AnalysisService",
+                         getKeyword = keyword)
             if service.getCategoryUID() not in categories:
                 categories.append(service.getCategoryUID())
         return categories
@@ -86,11 +94,11 @@ class AnalysisSpec(BaseFolder):
     def getResultsRangeDict(self):
         specs = {}
         for spec in self.getResultsRange():
-            uid = spec['service']
-            specs[uid] = {}
-            specs[uid]['min'] = spec['min']
-            specs[uid]['max'] = spec['max']
-            specs[uid]['error'] = spec['error']
+            keyword = spec['service_keyword']
+            specs[keyword] = {}
+            specs[keyword]['min'] = spec['min']
+            specs[keyword]['max'] = spec['max']
+            specs[keyword]['error'] = spec['error']
         return specs
 
     security.declarePublic('getResultsRangeSorted')

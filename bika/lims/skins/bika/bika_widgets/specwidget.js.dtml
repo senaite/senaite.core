@@ -16,14 +16,14 @@ function expand_analysisservices(categoryUID, fieldName){
 		if(selected_i > -1){
 			html = html + "<tr>" +
 				"<td><label for='"+uid+"'>"+title+"</label></td>"+
-				"<td><input name='ResultsRange.service:records:ignore_empty' type='hidden' value='"+uid+"'/>"+
+				"<td><input name='ResultsRange.service_keyword:records:ignore_empty' type='hidden' value='"+uid+"'/>"+
 				"<input name='ResultsRange.min:records:ignore_empty' type='text' size='6' value='"+selectedMin[selected_i]+"'/></td>"+
 				"<td><input name='ResultsRange.max:records:ignore_empty' type='text' size='6' value='"+selectedMax[selected_i]+"'/></td>"+
 				"<td><input name='ResultsRange.error:records:ignore_empty' type='text' size='6' value='"+selectedError[selected_i]+"'/></td>";
 		}else{
 			html = html + "<tr>" +
 				"<td><label for='"+uid+"'>"+title+"</label></td>"+
-				"<td><input name='ResultsRange.service:records:ignore_empty' type='hidden' value='"+uid+"'/>"+
+				"<td><input name='ResultsRange.service_keyword:records:ignore_empty' type='hidden' value='"+uid+"'/>"+
 				"<input name='ResultsRange.min:records:ignore_empty' type='text' size='6'/></td>"+
 				"<td><input name='ResultsRange.max:records:ignore_empty' type='text' size='6'/></td>"+
 				"<td><input name='ResultsRange.error:records:ignore_empty' type='text' size='6'/></td>";

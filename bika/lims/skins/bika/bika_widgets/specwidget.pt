@@ -20,10 +20,10 @@
                 </tr>
                 <tbody>
                   <tal:block tal:repeat="service services">
-                    <tr tal:condition="python:service.UID() in specs.keys()">
+                    <tr tal:condition="python:service.Keyword in specs.keys()">
                       <td tal:content="service/Title"/>
-                      <td tal:content="python:'between %s and %s'%(specs[service.UID()]['min'],specs[service.UID()]['max'])"/>
-                      <td tal:content="python:specs[service.UID()]['error']"/>
+                      <td tal:content="python:'between %s and %s'%(specs[service.Keyword]['min'],specs[service.Keyword]['max'])"/>
+                      <td tal:content="python:specs[service.Keyword]['error']"/>
                     </tr>
                   </tal:block>
                 </tbody>
@@ -54,7 +54,7 @@
                 </thead>
                 <tbody tal:attributes="id python:widget.getCategoryUID(category)" class="analysisservices"/>
                 <input type="hidden"
-                       tal:attributes="value python:','.join([s['service'] for s in widget.getCategorySpecs(field, category)]);
+                       tal:attributes="value python:','.join([s['service_keyword'] for s in widget.getCategorySpecs(field, category)]);
                                        min python:','.join([s['min'] for s in widget.getCategorySpecs(field, category)]);
                                        max python:','.join([s['max'] for s in widget.getCategorySpecs(field, category)]);
                                        error python:','.join([s['error'] for s in widget.getCategorySpecs(field, category)]);

@@ -261,20 +261,6 @@ class AnalysisService(BaseContent):
         return "%s (%s)" %(self.getField('ServiceName').get(self),
                            self.getField('Keyword').get(self))
 
-    security.declarePublic('getResultOptionsSorted')
-    def getResultOptionsSorted(self):
-        """ return the result options in the correct sequence """
-        optionsdict = {}
-        resultoptions = self.getResultOptions()
-        result = []
-        for option in resultoptions:
-            optionsdict[option['Seq']] = option['Result']
-        keys = optionsdict.keys()
-        keys.sort()
-        for key in keys:
-            result.append(optionsdict[key])
-        return result
-
     security.declarePublic('getDiscountedPrice')
     def getDiscountedPrice(self):
         """ compute discounted price excl. vat """
@@ -343,6 +329,27 @@ class AnalysisService(BaseContent):
             return "%.2f" % (self.getTotalPrice() - self.getPrice())
         except:
             return "0.00"
+
+    def getUncertainty(self, result=None):
+        """ Return the uncertainty value, if the result falls within specified ranges for this
+            service. """
+        if result is None:
+            return None
+
+        uncertainties = self.getUncertainties()
+        if uncertainties:
+            try:
+                result = float(result)
+            except:
+                # if it's not a number, we assume no measure of uncertainty
+                return None
+
+            for d in uncertainties:
+                if float(d['intercept_min']) <= result < float(d['intercept_max']):
+                    return d['errorvalue']
+            return None
+        else:
+            return None
 
     def duplicateService(self, context):
         """ Create a copy of the service and return the copy's id """
