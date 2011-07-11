@@ -241,14 +241,29 @@ NOT result column
 <tal:comment replace="nothing">***************
 Result column
 ******************************* </tal:comment>
-            <tal:result tal:condition="is_result">
+            <tal:result tal:condition="is_result"
+                tal:define="has_options python: item.has_key('ResultOptions') and item['ResultOptions'] or False">
+              <!-- Select for items with ResultOptions defined in the service -->
+              <select
+                tal:condition="python: has_options"
+                tal:attributes="
+                  field string:Result;
+                  name string:Results.${item/UID}:records:ignore_empty;
+                  uid item/UID;">
+                <tal:options tal:repeat="option item/ResultOptions">
+                    <option tal:attributes="
+                        value option/Result;
+                        selected python:item['Result'] == option['Result'] and 'selected' or '';">
+                        <span tal:content="option/Result"/>
+                    </option>
+                </tal:options>
+              </select>
               <!-- calculated results in disabled field -->
               <input
-                tal:condition="python: item['_calculation']"
+                tal:condition="python: item['_calculation'] and not has_options"
                 disabled="disabled"
                 type="text"
                 style="color:black"
-                tabindex="1000"
                 tal:attributes="
                   field string:Result_display;
                   uid item/UID;
@@ -256,7 +271,7 @@ Result column
                   value python: item['Result'];"/>
               <!-- hidden field for calculated result value, full precision -->
               <input
-                tal:condition="python: item['_calculation']"
+                tal:condition="python: item['_calculation'] and not has_options"
                 type="hidden"
                 class="analysis_entry"
                 tal:attributes="
@@ -266,7 +281,7 @@ Result column
                   value python: item['Result'];"/>
               <!-- regular result entry field -->
               <input
-                tal:condition="python: not item['_calculation']"
+                tal:condition="python: not item['_calculation'] and not has_options"
                 type="text"
                 class="analysis_entry"
                 tal:attributes="

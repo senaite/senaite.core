@@ -241,10 +241,9 @@ schema = BikaSchema.copy() + Schema((
     ),
     RecordsField('ResultOptions',
         type = 'resultsoptions',
-        subfields = ('Seq', 'Result',),
-        required_subfields = ('Seq', 'Result',),
-        subfield_types = {'Seq':'int'},
-        subfield_labels = {'Result': 'Option Text'},
+        subfields = ('Result',),
+        required_subfields = ('Result',),
+        subfield_labels = {'Result': 'Option Text',},
         widget = RecordsWidget(
             label = 'Result Options',
             label_msgid = 'label_result_options',

@@ -72,11 +72,13 @@ class AnalysisRequestAnalysesView(BikaListingView):
             item['_allow_edit'] = self.allow_edit or False
             calculation = obj.getService().getCalculation()
             item['_calculation'] = calculation and True or False
-            interim_fields = obj.getInterimFields()
-            item['item_data'] = json.dumps(interim_fields)
+            options = obj.getService().getResultOptions()
+            if options: item['ResultOptions'] = options
+            item_data = obj.getInterimFields()
+            item['item_data'] = json.dumps(item_data)
 
             # Add this analysis' interim fields to the list
-            for i in interim_fields:
+            for i in item_data:
                 if i['id'] not in self.interim_fields.keys():
                     self.interim_fields[i['id']] = i['title']
                 # This InterimField dictionary is the item's column value.
@@ -1021,9 +1023,15 @@ class AJAXAnalysisRequestSubmitResults(AnalysisRequestViewView):
 
                 if result:
                     precision = service.getPrecision()
-                    if precision:
-                        result = "%%.%df"%precision % float(result)
-#                    uncertainty = self.getUncertainty(service, result)
+                    options = service.getResultOptions()
+                    try:
+                        if precision:
+                            result = "%%.%df"%precision % float(result)
+                    except:
+                        if options:
+                            pass
+
+#                  XXX  uncertainty = self.getUncertainty(service, result)
 
                 analysis.edit(
                     Result = result,
@@ -1033,9 +1041,7 @@ class AJAXAnalysisRequestSubmitResults(AnalysisRequestViewView):
                     Unit = service.getUnit()
                 )
 
-#                wf.doActionFor(analysis, 'submit')
-#                transaction_note('Changed status of %s at %s' % (
-#                    analysis.title_or_id(), analysis.absolute_url()))
+#             XXX   wf.doActionFor(analysis, 'submit')
 
             if self.context.getReportDryMatter():
                 self.context.setDryMatterResults()
