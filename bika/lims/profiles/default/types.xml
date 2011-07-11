@@ -31,8 +31,7 @@
  <object name="InvoiceBatch" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="InvoiceFolder" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="InvoiceLineItem" meta_type="Factory-based Type Information"/>
- <object name="LabAnalysisSpecs" meta_type="Factory-based Type Information with dynamic views"/>
- <object name="LabAnalysisSpec" meta_type="Factory-based Type Information with dynamic views"/>
+ <object name="AnalysisSpecs" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="LabARProfiles" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="LabARProfile" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="LabContacts" meta_type="Factory-based Type Information with dynamic views"/>

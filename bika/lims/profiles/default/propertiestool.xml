@@ -35,7 +35,6 @@
     <element value="Attachment"/>
     <element value="AnalysisService"/>
     <element value="AnalysisSpec"/>
-    <element value="LabAnalysisSpec"/>
     <element value="ARProfile"/>
     <element value="LabARProfile"/>
     <element value="Address"/>

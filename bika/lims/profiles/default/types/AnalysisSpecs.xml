@@ -1,19 +1,19 @@
 <?xml version="1.0"?>
-<object name="LabAnalysisSpecs"
+<object name="AnalysisSpecs"
    meta_type="Factory-based Type Information with dynamic views"
    xmlns:i18n="http://xml.zope.org/namespaces/i18n">
  <property name="title">Lab Analysis Specs</property>
  <property name="description"></property>
  <property name="icon_expr">string:${portal_url}/folder_icon.gif</property>
- <property name="content_meta_type">LabAnalysisSpecs</property>
+ <property name="content_meta_type">AnalysisSpecs</property>
  <property name="product">bika.lims</property>
- <property name="factory">addLabAnalysisSpecs</property>
+ <property name="factory">addAnalysisSpecs</property>
  <property name="add_view_expr"></property>
  <property name="link_target"></property>
  <property name="global_allow">False</property>
  <property name="filter_content_types">True</property>
  <property name="allowed_content_types">
-  <element value="LabAnalysisSpec"/>
+  <element value="AnalysisSpec"/>
  </property>
  <property name="allow_discussion">False</property>
  <property name="default_view_fallback">False</property>

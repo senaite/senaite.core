@@ -189,11 +189,95 @@ class Analysis(BaseContent):
                 return d['errorvalue']
         return None
 
-    def checkHigherDependancies(self):
-        if self._affects_other_analysis:
+    def result_in_range(self, sampletype_uid, specification):
+        """ Check if a results is in range for any specs defined on it's service/sample type.
+        """
+        result = self.getResult()
+        try:
+            result = float(result)
+        except:
+            # if it is not a number we assume it is in range
             return True
-        else:
-            return False
+
+        service = self.getService()
+        keyword = service.getKeyword()
+
+        if self.portal_type in ['Analysis', 'RejectAnalysis']:
+            client_uid = self.getRequest().getClientUID()
+
+            if specification == 'lab':
+                a = self.context.portal_catalog(portal_type = 'AnalysisSpec',
+                                                getSampleTypeUID = sampletype_uid)
+            else:
+                a = self.context.portal_catalog(portal_type = 'AnalysisSpec',
+                                                getSampleTypeUID = sampletype_uid,
+                                                getClientUID = client_uid)
+
+            if a:
+                spec_obj = a[0].getObject()
+                spec = spec_obj.getResultsRangeDict()
+            else:
+                return True
+
+            if spec.has_key(keyword):
+                spec_min = float(spec[keyword]['min'])
+                spec_max = float(spec[keyword]['max'])
+                if spec_min <= result <= spec_max:
+                    return True
+                else:
+                    return False
+                #else:
+                #    """ XXX check if in 'shoulder' error range -
+                #        not yet supported nicely in the tal """
+                #    error_amount = result * Decimal(spec[service_uid]['error']) / 100
+                #    error_min = result - error_amount
+                #    error_max = result + error_amount
+                #    if ((result < spec_min) and (error_max >= spec_min)) or \
+                #       ((result > spec_max) and (error_min <= spec_max)):
+                #        result_class = 'in_error_range'
+            else:
+                return True
+
+##        elif analysis.portal_type == 'StandardAnalysis':
+##            result_class = ''
+##            specs = analysis.aq_parent.getResultsRangeDict()
+##            if specs.has_key(service_uid):
+##                spec = specs[service_uid]
+##                if (result < Decimal(spec['min'])) or (result > Decimal(spec['max'])):
+##                    result_class = 'out_of_range'
+##            return specs
+##
+##        elif analysis.portal_type == 'DuplicateAnalysis':
+##            service = analysis.getService()
+##            service_id = service.getId()
+##            service_uid = service.UID()
+##            wf_tool = self.context.portal_workflow
+##            if wf_tool.getInfoFor(analysis, 'review_state', '') == 'rejected':
+##                ws_uid = self.context.UID()
+##                for orig in self.context.portal_catalog(portal_type = 'RejectAnalysis',
+##                                                        getWorksheetUID = ws_uid,
+##                                                        getServiceUID = service_uid):
+##                    orig_analysis = orig.getObject()
+##                    if orig_analysis.getRequest().getRequestID() == analysis.getRequest().getRequestID():
+##                        break
+##            else:
+##                ar = analysis.getRequest()
+##                orig_analysis = ar[service_id]
+##            orig_result = orig_analysis.getResult()
+##            try:
+##                orig_result = float(orig_result)
+##            except ValueError:
+##                return ''
+##            dup_variation = service.getDuplicateVariation()
+##            dup_variation = dup_variation and dup_variation or 0
+##            range_min = result - (result * dup_variation / 100)
+##            range_max = result + (result * dup_variation / 100)
+##            if range_min <= orig_result <= range_max:
+##                result_class = ''
+##            else:
+##                result_class = 'out_of_range'
+
+        return result_class
 
 
     # workflow methods

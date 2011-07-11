@@ -66,7 +66,6 @@
   <type type_id="InvoiceFolder"/>
   <type type_id="InvoiceLineItem"/>
   <type type_id="LabARProfile"/>
-  <type type_id="LabAnalysisSpec"/>
   <type type_id="LabContact"/>
   <type type_id="Method"/>
   <type type_id="Pricelist"/>

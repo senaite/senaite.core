@@ -5,7 +5,7 @@ bika_attachmenttypes,AttachmentTypes
 bika_calculations,Calculations
 bika_departments,Departments
 bika_instruments,Instruments
-bika_labanalysisspecs,LabAnalysisSpecs
+bika_analysisspecs,AnalysisSpecs
 bika_labarprofiles,LabARProfiles
 bika_labcontacts,LabContacts
 bika_methods,Methods

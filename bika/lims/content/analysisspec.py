@@ -56,6 +56,7 @@ schema = BikaSchema.copy() + Schema((
 ))
 
 schema['title'].required = False
+schema['title'].widget.visible = False
 
 class AnalysisSpec(BaseFolder):
     security = ClassSecurityInfo()

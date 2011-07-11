@@ -46,9 +46,9 @@
     />
 
     <browser:page
-      for="bika.lims.interfaces.ILabAnalysisSpecs"
+      for="bika.lims.interfaces.IAnalysisSpecs"
       name="folder_view"
-      class=".bika_labanalysisspecs.LabAnalysisSpecsView"
+      class=".bika_analysisspecs.AnalysisSpecsView"
       permission="bika.lims.ManageBika"
       layer="bika.lims.interfaces.IBikaLIMS"
     />

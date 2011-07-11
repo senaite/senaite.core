@@ -16,7 +16,6 @@ from clientfolder import ClientFolder
 from contact import Contact
 from department import Department
 from instrument import Instrument
-from labanalysisspec import LabAnalysisSpec
 from labarprofile import LabARProfile
 from labcontact import LabContact
 from laboratory import Laboratory
@@ -26,6 +25,7 @@ from order import Order
 from orderitem import OrderItem
 from organisation import Organisation
 from person import Person
+from rejectanalysis import RejectAnalysis
 from sample import Sample
 from samplepoint import SamplePoint
 from sampletype import SampleType
@@ -38,7 +38,6 @@ from worksheet import Worksheet
 from worksheetfolder import WorksheetFolder
 from worksheettemplate import WorksheetTemplate
 from DuplicateAnalysis import DuplicateAnalysis
-from RejectAnalysis import RejectAnalysis
 from StandardAnalysis import StandardAnalysis
 from SupplierContact import SupplierContact
 from InvoiceFolder import InvoiceFolder

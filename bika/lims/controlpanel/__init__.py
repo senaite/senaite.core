@@ -5,7 +5,7 @@ from bika_attachmenttypes import AttachmentTypes
 from bika_calculations import Calculations
 from bika_departments import Departments
 from bika_instruments import Instruments
-from bika_labanalysisspecs import LabAnalysisSpecs
+from bika_analysisspecs import AnalysisSpecs
 from bika_labcontacts import LabContacts
 from bika_methods import Methods
 from bika_labproducts import LabProducts
