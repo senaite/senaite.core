@@ -432,7 +432,7 @@ class Worksheet(BaseFolder):
                 if result:
                     precision = service.getPrecision()
                     if precision:
-                        result = self.get_precise_result(result, precision)
+                        result = "%%.%df"%precision % result
                     uncertainty = self.get_uncertainty(result, service)
 
                 titrationvolume = value.get('TitrationVolume')

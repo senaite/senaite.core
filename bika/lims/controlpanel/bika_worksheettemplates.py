@@ -25,7 +25,6 @@ class WorksheetTemplatesView(BikaListingView):
     show_sort_column = False
     show_select_row = False
     show_select_column = True
-    batch = True
     pagesize = 20
 
     columns = {

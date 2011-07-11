@@ -5,43 +5,48 @@ $(document).ready(function(){
 		uid = $(this).attr('uid');
 		field = $(this).attr('field');
 		value = $(this).attr('value');
+		// collect all results for back-dependant calculations
+		var results = {};
+		$.each($("input[field='Result']"), function(i, e){
+			results[$(e).attr("uid")] = $(e).val();
+		});
 		options = {
 			type: 'POST',
 			url: 'analysis_entry',
+			async: false,
 			data: {
 				'uid': uid,
 				'field': field,
 				'value': value,
-				'item_data': $('#folder-contents-item-'+uid).attr('item_data'),
+				'results': $.toJSON(results),
+				'item_data': $('#'+uid+"_item_data").val(),
 				'_authenticator': $('input[name="_authenticator"]').val()
 			},
 			dataType: "json",
 			success: function(data,textStatus,$XHR){
-				// allow Python code to reset item_data (interim_fields)
+				// Update TR's interim_fields value to reflect new input field results
 				if('item_data' in data){
-					$('#folder-contents-item-'+uid).attr('item_data', $.toJSON(data.item_data));
+					$('#'+uid+"_item_data").val($.toJSON(data.item_data));
 				}
 				// clear out all row alerts
-				$("span[uid='"+uid+"']").empty();
-				if('error' in data){
-					$("span[uid='"+uid+"']")
-					  .filter("span[field='"+data.field+"']")
-					  .append("<img src='++resource++bika.lims.images/exclamation.png' title='"+data.error+"'/>");
-					// error: remove value from result field
+				$(".alert").empty();
+				// print alert icons / errors
+				for(i=0;i<$(data['alerts']).length;i++){
+					lert = $(data['alerts'])[i];
+					$("span[uid='"+lert.uid+"']")
+					  .filter("span[field='"+lert.field+"']")
+					  .append("<img src='++resource++bika.lims.images/"	+lert.icon +".png' title='"+lert.msg+"'/>");
+					// on error? remove value from result fields, to be re-filled below
 					$("input[uid='"+uid+"']").filter("input[field='Result']").val('');
+					$("input[uid='"+uid+"']").filter("input[field='Result_display']").val('');
 				}
-				if('unsatisfied' in data){
-					$("span[uid='"+uid+"']")
-					  .filter("span[name='unsatisfied'']")
-					  .append("<img src='++resource++bika.lims.images/dependencies.png' title='"+data.unsatisfied.join(", ")+"'/>");
-				}
-				if('result' in data){
-					$("input[uid='"+uid+"']").filter("input[field='Result']").val(data.result);
-					if('formula' in data){
-						$("span[uid='"+uid+"']")
-						  .filter("span[name='formula']")
-						  .append("<img src='++resource++bika.lims.images/calculation.png' title='"+data.formula+"'/>");
-					}
+				// put result values in their boxes
+				for(i=0;i<$(data['results']).length;i++){
+					result = $(data['results'])[i];
+					$("input[uid='"+result.uid+"']")
+						.filter("input[field='Result']").val(result.result);
+					$("input[uid='"+result.uid+"']")
+						.filter("input[field='Result_display']").val(result.result_display);
 				}
 			}
 		}

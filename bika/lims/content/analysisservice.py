@@ -106,6 +106,7 @@ schema = BikaSchema.copy() + Schema((
             i18n_domain = I18N_DOMAIN,
         ),
     ),
+    # XXX validate: may not clash with InterimField IDs
     StringField('Keyword',
         required = 1,
         index = 'FieldIndex:brains',

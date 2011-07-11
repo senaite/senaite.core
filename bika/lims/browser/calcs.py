@@ -1,96 +1,185 @@
 from Products.CMFCore.utils import getToolByName
-import plone, json, sys, math
+import plone, json, sys, math, urllib
 
 class AJAXCalculateAnalysisEntry():
     """ This view is called by javascript when an analysis' result or interim field value is
         entered. Returns a JSON dictionary, or None if no action is required or possible.
-        - If the return has an 'error':string, it must also have a 'field' key, the value of which
-          is the ID of the field which gets the (!).
-        - If the return has a 'result' key, no other values are required.
     """
 
     def __init__(self,context,request):
         self.context = context
         self.request = request
 
+    def calculate(self, uid=None):
+
+        recursing = uid and True or False
+        uid = uid or self.uid
+        if uid in self.calculated: return None
+        self.calculated.append(uid)
+
+        analysis = self.analyses[uid]
+        form_result = self.form_results[uid]
+        service = self.services[self.UIDtoUID[uid]]
+        precision = service.getPrecision()
+        calculation = service.getCalculation()
+        if not self.dependencies.has_key(uid):
+            self.dependencies[uid] = calculation and calculation.getDependentServices() or []
+
+        result = None
+        mapping = {}
+
+        # If we have no dependencies, why recurse into us?
+        if recursing and not self.dependencies[uid]:
+            return None
+
+        # check if all dependent services have values in the form_results, and add them to mapping
+        unsatisfied = False
+        for dep in self.dependencies[uid]:
+            dep_uid = dep.UID()
+            for analysis in self.analyses:
+                if self.UIDtoUID[dep_uid] == analysis:
+                    if self.form_results[self.UIDtoUID[dep_uid]] == "":
+                        unsatisfied = True
+                        break
+                    try:
+                        mapping[dep.getKeyword()] = float(self.form_results[self.UIDtoUID[dep_uid]])
+                    except:
+                        mapping[dep.getKeyword()] = self.form_results[self.UIDtoUID[dep_uid]]
+                    break
+        # reset form result and fail, if any dependencies are unsatisfied
+        if unsatisfied:
+            self.results.append({'uid': uid,
+                                 'result': '',
+                                 'result_display': ''})
+            return None
+
+        if calculation:
+
+            # check if all interim fields in this row have values in the form data
+            # add field value to the mapping, amd set self.item_data
+            if not recursing:
+                new_item_data = []
+                for i in self.item_data:
+
+                    # If an interim field is blank, remove the row result from form values
+                    if self.value == '':
+                        self.form_results[uid] = ''
+                        self.results.append({'uid': uid,
+                                             'result': '',
+                                             'result_display': ''})
+
+                    # Set the new value if it's changed
+                    if i['id'] == self.field:
+                        i['value'] = self.value
+
+                    new_item_data.append(i)
+                    mapping[i['id']] = i['value']
+
+                self.item_data = new_item_data
+
+            type_error = False
+            for key,value in mapping.items():
+                try:
+                    mapping[key] = float(value)
+                except Exception, e:
+                    type_error = True
+                    self.alerts.append({'uid': uid,
+                                        'field': 'Result',
+                                        'icon': 'exclamation',
+                                        'msg': "Type Error in field %s: %s" % (key, e.args[0])})
+            if type_error:
+                return None
+
+            formula = calculation.getFormula()
+            try:
+                # mapping values are keyed by ServiceKeyword or InterimField id
+                formula = eval("'%s'%%mapping"%formula,
+                               {"__builtins__":None, 'math':math},
+                               {'mapping': mapping})
+                self.alerts.append({'uid': uid,
+                                    'field': 'Result',
+                                    'icon': 'calculation',
+                                    'msg': formula})
+                result = eval(formula)
+                self.results.append({'uid': uid,
+                                     'result': result,
+                                     'result_display': precision and \
+                                                str("%%%sf" % precision) % result or \
+                                                result})
+                self.form_results[uid] = precision and str("%%%sf" % precision) % result or result
+            except ZeroDivisionError, e:
+                self.alerts.append({'uid': uid,
+                                    'field': 'Result',
+                                    'icon': 'exclamation',
+                                    'msg': "Calculation failed: division by zero"})
+                return None
+            except KeyError, e:
+                self.alerts.append({'uid': uid,
+                                    'field': 'Result',
+                                    'icon': 'exclamation',
+                                    'msg': "Key Error: " + str(e.args[0])})
+                return None
+            except Exception, e:
+                self.alerts.append({'uid': uid,
+                                    'field': 'Result',
+                                    'icon': 'exclamation',
+                                    'msg': "Exception: " +  str(e.args[0])})
+                return None
+
+        else:
+            # if nothing's changed, set form to show the original value
+            self.results.append({'uid': uid,
+                                 'result': form_result,
+                                 'result_display': form_result})
+
+        # result has changed
+        if result != form_result:
+            # maybe a service who depends on us must be recalculated.
+            for recurse_uid, recurse_val in self.form_results.items():
+                # if it's in recurse_uids its my ancestor.
+                if recurse_uid in self.recurse_uids:
+                    continue
+                # recalculate it
+                self.recurse_uids.append(recurse_uid)
+                self.calculate(recurse_uid)
+                self.recurse_uids.remove(recurse_uid)
+
     def __call__(self):
         pc = getToolByName(self.context, 'portal_catalog')
         plone.protect.CheckAuthenticator(self.request)
         plone.protect.PostOnly(self.request)
 
-        uid = self.request.get('uid')
-        field = self.request.get('field')
-        value = self.request.get('value')
-        interim_fields = json.loads(self.request.get('item_data'))
+        self.uid = self.request.get('uid')
+        self.field = self.request.get('field')
+        self.value = self.request.get('value')
+        self.form_results = json.loads(self.request.get('results'))
 
-        # all return values in here.
-        # 'field' decides the position of the error (!) exclaimation
-        ret = {'field':field}
+        # these are sent back to the js
+        self.item_data = json.loads(self.request.get('item_data', ''))
+        self.alerts = []
+        self.results = []
 
-        try:
-            analysis = pc(portal_type='Analysis', UID=uid)[0].getObject()
-        except:
-            ret['error'] = 'Analysis %s does not exist (should not happen!)' % uid
-            return json.dumps(ret)
+        self.services = {}
+        self.analyses = {}
+        self.dependencies = {}
+        # once a result is calculated for an analysis, recurse it not again
+        self.calculated = []
+        # Contains all Service UIDs as keys with the Analysis UID as the value
+        # Also contains all Analysis UIDS as keys, with their Service UIDs as values.
+        self.UIDtoUID = {}
+        for analysis_uid, result in self.form_results.items():
+            analysis = pc(portal_type='Analysis', UID=analysis_uid)[0].getObject()
+            service = analysis.getService()
+            service_uid = service.UID()
+            self.analyses[analysis_uid] = analysis
+            self.services[service_uid] = service
+            self.UIDtoUID[service_uid] = analysis_uid
+            self.UIDtoUID[analysis_uid] = service_uid
 
-        analyses = analysis.aq_parent.objectValues()
-        service = analysis.getService()
-        calculation = service.getCalculation()
-        dependencies = calculation and calculation.getDependentServices() or []
+        self.recurse_uids = [self.uid,]
 
-        if calculation:
-            # map keys to the names of services/fields in the calculation formula
-            mapping = {}
-            # modified interim_results gets returned to the html row's item_data
-            item_data = []
-            # check if all interim fields in the request have values
-            for i in interim_fields:
-                if i['id'] == field: i['value'] = value
-                if str(i['value']) == '': return None # nop
-                try:
-                    i['value'] = float(i['value'])
-                except:
-                    ret['field'] = field
-                    ret['error'] = 'The value specified is not a number'
-                    return json.dumps(ret)
-                mapping[i['id']] = i['value']
-                item_data.append(i)
-            ret['item_data'] = item_data
-            # check if all dependent analyses in this AR have results
-            unsatisfied = []
-            for dep in dependencies:
-                dep_uid = dep.getUID()
-                for a in analyses:
-                    if a.getService().getUID() == dep.getUID():
-                        if not a.getResult():
-                            unsatisfied.append(dep_uid)
-                        mapping[i['id']] = i['value']
-            # return unsatisfied dependencies
-            if unsatisfied:
-                ret['unsatisfied'] = unsatisfied
-                return json.dumps(ret)
+        self.calculate()
 
-            formula = calculation.getFormula()
-            try:
-                formula = eval("'%s'%%mapping"%formula,
-                               {"__builtins__":None, 'math':math},
-                               {'mapping': mapping})
-                ret['formula'] = formula
-                result = eval(formula)
-            except ZeroDivisionError:
-                ret['field'] = 'Result'
-                ret['error'] = "Cannot divide by zero"
-                return json.dumps(ret)
-            except Exception, e:
-                ret['field'] = 'Result'
-                ret['error'] = e.msg
-                return json.dumps(ret)
-
-            # check if analyses that rely on this need to have their results
-            # re-calculated now that this result is complete
-            # back_dependencies = analysis.getBackReferences()
-
-            ret['result'] = str(result)
-
-        return json.dumps(ret)
-
+        return json.dumps({'item_data': self.item_data,
+                           'alerts': self.alerts,
+                           'results': self.results})

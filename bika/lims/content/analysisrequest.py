@@ -257,7 +257,7 @@ class AnalysisRequest(BaseFolder):
                 settings = plone.bika_settings
                 return settings.getMemberDiscount()
             else:
-                return 0
+                return "0.00"
 
     security.declareProtected(View, 'getResponsible')
     def getResponsible(self):
@@ -541,113 +541,6 @@ class AnalysisRequest(BaseFolder):
 
         RESPONSE.redirect(
                 '%s/analysisrequest_analyses' % self.absolute_url())
-
-    security.declareProtected(SubmitResults, 'submitResults')
-    def submitResults(self, results = {}, REQUEST = None, RESPONSE = None):
-        """ Submit results
-        """
-        wf_tool = getToolByName(self, 'portal_workflow')
-
-        for key, value in self.REQUEST.form.items():
-            if key.startswith('results'):
-                id = key.split('.')[-1]
-                analysis = self._getOb(id)
-                if analysis.getCalcType() == 'dep':
-                    continue
-                result = value.get('Result')
-                if result:
-                    if result.strip() == '':
-                        result = None
-                else:
-                    result = None
-
-                retested = value.get('Retested')
-
-                uncertainty = None
-                service = analysis.getService()
-
-                if result:
-                    precision = service.getPrecision()
-                    if precision:
-                        result = self.get_precise_result(result, precision)
-
-                    uncertainty = self.get_uncertainty(result, service)
-
-                titrationvolume = value.get('TitrationVolume')
-                if titrationvolume:
-                    if titrationvolume.strip() == '':
-                        titrationvolume = None
-                else:
-                    titrationvolume = None
-
-                titrationfactor = value.get('TitrationFactor')
-                if titrationfactor:
-                    if titrationfactor.strip() == '':
-                        titrationfactor = None
-                else:
-                    titrationfactor = None
-
-                grossmass = value.get('GrossMass')
-                if grossmass:
-                    if grossmass.strip() == '':
-                        grossmass = None
-                else:
-                    grossmass = None
-
-                netmass = value.get('NetMass')
-                if netmass:
-                    if netmass.strip() == '':
-                        netmass = None
-                else:
-                    netmass = None
-
-                vesselmass = value.get('VesselMass')
-                if vesselmass:
-                    if vesselmass.strip() == '':
-                        vesselmass = None
-                else:
-                    vesselmass = None
-
-                samplemass = value.get('SampleMass')
-                if samplemass:
-                    if samplemass.strip() == '':
-                        samplemass = None
-                else:
-                    samplemass = None
-
-                analysis.setTitrationVolume(titrationvolume)
-                analysis.setTitrationFactor(titrationfactor)
-                analysis.setGrossMass(grossmass)
-                analysis.setNetMass(netmass)
-                analysis.setVesselMass(vesselmass)
-                analysis.setSampleMass(samplemass)
-
-                analysis.edit(
-                    Result = result,
-                    Retested = retested,
-                    Uncertainty = uncertainty,
-                    Unit = service.getUnit()
-                )
-
-                if analysis._affects_other_analysis:
-                    self.get_dependant_results(analysis)
-                if result is None:
-                    continue
-
-                wf_tool.doActionFor(analysis, 'submit')
-                transaction_note('Changed status of %s at %s' % (
-                    analysis.title_or_id(), analysis.absolute_url()))
-
-        if self.getReportDryMatter():
-            self.setDryMatterResults()
-
-        review_state = wf_tool.getInfoFor(self, 'review_state', '')
-        if review_state == 'to_be_verified':
-            RESPONSE.redirect(self.absolute_url())
-        else:
-            RESPONSE.redirect(
-                '%s/analysisrequest_analyses' % self.absolute_url())
-
 
     security.declarePublic('getContactUIDForUser')
     def getContactUIDForUser(self):

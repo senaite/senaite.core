@@ -66,6 +66,7 @@ class AnalysisRequestAnalysesView(BikaListingView):
             item['Service'] = obj.getService().Title()
             item['Uncertainty'] = obj.getUncertainty()
             item['Unit'] = obj.getUnit()
+            item['Keyword'] = obj.getService().Keyword
             item['Result'] = obj.getResult()
             item['Attachments'] = ", ".join([a.Title() for a in obj.getAttachment()])
             item['_allow_edit'] = self.allow_edit or False
@@ -132,6 +133,19 @@ class AnalysisRequestViewView(BrowserView):
     def now(self):
         return DateTime()
 
+    def arprofiles(self):
+        """ Return applicable client and Lab ARProfile records
+        """
+        profiles = []
+        pc = getToolByName(self.context, 'portal_catalog')
+        for proxy in pc(portal_type = 'ARProfile', getClientUID = self.context.UID(), sort_on = 'sortable_title'):
+            profiles.append(proxy.getObject())
+        for proxy in pc(portal_type = 'LabARProfile', sort_on = 'sortable_title'):
+            profile = proxy.getObject()
+            profile.setTitle("Lab: %s" % profile.Title())
+            profiles.append(proxy.getObject())
+        return profiles
+
     def Categories(self):
         """ Returns a dictionary with a list of field analyses and a list of lab analyses.
             This returns only categories which have analyses selected in the current AR.
@@ -158,6 +172,29 @@ class AnalysisRequestViewView(BrowserView):
         member_groups = [pg.getGroupById(group.id).getGroupName() for group in pg.getGroupsByUserId(member.id)]
         default_spec = ('clients' in member_groups) and 'client' or 'lab'
         return default_spec
+
+    def getUncertainty(self, service, result):
+        """ checks result against analysis.Service.Uncertainties
+            and returns the applicable uncertainty value
+        """
+        if result is None:
+            return None
+
+        uncertainties = service.getUncertainties()
+        if uncertainties:
+            try:
+                result = float(result)
+            except:
+                # if float()ing it fails for whatever reason,
+                # we assume no measure of uncertainty
+                return None
+
+            for d in uncertainties:
+                if float(d['intercept_min']) <= result < float(d['intercept_max']):
+                    return d['errorvalue']
+            return None
+        else:
+            return None
 
     @property
     def review_state(self):
@@ -347,38 +384,44 @@ class AnalysisRequestViewView(BrowserView):
                 verifier = actor
         return verifier
 
-class AnalysisRequestAddView(BrowserView):
+    def get_analysis_request_actions(self):
+        ## Script (Python) "get_analysis_request_actions"
+        ##bind container=container
+        ##bind context=context
+        ##bind namespace=
+        ##bind script=script
+        ##bind subpath=traverse_subpath
+        ##parameters=
+        ##title=
+        ##
+        wf_tool = self.context.portal_workflow
+        actions_tool = self.context.portal_actions
+
+        actions = {}
+        for analysis in self.context.getAnalyses():
+            review_state = wf_tool.getInfoFor(analysis, 'review_state', '')
+            if review_state in ('not_requested', 'to_be_verified', 'verified'):
+                a = actions_tool.listFilteredActionsFor(analysis)
+                for action in a['workflow']:
+                    if actions.has_key(action['id']):
+                        continue
+                    actions[action['id']] = action
+
+        return actions.values()
+
+class AnalysisRequestAddView(AnalysisRequestViewView):
     """ The main AR Add form
     """
     template = ViewPageTemplateFile("templates/analysisrequest_edit.pt")
 
     def __init__(self, context, request):
-        BrowserView.__init__(self, context, request)
+        super(AnalysisRequestAddView, self).__init__(context, request)
         self.col_count = 4
         self.came_from = "add"
         self.DryMatterService = self.context.bika_settings.getDryMatterService()
 
     def __call__(self):
         return self.template()
-
-    def tabindex(self):
-        i = 0
-        while True:
-            i += 1
-            yield i
-
-    def arprofiles(self):
-        """ Return applicable client and Lab ARProfile records
-        """
-        profiles = []
-        pc = getToolByName(self.context, 'portal_catalog')
-        for proxy in pc(portal_type = 'ARProfile', getClientUID = self.context.UID(), sort_on = 'sortable_title'):
-            profiles.append(proxy.getObject())
-        for proxy in pc(portal_type = 'LabARProfile', sort_on = 'sortable_title'):
-            profile = proxy.getObject()
-            profile.setTitle("Lab: %s" % profile.Title())
-            profiles.append(proxy.getObject())
-        return profiles
 
     def Categories(self):
         """ Dictionary keys: poc
@@ -420,16 +463,14 @@ class AnalysisRequestEditView(AnalysisRequestAddView):
 class AnalysisRequestManageResultsView(AnalysisRequestViewView):
     template = ViewPageTemplateFile("templates/analysisrequest_manage_results.pt")
 
-    def __init__(self, context, request):
-        super(AnalysisRequestViewView, self).__init__(context, request)
-        self.FieldAnalysesView = AnalysisRequestAnalysesView(
-                               context, request, allow_edit = True, getPointOfCapture = 'field')
-        self.LabAnalysesView = AnalysisRequestAnalysesView(
-                               context, request, allow_edit = True, getPointOfCapture = 'lab')
-
     def __call__(self):
         wf_tool = getToolByName(self.context, 'portal_workflow')
         pc = getToolByName(self.context, 'portal_catalog')
+
+        self.FieldAnalysesView = AnalysisRequestAnalysesView(
+                               self.context, self.request, allow_edit = True, getPointOfCapture = 'field')
+        self.LabAnalysesView = AnalysisRequestAnalysesView(
+                               self.context, self.request, allow_edit = True, getPointOfCapture = 'lab')
 
         form = self.request.form
         if form.has_key("submitted"):
@@ -438,60 +479,6 @@ class AnalysisRequestManageResultsView(AnalysisRequestViewView):
 
         return self.template()
 
-    def get_precise_result(self, result, precision):
-        ##bind container=container
-        ##bind context=context
-        ##bind namespace=
-        ##bind script=script
-        ##bind subpath=traverse_subpath
-        ##parameters=result, precision
-        ##title=Return result as a string with the correct precision
-        ##
-        try:
-            float_result = Decimal(result)
-        except ValueError:
-            return result
-
-        if precision == None or precision == '':
-            precision = 0
-        if precision == 0:
-            precise_result = '%.0f' % float_result
-        if precision == 1:
-            precise_result = '%.1f' % float_result
-        if precision == 2:
-            precise_result = '%.2f' % float_result
-        if precision == 3:
-            precise_result = '%.3f' % float_result
-        if precision == 4:
-            precise_result = '%.4f' % float_result
-        if precision > 4:
-            precise_result = '%.5f' % float_result
-        return precise_result
-
-    def get_analysis_request_actions(self):
-        ## Script (Python) "get_analysis_request_actions"
-        ##bind container=container
-        ##bind context=context
-        ##bind namespace=
-        ##bind script=script
-        ##bind subpath=traverse_subpath
-        ##parameters=
-        ##title=
-        ##
-        wf_tool = self.context.portal_workflow
-        actions_tool = self.context.portal_actions
-
-        actions = {}
-        for analysis in self.context.getAnalyses():
-            review_state = wf_tool.getInfoFor(analysis, 'review_state', '')
-            if review_state in ('not_requested', 'to_be_verified', 'verified'):
-                a = actions_tool.listFilteredActionsFor(analysis)
-                for action in a['workflow']:
-                    if actions.has_key(action['id']):
-                        continue
-                    actions[action['id']] = action
-
-        return actions.values()
 
 class AnalysisRequestResultsNotRequestedView(AnalysisRequestManageResultsView):
     template = ViewPageTemplateFile("templates/analysisrequest_analyses_not_requested.pt")
@@ -574,7 +561,6 @@ class AnalysisRequestSelectSampleView(BikaListingView):
     show_sort_column = False
     show_select_row = False
     show_select_column = False
-    batch = True
     pagesize = 50
 
     columns = {
@@ -1002,6 +988,59 @@ class AJAXAnalysisRequestSubmit():
                                                 mapping = {'AR': ', '.join(ARs)}, domain = 'bika')
             else:
                 message = "Changes Saved."
+        else:
+            message = "Changes Cancelled."
+
+        self.context.plone_utils.addPortalMessage(message, 'info')
+        return json.dumps({'success':message})
+
+class AJAXAnalysisRequestSubmitResults(AnalysisRequestViewView):
+
+    def __init__(self, context, request):
+        self.context = context
+        self.request = request
+
+    def __call__(self):
+        form = self.request.form
+        plone.protect.CheckAuthenticator(self.request)
+        plone.protect.PostOnly(self.request)
+
+        if form.has_key("save_button") and self.request.form.has_key("Results"):
+            wf = getToolByName(self.context, 'portal_workflow')
+            pc = getToolByName(self.context, 'portal_catalog')
+            rc = getToolByName(self.context, 'reference_catalog')
+
+            for analysis_uid, result in self.request.form['Results'][0].items():
+                analysis = rc.lookupObject(analysis_uid)
+                service = analysis.getService()
+
+                # XXX retested = value.get('Retested')
+
+                uncertainty = None
+                service = analysis.getService()
+
+                if result:
+                    precision = service.getPrecision()
+                    if precision:
+                        result = "%%.%df"%precision % float(result)
+#                    uncertainty = self.getUncertainty(service, result)
+
+                analysis.edit(
+                    Result = result,
+                    InterimFields = json.loads(form["InterimFields"][0][analysis_uid]),
+                    #Retested = retested,
+#                    Uncertainty = uncertainty,
+                    Unit = service.getUnit()
+                )
+
+#                wf.doActionFor(analysis, 'submit')
+#                transaction_note('Changed status of %s at %s' % (
+#                    analysis.title_or_id(), analysis.absolute_url()))
+
+            if self.context.getReportDryMatter():
+                self.context.setDryMatterResults()
+
+            message = "Changes saved."
         else:
             message = "Changes Cancelled."
 

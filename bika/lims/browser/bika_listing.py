@@ -109,7 +109,7 @@ class BikaListingView(FolderContentsView):
 
         show_all = self.request.get('show_all', '').lower() == 'true'
         pagesize = self.pagesize
-        pagenumber = int(self.request.get('pagenumber', 1))
+        pagenumber = int(self.request.get('pagenumber', 1) or 1)
         start = (pagenumber - 1) * pagesize
         end = start + pagesize
 

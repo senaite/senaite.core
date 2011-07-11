@@ -22,6 +22,7 @@
     id="edit_form">
 
 <input type="hidden" name="submitted" value="1" />
+<span tal:replace="structure context/@@authenticator/authenticator"/>
 
 <table cellpadding="3">
 <tr> <td valign="top">

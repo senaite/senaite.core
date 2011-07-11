@@ -73,7 +73,11 @@
         name="analysisrequest_manage_results_form"
         method="post">
 
-        <input type="hidden" name="submitted" value="1"/>
+        <input type="hidden" name="sort_on" tal:attributes="value request/sort_on|string:getObjPositionInParent"/>
+        <input type="hidden" name="pagenumber" value="1"/>
+        <input type="hidden" name="show_all" value="True"/>
+
+		<input type="hidden" name="submitted" value="1"/>
         <input tal:replace="structure context/@@authenticator/authenticator" />
 
         <tal:field_analyses>
@@ -85,6 +89,26 @@
           <h3 tal:content="python: modules['bika.lims.config'].POINTS_OF_CAPTURE.getValue('lab')"/>
           <span tal:replace="structure python: view.LabAnalysesView.contents_table()"/>
         </tal:lab_analyses>
+
+        <input class="context allowMultiSubmit"
+                tabindex=""
+                type="submit"
+                name="save_button"
+                value="Save"
+                i18n:attributes="value"
+                tal:attributes="tabindex tabindex/next"
+                />
+        <input class="context"
+                tabindex=""
+                type="submit"
+                name="cancel_button"
+                value="Cancel"
+                i18n:attributes="value"
+                tal:attributes="tabindex tabindex/next"
+                />
+        <span id="spinner" style="display:none">
+            <img tal:attributes="src python:portal.absolute_url()+ '/images/spinner.gif';"/>
+
     </form>
 
   </metal:content-core>

@@ -11,7 +11,6 @@ class ClientAnalysisRequestsView(BikaListingView):
     show_sort_column = False
     show_select_row = False
     show_select_column = True
-    batch = True
     pagesize = 10
 
     columns = {
@@ -113,7 +112,6 @@ class ClientSamplesView(BikaListingView):
     show_sort_column = False
     show_select_row = False
     show_select_column = False
-    batch = True
     pagesize = 20
 
     columns = {
@@ -194,7 +192,6 @@ class ClientARImportsView(BikaListingView):
     show_sort_column = False
     show_select_row = False
     show_select_column = True
-    batch = True
     pagesize = 20
 
     columns = {
@@ -243,7 +240,6 @@ class ClientARProfilesView(BikaListingView):
     show_sort_column = False
     show_select_row = False
     show_select_column = True
-    batch = True
     pagesize = 20
 
     columns = {
@@ -277,7 +273,6 @@ class ClientAnalysisSpecsView(BikaListingView):
     show_sort_column = False
     show_select_row = False
     show_select_column = True
-    batch = True
     pagesize = 20
 
     columns = {
@@ -322,7 +317,6 @@ class ClientAttachmentsView(BikaListingView):
     show_sort_column = False
     show_select_row = False
     show_select_column = True
-    batch = True
     pagesize = 20
 
     columns = {
@@ -384,7 +378,6 @@ class ClientOrdersView(BikaListingView):
     show_sort_column = False
     show_select_row = False
     show_select_column = True
-    batch = True
     pagesize = 20
 
     columns = {
@@ -434,7 +427,6 @@ class ClientContactsView(BikaListingView):
     show_sort_column = False
     show_select_row = False
     show_select_column = True
-    batch = True
     pagesize = 20
 
     columns = {

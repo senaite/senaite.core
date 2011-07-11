@@ -26,6 +26,7 @@ class AnalysisServicesView(BikaListingView):
 
     columns = {
                'getServiceName': {'title': _('Title')},
+               'getKeyword': {'title': _('Keyword')},
                'CategoryName': {'title': _('Category')},
                'ReportDryMatter': {'title': _('Report as dry matter')},
                'AttachmentOption': {'title': _('Attachments')},
@@ -39,6 +40,7 @@ class AnalysisServicesView(BikaListingView):
     review_states = [
                      {'title_or_id': _('All'), 'id':'all',
                       'columns': ['getServiceName',
+                                  'getKeyword',
                                   'CategoryName',
                                   'ReportDryMatter',
                                   'AttachmentOption',
@@ -71,7 +73,7 @@ class AnalysisServicesView(BikaListingView):
             else: items[x]['DuplicateVariation'] = ""
             calculation = obj.getCalculation()
             items[x]['Calculation'] = calculation and calculation.Title() or ''
-            items[x]['links'] = {'title_or_id': items[x]['url'] + "/edit"}
+            items[x]['links'] = {'getServiceName': items[x]['url'] + "/edit"}
             out.append(items[x])
         out = sorted(out, key=itemgetter('getServiceName'))
         for i in range(len(out)):

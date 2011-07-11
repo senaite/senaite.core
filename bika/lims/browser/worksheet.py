@@ -17,7 +17,6 @@ class WorksheetFolderView(BikaListingView):
     show_sort_column = False
     show_select_row = False
     show_select_column = True
-    batch = True
     pagesize = 50
 
     columns = {
@@ -311,7 +310,6 @@ class WorksheetAddBlankView(BikaListingView):
     show_select_row = False
     show_select_column = True
     show_filters = True
-    batch = True
     pagesize = 20
 
     columns = {
@@ -360,7 +358,6 @@ class WorksheetAddControlView(BikaListingView):
     show_select_row = False
     show_select_column = True
     show_filters = True
-    batch = True
     pagesize = 20
 
     columns = {
@@ -409,7 +406,6 @@ class WorksheetAddDuplicateView(BikaListingView):
     show_select_row = False
     show_select_column = True
     show_filters = True
-    batch = True
     pagesize = 20
 
     columns = {

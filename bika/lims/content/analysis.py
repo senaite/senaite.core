@@ -179,8 +179,9 @@ class Analysis(BaseContent):
 
         try:
             result = float(result)
-        except ValueError:
-            # if it is not a float we assume no measure of uncertainty
+        except:
+            # if float()ing it fails for whatever reason,
+            # we assume no measure of uncertainty
             return None
 
         for d in uncertainties:
