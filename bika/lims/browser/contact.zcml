@@ -1,0 +1,16 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:i18n="http://namespaces.zope.org/i18n"
+    i18n_domain="bika">
+
+    <browser:page
+      for="*"
+      name="contact_login_details"
+      class="bika.lims.browser.contact.ContactLoginDetailsView"
+      permission="bika.lims.ManageClients"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
+
+</configure>
