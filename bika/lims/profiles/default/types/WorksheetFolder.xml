@@ -21,11 +21,11 @@
   <element value="worksheets"/>
  </property>
  <property name="default_view_fallback">False</property>
- 
- <alias from="(Default)" to="base_edit"/>
+
+ <alias from="(Default)" to="worksheets"/>
  <alias from="view" to="worksheets"/>
- <alias from="edit" to="base_edit"/>
- 
+ <alias from="edit" to="worksheets"/>
+
  <action title="View" action_id="view" category="object" condition_expr=""
     icon_expr="" link_target="" url_expr="string:${object_url}/base_view"
     visible="False">

@@ -32,26 +32,35 @@
           method="POST"
           enctype="multipart/form-data">
 
-      <table width="100%">
-        <tr>
-          <td>
-            <span i18n:translate="label_range_specification">Range Specification</span>:
-            <input class="noborder" type="radio" name="specification" value="lab"
-                onclick="this.form.submit()"
-                tal:attributes="checked python: specification == 'lab' and 'checked' or None;"/>
-            <label i18n:translate="label_lab_spec">Lab</label>
-            <input class="noborder" type="radio" name="specification" value="client"
-                onclick="this.form.submit()"
-                tal:attributes="checked python: specification == 'client' and 'checked' or None;"/>
-            <label i18n:translate="label_client_spec">Client</label>
-          </td>
-          <td align="right">
-            <tal:hazardous tal:condition="python: sample.getSampleType().getHazardous()">
-              <img src="" tal:attributes="src string:${portal/absolute_url}/images/hazardous.png">
-            </tal:hazardous>
-          </td>
-        </tr>
-      </table>
+		<table width="100%">
+			<tr>
+				<td>
+					<form name="specificationForm"
+						enctype="multipart/form-data"
+						method="post">
+					<span i18n:translate="label_range_specification">Range Specification</span>
+					<input class="noborder"
+						type="radio"
+						name="specification"
+						value="lab"
+						tal:attributes="
+							checked python:specification == 'lab' and 'checked' or None;"/>
+					<label i18n:translate="label_lab">Lab</label>
+					<input class="noborder"
+						type="radio"
+						name="specification"
+						value="client"
+						tal:attributes="
+							checked python:specification == 'client' and 'checked' or None;"/>
+					<label i18n:translate="label_client">Client</label>
+					</form>
+				</td>
+				<td align="right">
+					<img tal:condition="view/getHazardous"
+						src="" tal:attributes="src string:${portal/absolute_url}/images/hazardous.png">
+				</td>
+			</tr>
+		</table>
 
       <table
           summary="Analysisrequest view"

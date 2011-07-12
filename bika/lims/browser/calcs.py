@@ -36,8 +36,8 @@ class AJAXCalculateAnalysisEntry():
         unsatisfied = False
         for dep in self.dependencies[uid]:
             dep_uid = dep.UID()
-            for analysis in self.analyses:
-                if self.UIDtoUID[dep_uid] == analysis:
+            for a in self.analyses:
+                if self.UIDtoUID[dep_uid] == a:
                     if self.form_results[self.UIDtoUID[dep_uid]] == "":
                         unsatisfied = True
                         break

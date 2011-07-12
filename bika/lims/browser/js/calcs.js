@@ -46,7 +46,7 @@ $(document).ready(function(){
 					lert = $(data['alerts'])[i];
 					$("span[uid='"+lert.uid+"']")
 					  .filter("span[field='"+lert.field+"']")
-					  .append("<img src='++resource++bika.lims.images/"	+lert.icon +".png' title='"+lert.msg+"'/>");
+					  .append("<img src='++resource++bika.lims.images/"	+lert.icon +".png' title='"+lert.msg+"' uid='"+lert.uid+"' icon='"+lert.icon+"'/>");
 					// on error? remove value from result fields, to be re-filled below
 					$("input[uid='"+uid+"']").filter("input[field='Result']").val('');
 					$("input[uid='"+uid+"']").filter("input[field='Result_display']").val('');
@@ -64,8 +64,55 @@ $(document).ready(function(){
 		$.ajax(options);
 	});
 
+	// range specification radio clicks
 	$("input[name='specification']").click(function(){
+		result_elements = $("input[field='Result']");
+		for(i=0; i<result_elements.length; i++){
+			re = result_elements[i];
+			result = $(re).val();
+			if (result == ''){
+				continue
+			}
+			uid = $(re).attr('uid');
+			// remove old alerts
+			$("img[uid='"+uid+"']").filter("img[icon='warning']").remove();
+			$("img[uid='"+uid+"']").filter("img[icon='exclamation']").remove();
+			// get spec data from TR
+			specs = $.parseJSON($('#folder-contents-item-'+uid).attr('specs'));
+			specification = $("input[name='specification']").filter(":checked").val();
+			if ( ! specification in specs){
+				continue;
+			}
 
+			spec = specs[specification];
+			result = parseFloat(result);
+			spec_min = parseFloat(spec.min);
+			spec_max = parseFloat(spec.max);
+
+			// shoulder first
+            error_amount =  (result/100)*parseFloat(spec['error'])
+            error_min = result - error_amount
+            error_max = result + error_amount
+            if (((result < spec_min) && (error_max >= spec_min)) ||
+				((result > spec_max) && (error_min <= spec_max)) ){
+				$("span[uid='"+uid+"']")
+				  .filter("span[field='Result']")
+				  .append("<img src='++resource++bika.lims.images/warning.png' uid='"+uid+"' icon='warning' title='Out Of Range: in shoulder'/>");
+				continue;
+			}
+
+			// then check if in range
+            if (result >= spec_min && result <= spec_max) {
+				continue;
+			}
+
+
+			// fall to here; set red
+			$("span[uid='"+uid+"']")
+			  .filter("span[field='Result']")
+			  .append("<img src='++resource++bika.lims.images/exclamation.png' uid='"+uid+"' icon='exclamation' title='Out Of Range'/>");
+
+		}
 	});
 
 });

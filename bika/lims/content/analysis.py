@@ -195,7 +195,7 @@ class Analysis(BaseContent):
         try:
             result = float(str(result))
         except:
-            # XXX if it is not a number we assume it is in range
+            # if it is not a number we assume it is in range
             return True
 
         service = self.getService()

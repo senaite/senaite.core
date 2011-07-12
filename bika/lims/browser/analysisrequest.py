@@ -36,7 +36,7 @@ class AnalysisRequestAnalysesView(BikaListingView):
         'Service': {'title': _('Analysis')},
         'Result': {'title': _('Result')},
         'Uncertainty': {'title': _('+-')},
-        'retested': {'title': _('retested'), 'type':'boolean'},
+        'retested': {'title': _('Retested'), 'type':'boolean'},
         'Attachments': {'title': _('Attachments')},
     }
     review_states = [
@@ -56,20 +56,25 @@ class AnalysisRequestAnalysesView(BikaListingView):
 
     def folderitems(self):
         """ InterimFields are inserted into self.columns before the column called 'Result',
-            not specifically ordered but vaguely predictable.
+            XXX not specifically ordered but vaguely predictable.
         """
         pc = getToolByName(self.context, 'portal_catalog')
         analyses = BikaListingView.folderitems(self)
 
-        # calculate specs - they are stored in the form
+        # calculate specs - they are stored in an attribute on each row so that selecting
+        # lab/client ranges can re-calculate in javascript
         specs = {'client':{}, 'lab':{}}
-        for spec in pc(portal_type = 'AnalysisSpec',
-                       getSampleTypeUID = self.context.getSample().getSampleType().UID()):
+        proxies = pc(portal_type = 'AnalysisSpec',
+                     getSampleTypeUID = self.context.getSample().getSampleType().UID())
+        for spec in proxies:
             spec = spec.getObject()
             client_or_lab = ""
-            if spec.getClientUID() == self.context.getClientUID(): client_or_lab = 'client'
-            elif spec.getClientUID() == None: client_or_lab = 'lab'
-            else: continue
+            if spec.getClientUID() == self.context.getClientUID():
+                client_or_lab = 'client'
+            elif spec.getClientUID() == None:
+                client_or_lab = 'lab'
+            else:
+                continue
             for keyword, results_range in spec.getResultsRangeDict().items():
                 specs[client_or_lab][keyword] = results_range
 
@@ -92,24 +97,23 @@ class AnalysisRequestAnalysesView(BikaListingView):
             item['Result'] = result
             item['Unit'] = obj.getUnit()
             item['Uncertainty'] = obj.getUncertainty(result)
-            item['specs'] = {'client': specs['client'].has_key(keyword) and specs['client'][keyword] or [],
-                             'lab': specs['lab'].has_key(keyword) and specs['lab'][keyword] or [],}
+            item['retested'] = obj.getRetested()
+            item['specs'] = json.dumps({'client': specs['client'].has_key(keyword) and specs['client'][keyword] or [],
+                                        'lab': specs['lab'].has_key(keyword) and specs['lab'][keyword] or [],})
             item['Attachments'] = ", ".join([a.Title() for a in obj.getAttachment()])
             item['item_data'] = json.dumps(item_data)
-            item['_allow_edit'] = self.allow_edit or False
-            item['_calculation'] = calculation and True or False
+            item['allow_edit'] = self.allow_edit or False
+            item['calculation'] = calculation and True or False
             item['result_in_range'] = obj.result_in_range(result)
-            item['retested'] = obj.getRetested()
             if choices: item['ResultOptions'] = choices
 
             # Add this analysis' interim fields to the list
             for i in item_data:
                 if i['id'] not in self.interim_fields.keys():
                     self.interim_fields[i['id']] = i['title']
-                # This InterimField dictionary is the item's column value.
                 item[i['id']] = i
-
             items.append(item)
+
         items = sorted(items, key=itemgetter('Service'))
         for i in range(len(items)):
             items[i]['table_row_class'] = ((i + 1) % 2 == 0) and "draggable even" or "draggable odd"
@@ -132,6 +136,7 @@ class AnalysisRequestAnalysesView(BikaListingView):
                     state['columns'].insert(pos, col_id)
             munged_states.append(state)
         self.review_states = munged_states
+
         return items
 
 class AnalysisRequestViewView(BrowserView):
