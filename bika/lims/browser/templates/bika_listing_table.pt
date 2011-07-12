@@ -133,7 +133,6 @@ Table data rows start here
           tal:attributes="class item/table_row_class;
             id string:folder-contents-item-${item/UID};
             uid item/UID;
-            specs item/specs|nothing;
             keyword keyword;">
         <input type="hidden" tal:attributes="
             name string:InterimFields.${item/UID}:records:ignore_empty;
@@ -228,17 +227,23 @@ NOT result column
                  tal:attributes="
                    href python:item['links'][column];
                    class string: ${item/state_class} ${item/type_class};">
-                <!--          <img tal:condition="python:view.columns[column].has_key('icon')"
-                               tal:attributes="src python:'images/'+view.columns[column]['icon']" />
-                  -->
                 <strong tal:content="python: item.get(column, '-')"/>
               </a>
               <span
-                tal:condition="python:not (item.has_key('links') and item['links'].has_key(column))"
+                tal:condition="python:columns[column].has_key('type') and columns[column]['type'] != 'boolean' and not (item.has_key('links') and item['links'].has_key(column))"
                 tal:content="python:item.get(column)"
                 tal:attributes="
 					class item/state_class;
 					id python:'%s-%s' % (item['UID'], column)">&nbsp
+              </span>
+              <span
+                tal:condition="python:columns[column].has_key('type') and columns[column]['type'] == 'boolean'">
+				<input type="checkbox"
+                tal:attributes="
+					class item/state_class;
+					id python:'%s-%s' % (item['UID'], column);
+					name string:retested.${item/UID}:record:ignore-empty;
+					checked python:item.get(column) and 'yes' or '';"/>
               </span>
             </tal:not_result>
 
@@ -331,21 +336,29 @@ The rest is simple; just display column values;
               <a
                 tal:condition="python:item.has_key('links') and item['links'].has_key(column)" href="#"
                 tal:attributes="href python:item['links'][column]; class string: ${item/state_class} ${item/type_class};">
-                <!--
-                <img
-                  tal:condition="python:view.columns[column].has_key('icon')"
-                  tal:attributes="src python:'images/'+view.columns[column]['icon']" /> -->
                 <strong tal:content="python: item.get(column, '-')"/>
               </a>
               <span
                 tal:condition="python:not (item.has_key('links') and item['links'].has_key(column))"
-                tal:content="python:item.get(column)"
+                tal:content="python:item.get(column) and item.get(column) or ''"
                 tal:attributes="class item/state_class">&nbsp
               </span>
                 <em class="discreet"
                     tal:condition="python: column == 'Result' and item.get(column, None)"
                     style="white-space:nowrap;"
                     tal:content="python: item['Unit']"/>
+              <span class="alert" tal:attributes="
+                  uid python:item['UID'];
+                  field string:Result;"
+                  tal:condition="python: column == 'Result' and item.get(column, None)">
+                <!-- initial out-of-range indicators for result view column -->
+				<img
+					tal:condition="python:item['Result'] and not item['result_in_range']"
+					src='++resource++bika.lims.images/exclamation.png' i18n:attributes="title" title="Result out of range"/>
+				<img
+					tal:condition="python:item['Result'] and item['result_in_range'] == '1'"
+					src='++resource++bika.lims.images/warning.png' i18n:attributes="title" title="Result out of range: in error shoulder"/>
+				</span>
           </tal:not_interim>
         </tal:not_editable>
 

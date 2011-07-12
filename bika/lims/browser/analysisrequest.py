@@ -36,6 +36,7 @@ class AnalysisRequestAnalysesView(BikaListingView):
         'Service': {'title': _('Analysis')},
         'Result': {'title': _('Result')},
         'Uncertainty': {'title': _('+-')},
+        'retested': {'title': _('retested'), 'type':'boolean'},
         'Attachments': {'title': _('Attachments')},
     }
     review_states = [
@@ -43,6 +44,7 @@ class AnalysisRequestAnalysesView(BikaListingView):
          'columns':['Service',
                     'Result',
                     'Uncertainty',
+                    'retested',
                     'Attachments'],
          },
     ]
@@ -97,6 +99,7 @@ class AnalysisRequestAnalysesView(BikaListingView):
             item['_allow_edit'] = self.allow_edit or False
             item['_calculation'] = calculation and True or False
             item['result_in_range'] = obj.result_in_range(result)
+            item['retested'] = obj.getRetested()
             if choices: item['ResultOptions'] = choices
 
             # Add this analysis' interim fields to the list
@@ -915,8 +918,6 @@ class AJAXAnalysisRequestSubmitResults(AnalysisRequestViewView):
                 analysis = rc.lookupObject(analysis_uid)
                 service = analysis.getService()
 
-                # XXX retested = value.get('Retested')
-
                 uncertainty = None
                 service = analysis.getService()
 
@@ -933,7 +934,7 @@ class AJAXAnalysisRequestSubmitResults(AnalysisRequestViewView):
                 analysis.edit(
                     Result = result,
                     InterimFields = json.loads(form["InterimFields"][0][analysis_uid]),
-                    #Retested = retested,
+                    Retested = form.has_key('retested') and form['retested'].has_key(analysis_uid),
                     Unit = service.getUnit()
                 )
 
