@@ -2,21 +2,22 @@
 
 $Id: Analysis.py 1902 2009-10-10 12:17:42Z anneline $
 """
-from Products.ATContentTypes.content import schemata
-from Products.Archetypes import atapi
-from DateTime import DateTime
+
 from AccessControl import ClassSecurityInfo
-from Products.CMFCore.WorkflowCore import WorkflowException
-from Products.CMFCore.utils import getToolByName
-from Products.CMFCore.permissions import View, \
-    ModifyPortalContent
+from DateTime import DateTime
+from Products.ATContentTypes.content import schemata
+from Products.ATExtensions.ateapi import DateTimeField, DateTimeWidget, RecordsField
+from Products.Archetypes import atapi
+from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.Archetypes.public import *
 from Products.Archetypes.references import HoldingReference
-from Products.Archetypes.config import REFERENCE_CATALOG
-from Products.ATExtensions.ateapi import DateTimeField, DateTimeWidget, RecordsField
+from Products.CMFCore.WorkflowCore import WorkflowException
+from Products.CMFCore.permissions import View, ModifyPortalContent
+from Products.CMFCore.utils import getToolByName
 from bika.lims.browser.widgets import RecordsWidget as BikaRecordsWidget
-from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.config import I18N_DOMAIN, PROJECTNAME
+from bika.lims.content.bikaschema import BikaSchema
+from decimal import Decimal
 
 # XXX XXX tune up
 
@@ -174,18 +175,25 @@ class Analysis(BaseContent):
         """
         return self.getService().getUncertainty(result and result or self.getResult())
 
-    def result_in_range(self, result=None, client_uid=None):
+    def result_in_range(self, result=None, specification="lab"):
         """ Check if a result is "in range".
             if result is None, self.getResult() is called for the result value.
             If client_uid is None, use AnalysisSpec objects without ClientUID value:
                 - these should be only the ones in bika_settings/bika_analysisspecs
+            Return False if out of range
+            Return True if in range
+            return '1' if in shoulder
         """
 
-        client_uid = client_uid and client_uid or self.getClientUID()
+        if specification == "client":
+            client_uid = self.getClientUID()
+        else:
+            client_uid = None
+
         result = result and result or self.getResult()
 
         try:
-            result = float(result)
+            result = float(str(result))
         except:
             # XXX if it is not a number we assume it is in range
             return True
@@ -194,10 +202,9 @@ class Analysis(BaseContent):
         keyword = service.getKeyword()
 
         if self.portal_type in ['Analysis', 'RejectAnalysis']:
-            a = self.context.portal_catalog(portal_type = 'AnalysisSpec',
-                                                getSampleTypeUID = sampletype_uid,
-                                                getClientUID = client_uid)
-
+            proxies = self.portal_catalog(portal_type = 'AnalysisSpec',
+                                          getSampleTypeUID = self.aq_parent.getSample().getSampleType().UID())
+            a = [p for p in proxies if p.getObject().getClientUID() == client_uid]
             if a:
                 spec_obj = a[0].getObject()
                 spec = spec_obj.getResultsRangeDict()
@@ -207,20 +214,20 @@ class Analysis(BaseContent):
             if spec.has_key(keyword):
                 spec_min = float(spec[keyword]['min'])
                 spec_max = float(spec[keyword]['max'])
+
                 if spec_min <= result <= spec_max:
                     return True
-                #else:
-                #    """ XXX check if in 'shoulder' error range -
-                #        not yet supported nicely in the tal """
-                #    error_amount = result * Decimal(spec[service_uid]['error']) / 100
-                #    error_min = result - error_amount
-                #    error_max = result + error_amount
-                #    if ((result < spec_min) and (error_max >= spec_min)) or \
-                #       ((result > spec_max) and (error_min <= spec_max)):
-                #        result_class = 'in_error_range'
+
+                """ check if in 'shoulder' error range - out of range, but in acceptable error """
+                error_amount =  (result/100)*float(spec[keyword]['error'])
+                error_min = result - error_amount
+                error_max = result + error_amount
+                if ((result < spec_min) and (error_max >= spec_min)) or \
+                   ((result > spec_max) and (error_min <= spec_max)):
+                    return '1'
+
             else:
                 return True
-
             return False
 
 ##        elif analysis.portal_type == 'StandardAnalysis':

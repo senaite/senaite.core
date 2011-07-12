@@ -1,6 +1,7 @@
 jQuery( function($) {
 $(document).ready(function(){
 
+	// XXX when should this run...?
 	$(".analysis_entry").live('change', function(){
 		uid = $(this).attr('uid');
 		field = $(this).attr('field');
@@ -19,6 +20,7 @@ $(document).ready(function(){
 				'field': field,
 				'value': value,
 				'results': $.toJSON(results),
+				'specification': $("input[name='specification']").filter(":checked").val(),
 				'item_data': $('#'+uid+"_item_data").val(),
 				'_authenticator': $('input[name="_authenticator"]').val()
 			},
@@ -28,8 +30,17 @@ $(document).ready(function(){
 				if('item_data' in data){
 					$('#'+uid+"_item_data").val($.toJSON(data.item_data));
 				}
-				// clear out all row alerts
-				$(".alert").empty();
+				// put result values in their boxes
+				for(i=0;i<$(data['results']).length;i++){
+					result = $(data['results'])[i];
+					// clear out all row alerts
+					$(".alert").filter("span[uid='"+result.uid+"']").empty();
+				}
+				// Update uncertainty value
+				for(i=0;i<$(data['uncertainties']).length;i++){
+					u = $(data['uncertainties'])[i];
+					$('#'+u.uid+"-uncertainty").val(u.uncertainty);
+				}
 				// print alert icons / errors
 				for(i=0;i<$(data['alerts']).length;i++){
 					lert = $(data['alerts'])[i];
@@ -51,6 +62,10 @@ $(document).ready(function(){
 			}
 		}
 		$.ajax(options);
+	});
+
+	$("input[name='specification']").click(function(){
+
 	});
 
 });

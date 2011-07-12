@@ -96,6 +96,7 @@ class AnalysisRequestAnalysesView(BikaListingView):
             item['item_data'] = json.dumps(item_data)
             item['_allow_edit'] = self.allow_edit or False
             item['_calculation'] = calculation and True or False
+            item['result_in_range'] = obj.result_in_range(result)
             if choices: item['ResultOptions'] = choices
 
             # Add this analysis' interim fields to the list

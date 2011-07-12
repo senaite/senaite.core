@@ -132,9 +132,26 @@ class AJAXCalculateAnalysisEntry():
                                  'result': form_result,
                                  'result_display': form_result})
 
-        # result has changed
+        # Uncertainty value for this result
+        self.uncertainties.append({'uid': uid,
+                                   'uncertainty':analysis.getUncertainty(result and result or form_result)})
+
+        # alert if the result is not in spec
+        in_range = analysis.result_in_range(result and result or form_result, self.specification)
+        if in_range == True: pass
+        if in_range == False:
+            self.alerts.append({'uid': uid,
+                    'field': 'Result',
+                    'icon': 'exclamation',
+                    'msg': "Result out of range"})
+        if in_range == '1':
+            self.alerts.append({'uid': uid,
+                    'field': 'Result',
+                    'icon': 'warning',
+                    'msg': "Result out of range: in error shoulder"})
+
+        # maybe a service who depends on us must be recalculated.
         if result != form_result:
-            # maybe a service who depends on us must be recalculated.
             for recurse_uid, recurse_val in self.form_results.items():
                 # if it's in recurse_uids its my ancestor.
                 if recurse_uid in self.recurse_uids:
@@ -144,6 +161,7 @@ class AJAXCalculateAnalysisEntry():
                 self.calculate(recurse_uid)
                 self.recurse_uids.remove(recurse_uid)
 
+
     def __call__(self):
         pc = getToolByName(self.context, 'portal_catalog')
         plone.protect.CheckAuthenticator(self.request)
@@ -152,10 +170,13 @@ class AJAXCalculateAnalysisEntry():
         self.uid = self.request.get('uid')
         self.field = self.request.get('field')
         self.value = self.request.get('value')
+        self.specification = self.request.get('specification', 'lab')
         self.form_results = json.loads(self.request.get('results'))
 
         # these are sent back to the js
-        self.item_data = json.loads(self.request.get('item_data', ''))
+        try: self.item_data = json.loads(self.request.get('item_data', ''))
+        except: self.item_data = []
+        self.uncertainties = []
         self.alerts = []
         self.results = []
 
@@ -182,4 +203,5 @@ class AJAXCalculateAnalysisEntry():
 
         return json.dumps({'item_data': self.item_data,
                            'alerts': self.alerts,
+                           'uncertainties': self.uncertainties,
                            'results': self.results})

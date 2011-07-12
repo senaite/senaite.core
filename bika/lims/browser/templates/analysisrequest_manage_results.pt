@@ -51,6 +51,7 @@
 				<input class="noborder"
 					type="radio"
 					name="specification"
+					onclick="this.form.submit()"
 					value="lab"
 					tal:attributes="
 						checked python:specification == 'lab' and 'checked' or None;
@@ -59,6 +60,7 @@
 				<input class="noborder"
 					type="radio"
 					name="specification"
+					onclick="this.form.submit()"
 					value="client"
 					tal:attributes="
 						checked python:specification == 'client' and 'checked' or None;

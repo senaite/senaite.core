@@ -236,7 +236,9 @@ NOT result column
               <span
                 tal:condition="python:not (item.has_key('links') and item['links'].has_key(column))"
                 tal:content="python:item.get(column)"
-                tal:attributes="class item/state_class">&nbsp
+                tal:attributes="
+					class item/state_class;
+					id python:'%s-%s' % (item['UID'], column)">&nbsp
               </span>
             </tal:not_result>
 
@@ -244,10 +246,11 @@ NOT result column
 Result column
 ******************************* </tal:comment>
             <tal:result tal:condition="is_result"
-                tal:define="has_options python: item.has_key('ResultOptions') and item['ResultOptions'] or False">
+                tal:define="has_options python:item.has_key('ResultOptions') and item['ResultOptions'] or False;
+							specification python:view.request.get('specification', 'lab')">
               <!-- Select for items with ResultOptions defined in the service -->
               <select
-                tal:condition="python: has_options"
+                tal:condition="python:has_options"
                 tal:attributes="
                   field string:Result;
                   name string:Results.${item/UID}:records:ignore_empty;
@@ -297,7 +300,15 @@ Result column
                   tal:content="python: item['Unit']"/>
               <span class="alert" tal:attributes="
                   uid python:item['UID'];
-                  field string:Result;"></span>
+                  field string:Result;">
+                <!-- initial out-of-range indicators -->
+				<img
+					tal:condition="python:item['Result'] and not item['result_in_range']"
+					src='++resource++bika.lims.images/exclamation.png' i18n:attributes="title" title="Result out of range"/>
+				<img
+					tal:condition="python:item['Result'] and item['result_in_range'] == '1'"
+					src='++resource++bika.lims.images/warning.png' i18n:attributes="title" title="Result out of range: in error shoulder"/>
+				</span>
             </tal:result>
           </tal:not_interim>
         </tal:editable>
