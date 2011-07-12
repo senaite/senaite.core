@@ -30,6 +30,8 @@ class BikaListingView(FolderContentsView):
     show_sort_column = False
     show_select_row = False
     show_select_column = False
+    # batch is actually the batch itself; it's set to true here to make some bits of TAL happy.
+    batch = True
     pagesize = 20
 
     def __init__(self, context, request):

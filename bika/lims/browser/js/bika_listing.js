@@ -5,7 +5,7 @@ jQuery( function($) {
 	$(document).ready(function(){
 
 		function inplace_submit(){
-			options = {target: '#folderlisting-main-table',
+			options = {target: '.folderlisting-main-table',
 			           replaceTarget: true,
 					   success: function(){
 							$('#filter_input_keypress').remove();

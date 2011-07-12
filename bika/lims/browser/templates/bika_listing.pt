@@ -48,13 +48,14 @@
         id="folderContentsForm"
         class="folderContentsForm"
         method="post"
-        action="">
+        action=""
+        tal:define="pagenumber string:1">
 
         <!-- These go here in the main bika_listing, so that multiple contents_table tables don't
             repeat them.  This means if you directly embed the contents_table into another template,
             you need to set them yourself.  -->
         <input type="hidden" name="sort_on" tal:attributes="value request/sort_on|string:getTitle"/>
-        <input type="hidden" name="pagenumber" tal:attributes="value view/batch/pagenumber|nothing"/>
+        <input type="hidden" name="pagenumber" tal:attributes="value view/batch/pagenumber|pagenumber"/>
         <input type="hidden" name="show_all" tal:attributes="value view/show_all|nothing"/>
         <input type="hidden" name="orig_template" tal:attributes="value view/viewname|nothing"/>
         <input type="hidden" name="paths:list"
