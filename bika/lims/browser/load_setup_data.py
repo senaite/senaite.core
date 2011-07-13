@@ -25,7 +25,7 @@ class LoadSetupData(BrowserView):
         logger.info("load_setup_data: More Calculations"); self.Calculations3()
         logger.info("load_setup_data: More Analysis Services"); self.AnalysisServices3()
         logger.info("load_setup_data: Methods"); self.Methods()
-        logger.info("load_setup_data: Reference Definition"); self.ReferenceDefinitions()
+        logger.info("load_setup_data: Reference Definitions"); self.ReferenceDefinitions()
         logger.info("load_setup_data: Reference Manufacturers"); self.ReferenceManufacturers()
         logger.info("load_setup_data: Reference Suppliers"); self.ReferenceSuppliers()
         logger.info("load_setup_data: Attachment Types"); self.AttachmentTypes()
@@ -737,5 +737,5 @@ class LoadSetupData(BrowserView):
             {'portal_type': 'Invoice', 'prefix': 'I-', 'padding': '4'},
             {'portal_type': 'ARImport', 'prefix': 'B-', 'padding': '4'},
             {'portal_type': 'ReferenceSample', 'prefix': 'RS-', 'padding': '4'},
-            {'portal_type': 'ReferenceeAnalysis', 'prefix': 'RA-', 'padding': '4'},
+            {'portal_type': 'ReferenceAnalysis', 'prefix': 'RA-', 'padding': '4'},
         ])

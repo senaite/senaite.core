@@ -14,9 +14,9 @@ class ReferenceResultField(RecordsField):
     _properties = RecordsField._properties.copy()
     _properties.update({
         'type' : 'referenceresult',
-        'subfields' : ('service', 'result', 'min', 'max'),
-        'required_subfields' : ('service'),
-        'subfield_labels':{'service': 'Analysis Service',
+        'subfields' : ('keyword', 'result', 'min', 'max'),
+        'required_subfields' : ('keyword'),
+        'subfield_labels':{'keyword': 'Analysis Service',
                            'result': 'Result',
                            'min': 'Min',
                            'max': 'Max'},

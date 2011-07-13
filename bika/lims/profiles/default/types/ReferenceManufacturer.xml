@@ -1,7 +1,5 @@
-<?xml version="1.0"?>
-<object name="ReferenceManufacturer"
-   meta_type="Factory-based Type Information with dynamic views"
-   xmlns:i18n="http://xml.zope.org/namespaces/i18n">
+<?xml version="1.0" encoding="UTF-8"?>
+<object name="ReferenceManufacturer" meta_type="Factory-based Type Information with dynamic views" xmlns:i18n="http://xml.zope.org/namespaces/i18n">
  <property name="title">ReferenceManufacturer</property>
  <property name="description">
  	Reference Manufacturers
@@ -10,8 +8,8 @@
  <property name="content_meta_type">ReferenceManufacturer</property>
  <property name="product">bika.lims</property>
  <property name="factory">addReferenceManufacturer</property>
- <property name="add_view_expr"></property>
- <property name="link_target"></property>
+ <property name="add_view_expr"/>
+ <property name="link_target"/>
  <property name="global_allow">False</property>
  <property name="filter_content_types">False</property>
  <property name="allowed_content_types"/>
@@ -20,14 +18,10 @@
  <alias from="(Default)" to="base_edit"/>
  <alias from="view" to="base_view"/>
  <alias from="edit" to="base_edit"/>
- <action title="View" action_id="view" category="object" condition_expr=""
-    icon_expr="" link_target="" url_expr="string:${portal_url}/bika_settings/bika_referencemanufacturers"
-    visible="True">
+ <action title="View" action_id="view" category="object" condition_expr="" icon_expr="" link_target="" url_expr="string:${portal_url}/bika_settings/bika_referencemanufacturers" visible="True">
   <permission value="Modify portal content"/>
  </action>
- <action title="Edit" action_id="edit" category="object" condition_expr=""
-    icon_expr="" link_target="" url_expr="string:${object_url}/base_edit"
-    visible="True">
+ <action title="Edit" action_id="edit" category="object" condition_expr="" icon_expr="" link_target="" url_expr="string:${object_url}/base_edit" visible="True">
   <permission value="Modify portal content"/>
  </action>
 </object>

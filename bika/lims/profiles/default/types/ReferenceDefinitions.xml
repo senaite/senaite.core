@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<object name="ReferenceDefinitions" meta_type="Factory-based Type Information with dynamic views" xmlns:i18n="http://xml.zope.org/namespaces/i18n">
+ <property name="title">Reference Definitions</property>
+ <property name="description"/>
+ <property name="icon_expr">string:${portal_url}/folder_icon.gif</property>
+ <property name="content_meta_type">ReferenceDefinition</property>
+ <property name="product">bika.lims</property>
+ <property name="factory">addReferenceDefinitions</property>
+ <property name="add_view_expr"/>
+ <property name="link_target"/>
+ <property name="global_allow">False</property>
+ <property name="filter_content_types">True</property>
+ <property name="allowed_content_types">
+  <element value="ReferenceDefinition"/>
+ </property>
+ <property name="allow_discussion">False</property>
+ <property name="default_view_fallback">False</property>
+ <alias from="(Default)" to="folder_view"/>
+ <alias from="view" to="folder_view"/>
+ <alias from="edit" to="base_edit"/>
+</object>

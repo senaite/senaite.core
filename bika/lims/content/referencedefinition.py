@@ -22,6 +22,11 @@ schema = BikaSchema.copy() + Schema((
     ),
     ReferenceResultField('ReferenceResults',
         required = 1,
+##        widget = ReferenceDefinitionEditWidget(
+##            label = "Reference Results",
+##            label_msgid = "label_reference_results",
+##            i18n_domain = I18N_DOMAIN,
+##        ),
     ),
     BooleanField('Hazardous',
         default = False,
@@ -33,6 +38,8 @@ schema = BikaSchema.copy() + Schema((
     ),
     DateTimeField('DateCreated',
         index = 'DateIndex',
+        with_date = 1,
+        with_time = 0,
         default_method = 'current_date',
         widget = DateTimeWidget(
             label = 'Date created',
@@ -42,6 +49,8 @@ schema = BikaSchema.copy() + Schema((
     DateTimeField('ExpiryDate',
         required = 1,
         index = 'DateIndex',
+        with_date = 1,
+        with_time = 0,
         widget = DateTimeWidget(
             label = 'Expiry date',
             label_msgid = 'label_expirydate',
