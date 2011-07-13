@@ -1,9 +1,10 @@
 function expand_analysisservices(categoryUID, fieldName){
 	html = "";
 	/*
-	 * XXX generally quite hideous... bika table edit can do this.. even records widgets can.
-	 * XXX JSON XXX plone.protect
-	 */
+		* XXX generally quite hideous... bika table edit can do this.. even records widgets can.
+		* XXX JSON XXX plone.protect
+		 XXX i18n
+		*/
 	selectedUID = $("#selectedservices_"+categoryUID).attr("value").split(',');
 	selectedKeyword = $("#selectedservices_"+categoryUID).attr("keyword").split(',');
 	selectedMin = $("#selectedservices_"+categoryUID).attr("min").split(',');
@@ -21,16 +22,16 @@ function expand_analysisservices(categoryUID, fieldName){
 			html = html + "<tr>" +
 				"<td><label for='"+keyword+"'>"+title+"</label></td>"+
 				"<td><input name='ResultsRange.keyword:records:ignore_empty' type='hidden' value='"+keyword+"'/>"+
-				"<input name='ResultsRange.min:records:ignore_empty' type='text' size='6' value='"+selectedMin[selected_i]+"'/></td>"+
-				"<td><input name='ResultsRange.max:records:ignore_empty' type='text' size='6' value='"+selectedMax[selected_i]+"'/></td>"+
-				"<td><input name='ResultsRange.error:records:ignore_empty' type='text' size='6' value='"+selectedError[selected_i]+"'/></td>";
+				"<input name='ResultsRange.min:records:ignore_empty' type='text' size='6' value='"+selectedMin[selected_i]+"' autocomplete='off'/></td>"+
+				"<td><input name='ResultsRange.max:records:ignore_empty' type='text' size='6' value='"+selectedMax[selected_i]+"' autocomplete='off'/></td>"+
+				"<td><input name='ResultsRange.error:records:ignore_empty' type='text' size='6' value='"+selectedError[selected_i]+"' autocomplete='off'/></td>";
 		}else{
 			html = html + "<tr>" +
 				"<td><label for='"+uid+"'>"+title+"</label></td>"+
 				"<td><input name='ResultsRange.keyword:records:ignore_empty' type='hidden' value='"+keyword+"'/>"+
-				"<input name='ResultsRange.min:records:ignore_empty' type='text' size='6'/></td>"+
-				"<td><input name='ResultsRange.max:records:ignore_empty' type='text' size='6'/></td>"+
-				"<td><input name='ResultsRange.error:records:ignore_empty' type='text' size='6'/></td>";
+				"<input name='ResultsRange.min:records:ignore_empty' type='text' size='6' autocomplete='off'/></td>"+
+				"<td><input name='ResultsRange.max:records:ignore_empty' type='text' size='6' autocomplete='off'/></td>"+
+				"<td><input name='ResultsRange.error:records:ignore_empty' type='text' size='6' autocomplete='off'/></td>";
 		}
 		$('#min_hdr_'+categoryUID).html('Min');
 		$('#max_hdr_'+categoryUID).html('Max');

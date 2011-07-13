@@ -257,7 +257,7 @@ class WorksheetAddAnalysisView(BikaListingView):
         'getClientOrderNumber': {'title': _('Order')},
         'getRequestID': {'title': _('Request ID')},
         'getCategoryName': {'title': _('Category')},
-        'getServiceName': {'title': _('Analysis')},
+        'getTitle': {'title': _('Analysis')},
         'getDateReceived': {'title': _('Date Received')},
         'getDueDate': {'title': _('Due Date')},
     }
@@ -268,7 +268,7 @@ class WorksheetAddAnalysisView(BikaListingView):
                     'getClientOrderNumber',
                     'getRequestID',
                     'getCategoryName',
-                    'getServiceName',
+                    'getTitle',
                     'getDateReceived',
                     'getDueDate'],
         },

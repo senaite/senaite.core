@@ -83,10 +83,10 @@ class AJAXCalculateAnalysisEntry():
                     mapping[key] = float(value)
                 except Exception, e:
                     type_error = True
-                    self.alerts.append({'uid': uid,
-                                        'field': 'Result',
-                                        'icon': 'exclamation',
-                                        'msg': "Type Error in field %s: %s" % (key, e.args[0])})
+##                    self.alerts.append({'uid': uid,
+##                                        'field': 'Result',
+##                                        'icon': 'exclamation',
+##                                        'msg': "Type Error in field %s: %s" % (key, e.args[0])})
             if type_error:
                 return None
 
@@ -96,10 +96,10 @@ class AJAXCalculateAnalysisEntry():
                 formula = eval("'%s'%%mapping"%formula,
                                {"__builtins__":None, 'math':math},
                                {'mapping': mapping})
-                self.alerts.append({'uid': uid,
-                                    'field': 'Result',
-                                    'icon': 'calculation',
-                                    'msg': formula})
+##                self.alerts.append({'uid': uid,
+##                                    'field': 'Result',
+##                                    'icon': 'calculation',
+##                                    'msg': formula})
                 result = eval(formula)
                 self.results.append({'uid': uid,
                                      'result': result,
@@ -108,10 +108,10 @@ class AJAXCalculateAnalysisEntry():
                                                 result})
                 self.form_results[uid] = precision and str("%%%sf" % precision) % result or result
             except ZeroDivisionError, e:
-                self.alerts.append({'uid': uid,
-                                    'field': 'Result',
-                                    'icon': 'exclamation',
-                                    'msg': "Calculation failed: division by zero"})
+##                self.alerts.append({'uid': uid,
+##                                    'field': 'Result',
+##                                    'icon': 'exclamation',
+##                                    'msg': "Calculation failed: division by zero"})
                 return None
             except KeyError, e:
                 self.alerts.append({'uid': uid,
@@ -143,12 +143,12 @@ class AJAXCalculateAnalysisEntry():
             self.alerts.append({'uid': uid,
                     'field': 'Result',
                     'icon': 'exclamation',
-                    'msg': "Result out of range"})
+                    'msg': _("Result out of range")})
         if in_range == '1':
             self.alerts.append({'uid': uid,
                     'field': 'Result',
                     'icon': 'warning',
-                    'msg': "Result out of range: in error shoulder"})
+                    'msg': _("Result out of range: in error shoulder")})
 
         # maybe a service who depends on us must be recalculated.
         if result != form_result:

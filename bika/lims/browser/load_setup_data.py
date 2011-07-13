@@ -498,7 +498,7 @@ class LoadSetupData(BrowserView):
             folder.invokeFactory(id = id, type_name = 'AnalysisService')
             obj = folder[id]
             obj.edit(PointOfCapture = PointOfCapture,
-                     ServiceName = title,
+                     Title = title,
                      Unit = unit,
                      Calculation = self.calculations[calculation],
                      Price = price,

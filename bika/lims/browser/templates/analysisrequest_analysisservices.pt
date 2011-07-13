@@ -6,7 +6,7 @@
 		tal:repeat="service python:view.Services(poc, categoryUID)"
 		tal:attributes="id service/UID">
 		<td style="text-align:left">
-			<span tal:content="service/getServiceName"/>
+			<span tal:content="service/Title"/>
 			<em
 				class="discreet"
 				style="white-space:nowrap;"

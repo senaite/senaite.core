@@ -15,6 +15,7 @@ from Products.CMFCore import permissions
 from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFCore.permissions import ListFolderContents, View
 from Products.CMFCore.utils import getToolByName
+from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.widgets import SpecWidget
 from bika.lims.config import I18N_DOMAIN, PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
@@ -35,10 +36,10 @@ schema = BikaSchema.copy() + Schema((
         type = 'analysisspec',
         subfields = ('keyword', 'min', 'max', 'error'),
         required_subfields = ('keyword', 'min', 'max', 'error'),
-        subfield_labels = {'keyword': 'Analysis Service',
-                           'min': 'Min',
-                           'max': 'Max',
-                           'error': '% Error'},
+        subfield_labels = {'keyword': _('Analysis Service'),
+                           'min': _('Min'),
+                           'max': _('Max'),
+                           'error': _('% Error')},
         widget = SpecWidget(
             checkbox_bound = 1,
             label = 'Results Range',

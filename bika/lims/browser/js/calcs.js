@@ -80,11 +80,14 @@ $(document).ready(function(){
 			// get spec data from TR
 			specs = $.parseJSON($('#folder-contents-item-'+uid).attr('specs'));
 			specification = $("input[name='specification']").filter(":checked").val();
-			if ( ! specification in specs){
+			if (!specification in specs){
 				continue;
 			}
 
 			spec = specs[specification];
+			if (spec.length == 0){
+				continue;
+			}
 			result = parseFloat(result);
 			spec_min = parseFloat(spec.min);
 			spec_max = parseFloat(spec.max);
@@ -105,7 +108,6 @@ $(document).ready(function(){
             if (result >= spec_min && result <= spec_max) {
 				continue;
 			}
-
 
 			// fall to here; set red
 			$("span[uid='"+uid+"']")

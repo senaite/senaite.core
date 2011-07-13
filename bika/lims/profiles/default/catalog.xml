@@ -160,9 +160,6 @@
  <index name="getCategoryName" meta_type="FieldIndex">
   <indexed_attr value="getCategoryName"/>
  </index>
- <index name="getServiceName" meta_type="FieldIndex">
-  <indexed_attr value="getServiceName"/>
- </index>
  <index name="getKeyword" meta_type="FieldIndex">
   <indexed_attr value="getKeyword"/>
  </index>
@@ -267,7 +264,6 @@
  <column value="getTextTitle"/>
  <column value="getCategoryUID"/>
  <column value="getCategoryName"/>
- <column value="getServiceName"/>
  <column value="getKeyword"/>
  <column value="getPointOfCapture"/>
  <column value="getUnit"/>
