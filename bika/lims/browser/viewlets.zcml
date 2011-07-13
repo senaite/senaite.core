@@ -15,7 +15,7 @@
         />
 
     <!-- Hide BreadCrumbs for other stuff -->
-    <!-- Initially used for ClientFolder, WorksheetFolder, StandardSupplierFolder and InvoiceFolder -->
+    <!-- Initially used for ClientFolder, WorksheetFolder, ReferenceSupplierFolder and InvoiceFolder -->
     <!-- ... and also index_html (see setuphandlers.py) -->
     <browser:viewlet
         for="bika.lims.interfaces.IHaveNoBreadCrumbs"

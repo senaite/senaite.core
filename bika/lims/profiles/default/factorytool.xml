@@ -26,8 +26,8 @@
   <type portal_type="Calculation"/>
   <type portal_type="AnalysisService"/>
   <type portal_type="LabProduct"/>
-  <type portal_type="StandardManufacturer"/>
-  <type portal_type="StandardStock"/>
+  <type portal_type="ReferenceManufacturer"/>
+  <type portal_type="ReferenceDefinition"/>
   <type portal_type="WorksheetTemplate"/>
  </factorytypes>
 </object>

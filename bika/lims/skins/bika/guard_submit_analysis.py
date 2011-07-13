@@ -9,7 +9,7 @@
 ##
 wf_tool = context.portal_workflow
 
-analyses = ['Analysis', 'DuplicateAnalysis', 'StandardAnalysis']
+analyses = ['Analysis', 'DuplicateAnalysis', 'ReferenceAnalysis']
 if context.portal_type in analyses:
     return context.getResult() is not None
 elif context.portal_type == 'AnalysisRequest':

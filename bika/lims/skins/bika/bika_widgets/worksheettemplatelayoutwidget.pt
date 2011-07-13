@@ -20,8 +20,8 @@
         accessor python: field.getAccessor(context);
         current_field_value accessor;
         sort_on python:(('Title', 'nocase', 'asc'),);
-        standardstocks python:[p.getObject() for p in context.portal_catalog(portal_type='StandardStock')];
-        standardstocks python:sequence.sort(standardstocks, sort_on);
+        ReferenceDefinitions python:[p.getObject() for p in context.portal_catalog(portal_type='ReferenceDefinition')];
+        ReferenceDefinitions python:sequence.sort(ReferenceDefinitions, sort_on);
         types context/getAnalysisTypes;
         num_positions request/NoOfPositions | python:0;
         num_positions python:int(num_positions);
@@ -46,7 +46,7 @@
         <tr>
           <th i18n:translate="label_position">Pos</th>
           <th i18n:translate="label_type">Analysis Type</th>
-          <th i18n:translate="label_standardstock">Standard stock</th>
+          <th i18n:translate="label_ReferenceDefinition">Reference Definition</th>
           <th i18n:translate="label_duplicate_of">Dup of</th>
         </tr>
 
@@ -82,7 +82,7 @@
           <td>
             <select name="Row.sub:records:ignore_empty"
                     tal:attributes="style python: selected_type in ['a','d'] and 'display:none;;' or 'display:inline;;'">
-                <tal:item tal:repeat="sst standardstocks">
+                <tal:item tal:repeat="sst ReferenceDefinitions">
                     <option selected="selected"
                         tal:define="
                                 sst_uid sst/UID;

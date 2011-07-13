@@ -165,42 +165,42 @@ class WorksheetAddView(BrowserView):
                                 analyses.append((position, analysis))
                     if row['type'] in ['b', 'c']:
                         sampletype_uid = row['sub']
-                        standards = {}
-                        standard_found = False
+                        references = {}
+                        reference_found = False
                         for s in self.context.portal_catalog(
-                                portal_type = 'StandardSample',
+                                portal_type = 'ReferenceSample',
                                 review_state = 'current',
-                                getStandardStockUID = sampletype_uid):
-                            standard = s.getObject()
-                            standard_uid = standard.UID()
-                            standards[standard_uid] = {}
-                            standards[standard_uid]['services'] = []
-                            standards[standard_uid]['count'] = 0
-                            specs = standard.getResultsRangeDict()
+                                getReferenceDefinitionUID = sampletype_uid):
+                            reference = s.getObject()
+                            reference_uid = reference.UID()
+                            references[reference_uid] = {}
+                            references[reference_uid]['services'] = []
+                            references[reference_uid]['count'] = 0
+                            specs = reference.getResultsRangeDict()
                             for service_uid in service_uids:
                                 if specs.has_key(service_uid):
-                                    standards[standard_uid]['services'].append(service_uid)
-                                    count = standards[standard_uid]['count']
+                                    references[reference_uid]['services'].append(service_uid)
+                                    count = references[reference_uid]['count']
                                     count += 1
-                                    standards[standard_uid]['count'] = count
-                            if standards[standard_uid]['count'] == len(service_uids):
-                                # this standard has all the services
-                                standard_found = True
+                                    references[reference_uid]['count'] = count
+                            if references[reference_uid]['count'] == len(service_uids):
+                                # this reference has all the services
+                                reference_found = True
                                 break
-                        if standard_found:
-                            ws.assignStandard(Standard = standard_uid, Position = position, Type = row['type'], Service = service_uids)
+                        if reference_found:
+                            ws.assignReference(Reference = reference_uid, Position = position, Type = row['type'], Service = service_uids)
                         else:
-                            # find the standard with the most services
+                            # find the reference with the most services
                             these_services = service_uids
-                            standard_keys = standards.keys()
+                            reference_keys = references.keys()
                             no_of_services = 0
                             mostest = None
-                            for key in standard_keys:
-                                if standards[key]['count'] > no_of_services:
-                                    no_of_services = standards[key]['count']
+                            for key in reference_keys:
+                                if references[key]['count'] > no_of_services:
+                                    no_of_services = references[key]['count']
                                     mostest = key
                             if mostest:
-                                ws.assignStandard(Standard = mostest, Position = position, Type = row['type'], Service = standards[mostest]['services'])
+                                ws.assignReference(Reference = mostest, Position = position, Type = row['type'], Service = references[mostest]['services'])
 
                 if analyses:
                     ws.assignNumberedAnalyses(Analyses = analyses)

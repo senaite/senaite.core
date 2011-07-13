@@ -26,11 +26,11 @@
     <element value="Client"/>
     <element value="SamplePoint"/>
     <element value="SampleType"/>
-    <element value="StandardManufacturer"/>
-    <element value="StandardStock"/>
-    <element value="StandardSupplier"/>
-    <element value="StandardSample"/>
-    <element value="StandardAnalysis"/>
+    <element value="ReferenceManufacturer"/>
+    <element value="ReferenceDefinition"/>
+    <element value="ReferenceSupplier"/>
+    <element value="ReferenceSample"/>
+    <element value="ReferenceAnalysis"/>
     <element value="LabProduct"/>
     <element value="Attachment"/>
     <element value="AnalysisService"/>

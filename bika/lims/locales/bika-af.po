@@ -272,7 +272,7 @@ msgstr "Late analyses"
 # to be translated
 #: ./skins/bika/analyses_late.pt
 #. <span i18n:translate="label_hourslate">
-#.  Late 
+#.  Late
 #. </span>
 msgid "label_hourslate"
 msgstr "Late"
@@ -337,12 +337,12 @@ msgstr "Bestelnommer"
 
 # to be translated
 #: ./skins/bika/worksheet_analyses.pt
-#. <span i18n:translate="label_copy_titrations">Copy titration factors</span>: 
+#. <span i18n:translate="label_copy_titrations">Copy titration factors</span>:
 msgid "label_copy_titrations"
 msgstr "Copy titration factors"
 
 #: ./skins/bika/worksheet_analyses.pt
-#. <span i18n:translate="label_orientation">Orientation</span>: 
+#. <span i18n:translate="label_orientation">Orientation</span>:
 msgid "label_orientation"
 msgstr "Ori&euml;ntasie"
 
@@ -483,8 +483,6 @@ msgstr "Geldig van"
 msgid "label_enddate"
 msgstr "Geldig tot"
 
-
-# Standard
 
 msgid "go_to_parent_url"
 msgstr "Een vlak ho&euml;r"
@@ -1504,32 +1502,32 @@ msgid "label_sticker_disposal_date"
 msgstr "Disposal date"
 
 # to be translated
-msgid "label_standard"
-msgstr "Standard"
+msgid "label_reference"
+msgstr "Reference"
 
 # to be translated
 msgid "heading_samples"
 msgstr "Samples"
 
 # to be translated
-msgid "heading_standard_samples"
-msgstr "Standard Samples"
+msgid "heading_reference_samples"
+msgstr "Reference Samples"
 
 # to be translated
-msgid "label_return_to_standardsamples"
-msgstr "Return to standard samples"
+msgid "label_return_to_referencesamples"
+msgstr "Return to reference samples"
 
 # to be translated
 msgid "label_title"
 msgstr "Title"
 
 # to be translated
-msgid "label_stock"
-msgstr "Stock"
+msgid "label_reference_definition"
+msgstr "Reference Definition"
 
 # to be translated
-msgid "label_standardsupplier"
-msgstr "Standard supplier"
+msgid "label_referencesupplier"
+msgstr "Reference supplier"
 
 # to be translated
 msgid "label_datesampled"
@@ -1540,12 +1538,12 @@ msgid "label_expirydate"
 msgstr "Expiry date"
 
 # to be translated
-msgid "heading_standard_stocks"
-msgstr "Standard Stocks"
+msgid "heading_reference_definitions"
+msgstr "Reference Definitions"
 
 # to be translated
-msgid "label_return_to_standardstocks"
-msgstr "Return to standard stocks"
+msgid "label_return_to_ReferenceDefinitions"
+msgstr "Return to Reference Definitions"
 
 # to be translated
 msgid "message_changes_saved"

@@ -1,4 +1,4 @@
-"""StandardSample represents a standard sample used for quality control testing
+"""ReferenceSample represents a reference sample used for quality control testing
 """
 import sys
 import time
@@ -13,32 +13,32 @@ from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.ATExtensions.ateapi import DateTimeField, DateTimeWidget
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.config import I18N_DOMAIN, PROJECTNAME
-from bika.lims.config import ManageStandard, ManageBika
+from bika.lims.config import ManageReference, ManageBika
 from bika.lims.utils import sortable_title
-from bika.lims.browser.fields import StandardResultField
+from bika.lims.browser.fields import ReferenceResultField
 from Products.CMFCore.permissions import View
 
 schema = BikaSchema.copy() + Schema((
-    StringField('StandardID',
+    StringField('ReferenceID',
         required = 1,
         index = 'FieldIndex',
         searchable = True,
         widget = StringWidget(
-            label = 'Standard ID',
-            label_msgid = 'label_standardid',
-            description = 'The ID assigned to the standard sample by the lab',
-            description_msgid = 'help_standardid',
+            label = 'Reference ID',
+            label_msgid = 'label_referenceid',
+            description = 'The ID assigned to the reference sample by the lab',
+            description_msgid = 'help_referenceid',
             i18n_domain = I18N_DOMAIN,
             visible = {'edit':'hidden'},
         ),
     ),
-    StringField('StandardDescription',
+    StringField('ReferenceDescription',
         searchable = True,
         widget = StringWidget(
-            label = 'Standard description',
-            label_msgid = 'label_standarddescription',
-            description = 'The standard description',
-            description_msgid = 'help_standarddescription',
+            label = 'Reference description',
+            label_msgid = 'label_referencedescription',
+            description = 'The reference description',
+            description_msgid = 'help_referencedescription',
             i18n_domain = I18N_DOMAIN,
         ),
     ),
@@ -56,7 +56,7 @@ schema = BikaSchema.copy() + Schema((
             i18n_domain = I18N_DOMAIN,
         ),
     ),
-    StandardResultField('Results',
+    ReferenceResultField('Results',
         required = 1,
     ),
     TextField('Notes',
@@ -64,20 +64,20 @@ schema = BikaSchema.copy() + Schema((
             label = 'Notes',
         ),
     ),
-    ReferenceField('StandardStock',
-        allowed_types = ('StandardStock',),
-        relationship = 'StandardSampleStandardStock',
+    ReferenceField('ReferenceDefinition',
+        allowed_types = ('ReferenceDefinition',),
+        relationship = 'ReferenceSampleReferenceDefinition',
         referenceClass = HoldingReference,
         widget = ReferenceWidget(
             checkbox_bound = 1,
-            label = 'Standard Stock',
-            label_msgid = 'label_stock',
+            label = 'Reference Definition',
+            label_msgid = 'label_reference_definition',
             i18n_domain = I18N_DOMAIN,
         ),
     ),
-    ReferenceField('StandardManufacturer',
-        allowed_types = ('StandardManufacturer',),
-        relationship = 'StandardSampleStandardManufacturer',
+    ReferenceField('ReferenceManufacturer',
+        allowed_types = ('ReferenceManufacturer',),
+        relationship = 'ReferenceSampleReferenceManufacturer',
         referenceClass = HoldingReference,
         widget = ReferenceWidget(
             checkbox_bound = 1,
@@ -132,16 +132,16 @@ schema = BikaSchema.copy() + Schema((
             visible = {'edit':'hidden'},
         ),
     ),
-    ComputedField('StandardSupplierUID',
+    ComputedField('ReferenceSupplierUID',
         index = 'FieldIndex',
         expression = 'context.aq_parent.UID()',
         widget = ComputedWidget(
             visible = False,
         ),
     ),
-    ComputedField('StandardStockUID',
+    ComputedField('ReferenceDefinitionUID',
         index = 'FieldIndex',
-        expression = 'here.getStandardStock() and here.getStandardStock().UID() or None',
+        expression = 'here.getReferenceDefinition() and here.getReferenceDefinition().UID() or None',
         widget = ComputedWidget(
             visible = False,
         ),
@@ -149,13 +149,13 @@ schema = BikaSchema.copy() + Schema((
 ),
 )
 
-class StandardSample(BaseFolder):
+class ReferenceSample(BaseFolder):
     security = ClassSecurityInfo()
     schema = schema
 
     def Title(self):
-        """ Return the Standard ID as title """
-        return self.getStandardID()
+        """ Return the Reference ID as title """
+        return self.getReferenceID()
 
     security.declarePublic('current_date')
     def current_date(self):
@@ -216,22 +216,22 @@ class StandardSample(BaseFolder):
 
         return sorted_specs
 
-    security.declarePublic('getStandardAnalyses')
-    def getStandardAnalyses(self):
-        """ return all analyses linked to this standard sample """
-        return self.objectValues('StandardAnalysis')
+    security.declarePublic('getReferenceAnalyses')
+    def getReferenceAnalyses(self):
+        """ return all analyses linked to this reference sample """
+        return self.objectValues('ReferenceAnalysis')
 
-    security.declarePublic('getStandardAnalysesService')
-    def getStandardAnalysesService(self, service_uid):
-        """ return all analyses linked to this standard sample for a service """
+    security.declarePublic('getReferenceAnalysesService')
+    def getReferenceAnalysesService(self, service_uid):
+        """ return all analyses linked to this reference sample for a service """
         analyses = []
-        for analysis in self.objectValues('StandardAnalysis'):
+        for analysis in self.objectValues('ReferenceAnalysis'):
             if analysis.getServiceUID() == service_uid:
                 analyses.append(analysis)
         return analyses
 
-    security.declarePublic('getStandardResult')
-    def getStandardResult(self, service_uid):
+    security.declarePublic('getReferenceResult')
+    def getReferenceResult(self, service_uid):
         """ return the desired result for a specific service """
         for spec in self.getResults():
             if spec['service'] == service_uid:
@@ -241,14 +241,14 @@ class StandardSample(BaseFolder):
                 return result, min, max
         return None
 
-    security.declarePublic('addStandardAnalysis')
-    def addStandardAnalysis(self, service_uid, standard_type):
+    security.declarePublic('addReferenceAnalysis')
+    def addReferenceAnalysis(self, service_uid, reference_type):
         """ add an analysis to the sample """
         rc = getToolByName(self, REFERENCE_CATALOG)
         service = rc.lookupObject(service_uid)
 
-        analysis_id = self.generateUniqueId('StandardAnalysis')
-        self.invokeFactory(id = analysis_id, type_name = 'StandardAnalysis')
+        analysis_id = self.generateUniqueId('ReferenceAnalysis')
+        self.invokeFactory(id = analysis_id, type_name = 'ReferenceAnalysis')
         analysis = self._getOb(analysis_id)
         calc_type = service.getCalculationType()
         if calc_type:
@@ -256,8 +256,8 @@ class StandardSample(BaseFolder):
         else:
             calc_code = None
         analysis.edit(
-            StandardAnalysisID = analysis_id,
-            StandardType = standard_type,
+            ReferenceAnalysisID = analysis_id,
+            ReferenceType = reference_type,
             Service = service_uid,
             Unit = service.getUnit(),
             CalcType = calc_code,
@@ -289,4 +289,4 @@ class StandardSample(BaseFolder):
         self.setDateDisposed(DateTime())
         self.reindexObject()
 
-registerType(StandardSample, PROJECTNAME)
+registerType(ReferenceSample, PROJECTNAME)

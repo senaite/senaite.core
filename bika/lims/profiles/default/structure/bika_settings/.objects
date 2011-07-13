@@ -12,6 +12,6 @@ bika_methods,Methods
 bika_labproducts,LabProducts
 bika_samplepoints,SamplePoints
 bika_sampletypes,SampleTypes
-bika_standardmanufacturers,StandardManufacturers
-bika_standardstocks,StandardStocks
+bika_referencemanufacturers,ReferenceManufacturers
+bika_referencedefinitions,ReferenceDefinitions
 bika_worksheettemplates,WorksheetTemplates

@@ -1,6 +1,6 @@
-"""StandardAnalysis
+"""ReferenceAnalysis
 
-$Id: StandardAnalysis.py 914 2007-10-16 19:49:15Z anneline $
+$Id: ReferenceAnalysis.py 914 2007-10-16 19:49:15Z anneline $
 """
 from DateTime import DateTime
 from AccessControl import ClassSecurityInfo
@@ -20,32 +20,32 @@ from bika.lims.config import I18N_DOMAIN, STD_TYPES, PROJECTNAME
 #    pass
 
 schema = BikaSchema.copy() + Schema((
-    StringField('StandardAnalysisID',
+    StringField('ReferenceAnalysisID',
         required = 1,
         index = 'FieldIndex',
         searchable = True,
         widget = StringWidget(
-            label = 'StandardAnalysis ID',
+            label = 'ReferenceAnalysis ID',
             label_msgid = 'label_requestid',
-            description = 'The ID assigned to the standard analysis',
-            description_msgid = 'help_standardanalysis_id',
+            description = 'The ID assigned to the reference analysis',
+            description_msgid = 'help_referenceanalysis_id',
             i18n_domain = I18N_DOMAIN,
             visible = {'edit':'hidden'},
         ),
     ),
-    StringField('StandardType',
+    StringField('ReferenceType',
         vocabulary = STD_TYPES,
         index = 'FieldIndex',
         widget = SelectionWidget(
-            label = 'Standard Type',
-            label_msgid = 'label_standardtype',
+            label = 'Reference Type',
+            label_msgid = 'label_referencetype',
             i18n_domain = I18N_DOMAIN,
         ),
     ),
     ReferenceField('Service',
         required = 1,
         allowed_types = ('AnalysisService',),
-        relationship = 'StandardAnalysisAnalysisService',
+        relationship = 'ReferenceAnalysisAnalysisService',
         referenceClass = HoldingReference,
         widget = ReferenceWidget(
             label = 'Analysis service',
@@ -112,14 +112,14 @@ schema = BikaSchema.copy() + Schema((
             visible = {'edit':'hidden'},
         ),
     ),
-    ComputedField('StandardSampleUID',
+    ComputedField('ReferenceSampleUID',
         index = 'FieldIndex',
         expression = 'context.aq_parent.UID()',
         widget = ComputedWidget(
             visible = False,
         ),
     ),
-    ComputedField('StandardSupplierUID',
+    ComputedField('ReferenceSupplierUID',
         index = 'FieldIndex',
         expression = 'context.aq_parent.aq_parent.UID()',
         widget = ComputedWidget(
@@ -136,9 +136,9 @@ schema = BikaSchema.copy() + Schema((
 ),
 )
 
-class StandardAnalysis(BaseContent):
+class ReferenceAnalysis(BaseContent):
     security = ClassSecurityInfo()
-    archetype_name = 'StandardAnalysis'
+    archetype_name = 'ReferenceAnalysis'
     schema = schema
     allowed_content_types = ()
     immediate_view = 'base_view'
@@ -156,7 +156,7 @@ class StandardAnalysis(BaseContent):
         tool = getToolByName(self, REFERENCE_CATALOG)
         worksheet = ''
         uids = [uid for uid in
-                tool.getBackReferences(self, 'WorksheetStandardAnalysis')]
+                tool.getBackReferences(self, 'WorksheetReferenceAnalysis')]
         if len(uids) == 1:
             reference = uids[0]
             worksheet = tool.lookupObject(reference.sourceUID)
@@ -354,10 +354,10 @@ class StandardAnalysis(BaseContent):
         return DateTime()
 
     def workflow_script_verify(self, state_info):
-        """ standard analysis """
+        """ reference analysis """
         self.setDateVerified(DateTime())
 
-registerType(StandardAnalysis, PROJECTNAME)
+registerType(ReferenceAnalysis, PROJECTNAME)
 
 def modify_fti(fti):
     for a in fti['actions']:

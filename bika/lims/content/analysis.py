@@ -230,7 +230,7 @@ class Analysis(BaseContent):
                 return True
             return False
 
-##        elif analysis.portal_type == 'StandardAnalysis':
+##        elif analysis.portal_type == 'ReferenceAnalysis':
 ##            result_class = ''
 ##            specs = analysis.aq_parent.getResultsRangeDict()
 ##            if specs.has_key(service_uid):

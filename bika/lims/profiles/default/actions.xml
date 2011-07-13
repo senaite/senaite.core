@@ -94,27 +94,27 @@
 			</property>
 			<property name="visible">True</property>
 		</object>
-		<object name="standardsuppliers" meta_type="CMF Action">
+		<object name="referencesuppliers" meta_type="CMF Action">
 			<property name="title">Suppliers</property>
 			<property name="description"/>
-			<property name="url_expr">string:$portal_url/standardsuppliers</property>
+			<property name="url_expr">string:$portal_url/referencesuppliers</property>
 			<property name="link_target"/>
 			<property name="icon_expr"/>
 			<property name="available_expr"/>
 			<property name="permissions">
-				<element value="bika.lims: Manage Standard Suppliers"/>
+				<element value="bika.lims: Manage Reference Suppliers"/>
 			</property>
 			<property name="visible">True</property>
 		</object>
-		<object name="standardsamples" meta_type="CMF Action">
-			<property name="title">Standards</property>
+		<object name="referencesamples" meta_type="CMF Action">
+			<property name="title">References</property>
 			<property name="description"/>
-			<property name="url_expr">string:$portal_url/standardsamples</property>
+			<property name="url_expr">string:$portal_url/referencesamples</property>
 			<property name="link_target"/>
 			<property name="icon_expr"/>
 			<property name="available_expr"/>
 			<property name="permissions">
-				<element value="bika.lims: Manage Standard"/>
+				<element value="bika.lims: Manage Reference"/>
 			</property>
 			<property name="visible">True</property>
 		</object>

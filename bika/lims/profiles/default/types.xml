@@ -4,7 +4,7 @@
  <object name="Analysis" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="DuplicateAnalysis" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="RejectAnalysis" meta_type="Factory-based Type Information with dynamic views"/>
- <object name="StandardAnalysis" meta_type="Factory-based Type Information with dynamic views"/>
+ <object name="ReferenceAnalysis" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="AnalysisCategories" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="AnalysisCategory" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="AnalysisRequest" meta_type="Factory-based Type Information with dynamic views"/>
@@ -52,13 +52,13 @@
  <object name="SamplePoint" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="SampleTypes" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="SampleType" meta_type="Factory-based Type Information with dynamic views"/>
- <object name="StandardManufacturers" meta_type="Factory-based Type Information with dynamic views"/>
- <object name="StandardManufacturer" meta_type="Factory-based Type Information with dynamic views"/>
- <object name="StandardSample" meta_type="Factory-based Type Information with dynamic views"/>
- <object name="StandardStocks" meta_type="Factory-based Type Information with dynamic views"/>
- <object name="StandardStock" meta_type="Factory-based Type Information with dynamic views"/>
- <object name="StandardSupplier" meta_type="Factory-based Type Information with dynamic views"/>
- <object name="StandardSupplierFolder" meta_type="Factory-based Type Information with dynamic views"/>
+ <object name="ReferenceManufacturers" meta_type="Factory-based Type Information with dynamic views"/>
+ <object name="ReferenceManufacturer" meta_type="Factory-based Type Information with dynamic views"/>
+ <object name="ReferenceSample" meta_type="Factory-based Type Information with dynamic views"/>
+ <object name="ReferenceDefinitions" meta_type="Factory-based Type Information with dynamic views"/>
+ <object name="ReferenceDefinition" meta_type="Factory-based Type Information with dynamic views"/>
+ <object name="ReferenceSupplier" meta_type="Factory-based Type Information with dynamic views"/>
+ <object name="ReferenceSupplierFolder" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="SupplierContact" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="Worksheet" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="WorksheetFolder" meta_type="Factory-based Type Information with dynamic views"/>

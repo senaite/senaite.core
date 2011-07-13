@@ -1,4 +1,4 @@
-"""The contact person at a standard supplier organisation.
+"""The contact person at a reference supplier organisation.
 
 $Id: SupplierContact.py 639 2007-03-20 09:35:32Z anneline $
 """

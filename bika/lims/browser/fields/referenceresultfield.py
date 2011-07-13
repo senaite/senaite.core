@@ -9,11 +9,11 @@ from Products.validation import validation
 from Products.validation.validators.RegexValidator import RegexValidator
 import sys
 
-class StandardResultField(RecordsField):
-    """a list of standard sample results """
+class ReferenceResultField(RecordsField):
+    """a list of reference sample results """
     _properties = RecordsField._properties.copy()
     _properties.update({
-        'type' : 'standardresult',
+        'type' : 'referenceresult',
         'subfields' : ('service', 'result', 'min', 'max'),
         'required_subfields' : ('service'),
         'subfield_labels':{'service': 'Analysis Service',
@@ -23,8 +23,8 @@ class StandardResultField(RecordsField):
         })
     security = ClassSecurityInfo()
 
-registerField(StandardResultField,
-              title = "Standard Results",
-              description = "Used for storing standard results",
+registerField(ReferenceResultField,
+              title = "Reference Results",
+              description = "Used for storing reference results",
               )
 

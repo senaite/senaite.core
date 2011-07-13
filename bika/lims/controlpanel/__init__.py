@@ -11,6 +11,6 @@ from bika_methods import Methods
 from bika_labproducts import LabProducts
 from bika_samplepoints import SamplePoints
 from bika_sampletypes import SampleTypes
-from bika_standardmanufacturers import StandardManufacturers
-from bika_standardstocks import StandardStocks
+from bika_referencemanufacturers import ReferenceManufacturers
+from bika_referencedefinitions import ReferenceDefinitions
 from bika_worksheettemplates import WorksheetTemplates

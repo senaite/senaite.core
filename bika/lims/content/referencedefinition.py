@@ -1,4 +1,4 @@
-"""StandardStock represents a standard stock or sample type used for
+"""ReferenceDefinition represents a Reference Definition or sample type used for
     quality control testing
 """
 from AccessControl import ClassSecurityInfo
@@ -7,20 +7,20 @@ from Products.ATExtensions.ateapi import DateTimeField, DateTimeWidget
 from Products.Archetypes.public import *
 from Products.CMFCore.permissions import View, ModifyPortalContent
 from bika.lims.content.bikaschema import BikaSchema
-from bika.lims.browser.fields import StandardResultField
+from bika.lims.browser.fields import ReferenceResultField
 from bika.lims.config import I18N_DOMAIN, PROJECTNAME
 import sys
 import time
 
 schema = BikaSchema.copy() + Schema((
-    TextField('StandardStockDescription',
+    TextField('ReferenceDefinitionDescription',
         widget = TextAreaWidget(
             label = 'Description',
             label_msgid = 'label_description',
             i18n_domain = I18N_DOMAIN,
         ),
     ),
-    StandardResultField('StandardResults',
+    ReferenceResultField('ReferenceResults',
         required = 1,
     ),
     BooleanField('Hazardous',
@@ -51,7 +51,7 @@ schema = BikaSchema.copy() + Schema((
 
 schema['title'].required = False
 
-class StandardStock(BaseContent):
+class ReferenceDefinition(BaseContent):
     security = ClassSecurityInfo()
     schema = schema
 
@@ -63,7 +63,7 @@ class StandardStock(BaseContent):
     security.declarePublic('getResultsRangeDict')
     def getResultsRangeDict(self):
         results = {}
-        for spec in self.getStandardResults():
+        for spec in self.getReferenceResults():
             uid = spec['service']
             results[uid] = {}
             try:
@@ -77,4 +77,4 @@ class StandardStock(BaseContent):
 
         return results
 
-registerType(StandardStock, PROJECTNAME)
+registerType(ReferenceDefinition, PROJECTNAME)

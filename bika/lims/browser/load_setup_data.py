@@ -25,12 +25,12 @@ class LoadSetupData(BrowserView):
         logger.info("load_setup_data: More Calculations"); self.Calculations3()
         logger.info("load_setup_data: More Analysis Services"); self.AnalysisServices3()
         logger.info("load_setup_data: Methods"); self.Methods()
-        logger.info("load_setup_data: Standard Stocks"); self.StandardStocks()
-        logger.info("load_setup_data: Standard Suppliers"); self.StandardSuppliers()
+        logger.info("load_setup_data: Reference Definition"); self.ReferenceDefinitions()
+        logger.info("load_setup_data: Reference Manufacturers"); self.ReferenceManufacturers()
+        logger.info("load_setup_data: Reference Suppliers"); self.ReferenceSuppliers()
         logger.info("load_setup_data: Attachment Types"); self.AttachmentTypes()
         logger.info("load_setup_data: Products"); self.Products()
 #        logger.info("load_setup_data: Worksheet Templates"); self.WorksheetTemplates()
-        logger.info("load_setup_data: Standard Manufacturers"); self.StandardManufacturers()
         logger.info("load_setup_data: Prefixes"); self.Prefixes()
 
         self.context.plone_utils.addPortalMessage(_(u'Setup data loaded.'), 'info')
@@ -600,38 +600,38 @@ class LoadSetupData(BrowserView):
             obj = folder[id]
             obj.edit(title = title, MethodDescription = description)
 
-    def StandardStocks(self):
-        self.std_stocks = []
-        standardstocks = (
-            ('wine standard', 'white wine sample', False),
+    def ReferenceDefinitions(self):
+        self.ref_defs = []
+        referencedefinitions = (
+            ('wine reference', 'white wine sample', False),
             ('4g/l sugar', 'Sugar water', False),
             ('8g/l sugar', 'Sugar water at 8g/l sugar', False),
             ('distilled water', 'distilled water', False),
-            ('Acid standard', 'HCl 3%', True),
+            ('Acid reference', 'HCl 3%', True),
         )
-        folder = self.context.bika_settings.bika_standardstocks
-        for title, description, hazardous in standardstocks:
-            id = folder.generateUniqueId('StandardStock')
-            folder.invokeFactory(id = id, type_name = 'StandardStock')
+        folder = self.context.bika_settings.bika_referencedefinitions
+        for title, description, hazardous in referencedefinitions:
+            id = folder.generateUniqueId('ReferenceDefinitions')
+            folder.invokeFactory(id = id, type_name = 'ReferenceDefinition')
             obj = folder[id]
             obj.edit(title = title,
-                     StandardStockDescription = description,
+                     ReferenceDefinitionDescription = description,
                      Hazardous = hazardous)
-            self.std_stocks.append(obj)
+            self.ref_defs.append(obj)
 
-    def StandardSuppliers(self):
-        standardsuppliers = (
+    def ReferenceSuppliers(self):
+        referencesuppliers = (
             ('1', ' Acme Standards', 'acme@scapp.co.za', '021 6162050', '0216162192', 'Bobby', 'Smith', 'bobby', 'bobby@scapp.co.za'),
             ('2', ' Samples for Africa', 'sfa@scapp.co.za', '021 3491150', '0213491504', 'Bulelani', 'Miyama', 'bulelani', 'bulelani@scapp.co.za'),
             ('3', ' Everything Normal', 'en@scapp.co.za', '021 3443026', '0213443157', 'Meredith', 'Miller', 'meredith', 'meredith@scapp.co.za'),
         )
-        folder = self.context.standardsuppliers
-        for account_nr, name, email, tel, fax, cname, csurname, cusername, cemail in standardsuppliers:
-            standardsupplier_id = folder.generateUniqueId('StandardSupplier')
-            folder.invokeFactory(id = standardsupplier_id, type_name = 'StandardSupplier')
-            standardsupplier = folder[standardsupplier_id]
+        folder = self.context.referencesuppliers
+        for account_nr, name, email, tel, fax, cname, csurname, cusername, cemail in referencesuppliers:
+            referencesupplier_id = folder.generateUniqueId('ReferenceSupplier')
+            folder.invokeFactory(id = referencesupplier_id, type_name = 'ReferenceSupplier')
+            referencesupplier = folder[referencesupplier_id]
             name = name.decode('latin-1').encode('utf-8').strip()
-            standardsupplier.edit(Name = name,
+            referencesupplier.edit(Name = name,
                                   AccountNumber = account_nr,
                                   EmailAddress = email,
                                   Phone = tel,
@@ -642,8 +642,8 @@ class LoadSetupData(BrowserView):
             cusername = cusername.decode('latin-1').encode('utf-8').strip()
             csurname = csurname.decode('latin-1').encode('utf-8').strip()
             contact_id = self.context.generateUniqueId('SupplierContact')
-            standardsupplier.invokeFactory(id = contact_id, type_name = 'SupplierContact')
-            contact = standardsupplier[contact_id]
+            referencesupplier.invokeFactory(id = contact_id, type_name = 'SupplierContact')
+            contact = referencesupplier[contact_id]
             contact.edit(Firstname = cname,
                          Surname = csurname,
                          PrimaryEmailAddress = cemail)
@@ -698,8 +698,8 @@ class LoadSetupData(BrowserView):
 
     def WorksheetTemplates(self):
         templates = (
-            ('Dry food standard', ({'pos': 1, 'type': 'b', 'sub': self.std_stocks[0]},
-                                   {'pos': 2, 'type': 'c', 'sub': self.std_stocks[1]},
+            ('Dry food standard', ({'pos': 1, 'type': 'b', 'sub': self.ref_defs[0]},
+                                   {'pos': 2, 'type': 'c', 'sub': self.ref_defs[1]},
                                    {'pos': 3, 'type': 'a', 'sub': ''},
                                    {'pos': 4, 'type': 'a', 'sub': ''},
                                    {'pos': 5, 'type': 'd', 'sub': '3'}),
@@ -714,18 +714,18 @@ class LoadSetupData(BrowserView):
                      Row = pos,
                      Service = serv)
 
-    def StandardManufacturers(self):
+    def ReferenceManufacturers(self):
         manufacturers = (
             ('Bloggs & co', 'Manufacturers of fine products since 2008'),
             ('Fred\'s Factory', '"We make stuff" is not just a promise!'),
             )
-        folder = self.context.bika_settings.bika_standardmanufacturers
+        folder = self.context.bika_settings.bika_referencemanufacturers
         for title, description in manufacturers:
-            id = folder.generateUniqueId('StandardManufacturer')
-            folder.invokeFactory(id = id, type_name = 'StandardManufacturer')
+            id = folder.generateUniqueId('ReferenceManufacturer')
+            folder.invokeFactory(id = id, type_name = 'ReferenceManufacturer')
             obj = folder[id]
             obj.edit(title = title,
-                     StandardManufacturerDescription = description)
+                     ReferenceManufacturerDescription = description)
 
     def Prefixes(self):
         bs = getToolByName(self.context, 'bika_settings')
@@ -736,6 +736,6 @@ class LoadSetupData(BrowserView):
             {'portal_type': 'Order', 'prefix': 'O-', 'padding': '4', },
             {'portal_type': 'Invoice', 'prefix': 'I-', 'padding': '4'},
             {'portal_type': 'ARImport', 'prefix': 'B-', 'padding': '4'},
-            {'portal_type': 'StandardSample', 'prefix': 'SS-', 'padding': '4'},
-            {'portal_type': 'StandardAnalysis', 'prefix': 'SA-', 'padding': '4'},
+            {'portal_type': 'ReferenceSample', 'prefix': 'RS-', 'padding': '4'},
+            {'portal_type': 'ReferenceeAnalysis', 'prefix': 'RA-', 'padding': '4'},
         ])

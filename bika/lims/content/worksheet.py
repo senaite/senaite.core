@@ -46,13 +46,13 @@ schema = BikaSchema.copy() + Schema((
             visible = False,
         ),
     ),
-    ReferenceField('StandardAnalyses',
+    ReferenceField('ReferenceAnalyses',
         multiValued = 1,
-        allowed_types = ('StandardAnalysis',),
-        relationship = 'WorksheetStandardAnalysis',
+        allowed_types = ('ReferenceAnalysis',),
+        relationship = 'WorksheetReferenceAnalysis',
         widget = ReferenceWidget(
-            label = 'StandardAnalyses',
-            label_msgid = 'label_standardanalyses',
+            label = 'ReferenceAnalyses',
+            label_msgid = 'label_referenceanalyses',
             i18n_domain = I18N_DOMAIN,
             visible = False,
         ),
@@ -270,7 +270,7 @@ class Worksheet(BaseFolder):
                 real_uids.append(uid)
             elif analysis.portal_type == 'DuplicateAnalysis':
                 dup_ids.append(analysis.getId())
-            elif analysis.portal_type == 'StandardAnalysis':
+            elif analysis.portal_type == 'ReferenceAnalysis':
                 std_analyses.append(analysis)
                 std_uids.append(uid)
 
@@ -293,11 +293,11 @@ class Worksheet(BaseFolder):
         if dup_ids:
             self.manage_delObjects(dup_ids)
 
-        """ Leave analysis on Standard Sample? AVS
+        """ Leave analysis on Reference Sample? AVS
         if std_analyses:
             for std_analysis in std_analyses:
-                standard_sample = std_analysis.aq_parent
-                standard_sample.manage_delObjects(std_analysis.getId())
+                reference_sample = std_analysis.aq_parent
+                reference_sample.manage_delObjects(std_analysis.getId())
 
 
         """
@@ -312,10 +312,10 @@ class Worksheet(BaseFolder):
  #               transaction_note('Changed status of %s at %s' % (
 #                    std_analysis.title_or_id(), std_analysis.absolute_url()))
             uids = []
-            for a in self.getStandardAnalyses():
+            for a in self.getReferenceAnalyses():
                 if a.UID() not in std_uids:
                     uids.append(a.UID())
-            self.setStandardAnalyses(uids)
+            self.setReferenceAnalyses(uids)
 
         self._removeFromSequence(Analyses)
         del self._delegating_workflow_action
@@ -536,7 +536,7 @@ class Worksheet(BaseFolder):
         for analysis in self.getAnalyses():
             analyses.append(analysis)
 
-        for analysis in self.getStandardAnalyses():
+        for analysis in self.getReferenceAnalyses():
             analyses.append(analysis)
 
         for analysis in self.objectValues('DuplicateAnalysis'):
@@ -547,9 +547,9 @@ class Worksheet(BaseFolder):
 
         return analyses
 
-    security.declarePublic('getStandardPositions')
-    def getStandardPositions(self, type, standard_uid):
-        """ get the current standard positions and analyses
+    security.declarePublic('getReferencePositions')
+    def getReferencePositions(self, type, reference_uid):
+        """ get the current reference positions and analyses
         """
 
         seq = {}
@@ -558,9 +558,9 @@ class Worksheet(BaseFolder):
         for item in self.getWorksheetLayout():
             seq[item['uid']] = item['pos']
         services = ''
-        for analysis in self.getStandardAnalyses():
-            if (analysis.getStandardType() == type) & \
-               (analysis.getStandardSampleUID() == standard_uid):
+        for analysis in self.getReferenceAnalyses():
+            if (analysis.getReferenceType() == type) & \
+               (analysis.getReferenceSampleUID() == reference_uid):
                 pos = seq[analysis.UID()]
                 if not positions.has_key(pos):
                     positions[pos] = {}
@@ -666,34 +666,34 @@ class Worksheet(BaseFolder):
 
     security.declarePublic('addControlAnalysis')
     def addControlAnalysis(self, REQUEST, RESPONSE):
-        """ Add a standard analysis to the first available entry
+        """ Add a reference analysis to the first available entry
         """
         return self.worksheet_add_control(
             REQUEST = REQUEST, RESPONSE = RESPONSE,
             template_id = 'worksheet_analyses')
 
-    security.declareProtected(AssignAnalyses, 'assignStandard')
-    def assignStandard(self, Standard = None, Position = None, Type = None, Service = [], REQUEST = None, RESPONSE = None):
-        """ assign selected standard analyses to worksheet
-            Standard=uid, Position=number or 'new', Service=[uids]
+    security.declareProtected(AssignAnalyses, 'assignReference')
+    def assignReference(self, Reference = None, Position = None, Type = None, Service = [], REQUEST = None, RESPONSE = None):
+        """ assign selected reference analyses to worksheet
+            Reference=uid, Position=number or 'new', Service=[uids]
         """
 
-        if not Standard or not Position or not Service:
+        if not Reference or not Position or not Service:
             if Type == 'b':
                 message = self.translate('message_no_blank_assigned', default = 'No blank analysis assigned', domain = 'bika')
             else:
-                message = self.translate('message_no_standard_assigned', default = 'No standard analysis assigned', domain = 'bika')
+                message = self.translate('message_no_reference_assigned', default = 'No reference analysis assigned', domain = 'bika')
         else:
             rc = getToolByName(self, REFERENCE_CATALOG)
             assigned = []
-            standard = rc.lookupObject(Standard)
+            reference = rc.lookupObject(Reference)
             for service_uid in Service:
-                sa_uid = standard.addStandardAnalysis(service_uid, Type)
+                sa_uid = reference.addReferenceAnalysis(service_uid, Type)
                 assigned.append(sa_uid)
 
             self._addToSequence(Type, int(Position), assigned)
-            assigned = assigned + self.getStandardAnalyses()
-            self.setStandardAnalyses(assigned)
+            assigned = assigned + self.getReferenceAnalyses()
+            self.setReferenceAnalyses(assigned)
 
             if Type == 'b':
                 message = self.translate('message_blank_assigned', default = 'Blank analysis has been assigned', domain = 'bika')
@@ -833,17 +833,17 @@ class Worksheet(BaseFolder):
                 wf_tool.doActionFor(analysis, 'retract')
             analysis._assigned_to_worksheet = False
 
-        for std_analysis in self.getStandardAnalyses():
+        for std_analysis in self.getReferenceAnalyses():
             review_state = wf_tool.getInfoFor(
                 std_analysis, 'review_state', '')
             if review_state != 'assigned':
                 wf_tool.doActionFor(std_analysis, 'retract')
             wf_tool.doActionFor(std_analysis, 'unassign')
 
-        """ AVS - leave standard analyses on Standard Sample?
+        """ AVS - leave reference analyses on Reference Sample?
         std_samples = []
         std_analyses = {}
-        for std_analysis in self.getStandardAnalyses():
+        for std_analysis in self.getReferenceAnalyses():
             parent_uid = std_analysis.aq_parent.UID()
             if not std_analyses.has_key(parent_uid):
                 std_samples.append(std_analysis.aq_parent)
@@ -886,7 +886,7 @@ class Worksheet(BaseFolder):
 
         del self._delegating_workflow_action
 
-        for std_analysis in self.getStandardAnalyses():
+        for std_analysis in self.getReferenceAnalyses():
             review_state = wf_tool.getInfoFor(
                 std_analysis, 'review_state', '')
             if review_state == 'assigned':
@@ -919,7 +919,7 @@ class Worksheet(BaseFolder):
                 analysis.reindexObject()
         del self._delegating_workflow_action
 
-        for std_analysis in self.getStandardAnalyses():
+        for std_analysis in self.getReferenceAnalyses():
             review_state = wf_tool.getInfoFor(
                 std_analysis, 'review_state', '')
             if review_state == 'to_be_verified':
@@ -940,7 +940,7 @@ class Worksheet(BaseFolder):
         """
             copy real analyses to RejectAnalysis, with link to real
             create a new worksheet, with the original analyses, and new
-            duplicates and standards to match the rejected
+            duplicates and references to match the rejected
             worksheet.
         """
         utils = getToolByName(self, 'plone_utils')
@@ -1025,28 +1025,28 @@ class Worksheet(BaseFolder):
             new_links.append(link.UID())
         self.setLinkedWorksheet(new_links)
 
-        # Standard analyses
+        # Reference analyses
         assigned = []
-        std_analyses = self.getStandardAnalyses()
+        std_analyses = self.getReferenceAnalyses()
         for std_analysis in std_analyses:
             service_uid = std_analysis.getService().UID()
-            standard = std_analysis.aq_parent
-            standard_type = std_analysis.getStandardType()
-            new_std_uid = standard.addStandardAnalysis(service_uid, standard_type)
+            reference = std_analysis.aq_parent
+            reference_type = std_analysis.getReferenceType()
+            new_std_uid = reference.addReferenceAnalysis(service_uid, reference_type)
             assigned.append(new_std_uid)
             position = new_dict[std_analysis.UID()]
             sequence.append({'pos': position,
-                             'type':standard_type,
+                             'type':reference_type,
                              'uid':std_analysis.UID(),
                              'key':''})
             new_sequence.append({'pos': position,
-                                 'type':standard_type,
+                                 'type':reference_type,
                                  'uid':new_std_uid,
                                  'key':''})
 
             wf_tool.doActionFor(std_analysis, 'reject')
             std_analysis.reindexObject()
-            new_ws.setStandardAnalyses(assigned)
+            new_ws.setReferenceAnalyses(assigned)
 
         # duplicates
         duplicates = self.objectValues('DuplicateAnalysis')
@@ -1109,7 +1109,7 @@ class Worksheet(BaseFolder):
                 analysis.reindexObject()
         del self._delegating_workflow_action
 
-        for std_analysis in self.getStandardAnalyses():
+        for std_analysis in self.getReferenceAnalyses():
             review_state = wf_tool.getInfoFor(
                 std_analysis, 'review_state', '')
             if review_state in ('to_be_verified', 'verified'):

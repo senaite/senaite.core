@@ -39,7 +39,7 @@ class BikaGenerator:
             portal.manage_delObjects(ids = del_ids)
 
         # index objects - importing through GenericSetup doesn't
-        for obj_id in ('clients', 'standardsuppliers', 'invoices', 'pricelists', 'worksheets'):
+        for obj_id in ('clients', 'referencesuppliers', 'invoices', 'pricelists', 'worksheets'):
             obj = portal._getOb(obj_id)
             obj.reindexObject()
 
@@ -77,8 +77,8 @@ class BikaGenerator:
         if 'clients' not in portal_groups.listGroupIds():
             portal_groups.addGroup('clients',
                 roles = ['Member', ])
-        if 'standardsuppliers' not in portal_groups.listGroupIds():
-            portal_groups.addGroup('standardsuppliers',
+        if 'referencesuppliers' not in portal_groups.listGroupIds():
+            portal_groups.addGroup('referencesuppliers',
                 roles = ['Member', ])
 
     def setupPermissions(self, portal):
@@ -116,9 +116,9 @@ class BikaGenerator:
             ['Manager', 'LabManager', 'LabClerk', 'LabTechnician'], 1)
         mp(ManageSample,
             ['Manager', 'LabManager', 'LabClerk', 'LabTechnician'], 1)
-        mp(ManageStandardSuppliers,
+        mp(ManageReferenceSuppliers,
             ['Manager', 'LabManager', 'LabClerk', 'LabTechnician'], 1)
-        mp(ManageStandard,
+        mp(ManageReference,
             ['Manager', 'LabManager', 'LabClerk', 'LabTechnician'], 1)
         mp(ViewResults,
             ['Manager', 'LabManager', 'LabClerk', 'Owner'], 1)
@@ -170,7 +170,7 @@ class BikaGenerator:
              'Owner'], 0)
         portal.clients.reindexObject()
 
-        mp = portal.standardsuppliers.manage_permission
+        mp = portal.referencesuppliers.manage_permission
         mp(permissions.ListFolderContents,
             ['Manager', 'LabManager', 'LabClerk', 'LabTechnician'], 1)
         mp(permissions.AddPortalContent,
@@ -179,7 +179,7 @@ class BikaGenerator:
         mp(permissions.View,
             ['Manager', 'LabManager', 'LabClerk', 'LabTechnician',
              'Owner'], 0)
-        portal.standardsuppliers.reindexObject()
+        portal.referencesuppliers.reindexObject()
 
         mp = portal.worksheets.manage_permission
         mp(permissions.ListFolderContents,
@@ -226,13 +226,13 @@ class BikaGenerator:
         script.manage_proxy(roles = ('Manager',))
         script = portal.portal_workflow.bika_sample_workflow.scripts.default
         script.manage_proxy(roles = ('Manager',))
-        script = portal.portal_workflow.bika_standardsample_workflow.scripts.default
+        script = portal.portal_workflow.bika_referencesample_workflow.scripts.default
         script.manage_proxy(roles = ('Manager',))
         script = portal.portal_workflow.bika_worksheet_workflow.scripts.default
         script.manage_proxy(roles = ('Manager',))
         script = portal.portal_workflow.bika_worksheetanalysis_workflow.scripts.default
         script.manage_proxy(roles = ('Manager',))
-        script = portal.portal_workflow.bika_standardanalysis_workflow.scripts.default
+        script = portal.portal_workflow.bika_referenceanalysis_workflow.scripts.default
         script.manage_proxy(roles = ('Manager',))
 
 

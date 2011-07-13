@@ -1,30 +1,30 @@
 <?xml version="1.0"?>
-<object name="StandardSupplierFolder"
+<object name="ReferenceSupplierFolder"
    meta_type="Factory-based Type Information with dynamic views"
    xmlns:i18n="http://xml.zope.org/namespaces/i18n">
- <property name="title">StandardSupplierFolder</property>
- <property name="description">Container for Standard Suppliers</property>
+ <property name="title">ReferenceSupplierFolder</property>
+ <property name="description">Container for Reference Suppliers</property>
  <property name="icon_expr">string:${portal_url}/folder_icon.gif</property>
- <property name="content_meta_type">StandardSupplierFolder</property>
+ <property name="content_meta_type">ReferenceSupplierFolder</property>
  <property name="product">bika.lims</property>
- <property name="factory">addStandardSupplierFolder</property>
+ <property name="factory">addReferenceSupplierFolder</property>
  <property name="add_view_expr"></property>
  <property name="link_target"></property>
  <property name="immediate_view">base_edit</property>
  <property name="global_allow">False</property>
  <property name="filter_content_types">True</property>
  <property name="allowed_content_types">
-  <element value="StandardSupplier"/>
+  <element value="ReferenceSupplier"/>
  </property>
  <property name="allow_discussion">False</property>
- <property name="default_view">standardsupplierfolder_contents</property>
+ <property name="default_view">referencesupplierfolder_contents</property>
  <property name="view_methods">
-  <element value="standardsupplierfolder_contents"/>
+  <element value="referencesupplierfolder_contents"/>
  </property>
  <property name="default_view_fallback">False</property>
- 
+
  <alias from="(Default)" to="base_edit"/>
- <alias from="view" to="standardsupplierfolder_contents"/>
+ <alias from="view" to="referencesupplierfolder_contents"/>
  <alias from="edit" to="base_edit"/>
 
  <action title="View" action_id="view" category="object" condition_expr=""
@@ -42,10 +42,10 @@
     url_expr="string:${folder_url}/view" visible="False">
   <permission value="View"/>
  </action>
- <action title="StandardSuppliers" action_id="standardsuppliers"
+ <action title="ReferenceSuppliers" action_id="referencesuppliers"
     category="object" condition_expr="" icon_expr="" link_target=""
-    url_expr="string:${object_url}/standardsupplierfolder_contents"
+    url_expr="string:${object_url}/referencesupplierfolder_contents"
     visible="True">
-  <permission value="bika.lims: Manage Standard Suppliers"/>
+  <permission value="bika.lims: Manage Reference Suppliers"/>
  </action>
 </object>

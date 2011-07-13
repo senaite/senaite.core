@@ -122,19 +122,19 @@
   <permission>BIKA: Manage Bika</permission>
  </configlet>
 
- <configlet title="Standard Manufacturers"
-    action_id="bika_standardmanufacturers" appId="bika"
+ <configlet title="Reference Manufacturers"
+    action_id="bika_referencemanufacturers" appId="bika"
     category="bika.lims" condition_expr=""
-    icon_expr="string:$portal_url/images/standardmanufacturer.png"
-    url_expr="string:$portal_url/bika_settings/bika_standardmanufacturers"
+    icon_expr="string:$portal_url/images/referencemanufacturer.png"
+    url_expr="string:$portal_url/bika_settings/bika_referencemanufacturers"
     visible="True">
   <permission>BIKA: Manage Bika</permission>
  </configlet>
 
- <configlet title="Standard Stocks" action_id="bika_standardstocks"
+ <configlet title="Reference Definitions" action_id="bika_referencedefinitions"
     appId="bika.lims" category="bika" condition_expr=""
-    icon_expr="string:$portal_url/images/standardstock.png"
-    url_expr="string:$portal_url/bika_settings/bika_standardstocks"
+    icon_expr="string:$portal_url/images/ReferenceDefinition.png"
+    url_expr="string:$portal_url/bika_settings/bika_referencedefinitions"
     visible="True">
   <permission>BIKA: Manage Bika</permission>
  </configlet>

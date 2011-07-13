@@ -110,17 +110,17 @@
     />
 
     <browser:page
-      for="bika.lims.interfaces.IStandardManufacturers"
+      for="bika.lims.interfaces.IReferenceManufacturers"
       name="folder_view"
-      class=".bika_standardmanufacturers.StandardManufacturersView"
+      class=".bika_referencemanufacturers.ReferenceManufacturersView"
       permission="bika.lims.ManageBika"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
     <browser:page
-      for="bika.lims.interfaces.IStandardStocks"
+      for="bika.lims.interfaces.IReferenceDefinitions"
       name="folder_view"
-      class=".bika_standardstocks.StandardStocksView"
+      class=".bika_referencedefinitions.ReferenceDefinitionsView"
       permission="bika.lims.ManageBika"
       layer="bika.lims.interfaces.IBikaLIMS"
     />

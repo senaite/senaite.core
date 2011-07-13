@@ -285,13 +285,6 @@ jQuery( function($) {
 	    error.value = '';
 	    return
 	}
-	function clearSampleAndService() {
-	    sample = document.getElementById('getStandardSampleUID');
-	    sample.value = '';
-	    service = document.getElementById('getServiceUID');
-	    service.value = '';
-	    return
-	}
 	function clearService() {
 	    service = document.getElementById('getServiceUID');
 	    service.value = '';

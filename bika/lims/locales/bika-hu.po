@@ -70,7 +70,7 @@ msgstr "Mielőtt az igénylést elküldi, egy ügyfél kapcsolatot meg kell adni
 #: ./skins/bika/listing.pt
 #. <p class="portalMessage" i18n:translate="order_contact_required">
 msgid "order_contact_required"
-msgstr "Mielőtt a rendelést elküldi, egy ügyfél kapcsolatot meg kell adni" 
+msgstr "Mielőtt a rendelést elküldi, egy ügyfél kapcsolatot meg kell adni"
 #msgstr "Client contact required before order may be submitted"
 
 #: ./skins/bika/portlet_pending_orders.pt
@@ -122,7 +122,7 @@ msgstr "Analízis igénylések"
 #.  Query analysis requests
 #. </span>
 msgid "heading_query_analysis_requests"
-msgstr "Analízis igénylések lekérdezése" 
+msgstr "Analízis igénylések lekérdezése"
 # "Query analysis requests"
 
 
@@ -185,13 +185,13 @@ msgstr "Analízisek"
 #: ./skins/bika/analysis_method.pt
 #. <label i18n:translate="label_analysismethod">
 msgid "label_analysismethod"
-msgstr "Teszt eljárás" 
+msgstr "Teszt eljárás"
 #"Analysis method"
 
 #: ./skins/bika/mail_templates.pt
 #. <label i18n:translate="label_analysismethods">
 msgid "label_analysismethods"
-msgstr "Teszt eljárások" 
+msgstr "Teszt eljárások"
 #"Analysis methods"
 
 #: ./skins/bika/analysisrequests_columns.pt
@@ -284,7 +284,7 @@ msgstr "Késedelmes analízisek"
 
 #: ./skins/bika/analyses_late.pt
 #. <span i18n:translate="label_hourslate">
-#.  Late 
+#.  Late
 #. </span>
 msgid "label_hourslate"
 msgstr "Késedelem"
@@ -295,7 +295,7 @@ msgstr "Késedelem"
 #.  Late
 #. </th>
 msgid "label_late"
-msgstr "Késedelem" 
+msgstr "Késedelem"
 #"Late"
 
 #: ./skins/bika/analyses_late.pt
@@ -351,14 +351,14 @@ msgstr "Rendelési szám"
 #"Order number"
 
 #: ./skins/bika/worksheet_analyses.pt
-#. <span i18n:translate="label_copy_titrations">Copy titration factors</span>: 
+#. <span i18n:translate="label_copy_titrations">Copy titration factors</span>:
 msgid "label_copy_titrations"
 msgstr "Titration faktor másolása"
 #"Copy titration factors"
 
 
 #: ./skins/bika/worksheet_analyses.pt
-#. <span i18n:translate="label_orientation">Orientation</span>: 
+#. <span i18n:translate="label_orientation">Orientation</span>:
 msgid "label_orientation"
 msgstr "Irány"
 #"Orientation"
@@ -525,8 +525,6 @@ msgid "label_enddate"
 msgstr "Befejezés időpontja"
 #"End date"
 
-# Standard
-
 msgid "go_to_parent_url"
 msgstr "egy szintet fel"
 #"one level up"
@@ -604,7 +602,7 @@ msgid "label_status"
 msgstr "Státusz"
 
 msgid "label_titrationvolume"
-msgstr "Titr volumen" 
+msgstr "Titr volumen"
 #"Titr Vol"
 
 msgid "label_titrationvolume_required"
@@ -1016,7 +1014,7 @@ msgid "orders"
 msgstr "megrendelések"
 #"orders"
 msgid "Orders"
-msgstr "Megrendelések" 
+msgstr "Megrendelések"
 #"Orders"
 
 msgid "order"
@@ -1438,13 +1436,13 @@ msgstr "megtekint"
 
 msgid "help_contact_has_user"
 msgstr "A(z) ${label_help_contact_fullname} nevű felhasználó a ${label_help_contact_username} belépési azonosítóval tud a rendszerbe belépni. Csak a kapcsolatok maguk képesek megváltoztatni a saját jelszavukat. Ha elfelejtette a jelszavát, kérjen egy új jelszót a bejelentkezési képernyőn"
-#"${label_help_contact_fullname} may login with the username ${label_help_contact_username}. 
-#Only contacts themselves are allowed to change their passwords. 
+#"${label_help_contact_fullname} may login with the username ${label_help_contact_username}.
+#Only contacts themselves are allowed to change their passwords.
 #Should you forget your password, please request a new on on the login form"
 
 msgid "help_contact_needs_user"
 msgstr "A ${label_help_contact_fullname} nevű felhasználó még nem rendelkezik felhasználói névvel. E nélkül a felhasználó nem tud a rendszerbe belépni. Kérem töltse ki az alábbi űrlapot a felhasználó létrehozásához"
-#"There is no user for ${label_help_contact_fullname} yet. 
+#"There is no user for ${label_help_contact_fullname} yet.
 #He/she won't be able to login without a username. Please complete the form below to create a user"
 
 msgid "label_user_name"
@@ -1453,9 +1451,9 @@ msgstr "Felhasználói név"
 
 msgid "help_user_name_creation_casesensitive"
 msgstr "Kérem adjon meg egy felhasználói nevet, amely általában ehhez hasonló: 'kovacsj'. Ne használjon szóközt vagy egyéb speciális karaktereket. A felhasználónév és jelszó kis/nagybetű érzékeny, győződjön meg róla, hogy a caps lock nincs bekapcsolva. Ezzel az azonosítóval tud majd a felhasználó bejelentkezni."
-#"Enter a user name, usually something like 'jsmith'. 
-#No spaces or special characters. 
-#Usernames and passwords are case sensitive, make sure the caps lock key is not enabled. 
+#"Enter a user name, usually something like 'jsmith'.
+#No spaces or special characters.
+#Usernames and passwords are case sensitive, make sure the caps lock key is not enabled.
 #This is the name used to log in."
 
 msgid "label_email"
@@ -1463,8 +1461,8 @@ msgstr "E-mail"
 
 msgid "help_email_creation"
 msgstr "Kérem adja meg az email címét. Erre akkor van szükség, ha például elfelejti a jelszavát. Mi tiszteletben tartjuk az Ön személyes adatait, ezért az email címét bizalmasan kezeljük: nem adjuk tovább harmadik félnek és nem használjuk fel azokat."
-#"Enter an email address. 
-#This is necessary in case the password is lost. 
+#"Enter an email address.
+#This is necessary in case the password is lost.
 #We respect your privacy, and will not give the address away to any third parties or expose it anywhere."
 
 msgid "label_password"
@@ -1642,32 +1640,32 @@ msgid "label_sticker_disposal_date"
 msgstr "Disposal date"
 
 # to be translated
-msgid "label_standard"
-msgstr "Standard"
+msgid "label_reference"
+msgstr "Reference"
 
 # to be translated
 msgid "heading_samples"
 msgstr "Samples"
 
 # to be translated
-msgid "heading_standard_samples"
-msgstr "Standard Samples"
+msgid "heading_reference_samples"
+msgstr "Reference Samples"
 
 # to be translated
-msgid "label_return_to_standardsamples"
-msgstr "Return to standard samples"
+msgid "label_return_to_referencesamples"
+msgstr "Return to reference samples"
 
 # to be translated
 msgid "label_title"
 msgstr "Title"
 
 # to be translated
-msgid "label_stock"
-msgstr "Stock"
+msgid "label_reference_definition"
+msgstr "Reference Definition"
 
 # to be translated
-msgid "label_standardsupplier"
-msgstr "Standard supplier"
+msgid "label_referencesupplier"
+msgstr "Reference supplier"
 
 # to be translated
 msgid "label_datesampled"
@@ -1678,12 +1676,12 @@ msgid "label_expirydate"
 msgstr "Expiry date"
 
 # to be translated
-msgid "heading_standard_stocks"
-msgstr "Standard Stocks"
+msgid "heading_reference_definitions"
+msgstr "Reference Definitions"
 
 # to be translated
-msgid "label_return_to_standardstocks"
-msgstr "Return to standard stocks"
+msgid "label_return_to_ReferenceDefinitions"
+msgstr "Return to Reference Definitions"
 
 # to be translated
 msgid "message_changes_saved"

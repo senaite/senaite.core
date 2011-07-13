@@ -134,7 +134,7 @@ msgstr "Solicitar un nuevo análisis"
 #. <p i18n:translate="worksheet_no_analysis_selected" tal:condition="not: batch">
 #. This worksheet contains no analysis
 #. </p>
-msgid "worksheet_no_analysis_selected"	
+msgid "worksheet_no_analysis_selected"
 msgstr "Esta hoja de trabajo no contiene análisis"
 
 #: ./skins/bika/worksheet_analyses.pt
@@ -272,7 +272,7 @@ msgstr "Últimos análisis"
 
 #: ./skins/bika/analyses_late.pt
 #. <span i18n:translate="label_hourslate">
-#.  Late 
+#.  Late
 #. </span>
 msgid "label_hourslate"
 #msgstr "Late"
@@ -337,14 +337,14 @@ msgid "label_ordernumber"
 msgstr "Número de Orden"
 
 #: ./skins/bika/worksheet_analyses.pt
-#. <span i18n:translate="label_copy_titrations">Copy titration factors</span>: 
+#. <span i18n:translate="label_copy_titrations">Copy titration factors</span>:
 msgid "label_copy_titrations"
 #msgstr "Copy titration factors"
 msgstr "Factores de titulación de copia"
 
 
 #: ./skins/bika/worksheet_analyses.pt
-#. <span i18n:translate="label_orientation">Orientation</span>: 
+#. <span i18n:translate="label_orientation">Orientation</span>:
 msgid "label_orientation"
 msgstr "Orientación"
 
@@ -394,7 +394,7 @@ msgstr "Tipo de muestra"
 msgid "help_sampletype"
 #msgstr "An optional product level to track sample"
 msgstr "Un tipo de producto para rastrear la muestra (opcional)"
- 
+
 msgid "label_samplepoint"
 #msgstr "Sample point"
 msgstr "Punto de muestreo"
@@ -483,8 +483,6 @@ msgstr "Valido desde"
 msgid "label_enddate"
 #msgstr "Valid to"
 msgstr "Valid hasta"
-
-# Standard
 
 msgid "go_to_parent_url"
 msgstr "regresar un nivel"
@@ -1483,32 +1481,32 @@ msgid "label_sticker_disposal_date"
 msgstr "Disposal date"
 
 # to be translated
-msgid "label_standard"
-msgstr "Standard"
+msgid "label_reference"
+msgstr "Reference"
 
 # to be translated
 msgid "heading_samples"
 msgstr "Samples"
 
 # to be translated
-msgid "heading_standard_samples"
-msgstr "Standard Samples"
+msgid "heading_reference_samples"
+msgstr "Reference Samples"
 
 # to be translated
-msgid "label_return_to_standardsamples"
-msgstr "Return to standard samples"
+msgid "label_return_to_referencesamples"
+msgstr "Return to reference samples"
 
 # to be translated
 msgid "label_title"
 msgstr "Title"
 
 # to be translated
-msgid "label_stock"
-msgstr "Stock"
+msgid "label_reference_definition"
+msgstr "Reference Definition"
 
 # to be translated
-msgid "label_standardsupplier"
-msgstr "Standard supplier"
+msgid "label_referencesupplier"
+msgstr "Reference supplier"
 
 # to be translated
 msgid "label_datesampled"
@@ -1519,12 +1517,12 @@ msgid "label_expirydate"
 msgstr "Expiry date"
 
 # to be translated
-msgid "heading_standard_stocks"
-msgstr "Standard Stocks"
+msgid "heading_reference_definitions"
+msgstr "Reference Definitions"
 
 # to be translated
-msgid "label_return_to_standardstocks"
-msgstr "Return to standard stocks"
+msgid "label_return_to_ReferenceDefinitions"
+msgstr "Return to Reference Definitions"
 
 # to be translated
 msgid "message_changes_saved"

@@ -10,14 +10,14 @@ from bika.lims import bikaMessageFactory as _
 from bika.lims.content.bikaschema import BikaFolderSchema
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.folder.folder import ATFolder, ATFolderSchema
-from bika.lims.interfaces import IStandardStocks
+from bika.lims.interfaces import IReferenceDefinitions
 from zope.interface.declarations import implements
 
-class StandardStocksView(BikaListingView):
+class ReferenceDefinitionsView(BikaListingView):
     implements(IFolderContentsView)
-    contentFilter = {'portal_type': 'StandardStock'}
-    content_add_actions = {_('Standard Stock'): "createObject?type_name=StandardStock"}
-    title = _("Standard Stocks")
+    contentFilter = {'portal_type': 'ReferenceDefinition'}
+    content_add_actions = {_('Reference Definition'): "createObject?type_name=ReferenceDefinition"}
+    title = _("Reference Definitions")
     description = ""
     show_editable_border = False
     show_filters = False
@@ -28,11 +28,11 @@ class StandardStocksView(BikaListingView):
 
     columns = {
                'title_or_id': {'title': _('Title')},
-               'StandardStockDescription': {'title': _('Description')},
+               'ReferenceDefinitionDescription': {'title': _('Description')},
               }
     review_states = [
                     {'title': _('All'), 'id':'all',
-                     'columns': ['title_or_id', 'StandardStockDescription'],
+                     'columns': ['title_or_id', 'ReferenceDefinitionDescription'],
                      'buttons':[{'cssclass': 'context',
                                  'title': _('Delete'),
                                  'url': 'folder_delete:method'}]},
@@ -43,15 +43,15 @@ class StandardStocksView(BikaListingView):
         for x in range(len(items)):
             if not items[x].has_key('brain'): continue
             obj = items[x]['brain'].getObject()
-            items[x]['StandardStockDescription'] = obj.StandardStockDescription()
+            items[x]['ReferenceDefinitionDescription'] = obj.ReferenceDefinitionDescription()
             items[x]['links'] = {'title_or_id': items[x]['url'] + "/edit"}
 
         return items
 
 schema = ATFolderSchema.copy()
-class StandardStocks(ATFolder):
-    implements(IStandardStocks)
+class ReferenceDefinitions(ATFolder):
+    implements(IReferenceDefinitions)
     schema = schema
     displayContentsTab = False
 schemata.finalizeATCTSchema(schema, folderish = True, moveDiscussion = False)
-atapi.registerType(StandardStocks, PROJECTNAME)
+atapi.registerType(ReferenceDefinitions, PROJECTNAME)

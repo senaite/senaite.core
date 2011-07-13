@@ -686,11 +686,11 @@ msgstr "DE_suppliers"
 msgid "suppliers"
 msgstr "DE_suppliers"
 
-msgid "Standards"
-msgstr "DE_standards"
+msgid "label_references"
+msgstr "References"
 
-msgid "standards"
-msgstr "DE_standards"
+msgid "references"
+msgstr "DE_references"
 
 msgid "Samples"
 msgstr "DE_samples"
@@ -1325,32 +1325,32 @@ msgstr "DE_Date Received"
 msgid "label_sticker_disposal_date"
 msgstr "DE_Disposal date"
 
-msgid "label_standard"
-msgstr "DE_Standard"
+msgid "label_reference"
+msgstr "DE_Reference"
 
 msgid "heading_samples"
 msgstr "DE_Samples"
 
-msgid "standard_samples_print"
-msgstr "DE_Print standards"
+msgid "reference_samples_print"
+msgstr "DE_Print references"
 
-msgid "standard_samples_email"
-msgstr "DE_Email standards"
+msgid "reference_samples_email"
+msgstr "DE_Email references"
 
-msgid "heading_standard_samples"
-msgstr "DE_Standard Samples"
+msgid "heading_reference_samples"
+msgstr "DE_Reference Samples"
 
-msgid "label_return_to_standardsamples"
-msgstr "DE_Return to standard samples"
+msgid "label_return_to_referencesamples"
+msgstr "DE_Return to reference samples"
 
 msgid "label_title"
 msgstr "DE_Title"
 
-msgid "label_stock"
-msgstr "DE_Stock"
+msgid "label_reference_definition"
+msgstr "DE_Reference Definition"
 
-msgid "label_standardsupplier"
-msgstr "DE_Standard supplier"
+msgid "label_referencesupplier"
+msgstr "DE_Reference supplier"
 
 msgid "label_datesampled"
 msgstr "DE_Date sampled"
@@ -1358,11 +1358,11 @@ msgstr "DE_Date sampled"
 msgid "label_expirydate"
 msgstr "DE_Expiry date"
 
-msgid "heading_standard_stocks"
-msgstr "DE_Standard Stocks"
+msgid "heading_reference_definitions"
+msgstr "DE_Reference Definitions"
 
-msgid "label_return_to_standardstocks"
-msgstr "DE_Return to standard stocks"
+msgid "label_return_to_ReferenceDefinitions"
+msgstr "DE_Return to Reference Definitions"
 
 msgid "message_changes_saved"
 msgstr "DE_Your changes have been saved"

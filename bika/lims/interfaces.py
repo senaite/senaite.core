@@ -26,11 +26,11 @@ class IWorksheetFolder(Interface):
 class IWorksheet(Interface):
     """Worksheet"""
 
-class IStandardSupplierFolder(Interface):
+class IReferenceSupplierFolder(Interface):
     """WorksheetFolder"""
 
 class IInvoiceFolder(Interface):
-    """StandardSupplierFolder"""
+    """ReferenceSupplierFolder"""
 
 class IHaveNoBreadCrumbs(Interface):
     """Items which do not display breadcrumbs"""
@@ -68,9 +68,9 @@ class ISamplePoints(Interface):
     ""
 class ISampleTypes(Interface):
     ""
-class IStandardManufacturers(Interface):
+class IReferenceManufacturers(Interface):
     ""
-class IStandardStocks(Interface):
+class IReferenceDefinitions(Interface):
     ""
 class IWorksheetTemplates(Interface):
     ""

@@ -1,6 +1,6 @@
-"""StandardSupplier.
+"""ReferenceSupplier.
 
-$Id: StandardSupplier.py 639 2007-03-20 09:35:32Z anneline $
+$Id: ReferenceSupplier.py 639 2007-03-20 09:35:32Z anneline $
 """
 
 from AccessControl import ClassSecurityInfo
@@ -12,24 +12,24 @@ from Products.CMFCore import permissions
 from Products.CMFCore.permissions import ListFolderContents, ModifyPortalContent
 from Products.CMFCore.utils import getToolByName
 from bika.lims.config import I18N_DOMAIN, PROJECTNAME, \
-    ManageStandardSuppliers
+    ManageReferenceSuppliers
 from bika.lims.content.organisation import Organisation
 
 schema = Organisation.schema.copy() + Schema((
-    StringField('StandardSupplierID',
+    StringField('ReferenceSupplierID',
         index = 'FieldIndex',
         searchable = True,
         widget = StringWidget(
-            label = 'StandardSupplier ID',
-            label_msgid = 'label_standardsupplierid',
+            label = 'ReferenceSupplier ID',
+            label_msgid = 'label_referencesupplierid',
             i18n_domain = I18N_DOMAIN,
         ),
     ),
 ))
 
-schema['AccountNumber'].write_permission = ManageStandardSuppliers
+schema['AccountNumber'].write_permission = ManageReferenceSuppliers
 
-class StandardSupplier(Organisation):
+class ReferenceSupplier(Organisation):
     security = ClassSecurityInfo()
     schema = schema
 
@@ -40,13 +40,13 @@ class StandardSupplier(Organisation):
             pairs.append((contact.UID(), contact.Title()))
         return DisplayList(pairs)
 
-    security.declarePublic('getStandardStockDisplayList')
-    def getStandardStockDisplayList(self):
-        """ return all standard stocks """
-        stocks = []
-        for st in self.portal_catalog(portal_type = 'StandardStock',
+    security.declarePublic('getReferenceDefinitionDisplayList')
+    def getReferenceDefinitionDisplayList(self):
+        """ return all Reference Definitions """
+        defs = []
+        for st in self.portal_catalog(portal_type = 'ReferenceDefinition',
                                       sort_on = 'sortable_title'):
-            stocks.append((st.UID, st.Title))
-        return DisplayList(stocks)
+            defs.append((st.UID, st.Title))
+        return DisplayList(defs)
 
-registerType(StandardSupplier, PROJECTNAME)
+registerType(ReferenceSupplier, PROJECTNAME)

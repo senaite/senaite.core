@@ -1,24 +1,24 @@
 <?xml version="1.0"?>
-<object name="StandardSupplier"
+<object name="ReferenceSupplier"
    meta_type="Factory-based Type Information with dynamic views"
    xmlns:i18n="http://xml.zope.org/namespaces/i18n">
  <property name="title">Product</property>
  <property name="description"></property>
- <property name="icon_expr">string:${portal_url}/images/standardsupplier.png</property>
- <property name="content_meta_type">StandardSupplier</property>
+ <property name="icon_expr">string:${portal_url}/images/referencesupplier.png</property>
+ <property name="content_meta_type">ReferenceSupplier</property>
  <property name="product">bika.lims</property>
- <property name="factory">addStandardSupplier</property>
+ <property name="factory">addReferenceSupplier</property>
  <property name="add_view_expr"></property>
  <property name="link_target"></property>
  <property name="global_allow">False</property>
  <property name="filter_content_types">False</property>
  <property name="allowed_content_types">
-  <element value="StandardSample"/>
+  <element value="ReferenceSample"/>
   <element value="SupplierContact"/>
  </property>
  <property name="allow_discussion">False</property>
  <property name="default_view_fallback">False</property>
- 
+
  <alias from="(Default)" to="base_view"/>
  <alias from="view" to="base_view"/>
  <alias from="edit" to="tool_base_edit"/>
@@ -36,13 +36,13 @@
 
  <action title="Contacts" action_id="suppliercontacts" category="object"
     condition_expr="" icon_expr="" link_target=""
-    url_expr="string:${object_url}/standardsupplier_suppliercontacts"
+    url_expr="string:${object_url}/referencesupplier_suppliercontacts"
     visible="True">
   <permission value="List folder contents"/>
  </action>
- <action title="Standards" action_id="standardsamples" category="object"
+ <action title="References" action_id="referencesamples" category="object"
     condition_expr="" icon_expr="" link_target=""
-    url_expr="string:${object_url}/standardsupplier_standardsamples"
+    url_expr="string:${object_url}/referencesupplier_referencesamples"
     visible="True">
   <permission value="List folder contents"/>
  </action>

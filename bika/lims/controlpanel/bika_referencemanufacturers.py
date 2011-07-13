@@ -10,14 +10,14 @@ from bika.lims import bikaMessageFactory as _
 from bika.lims.content.bikaschema import BikaFolderSchema
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.folder.folder import ATFolder, ATFolderSchema
-from bika.lims.interfaces import IStandardManufacturers
+from bika.lims.interfaces import IReferenceManufacturers
 from zope.interface.declarations import implements
 
-class StandardManufacturersView(BikaListingView):
+class ReferenceManufacturersView(BikaListingView):
     implements(IFolderContentsView)
-    contentFilter = {'portal_type': 'StandardManufacturer'}
-    content_add_actions = {_('Standard Manufacturer'): "createObject?type_name=StandardManufacturer"}
-    title = _("Standard Manufacturers")
+    contentFilter = {'portal_type': 'ReferenceManufacturer'}
+    content_add_actions = {_('Reference Manufacturer'): "createObject?type_name=ReferenceManufacturer"}
+    title = _("Reference Manufacturers")
     description = ""
     show_editable_border = False
     show_filters = False
@@ -28,11 +28,11 @@ class StandardManufacturersView(BikaListingView):
 
     columns = {
                'title_or_id': {'title': _('Title')},
-               'StandardManufacturerDescription': {'title': _('Description')},
+               'ReferenceManufacturerDescription': {'title': _('Description')},
               }
     review_states = [
                     {'title': _('All'), 'id':'all',
-                     'columns': ['title_or_id', 'StandardManufacturerDescription'],
+                     'columns': ['title_or_id', 'ReferenceManufacturerDescription'],
                      'buttons': [{'cssclass': 'context',
                                  'title': _('Delete'),
                                  'url': 'folder_delete:method'}]},
@@ -43,15 +43,15 @@ class StandardManufacturersView(BikaListingView):
         for x in range(len(items)):
             if not items[x].has_key('brain'): continue
             obj = items[x]['brain'].getObject()
-            items[x]['StandardManufacturerDescription'] = obj.StandardManufacturerDescription()
+            items[x]['ReferenceManufacturerDescription'] = obj.ReferenceManufacturerDescription()
             items[x]['links'] = {'title_or_id': items[x]['url'] + "/edit"}
 
         return items
 
 schema = ATFolderSchema.copy()
-class StandardManufacturers(ATFolder):
-    implements(IStandardManufacturers)
+class ReferenceManufacturers(ATFolder):
+    implements(IReferenceManufacturers)
     schema = schema
     displayContentsTab = False
 schemata.finalizeATCTSchema(schema, folderish = True, moveDiscussion = False)
-atapi.registerType(StandardManufacturers, PROJECTNAME)
+atapi.registerType(ReferenceManufacturers, PROJECTNAME)
