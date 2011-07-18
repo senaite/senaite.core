@@ -47,7 +47,6 @@ class SpecWidget(RecordsWidget):
             specs[keyword]['error'] = spec['error']
         return specs
 
-    # XXX Memoize
     security.declarePublic('getCategories')
     def getCategories(self, field, allservices = True):
         """Returns a dictionary of AnalysisCategory[service,service,...]

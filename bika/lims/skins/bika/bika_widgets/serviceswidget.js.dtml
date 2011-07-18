@@ -4,15 +4,18 @@ function services_html(poc, cat, allservices, selectedservices, fieldName){
 	for(i=0;i<allservices.length;i++){
 		UID = allservices[i][0];
 		Title = allservices[i][1];
+		Result = allservices[i][2];
+		Min = allservices[i][3];
+		Max = allservices[i][4];
+		Error = allservices[i][5];
 		if(selectedservices.search(UID) > -1){
-			html = html + "<tr><td>" +
-				"<input type='checkbox' id='"+UID+"' name='"+fieldName+":list:ignore-empty' value='"+UID+"' checked='checked'/></td>" +
-				"<td><label for='"+UID+"'>"+Title+"</label></td></tr>";
+			html = html + "<tr><td><input type='checkbox' id='"+UID+"' name='"+fieldName+":list:ignore-empty' value='"+UID+"' checked='checked'/></td>";
 		} else {
-			html = html + "<tr><td>" +
-				"<input type='checkbox' id='"+UID+"' name='"+fieldName+":list:ignore-empty' value='"+UID+"'/></td>" +
-				"<td><label for='"+UID+"'>"+Title+"</label></td></tr>";
+			html = html + "<tr><td><input type='checkbox' id='"+UID+"' name='"+fieldName+":list:ignore-empty' value='"+UID+"'/></td>";
 		}
+		html = html +
+			"<td><label for='"+UID+"'>"+Title+"</label></td>" +
+			"</tr>";
 	}
 	html = html + "";
 	return html;

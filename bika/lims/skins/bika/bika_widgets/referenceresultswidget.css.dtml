@@ -1,0 +1,20 @@
+#referenceresultswidget .analysisservices {
+	margin: 0 0 0 1em;
+	padding: 0;
+}
+#referenceresultswidget table {
+	margin:0;
+	padding:0;
+}
+#referenceresultswidget table thead th{
+	cursor:pointer;
+	margin:0;
+	padding:2px 5px 2px 5px;
+}
+#referenceresultswidget table tbody td{
+	margin:0;
+	padding:2px 5px 2px 5px;
+}
+#referenceresultswidget label {
+	font-weight:normal;
+}

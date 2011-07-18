@@ -40,13 +40,13 @@
 
       <table
             summary="Worksheet template form"
-            class="analysisrequest"
+            class="listing nosort"
             cellpadding="0" cellspacing="0">
 
         <tr>
           <th i18n:translate="label_position">Pos</th>
           <th i18n:translate="label_type">Analysis Type</th>
-          <th i18n:translate="label_ReferenceDefinition">Reference Definition</th>
+          <th i18n:translate="label_referencedefinition">Reference Definition</th>
           <th i18n:translate="label_duplicate_of">Dup of</th>
         </tr>
 

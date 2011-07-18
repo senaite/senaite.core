@@ -1,6 +1,7 @@
 <tal:define define="
 	categoryUID python:view.request['categoryUID'];
 	poc python:view.request['poc'];
+	col_count python:view.request.has_key('col_count') and view.request['col_count']) or 1;
 	portal context/@@plone_portal_state/portal">
 	<tr
 		tal:repeat="service python:view.Services(poc, categoryUID)"
@@ -38,7 +39,7 @@
 		<td class="service">
 			<image
 				class="copyButton"
-				tal:condition="python:int(view.request['col_count']) > 1"
+				tal:condition="python:col_count > 1"
 				tal:attributes="
 					id string:${service/UID};
 					src string:${portal/absolute_url}/images/copy.png"/>

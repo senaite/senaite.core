@@ -13,7 +13,7 @@ $(document).ready(function(){
         $(row).appendTo($(table));
     });
 
-    $("input[name*='_delete_']").click(function(i,e){
+    $("input[name*='_delete_']").live('click', function(i,e){
         $(this).attr('checked', false);
         fieldname = $(this).attr("id").split("_")[0];
         rows = $(".records_row_"+fieldname).length;

@@ -7,6 +7,7 @@ from Products.CMFCore.utils import getToolByName
 from bika.lims import bikaMessageFactory as _
 from bika.lims.interfaces import IIdServer
 from zope.interface.declarations import implements
+import App
 import os
 import sys
 import urllib
@@ -19,7 +20,6 @@ class bika_idserver(object):
     implements(IIdServer)
     security = ClassSecurityInfo()
 
-
     security.declarePublic('generate_id')
     def generate_id(self, portal_type, batch_size = None):
         """ Generate a new id for 'portal_type'
@@ -27,7 +27,9 @@ class bika_idserver(object):
         if portal_type == 'News Item':
             portal_type = 'NewsItem'
         idserver_url = os.environ.get('IDServerURL')
-
+        debug_mode = App.config.getConfiguration().debug_mode
+        if debug_mode and not idserver_url:
+            idserver_url = "http://localhost:8081"
         plone = getSite()
         portal_id = plone.getId()
         try:

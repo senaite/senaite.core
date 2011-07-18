@@ -6,7 +6,13 @@ from zope.browser.interfaces import IBrowserView
 from zope.component import getMultiAdapter
 from zope.interface import implements
 
-class LoadSetupData(BrowserView):
+class LoadSetupData():
+
+    def __init__(self, context, request=None):
+        # request is only present if we're being requested from the browser.  Tests call us
+        # directly with only portal context argument.
+        self.context = context
+        self.request = request
 
     def __call__(self):
         logger.info("load_setup_data: Laboratory"); self.Laboratory()
@@ -498,7 +504,7 @@ class LoadSetupData(BrowserView):
             folder.invokeFactory(id = id, type_name = 'AnalysisService')
             obj = folder[id]
             obj.edit(PointOfCapture = PointOfCapture,
-                     Title = title,
+                     ServiceTitle = title,
                      Unit = unit,
                      Calculation = self.calculations[calculation],
                      Price = price,

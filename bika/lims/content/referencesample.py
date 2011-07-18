@@ -15,7 +15,7 @@ from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.config import I18N_DOMAIN, PROJECTNAME
 from bika.lims.config import ManageReference, ManageBika
 from bika.lims.utils import sortable_title
-from bika.lims.browser.fields import ReferenceResultField
+from bika.lims.browser.fields import ReferenceResultsField
 from Products.CMFCore.permissions import View
 
 schema = BikaSchema.copy() + Schema((
@@ -56,7 +56,7 @@ schema = BikaSchema.copy() + Schema((
             i18n_domain = I18N_DOMAIN,
         ),
     ),
-    ReferenceResultField('Results',
+    ReferenceResultsField('Results',
         required = 1,
     ),
     TextField('Notes',

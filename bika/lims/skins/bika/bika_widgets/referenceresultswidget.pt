@@ -1,0 +1,57 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      i18n:domain="plone">
+  <head><title></title></head>
+  <body>
+    <metal:view_macro define-macro="view">
+    </metal:view_macro>
+
+    <metal:edit_macro define-macro="edit">
+      <metal:use use-macro="field_macro | context/widgets/field/macros/edit">
+        <metal:body_macro fill-slot="widget_body">
+          <span id="referenceresultswidget" tal:define="
+            all_services python:widget.getServicesByCategory();
+            selected_services python:widget.getServicesWithResultsByCategory(field);">
+
+            <input type="hidden" id="all_services" tal:attributes="
+              value python:widget.dumps(all_services);"/>
+
+            <input type="hidden" id="selected_services" tal:attributes="
+              value python:widget.dumps(selected_services);"/>
+
+            <table class="listing nosort">
+
+              <tal:repeat repeat="cat_key python:all_services.keys()">
+
+                <tal:define define="
+                  cat_uid python:cat_key.split('_')[0];
+                  cat_title python:cat_key.split('_')[1];
+                  selected_cat_uids python:[c.split('_')[0] for c in selected_services.keys()]">
+
+                  <!--   -->
+                  <thead>
+                    <tr tal:attributes="
+                      class python:cat_uid in selected_cat_uids and 'initial prefill' or 'initial';
+                      name cat_uid;
+                      key cat_key;">
+                      <th tal:content="python:cat_title"/>
+                      <th><span tal:attributes="id string:result_hdr_${cat_uid}">&nbsp;</span></th>
+                      <th><span tal:attributes="id string:min_hdr_${cat_uid}">&nbsp;</span></th>
+                      <th><span tal:attributes="id string:max_hdr_${cat_uid}">&nbsp;</span></th>
+                      <th><span tal:attributes="id string:error_hdr_${cat_uid}">&nbsp;</span></th>
+                    </tr>
+                  </thead>
+
+                  <!-- js fills this tbody with a bit of html -->
+                  <tbody tal:attributes="id python:cat_uid" class="analysisservices"/>
+
+                </tal:define>
+              </tal:repeat>
+          </span>
+        </metal:body_macro>
+      </metal:use>
+    </metal:edit_macro>
+</body>
+</html>

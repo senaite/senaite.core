@@ -1,0 +1,73 @@
+function expand_analysisservices(cat_key, fieldName){
+	html = "";
+	cat_uid = cat_key.split("_")[0];
+	selectedservices = $.parseJSON($("#selected_services").val());
+	allservices = $.parseJSON($("#all_services").val());
+	$.each(allservices[cat_key], function(i,v){
+		if(selectedservices != null &&
+		   selectedservices[cat_key] != undefined &&
+		   selectedservices[cat_key][v.uid] != undefined ){
+			ref = selectedservices[cat_key][v.uid];
+			html = html + "<tr>" +
+				"<td>"+ref.title+"</td>"+
+				"<td><input name='ReferenceResults.keyword:records:ignore_empty' type='hidden' value='"+ref.keyword+"'/>"+
+				"<input name='ReferenceResults.result:records:ignore_empty' type='text' size='6' value='"+ref.result+"' autocomplete='off'/></td>"+
+				"<td><input name='ReferenceResults.min:records:ignore_empty' type='text' size='6' value='"+ref.min+"' autocomplete='off'/></td>"+
+				"<td><input name='ReferenceResults.max:records:ignore_empty' type='text' size='6' value='"+ref.max+"' autocomplete='off'/></td>"+
+				"<td><input name='ReferenceResults.error:records:ignore_empty' type='text' size='6' value='"+ref.error+"' autocomplete='off'/></td>";
+		}else{
+			val = allservices[cat_key][i];
+			html = html + "<tr>" +
+				"<td>"+val.title+"</td>"+
+				"<td><input name='ReferenceResults.keyword:records:ignore_empty' type='hidden' value='"+val.keyword+"'/>"+
+				"<input name='ReferenceResults.result:records:ignore_empty' type='text' size='6' autocomplete='off'/></td>"+
+				"<td><input name='ReferenceResults.min:records:ignore_empty' type='text' size='6' autocomplete='off'/></td>"+
+				"<td><input name='ReferenceResults.max:records:ignore_empty' type='text' size='6' autocomplete='off'/></td>"+
+				"<td><input name='ReferenceResults.error:records:ignore_empty' type='text' size='6' autocomplete='off'/></td>";
+		}
+		$('#result_hdr_'+cat_uid).html('Result');
+		$('#min_hdr_'+cat_uid).html('Min');
+		$('#max_hdr_'+cat_uid).html('Max');
+		$('#error_hdr_'+cat_uid).html('Error %');
+	});
+	return html;
+}
+
+$(document).ready(function(){
+
+	// This widget is rendered only in the control panel Reference Definitions page.
+	// so we can use it to modify that page, by changing the Expiry and Created dates'
+	// string widgets to datepickers.
+	$('#DateCreated')
+		.val($('#DateCreated').val().split(" ")[0])
+		.datepicker({'dateFormat': 'yy-mm-dd', showAnim: ''});
+	$('#ExpiryDate')
+		.val($('#ExpiryDate').val().split(" ")[0])
+		.datepicker({'dateFormat': 'yy-mm-dd', showAnim: ''});
+
+	$('tr[class^="initial"]').click(function(){
+		target = $('#'+$(this).attr("name"));
+		fieldName = $(this).attr("id");
+		if($(this).hasClass("expanded")){
+			$(target).toggle();
+			cat_uid = $(this).attr("name");
+			$('#result_hdr_'+cat_uid).toggle();
+			$('#min_hdr_'+cat_uid).toggle();
+			$('#max_hdr_'+cat_uid).toggle();
+			$('#error_hdr_'+cat_uid).toggle();
+		} else {
+			$(this).removeClass("initial");
+			$(this).addClass("expanded");
+			target.html(expand_analysisservices($(this).attr("key"), fieldName));
+		}
+	});
+
+	$.each($('tr[class$="prefill"]'), function() {
+		target = $('#'+$(this).attr("name"));
+		fieldName = $(this).attr("id");
+		$(this).removeClass("initial");
+		$(this).addClass("expanded");
+			target.html(expand_analysisservices($(this).attr("key"), fieldName));
+	});
+
+});

@@ -3,11 +3,11 @@
 """
 from AccessControl import ClassSecurityInfo
 from DateTime import DateTime
-from Products.ATExtensions.ateapi import DateTimeField, DateTimeWidget
 from Products.Archetypes.public import *
 from Products.CMFCore.permissions import View, ModifyPortalContent
 from bika.lims.content.bikaschema import BikaSchema
-from bika.lims.browser.fields import ReferenceResultField
+from bika.lims.browser.fields import ReferenceResultsField
+from bika.lims.browser.widgets import ReferenceResultsWidget
 from bika.lims.config import I18N_DOMAIN, PROJECTNAME
 import sys
 import time
@@ -20,13 +20,13 @@ schema = BikaSchema.copy() + Schema((
             i18n_domain = I18N_DOMAIN,
         ),
     ),
-    ReferenceResultField('ReferenceResults',
+    ReferenceResultsField('ReferenceResults',
         required = 1,
-##        widget = ReferenceDefinitionEditWidget(
-##            label = "Reference Results",
-##            label_msgid = "label_reference_results",
-##            i18n_domain = I18N_DOMAIN,
-##        ),
+        widget = ReferenceResultsWidget(
+            label = "Reference Results",
+            label_msgid = "label_reference_results",
+            i18n_domain = I18N_DOMAIN,
+        ),
     ),
     BooleanField('Hazardous',
         default = False,
@@ -39,21 +39,23 @@ schema = BikaSchema.copy() + Schema((
     DateTimeField('DateCreated',
         index = 'DateIndex',
         with_date = 1,
-        with_time = 0,
+        show_hm = False,
         default_method = 'current_date',
-        widget = DateTimeWidget(
+        widget = StringWidget(
             label = 'Date created',
             label_msgid = 'label_datecreated',
+            i18n_domain = I18N_DOMAIN,
         ),
     ),
     DateTimeField('ExpiryDate',
         required = 1,
         index = 'DateIndex',
         with_date = 1,
-        with_time = 0,
-        widget = DateTimeWidget(
+        show_hm = False,
+        widget = StringWidget(
             label = 'Expiry date',
             label_msgid = 'label_expirydate',
+            i18n_domain = I18N_DOMAIN,
         ),
     ),
 ))

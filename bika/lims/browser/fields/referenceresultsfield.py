@@ -9,21 +9,22 @@ from Products.validation import validation
 from Products.validation.validators.RegexValidator import RegexValidator
 import sys
 
-class ReferenceResultField(RecordsField):
+class ReferenceResultsField(RecordsField):
     """a list of reference sample results """
     _properties = RecordsField._properties.copy()
     _properties.update({
         'type' : 'referenceresult',
-        'subfields' : ('keyword', 'result', 'min', 'max'),
-        'required_subfields' : ('keyword'),
+        'subfields' : ('keyword', 'result', 'min', 'max', 'error'),
+        'required_subfields' : ('keyword',),
         'subfield_labels':{'keyword': 'Analysis Service',
                            'result': 'Result',
                            'min': 'Min',
-                           'max': 'Max'},
+                           'max': 'Max',
+                           'error': 'Error %'},
         })
     security = ClassSecurityInfo()
 
-registerField(ReferenceResultField,
+registerField(ReferenceResultsField,
               title = "Reference Results",
               description = "Used for storing reference results",
               )
