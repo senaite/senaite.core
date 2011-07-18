@@ -57,7 +57,6 @@ class ServicesWidget(TypesWidget):
 registerWidget(ServicesWidget,
                title = 'Analysis Services',
                description = ('Categorised AnalysisService selector.'),
-               used_for = ('Products.Archetypes.Field.ReferenceField',)
                )
 
 #registerPropertyType('default_search_index', 'string', ServicesWidget)

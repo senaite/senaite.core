@@ -1,7 +1,7 @@
 <tal:define define="
 	categoryUID python:view.request['categoryUID'];
 	poc python:view.request['poc'];
-	col_count python:view.request.has_key('col_count') and view.request['col_count']) or 1;
+	col_count python:int(view.request.get('col_count', 1));
 	portal context/@@plone_portal_state/portal">
 	<tr
 		tal:repeat="service python:view.Services(poc, categoryUID)"

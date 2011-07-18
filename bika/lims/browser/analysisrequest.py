@@ -213,7 +213,7 @@ class AnalysisRequestViewView(BrowserView):
         return self.context.getSample().getSampleType().getHazardous()
 
     def getARProfileTitle(self):
-        return self.context.getProfile() and here.getProfile().getProfileTitle() or '';
+        return self.context.getProfile() and self.context.getProfile().getProfileTitle() or '';
 
     def get_requested_analyses(self):
         ##
@@ -629,7 +629,6 @@ class AJAXProfileServices(BrowserView):
     """
     def __call__(self):
         plone.protect.CheckAuthenticator(self.request)
-        plone.protect.PostOnly(self.request)
         rc = getToolByName(self, 'reference_catalog')
         pc = getToolByName(self, 'portal_catalog')
 
@@ -876,7 +875,7 @@ class AJAXAnalysisRequestSubmit():
                     analyses = ar.getAnalyses()
                     services_array = []
                     for a in analyses:
-                        services_array.append(a.getServiceUID())
+                        services_array.append(a.getService().UID())
                     profile.setService(services_array)
                     profile.reindexObject()
 

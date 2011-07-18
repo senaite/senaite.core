@@ -74,7 +74,7 @@
                 conditionalcomment=""
                 cookable="True"
                 enabled="on"
-                expression=""
+                expression="python:here.portal_type in ['Client', 'AnalysisRequest',]"
                 id="++resource++bika.lims.js/analysisrequest.js"
                 inline="False"
                 insert-after="*"/>
@@ -96,7 +96,7 @@
                 conditionalcomment=""
                 cookable="True"
                 enabled="on"
-                expression=""
+                expression="python:here.portal_type in ['Worksheet',]"
                 id="++resource++bika.lims.js/worksheet.js"
                 inline="False"
                 insert-after="*"/>
@@ -111,6 +111,7 @@
                 id="++resource++bika.lims.js/sample.js"
                 inline="False"
                 insert-after="*"/>
+
     <javascript authenticated="True"
                 cacheable="True"
                 compression="safe"

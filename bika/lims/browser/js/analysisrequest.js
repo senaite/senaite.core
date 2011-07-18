@@ -255,21 +255,27 @@ jQuery( function($) {
 		unsetARProfile(column);
 		if(profileUID == "") return;
 		selected_elements = []
-		$.getJSON('analysisrequest_profileservices', {'profileUID':profileUID}, function(data,textStatus){
-			$.each(data, function(poc_categoryUID, selectedservices){
-				p_c = poc_categoryUID.split("_");
-				if( $("tbody[class*='expanded']").filter("#"+p_c[1]).length > 0 ){
-					$.each(selectedservices, function(i,uid){
-						$.each($("input[column='"+column+"']").filter("#"+uid), function(x, e){
-							$(e).attr('checked', true);
+		$.getJSON(
+			'analysisrequest_profileservices',
+			{'profileUID':profileUID,
+			'_authenticator': $('input[name="_authenticator"]').val()},
+			function(data,textStatus){
+				$.each(data, function(poc_categoryUID, selectedservices){
+					if( $("tbody[class*='expanded']").filter("#"+poc_categoryUID).length > 0 ){
+						$.each(selectedservices, function(i,uid){
+							$.each($("input[column='"+column+"']").filter("#"+uid), function(x, e){
+								$(e).attr('checked', true);
+							});
+							recalc_prices(column);
 						});
-						recalc_prices(column);
-					});
-				} else {
-					toggleCat(p_c[0], p_c[1], column, selectedservices);
-				}
-			});
-		}, "json");
+					} else {
+						p_c = poc_categoryUID.split("_");
+						toggleCat(p_c[0], p_c[1], column, selectedservices);
+					}
+				});
+			},
+			"json"
+		);
 	}
 
 	function unsetARProfile(column){

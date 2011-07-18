@@ -136,7 +136,6 @@ class SpecWidget(RecordsWidget):
 registerWidget(SpecWidget,
                title = 'Analysis Services',
                description = ('AnalysisSpec selector.'),
-               used_for = ('Products.Archetypes.Field.ReferenceField',)
                )
 
 #registerPropertyType('default_search_index', 'string', AnalysisSpecsWidget)

@@ -12,8 +12,14 @@ from bika.lims.content.bikaschema import BikaSchema
 import sys
 
 schema = BikaSchema.copy() + Schema((
-    TextField('ServiceTitle',
-        widget = TextAreaWidget(
+    ComputedField('title',
+        expression = "context.getServiceTitle() and context.getServiceTitle() or ''",
+        widget = ComputedWidget(
+            visible = False
+        ),
+    ),
+    StringField('ServiceTitle',
+        widget = StringWidget(
             label = 'Service Title',
             label_msgid = 'label_service_title',
             i18n_domain = I18N_DOMAIN,
@@ -249,8 +255,10 @@ schema = BikaSchema.copy() + Schema((
     ),
 ))
 
-schema['title'].required = False
-schema['title'].widget = False
+IdField = schema['id']
+IdField.widget.visible = False
+TitleField = schema['title']
+TitleField.widget.visible = False
 
 class AnalysisService(BaseContent):
     security = ClassSecurityInfo()
@@ -258,7 +266,8 @@ class AnalysisService(BaseContent):
 
     security.declarePublic('Title')
     def Title(self):
-        return self.getServiceTitle()
+        t = self.getServiceTitle()
+        return t and t or ''
 
 
     security.declarePublic('getDiscountedPrice')
