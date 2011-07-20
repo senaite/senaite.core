@@ -64,7 +64,7 @@
 <table cellpadding="0" cellspacing="0" class="listing analysisrequest add nosort">
 <thead>
 	<!-- Contact -->
-	<tr>
+	<tr tal:define="cc_contact python:hasattr(context, 'getCCContact') and context.getCCContact() or ''">
 		<th colspan="2" class="rowheader">
 			<span i18n:translate="label_contact_person">Contact person</span>
 			&nbsp;<span class="fieldRequired"/>
@@ -92,9 +92,9 @@
 			i18n:domain="bika"
 			tal:attributes="tabindex tabindex/next;"/>
 		<input DISABLED style="width:60%" class="noborder" value="" id="cc_titles"
-			tal:attributes="value python:edit and ','.join([c.Title() for c in context.getCCContact()])"/>
+			tal:attributes="value python:edit and ','.join([c.Title() for c in context.getCCContact()]) or ''"/>
 		<input type="hidden" id="cc_uids" name="cc_uids"
-			tal:attributes="value python:edit and ','.join([c.UID() for c in context.getCCContact()])"/>
+			tal:attributes="value python:edit and ','.join([c.UID() for c in context.getCCContact()]) or ''"/>
 		</td>
 	</tr>
 	<!-- CC Emails -->

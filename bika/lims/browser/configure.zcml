@@ -3,44 +3,23 @@
     xmlns:browser="http://namespaces.zope.org/browser"
     i18n_domain="bika.lims">
 
-    <include file="client.zcml"/>
-    <include file="analysisrequest.zcml"/>
-    <include file="worksheet.zcml"/>
-    <include file="sample.zcml"/>
-    <include file="contact.zcml"/>
-    <include file="viewlets.zcml"/>
-    <include package=".fields"/>
-    <include package=".widgets"/>
+  <include file="analysisrequest.zcml"/>
+  <include file="calcs.zcml"/>
+  <include file="client.zcml"/>
+  <include file="contact.zcml"/>
+  <include file="referencesample.zcml"/>
+  <include file="referencesupplier.zcml"/>
+  <include file="sample.zcml"/>
+  <include file="viewlets.zcml"/>
+  <include file="worksheet.zcml"/>
+  <include package=".fields"/>
+  <include package=".widgets"/>
 
   <browser:page
       for="*"
       name="load_setup_data"
       class="bika.lims.browser.load_setup_data.LoadSetupData"
       permission="bika.lims.ManageBika"
-      layer="bika.lims.interfaces.IBikaLIMS"
-    />
-
-    <browser:page
-      for="Products.CMFPlone.interfaces.IPloneSiteRoot"
-      name="analysisrequests"
-      class="bika.lims.browser.analysisrequest.AnalysisRequestsView"
-      permission="zope.Public"
-      layer="bika.lims.interfaces.IBikaLIMS"
-    />
-
-    <browser:page
-      for="Products.CMFPlone.interfaces.IPloneSiteRoot"
-      name="samples"
-      class="bika.lims.browser.sample.SamplesView"
-      permission="zope.Public"
-      layer="bika.lims.interfaces.IBikaLIMS"
-    />
-
-    <browser:page
-      for="*"
-      name="analysis_entry"
-      class="bika.lims.browser.calcs.AJAXCalculateAnalysisEntry"
-      permission="zope.Public"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 

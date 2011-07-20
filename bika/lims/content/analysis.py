@@ -38,11 +38,14 @@ schema = BikaSchema.copy() + Schema((
             i18n_domain = I18N_DOMAIN,
         )
     ),
+    ComputedField('ServiceUID',
+        index = 'FieldIndex',
+        expression = 'context.getService().UID()',
+    ),
     ComputedField('Category',
         index = 'FieldIndex:brains',
         expression = 'context.Service.getCategoryName()',
     ),
-
     ReferenceField('Attachment',
         multiValued = 1,
         allowed_types = ('Attachment',),

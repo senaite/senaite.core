@@ -49,11 +49,8 @@ jQuery( function($) {
     type="submit"
     name="delARAttachment:method"
     value=""
-    tabindex=""
     title="delete"
-    tal:condition="deleteable"
-    tal:attributes="
-        tabindex tabindex/next"/>
+    tal:condition="deleteable"/>
 <input type="hidden" name="ARAttachment" value=""
     tal:attributes="value attachment/UID"/>
 <tal:attachment
@@ -69,14 +66,14 @@ jQuery( function($) {
 <a href=""  title="Click to download"
     tal:attributes="href string:${attachment/absolute_url}/at_download/AttachmentFile"
     tal:content=filename>Filename</a>
-<a href="" 
+<a href=""
     tal:condition="update_attachments"
     tal:attributes="href string:${attachment/absolute_url}/attachment_edit">
 <span class="discreet" tal:content="type">type</span>
 <span class="discreet" tal:content="mimetype">mimetype</span> &mdash;
 <span class="discreet" tal:content="filesize">0Kb</span>
 </a>
-<a href="" 
+<a href=""
     tal:condition="not: update_attachments"
     tal:attributes="href string:${attachment/absolute_url}/attachment_view">
 <span class="discreet" tal:content="type">type</span>
@@ -85,7 +82,7 @@ jQuery( function($) {
 </a>
 </tal:attachment>
 </form>
-</tal:repeat> 
+</tal:repeat>
 </div>
 
 <div metal:define-macro="analysis_attachments_list"
@@ -100,12 +97,10 @@ jQuery( function($) {
     type="submit"
     name="delARAttachment:method"
     value=""
-    tabindex=""
     title="delete"
     tal:condition="deleteable"
     tal:attributes="
-        onclick string:this.form.AnalysisAttachment.value = '${attachment/UID}';
-        tabindex tabindex/next"/>
+        onclick string:this.form.AnalysisAttachment.value = '${attachment/UID}'"/>
 <tal:attachment
     tal:define="file python:attachment.getAttachmentFile();
                 filename file/filename | nothing;
@@ -119,14 +114,14 @@ jQuery( function($) {
 <a href=""  title="Click to download"
     tal:attributes="href string:${attachment/absolute_url}/at_download/AttachmentFile"
     tal:content=filename>Filename</a>
-<a href="" 
+<a href=""
     tal:condition="update_attachments"
     tal:attributes="href string:${attachment/absolute_url}/attachment_edit">
 <span class="discreet" tal:content="type">Filename</span>
 <span class="discreet" tal:content="mimetype">ContentType</span> &mdash;
 <span class="discreet" tal:content="filesize">0Kb</span>
 </a>
-<a href="" 
+<a href=""
     tal:condition="not: update_attachments"
     tal:attributes="href string:${attachment/absolute_url}/attachment_view">
 <span class="discreet" tal:content="type">Filename</span>
@@ -135,7 +130,7 @@ jQuery( function($) {
 </a>
 </tal:attachment>
 </div>
-</tal:repeat> 
+</tal:repeat>
 </div>
 
 <div metal:define-macro="attachments_update">
@@ -161,15 +156,14 @@ jQuery( function($) {
     i18n:translate="label_analysis">Analysis</span>
 </td></tr>
 <tr><td>
-    <select name="AttachmentType" 
-        tal:attributes="tabindex tabindex/next;">
-    <tal:item 
+    <select name="AttachmentType">
+    <tal:item
         tal:define="
             vocab python:here.portal_catalog(portal_type='AttachmentType');
             sort_on python:(('Title', 'nocase', 'asc'),);
             vocab python:sequence.sort(vocab, sort_on);"
         tal:repeat="item vocab">
-    <option 
+    <option
         tal:attributes="value item/UID;"
         tal:content="item/Title"></option>
     </tal:item>
@@ -179,12 +173,11 @@ jQuery( function($) {
 <td>
 <tal:permitted tal:condition="analysis_attach_allowed">
 <tal:analyses tal:condition="analyses">
-    <select name="Analysis" 
-        tal:attributes="tabindex tabindex/next;">
+    <select name="Analysis">
     <option selected="selected"
         tal:condition="ar_attach_allowed"
         tal:attributes="value python:None"></option>
-    <tal:item 
+    <tal:item
         tal:repeat="item analyses">
     <option
         tal:attributes="value item/UID;"
@@ -209,10 +202,7 @@ jQuery( function($) {
     type="submit"
     name="addARAttachment:method"
     value="Add"
-    tabindex=""
-    i18n:attributes="value"
-    tal:attributes="
-        tabindex tabindex/next"/>
+    i18n:attributes="value"/>
 
 </form>
 </div>
@@ -237,11 +227,9 @@ jQuery( function($) {
 <tal:services tal:condition="attach_services"
         tal:define="global last_uid python:None">
     <select name="Service" id="Service"
-            onchange="enableAddAttachment('Service')"
-        tal:attributes="
-            tabindex tabindex/next">
+            onchange="enableAddAttachment('Service')">
     <option value='' selected></option>
-    <tal:item 
+    <tal:item
         tal:repeat="item attach_services">
     <tal:nodups
         tal:condition="python:not item.UID() == last_uid">
@@ -254,21 +242,19 @@ jQuery( function($) {
 
     </select>
 </tal:services>
-</td> 
+</td>
 <td>
 <span i18n:translate="label_or">or</span>
-</td> 
+</td>
 <td>
 <span tal:condition="attach_analyses"
     i18n:translate="label_analysis">Analysis</span>
 <br/>
 <tal:analyses tal:condition="attach_analyses">
     <select name="Analysis" id="Analysis"
-        onchange="enableAddAttachment('Analysis')"
-        tal:attributes="
-            tabindex tabindex/next">
+        onchange="enableAddAttachment('Analysis')">
     <option value='' selected></option>
-    <tal:item 
+    <tal:item
         tal:repeat="item attach_analyses">
     <option
         tal:condition="python:wtool.getInfoFor(item, 'review_state', '') in ['assigned', 'to_be_verified']"
@@ -285,15 +271,14 @@ jQuery( function($) {
 <td colspan="2">
 <span i18n:translate="label_attachment_type">Attachment Type</span>
 <br/>
-    <select name="AttachmentType" 
-        tal:attributes="tabindex tabindex/next;">
-    <tal:item 
+    <select name="AttachmentType">
+    <tal:item
         tal:define="
             vocab python:here.portal_catalog(portal_type='AttachmentType');
             sort_on python:(('Title', 'nocase', 'asc'),);
             vocab python:sequence.sort(vocab, sort_on)"
         tal:repeat="item vocab">
-    <option 
+    <option
         tal:attributes="value item/UID;"
         tal:content="item/Title"></option>
     </tal:item>
@@ -316,10 +301,7 @@ jQuery( function($) {
     id="addButton"
     name="addWSAttachment:method"
     value="Add"
-    tabindex=""
-    i18n:attributes="value"
-    tal:attributes="
-        tabindex tabindex/next"/>
+    i18n:attributes="value"/>
 </td>
 </tr>
 </table>
@@ -342,7 +324,7 @@ jQuery( function($) {
     tal:content=filename>Filename</a>
 </tal:attachment>
 </div>
-</tal:repeat> 
+</tal:repeat>
 </div>
 
 </body>

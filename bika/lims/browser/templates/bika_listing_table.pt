@@ -1,11 +1,7 @@
-<div class="folderlisting-main-table" i18n:domain="bika">
-
-<metal:listing
-	define-macro="folder_listing"
-	tal:define="
-		nosortclass view/get_nosort_class;
-		review_state python:[t for t in view.review_states if t['id'] == request.get('review_state', 'all')][0];
-		portal context/@@plone_portal_state/portal;">
+<div class="folderlisting-main-table" tal:define="
+	nosortclass view/get_nosort_class;
+	review_state python:[t for t in view.review_states if t['id'] == request.get('review_state', 'all')][0];
+	portal context/@@plone_portal_state/portal;">
 
 <tal:comment replace="nothing">***************
 Workflow review state selector
@@ -441,11 +437,10 @@ Editable - result field
 
 	<tal:transitions
 		tal:condition="python: review_state.has_key('transitions') and view.items"
-			tal:repeat="transition review_state/transitions">
-			<input class="context transition_action"
+		tal:repeat="transition review_state/transitions">
+		<input class="context transition_action"
 			type="submit"
-				name="transition_action"
-				tal:attributes="value transition;" />
-				</tal:transitions>
-		</metal:listing>
-	</div>
+			name="transition_action"
+			tal:attributes="value transition;" />
+	</tal:transitions>
+</div>

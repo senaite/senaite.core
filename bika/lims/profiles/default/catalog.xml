@@ -145,6 +145,9 @@
  <index name="getSampleTypeTitle" meta_type="FieldIndex">
   <indexed_attr value="getSampleTypeTitle"/>
  </index>
+ <index name="getServiceUID" meta_type="FieldIndex">
+  <indexed_attr value="getServiceUID"/>
+ </index>
  <index name="getStatus" meta_type="FieldIndex">
   <indexed_attr value="getStatus"/>
  </index>

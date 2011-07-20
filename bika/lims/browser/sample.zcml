@@ -5,6 +5,14 @@
     i18n_domain="bika">
 
     <browser:page
+      for="Products.CMFPlone.interfaces.IPloneSiteRoot"
+      name="samples"
+      class="bika.lims.browser.sample.SamplesView"
+      permission="zope.Public"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
       for="bika.lims.interfaces.ISample"
       name="base_view"
       class="bika.lims.browser.sample.SampleViewView"

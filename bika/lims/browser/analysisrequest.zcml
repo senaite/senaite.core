@@ -5,6 +5,14 @@
     i18n_domain="bika">
 
     <browser:page
+      for="Products.CMFPlone.interfaces.IPloneSiteRoot"
+      name="analysisrequests"
+      class="bika.lims.browser.analysisrequest.AnalysisRequestsView"
+      permission="zope.Public"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
       for="bika.lims.interfaces.IClient"
       name="analysisrequest_add"
       class="bika.lims.browser.analysisrequest.AnalysisRequestAddView"
@@ -13,26 +21,8 @@
     />
 
     <browser:page
-      for="*"
-      name="analysisrequest_submit"
-      class="bika.lims.browser.analysisrequest.AJAXAnalysisRequestSubmit"
-      permission="zope.Public"
-      layer="bika.lims.interfaces.IBikaLIMS"
-    />
-
-    <browser:page
-      for="*"
-      name="submit_results"
-      class="bika.lims.browser.analysisrequest.AJAXAnalysisRequestSubmitResults"
-      permission="zope.Public"
-      layer="bika.lims.interfaces.IBikaLIMS"
-    />
-
-
-
-<browser:page
       for="bika.lims.interfaces.IAnalysisRequest"
-      name="base_view"
+      name="view_ar"
       class="bika.lims.browser.analysisrequest.AnalysisRequestViewView"
       permission="zope.Public"
       layer="bika.lims.interfaces.IBikaLIMS"
@@ -96,9 +86,17 @@
 
     <browser:page
       for="*"
-      name="analysisrequest_select_cc"
-      class="bika.lims.browser.analysisrequest.AnalysisRequestSelectCCView"
-      permission="bika.lims.ManageAnalysisRequests"
+      name="analysisrequest_submit"
+      class="bika.lims.browser.analysisrequest.AJAXAnalysisRequestSubmit"
+      permission="zope.Public"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
+      for="*"
+      name="submit_results"
+      class="bika.lims.browser.analysisrequest.AJAXAnalysisRequestSubmitResults"
+      permission="zope.Public"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
@@ -110,6 +108,16 @@
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
+    <browser:page
+      for="*"
+      name="analysisrequest_select_cc"
+      class="bika.lims.browser.analysisrequest.AnalysisRequestSelectCCView"
+      permission="bika.lims.ManageAnalysisRequests"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
+<!--    When a contact is selected; get their default CCs automatically-->
+<!--    Also run when the form is first rendered-->
     <browser:page
       for="*"
       name="analysisrequest_contact_ccs"

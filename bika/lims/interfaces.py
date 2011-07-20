@@ -27,10 +27,10 @@ class IWorksheet(Interface):
     """Worksheet"""
 
 class IReferenceSupplierFolder(Interface):
-    """WorksheetFolder"""
+    """Reference Suppliers Folder"""
 
 class IInvoiceFolder(Interface):
-    """ReferenceSupplierFolder"""
+    """Invoices Folder"""
 
 class IHaveNoBreadCrumbs(Interface):
     """Items which do not display breadcrumbs"""

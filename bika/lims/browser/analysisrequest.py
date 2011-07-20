@@ -1,23 +1,22 @@
 from AccessControl import Unauthorized
-from bika.lims.browser.client import ClientAnalysisRequestsView
 from DateTime import DateTime
+from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import transaction_note
 from Products.Five.browser import BrowserView
-from bika.lims.browser.bika_listing import BikaListingView
-from bika.lims.config import POINTS_OF_CAPTURE
-from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import bikaMessageFactory as _
-from zope.component import getMultiAdapter
+from bika.lims.browser.bika_listing import BikaListingView
+from bika.lims.browser.client import ClientAnalysisRequestsView
+from bika.lims.config import POINTS_OF_CAPTURE
 from decimal import Decimal
-from zope.interface import implements
-from plone.app.content.browser.interfaces import IFolderContentsView
 from operator import itemgetter
-import plone
-#from plone.protect import CheckAuthenticator
+from plone.app.content.browser.interfaces import IFolderContentsView
+from zope.component import getMultiAdapter
+from zope.interface import implements,alsoProvides
 import json
+import plone
 
 class AnalysisRequestAnalysesView(BikaListingView):
     """ Displays a list of Analyses in a table.
@@ -402,6 +401,7 @@ class AnalysisRequestContactCCs(BrowserView):
         returned here, and the #cc_titles textbox is filled with Contact Titles
     """
     def __call__(self):
+        #XXXplone.protect.CheckAuthenticator(self.request)
         rc = getToolByName(self.context, 'reference_catalog')
         uid = self.request.form.keys() and self.request.form.keys()[0] or None
         if not uid:
