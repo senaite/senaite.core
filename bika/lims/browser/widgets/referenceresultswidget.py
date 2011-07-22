@@ -92,5 +92,3 @@ registerWidget(ReferenceResultsWidget,
                title = 'Reference definition results',
                description = ('Reference definition results.'),
                )
-
-#registerPropertyType('default_search_index', 'string', AnalysisSpecsWidget)

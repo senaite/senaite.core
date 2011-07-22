@@ -1,0 +1,24 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:i18n="http://namespaces.zope.org/i18n"
+    i18n_domain="bika">
+
+    <!-- return ReferenceResultsField contents for a selected reference definition -->
+    <browser:page
+      for="bika.lims.interfaces.IReferenceSample"
+      name="get_reference_definition_results"
+      class="bika.lims.browser.referencesample.AJAXGetReferenceDefinitionResults"
+      permission="zope.Public"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
+      for="bika.lims.interfaces.IReferenceSample"
+      name="qc"
+      class="bika.lims.browser.referencesample.QCView"
+      permission="zope.Public"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
+</configure>

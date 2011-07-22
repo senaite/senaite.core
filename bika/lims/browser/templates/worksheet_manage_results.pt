@@ -32,18 +32,8 @@
         specification python:request.get('specification', 'lab');
         review_state here/getWorkflowState;
         open_ws python:review_state == 'open';
-        attach_analyses python:[a for a in analyses if wtool.getInfoFor(a, 'review_state', '') in ['assigned', 'to_be_verified']];
-        attach_services python:[a.getService() for a in attach_analyses if a.getService().getAttachmentOption() in ['p', 'r']];
-        attach_analyses python:[a for a in attach_analyses if a.getService() in attach_services];
-        sort_on python:(('Title', 'nocase', 'asc'),);
-        attach_services python:view.sequence.sort(attach_services, sort_on);
-        analysis_attach_allowed here/bika_settings/getAnalysisAttachmentsPermitted;
-        update_attachments python:True">
+        sort_on python:(('Title', 'nocase', 'asc'),);">
 
-
-  <div tal:condition="python:analysis_attach_allowed and attach_services">
-    <metal:block use-macro="here/attachments/macros/ws_attachments"/>
-  </div>
 
   <span tal:replace="structure python:view.AnalysesView.contents_table()"/>
 

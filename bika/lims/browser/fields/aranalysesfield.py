@@ -84,7 +84,6 @@ class ARAnalysesField(ObjectField):
                         Unit = service.getUnit(),
                     )
 
-
             review_state = wf.getInfoFor(analysis, 'review_state', '')
             if ar_state in ('sample_received', 'assigned') and \
                 review_state == 'sample_due':
@@ -107,7 +106,7 @@ class ARAnalysesField(ObjectField):
             vocab.append((service.UID(), service.Title()))
         return vocab
 
-    security.declarePublic('Vocabulary')
+    security.declarePublic('Services')
     def Services(self):
         """ Return analysis services
         """
@@ -116,7 +115,6 @@ class ARAnalysesField(ObjectField):
                 for service in self.portal_catalog(
                 portal_type = 'AnalysisService')]
         return self._v_services
-
 
 registerField(ARAnalysesField,
               title = 'Analyses',

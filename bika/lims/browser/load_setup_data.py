@@ -36,14 +36,13 @@ class LoadSetupData():
         logger.info("load_setup_data: Reference Suppliers"); self.ReferenceSuppliers()
         logger.info("load_setup_data: Attachment Types"); self.AttachmentTypes()
         logger.info("load_setup_data: Products"); self.Products()
-#        logger.info("load_setup_data: Worksheet Templates"); self.WorksheetTemplates()
+        logger.info("load_setup_data: Worksheet Templates"); self.WorksheetTemplates()
         logger.info("load_setup_data: Prefixes"); self.Prefixes()
 
         self.context.plone_utils.addPortalMessage(_(u'Setup data loaded.'), 'info')
 
         plone = getMultiAdapter((self, self.request), name = "plone_portal_state").portal()
         self.request.response.redirect(plone.absolute_url())
-
 
     def Laboratory(self):
         name = 'Bika Laboratory'
@@ -69,11 +68,11 @@ class LoadSetupData():
             fullname = fullname.decode('latin-1').encode('utf-8').strip()
             try:
                 pr.addMember(username,
-                         password,
-                         properties = {'username': username,
-                                       'email': email,
-                                       'fullname': fullname}
-                )
+                             password,
+                             properties = {'username': username,
+                                           'email': email,
+                                           'fullname': fullname}
+                             )
                 group_id = '%ss' % role
                 group = pg.getGroupById(group_id)
                 group.addMember(username)
@@ -216,7 +215,7 @@ class LoadSetupData():
             ('Plant', 'Production point'),
             ('Bag', 'Retail sample'),
             ('Swab', 'Biomedical sample'),
-            )
+        )
         for title, description in samplepoints:
             id = folder.generateUniqueId('SamplePoint')
             folder.invokeFactory(id = id, type_name = 'SamplePoint')
@@ -381,7 +380,7 @@ class LoadSetupData():
              [{'id':'TV', 'title':'Titr Vol', 'type':'int', 'value':0, 'unit':'g'},
               {'id':'TF', 'title':'Titr Fact', 'type':'int', 'value':0, 'unit':''}],
              '%(TV)f * %(TF)f',
-            ),
+             ),
             ('Weight Loss',
              'Weight loss as % moisture',
              [],
@@ -389,7 +388,7 @@ class LoadSetupData():
               {'id':'NM', 'title':'Nett Mass', 'type':'int', 'value':0, 'unit':'g'},
               {'id':'VM', 'title':'Vessel Mass', 'type':'int', 'value':0, 'unit':'g'}],
              '( %(GM)f - %(NM)f ) / ( %(GM)f - %(VM)f ) * 100',
-            ),
+             ),
             ('Weight Loss (tare)',
              'Weight loss (tare) as % moisture',
              [],
@@ -397,7 +396,7 @@ class LoadSetupData():
               {'id':'NM', 'title':'Nett Mass', 'type':'int', 'value':0, 'unit':'g'},
               {'id':'VM', 'title':'Vessel Mass', 'type':'int', 'value':0, 'unit':'g'}],
              '(( %(VM)f + %(SM)f - %(NM)f ) / %(SM)f ) * 100',
-            ),
+             ),
             ('Residual Weight',
              'Residual Weight as % ash',
              [],
@@ -405,7 +404,7 @@ class LoadSetupData():
               {'id':'NM', 'title':'Nett Mass', 'type':'int', 'value':0, 'unit':'g'},
               {'id':'VM', 'title':'Vessel Mass', 'type':'int', 'value':0, 'unit':'g'}],
              '(( %(NM)f - %(VM)f ) / ( %(GM)f - %(VM)f )) * 100',
-            ),
+             ),
             ('Residual Weight (tare)',
              'Residual Weight (tare) as % ash',
              [],
@@ -413,7 +412,7 @@ class LoadSetupData():
               {'id':'NM', 'title':'Nett Mass', 'type':'int', 'value':0, 'unit':'g'},
               {'id':'VM', 'title':'Vessel Mass', 'type':'int', 'value':0, 'unit':'g'}],
              '(( %(NM)f - %(VM)f ) / %(SM)f ) * 100',
-            ),
+             ),
         )
         self.CreateCalculationObjects(calcs)
 
@@ -421,34 +420,34 @@ class LoadSetupData():
         calcs = (
             ('Dry Matter',
              'Percentage dry matter. Dependent on Moisture Analysis',
-             ['Moisture'],
+             ['Moist'],
              [],
              "100 - %(Moisture)f",
-            ),
+             ),
             ('Apparent Metabolizable Energy',
              'AME used for poultry feed as no correction is made for faecal or endogenous energy losses',
-             ['Protein Crude', 'Ether Extract', 'Starch', 'Sugars'],
+             ['CP', 'EE', 'STA', 'SUG'],
              [],
              "%(CP)f + %(EE)f + %(STA)f + %(SUG)f",
-            ),
+             ),
             ('Metabolizable Energy',
              'ME used for ruminant feeds',
-             ['Protein Crude', 'Ether Extract', 'Fibre - Crude', 'Ash'],
+             ['CP', 'EE', 'CF', 'Ash'],
              [],
              "12 + ( %(CP)f + %(EE)f ) - %(CF)f + %(Ash)f",
-            ),
+             ),
             ('Non-Structural Carbohydrates',
              'NSC is used for dairy cattle',
-             ['Fibre - NDF', 'Protein Crude', 'Ether Extract', 'Ash'],
+             ['NDF', 'CP', 'EE', 'Ash'],
              [],
              "100 - ( %(NDF)f + %(CP)f + %(EE)f + %(Ash)f )",
-            ),
+             ),
             ('Digestible Energy',
              'DE is used for pig feeds',
-             ['Protein Crude', 'Ether Extract', 'Fibre - Crude', 'Ash'],
+             ['CP', 'EE', 'CF', 'Ash'],
              [],
              "17.38 + %(CP)f + %(EE)f - %(CF)s - %(Ash)f",
-            ),
+             ),
         )
         self.CreateCalculationObjects(calcs)
 
@@ -456,7 +455,7 @@ class LoadSetupData():
         calcs = (
             ('Total Digestible Nutrients',
              'TDN % is used for ruminant feeds',
-             ['Metabolizable Energy'],
+             ['ME'],
              [],
              '%(ME)f * 6.67',
             ),
@@ -531,7 +530,7 @@ class LoadSetupData():
             obj.edit(Uncertainties = uc_out,
                      Category = category)
             obj.reindexObject()
-            self.service_objs[title] = obj.UID()
+            self.service_objs[keyword] = obj.UID()
 
     def AnalysisServices1(self):
         services = (
@@ -572,7 +571,7 @@ class LoadSetupData():
             ('lab', 'Suspended solids', 'mg/l', 5, 10, '', True, 'Suspended solid testing methods', 'SS', 2, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'Instructions for suspended solids', '2.00', '', False, 'Soil'),
             ('lab', 'TDS (calculated)', 'mg/l', 5, 10, '', False, 'Description for TDS', 'CTDS', 1, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'Instructions for calculated TDS', '2.00', '', False, 'Soil'),
             ('lab', 'Tot. Alkalinity (CaCO3)', 'mg/l', 5, 10, '', False, 'Description for determining the total alkalinity, or CaCO3 of a sample', 'CaCO3', 2, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'Instructions for total alkalinity', '0.00', '', False, 'Mold'),
-            ('lab', 'Tot. Hardness (CaCO3)', 'mg/l', 4, 16, '', False, 'Description for testing hardness - CaCO3', 'THCaCO3', 3, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'Instructions for total hardness', '0.00', '', False, 'Water'),
+            ('lab', 'Tot. Hardness (THCaCO3)', 'mg/l', 4, 16, '', False, 'Description for testing hardness - CaCO3', 'THCaCO3', 3, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'Instructions for total hardness', '0.00', '', False, 'Water'),
             ('lab', 'Urea ', 'mg/l', 2, 8, '', False, 'Description for urea testing', 'Urea', 4, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'Instructions for urea', '0.00', '', False, 'Mold'),
             ('lab', 'Zinc', 'mg/l', 5, 9, '', False, 'Description for zinc testing', 'Zn', 10, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'Instructions for zinc', '0.00', '', False, 'Soil'),
         )
@@ -689,7 +688,7 @@ class LoadSetupData():
             ('Sitroensuur', 'Byvoegings by Wyn', '1', 'kg', '13.6'),
             ('Meta Wynsteensuur', 'Byvoegings by Wyn', '1', 'kg', '90'),
             ('Cream of Tartar (Kremetart)', 'Byvoegings by Wyn', '1', 'kg', '35'),
-            )
+        )
         for title, description, volume, unit, price in products:
             id = folder.generateUniqueId('LabProduct')
             folder.invokeFactory(id = id, type_name = 'LabProduct')
@@ -704,13 +703,21 @@ class LoadSetupData():
 
     def WorksheetTemplates(self):
         templates = (
-            ('Dry food standard', ({'pos': 1, 'type': 'b', 'sub': self.ref_defs[0]},
-                                   {'pos': 2, 'type': 'c', 'sub': self.ref_defs[1]},
-                                   {'pos': 3, 'type': 'a', 'sub': ''},
-                                   {'pos': 4, 'type': 'a', 'sub': ''},
-                                   {'pos': 5, 'type': 'd', 'sub': '3'}),
-              [self.service_objs['Ash'], self.service_objs['AcidInsolubleResidue']]),
-            )
+            ('Water standard',
+             ({'pos':1, 'type':'b', 'sub':self.ref_defs[3].UID(), 'dup':''}, # distilled water
+              {'pos':2, 'type':'a', 'sub':'', 'dup':''},
+              {'pos':3, 'type':'a', 'sub':'', 'dup':''},
+              {'pos':4, 'type':'d', 'sub':'', 'dup':'1'}),
+             [self.service_objs['Ca'], # dumb list; these from 'water' category
+              self.service_objs['Clide'],
+              self.service_objs['CaCO3'],
+              self.service_objs['SO4'],
+              self.service_objs['SUG'],
+              self.service_objs['CP'],
+              self.service_objs['KOHP'],
+              self.service_objs['N'],
+              self.service_objs['SP']]),
+        )
         folder = self.context.bika_settings.bika_worksheettemplates
         for title, pos, serv  in templates:
             id = folder.generateUniqueId('WorksheetTemplate')
@@ -724,7 +731,7 @@ class LoadSetupData():
         manufacturers = (
             ('Bloggs & co', 'Manufacturers of fine products since 2008'),
             ('Fred\'s Factory', '"We make stuff" is not just a promise!'),
-            )
+        )
         folder = self.context.bika_settings.bika_referencemanufacturers
         for title, description in manufacturers:
             id = folder.generateUniqueId('ReferenceManufacturer')

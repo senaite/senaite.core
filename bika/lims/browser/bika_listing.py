@@ -31,7 +31,7 @@ class BikaListingView(FolderContentsView):
     show_select_row = False
     show_select_column = False
     # batch is actually the batch itself; it's set to true here to make some bits of TAL happy.
-    batch = True
+    batch = []
     pagesize = 20
 
     def __init__(self, context, request):
@@ -117,7 +117,7 @@ class BikaListingView(FolderContentsView):
 
         results = []
         for i, obj in enumerate(self.contentsMethod(self.contentFilter)):
-            path = obj.getPath or "/".join(obj.getPhysicalPath())
+            path = hasattr(obj, 'getPath') and obj.getPath() or "/".join(obj.getPhysicalPath())
 
             # avoid creating unnecessary info for items outside the current
             # batch;  only the path is needed for the "select all" case...
@@ -130,14 +130,20 @@ class BikaListingView(FolderContentsView):
             else:
                 table_row_class = "draggable odd"
 
-            url = obj.getURL()
+            url = hasattr(obj, 'getURL') and obj.getURL() or "/".join(obj.getPhysicalPath())
             icon = plone_layout.getIcon(obj)
             type_class = 'contenttype-' + plone_utils.normalizeString(
                 obj.portal_type)
 
-            review_state = obj.review_state
+            review_state = hasattr(obj, 'review_state') and \
+                         obj.review_state or \
+                         portal_workflow.getInfoFor(obj, 'review_state')
+
             state_class = 'state-' + plone_utils.normalizeString(review_state)
-            relative_url = obj.getURL(relative = True)
+
+            relative_url = hasattr(obj, 'getURL') and \
+                         obj.getURL(relative=True) or \
+                         "/".join(obj.getPhysicalPath())
 
             fti = portal_types.get(obj.portal_type)
             if fti is not None:
@@ -152,12 +158,6 @@ class BikaListingView(FolderContentsView):
                 obj.ModificationDate, long_format = 1)
 
             obj_type = obj.Type
-            if obj.portal_type in use_view_action:
-                view_url = url + '/view'
-            elif obj.is_folderish:
-                view_url = url + "/folder_contents"
-            else:
-                view_url = url
 
             is_browser_default = len(browser_default[1]) == 1 and (
                 obj.id == browser_default[1][0])
@@ -167,7 +167,6 @@ class BikaListingView(FolderContentsView):
                 url = url,
                 url_href_title = url_href_title,
                 id = obj.getId,
-                quoted_id = urllib.quote_plus(obj.getId),
                 path = path,
                 title_or_id = safe_unicode(pretty_title_or_id(plone_utils, obj)),
                 obj_type = obj_type,
@@ -176,22 +175,21 @@ class BikaListingView(FolderContentsView):
                 icon = icon.html_tag(),
                 type_class = type_class,
                 review_state = review_state,
-                state_title = portal_workflow.getTitleForStateOnType(review_state,
-                                                           obj_type),
+                state_title = portal_workflow.getTitleForStateOnType(review_state, obj_type),
                 state_class = state_class,
                 is_browser_default = is_browser_default,
-                folderish = obj.is_folderish,
                 relative_url = relative_url,
-                view_url = view_url,
+                view_url = url,
                 table_row_class = table_row_class,
-                is_expired = isExpired(obj),
             )
             # Insert all fields from the schema, if they are in the brains
             # XXX LIMIT TO ONLY NECESSARY VALUES (columns displayed)
 
-            for field in obj.schema():
-                if not results_dict.get(field):
-                    results_dict[field] = getattr(obj, field)
+            try:
+                for field in obj.schema():
+                    if not results_dict.get(field):
+                        results_dict[field] = getattr(obj, field)
+            except TypeError: pass
 
             results.append(results_dict)
 

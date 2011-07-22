@@ -13,6 +13,7 @@ import plone, json
 
 class WorksheetAnalysesView(AnalysisRequestAnalysesView):
     columns = {
+        'Service': {'title': _('Analysis')},
         'Pos': {'title': _('Pos')},
         'Client': {'title': _('Client')},
         'Order': {'title': _('Order')},
@@ -35,18 +36,22 @@ class WorksheetAnalysesView(AnalysisRequestAnalysesView):
         # get worksheet analyses as a UID keyed dictionary
         analyses = {}
         for analysis in super(WorksheetAnalysesView, self).folderitems():
-            analyses[analysis.UID()] = analysis
+            # brain is object, not brain. :(
+            analyses[analysis['brain'].UID()] = analysis
 
         # re-order items and add WS specific fields
+        items = []
         for slot in self.context.getWorksheetLayout():
             item = analyses[slot['uid']]
+            item['UID'] = slot['uid']
             item['Pos'] = slot['pos']
-            item['Client'] = item.aq_parent.aq_parent.Title()
-            item['Order'] = item.aq_parent.getClientOrderNumber()
-            item['ServiceTitle'] = item.getService().Title()
-
-        return analyses
-
+            item['Client'] = item['brain'].aq_parent.aq_parent.Title()
+            item['Order'] = hasattr(item['brain'].aq_parent, 'getClientOrderNumber') and\
+                            item['brain'].aq_parent.getClientOrderNumber() or \
+                            ''
+            item['ServiceTitle'] = item['brain'].getService().Title()
+            items.append(item)
+        return items
 
 
 class WorksheetFolderView(BikaListingView):

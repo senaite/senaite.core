@@ -1,49 +1,49 @@
 <?xml version="1.0"?>
 <object name="ReferenceSupplier"
-   meta_type="Factory-based Type Information with dynamic views"
-   xmlns:i18n="http://xml.zope.org/namespaces/i18n">
- <property name="title">Reference Supplier</property>
- <property name="description"></property>
- <property name="icon_expr">string:${portal_url}/images/referencesupplier.png</property>
- <property name="content_meta_type">ReferenceSupplier</property>
- <property name="product">bika.lims</property>
- <property name="factory">addReferenceSupplier</property>
- <property name="add_view_expr"></property>
- <property name="link_target"></property>
- <property name="global_allow">False</property>
- <property name="filter_content_types">False</property>
- <property name="allowed_content_types">
-  <element value="ReferenceSample"/>
-  <element value="SupplierContact"/>
- </property>
- <property name="allow_discussion">False</property>
- <property name="default_view_fallback">False</property>
+	meta_type="Factory-based Type Information with dynamic views"
+	xmlns:i18n="http://xml.zope.org/namespaces/i18n">
+<property name="title">Reference Supplier</property>
+<property name="description"></property>
+<property name="icon_expr">string:${portal_url}/images/referencesupplier.png</property>
+<property name="content_meta_type">ReferenceSupplier</property>
+<property name="product">bika.lims</property>
+<property name="factory">addReferenceSupplier</property>
+<property name="add_view_expr"></property>
+<property name="link_target"></property>
+<property name="global_allow">False</property>
+<property name="filter_content_types">True</property>
+<property name="allowed_content_types">
+	<element value="ReferenceSample"/>
+	<element value="SupplierContact"/>
+</property>
+<property name="allow_discussion">False</property>
+<property name="default_view_fallback">False</property>
 
- <alias from="(Default)" to="referencesamples"/>
+<alias from="(Default)" to="referencesamples"/>
 
- <action action_id="edit"
-         title="Edit"
-         visible="True"
-         category="object"
-         url_expr="string:${object_url}/base_edit">
-  <permission value="Modify portal content"/>
- </action>
+<action action_id="edit"
+	title="Edit"
+	visible="True"
+	category="object"
+	url_expr="string:${object_url}/base_edit">
+	<permission value="Modify portal content"/>
+</action>
 
- <action title="Contacts"
-         action_id="contacts"
-         visible="True"
-         category="object"
-         url_expr="string:${object_url}/contacts">
-  <permission value="List folder contents"/>
- </action>
+<action title="Contacts"
+	action_id="contacts"
+	visible="True"
+	category="object"
+	url_expr="string:${object_url}/contacts">
+	<permission value="List folder contents"/>
+</action>
 
- <action action_id="view"
-         title="Reference Samples"
-         visible="True"
-         category="object"
-         condition_expr=""
-         url_expr="string:${object_url}/referencesamples">
-  <permission value="View"/>
- </action>
+<action action_id="view"
+	title="Reference Samples"
+	visible="True"
+	category="object"
+	condition_expr=""
+	url_expr="string:${object_url}/referencesamples">
+	<permission value="View"/>
+</action>
 
 </object>

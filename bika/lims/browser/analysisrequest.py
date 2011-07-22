@@ -64,30 +64,36 @@ class AnalysisRequestAnalysesView(BikaListingView):
         self.interim_fields = {}
         for item in analyses:
             if not item.has_key('brain'): continue
-            obj = item['brain'].getObject()
+            # this is fugly; this view is used for worksheets also. So sometimes the list
+            # is made out of objects, not brains.
+            if hasattr(item['brain'], 'getObject'):
+                obj = item['brain'].getObject()
+            else:
+                obj = item['brain']
 
             # calculate specs - they are stored in an attribute on each row so that selecting
             # lab/client ranges can re-calculate in javascript
             # calculate specs for every analysis, since they may
             # all be for different sample types
             specs = {'client':{}, 'lab':{}}
-            if self.context.portal_type == 'AnalysisRequest':
-                proxies = pc(portal_type = 'AnalysisSpec',
-                             getSampleTypeUID = self.context.getSample().getSampleType().UID())
-            else:
-                proxies = pc(portal_type = 'AnalysisSpec',
-                             getSampleTypeUID = item.aq_parent.getSample().getSampleType().UID())
-            for spec in proxies:
-                spec = spec.getObject()
-                client_or_lab = ""
-                if spec.getClientUID() == self.context.getClientUID():
-                    client_or_lab = 'client'
-                elif spec.getClientUID() == None:
-                    client_or_lab = 'lab'
-                else:
-                    continue
-                for keyword, results_range in spec.getResultsRangeDict().items():
-                    specs[client_or_lab][keyword] = results_range
+            if obj.portal_type != 'ReferenceAnalysis':
+                if self.context.portal_type == 'AnalysisRequest':
+                    proxies = pc(portal_type = 'AnalysisSpec',
+                                 getSampleTypeUID = self.context.getSample().getSampleType().UID())
+                else: # worksheet.  XXX fix this, man.  need a seperate AnalysesView
+                    proxies = pc(portal_type = 'AnalysisSpec',
+                                 getSampleTypeUID = obj.aq_parent.getSample().getSampleType().UID())
+                for spec in proxies:
+                    spec = spec.getObject()
+                    client_or_lab = ""
+                    if spec.getClientUID() == self.context.getClientUID():
+                        client_or_lab = 'client'
+                    elif spec.getClientUID() == None:
+                        client_or_lab = 'lab'
+                    else:
+                        continue
+                    for keyword, results_range in spec.getResultsRangeDict().items():
+                        specs[client_or_lab][keyword] = results_range
 
             uid = obj.UID()
             result = obj.getResult()
@@ -105,11 +111,17 @@ class AnalysisRequestAnalysesView(BikaListingView):
             item['retested'] = obj.getRetested()
             item['specs'] = json.dumps({'client': specs['client'].has_key(keyword) and specs['client'][keyword] or [],
                                         'lab': specs['lab'].has_key(keyword) and specs['lab'][keyword] or [],})
-            item['Attachments'] = ", ".join([a.Title() for a in obj.getAttachment()])
+            if hasattr(obj, 'getAttachment'):
+                item['Attachments'] = ", ".join([a.Title() for a in obj.getAttachment()])
+            else:
+                item['Attachments'] = ''
             item['item_data'] = json.dumps(item_data)
             item['allow_edit'] = self.allow_edit or False
             item['calculation'] = calculation and True or False
-            item['result_in_range'] = obj.result_in_range(result)
+            if hasattr(obj, 'result+in_range'):
+                item['result_in_range'] = obj.result_in_range(result)
+            else:
+                item['result_in_range'] = True
             if choices: item['ResultOptions'] = choices
 
             # Add this analysis' interim fields to the list
@@ -888,7 +900,6 @@ class AJAXAnalysisRequestSubmit():
                 if values.has_key('SampleID') and wftool.getInfoFor(sample, 'review_state') != 'due':
                     wftool.doActionFor(ar, 'receive')
 
-            # XXX ARAnalysesField must move to content.analysis
             ar.setAnalyses(Analyses, prices = prices)
 
             if came_from == "add":

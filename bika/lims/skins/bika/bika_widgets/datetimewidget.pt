@@ -1,0 +1,38 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html
+    xmlns:tal="http://xml.zope.org/namespaces/tal"
+    xmlns:metal="http://xml.zope.org/namespaces/metal"
+    i18n:domain="plone">
+
+<body>
+
+<metal:view_macro define-macro="view">
+  <div metal:use-macro="here/widgets/string/macros/view" />
+</metal:view_macro>
+
+<metal:search_macro define-macro="search">
+  <div metal:use-macro="here/widgets/string/macros/edit"/>
+</metal:search_macro>
+
+<metal:edit_macro define-macro="edit">
+  <metal:use use-macro="field_macro | context/widgets/field/macros/edit">
+    <input metal:fill-slot="widget_body"
+           type="text"
+           name=""
+           class="blurrable firstToFocus"
+           id=""
+           value=""
+           size="30"
+           tal:attributes="name fieldName;
+                           id fieldName;
+                           value value;
+                           size widget/size|nothing;
+                           DatePicker string:1;
+                           maxlength widget/maxlength|nothing;"/>
+  </metal:use>
+</metal:edit_macro>
+
+</body>
+
+</html>

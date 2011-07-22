@@ -112,7 +112,7 @@ schema = BikaSchema.copy() + Schema((
             visible = {'edit':'hidden'},
         ),
     ),
-    ReferenceResultsField('Results',
+    ReferenceResultsField('ReferenceResults',
         required = 1,
         widget = ReferenceResultsWidget(
             label = "Reference Results",
@@ -162,8 +162,8 @@ class ReferenceSample(BaseFolder):
     def getSpecCategories(self):
         tool = getToolByName(self, REFERENCE_CATALOG)
         categories = []
-        for spec in self.getResults():
-            service = tool.lookupObject(spec['service'])
+        for spec in self.getReferenceResults():
+            service = tool.lookupObject(spec['uid'])
             if service.getCategoryUID() not in categories:
                 categories.append(service.getCategoryUID())
         return categories
@@ -171,8 +171,8 @@ class ReferenceSample(BaseFolder):
     security.declarePublic('getResultsRangeDict')
     def getResultsRangeDict(self):
         specs = {}
-        for spec in self.getResults():
-            uid = spec['service']
+        for spec in self.getReferenceResults():
+            uid = spec['uid']
             specs[uid] = {}
             specs[uid]['result'] = spec['result']
             specs[uid]['min'] = spec['min']
@@ -184,8 +184,8 @@ class ReferenceSample(BaseFolder):
         tool = getToolByName(self, REFERENCE_CATALOG)
 
         cats = {}
-        for spec in self.getResults():
-            service = tool.lookupObject(spec['service'])
+        for spec in self.getReferenceResults():
+            service = tool.lookupObject(spec['uid'])
             service_title = service.Title()
             category = service.getCategoryName()
             if not cats.has_key(category):
@@ -229,8 +229,8 @@ class ReferenceSample(BaseFolder):
     security.declarePublic('getReferenceResult')
     def getReferenceResult(self, service_uid):
         """ return the desired result for a specific service """
-        for spec in self.getResults():
-            if spec['service'] == service_uid:
+        for spec in self.getReferenceResults():
+            if spec['uid'] == service_uid:
                 result = float(spec['result'])
                 min = float(spec['min'])
                 max = float(spec['max'])
@@ -246,17 +246,16 @@ class ReferenceSample(BaseFolder):
         analysis_id = self.generateUniqueId('ReferenceAnalysis')
         self.invokeFactory(id = analysis_id, type_name = 'ReferenceAnalysis')
         analysis = self._getOb(analysis_id)
-        calc_type = service.getCalculationType()
-        if calc_type:
-            calc_code = calc_type.getCalcTypeCode()
-        else:
-            calc_code = None
+        calculation = service.getCalculation()
+        interim_fields = calculation and calculation.getInterimFields() or []
+
         analysis.edit(
             ReferenceAnalysisID = analysis_id,
             ReferenceType = reference_type,
             Service = service_uid,
             Unit = service.getUnit(),
-            CalcType = calc_code,
+            Calculation = calculation,
+            InterimFields = interim_fields,
             ServiceUID = service.UID(),
         )
         analysis.reindexObject()
@@ -267,8 +266,8 @@ class ReferenceSample(BaseFolder):
         """ get all services for this Sample """
         tool = getToolByName(self, REFERENCE_CATALOG)
         services = []
-        for spec in self.getResults():
-            service = tool.lookupObject(spec['service'])
+        for spec in self.getReferenceResults():
+            service = tool.lookupObject(spec['uid'])
             services.append(service)
         return services
 

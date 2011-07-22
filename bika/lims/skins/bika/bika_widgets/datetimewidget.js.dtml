@@ -1,0 +1,7 @@
+jQuery(function($){
+$(document).ready(function(){
+
+	$('input[DatePicker="1"]').datepicker({'dateFormat': 'yy-mm-dd', showAnim: ''});
+
+});
+});
