@@ -4,18 +4,6 @@
     xmlns:i18n="http://namespaces.zope.org/i18n"
     i18n_domain="bika">
 
-    <!-- Client Folder -->
-
-    <browser:page
-      for="bika.lims.interfaces.IClientFolder"
-      name="clientfolder_contents"
-      class="bika.lims.browser.clientfolder.ClientFolderContentsView"
-      permission="bika.lims.ManageClients"
-      layer="bika.lims.interfaces.IBikaLIMS"
-    />
-
-    <!-- Individual Client Pages -->
-
     <browser:page
       for="bika.lims.interfaces.IClient"
       name="analysisrequests"
@@ -79,6 +67,5 @@
       permission="zope.Public"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
-
 
 </configure>

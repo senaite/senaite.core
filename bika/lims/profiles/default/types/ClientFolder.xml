@@ -17,7 +17,7 @@
  </property>
  <property name="allow_discussion">False</property>
  <property name="default_view_fallback">False</property>
- 
- <alias from="(Default)" to="clientfolder_contents"/>
- <alias from="view" to="clientfolder_contents"/>
+
+ <alias from="(Default)" to="base_view"/>
+ <alias from="view" to="base_view"/>
  </object>

@@ -6,12 +6,16 @@
   <include file="analysisrequest.zcml"/>
   <include file="calcs.zcml"/>
   <include file="client.zcml"/>
+  <include file="clientfolder.zcml"/>
   <include file="contact.zcml"/>
   <include file="referencesample.zcml"/>
+  <include file="referencesamples.zcml"/>
   <include file="referencesupplier.zcml"/>
+  <include file="referencesupplierfolder.zcml"/>
   <include file="sample.zcml"/>
   <include file="viewlets.zcml"/>
   <include file="worksheet.zcml"/>
+
   <include package=".fields"/>
   <include package=".widgets"/>
 

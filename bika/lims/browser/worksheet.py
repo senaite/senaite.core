@@ -6,9 +6,48 @@ from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.interfaces import IWorksheet
+from bika.lims.browser.analysisrequest import AnalysisRequestAnalysesView
 from plone.app.content.browser.interfaces import IFolderContentsView
 from zope.interface import implements
 import plone, json
+
+class WorksheetAnalysesView(AnalysisRequestAnalysesView):
+    columns = {
+        'Pos': {'title': _('Pos')},
+        'Client': {'title': _('Client')},
+        'Order': {'title': _('Order')},
+        'DueDate': {'title': _('Due Date')},
+        'Category': {'title': _('Category')},
+        'ServiceTitle': {'title': _('Analysis')},
+        'Result': {'title': _('Result')},
+        'Uncertainty': {'title': _('+-')},
+        'retested': {'title': _('Retested'), 'type':'boolean'},
+        'Attachments': {'title': _('Attachments')},
+        'state_title': {'title': _('State')},
+    }
+
+    def __init__(self, context, request, allow_edit = False, **kwargs):
+        super(WorksheetAnalysesView, self).__init__(context, request)
+        self.contentsMethod = self.context.getAllAnalyses
+        self.allow_edit = allow_edit
+
+    def folderitems(self):
+        # get worksheet analyses as a UID keyed dictionary
+        analyses = {}
+        for analysis in super(WorksheetAnalysesView, self).folderitems():
+            analyses[analysis.UID()] = analysis
+
+        # re-order items and add WS specific fields
+        for slot in self.context.getWorksheetLayout():
+            item = analyses[slot['uid']]
+            item['Pos'] = slot['pos']
+            item['Client'] = item.aq_parent.aq_parent.Title()
+            item['Order'] = item.aq_parent.getClientOrderNumber()
+            item['ServiceTitle'] = item.getService().Title()
+
+        return analyses
+
+
 
 class WorksheetFolderView(BikaListingView):
     contentFilter = {'portal_type': 'Worksheet'}
@@ -119,21 +158,21 @@ class WorksheetAddView(BrowserView):
                 # get the oldest analyses first
                 for a in pc(portal_type = 'Analysis',
                             getServiceUID = service_uids,
+                            review_state = 'sample_received',
                             sort_on = 'getDueDate'):
-#                            review_state = 'sample_received',
                     analysis = a.getObject()
                     ar = analysis.aq_parent
                     if not selected.has_key(ar.id):
                         if len(selected) < count_a:
                             selected[ar.id] = {}
-                            selected[ar.id]['a'] = []
-                            selected[ar.id]['c'] = []
+                            selected[ar.id]['analyses'] = []
+                            selected[ar.id]['services'] = []
                             selected[ar.id]['uid'] = ar.UID()
                             ars.append(ar.id)
                         else:
                             continue
-                    selected[ar.id]['a'].append(analysis.UID())
-                    selected[ar.id]['c'].append(analysis.getServiceUID())
+                    selected[ar.id]['analyses'].append(analysis.UID())
+                    selected[ar.id]['services'].append(analysis.getServiceUID())
 
                 used_ars = {}
                 for row in rows:
@@ -143,8 +182,8 @@ class WorksheetAddView(BrowserView):
                             ar = ars.pop(0)
                             used_ars[position] = {}
                             used_ars[position]['ar'] = selected[ar]['uid']
-                            used_ars[position]['serv'] = selected[ar]['c']
-                            for analysis in selected[ar]['a']:
+                            used_ars[position]['serv'] = selected[ar]['services']
+                            for analysis in selected[ar]['analyses']:
                                 analyses.append((position, analysis))
                     if row['type'] in ['b', 'c']:
                         sampletype_uid = row['sub']
@@ -211,7 +250,14 @@ class WorksheetAddView(BrowserView):
 class WorksheetManageResultsView(BrowserView):
     template = ViewPageTemplateFile("templates/worksheet_manage_results.pt")
 
+    def __init__(self, context, request):
+        super(WorksheetManageResultsView, self).__init__(context, request)
+        self.sequence = sequence
+
     def __call__(self):
+        self.AnalysesView = WorksheetAnalysesView(self.context,
+                                                  self.request,
+                                                  allow_edit = True)
         return self.template()
 
     def tabindex(self):
@@ -225,6 +271,29 @@ class WorksheetManageResultsView(BrowserView):
 
     def WorksheetLayout(self):
         return self.context.getWorksheetLayout()
+
+    def sort_analyses_on_requestid(self, analyses):
+        ## Script (Python) "sort_analyses_on_requestid"
+        ##bind container=container
+        ##bind context=context
+        ##bind namespace=
+        ##bind script=script
+        ##bind subpath=traverse_subpath
+        ##parameters=analyses
+        ##title=
+        ##
+        r = {}
+        for a in analyses:
+            ar_id = a.aq_parent.getRequestID()
+            l = r.get(ar_id, [])
+            l.append(a)
+            r[ar_id] = l
+        k = r.keys()
+        k.sort()
+        result = []
+        for ar_id in k:
+            result += r[ar_id]
+        return result
 
 class WorksheetAddAnalysisView(BikaListingView):
     content_add_actions = {}

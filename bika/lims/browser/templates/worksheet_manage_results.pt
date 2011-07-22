@@ -8,9 +8,44 @@
 <head> </head>
 <body>
 
+<metal:title fill-slot="content-title">
+  <h1>
+    <span tal:content="here/title_or_id" tal:omit-tag="">Directory Id</span>
+  </h1>
+</metal:title>
 
-<metal:content fill-slot="content-core">
-hi... this template gets deleted soon.
+<metal:description fill-slot="content-description">
+  <tal:links
+    tal:define="linkedws here/getLinkedWorksheet|nothing"
+    tal:condition="nocall:linkedws">
+  (
+    <span i18n:translate="message_linked_worksheets">linked to:</span>
+    <tal:ws tal:repeat="ws linkedws">
+      <a href="" tal:content="ws/Number" tal:attributes="href ws/absolute_url"/>
+    </tal:ws>
+  )
+  </tal:links>
+</metal:description>
+
+<metal:content fill-slot="content-core" tal:define="
+        analyses python:view.sort_analyses_on_requestid(here.getAnalyses());
+        specification python:request.get('specification', 'lab');
+        review_state here/getWorkflowState;
+        open_ws python:review_state == 'open';
+        attach_analyses python:[a for a in analyses if wtool.getInfoFor(a, 'review_state', '') in ['assigned', 'to_be_verified']];
+        attach_services python:[a.getService() for a in attach_analyses if a.getService().getAttachmentOption() in ['p', 'r']];
+        attach_analyses python:[a for a in attach_analyses if a.getService() in attach_services];
+        sort_on python:(('Title', 'nocase', 'asc'),);
+        attach_services python:view.sequence.sort(attach_services, sort_on);
+        analysis_attach_allowed here/bika_settings/getAnalysisAttachmentsPermitted;
+        update_attachments python:True">
+
+
+  <div tal:condition="python:analysis_attach_allowed and attach_services">
+    <metal:block use-macro="here/attachments/macros/ws_attachments"/>
+  </div>
+
+  <span tal:replace="structure python:view.AnalysesView.contents_table()"/>
 
 <ul>
   <li tal:repeat="record view/WorksheetLayout">

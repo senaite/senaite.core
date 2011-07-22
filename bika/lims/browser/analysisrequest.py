@@ -60,29 +60,35 @@ class AnalysisRequestAnalysesView(BikaListingView):
         pc = getToolByName(self.context, 'portal_catalog')
         analyses = BikaListingView.folderitems(self)
 
-        # calculate specs - they are stored in an attribute on each row so that selecting
-        # lab/client ranges can re-calculate in javascript
-        specs = {'client':{}, 'lab':{}}
-        proxies = pc(portal_type = 'AnalysisSpec',
-                     getSampleTypeUID = self.context.getSample().getSampleType().UID())
-        for spec in proxies:
-            spec = spec.getObject()
-            client_or_lab = ""
-            if spec.getClientUID() == self.context.getClientUID():
-                client_or_lab = 'client'
-            elif spec.getClientUID() == None:
-                client_or_lab = 'lab'
-            else:
-                continue
-            for keyword, results_range in spec.getResultsRangeDict().items():
-                specs[client_or_lab][keyword] = results_range
-
         items = []
         self.interim_fields = {}
         for item in analyses:
             if not item.has_key('brain'): continue
-
             obj = item['brain'].getObject()
+
+            # calculate specs - they are stored in an attribute on each row so that selecting
+            # lab/client ranges can re-calculate in javascript
+            # calculate specs for every analysis, since they may
+            # all be for different sample types
+            specs = {'client':{}, 'lab':{}}
+            if self.context.portal_type == 'AnalysisRequest':
+                proxies = pc(portal_type = 'AnalysisSpec',
+                             getSampleTypeUID = self.context.getSample().getSampleType().UID())
+            else:
+                proxies = pc(portal_type = 'AnalysisSpec',
+                             getSampleTypeUID = item.aq_parent.getSample().getSampleType().UID())
+            for spec in proxies:
+                spec = spec.getObject()
+                client_or_lab = ""
+                if spec.getClientUID() == self.context.getClientUID():
+                    client_or_lab = 'client'
+                elif spec.getClientUID() == None:
+                    client_or_lab = 'lab'
+                else:
+                    continue
+                for keyword, results_range in spec.getResultsRangeDict().items():
+                    specs[client_or_lab][keyword] = results_range
+
             uid = obj.UID()
             result = obj.getResult()
             service = obj.getService()
@@ -147,9 +153,9 @@ class AnalysisRequestViewView(BrowserView):
 
     def __init__(self, context, request):
         super(AnalysisRequestViewView, self).__init__(context, request)
-        self.FieldAnalysesView = AnalysisRequestAnalysesView(
+        self.FieldAnalysisRequestAnalysesView = AnalysisRequestAnalysesView(
                                 context, request, getPointOfCapture = 'field')
-        self.LabAnalysesView = AnalysisRequestAnalysesView(
+        self.LabAnalysisRequestAnalysesView = AnalysisRequestAnalysesView(
                                 context, request, getPointOfCapture = 'lab')
 
     def __call__(self):
@@ -375,9 +381,9 @@ class AnalysisRequestManageResultsView(AnalysisRequestViewView):
         wf_tool = getToolByName(self.context, 'portal_workflow')
         pc = getToolByName(self.context, 'portal_catalog')
 
-        self.FieldAnalysesView = AnalysisRequestAnalysesView(
+        self.FieldAnalysisRequestAnalysesView = AnalysisRequestAnalysesView(
                                self.context, self.request, allow_edit = True, getPointOfCapture = 'field')
-        self.LabAnalysesView = AnalysisRequestAnalysesView(
+        self.LabAnalysisRequestAnalysesView = AnalysisRequestAnalysesView(
                                self.context, self.request, allow_edit = True, getPointOfCapture = 'lab')
 
         form = self.request.form

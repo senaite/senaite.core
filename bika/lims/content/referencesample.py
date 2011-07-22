@@ -1,44 +1,43 @@
 """ReferenceSample represents a reference sample used for quality control testing
 """
-import sys
-import time
-from DateTime import DateTime
 from AccessControl import ClassSecurityInfo
-from Products.CMFCore.WorkflowCore import WorkflowException
-from Products.CMFCore import permissions
-from Products.CMFCore.utils import getToolByName
+from DateTime import DateTime
+from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.Archetypes.public import *
 from Products.Archetypes.references import HoldingReference
-from Products.Archetypes.config import REFERENCE_CATALOG
-from Products.ATExtensions.ateapi import DateTimeField, DateTimeWidget
-from bika.lims.content.bikaschema import BikaSchema
+from Products.CMFCore import permissions
+from Products.CMFCore.WorkflowCore import WorkflowException
+from Products.CMFCore.permissions import View
+from Products.CMFCore.utils import getToolByName
+from bika.lims.browser.fields import ReferenceResultsField
+from bika.lims.browser.widgets import ReferenceResultsWidget
+from bika.lims.browser.widgets import DateTimeWidget as bika_DateTimeWidget
 from bika.lims.config import I18N_DOMAIN, PROJECTNAME
 from bika.lims.config import ManageReference, ManageBika
+from bika.lims.content.bikaschema import BikaSchema
+from bika.lims.interfaces import IReferenceSample
 from bika.lims.utils import sortable_title
-from bika.lims.browser.fields import ReferenceResultsField
-from Products.CMFCore.permissions import View
+from zope.interface import implements
+import sys
+import time
 
 schema = BikaSchema.copy() + Schema((
-    StringField('ReferenceID',
-        required = 1,
-        index = 'FieldIndex',
+    StringField('ReferenceTitle',
         searchable = True,
         widget = StringWidget(
-            label = 'Reference ID',
-            label_msgid = 'label_referenceid',
-            description = 'The ID assigned to the reference sample by the lab',
-            description_msgid = 'help_referenceid',
+            label = 'Title',
+            label_msgid = 'label_referencetitle',
             i18n_domain = I18N_DOMAIN,
-            visible = {'edit':'hidden'},
         ),
     ),
-    StringField('ReferenceDescription',
-        searchable = True,
-        widget = StringWidget(
-            label = 'Reference description',
-            label_msgid = 'label_referencedescription',
-            description = 'The reference description',
-            description_msgid = 'help_referencedescription',
+    ReferenceField('ReferenceManufacturer',
+        allowed_types = ('ReferenceManufacturer',),
+        relationship = 'ReferenceSampleReferenceManufacturer',
+        referenceClass = HoldingReference,
+        widget = ReferenceWidget(
+            checkbox_bound = 1,
+            label = 'Manufacturer',
+            label_msgid = 'label_manufacturer',
             i18n_domain = I18N_DOMAIN,
         ),
     ),
@@ -56,14 +55,6 @@ schema = BikaSchema.copy() + Schema((
             i18n_domain = I18N_DOMAIN,
         ),
     ),
-    ReferenceResultsField('Results',
-        required = 1,
-    ),
-    TextField('Notes',
-        widget = TextAreaWidget(
-            label = 'Notes',
-        ),
-    ),
     ReferenceField('ReferenceDefinition',
         allowed_types = ('ReferenceDefinition',),
         relationship = 'ReferenceSampleReferenceDefinition',
@@ -75,28 +66,9 @@ schema = BikaSchema.copy() + Schema((
             i18n_domain = I18N_DOMAIN,
         ),
     ),
-    ReferenceField('ReferenceManufacturer',
-        allowed_types = ('ReferenceManufacturer',),
-        relationship = 'ReferenceSampleReferenceManufacturer',
-        referenceClass = HoldingReference,
-        widget = ReferenceWidget(
-            checkbox_bound = 1,
-            label = 'Manufacturer',
-            label_msgid = 'label_manufacturer',
-            i18n_domain = I18N_DOMAIN,
-        ),
-    ),
-    DateTimeField('ExpiryDate',
-        required = 1,
-        index = 'DateIndex',
-        widget = DateTimeWidget(
-            label = 'Expiry date',
-            label_msgid = 'label_expirydate',
-        ),
-    ),
     DateTimeField('DateSampled',
         index = 'DateIndex',
-        widget = DateTimeWidget(
+        widget = bika_DateTimeWidget(
             label = 'Date sampled',
             label_msgid = 'label_datesampled',
         ),
@@ -104,21 +76,29 @@ schema = BikaSchema.copy() + Schema((
     DateTimeField('DateReceived',
         index = 'DateIndex',
         default_method = 'current_date',
-        widget = DateTimeWidget(
+        widget = bika_DateTimeWidget(
             label = 'Date received',
             label_msgid = 'label_datereceived',
         ),
     ),
     DateTimeField('DateOpened',
         index = 'DateIndex',
-        widget = DateTimeWidget(
+        widget = bika_DateTimeWidget(
             label = 'Date opened',
             label_msgid = 'label_dateopened',
         ),
     ),
+    DateTimeField('ExpiryDate',
+        required = 1,
+        index = 'DateIndex',
+        widget = bika_DateTimeWidget(
+            label = 'Expiry date',
+            label_msgid = 'label_expirydate',
+        ),
+    ),
     DateTimeField('DateExpired',
         index = 'DateIndex',
-        widget = DateTimeWidget(
+        widget = bika_DateTimeWidget(
             label = 'Date expired',
             label_msgid = 'label_dateexpired',
             visible = {'edit':'hidden'},
@@ -126,10 +106,24 @@ schema = BikaSchema.copy() + Schema((
     ),
     DateTimeField('DateDisposed',
         index = 'DateIndex',
-        widget = DateTimeWidget(
+        widget = bika_DateTimeWidget(
             label = 'Date disposed',
             label_msgid = 'label_datedisposed',
             visible = {'edit':'hidden'},
+        ),
+    ),
+    ReferenceResultsField('Results',
+        required = 1,
+        widget = ReferenceResultsWidget(
+            label = "Reference Results",
+            label_msgid = "label_reference_results",
+            i18n_domain = I18N_DOMAIN,
+        ),
+    ),
+    TextField('Notes',
+        widget = TextAreaWidget(
+            label = 'Notes',
+            label_msgid = 'label_notes',
         ),
     ),
     ComputedField('ReferenceSupplierUID',
@@ -146,21 +140,23 @@ schema = BikaSchema.copy() + Schema((
             visible = False,
         ),
     ),
-),
-)
+))
+
+schema['title'].required = 0
+schema['title'].widget.visible = False
 
 class ReferenceSample(BaseFolder):
+    implements(IReferenceSample)
     security = ClassSecurityInfo()
     schema = schema
 
     def Title(self):
         """ Return the Reference ID as title """
-        return self.getReferenceID()
+        return self.id
 
     security.declarePublic('current_date')
     def current_date(self):
-        """ return current date """
-        return DateTime()
+        return DateTime().strftime("%Y-%m-%d")
 
     security.declarePublic('getSpecCategories')
     def getSpecCategories(self):

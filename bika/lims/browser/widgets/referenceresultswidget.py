@@ -21,8 +21,8 @@ class ReferenceResultsWidget(RecordsWidget):
     security.declarePublic('process_form')
     def process_form(self, instance, field, form, empty_marker = None,
                      emptyReturnsMarker = False):
-        """ All ResultsField.X.records: fields have keyword specified in the TAL.
-            Remove rows with no other values entered, here.
+        """ All records have have UID specified in the TAL, so they will show up as valid
+            RecordsWidget entries. We remove rows with no other values entered, here.
         """
         value = form.get(field.getName(), empty_marker)
         if value is empty_marker:
@@ -47,12 +47,10 @@ class ReferenceResultsWidget(RecordsWidget):
             CategoryTitle = service.getCategory().Title()
             key = "%s_%s"%(CategoryUID, CategoryTitle)
             if categories.has_key(key):
-                categories[key].append({'keyword': service.getKeyword(),
-                                        'title': service.Title(),
+                categories[key].append({'title': service.Title(),
                                         'uid' : service.UID()})
             else:
-                categories[key] = [{'keyword': service.getKeyword(),
-                                    'title': service.Title(),
+                categories[key] = [{'title': service.Title(),
                                     'uid': service.UID()},]
         return categories
 
@@ -64,7 +62,7 @@ class ReferenceResultsWidget(RecordsWidget):
         pc = getToolByName(self, 'portal_catalog')
         for ref in getattr(field, field.accessor)():
             service = pc(portal_type='AnalysisService',
-                         getKeyword=ref['keyword'])[0]
+                         UID=ref['uid'])[0]
             service = service.getObject()
             CategoryUID = service.getCategory().UID()
             CategoryTitle = service.getCategory().Title()

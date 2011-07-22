@@ -3,24 +3,21 @@ function expand_analysisservices(cat_key, fieldName){
 	cat_uid = cat_key.split("_")[0];
 	selectedservices = $.parseJSON($("#selected_services").val());
 	allservices = $.parseJSON($("#all_services").val());
-	$.each(allservices[cat_key], function(i,v){
+	$.each(allservices[cat_key], function(i,val){
 		if(selectedservices != null &&
-		   selectedservices[cat_key] != undefined &&
-		   selectedservices[cat_key][v.uid] != undefined ){
-			ref = selectedservices[cat_key][v.uid];
-			html = html + "<tr>" +
-				"<td>"+ref.title+"</td>"+
-				"<td><input name='ReferenceResults.keyword:records:ignore_empty' type='hidden' value='"+ref.keyword+"'/>"+
-				"<input name='ReferenceResults.result:records:ignore_empty' type='text' size='6' value='"+ref.result+"' autocomplete='off'/></td>"+
-				"<td><input name='ReferenceResults.min:records:ignore_empty' type='text' size='6' value='"+ref.min+"' autocomplete='off'/></td>"+
-				"<td><input name='ReferenceResults.max:records:ignore_empty' type='text' size='6' value='"+ref.max+"' autocomplete='off'/></td>"+
-				"<td><input name='ReferenceResults.error:records:ignore_empty' type='text' size='6' value='"+ref.error+"' autocomplete='off'/></td>";
-		}else{
-			val = allservices[cat_key][i];
-			html = html + "<tr>" +
-				"<td>"+val.title+"</td>"+
-				"<td><input name='ReferenceResults.keyword:records:ignore_empty' type='hidden' value='"+val.keyword+"'/>"+
-				"<input name='ReferenceResults.result:records:ignore_empty' type='text' size='6' autocomplete='off'/></td>"+
+			selectedservices[cat_key] != undefined &&
+			selectedservices[cat_key][val.uid] != undefined ){
+				ref = selectedservices[cat_key][val.uid];
+				html = html + "<tr id='"+ref.uid+"'>" +
+					"<td>"+ref.title+"<input name='ReferenceResults.uid:records:ignore_empty' type='hidden' value='"+ref.uid+"'/></td>"+
+					"<td><input name='ReferenceResults.result:records:ignore_empty' type='text' size='6' value='"+ref.result+"' autocomplete='off'/></td>"+
+					"<td><input name='ReferenceResults.min:records:ignore_empty' type='text' size='6' value='"+ref.min+"' autocomplete='off'/></td>"+
+					"<td><input name='ReferenceResults.max:records:ignore_empty' type='text' size='6' value='"+ref.max+"' autocomplete='off'/></td>"+
+					"<td><input name='ReferenceResults.error:records:ignore_empty' type='text' size='6' value='"+ref.error+"' autocomplete='off'/></td>";
+		} else {
+			html = html + "<tr id='"+val.uid+"'>" +
+				"<td>"+val.title+"<input name='ReferenceResults.uid:records:ignore_empty' type='hidden' value='"+val.uid+"'/></td>"+
+				"<td><input name='ReferenceResults.result:records:ignore_empty' type='text' size='6' autocomplete='off'/></td>"+
 				"<td><input name='ReferenceResults.min:records:ignore_empty' type='text' size='6' autocomplete='off'/></td>"+
 				"<td><input name='ReferenceResults.max:records:ignore_empty' type='text' size='6' autocomplete='off'/></td>"+
 				"<td><input name='ReferenceResults.error:records:ignore_empty' type='text' size='6' autocomplete='off'/></td>";
@@ -35,16 +32,7 @@ function expand_analysisservices(cat_key, fieldName){
 
 $(document).ready(function(){
 
-	// This widget is rendered only in the control panel Reference Definitions page.
-	// so we can use it to modify that page, by changing the Expiry and Created dates'
-	// string widgets to datepickers.
-	$('#DateCreated')
-		.val($('#DateCreated').val().split(" ")[0])
-		.datepicker({'dateFormat': 'yy-mm-dd', showAnim: ''});
-	$('#ExpiryDate')
-		.val($('#ExpiryDate').val().split(" ")[0])
-		.datepicker({'dateFormat': 'yy-mm-dd', showAnim: ''});
-
+	// expanding categories by clicking on their TR
 	$('tr[class^="initial"]').click(function(){
 		target = $('#'+$(this).attr("name"));
 		fieldName = $(this).attr("id");
@@ -62,6 +50,7 @@ $(document).ready(function(){
 		}
 	});
 
+	// auto-expand-on-load categories
 	$.each($('tr[class$="prefill"]'), function() {
 		target = $('#'+$(this).attr("name"));
 		fieldName = $(this).attr("id");

@@ -24,50 +24,99 @@
  </property>
  <property name="allow_discussion">False</property>
  <property name="default_view_fallback">False</property>
- 
+
  <alias from="(Default)" to="analysisrequests"/>
- 
-  <action title="Edit" action_id="edit" category="object"
-    condition_expr="" icon_expr="" link_target=""
-    url_expr="string:${object_url}/base_edit" visible="True"/>
- <action title="Contacts" action_id="contacts" category="object"
-    condition_expr="" icon_expr="string:${portal_url}/images/contact.png"
-    link_target="" url_expr="string:${object_url}/contacts" visible="True">
+
+ <action title="Edit"
+         action_id="edit"
+         category="object"
+         url_expr="string:${object_url}/base_edit"
+         visible="True"/>
+
+ <action title="Contacts"
+         action_id="contacts"
+         category="object"
+         icon_expr="string:${portal_url}/images/contact.png"
+         url_expr="string:${object_url}/contacts"
+         visible="True">
   <permission value="List folder contents"/>
  </action>
- <action title="Samples" action_id="samples" category="object"
-    condition_expr="" icon_expr="string:${portal_url}/images/sample.png"
-    link_target="" url_expr="string:${object_url}/samples" visible="True">
+
+ <action title="Samples"
+         action_id="samples"
+         category="object"
+         condition_expr=""
+         icon_expr="string:${portal_url}/images/sample.png"
+         link_target=""
+         url_expr="string:${object_url}/samples"
+         visible="True">
   <permission value="List folder contents"/>
  </action>
- <action title="Requests" action_id="view" category="object" condition_expr=""
-    icon_expr="string:${portal_url}/images/ar.png" link_target=""
-    url_expr="string:${object_url}/analysisrequests" visible="True">
+
+ <action title="Requests"
+         action_id="view"
+         category="object"
+         condition_expr=""
+         icon_expr="string:${portal_url}/images/ar.png"
+         link_target=""
+         url_expr="string:${object_url}/analysisrequests"
+         visible="True">
   <permission value="List folder contents"/>
  </action>
- <action title="Imports" action_id="imports" category="object"
-    condition_expr="" icon_expr="string:${portal_url}/images/arimport.png"
-    link_target="" url_expr="string:${object_url}/arimports" visible="True">
+
+ <action title="Imports"
+         action_id="imports"
+         category="object"
+         condition_expr=""
+         icon_expr="string:${portal_url}/images/arimport.png"
+         link_target=""
+         url_expr="string:${object_url}/arimports"
+         visible="True">
   <permission value="List folder contents"/>
  </action>
- <action title="Profiles" action_id="profiles" category="object"
-    condition_expr="" icon_expr="string:${portal_url}/images/arprofile.png"
-    link_target="" url_expr="string:${object_url}/arprofiles" visible="True">
+
+ <action title="Profiles"
+         action_id="profiles"
+         category="object"
+         condition_expr=""
+         icon_expr="string:${portal_url}/images/arprofile.png"
+         link_target=""
+         url_expr="string:${object_url}/arprofiles"
+         visible="True">
   <permission value="List folder contents"/>
  </action>
- <action title="Specs" action_id="specs" category="object" condition_expr=""
-    icon_expr="string:${portal_url}/images/analysisspec.png" link_target=""
-    url_expr="string:${object_url}/analysisspecs" visible="True">
+
+ <action title="Specs"
+         action_id="specs"
+         category="object"
+         condition_expr=""
+         icon_expr="string:${portal_url}/images/analysisspec.png"
+         link_target=""
+         url_expr="string:${object_url}/analysisspecs"
+         visible="True">
   <permission value="List folder contents"/>
  </action>
- <action title="Attachments" action_id="attachments" category="object"
-    condition_expr="" icon_expr="string:${portal_url}/images/attachment.png"
-    link_target="" url_expr="string:${object_url}/attachments" visible="True">
+
+ <action title="Attachments"
+         action_id="attachments"
+         category="object"
+         condition_expr=""
+         icon_expr="string:${portal_url}/images/attachment.png"
+         link_target=""
+         url_expr="string:${object_url}/attachments"
+         visible="True">
   <permission value="List folder contents"/>
  </action>
- <action title="Orders" action_id="orders" category="object" condition_expr=""
-    icon_expr="string:${portal_url}/images/order.png" link_target=""
-    url_expr="string:${object_url}/orders" visible="True">
+
+ <action title="Orders"
+         action_id="orders"
+         category="object"
+         condition_expr=""
+         icon_expr="string:${portal_url}/images/order.png"
+         link_target=""
+         url_expr="string:${object_url}/orders"
+         visible="True">
   <permission value="List folder contents"/>
  </action>
+
 </object>

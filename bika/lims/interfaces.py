@@ -5,7 +5,6 @@ class IBikaLIMS(Interface):
     """Marker interface that defines a Zope 3 browser layer.
        If you need to register a viewlet only for the
        "bika" theme, this interface must be its layer
-       (in lims/viewlets/configure.zcml).
     """
 
 class IClientFolder(Interface):
@@ -25,6 +24,12 @@ class IWorksheetFolder(Interface):
 
 class IWorksheet(Interface):
     """Worksheet"""
+
+class IReferenceSample(Interface):
+    """Reference Suppliers Folder"""
+
+class IReferenceSupplier(Interface):
+    """Reference Suppliers Folder"""
 
 class IReferenceSupplierFolder(Interface):
     """Reference Suppliers Folder"""

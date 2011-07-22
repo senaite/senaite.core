@@ -529,8 +529,10 @@ class Worksheet(BaseFolder):
             REQUEST = REQUEST, RESPONSE = RESPONSE,
             template_id = 'worksheet_analyses')
 
-    def getAllAnalyses(self):
-        """ get all the analyses of different types linked to this WS """
+    def getAllAnalyses(self, contentFilter=None):
+        """ get all the analyses of different types linked to this WS
+            contentFilter is supplied by BikaListingView, and ignored.
+        """
 
         analyses = []
         for analysis in self.getAnalyses():
