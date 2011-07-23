@@ -39,8 +39,8 @@ class AnalysisCategoriesView(BikaListingView):
     def folderitems(self):
         items = BikaListingView.folderitems(self)
         for x in range(len(items)):
-            if not items[x].has_key('brain'): continue
-            obj = items[x]['brain'].getObject()
+            if not items[x].has_key('obj'): continue
+            obj = items[x]['obj'].getObject()
             items[x]['CategoryDescription'] = obj.CategoryDescription()
             items[x]['Department'] = obj.getDepartment().Title()
             items[x]['links'] = {'title_or_id': items[x]['url'] + "/base_edit",

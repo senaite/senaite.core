@@ -45,8 +45,8 @@ class LabProductsView(BikaListingView):
     def folderitems(self):
         items = BikaListingView.folderitems(self)
         for x in range(len(items)):
-            if not items[x].has_key('brain'): continue
-            obj = items[x]['brain'].getObject()
+            if not items[x].has_key('obj'): continue
+            obj = items[x]['obj'].getObject()
             items[x]['Volume'] = obj.Volume
             items[x]['Unit'] = obj.Unit
             items[x]['Price'] = obj.Price

@@ -3,14 +3,16 @@ from Products.Archetypes.atapi import process_types, listTypes
 from Products.CMFCore import utils
 from Products.CMFCore.DirectoryView import registerDirectory
 from Products.CMFCore.utils import ContentInit, ToolInit, getToolByName
+from Products.CMFPlone import PloneMessageFactory
 from Products.CMFPlone.interfaces import IPloneSiteRoot
 from Products.GenericSetup import EXTENSION, profile_registry
 from bika.lims.config import *
 
+# import this to create messages in the bika domain.
 from zope.i18nmessageid import MessageFactory
 bikaMessageFactory = MessageFactory('bika')
-ploneMessageFactory = MessageFactory('plone')
 
+# import this to log messages
 import logging
 logger = logging.getLogger('Bika')
 
@@ -18,13 +20,6 @@ from content import *
 from controlpanel import *
 
 allow_module('bika.lims')
-#allow_module('bika.lims.stats')
-#allow_module('bika.lims.pstat')
-#allow_module('whrandom')
-#allow_module('math')
-#allow_module('re')
-#allow_module('bika.lims.fixSchema')
-#AccessControl.ModuleSecurityInfo('pdb').declarePublic('set_trace')
 
 def initialize(context):
 
@@ -39,4 +34,3 @@ def initialize(context):
         extra_constructors = constructors,
         fti = ftis,
         ).initialize(context)
-

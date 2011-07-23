@@ -1,188 +1,167 @@
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
-      lang="en"
-      xmlns:tal="http://xml.zope.org/namespaces/tal"
-      xmlns:metal="http://xml.zope.org/namespaces/metal"
-      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
-      metal:use-macro="here/main_template/macros/master"
-      i18n:domain="bika">
-
-<head><title></title></head>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xml:lang="en" lang="en"
+	xmlns:tal="http://xml.zope.org/namespaces/tal"
+	xmlns:metal="http://xml.zope.org/namespaces/metal"
+	xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+	metal:use-macro="here/main_template/macros/master"
+	i18n:domain="bika">
 
 <body>
 
-<div metal:fill-slot="main"
-    tal:define="
-                tabindex view/tabindex;
-                portal context/@@plone_portal_state/portal">
+<metal:title fill-slot="content-title">
+	<h1 tal:content="here/title_or_id"/>
+</metal:title>
 
-    <h1 tal:content="here/title_or_id"/>
+<metal:content fill-slot="content-core" tal:define="
+	review_state python:context.portal_workflow.getInfoFor(here, 'review_state', '');
+	portal context/@@plone_portal_state/portal;">
 
-<form name="edit_form"
-    method="post"
-    id="edit_form">
+	<form name="edit_form"
+		method="post"
+		id="edit_form">
 
-<input type="hidden" name="submitted" value="1" />
-<span tal:replace="structure context/@@authenticator/authenticator"/>
+	<input type="hidden" name="submitted" value="1" />
+	<span tal:replace="structure context/@@authenticator/authenticator"/>
 
-<table cellpadding="3">
-<tr> <td valign="top">
-<table
-    summary="Sample edit"
-    class="analysisrequest listing nosort"
-    cellpadding="0" cellspacing="0">
+	<table
+		summary="Sample edit"
+		class="analysisrequest listing nosort"
+		cellpadding="0" cellspacing="0">
 
-<thead>
+	<thead>
 
-<tr>
-<th id="" i18n:translate="label_clientreference">Client Reference</th>
-<td class="left">
-<input size="10" name="ClientReference" id="ClientReference"
-    tal:attributes="
-        value here/getClientReference;
-        tabindex tabindex/next;"/>
-</td>
-</tr>
+		<tr>
+			<th id="" i18n:translate="label_clientreference">Client Reference</th>
+			<td class="left">
+				<input type="text" size="10" name="ClientReference" id="ClientReference"
+					tal:attributes="
+						value here/getClientReference;"/>
+			</td>
+		</tr>
 
-<tr>
-<th id="" i18n:translate="label_clientsampleid">Client Sample ID</th>
-<td class="left">
-<input size="10" name="ClientSampleID"
-    tal:attributes="
-        value here/getClientSampleID;
-	    tabindex tabindex/next;"/>
-</td>
-</tr>
+		<tr>
+			<th id="" i18n:translate="label_clientsampleid">Client Sample ID</th>
+			<td class="left">
+				<input type="text" size="10" name="ClientSampleID"
+					tal:attributes="
+						value here/getClientSampleID;"/>
+			</td>
+		</tr>
 
-<tr>
-<th i18n:translate="label_requests">Requests</th>
-<td class="left">
-<tal:requests
-    tal:define="ars python:here.getAnalysisRequests()"
-    tal:repeat="ar ars">
-<a href="" tal:content="ar/Title"
-    tal:attributes="href ar/absolute_url">AR-00001</a>
-</tal:requests>
-</td>
-</tr>
+		<tr>
+			<th i18n:translate="label_requests">Requests</th>
+			<td class="left">
+				<tal:requests
+					tal:define="ars python:here.getAnalysisRequests()"
+					tal:repeat="ar ars">
+					<a href=""
+						tal:content="ar/Title"
+						tal:attributes="href ar/absolute_url">AR-00001</a>
+				</tal:requests>
+			</td>
+		</tr>
 
-<tr>
-    <th>
-        <span i18n:translate="label_sampletype">Sample Type</span>&nbsp;
-        <span class="fieldRequired"/>
-    </th>
-    <td class="left">
-        <input size="25" type='text' name="SampleType" id="SampleType"
-        tal:define="
-            st here/getSampleType;
-            stTitle st/Title"
-        tal:attributes="
-            value stTitle;
-            tabindex tabindex/next;"/>
-    </td>
-</tr>
+		<tr>
+			<th>
+				<span i18n:translate="label_sampletype">Sample Type</span> &nbsp;
+				<span class="fieldRequired"/>
+			</th>
+			<td class="left">
+				<input size="25" type='text' name="SampleType" id="SampleType"
+					tal:define="
+						st here/getSampleType;
+						stTitle st/Title"
+					tal:attributes="
+						value stTitle;"/>
+			</td>
+		</tr>
 
-<tr>
-<th id="" i18n:translate="label_samplepoint">Sample point</th>
-<td class="left">
-    <input size="25" type='text' name="SamplePoint" id="SamplePoint"
-    tal:define="
-        sp here/getSamplePoint;
-        spTitle sp/Title | nothing"
-    tal:attributes="
-        value spTitle;
-        tabindex tabindex/next;"/>
-</td>
-</tr>
+		<tr>
+			<th id="" i18n:translate="label_samplepoint">Sample point</th>
+			<td class="left">
+				<input size="25" type='text' name="SamplePoint" id="SamplePoint"
+					tal:define="
+						sp here/getSamplePoint;
+						spTitle sp/Title | nothing"
+					tal:attributes="
+						value spTitle;"/>
+			</td>
+		</tr>
 
-<tr>
-    <th>
-        <span i18n:translate="label_datesampled">Date sampled</span>&nbsp;
-        <span class="fieldRequired"/>
-    </th>
-    <td class="left">
-        <input size="10" type='text' readonly="readonly"
-            tal:attributes="
-                tabindex tabindex/next;
-                id string:DateSampled;
-                name string:DateSampled;
-                value view/fmtDateSampled"/>
-    </td>
-</tr>
+		<tr>
+			<th>
+				<span i18n:translate="label_datesampled">Date sampled</span> &nbsp;
+				<span class="fieldRequired"/>
+			</th>
+			<td class="left">
+				<input size="10" type='text' readonly="readonly"
+					tal:attributes="
+						id string:DateSampled;
+						name string:DateSampled;
+						value view/fmtDateSampled"/>
+			</td>
+		</tr>
 
-<tr>
-<th i18n:translate="label_datesubmitted">Date submitted
-</th>
-<td class="left"
-    tal:define="date_submitted here/getDateSubmitted"
-    tal:content="python:plone_view.toLocalizedTime(date_submitted, long_format=1)"
-    >2005-01-01 10:00</td>
-</tr>
+		<tr>
+			<th i18n:translate="label_datesubmitted">Date submitted</th>
+			<td class="left">
+				<span
+					tal:define="date_submitted here/getDateSubmitted"
+					tal:content="python:plone_view.toLocalizedTime(date_submitted, long_format=1)"/>
+			</td>
+		</tr>
 
-<tal:state
-    define="review_state python:context.portal_workflow.getInfoFor(here, 'review_state', '')">
-<tr tal:condition="python:review_state != 'due'">
-<th i18n:translate="label_datereceived">Date received
-</th>
-<td class="left">
-<span
-    tal:define="date_received here/getDateReceived"
-    tal:condition="date_received"
-    tal:content="python:plone_view.toLocalizedTime(date_received, long_format=1)"
-    >2005-01-01 10:00
-</span></td>
-</tr>
+		<tr tal:condition="python:review_state != 'due'">
+			<th i18n:translate="label_datereceived">Date received</th>
+			<td class="left">
+				<span
+					tal:define="date_received here/getDateReceived"
+					tal:condition="date_received"
+					tal:content="python:plone_view.toLocalizedTime(date_received, long_format=1)"/>
+			</td>
+		</tr>
 
-<tr>
-<th i18n:translate="label_disposal_date">Disposal date
-</th>
-<td class="left">
-<span
-    tal:define="disposal_date here/getDisposalDate"
-    tal:condition="disposal_date"
-    tal:content="python:plone_view.toLocalizedTime(disposal_date, long_format=1)"
-    >2005-01-01 10:00
-</span></td>
-</tr>
+		<tr>
+			<th i18n:translate="label_disposal_date">Disposal date</th>
+			<td class="left">
+				<span
+					tal:define="disposal_date here/getDisposalDate"
+					tal:condition="disposal_date"
+					tal:content="python:plone_view.toLocalizedTime(disposal_date, long_format=1)"/>
+			</td>
+		</tr>
 
-<tr tal:condition="python:review_state in ['expired', 'disposed']">
-<th i18n:translate="label_dateexpired">Date expired
-</th>
-<td class="left">
-<span
-    tal:define="date_expired here/getDateExpired"
-    tal:condition="date_expired"
-    tal:content="python:plone_view.toLocalizedTime(date_expired, long_format=1)"
-    >2005-01-01 10:00
-</span></td>
-</tr>
+		<tr tal:condition="python:review_state in ['expired', 'disposed']">
+			<th i18n:translate="label_dateexpired">Date expired</th>
+			<td class="left">
+				<span
+					tal:define="date_expired here/getDateExpired"
+					tal:condition="date_expired"
+					tal:content="python:plone_view.toLocalizedTime(date_expired, long_format=1)"/>
+			</td>
+		</tr>
 
-</tal:state>
+	</table>
 
-</table>
+	<input class="context allowMultiSubmit"
+		type="submit"
+		name="save_button"
+		value="Save"
+		i18n:attributes="value"/>
 
-<input class="context allowMultiSubmit"
-        tabindex=""
-        type="submit"
-        name="save_button"
-        value="Save"
-        i18n:attributes="value"
-        tal:attributes="tabindex tabindex/next"
-        />
-<input class="context"
-        tabindex=""
-        type="submit"
-        name="cancel_button"
-        value="Cancel"
-        i18n:attributes="value"
-        tal:attributes="tabindex tabindex/next"
-        />
-<span id="spinner" style="display:none">
-      <img tal:attributes="src python:portal.absolute_url()+ '/images/spinner.gif';"/></span>
+	<input class="context"
+		tabindex=""
+		type="submit"
+		name="cancel_button"
+		value="Cancel"
+		i18n:attributes="value"/>
 
+	<img id="spinner" style="display:none"
+		tal:attributes="src python:portal.absolute_url()+ '/images/spinner.gif'"/>
 
-</form>
+	</form>
 
-</div>
+</metal:content>
 </body>
 </html>
 

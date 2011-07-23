@@ -1,21 +1,19 @@
 jQuery( function($) {
+$(document).ready(function(){
 
-	// All actions in the folderContentsForm will refresh only the content table.
-
-	$(document).ready(function(){
-
-		function inplace_submit(){
-			options = {target: '.folderlisting-main-table',
-			           replaceTarget: true,
-					   success: function(){
-							$('#filter_input_keypress').remove();
-							$('#review_state_clicked').remove();
-							$('#workflow_action_submitted').remove();
-					   }
-				      }
-			form = $('#folderContentsForm');
-			form.ajaxSubmit(options);
-		}
+	// All actions will refresh only the content table.
+	function inplace_submit(){
+		options = {target: '.folderlisting-main-table',
+				   replaceTarget: true,
+				   success: function(){
+						$('#filter_input_keypress').remove();
+						$('#review_state_clicked').remove();
+						$('#workflow_action_submitted').remove();
+				   }
+				  }
+		form = $('#folderContentsForm');
+		form.ajaxSubmit(options);
+	}
 
 		$(".folderlisting-filter").live('keyup', function(key){
 			if(key.which == 13) {

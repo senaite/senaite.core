@@ -1,43 +1,39 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
-      lang="en"
-      xmlns:tal="http://xml.zope.org/namespaces/tal"
-      xmlns:metal="http://xml.zope.org/namespaces/metal"
-      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
-      metal:use-macro="here/main_template/macros/master"
-      i18n:domain="bika">
+	lang="en"
+	xmlns:tal="http://xml.zope.org/namespaces/tal"
+	xmlns:metal="http://xml.zope.org/namespaces/metal"
+	xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+	metal:use-macro="here/main_template/macros/master"
+	i18n:domain="bika">
 <head><title></title></head>
 
 <body>
 
 <metal:content-core fill-slot="content-core" tal:define="
-    portal context/@@plone_portal_state/portal;
-    specification python:request.get('specification', view.getDefaultSpec());
-    sample here/getSample;
-    colspan python:10;
-    ar_attach_allowed here/bika_settings/getARAttachmentsPermitted;
-    ar_review_state python: context.portal_workflow.getInfoFor(context, 'review_state');
-    analysis_attach_allowed here/bika_settings/getAnalysisAttachmentsPermitted;
-    attachments_allowed here/bika_settings/getAttachmentsPermitted;
-    attachments here/getAttachment | nothing;
-    delete_attachments python:True;
-    update_attachments python:True">
+	portal context/@@plone_portal_state/portal;
+	specification python:request.get('specification', view.getDefaultSpec());
+	sample here/getSample;
+	colspan python:10;
+	ar_attach_allowed here/bika_settings/getARAttachmentsPermitted;
+	ar_review_state python: context.portal_workflow.getInfoFor(context, 'review_state');
+	analysis_attach_allowed here/bika_settings/getAnalysisAttachmentsPermitted;
+	attachments_allowed here/bika_settings/getAttachmentsPermitted;
+	attachments here/getAttachment | nothing;
+	delete_attachments python:True;
+	update_attachments python:True">
 
-    <div tal:condition="attachments_allowed">
-      <metal:block use-macro="here/attachments/macros/attachments"/>
-    </div>
+	<div tal:condition="attachments_allowed">
+		<metal:block use-macro="here/attachments/macros/attachments"/>
+	</div>
 
-
-    <form id="analysisrequest_edit_form"
-          name="analysisrequest_edit_form"
-          method="POST"
-          enctype="multipart/form-data">
+	<form id="analysisrequest_edit_form"
+		name="analysisrequest_edit_form"
+		method="POST"
+		enctype="multipart/form-data">
 
 		<table width="100%">
 			<tr>
 				<td>
-					<form name="specificationForm"
-						enctype="multipart/form-data"
-						method="post">
 					<span i18n:translate="label_range_specification">Range Specification</span>
 					<input class="noborder"
 						type="radio"
@@ -53,137 +49,131 @@
 						tal:attributes="
 							checked python:specification == 'client' and 'checked' or None;"/>
 					<label i18n:translate="label_client">Client</label>
-					</form>
 				</td>
 				<td align="right">
 					<img tal:condition="view/getHazardous"
-						src="" tal:attributes="src string:${portal/absolute_url}/images/hazardous.png">
+						tal:attributes="src string:${portal/absolute_url}/images/hazardous.png">
 				</td>
 			</tr>
 		</table>
 
-      <table
-          summary="Analysisrequest view"
-          class="listing analysisrequest nosort"
-          cellpadding="0" cellspacing="0">
-        <thead>
-          <tr>
-            <th i18n:translate="label_contact_person">Contact person</th>
-            <td colspan="3">
-              <a tal:define="contact here/getContact"
-                tal:condition="nocall:contact"
-                tal:attributes="href contact/absolute_url"
-                tal:content="contact/Title">Pete Smith</a>
-              <tal:ccs define="ccs here/getCCContact" condition="nocall:ccs" repeat="cc ccs">
-                <span tal:condition="python:repeat['cc'].index == 0">&nbsp;cc:</span>
-                <span tal:condition="python:repeat['cc'].index > 0">;</span>
-                <a tal:content="cc/Title" tal:attributes="href cc/absolute_url"/>
-              </tal:ccs>
-            </td>
-          </tr>
-          <tr>
-          <th i18n:translate="label_cc_emails">cc (email)
-          </th>
-          <td colspan="3"
-              tal:content="here/getCCEmails">a@b.com</td>
-          </tr>
-          <tr>
-            <th i18n:translate="label_client_order_id">Client Order ID</th>
-            <td
-                tal:content="here/getClientOrderNumber|nothing">123</td>
-            <th i18n:translate="label_sampleid">Sample</th>
-            <td >
-              <a tal:attributes="href sample/absolute_url">
-                  <span tal:content="sample/Title">S-00001</span>
-              </a>
-            </td>
-          </tr>
-          <tr>
-            <th i18n:translate="label_clientreference">Client Reference</th>
-            <td
-                tal:content="sample/getClientReference">R001</td>
-            <th i18n:translate="label_clientsampleid">Client Sample ID</th>
-            <td
-                tal:content="sample/getClientSampleID">S001</td>
-          </tr>
+		<table
+			summary="Analysisrequest view"
+			class="listing analysisrequest nosort"
+			cellpadding="0" cellspacing="0">
 
-          <tr>
-            <th i18n:translate="label_sampletype">Sample type</th>
-            <td  tal:content="context/getSampleTypeTitle">sample type</td>
-            <th i18n:translate="label_samplepoint">Sample point</th>
-            <td  tal:content="context/getSamplePointTitle">sample point</td>
-          </tr>
+		<thead>
 
-          <tr>
-            <th i18n:translate="label_status">Status
-            </th>
-            <td
-                tal:content="view/review_state">received</td>
-            <th i18n:translate="label_arprofiles">Profile</th>
-            <td
-                tal:content="view/getARProfileTitle">pr01</td>
-          </tr>
-          <tr>
-            <th i18n:translate="label_datesampled">Date sampled</th>
-            <td >
-            <span
-                tal:define="date_sampled sample/getDateSampled"
-                tal:condition="date_sampled"
-                tal:content="python:context.toLocalizedTime(date_sampled, long_format=1)"
-                >2005-01-01</span>
-            </td>
-            <th i18n:translate="label_daterequested">Date requested</th>
-            <td >
-            <span
-                tal:define="date_requested here/getDateRequested"
-                tal:condition="date_requested"
-                tal:content="python:context.toLocalizedTime(date_requested, long_format=1)"
-                >2005-01-01 10:00
-            </span></td>
-          </tr>
-          <tr tal:condition="python:view.review_state != 'sample_due'">
-            <th i18n:translate="label_datereceived">Date received
-            </th>
-            <td
-                tal:define="date_received here/getDateReceived"
-                tal:content="python:context.toLocalizedTime(date_received, long_format=1)"
-                >2005-01-01 10:00</td>
-            <th>
-            <span tal:condition="python:view.review_state in ('verified', 'published')"
-                i18n:translate="label_verified_by">Verified by </span></th>
-            <td >
-            <span
-                tal:condition="python:view.review_state in ('verified', 'published')"
-                tal:define="verifier python:view.get_analysisrequest_verifier(here)"
-                tal:content="verifier"></span>
-            </td>
-          </tr>
-          <tr tal:condition="python:view.review_state == 'published'">
-            <th i18n:translate="label_datepublished">Date published
-            </th>
-            <td
-                tal:define="date_published here/getDatePublished"
-                tal:content="python:context.toLocalizedTime(date_published, long_format=1)"
-                i18n:translate=""
-                >2005-01-01 10:00</td>
-            <th></th>
-            <td></td>
-          </tr>
+		<tr>
+			<th i18n:translate="label_contact_person">Contact person</th>
+			<td colspan="3">
+				<a tal:define="contact here/getContact"
+					tal:condition="nocall:contact"
+					tal:attributes="href contact/absolute_url"
+					tal:content="contact/Title">Pete Smith</a>
+				<tal:ccs define="ccs here/getCCContact" condition="nocall:ccs" repeat="cc ccs">
+					<span tal:condition="python:repeat['cc'].index == 0">&nbsp;cc:</span>
+					<span tal:condition="python:repeat['cc'].index > 0">;</span>
+					<a tal:content="cc/Title" tal:attributes="href cc/absolute_url"/>
+				</tal:ccs>
+			</td>
+		</tr>
 
-        </thead>
-      </table>
+		<tr>
+			<th i18n:translate="label_cc_emails">cc (email)</th>
+			<td colspan="3" tal:content="here/getCCEmails">a@b.com</td>
+		</tr>
 
-      <tal:field_analyses>
-        <h3 tal:content="python: modules['bika.lims.config'].POINTS_OF_CAPTURE.getValue('field')"/>
-        <span tal:replace="structure python: view.FieldAnalysisRequestAnalysesView.contents_table()"/>
-      </tal:field_analyses>
+		<tr>
+			<th i18n:translate="label_client_order_id">Client Order ID</th>
+			<td tal:content="here/getClientOrderNumber|nothing">123</td>
+			<th i18n:translate="label_sampleid">Sample</th>
+			<td>
+				<a tal:attributes="href sample/absolute_url"
+					tal:content="sample/Title">S-00001</a>
+			</td>
+		</tr>
 
-      <tal:lab_analyses>
-        <h3 tal:content="python: modules['bika.lims.config'].POINTS_OF_CAPTURE.getValue('lab')"/>
-        <span tal:replace="structure python: view.LabAnalysisRequestAnalysesView.contents_table()"/>
-      </tal:lab_analyses>
+		<tr>
+			<th i18n:translate="label_clientreference">Client Reference</th>
+			<td tal:content="sample/getClientReference">R001</td>
+			<th i18n:translate="label_clientsampleid">Client Sample ID</th>
+			<td tal:content="sample/getClientSampleID">S001</td>
+		</tr>
 
-    </form>
-  </metal:content-core>
+		<tr>
+			<th i18n:translate="label_sampletype">Sample type</th>
+			<td tal:content="context/getSampleTypeTitle">sample type</td>
+			<th i18n:translate="label_samplepoint">Sample point</th>
+			<td tal:content="context/getSamplePointTitle">sample point</td>
+		</tr>
+
+		<tr>
+			<th i18n:translate="label_status">Status</th>
+			<td tal:content="view/review_state">received</td>
+			<th i18n:translate="label_arprofiles">Profile</th>
+			<td tal:content="view/getARProfileTitle">pr01</td>
+		</tr>
+
+		<tr>
+			<th i18n:translate="label_datesampled">Date sampled</th>
+			<td>
+				<span
+					tal:define="date_sampled sample/getDateSampled"
+					tal:condition="date_sampled"
+					tal:content="python:context.toLocalizedTime(date_sampled, long_format=1)"/>
+			</td>
+			<th i18n:translate="label_daterequested">Date requested</th>
+			<td>
+				<span
+					tal:define="date_requested here/getDateRequested"
+					tal:condition="date_requested"
+					tal:content="python:context.toLocalizedTime(date_requested, long_format=1)"/>
+			</td>
+		</tr>
+
+		<tr tal:condition="python:view.review_state != 'sample_due'">
+			<th i18n:translate="label_datereceived">Date received</th>
+			<td tal:define="date_received here/getDateReceived"
+				tal:content="python:context.toLocalizedTime(date_received, long_format=1)">
+			</td>
+			<th>
+				<span
+					tal:condition="python:view.review_state in ('verified', 'published')"
+					i18n:translate="label_verified_by">Verified by</span>
+			</th>
+			<td>
+				<span
+					tal:condition="python:view.review_state in ('verified', 'published')"
+					tal:define="verifier python:view.get_analysisrequest_verifier(here)"
+					tal:content="verifier"/>
+			</td>
+		</tr>
+
+		<tr tal:condition="python:view.review_state == 'published'">
+			<th i18n:translate="label_datepublished">Date published</th>
+			<td
+				tal:define="date_published here/getDatePublished"
+				tal:content="python:context.toLocalizedTime(date_published, long_format=1)"/>
+			</td>
+			<th></th>
+			<td></td>
+		</tr>
+
+		</thead>
+		</table>
+
+		<tal:field_analyses>
+			<h3 tal:content="python: modules['bika.lims.config'].POINTS_OF_CAPTURE.getValue('field')"/>
+			<span tal:replace="structure python: view.FieldAnalyses.contents_table()"/>
+		</tal:field_analyses>
+
+		<tal:lab_analyses>
+			<h3 tal:content="python: modules['bika.lims.config'].POINTS_OF_CAPTURE.getValue('lab')"/>
+			<span tal:replace="structure python: view.LabAnalysesView.contents_table()"/>
+		</tal:lab_analyses>
+
+	</form>
+</metal:content-core>
 </body>
 </html>

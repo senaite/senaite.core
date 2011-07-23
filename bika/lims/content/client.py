@@ -218,17 +218,17 @@ class Client(Organisation):
             sampletypes.append((st.UID, st.Title))
         return DisplayList(sampletypes)
 
-        portal_types = getToolByName(self, 'portal_types')
-        myType = portal_types.getTypeInfo(self)
-        result = portal_types.listTypeInfo()
-        if myType is not None:
-            result = [t for t in result if myType.allowType(t.getId()) and
-                    t.isConstructionAllowed(self)]
-        else:
-            result = [t for t in result if t.isConstructionAllowed(self)]
-
-        return allowed_content_types and [t for t in result if t.id in allowed_content_types] or result
-
+## gets all addable types for self ???
+##        portal_types = getToolByName(self, 'portal_types')
+##        myType = portal_types.getTypeInfo(self)
+##        result = portal_types.listTypeInfo()
+##        if myType is not None:
+##            result = [t for t in result if myType.allowType(t.getId()) and
+##                    t.isConstructionAllowed(self)]
+##        else:
+##            result = [t for t in result if t.isConstructionAllowed(self)]
+##
+##        return allowed_content_types and [t for t in result if t.id in allowed_content_types] or result
 
 schemata.finalizeATCTSchema(schema, folderish = True, moveDiscussion = False)
 

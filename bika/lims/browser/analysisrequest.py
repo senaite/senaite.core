@@ -7,6 +7,7 @@ from Products.CMFPlone.utils import transaction_note
 from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import bikaMessageFactory as _
+from bika.lims.browser.analyses import AnalysesView
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.browser.client import ClientAnalysisRequestsView
 from bika.lims.config import POINTS_OF_CAPTURE
@@ -18,144 +19,6 @@ from zope.interface import implements,alsoProvides
 import json
 import plone
 
-class AnalysisRequestAnalysesView(BikaListingView):
-    """ Displays a list of Analyses in a table.
-        All InterimFields from all analyses are added to self.columns[].
-        allow_edit boolean decides if edit is possible, but each analysis
-        can be editable or not, depending on it's review_state.
-        Keyword arguments are passed directly to portal_catalog.
-    """
-    content_add_actions = {}
-    show_filters = False
-    show_sort_column = False
-    show_select_row = False
-    show_select_column = False
-    pagesize = 1000
-    columns = {
-        'Service': {'title': _('Analysis')},
-        'Result': {'title': _('Result')},
-        'Uncertainty': {'title': _('+-')},
-        'retested': {'title': _('Retested'), 'type':'boolean'},
-        'Attachments': {'title': _('Attachments')},
-    }
-    review_states = [
-        {'title': _('All'), 'id':'all',
-         'columns':['Service',
-                    'Result',
-                    'Uncertainty',
-                    'retested',
-                    'Attachments'],
-         },
-    ]
-    def __init__(self, context, request, allow_edit = False, **kwargs):
-        super(AnalysisRequestAnalysesView, self).__init__(context, request)
-        self.allow_edit = allow_edit
-        self.contentFilter = dict(kwargs)
-        self.contentFilter['portal_type'] = 'Analysis'
-
-    def folderitems(self):
-        """ InterimFields are inserted into self.columns before the column called 'Result',
-            XXX not specifically ordered but vaguely predictable.
-        """
-        pc = getToolByName(self.context, 'portal_catalog')
-        analyses = BikaListingView.folderitems(self)
-
-        items = []
-        self.interim_fields = {}
-        for item in analyses:
-            if not item.has_key('brain'): continue
-            # this is fugly; this view is used for worksheets also. So sometimes the list
-            # is made out of objects, not brains.
-            if hasattr(item['brain'], 'getObject'):
-                obj = item['brain'].getObject()
-            else:
-                obj = item['brain']
-
-            # calculate specs - they are stored in an attribute on each row so that selecting
-            # lab/client ranges can re-calculate in javascript
-            # calculate specs for every analysis, since they may
-            # all be for different sample types
-            specs = {'client':{}, 'lab':{}}
-            if obj.portal_type != 'ReferenceAnalysis':
-                if self.context.portal_type == 'AnalysisRequest':
-                    proxies = pc(portal_type = 'AnalysisSpec',
-                                 getSampleTypeUID = self.context.getSample().getSampleType().UID())
-                else: # worksheet.  XXX fix this, man.  need a seperate AnalysesView
-                    proxies = pc(portal_type = 'AnalysisSpec',
-                                 getSampleTypeUID = obj.aq_parent.getSample().getSampleType().UID())
-                for spec in proxies:
-                    spec = spec.getObject()
-                    client_or_lab = ""
-                    if spec.getClientUID() == self.context.getClientUID():
-                        client_or_lab = 'client'
-                    elif spec.getClientUID() == None:
-                        client_or_lab = 'lab'
-                    else:
-                        continue
-                    for keyword, results_range in spec.getResultsRangeDict().items():
-                        specs[client_or_lab][keyword] = results_range
-
-            uid = obj.UID()
-            result = obj.getResult()
-            service = obj.getService()
-            keyword = service.getKeyword()
-            calculation = service.getCalculation()
-            choices = service.getResultOptions()
-            item_data = obj.getInterimFields()
-
-            item['Service'] = service.Title()
-            item['Keyword'] = keyword
-            item['Result'] = result
-            item['Unit'] = obj.getUnit()
-            item['Uncertainty'] = obj.getUncertainty(result)
-            item['retested'] = obj.getRetested()
-            item['specs'] = json.dumps({'client': specs['client'].has_key(keyword) and specs['client'][keyword] or [],
-                                        'lab': specs['lab'].has_key(keyword) and specs['lab'][keyword] or [],})
-            if hasattr(obj, 'getAttachment'):
-                item['Attachments'] = ", ".join([a.Title() for a in obj.getAttachment()])
-            else:
-                item['Attachments'] = ''
-            item['item_data'] = json.dumps(item_data)
-            item['allow_edit'] = self.allow_edit or False
-            item['calculation'] = calculation and True or False
-            if hasattr(obj, 'result+in_range'):
-                item['result_in_range'] = obj.result_in_range(result)
-            else:
-                item['result_in_range'] = True
-            if choices: item['ResultOptions'] = choices
-
-            # Add this analysis' interim fields to the list
-            for i in item_data:
-                if i['id'] not in self.interim_fields.keys():
-                    self.interim_fields[i['id']] = i['title']
-                item[i['id']] = i
-            items.append(item)
-
-        items = sorted(items, key=itemgetter('Service'))
-        for i in range(len(items)):
-            items[i]['table_row_class'] = ((i + 1) % 2 == 0) and "draggable even" or "draggable odd"
-
-        interim_keys = self.interim_fields.keys()
-        interim_keys.reverse()
-
-        # munge self.columns
-        for col_id in interim_keys:
-            if col_id not in self.columns:
-                self.columns[col_id] = {'title': self.interim_fields[col_id]}
-
-        # munge self.review_states
-        munged_states = []
-        for state in self.review_states:
-            pos = state['columns'].index('Result')
-            if not pos: pos = len(state['columns'])
-            for col_id in interim_keys:
-                if col_id not in state['columns']:
-                    state['columns'].insert(pos, col_id)
-            munged_states.append(state)
-        self.review_states = munged_states
-
-        return items
-
 class AnalysisRequestViewView(BrowserView):
     """ AR View form
         The AR fields are printed in a table, using analysisrequest_view.py
@@ -165,12 +28,10 @@ class AnalysisRequestViewView(BrowserView):
 
     def __init__(self, context, request):
         super(AnalysisRequestViewView, self).__init__(context, request)
-        self.FieldAnalysisRequestAnalysesView = AnalysisRequestAnalysesView(
-                                context, request, getPointOfCapture = 'field')
-        self.LabAnalysisRequestAnalysesView = AnalysisRequestAnalysesView(
-                                context, request, getPointOfCapture = 'lab')
 
     def __call__(self):
+        self.FieldAnalysesView = AnalysesView(context, request, getPointOfCapture = 'field')
+        self.LabAnalysesView = AnalysesView(context, request, getPointOfCapture = 'lab')
         return self.template()
 
     def tabindex(self):
@@ -392,11 +253,10 @@ class AnalysisRequestManageResultsView(AnalysisRequestViewView):
     def __call__(self):
         wf_tool = getToolByName(self.context, 'portal_workflow')
         pc = getToolByName(self.context, 'portal_catalog')
-
-        self.FieldAnalysisRequestAnalysesView = AnalysisRequestAnalysesView(
-                               self.context, self.request, allow_edit = True, getPointOfCapture = 'field')
-        self.LabAnalysisRequestAnalysesView = AnalysisRequestAnalysesView(
-                               self.context, self.request, allow_edit = True, getPointOfCapture = 'lab')
+        self.FieldAnalysesView = AnalysesView(self.context, self.request,
+                                              getPointOfCapture = 'field', allow_edit = True)
+        self.LabAnalysesView = AnalysesView(self.context, self.request,
+                                            getPointOfCapture = 'lab', allow_edit = True)
 
         form = self.request.form
         if form.has_key("submitted"):
@@ -531,8 +391,8 @@ class AnalysisRequestSelectSampleView(BikaListingView):
         items = BikaListingView.folderitems(self)
         out = []
         for x in range(len(items)):
-            if not items[x].has_key('brain'): continue
-            obj = items[x]['brain'].getObject()
+            if not items[x].has_key('obj'): continue
+            obj = items[x]['obj'].getObject()
             if items[x]['UID'] in self.request.get('hide_uids', ''): continue
             if items[x]['UID'] in self.request.get('selected_uids', ''):
                 items[x]['checked'] = True
@@ -996,6 +856,6 @@ class AnalysisRequestsView(ClientAnalysisRequestsView):
     def folderitems(self):
         items = ClientAnalysisRequestsView.folderitems(self)
         for x in range(len(items)):
-            if not items[x].has_key('brain'): continue
-            items[x]['Client'] = items[x]['brain'].getObject().aq_parent.Title()
+            if not items[x].has_key('obj'): continue
+            items[x]['Client'] = items[x]['obj'].getObject().aq_parent.Title()
         return items

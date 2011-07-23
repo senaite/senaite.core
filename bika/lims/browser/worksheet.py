@@ -6,12 +6,12 @@ from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.interfaces import IWorksheet
-from bika.lims.browser.analysisrequest import AnalysisRequestAnalysesView
+from bika.lims.browser.analyses import AnalysesView
 from plone.app.content.browser.interfaces import IFolderContentsView
 from zope.interface import implements
 import plone, json
 
-class WorksheetAnalysesView(AnalysisRequestAnalysesView):
+class WorksheetAnalysesView(AnalysesView):
     columns = {
         'Service': {'title': _('Analysis')},
         'Pos': {'title': _('Pos')},
@@ -29,15 +29,13 @@ class WorksheetAnalysesView(AnalysisRequestAnalysesView):
 
     def __init__(self, context, request, allow_edit = False, **kwargs):
         super(WorksheetAnalysesView, self).__init__(context, request)
-        self.contentsMethod = self.context.getAllAnalyses
-        self.allow_edit = allow_edit
 
     def folderitems(self):
         # get worksheet analyses as a UID keyed dictionary
+        self.contentsMethod = self.context.getAllAnalyses
         analyses = {}
-        for analysis in super(WorksheetAnalysesView, self).folderitems():
-            # brain is object, not brain. :(
-            analyses[analysis['brain'].UID()] = analysis
+        for analysis in AnalysesView.folderitems(self):
+            analyses[analysis['uid']] = analysis
 
         # re-order items and add WS specific fields
         items = []
@@ -45,11 +43,11 @@ class WorksheetAnalysesView(AnalysisRequestAnalysesView):
             item = analyses[slot['uid']]
             item['UID'] = slot['uid']
             item['Pos'] = slot['pos']
-            item['Client'] = item['brain'].aq_parent.aq_parent.Title()
-            item['Order'] = hasattr(item['brain'].aq_parent, 'getClientOrderNumber') and\
-                            item['brain'].aq_parent.getClientOrderNumber() or \
+            item['Client'] = item['obj'].aq_parent.aq_parent.Title()
+            item['Order'] = hasattr(item['obj'].aq_parent, 'getClientOrderNumber') and\
+                            item['obj'].aq_parent.getClientOrderNumber() or \
                             ''
-            item['ServiceTitle'] = item['brain'].getService().Title()
+            item['ServiceTitle'] = item['obj'].getService().Title()
             items.append(item)
         return items
 
@@ -114,8 +112,8 @@ class WorksheetFolderView(BikaListingView):
     def folderitems(self):
         items = BikaListingView.folderitems(self)
         for x in range(len(items)):
-            if not items[x].has_key('brain'): continue
-            obj = items[x]['brain'].getObject()
+            if not items[x].has_key('obj'): continue
+            obj = items[x]['obj'].getObject()
             items[x]['getNumber'] = obj.getNumber()
             items[x]['getOwnerUserID'] = obj.getOwnerUserID()
             items[x]['CreationDate'] = obj.CreationDate() and self.context.toLocalizedTime(obj.CreationDate(), long_format = 0) or ''
@@ -339,7 +337,7 @@ class WorksheetAddAnalysisView(BikaListingView):
     def folderitems(self):
         items = BikaListingView.folderitems(self)
         for x in range(len(items)):
-            if not items[x].has_key('brain'): continue
+            if not items[x].has_key('obj'): continue
             items[x]['getDateReceived'] = self.context.toLocalizedTime(items[x]['getDateReceived'], long_format = 0)
             items[x]['getDueDate'] = self.context.toLocalizedTime(items[x]['getDueDate'], long_format = 0)
         return items
@@ -401,8 +399,8 @@ class WorksheetAddBlankView(BikaListingView):
     def folderitems(self):
         items = BikaListingView.folderitems(self)
         for x in range(len(items)):
-            if not items[x].has_key('brain'): continue
-            obj = items[x]['brain'].getObject()
+            if not items[x].has_key('obj'): continue
+            obj = items[x]['obj'].getObject()
             items[x]['getNumber'] = obj.getNumber()
             items[x]['getOwnerUserID'] = obj.getOwnerUserID()
             items[x]['CreationDate'] = obj.CreationDate() and self.context.toLocalizedTime(obj.CreationDate(), long_format = 0) or ''
@@ -449,8 +447,8 @@ class WorksheetAddControlView(BikaListingView):
     def folderitems(self):
         items = BikaListingView.folderitems(self)
         for x in range(len(items)):
-            if not items[x].has_key('brain'): continue
-            obj = items[x]['brain'].getObject()
+            if not items[x].has_key('obj'): continue
+            obj = items[x]['obj'].getObject()
             items[x]['getNumber'] = obj.getNumber()
             items[x]['getOwnerUserID'] = obj.getOwnerUserID()
             items[x]['CreationDate'] = obj.CreationDate() and self.context.toLocalizedTime(obj.CreationDate(), long_format = 0) or ''
@@ -497,8 +495,8 @@ class WorksheetAddDuplicateView(BikaListingView):
     def folderitems(self):
         items = BikaListingView.folderitems(self)
         for x in range(len(items)):
-            if not items[x].has_key('brain'): continue
-            obj = items[x]['brain'].getObject()
+            if not items[x].has_key('obj'): continue
+            obj = items[x]['obj'].getObject()
             items[x]['getNumber'] = obj.getNumber()
             items[x]['getOwnerUserID'] = obj.getOwnerUserID()
             items[x]['CreationDate'] = obj.CreationDate() and self.context.toLocalizedTime(obj.CreationDate(), long_format = 0) or ''

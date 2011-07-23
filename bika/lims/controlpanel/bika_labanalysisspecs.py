@@ -37,8 +37,8 @@ class AnalysisSpecsView(BikaListingView):
     def folderitems(self):
         items = BikaListingView.folderitems(self)
         for x in range(len(items)):
-            if not items[x].has_key('brain'): continue
-            obj = items[x]['brain'].getObject()
+            if not items[x].has_key('obj'): continue
+            obj = items[x]['obj'].getObject()
             items[x]['getSampleType'] = obj.getSampleType() and obj.getSampleType().Title()
             items[x]['links'] = {'getSampleType': items[x]['url'] + "/edit"}
 

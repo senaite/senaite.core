@@ -40,7 +40,7 @@ class AttachmentTypesView(BikaListingView):
     def folderitems(self):
         items = BikaListingView.folderitems(self)
         for x in range(len(items)):
-            if not items[x].has_key('brain'): continue
+            if not items[x].has_key('obj'): continue
             items[x]['links'] = {'title_or_id': items[x]['url'] + "/edit"}
 
         return items

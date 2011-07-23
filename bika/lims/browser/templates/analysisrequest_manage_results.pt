@@ -86,12 +86,12 @@
 
 	<tal:field_analyses>
 		<h3 tal:content="python: modules['bika.lims.config'].POINTS_OF_CAPTURE.getValue('field')"/>
-		<span tal:replace="structure python: view.FieldAnalysisRequestAnalysesView.contents_table()"/>
+		<span tal:replace="structure python: view.FieldAnalysesView.contents_table()"/>
 	</tal:field_analyses>
 
 	<tal:lab_analyses>
 		<h3 tal:content="python: modules['bika.lims.config'].POINTS_OF_CAPTURE.getValue('lab')"/>
-		<span tal:replace="structure python: view.LabAnalysisRequestAnalysesView.contents_table()"/>
+		<span tal:replace="structure python: view.LabAnalysesView.contents_table()"/>
 	</tal:lab_analyses>
 
 	<input class="context allowMultiSubmit"

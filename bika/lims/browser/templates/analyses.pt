@@ -1,23 +1,23 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
-	xml:lang="en" lang="en"
+	xmlns:i18n="http://xml.zope.org/namespaces/i18n"
 	xmlns:tal="http://xml.zope.org/namespaces/tal"
 	xmlns:metal="http://xml.zope.org/namespaces/metal"
-	xmlns:i18n="http://xml.zope.org/namespaces/i18n"
-	metal:use-macro="here/main_template/macros/master"
-	i18n:domain="bika">
+	xml:lang="en" lang="en"
+	i18n:domain="plone"
+	metal:use-macro="here/main_template/macros/master">
 <body>
 
-<metal:content-title fill-slot="content-title">
-	<h1 class="documentFirstHeading" tal:content="view/title"/>
-</metal:content-title>
+	<metal:content-title fill-slot="content-title">
+		<h1 class="documentFirstHeading" tal:content="view/title"/>
+	</metal:content-title>
 
-<metal:content-description fill-slot="content-description">
-	<div class="documentDescription"
-		tal:content="view/description"
-		tal:condition="view/description"/>
-</metal:content-description>
+	<metal:content-description fill-slot="content-description">
+		<div class="documentDescription"
+			tal:content="view/description"
+			tal:condition="view/description"/>
+	</metal:content-description>
 
-<metal:content-core fill-slot="content-core">
+	<metal:content-core fill-slot="content-core">
 
 	<tal:add_actions repeat="add_item python:view.content_add_actions.keys()">
 		<form method="post"

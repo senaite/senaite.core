@@ -42,8 +42,8 @@ class DepartmentsView(BikaListingView):
     def folderitems(self):
         items = BikaListingView.folderitems(self)
         for x in range(len(items)):
-            if not items[x].has_key('brain'): continue
-            obj = items[x]['brain'].getObject()
+            if not items[x].has_key('obj'): continue
+            obj = items[x]['obj'].getObject()
             items[x]['DepartmentDescription'] = obj.DepartmentDescription()
             items[x]['Manager'] = obj.getManagerName()
             if items[x]['Manager']:

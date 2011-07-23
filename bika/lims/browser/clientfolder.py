@@ -20,7 +20,7 @@ class ClientFolderContentsView(BikaListingView):
     pagesize = 20
 
     columns = {
-               'title_or_id': {'title': _('Name')},
+               'title': {'title': _('Name')},
                'getEmailAddress': {'title': _('Email Address')},
                'getPhone': {'title': _('Phone')},
                'getFax': {'title': _('Fax')},
@@ -28,22 +28,19 @@ class ClientFolderContentsView(BikaListingView):
 
     review_states = [
                     {'title': _('All'), 'id':'all',
-                     'columns':['title_or_id',
+                     'columns':['title',
                                 'getEmailAddress',
                                 'getPhone',
-                                'getFax', ],
-                     'buttons':[{'cssclass': 'context',
-                                 'title': _('Delete'),
-                                 'url': 'folder_delete:method'}],
-                      }
-                    ]
+                                'getFax', ]
+                     },
+    ]
 
     def folderitems(self):
         items = BikaListingView.folderitems(self)
         for x in range(len(items)):
-            if not items[x].has_key('brain'): continue
+            if not items[x].has_key('obj'): continue
             items[x]['links'] = {
-                'title_or_id': items[x]['url'],
+                'title': items[x]['url'],
                 'getEmailAddress': items[x]['getEmailAddress'] and 'mailto:%s' % items[x]['getEmailAddress'] or "",
             }
 

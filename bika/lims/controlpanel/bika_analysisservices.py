@@ -58,8 +58,8 @@ class AnalysisServicesView(BikaListingView):
         items = BikaListingView.folderitems(self)
         out = []
         for x in range(len(items)):
-            if not items[x].has_key('brain'): continue
-            obj = items[x]['brain'].getObject()
+            if not items[x].has_key('obj'): continue
+            obj = items[x]['obj'].getObject()
             items[x]['CategoryName'] = obj.getCategoryName()
             items[x]['ReportDryMatter'] = obj.ReportDryMatter
             items[x]['AttachmentOption'] = \

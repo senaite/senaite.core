@@ -28,7 +28,7 @@ Workflow review state selector
 	tal:condition="view/filters_in_use">
 	<span i18n:translate="clear_filters" class="link">[clear filters]</span></p>
 
-<table class="listing" style="width:100%"
+<table class="listing"
 	tal:condition="view/items"
 	id="listing-table"
 	summary="Content listing"
@@ -127,13 +127,13 @@ Table data rows start here
 		<tr tal:condition="python:item.has_key('id')"
 			tal:define="keyword python:item.has_key('Keyword') and item['Keyword'] or ''"
 			tal:attributes="class item/table_row_class;
-				id string:folder-contents-item-${item/uid};
-				uid item/uid;
+				id string:folder-contents-item-${item/UID};
+				uid item/UID;
 				specs python:item.has_key('specs') and item['specs'] or [];
 				keyword keyword;">
 		<input type="hidden" tal:attributes="
-			name string:InterimFields.${item/uid}:records:ignore_empty;
-			id string:${item/uid}_item_data;
+			name string:InterimFields.${item/UID}:records:ignore_empty;
+			id string:${item/UID}_item_data;
 			value item/item_data|nothing;"/>
 
 <tal:comment replace="nothing">***************
@@ -154,13 +154,14 @@ Elements for selecting items
 				id      string:cb_${item/id};
 				checked item/checked;
 				alt     python:view.msg_select_item(item);
-				uid     item/uid" />
+				title   item/Title;
+				uid     item/UID" />
 		<input type="hidden"
 			name="selected_obj_paths:list"
 			value="#"
 			tal:attributes="value item/relative_url" />
 		<label
-			tal:content="item/title"
+			tal:content="item/title_or_id"
 			tal:attributes="for string:cb_${item/id}"
 			class="hiddenStructure">Item Title</label>
 	</td>
@@ -200,7 +201,7 @@ Editable - interim_field column
 			class="analysis_entry"
 			tal:attributes="
 				size input_width;
-				uid string:${item/uid};
+				uid string:${item/UID};
 				field python:item[column]['id'];
 				value python: item[column]['value'];"/>
 		<!-- unit -->
@@ -209,7 +210,7 @@ Editable - interim_field column
 			tal:content="python: item[column]['unit']"/>
 		<!-- alert container -->
 		<span class="alert" tal:attributes="
-			uid python:item['uid'];
+			uid python:item['UID'];
 			field python:item[column]['id']"></span>
 	</tal:interim_field>
 
@@ -237,21 +238,21 @@ Editable - not result field
 				tal:content="python:item.get(column)"
 				tal:attributes="
 					class item/state_class;
-					id python:'%s-%s' % (item['uid'], column)">&nbsp
+					id python:'%s-%s' % (item['UID'], column)">&nbsp
 			</span>
 			<span
 				tal:condition="python:columns[column].has_key('type') and columns[column]['type'] == 'boolean'">
 				<input type="checkbox" tal:condition="python:column=='retested' and not item['calculation']"
 				tal:attributes="
 					class item/state_class;
-					id python:'%s-%s' % (item['uid'], column);
-					name string:retested.${item/uid}:record:ignore-empty;
+					id python:'%s-%s' % (item['UID'], column);
+					name string:retested.${item/UID}:record:ignore-empty;
 					checked python:item.get(column) and 'yes' or '';"/>
 				<input type="checkbox" tal:condition="python:column!='retested'"
 				tal:attributes="
 					class item/state_class;
-					id python:'%s-%s' % (item['uid'], column);
-					name string:retested.${item/uid}:record:ignore-empty;
+					id python:'%s-%s' % (item['UID'], column);
+					name string:retested.${item/UID}:record:ignore-empty;
 					checked python:item.get(column) and 'yes' or '';"/>
 			</span>
 		</tal:not_link>
@@ -270,8 +271,8 @@ Editable - result field
 		tal:condition="python:has_options"
 		tal:attributes="
 			field string:Result;
-			name string:Results.${item/uid}:records:ignore_empty;
-			uid item/uid;">
+			name string:Results.${item/UID}:records:ignore_empty;
+			uid item/UID;">
 		<tal:options tal:repeat="option item/ResultOptions">
 			<option tal:attributes="
 				value option/Result;
@@ -289,7 +290,7 @@ Editable - result field
 		style="color:black"
 		tal:attributes="
 			field string:Result_display;
-			uid item/uid;
+			uid item/UID;
 			size input_width;
 			value python: item['Result'];"/>
 
@@ -299,9 +300,9 @@ Editable - result field
 		type="hidden"
 		class="analysis_entry"
 		tal:attributes="
-			uid string:${item/uid};
+			uid string:${item/UID};
 			field string:Result;
-			name string:Results.${item/uid}:records:ignore_empty;
+			name string:Results.${item/UID}:records:ignore_empty;
 			value python: item['Result'];"/>
 
 	<!-- regular result entry field -->
@@ -311,8 +312,8 @@ Editable - result field
 		class="analysis_entry"
 		tal:attributes="
 			size input_width;
-			uid string:${item/uid};
-			name string:Results.${item/uid}:records:ignore_empty;
+			uid string:${item/UID};
+			name string:Results.${item/UID}:records:ignore_empty;
 			field string:Result;
 			value python: item['Result'];"/>
 	<!-- unit -->
@@ -321,16 +322,16 @@ Editable - result field
 		tal:content="python: item['Unit']"/>
 	<!-- alert container -->
 	<span class="alert" tal:attributes="
-		uid python:item['uid'];
+		uid python:item['UID'];
 		field string:Result;">
 	<!-- initial out-of-range indicators -->
 	<img
 		tal:condition="python:item['Result'] and not item['result_in_range']"
-		tal:attributes="uid item/uid;"
+		tal:attributes="uid item/UID;"
 		src='++resource++bika.lims.images/exclamation.png' i18n:attributes="title" title="Result out of range" icon="exclamation"/>
 	<img
 		tal:condition="python:item['Result'] and item['result_in_range'] == '1'"
-		tal:attributes="uid item/uid;"
+		tal:attributes="uid item/UID;"
 		src='++resource++bika.lims.images/warning.png' i18n:attributes="title" title="Result out of range: in error shoulder" icon="warning"/>
 	</span>
 	</tal:result>
@@ -368,9 +369,9 @@ Editable - result field
 				type="hidden"
 				class="analysis_entry"
 				tal:attributes="
-					uid string:${item/uid};
+					uid string:${item/UID};
 					field string:Result;
-					name string:Results.${item/uid}:records:ignore_empty;
+					name string:Results.${item/UID}:records:ignore_empty;
 					value python: item['Result'];"/>
 			<!-- Regular row value -->
 			<span
@@ -385,7 +386,7 @@ Editable - result field
 				tal:content="python: item['Unit']"/>
 			<!-- alert container -->
 			<span class="alert" tal:attributes="
-				uid python:item['uid'];
+				uid python:item['UID'];
 				field string:Result;"
 				tal:condition="python: column == 'Result' and item.get(column, None)">
 				<!-- initial out-of-range indicators for result view column -->
@@ -393,14 +394,14 @@ Editable - result field
 					tal:condition="python:item['Result'] and not item['result_in_range']"
 					src='++resource++bika.lims.images/exclamation.png'
 					icon="exclamation"
-					tal:attributes="uid item/uid;"
+					tal:attributes="uid item/UID;"
 					i18n:attributes="title"
 					title="Result out of range"/>
 				<img
 					tal:condition="python:item['Result'] and item['result_in_range'] == '1'"
 					src='++resource++bika.lims.images/warning.png'
 					icon="warning"
-					tal:attributes="uid item/uid;"
+					tal:attributes="uid item/UID;"
 					i18n:attributes="title"
 					title="Result out of range: in error shoulder"/>
 			</span>

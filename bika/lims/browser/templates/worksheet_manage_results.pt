@@ -1,50 +1,47 @@
-<html
-  xmlns="http://www.w3.org/1999/xhtml"
-  xml:lang="en"
-  lang="en"
-  i18n:domain="bika"
-  metal:use-macro="here/main_template/macros/master">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xml:lang="en" lang="en"
+	xmlns:tal="http://xml.zope.org/namespaces/tal"
+	xmlns:metal="http://xml.zope.org/namespaces/metal"
+	xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+	metal:use-macro="here/main_template/macros/master"
+	i18n:domain="bika">
 
-<head> </head>
 <body>
 
 <metal:title fill-slot="content-title">
-  <h1>
-    <span tal:content="here/title_or_id" tal:omit-tag="">Directory Id</span>
-  </h1>
+	<h1 tal:content="here/title_or_id"/>
 </metal:title>
 
 <metal:description fill-slot="content-description">
-  <tal:links
-    tal:define="linkedws here/getLinkedWorksheet|nothing"
-    tal:condition="nocall:linkedws">
-  (
-    <span i18n:translate="message_linked_worksheets">linked to:</span>
-    <tal:ws tal:repeat="ws linkedws">
-      <a href="" tal:content="ws/Number" tal:attributes="href ws/absolute_url"/>
-    </tal:ws>
-  )
-  </tal:links>
+	<tal:links
+		tal:define="linkedws here/getLinkedWorksheet|nothing"
+		tal:condition="nocall:linkedws">
+	(
+		<span i18n:translate="message_linked_worksheets">Linked to:</span>
+		<tal:ws tal:repeat="ws linkedws">
+			<a href="" tal:content="ws/Number" tal:attributes="href ws/absolute_url"/>
+		</tal:ws>
+	)
+	</tal:links>
 </metal:description>
 
 <metal:content fill-slot="content-core" tal:define="
-        analyses python:view.sort_analyses_on_requestid(here.getAnalyses());
-        specification python:request.get('specification', 'lab');
-        review_state here/getWorkflowState;
-        open_ws python:review_state == 'open';
-        sort_on python:(('Title', 'nocase', 'asc'),);">
+	analyses python:view.sort_analyses_on_requestid(here.getAnalyses());
+	specification python:request.get('specification', 'lab');
+	review_state here/getWorkflowState;
+	open_ws python:review_state == 'open';
+	sort_on python:(('Title', 'nocase', 'asc'),);">
 
+	<ul>
+		<li tal:repeat="record view/WorksheetLayout">
+			POS: <span tal:content="record/pos"/> &nbsp;
+			Key: <span tal:content="record/key"/> &nbsp;
+			UID: <span tal:content="record/uid"/> &nbsp;
+			Type: <span tal:content="record/type"/>
+		</li>
+	</ul>
 
-  <span tal:replace="structure python:view.AnalysesView.contents_table()"/>
-
-<ul>
-  <li tal:repeat="record view/WorksheetLayout">
-    POS: <span tal:content="record/pos"/> &nbsp;
-    Key: <span tal:content="record/key"/> &nbsp;
-    UID: <span tal:content="record/uid"/> &nbsp;
-    Type: <span tal:content="record/type"/>
-  </li>
-</ul>
+	<span tal:replace="structure python:view.AnalysesView.contents_table()"/>
 
 </metal:content>
 </body>

@@ -44,7 +44,7 @@ class LabARProfilesView(BikaListingView):
     def folderitems(self):
         items = BikaListingView.folderitems(self)
         for x in range(len(items)):
-            if not items[x].has_key('brain'): continue
+            if not items[x].has_key('obj'): continue
             items[x]['links'] = {'getProfileTitle': items[x]['url'] + "/base_edit"}
 
         return items

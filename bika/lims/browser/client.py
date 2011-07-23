@@ -11,7 +11,6 @@ class ClientAnalysisRequestsView(BikaListingView):
     show_sort_column = False
     show_select_row = False
     show_select_column = True
-    pagesize = 10
 
     columns = {
            'getRequestID': {'title': _('Request ID')},
@@ -98,7 +97,7 @@ class ClientAnalysisRequestsView(BikaListingView):
     def folderitems(self):
         items = BikaListingView.folderitems(self)
         for x in range(len(items)):
-            if not items[x].has_key('brain'): continue
+            if not items[x].has_key('obj'): continue
             items[x]['getDateReceived'] = items[x]['getDateReceived'] and \
                 self.context.toLocalizedTime(items[x]['getDateReceived'], long_format = 0) or ''
             items[x]['links'] = {'getRequestID': items[x]['url']}
@@ -175,8 +174,8 @@ class ClientSamplesView(BikaListingView):
     def folderitems(self):
         items = BikaListingView.folderitems(self)
         for x in range(len(items)):
-            if not items[x].has_key('brain'): continue
-            obj = items[x]['brain'].getObject()
+            if not items[x].has_key('obj'): continue
+            obj = items[x]['obj'].getObject()
             items[x]['Requests'] = ",".join([o.Title() for o in obj.getAnalysisRequests()])
             items[x]['getDateReceived'] = items[x]['getDateReceived'] and \
                  self.context.toLocalizedTime(items[x]['getDateReceived'], long_format = 0) or ''
@@ -227,7 +226,7 @@ class ClientARImportsView(BikaListingView):
     def folderitems(self):
         items = BikaListingView.folderitems(self)
         for x in range(len(items)):
-            if not items[x].has_key('brain'): continue
+            if not items[x].has_key('obj'): continue
             items[x]['links'] = {'title_or_id': items[x]['url']}
 
         return items
@@ -260,7 +259,7 @@ class ClientARProfilesView(BikaListingView):
     def folderitems(self):
         items = BikaListingView.folderitems(self)
         for x in range(len(items)):
-            if not items[x].has_key('brain'): continue
+            if not items[x].has_key('obj'): continue
             items[x]['links'] = {'getProfileTitle': items[x]['url'] + "/base_edit"}
 
         return items
@@ -300,8 +299,8 @@ class ClientAnalysisSpecsView(BikaListingView):
     def folderitems(self):
         items = BikaListingView.folderitems(self)
         for x in range(len(items)):
-            if not items[x].has_key('brain'): continue
-            obj = items[x]['brain'].getObject()
+            if not items[x].has_key('obj'): continue
+            obj = items[x]['obj'].getObject()
             items[x]['getSampleType'] = obj.getSampleType() and obj.getSampleType().Title()
             items[x]['links'] = {'getSampleType': items[x]['url']}
 
@@ -353,8 +352,8 @@ class ClientAttachmentsView(BikaListingView):
     def folderitems(self):
         items = BikaListingView.folderitems(self)
         for x in range(len(items)):
-            if not items[x].has_key('brain'): continue
-            obj = items[x]['brain'].getObject()
+            if not items[x].has_key('obj'): continue
+            obj = items[x]['obj'].getObject()
             obj_url = obj.absolute_url()
             file = obj.getAttachmentFile()
             icon = file.getBestIcon()
@@ -409,8 +408,8 @@ class ClientOrdersView(BikaListingView):
     def folderitems(self):
         items = BikaListingView.folderitems(self)
         for x in range(len(items)):
-            if not items[x].has_key('brain'): continue
-            obj = items[x]['brain'].getObject()
+            if not items[x].has_key('obj'): continue
+            obj = items[x]['obj'].getObject()
             items[x]['OrderNumber'] = obj.getOrderNumber()
             items[x]['OrderDate'] = obj.getOrderDate()
             items[x]['DateDispatched'] = obj.getDateDispatched()
@@ -453,7 +452,7 @@ class ClientContactsView(BikaListingView):
     def folderitems(self):
         items = BikaListingView.folderitems(self)
         for x in range(len(items)):
-            if not items[x].has_key('brain'): continue
+            if not items[x].has_key('obj'): continue
             items[x]['links'] = {'getFullname': items[x]['url'] + "/edit"}
 
         return items
