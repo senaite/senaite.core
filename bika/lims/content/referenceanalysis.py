@@ -10,6 +10,7 @@ from Products.Archetypes.public import *
 from Products.Archetypes.references import HoldingReference
 from Products.CMFCore.permissions import View, ModifyPortalContent
 from Products.CMFCore.utils import getToolByName
+from bika.lims.browser.fieldsimport InterimFieldsField
 from bika.lims.browser.widgets import RecordsWidget as BikaRecordsWidget
 from bika.lims.config import I18N_DOMAIN, STD_TYPES, PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
@@ -63,12 +64,7 @@ schema = BikaSchema.copy() + Schema((
         relationship = 'AnalysisCalculation',
         referenceClass = HoldingReference,
     ),
-    RecordsField('InterimFields',
-        # 'subfields' must be the identical twin of Calculation.InterimFields.
-        type = 'InterimFields',
-        subfields = ('id', 'title', 'value', 'unit'),
-        subfield_labels = {'id':'Field ID', 'title':'Field Title', 'value':'Default', 'unit':'Unit'},
-        required_subfields = ('id','title',),
+    InterimFieldsField('InterimFields',
         widget = BikaRecordsWidget(
             label = 'Calculation Interim Fields',
             label_msgid = 'label_interim_fields',
@@ -149,15 +145,54 @@ class ReferenceAnalysis(BaseContent):
     filter_content_types = 0
     use_folder_tabs = 0
     actions = ()
+
     def Title(self):
         """ Return the Service ID as title """
         s = self.getService()
         return s and s.Title() or ''
 
     def getUncertainty(self, result=None):
-        """ Calls self.Service.getUncertainty with either the provided result value or self.Result
+        """ Calls self.Service.getUncertainty with either the
+            provided result value or self.Result
         """
         return self.getService().getUncertainty(result and result or self.getResult())
+
+    def result_in_range(self, result=None):
+        """ Check if the result is in range for the Analysis' service.
+            if result is None, self.getResult() is called for the result value.
+            Return False if out of range
+            Return True if in range
+            return '1' if in shoulder
+        """
+
+        result = result and result or self.getResult()
+
+        try:
+            result = float(str(result))
+        except:
+            # if it is not a number we assume it is in range
+            return True
+
+        service_uid = self.getService().UID()
+        specs = self.aq_parent.getResultsRangeDict()
+        if specs.has_key(service_uid):
+            spec = specs[service_uid]
+            spec_min = float(spec['min'])
+            spec_max = float(spec['max'])
+
+            if spec_min <= result <= spec_max:
+                return True
+
+            """ check if in 'shoulder' error range - out of range, but in acceptable error """
+            error_amount =  (result/100)*float(spec['error'])
+            error_min = result - error_amount
+            error_max = result + error_amount
+            if ((result < spec_min) and (error_max >= spec_min)) or \
+               ((result > spec_max) and (error_min <= spec_max)):
+                return '1'
+        else:
+            return True
+        return False
 
     security.declarePublic('getWorksheet')
     def getWorksheet(self):

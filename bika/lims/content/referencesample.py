@@ -177,6 +177,7 @@ class ReferenceSample(BaseFolder):
             specs[uid]['result'] = spec['result']
             specs[uid]['min'] = spec['min']
             specs[uid]['max'] = spec['max']
+            specs[uid]['error'] = spec['error']
         return specs
 
     security.declarePublic('getResultsRangeSorted')
@@ -198,7 +199,8 @@ class ReferenceSample(BaseFolder):
                                   'unit': service.getUnit(),
                                   'result': spec['result'],
                                   'min': spec['min'],
-                                  'max': spec['max']}
+                                  'max': spec['max'],
+                                  'error': spec['error']}
 
         cat_keys = cats.keys()
         cat_keys.sort(lambda x, y:cmp(x.lower(), y.lower()))
@@ -234,7 +236,8 @@ class ReferenceSample(BaseFolder):
                 result = float(spec['result'])
                 min = float(spec['min'])
                 max = float(spec['max'])
-                return result, min, max
+                error = float(spec['error'])
+                return result, min, max, error
         return None
 
     security.declarePublic('addReferenceAnalysis')

@@ -3,6 +3,7 @@
 	review_state python:[t for t in view.review_states if t['id'] == request.get('review_state', 'all')][0];
 	portal context/@@plone_portal_state/portal;">
 
+
 <tal:comment replace="nothing">***************
 Workflow review state selector
 ********************************</tal:comment>

@@ -1,14 +1,15 @@
 from AccessControl import ClassSecurityInfo
-from Products.CMFCore.permissions import ModifyPortalContent, View
+from Products.ATExtensions.ateapi import RecordsField as RecordsField
 from Products.Archetypes.public import *
 from Products.Archetypes.references import HoldingReference
-from Products.ATExtensions.ateapi import RecordsField as RecordsField
+from Products.CMFCore.permissions import ModifyPortalContent, View
 from Products.validation.ZService import ZService as Service
 from Products.validation.interfaces.IValidator import IValidator
-from bika.lims.browser.widgets import RecordsWidget as BikaRecordsWidget
-from bika.lims.content.bikaschema import BikaSchema
-from bika.lims.config import I18N_DOMAIN, PROJECTNAME
 from bika.lims import bikaMessageFactory as _
+from bika.lims.browser.fields import InterimFieldsField
+from bika.lims.browser.widgets import RecordsWidget as BikaRecordsWidget
+from bika.lims.config import I18N_DOMAIN, PROJECTNAME
+from bika.lims.content.bikaschema import BikaSchema
 from zope.interface import implements
 from zope.site.hooks import getSite
 import sys,re
@@ -56,22 +57,13 @@ schema = BikaSchema.copy() + Schema((
             i18n_domain = I18N_DOMAIN,
         )
     ),
-    RecordsField('InterimFields',
-        # 'subfields' must be the identical twin of Analysis.InterimFields.
-        type = 'InterimFields',
-        subfields = ('id', 'title', 'value', 'unit'),
-        required_subfields = ('id','title',),
-        subfield_labels = {'id':'Field ID', 'title':'Field Title', 'value':'Default', 'unit':'Unit'},
-        subfield_sizes = {'id':20, 'title':40, 'value':15, 'unit':10},
-        subfield_validators = {'id':id_validator, 'title':title_validator},
-        # subfield_conditions
+    InterimFieldsField('InterimFields',
         widget = BikaRecordsWidget(
             label = 'Calculation Interim Fields',
             label_msgid = 'label_interim_fields',
             i18n_domain = I18N_DOMAIN,
         )
     ),
-
     ReferenceField('DependentServices',
         required = 0,
         multiValued = 1,

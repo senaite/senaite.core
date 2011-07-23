@@ -41,6 +41,7 @@
 		</li>
 	</ul>
 
+	<input tal:replace="structure context/@@authenticator/authenticator" />
 	<span tal:replace="structure python:view.AnalysesView.contents_table()"/>
 
 </metal:content>

@@ -137,7 +137,12 @@ class AJAXCalculateAnalysisEntry():
                                    'uncertainty':analysis.getUncertainty(result and result or form_result)})
 
         # alert if the result is not in spec
-        in_range = analysis.result_in_range(result and result or form_result, self.specification)
+        # for a normal analysis this checks against lab/client results specificitions
+        # for a reference analysis this checks against the analysis' ReferenceResults
+        if analysis.portal_type == 'ReferenceAnalysis':
+            in_range = analysis.result_in_range(result and result or form_result)
+        else:
+            in_range = analysis.result_in_range(result and result or form_result, self.specification)
         if in_range == True: pass
         if in_range == False:
             self.alerts.append({'uid': uid,
@@ -161,9 +166,8 @@ class AJAXCalculateAnalysisEntry():
                 self.calculate(recurse_uid)
                 self.recurse_uids.remove(recurse_uid)
 
-
     def __call__(self):
-        pc = getToolByName(self.context, 'portal_catalog')
+        rc = getToolByName(self.context, 'reference_catalog')
         plone.protect.CheckAuthenticator(self.request)
         plone.protect.PostOnly(self.request)
 
@@ -189,7 +193,7 @@ class AJAXCalculateAnalysisEntry():
         # Also contains all Analysis UIDS as keys, with their Service UIDs as values.
         self.UIDtoUID = {}
         for analysis_uid, result in self.form_results.items():
-            analysis = pc(portal_type='Analysis', UID=analysis_uid)[0].getObject()
+            analysis = rc.lookupObject(analysis_uid)
             service = analysis.getService()
             service_uid = service.UID()
             self.analyses[analysis_uid] = analysis

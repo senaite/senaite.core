@@ -14,12 +14,11 @@ from Products.Archetypes.references import HoldingReference
 from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFCore.permissions import View, ModifyPortalContent
 from Products.CMFCore.utils import getToolByName
+from bika.lims.browser.fields import InterimFieldsField
 from bika.lims.browser.widgets import RecordsWidget as BikaRecordsWidget
 from bika.lims.config import I18N_DOMAIN, PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from decimal import Decimal
-
-# XXX XXX tune up
 
 #try:
 #    from bika.limsCalendar.config import TOOL_NAME as BIKA_CALENDAR_TOOL # XXX
@@ -75,12 +74,7 @@ schema = BikaSchema.copy() + Schema((
     BooleanField('ReportDryMatter',
         default = False,
     ),
-    RecordsField('InterimFields',
-        # 'subfields' must be the identical twin of Calculation.InterimFields.
-        type = 'InterimFields',
-        subfields = ('id', 'title', 'value', 'unit'),
-        subfield_labels = {'id':'Field ID', 'title':'Field Title', 'value':'Default', 'unit':'Unit'},
-        required_subfields = ('id','title',),
+    InterimFieldsField('InterimFields',
         widget = BikaRecordsWidget(
             label = 'Calculation Interim Fields',
             label_msgid = 'label_interim_fields',
@@ -181,8 +175,6 @@ class Analysis(BaseContent):
     def result_in_range(self, result=None, specification="lab"):
         """ Check if a result is "in range".
             if result is None, self.getResult() is called for the result value.
-            If client_uid is None, use AnalysisSpec objects without ClientUID value:
-                - these should be only the ones in bika_settings/bika_analysisspecs
             Return False if out of range
             Return True if in range
             return '1' if in shoulder
@@ -204,43 +196,33 @@ class Analysis(BaseContent):
         service = self.getService()
         keyword = service.getKeyword()
 
-        if self.portal_type in ['Analysis', 'RejectAnalysis']:
-            proxies = self.portal_catalog(portal_type = 'AnalysisSpec',
-                                          getSampleTypeUID = self.aq_parent.getSample().getSampleType().UID())
-            a = [p for p in proxies if p.getObject().getClientUID() == client_uid]
-            if a:
-                spec_obj = a[0].getObject()
-                spec = spec_obj.getResultsRangeDict()
-            else:
+        proxies = self.portal_catalog(portal_type = 'AnalysisSpec',
+                                      getSampleTypeUID = self.aq_parent.getSample().getSampleType().UID())
+        a = [p for p in proxies if p.getObject().getClientUID() == client_uid]
+        if a:
+            spec_obj = a[0].getObject()
+            spec = spec_obj.getResultsRangeDict()
+        else:
+            return True
+
+        if spec.has_key(keyword):
+            spec_min = float(spec[keyword]['min'])
+            spec_max = float(spec[keyword]['max'])
+
+            if spec_min <= result <= spec_max:
                 return True
 
-            if spec.has_key(keyword):
-                spec_min = float(spec[keyword]['min'])
-                spec_max = float(spec[keyword]['max'])
+            """ check if in 'shoulder' error range - out of range, but in acceptable error """
+            error_amount =  (result/100)*float(spec[keyword]['error'])
+            error_min = result - error_amount
+            error_max = result + error_amount
+            if ((result < spec_min) and (error_max >= spec_min)) or \
+               ((result > spec_max) and (error_min <= spec_max)):
+                return '1'
+        else:
+            return True
+        return False
 
-                if spec_min <= result <= spec_max:
-                    return True
-
-                """ check if in 'shoulder' error range - out of range, but in acceptable error """
-                error_amount =  (result/100)*float(spec[keyword]['error'])
-                error_min = result - error_amount
-                error_max = result + error_amount
-                if ((result < spec_min) and (error_max >= spec_min)) or \
-                   ((result > spec_max) and (error_min <= spec_max)):
-                    return '1'
-
-            else:
-                return True
-            return False
-
-##        elif analysis.portal_type == 'ReferenceAnalysis':
-##            result_class = ''
-##            specs = analysis.aq_parent.getResultsRangeDict()
-##            if specs.has_key(service_uid):
-##                spec = specs[service_uid]
-##                if (result < Decimal(spec['min'])) or (result > Decimal(spec['max'])):
-##                    result_class = 'out_of_range'
-##            return specs
 ##
 ##        elif analysis.portal_type == 'DuplicateAnalysis':
 ##            service = analysis.getService()

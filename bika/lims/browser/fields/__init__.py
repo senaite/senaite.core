@@ -1,3 +1,4 @@
 from addressfield import AddressField
 from aranalysesfield import ARAnalysesField
+from interimfieldsfield import InterimFieldsField
 from referenceresultsfield import ReferenceResultsField
