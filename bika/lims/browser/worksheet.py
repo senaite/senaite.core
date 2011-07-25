@@ -69,13 +69,13 @@ class WorksheetAnalysesView(AnalysesView):
             item['Order'] = hasattr(item['obj'].aq_parent, 'getClientOrderNumber') and \
                             item['obj'].aq_parent.getClientOrderNumber() or ''
             if slot['type'] == 'b':
-                item['icon'] = '<img width="16" height="16" src="%s/++resource++bika.lims.images/blank.png"/>'%\
+                item['after'] += '<img width="16" height="16" src="%s/++resource++bika.lims.images/blank.png"/>'%\
                     (portal.absolute_url())
             if slot['type'] == 'c':
-                item['icon'] = '<img width="16" height="16" src="%s/++resource++bika.lims.images/control.png"/>'%\
+                item['after'] += '<img width="16" height="16" src="%s/++resource++bika.lims.images/control.png"/>'%\
                     (portal.absolute_url())
             if slot['type'] == 'd':
-                item['icon'] = '<img width="16" height="16" src="%s/++resource++bika.lims.images/duplicate.png"/>'%\
+                item['after'] += '<img width="16" height="16" src="%s/++resource++bika.lims.images/duplicate.png"/>'%\
                     (portal.absolute_url())
             items.append(item)
 

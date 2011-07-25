@@ -4,9 +4,10 @@
    xmlns:i18n="http://xml.zope.org/namespaces/i18n">
  <property name="title">Laboratory</property>
  <property name="description">
- 	Laboratory information includes the name of the laboratory, contact numbers, physical and postal address, email address and the laboratory personnel and their contact details
+ 	Laboratory information includes the name of the laboratory, contact numbers, physical
+	and postal address, email address and the laboratory personnel and their contact details
  </property>
- <property name="icon_expr">string:${portal_url}/images/lab.png</property>
+ <property name="content_icon">++resource++bika.lims.images/lab.png</property>
  <property name="content_meta_type">Laboratory</property>
  <property name="product">bika.lims</property>
  <property name="factory">addLaboratory</property>

@@ -4,7 +4,7 @@
    xmlns:i18n="http://xml.zope.org/namespaces/i18n">
  <property name="title">Sample</property>
  <property name="description">Sample object</property>
- <property name="icon_expr">string:${portal_url}/images/sample.png</property>
+ <property name="content_icon">++resource++bika.lims.images/sample.png</property>
  <property name="content_meta_type">Sample</property>
  <property name="product">bika.lims</property>
  <property name="factory">addSample</property>
@@ -15,9 +15,9 @@
  <property name="allowed_content_types"/>
  <property name="allow_discussion">False</property>
  <property name="default_view_fallback">False</property>
- 
+
  <alias from="(Default)" to="base_view"/>
- 
+
  <action title="View" action_id="view" category="object" condition_expr=""
     icon_expr="" link_target="" url_expr="string:${object_url}/base_view"
     visible="True">

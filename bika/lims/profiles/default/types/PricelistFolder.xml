@@ -3,14 +3,7 @@
    meta_type="Factory-based Type Information with dynamic views"
    xmlns:i18n="http://xml.zope.org/namespaces/i18n">
  <property name="title">PricelistFolder</property>
- <property
-    name="description">Mixin class for content types using the dynamic view FTI
-  
-  Allow the user to select a layout template (in the same way as
-  TemplateMixin in Archetypes does), and/or to set a contained
-  object's id as a default_page (acting in the same way as index_html)
-  
-  Note: folderish content types should overwrite HEAD like ATContentTypes</property>
+ <property name="description"> </property>
  <property name="icon_expr">string:${portal_url}/folder_icon.gif</property>
  <property name="content_meta_type">PricelistFolder</property>
  <property name="product">bika.lims</property>
@@ -45,6 +38,6 @@
  <action title="Price lists" action_id="pricelists" category="object"
     condition_expr="" icon_expr="" link_target=""
     url_expr="string:${object_url}/pricelistfolder_pricelists" visible="True">
-  <permission value="bika.lims: Manage Pricelists"/>
+  <permission value="BIKA: Manage Pricelists"/>
  </action>
 </object>

@@ -4,7 +4,7 @@
 	xmlns:i18n="http://xml.zope.org/namespaces/i18n">
 <property name="title">Reference Sample</property>
 <property name="description">ReferenceSample represents a reference sample used for quality control testing</property>
-<property name="icon_expr">string:${portal_url}/images/referencesample.png</property>
+<property name="content_icon">++resource++bika.lims.images/referencesample.png</property>
 <property name="content_meta_type">ReferenceSample</property>
 <property name="product">bika.lims</property>
 <property name="factory">addReferenceSample</property>

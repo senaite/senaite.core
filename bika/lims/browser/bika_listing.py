@@ -12,6 +12,7 @@ from bika.lims import logger
 from plone.app.content.browser import tableview
 from plone.app.content.browser.foldercontents import FolderContentsView, FolderContentsTable
 from plone.app.content.browser.interfaces import IFolderContentsView
+from zope.app.component.hooks import getSite
 from zope.component._api import getMultiAdapter
 from zope.i18n import translate
 from zope.i18nmessageid import MessageFactory
@@ -48,14 +49,13 @@ class BikaListingView(FolderContentsView):
 ##     - "type": string
 ##       possible values: "str", "bool"
 ##
-##     - "show_icon": string
-##       possible values: "before" or "after".
-##       Displays the content type icon in this column, either before
-##       or after the field contents.
-
+##     - "before": string
+##       A snippet of HTML which will be rendered before the column content value
+##     - "after": string
+##       A snippet of HTML which will be rendered after the column content value
+##
     columns = {
-           'obj_type': {'title': _('Type'),
-                        'show_icon': "before"},
+           'obj_type': {'title': _('Type')},
            'id': {'title': _('ID')},
            'title_or_id': {'title': _('Title')},
            'modified': {'title': _('Last modified')},
@@ -139,8 +139,6 @@ class BikaListingView(FolderContentsView):
         portal_workflow = getToolByName(context, 'portal_workflow')
         site_properties = portal_properties.site_properties
 
-        browser_default = plone_utils.browserDefault(context)
-
         show_all = self.request.get('show_all', '').lower() == 'true'
         pagenumber = int(self.request.get('pagenumber', 1) or 1)
         pagesize = self.pagesize
@@ -198,9 +196,6 @@ class BikaListingView(FolderContentsView):
 
             modified = plone_view.toLocalizedTime(obj.ModificationDate, long_format = 1)
 
-            is_browser_default = len(browser_default[1]) == 1 and (
-                obj.id == browser_default[1][0])
-
             # Check for InterimFields attribute on our object,
             interim_fields = hasattr(obj, 'getInterimFields') and obj.getInterimFields or []
             if not interim_fields:
@@ -235,10 +230,11 @@ class BikaListingView(FolderContentsView):
                 state_title = portal_workflow.getTitleForStateOnType(review_state,
                                                                      obj.portal_type),
                 state_class = state_class,
-                is_browser_default = is_browser_default,
                 relative_url = relative_url,
                 view_url = url,
                 table_row_class = table_row_class,
+                before = "",
+                after = "",
             )
 
             # look through self.columns for object attribute names (the column key),
@@ -271,6 +267,7 @@ class BikaListingView(FolderContentsView):
                                  self.request,
                                  folderitems = self.folderitems,
                                  columns = self.columns,
+                                 allow_edit = self.allow_edit,
                                  review_states = self.review_states,
                                  pagesize = self.pagesize,
                                  show_sort_column = self.show_sort_column,
@@ -286,6 +283,7 @@ class BikaListingTable(FolderContentsTable):
                  request,
                  folderitems,
                  columns,
+                 allow_edit,
                  review_states,
                  pagesize,
                  show_sort_column,
@@ -302,6 +300,7 @@ class BikaListingTable(FolderContentsTable):
                            url + "/view",
                            folderitems(),
                            columns,
+                           allow_edit,
                            review_states,
                            show_sort_column = show_sort_column,
                            show_select_row = show_select_row,
@@ -321,6 +320,7 @@ class Table(tableview.Table):
                  view_url,
                  items,
                  columns,
+                 allow_edit,
                  review_states,
                  show_sort_column,
                  show_select_row,
@@ -341,6 +341,7 @@ class Table(tableview.Table):
         self.context = context
         self.request = request
         self.columns = columns
+        self.allow_edit = allow_edit
         self.show_sort_column = show_sort_column
         self.show_select_row = show_select_row
         self.show_select_column = show_select_column

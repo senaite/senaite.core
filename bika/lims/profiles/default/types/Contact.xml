@@ -4,7 +4,7 @@
    xmlns:i18n="http://xml.zope.org/namespaces/i18n">
  <property name="title">Contact</property>
  <property name="description"></property>
- <property name="icon_expr">string:${portal_url}/images/contact.png</property>
+ <property name="content_icon">++resource++bika.lims.images/contact.png</property>
  <property name="content_meta_type">Contact</property>
  <property name="product">bika.lims</property>
  <property name="factory">addContact</property>
@@ -33,7 +33,7 @@
  <action title="Login details" action_id="access" category="object"
     condition_expr="" url_expr="string:${object_url}/contact_login_details"
     visible="True">
-  <permission value="bika.lims: Manage Clients"/>
+  <permission value="BIKA: Manage Clients"/>
  </action>
  <action title="Folder Listing" action_id="folderlisting" category="folder"
     condition_expr="object/isPrincipiaFolderish" icon_expr="" link_target=""

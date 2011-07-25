@@ -6,7 +6,7 @@
  <property name="description">
  	Configure sample points of origin
  </property>
- <property name="icon_expr">string:${portal_url}/images/samplepoint.png</property>
+ <property name="content_icon">++resource++bika.lims.images/samplepoint.png</property>
  <property name="content_meta_type">SamplePoint</property>
  <property name="product">bika.lims</property>
  <property name="factory">addSamplePoint</property>

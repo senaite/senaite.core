@@ -60,25 +60,25 @@ class BikaGenerator:
         # Create groups
         portal_groups = portal.portal_groups
         if 'labmanagers' not in portal_groups.listGroupIds():
-            portal_groups.addGroup('labmanagers',
+            portal_groups.addGroup('labmanagers', title = "Lab Managers",
                 roles = ['Member', 'LabManager', 'Reviewer'])
         if 'labclerks' not in portal_groups.listGroupIds():
-            portal_groups.addGroup('labclerks',
+            portal_groups.addGroup('labclerks', title = "Lab Clerks",
                 roles = ['Member', 'LabClerk'])
         if 'labtechnicians' not in portal_groups.listGroupIds():
-            portal_groups.addGroup('labtechnicians',
+            portal_groups.addGroup('labtechnicians', title = "Lab Technicians",
                 roles = ['Member', 'LabTechnician'])
         if 'verifiers' not in portal_groups.listGroupIds():
-            portal_groups.addGroup('verifiers',
+            portal_groups.addGroup('verifiers', title = "Verifiers",
                 roles = ['Verifier'])
         if 'publishers' not in portal_groups.listGroupIds():
-            portal_groups.addGroup('publishers',
+            portal_groups.addGroup('publishers', title = "Publishers",
                 roles = ['Publisher'])
         if 'clients' not in portal_groups.listGroupIds():
-            portal_groups.addGroup('clients',
+            portal_groups.addGroup('clients', title = "Clients",
                 roles = ['Member', ])
         if 'referencesuppliers' not in portal_groups.listGroupIds():
-            portal_groups.addGroup('referencesuppliers',
+            portal_groups.addGroup('referencesuppliers', title = "",
                 roles = ['Member', ])
 
     def setupPermissions(self, portal):

@@ -29,7 +29,7 @@ Workflow review state selector
 	tal:condition="view/filters_in_use">
 	<span i18n:translate="clear_filters" class="link">[clear filters]</span></p>
 
-<table class="listing" style="width:100%"
+<table class="listing"
 	tal:condition="view/items"
 	id="listing-table"
 	summary="Content listing"
@@ -184,14 +184,14 @@ XXX proper truth table
 			class python: columns[column].has_key('table_row_class') and columns[column]['table_row_class'] or ''"
 		tal:define="
 			input_width python:6;
-			is_editable python: item.has_key('allow_edit') and item['allow_edit'] or False;
+			is_editable python: view.allow_edit and item.has_key('allow_edit') and item['allow_edit'] or False;
 			is_interim python: item.has_key(column) and type(item[column]) == type({}) or False;
 			is_result python: column == 'Result';">
 
-	<!--  show_icon before field content -->
+	<!--  column has "before" content snippet -->
 	<tal:icon
-		condition="python:view.columns[column].has_key('show_icon') and view.columns[column]['show_icon']=='before'"
-		tal:replace="structure item/icon"/>
+		condition="python:view.columns[column].has_key('before')"
+		tal:replace="structure item/before"/>
 
 <tal:comment replace="nothing">***************
 <!----------------- Editable ----------------->
@@ -412,10 +412,10 @@ Editable - result field
 		</tal:not_interim>
 	</tal:not_editable>
 
-	<!--  show_icon after field content -->
+	<!--  column has "after" content snippet -->
 	<tal:icon
-		condition="python:view.columns[column].has_key('show_icon') and view.columns[column]['show_icon']=='after'"
-		tal:replace="structure item/icon"/>
+		condition="python:view.columns[column].has_key('after')"
+		tal:replace="structure item/after"/>
 
 	</td>
 	</tal:column>

@@ -7,7 +7,7 @@
     icon_expr="string:$portal_url/images/setup.png"
 	url_expr="string:$portal_url/bika_settings/edit"
     visible="True">
-  <permission>bika.lims: Manage Bika</permission>
+  <permission>BIKA: Manage Bika</permission>
  </configlet>
 
  <configlet title="Laboratory Information" action_id="bika_labinfo"
@@ -15,7 +15,7 @@
     icon_expr="string:$portal_url/images/lab.png"
 	url_expr="string:$portal_url/bika_settings/laboratory/base_edit"
     visible="True">
-  <permission>bika.lims: Manage Bika</permission>
+  <permission>BIKA: Manage Bika</permission>
  </configlet>
 
  <configlet title="Lab Departments" action_id="bika_departments"
@@ -23,7 +23,7 @@
     icon_expr="string:$portal_url/images/department.png"
     url_expr="string:$portal_url/bika_settings/bika_departments"
 	visible="True">
-  <permission>bika.lims: Manage Bika</permission>
+  <permission>BIKA: Manage Bika</permission>
  </configlet>
 
  <configlet title="Lab Contacts" action_id="bika_labcontacts"
@@ -31,7 +31,7 @@
     icon_expr="string:$portal_url/images/contact.png"
     url_expr="string:$portal_url/bika_settings/bika_labcontacts"
 	visible="True">
-  <permission>bika.lims: Manage Bika</permission>
+  <permission>BIKA: Manage Bika</permission>
  </configlet>
 
  <configlet title="Analysis Categories" action_id="bika_analysiscategories"
@@ -39,7 +39,7 @@
     icon_expr="string:$portal_url/images/category.png"
     url_expr="string:$portal_url/bika_settings/bika_analysiscategories"
     visible="True">
-  <permission>bika.lims: Manage Bika</permission>
+  <permission>BIKA: Manage Bika</permission>
  </configlet>
 
  <configlet title="Analysis Services" action_id="bika_analysisservices"
@@ -47,7 +47,7 @@
     icon_expr="string:$portal_url/images/service.png"
     url_expr="string:$portal_url/bika_settings/bika_analysisservices"
     visible="True">
-  <permission>bika.lims: Manage Bika</permission>
+  <permission>BIKA: Manage Bika</permission>
  </configlet>
 
  <configlet title="Analysis Specs" action_id="bika_analysisspecs"
@@ -55,7 +55,7 @@
     icon_expr="string:$portal_url/images/service.png"
     url_expr="string:$portal_url/bika_settings/bika_analysisspecs"
     visible="True">
-  <permission>bika.lims: Manage Bika</permission>
+  <permission>BIKA: Manage Bika</permission>
  </configlet>
 
  <configlet title="Sample Types" action_id="bika_sampletypes"
@@ -63,7 +63,7 @@
     icon_expr="string:$portal_url/images/sampletype.png"
     url_expr="string:$portal_url/bika_settings/bika_sampletypes"
 	visible="True">
-  <permission>bika.lims: Manage Bika</permission>
+  <permission>BIKA: Manage Bika</permission>
  </configlet>
 
  <configlet title="Sample Points" action_id="bika_samplepoints"
@@ -71,7 +71,7 @@
     icon_expr="string:$portal_url/images/samplepoint.png"
     url_expr="string:$portal_url/bika_settings/bika_samplepoints"
 	visible="True">
-  <permission>bika.lims: Manage Bika</permission>
+  <permission>BIKA: Manage Bika</permission>
  </configlet>
 
  <configlet title="Instruments" action_id="bika_instruments"
@@ -79,7 +79,7 @@
     icon_expr="string:$portal_url/images/instrument.png"
     url_expr="string:$portal_url/bika_settings/bika_instruments"
     visible="True">
-  <permission>bika.lims: Manage Bika</permission>
+  <permission>BIKA: Manage Bika</permission>
  </configlet>
 
  <configlet title="Methods" action_id="bika_methods"
@@ -87,7 +87,7 @@
     icon_expr="string:$portal_url/images/method.png"
     url_expr="string:$portal_url/bika_settings/bika_methods"
     visible="True">
-  <permission>bika.lims: Manage Bika</permission>
+  <permission>BIKA: Manage Bika</permission>
  </configlet>
 
  <configlet title="Attachment Types" action_id="bika_attachmenttypes"
@@ -95,7 +95,7 @@
     icon_expr="string:$portal_url/images/attachment.png"
     url_expr="string:$portal_url/bika_settings/bika_attachmenttypes"
     visible="True">
-  <permission>bika.lims: Manage Bika</permission>
+  <permission>BIKA: Manage Bika</permission>
  </configlet>
 
  <configlet title="Calculations" action_id="bika_calculations"
@@ -103,7 +103,7 @@
     icon_expr="string:++resource++bika.lims.images/calculation.png"
     url_expr="string:$portal_url/bika_settings/bika_calculations"
     visible="True">
-  <permission>bika.lims: Manage Bika</permission>
+  <permission>BIKA: Manage Bika</permission>
  </configlet>
 
  <configlet title="Analysis Profiles" action_id="bika_labarprofiles"
@@ -111,7 +111,7 @@
     icon_expr="string:$portal_url/images/service.png"
     url_expr="string:$portal_url/bika_settings/bika_labarprofiles"
     visible="True">
-  <permission>bika.lims: Manage Bika</permission>
+  <permission>BIKA: Manage Bika</permission>
  </configlet>
 
  <configlet title="Products" action_id="bika_labproducts" appId="bika"
@@ -119,7 +119,7 @@
     icon_expr="string:$portal_url/images/product.png"
     url_expr="string:$portal_url/bika_settings/bika_labproducts"
     visible="True">
-  <permission>bika.lims: Manage Bika</permission>
+  <permission>BIKA: Manage Bika</permission>
  </configlet>
 
  <configlet title="Reference Manufacturers"
@@ -128,7 +128,7 @@
     icon_expr="string:$portal_url/images/referencemanufacturer.png"
     url_expr="string:$portal_url/bika_settings/bika_referencemanufacturers"
     visible="True">
-  <permission>bika.lims: Manage Bika</permission>
+  <permission>BIKA: Manage Bika</permission>
  </configlet>
 
  <configlet title="Reference Definitions" action_id="bika_referencedefinitions"
@@ -136,7 +136,7 @@
     icon_expr="string:$portal_url/images/referencedefinition.png"
     url_expr="string:$portal_url/bika_settings/bika_referencedefinitions"
     visible="True">
-  <permission>bika.lims: Manage Bika</permission>
+  <permission>BIKA: Manage Bika</permission>
  </configlet>
 
  <configlet title="Worksheet Templates" action_id="bika_worksheettemplates"
@@ -144,6 +144,6 @@
     icon_expr="string:$portal_url/images/worksheettemplate.png"
     url_expr="string:$portal_url/bika_settings/bika_worksheettemplates"
     visible="True">
-  <permission>bika.lims: Manage Bika</permission>
+  <permission>BIKA: Manage Bika</permission>
  </configlet>
 </object>

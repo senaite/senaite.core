@@ -5,14 +5,14 @@
              initial_state="due">
  <permission>Modify portal content</permission>
  <permission>Delete objects</permission>
- <permission>bika.lims: Submit results</permission>
- <permission>bika.lims: Manage Sample</permission>
- <permission>bika.lims: View Results</permission>
- <permission>bika.lims: Edit analyses</permission>
- <permission>bika.lims: Retract sample</permission>
+ <permission>BIKA: Submit results</permission>
+ <permission>BIKA: Manage Sample</permission>
+ <permission>BIKA: View Results</permission>
+ <permission>BIKA: Edit analyses</permission>
+ <permission>BIKA: Retract sample</permission>
  <state state_id="due" title="Due">
   <exit-transition transition_id="receive"/>
-  <permission-map name="bika.lims: Edit analyses"
+  <permission-map name="BIKA: Edit analyses"
                   acquired="False">
    <permission-role>Manager</permission-role>
    <permission-role>LabManager</permission-role>
@@ -20,21 +20,21 @@
    <permission-role>LabClerk</permission-role>
    <permission-role>Owner</permission-role>
   </permission-map>
-  <permission-map name="bika.lims: Manage Sample"
+  <permission-map name="BIKA: Manage Sample"
                   acquired="False">
    <permission-role>Manager</permission-role>
    <permission-role>LabManager</permission-role>
    <permission-role>LabTechnician</permission-role>
    <permission-role>LabClerk</permission-role>
   </permission-map>
-  <permission-map name="bika.lims: Retract sample"
+  <permission-map name="BIKA: Retract sample"
                   acquired="True">
   </permission-map>
-  <permission-map name="bika.lims: Submit results"
+  <permission-map name="BIKA: Submit results"
                   acquired="False">
    <permission-role>Manager</permission-role>
   </permission-map>
-  <permission-map name="bika.lims: View Results" acquired="False">
+  <permission-map name="BIKA: View Results" acquired="False">
    <permission-role>Manager</permission-role>
    <permission-role>LabManager</permission-role>
    <permission-role>LabTechnician</permission-role>
@@ -59,30 +59,30 @@
  </state>
  <state state_id="received" title="Received">
   <exit-transition transition_id="expire"/>
-  <permission-map name="bika.lims: Edit analyses"
+  <permission-map name="BIKA: Edit analyses"
                   acquired="False">
    <permission-role>Manager</permission-role>
    <permission-role>LabManager</permission-role>
    <permission-role>LabClerk</permission-role>
   </permission-map>
-  <permission-map name="bika.lims: Manage Sample"
+  <permission-map name="BIKA: Manage Sample"
                   acquired="False">
    <permission-role>Manager</permission-role>
    <permission-role>LabManager</permission-role>
    <permission-role>LabTechnician</permission-role>
    <permission-role>LabClerk</permission-role>
   </permission-map>
-  <permission-map name="bika.lims: Retract sample"
+  <permission-map name="BIKA: Retract sample"
                   acquired="True">
   </permission-map>
-  <permission-map name="bika.lims: Submit results"
+  <permission-map name="BIKA: Submit results"
                   acquired="False">
    <permission-role>Manager</permission-role>
    <permission-role>LabManager</permission-role>
    <permission-role>LabTechnician</permission-role>
    <permission-role>LabClerk</permission-role>
   </permission-map>
-  <permission-map name="bika.lims: View Results" acquired="False">
+  <permission-map name="BIKA: View Results" acquired="False">
    <permission-role>Manager</permission-role>
    <permission-role>LabManager</permission-role>
    <permission-role>LabTechnician</permission-role>
@@ -104,26 +104,26 @@
  </state>
  <state state_id="expired" title="Expired">
   <exit-transition transition_id="dispose"/>
-  <permission-map name="bika.lims: Edit analyses"
+  <permission-map name="BIKA: Edit analyses"
                   acquired="False">
    <permission-role>Manager</permission-role>
   </permission-map>
-  <permission-map name="bika.lims: Manage Sample"
+  <permission-map name="BIKA: Manage Sample"
                   acquired="False">
    <permission-role>Manager</permission-role>
   </permission-map>
-  <permission-map name="bika.lims: Publish sample"
+  <permission-map name="BIKA: Publish sample"
                   acquired="False">
    <permission-role>Publisher</permission-role>
   </permission-map>
-  <permission-map name="bika.lims: Retract sample"
+  <permission-map name="BIKA: Retract sample"
                   acquired="True">
   </permission-map>
-  <permission-map name="bika.lims: Submit results"
+  <permission-map name="BIKA: Submit results"
                   acquired="False">
    <permission-role>Manager</permission-role>
   </permission-map>
-  <permission-map name="bika.lims: View Results" acquired="False">
+  <permission-map name="BIKA: View Results" acquired="False">
    <permission-role>Manager</permission-role>
    <permission-role>LabManager</permission-role>
    <permission-role>LabTechnician</permission-role>
@@ -139,22 +139,22 @@
   </permission-map>
  </state>
  <state state_id="disposed" title="Disposed">
-  <permission-map name="bika.lims: Edit analyses"
+  <permission-map name="BIKA: Edit analyses"
                   acquired="False">
    <permission-role>Manager</permission-role>
   </permission-map>
-  <permission-map name="bika.lims: Manage Sample"
+  <permission-map name="BIKA: Manage Sample"
                   acquired="False">
    <permission-role>Manager</permission-role>
   </permission-map>
-  <permission-map name="bika.lims: Retract sample"
+  <permission-map name="BIKA: Retract sample"
                   acquired="True">
   </permission-map>
-  <permission-map name="bika.lims: Submit results"
+  <permission-map name="BIKA: Submit results"
                   acquired="False">
    <permission-role>Manager</permission-role>
   </permission-map>
-  <permission-map name="bika.lims: View Results" acquired="False">
+  <permission-map name="BIKA: View Results" acquired="False">
    <permission-role>Manager</permission-role>
    <permission-role>LabManager</permission-role>
    <permission-role>LabTechnician</permission-role>
@@ -174,7 +174,7 @@
              before_script="" after_script="default">
   <action url="" category="workflow">Receive</action>
   <guard>
-   <guard-permission>bika.lims: Receive sample</guard-permission>
+   <guard-permission>BIKA: Receive sample</guard-permission>
   </guard>
  </transition>
  <transition transition_id="expire"
@@ -183,7 +183,7 @@
              before_script="" after_script="default">
   <action url="" category="workflow">Expire</action>
   <guard>
-   <guard-permission>bika.lims: Manage Sample</guard-permission>
+   <guard-permission>BIKA: Manage Sample</guard-permission>
   </guard>
  </transition>
  <transition transition_id="dispose" title="Dispose"
@@ -191,7 +191,7 @@
              before_script="" after_script="default">
   <action url="" category="workflow">Dispose</action>
   <guard>
-   <guard-permission>bika.lims: Manage Sample</guard-permission>
+   <guard-permission>BIKA: Manage Sample</guard-permission>
   </guard>
  </transition>
  <worklist worklist_id="reviewer_queue" title="">
@@ -207,7 +207,7 @@
            for_status="True" update_always="True">
   <description>The last transition</description>
   <default>
-   
+
    <expression>transition/getId|nothing</expression>
   </default>
   <guard>
@@ -217,7 +217,7 @@
            for_status="True" update_always="True">
   <description>The ID of the user who performed the last transition</description>
   <default>
-   
+
    <expression>user/getId</expression>
   </default>
   <guard>
@@ -227,7 +227,7 @@
            for_status="True" update_always="True">
   <description>Comments about the last transition</description>
   <default>
-   
+
    <expression>python:state_change.kwargs.get('comment', '')</expression>
   </default>
   <guard>
@@ -237,7 +237,7 @@
            for_status="False" update_always="False">
   <description>Provides access to workflow history</description>
   <default>
-   
+
    <expression>state_change/getHistory</expression>
   </default>
   <guard>
@@ -247,7 +247,7 @@
            for_status="True" update_always="True">
   <description>Time of the last transition</description>
   <default>
-   
+
    <expression>state_change/getDateTime</expression>
   </default>
   <guard>

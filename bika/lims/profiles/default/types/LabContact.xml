@@ -6,7 +6,7 @@
  <property name="description">
  	Set up the contacts for the lab.
   </property>
- <property name="icon_expr">string:${portal_url}/images/contact.png</property>
+ <property name="content_icon">++resource++bika.lims.images/contact.png</property>
  <property name="content_meta_type">LabContact</property>
  <property name="product">bika.lims</property>
  <property name="factory">addLabContact</property>

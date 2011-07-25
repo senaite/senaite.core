@@ -1,4 +1,4 @@
-from AccessControl import Unauthorized
+from AccessControl import getSecurityManager, Unauthorized
 from DateTime import DateTime
 from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.CMFCore.WorkflowCore import WorkflowException
@@ -6,6 +6,7 @@ from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import transaction_note
 from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from bika.lims import ViewResults
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.browser.client import ClientAnalysisRequestsView
@@ -13,6 +14,7 @@ from bika.lims.config import POINTS_OF_CAPTURE
 from decimal import Decimal
 from operator import itemgetter
 from plone.app.content.browser.interfaces import IFolderContentsView
+from zope.app.component.hooks import getSite
 from zope.component import getMultiAdapter
 from zope.interface import implements,alsoProvides
 import json
@@ -30,9 +32,12 @@ class AnalysesView(BikaListingView):
     show_sort_column = False
     show_select_row = False
     show_select_column = False
+    # allow_edit must also be True in the column definition
+    allow_edit = False
     pagesize = 1000
     columns = {
         'Service': {'title': _('Analysis')},
+        'state_title': {'title': _('Status')},
         'Result': {'title': _('Result'),
                    'allow_edit': True},
         'Uncertainty': {'title': _('+-')},
@@ -40,26 +45,32 @@ class AnalysesView(BikaListingView):
                      'allow_edit': True,
                      'type':'boolean'},
         'Attachments': {'title': _('Attachments')},
+        'DueDate': {'title': _('Due Date')},
     }
     review_states = [
         {'title': _('All'), 'id':'all',
          'columns':['Service',
+                    'state_title',
                     'Result',
                     'Uncertainty',
                     'retested',
                     'Attachments'],
          },
     ]
-    def __init__(self, context, request, allow_edit = False, **kwargs):
+    def __init__(self, context, request, **kwargs):
         super(AnalysesView, self).__init__(context, request)
         self.contentFilter = dict(kwargs)
         self.contentFilter['portal_type'] = 'Analysis'
+        mt = getToolByName(self.context, 'portal_membership')
+        member = mt.getAuthenticatedMember()
+        self.show_interim = member.has_role('labtechnician') and True or False
 
     def folderitems(self):
-        """ InterimFields are inserted into self.columns before 'Result',
-            XXX not specifically ordered but vaguely predictable.
+        """ XXX interim fields not specifically ordered but vaguely predictable.
         """
+        portal = getSite()
         pc = getToolByName(self.context, 'portal_catalog')
+        wf = getToolByName(self.context, 'portal_workflow')
 
         analyses = super(AnalysesView, self).folderitems(full_objects = True)
 
@@ -118,6 +129,7 @@ class AnalysesView(BikaListingView):
             item['retested'] = obj.getRetested()
             item['allow_edit'] = self.allow_edit or False
             item['calculation'] = service.getCalculation() and True or False
+            item['DueDate'] = obj.getDueDate()
 
             if choices:
                 item['ResultOptions'] = choices
@@ -140,6 +152,16 @@ class AnalysesView(BikaListingView):
                     self.interim_fields[f['id']] = f['title']
                 item[f['id']] = f
 
+            # check if this analysis is late/overdue
+            if item['review_state'] not in ['sample_due', 'published'] and item['DueDate'] < DateTime():
+                item['after'] += '<img width="16" height="16" src="%s/++resource++bika.lims.images/late.png"/>'%\
+                    (portal.absolute_url())
+
+            # Icon if we can not yet view results
+            if not getSecurityManager().checkPermission(ViewResults, object):
+                item['before'] += '<img width="16" height="16" src="%s/++resource++bika.lims.images/to_follow.png"/>'%\
+                    (portal.absolute_url())
+
             items.append(item)
 
         items = sorted(items, key=itemgetter('Service'))
@@ -152,16 +174,20 @@ class AnalysesView(BikaListingView):
             if col_id not in self.columns:
                 self.columns[col_id] = {'title': self.interim_fields[col_id]}
 
-        # Add InterimFields keys to review_states column lists
-        munged_states = []
-        for state in self.review_states:
-            pos = state['columns'].index('Result')
-            if not pos: pos = len(state['columns'])
-            for col_id in interim_keys:
-                if col_id not in state['columns']:
-                    state['columns'].insert(pos, col_id)
-            munged_states.append(state)
-        self.review_states = munged_states
+        # if we are a Lab Technician, or if we have local owner role,
+        # add InterimFields keys to review_states column lists
+        # they remain in self.columns and item_data, so that they
+        # can still be calculated
+        if self.show_interim:
+            munged_states = []
+            for state in self.review_states:
+                pos = state['columns'].index('Result')
+                if not pos: pos = len(state['columns'])
+                for col_id in interim_keys:
+                    if col_id not in state['columns']:
+                        state['columns'].insert(pos, col_id)
+                munged_states.append(state)
+            self.review_states = munged_states
 
         # re-do the pretty css odd/even classes
         for i in range(len(items)):

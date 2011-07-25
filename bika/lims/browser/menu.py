@@ -32,9 +32,9 @@ except ImportError:
     from zope.app.publisher.browser.menu import BrowserMenu
     from zope.app.publisher.browser.menu import BrowserSubMenuItem
 
-class FactoriesMenu(BrowserMenu):
-    implements(IFactoriesMenu)
-
-    def getMenuItems(self, context, request):
-
-        return ()
+##class FactoriesMenu(BrowserMenu):
+##    implements(IFactoriesMenu)
+##
+##    def getMenuItems(self, context, request):
+##
+##        return ()

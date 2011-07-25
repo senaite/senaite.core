@@ -30,10 +30,12 @@ class AnalysisRequestViewView(BrowserView):
         super(AnalysisRequestViewView, self).__init__(context, request)
 
     def __call__(self):
-        self.FieldAnalysesView = AnalysesView(self.context, self.request,
-                                              allow_edit = False, getPointOfCapture = 'field')
-        self.LabAnalysesView = AnalysesView(self.context, self.request,
-                                            allow_edit = False, getPointOfCapture = 'lab')
+        self.FieldAnalysesView = AnalysesView(
+            self.context, self.request, getPointOfCapture = 'field')
+        self.FieldAnalysesView.allow_edit = False
+        self.LabAnalysesView = AnalysesView(
+            self.context, self.request, getPointOfCapture = 'lab')
+        self.LabAnalysesView.allow_edit = False
         return self.template()
 
     def tabindex(self):

@@ -10,7 +10,7 @@
   <property name="name" type="string"></property>
   <property name="root" type="string">/</property>
   <property name="currentFolderOnlyInNavtree" type="boolean">False</property>
-  <property name="includeTop" type="boolean">True</property>
+  <property name="includeTop" type="boolean">False</property>
   <property name="topLevel" type="int">0</property>
   <property name="bottomLevel" type="int">0</property>
   <property name="showAllParents" type="boolean">True</property>
@@ -71,15 +71,6 @@
   <property name="enable_wf_state_filtering" type="boolean">False</property>
   <property name="wf_states_to_show" type="lines"/>
 </object>
-
-
-<object name="site_properties" meta_type="Plone Property Sheet">
-<!--
-<property name="disable_folder_sections" type="boolean">True</property>
-  <property name="disable_nonfolderish_sections" type="boolean">True</property>
-  -->
-</object>
-
 </object>
 
 

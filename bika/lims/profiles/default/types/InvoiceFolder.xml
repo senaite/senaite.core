@@ -3,14 +3,7 @@
    meta_type="Factory-based Type Information with dynamic views"
    xmlns:i18n="http://xml.zope.org/namespaces/i18n">
  <property name="title">InvoiceFolder</property>
- <property
-    name="description">Mixin class for content types using the dynamic view FTI
-  
-  Allow the user to select a layout template (in the same way as
-  TemplateMixin in Archetypes does), and/or to set a contained
-  object's id as a default_page (acting in the same way as index_html)
-  
-  Note: folderish content types should overwrite HEAD like ATContentTypes</property>
+ <property name="description"> </property>
  <property name="icon_expr">string:${portal_url}/folder_icon.gif</property>
  <property name="content_meta_type">InvoiceFolder</property>
  <property name="product">bika.lims</property>
@@ -24,11 +17,11 @@
  </property>
  <property name="allow_discussion">False</property>
  <property name="default_view_fallback">False</property>
- 
+
  <alias from="(Default)" to="invoicefolder_invoicebatches"/>
  <alias from="view" to="invoicefolder_invoicebatches"/>
  <alias from="edit" to="base_edit"/>
- 
+
  <action title="View" action_id="view" category="object" condition_expr=""
     icon_expr="" link_target="" url_expr="string:${object_url}/base_view"
     visible="False">
@@ -48,6 +41,6 @@
     condition_expr="" icon_expr="" link_target=""
     url_expr="string:${object_url}/invoicefolder_invoicebatches"
     visible="True">
-  <permission value="bika.lims: Manage Invoices"/>
+  <permission value="BIKA: Manage Invoices"/>
  </action>
 </object>

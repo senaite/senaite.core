@@ -13,12 +13,12 @@
   <include file="referencesupplier.zcml"/>
   <include file="referencesupplierfolder.zcml"/>
   <include file="sample.zcml"/>
-  <include file="viewlets.zcml"/>
   <include file="worksheet.zcml"/>
   <include file="worksheetfolder.zcml"/>
 
   <include package=".fields"/>
   <include package=".widgets"/>
+  <include package=".viewlets"/>
 
   <browser:page
       for="*"

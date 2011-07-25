@@ -6,7 +6,7 @@
  <property name="description">
  	Set up the departments in the laboratory
  </property>
- <property name="icon_expr">string:${portal_url}/images/department.png</property>
+ <property name="content_icon">++resource++bika.lims.images/department.png</property>
  <property name="content_meta_type">Department</property>
  <property name="product">bika.lims</property>
  <property name="factory">addDepartment</property>

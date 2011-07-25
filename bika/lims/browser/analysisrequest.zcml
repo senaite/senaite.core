@@ -16,15 +16,15 @@
       for="bika.lims.interfaces.IClient"
       name="analysisrequest_add"
       class="bika.lims.browser.analysisrequest.AnalysisRequestAddView"
-      permission="bika.lims.ManageAnalysisRequests"
+      permission="cmf.AddPortalContent"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
     <browser:page
       for="bika.lims.interfaces.IAnalysisRequest"
-      name="view_ar"
+      name="base_view"
       class="bika.lims.browser.analysisrequest.AnalysisRequestViewView"
-      permission="bika.lims.ManageAnalysisRequests"
+      permission="zope2.View"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
@@ -32,7 +32,7 @@
       for="bika.lims.interfaces.IAnalysisRequest"
       name="base_edit"
       class="bika.lims.browser.analysisrequest.AnalysisRequestEditView"
-      permission="bika.lims.ManageAnalysisRequests"
+      permission="cmf.ModifyPortalContent"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
@@ -104,7 +104,7 @@
       for="*"
       name="analysisrequest_select_sample"
       class="bika.lims.browser.analysisrequest.AnalysisRequestSelectSampleView"
-      permission="bika.lims.ManageAnalysisRequests"
+      permission="zope2.View"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
@@ -112,7 +112,7 @@
       for="*"
       name="analysisrequest_select_cc"
       class="bika.lims.browser.analysisrequest.AnalysisRequestSelectCCView"
-      permission="bika.lims.ManageAnalysisRequests"
+      permission="zope2.View"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
@@ -122,7 +122,7 @@
       for="*"
       name="analysisrequest_contact_ccs"
       class="bika.lims.browser.analysisrequest.AnalysisRequestContactCCs"
-      permission="bika.lims.ManageAnalysisRequests"
+      permission="cmf.ListFolderContents"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 

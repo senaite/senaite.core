@@ -8,7 +8,7 @@
       for="bika.lims.interfaces.IClientFolder"
       name="base_view"
       class="bika.lims.browser.clientfolder.ClientFolderContentsView"
-      permission="bika.lims.ManageClients"
+      permission="cmf.ListFolderContents"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 

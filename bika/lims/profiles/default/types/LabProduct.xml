@@ -6,7 +6,7 @@
  <property name="description">
  	Configure products sold by the lab
  </property>
- <property name="icon_expr">string:${portal_url}/images/product.png</property>
+ <property name="content_icon">++resource++bika.lims.images/product.png</property>
  <property name="content_meta_type">LabProduct</property>
  <property name="product">bika.lims</property>
  <property name="factory">addLabProduct</property>

@@ -393,7 +393,10 @@ jQuery( function($) {
 				dataType: "json"
 			});
 		});
-		$("#contact").change();
+		contact_element = $("#contact");
+		if(contact_element.length > 0) {
+			contact_element.change();
+		}
 
 		// recalculate when price elements' values are changed
 		$("input[name^='Price']").live('change', function(){
@@ -496,7 +499,6 @@ jQuery( function($) {
 			url: window.location.href.replace("/analysisrequest_add","/analysisrequest_submit").
 				 replace("/base_edit","/analysisrequest_submit"),
 			dataType: 'json',
-			data: $(this).formToArray(),
 			beforeSubmit: function(formData, jqForm, options) {
 				$("input[class~='context']").attr('disabled',true);
 				$("#spinner").toggle(true);
@@ -537,7 +539,6 @@ jQuery( function($) {
 		var options = {
 			url: window.location.href.replace("/manage_results","/submit_results"),
 			dataType: 'json',
-			data: $(this).formToArray(),
 			beforeSubmit: function(formData, jqForm, options) {
 				$("input[class~='context']").attr('disabled',true);
 				$("#spinner").toggle(true);

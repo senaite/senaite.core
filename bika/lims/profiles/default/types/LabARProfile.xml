@@ -6,7 +6,7 @@
 <property name="description">
     Configure Analysis Request templates
 </property>
-<property name="icon_expr">string:${portal_url}/images/arprofile.png</property>
+<property name="content_icon">++resource++bika.lims.images/arprofile.png</property>
 <property name="content_meta_type">LabARProfile</property>
 <property name="product">bika.lims</property>
 <property name="factory">addLabARProfile</property>

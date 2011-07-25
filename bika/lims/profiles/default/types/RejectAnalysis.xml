@@ -4,7 +4,7 @@
    xmlns:i18n="http://xml.zope.org/namespaces/i18n">
  <property name="title">RejectAnalysis</property>
  <property name="description">RejectAnalysis Objects</property>
- <property name="icon_expr">string:${portal_url}/images/worksheet.png</property>
+ <property name="content_icon">++resource++bika.lims.images/worksheet.png</property>
  <property name="content_meta_type">RejectAnalysis</property>
  <property name="product">bika.lims</property>
  <property name="factory">addRejectAnalysis</property>

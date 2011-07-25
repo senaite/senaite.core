@@ -5,42 +5,42 @@
              initial_state="assigned">
  <permission>Modify portal content</permission>
  <permission>Delete objects</permission>
- <permission>bika.lims: Submit results</permission>
- <permission>bika.lims: Manage Analysis Requests</permission>
- <permission>bika.lims: View Results</permission>
- <permission>bika.lims: Edit analyses</permission>
- <permission>bika.lims: Retract sample</permission>
+ <permission>BIKA: Submit results</permission>
+ <permission>BIKA: Manage Analysis Requests</permission>
+ <permission>BIKA: View Results</permission>
+ <permission>BIKA: Edit analyses</permission>
+ <permission>BIKA: Retract sample</permission>
  <state state_id="assigned" title="Assigned to Worksheet">
   <exit-transition transition_id="submit"/>
   <exit-transition transition_id="unassign"/>
-  <permission-map name="bika.lims: Edit analyses"
+  <permission-map name="BIKA: Edit analyses"
                   acquired="False">
    <permission-role>Manager</permission-role>
    <permission-role>LabManager</permission-role>
    <permission-role>LabClerk</permission-role>
   </permission-map>
-  <permission-map name="bika.lims: Manage Analysis Requests"
+  <permission-map name="BIKA: Manage Analysis Requests"
                   acquired="False">
    <permission-role>Manager</permission-role>
    <permission-role>LabManager</permission-role>
    <permission-role>LabTechnician</permission-role>
    <permission-role>LabClerk</permission-role>
   </permission-map>
-  <permission-map name="bika.lims: Retract sample"
+  <permission-map name="BIKA: Retract sample"
                   acquired="True">
    <permission-role>LabTechnician</permission-role>
    <permission-role>LabClerk</permission-role>
    <permission-role>Reviewer</permission-role>
    <permission-role>Verifier</permission-role>
   </permission-map>
-  <permission-map name="bika.lims: Submit results"
+  <permission-map name="BIKA: Submit results"
                   acquired="False">
    <permission-role>Manager</permission-role>
    <permission-role>LabManager</permission-role>
    <permission-role>LabTechnician</permission-role>
    <permission-role>LabClerk</permission-role>
   </permission-map>
-  <permission-map name="bika.lims: View Results" acquired="False">
+  <permission-map name="BIKA: View Results" acquired="False">
    <permission-role>Manager</permission-role>
    <permission-role>LabManager</permission-role>
    <permission-role>LabTechnician</permission-role>
@@ -62,30 +62,30 @@
  </state>
  <state state_id="not_requested" title="Not requested">
   <exit-transition transition_id="verify"/>
-  <permission-map name="bika.lims: Edit analyses"
+  <permission-map name="BIKA: Edit analyses"
                   acquired="False">
    <permission-role>Manager</permission-role>
    <permission-role>LabManager</permission-role>
    <permission-role>LabClerk</permission-role>
   </permission-map>
-  <permission-map name="bika.lims: Manage Analysis Requests"
+  <permission-map name="BIKA: Manage Analysis Requests"
                   acquired="False">
    <permission-role>Manager</permission-role>
    <permission-role>LabManager</permission-role>
    <permission-role>LabTechnician</permission-role>
    <permission-role>LabClerk</permission-role>
   </permission-map>
-  <permission-map name="bika.lims: Retract sample"
+  <permission-map name="BIKA: Retract sample"
                   acquired="True">
   </permission-map>
-  <permission-map name="bika.lims: Submit results"
+  <permission-map name="BIKA: Submit results"
                   acquired="False">
    <permission-role>Manager</permission-role>
    <permission-role>LabManager</permission-role>
    <permission-role>LabTechnician</permission-role>
    <permission-role>LabClerk</permission-role>
   </permission-map>
-  <permission-map name="bika.lims: View Results" acquired="False">
+  <permission-map name="BIKA: View Results" acquired="False">
    <permission-role>Manager</permission-role>
    <permission-role>LabManager</permission-role>
    <permission-role>LabTechnician</permission-role>
@@ -109,26 +109,26 @@
   <exit-transition transition_id="verify"/>
   <exit-transition transition_id="retract"/>
   <exit-transition transition_id="reject"/>
-  <permission-map name="bika.lims: Edit analyses"
+  <permission-map name="BIKA: Edit analyses"
                   acquired="False">
    <permission-role>Manager</permission-role>
   </permission-map>
-  <permission-map name="bika.lims: Manage Analysis Requests"
+  <permission-map name="BIKA: Manage Analysis Requests"
                   acquired="False">
    <permission-role>Manager</permission-role>
   </permission-map>
-  <permission-map name="bika.lims: Retract sample"
+  <permission-map name="BIKA: Retract sample"
                   acquired="True">
   </permission-map>
-  <permission-map name="bika.lims: Submit results"
+  <permission-map name="BIKA: Submit results"
                   acquired="False">
    <permission-role>Manager</permission-role>
   </permission-map>
-  <permission-map name="bika.lims: Verify sample"
+  <permission-map name="BIKA: Verify sample"
                   acquired="False">
    <permission-role>Verifier</permission-role>
   </permission-map>
-  <permission-map name="bika.lims: View Results" acquired="False">
+  <permission-map name="BIKA: View Results" acquired="False">
    <permission-role>Manager</permission-role>
    <permission-role>LabManager</permission-role>
    <permission-role>LabTechnician</permission-role>
@@ -146,26 +146,26 @@
  </state>
  <state state_id="verified" title="Verified">
   <exit-transition transition_id="retract"/>
-  <permission-map name="bika.lims: Edit analyses"
+  <permission-map name="BIKA: Edit analyses"
                   acquired="False">
    <permission-role>Manager</permission-role>
   </permission-map>
-  <permission-map name="bika.lims: Manage Analysis Requests"
+  <permission-map name="BIKA: Manage Analysis Requests"
                   acquired="False">
    <permission-role>Manager</permission-role>
   </permission-map>
-  <permission-map name="bika.lims: Publish sample"
+  <permission-map name="BIKA: Publish sample"
                   acquired="False">
    <permission-role>Publisher</permission-role>
   </permission-map>
-  <permission-map name="bika.lims: Retract sample"
+  <permission-map name="BIKA: Retract sample"
                   acquired="True">
   </permission-map>
-  <permission-map name="bika.lims: Submit results"
+  <permission-map name="BIKA: Submit results"
                   acquired="False">
    <permission-role>Manager</permission-role>
   </permission-map>
-  <permission-map name="bika.lims: View Results" acquired="False">
+  <permission-map name="BIKA: View Results" acquired="False">
    <permission-role>Manager</permission-role>
    <permission-role>LabManager</permission-role>
    <permission-role>LabTechnician</permission-role>
@@ -181,22 +181,22 @@
   </permission-map>
  </state>
  <state state_id="rejected" title="Rejected">
-  <permission-map name="bika.lims: Edit analyses"
+  <permission-map name="BIKA: Edit analyses"
                   acquired="False">
    <permission-role>Manager</permission-role>
   </permission-map>
-  <permission-map name="bika.lims: Manage Analysis Requests"
+  <permission-map name="BIKA: Manage Analysis Requests"
                   acquired="False">
    <permission-role>Manager</permission-role>
   </permission-map>
-  <permission-map name="bika.lims: Retract sample"
+  <permission-map name="BIKA: Retract sample"
                   acquired="True">
   </permission-map>
-  <permission-map name="bika.lims: Submit results"
+  <permission-map name="BIKA: Submit results"
                   acquired="False">
    <permission-role>Manager</permission-role>
   </permission-map>
-  <permission-map name="bika.lims: View Results" acquired="False">
+  <permission-map name="BIKA: View Results" acquired="False">
    <permission-role>Manager</permission-role>
    <permission-role>LabManager</permission-role>
    <permission-role>LabTechnician</permission-role>
@@ -212,15 +212,15 @@
   </permission-map>
  </state>
  <state state_id="unassigned" title="Unassigned">
-  <permission-map name="bika.lims: Edit analyses"
+  <permission-map name="BIKA: Edit analyses"
                   acquired="False">
    <permission-role>Manager</permission-role>
   </permission-map>
-  <permission-map name="bika.lims: Manage Analysis Requests"
+  <permission-map name="BIKA: Manage Analysis Requests"
                   acquired="False">
    <permission-role>Manager</permission-role>
   </permission-map>
-  <permission-map name="bika.lims: View Results" acquired="False">
+  <permission-map name="BIKA: View Results" acquired="False">
    <permission-role>Manager</permission-role>
    <permission-role>LabManager</permission-role>
    <permission-role>LabTechnician</permission-role>
@@ -240,7 +240,7 @@
              before_script="" after_script="default">
 
   <guard>
-   <guard-permission>bika.lims: Import sample</guard-permission>
+   <guard-permission>BIKA: Import sample</guard-permission>
   </guard>
  </transition>
  <transition transition_id="retract" title="Retract"
@@ -248,7 +248,7 @@
              before_script="" after_script="default">
   <action url="" category="workflow">Retract</action>
   <guard>
-   <guard-permission>bika.lims: Retract sample</guard-permission>
+   <guard-permission>BIKA: Retract sample</guard-permission>
    <guard-expression>python:here.guard_retract_sample()</guard-expression>
   </guard>
  </transition>
@@ -258,7 +258,7 @@
              before_script="" after_script="default">
   <action url="" category="workflow">Submit for verification</action>
   <guard>
-   <guard-permission>bika.lims: Submit sample</guard-permission>
+   <guard-permission>BIKA: Submit sample</guard-permission>
    <guard-expression>python:here.guard_submit_analysis()</guard-expression>
   </guard>
  </transition>
@@ -267,7 +267,7 @@
              before_script="" after_script="default">
   <action url="" category="workflow">Verify</action>
   <guard>
-   <guard-permission>bika.lims: Verify sample</guard-permission>
+   <guard-permission>BIKA: Verify sample</guard-permission>
   </guard>
  </transition>
  <transition transition_id="reject" title="Reject"
@@ -275,7 +275,7 @@
              before_script="" after_script="">
   <action url="" category="workflow">Reject</action>
   <guard>
-   <guard-permission>bika.lims: Verify sample</guard-permission>
+   <guard-permission>BIKA: Verify sample</guard-permission>
   </guard>
  </transition>
  <transition transition_id="unassign" title="Unassign"
@@ -283,7 +283,7 @@
              before_script="" after_script="">
   <action url="" category="workflow">Unassign</action>
   <guard>
-   <guard-permission>bika.lims: Verify sample</guard-permission>
+   <guard-permission>BIKA: Verify sample</guard-permission>
   </guard>
  </transition>
  <worklist worklist_id="reviewer_queue" title="">

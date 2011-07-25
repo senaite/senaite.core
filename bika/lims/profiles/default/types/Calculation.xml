@@ -6,7 +6,7 @@
  <property name="description">
 
  </property>
- <property name="icon_expr">string:${portal_url}/images/calculation.png</property>
+ <property name="content_icon">++resource++bika.lims.images/calculation.png</property>
  <property name="content_meta_type">Calculation</property>
  <property name="product">bika.lims</property>
  <property name="factory">addCalculation</property>
