@@ -15,6 +15,7 @@
   <include file="sample.zcml"/>
   <include file="viewlets.zcml"/>
   <include file="worksheet.zcml"/>
+  <include file="worksheetfolder.zcml"/>
 
   <include package=".fields"/>
   <include package=".widgets"/>

@@ -135,10 +135,7 @@ class LoadSetupData():
                 self.context.REQUEST.set('password', cusername)
                 self.context.REQUEST.set('email', cemail)
                 pr = getToolByName(self.context, 'portal_registration')
-                try:
-                    pr.addMember(cusername, cusername, properties = self.context.REQUEST)
-                except:
-                    pass
+                pr.addMember(cusername, cusername, properties = self.context.REQUEST)
                 contact.setUsername(cusername)
 
                 # Give contact an Owner local role on client

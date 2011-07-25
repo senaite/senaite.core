@@ -30,8 +30,10 @@ class AnalysisRequestViewView(BrowserView):
         super(AnalysisRequestViewView, self).__init__(context, request)
 
     def __call__(self):
-        self.FieldAnalysesView = AnalysesView(context, request, getPointOfCapture = 'field')
-        self.LabAnalysesView = AnalysesView(context, request, getPointOfCapture = 'lab')
+        self.FieldAnalysesView = AnalysesView(self.context, self.request,
+                                              allow_edit = False, getPointOfCapture = 'field')
+        self.LabAnalysesView = AnalysesView(self.context, self.request,
+                                            allow_edit = False, getPointOfCapture = 'lab')
         return self.template()
 
     def tabindex(self):
@@ -334,8 +336,8 @@ class AnalysisRequestSelectCCView(BikaListingView):
         out = []
         for x in range(len(items)):
             if not items[x].has_key('brain'): continue
-            if items[x]['UID'] in self.request.get('hide_uids', ''): continue
-            if items[x]['UID'] in self.request.get('selected_uids', ''):
+            if items[x]['uid'] in self.request.get('hide_uids', ''): continue
+            if items[x]['uid'] in self.request.get('selected_uids', ''):
                 items[x]['checked'] = True
             out.append(items[x])
         return out
@@ -348,7 +350,7 @@ class AnalysisRequestSelectSampleView(BikaListingView):
     show_sort_column = False
     show_select_row = False
     show_select_column = False
-    pagesize = 50
+    pagesize = 25
 
     columns = {
         'getSampleID': {'title': _('Sample ID'), 'table_row_class':'select_sample_select'},
@@ -393,14 +395,16 @@ class AnalysisRequestSelectSampleView(BikaListingView):
         for x in range(len(items)):
             if not items[x].has_key('obj'): continue
             obj = items[x]['obj'].getObject()
-            if items[x]['UID'] in self.request.get('hide_uids', ''): continue
-            if items[x]['UID'] in self.request.get('selected_uids', ''):
+            if items[x]['uid'] in self.request.get('hide_uids', ''): continue
+            if items[x]['uid'] in self.request.get('selected_uids', ''):
                 items[x]['checked'] = True
             items[x]['view_url'] = obj.absolute_url() + "/view"
             items[x]['SampleType'] = obj.getSampleType().Title()
             items[x]['SamplePoint'] = obj.getSamplePoint() and obj.getSamplePoint().Title()
-            items[x]['getDateReceived'] = obj.getDateReceived() and self.context.toLocalizedTime(obj.getDateReceived(), long_format = 0) or ''
-            items[x]['getDateSampled'] = obj.getDateSampled() and self.context.toLocalizedTime(obj.getDateSampled(), long_format = 0) or ''
+            items[x]['getDateReceived'] = obj.getDateReceived() and \
+                 self.context.toLocalizedTime(obj.getDateReceived(), long_format = 0) or ''
+            items[x]['getDateSampled'] = obj.getDateSampled() and \
+                 self.context.toLocalizedTime(obj.getDateSampled(), long_format = 0) or ''
             items[x]['item_data'] = json.dumps({
                 'SampleID': items[x]['Title'],
                 'ClientReference': items[x]['getClientReference'],
@@ -831,31 +835,112 @@ class AJAXAnalysisRequestSubmitResults(AnalysisRequestViewView):
         self.context.plone_utils.addPortalMessage(message, 'info')
         return json.dumps({'success':message})
 
-class AnalysisRequestsView(ClientAnalysisRequestsView):
+class AnalysisRequestsView(BikaListingView):
     """ The main portal Analysis Requests action tab
-        Only modifies the original attributes provided by ClientAnalysisRequestsView
     """
-    show_editable_border = False
-    content_add_actions = {}
-    contentFilter = {'portal_type':'AnalysisRequest', 'path':{"query": ["/"], "level" : 0 }}
     title = "AnalysisRequests"
     description = ""
+    show_editable_border = False
+    contentFilter = {'portal_type':'AnalysisRequest', 'path':{"query": ["/"], "level" : 0 }}
+
+    columns = {
+           'getRequestID': {'title': _('Request ID')},
+           'Client': {'title': _('Client')},
+           'getClientOrderNumber': {'title': _('Client Order')},
+           'getClientReference': {'title': _('Client Ref')},
+           'getClientSampleID': {'title': _('Client Sample')},
+           'getSampleTypeTitle': {'title': _('Sample Type')},
+           'getSamplePointTitle': {'title': _('Sample Point')},
+           'getDateReceived': {'title': _('Date Received')},
+           'getDatePublished': {'title': _('Date Published')},
+           'state_title': {'title': _('State'), },
+    }
+
+    review_states = [
+                {'title': _('All'), 'id':'all',
+                 'columns':['getRequestID',
+                            'Client',
+                            'getClientOrderNumber',
+                            'getClientReference',
+                            'getClientSampleID',
+                            'getSampleTypeTitle',
+                            'getSamplePointTitle',
+                            'getDateReceived',
+                            'getDatePublished',
+                            'state_title']},
+                {'title': _('Sample due'), 'id':'sample_due',
+                 'transitions': ['cancel', 'receive'],
+                 'columns':['getRequestID',
+                            'Client',
+                            'getClientOrderNumber',
+                            'getClientReference',
+                            'getClientSampleID',
+                            'getSampleTypeTitle',
+                            'getSamplePointTitle']},
+                {'title': _('Sample received'), 'id':'sample_received',
+                 'transitions': ['cancel'],
+                 'columns':['getRequestID',
+                            'Client',
+                            'getClientOrderNumber',
+                            'getClientReference',
+                            'getClientSampleID',
+                            'getSampleTypeTitle',
+                            'getSamplePointTitle',
+                            'getDateReceived']},
+                {'title': _('Assigned to Worksheet'), 'id':'assigned',
+                 'transitions': ['cancel'],
+                 'columns':['getRequestID',
+                            'Client',
+                            'getClientOrderNumber',
+                            'getClientReference',
+                            'getClientSampleID',
+                            'getSampleTypeTitle',
+                            'getSamplePointTitle',
+                            'getDateReceived']},
+                {'title': _('To be verified'), 'id':'to_be_verified',
+                 'transitions': ['cancel', 'verify'],
+                 'columns':['getRequestID',
+                            'Client',
+                            'getClientOrderNumber',
+                            'getClientReference',
+                            'getClientSampleID',
+                            'getSampleTypeTitle',
+                            'getSamplePointTitle',
+                            'getDateReceived']},
+                {'title': _('Verified'), 'id':'verified',
+                 'transitions': ['cancel', 'publish'],
+                 'columns':['getRequestID',
+                            'Client',
+                            'getClientOrderNumber',
+                            'getClientReference',
+                            'getClientSampleID',
+                            'getSampleTypeTitle',
+                            'getSamplePointTitle',
+                            'getDateReceived']},
+                {'title': _('Published'), 'id':'published',
+                 'columns':['getRequestID',
+                            'Client',
+                            'getClientOrderNumber',
+                            'getClientReference',
+                            'getClientSampleID',
+                            'getSampleTypeTitle',
+                            'getSamplePointTitle',
+                            'getDateReceived',
+                            'getDatePublished']},
+                ]
 
     def __init__(self, context, request):
         super(AnalysisRequestsView, self).__init__(context, request)
-
-        self.columns['Client'] = {'title': 'Client'}
-
-        new_states = []
-        for x in self.review_states:
-            x['columns'] = ['Client'] + x['columns']
-            new_states.append(x)
-        self.review_states = new_states
-
+        self.title = "%s: %s" % (self.context.Title(), _("Analysis Requests"))
+        self.description = ""
 
     def folderitems(self):
-        items = ClientAnalysisRequestsView.folderitems(self)
-        for x in range(len(items)):
-            if not items[x].has_key('obj'): continue
-            items[x]['Client'] = items[x]['obj'].getObject().aq_parent.Title()
+        items = BikaListingView.folderitems(self)
+        for i, item in enumerate(items):
+            if not item.has_key('obj'): continue
+            obj = item['obj']
+            items[i]['getDateReceived'] = item['getDateReceived'] and \
+                self.context.toLocalizedTime(item['getDateReceived'], long_format = 0) or ''
+            items[i]['Client'] = obj.getObject().aq_parent.Title()
+            items[i]['links'] = {'getRequestID': item['url']}
         return items

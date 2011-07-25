@@ -3,7 +3,7 @@
    meta_type="Factory-based Type Information with dynamic views"
    xmlns:i18n="http://xml.zope.org/namespaces/i18n">
  <property name="title">WorksheetFolder</property>
- <property  name="description"></property>
+ <property name="description"></property>
  <property name="icon_expr">string:${portal_url}/folder_icon.gif</property>
  <property name="content_meta_type">WorksheetFolder</property>
  <property name="product">bika.lims</property>
@@ -16,34 +16,8 @@
   <element value="Worksheet"/>
  </property>
  <property name="allow_discussion">False</property>
- <property name="default_view">worksheets</property>
- <property name="view_methods">
-  <element value="worksheets"/>
- </property>
  <property name="default_view_fallback">False</property>
 
- <alias from="(Default)" to="worksheets"/>
- <alias from="view" to="worksheets"/>
- <alias from="edit" to="worksheets"/>
-
- <action title="View" action_id="view" category="object" condition_expr=""
-    icon_expr="" link_target="" url_expr="string:${object_url}/base_view"
-    visible="False">
-  <permission value="View"/>
- </action>
- <action title="Edit" action_id="edit" category="object" condition_expr=""
-    icon_expr="" link_target="" url_expr="string:${object_url}/base_edit"
-    visible="False">
-  <permission value="Modify portal content"/>
- </action>
- <action title="Folder Listing" action_id="folderlisting" category="folder"
-    condition_expr="object/isPrincipiaFolderish" icon_expr="" link_target=""
-    url_expr="string:${folder_url}/view" visible="False">
-  <permission value="View"/>
- </action>
- <action title="Worksheets" action_id="worksheets" category="object"
-    condition_expr="" icon_expr="" link_target=""
-    url_expr="string:${object_url}/worksheets" visible="True">
-  <permission value="bika.lims: Manage Worksheets"/>
- </action>
-</object>
+ <alias from="(Default)" to="base_view"/>
+ <alias from="view" to="base_view"/>
+ </object>

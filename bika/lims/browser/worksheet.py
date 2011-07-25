@@ -8,31 +8,50 @@ from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.interfaces import IWorksheet
 from bika.lims.browser.analyses import AnalysesView
 from plone.app.content.browser.interfaces import IFolderContentsView
+from zope.app.component.hooks import getSite
+from zope.component import getMultiAdapter
 from zope.interface import implements
 import plone, json
 
 class WorksheetAnalysesView(AnalysesView):
-    columns = {
-        'Service': {'title': _('Analysis')},
-        'Pos': {'title': _('Pos')},
-        'Client': {'title': _('Client')},
-        'Order': {'title': _('Order')},
-        'DueDate': {'title': _('Due Date')},
-        'Category': {'title': _('Category')},
-        'ServiceTitle': {'title': _('Analysis')},
-        'Result': {'title': _('Result')},
-        'Uncertainty': {'title': _('+-')},
-        'retested': {'title': _('Retested'), 'type':'boolean'},
-        'Attachments': {'title': _('Attachments')},
-        'state_title': {'title': _('State')},
-    }
 
     def __init__(self, context, request, allow_edit = False, **kwargs):
         super(WorksheetAnalysesView, self).__init__(context, request)
 
+        self.columns = {
+            'Pos': {'title': _('Pos'),
+                    'show_icon':'after'},
+            'Client': {'title': _('Client')},
+            'Order': {'title': _('Order')},
+            'DueDate': {'title': _('Due Date')},
+            'Category': {'title': _('Category')},
+            'Service': {'title': _('Analysis')},
+            'Result': {'title': _('Result')},
+            'Uncertainty': {'title': _('+-')},
+            'retested': {'title': _('Retested'), 'type':'boolean'},
+            'Attachments': {'title': _('Attachments')},
+            'state_title': {'title': _('State')},
+        }
+        self.review_states = [
+            {'title': _('All'), 'id':'all',
+             'columns':['Pos',
+                        'Client',
+                        'Order',
+                        'DueDate',
+                        'Category',
+                        'Service',
+                        'Result',
+                        'Uncertainty',
+                        'retested',
+                        'Attachments',
+                        'state_title'],
+             },
+        ]
+
     def folderitems(self):
         # get worksheet analyses as a UID keyed dictionary
         self.contentsMethod = self.context.getAllAnalyses
+        portal = getSite()
         analyses = {}
         for analysis in AnalysesView.folderitems(self):
             analyses[analysis['uid']] = analysis
@@ -41,16 +60,30 @@ class WorksheetAnalysesView(AnalysesView):
         items = []
         for slot in self.context.getWorksheetLayout():
             item = analyses[slot['uid']]
+            obj = item['obj']
             item['UID'] = slot['uid']
             item['Pos'] = slot['pos']
             item['Client'] = item['obj'].aq_parent.aq_parent.Title()
-            item['Order'] = hasattr(item['obj'].aq_parent, 'getClientOrderNumber') and\
-                            item['obj'].aq_parent.getClientOrderNumber() or \
-                            ''
-            item['ServiceTitle'] = item['obj'].getService().Title()
+            item['DueDate'] = hasattr(obj, 'DueDate') and \
+                self.context.toLocalizedTime(obj.DueDate, long_format=0) or ''
+            item['Order'] = hasattr(item['obj'].aq_parent, 'getClientOrderNumber') and \
+                            item['obj'].aq_parent.getClientOrderNumber() or ''
+            if slot['type'] == 'b':
+                item['icon'] = '<img width="16" height="16" src="%s/++resource++bika.lims.images/blank.png"/>'%\
+                    (portal.absolute_url())
+            if slot['type'] == 'c':
+                item['icon'] = '<img width="16" height="16" src="%s/++resource++bika.lims.images/control.png"/>'%\
+                    (portal.absolute_url())
+            if slot['type'] == 'd':
+                item['icon'] = '<img width="16" height="16" src="%s/++resource++bika.lims.images/duplicate.png"/>'%\
+                    (portal.absolute_url())
             items.append(item)
-        return items
 
+         # re-do the pretty css odd/even classes
+        for i in range(len(items)):
+            items[i]['table_row_class'] = ((i + 1) % 2 == 0) and "draggable even" or "draggable odd"
+
+        return items
 
 class WorksheetFolderView(BikaListingView):
     contentFilter = {'portal_type': 'Worksheet'}
@@ -261,6 +294,12 @@ class WorksheetManageResultsView(BrowserView):
         self.AnalysesView = WorksheetAnalysesView(self.context,
                                                   self.request,
                                                   allow_edit = True)
+
+        form = self.request.form
+        if form.has_key("submitted"):
+            import pprint
+            pprint.pprint(form)
+
         return self.template()
 
     def tabindex(self):
@@ -520,4 +559,3 @@ class AJAXGetWorksheetTemplates():
         for t in pc(portal_type="WorksheetTemplate"):
             templates.append((t.UID, t.Title))
         return json.dumps(templates)
-

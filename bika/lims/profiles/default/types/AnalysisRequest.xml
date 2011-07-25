@@ -4,7 +4,7 @@
    xmlns:i18n="http://xml.zope.org/namespaces/i18n">
  <property name="title">Analysis request</property>
  <property name="description"></property>
- <property name="icon_expr">string:${portal_url}/images/ar.png</property>
+ <property name="icon_expr">string:++resource++bika.lims.images/analysisrequest.png</property>
  <property name="content_meta_type">AnalysisRequest</property>
  <property name="product">bika.lims</property>
  <property name="factory">addAnalysisRequest</property>

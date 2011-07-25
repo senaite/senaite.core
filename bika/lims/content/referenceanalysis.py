@@ -10,7 +10,7 @@ from Products.Archetypes.public import *
 from Products.Archetypes.references import HoldingReference
 from Products.CMFCore.permissions import View, ModifyPortalContent
 from Products.CMFCore.utils import getToolByName
-from bika.lims.browser.fieldsimport InterimFieldsField
+from bika.lims.browser.fields import InterimFieldsField
 from bika.lims.browser.widgets import RecordsWidget as BikaRecordsWidget
 from bika.lims.config import I18N_DOMAIN, STD_TYPES, PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema

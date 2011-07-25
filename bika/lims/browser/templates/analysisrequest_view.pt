@@ -155,7 +155,6 @@
 			<td
 				tal:define="date_published here/getDatePublished"
 				tal:content="python:context.toLocalizedTime(date_published, long_format=1)"/>
-			</td>
 			<th></th>
 			<td></td>
 		</tr>
@@ -165,7 +164,7 @@
 
 		<tal:field_analyses>
 			<h3 tal:content="python: modules['bika.lims.config'].POINTS_OF_CAPTURE.getValue('field')"/>
-			<span tal:replace="structure python: view.FieldAnalyses.contents_table()"/>
+			<span tal:replace="structure python: view.FieldAnalysesView.contents_table()"/>
 		</tal:field_analyses>
 
 		<tal:lab_analyses>

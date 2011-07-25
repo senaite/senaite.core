@@ -23,7 +23,7 @@
 <script type="text/javascript">
 //<!--
 jQuery( function($) {
-    $('fieldset.attachments').click(function(){
+    $('fieldset.attachments > legend').click(function(){
         $('table.attachments').toggle();
     });
 });

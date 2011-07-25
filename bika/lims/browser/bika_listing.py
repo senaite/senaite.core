@@ -19,8 +19,6 @@ from zope.interface import implements
 import json
 import urllib
 
-ploneMessageFactory = MessageFactory('plone')
-
 class BikaListingView(FolderContentsView):
     """
     """
@@ -33,20 +31,31 @@ class BikaListingView(FolderContentsView):
     content_add_actions = {}    # XXX menu.zcml/menu.py
     show_editable_border = True # XXX viewlets.zcml entries
     show_filters = False
-    show_sort_column = False
-    show_select_row = False
     show_select_column = False
+    show_select_row = False
+    show_sort_column = False
     # just set pagesize high to disable batching.
     pagesize = 50
 
-    # column keys must be in foldercontents item dictionaries.
-    # possible column dictionary keys are:
-    # - allow_edit: boolean.
-    #   if self.allow_edit is true, this field is made editable
-    # - type: string
-    #   one of "str", "bool".  default is "str".
+##     The keys of the columns dictionary must all exist in all
+##     items returned by subclassing view's .foldercontents.
+##
+##     possible column dictionary keys are:
+##
+##     - "allow_edit": boolean
+##       if View.allow_edit is also True, this field is made editable
+##
+##     - "type": string
+##       possible values: "str", "bool"
+##
+##     - "show_icon": string
+##       possible values: "before" or "after".
+##       Displays the content type icon in this column, either before
+##       or after the field contents.
+
     columns = {
-           'obj_type': {'title': _('Type')},
+           'obj_type': {'title': _('Type'),
+                        'show_icon': "before"},
            'id': {'title': _('ID')},
            'title_or_id': {'title': _('Title')},
            'modified': {'title': _('Last modified')},
@@ -110,13 +119,7 @@ class BikaListingView(FolderContentsView):
                 item_id = path.split("/")[-1]
                 item_path = path.replace("/" + item_id, '')
                 item = pc(id = item_id, path = {'query':item_path, 'depth':1})[0].getObject()
-                #try: # XXX in our folder views at the moment, we don't allow mixed types for submit?
                 wf.doActionFor(item, action)
-                #except:
-                    # Since we could theoritically end up with items of mixed status selected,
-                    # it can occur quite easily that the workflow_action doesn't work for some
-                    # objects but we need to keep on going.
-                    #pass
 
             # subclass form_submit is only called for transition actions
             if hasattr(self, 'form_submit'):
@@ -128,12 +131,12 @@ class BikaListingView(FolderContentsView):
         """
         """
         context = aq_inner(self.context)
+        plone_layout = getMultiAdapter((context, self.request), name = u'plone_layout')
         plone_utils = getToolByName(context, 'plone_utils')
         plone_view = getMultiAdapter((context, self.request), name = u'plone')
-        plone_layout = getMultiAdapter((context, self.request), name = u'plone_layout')
-        portal_workflow = getToolByName(context, 'portal_workflow')
         portal_properties = getToolByName(context, 'portal_properties')
         portal_types = getToolByName(context, 'portal_types')
+        portal_workflow = getToolByName(context, 'portal_workflow')
         site_properties = portal_properties.site_properties
 
         browser_default = plone_utils.browserDefault(context)
@@ -167,8 +170,12 @@ class BikaListingView(FolderContentsView):
 
             icon = plone_layout.getIcon(obj)
 
-            review_state = hasattr(obj, 'review_state') and obj.review_state or \
-                         portal_workflow.getInfoFor(obj, 'review_state')
+            review_state = hasattr(obj, 'review_state') and obj.review_state or None
+            if not review_state:
+                try:
+                    review_state = portal_workflow.getInfoFor(obj, 'review_state')
+                except:
+                    review_state = ''
 
             url = hasattr(obj, 'getURL') and obj.getURL() or \
                 "/".join(obj.getPhysicalPath())
@@ -182,14 +189,14 @@ class BikaListingView(FolderContentsView):
             else:
                 type_title_msgid = obj.portal_type
 
+            description = obj.Description
+            if callable(description): description = description()
             url_href_title = u'%s at %s: %s' % \
                 (translate(type_title_msgid, context = self.request),
                  path,
-                 safe_unicode(obj.Description))
+                 safe_unicode(description))
 
             modified = plone_view.toLocalizedTime(obj.ModificationDate, long_format = 1)
-
-            obj_type = obj.Type
 
             is_browser_default = len(browser_default[1]) == 1 and (
                 obj.id == browser_default[1][0])
@@ -214,17 +221,19 @@ class BikaListingView(FolderContentsView):
                 title = title,
                 uid = uid,
                 path = path,
+                fti = fti,
                 interim_fields = interim_fields,
                 item_data = json.dumps(interim_fields),
                 url = url,
                 url_href_title = url_href_title,
-                obj_type = obj_type,
+                obj_type = obj.Type,
                 size = obj.getObjSize,
                 modified = modified,
                 icon = icon.html_tag(),
                 type_class = type_class,
                 review_state = review_state,
-                state_title = portal_workflow.getTitleForStateOnType(review_state, obj_type),
+                state_title = portal_workflow.getTitleForStateOnType(review_state,
+                                                                     obj.portal_type),
                 state_class = state_class,
                 is_browser_default = is_browser_default,
                 relative_url = relative_url,

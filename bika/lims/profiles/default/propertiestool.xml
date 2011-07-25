@@ -1,23 +1,22 @@
 <?xml version="1.0"?>
-
 <object name="portal_properties" meta_type="Plone Properties Tool">
-
-<object name="navtree_properties" meta_type="Plone Property Sheet">
+ <object name="navtree_properties" meta_type="Plone Property Sheet">
   <property name="title">NavigationTree properties</property>
-  <property name="sortAttribute" type="string">sortable_title</property>
+  <!-- <property name="sortAttribute" type="string">sortable_title</property> -->
+  <property name="sortAttribute"
+     type="string">getObjPositionInParent</property>
   <property name="sortOrder" type="string">asc</property>
   <property name="sitemapDepth" type="int">3</property>
   <property name="name" type="string"></property>
   <property name="root" type="string">/</property>
   <property name="currentFolderOnlyInNavtree" type="boolean">False</property>
-  <property name="includeTop" type="boolean">False</property>
+  <property name="includeTop" type="boolean">True</property>
   <property name="topLevel" type="int">0</property>
   <property name="bottomLevel" type="int">0</property>
-  <property name="showAllParents" type="boolean">False</property>
+  <property name="showAllParents" type="boolean">True</property>
   <property name="idsNotToList" type="lines"/>
   <property name="parentMetaTypesNotToQuery" type="lines">
     <element value="TempFolder"/>
-    <element value="Large Plone Folder"/>
   </property>
   <property name="metaTypesNotToList" type="lines">
     <element value="AnalysisRequest"/>
@@ -51,14 +50,38 @@
     <element value="Instrument"/>
     <element value="WorksheetTemplate"/>
     <element value="BikaSettings"/>
+    <element value="ATBooleanCriterion"/>
+    <element value="ATDateCriteria"/>
+    <element value="ATDateRangeCriterion"/>
+    <element value="ATListCriterion"/>
+    <element value="ATPortalTypeCriterion"/>
+    <element value="ATReferenceCriterion"/>
+    <element value="ATSelectionCriterion"/>
+    <element value="ATSimpleIntCriterion"/>
+    <element value="ATSimpleStringCriterion"/>
+    <element value="ATSortCriterion"/>
+    <element value="ChangeSet"/>
+    <element value="Discussion Item"/>
+    <element value="Plone Site"/>
+    <element value="TempFolder"/>
+    <element value="ATCurrentAuthorCriterion"/>
+    <element value="ATPathCriterion"/>
+    <element value="ATRelativePathCriterion"/>
   </property>
+  <property name="enable_wf_state_filtering" type="boolean">False</property>
+  <property name="wf_states_to_show" type="lines"/>
 </object>
+
 
 <object name="site_properties" meta_type="Plone Property Sheet">
-  <property name="visible_ids" type="boolean">False</property>
-  <property name="exposeDCMetaTags" type="boolean">False</property>
-  <property name="disable_folder_sections" type="boolean">True</property>
+<!--
+<property name="disable_folder_sections" type="boolean">True</property>
   <property name="disable_nonfolderish_sections" type="boolean">True</property>
+  -->
 </object>
 
 </object>
+
+
+
+

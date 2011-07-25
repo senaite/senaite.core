@@ -121,7 +121,7 @@ Filters
 	</thead>
 
 	<tbody>
-<tal:comment replace="nothing">***************
+<tal:comment replace="nothing">*************** TR
 Table data rows start here
 ********************************</tal:comment>
 	<tal:items tal:repeat="item view/batch">
@@ -143,7 +143,7 @@ Draggable column for manually ordering items
 	<td tal:condition="view/show_sort_column" class="draggable">&nbsp;</td>
 
 <tal:comment replace="nothing">***************
-Elements for selecting items
+Item select checkboxes.
 ********************************</tal:comment>
 	<td tal:condition="view/show_select_column" class="notDraggable">
 		<input type="checkbox"
@@ -166,10 +166,10 @@ Elements for selecting items
 			class="hiddenStructure">Item Title</label>
 	</td>
 
-<tal:comment replace="nothing">***************
-Table cells for each column from
-BikaListingView class definition
+<tal:comment replace="nothing">***************  TD.
+Table cells for each column from in review_state's column list.
 **********************************************
+XXX proper truth table
 0 Not interim column or Result column: just print value.
 1 interim and editable - input
 2 interim not editable - readonly input
@@ -188,12 +188,16 @@ BikaListingView class definition
 			is_interim python: item.has_key(column) and type(item[column]) == type({}) or False;
 			is_result python: column == 'Result';">
 
-<!----------------- Editable ----------------->
-	<tal:editable condition="is_editable">
+	<!--  show_icon before field content -->
+	<tal:icon
+		condition="python:view.columns[column].has_key('show_icon') and view.columns[column]['show_icon']=='before'"
+		tal:replace="structure item/icon"/>
 
 <tal:comment replace="nothing">***************
+<!----------------- Editable ----------------->
 Editable - interim_field column
 ******************************* </tal:comment>
+	<tal:editable condition="is_editable">
 	<tal:interim_field condition="is_interim">
 		<!-- Text field -->
 		<input
@@ -241,7 +245,7 @@ Editable - not result field
 					id python:'%s-%s' % (item['uid'], column)">&nbsp
 			</span>
 			<span
-				tal:condition="python:columns[column].has_key('type') and columns[column]['type'] == 'boolean'">
+				tal:condition="python:columns[column].has_key('type') and columns[column]['type'] == 'bool'">
 				<input type="checkbox" tal:condition="python:column=='retested' and not item['calculation']"
 				tal:attributes="
 					class item/state_class;
@@ -407,6 +411,11 @@ Editable - result field
 			</span>
 		</tal:not_interim>
 	</tal:not_editable>
+
+	<!--  show_icon after field content -->
+	<tal:icon
+		condition="python:view.columns[column].has_key('show_icon') and view.columns[column]['show_icon']=='after'"
+		tal:replace="structure item/icon"/>
 
 	</td>
 	</tal:column>
