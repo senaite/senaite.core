@@ -17,6 +17,12 @@
 </property>
 <property name="allow_discussion">False</property>
 <property name="default_view_fallback">False</property>
+<property name="default_view">base_view</property>
+<property name="view_methods">
+	<element value="base_view"/>
+	<element value="base_edit"/>
+	<element value="manage_results"/>
+</property>
 <alias from="(Default)" to="base_view"/>
 
 <action title="View"

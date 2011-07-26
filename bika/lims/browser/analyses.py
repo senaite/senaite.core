@@ -9,14 +9,12 @@ from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import ViewResults
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
-from bika.lims.browser.client import ClientAnalysisRequestsView
 from bika.lims.config import POINTS_OF_CAPTURE
 from decimal import Decimal
 from operator import itemgetter
-from plone.app.content.browser.interfaces import IFolderContentsView
 from zope.app.component.hooks import getSite
 from zope.component import getMultiAdapter
-from zope.interface import implements,alsoProvides
+from zope.interface import implements,	alsoProvides, implementsOnly
 import json
 import plone
 

@@ -32,7 +32,9 @@ class SampleEditView(BrowserView):
             yield i
 
     def fmtDateSampled(self):
-        date_sampled = self.request.form.has_key("DateSampled") and self.request.form["DateSampled"] or self.context.getDateSampled().strftime("%Y-%m-%d")
+        date_sampled = self.request.form.has_key("DateSampled") and \
+                     self.request.form["DateSampled"] or \
+                     self.context.getDateSampled().strftime("%Y-%m-%d")
         return date_sampled
 
 class AJAXSampleSubmit():
