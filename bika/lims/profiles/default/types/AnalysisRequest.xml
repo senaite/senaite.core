@@ -69,7 +69,7 @@
 	<permission value="BIKA: Manage Bika"/>
 </action>
 
-<action title="Large Sticker" a
+<action title="Large Sticker"
 	action_id="sticker_lrg"
 	category="document_actions"
 	condition_expr=""

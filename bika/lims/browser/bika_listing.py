@@ -20,7 +20,7 @@ from zope.interface import implements
 import json
 import urllib
 
-class BikaListingView(FolderContentsView):
+class BikaListingView(BrowserView):
     """
     """
     template = ViewPageTemplateFile("templates/bika_listing.pt")
