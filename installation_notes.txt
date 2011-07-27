@@ -28,6 +28,11 @@ environment-vars =
 5. Run bin/buildout -n -c develop.cfg
 6. Run bin/plonectl fg
 7. Load sample data with url/load_setup_data
+8. Make sure the idserver is running
+9. Load sample data with url/load_setup_data
+
+If filestorage files have been deleted, run bin\plonectl adduser admin admin
+to create the admin user
 
 Windows people:
 ===============
