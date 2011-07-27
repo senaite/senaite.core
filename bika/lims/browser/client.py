@@ -285,16 +285,8 @@ class ClientAnalysisSpecsView(BikaListingView):
     review_states = [
                      {'title': _('All'), 'id':'all',
                       'columns': ['getSampleType'],
-                      'buttons':[{'cssclass': 'context',
-                                  'title': _('Delete'),
-                                  'url': 'folder_delete:method'},
-                                 {'cssclass':'context',
-                                  'title': _('Duplicate'),
-                                  'url': 'duplicate_analysisspec:method',
-                                 }
-                                ],
-                     },
-                    ]
+                      },
+    ]
 
     def __init__(self, context, request):
         super(ClientAnalysisSpecsView, self).__init__(context, request)

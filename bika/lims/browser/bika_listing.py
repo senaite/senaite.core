@@ -52,10 +52,6 @@ class BikaListingView(BrowserView):
 ##       if "choices" is selected, item['choices'][column_id] must
 ##       be a list of choice strings.
 ##
-##     - table_cell_class
-##       css classes to apply to the table cell.
-##       applied to each cell after table_row_class.
-##
     columns = {
            'obj_type': {'title': _('Type')},
            'id': {'title': _('ID')},
@@ -227,8 +223,6 @@ class BikaListingView(BrowserView):
                 icon = icon.html_tag(),
                 type_class = type_class,
                 review_state = review_state,
-                # a list of names of fields that may be edited
-                allow_edit = [],
                 # a list of lookups for single-value-select fields
                 choices = [],
                 state_title = portal_workflow.getTitleForStateOnType(review_state,
@@ -236,8 +230,10 @@ class BikaListingView(BrowserView):
                 state_class = state_class,
                 relative_url = relative_url,
                 view_url = url,
-                table_cell_class = '',
                 table_row_class = table_row_class,
+
+                # a list of names of fields that may be edited on this item
+                allow_edit = [],
                 # "before", "after" and replace: dictionary (key is column ID)
                 # A snippet of HTML which will be rendered
                 # before/after/instead of the table cell content.
@@ -245,6 +241,9 @@ class BikaListingView(BrowserView):
                 after = {},
                 replace = {},
             )
+
+            # extra classes for individual fields on this item
+            results_dict['class'] = {}
 
             # look through self.columns for object attribute names (the column key),
             # and try get them from the brain/object.

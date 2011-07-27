@@ -32,6 +32,9 @@ class AnalysesView(BikaListingView):
         self.show_sort_column = False
         self.show_select_row = False
         self.show_select_column = False
+        # each editable item needs it's own allow_edit
+        # which is a list of field names.
+        self.allow_edit = False
         self.pagesize = 1000
 
         self.columns = {
@@ -39,7 +42,8 @@ class AnalysesView(BikaListingView):
             'state_title': {'title': _('Status')},
             'Result': {'title': _('Result')},
             'Uncertainty': {'title': _('+-')},
-            'retested': {'title': _('retested'), 'type':'boolean'},
+            'retested': {'title': _('retested'),
+                         'type':'boolean'},
             'Attachments': {'title': _('Attachments')},
             'DueDate': {'title': _('Due Date')},
         }
@@ -61,7 +65,8 @@ class AnalysesView(BikaListingView):
 
         pc = getToolByName(self.context, 'portal_catalog')
         wf = getToolByName(self.context, 'portal_workflow')
-        can_edit_analyses = getSecurityManager().checkPermission(EditAnalyses, self.context)
+        can_edit_analyses = self.allow_edit and \
+                          getSecurityManager().checkPermission(EditAnalyses, self.context)
 
         items = []
         self.interim_fields = {}
@@ -117,8 +122,10 @@ class AnalysesView(BikaListingView):
             item['formatted_result'] = ''
             item['Uncertainty'] = ''
             item['retested'] = obj.getRetested()
+            item['class']['retested'] = 'center'
             item['calculation'] = service.getCalculation() and True or False
             item['DueDate'] = obj.getDueDate()
+            item['Attachments'] = ''
             item['item_data'] = json.dumps(item['interim_fields'])
             # choices defined on Service apply result fields.
             choices = service.getResultOptions()
@@ -140,7 +147,7 @@ class AnalysesView(BikaListingView):
 
             # Only display data bearing fields if we have ViewResults
             # permission, otherwise put an icon in Result column.
-            if result and getSecurityManager().checkPermission(ViewResults, obj):
+            if getSecurityManager().checkPermission(ViewResults, obj):
                 item['Result'] = result
                 item['formatted_result'] = precision and \
                     str("%%%sf" % precision) % result or result
@@ -156,6 +163,7 @@ class AnalysesView(BikaListingView):
                     '<img width="16" height="16" ' + \
                     'src="%s/++resource++bika.lims.images/to_follow.png"/>'% \
                     (portal.absolute_url())
+                item['class']['Result'] = 'center'
 
             # Add this analysis' interim fields to the list
             for f in item['interim_fields']:
@@ -196,7 +204,7 @@ class AnalysesView(BikaListingView):
                         state['columns'].insert(pos, col_id)
                 # retested column is added after Result.
                 pos = 'Result' in state['columns'] and \
-                    state['columns'].index('Result') or len(state['columns'])
+                    state['columns'].index('Result')+1 or len(state['columns'])
                 state['columns'].insert(pos, 'retested')
                 new_states.append(state)
             self.review_states = new_states

@@ -31,9 +31,13 @@ class AnalysisRequestViewView(BrowserView):
 
     def __call__(self):
         self.Field = AnalysesView(self.context, self.request,
-                                  getPointOfCapture = 'field').contents_table()
+                                  getPointOfCapture = 'field')
+        self.Field.allow_edit = False
+        self.Field = self.Field.contents_table()
         self.Lab = AnalysesView(self.context, self.request,
-                                getPointOfCapture = 'lab').contents_table()
+                                getPointOfCapture = 'lab')
+        self.Lab.allow_edit = False
+        self.Lab = self.Lab.contents_table()
         return self.template()
 
     def tabindex(self):
@@ -255,9 +259,13 @@ class AnalysisRequestManageResultsView(AnalysisRequestViewView):
         wf_tool = getToolByName(self.context, 'portal_workflow')
         pc = getToolByName(self.context, 'portal_catalog')
         self.Field = AnalysesView(self.context, self.request,
-                                  getPointOfCapture = 'field').contents_table()
+                                  getPointOfCapture = 'field')
+        self.Field.allow_edit = True
+        self.Field = self.Field.contents_table()
         self.Lab = AnalysesView(self.context, self.request,
-                                getPointOfCapture = 'lab').contents_table()
+                                getPointOfCapture = 'lab')
+        self.Lab.allow_edit = True
+        self.Lab = self.Lab.contents_table()
 
         form = self.request.form
         if form.has_key("submitted"):
@@ -352,7 +360,8 @@ class AnalysisRequestSelectSampleView(BikaListingView):
     pagesize = 25
 
     columns = {
-        'getSampleID': {'title': _('Sample ID'), 'table_row_class':'select_sample_select'},
+        'getSampleID': {'title': _('Sample ID'),
+                        'class':'select_sample_select'},
         'getClientSampleID': {'title': _('Client SID')},
         'getClientReference': {'title': _('Client Reference')},
         'SampleType': {'title': _('Sample Type')},
