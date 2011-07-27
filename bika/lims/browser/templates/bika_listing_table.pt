@@ -189,7 +189,7 @@ Table cells for each column from in review_state's column list.
 
 	<!-- before -->
 	<tal:before
-		tal:replace="structure python:item['before'][column]"/>
+		tal:replace="structure before"/>
 
 	<span tal:condition="python:type == 'boolean'">		<!-- boolean -->
 		<input
@@ -211,7 +211,7 @@ Table cells for each column from in review_state's column list.
 		<input
 			type="hidden"
 			tal:attributes="
-				value item[column];
+				value python:item[column];
 				id python:'%s-%s' % (item['uid'], column);
 				name string:${column}.${item/uid}:record:ignore-empty;"/>
 	</span>
@@ -225,8 +225,8 @@ Table cells for each column from in review_state's column list.
 			tal:attributes="
 				size input_width;
 				uid string:${item/uid};
-				field python:item[column]['id'];
-				value python: item[column]['value'];"/>
+				field python:column;
+				value python: item[column];"/>
 		<!-- normal field view -->
 		<span
 			tal:condition="python:not allow_edit and not (column == 'Result' and item['calculation'])"
@@ -238,8 +238,8 @@ Table cells for each column from in review_state's column list.
 			tal:attributes="
 				size input_width;
 				uid string:${item/uid};
-				field python:item[column]['id'];
-				value python:item[column]['value'];"/>
+				field python:column;
+				value python:item[column];"/>
 		<!-- calculated result field; not editable. -->
 		<input
 			tal:condition="python:column == 'Result' and item['calculation']"
@@ -273,7 +273,7 @@ Table cells for each column from in review_state's column list.
 					name string:${column}.${item/uid}:records:ignore_empty;
 					uid item/uid;">
 				<option value=""></option>
-				<tal:options tal:repeat="option item['options'][column]">
+				<tal:options tal:repeat="option python:item['options'][column]">
 					<option
 						tal:attributes="
 							value option;
@@ -293,14 +293,15 @@ Table cells for each column from in review_state's column list.
 				tal:attributes="
 					size input_width;
 					uid string:${item/uid};
-					field python:item[column]['id'];
-					value python: item[column]['value'];"/>
+					field python:column;
+					value python:item[column];"/>
 		</span>
 	</span>
 
 
 	<!-- unit for interim and result-->
-	<em class="discreet"
+	<em tal:condition="python:'Unit' in item"
+		class="discreet"
 		style="white-space:nowrap;"
 		tal:content="python: item['Unit']"/>
 	<!-- alert container -->
@@ -316,7 +317,7 @@ Table cells for each column from in review_state's column list.
 			title="Result out of range"
 			icon="exclamation"/>
 		<img
-			tal:condition="python:column == 'Result' item['Result'] and item['result_in_range'] == '1'"
+			tal:condition="python:column == 'Result' and item['Result'] and item['result_in_range'] == '1'"
 			tal:attributes="uid item/uid;"
 			src='++resource++bika.lims.images/warning.png'
 			i18n:attributes="title"
@@ -326,7 +327,7 @@ Table cells for each column from in review_state's column list.
 
 	<!-- before -->
 	<tal:before
-		tal:replace="structure python:item['before'][column]"/>
+		tal:replace="structure before"/>
 
 	</td>
 	</tal:cell>
