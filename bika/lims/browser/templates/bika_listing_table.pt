@@ -179,18 +179,24 @@ Table cells for each column from in review_state's column list.
 		tal:define="
 			input_width python:5;
 			allow_edit python: column in item['allow_edit'];
-			before python: column in item['before'] and item['before']['column'] or '';
-			after python: column in item['after'] and item['after']['column'] or '';
+			before python: column in item['before'] and item['before'][column] or '';
+			after python: column in item['after'] and item['after'][column] or '';
+			replace python: column in item['replace'] and item['replace'][column] or '';
 			type python: 'type' in columns[column] and columns[column]['type'] or 'string';
 			row_class python: 'table_row_class' in columns[column] and columns[column]['table_row_class'] or '';
 			cell_class python: 'table_cell_class' in item and item['table_cell_class'] or '';"
 		tal:attributes="
 			class string:$row_class $cell_class">
 
-	<!-- before -->
+	<!-- before structure -->
 	<tal:before
 		tal:replace="structure before"/>
 
+	<!-- replace structure -->
+	<tal:before
+		tal:replace="structure replace"/>
+
+	<span tal:condition="not:replace">
 	<span tal:condition="python:type == 'boolean'">		<!-- boolean -->
 		<input
 			type="checkbox"
@@ -323,11 +329,12 @@ Table cells for each column from in review_state's column list.
 			i18n:attributes="title"
 			title="Result out of range: in error shoulder"
 			icon="warning"/>
-		</span>
+	</span>
+	</span> <!-- /replace -->
 
-	<!-- before -->
-	<tal:before
-		tal:replace="structure before"/>
+	<!-- after structure -->
+	<tal:after
+		tal:replace="structure after"/>
 
 	</td>
 	</tal:cell>

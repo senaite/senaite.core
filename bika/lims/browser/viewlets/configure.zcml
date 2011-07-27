@@ -1,0 +1,53 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:i18n="http://namespaces.zope.org/i18n"
+    i18n_domain="bika">
+
+    <!-- Hide BreadCrumbs for root views -->
+    <browser:viewlet
+        for="Products.CMFPlone.interfaces.IPloneSiteRoot"
+        name="plone.path_bar"
+        manager="plone.app.layout.viewlets.interfaces.IAboveContent"
+        template="blank.pt"
+        permission="zope2.View"
+        layer="bika.lims.interfaces.IBikaLIMS"
+        />
+
+    <!-- Hide BreadCrumbs for other stuff -->
+    <browser:viewlet
+        for="bika.lims.interfaces.IHaveNoBreadCrumbs"
+        name="plone.path_bar"
+        manager="plone.app.layout.viewlets.interfaces.IAboveContent"
+        template="blank.pt"
+        permission="zope2.View"
+        layer="bika.lims.interfaces.IBikaLIMS"
+        />
+
+    <!-- Hide ByLine for everything -->
+    <browser:viewlet
+        for="*"
+        name="plone.belowcontenttitle.documentbyline"
+        manager="plone.app.layout.viewlets.interfaces.IBelowContentTitle"
+        template="blank.pt"
+        permission="zope2.View"
+        layer="bika.lims.interfaces.IBikaLIMS"
+        />
+
+    <!-- Make document actions beautiful -->
+    <browser:viewlet
+        name="plone.abovecontenttitle.documentactions"
+        manager="plone.app.layout.viewlets.interfaces.IBelowContentBody"
+        template="blank.pt"
+        permission="zope2.View"
+        layer="bika.lims.interfaces.IBikaLIMS"
+    />
+    <browser:viewlet
+        name="plone.abovecontenttitle.documentactions"
+        manager="plone.app.layout.viewlets.interfaces.IAboveContentTitle"
+        class=".document_actions.DocumentActionsViewlet"
+        permission="zope2.View"
+        layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
+</configure>

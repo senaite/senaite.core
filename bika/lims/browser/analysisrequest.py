@@ -941,5 +941,5 @@ class AnalysisRequestsView(BikaListingView):
             items[i]['getDateReceived'] = item['getDateReceived'] and \
                 self.context.toLocalizedTime(item['getDateReceived'], long_format = 0) or ''
             items[i]['Client'] = obj.getObject().aq_parent.Title()
-            items[i]['links'] = {'getRequestID': item['url']}
+            items[i]['replace']['getRequestID'] = obj.absolute_url()
         return items

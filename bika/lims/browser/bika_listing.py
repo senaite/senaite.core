@@ -238,10 +238,12 @@ class BikaListingView(BrowserView):
                 view_url = url,
                 table_cell_class = '',
                 table_row_class = table_row_class,
-                # "before" and "after": dictionary with column ID as key
-                # A snippet of HTML which will be rendered before/after the table cell content.
+                # "before", "after" and replace: dictionary (key is column ID)
+                # A snippet of HTML which will be rendered
+                # before/after/instead of the table cell content.
                 before = {},
                 after = {},
+                replace = {},
             )
 
             # look through self.columns for object attribute names (the column key),
