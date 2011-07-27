@@ -39,11 +39,14 @@ class ClientFolderContentsView(BikaListingView):
         items = BikaListingView.folderitems(self)
         for x in range(len(items)):
             if not items[x].has_key('obj'): continue
-            items[x]['replace']['title'] = "<a href='%s'>%s</a>"%(items[x]['obj'].getURL(), items[x]['title'])
-            if items[x]['getEmailAddress']:
-                'getEmailAddress': "<a href='%s'>%s</a>"%(items[x]['getEmailAddress'] and 'mailto:%s' % items[x]['getEmailAddress'] or ""),
 
-            }
+            items[x]['replace']['title'] = "<a href='%s'>%s</a>"%\
+                 (items[x]['obj'].getURL(), items[x]['title'])
+
+            if items[x]['getEmailAddress']:
+                items[x]['replace']['getEmailAddress'] = "<a href='%s'>%s</a>"%\
+                     ('mailto:%s' % items[x]['getEmailAddress'],
+                      items[x]['getEmailAddress'])
 
         return items
 
