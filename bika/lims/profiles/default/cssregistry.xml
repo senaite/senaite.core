@@ -25,16 +25,17 @@
       -->
 
 <stylesheet
-    title=""
-    cacheable="True"
-    compression="safe"
-    cookable="True"
-    enabled="1"
-    expression=""
     id="++resource++bika.lims.css/jquery-ui.css"
     media="screen"
     rel="stylesheet"
     rendering="import"
     insert-after="*"/>
+
+    <javascript authenticated="True"
+                expression="python:here.portal_type in ['Client', 'AnalysisRequest', 'Worksheet', 'Sample']"
+                id="++resource++bika.lims.css/hide_contentmenu.css"
+                media="screen"
+                rel="stylesheet"
+                rendering="inline"/>
 
 </object>

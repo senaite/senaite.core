@@ -6,7 +6,7 @@ from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import transaction_note
 from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from bika.lims import ViewResults
+from bika.lims import EditAnalyses, ViewResults
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.config import POINTS_OF_CAPTURE
@@ -21,56 +21,47 @@ import plone
 class AnalysesView(BikaListingView):
     """ Displays a list of Analyses in a table.
         All InterimFields from all analyses are added to self.columns[].
-        allow_edit boolean decides if edit is possible, but each analysis
-        can be editable or not, depending on it's review_state.
         Keyword arguments are passed directly to portal_catalog.
     """
-    content_add_actions = {}
-    show_filters = False
-    show_sort_column = False
-    show_select_row = False
-    show_select_column = False
-    # allow_edit must also be True in the column definition
-    allow_edit = False
-    pagesize = 1000
-    columns = {
-        'Service': {'title': _('Analysis')},
-        'state_title': {'title': _('Status')},
-        'Result': {'title': _('Result'),
-                   'allow_edit': True},
-        'Uncertainty': {'title': _('+-')},
-        'retested': {'title': _('Retested'),
-                     'allow_edit': True,
-                     'type':'boolean'},
-        'Attachments': {'title': _('Attachments')},
-        'DueDate': {'title': _('Due Date')},
-    }
-    review_states = [
-        {'title': _('All'), 'id':'all',
-         'columns':['Service',
-                    'state_title',
-                    'Result',
-                    'Uncertainty',
-                    'retested',
-                    'Attachments'],
-         },
-    ]
     def __init__(self, context, request, **kwargs):
         super(AnalysesView, self).__init__(context, request)
         self.contentFilter = dict(kwargs)
         self.contentFilter['portal_type'] = 'Analysis'
-        mt = getToolByName(self.context, 'portal_membership')
-        member = mt.getAuthenticatedMember()
-        self.show_interim = member.has_role('labtechnician') and True or False
+        self.content_add_actions = {}
+        self.show_filters = False
+        self.show_sort_column = False
+        self.show_select_row = False
+        self.show_select_column = False
+        self.pagesize = 1000
+
+        self.columns = {
+            'Service': {'title': _('Analysis')},
+            'state_title': {'title': _('Status')},
+            'Result': {'title': _('Result')},
+            'Uncertainty': {'title': _('+-')},
+            'retested': {'title': _('retested'), 'type':'boolean'},
+            'Attachments': {'title': _('Attachments')},
+            'DueDate': {'title': _('Due Date')},
+        }
+
+        self.review_states = [
+            {'title': _('All'), 'id':'all',
+             'columns':['Service',
+                        'Result',
+                        'Uncertainty',
+                        'state_title',
+                        'Attachments'],
+             },
+        ]
 
     def folderitems(self):
-        """ XXX interim fields not specifically ordered but vaguely predictable.
-        """
+        analyses = super(AnalysesView, self).folderitems(full_objects = True)
+
         portal = getSite()
+
         pc = getToolByName(self.context, 'portal_catalog')
         wf = getToolByName(self.context, 'portal_workflow')
-
-        analyses = super(AnalysesView, self).folderitems(full_objects = True)
+        can_edit_analyses = getSecurityManager().checkPermission(EditAnalyses, self.context)
 
         items = []
         self.interim_fields = {}
@@ -110,39 +101,61 @@ class AnalysesView(BikaListingView):
             result = obj.getResult()
             service = obj.getService()
             keyword = service.getKeyword()
-            choices = service.getResultOptions()
-
+            precision = service.getPrecision()
             item['specs'] = json.dumps(
-                {'client': specs['client'].has_key(keyword) and specs['client'][keyword] or [],
-                 'lab': specs['lab'].has_key(keyword) and specs['lab'][keyword] or [],
-                 })
-
-            obj.getInterimFields()
-
+                {'client': specs['client'].has_key(keyword) and \
+                           specs['client'][keyword] or [],
+                 'lab': specs['lab'].has_key(keyword) and \
+                        specs['lab'][keyword] or [],
+                 }
+            )
+            item['interim_fields'] = obj.getInterimFields()
             item['Service'] = service.Title()
             item['Keyword'] = keyword
-            item['Result'] = result
             item['Unit'] = obj.getUnit()
-            item['Uncertainty'] = obj.getUncertainty(result)
+            item['Result'] = ''
+            item['formatted_result'] = ''
+            item['Uncertainty'] = ''
             item['retested'] = obj.getRetested()
-            item['allow_edit'] = self.allow_edit or False
             item['calculation'] = service.getCalculation() and True or False
             item['DueDate'] = obj.getDueDate()
-
-            if choices:
-                item['ResultOptions'] = choices
-
             item['item_data'] = json.dumps(item['interim_fields'])
+            # choices defined on Service apply result fields.
+            choices = service.getResultOptions()
+            if choices:
+                item['choices']['Result'] = choices
+            # Results can only be edited in certain states.
+            if can_edit_analyses and item['review_state'] not in \
+               ('sample_due', 'to_be_verified', 'verified', 'published'):
+               item['allow_edit'] = ['Result',]
+               # if the Result field is editable, our interim fields are too
+               for f in item['interim_fields']:
+                   item['allow_edit'].append(f['id'])
 
-            if hasattr(obj, 'getAttachment'):
-                item['Attachments'] = ", ".join([a.Title() for a in obj.getAttachment()])
-            else:
-                item['Attachments'] = ''
+               # if there isn't a calculation then result must be re-testable,
+               # and if there are interim fields, they too must be re-testable.
+               if not item['calculation'] or \
+                  (item['calculation'] and item['interim_fields']):
+                   item['allow_edit'].append('retested')
 
-            if hasattr(obj, 'result_in_range'):
-                item['result_in_range'] = obj.result_in_range(result)
+            # Only display data bearing fields if we have ViewResults
+            # permission, otherwise put an icon in Result column.
+            if result and getSecurityManager().checkPermission(ViewResults, obj):
+                item['Result'] = result
+                item['formatted_result'] = precision and \
+                    str("%%%sf" % precision) % result or result
+                item['Uncertainty'] = obj.getUncertainty(result)
+                item['Attachments'] = hasattr(obj, 'getAttachment') and \
+                    ", ".join([a.Title() for a in obj.getAttachment()]) or ''
+                item['result_in_range'] = hasattr(obj, 'result_in_range') and \
+                    obj.result_in_range(result) or True
             else:
-                item['result_in_range'] = True
+                if 'Result' in item['allow_edit']:
+                    item['allow_edit'].remove('Result')
+                item['before']['Result'] = \
+                    '<img width="16" height="16" ' + \
+                    'src="%s/++resource++bika.lims.images/to_follow.png"/>'% \
+                    (portal.absolute_url())
 
             # Add this analysis' interim fields to the list
             for f in item['interim_fields']:
@@ -151,19 +164,18 @@ class AnalysesView(BikaListingView):
                 item[f['id']] = f
 
             # check if this analysis is late/overdue
-            if item['review_state'] not in ['sample_due', 'published'] and item['DueDate'] < DateTime():
-                item['after'] += '<img width="16" height="16" src="%s/++resource++bika.lims.images/late.png"/>'%\
-                    (portal.absolute_url())
-
-            # Icon if we can not yet view results
-            if not getSecurityManager().checkPermission(ViewResults, object):
-                item['before'] += '<img width="16" height="16" src="%s/++resource++bika.lims.images/to_follow.png"/>'%\
-                    (portal.absolute_url())
+            if item['review_state'] not in ['sample_due', 'published'] and \
+               item['DueDate'] < DateTime():
+                item['after']['Service'] = \
+                    '<img width="16" height="16" ' + \
+                    'src="%s/++resource++bika.lims.images/late.png" title="%s"/>'% \
+                    (portal.absolute_url(), _("Late"))
 
             items.append(item)
 
         items = sorted(items, key=itemgetter('Service'))
 
+        # XXX order the list of interim columns
         interim_keys = self.interim_fields.keys()
         interim_keys.reverse()
 
@@ -172,23 +184,28 @@ class AnalysesView(BikaListingView):
             if col_id not in self.columns:
                 self.columns[col_id] = {'title': self.interim_fields[col_id]}
 
-        # if we are a Lab Technician, or if we have local owner role,
-        # add InterimFields keys to review_states column lists
-        # they remain in self.columns and item_data, so that they
-        # can still be calculated
-        if self.show_interim:
-            munged_states = []
+        if can_edit_analyses:
+            new_states = []
             for state in self.review_states:
-                pos = state['columns'].index('Result')
-                if not pos: pos = len(state['columns'])
+                # InterimFields are displayed in review_state
+                # They are anyway available through View.columns though.
+                pos = 'Result' in state['columns'] and \
+                    state['columns'].index('Result') or len(state['columns'])
                 for col_id in interim_keys:
                     if col_id not in state['columns']:
                         state['columns'].insert(pos, col_id)
-                munged_states.append(state)
-            self.review_states = munged_states
+                # retested column is added after Result.
+                pos = 'Result' in state['columns'] and \
+                    state['columns'].index('Result') or len(state['columns'])
+                state['columns'].insert(pos, 'retested')
+                new_states.append(state)
+            self.review_states = new_states
+            # Allow selecting individual analyses
+            self.show_select_column = True
 
         # re-do the pretty css odd/even classes
         for i in range(len(items)):
-            items[i]['table_row_class'] = ((i + 1) % 2 == 0) and "draggable even" or "draggable odd"
+            items[i]['table_row_class'] = ((i + 1) % 2 == 0) and \
+                 "draggable even" or "draggable odd"
 
         return items

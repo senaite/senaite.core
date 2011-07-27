@@ -61,10 +61,12 @@ div.position-1\3a 4 {margin-left:    -81.5%;} /* .position-1:4 */
   float:right;
 }
 
-fieldset.attachments {
+fieldset.attachments legend {
     color: &dtml-linkColor;;
     font-weight:bold;
     cursor: pointer;
+}
+fieldset.attachments{
     padding: 0 1em 0 1em;
     margin: 0;
 }
@@ -83,10 +85,6 @@ fieldset.attachments {
 
 table.analysisrequest {
 	border-top: 1px solid #dddddd;
-}
-
-table.analysisrequest td .center{
-    text-align: center;
 }
 
 table.add td {
@@ -173,6 +171,9 @@ table.analysisrequest input {
 .link {
     color: &dtml-linkColor;;
     cursor: pointer;
+}
+.center{
+    text-align: center;
 }
 
 

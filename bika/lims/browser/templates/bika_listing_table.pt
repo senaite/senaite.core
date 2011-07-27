@@ -1,7 +1,8 @@
 <div class="folderlisting-main-table" tal:define="
 	nosortclass view/get_nosort_class;
+	portal context/@@plone_portal_state/portal;
 	review_state python:[t for t in view.review_states if t['id'] == request.get('review_state', 'all')][0];
-	portal context/@@plone_portal_state/portal;">
+	specification python:view.request.get('specification', 'lab');">
 
 
 <tal:comment replace="nothing">***************
@@ -168,159 +169,137 @@ Item select checkboxes.
 
 <tal:comment replace="nothing">***************  TD.
 Table cells for each column from in review_state's column list.
-**********************************************
-XXX proper truth table
-0 Not interim column or Result column: just print value.
-1 interim and editable - input
-2 interim not editable - readonly input
-3 'Result' and calculation - readonly input
-4 'Result' not calculation - input
-* Interim OR Result: Unit
-*******************************</tal:comment>
-	<tal:column tal:repeat="column review_state/columns">
+********************</tal:comment>
+
+	<tal:cell
+		tal:repeat="column review_state/columns">
+
 	<td
 		style="white-space: nowrap;"
-		tal:attributes="
-			class python: columns[column].has_key('table_row_class') and columns[column]['table_row_class'] or ''"
 		tal:define="
-			input_width python:6;
-			is_editable python: view.allow_edit and item.has_key('allow_edit') and item['allow_edit'] or False;
-			is_interim python: item.has_key(column) and type(item[column]) == type({}) or False;
-			is_result python: column == 'Result';">
+			input_width python:5;
+			allow_edit python: column in item['allow_edit'];
+			before python: column in item['before'] and item['before']['column'] or '';
+			after python: column in item['after'] and item['after']['column'] or '';
+			type python: 'type' in columns[column] and columns[column]['type'] or 'string';
+			row_class python: 'table_row_class' in columns[column] and columns[column]['table_row_class'] or '';
+			cell_class python: 'table_cell_class' in item and item['table_cell_class'] or '';"
+		tal:attributes="
+			class string:$row_class $cell_class">
 
-	<!--  column has "before" content snippet -->
-	<tal:icon
-		condition="python:view.columns[column].has_key('before')"
-		tal:replace="structure item/before"/>
+	<!-- before -->
+	<tal:before
+		tal:replace="structure python:item['before'][column]"/>
 
-<tal:comment replace="nothing">***************
-<!----------------- Editable ----------------->
-Editable - interim_field column
-******************************* </tal:comment>
-	<tal:editable condition="is_editable">
-	<tal:interim_field condition="is_interim">
-		<!-- Text field -->
+	<span tal:condition="python:type == 'boolean'">		<!-- boolean -->
+		<input
+			type="checkbox"
+			tal:condition="allow_edit"
+			tal:attributes="
+				class item/state_class;
+				uid string:${item/uid};
+				id python:'%s-%s' % (item['uid'], column);
+				name string:${column}.${item/uid}:record:ignore-empty;
+				checked python:item.get(column) and 'yes' or '';"/>
+		<input
+			type="checkbox"
+			tal:condition="not:allow_edit"
+			disabled="disabled"
+			tal:attributes="
+				class item/state_class;
+				checked python:item.get(column) and 'yes' or '';"/>
+		<input
+			type="hidden"
+			tal:attributes="
+				value item[column];
+				id python:'%s-%s' % (item['uid'], column);
+				name string:${column}.${item/uid}:record:ignore-empty;"/>
+	</span>
+
+	<span tal:condition="python:type == 'string'">		<!-- string -->
+		<!-- normal field edit -->
 		<input
 			type="text"
-			class="analysis_entry"
+			tal:condition="python:allow_edit and not (column == 'Result' and item['calculation'])"
+			class="listing_string_entry"
 			tal:attributes="
 				size input_width;
 				uid string:${item/uid};
 				field python:item[column]['id'];
 				value python: item[column]['value'];"/>
-		<!-- unit -->
-		<em class="discreet"
-			style="white-space:nowrap;"
-			tal:content="python: item[column]['unit']"/>
-		<!-- alert container -->
-		<span class="alert" tal:attributes="
-			uid python:item['uid'];
-			field python:item[column]['id']"></span>
-	</tal:interim_field>
-
-<tal:comment replace="nothing">***************
-Editable - Any column that is not an interim_field
-******************************* </tal:comment>
-	<tal:not_interim condition="not: is_interim">
-
-<tal:comment replace="nothing">***************
-Editable - not result field
-******************************* </tal:comment>
-	<tal:not_result tal:condition="not: is_result">
-		<!-- Row content is a link -->
-		<a tal:condition="python:item.has_key('links') and item['links'].has_key(column)" href="#"
+		<!-- normal field view -->
+		<span
+			tal:condition="python:not allow_edit and not (column == 'Result' and item['calculation'])"
+			tal:content="python:item.get(column) and item.get(column) or ''"
+			tal:attributes="class item/state_class"/>
+		<input
+			type="hidden"
+			tal:condition="python:not allow_edit and not (column == 'Result' and item['calculation'])"
 			tal:attributes="
-				href python:item['links'][column];
-				class string: ${item/state_class} ${item/type_class};">
-			<strong tal:content="python: item.get(column, '-')"/>
-		</a>
+				size input_width;
+				uid string:${item/uid};
+				field python:item[column]['id'];
+				value python:item[column]['value'];"/>
+		<!-- calculated result field; not editable. -->
+		<input
+			tal:condition="python:column == 'Result' and item['calculation']"
+			disabled="disabled"
+			type="text"
+			style="color:black"
+			tal:attributes="
+				field string:formatted_result;
+				uid item/uid;
+				size input_width;
+				value python:item['Result'];"/>
+		<!-- calculated result; hidden -->
+		<input
+			tal:condition="python:column == 'Result' and item['calculation']"
+			type="hidden"
+			class="listing_string_entry"
+			tal:attributes="
+				uid string:${item/uid};
+				field string:Result;
+				name string:Results.${item/uid}:records:ignore_empty;
+				value python: item['Result'];"/>
 
-		<tal:not_link condition="python:not (item.has_key('links') and item['links'].has_key(column))">
-			<!-- XXX very specific uglies for 'retested' column here -->
+	</span>
+
+	<span tal:condition="python:type == 'choices'">		<!-- choices -->
+		<span tal:condition="allow_edit">
+			<select
+				tal:condition="python:column in item['options']"
+				tal:attributes="
+					field string:column;
+					name string:${column}.${item/uid}:records:ignore_empty;
+					uid item/uid;">
+				<option value=""></option>
+				<tal:options tal:repeat="option item['options'][column]">
+					<option
+						tal:attributes="
+							value option;
+							selected python:item[column] == option and 'selected' or '';"
+						tal:content="option">
+					</option>
+				</tal:options>
+			</select>
+		</span>
+		<span tal:condition="not:allow_edit">
 			<span
-				tal:condition="python: column!='retested'"
-				tal:content="python:item.get(column)"
+				tal:content="python:item.get(column) and item.get(column) or ''"
+				tal:attributes="class string:${item/state_class} result"/>
+			<input
+				type="hidden"
+				tal:condition="not:allow_edit"
 				tal:attributes="
-					class item/state_class;
-					id python:'%s-%s' % (item['uid'], column)">&nbsp
-			</span>
-			<span
-				tal:condition="python:columns[column].has_key('type') and columns[column]['type'] == 'bool'">
-				<input type="checkbox" tal:condition="python:column=='retested' and not item['calculation']"
-				tal:attributes="
-					class item/state_class;
-					id python:'%s-%s' % (item['uid'], column);
-					name string:retested.${item/uid}:record:ignore-empty;
-					checked python:item.get(column) and 'yes' or '';"/>
-				<input type="checkbox" tal:condition="python:column!='retested'"
-				tal:attributes="
-					class item/state_class;
-					id python:'%s-%s' % (item['uid'], column);
-					name string:retested.${item/uid}:record:ignore-empty;
-					checked python:item.get(column) and 'yes' or '';"/>
-			</span>
-		</tal:not_link>
+					size input_width;
+					uid string:${item/uid};
+					field python:item[column]['id'];
+					value python: item[column]['value'];"/>
+		</span>
+	</span>
 
-	</tal:not_result>
 
-<tal:comment replace="nothing">***************
-Editable - result field
-******************************* </tal:comment>
-	<tal:result tal:condition="is_result" tal:define="
-		has_options python:item.has_key('ResultOptions') and item['ResultOptions'] or False;
-		specification python:view.request.get('specification', 'lab')">
-
-	<!-- Select for items with ResultOptions defined in the service -->
-	<select
-		tal:condition="python:has_options"
-		tal:attributes="
-			field string:Result;
-			name string:Results.${item/uid}:records:ignore_empty;
-			uid item/uid;">
-		<tal:options tal:repeat="option item/ResultOptions">
-			<option tal:attributes="
-				value option/Result;
-				selected python:item['Result'] == option['Result'] and 'selected' or '';">
-				<span tal:content="option/Result"/>
-			</option>
-		</tal:options>
-	</select>
-
-	<!-- calculated results in disabled field -->
-	<input
-		tal:condition="python: item['calculation'] and not has_options"
-		disabled="disabled"
-		type="text"
-		style="color:black"
-		tal:attributes="
-			field string:Result_display;
-			uid item/uid;
-			size input_width;
-			value python: item['Result'];"/>
-
-	<!-- hidden field for calculated result value -->
-	<input
-		tal:condition="python: item['calculation'] and not has_options"
-		type="hidden"
-		class="analysis_entry"
-		tal:attributes="
-			uid string:${item/uid};
-			field string:Result;
-			name string:Results.${item/uid}:records:ignore_empty;
-			value python: item['Result'];"/>
-
-	<!-- regular result entry field -->
-	<input
-		tal:condition="python: not item['calculation'] and not has_options"
-		type="text"
-		class="analysis_entry"
-		tal:attributes="
-			size input_width;
-			uid string:${item/uid};
-			name string:Results.${item/uid}:records:ignore_empty;
-			field string:Result;
-			value python: item['Result'];"/>
-	<!-- unit -->
+	<!-- unit for interim and result-->
 	<em class="discreet"
 		style="white-space:nowrap;"
 		tal:content="python: item['Unit']"/>
@@ -328,97 +307,31 @@ Editable - result field
 	<span class="alert" tal:attributes="
 		uid python:item['uid'];
 		field string:Result;">
-	<!-- initial out-of-range indicators -->
-	<img
-		tal:condition="python:item['Result'] and not item['result_in_range']"
-		tal:attributes="uid item/uid;"
-		src='++resource++bika.lims.images/exclamation.png' i18n:attributes="title" title="Result out of range" icon="exclamation"/>
-	<img
-		tal:condition="python:item['Result'] and item['result_in_range'] == '1'"
-		tal:attributes="uid item/uid;"
-		src='++resource++bika.lims.images/warning.png' i18n:attributes="title" title="Result out of range: in error shoulder" icon="warning"/>
-	</span>
-	</tal:result>
-</tal:not_interim>
-</tal:editable>
+		<!-- initial out-of-range indicators -->
+		<img
+			tal:condition="python:column == 'Result' and item['Result'] and not item['result_in_range']"
+			tal:attributes="uid item/uid;"
+			src='++resource++bika.lims.images/exclamation.png'
+			i18n:attributes="title"
+			title="Result out of range"
+			icon="exclamation"/>
+		<img
+			tal:condition="python:column == 'Result' item['Result'] and item['result_in_range'] == '1'"
+			tal:attributes="uid item/uid;"
+			src='++resource++bika.lims.images/warning.png'
+			i18n:attributes="title"
+			title="Result out of range: in error shoulder"
+			icon="warning"/>
+		</span>
 
-<!----------------- Not Editable ----------------->
-
-	<tal:not_editable condition="not: is_editable">
-
-		<!-- interim fields -->
-		<tal:interim condition="is_interim">
-			<span
-				tal:content="python:item.get(column)['value']"
-				tal:attributes="class item/state_class">&nbsp
-			</span>
-			<!-- unit of interim field-->
-			<em tal:condition="python:item.get(column)['value'] != ''"
-				class="discreet"
-				style="white-space:nowrap;"
-				tal:content="python: item[column]['unit']"/>
-		</tal:interim>
-
-		<!-- any other field -->
-		<tal:not_interim condition="not: is_interim">
-			<!-- Row content is a link -->
-			<a
-				tal:condition="python:item.has_key('links') and item['links'].has_key(column)" href="#"
-				tal:attributes="href python:item['links'][column]; class string: ${item/state_class} ${item/type_class};">
-				<strong tal:content="python: item.get(column) and item.get(column) or ''"/>
-			</a>
-			<!-- hidden field (if this is a result field) for value; put here for javascript range checking -->
-			<input
-				tal:condition="python:column=='Result'"
-				type="hidden"
-				class="analysis_entry"
-				tal:attributes="
-					uid string:${item/uid};
-					field string:Result;
-					name string:Results.${item/uid}:records:ignore_empty;
-					value python: item['Result'];"/>
-			<!-- Regular row value -->
-			<span
-				tal:condition="python:not (item.has_key('links') and item['links'].has_key(column))"
-				tal:content="python:item.get(column) and item.get(column) or ''"
-				tal:attributes="class item/state_class">&nbsp
-			</span>
-			<!-- unit -->
-			<em class="discreet"
-				tal:condition="python: column == 'Result' and item.get(column, None)"
-				style="white-space:nowrap;"
-				tal:content="python: item['Unit']"/>
-			<!-- alert container -->
-			<span class="alert" tal:attributes="
-				uid python:item['uid'];
-				field string:Result;"
-				tal:condition="python: column == 'Result' and item.get(column, None)">
-				<!-- initial out-of-range indicators for result view column -->
-				<img
-					tal:condition="python:item['Result'] and not item['result_in_range']"
-					src='++resource++bika.lims.images/exclamation.png'
-					icon="exclamation"
-					tal:attributes="uid item/uid;"
-					i18n:attributes="title"
-					title="Result out of range"/>
-				<img
-					tal:condition="python:item['Result'] and item['result_in_range'] == '1'"
-					src='++resource++bika.lims.images/warning.png'
-					icon="warning"
-					tal:attributes="uid item/uid;"
-					i18n:attributes="title"
-					title="Result out of range: in error shoulder"/>
-			</span>
-		</tal:not_interim>
-	</tal:not_editable>
-
-	<!--  column has "after" content snippet -->
-	<tal:icon
-		condition="python:view.columns[column].has_key('after')"
-		tal:replace="structure item/after"/>
+	<!-- before -->
+	<tal:before
+		tal:replace="structure python:item['before'][column]"/>
 
 	</td>
-	</tal:column>
+	</tal:cell>
+
+
 	</tr>
 	</tal:items>
 	</tbody>

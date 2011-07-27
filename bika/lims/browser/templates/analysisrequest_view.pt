@@ -15,14 +15,15 @@
 	sample here/getSample;
 	colspan python:10;
 	ar_attach_allowed here/bika_settings/getARAttachmentsPermitted;
-	ar_review_state python: context.portal_workflow.getInfoFor(context, 'review_state');
+	review_state python:context.portal_workflow.getInfoFor(context, 'review_state');
 	analysis_attach_allowed here/bika_settings/getAnalysisAttachmentsPermitted;
 	attachments_allowed here/bika_settings/getAttachmentsPermitted;
 	attachments here/getAttachment | nothing;
 	delete_attachments python:True;
 	update_attachments python:True">
 
-	<div tal:condition="attachments_allowed">
+	<div tal:condition="attachments_allowed"
+		tal:define="ar_review_state review_state">
 		<metal:block use-macro="here/attachments/macros/attachments"/>
 	</div>
 
@@ -110,7 +111,7 @@
 
 		<tr>
 			<th i18n:translate="label_status">Status</th>
-			<td tal:content="ar_review_state">received</td>
+			<td tal:content="review_state">received</td>
 			<th i18n:translate="label_arprofiles">Profile</th>
 			<td tal:content="view/getARProfileTitle">pr01</td>
 		</tr>
@@ -132,25 +133,25 @@
 			</td>
 		</tr>
 
-		<tr tal:condition="python:view.review_state != 'sample_due'">
+		<tr tal:condition="python:review_state != 'sample_due'">
 			<th i18n:translate="label_datereceived">Date received</th>
 			<td tal:define="date_received here/getDateReceived"
 				tal:content="python:context.toLocalizedTime(date_received, long_format=1)">
 			</td>
 			<th>
 				<span
-					tal:condition="python:view.review_state in ('verified', 'published')"
+					tal:condition="python:review_state in ('verified', 'published')"
 					i18n:translate="label_verified_by">Verified by</span>
 			</th>
 			<td>
 				<span
-					tal:condition="python:view.review_state in ('verified', 'published')"
+					tal:condition="python:review_state in ('verified', 'published')"
 					tal:define="verifier python:view.get_analysisrequest_verifier(here)"
 					tal:content="verifier"/>
 			</td>
 		</tr>
 
-		<tr tal:condition="python:view.review_state == 'published'">
+		<tr tal:condition="python:review_state == 'published'">
 			<th i18n:translate="label_datepublished">Date published</th>
 			<td
 				tal:define="date_published here/getDatePublished"
@@ -164,12 +165,12 @@
 
 		<tal:field_analyses>
 			<h3 tal:content="python: modules['bika.lims.config'].POINTS_OF_CAPTURE.getValue('field')"/>
-			<span tal:replace="structure python: view.FieldAnalyses"/>
+			<span tal:replace="structure python: view.Field"/>
 		</tal:field_analyses>
 
 		<tal:lab_analyses>
 			<h3 tal:content="python: modules['bika.lims.config'].POINTS_OF_CAPTURE.getValue('lab')"/>
-			<span tal:replace="structure python: view.LabAnalyses"/>
+			<span tal:replace="structure python: view.Lab"/>
 		</tal:lab_analyses>
 
 	</form>

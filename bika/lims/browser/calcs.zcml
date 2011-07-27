@@ -7,7 +7,7 @@
 <!--  When interim fields are changed, javascript calls this to populate result fields  -->
   <browser:page
     for="*"
-    name="analysis_entry"
+    name="listing_string_entry"
     class="bika.lims.browser.calcs.AJAXCalculateAnalysisEntry"
     permission="zope.Public"
     layer="bika.lims.interfaces.IBikaLIMS"

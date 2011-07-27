@@ -43,16 +43,18 @@ class BikaListingView(BrowserView):
 ##
 ##     possible column dictionary keys are:
 ##
-##     - "allow_edit": boolean
+##     - allow_edit
 ##       if View.allow_edit is also True, this field is made editable
+##       Interim fields are always editable
 ##
-##     - "type": string
-##       possible values: "str", "bool"
+##     - type
+##       possible values: "string", "boolean", "choices".
+##       if "choices" is selected, item['choices'][column_id] must
+##       be a list of choice strings.
 ##
-##     - "before": string
-##       A snippet of HTML which will be rendered before the column content value
-##     - "after": string
-##       A snippet of HTML which will be rendered after the column content value
+##     - table_cell_class
+##       css classes to apply to the table cell.
+##       applied to each cell after table_row_class.
 ##
     columns = {
            'obj_type': {'title': _('Type')},
@@ -66,18 +68,14 @@ class BikaListingView(BrowserView):
     review_states = [
         {'id':'all',
          'title': _('All'),
-         'columns':['obj_type',
-                    'id',
-                    'title_or_id',
-                    'modified',
-                    'state_title']
+         'columns':['state_title',]
          },
     ]
 
     def __init__(self, context, request):
         super(BikaListingView, self).__init__(context, request)
-        if self.show_editable_border: request.set('enable_border', 1)      # XXX
-        if not self.show_editable_border: request.set('disable_border', 1) # XXX
+        if self.show_editable_border: request.set('enable_border', 1)
+        if not self.show_editable_border: request.set('disable_border', 1)
         # contentsMethod may return a list of brains or a list of objects.
         self.contentsMethod = self.context.getFolderContents
 
@@ -86,7 +84,8 @@ class BikaListingView(BrowserView):
         pc = getToolByName(self.context, 'portal_catalog')
         wf = getToolByName(self.context, 'portal_workflow')
 
-        # inserted before ajax form submit by bika_listing.js when review_state radio is clicked
+        # inserted before ajax form submit by bika_listing.js
+        # when review_state radio is clicked
         if form.has_key('review_state_clicked'):
             # modify contentFilter with review_state radio value
             if form.has_key("review_state"):
@@ -98,7 +97,8 @@ class BikaListingView(BrowserView):
 
             return self.contents_table()
 
-        # bika_listing.js submits this when the user pressed enter in a filter input
+        # bika_listing.js submits this when the user
+        # pressed enter in a filter input
         if form.has_key('filter_input_keypress'):
             # modify contentFilter with text filters if specified
             for key, value in form.items():
@@ -121,7 +121,7 @@ class BikaListingView(BrowserView):
                 item = pc(id = item_id, path = {'query':item_path, 'depth':1})[0].getObject()
                 wf.doActionFor(item, action)
 
-            # subclass form_submit is only called for transition actions
+            # this form_submit is only called for transition actions.
             if hasattr(self, 'form_submit'):
                 self.form_submit(form)
 
@@ -216,10 +216,10 @@ class BikaListingView(BrowserView):
                 title = title,
                 uid = uid,
                 path = path,
+                url = url,
                 fti = fti,
                 interim_fields = interim_fields,
                 item_data = json.dumps(interim_fields),
-                url = url,
                 url_href_title = url_href_title,
                 obj_type = obj.Type,
                 size = obj.getObjSize,
@@ -227,14 +227,21 @@ class BikaListingView(BrowserView):
                 icon = icon.html_tag(),
                 type_class = type_class,
                 review_state = review_state,
+                # a list of names of fields that may be edited
+                allow_edit = [],
+                # a list of lookups for single-value-select fields
+                choices = [],
                 state_title = portal_workflow.getTitleForStateOnType(review_state,
                                                                      obj.portal_type),
                 state_class = state_class,
                 relative_url = relative_url,
                 view_url = url,
+                table_cell_class = '',
                 table_row_class = table_row_class,
-                before = "",
-                after = "",
+                # "before" and "after": dictionary with column ID as key
+                # A snippet of HTML which will be rendered before/after the table cell content.
+                before = {},
+                after = {},
             )
 
             # look through self.columns for object attribute names (the column key),

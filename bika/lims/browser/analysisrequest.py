@@ -30,12 +30,10 @@ class AnalysisRequestViewView(BrowserView):
         super(AnalysisRequestViewView, self).__init__(context, request)
 
     def __call__(self):
-        analyses = AnalysesView(self.context, self.request, getPointOfCapture = 'field')
-        analyses.allow_edit = False
-        self.FieldAnalyses = analyses.contents_table()
-        analyses = AnalysesView(self.context, self.request, getPointOfCapture = 'lab')
-        analyses.allow_edit = False
-        self.LabAnalyses = analyses.contents_table()
+        self.Field = AnalysesView(self.context, self.request,
+                                  getPointOfCapture = 'field').contents_table()
+        self.Lab = AnalysesView(self.context, self.request,
+                                getPointOfCapture = 'lab').contents_table()
         return self.template()
 
     def tabindex(self):
@@ -86,10 +84,6 @@ class AnalysisRequestViewView(BrowserView):
         member_groups = [pg.getGroupById(group.id).getGroupName() for group in pg.getGroupsByUserId(member.id)]
         default_spec = ('clients' in member_groups) and 'client' or 'lab'
         return default_spec
-
-    @property
-    def review_state(self):
-        return '' # self.context.portal_workflow.getInfoFor(self.context, 'review_state', '')
 
     def getHazardous(self):
         return self.context.getSample().getSampleType().getHazardous()
@@ -245,10 +239,13 @@ class AnalysisRequestEditView(AnalysisRequestAddView):
         """
         pc = getToolByName(self.context, 'portal_catalog')
         res = []
-        for analysis in pc(portal_type = "Analysis", getRequestID = self.context.RequestID):
+        for analysis in pc(portal_type = "Analysis",
+                           getRequestID = self.context.RequestID):
             analysis = analysis.getObject()
             service = analysis.getService()
-            res.append([service.getPointOfCapture(), service.getCategoryUID(), service.UID()])
+            res.append([service.getPointOfCapture(),
+                        service.getCategoryUID(),
+                        service.UID()])
         return res
 
 class AnalysisRequestManageResultsView(AnalysisRequestViewView):
@@ -257,10 +254,10 @@ class AnalysisRequestManageResultsView(AnalysisRequestViewView):
     def __call__(self):
         wf_tool = getToolByName(self.context, 'portal_workflow')
         pc = getToolByName(self.context, 'portal_catalog')
-        self.FieldAnalysesView = AnalysesView(self.context, self.request,
-                                              getPointOfCapture = 'field', allow_edit = True)
-        self.LabAnalysesView = AnalysesView(self.context, self.request,
-                                            getPointOfCapture = 'lab', allow_edit = True)
+        self.Field = AnalysesView(self.context, self.request,
+                                  getPointOfCapture = 'field').contents_table()
+        self.Lab = AnalysesView(self.context, self.request,
+                                getPointOfCapture = 'lab').contents_table()
 
         form = self.request.form
         if form.has_key("submitted"):

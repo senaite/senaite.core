@@ -2,7 +2,7 @@ jQuery( function($) {
 $(document).ready(function(){
 
 	// XXX when should this run...?
-	$(".analysis_entry").live('change', function(){
+	$(".listing_string_entry").live('change', function(){
 		uid = $(this).attr('uid');
 		field = $(this).attr('field');
 		value = $(this).attr('value');
@@ -13,7 +13,7 @@ $(document).ready(function(){
 		});
 		options = {
 			type: 'POST',
-			url: 'analysis_entry',
+			url: 'listing_string_entry',
 			async: false,
 			data: {
 				'uid': uid,
@@ -49,7 +49,7 @@ $(document).ready(function(){
 					  .append("<img src='++resource++bika.lims.images/"	+lert.icon +".png' title='"+lert.msg+"' uid='"+lert.uid+"' icon='"+lert.icon+"'/>");
 					// on error? remove value from result fields, to be re-filled below
 					$("input[uid='"+uid+"']").filter("input[field='Result']").val('');
-					$("input[uid='"+uid+"']").filter("input[field='Result_display']").val('');
+					$("input[uid='"+uid+"']").filter("input[field='formatted_result']").val('');
 				}
 				// put result values in their boxes
 				for(i=0;i<$(data['results']).length;i++){
@@ -57,7 +57,7 @@ $(document).ready(function(){
 					$("input[uid='"+result.uid+"']")
 						.filter("input[field='Result']").val(result.result);
 					$("input[uid='"+result.uid+"']")
-						.filter("input[field='Result_display']").val(result.result_display);
+						.filter("input[field='formatted_result']").val(result.formatted_result);
 				}
 			}
 		}

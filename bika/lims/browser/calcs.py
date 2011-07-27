@@ -50,7 +50,7 @@ class AJAXCalculateAnalysisEntry():
         if unsatisfied:
             self.results.append({'uid': uid,
                                  'result': '',
-                                 'result_display': ''})
+                                 'formatted_result': ''})
             return None
 
         if calculation:
@@ -66,7 +66,7 @@ class AJAXCalculateAnalysisEntry():
                         self.form_results[uid] = ''
                         self.results.append({'uid': uid,
                                              'result': '',
-                                             'result_display': ''})
+                                             'formatted_result': ''})
 
                     # Set the new value if it's changed
                     if i['id'] == self.field:
@@ -103,7 +103,7 @@ class AJAXCalculateAnalysisEntry():
                 result = eval(formula)
                 self.results.append({'uid': uid,
                                      'result': result,
-                                     'result_display': precision and \
+                                     'formatted_result': precision and \
                                                 str("%%%sf" % precision) % result or \
                                                 result})
                 self.form_results[uid] = precision and str("%%%sf" % precision) % result or result
@@ -130,7 +130,7 @@ class AJAXCalculateAnalysisEntry():
             # if nothing's changed, set form to show the original value
             self.results.append({'uid': uid,
                                  'result': form_result,
-                                 'result_display': form_result})
+                                 'formatted_result': form_result})
 
         # Uncertainty value for this result
         self.uncertainties.append({'uid': uid,

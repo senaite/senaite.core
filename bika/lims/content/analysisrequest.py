@@ -515,7 +515,7 @@ class AnalysisRequest(BaseFolder):
             self.setAttachment(attachments)
 
         RESPONSE.redirect(
-                '%s/analysisrequest_analyses' % self.absolute_url())
+                '%s/manage_results' % self.absolute_url())
 
     def delARAttachment(self, REQUEST = None, RESPONSE = None):
         """ delete the attachment """
@@ -540,7 +540,7 @@ class AnalysisRequest(BaseFolder):
         BaseFolder.manage_delObjects(client, ids, REQUEST)
 
         RESPONSE.redirect(
-                '%s/analysisrequest_analyses' % self.absolute_url())
+                '%s/manage_results' % self.absolute_url())
 
     security.declarePublic('getContactUIDForUser')
     def getContactUIDForUser(self):
