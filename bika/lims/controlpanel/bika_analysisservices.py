@@ -73,7 +73,8 @@ class AnalysisServicesView(BikaListingView):
             else: items[x]['DuplicateVariation'] = ""
             calculation = obj.getCalculation()
             items[x]['Calculation'] = calculation and calculation.Title() or ''
-            items[x]['links'] = {'Title': items[x]['url'] + "/edit"}
+            items[x]['replace']['Title'] = "<a href='%s'>%s</a>" % \
+                 (items[x]['url'], items[x]['Title'])
             out.append(items[x])
         out = sorted(out, key=itemgetter('Title'))
         for i in range(len(out)):

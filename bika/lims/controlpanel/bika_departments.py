@@ -53,8 +53,13 @@ class DepartmentsView(BikaListingView):
                 items[x]['ManagerPhone'] = ""
                 items[x]['ManagerEmail'] = ""
 
-            items[x]['links'] = {'title_or_id': items[x]['url'] + "/base_edit",
-                                 'ManagerEmail': items[x]['ManagerEmail'] and "mailto:%s" % (items[x]['ManagerEmail']) or ""}
+            items[x]['replace']['title_or_id'] = "<a href='%s'>%s</a>" % \
+                 (items[x]['url'], items[x]['title_or_id'])
+
+            if items[x]['ManagerEmail']:
+                items[x]['replace']['ManagerEmail'] = "<a href='%s'>%s</a>"%\
+                     ('mailto:%s' % items[x]['ManagerEmail'],
+                      items[x]['ManagerEmail'])
 
         return items
 

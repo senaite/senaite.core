@@ -100,7 +100,8 @@ class ClientAnalysisRequestsView(BikaListingView):
             if not items[x].has_key('obj'): continue
             items[x]['getDateReceived'] = items[x]['getDateReceived'] and \
                 self.context.toLocalizedTime(items[x]['getDateReceived'], long_format = 0) or ''
-            items[x]['links'] = {'getRequestID': items[x]['url']}
+            items[x]['replace']['getRequestID'] = "<a href='%s'>%s</a>" % \
+                 (items[x]['url'], items[x]['getRequestID'])
         return items
 
 class ClientSamplesView(BikaListingView):
@@ -179,7 +180,8 @@ class ClientSamplesView(BikaListingView):
             items[x]['Requests'] = ",".join([o.Title() for o in obj.getAnalysisRequests()])
             items[x]['getDateReceived'] = items[x]['getDateReceived'] and \
                  self.context.toLocalizedTime(items[x]['getDateReceived'], long_format = 0) or ''
-            items[x]['links'] = {'getSampleID': items[x]['url']}
+            items[x]['replace']['getSampleID'] = "<a href='%s'>%s</a>" % \
+                 (items[x]['url'], items[x]['getSampleID'])
 
         return items
 
@@ -227,7 +229,9 @@ class ClientARImportsView(BikaListingView):
         items = BikaListingView.folderitems(self)
         for x in range(len(items)):
             if not items[x].has_key('obj'): continue
-            items[x]['links'] = {'title_or_id': items[x]['url']}
+
+            items[x]['replace']['title_or_id'] = "<a href='%s'>%s</a>" % \
+                 (items[x]['url'], items[x]['title_or_id'])
 
         return items
 
@@ -260,7 +264,8 @@ class ClientARProfilesView(BikaListingView):
         items = BikaListingView.folderitems(self)
         for x in range(len(items)):
             if not items[x].has_key('obj'): continue
-            items[x]['links'] = {'getProfileTitle': items[x]['url'] + "/base_edit"}
+            items[x]['replace']['getProfileTitle'] = "<a href='%s'>%s</a>" % \
+                 (items[x]['url'], items[x]['getProfileTitle'])
 
         return items
 
@@ -300,9 +305,14 @@ class ClientAnalysisSpecsView(BikaListingView):
         items = BikaListingView.folderitems(self)
         for x in range(len(items)):
             if not items[x].has_key('obj'): continue
+
             obj = items[x]['obj'].getObject()
-            items[x]['getSampleType'] = obj.getSampleType() and obj.getSampleType().Title()
-            items[x]['links'] = {'getSampleType': items[x]['url']}
+
+            items[x]['getSampleType'] = obj.getSampleType() and \
+                 obj.getSampleType().Title()
+
+            items[x]['replace']['getSampleType'] = "<a href='%s'>%s</a>" % \
+                 (items[x]['url'], items[x]['getSampleType'])
 
         return items
 
@@ -365,8 +375,12 @@ class ClientAttachmentsView(BikaListingView):
             items[x]['FileSize'] = '%sKb' % (file.get_size() / 1024)
             items[x]['DateLoaded'] = obj.getDateLoaded()
 
-            items[x]['links'] = {'getTextTitle': obj_url,
-                                 'AttachmentFile': "%s/at_download/AttachmentFile" % obj_url}
+            items[x]['replace']['getTextTitle'] = "<a href='%s'>%s</a>" % \
+                 (obj_url, items[x]['getTextTitle'])
+
+            items[x]['replace']['AttachmentFile'] = \
+                 "<a href='%s/at_download/AttachmentFile'>%s</a>" % \
+                 (obj_url, items[x]['AttachmentFile'])
         return items
 
 class ClientOrdersView(BikaListingView):
@@ -414,7 +428,8 @@ class ClientOrdersView(BikaListingView):
             items[x]['OrderDate'] = obj.getOrderDate()
             items[x]['DateDispatched'] = obj.getDateDispatched()
 
-            items[x]['links'] = {'OrderNumber': obj.absolute_url()}
+            items[x]['replace']['OrderNumber'] = "<a href='%s'>%s</a>" % \
+                 (items[x]['url'], items[x]['OrderNumber'])
 
         return items
 
@@ -453,6 +468,8 @@ class ClientContactsView(BikaListingView):
         items = BikaListingView.folderitems(self)
         for x in range(len(items)):
             if not items[x].has_key('obj'): continue
-            items[x]['links'] = {'getFullname': items[x]['url'] + "/edit"}
+
+            items[x]['replace']['getFullName'] = "<a href='%s'>%s</a>" % \
+                 (items[x]['url'], items[x]['getFullName'])
 
         return items

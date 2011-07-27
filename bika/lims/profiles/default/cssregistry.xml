@@ -31,11 +31,12 @@
     rendering="import"
     insert-after="*"/>
 
-    <javascript authenticated="True"
-                expression="python:here.portal_type in ['Client', 'AnalysisRequest', 'Worksheet', 'Sample']"
-                id="++resource++bika.lims.css/hide_contentmenu.css"
-                media="screen"
-                rel="stylesheet"
-                rendering="inline"/>
+<stylesheet
+    id="++resource++bika.lims.css/hide_contentmenu.css"
+    expression="python:here.portal_type in ['Client', 'AnalysisRequest', 'Worksheet', 'Sample']"
+    media="screen"
+    rel="stylesheet"
+    rendering="link"
+    insert-before="*"/>
 
 </object>

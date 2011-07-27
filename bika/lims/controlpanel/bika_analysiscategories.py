@@ -43,8 +43,10 @@ class AnalysisCategoriesView(BikaListingView):
             obj = items[x]['obj'].getObject()
             items[x]['CategoryDescription'] = obj.CategoryDescription()
             items[x]['Department'] = obj.getDepartment().Title()
-            items[x]['links'] = {'title_or_id': items[x]['url'] + "/base_edit",
-                                 'Department': obj.getDepartment().absolute_url() + "/base_edit"}
+            items[x]['replace']['title_or_id'] = "<a href='%s'>%s</a>" % \
+               (items[x]['url'], items[x]['title_or_id'])
+            items[x]['replace']['title_or_id'] = "<a href='%s'>%s</a>" % \
+                 (obj.getDepartment().absolute_url(), items[x]['Department'])
         return items
 
 schema = ATFolderSchema.copy()

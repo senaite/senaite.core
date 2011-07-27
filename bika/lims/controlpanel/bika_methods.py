@@ -41,7 +41,8 @@ class MethodsView(BikaListingView):
         items = BikaListingView.folderitems(self)
         for x in range(len(items)):
             if not items[x].has_key('obj'): continue
-            items[x]['links'] = {'title_or_id': items[x]['url'] + "/edit"}
+            items[x]['replace']['title_or_id'] = "<a href='%s'>%s</a>" % \
+                 (items[x]['url'], items[x]['title_or_id'])
 
         return items
 

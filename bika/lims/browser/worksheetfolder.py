@@ -75,8 +75,11 @@ class WorksheetFolderView(BikaListingView):
             obj = items[x]['obj'].getObject()
             items[x]['getNumber'] = obj.getNumber()
             items[x]['getOwnerUserID'] = obj.getOwnerUserID()
-            items[x]['CreationDate'] = obj.CreationDate() and self.context.toLocalizedTime(obj.CreationDate(), long_format = 0) or ''
-            items[x]['getLinkedWorksheet'] = obj.getLinkedWorksheet() and ",".join(obj.getLinkedWorksheet()) or ''
-            items[x]['links'] = {'getNumber': items[x]['url'] + "/manage_results"}
+            items[x]['CreationDate'] = obj.CreationDate() and \
+                 self.context.toLocalizedTime(obj.CreationDate(), long_format = 0) or ''
+            items[x]['getLinkedWorksheet'] = obj.getLinkedWorksheet() and \
+                 ",".join(obj.getLinkedWorksheet()) or ''
+            items[x]['replace']['getNumber'] = "<a href='%s'>%s</a>" % \
+                 (items[x]['url'], items[x]['getNumber'])
 
         return items

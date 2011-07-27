@@ -94,7 +94,9 @@ class ReferenceSamplesView(BikaListingView):
                  self.context.toLocalizedTime(obj.getDateOpened(), long_format = 0)
             items[x]['ExpiryDate'] = \
                  self.context.toLocalizedTime(obj.getExpiryDate(), long_format = 0)
-            items[x]['links'] = {'ID': items[x]['url']}
+
+            items[x]['replace']['ID'] = "<a href='%s'>%s</a>" % \
+                 (items[x]['url'], items[x]['ID'])
 
         return items
 
@@ -136,6 +138,8 @@ class ContactsView(BikaListingView):
         items = BikaListingView.folderitems(self)
         for x in range(len(items)):
             if not items[x].has_key('obj'): continue
-            items[x]['links'] = {'getFullname': items[x]['url'] + "/edit"}
+
+            items[x]['replace']['getFullName'] = "<a href='%s'>%s</a>" % \
+                 (items[x]['url'], items[x]['getFullName'])
 
         return items

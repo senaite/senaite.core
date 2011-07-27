@@ -36,6 +36,7 @@ class ReferenceSuppliersView(BikaListingView):
             items[x]['Email'] = obj.getEmailAddress()
             items[x]['Phone'] = obj.getPhone()
             items[x]['Fax'] = obj.getFax()
-            items[x]['links'] = {'Name': items[x]['url']}
+            items[x]['replace']['Name'] = "<a href='%s'>%s</a>" % \
+                 (items[x]['url'], items[x]['Name'])
 
         return items

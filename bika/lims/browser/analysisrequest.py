@@ -935,11 +935,16 @@ class AnalysisRequestsView(BikaListingView):
 
     def folderitems(self):
         items = BikaListingView.folderitems(self)
-        for i, item in enumerate(items):
+        for x, item in enumerate(items):
             if not item.has_key('obj'): continue
-            obj = item['obj']
-            items[i]['getDateReceived'] = item['getDateReceived'] and \
+            obj = item['obj'].getObject()
+
+            items[x]['getDateReceived'] = item['getDateReceived'] and \
                 self.context.toLocalizedTime(item['getDateReceived'], long_format = 0) or ''
-            items[i]['Client'] = obj.getObject().aq_parent.Title()
-            items[i]['replace']['getRequestID'] = obj.absolute_url()
+
+            items[x]['replace']['Client'] = "<a href='%s'>%s</a>" % \
+                 (obj.aq_parent.absolute_url(), obj.aq_parent.Title())
+
+            items[x]['replace']['getRequestID'] = "<a href='%s'>%s</a>" % \
+                 (items[x]['url'], items[x]['getRequestID'])
         return items

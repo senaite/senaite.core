@@ -99,6 +99,8 @@ class ReferenceSamplesView(BikaListingView):
                  self.context.toLocalizedTime(obj.getDateOpened(), long_format = 0)
             items[x]['ExpiryDate'] = \
                  self.context.toLocalizedTime(obj.getExpiryDate(), long_format = 0)
-            items[x]['links'] = {'ID': items[x]['url']}
+
+            items[x]['replace']['ID'] = "<a href='%s'>%s</a>" % \
+                 (items[x]['url'], items[x]['ID'])
 
         return items

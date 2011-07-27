@@ -50,7 +50,8 @@ class InstrumentsView(BikaListingView):
             items[x]['Brand'] = obj.Brand
             items[x]['Model'] = obj.Model
             items[x]['ExpiryDate'] = obj.CalibrationExpiryDate
-            items[x]['links'] = {'title_or_id': items[x]['url'] + "/edit"}
+            items[x]['replace']['title_or_id'] = "<a href='%s'>%s</a>" % \
+                 (items[x]['url'], items[x]['title_or_id'])
 
         return items
 

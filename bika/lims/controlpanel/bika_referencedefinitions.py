@@ -44,7 +44,8 @@ class ReferenceDefinitionsView(BikaListingView):
             if not items[x].has_key('obj'): continue
             obj = items[x]['obj'].getObject()
             items[x]['ReferenceDefinitionDescription'] = obj.ReferenceDefinitionDescription()
-            items[x]['links'] = {'title_or_id': items[x]['url'] + "/edit"}
+            items[x]['replace']['title_or_id'] = "<a href='%s'>%s</a>" % \
+                 (items[x]['url'], items[x]['title_or_id'])
 
         return items
 

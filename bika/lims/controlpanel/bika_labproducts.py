@@ -52,7 +52,8 @@ class LabProductsView(BikaListingView):
             items[x]['Price'] = obj.Price
             items[x]['VATAmount'] = obj.getVATAmount()
             items[x]['TotalPrice'] = obj.getTotalPrice()
-            items[x]['links'] = {'title_or_id': items[x]['url'] + "/edit"}
+            items[x]['replace']['title_or_id'] = "<a href='%s'>%s</a>" % \
+                 (items[x]['url'], items[x]['title_or_id'])
 
         return items
 
