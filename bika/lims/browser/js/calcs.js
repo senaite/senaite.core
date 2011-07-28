@@ -30,7 +30,6 @@ $(document).ready(function(){
 				if('item_data' in data){
 					$('#'+uid+"_item_data").val($.toJSON(data.item_data));
 				}
-				// put result values in their boxes
 				for(i=0;i<$(data['results']).length;i++){
 					result = $(data['results'])[i];
 					// clear out all row alerts
@@ -55,9 +54,15 @@ $(document).ready(function(){
 				for(i=0;i<$(data['results']).length;i++){
 					result = $(data['results'])[i];
 					$("input[uid='"+result.uid+"']")
-						.filter("input[field='Result']").val(result.result);
+						.filter("input[field='Result']")
+						.val(result.result);
 					$("input[uid='"+result.uid+"']")
-						.filter("input[field='formatted_result']").val(result.formatted_result);
+						.filter("input[field='formatted_result']")
+						.val(result.formatted_result);
+					$("span[uid='"+result.uid+"']")
+						.filter("span[field='formatted_result']")
+						.empty()
+						.append(result.formatted_result);
 				}
 			}
 		}

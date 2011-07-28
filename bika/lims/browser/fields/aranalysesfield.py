@@ -87,7 +87,7 @@ class ARAnalysesField(ObjectField):
             review_state = wf.getInfoFor(analysis, 'review_state', '')
             if ar_state in ('sample_received', 'assigned') and \
                 review_state == 'sample_due':
-                wf_tool.doActionFor(analysis, 'receive')
+                wf.doActionFor(analysis, 'receive')
 
         # delete analyses
         delete_ids = []

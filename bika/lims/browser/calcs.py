@@ -104,9 +104,9 @@ class AJAXCalculateAnalysisEntry():
                 self.results.append({'uid': uid,
                                      'result': result,
                                      'formatted_result': precision and \
-                                                str("%%%sf" % precision) % result or \
+                                                str("%%.%sf" % precision) % result or \
                                                 result})
-                self.form_results[uid] = precision and str("%%%sf" % precision) % result or result
+                self.form_results[uid] = precision and str("%%.%sf" % precision) % result or result
             except ZeroDivisionError, e:
 ##                self.alerts.append({'uid': uid,
 ##                                    'field': 'Result',

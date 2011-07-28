@@ -31,7 +31,7 @@ class AnalysesView(BikaListingView):
         self.show_filters = False
         self.show_sort_column = False
         self.show_select_row = False
-        self.show_select_column = False
+        self.show_select_column = True
         # each editable item needs it's own allow_edit
         # which is a list of field names.
         self.allow_edit = False
@@ -152,20 +152,20 @@ class AnalysesView(BikaListingView):
             if can_view_results:
                 item['Result'] = result
                 item['formatted_result'] = precision and result and \
-                    str("%%%sf" % precision) % float(result) or result
+                    str("%%.%sf" % precision) % float(result) or result
                 item['Uncertainty'] = obj.getUncertainty(result)
                 item['Attachments'] = hasattr(obj, 'getAttachment') and \
                     ", ".join([a.Title() for a in obj.getAttachment()]) or ''
                 item['result_in_range'] = hasattr(obj, 'result_in_range') and \
                     obj.result_in_range(result) or True
-            if not can_view_results or not item['Result']:
+            if not can_view_results or \
+               (not item['Result'] and not can_edit_analyses):
                 if 'Result' in item['allow_edit']:
                     item['allow_edit'].remove('Result')
                 item['before']['Result'] = \
                     '<img width="16" height="16" ' + \
                     'src="%s/++resource++bika.lims.images/to_follow.png"/>'% \
                     (portal.absolute_url())
-                item['class']['Result'] = 'center'
 
             # Add this analysis' interim fields to the list
             for f in item['interim_fields']:
@@ -177,15 +177,17 @@ class AnalysesView(BikaListingView):
             # check if this analysis is late/overdue
             if item['review_state'] not in ['sample_due', 'published'] and \
                item['DueDate'] < DateTime():
+                DueDate = self.context.toLocalizedTime(
+                    item['DueDate'], long_format = 1)
                 item['after']['Service'] = \
                     '<img width="16" height="16" ' + \
                     'src="%s/++resource++bika.lims.images/late.png" title="%s"/>'% \
-                    (portal.absolute_url(), _("Late"))
+                    (portal.absolute_url(), _("Due Date: ") + DueDate)
 
             items.append(item)
 
         # the TAL is lazy, it requires blank values for
-        # *all* interim fields on all items, so we loop
+        # all interim fields on all items, so we loop
         # through the list and fill in the blanks
         for item in items:
             for field in self.interim_fields:

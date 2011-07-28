@@ -802,36 +802,26 @@ class AJAXAnalysisRequestSubmitResults(AnalysisRequestViewView):
         plone.protect.CheckAuthenticator(self.request)
         plone.protect.PostOnly(self.request)
 
-        if form.has_key("save_button") and self.request.form.has_key("Results"):
+        if form.has_key("save_button") and self.request.form.has_key("Result"):
             wf = getToolByName(self.context, 'portal_workflow')
             pc = getToolByName(self.context, 'portal_catalog')
             rc = getToolByName(self.context, 'reference_catalog')
 
-            for analysis_uid, result in self.request.form['Results'][0].items():
+            for analysis_uid, result in self.request.form['Result'][0].items():
                 analysis = rc.lookupObject(analysis_uid)
                 service = analysis.getService()
 
                 uncertainty = None
-                service = analysis.getService()
-
-                if result:
-                    precision = service.getPrecision()
-                    options = service.getResultOptions()
-                    try:
-                        if precision:
-                            result = "%%.%df"%precision % float(result)
-                    except:
-                        if options:
-                            pass
 
                 analysis.edit(
                     Result = result,
                     InterimFields = json.loads(form["InterimFields"][0][analysis_uid]),
-                    Retested = form.has_key('retested') and form['retested'].has_key(analysis_uid),
+                    Retested = form.has_key('retested') and \
+                               form['retested'].has_key(analysis_uid),
                     Unit = service.getUnit()
                 )
 
-#             XXX   wf.doActionFor(analysis, 'submit')
+                wf.doActionFor(analysis, 'submit')
 
             if self.context.getReportDryMatter():
                 self.context.setDryMatterResults()

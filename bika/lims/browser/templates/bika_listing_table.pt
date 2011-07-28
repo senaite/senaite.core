@@ -4,14 +4,18 @@
 	review_state python:[t for t in view.review_states
 	                     if t['id'] == request.get('review_state', 'all')][0];
 	specification python:view.request.get('specification', 'lab');
-	EditAnalyses python: modules['AccessControl'].getSecurityManager().checkPermission('BIKA: Edit analyses', context);
-	ViewResults python: modules['AccessControl'].getSecurityManager().checkPermission('BIKA: View Results', context);">
+
+	sm python:modules['AccessControl'].getSecurityManager();
+	EditAnalyses python:sm.checkPermission('BIKA: Edit analyses', context);
+	ViewResults python:sm.checkPermission('BIKA: View Results', context);
+	user python:sm.getUser();
+	roles python:user.getRoles();">
 
 <tal:comment replace="nothing">***************
 Workflow review state selector
 ********************************</tal:comment>
 	<tal:review_states
-		condition="python: len(view.review_states)>1"
+		condition="python:len(view.review_states)>1"
 		repeat="state view/review_states">
 		<input class="review_state_filter"
 			type="radio"
@@ -43,10 +47,10 @@ Workflow review state selector
 	summary="Content listing"
 	i18n:attributes="summary summary_content_listing;"
 	tal:define="
-		colspan python: len(review_state['columns']);
-		colspan python: view.show_select_column and colspan + 1 or colspan;
-		colspan python: view.show_sort_column and colspan + 1 or colspan;
-		colspan python: str(colspan);
+		colspan python:len(review_state['columns']);
+		colspan python:view.show_select_column and colspan + 1 or colspan;
+		colspan python:view.show_sort_column and colspan + 1 or colspan;
+		colspan python:str(colspan);
 		columns view/columns;
 		column_list python:review_state['columns']">
 
@@ -55,7 +59,7 @@ Workflow review state selector
 <tal:comment replace="nothing">***************
 Item multi-select links in this row
 ********************************</tal:comment>
-	<tal:selectrow condition="python: view.items and view.show_select_row">
+	<tal:selectrow condition="python:view.items and view.show_select_row">
 		<tr tal:condition="not:view/selectcurrentbatch">
 			<th tal:attributes="colspan colspan" class="nosort">
 				<span i18n:translate="label_select"
@@ -122,7 +126,7 @@ Colum Headers
 <tal:comment replace="nothing">***************
 Filters
 ********************************</tal:comment>
-	<tr tal:condition="python: view.items and view.show_filters">
+	<tr tal:condition="python:view.items and view.show_filters">
 		<th class="nosort column"
 			id="foldercontents-order-column"
 			tal:condition="view/show_sort_column"/>
@@ -136,7 +140,7 @@ Filters
 		tal:attributes="
 			id string:foldercontents-${column}-column-filter-input;
 			name string:foldercontents-${column}-column-filter-input;
-			value python: view.request.get('foldercontents-'+column+
+			value python:view.request.get('foldercontents-'+column+
 							'-column-filter-input', '')"/>
 		</th>
 	</tr>
@@ -201,18 +205,18 @@ Table cells for each column from in review_state's column list.
 		style="white-space: nowrap;"
 		tal:define="
 			input_width python:5;
-			allow_edit python: column in item['allow_edit'];
-			before python: column in item['before'] and
+			allow_edit python:column in item['allow_edit'];
+			before python:column in item['before'] and
 				item['before'][column] or '';
-			after python: column in item['after'] and
+			after python:column in item['after'] and
 				item['after'][column] or '';
-			replace python: column in item['replace'] and
+			replace python:column in item['replace'] and
 				item['replace'][column] or '';
-			field_type python: 'type' in columns[column] and
+			field_type python:'type' in columns[column] and
 				columns[column]['type'] or 'string';
-			table_row_class python: 'table_row_class' in columns[column] and
+			table_row_class python:'table_row_class' in columns[column] and
 				columns[column]['table_row_class'] or '';
-			class python: column in item['class'] and
+			class python:column in item['class'] and
 				item['class'][column] or '';"
 		tal:attributes="
 			class string:$table_row_class $class">
@@ -225,11 +229,13 @@ Table cells for each column from in review_state's column list.
 	<tal:before
 		tal:replace="structure replace"/>
 
-	<span tal:condition="not:replace">
-
-	<span tal:condition="python:field_type == 'string'">		<!-- string -->
+	<span tal:omit-tag
+		tal:condition="not:replace">
+	<span tal:omit-tag
+		tal:condition="python:field_type == 'string'">		<!-- string -->
 		<!-- interim field -->
-		<span tal:condition="python: type(item[column]) == type({})">
+		<span tal:omit-tag
+			tal:condition="python:type(item[column]) == type({})">
 			<!-- edit -->
 			<input
 				type="text"
@@ -255,71 +261,64 @@ Table cells for each column from in review_state's column list.
 					value python:item[column]['value'];"/>
 		</span>
 		<!-- regular field -->
-		<span tal:condition="python: type(item[column]) != type({})">
+		<span tal:omit-tag
+			tal:condition="python:type(item[column]) != type({}) and
+							not (column == 'Result' and item['calculation'])">
 			<!-- edit -->
 			<input
 				type="text"
-				tal:condition="python:allow_edit and
-									not (column == 'Result' and
-									item['calculation'])"
+				tal:condition="python:allow_edit"
 				class="listing_string_entry"
 				tal:attributes="
 					size input_width;
 					uid string:${item/uid};
 					field python:column;
+					name string:${column}.${item/uid}:records:ignore_empty;
 					value python:item[column] and
 									item[column] or '';"/>
 			<!-- view -->
 			<span
-				tal:condition="python:not allow_edit and
-									not (column == 'Result' and
-									item['calculation'])"
+				tal:condition="python:not allow_edit"
 				tal:content="python:item[column] and item[column] or ''"
 				tal:attributes="class item/state_class"/>
 			<input
 				type="hidden"
-				tal:condition="python:not allow_edit and
-									  not (column == 'Result' and
-									  item['calculation'])"
+				tal:condition="python:not allow_edit"
 				tal:attributes="
 					size input_width;
 					uid string:${item/uid};
 					field python:column;
+					name string:${column}.${item/uid}:records:ignore_empty;
 					value python:item[column];"/>
 		</span>
-		<!-- calculated result field; not editable. -->
-		<input
-			tal:condition="python:ViewResults and
-								column == 'Result' and
-								item['calculation'] and
-								item[column] and
-								item['review_state'] != 'sample_due'"
-			disabled="disabled"
-			type="text"
-			style="color:black"
-			tal:attributes="
-				field string:formatted_result;
-				uid item/uid;
-				size input_width;
-				value python:item['Result'];"/>
-		<!-- calculated result; hidden -->
-		<input
-			tal:condition="python:ViewResults and
-								column == 'Result' and
-								item['calculation'] and
-								item[column] and
-								item['review_state'] != 'sample_due'"
-			type="hidden"
-			class="listing_string_entry"
-			tal:attributes="
-				uid string:${item/uid};
-				field string:Result;
-				name string:Results.${item/uid}:records:ignore_empty;
-				value python: item['Result'];"/>
+		<!-- calculated result field. -->
+		<span tal:omit-tag
+			tal:condition="python:column == 'Result' and
+								item['calculation']">
+			<span
+				tal:condition="python:ViewResults and
+									item['review_state'] != 'sample_due'"
+				tal:attributes="
+					field string:formatted_result;
+					uid item/uid;
+					size input_width;"
+				tal:content="python:item['Result']"/>
+			<input
+				tal:condition="python:ViewResults and
+									item['review_state'] != 'sample_due'"
+				type="hidden"
+				class="listing_string_entry"
+				tal:attributes="
+					uid string:${item/uid};
+					field string:Result;
+					name string:Result.${item/uid}:records:ignore_empty;
+					value python:item['Result'];"/>
+		</span>
 
 	</span>
 
-	<span tal:condition="python:field_type == 'boolean'">		<!-- boolean -->
+	<span tal:omit-tag
+		tal:condition="python:field_type == 'boolean'">		<!-- boolean -->
 		<input
 			type="checkbox"
 			tal:condition="allow_edit"
@@ -332,20 +331,15 @@ Table cells for each column from in review_state's column list.
 		<!-- will not display if readonly and false -->
 		<input
 			type="checkbox"
-			tal:condition="python: not allow_edit and item.get(column)"
+			tal:condition="python:not allow_edit and item.get(column)"
 			disabled="disabled"
 			tal:attributes="
 				class item/state_class;
 				checked python:item.get(column) and 'yes' or '';"/>
-		<input
-			type="hidden"
-			tal:attributes="
-				value python:item[column];
-				id python:'%s-%s' % (item['uid'], column);
-				name string:${column}.${item/uid}:record:ignore-empty;"/>
 	</span>
 
-	<span tal:condition="python:field_type == 'choices'">		<!-- choices -->
+	<span tal:omit-tag
+		tal:condition="python:field_type == 'choices'">		<!-- choices -->
 		<span tal:condition="allow_edit">
 			<select
 				tal:condition="python:column in item['options']"
@@ -365,7 +359,8 @@ Table cells for each column from in review_state's column list.
 				</tal:options>
 			</select>
 		</span>
-		<span tal:condition="not:allow_edit">
+		<span tal:omit-tag
+			tal:condition="not:allow_edit">
 			<span
 				tal:content="python:item.get(column) and item.get(column) or ''"
 				tal:attributes="class string:${item/state_class} result"/>
@@ -380,15 +375,14 @@ Table cells for each column from in review_state's column list.
 		</span>
 	</span>
 
-
 	<!-- unit for interim and result-->
-	<em tal:condition="python:item[column] and
-							'Unit' in item and
+	<em tal:condition="python:'Unit' in item and
 							(column == 'Result' or
 								column in item['interim_fields'])"
 		class="discreet"
 		style="white-space:nowrap;"
-		tal:content="python: item['Unit']"/>
+		tal:content="python:item['Unit']"/>
+
 	<!-- alert container -->
 	<span class="alert" tal:attributes="
 		uid python:item['uid'];
@@ -450,10 +444,10 @@ Table cells for each column from in review_state's column list.
 	</table>
 
 	<div tal:replace="structure view/batching"
-		tal:condition="python: not view.show_all"/>
+		tal:condition="python:not view.show_all"/>
 
 	<tal:transitions
-		tal:condition="python: review_state.has_key('transitions') and view.items"
+		tal:condition="python:review_state.has_key('transitions') and view.items"
 		tal:repeat="transition review_state/transitions">
 		<input class="context transition_action"
 			type="submit"
