@@ -3,8 +3,9 @@
 	portal context/@@plone_portal_state/portal;
 	review_state python:[t for t in view.review_states
 	                     if t['id'] == request.get('review_state', 'all')][0];
-	specification python:view.request.get('specification', 'lab');">
-
+	specification python:view.request.get('specification', 'lab');
+	EditAnalyses python: modules['AccessControl'].getSecurityManager().checkPermission('BIKA: Edit analyses', context);
+	ViewResults python: modules['AccessControl'].getSecurityManager().checkPermission('BIKA: View Results', context);">
 
 <tal:comment replace="nothing">***************
 Workflow review state selector
@@ -207,7 +208,7 @@ Table cells for each column from in review_state's column list.
 				item['after'][column] or '';
 			replace python: column in item['replace'] and
 				item['replace'][column] or '';
-			type python: 'type' in columns[column] and
+			field_type python: 'type' in columns[column] and
 				columns[column]['type'] or 'string';
 			table_row_class python: 'table_row_class' in columns[column] and
 				columns[column]['table_row_class'] or '';
@@ -226,40 +227,72 @@ Table cells for each column from in review_state's column list.
 
 	<span tal:condition="not:replace">
 
-	<span tal:condition="python:type == 'string'">		<!-- string -->
-		<!-- normal field edit -->
-		<input
-			type="text"
-			tal:condition="python:allow_edit and
-								not (column == 'Result' and
-								item['calculation'])"
-			class="listing_string_entry"
-			tal:attributes="
-				size input_width;
-				uid string:${item/uid};
-				field python:column;
-				value python: item[column];"/>
-		<!-- normal field view -->
-		<span
-			tal:condition="python:not allow_edit and
-								not (column == 'Result' and
-								item['calculation'])"
-			tal:content="python:item.get(column) and item.get(column) or ''"
-			tal:attributes="class item/state_class"/>
-		<input
-			type="hidden"
-			tal:condition="python:not allow_edit and
-			                      not (column == 'Result' and
-								  item['calculation'])"
-			tal:attributes="
-				size input_width;
-				uid string:${item/uid};
-				field python:column;
-				value python:item[column];"/>
+	<span tal:condition="python:field_type == 'string'">		<!-- string -->
+		<!-- interim field -->
+		<span tal:condition="python: type(item[column]) == type({})">
+			<!-- edit -->
+			<input
+				type="text"
+				class="listing_string_entry"
+				tal:condition="python:allow_edit"
+				tal:attributes="
+					size input_width;
+					uid string:${item/uid};
+					field python:column;
+					value python:item[column]['value'];"/>
+			<!-- view -->
+			<span
+				tal:condition="python:not allow_edit"
+				tal:content="python:item[column]['value']"
+				tal:attributes="class item/state_class"/>
+			<input
+				type="hidden"
+				tal:condition="python:not allow_edit"
+				tal:attributes="
+					size input_width;
+					uid string:${item/uid};
+					field python:column;
+					value python:item[column]['value'];"/>
+		</span>
+		<!-- regular field -->
+		<span tal:condition="python: type(item[column]) != type({})">
+			<!-- edit -->
+			<input
+				type="text"
+				tal:condition="python:allow_edit and
+									not (column == 'Result' and
+									item['calculation'])"
+				class="listing_string_entry"
+				tal:attributes="
+					size input_width;
+					uid string:${item/uid};
+					field python:column;
+					value python:item[column] and
+									item[column] or '';"/>
+			<!-- view -->
+			<span
+				tal:condition="python:not allow_edit and
+									not (column == 'Result' and
+									item['calculation'])"
+				tal:content="python:item[column] and item[column] or ''"
+				tal:attributes="class item/state_class"/>
+			<input
+				type="hidden"
+				tal:condition="python:not allow_edit and
+									  not (column == 'Result' and
+									  item['calculation'])"
+				tal:attributes="
+					size input_width;
+					uid string:${item/uid};
+					field python:column;
+					value python:item[column];"/>
+		</span>
 		<!-- calculated result field; not editable. -->
 		<input
-			tal:condition="python:column == 'Result' and
+			tal:condition="python:ViewResults and
+								column == 'Result' and
 								item['calculation'] and
+								item[column] and
 								item['review_state'] != 'sample_due'"
 			disabled="disabled"
 			type="text"
@@ -271,7 +304,11 @@ Table cells for each column from in review_state's column list.
 				value python:item['Result'];"/>
 		<!-- calculated result; hidden -->
 		<input
-			tal:condition="python:column == 'Result' and item['calculation']"
+			tal:condition="python:ViewResults and
+								column == 'Result' and
+								item['calculation'] and
+								item[column] and
+								item['review_state'] != 'sample_due'"
 			type="hidden"
 			class="listing_string_entry"
 			tal:attributes="
@@ -282,7 +319,7 @@ Table cells for each column from in review_state's column list.
 
 	</span>
 
-	<span tal:condition="python:type == 'boolean'">		<!-- boolean -->
+	<span tal:condition="python:field_type == 'boolean'">		<!-- boolean -->
 		<input
 			type="checkbox"
 			tal:condition="allow_edit"
@@ -292,9 +329,10 @@ Table cells for each column from in review_state's column list.
 				id python:'%s-%s' % (item['uid'], column);
 				name string:${column}.${item/uid}:record:ignore-empty;
 				checked python:item.get(column) and 'yes' or '';"/>
+		<!-- will not display if readonly and false -->
 		<input
 			type="checkbox"
-			tal:condition="not:allow_edit"
+			tal:condition="python: not allow_edit and item.get(column)"
 			disabled="disabled"
 			tal:attributes="
 				class item/state_class;
@@ -307,7 +345,7 @@ Table cells for each column from in review_state's column list.
 				name string:${column}.${item/uid}:record:ignore-empty;"/>
 	</span>
 
-	<span tal:condition="python:type == 'choices'">		<!-- choices -->
+	<span tal:condition="python:field_type == 'choices'">		<!-- choices -->
 		<span tal:condition="allow_edit">
 			<select
 				tal:condition="python:column in item['options']"

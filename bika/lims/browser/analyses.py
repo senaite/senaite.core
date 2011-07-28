@@ -102,7 +102,6 @@ class AnalysesView(BikaListingView):
                     for keyword, results_range in spec.getResultsRangeDict().items():
                         specs[client_or_lab][keyword] = results_range
 
-
             result = obj.getResult()
             service = obj.getService()
             keyword = service.getKeyword()
@@ -145,18 +144,21 @@ class AnalysesView(BikaListingView):
                   (item['calculation'] and item['interim_fields']):
                    item['allow_edit'].append('retested')
 
+            can_view_results = \
+                getSecurityManager().checkPermission(ViewResults, self.context)
+
             # Only display data bearing fields if we have ViewResults
-            # permission, otherwise put an icon in Result column.
-            if getSecurityManager().checkPermission(ViewResults, obj):
+            # permission, otherwise just put an icon in Result column.
+            if can_view_results:
                 item['Result'] = result
-                item['formatted_result'] = precision and \
-                    str("%%%sf" % precision) % result or result
+                item['formatted_result'] = precision and result and \
+                    str("%%%sf" % precision) % float(result) or result
                 item['Uncertainty'] = obj.getUncertainty(result)
                 item['Attachments'] = hasattr(obj, 'getAttachment') and \
                     ", ".join([a.Title() for a in obj.getAttachment()]) or ''
                 item['result_in_range'] = hasattr(obj, 'result_in_range') and \
                     obj.result_in_range(result) or True
-            else:
+            if not can_view_results or not item['Result']:
                 if 'Result' in item['allow_edit']:
                     item['allow_edit'].remove('Result')
                 item['before']['Result'] = \
@@ -169,6 +171,7 @@ class AnalysesView(BikaListingView):
             for f in item['interim_fields']:
                 if f['id'] not in self.interim_fields.keys():
                     self.interim_fields[f['id']] = f['title']
+                # and to the item itself
                 item[f['id']] = f
 
             # check if this analysis is late/overdue
@@ -180,6 +183,14 @@ class AnalysesView(BikaListingView):
                     (portal.absolute_url(), _("Late"))
 
             items.append(item)
+
+        # the TAL is lazy, it requires blank values for
+        # *all* interim fields on all items, so we loop
+        # through the list and fill in the blanks
+        for item in items:
+            for field in self.interim_fields:
+                if field not in item:
+                    item[field] = ''
 
         items = sorted(items, key=itemgetter('Service'))
 

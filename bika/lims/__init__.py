@@ -20,6 +20,7 @@ from content import *
 from controlpanel import *
 
 allow_module('bika.lims')
+allow_module('AccessControl')
 
 def initialize(context):
 
