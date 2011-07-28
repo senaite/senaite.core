@@ -14,7 +14,7 @@
 				tal:condition="service/getUnit">(<span tal:replace="service/getUnit">mg/l</span>)</em>
 			<img
 				tal:condition="python:context.bika_settings.laboratory.getLaboratoryAccredited() and service.getAccredited"
-				tal:attributes="src string:${portal/absolute_url}/images/accredited.png"/>
+				src="++resource++bika.lims.images/accredited.png"/>
 		</td>
 		<td
 			style="white-space:nowrap;"

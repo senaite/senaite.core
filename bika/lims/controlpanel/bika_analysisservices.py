@@ -28,13 +28,10 @@ class AnalysisServicesView(BikaListingView):
                'Title': {'title': _('Title')},
                'getKeyword': {'title': _('Keyword')},
                'CategoryName': {'title': _('Category')},
-               'ReportDryMatter': {'title': _('Report as dry matter')},
-               'AttachmentOption': {'title': _('Attachments')},
                'Unit': {'title': _('Unit')},
-               'Price': {'title': _('Price excluding VAT')},
-               'CorporatePrice': {'title': _('Corporate price excluding VAT')},
-               'MaxHoursAllowed': {'title': _('Maximum Hours Allowed')},
-               'DuplicateVariation': {'title': _('Duplicate Variation')},
+               'Price': {'title': _('Price')},
+               'MaxHoursAllowed': {'title': _('Max Hours')},
+               'DuplicateVariation': {'title': _('Dup Var')},
                'Calculation': {'title': _('Calculation')},
               }
     review_states = [
@@ -42,17 +39,21 @@ class AnalysisServicesView(BikaListingView):
                       'columns': ['Title',
                                   'getKeyword',
                                   'CategoryName',
-                                  'ReportDryMatter',
-                                  'AttachmentOption',
                                   'Unit',
                                   'Price',
-                                  'CorporatePrice',
                                   'MaxHoursAllowed',
                                   'DuplicateVariation',
                                   'Calculation',
                                  ],
                      },
                     ]
+
+        
+    #          'ReportDryMatter': {'title': _('Dry')},
+    #          'AttachmentOption': {'title': _('Attachments')},
+    #       items[x]['ReportDryMatter'] = obj.ReportDryMatter
+    #       items[x]['AttachmentOption'] = \
+    #           obj.Schema()['AttachmentOption'].Vocabulary().getValue(obj.AttachmentOption)
 
     def folderitems(self):
         items = BikaListingView.folderitems(self)
@@ -61,12 +62,8 @@ class AnalysisServicesView(BikaListingView):
             if not items[x].has_key('obj'): continue
             obj = items[x]['obj'].getObject()
             items[x]['CategoryName'] = obj.getCategoryName()
-            items[x]['ReportDryMatter'] = obj.ReportDryMatter
-            items[x]['AttachmentOption'] = \
-                obj.Schema()['AttachmentOption'].Vocabulary().getValue(obj.AttachmentOption)
             items[x]['Unit'] = obj.Unit
             items[x]['Price'] = "%s.%02d" % (obj.Price)
-            items[x]['CorporatePrice'] = "%s.%02d" % (obj.CorporatePrice)
             items[x]['MaxHoursAllowed'] = obj.MaxHoursAllowed
             if obj.DuplicateVariation is not None:
                 items[x]['DuplicateVariation'] = "%s.%02d" % (obj.DuplicateVariation)
@@ -75,6 +72,17 @@ class AnalysisServicesView(BikaListingView):
             items[x]['Calculation'] = calculation and calculation.Title() or ''
             items[x]['replace']['Title'] = "<a href='%s'>%s</a>" % \
                  (items[x]['url'], items[x]['Title'])
+            after_icons = ''
+            if obj.getAccredited():
+                after_icons += "<img src='++resource++bika.lims.images/accredited.png' title='Accredited'>"
+            if obj.getReportDryMatter():
+                after_icons += "<img src='++resource++bika.lims.images/dry.png' title='Can be reported as dry matter'>"
+            if obj.getAttachmentOption() == 'r':
+                after_icons += "<img src='++resource++bika.lims.images/attach_reqd.png' title='Attachment required'>"
+            if obj.getAttachmentOption() == 'n':
+                after_icons += "<img src='++resource++bika.lims.images/attach_no.png' title='Attachment not permitted'>"
+            if after_icons:
+                items[x]['after']['Title'] = after_icons
             out.append(items[x])
         out = sorted(out, key=itemgetter('Title'))
         for i in range(len(out)):

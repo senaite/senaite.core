@@ -31,8 +31,8 @@ environment-vars =
 8. Make sure the idserver is running
 9. Load sample data with url/load_setup_data
 
-If filestorage files have been deleted, run bin\plonectl adduser admin admin
-to create the admin user
+If filestorage files have been deleted, 
+run bin\plonectl adduser admin admin to create the admin user
 
 Windows people:
 ===============

@@ -506,7 +506,7 @@
     Can be reported as dry matter</span>
     </p>-->
     <p tal:condition="python:context.bika_settings.laboratory.getLaboratoryAccredited()">
-        <img src="" tal:attributes="src string:${portal/absolute_url}/images/accredited.png">
+        <img src="++resource++bika.lims.images/accredited.png">
         <span i18n:translate="disclaimer_accred">
             Methods included in the
                 <tal:block
