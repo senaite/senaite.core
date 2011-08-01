@@ -131,8 +131,7 @@ class AnalysesView(BikaListingView):
             if choices:
                 item['choices']['Result'] = choices
             # Results can only be edited in certain states.
-            if can_edit_analyses and item['review_state'] not in \
-               ('sample_due', 'to_be_verified', 'verified', 'published'):
+            if can_edit_analyses:
                item['allow_edit'] = ['Result',]
                # if the Result field is editable, our interim fields are too
                for f in item['interim_fields']:
@@ -145,7 +144,7 @@ class AnalysesView(BikaListingView):
                    item['allow_edit'].append('retested')
 
             can_view_results = \
-                getSecurityManager().checkPermission(ViewResults, self.context)
+                getSecurityManager().checkPermission(ViewResults, obj)
 
             # Only display data bearing fields if we have ViewResults
             # permission, otherwise just put an icon in Result column.

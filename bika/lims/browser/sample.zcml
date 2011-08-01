@@ -12,6 +12,13 @@
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
+     <!-- Workflow action events -->
+    <subscriber
+      for="bika.lims.interfaces.ISample
+           Products.CMFCore.interfaces.IActionSucceededEvent"
+      handler="bika.lims.browser.sample.ActionSucceededEventHandler"
+    />
+
     <browser:page
       for="bika.lims.interfaces.ISample"
       name="base_view"

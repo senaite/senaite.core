@@ -18,7 +18,55 @@ from zope.i18n import translate
 from zope.i18nmessageid import MessageFactory
 from zope.interface import implements
 import json
+import plone
 import urllib
+
+class WorkflowAction:
+    """ Default handler for workflow action buttons in Table instances.
+        does the selected action on all all selected items.
+    """
+    def __init__(self, context, request):
+        self.context = context
+        self.request = request
+
+    def __call__(self):
+        form = self.request.form
+        pc = getToolByName(self.context, 'portal_catalog')
+        wf = getToolByName(self.context, 'portal_workflow')
+
+        plone.protect.CheckAuthenticator(form)
+        plone.protect.PostOnly(self.request.form)
+
+        transitioned = []
+        if 'paths' in form:
+            for path in form['paths']:
+                item_id = path.split("/")[-1]
+                item_path = path.replace("/" + item_id, '')
+                item = pc(id = item_id,
+                          path = {'query':item_path, 'depth':1})[0].getObject()
+                action = form['workflow_action_button']
+                try:
+                    wf.doActionFor(item, action)
+                    transitioned.append(item.Title())
+                except:
+                    # selecting items in multiple states means some of the
+                    # transitions might fail, but we don't really care.
+                    pass
+
+        if len(transitioned) > 1:
+            message = _('message_items_transitioned',
+                default = '${items} were successfully transitioned.',
+                mapping = {'items': ', '.join(transitioned)})
+        elif len(transitioned) == 1:
+            message = _('message_ar_created',
+                default = '${items} was successfully transitioned.',
+                mapping = {'items': ', '.join(transitioned)})
+        else:
+            message = _('No changes made.')
+
+        self.context.plone_utils.addPortalMessage(message, 'info')
+
+        self.request.response.redirect(self.context.absolute_url())
 
 class BikaListingView(BrowserView):
     """
@@ -38,20 +86,18 @@ class BikaListingView(BrowserView):
     # just set pagesize high to disable batching.
     pagesize = 50
 
-##     The keys of the columns dictionary must all exist in all
-##     items returned by subclassing view's .foldercontents.
-##
-##     possible column dictionary keys are:
-##
-##     - allow_edit
-##       if View.allow_edit is also True, this field is made editable
-##       Interim fields are always editable
-##
-##     - type
-##       possible values: "string", "boolean", "choices".
-##       if "choices" is selected, item['choices'][column_id] must
-##       be a list of choice strings.
-##
+    """
+     The keys of the columns dictionary must all exist in all
+     items returned by subclassing view's .foldercontents.
+     possible column dictionary keys are:
+     - allow_edit
+       if View.allow_edit is also True, this field is made editable
+       Interim fields are always editable
+     - type
+       possible values: "string", "boolean", "choices".
+       if "choices" is selected, item['choices'][column_id] must
+       be a list of choice strings.
+    """
     columns = {
            'obj_type': {'title': _('Type')},
            'id': {'title': _('ID')},
@@ -76,6 +122,9 @@ class BikaListingView(BrowserView):
         self.contentsMethod = self.context.getFolderContents
 
     def __call__(self):
+        """ Any form action in all the TAL rendered by bika_listing*.pt
+            is routed to here.
+        """
         form = self.request.form
         pc = getToolByName(self.context, 'portal_catalog')
         wf = getToolByName(self.context, 'portal_workflow')
@@ -108,19 +157,7 @@ class BikaListingView(BrowserView):
                     del self.contentFilter[key]
             return self.contents_table()
 
-        # workflow transition action was submitted
-        if form.has_key('transition_action_submitted'):
-            action = form['transition_action']
-            for path in form['paths']:
-                item_id = path.split("/")[-1]
-                item_path = path.replace("/" + item_id, '')
-                item = pc(id = item_id, path = {'query':item_path, 'depth':1})[0].getObject()
-                wf.doActionFor(item, action)
-
-            # this form_submit is only called for transition actions.
-            if hasattr(self, 'form_submit'):
-                self.form_submit(form)
-
+        # shouldnt happen
         return self.template()
 
     def folderitems(self, full_objects=False):
@@ -132,7 +169,7 @@ class BikaListingView(BrowserView):
         plone_view = getMultiAdapter((context, self.request), name = u'plone')
         portal_properties = getToolByName(context, 'portal_properties')
         portal_types = getToolByName(context, 'portal_types')
-        portal_workflow = getToolByName(context, 'portal_workflow')
+        wf = getToolByName(context, 'portal_workflow')
         site_properties = portal_properties.site_properties
 
         show_all = self.request.get('show_all', '').lower() == 'true'
@@ -167,7 +204,7 @@ class BikaListingView(BrowserView):
             review_state = hasattr(obj, 'review_state') and obj.review_state or None
             if not review_state:
                 try:
-                    review_state = portal_workflow.getInfoFor(obj, 'review_state')
+                    review_state = wf.getInfoFor(obj, 'review_state')
                 except:
                     review_state = ''
 
@@ -225,8 +262,8 @@ class BikaListingView(BrowserView):
                 review_state = review_state,
                 # a list of lookups for single-value-select fields
                 choices = [],
-                state_title = portal_workflow.getTitleForStateOnType(review_state,
-                                                                     obj.portal_type),
+                state_title = wf.getTitleForStateOnType(review_state,
+                                                        obj.portal_type),
                 state_class = state_class,
                 relative_url = relative_url,
                 view_url = url,
@@ -350,6 +387,7 @@ class Table(tableview.Table):
         self.request = request
         self.columns = columns
         self.allow_edit = allow_edit
+        self.items = items
         self.show_sort_column = show_sort_column
         self.show_select_row = show_select_row
         self.show_select_column = show_select_column
@@ -357,5 +395,35 @@ class Table(tableview.Table):
         self.filters_in_use = filters_in_use
         self.review_states = review_states
 
+    def get_workflow_actions(self):
+        """ Compile a list of possible workflow transitions for items
+            in this Table.
+        """
+        wf = getToolByName(self.context, 'portal_workflow')
+
+        # return empty list if selecting checkboxes are disabled
+        if not self.show_select_column:
+            return []
+
+        state = self.request.get('review_state', 'all')
+        review_state = [rs for rs in self.review_states if rs['id'] == state][0]
+
+        # otherwise compile a list from the available transitions
+        # for all items.
+        # filter on possible review_state[x]['transitions']
+        transitions = []
+        for i, item in enumerate(self.items):
+            obj = hasattr(item['obj'], 'getObject') and \
+                item['obj'].getObject() or \
+                item['obj']
+            for t in wf.getTransitionsFor(obj):
+                if t not in transitions:
+                    if 'transitions' not in review_state or\
+                       ('transitions' in review_state and \
+                             t['id'] in review_state['transitions']):
+                        transitions.append(t)
+        return transitions
+
     render = ViewPageTemplateFile("templates/bika_listing_table.pt")
     batching = ViewPageTemplateFile("templates/bika_listing_batching.pt")
+

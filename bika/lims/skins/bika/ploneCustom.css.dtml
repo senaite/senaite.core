@@ -79,6 +79,12 @@ fieldset.attachments{
     width:100%;
 }
 
+.workflow_action_buttons {
+  margin-left: 1.5em;
+}
+.workflow_action_button {
+}
+
 /*
  * Analysis Request tables
  */

@@ -4,12 +4,29 @@
     xmlns:i18n="http://namespaces.zope.org/i18n"
     i18n_domain="bika">
 
+    <!-- main site/analysisrequests view -->
     <browser:page
       for="Products.CMFPlone.interfaces.IPloneSiteRoot"
       name="analysisrequests"
       class="bika.lims.browser.analysisrequest.AnalysisRequestsView"
       permission="zope.Public"
       layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
+    <!-- Workflow action button clicked -->
+    <browser:page
+      for="bika.lims.interfaces.IAnalysisRequest"
+      name="workflow_action"
+      class="bika.lims.browser.analysisrequest.AnalysisRequestWorkflowAction"
+      permission="zope.Public"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
+    <!-- Workflow action events -->
+    <subscriber
+      for="bika.lims.interfaces.IAnalysisRequest
+           Products.CMFCore.interfaces.IActionSucceededEvent"
+      handler="bika.lims.browser.analysisrequest.ActionSucceededEventHandler"
     />
 
     <browser:page
@@ -88,14 +105,6 @@
       for="*"
       name="analysisrequest_submit"
       class="bika.lims.browser.analysisrequest.AJAXAnalysisRequestSubmit"
-      permission="zope.Public"
-      layer="bika.lims.interfaces.IBikaLIMS"
-    />
-
-    <browser:page
-      for="*"
-      name="submit_results"
-      class="bika.lims.browser.analysisrequest.AJAXAnalysisRequestSubmitResults"
       permission="zope.Public"
       layer="bika.lims.interfaces.IBikaLIMS"
     />

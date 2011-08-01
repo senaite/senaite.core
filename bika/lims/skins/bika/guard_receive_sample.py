@@ -7,7 +7,9 @@
 ##parameters=type_name=None
 ##title=
 ##
-if context.portal_type == 'Analysis':
-    return 1
-elif context.portal_type == 'AnalysisRequest':
-    return len(context.objectIds('Analysis')) > 0
+return 1
+
+##if context.portal_type == 'Analysis':
+##    return 1
+##elif context.portal_type == 'AnalysisRequest':
+##    return len(context.objectIds('Analysis')) > 0

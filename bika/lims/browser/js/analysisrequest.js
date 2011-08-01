@@ -535,46 +535,6 @@ jQuery( function($) {
 		};
 		$('#analysisrequest_edit_form').ajaxForm(options);
 
-		// Manage Results "Submit results" button
-		var options = {
-			url: window.location.href.replace("/manage_results","/submit_results"),
-			dataType: 'json',
-			beforeSubmit: function(formData, jqForm, options) {
-				$("input[class~='context']").attr('disabled',true);
-				$("#spinner").toggle(true);
-			},
-			success: function(responseText, statusText, xhr, $form)  {
-				if(responseText['success'] != undefined){
-					$("#spinner").toggle(false);
-					destination = window.location.href.replace("/analysisrequest_add","");
-					destination = destination.replace("/base_edit", "/base_view");
-					window.location.replace(destination);
-				} else {
-					msg = ""
-					for(error in responseText['errors']){
-						x = error.split(".");
-						if (x.length == 2){
-							e = x[1] + " (Column " + (+x[0] + 1) + "): ";
-						} else {
-							e = "";
-						}
-						msg = msg + e + responseText['errors'][error] + "<br/>";
-					};
-					portalMessage(msg);
-					window.scroll(0,0);
-					$("input[class~='context']").removeAttr('disabled');
-					$("#spinner").toggle(false);
-				}
-			},
-			error: function(XMLHttpRequest, statusText, errorThrown) {
-				portalMessage(statusText);
-				window.scroll(0,0);
-				$("input[class~='context']").removeAttr('disabled');
-				$("#spinner").toggle(false);
-			},
-		};
-		$('#analysisrequest_manage_results_form').ajaxForm(options);
-
 		// these go here so that popup windows can access them in our context
 		window.recalc_prices = recalc_prices;
 		window.toggleCat = toggleCat;

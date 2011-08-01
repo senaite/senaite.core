@@ -14,32 +14,42 @@
 	tabindex view/tabindex;
 	now view/now">
 
-	<metal:content-title fill-slot="content-title">
-		<h1 class="documentFirstHeading" tal:content="context/title_or_id"/>
-		<img src=""
-			tal:condition="here/getInvoiceExclude"
-			tal:attributes="src string:${portal/absolute_url}/images/no_invoice.png"/>
-	</metal:content-title>
+<metal:content-title fill-slot="content-title">
+	<h1 class="documentFirstHeading" tal:content="context/title_or_id"/>
+	<img src=""
+		tal:condition="here/getInvoiceExclude"
+		tal:attributes="src string:${portal/absolute_url}/images/no_invoice.png"/>
+</metal:content-title>
 
-	<metal:content-description fill-slot="content-description">
-	</metal:content-description>
+<metal:content-description fill-slot="content-description">
+</metal:content-description>
 
-	<metal:content-core fill-slot="content-core"
-		tal:define="
-			tabindex view/tabindex;
-			portal context/@@plone_portal_state/portal;
-			specification python: request.get('specification', view.getDefaultSpec());
-			ar_attach_allowed here/bika_settings/getARAttachmentsPermitted;
-			ar_review_state python: context.portal_workflow.getInfoFor(context, 'review_state');
-			analysis_attach_allowed here/bika_settings/getAnalysisAttachmentsPermitted;
-			attachments_allowed here/bika_settings/getAttachmentsPermitted;
-			attachments here/getAttachment | nothing;
-			delete_attachments python:True;
-			update_attachments python:True">
+<metal:content-core fill-slot="content-core"
+	tal:define="
+		tabindex view/tabindex;
+		portal context/@@plone_portal_state/portal;
+		specification python: request.get('specification', view.getDefaultSpec());
+		ar_attach_allowed here/bika_settings/getARAttachmentsPermitted;
+		ar_review_state python: context.portal_workflow.getInfoFor(context, 'review_state');
+		analysis_attach_allowed here/bika_settings/getAnalysisAttachmentsPermitted;
+		attachments_allowed here/bika_settings/getAttachmentsPermitted;
+		attachments here/getAttachment | nothing;
+		delete_attachments python:True;
+		update_attachments python:True">
 
 	<div tal:condition="attachments_allowed">
 		<metal:block use-macro="here/attachments/macros/attachments"/>
 	</div>
+
+	<form
+		name="folderContentsForm"
+		id="folderContentsForm"
+		class="folderContentsForm"
+		method="post"
+		action="workflow_action"
+		tal:define="pagenumber string:1">
+
+	<input tal:replace="structure context/@@authenticator/authenticator" />
 
 	<table width="100%">
 		<tr>
@@ -73,10 +83,6 @@
 		</tr>
 	</table>
 
-	<form id="analysisrequest_manage_results_form"
-		name="analysisrequest_manage_results_form"
-		method="post">
-
 	<input type="hidden" name="sort_on" tal:attributes="value request/sort_on|string:getObjPositionInParent"/>
 	<input type="hidden" name="pagenumber" value="1"/>
 	<input type="hidden" name="show_all" value="True"/>
@@ -94,28 +100,9 @@
 		<span tal:replace="structure python: view.Lab"/>
 	</tal:lab_analyses>
 
-	<input class="context allowMultiSubmit"
-		tabindex=""
-		type="submit"
-		name="save_button"
-		value="Save"
-		i18n:attributes="value"
-		tal:attributes="tabindex tabindex/next"
-		/>
-	<input class="context"
-		tabindex=""
-		type="submit"
-		name="cancel_button"
-		value="Cancel"
-		i18n:attributes="value"
-		tal:attributes="tabindex tabindex/next"
-		/>
-	<span id="spinner" style="display:none">
-		<img tal:attributes="src python:portal.absolute_url()+ '/images/spinner.gif';"/>
-
 	</form>
 
-	</metal:content-core>
+</metal:content-core>
 
 </body>
 </html>

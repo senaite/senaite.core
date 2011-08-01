@@ -18,7 +18,9 @@ from bika.lims.browser.fields import InterimFieldsField
 from bika.lims.browser.widgets import RecordsWidget as BikaRecordsWidget
 from bika.lims.config import I18N_DOMAIN, PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
+from bika.lims.interfaces import IAnalysis
 from decimal import Decimal
+from zope.interface import implements
 
 #try:
 #    from bika.limsCalendar.config import TOOL_NAME as BIKA_CALENDAR_TOOL # XXX
@@ -153,6 +155,7 @@ schema = BikaSchema.copy() + Schema((
 )
 
 class Analysis(BaseContent):
+    implements(IAnalysis)
     security = ClassSecurityInfo()
     schema = schema
     displayContentsTab = False
@@ -257,54 +260,54 @@ class Analysis(BaseContent):
 
     # workflow methods
     #
-    def workflow_script_receive(self, state_info):
-        """ receive sample """
-        if self.REQUEST.has_key('suppress_escalation'):
-            return
-        """ set the max hours allowed """
-        service = self.getService()
-        maxhours = service.getMaxHoursAllowed()
-        if not maxhours:
-            maxhours = 0
-
-        self.setMaxHoursAllowed(maxhours)
-        """ set the due date """
-        starttime = self.aq_parent.getDateReceived()
-        if starttime is None:
-            return
-
-        """ default to old calc in case no calendars  """
-        """ still need a due time for selection to ws """
-        duetime = starttime + maxhours / 24.0
-
-        if maxhours:
-            maxminutes = maxhours * 60
-            try:
-                bct = getToolByName(self, BIKA_CALENDAR_TOOL)
-            except:
-                bct = None
-            if bct:
-                duetime = bct.getDurationAdded(starttime, maxminutes)
-
-        self.setDueDate(duetime)
-        self.reindexObject()
-
-        self._escalateWorkflowAction('receive')
+##    def workflow_script_receive(self, state_info):
+##        """ receive sample """
+##        if self.REQUEST.has_key('suppress_escalation'):
+##            return
+##        """ set the max hours allowed """
+##        service = self.getService()
+##        maxhours = service.getMaxHoursAllowed()
+##        if not maxhours:
+##            maxhours = 0
+##
+##        self.setMaxHoursAllowed(maxhours)
+##        """ set the due date """
+##        starttime = self.aq_parent.getDateReceived()
+##        if starttime is None:
+##            return
+##
+##        """ default to old calc in case no calendars  """
+##        """ still need a due time for selection to ws """
+##        duetime = starttime + maxhours / 24.0
+##
+##        if maxhours:
+##            maxminutes = maxhours * 60
+##            try:
+##                bct = getToolByName(self, BIKA_CALENDAR_TOOL)
+##            except:
+##                bct = None
+##            if bct:
+##                duetime = bct.getDurationAdded(starttime, maxminutes)
+##
+##        self.setDueDate(duetime)
+##        self.reindexObject()
+##
+##        self._escalateWorkflowAction('receive')
 
     def workflow_script_assign(self, state_info):
         """ submit sample """
         self._escalateWorkflowAction('assign')
         self._assigned_to_worksheet = True
 
-    def workflow_script_submit(self, state_info):
-        """ submit sample """
-        self._escalateWorkflowDependancies('submit')
-        self._escalateWorkflowAction('submit')
+##    def workflow_script_submit(self, state_info):
+##        """ submit sample """
+##        self._escalateWorkflowDependancies('submit')
+##        self._escalateWorkflowAction('submit')
 
-    def workflow_script_verify(self, state_info):
-        """ verify sample """
-        self._escalateWorkflowDependancies('verify')
-        self._escalateWorkflowAction('verify')
+##    def workflow_script_verify(self, state_info):
+##        """ verify sample """
+##        self._escalateWorkflowDependancies('verify')
+##        self._escalateWorkflowAction('verify')
 
     def workflow_script_publish(self, state_info):
         """ publish analysis """

@@ -1,9 +1,10 @@
-from bika.lims.browser.client import ClientSamplesView
+from DateTime import DateTime
+from Products.CMFCore.utils import getToolByName
 from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from zope.interface import implements
+from bika.lims.browser.client import ClientSamplesView
 from plone.app.content.browser.interfaces import IFolderContentsView
-from Products.CMFCore.utils import getToolByName
+from zope.interface import implements
 import json
 import plone
 
@@ -88,4 +89,23 @@ class SamplesView(ClientSamplesView):
     contentFilter = {'portal_type':'Sample', 'path':{"query": ["/"], "level" : 0 }}
     title = "Samples"
     description = ""
+
+
+    from Products.CMFCore.WorkflowCore import WorkflowException
+from Products.CMFCore.utils import getToolByName
+
+def ActionSucceededEventHandler(obj, event):
+    wf = getToolByName(obj, 'portal_workflow')
+    pc = getToolByName(obj, 'portal_catalog')
+    rc = getToolByName(obj, 'reference_catalog')
+
+    if event.action == "receive":
+        obj.setDateReceived(DateTime())
+        for ar in obj.getAnalysisRequests():
+            review_state = wf.getInfoFor(ar, 'review_state', '')
+            if review_state != 'sample_due':
+                continue
+            wf.doActionFor(ar, event.action)
+            ar.reindexObject()
+        obj.reindexObject()
 

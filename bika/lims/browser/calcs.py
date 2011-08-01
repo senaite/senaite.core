@@ -100,13 +100,16 @@ class AJAXCalculateAnalysisEntry():
 ##                                    'field': 'Result',
 ##                                    'icon': 'calculation',
 ##                                    'msg': formula})
+                # calculate
                 result = eval(formula)
+                # always format calculation result to service precision
+                result = precision and str("%%.%sf" % precision) % result or \
+                       result
+
                 self.results.append({'uid': uid,
                                      'result': result,
-                                     'formatted_result': precision and \
-                                                str("%%.%sf" % precision) % result or \
-                                                result})
-                self.form_results[uid] = precision and str("%%.%sf" % precision) % result or result
+                                     'formatted_result': result})
+                self.form_results[uid] = result
             except ZeroDivisionError, e:
 ##                self.alerts.append({'uid': uid,
 ##                                    'field': 'Result',

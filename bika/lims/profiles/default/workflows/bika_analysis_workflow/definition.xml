@@ -11,6 +11,58 @@
  <permission>BIKA: Edit analyses</permission>
  <permission>BIKA: Retract sample</permission>
  <permission>BIKA: Manage Invoices</permission>
+
+ <state state_id="sample_due" title="Sample due">
+  <exit-transition transition_id="receive"/>
+  <exit-transition transition_id="import"/>
+  <permission-map name="BIKA: Edit analyses" acquired="False">
+   <!--
+
+
+   <permission-role>Manager</permission-role>
+   <permission-role>LabManager</permission-role>
+   <permission-role>LabTechnician</permission-role>
+   <permission-role>LabClerk</permission-role>
+   <permission-role>Owner</permission-role>
+
+        Maodify Portal Content should be enough
+
+   -->
+  </permission-map>
+  <permission-map name="BIKA: Manage Analysis Requests" acquired="False">
+   <permission-role>Manager</permission-role>
+   <permission-role>LabManager</permission-role>
+   <permission-role>LabTechnician</permission-role>
+   <permission-role>LabClerk</permission-role>
+  </permission-map>
+  <permission-map name="BIKA: Retract sample" acquired="True">
+  </permission-map>
+  <permission-map name="BIKA: Submit results" acquired="False">
+   <permission-role>Manager</permission-role>
+  </permission-map>
+  <permission-map name="BIKA: View Results" acquired="False">
+   <permission-role>Manager</permission-role>
+   <permission-role>LabManager</permission-role>
+   <permission-role>LabTechnician</permission-role>
+   <permission-role>LabClerk</permission-role>
+   <!-- <permission-role>Owner</permission-role>
+        Owner can ONLY view verified/published results-->
+  </permission-map>
+  <permission-map name="Delete objects" acquired="False">
+   <permission-role>Manager</permission-role>
+   <permission-role>LabManager</permission-role>
+   <permission-role>LabTechnician</permission-role>
+   <permission-role>LabClerk</permission-role>
+   <permission-role>Owner</permission-role>
+  </permission-map>
+  <permission-map name="Modify portal content" acquired="False">
+   <permission-role>Manager</permission-role>
+   <permission-role>LabManager</permission-role>
+   <permission-role>LabTechnician</permission-role>
+   <permission-role>LabClerk</permission-role>
+   <permission-role>Owner</permission-role>
+  </permission-map>
+ </state>
  <state state_id="assigned" title="Assigned to Worksheet">
   <exit-transition transition_id="submit"/>
   <exit-transition transition_id="retract"/>
@@ -168,49 +220,6 @@
    <permission-role>Manager</permission-role>
   </permission-map>
  </state>
- <state state_id="sample_due" title="Sample due">
-  <exit-transition transition_id="receive"/>
-  <exit-transition transition_id="import"/>
-  <permission-map name="BIKA: Edit analyses" acquired="False">
-   <permission-role>Manager</permission-role>
-   <permission-role>LabManager</permission-role>
-   <permission-role>LabTechnician</permission-role>
-   <permission-role>LabClerk</permission-role>
-  <!-- <permission-role>Owner</permission-role> -->
-  </permission-map>
-  <permission-map name="BIKA: Manage Analysis Requests" acquired="False">
-   <permission-role>Manager</permission-role>
-   <permission-role>LabManager</permission-role>
-   <permission-role>LabTechnician</permission-role>
-   <permission-role>LabClerk</permission-role>
-  </permission-map>
-  <permission-map name="BIKA: Retract sample" acquired="True">
-  </permission-map>
-  <permission-map name="BIKA: Submit results" acquired="False">
-   <permission-role>Manager</permission-role>
-  </permission-map>
-  <permission-map name="BIKA: View Results" acquired="False">
-   <permission-role>Manager</permission-role>
-   <permission-role>LabManager</permission-role>
-   <permission-role>LabTechnician</permission-role>
-   <permission-role>LabClerk</permission-role>
-   <permission-role>Owner</permission-role>
-  </permission-map>
-  <permission-map name="Delete objects" acquired="False">
-   <permission-role>Manager</permission-role>
-   <permission-role>LabManager</permission-role>
-   <permission-role>LabTechnician</permission-role>
-   <permission-role>LabClerk</permission-role>
-   <permission-role>Owner</permission-role>
-  </permission-map>
-  <permission-map name="Modify portal content" acquired="False">
-   <permission-role>Manager</permission-role>
-   <permission-role>LabManager</permission-role>
-   <permission-role>LabTechnician</permission-role>
-   <permission-role>LabClerk</permission-role>
-   <permission-role>Owner</permission-role>
-  </permission-map>
- </state>
  <state state_id="to_be_verified" title="To be verified">
   <exit-transition transition_id="verify"/>
   <exit-transition transition_id="prepublish"/>
@@ -220,12 +229,14 @@
   </permission-map>
   <permission-map name="BIKA: Manage Analysis Requests" acquired="False">
    <permission-role>Manager</permission-role>
+   <permission-role>LabManager</permission-role>
    <permission-role>Verifier</permission-role>
   </permission-map>
   <permission-map name="BIKA: Retract sample" acquired="True">
   </permission-map>
   <permission-map name="BIKA: Submit results" acquired="False">
-   <permission-role>Manager</permission-role>
+   <!-- <permission-role>Manager</permission-role>
+        retract first, then re-submit.-->
   </permission-map>
   <permission-map name="BIKA: Verify sample" acquired="False">
    <permission-role>Verifier</permission-role>
@@ -278,7 +289,7 @@
   </permission-map>
  </state>
  <transition transition_id="assign"
-             title="Assign to Worksheet"
+             title=""
              new_state="assigned" trigger="USER"
              before_script="" after_script="default">
   <action url="" category="workflow">Assign to Worksheet</action>

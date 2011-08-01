@@ -372,27 +372,6 @@ class AnalysisRequest(BaseFolder):
         return TotalPrice
     getTotal = getTotalPrice
 
-    security.declareProtected(View, 'getCatAnalyses')
-    def getCatAnalyses(self):
-        """ return analyses in category sequence """
-        cats = {}
-        results = []
-        for analysis in self.getAnalyses():
-            if cats.has_key(analysis.getCategoryName()):
-                analyses = cats[analysis.getCategoryName()]
-            else:
-                analyses = []
-            analyses.append(analysis)
-            cats[analysis.getCategoryName()] = analyses
-        cat_keys = cats.keys()
-        cat_keys.sort()
-        for cat_key in cat_keys():
-            analyses = cats[cat_key]
-            analyses.sort(lambda x, y:cmp(x.Title().lower(), y.Title().lower()))
-            for analysis in analyses:
-                results.append(analysis)
-        return results
-
     security.declareProtected(View, 'getPublishedAnalyses')
     def getPublishedAnalyses(self):
         """ return published analyses """
@@ -577,13 +556,13 @@ class AnalysisRequest(BaseFolder):
         BaseFolder.manage_delObjects(self, ids, REQUEST)
         self._escalateWorkflowAction()
 
-    # workflow methods
-    #
-    def workflow_script_receive(self, state_info):
-        """ receive sample """
-        self.setDateReceived(DateTime())
-        self.reindexObject()
-        self._delegateWorkflowAction('receive')
+##     workflow methods
+##
+##    def workflow_script_receive(self, state_info):
+##        """ receive sample """
+##        self.setDateReceived(DateTime())
+##        self.reindexObject()
+##        self._delegateWorkflowAction('receive')
 
     def workflow_script_assign(self, state_info):
         """ submit sample """
@@ -591,13 +570,13 @@ class AnalysisRequest(BaseFolder):
         # we need to record that we passed through the 'assigned' state
         self._assigned_to_worksheet = True
 
-    def workflow_script_submit(self, state_info):
-        """ submit sample """
-        self._delegateWorkflowAction('submit')
+##    def workflow_script_submit(self, state_info):
+##        """ submit sample """
+##        self._delegateWorkflowAction('submit')
 
-    def workflow_script_verify(self, state_info):
-        """ verify sample """
-        self._delegateWorkflowAction('verify')
+##    def workflow_script_verify(self, state_info):
+##        """ verify sample """
+##        self._delegateWorkflowAction('verify')
 
     def workflow_script_retract(self, state_info):
         """ retract sample """

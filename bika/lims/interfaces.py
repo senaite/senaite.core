@@ -16,6 +16,9 @@ class IClient(Interface):
 class IAnalysisRequest(Interface):
     """Analysis Request"""
 
+class IAnalysis(Interface):
+    """Analysis"""
+
 class ISample(Interface):
     """Sample"""
 

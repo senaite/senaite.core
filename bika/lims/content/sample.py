@@ -261,41 +261,41 @@ class Sample(BaseFolder):
 
     # workflow methods
     #
-    def workflow_script_receive(self, state_info):
-        """ receive sample """
-        self.setDateReceived(DateTime())
-        self.reindexObject()
-        self._delegateWorkflowAction('receive')
+##    def workflow_script_receive(self, state_info):
+##        """ receive sample """
+##        self.setDateReceived(DateTime())
+##        self.reindexObject()
+##        self._delegateWorkflowAction('receive')
 
     def workflow_script_expire(self, state_info):
         """ expire sample """
         self.setDateExpired(DateTime())
         self.reindexObject()
 
-    def _delegateWorkflowAction(self, action_id):
-        """ Notify the analysisrequests that the sample has been received """
-        if action_id not in ('receive'):
-            return
-        tool = getToolByName(self, REFERENCE_CATALOG)
-        wf_tool = self.portal_workflow
-        uids = [uid for uid in
-                tool.getBackReferences(self, 'AnalysisRequestSample')]
-        for uid in uids:
-            reference = uid
-            ar = tool.lookupObject(reference.sourceUID)
-            review_state = wf_tool.getInfoFor(ar, 'review_state', '')
-            if review_state != 'sample_due':
-                #from zLOG import LOG, WARNING; LOG('bika', WARNING,
-                #'Escalate workflow action sample receive. ',
-                #'Analysis request %s in state: %s' % (self.getId(), review_state))
-                continue
-            try:
-                wf_tool.doActionFor(ar, action_id)
-                ar.reindexObject()
-            except WorkflowException, msg:
-                from zLOG import LOG; LOG('INFO', 0, '', msg)
-                pass
-            # ar._delegateWorkflowAction('receive_sample')
+##    def _delegateWorkflowAction(self, action_id):
+##        """ Notify the analysisrequests that the sample has been received """
+##        if action_id not in ('receive'):
+##            return
+##        tool = getToolByName(self, REFERENCE_CATALOG)
+##        wf_tool = self.portal_workflow
+##        uids = [uid for uid in
+##                tool.getBackReferences(self, 'AnalysisRequestSample')]
+##        for uid in uids:
+##            reference = uid
+##            ar = tool.lookupObject(reference.sourceUID)
+##            review_state = wf_tool.getInfoFor(ar, 'review_state', '')
+##            if review_state != 'sample_due':
+##                #from zLOG import LOG, WARNING; LOG('bika', WARNING,
+##                #'Escalate workflow action sample receive. ',
+##                #'Analysis request %s in state: %s' % (self.getId(), review_state))
+##                continue
+##            try:
+##                wf_tool.doActionFor(ar, action_id)
+##                ar.reindexObject()
+##            except WorkflowException, msg:
+##                from zLOG import LOG; LOG('INFO', 0, '', msg)
+##                pass
+##            # ar._delegateWorkflowAction('receive_sample')
 
     security.declarePublic('current_date')
     def current_date(self):

@@ -41,6 +41,8 @@ Workflow review state selector
 	tal:condition="view/filters_in_use">
 	<span i18n:translate="clear_filters" class="link">[clear filters]</span></p>
 
+<span tal:replace="structure context/@@authenticator/authenticator"/>
+
 <table class="listing"
 	tal:condition="view/items"
 	id="listing-table"
@@ -278,7 +280,11 @@ Table cells for each column from in review_state's column list.
 									item[column] or '';"/>
 			<!-- view -->
 			<span
-				tal:condition="python:not allow_edit"
+				tal:condition="python:not allow_edit and column == 'Result'"
+				tal:content="python:item['formatted_result'] and item['formatted_result'] or item[column]"
+				tal:attributes="class item/state_class"/>
+			<span
+				tal:condition="python:not allow_edit and column != 'Result'"
 				tal:content="python:item[column] and item[column] or ''"
 				tal:attributes="class item/state_class"/>
 			<input
@@ -296,16 +302,14 @@ Table cells for each column from in review_state's column list.
 			tal:condition="python:column == 'Result' and
 								item['calculation']">
 			<span
-				tal:condition="python:ViewResults and
-									item['review_state'] != 'sample_due'"
+				tal:condition="python:ViewResults"
 				tal:attributes="
 					field string:formatted_result;
 					uid item/uid;
 					size input_width;"
 				tal:content="python:item['Result']"/>
 			<input
-				tal:condition="python:ViewResults and
-									item['review_state'] != 'sample_due'"
+				tal:condition="python:ViewResults"
 				type="hidden"
 				class="listing_string_entry"
 				tal:attributes="
@@ -419,9 +423,9 @@ Table cells for each column from in review_state's column list.
 
 	</tr>
 	</tal:items>
-	</tbody>
+</tbody>
 
-	<tfoot tal:condition="not:view/within_batch_size">
+<tfoot tal:condition="not:view/within_batch_size">
 	<tr tal:condition="not:view/show_all">
 		<th class="nosort" tal:attributes="colspan colspan">
 			<a
@@ -433,25 +437,30 @@ Table cells for each column from in review_state's column list.
 				items</a>
 		</th>
 	</tr>
-		<tr tal:condition="view/show_all">
+	<tr tal:condition="view/show_all">
 		<th class="nosort" tal:attributes="colspan colspan">
 			<a tal:attributes="href view/view_url"
 				i18n:translate="label_show_batched"
 					id="foldercontents-show-batched">Show batched</a>
-					</th>
-			</tr>
-		</tfoot>
-	</table>
+		</th>
+	</tr>
+	</tfoot>
+</table>
 
-	<div tal:replace="structure view/batching"
-		tal:condition="python:not view.show_all"/>
+<div tal:replace="structure view/batching"
+	tal:condition="python:not view.show_all"/>
 
-	<tal:transitions
-		tal:condition="python:review_state.has_key('transitions') and view.items"
-		tal:repeat="transition review_state/transitions">
-		<input class="context transition_action"
+<span class="workflow_action_buttons"
+	tal:define="actions view/get_workflow_actions">
+	<span tal:replace="structure context/@@authenticator/authenticator"/>
+	<span tal:omit-tag tal:repeat="action actions">
+		<input
+			class="context workflow_action_button"
 			type="submit"
-			name="transition_action"
-			tal:attributes="value transition;" />
-	</tal:transitions>
+			name="workflow_action_button"
+			tal:attributes="
+				value action/id;"/>
+	</span>
+</span>
+
 </div>
