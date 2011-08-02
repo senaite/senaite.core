@@ -177,11 +177,16 @@ class ClientSamplesView(BikaListingView):
         for x in range(len(items)):
             if not items[x].has_key('obj'): continue
             obj = items[x]['obj'].getObject()
-            items[x]['Requests'] = ",".join([o.Title() for o in obj.getAnalysisRequests()])
+
             items[x]['getDateReceived'] = items[x]['getDateReceived'] and \
                  self.context.toLocalizedTime(items[x]['getDateReceived'], long_format = 0) or ''
+
             items[x]['replace']['getSampleID'] = "<a href='%s'>%s</a>" % \
                  (items[x]['url'], items[x]['getSampleID'])
+
+            items[x]['replace']['Requests'] = ",".join(
+                ["<a href='%s'>%s</a>"%(o.absolute_url(), o.Title())
+                 for o in obj.getAnalysisRequests()])
 
         return items
 

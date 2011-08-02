@@ -722,14 +722,14 @@ class AnalysisRequest(BaseFolder):
 
         # build a state to transition map
         transitions = wf_tool.getTransitionsFor(self)
-        wf = wf_tool.getWorkflowById('bika_analysis_workflow')
+        workflow = wf_tool.getWorkflowById('bika_analysis_workflow')
         # make a map of transitions
         transition_map = {}
         for t in transitions:
             # 'import' is not a transition made by users
             if t['id'] == 'import':
                 continue
-            transition = wf.transitions.get(t['id'])
+            transition = workflow.transitions.get(t['id'])
             transition_map[transition.new_state_id] = transition.id
 
         ar_state = wf_tool.getInfoFor(self, 'review_state', '')

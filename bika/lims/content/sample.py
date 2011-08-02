@@ -259,8 +259,8 @@ class Sample(BaseFolder):
 
         return analyses
 
-    # workflow methods
-    #
+##     workflow methods
+##
 ##    def workflow_script_receive(self, state_info):
 ##        """ receive sample """
 ##        self.setDateReceived(DateTime())

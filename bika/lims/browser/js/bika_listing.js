@@ -3,15 +3,17 @@ $(document).ready(function(){
 
 	// All actions will refresh only the content table.
 	function inplace_submit(){
-		options = {target: '.folderlisting-main-table',
-				   replaceTarget: true,
-				   success: function(){
-						$('#filter_input_keypress').remove();
-						$('#review_state_clicked').remove();
-						$('#workflow_action_submitted').remove();
-				   }
-				  }
 		form = $('#folderContentsForm');
+		options = {
+			target: '.folderlisting-main-table',
+			replaceTarget: true,
+			data: form.formToArray(),
+			success: function(){
+				$('#filter_input_keypress').remove();
+				$('#review_state_clicked').remove();
+				$('#workflow_action_submitted').remove();
+			}
+		}
 		form.ajaxSubmit(options);
 	}
 
@@ -32,6 +34,14 @@ $(document).ready(function(){
 		$('#folderContentsForm').append("<input type='hidden' value='1' name='clear_filters' id='clear_filters'/>");
 		inplace_submit();
 		$("#clear_filters").toggle(false);
+	})
+
+	// workflow action buttons submit entire form to workflow_action.
+	$(".workflow_action_button").live('click', function(){
+		form = $('#folderContentsForm');
+		form.append("<input type='hidden' value='"+$(this).val()+"' name='workflow_action_button'/>");
+		form.attr("action", "workflow_action");
+		form.submit();
 	})
 
 });

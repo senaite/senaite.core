@@ -64,9 +64,10 @@ class AnalysesView(BikaListingView):
         portal = getSite()
 
         pc = getToolByName(self.context, 'portal_catalog')
-        wf = getToolByName(self.context, 'portal_workflow')
+        workflow = getToolByName(self.context, 'portal_workflow')
+
         can_edit_analyses = self.allow_edit and \
-                          getSecurityManager().checkPermission(EditAnalyses, self.context)
+            getSecurityManager().checkPermission(EditAnalyses, self.context)
 
         items = []
         self.interim_fields = {}
@@ -86,10 +87,10 @@ class AnalysesView(BikaListingView):
             if obj.portal_type != 'ReferenceAnalysis':
                 if self.context.portal_type == 'AnalysisRequest':
                     proxies = pc(portal_type = 'AnalysisSpec',
-                                 getSampleTypeUID = self.context.getSample().getSampleType().UID())
+                        getSampleTypeUID = self.context.getSample().getSampleType().UID())
                 else: # worksheet.  XXX fix this, man.  It should be like a generalized review_state_filter
                     proxies = pc(portal_type = 'AnalysisSpec',
-                                 getSampleTypeUID = obj.aq_parent.getSample().getSampleType().UID())
+                        getSampleTypeUID = obj.aq_parent.getSample().getSampleType().UID())
                 for spec in proxies:
                     spec = spec.getObject()
                     client_or_lab = ""
@@ -131,7 +132,11 @@ class AnalysesView(BikaListingView):
             if choices:
                 item['choices']['Result'] = choices
             # Results can only be edited in certain states.
-            if can_edit_analyses:
+            can_view_results = \
+                getSecurityManager().checkPermission(ViewResults, obj)
+            can_edit_analysis = self.allow_edit and \
+                getSecurityManager().checkPermission(EditAnalyses, obj)
+            if can_edit_analysis:
                item['allow_edit'] = ['Result',]
                # if the Result field is editable, our interim fields are too
                for f in item['interim_fields']:
@@ -143,8 +148,6 @@ class AnalysesView(BikaListingView):
                   (item['calculation'] and item['interim_fields']):
                    item['allow_edit'].append('retested')
 
-            can_view_results = \
-                getSecurityManager().checkPermission(ViewResults, obj)
 
             # Only display data bearing fields if we have ViewResults
             # permission, otherwise just put an icon in Result column.
@@ -158,7 +161,7 @@ class AnalysesView(BikaListingView):
                 item['result_in_range'] = hasattr(obj, 'result_in_range') and \
                     obj.result_in_range(result) or True
             if not can_view_results or \
-               (not item['Result'] and not can_edit_analyses):
+               (not item['Result'] and not can_edit_analysis):
                 if 'Result' in item['allow_edit']:
                     item['allow_edit'].remove('Result')
                 item['before']['Result'] = \

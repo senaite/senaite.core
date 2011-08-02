@@ -123,7 +123,7 @@
                   acquired="False">
    <permission-role>Manager</permission-role>
   </permission-map>
-  <permission-map name="BIKA: Verify sample"
+  <permission-map name="BIKA: Verify Results"
                   acquired="False">
    <permission-role>Verifier</permission-role>
   </permission-map>
@@ -242,7 +242,7 @@
              before_script="" after_script="default">
   <action url="" category="workflow">Verify</action>
   <guard>
-   <guard-permission>BIKA: Verify sample</guard-permission>
+   <guard-permission>BIKA: Verify Results</guard-permission>
   </guard>
  </transition>
  <transition transition_id="reject" title="Reject"
@@ -250,7 +250,7 @@
              before_script="" after_script="">
   <action url="" category="workflow">Reject</action>
   <guard>
-   <guard-permission>BIKA: Verify sample</guard-permission>
+   <guard-permission>BIKA: Verify Results</guard-permission>
   </guard>
  </transition>
  <worklist worklist_id="reviewer_queue" title="">

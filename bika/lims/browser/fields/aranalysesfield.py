@@ -41,9 +41,9 @@ class ARAnalysesField(ObjectField):
         assert type(service_uids) in (ListType, TupleType)
         assert prices
 
-        wf = instance.portal_workflow
+        workflow = instance.portal_workflow
         # one can only edit Analyses up to a certain state.
-        ar_state = wf.getInfoFor(instance, 'review_state', '')
+        ar_state = workflow.getInfoFor(instance, 'review_state', '')
         assert ar_state in ('sample_due', 'sample_received', 'assigned')
 
         services = {}
@@ -84,10 +84,10 @@ class ARAnalysesField(ObjectField):
                         Unit = service.getUnit(),
                     )
 
-            review_state = wf.getInfoFor(analysis, 'review_state', '')
+            review_state = workflow.getInfoFor(analysis, 'review_state', '')
             if ar_state in ('sample_received', 'assigned') and \
                 review_state == 'sample_due':
-                wf.doActionFor(analysis, 'receive')
+                workflow.doActionFor(analysis, 'receive')
 
         # delete analyses
         delete_ids = []

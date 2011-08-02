@@ -11,6 +11,7 @@ from bika.lims.browser.analyses import AnalysesView
 from bika.lims.browser.bika_listing import BikaListingView, WorkflowAction
 from bika.lims.browser.client import ClientAnalysisRequestsView
 from bika.lims.config import POINTS_OF_CAPTURE
+from bika.lims import logger
 from decimal import Decimal
 from operator import itemgetter
 from plone.app.content.browser.interfaces import IFolderContentsView
@@ -19,6 +20,62 @@ from zope.interface import implements,alsoProvides
 import json
 import plone
 import transaction
+
+class AnalysisRequestWorkflowAction(WorkflowAction):
+    """ Workflow actions taken in AnalysisRequest context
+        This function is called to do the worflow actions
+    """
+    def __call__(self):
+        form = self.request.form
+        plone.protect.CheckAuthenticator(form)
+        workflow = getToolByName(self.context, 'portal_workflow')
+        pc = getToolByName(self.context, 'portal_catalog')
+        rc = getToolByName(self.context, 'reference_catalog')
+
+        originating_url = self.request.get_header("referer",
+                                                  self.context.absolute_url())
+
+        # use came_from to decide which UI action was clicked.
+        # "workflow_action" is the action name specified in the
+        # portal_workflow transition url.
+        came_from = "workflow_action"
+        action = form.get(came_from, '')
+        if not action:
+            # workflow_action_button is the action name specified in
+            # the bika_listing_view table buttons.
+            came_from = "workflow_action_button"
+            action = form.get(came_from, '')
+            if not action:
+                logger.warn("No workflow action provided.")
+                return
+
+        if action == 'submit' and self.request.form.has_key("Result"):
+            # all submit actions will submit all records.  The list of
+            # selected analyses, if any, will always be ignored.
+            for analysis_uid, result in self.request.form['Result'][0].items():
+                analysis = rc.lookupObject(analysis_uid)
+                service = analysis.getService()
+                interims = form["InterimFields"][0][analysis_uid]
+                analysis.edit(
+                    Result = result,
+                    InterimFields = json.loads(interims),
+                    Retested = form.has_key('retested') and \
+                               form['retested'].has_key(analysis_uid),
+                    Unit = service.getUnit())
+                if result != '':
+                    try:
+                        workflow.doActionFor(analysis, 'submit')
+                    except WorkflowException:
+                        pass
+            if self.context.getReportDryMatter():
+                self.context.setDryMatterResults()
+            message = _("Changes saved.")
+            self.context.plone_utils.addPortalMessage(message, 'info')
+            self.request.response.redirect(originating_url)
+
+        else:
+            # default bika_listing.py/WorkflowAction for other transitions
+            WorkflowAction.__call__(self)
 
 class AnalysisRequestViewView(BrowserView):
     """ AR View form
@@ -800,225 +857,103 @@ class AJAXAnalysisRequestSubmit():
         self.context.plone_utils.addPortalMessage(message, 'info')
         return json.dumps({'success':message})
 
-class AnalysisRequestWorkflowAction(WorkflowAction):
-
-    def __call__(self):
-        form = self.request.form
-        plone.protect.CheckAuthenticator(form)
-        plone.protect.PostOnly(self.request)
-
-        # manage_results/submit action
-        if form['workflow_action_button'] == 'submit' and \
-           self.request.form.has_key("Result"):
-            wf = getToolByName(self.context, 'portal_workflow')
-            pc = getToolByName(self.context, 'portal_catalog')
-            rc = getToolByName(self.context, 'reference_catalog')
-
-            # all elements with a name="Result:uid:records_allow_empty"
-            # are submitted. XXX the list of selected elements will be ignored
-            for analysis_uid, result in self.request.form['Result'][0].items():
-                analysis = rc.lookupObject(analysis_uid)
-                service = analysis.getService()
-
-                analysis.edit(
-                    Result = result,
-                    InterimFields = json.loads(form["InterimFields"][0][analysis_uid]),
-                    Retested = form.has_key('retested') and \
-                               form['retested'].has_key(analysis_uid),
-                    Unit = service.getUnit()
-                )
-
-                try:
-                    wf.doActionFor(analysis, 'submit')
-                except:
-                    pass
-
-            if self.context.getReportDryMatter():
-                self.context.setDryMatterResults()
-
-            message = _("Changes saved.")
-            self.context.plone_utils.addPortalMessage(message, 'info')
-            self.request.response.redirect(self.context.absolute_url())
-        else:
-            # default bika_listing/WorkflowAction for other transitions
-            WorkflowAction.__call__(self)
-
-def ActionSucceededEventHandler(obj, event):
-    wf = getToolByName(obj, 'portal_workflow')
-    pc = getToolByName(obj, 'portal_catalog')
-    user = getSecurityManager().getUser()
-    addPortalMessage = getToolByName(obj, 'plone_utils').addPortalMessage
-
-    if event.action == "receive":
-        obj.setDateReceived(DateTime())
-        obj.reindexObject()
-        # receive the AR's sample
-        sample = obj.getSample()
-        try:
-            wf.doActionFor(sample, event.action)
-            sample.reindexObject()
-        except WorkflowException, msg:
-            pass
-        # receive all analyses in this AR.
-        analyses = obj.getAnalyses()
-        if not analyses:
-            addPortalMessage(_("Add one or more Analyses first."))
-            transaction.abort()
-        for analysis in analyses:
-            review_state = wf.getInfoFor(analysis, 'review_state')
-            # ignore 'not requested' analyses
-            if review_state == 'not_requested':
-                continue
-            try:
-                if event.action in [t['id'] for t in wf.getTransitionsFor(analysis)]:
-                    wf.doActionFor(analysis, event.action)
-            except:
-                addPortalMessage(_("Failed to recieve analysis"))
-                transaction.abort()
-            analysis.reindexObject()
-
-    if event.action == "submit":
-        # submit all analyses in this AR.
-        analyses = obj.getAnalyses()
-        for analysis in analyses:
-            review_state = wf.getInfoFor(analysis, 'review_state')
-            # ignore 'not requested' analyses
-            if review_state == 'not_requested':
-                continue
-            try:
-                if event.action in [t['id'] for t in wf.getTransitionsFor(analysis)]:
-                    wf.doActionFor(analysis, event.action)
-            except:
-                addPortalMessage(_("One or more analyses transitions failed."))
-                transaction.abort()
-            analysis.reindexObject()
-
-    if event.action == "verify":
-        # verify all analyses in this AR.
-        analyses = obj.getAnalyses()
-        for analysis in analyses:
-            review_state = wf.getInfoFor(analysis, 'review_state')
-            # ignore 'not requested' analyses
-            if review_state == 'not_requested':
-                continue
-            # fail if we are the same user who submitted this analysis
-            review_history = wf.getInfoFor(analysis, 'review_history')
-            review_history.reverse()
-            for event in review_history:
-                if event.get('action') == 'submit':
-                    if event.get('actor') == user.getId():
-                        addPortalMessage(_("Results you submitted must be verified by another user."))
-                        transaction.abort()
-                        return
-                    break
-            try:
-                if event.action in [t['id'] for t in wf.getTransitionsFor(analysis)]:
-                    wf.doActionFor(analysis, event.action)
-            except:
-                addPortalMessage(_("One or more analyses transitions failed."))
-                transaction.abort()
-                return
-            analysis.reindexObject()
-
-
 class AnalysisRequestsView(BikaListingView):
     """ The main portal Analysis Requests action tab
     """
-    title = "AnalysisRequests"
-    description = ""
-    show_editable_border = False
-    contentFilter = {'portal_type':'AnalysisRequest', 'path':{"query": ["/"], "level" : 0 }}
-
-    columns = {
-        'getRequestID': {'title': _('Request ID')},
-        'Client': {'title': _('Client')},
-        'getClientOrderNumber': {'title': _('Client Order')},
-        'getClientReference': {'title': _('Client Ref')},
-        'getClientSampleID': {'title': _('Client Sample')},
-        'getSampleTypeTitle': {'title': _('Sample Type')},
-        'getSamplePointTitle': {'title': _('Sample Point')},
-        'getDateReceived': {'title': _('Date Received')},
-        'getDatePublished': {'title': _('Date Published')},
-        'state_title': {'title': _('State'), },
-    }
-
-    review_states = [
-        {'title': _('All'), 'id':'all',
-         'columns':['getRequestID',
-                    'Client',
-                    'getClientOrderNumber',
-                    'getClientReference',
-                    'getClientSampleID',
-                    'getSampleTypeTitle',
-                    'getSamplePointTitle',
-                    'getDateReceived',
-                    'getDatePublished',
-                    'state_title']},
-        {'title': _('Sample due'), 'id':'sample_due',
-         'transitions': ['cancel', 'receive'],
-         'columns':['getRequestID',
-                    'Client',
-                    'getClientOrderNumber',
-                    'getClientReference',
-                    'getClientSampleID',
-                    'getSampleTypeTitle',
-                    'getSamplePointTitle']},
-        {'title': _('Sample received'), 'id':'sample_received',
-         'transitions': ['cancel'],
-         'columns':['getRequestID',
-                    'Client',
-                    'getClientOrderNumber',
-                    'getClientReference',
-                    'getClientSampleID',
-                    'getSampleTypeTitle',
-                    'getSamplePointTitle',
-                    'getDateReceived']},
-        {'title': _('Assigned to Worksheet'), 'id':'assigned',
-         'transitions': ['cancel'],
-         'columns':['getRequestID',
-                    'Client',
-                    'getClientOrderNumber',
-                    'getClientReference',
-                    'getClientSampleID',
-                    'getSampleTypeTitle',
-                    'getSamplePointTitle',
-                    'getDateReceived']},
-        {'title': _('To be verified'), 'id':'to_be_verified',
-         'transitions': ['cancel', 'verify'],
-         'columns':['getRequestID',
-                    'Client',
-                    'getClientOrderNumber',
-                    'getClientReference',
-                    'getClientSampleID',
-                    'getSampleTypeTitle',
-                    'getSamplePointTitle',
-                    'getDateReceived']},
-        {'title': _('Verified'), 'id':'verified',
-         'transitions': ['cancel', 'publish'],
-         'columns':['getRequestID',
-                    'Client',
-                    'getClientOrderNumber',
-                    'getClientReference',
-                    'getClientSampleID',
-                    'getSampleTypeTitle',
-                    'getSamplePointTitle',
-                    'getDateReceived']},
-        {'title': _('Published'), 'id':'published',
-         'columns':['getRequestID',
-                    'Client',
-                    'getClientOrderNumber',
-                    'getClientReference',
-                    'getClientSampleID',
-                    'getSampleTypeTitle',
-                    'getSamplePointTitle',
-                    'getDateReceived',
-                    'getDatePublished']},
-    ]
 
     def __init__(self, context, request):
         super(AnalysisRequestsView, self).__init__(context, request)
         self.title = "%s: %s" % (self.context.Title(), _("Analysis Requests"))
         self.description = ""
+        self.show_editable_border = False
+        self.show_select_column = True
+        self.contentFilter = {'portal_type':'AnalysisRequest', 'path':{"query": ["/"], "level" : 0 }}
+
+        self.columns = {
+            'getRequestID': {'title': _('Request ID')},
+            'Client': {'title': _('Client')},
+            'getClientOrderNumber': {'title': _('Client Order')},
+            'getClientReference': {'title': _('Client Ref')},
+            'getClientSampleID': {'title': _('Client Sample')},
+            'getSampleTypeTitle': {'title': _('Sample Type')},
+            'getSamplePointTitle': {'title': _('Sample Point')},
+            'getDateReceived': {'title': _('Date Received')},
+            'getDatePublished': {'title': _('Date Published')},
+            'state_title': {'title': _('State'), },
+        }
+
+        self.review_states = [
+            {'title': _('All'), 'id':'all',
+             'columns':['getRequestID',
+                        'Client',
+                        'getClientOrderNumber',
+                        'getClientReference',
+                        'getClientSampleID',
+                        'getSampleTypeTitle',
+                        'getSamplePointTitle',
+                        'getDateReceived',
+                        'getDatePublished',
+                        'state_title']},
+            {'title': _('Sample due'), 'id':'sample_due',
+             'transitions': ['cancel', 'receive'],
+             'columns':['getRequestID',
+                        'Client',
+                        'getClientOrderNumber',
+                        'getClientReference',
+                        'getClientSampleID',
+                        'getSampleTypeTitle',
+                        'getSamplePointTitle']},
+            {'title': _('Sample received'), 'id':'sample_received',
+             'transitions': ['cancel'],
+             'columns':['getRequestID',
+                        'Client',
+                        'getClientOrderNumber',
+                        'getClientReference',
+                        'getClientSampleID',
+                        'getSampleTypeTitle',
+                        'getSamplePointTitle',
+                        'getDateReceived']},
+            {'title': _('Assigned to Worksheet'), 'id':'assigned',
+             'transitions': ['cancel'],
+             'columns':['getRequestID',
+                        'Client',
+                        'getClientOrderNumber',
+                        'getClientReference',
+                        'getClientSampleID',
+                        'getSampleTypeTitle',
+                        'getSamplePointTitle',
+                        'getDateReceived']},
+            {'title': _('To be verified'), 'id':'to_be_verified',
+             'transitions': ['cancel', 'verify'],
+             'columns':['getRequestID',
+                        'Client',
+                        'getClientOrderNumber',
+                        'getClientReference',
+                        'getClientSampleID',
+                        'getSampleTypeTitle',
+                        'getSamplePointTitle',
+                        'getDateReceived']},
+            {'title': _('Verified'), 'id':'verified',
+             'transitions': ['cancel', 'publish'],
+             'columns':['getRequestID',
+                        'Client',
+                        'getClientOrderNumber',
+                        'getClientReference',
+                        'getClientSampleID',
+                        'getSampleTypeTitle',
+                        'getSamplePointTitle',
+                        'getDateReceived']},
+            {'title': _('Published'), 'id':'published',
+             'columns':['getRequestID',
+                        'Client',
+                        'getClientOrderNumber',
+                        'getClientReference',
+                        'getClientSampleID',
+                        'getSampleTypeTitle',
+                        'getSamplePointTitle',
+                        'getDateReceived',
+                        'getDatePublished']},
+        ]
 
     def folderitems(self):
         items = BikaListingView.folderitems(self)

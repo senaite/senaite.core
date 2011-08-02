@@ -3,6 +3,7 @@
 from AccessControl import Unauthorized
 from Acquisition import aq_parent, aq_inner
 from Products.CMFCore.utils import getToolByName
+from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFPlone import PloneMessageFactory
 from Products.CMFPlone.utils import pretty_title_or_id, isExpired, safe_unicode
 from Products.Five.browser import BrowserView
@@ -19,11 +20,12 @@ from zope.i18nmessageid import MessageFactory
 from zope.interface import implements
 import json
 import plone
+import transaction
 import urllib
 
 class WorkflowAction:
-    """ Default handler for workflow action buttons in Table instances.
-        does the selected action on all all selected items.
+    """ Workflow actions taken in any Bika contextAnalysisRequest context
+        This function is called to do the worflow actions
     """
     def __init__(self, context, request):
         self.context = context
@@ -31,12 +33,35 @@ class WorkflowAction:
 
     def __call__(self):
         form = self.request.form
-        pc = getToolByName(self.context, 'portal_catalog')
-        wf = getToolByName(self.context, 'portal_workflow')
-
         plone.protect.CheckAuthenticator(form)
-        plone.protect.PostOnly(self.request.form)
+        workflow = getToolByName(self.context, 'portal_workflow')
+        pc = getToolByName(self.context, 'portal_catalog')
+        rc = getToolByName(self.context, 'reference_catalog')
 
+        originating_url = self.request.get_header("referer",
+                                                  self.context.absolute_url())
+
+        # use came_from to decide which UI action was clicked.
+        # "workflow_action" is the action name specified in the
+        # portal_workflow transition url.
+        came_from = "workflow_action"
+        action = form.get(came_from, '')
+        if not action:
+            # workflow_action_button is the action name specified in
+            # the bika_listing_view table buttons.
+            came_from = "workflow_action_button"
+            action = form.get(came_from, '')
+            if not action:
+                logger.warn("No workflow action provided.")
+                return
+
+        # transition the context object.
+        if came_from == "workflow_action":
+            workflow.doActionFor(self.context, action)
+            self.request.response.redirect(originating_url)
+            return
+
+        # transition selected items from the bika_listing/Table.
         transitioned = []
         if 'paths' in form:
             for path in form['paths']:
@@ -44,14 +69,19 @@ class WorkflowAction:
                 item_path = path.replace("/" + item_id, '')
                 item = pc(id = item_id,
                           path = {'query':item_path, 'depth':1})[0].getObject()
-                action = form['workflow_action_button']
                 try:
-                    wf.doActionFor(item, action)
-                    transitioned.append(item.Title())
-                except:
-                    # selecting items in multiple states means some of the
-                    # transitions might fail, but we don't really care.
-                    pass
+                    # peform the transition, ignoring items for which the
+                    # transition is not available
+                    if action in [t['id'] for t in workflow.getTransitionsFor(item)]:
+                        workflow.doActionFor(item, action)
+                        transitioned.append(item.Title())
+                # any failures get an addPortalMessage,
+                # and the whole transaction aborts.
+                except WorkflowException, msg:
+                    transaction.abort()
+                    self.context.plone_utils.addPortalMessage(str(msg), 'info')
+                    self.request.response.redirect(originating_url)
+                    return
 
         if len(transitioned) > 1:
             message = _('message_items_transitioned',
@@ -62,11 +92,10 @@ class WorkflowAction:
                 default = '${items} was successfully transitioned.',
                 mapping = {'items': ', '.join(transitioned)})
         else:
-            message = _('No changes made.')
+            message = _('No items were affected.')
 
         self.context.plone_utils.addPortalMessage(message, 'info')
-
-        self.request.response.redirect(self.context.absolute_url())
+        self.request.response.redirect(originating_url)
 
 class BikaListingView(BrowserView):
     """
@@ -127,7 +156,7 @@ class BikaListingView(BrowserView):
         """
         form = self.request.form
         pc = getToolByName(self.context, 'portal_catalog')
-        wf = getToolByName(self.context, 'portal_workflow')
+        workflow = getToolByName(self.context, 'portal_workflow')
 
         # inserted before ajax form submit by bika_listing.js
         # when review_state radio is clicked
@@ -157,7 +186,12 @@ class BikaListingView(BrowserView):
                     del self.contentFilter[key]
             return self.contents_table()
 
-        # shouldnt happen
+        # If a workflow action was selected, redirect
+##        if form.get("workflow_action") or \
+##           form.get("workflow_action_button"):
+##            self.request.response.redirect(
+##                self.context.absolute_url() + "/workflow_action")
+
         return self.template()
 
     def folderitems(self, full_objects=False):
@@ -169,7 +203,7 @@ class BikaListingView(BrowserView):
         plone_view = getMultiAdapter((context, self.request), name = u'plone')
         portal_properties = getToolByName(context, 'portal_properties')
         portal_types = getToolByName(context, 'portal_types')
-        wf = getToolByName(context, 'portal_workflow')
+        workflow = getToolByName(context, 'portal_workflow')
         site_properties = portal_properties.site_properties
 
         show_all = self.request.get('show_all', '').lower() == 'true'
@@ -204,7 +238,7 @@ class BikaListingView(BrowserView):
             review_state = hasattr(obj, 'review_state') and obj.review_state or None
             if not review_state:
                 try:
-                    review_state = wf.getInfoFor(obj, 'review_state')
+                    review_state = workflow.getInfoFor(obj, 'review_state')
                 except:
                     review_state = ''
 
@@ -262,7 +296,7 @@ class BikaListingView(BrowserView):
                 review_state = review_state,
                 # a list of lookups for single-value-select fields
                 choices = [],
-                state_title = wf.getTitleForStateOnType(review_state,
+                state_title = workflow.getTitleForStateOnType(review_state,
                                                         obj.portal_type),
                 state_class = state_class,
                 relative_url = relative_url,
@@ -399,7 +433,7 @@ class Table(tableview.Table):
         """ Compile a list of possible workflow transitions for items
             in this Table.
         """
-        wf = getToolByName(self.context, 'portal_workflow')
+        workflow = getToolByName(self.context, 'portal_workflow')
 
         # return empty list if selecting checkboxes are disabled
         if not self.show_select_column:
@@ -416,7 +450,7 @@ class Table(tableview.Table):
             obj = hasattr(item['obj'], 'getObject') and \
                 item['obj'].getObject() or \
                 item['obj']
-            for t in wf.getTransitionsFor(obj):
+            for t in workflow.getTransitionsFor(obj):
                 if t not in transitions:
                     if 'transitions' not in review_state or\
                        ('transitions' in review_state and \

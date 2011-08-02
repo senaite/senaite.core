@@ -22,13 +22,6 @@
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
-    <!-- Workflow action events -->
-    <subscriber
-      for="bika.lims.interfaces.IAnalysisRequest
-           Products.CMFCore.interfaces.IActionSucceededEvent"
-      handler="bika.lims.browser.analysisrequest.ActionSucceededEventHandler"
-    />
-
     <browser:page
       for="bika.lims.interfaces.IClient"
       name="analysisrequest_add"

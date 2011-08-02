@@ -7,9 +7,12 @@
 
   <five:registerPackage package="." initialize=".initialize" />
   <include file="permissions.zcml" />
+
   <include package=".browser" />
   <include package=".content" />
   <include package=".controlpanel" />
+  <include package=".subscribers" />
+
   <include file="profiles.zcml" />
 
   <i18n:registerTranslations directory="locales" />

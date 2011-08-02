@@ -342,15 +342,15 @@ class Analysis(BaseContent):
         self.reindexObject()
         self._escalateWorkflowAction('publish')
 
-    def workflow_script_retract(self, state_info):
-        """ retract analysis """
-        self._escalateWorkflowDependancies('retract')
-        self._escalateWorkflowAction('retract')
-        if self._assigned_to_worksheet:
-            self.portal_workflow.doActionFor(self, 'assign')
-            self.reindexObject()
-            self._escalateWorkflowDependancies('assign')
-            self._escalateWorkflowAction('assign')
+##    def workflow_script_retract(self, state_info):
+##        """ retract analysis """
+##        self._escalateWorkflowDependancies('retract')
+##        self._escalateWorkflowAction('retract')
+##        if self._assigned_to_worksheet:
+##            self.portal_workflow.doActionFor(self, 'assign')
+##            self.reindexObject()
+##            self._escalateWorkflowDependancies('assign')
+##            self._escalateWorkflowAction('assign')
 
     def _escalateWorkflowAction(self, action_id):
         """ notify analysis request that our status changed """

@@ -25,7 +25,7 @@ ManageARImport = 'BIKA: Manage ARImport'
 # Workflow permissions
 ReceiveSample = 'BIKA: Receive sample'
 SubmitSample = 'BIKA: Submit sample'
-VerifySample = 'BIKA: Verify sample'
+VerifyResults = 'BIKA: Verify Results'
 PublishSample = 'BIKA: Publish sample'
 RetractSample = 'BIKA: Retract sample'
 ImportSample = 'BIKA: Import sample'
@@ -59,7 +59,7 @@ BIKA_PERMISSIONS = (
     (ViewMethods, ()),
     (ReceiveSample, ()),
     (SubmitSample, ()),
-    (VerifySample, ()),
+    (VerifyResults, ()),
     (PublishSample, ()),
     (RetractSample, ()),
     (ImportSample, ()),

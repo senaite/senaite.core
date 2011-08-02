@@ -1146,11 +1146,11 @@ class Worksheet(BaseFolder):
 
         # build a state to transition map
         transitions = wf_tool.getTransitionsFor(self)
-        wf = wf_tool.getWorkflowById('bika_worksheet_workflow')
+        workflow = wf_tool.getWorkflowById('bika_worksheet_workflow')
         # make a map of transitions
         transition_map = {}
         for t in transitions:
-            transition = wf.transitions.get(t['id'])
+            transition = workflow.transitions.get(t['id'])
             transition_map[transition.new_state_id] = transition.id
 
         state_map = {'assigned': 'open', 'published': 'verified'}

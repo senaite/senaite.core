@@ -1,68 +1,13 @@
 <?xml version="1.0"?>
-<dc-workflow workflow_id="bika_analysis_workflow"
-             title="Analysis Workflow [bika]"
-             state_variable="review_state"
-             initial_state="sample_due">
- <permission>Modify portal content</permission>
- <permission>Delete objects</permission>
- <permission>BIKA: Submit results</permission>
- <permission>BIKA: Manage Analysis Requests</permission>
- <permission>BIKA: View Results</permission>
+<dc-workflow workflow_id="bika_analysis_workflow" title="Analysis Workflow [bika]" description="" state_variable="review_state" initial_state="sample_due" manager_bypass="False">
  <permission>BIKA: Edit analyses</permission>
- <permission>BIKA: Retract sample</permission>
+ <permission>BIKA: Manage Analysis Requests</permission>
  <permission>BIKA: Manage Invoices</permission>
-
- <state state_id="sample_due" title="Sample due">
-  <exit-transition transition_id="receive"/>
-  <exit-transition transition_id="import"/>
-  <permission-map name="BIKA: Edit analyses" acquired="False">
-   <!--
-
-
-   <permission-role>Manager</permission-role>
-   <permission-role>LabManager</permission-role>
-   <permission-role>LabTechnician</permission-role>
-   <permission-role>LabClerk</permission-role>
-   <permission-role>Owner</permission-role>
-
-        Maodify Portal Content should be enough
-
-   -->
-  </permission-map>
-  <permission-map name="BIKA: Manage Analysis Requests" acquired="False">
-   <permission-role>Manager</permission-role>
-   <permission-role>LabManager</permission-role>
-   <permission-role>LabTechnician</permission-role>
-   <permission-role>LabClerk</permission-role>
-  </permission-map>
-  <permission-map name="BIKA: Retract sample" acquired="True">
-  </permission-map>
-  <permission-map name="BIKA: Submit results" acquired="False">
-   <permission-role>Manager</permission-role>
-  </permission-map>
-  <permission-map name="BIKA: View Results" acquired="False">
-   <permission-role>Manager</permission-role>
-   <permission-role>LabManager</permission-role>
-   <permission-role>LabTechnician</permission-role>
-   <permission-role>LabClerk</permission-role>
-   <!-- <permission-role>Owner</permission-role>
-        Owner can ONLY view verified/published results-->
-  </permission-map>
-  <permission-map name="Delete objects" acquired="False">
-   <permission-role>Manager</permission-role>
-   <permission-role>LabManager</permission-role>
-   <permission-role>LabTechnician</permission-role>
-   <permission-role>LabClerk</permission-role>
-   <permission-role>Owner</permission-role>
-  </permission-map>
-  <permission-map name="Modify portal content" acquired="False">
-   <permission-role>Manager</permission-role>
-   <permission-role>LabManager</permission-role>
-   <permission-role>LabTechnician</permission-role>
-   <permission-role>LabClerk</permission-role>
-   <permission-role>Owner</permission-role>
-  </permission-map>
- </state>
+ <permission>BIKA: Retract sample</permission>
+ <permission>BIKA: Submit results</permission>
+ <permission>BIKA: View Results</permission>
+ <permission>Delete objects</permission>
+ <permission>Modify portal content</permission>
  <state state_id="assigned" title="Assigned to Worksheet">
   <exit-transition transition_id="submit"/>
   <exit-transition transition_id="retract"/>
@@ -83,48 +28,6 @@
    <permission-role>LabClerk</permission-role>
    <permission-role>Reviewer</permission-role>
    <permission-role>Verifier</permission-role>
-  </permission-map>
-  <permission-map name="BIKA: Submit results" acquired="False">
-   <permission-role>Manager</permission-role>
-   <permission-role>LabManager</permission-role>
-   <permission-role>LabTechnician</permission-role>
-   <permission-role>LabClerk</permission-role>
-  </permission-map>
-  <permission-map name="BIKA: View Results" acquired="False">
-   <permission-role>Manager</permission-role>
-   <permission-role>LabManager</permission-role>
-   <permission-role>LabTechnician</permission-role>
-   <permission-role>LabClerk</permission-role>
-  </permission-map>
-  <permission-map name="Delete objects" acquired="False">
-   <permission-role>Manager</permission-role>
-   <permission-role>LabManager</permission-role>
-   <permission-role>LabTechnician</permission-role>
-   <permission-role>LabClerk</permission-role>
-  </permission-map>
-  <permission-map name="Modify portal content" acquired="False">
-   <permission-role>Manager</permission-role>
-   <permission-role>LabManager</permission-role>
-   <permission-role>LabTechnician</permission-role>
-   <permission-role>LabClerk</permission-role>
-  </permission-map>
- </state>
- <state state_id="sample_received" title="Sample received">
-  <exit-transition transition_id="assign"/>
-  <exit-transition transition_id="prepublish"/>
-  <exit-transition transition_id="submit"/>
-  <permission-map name="BIKA: Edit analyses" acquired="False">
-   <permission-role>Manager</permission-role>
-   <permission-role>LabManager</permission-role>
-   <permission-role>LabClerk</permission-role>
-  </permission-map>
-  <permission-map name="BIKA: Manage Analysis Requests" acquired="False">
-   <permission-role>Manager</permission-role>
-   <permission-role>LabManager</permission-role>
-   <permission-role>LabTechnician</permission-role>
-   <permission-role>LabClerk</permission-role>
-  </permission-map>
-  <permission-map name="BIKA: Retract sample" acquired="True">
   </permission-map>
   <permission-map name="BIKA: Submit results" acquired="False">
    <permission-role>Manager</permission-role>
@@ -199,9 +102,9 @@
   <permission-map name="BIKA: Manage Analysis Requests" acquired="False">
    <permission-role>Manager</permission-role>
   </permission-map>
-  <permission-map name="BIKA: Retract sample" acquired="True">
-  </permission-map>
   <permission-map name="BIKA: Manage Invoices" acquired="True">
+  </permission-map>
+  <permission-map name="BIKA: Retract sample" acquired="True">
   </permission-map>
   <permission-map name="BIKA: Submit results" acquired="False">
    <permission-role>Manager</permission-role>
@@ -220,25 +123,103 @@
    <permission-role>Manager</permission-role>
   </permission-map>
  </state>
+ <state state_id="sample_due" title="Sample due">
+  <exit-transition transition_id="receive"/>
+  <exit-transition transition_id="import"/>
+  <permission-map name="BIKA: Edit analyses" acquired="False">
+  </permission-map>
+  <permission-map name="BIKA: Manage Analysis Requests" acquired="False">
+   <permission-role>Manager</permission-role>
+   <permission-role>LabManager</permission-role>
+   <permission-role>LabTechnician</permission-role>
+   <permission-role>LabClerk</permission-role>
+  </permission-map>
+  <permission-map name="BIKA: Retract sample" acquired="True">
+  </permission-map>
+  <permission-map name="BIKA: Submit results" acquired="False">
+   <permission-role>Manager</permission-role>
+  </permission-map>
+  <permission-map name="BIKA: View Results" acquired="False">
+   <permission-role>Manager</permission-role>
+   <permission-role>LabManager</permission-role>
+   <permission-role>LabTechnician</permission-role>
+   <permission-role>LabClerk</permission-role>
+  </permission-map>
+  <permission-map name="Delete objects" acquired="False">
+   <permission-role>Manager</permission-role>
+   <permission-role>LabManager</permission-role>
+   <permission-role>LabTechnician</permission-role>
+   <permission-role>LabClerk</permission-role>
+   <permission-role>Owner</permission-role>
+  </permission-map>
+  <permission-map name="Modify portal content" acquired="False">
+   <permission-role>Manager</permission-role>
+   <permission-role>LabManager</permission-role>
+   <permission-role>LabTechnician</permission-role>
+   <permission-role>LabClerk</permission-role>
+   <permission-role>Owner</permission-role>
+  </permission-map>
+ </state>
+ <state state_id="sample_received" title="Sample received">
+  <exit-transition transition_id="assign"/>
+  <exit-transition transition_id="prepublish"/>
+  <exit-transition transition_id="submit"/>
+  <permission-map name="BIKA: Edit analyses" acquired="False">
+   <permission-role>Manager</permission-role>
+   <permission-role>LabManager</permission-role>
+   <permission-role>LabClerk</permission-role>
+  </permission-map>
+  <permission-map name="BIKA: Manage Analysis Requests" acquired="False">
+   <permission-role>Manager</permission-role>
+   <permission-role>LabManager</permission-role>
+   <permission-role>LabTechnician</permission-role>
+   <permission-role>LabClerk</permission-role>
+  </permission-map>
+  <permission-map name="BIKA: Retract sample" acquired="True">
+  </permission-map>
+  <permission-map name="BIKA: Submit results" acquired="False">
+   <permission-role>Manager</permission-role>
+   <permission-role>LabManager</permission-role>
+   <permission-role>LabTechnician</permission-role>
+   <permission-role>LabClerk</permission-role>
+  </permission-map>
+  <permission-map name="BIKA: View Results" acquired="False">
+   <permission-role>Manager</permission-role>
+   <permission-role>LabManager</permission-role>
+   <permission-role>LabTechnician</permission-role>
+   <permission-role>LabClerk</permission-role>
+  </permission-map>
+  <permission-map name="Delete objects" acquired="False">
+   <permission-role>Manager</permission-role>
+   <permission-role>LabManager</permission-role>
+   <permission-role>LabTechnician</permission-role>
+   <permission-role>LabClerk</permission-role>
+  </permission-map>
+  <permission-map name="Modify portal content" acquired="False">
+   <permission-role>Manager</permission-role>
+   <permission-role>LabManager</permission-role>
+   <permission-role>LabTechnician</permission-role>
+   <permission-role>LabClerk</permission-role>
+  </permission-map>
+ </state>
  <state state_id="to_be_verified" title="To be verified">
   <exit-transition transition_id="verify"/>
   <exit-transition transition_id="prepublish"/>
   <exit-transition transition_id="retract"/>
   <permission-map name="BIKA: Edit analyses" acquired="False">
-   <permission-role>Manager</permission-role>
   </permission-map>
   <permission-map name="BIKA: Manage Analysis Requests" acquired="False">
    <permission-role>Manager</permission-role>
    <permission-role>LabManager</permission-role>
+   <permission-role>LabClerk</permission-role>
+   <permission-role>LabTechnician</permission-role>
    <permission-role>Verifier</permission-role>
   </permission-map>
   <permission-map name="BIKA: Retract sample" acquired="True">
   </permission-map>
   <permission-map name="BIKA: Submit results" acquired="False">
-   <!-- <permission-role>Manager</permission-role>
-        retract first, then re-submit.-->
   </permission-map>
-  <permission-map name="BIKA: Verify sample" acquired="False">
+  <permission-map name="BIKA: Verify Results" acquired="False">
    <permission-role>Verifier</permission-role>
   </permission-map>
   <permission-map name="BIKA: View Results" acquired="False">
@@ -283,103 +264,79 @@
   <permission-map name="Delete objects" acquired="False">
    <permission-role>Manager</permission-role>
   </permission-map>
-  <permission-map name="Modify portal content"
-                  acquired="False">
+  <permission-map name="Modify portal content" acquired="False">
    <permission-role>Manager</permission-role>
   </permission-map>
  </state>
- <transition transition_id="assign"
-             title=""
-             new_state="assigned" trigger="USER"
-             before_script="" after_script="default">
-  <action url="" category="workflow">Assign to Worksheet</action>
+ <transition transition_id="assign" title="" new_state="assigned" trigger="USER" before_script="" after_script="default">
+  <action url="" category="workflow" icon="">Assign to Worksheet</action>
   <guard>
    <guard-permission>BIKA: Assign analyses</guard-permission>
    <guard-expression>python:here.guard_assign_sample()</guard-expression>
   </guard>
  </transition>
- <transition transition_id="import" title="Import"
-             new_state="not_requested" trigger="USER"
-             before_script="" after_script="default">
+ <transition transition_id="import" title="Import" new_state="not_requested" trigger="USER" before_script="" after_script="default">
 
   <guard>
    <guard-permission>BIKA: Import sample</guard-permission>
   </guard>
  </transition>
- <transition transition_id="prepublish" title="Prepublish"
-             new_state="" trigger="USER"
-             before_script="" after_script="default">
-  <action url="" category="workflow">Prepublish</action>
+ <transition transition_id="prepublish" title="Prepublish" new_state="" trigger="USER" before_script="" after_script="default">
+  <action url="workflow_action?workflow_action=prepublish" category="workflow" icon="">Prepublish</action>
   <guard>
    <guard-permission>BIKA: Publish sample</guard-permission>
    <guard-expression>python:here.guard_prepublish_ar()</guard-expression>
   </guard>
  </transition>
- <transition transition_id="publish" title="Publish"
-             new_state="published" trigger="USER"
-             before_script="" after_script="default">
-  <action url="" category="workflow">Publish</action>
+ <transition transition_id="publish" title="Publish" new_state="published" trigger="USER" before_script="" after_script="default">
+  <action url="workflow_action?workflow_action=publish" category="workflow" icon="">Publish</action>
   <guard>
    <guard-permission>BIKA: Publish sample</guard-permission>
    <guard-expression>python:here.guard_publish_analysis()</guard-expression>
   </guard>
  </transition>
- <transition transition_id="receive" title="Receive sample"
-             new_state="sample_received" trigger="USER"
-             before_script="" after_script="default">
-  <action url="" category="workflow">Receive sample</action>
+ <transition transition_id="receive" title="Receive sample" new_state="sample_received" trigger="USER" before_script="" after_script="default">
+  <action url="workflow_action?workflow_action=receive" category="workflow" icon="">Receive sample</action>
   <guard>
    <guard-permission>BIKA: Receive sample</guard-permission>
    <guard-expression>python:here.guard_receive_sample()</guard-expression>
   </guard>
  </transition>
- <transition transition_id="republish" title="Republish"
-             new_state="" trigger="USER"
-             before_script="" after_script="default">
-  <action url="" category="workflow">Republish</action>
+ <transition transition_id="republish" title="Republish" new_state="" trigger="USER" before_script="" after_script="default">
+  <action url="workflow_action?workflow_action=republish" category="workflow" icon="">Republish</action>
   <guard>
    <guard-permission>BIKA: Publish sample</guard-permission>
   </guard>
  </transition>
- <transition transition_id="retract" title="Retract"
-             new_state="sample_received" trigger="USER"
-             before_script="" after_script="default">
-  <action url="" category="workflow">Retract</action>
+ <transition transition_id="retract" title="Retract" new_state="sample_received" trigger="USER" before_script="" after_script="default">
+  <action url="workflow_action?workflow_action=retract" category="workflow" icon="">Retract</action>
   <guard>
    <guard-permission>BIKA: Retract sample</guard-permission>
    <guard-expression>python:here.guard_retract_sample()</guard-expression>
   </guard>
  </transition>
- <transition transition_id="submit"
-             title="Submit for verification"
-             new_state="to_be_verified" trigger="USER"
-             before_script="" after_script="default">
-  <action url="" category="workflow">Submit for verification</action>
+ <transition transition_id="submit" title="Submit for verification" new_state="to_be_verified" trigger="USER" before_script="" after_script="default">
+  <action url="workflow_action?workflow_action=submit" category="workflow" icon="">Submit for verification</action>
   <guard>
    <guard-permission>BIKA: Submit sample</guard-permission>
    <guard-expression>python:here.guard_submit_analysis()</guard-expression>
   </guard>
  </transition>
- <transition transition_id="verify" title="Verify"
-             new_state="verified" trigger="USER"
-             before_script="" after_script="default">
-  <action url="" category="workflow">Verify</action>
+ <transition transition_id="verify" title="Verify" new_state="verified" trigger="USER" before_script="" after_script="default">
+  <action url="workflow_action?workflow_action=verify" category="workflow" icon="">Verify</action>
   <guard>
-   <guard-permission>BIKA: Verify sample</guard-permission>
-   <guard-expression>python:here.guard_verify_analysis()</guard-expression>
+   <guard-permission>BIKA: Verify Results</guard-permission>
   </guard>
  </transition>
  <worklist worklist_id="reviewer_queue" title="">
   <description>Lab manager tasks</description>
-  <action url="%(portal_url)s/search?review_state=pending"
-          category="global">To be verified (%(count)d)</action>
+  <action url="%(portal_url)s/search?review_state=pending" category="global" icon="">To be verified (%(count)d)</action>
   <guard>
    <guard-permission>Review portal content</guard-permission>
   </guard>
   <match name="review_state" values="to_be_verified"/>
  </worklist>
- <variable variable_id="action" for_catalog="False"
-           for_status="True" update_always="True">
+ <variable variable_id="action" for_catalog="False" for_status="True" update_always="True">
   <description>The last transition</description>
   <default>
 
@@ -388,8 +345,7 @@
   <guard>
   </guard>
  </variable>
- <variable variable_id="actor" for_catalog="False"
-           for_status="True" update_always="True">
+ <variable variable_id="actor" for_catalog="False" for_status="True" update_always="True">
   <description>The ID of the user who performed the last transition</description>
   <default>
 
@@ -398,8 +354,7 @@
   <guard>
   </guard>
  </variable>
- <variable variable_id="comments" for_catalog="False"
-           for_status="True" update_always="True">
+ <variable variable_id="comments" for_catalog="False" for_status="True" update_always="True">
   <description>Comments about the last transition</description>
   <default>
 
@@ -408,8 +363,7 @@
   <guard>
   </guard>
  </variable>
- <variable variable_id="review_history" for_catalog="False"
-           for_status="False" update_always="False">
+ <variable variable_id="review_history" for_catalog="False" for_status="False" update_always="False">
   <description>Provides access to workflow history</description>
   <default>
 
@@ -418,8 +372,7 @@
   <guard>
   </guard>
  </variable>
- <variable variable_id="time" for_catalog="False"
-           for_status="True" update_always="True">
+ <variable variable_id="time" for_catalog="False" for_status="True" update_always="True">
   <description>Time of the last transition</description>
   <default>
 
@@ -428,7 +381,5 @@
   <guard>
   </guard>
  </variable>
- <script script_id="default" type="Script (Python)"
-         filename="workflows/bika_analysis_workflow/scripts/default.py"
-         module="" function=""/>
+ <script script_id="default" type="Script (Python)" filename="workflows/bika_analysis_workflow/scripts/default.py" module="" function=""/>
 </dc-workflow>

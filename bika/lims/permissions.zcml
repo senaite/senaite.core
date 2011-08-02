@@ -1,4 +1,3 @@
-
 <configure
     xmlns="http://namespaces.zope.org/zope"
     xmlns:five="http://namespaces.zope.org/five"
@@ -30,7 +29,7 @@
 # Workflow permissions
 <permission id="bika.lims.ReceiveSample" title="BIKA: Receive sample"/>
 <permission id="bika.lims.SubmitSample" title="BIKA: Submit sample"/>
-<permission id="bika.lims.VerifySample" title="BIKA: Verify sample"/>
+<permission id="bika.lims.VerifyResults" title="BIKA: Verify Results"/>
 <permission id="bika.lims.PublishSample" title="BIKA: Publish sample"/>
 <permission id="bika.lims.RetractSample" title="BIKA: Retract sample"/>
 <permission id="bika.lims.ImportSample" title="BIKA: Import sample"/>

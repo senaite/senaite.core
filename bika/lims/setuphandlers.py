@@ -134,7 +134,7 @@ class BikaGenerator:
             ['Manager', 'LabManager', 'LabClerk'], 1)
         mp(SubmitSample,
             ['Manager', 'LabManager', 'LabClerk', 'LabTechnician'], 1)
-        mp(VerifySample,
+        mp(VerifyResults,
             ['Manager', 'LabManager', 'Reviewer', 'Verifier'], 1)
         mp(PublishSample,
             ['Manager', 'LabManager', 'Reviewer', 'Publisher'], 1)

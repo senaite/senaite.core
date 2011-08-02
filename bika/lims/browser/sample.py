@@ -85,27 +85,13 @@ class AJAXSampleSubmit():
 class SamplesView(ClientSamplesView):
     """ The main portal Samples action tab
     """
-    show_editable_border = False
-    contentFilter = {'portal_type':'Sample', 'path':{"query": ["/"], "level" : 0 }}
-    title = "Samples"
-    description = ""
+    def __init__(self, context, request):
+        super(SamplesView, self).__init__(context,request)
+        self.contentFilter = {'portal_type':'Sample',
+                              'path':{"query": ["/"], "level" : 0 }}
+        self.show_editable_border = False
+        self.show_select_column = True
+        self.title = "Samples"
+        self.description = ""
 
-
-    from Products.CMFCore.WorkflowCore import WorkflowException
-from Products.CMFCore.utils import getToolByName
-
-def ActionSucceededEventHandler(obj, event):
-    wf = getToolByName(obj, 'portal_workflow')
-    pc = getToolByName(obj, 'portal_catalog')
-    rc = getToolByName(obj, 'reference_catalog')
-
-    if event.action == "receive":
-        obj.setDateReceived(DateTime())
-        for ar in obj.getAnalysisRequests():
-            review_state = wf.getInfoFor(ar, 'review_state', '')
-            if review_state != 'sample_due':
-                continue
-            wf.doActionFor(ar, event.action)
-            ar.reindexObject()
-        obj.reindexObject()
 

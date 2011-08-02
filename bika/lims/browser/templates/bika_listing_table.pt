@@ -163,7 +163,7 @@ Table data rows start here
 				specs python:item.has_key('specs') and item['specs'] or [];
 				keyword keyword;">
 		<input type="hidden" tal:attributes="
-			name string:InterimFields.${item/uid}:records:ignore_empty;
+			name string:InterimFields.${item/uid}:records;
 			id string:${item/uid}_item_data;
 			value item/item_data|nothing;"/>
 
@@ -275,7 +275,7 @@ Table cells for each column from in review_state's column list.
 					size input_width;
 					uid string:${item/uid};
 					field python:column;
-					name string:${column}.${item/uid}:records:ignore_empty;
+					name string:${column}.${item/uid}:records;
 					value python:item[column] and
 									item[column] or '';"/>
 			<!-- view -->
@@ -294,7 +294,7 @@ Table cells for each column from in review_state's column list.
 					size input_width;
 					uid string:${item/uid};
 					field python:column;
-					name string:${column}.${item/uid}:records:ignore_empty;
+					name string:${column}.${item/uid}:records;
 					value python:item[column];"/>
 		</span>
 		<!-- calculated result field. -->
@@ -311,11 +311,10 @@ Table cells for each column from in review_state's column list.
 			<input
 				tal:condition="python:ViewResults"
 				type="hidden"
-				class="listing_string_entry"
 				tal:attributes="
 					uid string:${item/uid};
 					field string:Result;
-					name string:Result.${item/uid}:records:ignore_empty;
+					name string:Result.${item/uid}:records;
 					value python:item['Result'];"/>
 		</span>
 
@@ -349,7 +348,7 @@ Table cells for each column from in review_state's column list.
 				tal:condition="python:column in item['options']"
 				tal:attributes="
 					field string:column;
-					name string:${column}.${item/uid}:records:ignore_empty;
+					name string:${column}.${item/uid}:records;
 					uid item/uid;">
 				<option value=""></option>
 				<tal:options tal:repeat="option python:item['options'][column]">
