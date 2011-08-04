@@ -6,13 +6,6 @@ from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.config import I18N_DOMAIN, PROJECTNAME
 
 schema = BikaSchema.copy() + Schema((
-    TextField('SampleTypeDescription',
-        widget = TextAreaWidget(
-            label = 'Description',
-            label_msgid = 'label_description',
-            i18n_domain = I18N_DOMAIN,
-        ),
-    ),
     IntegerField('RetentionPeriod',
         required = 1,
         default_method = 'getDefaultLifetime',

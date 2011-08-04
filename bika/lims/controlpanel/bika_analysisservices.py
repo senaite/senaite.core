@@ -35,7 +35,7 @@ class AnalysisServicesView(BikaListingView):
                'Calculation': {'title': _('Calculation')},
               }
     review_states = [
-                     {'title_or_id': _('All'), 'id':'all',
+                     {'title': _('All'), 'id':'all',
                       'columns': ['Title',
                                   'getKeyword',
                                   'CategoryName',

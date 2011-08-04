@@ -10,13 +10,6 @@ from AccessControl import ClassSecurityInfo
 import sys
 
 schema = BikaSchema.copy() + Schema((
-    TextField('DepartmentDescription',
-        widget = TextAreaWidget(
-            label = 'Description',
-            label_msgid = 'label_description',
-            i18n_domain = I18N_DOMAIN,
-        ),
-    ),
     ReferenceField('Manager',
         vocabulary = 'getContactsDisplayList',
         vocabulary_display_path_bound = sys.maxint,

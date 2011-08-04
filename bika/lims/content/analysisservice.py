@@ -12,26 +12,6 @@ from bika.lims.content.bikaschema import BikaSchema
 import sys
 
 schema = BikaSchema.copy() + Schema((
-    ComputedField('title',
-        expression = "context.getServiceTitle() and context.getServiceTitle() or ''",
-        widget = ComputedWidget(
-            visible = False
-        ),
-    ),
-    StringField('ServiceTitle',
-        widget = StringWidget(
-            label = 'Service Title',
-            label_msgid = 'label_service_title',
-            i18n_domain = I18N_DOMAIN,
-        ),
-    ),
-    TextField('ServiceDescription',
-        widget = TextAreaWidget(
-            label = 'Description',
-            label_msgid = 'label_description',
-            i18n_domain = I18N_DOMAIN,
-        ),
-    ),
     BooleanField('ReportDryMatter',
         default = False,
         widget = BooleanWidget(
@@ -257,18 +237,10 @@ schema = BikaSchema.copy() + Schema((
 
 IdField = schema['id']
 IdField.widget.visible = False
-TitleField = schema['title']
-TitleField.widget.visible = False
 
 class AnalysisService(BaseContent):
     security = ClassSecurityInfo()
     schema = schema
-
-    security.declarePublic('Title')
-    def Title(self):
-        t = self.getServiceTitle()
-        return t and t or ''
-
 
     security.declarePublic('getDiscountedPrice')
     def getDiscountedPrice(self):
@@ -367,7 +339,7 @@ class AnalysisService(BaseContent):
         dup = context[dup_id]
         dup.setTitle('! Copy of %s' % self.Title())
         dup.edit(
-            ServiceDescription = self.getServiceDescription(),
+            description = self.Description(),
             Instructions = self.getInstructions(),
             ReportDryMatter = self.getReportDryMatter(),
             Unit = self.getUnit(),

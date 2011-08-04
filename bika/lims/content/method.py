@@ -10,13 +10,6 @@ from bika.lims import bikaMessageFactory as _
 import sys
 
 schema = BikaSchema.copy() + Schema((
-    TextField('MethodDescription',
-        widget = TextAreaWidget(
-            label = 'Method description',
-            label_msgid = 'label_method_description',
-            i18n_domain = I18N_DOMAIN,
-        )
-    ),
     TextField('Instructions',
         widget = TextAreaWidget(
             label = 'Instructions',

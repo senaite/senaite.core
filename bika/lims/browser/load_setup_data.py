@@ -180,7 +180,7 @@ class LoadSetupData():
             folder.invokeFactory(id = dept_id, type_name = 'Department')
             dept = folder[dept_id]
             dept.edit(title = title,
-                      DepartmentDescription = descr,
+                      description = descr,
                       Manager = labcontact)
             self.departments.append(dept)
 
@@ -198,7 +198,7 @@ class LoadSetupData():
             folder.invokeFactory(id = id, type_name = 'Instrument')
             obj = folder[id]
             obj.edit(title = title,
-                     InstrumentDescription = description,
+                     description = description,
                      Type = type,
                      Brand = brand,
                      Model = model,
@@ -217,7 +217,7 @@ class LoadSetupData():
             id = folder.generateUniqueId('SamplePoint')
             folder.invokeFactory(id = id, type_name = 'SamplePoint')
             obj = folder[id]
-            obj.edit(title = title, SamplePointDescription = description)
+            obj.edit(title = title, description = description)
 
     def SampleTypes(self):
         folder = self.context.bika_setup.bika_sampletypes
@@ -350,7 +350,7 @@ class LoadSetupData():
             folder.invokeFactory(id = id, type_name = 'SampleType')
             obj = folder[id]
             obj.edit(title = title,
-                     SampleTypeDescription = description,
+                     description = description,
                      Hazardous = hazardous)
 
     def CreateCalculationObjects(self, calcs):
@@ -362,7 +362,7 @@ class LoadSetupData():
             folder.invokeFactory(id = calc_id, type_name = 'Calculation')
             obj = folder[calc_id]
             obj.edit(title = title,
-                      CalculationDescription = CalculationDescription,
+                      description = CalculationDescription,
                       DependentServices = [self.service_objs[a] for a in DependentServices],
                       InterimFields = InterimFields,
                       Formula = Formula)
@@ -461,17 +461,17 @@ class LoadSetupData():
 
     def AnalysisCategories(self):
         cats = (
-            ('Air', 'Air'),
-            ('Biogas', 'Biogas'),
-            ('Dragon Fire', 'Dragon Fire'),
-            ('Feed & Compost', 'Feed & Compost'),
-            ('General', 'General'),
-            ('GHG', 'GHG'),
-            ('Mold', 'Mold'),
-            ('Oil', 'Oil'),
-            ('Precious Metals', 'Precious Metals'),
-            ('Soil', 'Soil'),
-            ('Water', 'Water'),
+            ('Air', 'Air description'),
+            ('Biogas', 'Biogas description'),
+            ('Dragon Fire', 'Dragon Fire description'),
+            ('Feed & Compost', 'Feed & Compost description'),
+            ('General', 'General description'),
+            ('GHG', 'GHG description'),
+            ('Mold', 'Mold description'),
+            ('Oil', 'Oil description'),
+            ('Precious Metals', 'Precious Metals description'),
+            ('Soil', 'Soil description'),
+            ('Water', 'Water description'),
         )
 
         def depgen():
@@ -486,7 +486,7 @@ class LoadSetupData():
             cat_id = folder.generateUniqueId('AnalysisCategory')
             folder.invokeFactory(id = cat_id, type_name = 'AnalysisCategory')
             cat = folder[cat_id]
-            cat.edit(title = title, CategoryDescription = descr, Department = depgen.next())
+            cat.edit(title = title, description = descr, Department = depgen.next())
             self.categories[title] = cat
 
     def CreateServiceObjects(self, services):
@@ -500,7 +500,8 @@ class LoadSetupData():
             folder.invokeFactory(id = id, type_name = 'AnalysisService')
             obj = folder[id]
             obj.edit(PointOfCapture = PointOfCapture,
-                     ServiceTitle = title,
+                     title = title,
+                     description = description,
                      Unit = unit,
                      Calculation = self.calculations[calculation],
                      Price = price,
@@ -509,7 +510,6 @@ class LoadSetupData():
                      Precision = 2,
                      TitrationUnit = titration_unit,
                      Accredited = accred,
-                     ServiceDescription = description,
                      Keyword = keyword,
                      MaxHoursAllowed = maxhours,
                      Instructions = instructions,
@@ -600,7 +600,7 @@ class LoadSetupData():
             id = folder.generateUniqueId('Method')
             folder.invokeFactory(id = id, type_name = 'Method')
             obj = folder[id]
-            obj.edit(title = title, MethodDescription = description)
+            obj.edit(title = title, description = description)
 
     def ReferenceDefinitions(self):
         self.ref_defs = []
@@ -617,7 +617,7 @@ class LoadSetupData():
             folder.invokeFactory(id = id, type_name = 'ReferenceDefinition')
             obj = folder[id]
             obj.edit(title = title,
-                     ReferenceDefinitionDescription = description,
+                     description = description,
                      Hazardous = hazardous)
             self.ref_defs.append(obj)
 
@@ -660,7 +660,7 @@ class LoadSetupData():
             attach_id = folder.generateUniqueId('AttachmentType')
             folder.invokeFactory(id = attach_id, type_name = 'AttachmentType')
             attachment = folder[attach_id]
-            attachment.edit(title = title, AttachmentTypeDescription = descr)
+            attachment.edit(title = title, description = descr)
 
     def Products(self):
         folder = self.context.bika_setup.bika_labproducts
@@ -692,7 +692,7 @@ class LoadSetupData():
             obj = folder[id]
             obj.edit(
                 title = title,
-                ProductDescription = description,
+                description = description,
                 Volume = volume,
                 Unit = unit,
                 Price = price,
@@ -735,7 +735,7 @@ class LoadSetupData():
             folder.invokeFactory(id = id, type_name = 'ReferenceManufacturer')
             obj = folder[id]
             obj.edit(title = title,
-                     ReferenceManufacturerDescription = description)
+                     description = description)
 
     def Prefixes(self):
         bs = getToolByName(self.context, 'bika_setup')

@@ -154,7 +154,7 @@ class AnalysisRequestViewView(BrowserView):
         return self.context.getSample().getSampleType().getHazardous()
 
     def getARProfileTitle(self):
-        return self.context.getProfile() and self.context.getProfile().getProfileTitle() or '';
+        return self.context.getProfile() and self.context.getProfile().Title() or '';
 
     def get_requested_analyses(self):
         ##
@@ -827,7 +827,7 @@ class AJAXAnalysisRequestSubmit():
                     self.context.invokeFactory(id = profile_id, type_name = 'ARProfile')
                     profile = self.context[profile_id]
                     ar.edit(Profile = profile)
-                    profile.setProfileTitle(values['profileTitle'])
+                    profile.setTitle(values['profileTitle'])
                     analyses = ar.getAnalyses()
                     services_array = []
                     for a in analyses:

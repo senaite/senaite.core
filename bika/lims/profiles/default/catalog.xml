@@ -181,9 +181,6 @@
  <index name="getAccredited" meta_type="FieldIndex">
   <indexed_attr value="getAccredited"/>
  </index>
- <index name="getProfileTitle" meta_type="FieldIndex">
-  <indexed_attr value="getProfileTitle"/>
- </index>
  <index name="getProfileKey" meta_type="FieldIndex">
   <indexed_attr value="getProfileKey"/>
  </index>
@@ -273,7 +270,6 @@
  <column value="getPrice"/>
  <column value="getVAT"/>
  <column value="getAccredited"/>
- <column value="getProfileTitle"/>
  <column value="getProfileKey"/>
  <column value="id"/>
  <column value="is_folderish"/>

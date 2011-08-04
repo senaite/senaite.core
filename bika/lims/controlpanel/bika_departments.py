@@ -25,15 +25,15 @@ class DepartmentsView(BikaListingView):
     pagesize = 20
 
     columns = {
-               'title_or_id': {'title': _('Title')},
-               'DepartmentDescription': {'title': _('Department Description')},
+               'title': {'title': _('Title')},
+               'Description': {'title': _('Description')},
                'Manager': {'title': _('Manager')},
                'ManagerPhone': {'title': _('Manager Phone')},
                'ManagerEmail': {'title': _('Manager Email')},
               }
     review_states = [
                     {'title': _('All'), 'id':'all',
-                     'columns': ['title_or_id', 'DepartmentDescription', 'Manager', 'ManagerPhone', 'ManagerEmail'],
+                     'columns': ['title', 'Description', 'Manager', 'ManagerPhone', 'ManagerEmail'],
                      'buttons':[{'cssclass': 'context',
                                  'title': _('Delete'),
                                  'url': 'folder_delete:method'}]},
@@ -44,7 +44,7 @@ class DepartmentsView(BikaListingView):
         for x in range(len(items)):
             if not items[x].has_key('obj'): continue
             obj = items[x]['obj'].getObject()
-            items[x]['DepartmentDescription'] = obj.DepartmentDescription()
+            items[x]['Description'] = obj.Description()
             items[x]['Manager'] = obj.getManagerName()
             if items[x]['Manager']:
                 items[x]['ManagerPhone'] = obj.getManager().BusinessPhone
@@ -53,8 +53,8 @@ class DepartmentsView(BikaListingView):
                 items[x]['ManagerPhone'] = ""
                 items[x]['ManagerEmail'] = ""
 
-            items[x]['replace']['title_or_id'] = "<a href='%s'>%s</a>" % \
-                 (items[x]['url'], items[x]['title_or_id'])
+            items[x]['replace']['title'] = "<a href='%s'>%s</a>" % \
+                 (items[x]['url'], items[x]['title'])
 
             if items[x]['ManagerEmail']:
                 items[x]['replace']['ManagerEmail'] = "<a href='%s'>%s</a>"%\

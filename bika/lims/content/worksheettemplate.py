@@ -11,13 +11,6 @@ from bika.lims.config import ANALYSIS_TYPES, I18N_DOMAIN, PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 
 schema = BikaSchema.copy() + Schema((
-    TextField('WorksheetTemplateDescription',
-        widget = TextAreaWidget(
-            label = 'Description',
-            label_msgid = 'label_description',
-            i18n_domain = I18N_DOMAIN,
-        ),
-    ),
     RecordsField('Row',
         required = 1,
         type = 'templateposition',

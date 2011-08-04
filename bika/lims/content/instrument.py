@@ -7,13 +7,6 @@ from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.config import I18N_DOMAIN, PROJECTNAME
 
 schema = BikaSchema.copy() + Schema((
-    TextField('InstrumentDescription',
-        widget = TextAreaWidget(
-            label = 'Instrument description',
-            label_msgid = 'label_instrument_description',
-            i18n_domain = I18N_DOMAIN,
-        )
-    ),
     StringField('Type',
         widget = StringWidget(
             label_msgid = 'label_type',

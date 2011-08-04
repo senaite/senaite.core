@@ -55,12 +55,12 @@ class bika_profiles_export(UniqueObject, SimpleItem):
 
             for p in self.portal_catalog(portal_type = 'ARProfile',
                                          getClientUID = client.UID(),
-                                         sort_on = 'getProfileTitle'):
+                                         sort_on = 'sortable_title'):
 
                 profile = p.getObject()
 
                 # create detail line
-                detail = [profile.getProfileTitle(), profile.getProfileKey(), client.Title()]
+                detail = [profile.Title(), profile.getProfileKey(), client.Title()]
                 rows.append(detail)
 
         # get all client profiles
@@ -71,22 +71,22 @@ class bika_profiles_export(UniqueObject, SimpleItem):
 
                 for p in self.portal_catalog(portal_type = 'ARProfile',
                                              getClientUID = c.UID,
-                                             sort_on = 'getProfileTitle'):
+                                             sort_on = 'sortable_title'):
 
                     profile = p.getObject()
 
                     # create detail line
-                    detail = [profile.getProfileTitle(), profile.getProfileKey(), client_title]
+                    detail = [profile.Title(), profile.getProfileKey(), client_title]
                     rows.append(detail)
 
         # get lab profiles
         if spec in ['lab', 'all', 'clientandlab']:
             for p in self.portal_catalog(portal_type = 'LabARProfile',
-                                     sort_on = 'getProfileTitle'):
+                                     sort_on = 'sortable_title'):
                 profile = p.getObject()
 
                 # create detail line
-                detail = [profile.getProfileTitle(), profile.getProfileKey(), 'Lab']
+                detail = [profile.Title(), profile.getProfileKey(), 'Lab']
                 rows.append(detail)
 
         #convert lists to csv string

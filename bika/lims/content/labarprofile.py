@@ -15,16 +15,6 @@ from bika.lims.content.bikaschema import BikaSchema
 import sys
 
 schema = BikaSchema.copy() + Schema((
-    StringField('ProfileTitle',
-        required = 1,
-        index = 'FieldIndex',
-        searchable = True,
-        widget = StringWidget(
-            label = 'ProfileTitle',
-            label_msgid = 'label_profiletitle',
-            i18n_domain = I18N_DOMAIN,
-        ),
-    ),
     StringField('ProfileKey',
         index = 'FieldIndex',
         widget = StringWidget(
@@ -64,17 +54,11 @@ schema = BikaSchema.copy() + Schema((
 )
 
 IdField = schema['id']
-TitleField = schema['title']
-TitleField.required = False
-TitleField.widget.visible = False
 
 class LabARProfile(BaseContent):
     security = ClassSecurityInfo()
     schema = schema
     displayContentsTab = False
 
-    def Title(self):
-        """ Return the profile title as title """
-        return self.getProfileTitle()
 
 registerType(LabARProfile, PROJECTNAME)

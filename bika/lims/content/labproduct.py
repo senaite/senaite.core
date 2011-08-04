@@ -5,13 +5,6 @@ from bika.lims.config import I18N_DOMAIN, PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 
 schema = BikaSchema.copy() + Schema((
-    TextField('ProductDescription',
-        widget = TextAreaWidget(
-            label = 'Product description',
-            label_msgid = 'label_product_description',
-            i18n_domain = I18N_DOMAIN,
-        )
-    ),
     StringField('Volume',
         widget = StringWidget(
             label_msgid = 'label_volume',

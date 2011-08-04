@@ -14,13 +14,6 @@ from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.config import I18N_DOMAIN, PROJECTNAME
 
 schema = BikaSchema.copy() + Schema((
-    TextField('CategoryDescription',
-        widget = TextAreaWidget(
-            label = 'Description',
-            label_msgid = 'label_description',
-            i18n_domain = I18N_DOMAIN,
-        ),
-    ),
     ReferenceField('Department',
         required = 1,
         vocabulary_display_path_bound = sys.maxint,
@@ -39,5 +32,6 @@ schema = BikaSchema.copy() + Schema((
 class AnalysisCategory(BaseContent):
     security = ClassSecurityInfo()
     schema = schema
+
 
 registerType(AnalysisCategory, PROJECTNAME)

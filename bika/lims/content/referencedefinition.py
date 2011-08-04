@@ -13,13 +13,6 @@ import sys
 import time
 
 schema = BikaSchema.copy() + Schema((
-    TextField('ReferenceDefinitionDescription',
-        widget = TextAreaWidget(
-            label = 'Description',
-            label_msgid = 'label_description',
-            i18n_domain = I18N_DOMAIN,
-        ),
-    ),
     ReferenceResultsField('ReferenceResults',
         required = 1,
         widget = ReferenceResultsWidget(
@@ -38,7 +31,6 @@ schema = BikaSchema.copy() + Schema((
     ),
 ))
 
-schema['title'].required = False
 
 class ReferenceDefinition(BaseContent):
     security = ClassSecurityInfo()

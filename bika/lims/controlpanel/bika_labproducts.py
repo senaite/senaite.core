@@ -27,7 +27,7 @@ class LabProductsView(BikaListingView):
     pagesize = 20
 
     columns = {
-               'title_or_id': {'title': _('Title')},
+               'title': {'title': _('Title')},
                'Volume': {'title': _('Volume')},
                'Unit': {'title': _('Unit')},
                'Price': {'title': _('Price')},
@@ -36,7 +36,7 @@ class LabProductsView(BikaListingView):
               }
     review_states = [
                     {'title': _('All'), 'id':'all',
-                     'columns': ['title_or_id', 'Volume', 'Unit', 'Price', 'VATAmount', 'TotalPrice'],
+                     'columns': ['title', 'Volume', 'Unit', 'Price', 'VATAmount', 'TotalPrice'],
                      'buttons':[{'cssclass': 'context',
                                  'title': _('Delete'),
                                  'url': 'folder_delete:method'}]},
@@ -52,8 +52,8 @@ class LabProductsView(BikaListingView):
             items[x]['Price'] = obj.Price
             items[x]['VATAmount'] = obj.getVATAmount()
             items[x]['TotalPrice'] = obj.getTotalPrice()
-            items[x]['replace']['title_or_id'] = "<a href='%s'>%s</a>" % \
-                 (items[x]['url'], items[x]['title_or_id'])
+            items[x]['replace']['title'] = "<a href='%s'>%s</a>" % \
+                 (items[x]['url'], items[x]['title'])
 
         return items
 

@@ -25,12 +25,12 @@ class LabARProfilesView(BikaListingView):
     pagesize = 20
 
     columns = {
-               'getProfileTitle': {'title': _('Profile Title')},
+               'title': {'title': _('Profile Title')},
                'getProfileKey': {'title': _('Profile Key')},
               }
     review_states = [
                      {'title': 'All', 'id':'all',
-                      'columns': ['getProfileTitle', 'getProfileKey'],
+                      'columns': ['title', 'getProfileKey'],
                      'buttons':[{'cssclass': 'context',
                                  'title': _('Delete'),
                                  'url': 'folder_delete:method'},
@@ -45,8 +45,8 @@ class LabARProfilesView(BikaListingView):
         items = BikaListingView.folderitems(self)
         for x in range(len(items)):
             if not items[x].has_key('obj'): continue
-            items[x]['replace']['getProfileTitle'] = "<a href='%s'>%s</a>" % \
-                 (items[x]['url'], items[x]['getProfileTitle'])
+            items[x]['replace']['title'] = "<a href='%s'>%s</a>" % \
+                 (items[x]['url'], items[x]['title'])
 
         return items
 

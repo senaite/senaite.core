@@ -27,12 +27,12 @@ class ReferenceDefinitionsView(BikaListingView):
     pagesize = 20
 
     columns = {
-               'title_or_id': {'title': _('Title')},
-               'ReferenceDefinitionDescription': {'title': _('Description')},
+               'title': {'title': _('Title')},
+               'Description': {'title': _('Description')},
               }
     review_states = [
                     {'title': _('All'), 'id':'all',
-                     'columns': ['title_or_id', 'ReferenceDefinitionDescription'],
+                     'columns': ['title', 'Description'],
                      'buttons':[{'cssclass': 'context',
                                  'title': _('Delete'),
                                  'url': 'folder_delete:method'}]},
@@ -43,9 +43,9 @@ class ReferenceDefinitionsView(BikaListingView):
         for x in range(len(items)):
             if not items[x].has_key('obj'): continue
             obj = items[x]['obj'].getObject()
-            items[x]['ReferenceDefinitionDescription'] = obj.ReferenceDefinitionDescription()
-            items[x]['replace']['title_or_id'] = "<a href='%s'>%s</a>" % \
-                 (items[x]['url'], items[x]['title_or_id'])
+            items[x]['Description'] = obj.Description()
+            items[x]['replace']['title'] = "<a href='%s'>%s</a>" % \
+                 (items[x]['url'], items[x]['title'])
 
         return items
 

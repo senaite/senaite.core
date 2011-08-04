@@ -24,13 +24,13 @@ class AnalysisCategoriesView(BikaListingView):
     pagesize = 20
 
     columns = {
-               'title_or_id': {'title': _('Title')},
-               'CategoryDescription': {'title': _('Category Description')},
+               'title': {'title': _('Category')},
+               'Description': {'title': _('Description')},
                'Department': {'title': _('Department')},
               }
     review_states = [
                     {'title': _('All'), 'id':'all',
-                     'columns': ['title_or_id', 'CategoryDescription', 'Department'],
+                     'columns': ['title', 'Description', 'Department'],
                      'buttons':[{'cssclass': 'context',
                                  'title': _('Delete'),
                                  'url': 'folder_delete:method'}]},
@@ -41,12 +41,10 @@ class AnalysisCategoriesView(BikaListingView):
         for x in range(len(items)):
             if not items[x].has_key('obj'): continue
             obj = items[x]['obj'].getObject()
-            items[x]['CategoryDescription'] = obj.CategoryDescription()
+            items[x]['Description'] = obj.Description()
             items[x]['Department'] = obj.getDepartment().Title()
-            items[x]['replace']['title_or_id'] = "<a href='%s'>%s</a>" % \
-               (items[x]['url'], items[x]['title_or_id'])
-            items[x]['replace']['title_or_id'] = "<a href='%s'>%s</a>" % \
-                 (obj.getDepartment().absolute_url(), items[x]['Department'])
+            items[x]['replace']['title'] = "<a href='%s'>%s</a>" % \
+               (items[x]['url'], items[x]['title'])
         return items
 
 schema = ATFolderSchema.copy()

@@ -201,7 +201,7 @@ class ClientARImportsView(BikaListingView):
     pagesize = 20
 
     columns = {
-           'title_or_id': {'title': _('Import')},
+           'title': {'title': _('Import')},
            'getDateImported': {'title': _('Date Imported')},
            'getStatus': {'title': _('Validity')},
            'getDateApplied': {'title': _('Date Submitted')},
@@ -209,17 +209,17 @@ class ClientARImportsView(BikaListingView):
           }
     review_states = [
                 {'title': _('All'), 'id':'all',
-                 'columns': ['title_or_id',
+                 'columns': ['title',
                              'getDateImported',
                              'getStatus',
                              'getDateApplied',
                              'state_title']},
                 {'title': _('Imported'), 'id':'imported',
-                 'columns': ['title_or_id',
+                 'columns': ['title',
                              'getDateImported',
                              'getStatus']},
                 {'title': _('Applied'), 'id':'submitted',
-                 'columns': ['title_or_id',
+                 'columns': ['title',
                              'getDateImported',
                              'getStatus',
                              'getDateApplied']},
@@ -235,8 +235,8 @@ class ClientARImportsView(BikaListingView):
         for x in range(len(items)):
             if not items[x].has_key('obj'): continue
 
-            items[x]['replace']['title_or_id'] = "<a href='%s'>%s</a>" % \
-                 (items[x]['url'], items[x]['title_or_id'])
+            items[x]['replace']['title'] = "<a href='%s'>%s</a>" % \
+                 (items[x]['url'], items[x]['title'])
 
         return items
 
@@ -251,12 +251,12 @@ class ClientARProfilesView(BikaListingView):
     pagesize = 20
 
     columns = {
-           'getProfileTitle': {'title': _('Title')},
+           'title': {'title': _('Title')},
            'getProfileKey': {'title': _('Profile Key')},
           }
     review_states = [
                 {'title': _('All'), 'id':'all',
-                 'columns': ['getProfileTitle',
+                 'columns': ['title',
                              'getProfileKey']},
                 ]
 
@@ -269,8 +269,8 @@ class ClientARProfilesView(BikaListingView):
         items = BikaListingView.folderitems(self)
         for x in range(len(items)):
             if not items[x].has_key('obj'): continue
-            items[x]['replace']['getProfileTitle'] = "<a href='%s'>%s</a>" % \
-                 (items[x]['url'], items[x]['getProfileTitle'])
+            items[x]['replace']['title'] = "<a href='%s'>%s</a>" % \
+                 (items[x]['url'], items[x]['title'])
 
         return items
 

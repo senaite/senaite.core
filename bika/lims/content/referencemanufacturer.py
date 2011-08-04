@@ -4,15 +4,7 @@ from Products.CMFCore.permissions import View, ModifyPortalContent
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.config import I18N_DOMAIN, PROJECTNAME
 
-schema = BikaSchema.copy() + Schema((
-    TextField('ReferenceManufacturerDescription',
-        widget = TextAreaWidget(
-            label = 'Description',
-            label_msgid = 'label_description',
-            i18n_domain = I18N_DOMAIN,
-        ),
-    ),
-))
+schema = BikaSchema.copy()
 
 class ReferenceManufacturer(BaseContent):
     security = ClassSecurityInfo()

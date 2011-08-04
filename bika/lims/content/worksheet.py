@@ -241,7 +241,7 @@ class Worksheet(BaseFolder):
                 wf_tool.doActionFor(analysis, 'assign')
                 analysis.reindexObject()
  #               transaction_note('Changed status of %s at %s' % (
-#                    analysis.title_or_id(), analysis.absolute_url()))
+#                    analysis.Title(), analysis.absolute_url()))
                 assigned.append(uid)
 
             assigned = assigned + self.getAnalyses()
@@ -282,7 +282,7 @@ class Worksheet(BaseFolder):
                 analysis._assigned_to_worksheet = False
                 wf_tool.doActionFor(analysis, 'retract')
  #               transaction_note('Changed status of %s at %s' % (
-#                    analysis.title_or_id(), analysis.absolute_url()))
+#                    analysis.Title(), analysis.absolute_url()))
 
             uids = []
             for a in self.getAnalyses():
@@ -310,7 +310,7 @@ class Worksheet(BaseFolder):
                     wf_tool.doActionFor(std_analysis, 'retract')
                 wf_tool.doActionFor(std_analysis, 'unassign')
  #               transaction_note('Changed status of %s at %s' % (
-#                    std_analysis.title_or_id(), std_analysis.absolute_url()))
+#                    std_analysis.Title(), std_analysis.absolute_url()))
             uids = []
             for a in self.getReferenceAnalyses():
                 if a.UID() not in std_uids:

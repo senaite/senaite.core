@@ -52,8 +52,8 @@ class LabContactsView(BikaListingView):
             items[x]['Fax'] = obj.BusinessFax
             items[x]['MobilePhone'] = obj.MobilePhone
             items[x]['EmailAddress'] = obj.EmailAddress
-            items[x]['replace']['getFullName'] = "<a href='%s'>%s</a>" % \
-                 (items[x]['url'], items[x]['getFullName'])
+            items[x]['replace']['getFullname'] = "<a href='%s'>%s</a>" % \
+                 (items[x]['url'], items[x]['getFullname'])
 
         return items
 

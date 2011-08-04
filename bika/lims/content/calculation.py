@@ -50,13 +50,6 @@ class interim_field_title_validator:
 title_validator = interim_field_title_validator()
 
 schema = BikaSchema.copy() + Schema((
-    TextField('CalculationDescription',
-        widget = TextAreaWidget(
-            label = 'Calculation description',
-            label_msgid = 'label_calculation_description',
-            i18n_domain = I18N_DOMAIN,
-        )
-    ),
     InterimFieldsField('InterimFields',
         widget = BikaRecordsWidget(
             label = 'Calculation Interim Fields',

@@ -126,7 +126,7 @@ class Pricelist(BaseFolder):
                 else:
                     itemTitle = obj.Title()
                 if self.getDescriptions():
-                    itemDescription = obj.getProductDescription()
+                    itemDescription = obj.Description()
             else:
                 if str(obj.getUnit()):
                     print_detail = ' (' + str(obj.getUnit()) + ')'
@@ -134,7 +134,7 @@ class Pricelist(BaseFolder):
                 else:
                     itemTitle = obj.Title()
                 if self.getDescriptions():
-                    itemDescription = obj.getServiceDescription()
+                    itemDescription = obj.Description()
                 itemAccredited = obj.getAccredited()
             if self.getType() == 'AnalysisService':
                 cat = obj.getCategoryName()
