@@ -32,12 +32,12 @@ class bika_ar_export(UniqueObject, SimpleItem):
         now = DateTime()
         filename = 'BikaResults%s.csv' % (now.strftime('%Y%m%d-%H%M%S'))
 
-        if self.bika_settings.getARAttachmentOption() == 'n':
+        if self.bika_setup.getARAttachmentOption() == 'n':
             allow_ar_attach = False
         else:
             allow_ar_attach = True
 
-        if self.bika_settings.getAnalysisAttachmentOption() == 'n':
+        if self.bika_setup.getAnalysisAttachmentOption() == 'n':
             allow_analysis_attach = False
         else:
             allow_analysis_attach = True

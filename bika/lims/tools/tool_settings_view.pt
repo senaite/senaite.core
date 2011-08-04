@@ -26,7 +26,7 @@ Up to Plone Setup
 <p tal:content="here/description">Tool description</p>
 
 <p>
-Edit <a href="settings/tool_base_edit">bika settings</a>.
+Edit <a href="settings/tool_base_edit">bika setup</a>.
 </p>
 
 </div>

@@ -47,7 +47,7 @@ class LoadSetupData():
     def Laboratory(self):
         name = 'Bika Laboratory'
         name = name.decode('latin-1').encode('utf-8').strip()
-        self.context.bika_settings.laboratory.edit(
+        self.context.bika_setup.laboratory.edit(
             Name = name,
             EmailAddress = 'lab@scapp.co.za',
             Confidence = '95',
@@ -153,7 +153,7 @@ class LoadSetupData():
             ('John', 'Smith', 'john@scapp.co.za', '021 5551234', '021 5551233', '0825559910'),
             ('Mary', 'Makoeba', 'mary@scapp.co.za', '021 5551236', '021 5551233', '0835558108'),
         )
-        folder = self.context.bika_settings.bika_labcontacts
+        folder = self.context.bika_setup.bika_labcontacts
         for firstname, surname, email, tel, fax, mobile in contacts:
             labcontact_id = folder.generateUniqueId('LabContact')
             folder.invokeFactory(id = labcontact_id, type_name = 'LabContact')
@@ -173,8 +173,8 @@ class LoadSetupData():
             ('Microbiology', 'Microbiology department'),
             ('Chemistry', 'Analytical chemistry department'),
         )
-        labcontact = self.context.bika_settings.portal_catalog(portal_type = 'LabContact')[0].getObject()
-        folder = self.context.bika_settings.bika_departments
+        labcontact = self.context.bika_setup.portal_catalog(portal_type = 'LabContact')[0].getObject()
+        folder = self.context.bika_setup.bika_departments
         for title, descr in depts:
             dept_id = folder.generateUniqueId('Department')
             folder.invokeFactory(id = dept_id, type_name = 'Department')
@@ -185,7 +185,7 @@ class LoadSetupData():
             self.departments.append(dept)
 
     def Instruments(self):
-        folder = self.context.bika_settings.bika_instruments
+        folder = self.context.bika_setup.bika_instruments
         instruments = (
             ('Spectrometer', 'Spectrometer', 'Digital', 'Spectronic', '20', '5556545', '', ''),
             ('pH Meter', 'Digital pH meter uses an electrode to measure pH of a solution', 'Digital', 'XBrand', 'Xmodel', '76879878', '', ''),
@@ -207,7 +207,7 @@ class LoadSetupData():
                      CalibrationExpiryDate = calibrationexpiry)
 
     def SamplePoints(self):
-        folder = self.context.bika_settings.bika_samplepoints
+        folder = self.context.bika_setup.bika_samplepoints
         samplepoints = (
             ('Plant', 'Production point'),
             ('Bag', 'Retail sample'),
@@ -220,7 +220,7 @@ class LoadSetupData():
             obj.edit(title = title, SamplePointDescription = description)
 
     def SampleTypes(self):
-        folder = self.context.bika_settings.bika_sampletypes
+        folder = self.context.bika_setup.bika_sampletypes
         sampletypes = (
             ('Aartappel/Potato', '', False),
             ('Appelpulp/Apple Pulp', '', False),
@@ -356,7 +356,7 @@ class LoadSetupData():
     def CreateCalculationObjects(self, calcs):
         if not hasattr(self, 'calculations'):
             self.calculations = {'':None}
-        folder = self.context.bika_settings.bika_calculations
+        folder = self.context.bika_setup.bika_calculations
         for title, CalculationDescription, DependentServices, InterimFields, Formula in calcs:
             calc_id = folder.generateUniqueId('Calculation')
             folder.invokeFactory(id = calc_id, type_name = 'Calculation')
@@ -481,7 +481,7 @@ class LoadSetupData():
         depgen = depgen()
 
         self.categories = {}
-        folder = self.context.bika_settings.bika_analysiscategories
+        folder = self.context.bika_setup.bika_analysiscategories
         for title, descr in cats:
             cat_id = folder.generateUniqueId('AnalysisCategory')
             folder.invokeFactory(id = cat_id, type_name = 'AnalysisCategory')
@@ -492,7 +492,7 @@ class LoadSetupData():
     def CreateServiceObjects(self, services):
         if not hasattr(self, 'service_objs'):
             self.service_objs = {'':None}
-        folder = self.context.bika_settings.bika_analysisservices
+        folder = self.context.bika_setup.bika_analysisservices
         price = '15.00'
         corporateprice = '12.00'
         for PointOfCapture, title, unit, min, max, titration_unit, accred, description, keyword, maxhours, uncertainties, instructions, dup_variation, calculation, dry_matter, cat in services:
@@ -595,7 +595,7 @@ class LoadSetupData():
             ('pH measure', '<p>Remove bottle with storage solution, rinse electrode, blot dry</p><p>Measure pH of 4 buffer, which is pink</p><p>Adjust meter to read 4 with Cal 1 knob</p>'),
             ('Titration', '<p>A titration is a method of analysis that will allow you to determine the precise endpoint of a reaction and therefore the precise quantity of reactant in the titration flask. A buret is used to deliver the second reactant to the flask and an indicator of pH Meter is used to detect the endpoint of the reaction</p>')
         )
-        folder = self.context.bika_settings.bika_methods
+        folder = self.context.bika_setup.bika_methods
         for title, description in methods:
             id = folder.generateUniqueId('Method')
             folder.invokeFactory(id = id, type_name = 'Method')
@@ -611,7 +611,7 @@ class LoadSetupData():
             ('distilled water', 'distilled water', False),
             ('Acid reference', 'HCl 3%', True),
         )
-        folder = self.context.bika_settings.bika_referencedefinitions
+        folder = self.context.bika_setup.bika_referencedefinitions
         for title, description, hazardous in referencedefinitions:
             id = folder.generateUniqueId('ReferenceDefinitions')
             folder.invokeFactory(id = id, type_name = 'ReferenceDefinition')
@@ -655,7 +655,7 @@ class LoadSetupData():
             ('Spectrograph', 'Spectrograph image'),
             ('Photograph', 'Photographic image'),
         )
-        folder = self.context.bika_settings.bika_attachmenttypes
+        folder = self.context.bika_setup.bika_attachmenttypes
         for title, descr in attachments:
             attach_id = folder.generateUniqueId('AttachmentType')
             folder.invokeFactory(id = attach_id, type_name = 'AttachmentType')
@@ -663,7 +663,7 @@ class LoadSetupData():
             attachment.edit(title = title, AttachmentTypeDescription = descr)
 
     def Products(self):
-        folder = self.context.bika_settings.bika_labproducts
+        folder = self.context.bika_setup.bika_labproducts
         products = (
             ('NaOH', 'N/100', '2', 'l', '56'),
             ('Gedistilleerde water', 'Eie kan', '5', 'l', '20'),
@@ -715,7 +715,7 @@ class LoadSetupData():
               self.service_objs['N'],
               self.service_objs['SP']]),
         )
-        folder = self.context.bika_settings.bika_worksheettemplates
+        folder = self.context.bika_setup.bika_worksheettemplates
         for title, pos, serv  in templates:
             id = folder.generateUniqueId('WorksheetTemplate')
             folder.invokeFactory(id = id, type_name = 'WorksheetTemplate')
@@ -729,7 +729,7 @@ class LoadSetupData():
             ('Bloggs & co', 'Manufacturers of fine products since 2008'),
             ('Fred\'s Factory', '"We make stuff" is not just a promise!'),
         )
-        folder = self.context.bika_settings.bika_referencemanufacturers
+        folder = self.context.bika_setup.bika_referencemanufacturers
         for title, description in manufacturers:
             id = folder.generateUniqueId('ReferenceManufacturer')
             folder.invokeFactory(id = id, type_name = 'ReferenceManufacturer')
@@ -738,7 +738,7 @@ class LoadSetupData():
                      ReferenceManufacturerDescription = description)
 
     def Prefixes(self):
-        bs = getToolByName(self.context, 'bika_settings')
+        bs = getToolByName(self.context, 'bika_setup')
         bs.setPrefixes([
             {'portal_type': 'AnalysisRequest', 'prefix': 'AR-', 'padding': '2'},
             {'portal_type': 'Sample', 'prefix': 'S-', 'padding': '5'},

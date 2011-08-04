@@ -28,7 +28,7 @@
 
 <!-- member discount percentage if applicable -->
 <input type="hidden" id="member_discount" name="member_discount"
-    tal:attributes="value here/bika_settings/getMemberDiscount"
+    tal:attributes="value here/bika_setup/getMemberDiscount"
     tal:condition="here/getMemberDiscountApplies"/>
 
 <!-- col_count goes here for the jquery expanding services rows to know how to print themselves -->
@@ -400,7 +400,7 @@
 <tr tal:condition="here/getMemberDiscountApplies">
     <th class="topborder" colspan="2">
         <b i18n:translate="label_discount">Discount</b>
-        <span class="discreet">(<tal:i content="here/bika_settings/getMemberDiscount"/>%)</span>
+        <span class="discreet">(<tal:i content="here/bika_setup/getMemberDiscount"/>%)</span>
     </th>
     <th class="topborder noleftborder"
         style="text-align:center"
@@ -505,12 +505,12 @@
     <span i18n:translate="disclaimer_can_be_dry">
     Can be reported as dry matter</span>
     </p>-->
-    <p tal:condition="python:context.bika_settings.laboratory.getLaboratoryAccredited()">
+    <p tal:condition="python:context.bika_setup.laboratory.getLaboratoryAccredited()">
         <img src="++resource++bika.lims.images/accredited.png">
         <span i18n:translate="disclaimer_accred">
             Methods included in the
                 <tal:block
-                    replace="here/bika_settings/laboratory/AccreditationBody"
+                    replace="here/bika_setup/laboratory/AccreditationBody"
                     i18n:name="accreditation_body"/>
             schedule of Accreditation for this Laboratory. Analysis remarks are not accredited
         </span>

@@ -18,7 +18,7 @@
  <alias from="(Default)" to="base_edit"/>
  <alias from="view" to="base_view"/>
  <alias from="edit" to="base_edit"/>
- <action title="View" action_id="view" category="object" condition_expr="" icon_expr="" link_target="" url_expr="string:${portal_url}/bika_settings/bika_referencedefinitions" visible="True">
+ <action title="View" action_id="view" category="object" condition_expr="" icon_expr="" link_target="" url_expr="string:${portal_url}/bika_setup/bika_referencedefinitions" visible="True">
   <permission value="Modify portal content"/>
  </action>
  <action title="Edit" action_id="edit" category="object" condition_expr="" icon_expr="" link_target="" url_expr="string:${object_url}/base_edit" visible="True">

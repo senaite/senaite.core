@@ -72,9 +72,9 @@ class LabProduct(BaseContent):
         return price + price * vat
 
     def getDefaultVAT(self):
-        """ return default VAT from bika_settings """
+        """ return default VAT from bika_setup """
         try:
-            vat = self.bika_settings.getVAT()
+            vat = self.bika_setup.getVAT()
             return vat
         except ValueError:
             return "0.00"

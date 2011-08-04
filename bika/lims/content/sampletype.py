@@ -38,7 +38,7 @@ class SampleType(BaseContent):
 
     def getDefaultLifetime(self):
         """ get the default retention period """
-        settings = getToolByName(self, 'bika_settings')
+        settings = getToolByName(self, 'bika_setup')
         return settings.getDefaultSampleLifetime()
 
 registerType(SampleType, PROJECTNAME)

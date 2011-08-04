@@ -275,7 +275,7 @@ class AnalysisService(BaseContent):
         """ compute discounted price excl. vat """
         price = self.getPrice()
         price = price and price or 0
-        discount = self.bika_settings.getMemberDiscount()
+        discount = self.bika_setup.getMemberDiscount()
         discount = discount and discount or 0
         return float(price) - (float(price) * float(discount)) / 100
 
@@ -284,7 +284,7 @@ class AnalysisService(BaseContent):
         """ compute discounted corporate price excl. vat """
         price = self.getCorporatePrice()
         price = price and price or 0
-        discount = self.bika_settings.getMemberDiscount()
+        discount = self.bika_setup.getMemberDiscount()
         discount = discount and discount or 0
         return float(price) - (float(price) * float(discount)) / 100
 
@@ -323,9 +323,9 @@ class AnalysisService(BaseContent):
         return float(price) + (float(price) * float(vat)) / 100
 
     def getDefaultVAT(self):
-        """ return default VAT from bika_settings """
+        """ return default VAT from bika_setup """
         try:
-            vat = self.bika_settings.getVAT()
+            vat = self.bika_setup.getVAT()
             return vat
         except ValueError:
             return "0.00"

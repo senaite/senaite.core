@@ -48,7 +48,7 @@ class IIdServer(Interface):
     def generate_id(self, portal_type, batch_size = None):
         """ Generate a new id for 'portal_type' """
 
-class IBikaSettings(Interface):
+class IBikaSetup(Interface):
     ""
 class IAnalysisCategories(Interface):
     ""

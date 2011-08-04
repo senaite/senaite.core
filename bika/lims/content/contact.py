@@ -92,7 +92,7 @@ class Contact(Person):
         portal = context.portal_url.getPortalObject()
         pmt = portal.portal_mailtemplates
         lab = context.bika_labinfo.laboratory
-        settings = context.bika_settings.settings
+        settings = context.bika_setup.settings
         lab_url = lab.getLabURL() or portal.absolute_url
         ar_results = portal.portal_mailtemplates.getTemplate('bika', 'ar_results')
         ar_dict = dict([ (ar.getRequestID(), ar) for ar in analysis_requests ])
@@ -343,7 +343,7 @@ class Contact(Person):
         if contact and 'sms' in contact.getPublicationPreference():
             sms_gw = settings.getSMSGatewayAddress()
             if not sms_gw: raise "No SMS Gateway defined in settings"
-            # XXX strips special chars - bika_settings.
+            # XXX strips special chars - bika_setup.
             cell = "".join([c for c in contact.getMobilePhone() if c in '0123456789'])
 
             if sms_gw[0] == "@":

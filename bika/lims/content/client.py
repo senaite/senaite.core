@@ -115,7 +115,7 @@ class Client(Organisation):
             Analysisrequests are numbered as subnumbers of the associated sample,
         """
         # get prefix
-        prefixes = self.bika_settings.getPrefixes()
+        prefixes = self.bika_setup.getPrefixes()
         type_name = type_name.replace(' ', '')
         for d in prefixes:
             if type_name == d['portal_type']:

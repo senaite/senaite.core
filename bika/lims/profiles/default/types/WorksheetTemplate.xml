@@ -22,7 +22,7 @@
  <alias from="view" to="base_view"/>
  <alias from="edit" to="base_edit"/>
  <action title="View" action_id="view" category="object" condition_expr=""
-    icon_expr="" link_target="" url_expr="string:${portal_url}/bika_settings/bika_worksheettemplates"
+    icon_expr="" link_target="" url_expr="string:${portal_url}/bika_setup/bika_worksheettemplates"
     visible="True">
   <permission value="View"/>
  </action>

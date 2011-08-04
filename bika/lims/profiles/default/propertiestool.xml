@@ -48,7 +48,7 @@
     <element value="MethodLogEntry"/>
     <element value="Instrument"/>
     <element value="WorksheetTemplate"/>
-    <element value="BikaSettings"/>
+    <element value="BikaSetup"/>
     <element value="ATBooleanCriterion"/>
     <element value="ATDateCriteria"/>
     <element value="ATDateRangeCriterion"/>

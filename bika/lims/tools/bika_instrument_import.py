@@ -23,7 +23,7 @@ class bika_instrument_import(UniqueObject, SimpleItem):
     security.declareProtected(ManageAnalysisRequests, 'import_file')
     def import_file(self, csvfile):
         wf_tool = getToolByName(self, 'portal_workflow')
-        prefixes = self.bika_settings.getPrefixes()
+        prefixes = self.bika_setup.getPrefixes()
         ws_prefix = 'WS-'
         for d in prefixes:
             if d['portal_type'] == 'Worksheet':

@@ -254,7 +254,7 @@ class AnalysisRequest(BaseFolder):
         if hasattr(self, 'getMemberDiscountApplies'):
             if self.getMemberDiscountApplies():
                 plone = getSite()
-                settings = plone.bika_settings
+                settings = plone.bika_setup
                 return settings.getMemberDiscount()
             else:
                 return "0.00"
@@ -387,7 +387,7 @@ class AnalysisRequest(BaseFolder):
         """ get results of analysis requiring DryMatter reporting """
         analyses = []
         DryMatter = None
-        settings = getToolByName(self, 'bika_settings')
+        settings = getToolByName(self, 'bika_setup')
         dry_service = settings.getDryMatterService()
         for analysis in self.getAnalyses():
             if analysis.getReportDryMatter():

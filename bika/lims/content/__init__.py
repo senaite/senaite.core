@@ -20,7 +20,7 @@ from arprofile import ARProfile
 from attachment import Attachment
 from attachmenttype import AttachmentType
 from bikaschema import BikaSchema
-from bikasettings import BikaSettings
+from bikasetup import BikaSetup
 from calculation import Calculation
 from client import Client
 from clientfolder import ClientFolder

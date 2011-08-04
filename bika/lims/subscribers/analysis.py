@@ -67,7 +67,7 @@ def ActionSucceededEventHandler(analysis, event):
                     workflow.doActionFor(dep, 'verify')
         # check if required analysis attachment is present
         if not analysis.getAttachment():
-            if analysis.bika_settings.getAnalysisAttachmentsPermitted():
+            if analysis.bika_setup.getAnalysisAttachmentsPermitted():
                 if service.getAttachmentOption() == 'r':
                     transaction.abort()
                     raise WorkflowException, _("Required analysis attachment is missing for ") + analysis.Title()

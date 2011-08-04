@@ -14,7 +14,7 @@
 
 <metal:content fill-slot="content-core" tal:define="
 	review_state python:context.portal_workflow.getInfoFor(here, 'review_state', '');
-	lab_accredited python:context.bika_settings.laboratory.getLaboratoryAccredited();
+	lab_accredited python:context.bika_setup.laboratory.getLaboratoryAccredited();
 	portal context/@@plone_portal_state/portal;
 	sampletype here/getSampleType;">
 

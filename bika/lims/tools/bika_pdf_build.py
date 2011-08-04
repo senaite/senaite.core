@@ -452,7 +452,7 @@ class bika_pdf_build(UniqueObject, SimpleItem):
     security.declarePublic('ar_results_pdf')
     def ar_results_pdf(self, info):
 
-        settings = self.aq_parent.bika_settings
+        settings = self.aq_parent.bika_setup
         max_batch = settings.getBatchEmail()
 
 

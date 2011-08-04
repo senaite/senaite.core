@@ -101,7 +101,7 @@ def generateUniqueId (self, type_name, batch_size = None):
     IdServer = getUtility(interfaces.IIdServer)()
 
     # get prefix
-    prefixes = self.bika_settings.getPrefixes()
+    prefixes = self.bika_setup.getPrefixes()
     type_name.replace(' ', '')
     for d in prefixes:
         if type_name != d['portal_type']: continue

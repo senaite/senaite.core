@@ -269,7 +269,7 @@ class AnalysisRequestAddView(AnalysisRequestViewView):
         self.request = request
         self.col_count = 4
         self.came_from = "add"
-        self.DryMatterService = self.context.bika_settings.getDryMatterService()
+        self.DryMatterService = self.context.bika_setup.getDryMatterService()
 
     def __call__(self):
         return self.template()
