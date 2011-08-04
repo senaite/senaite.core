@@ -4,7 +4,7 @@
    xmlns:i18n="http://xml.zope.org/namespaces/i18n">
  <property name="title">Analysis Categories</property>
  <property name="description"></property>
- <property name="icon_expr">string:${portal_url}/folder_icon.gif</property>
+ <property name="content_icon">++resource++bika.lims.images/category.png</property>
  <property name="content_meta_type">AnalysisCategories</property>
  <property name="product">bika.lims</property>
  <property name="factory">addAnalysisCategories</property>
