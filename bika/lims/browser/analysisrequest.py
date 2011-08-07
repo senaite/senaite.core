@@ -10,6 +10,7 @@ from bika.lims import logger, bikaMessageFactory as _
 from bika.lims.browser.analyses import AnalysesView
 from bika.lims.browser.bika_listing import BikaListingView, WorkflowAction
 from bika.lims.browser.client import ClientAnalysisRequestsView
+from bika.lims.browser.publish import Publish
 from bika.lims.config import POINTS_OF_CAPTURE
 from bika.lims import logger
 from decimal import Decimal
@@ -24,6 +25,7 @@ import transaction
 class AnalysisRequestWorkflowAction(WorkflowAction):
     """ Workflow actions taken in AnalysisRequest context
         This function is called to do the worflow actions
+        that apply to Analysis objects
     """
     def __call__(self):
         form = self.request.form
@@ -45,6 +47,8 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
             # the bika_listing_view table buttons.
             came_from = "workflow_action_button"
             action = form.get(came_from, '')
+            # XXX some browsers agree better than others about our JS ideas.
+            if type(action) == type([]): action = action[0]
             if not action:
                 logger.warn("No workflow action provided.")
                 return
@@ -64,6 +68,12 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
                     Unit = service.getUnit())
                 if result != '':
                     try:
+                        # Can't submit analyses with dependencies; they are
+                        # submitted automatically when all their dependencies
+                        # are submitted
+                        calculation = analysis.getService().getCalculation()
+                        if calculation and calculation.getDependentServices():
+                            continue
                         workflow.doActionFor(analysis, 'submit')
                     except WorkflowException:
                         pass
@@ -73,9 +83,27 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
             self.context.plone_utils.addPortalMessage(message, 'info')
             self.request.response.redirect(originating_url)
 
+        elif action in ('prepublish', 'publish', 'prepublish'):
+            # XXX publish entire AR.
+            transitioned = Publish(self.context,
+                                   self.request,
+                                   action,
+                                   [self.context,])()
+
+            if len(transitioned) == 1:
+                message = _('message_item_published',
+                    default = '${items} was published.',
+                    mapping = {'items': ', '.join(transitioned)})
+            else:
+                message = _('No ARs were published.')
+            self.context.plone_utils.addPortalMessage(message, 'info')
+            self.request.response.redirect(originating_url)
+
         else:
             # default bika_listing.py/WorkflowAction for other transitions
             WorkflowAction.__call__(self)
+
+
 
 class AnalysisRequestViewView(BrowserView):
     """ AR View form
@@ -856,6 +884,8 @@ class AJAXAnalysisRequestSubmit():
 
         self.context.plone_utils.addPortalMessage(message, 'info')
         return json.dumps({'success':message})
+
+
 
 class AnalysisRequestsView(BikaListingView):
     """ The main portal Analysis Requests action tab

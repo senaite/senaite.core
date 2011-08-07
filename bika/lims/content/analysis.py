@@ -171,9 +171,38 @@ class Analysis(BaseContent):
         if s: return s.Title()
 
     def getUncertainty(self, result=None):
-        """ Calls self.Service.getUncertainty with either the provided result value or self.Result
+        """ Calls self.Service.getUncertainty with either the provided
+            result value or self.Result
         """
         return self.getService().getUncertainty(result and result or self.getResult())
+
+    def getDependents(self):
+        """ Return a list of analyses who depend on us
+            to calculate their result
+        """
+        dependents = []
+        service = self.getService()
+        for sibling in self.aq_parent.getAnalyses():
+            if sibling == self:
+                continue
+            calculation = sibling.getService().getCalculation()
+            if not calculation:
+                continue
+            if service in calculation.getDependentServices():
+                dependents.append(sibling)
+        return dependents
+
+    def getDependencies(self):
+        """ Return a list of analyses who we depend on
+            to calculate our result.
+        """
+        siblings = self.aq_parent.getAnalyses()
+        calculation = self.getService().getCalculation()
+        if not calculation:
+            return []
+        deps = calculation.getDependentServices()
+        return [a for a in siblings if a.getService() in deps]
+
 
     def result_in_range(self, result=None, specification="lab"):
         """ Check if a result is "in range".
@@ -294,10 +323,10 @@ class Analysis(BaseContent):
 ##
 ##        self._escalateWorkflowAction('receive')
 
-    def workflow_script_assign(self, state_info):
-        """ submit sample """
-        self._escalateWorkflowAction('assign')
-        self._assigned_to_worksheet = True
+##    def workflow_script_assign(self, state_info):
+##        """ submit sample """
+##        self._escalateWorkflowAction('assign')
+##        self._assigned_to_worksheet = True
 
 ##    def workflow_script_submit(self, state_info):
 ##        """ submit sample """

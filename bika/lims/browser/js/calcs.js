@@ -20,20 +20,29 @@ $(document).ready(function(){
 				'field': field,
 				'value': value,
 				'results': $.toJSON(results),
-				'specification': $("input[name='specification']").filter(":checked").val(),
+				'specification': $("input[name='specification']")
+					.filter(":checked").val(),
 				'item_data': $('#'+uid+"_item_data").val(),
 				'_authenticator': $('input[name="_authenticator"]').val()
 			},
 			dataType: "json",
 			success: function(data,textStatus,$XHR){
-				// Update TR's interim_fields value to reflect new input field results
+				// Update TR's interim_fields value to reflect
+				// new input field results
 				if('item_data' in data){
 					$('#'+uid+"_item_data").val($.toJSON(data.item_data));
 				}
+				// clear out all row alerts for rows with fresh results
 				for(i=0;i<$(data['results']).length;i++){
 					result = $(data['results'])[i];
-					// clear out all row alerts
 					$(".alert").filter("span[uid='"+result.uid+"']").empty();
+				}
+				// clear out all row alerts for rows with fresh alerts!
+				for(i=0;i<$(data['alerts']).length;i++){
+					lert = $(data['alerts'])[i];
+					$("span[uid='"+lert.uid+"']")
+					  .filter("span[field='"+lert.field+"']")
+					  .empty();
 				}
 				// Update uncertainty value
 				for(i=0;i<$(data['uncertainties']).length;i++){
@@ -45,10 +54,16 @@ $(document).ready(function(){
 					lert = $(data['alerts'])[i];
 					$("span[uid='"+lert.uid+"']")
 					  .filter("span[field='"+lert.field+"']")
-					  .append("<img src='++resource++bika.lims.images/"	+lert.icon +".png' title='"+lert.msg+"' uid='"+lert.uid+"' icon='"+lert.icon+"'/>");
-					// on error? remove value from result fields, to be re-filled below
-					$("input[uid='"+uid+"']").filter("input[field='Result']").val('');
-					$("input[uid='"+uid+"']").filter("input[field='formatted_result']").val('');
+					  .append("<img src='++resource++bika.lims.images/"	+
+						lert.icon +".png' title='"+
+						lert.msg+"' uid='"+
+						lert.uid+"' icon='"+
+						lert.icon+"'/>");
+					// remove value from result fields to be re-inserted below
+					$("input[uid='"+uid+"']")
+						.filter("input[field='Result']").val('');
+					$("input[uid='"+uid+"']")
+						.filter("input[field='formatted_result']").val('');
 				}
 				// put result values in their boxes
 				for(i=0;i<$(data['results']).length;i++){
@@ -84,7 +99,8 @@ $(document).ready(function(){
 			$("img[uid='"+uid+"']").filter("img[icon='exclamation']").remove();
 			// get spec data from TR
 			specs = $.parseJSON($('#folder-contents-item-'+uid).attr('specs'));
-			specification = $("input[name='specification']").filter(":checked").val();
+			specification = $("input[name='specification']")
+				.filter(":checked").val();
 			if (!specification in specs){
 				continue;
 			}

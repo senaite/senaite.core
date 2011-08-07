@@ -23,7 +23,8 @@ class AJAXCalculateAnalysisEntry():
         precision = service.getPrecision()
         calculation = service.getCalculation()
         if not self.dependencies.has_key(uid):
-            self.dependencies[uid] = calculation and calculation.getDependentServices() or []
+            self.dependencies[uid] = calculation and \
+                calculation.getDependentServices() or []
 
         result = None
         mapping = {}
@@ -32,7 +33,8 @@ class AJAXCalculateAnalysisEntry():
         if recursing and not self.dependencies[uid]:
             return None
 
-        # check if all dependent services have values in the form_results, and add them to mapping
+        # check if all dependent services have values in the form_results,
+        # and add them to mapping
         unsatisfied = False
         for dep in self.dependencies[uid]:
             dep_uid = dep.UID()
@@ -42,9 +44,11 @@ class AJAXCalculateAnalysisEntry():
                         unsatisfied = True
                         break
                     try:
-                        mapping[dep.getKeyword()] = float(self.form_results[self.UIDtoUID[dep_uid]])
+                        mapping[dep.getKeyword()] = float(
+                            self.form_results[self.UIDtoUID[dep_uid]])
                     except:
-                        mapping[dep.getKeyword()] = self.form_results[self.UIDtoUID[dep_uid]]
+                        mapping[dep.getKeyword()] = \
+                               self.form_results[self.UIDtoUID[dep_uid]]
                     break
         # reset form result and fail, if any dependencies are unsatisfied
         if unsatisfied:
@@ -55,13 +59,14 @@ class AJAXCalculateAnalysisEntry():
 
         if calculation:
 
-            # check if all interim fields in this row have values in the form data
-            # add field value to the mapping, amd set self.item_data
+            # check if all interim fields in this row have values in the form
+            # data add field value to the mapping, amd set self.item_data
             if not recursing:
                 new_item_data = []
                 for i in self.item_data:
 
-                    # If an interim field is blank, remove the row result from form values
+                    # If an interim field is blank, remove the row
+                    # result from form values
                     if self.value == '':
                         self.form_results[uid] = ''
                         self.results.append({'uid': uid,

@@ -26,9 +26,23 @@ class ARAnalysesField(ObjectField):
 
     security.declarePrivate('get')
     def get(self, instance, **kwargs):
-        """get() returns the list of contained analyses
+        """ get() returns the list of contained analyses
+            passing full_objects = false in kwargs returns list of brains
+            other kwargs are passed to portal_catalog
         """
-        return instance.objectValues('Analysis')
+        full_objects = True
+        if 'full_objects' in kwargs:
+            full_objects = kwargs['full_objects']
+            del kwargs['full_objects']
+        contentFilter = kwargs
+        contentFilter['portal_type'] = "Analysis"
+        contentFilter['path'] = {'query':"/".join(instance.getPhysicalPath()),
+                                 'depth':1}
+        pc = getToolByName(instance, 'portal_catalog')
+        analyses = pc(contentFilter)
+        if full_objects:
+            analyses = [a.getObject() for a in analyses]
+        return analyses
 
     security.declarePrivate('set')
     def set(self, instance, service_uids, prices=None, **kwargs):
@@ -55,9 +69,9 @@ class ARAnalysesField(ObjectField):
             vat = Decimal(service.getVAT())
 
             #create the analysis if it doesn't exist
-            if not hasattr(instance, service.id):
-                instance.invokeFactory(id = service.id, type_name = 'Analysis')
-            analysis = instance._getOb(service.id)
+            if not hasattr(instance, service.getKeyword()):
+                instance.invokeFactory(id = service.getKeyword(), type_name = 'Analysis')
+            analysis = instance._getOb(service.getKeyword())
 
             calc = service.getCalculation()
             interim_fields = calc and calc.getInterimFields() or []

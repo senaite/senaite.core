@@ -79,18 +79,21 @@ class AnalysesView(BikaListingView):
             else:
                 obj = item['obj']
 
-            # calculate specs - they are stored in an attribute on each row so that selecting
-            # lab/client ranges can re-calculate in javascript
+            # calculate specs - they are stored in an attribute on each row
+            # so that selecting lab/client ranges can re-calculate in javascript
             # calculate specs for every analysis, since they may
             # all be for different sample types
+             # worksheet.  XXX Should be like a generalized review_state_filter
             specs = {'client':{}, 'lab':{}}
             if obj.portal_type != 'ReferenceAnalysis':
                 if self.context.portal_type == 'AnalysisRequest':
+                    sample = self.context.getSample()
                     proxies = pc(portal_type = 'AnalysisSpec',
-                        getSampleTypeUID = self.context.getSample().getSampleType().UID())
-                else: # worksheet.  XXX fix this, man.  It should be like a generalized review_state_filter
+                        getSampleTypeUID = sample.getSampleType().UID())
+                else:
+                    sample = obj.aq_parent.getSample()
                     proxies = pc(portal_type = 'AnalysisSpec',
-                        getSampleTypeUID = obj.aq_parent.getSample().getSampleType().UID())
+                        getSampleTypeUID = sample.getSampleType().UID())
                 for spec in proxies:
                     spec = spec.getObject()
                     client_or_lab = ""
@@ -100,7 +103,8 @@ class AnalysesView(BikaListingView):
                         client_or_lab = 'lab'
                     else:
                         continue
-                    for keyword, results_range in spec.getResultsRangeDict().items():
+                    for keyword, results_range in \
+                        spec.getResultsRangeDict().items():
                         specs[client_or_lab][keyword] = results_range
 
             result = obj.getResult()
@@ -123,7 +127,8 @@ class AnalysesView(BikaListingView):
             item['Uncertainty'] = ''
             item['retested'] = obj.getRetested()
             item['class']['retested'] = 'center'
-            item['calculation'] = service.getCalculation() and True or False
+            calculation = service.getCalculation()
+            item['calculation'] = calculation and True or False
             item['DueDate'] = obj.getDueDate()
             item['Attachments'] = ''
             item['item_data'] = json.dumps(item['interim_fields'])
@@ -132,35 +137,48 @@ class AnalysesView(BikaListingView):
             if choices:
                 item['choices']['Result'] = choices
             # Results can only be edited in certain states.
-            can_view_results = \
+            can_view_result = \
                 getSecurityManager().checkPermission(ViewResults, obj)
             can_edit_analysis = self.allow_edit and \
-                getSecurityManager().checkPermission(EditAnalyses, obj)
+                getSecurityManager().checkPermission(EditAnalyses, obj) and \
+                item['review_state'] == 'sample_received'
             if can_edit_analysis:
-               item['allow_edit'] = ['Result',]
-               # if the Result field is editable, our interim fields are too
-               for f in item['interim_fields']:
-                   item['allow_edit'].append(f['id'])
+                item['allow_edit'] = ['Result',]
+                # if the Result field is editable, our interim fields are too
+                for f in item['interim_fields']:
+                    item['allow_edit'].append(f['id'])
 
-               # if there isn't a calculation then result must be re-testable,
-               # and if there are interim fields, they too must be re-testable.
-               if not item['calculation'] or \
-                  (item['calculation'] and item['interim_fields']):
-                   item['allow_edit'].append('retested')
-
+                # if there isn't a calculation then result must be re-testable,
+                # and if there are interim fields, they too must be re-testable.
+                if not item['calculation'] or \
+                   (item['calculation'] and item['interim_fields']):
+                    item['allow_edit'].append('retested')
 
             # Only display data bearing fields if we have ViewResults
             # permission, otherwise just put an icon in Result column.
-            if can_view_results:
+            if can_view_result:
                 item['Result'] = result
                 item['formatted_result'] = precision and result and \
                     str("%%.%sf" % precision) % float(result) or result
                 item['Uncertainty'] = obj.getUncertainty(result)
-                item['Attachments'] = hasattr(obj, 'getAttachment') and \
-                    ", ".join([a.Title() for a in obj.getAttachment()]) or ''
+
+                attachments = ""
+                if hasattr(obj, 'getAttachment'):
+                    for attachment in obj.getAttachment():
+                        af = attachment.getAttachmentFile()
+                        icon = af.getBestIcon()
+                        if icon:
+                            attachments += "<img src='%s/%s'/>"%\
+                                        (portal.absolute_url(), icon)
+                        attachments += \
+                            '<a href="%s/at_download/AttachmentFile"/>%s</a>'%\
+                            (attachment.absolute_url(), af.filename)
+                item['replace']['Attachments'] = attachments
+
                 item['result_in_range'] = hasattr(obj, 'result_in_range') and \
                     obj.result_in_range(result) or True
-            if not can_view_results or \
+
+            if not can_view_result or \
                (not item['Result'] and not can_edit_analysis):
                 if 'Result' in item['allow_edit']:
                     item['allow_edit'].remove('Result')
@@ -177,7 +195,8 @@ class AnalysesView(BikaListingView):
                 item[f['id']] = f
 
             # check if this analysis is late/overdue
-            if item['review_state'] not in ['sample_due', 'published'] and \
+            if (not calculation or (calculation and not calculation.getDependentServices())) and \
+               item['review_state'] not in ['sample_due', 'published'] and \
                item['DueDate'] < DateTime():
                 DueDate = self.context.toLocalizedTime(
                     item['DueDate'], long_format = 1)

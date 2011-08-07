@@ -299,7 +299,6 @@
   <action url="workflow_action?workflow_action=receive" category="workflow" icon="">Receive sample</action>
   <guard>
    <guard-permission>BIKA: Receive sample</guard-permission>
-   <guard-expression>python:here.guard_receive_sample()</guard-expression>
   </guard>
  </transition>
  <transition transition_id="republish" title="Republish" new_state="" trigger="USER" before_script="" after_script="default">

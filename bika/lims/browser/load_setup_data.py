@@ -419,7 +419,7 @@ class LoadSetupData():
              'Percentage dry matter. Dependent on Moisture Analysis',
              ['Moist'],
              [],
-             "100 - %(Moisture)f",
+             "100 - %(Moist)f",
              ),
             ('Apparent Metabolizable Energy',
              'AME used for poultry feed as no correction is made for faecal or endogenous energy losses',

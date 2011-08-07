@@ -1,8 +1,79 @@
 from Products.CMFCore.utils import getToolByName
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
+from bika.lims.browser.publish import Publish
+from bika.lims.browser.bika_listing import WorkflowAction
 from plone.app.content.browser.interfaces import IFolderContentsView
 from zope.interface import implements
+import plone
+
+class ClientWorkflowAction(WorkflowAction):
+    """ Workflow actions taken in AnalysisRequest context
+        This function is called to do the worflow actions
+        that apply to objects transitioned directly
+        from Client views
+    """
+    def __call__(self):
+        form = self.request.form
+        plone.protect.CheckAuthenticator(form)
+        workflow = getToolByName(self.context, 'portal_workflow')
+        pc = getToolByName(self.context, 'portal_catalog')
+        rc = getToolByName(self.context, 'reference_catalog')
+
+        originating_url = self.request.get_header("referer",
+                                                  self.context.absolute_url())
+
+        # use came_from to decide which UI action was clicked.
+        # "workflow_action" is the action name specified in the
+        # portal_workflow transition url.
+        came_from = "workflow_action"
+        action = form.get(came_from, '')
+        if not action:
+            # workflow_action_button is the action name specified in
+            # the bika_listing_view table buttons.
+            came_from = "workflow_action_button"
+            action = form.get(came_from, '')
+            # XXX some browsers agree better than others about our JS ideas.
+            if type(action) == type([]): action = action[0]
+            if not action:
+                self.context.plone_utils.addPortalMessage("No action provided", 'error')
+                self.request.response.redirect(originating_url)
+
+        if action in ('prepublish', 'publish', 'prepublish'):
+            # We pass a list of AR objects to Publish.
+            # it returns a list of AR IDs which were actually published.
+            ARs_to_publish = []
+            transitioned = []
+            if 'paths' in form:
+                for path in form['paths']:
+                    item_id = path.split("/")[-1]
+                    item_path = path.replace("/" + item_id, '')
+                    ar = pc(id = item_id,
+                              path = {'query':item_path,
+                                      'depth':1})[0].getObject()
+                    ARs_to_publish.append(ar)
+
+                transitioned = Publish(self.context,
+                                       self.request,
+                                       action,
+                                       ARs_to_publish)()
+
+            if len(transitioned) > 1:
+                message = _('message_items_published',
+                    default = '${items} were published.',
+                    mapping = {'items': ', '.join(transitioned)})
+            elif len(transitioned) == 1:
+                message = _('message_item_published',
+                    default = '${items} was published.',
+                    mapping = {'items': ', '.join(transitioned)})
+            else:
+                message = _('No ARs were published.')
+            self.context.plone_utils.addPortalMessage(message, 'info')
+            self.request.response.redirect(originating_url)
+
+        else:
+            # default bika_listing.py/WorkflowAction for other transitions
+            WorkflowAction.__call__(self)
 
 class ClientAnalysisRequestsView(BikaListingView):
     contentFilter = {'portal_type': 'AnalysisRequest'}
@@ -99,7 +170,8 @@ class ClientAnalysisRequestsView(BikaListingView):
         for x in range(len(items)):
             if not items[x].has_key('obj'): continue
             items[x]['getDateReceived'] = items[x]['getDateReceived'] and \
-                self.context.toLocalizedTime(items[x]['getDateReceived'], long_format = 0) or ''
+                self.context.toLocalizedTime(items[x]['getDateReceived'], \
+                                             long_format = 0) or ''
             items[x]['replace']['getRequestID'] = "<a href='%s'>%s</a>" % \
                  (items[x]['url'], items[x]['getRequestID'])
         return items
@@ -179,7 +251,8 @@ class ClientSamplesView(BikaListingView):
             obj = items[x]['obj'].getObject()
 
             items[x]['getDateReceived'] = items[x]['getDateReceived'] and \
-                 self.context.toLocalizedTime(items[x]['getDateReceived'], long_format = 0) or ''
+                 self.context.toLocalizedTime(items[x]['getDateReceived'], \
+                                              long_format = 0) or ''
 
             items[x]['replace']['getSampleID'] = "<a href='%s'>%s</a>" % \
                  (items[x]['url'], items[x]['getSampleID'])
@@ -227,7 +300,8 @@ class ClientARImportsView(BikaListingView):
 
     def __init__(self, context, request):
         super(ClientARImportsView, self).__init__(context, request)
-        self.title = "%s: %s" % (self.context.Title(), _("Analysis Request Imports"))
+        self.title = "%s: %s" % (self.context.Title(), \
+                                 _("Analysis Request Imports"))
         self.description = ""
 
     def folderitems(self):
@@ -262,7 +336,8 @@ class ClientARProfilesView(BikaListingView):
 
     def __init__(self, context, request):
         super(ClientARProfilesView, self).__init__(context, request)
-        self.title = "%s: %s" % (self.context.Title(), _("Analysis Request Profiles"))
+        self.title = "%s: %s" % (self.context.Title(), \
+                                 _("Analysis Request Profiles"))
         self.description = ""
 
     def folderitems(self):
@@ -276,7 +351,8 @@ class ClientARProfilesView(BikaListingView):
 
 class ClientAnalysisSpecsView(BikaListingView):
     contentFilter = {'portal_type': 'AnalysisSpec'}
-    content_add_actions = {_('Analysis Spec'): "createObject?type_name=AnalysisSpec"}
+    content_add_actions = {_('Analysis Spec'): \
+                           "createObject?type_name=AnalysisSpec"}
     show_editable_border = True
     show_table_only = False
     show_sort_column = False
@@ -295,7 +371,8 @@ class ClientAnalysisSpecsView(BikaListingView):
 
     def __init__(self, context, request):
         super(ClientAnalysisSpecsView, self).__init__(context, request)
-        self.title = "%s: %s" % (self.context.Title(), _("Analysis Specifications"))
+        self.title = "%s: %s" % (self.context.Title(), \
+                                 _("Analysis Specifications"))
         self.description = ""
 
     def folderitems(self):

@@ -28,6 +28,7 @@ jQuery( function($) {
     });
 });
 //-->
+</script>
 </div>
 
 <div metal:define-macro="ws_attachments">
@@ -62,7 +63,7 @@ jQuery( function($) {
                 type python:attachment.getAttachmentType().Title();
                 mimetype python:here.lookupMime(file.getContentType())">
 <img tal:condition="icon" src=""
-    tal:attributes="src string:${here/portal_url}/images/$icon"/>
+    tal:attributes="src string:${here/portal_url}/$icon"/>
 <a href=""  title="Click to download"
     tal:attributes="href string:${attachment/absolute_url}/at_download/AttachmentFile"
     tal:content=filename>Filename</a>

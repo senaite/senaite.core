@@ -522,6 +522,30 @@ class AnalysisRequest(BaseFolder):
                 '%s/manage_results' % self.absolute_url())
 
     security.declarePublic('getContactUIDForUser')
+    def get_verifier(self):
+        wtool = getToolByName(self,'portal_workflow')
+        mtool = getToolByName(self,'portal_membership')
+
+        verifier = None
+        try:
+            review_history = wtool.getInfoFor(self, 'review_history')
+        except:
+            return 'access denied'
+
+        if not review_history:
+            return 'no history'
+        for items in  review_history:
+            action = items.get('action')
+            if action != 'verify':
+                continue
+            actor = items.get('actor')
+            member = mtool.getMemberById(actor)
+            verifier = member.getProperty('fullname')
+            if verifier is None or verifier == '':
+                verifier = actor
+        return verifier
+
+    security.declarePublic('getContactUIDForUser')
     def getContactUIDForUser(self):
         """ get the UID of the contact associated with the authenticated
             user
@@ -564,11 +588,11 @@ class AnalysisRequest(BaseFolder):
 ##        self.reindexObject()
 ##        self._delegateWorkflowAction('receive')
 
-    def workflow_script_assign(self, state_info):
-        """ submit sample """
-        self._delegateWorkflowAction('assign')
-        # we need to record that we passed through the 'assigned' state
-        self._assigned_to_worksheet = True
+##    def workflow_script_assign(self, state_info):
+##        """ submit sample """
+##        self._delegateWorkflowAction('assign')
+##        # we need to record that we passed through the 'assigned' state
+##        self._assigned_to_worksheet = True
 
 ##    def workflow_script_submit(self, state_info):
 ##        """ submit sample """
@@ -578,18 +602,18 @@ class AnalysisRequest(BaseFolder):
 ##        """ verify sample """
 ##        self._delegateWorkflowAction('verify')
 
-    def workflow_script_retract(self, state_info):
-        """ retract sample """
-        self._delegateWorkflowAction('retract')
-        self._escalateWorkflowAction()
-        #wf_tool = self.portal_workflow
-        #for analysis in self.getAnalyses():
-        #    review_state = wf_tool.getInfoFor(analysis, 'review_state', '')
-        #    if review_state == 'assigned':
-        #        continue
-        #    if analysis._assigned_to_worksheet:
-        #        wf_tool.doActionFor(analysis, 'assign')
-        #        analysis.reindexObject()
+##    def workflow_script_retract(self, state_info):
+##        """ retract sample """
+##        self._delegateWorkflowAction('retract')
+##        self._escalateWorkflowAction()
+##        #wf_tool = self.portal_workflow
+##        #for analysis in self.getAnalyses():
+##        #    review_state = wf_tool.getInfoFor(analysis, 'review_state', '')
+##        #    if review_state == 'assigned':
+##        #        continue
+##        #    if analysis._assigned_to_worksheet:
+##        #        wf_tool.doActionFor(analysis, 'assign')
+##        #        analysis.reindexObject()
 
     def workflow_script_publish(self, state_info):
         """ publish analysis request """
@@ -617,25 +641,25 @@ class AnalysisRequest(BaseFolder):
         #    self.REQUEST.SESSION.set('uids', [self.UID(),])
         #    self.REQUEST.RESPONSE.redirect('%s/print_analysisrequests'%self.absolute_url())
 
-    def workflow_script_prepublish(self, state_info):
-        """ prepublish analysis request """
-        """ publish verified analyses linked to this request """
-        self._delegateWorkflowAction('publish')
-        #get_transaction().commit()
-        if self.REQUEST.has_key('PUBLISH_BATCH'):
-            return
-
-        contact = self.getContact()
-        analysis_requests = [self]
-        self.publish_analysis_requests(contact, analysis_requests, None)
-
-        # cc contacts
-        for cc_contact in self.getCCContact():
-            self.publish_analysis_requests(cc_contact, analysis_requests, None)
-        # cc emails
-        cc_emails = self.getCCEmails()
-        if cc_emails:
-            self.publish_analysis_requests(None, analysis_requests, cc_emails)
+##    def workflow_script_prepublish(self, state_info):
+##        """ prepublish analysis request """
+##        """ publish verified analyses linked to this request """
+##        self._delegateWorkflowAction('publish')
+##        #get_transaction().commit()
+##        if self.REQUEST.has_key('PUBLISH_BATCH'):
+##            return
+##
+##        contact = self.getContact()
+##        analysis_requests = [self]
+##        self.publish_analysis_requests(contact, analysis_requests, None)
+##
+##        # cc contacts
+##        for cc_contact in self.getCCContact():
+##            self.publish_analysis_requests(cc_contact, analysis_requests, None)
+##        # cc emails
+##        cc_emails = self.getCCEmails()
+##        if cc_emails:
+##            self.publish_analysis_requests(None, analysis_requests, cc_emails)
 
     def workflow_script_republish(self, state_info):
         """ republish analysis request """

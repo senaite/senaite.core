@@ -51,6 +51,8 @@ class WorkflowAction:
             # the bika_listing_view table buttons.
             came_from = "workflow_action_button"
             action = form.get(came_from, '')
+            # XXX some browsers agree better than others about our JS ideas.
+            if type(action) == type([]): action = action[0]
             if not action:
                 logger.warn("No workflow action provided.")
                 return
@@ -68,18 +70,20 @@ class WorkflowAction:
                 item_id = path.split("/")[-1]
                 item_path = path.replace("/" + item_id, '')
                 item = pc(id = item_id,
-                          path = {'query':item_path, 'depth':1})[0].getObject()
+                          path = {'query':item_path,
+                                  'depth':1})[0].getObject()
                 try:
                     # peform the transition, ignoring items for which the
                     # transition is not available
-                    if action in [t['id'] for t in workflow.getTransitionsFor(item)]:
+                    if action in [t['id'] for \
+                                  t in workflow.getTransitionsFor(item)]:
                         workflow.doActionFor(item, action)
                         transitioned.append(item.Title())
                 # any failures get an addPortalMessage,
                 # and the whole transaction aborts.
-                except WorkflowException, msg:
+                except WorkflowException, errmsg:
                     transaction.abort()
-                    self.context.plone_utils.addPortalMessage(str(msg), 'info')
+                    self.context.plone_utils.addPortalMessage(str(errmsg), 'info')
                     self.request.response.redirect(originating_url)
                     return
 
