@@ -97,7 +97,7 @@ class Publish(BrowserView):
                     mime_msg.preamble = 'This is a multi-part MIME message.'
                     msg_txt = MIMEText(self.ar_results(), _subtype='html')
                     mime_msg.attach(msg_txt)
-                    open("/home/cb/tmp/test.html", "w").write(self.ar_results())
+                    #open("/home/cb/tmp/test.html", "w").write(self.ar_results())
                     self.context.MailHost.send(mime_msg.as_string())
                 else:
                     raise Exception, "XXX pub_pref %s" % self.pub_pref
