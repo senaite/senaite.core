@@ -18,9 +18,9 @@ user_id = getSecurityManager().getUser().getId()
 wf_tool = context.portal_workflow
 
 self_submitted = False
-for analysis in context.getAnalyses():
+for analysis in context.getAnalyses(full_objects=True):
     review_state = wf_tool.getInfoFor(analysis, 'review_state')
-    if review_state == 'to_be_verified': 
+    if review_state == 'to_be_verified':
         review_history = wf_tool.getInfoFor(analysis, 'review_history')
         review_history = context.reverseList(review_history)
         for event in review_history:

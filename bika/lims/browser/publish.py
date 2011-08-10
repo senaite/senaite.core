@@ -1,12 +1,17 @@
 from DateTime import DateTime
-from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from Products.CMFCore.WorkflowCore import WorkflowException
+from Products.CMFCore.utils import getToolByName
 from Products.Five.browser import BrowserView
+from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims.utils import sendmail, encode_header
 from email.Utils import formataddr
-from Products.CMFCore.utils import getToolByName
 from email.mime.image import MIMEImage
 from email.mime.multipart import MIMEMultipart
+from bika.lims.config import POINTS_OF_CAPTURE
 from email.mime.text import MIMEText
+from os.path import join
+import App
+import Globals
 import re
 
 class Publish(BrowserView):
@@ -26,18 +31,14 @@ class Publish(BrowserView):
             if workflow.getInfoFor(ar, 'review_state') == 'verified':
                 ARs_to_publish.append(ar)
             else:
-                analyses = ar.getAnalyses()
-                has_verified = False
-                for analysis in analyses:
-                    if workflow.getInfoFor(analysis, 'review_state') \
-                       == 'verified':
-                        has_verified = True
-                        break
-                if has_verified:
+                if ar.getAnalyses(review_state='verified'):
                     ARs_to_publish.append(ar)
         self.analysis_requests = ARs_to_publish
 
     def __call__(self):
+
+        rc = getToolByName(self.context, 'reference_catalog')
+        workflow = getToolByName(self.context, 'portal_workflow')
 
         laboratory = self.context.bika_setup.laboratory
         BatchEmail = self.context.bika_setup.getBatchEmail()
@@ -56,8 +57,7 @@ class Publish(BrowserView):
             self.contact = ars[0].getContact()
             self.pub_pref = self.contact.getPublicationPreference()
             batch_size = 'email' in self.pub_pref and BatchEmail or \
-                         'fax' in self.pub_pref and BatchFax or \
-                         1
+                         'fax' in self.pub_pref and BatchFax or 1
 
             # send batches of ARs to each contact
             for b in range(0, len(ars), batch_size):
@@ -72,9 +72,12 @@ class Publish(BrowserView):
                     if ar.getReportDryMatter():
                         self.any_drymatter = True
                     states = ("verified", "published")
-                    for analysis in ar.getAnalyses(review_state=states):
+                    # XXX Why is getAnalyses here, returning broken brains?
+                    for analysis in ar.getAnalyses(full_objects=True,
+                                                   review_state=states):
+                        #service = rc.lookupObject(analysis.getServiceUID())
                         service = analysis.getService()
-                        poc = service.getPointOfCapture()
+                        poc = POINTS_OF_CAPTURE.getValue(service.getPointOfCapture())
                         cat = service.getCategoryName()
                         if poc not in self.services:
                             self.services[poc] = {}
@@ -95,15 +98,29 @@ class Publish(BrowserView):
                         (encode_header(self.contact.getFullname()),
                          self.contact.getEmailAddress()))
                     mime_msg.preamble = 'This is a multi-part MIME message.'
-                    msg_txt = MIMEText(self.ar_results(), _subtype='html')
+                    ar_results = self.ar_results()
+                    msg_txt = MIMEText(ar_results, _subtype='html')
                     mime_msg.attach(msg_txt)
-                    #open("/home/cb/tmp/test.html", "w").write(self.ar_results())
-                    self.context.MailHost.send(mime_msg.as_string())
+
+                    #XXX
+                    open(join(Globals.INSTANCE_HOME,'var','ar_results.html'),
+                                "w").write(ar_results)
+
+                    try:
+                        host = getToolByName(self.context, 'MailHost')
+                        host.send(mime_msg.as_string(), immediate=True)
+                    except SMTPRecipientsRefused, msg:
+                        raise WorkflowException(str(msg))
+                    if self.action == 'publish':
+                        for ar in self.batch:
+                            try:
+                                workflow.doActionFor(ar, 'publish')
+                            except WorkflowException:
+                                pass
                 else:
                     raise Exception, "XXX pub_pref %s" % self.pub_pref
 
         return [ar.RequestID for ar in self.analysis_requests]
-
 
     def get_managers_from_requests(self):
         ## Script (Python) "get_managers_from_requests"

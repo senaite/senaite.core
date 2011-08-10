@@ -6,6 +6,11 @@ from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
 import transaction
 
+#try:
+#    from bika.limsCalendar.config import TOOL_NAME as BIKA_CALENDAR_TOOL
+#except:
+#    pass
+
 
 def ActionSucceededEventHandler(analysis, event):
     workflow = getToolByName(analysis, 'portal_workflow')
@@ -62,38 +67,31 @@ def ActionSucceededEventHandler(analysis, event):
                 workflow.doActionFor(dependent, event.action)
 
         # Escalate action to the parent AR
-        if event.action in [t['id'] for t in workflow.getTransitionsFor(analysis.aq_parent)]:
+        try:
             workflow.doActionFor(analysis.aq_parent, event.action)
+        except WorkflowException:
+            pass
 
     if event.action == "verify":
         # fail if we are the same user who submitted this analysis
-        review_history = workflow.getInfoFor(analysis, 'review_history')
-        review_history.reverse()
-        for e in review_history:
-            if e.get('action') == 'submit':
-                if e.get('actor') == user.getId():
-                    transaction.abort()
-                    raise WorkflowException, _("Results cannot be verified by the submitting user.")
-                break
-##        # Cannot verify analyses with dependencies; they are verified
-##        # automatically when all their dependencies are verified.
-##        service = analysis.getService()
-##        calculation = service.getCalculation()
-##        if calculation and calculation.getDependentServices():
-##            transaction.abort()
-##            return
-        # Check for dependents, verify that all their dependencies are
-        # ready, and verify them.
-        for dependent in analysis.getDependents():
-            if workflow.getInfoFor(dependent, 'review_state') == 'verified':
-                continue
-            can_submit = False
-            for dependency in dependent.getDependencies():
-                if workflow.getInfoFor(dependency, 'review_state') in \
-                   ('sample_received', 'to_be_verified'):
-                    can_submit = False
-            if can_submit:
-                workflow.doActionFor(dependent, event.action)
+        mt = getToolByName(analysis, 'portal_membership')
+        member = mt.getAuthenticatedMember()
+        if 'Manager' not in member.getRoles():
+            # fail if we are the user who submitted this analysis
+            review_history = workflow.getInfoFor(analysis, 'review_history')
+            review_history.reverse()
+            for e in review_history:
+                if e.get('action') == 'submit':
+                    if e.get('actor') == user.getId():
+                        transaction.abort()
+                        raise WorkflowException, _("Results cannot be verified by the submitting user.")
+                    break
+        # Verify any dependent services
+        for dep in analysis.getDependents():
+            try:
+                workflow.doActionFor(dep, event.action)
+            except WorkflowException:
+                pass
         # check for required Analysis Attachments
         service = analysis.getService()
         if not analysis.getAttachment():
@@ -105,34 +103,43 @@ def ActionSucceededEventHandler(analysis, event):
         # escalate the action to the parent AR
         all_verified = True
         for a in analysis.aq_parent.getAnalyses():
-            if workflow.getInfoFor(a, 'review_state') in \
+            if a.review_state in \
                ('sample_due', 'sample_received', 'to_be_verified'):
                 all_verified = False
                 break
-        if all_verified and \
-           event.action in [t['id'] for t in workflow.getTransitionsFor(analysis.aq_parent)]:
-            workflow.doActionFor(analysis.aq_parent, event.action)
+        if all_verified:
+            try:
+                workflow.doActionFor(analysis.aq_parent, event.action)
+            except WorkflowExfeption:
+                pass
 
     if event.action == "retract":
         # Retract our dependencies
         for dep in analysis.getDependencies():
-            if event.action in [t['id'] for t in workflow.getTransitionsFor(dep)]:
+            try:
                 workflow.doActionFor(dep, event.action)
                 if dep._assigned_to_worksheet:
                     workflow.doActionFor(dep, 'assign')
+            except WorkflowException:
+                pass
         # Retract our dependents
         for dep in analysis.getDependents():
-            if event.action in [t['id'] for t in workflow.getTransitionsFor(dep)]:
+            try:
                 workflow.doActionFor(dep, event.action)
                 if dep._assigned_to_worksheet:
                     workflow.doActionFor(dep, 'assign')
+            except WorkflowException:
+                pass
         # Escalate action to the parent AR
-        # hacky: set AR._skip_ActionSucceededEvent so that AR doesn't delegate to our sibling analyses
-        if event.action in [t['id'] for t in workflow.getTransitionsFor(analysis.aq_parent)]:
+        try:
             analysis.aq_parent._skip_ActionSucceededEvent = True
             workflow.doActionFor(analysis.aq_parent, event.action)
             if analysis.aq_parent._assigned_to_worksheet:
                 workflow.doActionFor(analysis.aq_parent, 'assign')
+            if hasattr(analysis.aq_parent, '_skip_ActionSucceededEvent'):
+                del analysis.aq_parent._skip_ActionSucceededEvent
+        except WorkflowException:
+            pass
         # if we are assigned to a worksheet, our new
         # state must be 'assigned', not 'received'.
         # XXX hacky, analysis should have multiple workflows
@@ -140,8 +147,32 @@ def ActionSucceededEventHandler(analysis, event):
             workflow.doActionFor(analysis, 'assign')
             analysis.reindexObject()
 
-
-
-
-
+    if event.action == "publish":
+        endtime = DateTime()
+        analysis.setDateAnalysisPublished(endtime)
+        starttime = analysis.aq_parent.getDateReceived()
+        service = analysis.getService()
+        maxhours = service.getMaxHoursAllowed()
+        # set the analysis duration value to default values
+        # in case of no calendars or max hours
+        if maxhours:
+            duration = (endtime - starttime) * 24 * 60
+            earliness = (maxhours * 60) - duration
+        else:
+            earliness = 0
+            duration = 0
+##        try:
+##            bct = getToolByName(analysis, BIKA_CALENDAR_TOOL)
+##        except:
+##        bct = None
+##        if bct:
+##            duration = bct.getDuration(starttime, endtime)
+##            # set the earliness of the analysis
+##            # will be negative if late
+##            if analysis.getDueDate():
+##                earliness = bct.getDuration(endtime,
+##                                        self.getDueDate())
+        analysis.setDuration(duration)
+        analysis.setEarliness(earliness)
+        analysis.reindexObject()
 

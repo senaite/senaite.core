@@ -33,62 +33,58 @@ def ActionSucceededEventHandler(ar, event):
             addPortalMessage(_("Add one or more Analyses first."))
             transaction.abort()
         for analysis in analyses:
-            review_state = workflow.getInfoFor(analysis, 'review_state')
             # ignore 'not requested' analyses
-            if review_state == 'not_requested':
+            if analysis.review_state == 'not_requested':
                 continue
             try:
-                if event.action in \
-                   [t['id'] for t in workflow.getTransitionsFor(analysis)]:
-                    workflow.doActionFor(analysis, event.action)
-                    analysis.reindexObject()
+                analysis= analysis.getObject()
+                workflow.doActionFor(analysis, event.action)
+                analysis.reindexObject()
             except WorkflowException, errmsg:
-                transaction.abort()
-                raise WorkflowException, \
-                      _("One or more transitions failed: ") + str(errmsg)
+                pass
 
     if event.action == "assign":
         ar._assigned_to_worksheet = True
 
     if event.action == "submit":
-        # submit all analyses in this AR.
+        # Check all analyses, verify that they are in sample_recieved,
+        # and that their Result is anything other than an empty string,
+        # and submit them
         analyses = ar.getAnalyses()
         for analysis in analyses:
-            review_state = workflow.getInfoFor(analysis, 'review_state')
-            # ignore 'not requested' analyses
-            if review_state == 'not_requested':
+            if analysis.review_state == 'not_requested':
+                continue
+            if analysis.review_state != 'sample_received':
                 continue
             try:
-                if event.action in \
-                   [t['id'] for t in workflow.getTransitionsFor(analysis)]:
-                    workflow.doActionFor(analysis, event.action)
-                    analysis.reindexObject()
-            except WorkflowException, errmsg:
-                transaction.abort()
-                raise WorkflowException, \
-                      _("One or more transitions failed: ") + str(errmsg)
+                analysis = analysis.getObject()
+                workflow.doActionFor(analysis, event.action)
+                analysis.reindexObject()
+            except WorkflowException:
+                pass
 
     if event.action == "verify":
         # verify all analyses in this AR.
+        mt = getToolByName(ar, 'portal_membership')
+        member = mt.getAuthenticatedMember()
         analyses = ar.getAnalyses()
         for analysis in analyses:
-            review_state = workflow.getInfoFor(analysis, 'review_state')
             # ignore 'not requested' analyses
-            if review_state == 'not_requested':
+            if analysis.review_state == 'not_requested':
                 continue
-            # fail if we are the same user who submitted this analysis
-            review_history = workflow.getInfoFor(analysis, 'review_history')
-            review_history.reverse()
-            for e in review_history:
-                if e.get('action') == 'submit':
-                    if e.get('actor') == user.getId():
-                        transaction.abort()
-                        addPortalMessage(_("Results cannot be verified by the submitting user."))
-                        return
-                    break
+            analysis = analysis.getObject()
+            if 'Manager' not in member.getRoles():
+                # fail if we are the user who submitted this analysis
+                review_history = workflow.getInfoFor(analysis, 'review_history')
+                review_history.reverse()
+                for e in review_history:
+                    if e.get('action') == 'submit':
+                        if e.get('actor') == user.getId():
+                            transaction.abort()
+                            addPortalMessage(_("Results cannot be verified by the submitting user."))
+                            return
+                        break
             try:
-                if event.action in \
-                   [t['id'] for t in workflow.getTransitionsFor(analysis)]:
                     workflow.doActionFor(analysis, event.action)
                     analysis.reindexObject()
             except WorkflowException, errmsg:
@@ -100,28 +96,33 @@ def ActionSucceededEventHandler(ar, event):
         # retract all analyses in this AR.
         analyses = ar.getAnalyses()
         for analysis in analyses:
-            review_state = workflow.getInfoFor(analysis, 'review_state')
             # ignore 'not requested' analyses
-            if review_state == 'not_requested':
+            if analysis.review_state == 'not_requested':
                 continue
+            analysis = analysis.getObject()
             try:
-                if event.action in \
-                   [t['id'] for t in workflow.getTransitionsFor(analysis)]:
-                    workflow.doActionFor(analysis, event.action)
-                    if analysis._assigned_to_worksheet:
-                        workflow.doActionFor(analysis, 'assign')
-                    analysis.reindexObject()
-            except WorkflowException, errmsg:
-                transaction.abort()
-                raise WorkflowException, \
-                      _("One or more transitions failed: ") + str(errmsg)
+                workflow.doActionFor(analysis, event.action)
+                if analysis._assigned_to_worksheet:
+                    workflow.doActionFor(analysis, 'assign')
+                analysis.reindexObject()
+            except WorkflowException:
+                pass
         if ar._assigned_to_worksheet:
             workflow.doActionFor(ar, 'assign')
         ar.reindexObject()
 
-
-
-
-
-
-
+    if event.action == "publish":
+        ar.setDatePublished(DateTime())
+        ar.reindexObject()
+        # publish all analyses in this AR.
+        analyses = ar.getAnalyses()
+        for analysis in analyses:
+            # ignore 'not requested' analyses
+            if analysis.review_state == 'not_requested':
+                continue
+            analysis = analysis.getObject()
+            try:
+                workflow.doActionFor(analysis, event.action)
+                analysis.reindexObject()
+            except WorkflowException:
+                pass

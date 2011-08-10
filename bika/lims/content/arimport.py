@@ -302,7 +302,7 @@ class ARImport(BaseFolder):
             row_count += 1
             # set up analyses
             analyses = []
-            for analysis in aritem.getAnalyses():
+            for analysis in aritem.getAnalyses(full_objects=True):
                 if services.has_key(analysis):
                     analyses.append(services[analysis])
                 else:
@@ -450,7 +450,7 @@ class ARImport(BaseFolder):
                     else:
                         valid_batch = False
 
-            for analysis in aritem.getAnalyses():
+            for analysis in aritem.getAnalyses(full_objects=True):
                 if not services.has_key(analysis):
                     for service in self.portal_catalog(
                             portal_type = 'AnalysisService',

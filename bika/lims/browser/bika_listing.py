@@ -75,26 +75,15 @@ class WorkflowAction:
                 try:
                     # peform the transition, ignoring items for which the
                     # transition is not available
-                    if action in [t['id'] for \
-                                  t in workflow.getTransitionsFor(item)]:
                         workflow.doActionFor(item, action)
                         transitioned.append(item.Title())
                 # any failures get an addPortalMessage,
                 # and the whole transaction aborts.
                 except WorkflowException, errmsg:
-                    transaction.abort()
-                    self.context.plone_utils.addPortalMessage(str(errmsg), 'info')
-                    self.request.response.redirect(originating_url)
-                    return
+                    pass
 
-        if len(transitioned) > 1:
-            message = _('message_items_transitioned',
-                default = '${items} were successfully transitioned.',
-                mapping = {'items': ', '.join(transitioned)})
-        elif len(transitioned) == 1:
-            message = _('message_ar_created',
-                default = '${items} was successfully transitioned.',
-                mapping = {'items': ', '.join(transitioned)})
+        if len(transitioned) > 0:
+            message = _('Action successful.')
         else:
             message = _('No items were affected.')
 

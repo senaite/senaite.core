@@ -145,7 +145,7 @@ jQuery( function($) {
 <div>
 <table
     tal:define="
-        analyses python:here.getAnalyses();
+        analyses python:here.getAnalyses(full_objects=True);
         analyses python:[a for a in analyses if a.getService().getAttachmentOption() in ['p', 'r']];
         sort_on python:(('Title', 'nocase', 'asc'),);
         analyses python:sequence.sort(analyses, sort_on);">

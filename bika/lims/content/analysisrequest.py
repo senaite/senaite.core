@@ -372,24 +372,13 @@ class AnalysisRequest(BaseFolder):
         return TotalPrice
     getTotal = getTotalPrice
 
-    security.declareProtected(View, 'getPublishedAnalyses')
-    def getPublishedAnalyses(self):
-        """ return published analyses """
-        wf_tool = getToolByName(self, 'portal_workflow')
-        r = []
-        for analysis in self.getAnalyses():
-            review_state = wf_tool.getInfoFor(analysis, 'review_state', '')
-            if review_state == 'published':
-                r.append(analysis)
-        return r
-
     def setDryMatterResults(self):
         """ get results of analysis requiring DryMatter reporting """
         analyses = []
         DryMatter = None
         settings = getToolByName(self, 'bika_setup')
         dry_service = settings.getDryMatterService()
-        for analysis in self.getAnalyses():
+        for analysis in self.getAnalyses(full_objects=True):
             if analysis.getReportDryMatter():
                 analyses.append(analysis)
             try:
@@ -615,31 +604,31 @@ class AnalysisRequest(BaseFolder):
 ##        #        wf_tool.doActionFor(analysis, 'assign')
 ##        #        analysis.reindexObject()
 
-    def workflow_script_publish(self, state_info):
-        """ publish analysis request """
-        self.setDatePublished(DateTime())
-        self.reindexObject()
-        self._delegateWorkflowAction('publish')
-        #get_transaction().commit()
-        if self.REQUEST.has_key('PUBLISH_BATCH'):
-            return
-
-        contact = self.getContact()
-        analysis_requests = [self]
-        self.publish_analysis_requests(contact, analysis_requests, None)
-
-        # cc contacts
-        for cc_contact in self.getCCContact():
-            self.publish_analysis_requests(cc_contact, analysis_requests, None)
-        # cc emails
-        cc_emails = self.getCCEmails()
-        if cc_emails:
-            self.publish_analysis_requests(None, analysis_requests, cc_emails)
-
-        # AVS print the published ar
-        #if 'print' in contact.getPublicationPreference():
-        #    self.REQUEST.SESSION.set('uids', [self.UID(),])
-        #    self.REQUEST.RESPONSE.redirect('%s/print_analysisrequests'%self.absolute_url())
+##    def workflow_script_publish(self, state_info):
+##        """ publish analysis request """
+##        self.setDatePublished(DateTime())
+##        self.reindexObject()
+##        self._delegateWorkflowAction('publish')
+##        #get_transaction().commit()
+##        if self.REQUEST.has_key('PUBLISH_BATCH'):
+##            return
+##
+##        contact = self.getContact()
+##        analysis_requests = [self]
+##        self.publish_analysis_requests(contact, analysis_requests, None)
+##
+##        # cc contacts
+##        for cc_contact in self.getCCContact():
+##            self.publish_analysis_requests(cc_contact, analysis_requests, None)
+##        # cc emails
+##        cc_emails = self.getCCEmails()
+##        if cc_emails:
+##            self.publish_analysis_requests(None, analysis_requests, cc_emails)
+##
+##        # AVS print the published ar
+##        #if 'print' in contact.getPublicationPreference():
+##        #    self.REQUEST.SESSION.set('uids', [self.UID(),])
+##        #    self.REQUEST.RESPONSE.redirect('%s/print_analysisrequests'%self.absolute_url())
 
 ##    def workflow_script_prepublish(self, state_info):
 ##        """ prepublish analysis request """
@@ -661,118 +650,118 @@ class AnalysisRequest(BaseFolder):
 ##        if cc_emails:
 ##            self.publish_analysis_requests(None, analysis_requests, cc_emails)
 
-    def workflow_script_republish(self, state_info):
-        """ republish analysis request """
-        if self.REQUEST.has_key('PUBLISH_BATCH'):
-            return
-
-        contact = self.getContact()
-        analysis_requests = [self]
-        self.publish_analysis_requests(contact, analysis_requests, None)
-
-        # cc contacts
-        for cc_contact in self.getCCContact():
-            self.publish_analysis_requests(cc_contact, analysis_requests, None)
-        # cc emails
-        cc_emails = self.getCCEmails()
-        if cc_emails:
-            self.publish_analysis_requests(None, analysis_requests, cc_emails)
-
-    def _delegateWorkflowAction(self, action_id):
-        """ if analysisrequest is 'received', that actually means that
-            the sample is received. Delegate received status to sample,
-            which will delegate it to all other linked analysisrequests
-        """
-        if getattr(self, '_escalating_workflow_action', None):
-            return
-        if action_id == 'receive_sample':
-            receive_sample = True
-            action_id = 'receive'
-        else:
-            receive_sample = False
-
-        self._delegating_workflow_action = 1
-        wf_tool = self.portal_workflow
-        for analysis in self.getAnalyses():
-            review_state = wf_tool.getInfoFor(analysis, 'review_state', '')
-            # 'not requested' analyses stay unaffected until
-            # individually verified
-            if review_state == 'not_requested':
-                continue
-            try:
-                wf_tool.doActionFor(analysis, action_id)
-                analysis.reindexObject()
-            except WorkflowException, msg:
-                from zLOG import LOG; LOG('INFO', 0, '', msg)
-                pass
-
-        if receive_sample:
-            # this is an escalation from the sample, do not escalate sample
-            pass
-        elif action_id in ('receive'):
-            # analysisrequest was received, and must delegate to sample
-            sample = self.getSample()
-            review_state = wf_tool.getInfoFor(sample, 'review_state', '')
-            if review_state != 'due':
-                from zLOG import LOG, WARNING; LOG('bika', WARNING,
-                'Escalate workflow action sample receive. ',
-                'sample %s in state: %s' % (self.getId(), review_state))
-                return
-            try:
-                wf_tool.doActionFor(sample, action_id)
-                sample.reindexObject()
-            except WorkflowException, msg:
-                from zLOG import LOG; LOG('INFO', 0, '', msg)
-                pass
-
-            #sample._delegateWorkflowAction('receive')
-
-        del self._delegating_workflow_action
-
-    def _escalateWorkflowAction(self):
-        """ if all analyses have transitioned to next state then our
-            state must change too
-        """
-        if getattr(self, '_delegating_workflow_action', None):
-            return
-
-
-        self._escalating_workflow_action = 1
-        wf_tool = self.portal_workflow
-        analyses_states = {}
-        for analysis in self.getAnalyses():
-            review_state = wf_tool.getInfoFor(analysis, 'review_state', '')
-            analyses_states[review_state] = 1
-
-        # build a state to transition map
-        transitions = wf_tool.getTransitionsFor(self)
-        workflow = wf_tool.getWorkflowById('bika_analysis_workflow')
-        # make a map of transitions
-        transition_map = {}
-        for t in transitions:
-            # 'import' is not a transition made by users
-            if t['id'] == 'import':
-                continue
-            transition = workflow.transitions.get(t['id'])
-            transition_map[transition.new_state_id] = transition.id
-
-        ar_state = wf_tool.getInfoFor(self, 'review_state', '')
-        # change the AR to the lowest possible state
-        for state_id in ('sample_due', 'sample_received', 'assigned',
-             'to_be_verified', 'verified', 'published'):
-            if analyses_states.has_key(state_id):
-                if ar_state == state_id:
-                    break
-                elif transition_map.has_key(state_id):
-                    wf_tool.doActionFor(self, transition_map.get(state_id))
-                    break
-
-        if getattr(self, '_escalating_workflow_action', None):
-            del self._escalating_workflow_action
-        else:
-            from zLOG import LOG, WARNING; LOG('bika', WARNING,
-            'Escalate workflow action',
-            'No _escalateWorkflowAction found on %s' % self.getId())
+##    def workflow_script_republish(self, state_info):
+##        """ republish analysis request """
+##        if self.REQUEST.has_key('PUBLISH_BATCH'):
+##            return
+##
+##        contact = self.getContact()
+##        analysis_requests = [self]
+##        self.publish_analysis_requests(contact, analysis_requests, None)
+##
+##        # cc contacts
+##        for cc_contact in self.getCCContact():
+##            self.publish_analysis_requests(cc_contact, analysis_requests, None)
+##        # cc emails
+##        cc_emails = self.getCCEmails()
+##        if cc_emails:
+##            self.publish_analysis_requests(None, analysis_requests, cc_emails)
+##
+##    def _delegateWorkflowAction(self, action_id):
+##        """ if analysisrequest is 'received', that actually means that
+##            the sample is received. Delegate received status to sample,
+##            which will delegate it to all other linked analysisrequests
+##        """
+##        if getattr(self, '_escalating_workflow_action', None):
+##            return
+##        if action_id == 'receive_sample':
+##            receive_sample = True
+##            action_id = 'receive'
+##        else:
+##            receive_sample = False
+##
+##        self._delegating_workflow_action = 1
+##        wf_tool = self.portal_workflow
+##        for analysis in self.getAnalyses():
+##            review_state = wf_tool.getInfoFor(analysis, 'review_state', '')
+##            # 'not requested' analyses stay unaffected until
+##            # individually verified
+##            if review_state == 'not_requested':
+##                continue
+##            try:
+##                wf_tool.doActionFor(analysis, action_id)
+##                analysis.reindexObject()
+##            except WorkflowException, msg:
+##                from zLOG import LOG; LOG('INFO', 0, '', msg)
+##                pass
+##
+##        if receive_sample:
+##            # this is an escalation from the sample, do not escalate sample
+##            pass
+##        elif action_id in ('receive'):
+##            # analysisrequest was received, and must delegate to sample
+##            sample = self.getSample()
+##            review_state = wf_tool.getInfoFor(sample, 'review_state', '')
+##            if review_state != 'due':
+##                from zLOG import LOG, WARNING; LOG('bika', WARNING,
+##                'Escalate workflow action sample receive. ',
+##                'sample %s in state: %s' % (self.getId(), review_state))
+##                return
+##            try:
+##                wf_tool.doActionFor(sample, action_id)
+##                sample.reindexObject()
+##            except WorkflowException, msg:
+##                from zLOG import LOG; LOG('INFO', 0, '', msg)
+##                pass
+##
+##            #sample._delegateWorkflowAction('receive')
+##
+##        del self._delegating_workflow_action
+##
+##    def _escalateWorkflowAction(self):
+##        """ if all analyses have transitioned to next state then our
+##            state must change too
+##        """
+##        if getattr(self, '_delegating_workflow_action', None):
+##            return
+##
+##
+##        self._escalating_workflow_action = 1
+##        wf_tool = self.portal_workflow
+##        analyses_states = {}
+##        for analysis in self.getAnalyses():
+##            review_state = wf_tool.getInfoFor(analysis, 'review_state', '')
+##            analyses_states[review_state] = 1
+##
+##        # build a state to transition map
+##        transitions = wf_tool.getTransitionsFor(self)
+##        workflow = wf_tool.getWorkflowById('bika_analysis_workflow')
+##        # make a map of transitions
+##        transition_map = {}
+##        for t in transitions:
+##            # 'import' is not a transition made by users
+##            if t['id'] == 'import':
+##                continue
+##            transition = workflow.transitions.get(t['id'])
+##            transition_map[transition.new_state_id] = transition.id
+##
+##        ar_state = wf_tool.getInfoFor(self, 'review_state', '')
+##        # change the AR to the lowest possible state
+##        for state_id in ('sample_due', 'sample_received', 'assigned',
+##             'to_be_verified', 'verified', 'published'):
+##            if analyses_states.has_key(state_id):
+##                if ar_state == state_id:
+##                    break
+##                elif transition_map.has_key(state_id):
+##                    wf_tool.doActionFor(self, transition_map.get(state_id))
+##                    break
+##
+##        if getattr(self, '_escalating_workflow_action', None):
+##            del self._escalating_workflow_action
+##        else:
+##            from zLOG import LOG, WARNING; LOG('bika', WARNING,
+##            'Escalate workflow action',
+##            'No _escalateWorkflowAction found on %s' % self.getId())
 
     security.declarePublic('current_date')
     def current_date(self):

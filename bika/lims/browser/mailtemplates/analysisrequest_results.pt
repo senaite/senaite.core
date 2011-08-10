@@ -23,7 +23,7 @@
 <style>
 body {
     font-family: Arial, "Lucida Grande", Verdana, Lucida, Helvetica, sans-serif;
-    font-size: 10;
+    font-size: 70%;
     background-color: White;
     color: Black;
     margin: 1em;
@@ -92,7 +92,10 @@ h1, h2, h3, h4, h5, h6 {
     padding: 0em 1em 0em 1em;
     text-align: left;
 }
-
+.analysisrequest th {
+    background:transparent;
+    font-weight:bold;
+}
 .analysisrequest .top {
     border-left: 1px solid #636321;
     border-top: 1px solid #636321; ! important;
@@ -168,18 +171,21 @@ h1, h2, h3, h4, h5, h6 {
 }
 .category  {
     text-align: left ! important;
-    background: #B6C0D1;;
+    background: #EEEEEE;
+}
+.category td {
+   border: 0;
 }
 .out_of_range {
-    color: red;;
+    color: red;
 }
 .retested {
-    color: red;;
-    font-size: 80%;;
+    color: red;
+    font-size: 80%;
     font-weight: normal;
 }
 .discreeter {
-    color: &dtml-discreetColor;;
+    color: #AAA;
     font-size: 80%;;
     font-weight: normal;
 }
@@ -217,7 +223,7 @@ h1, h2, h3, h4, h5, h6 {
         <span tal:content="contact/getFullname"/>
         <span tal:content="client/Title"/>
         <span tal:define="address python:contact_address.get('address','')"
-          tal:content="structure python:modules['Products.PythonScripts.standard'].newline_to_br(address)"/>
+          tal:content="structure python:'<br/>' + modules['Products.PythonScripts.standard'].newline_to_br(address)"/>
         <div>
           <span tal:content="python:contact_address.get('city','')"/>,
           <span tal:content="python:contact_address.get('state','')"/>,
@@ -229,7 +235,7 @@ h1, h2, h3, h4, h5, h6 {
       <td>
         <span tal:content="laboratory/Title"/>
         <span tal:define="address python:lab_address.get('address','')"
-          tal:content="structure python:modules['Products.PythonScripts.standard'].newline_to_br(address)"/>
+          tal:content="structure python:'<br/>' + modules['Products.PythonScripts.standard'].newline_to_br(address)"/>
         <div>
           <span tal:content="python:lab_address.get('city','')"/>,
           <span tal:content="python:lab_address.get('state','')"/>,
@@ -373,17 +379,12 @@ h1, h2, h3, h4, h5, h6 {
       </tal:arcount>
 
       <tal:poc tal:repeat="poc python:view.services.keys()">
-        <tr class="pointofcapture">
-          <th
-            tal:attributes="colspan python:columns + 1"
-            tal:content="poc"/>
-        </tr>
 
       <tal:category tal:repeat="cat python:view.services[poc].keys()">
         <tr class="category">
           <th
             tal:attributes="colspan python:columns + 1"
-            tal:content="cat"/>
+            tal:content="string:${poc} - ${cat}"/>
         </tr>
 
       <tal:service tal:repeat="service python:view.services[poc][cat]">
@@ -414,7 +415,7 @@ h1, h2, h3, h4, h5, h6 {
                   tal:attributes="class result_class">
                   <span tal:content="result">10.00</span>
                   <span tal:content="string:${analysis/Unit}"
-                    tal:condition="python:analysis.Unit"/>
+                    tal:condition="python:analysis_found and analysis.Unit"/>
                   <img tal:condition="python:not in_range"
                     tal:attributes="src string:${portal/absolute_url}/++resource++bika.lims.images/exclamation.png">
                   <span tal:content="string:[+/- $uncertainty]"
@@ -482,7 +483,7 @@ h1, h2, h3, h4, h5, h6 {
           </tal:attachment>
         </td>
       </tr>
-      <tal:analyses tal:repeat="analysis ar/getAnalyses">
+      <tal:analyses tal:repeat="analysis python:ar.getAnalyses(full_objects=True)">
         <tal:attachments tal:define="attachments analysis/getAttachment">
           <tal:attachment tal:repeat="attachment attachments">
             <tr>

@@ -22,11 +22,6 @@ from bika.lims.interfaces import IAnalysis
 from decimal import Decimal
 from zope.interface import implements
 
-#try:
-#    from bika.limsCalendar.config import TOOL_NAME as BIKA_CALENDAR_TOOL # XXX
-#except:
-#    pass
-
 schema = BikaSchema.copy() + Schema((
     ReferenceField('Service',
         required = 1,
@@ -40,7 +35,7 @@ schema = BikaSchema.copy() + Schema((
         )
     ),
     ComputedField('ServiceUID',
-        index = 'FieldIndex',
+        index = 'FieldIndex:brains',
         expression = 'context.getService().UID()',
     ),
     ComputedField('Category',
@@ -179,29 +174,38 @@ class Analysis(BaseContent):
     def getDependents(self):
         """ Return a list of analyses who depend on us
             to calculate their result
+            XXX This should recurse
         """
+        rc = getToolByName(self, 'reference_catalog')
         dependents = []
         service = self.getService()
-        for sibling in self.aq_parent.getAnalyses():
+        # XXX why does getAnalyses here return a brain without getServiceUID()?
+        for sibling in self.aq_parent.getAnalyses(full_objects=True):
             if sibling == self:
                 continue
-            calculation = sibling.getService().getCalculation()
+            service = rc.lookupObject(sibling.getServiceUID())
+            calculation = service.getCalculation()
             if not calculation:
                 continue
-            if service in calculation.getDependentServices():
+            depservices = calculation.getDependentServices()
+            if self.getService() in depservices:
                 dependents.append(sibling)
+            for depservice in depservices:
+                keyword = depservice.getKeyword()
+                dependents.append(self.aq_parent[keyword])
         return dependents
 
     def getDependencies(self):
         """ Return a list of analyses who we depend on
             to calculate our result.
         """
-        siblings = self.aq_parent.getAnalyses()
+        # XXX why does getAnalyses here return a brain without getServiceUID()?
+        siblings = self.aq_parent.getAnalyses(full_objects=True)
         calculation = self.getService().getCalculation()
         if not calculation:
             return []
-        deps = calculation.getDependentServices()
-        return [a for a in siblings if a.getService() in deps]
+        deps = [d.UID() for d in calculation.getDependentServices()]
+        return [a for a in siblings if a.getServiceUID() in deps]
 
 
     def result_in_range(self, result=None, specification="lab"):
@@ -286,158 +290,6 @@ class Analysis(BaseContent):
 ##            else:
 ##                result_class = 'out_of_range'
 
-
-    # workflow methods
-    #
-##    def workflow_script_receive(self, state_info):
-##        """ receive sample """
-##        if self.REQUEST.has_key('suppress_escalation'):
-##            return
-##        """ set the max hours allowed """
-##        service = self.getService()
-##        maxhours = service.getMaxHoursAllowed()
-##        if not maxhours:
-##            maxhours = 0
-##
-##        self.setMaxHoursAllowed(maxhours)
-##        """ set the due date """
-##        starttime = self.aq_parent.getDateReceived()
-##        if starttime is None:
-##            return
-##
-##        """ default to old calc in case no calendars  """
-##        """ still need a due time for selection to ws """
-##        duetime = starttime + maxhours / 24.0
-##
-##        if maxhours:
-##            maxminutes = maxhours * 60
-##            try:
-##                bct = getToolByName(self, BIKA_CALENDAR_TOOL)
-##            except:
-##                bct = None
-##            if bct:
-##                duetime = bct.getDurationAdded(starttime, maxminutes)
-##
-##        self.setDueDate(duetime)
-##        self.reindexObject()
-##
-##        self._escalateWorkflowAction('receive')
-
-##    def workflow_script_assign(self, state_info):
-##        """ submit sample """
-##        self._escalateWorkflowAction('assign')
-##        self._assigned_to_worksheet = True
-
-##    def workflow_script_submit(self, state_info):
-##        """ submit sample """
-##        self._escalateWorkflowDependancies('submit')
-##        self._escalateWorkflowAction('submit')
-
-##    def workflow_script_verify(self, state_info):
-##        """ verify sample """
-##        self._escalateWorkflowDependancies('verify')
-##        self._escalateWorkflowAction('verify')
-
-    def workflow_script_publish(self, state_info):
-        """ publish analysis """
-        starttime = self.aq_parent.getDateReceived()
-        endtime = DateTime()
-        self.setDateAnalysisPublished(endtime)
-
-        service = self.getService()
-        maxhours = service.getMaxHoursAllowed()
-
-        """ set the analysis duration value to default values """
-        """ in case of no calendars or max hours """
-        if maxhours:
-            duration = (endtime - starttime) * 24 * 60
-            earliness = (maxhours * 60) - duration
-        else:
-            earliness = 0
-            duration = 0
-        try:
-            bct = getToolByName(self, BIKA_CALENDAR_TOOL)
-        except:
-            bct = None
-        if bct:
-            duration = bct.getDuration(starttime, endtime)
-            """ set the earliness of the analysis """
-            """ will be negative if late """
-            if self.getDueDate():
-                earliness = bct.getDuration(endtime, self.getDueDate())
-
-        self.setDuration(duration)
-        self.setEarliness(earliness)
-        self.reindexObject()
-        self._escalateWorkflowAction('publish')
-
-##    def workflow_script_retract(self, state_info):
-##        """ retract analysis """
-##        self._escalateWorkflowDependancies('retract')
-##        self._escalateWorkflowAction('retract')
-##        if self._assigned_to_worksheet:
-##            self.portal_workflow.doActionFor(self, 'assign')
-##            self.reindexObject()
-##            self._escalateWorkflowDependancies('assign')
-##            self._escalateWorkflowAction('assign')
-
-    def _escalateWorkflowAction(self, action_id):
-        """ notify analysis request that our status changed """
-        self.aq_parent._escalateWorkflowAction()
-        # if we are assigned to a worksheet we need to let it know that
-        # our state change under certain circumstances.
-        if action_id not in ('assign', 'retract', 'submit', 'verify'):
-            return
-        tool = getToolByName(self, REFERENCE_CATALOG)
-        uids = [uid for uid in
-                tool.getBackReferences(self, 'WorksheetAnalysis')]
-        if len(uids) == 1:
-            reference = uids[0]
-            worksheet = tool.lookupObject(reference.sourceUID)
-            worksheet._escalateWorkflowAction()
-
-    def _escalateWorkflowDependancies(self, action_id):
-        """ notify analysis request that our status changed """
-        # if this analysis affects other analysis results, escalate
-        # the workflow change appropriately
-        if not self._affects_other_analysis:
-            return
-        if action_id not in ('retract', 'submit', 'verify'):
-            return
-        if action_id == 'submit':
-            ready_states = ['to_be_verified', 'verified', 'published']
-        if action_id == 'verify':
-            ready_states = ['verified', 'published']
-        wf_tool = self.portal_workflow
-        tool = getToolByName(self, REFERENCE_CATALOG)
-        parents = [uid for uid in
-            tool.getBackReferences(self, 'AnalysisAnalysis')]
-        for p in parents:
-            parent = tool.lookupObject(p.sourceUID)
-            parent_state = wf_tool.getInfoFor(parent, 'review_state', '')
-            if action_id == 'retract':
-                try:
-                    wf_tool.doActionFor(parent, 'retract')
-                    parent.reindexObject()
-                except WorkflowException:
-                    pass
-
-            if action_id in ['submit', 'verify']:
-                if parent_state in ready_states:
-                    continue
-
-                all_ready = True
-                for child in parent.getDependantAnalysis():
-                    review_state = wf_tool.getInfoFor(child, 'review_state', '')
-                    if review_state not in ready_states:
-                        all_ready = False
-                        break
-                if all_ready:
-                    try:
-                        wf_tool.doActionFor(parent, action_id)
-                        parent.reindexObject()
-                    except WorkflowException:
-                        pass
 
     security.declarePublic('getWorksheet')
     def getWorksheet(self):

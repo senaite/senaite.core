@@ -188,28 +188,26 @@ class AnalysisRequestViewView(BrowserView):
         ##
         ##title=Get requested analyses
         ##
-        wf_tool = getToolByName(self.context, 'portal_workflow')
+        rc = getToolByName(self.context, 'reference_catalog')
         result = []
         cats = {}
         for analysis in self.context.getAnalyses():
-            if wf_tool.getInfoFor(analysis, 'review_state', '') == 'not_requested':
+            if analysis.review_state == 'not_requested':
                 continue
-            if not cats.has_key(analysis.getService().getCategoryName()):
-                cats[analysis.getService().getCategoryName()] = {}
-            analyses = cats[analysis.getService().getCategoryName()]
-            analyses[analysis.Title()] = analysis
-            cats[analysis.getService().getCategoryName()] = analyses
+            service = rc.lookupObject(analysis.getServiceUID())
+            category_name = service.getCategoryName()
+            if not category_name in cats:
+                cats[category_name] = {}
+            cats[category_name][analysis.Title()] = analysis
 
         cat_keys = cats.keys()
         cat_keys.sort(lambda x, y:cmp(x.lower(), y.lower()))
-
         for cat_key in cat_keys:
             analyses = cats[cat_key]
             analysis_keys = analyses.keys()
             analysis_keys.sort(lambda x, y:cmp(x.lower(), y.lower()))
             for analysis_key in analysis_keys:
                 result.append(analyses[analysis_key])
-
         return result
 
     def get_analyses_not_requested(self):
@@ -220,7 +218,7 @@ class AnalysisRequestViewView(BrowserView):
         wf_tool = getToolByName(self.context, 'portal_workflow')
         result = []
         for analysis in self.context.getAnalyses():
-            if wf_tool.getInfoFor(analysis, 'review_state', '') == 'not_requested':
+            if analysis.review_state == 'not_requested':
                 result.append(analysis)
 
         return result
@@ -277,8 +275,9 @@ class AnalysisRequestViewView(BrowserView):
 
         actions = {}
         for analysis in self.context.getAnalyses():
-            review_state = wf_tool.getInfoFor(analysis, 'review_state', '')
-            if review_state in ('not_requested', 'to_be_verified', 'verified'):
+            if analysis.review_state in \
+               ('not_requested', 'to_be_verified', 'verified'):
+                analysis = analysis.getObject()
                 a = actions_tool.listFilteredActionsFor(analysis)
                 for action in a['workflow']:
                     if actions.has_key(action['id']):
@@ -523,21 +522,23 @@ class AnalysisRequestSelectSampleView(BikaListingView):
 
     def FieldAnalyses(self, sample):
         """ Returns a dictionary of lists reflecting Field Analyses
-            linked to this sample.
-            For secondary ARs field analyses and their values are
-            read/written from the first AR.
+            linked to this sample (meaning field analyses on this sample's
+            first AR. For secondary ARs field analyses and their values are
+            read/written from the first AR.)
             {category_uid: [service_uid, service_uid], ... }
         """
+        rc = getToolByName('reference_catalog')
         res = {}
         ars = sample.getAnalysisRequests()
         if len(ars) > 0:
             for analysis in ars[0].getAnalyses():
-                if analysis.getService().getPointOfCapture() == 'field':
-                    catuid = analysis.getService().getCategoryUID()
+                service = rc.lookupObject(analysis.getServiceUID())
+                if service.getPointOfCapture() == 'field':
+                    catuid = service.getCategoryUID()
                     if res.has_key(catuid):
-                        res[catuid].append(analysis.getService().UID())
+                        res[catuid].append(service.UID())
                     else:
-                        res[catuid] = [analysis.getService().UID()]
+                        res[catuid] = [service.UID()]
         return res
 
 def getServiceDependencies(context, service_uid):
@@ -859,7 +860,7 @@ class AJAXAnalysisRequestSubmit():
                     analyses = ar.getAnalyses()
                     services_array = []
                     for a in analyses:
-                        services_array.append(a.getService().UID())
+                        services_array.append(a.getServiceUID())
                     profile.setService(services_array)
                     profile.reindexObject()
 

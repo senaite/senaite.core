@@ -27,10 +27,11 @@ class ARAnalysesField(ObjectField):
     security.declarePrivate('get')
     def get(self, instance, **kwargs):
         """ get() returns the list of contained analyses
-            passing full_objects = false in kwargs returns list of brains
+            By default, return a list of catalog brains.
+            If you want objects, pass full_objects = True
             other kwargs are passed to portal_catalog
         """
-        full_objects = True
+        full_objects = False
         if 'full_objects' in kwargs:
             full_objects = kwargs['full_objects']
             del kwargs['full_objects']

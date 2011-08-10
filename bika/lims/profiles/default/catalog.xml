@@ -260,6 +260,7 @@
  <column value="getSampleID"/>
  <column value="getSamplePointTitle"/>
  <column value="getSampleTypeTitle"/>
+ <column value="getServiceUID"/>
  <column value="getStatus"/>
  <column value="getTextTitle"/>
  <column value="getCategoryUID"/>
