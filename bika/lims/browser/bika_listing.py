@@ -440,9 +440,11 @@ class Table(tableview.Table):
         # filter on possible review_state[x]['transitions']
         transitions = []
         for i, item in enumerate(self.items):
+            if not item.has_key('obj'): continue
             obj = hasattr(item['obj'], 'getObject') and \
                 item['obj'].getObject() or \
                 item['obj']
+
             for t in workflow.getTransitionsFor(obj):
                 if t not in transitions:
                     if 'transitions' not in review_state or\
