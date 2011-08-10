@@ -9,10 +9,11 @@ from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.folder.folder import ATFolderSchema, ATFolder
 from zope.interface.declarations import implements
 from zope.interface import alsoProvides
+from operator import itemgetter
 
 class AnalysisCategoriesView(BikaListingView):
     implements(IFolderContentsView)
-    contentFilter = {'portal_type': 'AnalysisCategory'}
+    contentFilter = {'portal_type': 'AnalysisCategory', 'sort_on': 'sortable_title'}
     content_add_actions = {_('Analysis Category'): "createObject?type_name=AnalysisCategory"}
     title = _("Analysis Categories")
     description = ""
@@ -24,28 +25,34 @@ class AnalysisCategoriesView(BikaListingView):
     pagesize = 20
 
     columns = {
-               'title': {'title': _('Category')},
+               'Title': {'title': _('Category')},
                'Description': {'title': _('Description')},
                'Department': {'title': _('Department')},
               }
     review_states = [
                     {'title': _('All'), 'id':'all',
-                     'columns': ['title', 'Description', 'Department'],
+                     'columns': ['Title', 'Description', 'Department'],
                      'buttons':[{'cssclass': 'context',
-                                 'title': _('Delete'),
+                                 'Title': _('Delete'),
                                  'url': 'folder_delete:method'}]},
                     ]
 
     def folderitems(self):
         items = BikaListingView.folderitems(self)
+        out = []
         for x in range(len(items)):
             if not items[x].has_key('obj'): continue
             obj = items[x]['obj'].getObject()
             items[x]['Description'] = obj.Description()
             items[x]['Department'] = obj.getDepartment().Title()
-            items[x]['replace']['title'] = "<a href='%s'>%s</a>" % \
-               (items[x]['url'], items[x]['title'])
-        return items
+            items[x]['replace']['Title'] = "<a href='%s'>%s</a>" % \
+               (items[x]['url'], items[x]['Title'])
+            out.append(items[x])
+        out = sorted(out, key=itemgetter('Title'))
+        for i in range(len(out)):
+            out[i]['table_row_class'] = ((i + 1) % 2 == 0) and "draggable even" or "draggable odd"  
+
+        return out
 
 schema = ATFolderSchema.copy()
 class AnalysisCategories(ATFolder):

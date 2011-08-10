@@ -14,10 +14,11 @@ from plone.app.folder.folder import ATFolder, ATFolderSchema
 from zope.interface.declarations import implements
 from Products.CMFCore.utils import getToolByName
 import json
+from operator import itemgetter
 
 class SampleTypesView(BikaListingView):
     implements(IFolderContentsView)
-    contentFilter = {'portal_type': 'SampleType'}
+    contentFilter = {'portal_type': 'SampleType', 'sort_on': 'sortable_title'}
     content_add_actions = {_('Sample Type'): "createObject?type_name=SampleType"}
     title = _("Sample Types")
     description = ""
@@ -29,27 +30,33 @@ class SampleTypesView(BikaListingView):
     pagesize = 20
 
     columns = {
-               'title': {'title': _('Title'), 'icon':'sampletype.png'},
+               'Title': {'title': _('Sample Type'), 'icon':'sampletype.png'},
                'Description': {'title': _('Description')},
               }
     review_states = [
                     {'title': _('All'), 'id':'all',
-                     'columns': ['title', 'Description'],
+                     'columns': ['Title', 'Description'],
                      'buttons':[{'cssclass': 'context',
-                                 'title': _('Delete'),
+                                 'Title': _('Delete'),
                                  'url': 'folder_delete:method'}]},
                     ]
 
     def folderitems(self):
         items = BikaListingView.folderitems(self)
+        out = []
         for x in range(len(items)):
             if not items[x].has_key('obj'): continue
             obj = items[x]['obj'].getObject()
             items[x]['Description'] = obj.Description()
-            items[x]['replace']['title'] = "<a href='%s'>%s</a>" % \
-                 (items[x]['url'], items[x]['title'])
+            items[x]['replace']['Title'] = "<a href='%s'>%s</a>" % \
+                 (items[x]['url'], items[x]['Title'])
+            out.append(items[x])
 
-        return items
+
+        out = sorted(out, key=itemgetter('Title'))
+        for i in range(len(out)):
+            out[i]['table_row_class'] = ((i + 1) % 2 == 0) and "draggable even" or "draggable odd"
+        return out
 
 schema = ATFolderSchema.copy()
 

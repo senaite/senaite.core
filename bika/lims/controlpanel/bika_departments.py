@@ -10,10 +10,11 @@ from bika.lims.interfaces import IDepartments
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.folder.folder import ATFolder, ATFolderSchema
 from zope.interface.declarations import implements
+from operator import itemgetter
 
 class DepartmentsView(BikaListingView):
     implements(IFolderContentsView)
-    contentFilter = {'portal_type': 'Department'}
+    contentFilter = {'portal_type': 'Department', 'sort_on': 'sortable_title'}
     content_add_actions = {_('Department'): "createObject?type_name=Department"}
     title = _("Lab Departments")
     description = ""
@@ -25,7 +26,7 @@ class DepartmentsView(BikaListingView):
     pagesize = 20
 
     columns = {
-               'title': {'title': _('Title')},
+               'Title': {'title': _('Department')},
                'Description': {'title': _('Description')},
                'Manager': {'title': _('Manager')},
                'ManagerPhone': {'title': _('Manager Phone')},
@@ -33,14 +34,15 @@ class DepartmentsView(BikaListingView):
               }
     review_states = [
                     {'title': _('All'), 'id':'all',
-                     'columns': ['title', 'Description', 'Manager', 'ManagerPhone', 'ManagerEmail'],
+                     'columns': ['Title', 'Description', 'Manager', 'ManagerPhone', 'ManagerEmail'],
                      'buttons':[{'cssclass': 'context',
-                                 'title': _('Delete'),
+                                 'Title': _('Delete'),
                                  'url': 'folder_delete:method'}]},
                     ]
 
     def folderitems(self):
         items = BikaListingView.folderitems(self)
+        out = []
         for x in range(len(items)):
             if not items[x].has_key('obj'): continue
             obj = items[x]['obj'].getObject()
@@ -53,15 +55,20 @@ class DepartmentsView(BikaListingView):
                 items[x]['ManagerPhone'] = ""
                 items[x]['ManagerEmail'] = ""
 
-            items[x]['replace']['title'] = "<a href='%s'>%s</a>" % \
-                 (items[x]['url'], items[x]['title'])
+            items[x]['replace']['Title'] = "<a href='%s'>%s</a>" % \
+                 (items[x]['url'], items[x]['Title'])
 
             if items[x]['ManagerEmail']:
                 items[x]['replace']['ManagerEmail'] = "<a href='%s'>%s</a>"%\
                      ('mailto:%s' % items[x]['ManagerEmail'],
                       items[x]['ManagerEmail'])
 
-        return items
+            out.append(items[x])
+
+        out = sorted(out, key=itemgetter('Title'))
+        for i in range(len(out)):
+            out[i]['table_row_class'] = ((i + 1) % 2 == 0) and "draggable even" or "draggable odd"
+        return out
 
 schema = ATFolderSchema.copy()
 class Departments(ATFolder):

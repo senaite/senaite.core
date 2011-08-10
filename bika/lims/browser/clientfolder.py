@@ -7,7 +7,7 @@ from zope.interface import implements
 
 class ClientFolderContentsView(BikaListingView):
     implements(IFolderContentsView)
-    contentFilter = {'portal_type': 'Client'}
+    contentFilter = {'portal_type': 'Client', 'sort_on': 'sortable_title'}
     content_add_actions = {_('Client'): "createObject?type_name=Client"}
     title = _("Clients")
     description = ""

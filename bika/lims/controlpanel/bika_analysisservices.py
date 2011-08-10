@@ -14,7 +14,7 @@ from operator import itemgetter
 
 class AnalysisServicesView(BikaListingView):
     implements(IFolderContentsView)
-    contentFilter = {'portal_type': 'AnalysisService'}
+    contentFilter = {'portal_type': 'AnalysisService', 'sort_on': 'sortable_title'}
     content_add_actions = {_('Analysis Service'): "createObject?type_name=AnalysisService"}
     title = _("Analysis Services")
     show_editable_border = False
@@ -22,10 +22,10 @@ class AnalysisServicesView(BikaListingView):
     show_sort_column = False
     show_select_row = False
     show_select_column = True
-    pagesize = 50
+    pagesize = 20
 
     columns = {
-               'Title': {'title': _('Title')},
+               'Title': {'title': _('Service')},
                'getKeyword': {'title': _('Keyword')},
                'CategoryName': {'title': _('Category')},
                'Unit': {'title': _('Unit')},
@@ -49,12 +49,6 @@ class AnalysisServicesView(BikaListingView):
                     ]
 
         
-    #          'ReportDryMatter': {'title': _('Dry')},
-    #          'AttachmentOption': {'title': _('Attachments')},
-    #       items[x]['ReportDryMatter'] = obj.ReportDryMatter
-    #       items[x]['AttachmentOption'] = \
-    #           obj.Schema()['AttachmentOption'].Vocabulary().getValue(obj.AttachmentOption)
-
     def folderitems(self):
         items = BikaListingView.folderitems(self)
         out = []
@@ -84,6 +78,7 @@ class AnalysisServicesView(BikaListingView):
             if after_icons:
                 items[x]['after']['Title'] = after_icons
             out.append(items[x])
+
         out = sorted(out, key=itemgetter('Title'))
         for i in range(len(out)):
             out[i]['table_row_class'] = ((i + 1) % 2 == 0) and "draggable even" or "draggable odd"

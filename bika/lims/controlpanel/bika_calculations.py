@@ -12,10 +12,11 @@ from bika.lims.interfaces import ICalculations
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.folder.folder import ATFolder, ATFolderSchema
 from zope.interface.declarations import implements
+from operator import itemgetter
 
 class CalculationsView(BikaListingView):
     implements(IFolderContentsView)
-    contentFilter = {'portal_type': 'Calculation'}
+    contentFilter = {'portal_type': 'Calculation', 'sort_on': 'sortable_title'}
     content_add_actions = {_('Calculation Type'): "createObject?type_name=Calculation"}
     title = _("Calculations")
     description = ""
@@ -27,28 +28,32 @@ class CalculationsView(BikaListingView):
     pagesize = 20
 
     columns = {
-               'title': {'title': _('Title')},
+               'Title': {'title': _('Calculation')},
                'Description': {'title': _('Description')},
               }
     review_states = [
                     {'title': _('All'), 'id':'all',
-                     'columns': ['title', 'Description'],
+                     'columns': ['Title', 'Description'],
                      'buttons':[{'cssclass': 'context',
-                                 'title': _('Delete'),
+                                 'Title': _('Delete'),
                                  'url': 'folder_delete:method'}]},
                     ]
 
     def folderitems(self):
         items = BikaListingView.folderitems(self)
+        out = []
         for x in range(len(items)):
             if not items[x].has_key('obj'): continue
             obj = items[x]['obj'].getObject()
-            items[x]['replace']['title'] = "<a href='%s'>%s</a>" % \
-                 (items[x]['url'], items[x]['title'])
+            items[x]['replace']['Title'] = "<a href='%s'>%s</a>" % \
+                 (items[x]['url'], items[x]['Title'])
             items[x]['Description'] = obj.Description()
+            out.append(items[x])
 
-        return items
-
+        out = sorted(out, key=itemgetter('Title'))
+        for i in range(len(out)):
+            out[i]['table_row_class'] = ((i + 1) % 2 == 0) and "draggable even" or "draggable odd"
+        return out
 schema = ATFolderSchema.copy()
 class Calculations(ATFolder):
     implements(ICalculations)

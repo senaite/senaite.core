@@ -2,8 +2,6 @@ from AccessControl import ClassSecurityInfo
 from Products.ATContentTypes.content import schemata
 from Products.Archetypes import atapi
 from Products.Archetypes.ArchetypeTool import registerType
-from Products.CMFCore import permissions
-from Products.Five.browser import BrowserView
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.config import PROJECTNAME
 from bika.lims import bikaMessageFactory as _
@@ -12,10 +10,11 @@ from bika.lims.interfaces import IAttachmentTypes
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.folder.folder import ATFolder, ATFolderSchema
 from zope.interface.declarations import implements
+from operator import itemgetter
 
 class AttachmentTypesView(BikaListingView):
     implements(IFolderContentsView)
-    contentFilter = {'portal_type': 'AttachmentType'}
+    contentFilter = {'portal_type': 'AttachmentType', 'sort_on': 'sortable_title'}
     content_add_actions = {_('Attachment Type'): "createObject?type_name=AttachmentType"}
     title = _("Attachment Types")
     show_editable_border = False
@@ -26,26 +25,32 @@ class AttachmentTypesView(BikaListingView):
     pagesize = 20
 
     columns = {
-               'title': {'title': _('Title')},
+               'Title': {'title': _('Attachment Type')},
                'Description': {'title': _('Description')},
               }
     review_states = [
                     {'title': _('All'), 'id':'all',
-                     'columns': ['title', 'Description'],
+                     'columns': ['Title', 'Description'],
                      'buttons':[{'cssclass': 'context',
-                                 'title': _('Delete'),
+                                 'Title': _('Delete'),
                                  'url': 'folder_delete:method'}]},
                     ]
 
     def folderitems(self):
         items = BikaListingView.folderitems(self)
+        out = []
         for x in range(len(items)):
             if not items[x].has_key('obj'): continue
-            items[x]['replace']['title'] = "<a href='%s'>%s</a>" % \
-                 (items[x]['url'], items[x]['title'])
+            obj = items[x]['obj'].getObject()
+            items[x]['replace']['Title'] = "<a href='%s'>%s</a>" % \
+                 (items[x]['url'], items[x]['Title'])
             items[x]['Description'] = obj.Description()
+            out.append(items[x])
 
-        return items
+        out = sorted(out, key=itemgetter('Title'))
+        for i in range(len(out)):
+            out[i]['table_row_class'] = ((i + 1) % 2 == 0) and "draggable even" or "draggable odd"
+        return out
 
 schema = ATFolderSchema.copy()
 class AttachmentTypes(ATFolder):

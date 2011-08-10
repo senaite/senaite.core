@@ -9,12 +9,13 @@ from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.folder.folder import ATFolder, ATFolderSchema
 from bika.lims.interfaces import IAnalysisSpecs
 from zope.interface.declarations import implements
+from operator import itemgetter
 
 #XXX multiple additions in one add_form.
 
 class AnalysisSpecsView(BikaListingView):
     implements(IFolderContentsView)
-    contentFilter = {'portal_type': 'AnalysisSpec'}
+    contentFilter = {'portal_type': 'AnalysisSpec', 'sort_on': 'sortable_title'}
     content_add_actions = {_('Analysis Specification'): "createObject?type_name=AnalysisSpec"}
     title = _("Analysis Specs")
     description = _("Set up the laboratory analysis service results specifications")
@@ -36,6 +37,7 @@ class AnalysisSpecsView(BikaListingView):
 
     def folderitems(self):
         items = BikaListingView.folderitems(self)
+        out = []
         for x in range(len(items)):
             if not items[x].has_key('obj'): continue
             obj = items[x]['obj'].getObject()
@@ -43,7 +45,12 @@ class AnalysisSpecsView(BikaListingView):
             items[x]['replace']['getSampleType'] = "<a href='%s'>%s</a>" % \
                  (items[x]['url'], items[x]['getSampleType'])
 
-        return items
+            out.append(items[x])
+        out = sorted(out, key=itemgetter('Title'))
+        for i in range(len(out)):
+            out[i]['table_row_class'] = ((i + 1) % 2 == 0) and "draggable even" or "draggable odd"  
+
+        return out
 
 schema = ATFolderSchema.copy()
 class AnalysisSpecs(ATFolder):

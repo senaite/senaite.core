@@ -130,6 +130,17 @@ class Person(BaseFolder):
         else:
             return ''
 
+    def getListingname(self):
+        """ return Person's Fullname as Surname, Firstname """
+        fn = self.getFirstname()
+        sn = self.getSurname()
+        if fn and sn:
+            return '%s, %s' % (self.getSurname(), self.getFirstname())
+        elif fn or sn:
+            return '%s %s' % (self.getSurname(), self.getFirstname())
+        else:
+            return ''
+
     Title = getFullname
 
     security.declareProtected(CMFCorePermissions.ManagePortal, 'hasUser')
