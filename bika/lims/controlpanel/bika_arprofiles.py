@@ -13,7 +13,7 @@ from zope.interface.declarations import implements
 
 class ARProfilesView(BikaListingView):
     implements(IFolderContentsView)
-    contentFilter = {'portal_type': 'ARProfile'}
+    contentFilter = {'portal_type': 'ARProfile', 'sort_on': 'sortable_title'}
     content_add_actions = {_('AR Profile'): "createObject?type_name=ARProfile"}
     title = _("Analysis Request Profiles")
     description = ""

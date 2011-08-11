@@ -51,11 +51,8 @@ class AnalysisServicesView(BikaListingView):
 
     def folderitems(self):
         items = BikaListingView.folderitems(self)
-        out = []
         for x in range(len(items)):
-            if not items[x].has_key('obj'):
-                out.append(items[x])
-                continue
+            if not items[x].has_key('obj'): continue
             obj = items[x]['obj'].getObject()
             items[x]['CategoryName'] = obj.getCategoryName()
             items[x]['Unit'] = obj.Unit
@@ -79,12 +76,8 @@ class AnalysisServicesView(BikaListingView):
                 after_icons += "<img src='++resource++bika.lims.images/attach_no.png' title='Attachment not permitted'>"
             if after_icons:
                 items[x]['after']['Title'] = after_icons
-            out.append(items[x])
 
-        for i in range(len(out)):
-            out[i]['table_row_class'] = ((i + 1) % 2 == 0) and \
-               "draggable even" or "draggable odd"
-        return out
+        return items
 
 schema = ATFolderSchema.copy()
 class AnalysisServices(ATFolder):

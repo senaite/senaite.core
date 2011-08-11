@@ -39,20 +39,16 @@ class AnalysisCategoriesView(BikaListingView):
 
     def folderitems(self):
         items = BikaListingView.folderitems(self)
-        out = []
         for x in range(len(items)):
-            if not items[x].has_key('obj'): continue
+            if not items[x].has_key('obj'): 
+                continue
             obj = items[x]['obj'].getObject()
             items[x]['Description'] = obj.Description()
             items[x]['Department'] = obj.getDepartment().Title()
             items[x]['replace']['Title'] = "<a href='%s'>%s</a>" % \
                (items[x]['url'], items[x]['Title'])
-            out.append(items[x])
-        out = sorted(out, key=itemgetter('Title'))
-        for i in range(len(out)):
-            out[i]['table_row_class'] = ((i + 1) % 2 == 0) and "draggable even" or "draggable odd"  
 
-        return out
+        return items
 
 schema = ATFolderSchema.copy()
 class AnalysisCategories(ATFolder):

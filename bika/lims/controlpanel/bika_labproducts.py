@@ -45,7 +45,6 @@ class LabProductsView(BikaListingView):
 
     def folderitems(self):
         items = BikaListingView.folderitems(self)
-        out = []
         for x in range(len(items)):
             if not items[x].has_key('obj'): continue
             obj = items[x]['obj'].getObject()
@@ -58,10 +57,7 @@ class LabProductsView(BikaListingView):
                  (items[x]['url'], items[x]['Title'])
 
 
-        out = sorted(out, key=itemgetter('Title'))
-        for i in range(len(out)):
-            out[i]['table_row_class'] = ((i + 1) % 2 == 0) and "draggable even" or "draggable odd"
-        return out
+        return items
 
 schema = ATFolderSchema.copy()
 class LabProducts(ATFolder):
