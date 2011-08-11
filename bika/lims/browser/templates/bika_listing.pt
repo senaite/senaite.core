@@ -38,6 +38,7 @@
 	<br/>
 
 	<form name="folderContentsForm"
+	      id="folderContentsForm"
 		  method="post"
 		  class="kssattr-serveraction-foldercontents_update_table">
 	  <div tal:replace="structure view/contents_table"></div>

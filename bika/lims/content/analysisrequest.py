@@ -567,7 +567,7 @@ class AnalysisRequest(BaseFolder):
     def manage_delObjects(self, ids = [], REQUEST = None):
         """ recalculate state from remaining analyses """
         BaseFolder.manage_delObjects(self, ids, REQUEST)
-        self._escalateWorkflowAction()
+        #self._escalateWorkflowAction()
 
 ##     workflow methods
 ##
