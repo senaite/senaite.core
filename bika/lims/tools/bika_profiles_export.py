@@ -81,7 +81,7 @@ class bika_profiles_export(UniqueObject, SimpleItem):
 
         # get lab profiles
         if spec in ['lab', 'all', 'clientandlab']:
-            for p in self.portal_catalog(portal_type = 'LabARProfile',
+            for p in self.portal_catalog(portal_type = 'ARProfile',
                                      sort_on = 'sortable_title'):
                 profile = p.getObject()
 

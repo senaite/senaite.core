@@ -36,8 +36,6 @@
     <element value="DuplicateAnalysis"/>
     <element value="Instrument"/>
     <element value="InvoiceLineItem"/>
-    <element value="LabAnalysisSpec"/>
-    <element value="LabARProfile"/>
     <element value="LabContact"/>
     <element value="LabProduct"/>
     <element value="Method"/>

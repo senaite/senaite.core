@@ -416,7 +416,7 @@ class ARImport(BaseFolder):
                 this_profile = None
                 if not profiles.has_key(profilekey):
                     profiles[profilekey] = []
-                    l_prox = self.portal_catalog(portal_type = 'LabARProfile',
+                    l_prox = self.portal_catalog(portal_type = 'ARProfile',
                                     getProfileKey = profilekey)
                     if l_prox:
                         p = l_prox[0].getObject()

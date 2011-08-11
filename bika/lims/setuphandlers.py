@@ -39,8 +39,14 @@ class BikaGenerator:
             portal.manage_delObjects(ids = del_ids)
 
         # index objects - importing through GenericSetup doesn't
-        for obj_id in ('clients', 'referencesuppliers', 'invoices', 'pricelists', 'worksheets'):
+        for obj_id in ('clients', 'referencesuppliers', 'invoices', 'pricelists', 'worksheets', 'bika_setup' ):
             obj = portal._getOb(obj_id)
+            obj.reindexObject()
+
+        # index setup objects - importing through GenericSetup doesn't
+        bika_setup = portal._getOb('bika_setup')
+        for obj_id in ('bika_analysiscategories', 'bika_analysisservices', 'bika_attachmenttypes', 'bika_calculations', 'bika_departments', 'bika_instruments', 'bika_analysisspecs', 'bika_arprofiles', 'bika_labcontacts', 'bika_methods', 'bika_labproducts', 'bika_samplepoints', 'bika_sampletypes', 'bika_referencemanufacturers', 'bika_referencedefinitions', 'bika_worksheettemplates' ):
+            obj = bika_setup._getOb(obj_id)
             obj.reindexObject()
 
         # Move calendar and user action to bika

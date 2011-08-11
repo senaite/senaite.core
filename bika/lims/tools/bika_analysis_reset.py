@@ -23,7 +23,7 @@ class bika_analysis_reset(UniqueObject, SimpleItem):
     security.declareProtected(ManageAnalysisRequests, 'import_file')
     def import_file(self, csvfile):
         msgs = []
-        sfolder = self.bika_services
+        sfolder = self.bika_analysisservices
 
         reader = csv.reader(csvfile, delimiter = ',')
         analyses = []

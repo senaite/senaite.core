@@ -1,6 +1,6 @@
 from bika_analysiscategories import AnalysisCategories
 from bika_analysisservices import AnalysisServices
-from bika_labarprofiles import LabARProfiles
+from bika_arprofiles import ARProfiles
 from bika_attachmenttypes import AttachmentTypes
 from bika_calculations import Calculations
 from bika_departments import Departments

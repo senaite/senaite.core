@@ -145,7 +145,7 @@ class AnalysisRequestViewView(BrowserView):
         pc = getToolByName(self.context, 'portal_catalog')
         for proxy in pc(portal_type = 'ARProfile', getClientUID = self.context.UID(), sort_on = 'sortable_title'):
             profiles.append(proxy.getObject())
-        for proxy in pc(portal_type = 'LabARProfile', sort_on = 'sortable_title'):
+        for proxy in pc(portal_type = 'ARProfile', sort_on = 'sortable_title'):
             profile = proxy.getObject()
             profile.setTitle("Lab: %s" % profile.Title())
             profiles.append(proxy.getObject())
@@ -780,7 +780,7 @@ class AJAXAnalysisRequestSubmit():
                                     UID = profileUID):
                         profile = proxy.getObject()
                     if profile == None:
-                        for proxy in pc(portal_type = 'LabARProfile',
+                        for proxy in pc(portal_type = 'ARProfile',
                                         UID = profileUID):
                             profile = proxy.getObject()
 

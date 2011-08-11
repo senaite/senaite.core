@@ -94,9 +94,9 @@
     />
 
     <browser:page
-      for="bika.lims.interfaces.ILabARProfiles"
+      for="bika.lims.interfaces.IARProfiles"
       name="folder_view"
-      class=".bika_labarprofiles.LabARProfilesView"
+      class=".bika_arprofiles.ARProfilesView"
       permission="bika.lims.ManageBika"
       layer="bika.lims.interfaces.IBikaLIMS"
     />

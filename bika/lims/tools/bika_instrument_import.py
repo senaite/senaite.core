@@ -104,7 +104,7 @@ class bika_instrument_import(UniqueObject, SimpleItem):
                     results[sample_id]['errors'].append('Instrument keyword %s not found' % (keyword))
                     continue
 
-                service = self.bika_services._getOb(service_id)
+                service = self.bika_analysisservices._getOb(service_id)
                 service_title = service.Title()
                 analysis = None
                 if service_id in these_service_ids:

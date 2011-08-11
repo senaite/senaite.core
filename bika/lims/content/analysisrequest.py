@@ -102,7 +102,7 @@ schema = BikaSchema.copy() + Schema((
         relationship = 'AnalysisRequestInvoice',
     ),
     ReferenceField('Profile',
-        allowed_types = ('ARProfile', 'LabARProfile',),
+        allowed_types = ('ARProfile', ),
         referenceClass = HoldingReference,
         relationship = 'AnalysisRequestProfile',
     ),

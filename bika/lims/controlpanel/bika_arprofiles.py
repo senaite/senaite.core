@@ -8,14 +8,14 @@ from bika.lims import bikaMessageFactory as _
 from bika.lims.content.bikaschema import BikaFolderSchema
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.folder.folder import ATFolder, ATFolderSchema
-from bika.lims.interfaces import ILabARProfiles
+from bika.lims.interfaces import IARProfiles
 from zope.interface.declarations import implements
 
-class LabARProfilesView(BikaListingView):
+class ARProfilesView(BikaListingView):
     implements(IFolderContentsView)
-    contentFilter = {'portal_type': 'LabARProfile'}
-    content_add_actions = {_('Lab AR Profile'): "createObject?type_name=LabARProfile"}
-    title = _("Analysis Request Templates")
+    contentFilter = {'portal_type': 'ARProfile'}
+    content_add_actions = {_('AR Profile'): "createObject?type_name=ARProfile"}
+    title = _("Analysis Request Profiles")
     description = ""
     show_editable_border = False
     show_filters = False
@@ -36,7 +36,7 @@ class LabARProfilesView(BikaListingView):
                                  'url': 'folder_delete:method'},
                                 {'cssclass':'context',
                                  'title': 'Duplicate',
-                                 'url': 'duplicate_labarprofile:method',
+                                 'url': 'duplicate_arprofile:method',
                                  }],
                      }
                     ]
@@ -51,9 +51,9 @@ class LabARProfilesView(BikaListingView):
         return items
 
 schema = ATFolderSchema.copy()
-class LabARProfiles(ATFolder):
-    implements(ILabARProfiles)
+class ARProfiles(ATFolder):
+    implements(IARProfiles)
     schema = schema
     displayContentsTab = False
 schemata.finalizeATCTSchema(schema, folderish = True, moveDiscussion = False)
-atapi.registerType(LabARProfiles, PROJECTNAME)
+atapi.registerType(ARProfiles, PROJECTNAME)

@@ -106,25 +106,25 @@
   <permission>BIKA: Manage Bika</permission>
  </configlet>
 
- <configlet title="Analysis Profiles" action_id="bika_labarprofiles"
+ <configlet title="Analysis Profiles" action_id="bika_arprofiles"
     appId="bika.lims" category="bika" condition_expr=""
     icon_expr="string:++resource++bika.lims.images/service.png"
-    url_expr="string:$portal_url/bika_setup/bika_labarprofiles"
+    url_expr="string:$portal_url/bika_setup/bika_arprofiles"
     visible="True">
   <permission>BIKA: Manage Bika</permission>
  </configlet>
 
- <configlet title="Products" action_id="bika_labproducts" appId="bika"
-    category="bika.lims" condition_expr=""
+ <configlet title="Products" action_id="bika_labproducts" 
+    appId="bika.lims" category="bika" condition_expr=""
     icon_expr="string:++resource++bika.lims.images/product.png"
     url_expr="string:$portal_url/bika_setup/bika_labproducts"
     visible="True">
   <permission>BIKA: Manage Bika</permission>
  </configlet>
 
- <configlet title="Reference Manufacturers"
-    action_id="bika_referencemanufacturers" appId="bika"
-    category="bika.lims" condition_expr=""
+ <configlet title="Reference Manufacturers" 
+    action_id="bika_referencemanufacturers" 
+    appId="bika.lims" category="bika" condition_expr=""
     icon_expr="string:++resource++bika.lims.images/referencemanufacturer.png"
     url_expr="string:$portal_url/bika_setup/bika_referencemanufacturers"
     visible="True">

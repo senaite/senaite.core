@@ -1,7 +1,7 @@
 jQuery( function($) {
 	function showMethod(path, service )
 	{
-	    window.open(path + '/bika_services/' + service + '/analysis_method','analysismethod', 'toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=400,height=400');
+	    window.open(path + '/bika_analysisservices/' + service + '/analysis_method','analysismethod', 'toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=400,height=400');
 	}
 
 	function enableAddAttachment(this_field) {

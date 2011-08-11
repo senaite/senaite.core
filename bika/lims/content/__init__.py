@@ -27,7 +27,7 @@ from clientfolder import ClientFolder
 from contact import Contact
 from department import Department
 from instrument import Instrument
-from labarprofile import LabARProfile
+from arprofile import ARProfile
 from labcontact import LabContact
 from laboratory import Laboratory
 from labproduct import LabProduct
