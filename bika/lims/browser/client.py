@@ -172,6 +172,9 @@ class ClientAnalysisRequestsView(BikaListingView):
             items[x]['getDateReceived'] = items[x]['getDateReceived'] and \
                 self.context.toLocalizedTime(items[x]['getDateReceived'], \
                                              long_format = 0) or ''
+            items[x]['getDatePublished'] = items[x]['getDatePublished'] and \
+                self.context.toLocalizedTime(items[x]['getDatePublished'], \
+                                             long_format = 0) or ''
             items[x]['replace']['getRequestID'] = "<a href='%s'>%s</a>" % \
                  (items[x]['url'], items[x]['getRequestID'])
         return items

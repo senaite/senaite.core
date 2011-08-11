@@ -1,4 +1,3 @@
-<!-- Navigation XXX plone default should do fine.-->
 <div class="listingBar"
      i18n:domain="plone"
      metal:define-macro="navigation"

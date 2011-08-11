@@ -23,39 +23,15 @@
 <style>
 body {
     font-family: Arial, "Lucida Grande", Verdana, Lucida, Helvetica, sans-serif;
-    font-size: 70%;
-    background-color: White;
+    font-size: 65%;
+    background-color: transparent;
     color: Black;
     margin: 1em;
     padding: 0;
 }
-a {
-    text-decoration: none;
-    color: #436976;
-    background-color: transparent;
-}
 img {
     border: none;
     vertical-align: middle;
-}
-p {
-    margin: 0.5em 0em 1em 0em;
-    line-height: 1.5em;
-}
-p a {
-    text-decoration: underline;
-}
-p a:visited {
-    color: Purple;
-    background-color: transparent;
-}
-p a:active {
-    color: Red;
-    background-color: transparent;
-}
-p img {
-    border: 0;
-    margin: 0;
 }
 hr {
     height: 1px;
@@ -64,83 +40,68 @@ hr {
 }
 h1, h2, h3, h4, h5, h6 {
     color: Black; ! important;
-    background-color: transparent;
-    font-family: Arial, "Lucida Grande", Verdana, Lucida, Helvetica, sans-serif;
     font-size: 69%;
     font-weight: normal;
     margin: 0;
     padding-top: 0.5em;
-    border-bottom: 1px solid #636321;
 }
 .logos {
     width: 50%
 }
 .analysisrequest {
     border-collapse: collapse;
-    border-left: 1px solid #636321;
-    border-bottom: 1px solid #636321;
+    border-top: none;
+    border-right: none;
+    border-bottom: 1px solid #CCCCCC;
+    border-left: none;
     font-size: 85%;
     margin: 1em 0em 1em 0em;
 }
-
-.analysisrequest th {
-    background: #d3d3ad;
-    border-top: 1px solid #636321;
-    border-right: 1px solid #636321;
-    border-bottom: 1px solid #636321;
-    font-weight: normal;
-    padding: 0em 1em 0em 1em;
-    text-align: left;
+.analysisrequest tr{
+    border-top: 1px solid #CCCCCC;
+    border-right:none;
+    border-bottom: none;
+    border-left: 1px solid #CCCCCC;
+    margin: 1em 0em 1em 0em;
 }
-.analysisrequest th {
-    background:transparent;
+.analysisrequest tr.category_heading {
+    border-top: 1px solid #CCCCCC;
+    border-right: 1px solid #CCCCCC;
+    border-bottom: none;
+    border-left: 1px solid #CCCCCC;
+    padding: .15em 0em .15em 0em;
+    font-size: 1.1em;
+}
+.analysisrequest tr.category_heading th {
+    background-color:#EAEAEA;
+    text-align:center;
     font-weight:bold;
 }
-.analysisrequest .top {
-    border-left: 1px solid #636321;
-    border-top: 1px solid #636321; ! important;
-    border-right: 1px solid #636321; ! important;
-    text-align: right ! important;
-    padding: 0em 0em 1em 0em;
+.analysisrequest th {
+    background:#EEEEEE;
+    border-top: none;
+    border-right: 1px solid #CCCCCC;
+    border-bottom: none;
+    border-left: none;
+    font-weight: normal;
+    padding: 0em .25em 0em .5em;
+    text-align: left;
+}
+.analysisrequest td {
+    border-top: none;
+    border-right: 1px solid #CCCCCC;
+    border-bottom: none;
+    border-left: none;
+    padding: 0em 0em;
+    vertical-align: top;
+    padding: 0em .25em 0em .25em;
+    text-align: center;
 }
 .analysisrequest .odd {
     background-color: transparent;
 }
 .analysisrequest .even {
-    background-color: #f7f9fa;
-}
-.analysisrequest .dryhead {
-    background-color: #a6b5db;
-}
-.analysisrequest .drybody {
-    background-color: #dae0f0;
-}
-.analysisrequest .listingCheckbox {
-    text-align: center;
-}
-.analysisrequest td.left {
-    text-align: left;
-}
-.analysisrequest td.contact {
-    text-align: left;
-}
-.analysisrequest td {
-    border-right: 1px solid #636321;
-    border-top: 1px solid #636321;
-    border-bottom: 1px solid #636321;
-    padding: 0em 0em;
-    vertical-align: top;
-    text-align: center;
-}
-.analysisrequest a:hover {
-    text-decoration: underline;
-}
-.analysisrequest img {
-    vertical-align: middle;
-}
-.analysisrequest .amount {
-    text-align: right;
-    padding-right: 1em;
+    background-color: #EEEEEE;
 }
 .remarks {
     border-collapse: collapse;
@@ -149,7 +110,6 @@ h1, h2, h3, h4, h5, h6 {
     font-size: 85%;
     margin: 1em 0em 1em 0em;
 }
-
 .remarks th {
     background: #d3d3ad;
     border-top: 1px solid #636321;
@@ -168,13 +128,6 @@ h1, h2, h3, h4, h5, h6 {
 }
 .remarks th.tabletitle {
     text-align: center;
-}
-.category  {
-    text-align: left ! important;
-    background: #EEEEEE;
-}
-.category td {
-   border: 0;
 }
 .out_of_range {
     color: red;
@@ -352,22 +305,6 @@ h1, h2, h3, h4, h5, h6 {
         </td>
       </tr>
 
-      <tr>
-        <th><b i18n:translate="label_analysis_results">Analysis results</b></th>
-        <tal:results tal:repeat="ar view/batch">
-
-          <tal:drymatter tal:condition="ar/getReportDryMatter">
-            <th><b i18n:translate="label_result">Result</b></th>
-            <th class="dryhead"><b i18n:translate="label_dry">Dry Result</b></th>
-          </tal:drymatter>
-
-          <tal:notdrymatter tal:condition="not:ar/getReportDryMatter">
-            <th></th>
-          </tal:notdrymatter>
-
-        </tal:results>
-      </tr>
-
     </thead>
 
     <tbody>
@@ -381,10 +318,18 @@ h1, h2, h3, h4, h5, h6 {
       <tal:poc tal:repeat="poc python:view.services.keys()">
 
       <tal:category tal:repeat="cat python:view.services[poc].keys()">
-        <tr class="category">
+        <tr class="category_heading">
           <th
-            tal:attributes="colspan python:columns + 1"
             tal:content="string:${poc} - ${cat}"/>
+          <tal:results tal:repeat="ar view/batch">
+            <tal:drymatter tal:condition="ar/getReportDryMatter">
+              <th i18n:translate="label_result">Result</th>
+              <th i18n:translate="label_dry_result">Dry Result</th>
+            </tal:drymatter>
+            <tal:notdrymatter tal:condition="not:ar/getReportDryMatter">
+              <th i18n:translate="label_result">Result</th>
+            </tal:notdrymatter>
+          </tal:results>
         </tr>
 
       <tal:service tal:repeat="service python:view.services[poc][cat]">
@@ -408,14 +353,14 @@ h1, h2, h3, h4, h5, h6 {
               <tal:result
                 tal:condition="analysis_found"
                 tal:define="
-                  in_range python:analysis_found and analysis.result_in_range(None, 'client');
-                  result_class python: in_range and '' or 'out_of_range';
+                  in_range python:analysis.result_in_range(None, 'client');
+                  result_class python:in_range and '' or 'out_of_range';
                   global out_of_range python:in_range and out_of_range or 1">
                 <td nowrap align="center"
                   tal:attributes="class result_class">
                   <span tal:content="result">10.00</span>
                   <span tal:content="string:${analysis/Unit}"
-                    tal:condition="python:analysis_found and analysis.Unit"/>
+                    tal:condition="python:analysis.Unit"/>
                   <img tal:condition="python:not in_range"
                     tal:attributes="src string:${portal/absolute_url}/++resource++bika.lims.images/exclamation.png">
                   <span tal:content="string:[+/- $uncertainty]"
@@ -424,14 +369,14 @@ h1, h2, h3, h4, h5, h6 {
                     tal:condition="analysis/getRetested"
                     i18n:translate="retested">retested</div>
                 </td>
-                <td class="drybody" tal:condition="ar/getReportDryMatter">
+                <td tal:condition="ar/getReportDryMatter">
                   <span tal:condition="analysis/getResultDM"
                     tal:content="analysis/getResultDM">10</span>
                 </td>
               </tal:result>
               <tal:notanalysis tal:condition="python:not analysis_found">
                 <td></td>
-                <td class="drybody" tal:condition="ar/getReportDryMatter"></td>
+                <td tal:condition="ar/getReportDryMatter"></td>
               </tal:notanalysis>
             </div>
           </tal:ars>

@@ -170,7 +170,22 @@ Table data rows start here
 <tal:comment replace="nothing">***************
 Draggable column for manually ordering items
 ********************************</tal:comment>
-	<td tal:condition="view/show_sort_column" class="draggable">&nbsp;</td>
+	<td tal:condition="view/show_sort_column" class="draggable">
+	 <tal:block tal:define="quoted_id python:item['obj'].UID();">
+	  <a href=""
+		 title="Move item up"
+		 i18n:attributes="title title_move_item_up;"
+		 tal:attributes="href string:${view/base_url}/folder_position?position=up&amp;id=${quoted_id}">
+		&#9650;
+	  </a>
+	  <a href=""
+		 title="Move item down"
+		 i18n:attributes="title title_move_item_down;"
+		 tal:attributes="href string:${view/base_url}/folder_position?position=down&amp;id=${quoted_id}">
+		&#9660;
+	  </a>
+	 </tal:block>
+	</td>
 
 <tal:comment replace="nothing">***************
 Item select checkboxes.
@@ -451,7 +466,6 @@ Table cells for each column from in review_state's column list.
 
 <span class="workflow_action_buttons"
 	tal:define="actions view/get_workflow_actions">
-	<span tal:replace="structure context/@@authenticator/authenticator"/>
 	<span tal:omit-tag tal:repeat="action actions">
 		<input
 			class="context workflow_action_button"

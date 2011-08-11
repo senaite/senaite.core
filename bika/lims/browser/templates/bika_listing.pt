@@ -37,25 +37,12 @@
 
 	<br/>
 
-	<form
-		name="folderContentsForm"
-		id="folderContentsForm"
-		class="folderContentsForm"
-		method="post"
-		tal:define="pagenumber string:1">
-
-	<input tal:replace="structure context/@@authenticator/authenticator" />
-	<input type="hidden" name="sort_on" tal:attributes="value request/sort_on|string:getTitle"/>
-	<input type="hidden" name="pagenumber" tal:attributes="value view/batch/pagenumber|pagenumber"/>
-	<input type="hidden" name="show_all" tal:attributes="value view/show_all|nothing"/>
-	<input type="hidden" name="orig_template" tal:attributes="value view/viewname|nothing"/>
-	<input type="hidden" name="paths:list"
-		tal:condition="view/selectall|nothing"
-		tal:repeat="item view/batch/items_not_on_page"
-		tal:attributes="value item/path"/>
-
-	<div tal:replace="structure view/contents_table"></div>
-</form>
+	<form name="folderContentsForm"
+		  method="post"
+		  class="kssattr-serveraction-foldercontents_update_table">
+	  <div tal:replace="structure view/contents_table"></div>
+	  <input tal:replace="structure context/@@authenticator/authenticator" />
+	</form>
 </metal:content-core>
 
 	</body>

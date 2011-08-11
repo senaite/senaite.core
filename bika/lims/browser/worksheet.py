@@ -17,12 +17,13 @@ class WorksheetAnalysesView(AnalysesView):
 
     def __init__(self, context, request, allow_edit = False, **kwargs):
         super(WorksheetAnalysesView, self).__init__(context, request)
-
+        self.show_sort_column = True
         self.columns = {
             'Pos': {'title': _('Pos'),
                     'show_icon':'after'},
             'Client': {'title': _('Client')},
             'Order': {'title': _('Order')},
+            'RequestID': {'title': _('Reqest ID')},
             'DueDate': {'title': _('Due Date')},
             'Category': {'title': _('Category')},
             'Service': {'title': _('Analysis')},
@@ -37,11 +38,11 @@ class WorksheetAnalysesView(AnalysesView):
              'columns':['Pos',
                         'Client',
                         'Order',
+                        'RequestID',
                         'DueDate',
                         'Category',
                         'Service',
                         'Result',
-                        'Uncertainty',
                         'retested',
                         'Attachments',
                         'state_title'],
@@ -63,6 +64,9 @@ class WorksheetAnalysesView(AnalysesView):
             obj = item['obj']
             item['UID'] = slot['uid']
             item['Pos'] = slot['pos']
+            service = item['obj'].getService()
+            item['Category'] = service.getCategory().Title()
+            item['RequestID'] = item['obj'].aq_parent.Title()
             item['Client'] = item['obj'].aq_parent.aq_parent.Title()
             item['DueDate'] = hasattr(obj, 'DueDate') and \
                 self.context.toLocalizedTime(obj.DueDate, long_format=0) or ''

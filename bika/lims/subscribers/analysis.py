@@ -120,7 +120,7 @@ def ActionSucceededEventHandler(analysis, event):
                 workflow.doActionFor(dep, event.action)
                 if dep._assigned_to_worksheet:
                     workflow.doActionFor(dep, 'assign')
-            except WorkflowException:
+            except:
                 pass
         # Retract our dependents
         for dep in analysis.getDependents():
@@ -128,7 +128,7 @@ def ActionSucceededEventHandler(analysis, event):
                 workflow.doActionFor(dep, event.action)
                 if dep._assigned_to_worksheet:
                     workflow.doActionFor(dep, 'assign')
-            except WorkflowException:
+            except:
                 pass
         # Escalate action to the parent AR
         try:
@@ -138,7 +138,7 @@ def ActionSucceededEventHandler(analysis, event):
                 workflow.doActionFor(analysis.aq_parent, 'assign')
             if hasattr(analysis.aq_parent, '_skip_ActionSucceededEvent'):
                 del analysis.aq_parent._skip_ActionSucceededEvent
-        except WorkflowException:
+        except:
             pass
         # if we are assigned to a worksheet, our new
         # state must be 'assigned', not 'received'.

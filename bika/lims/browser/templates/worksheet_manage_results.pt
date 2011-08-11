@@ -25,12 +25,7 @@
 	</tal:links>
 </metal:description>
 
-<metal:content fill-slot="content-core" tal:define="
-	analyses python:view.sort_analyses_on_requestid(here.getAnalyses());
-	specification python:request.get('specification', 'lab');
-	review_state here/getWorkflowState;
-	open_ws python:review_state == 'open';
-	sort_on python:(('Title', 'nocase', 'asc'),);">
+<metal:content fill-slot="content-core">
 
 	<ul>
 		<li tal:repeat="record view/WorksheetLayout">
@@ -41,8 +36,16 @@
 		</li>
 	</ul>
 
-	<input tal:replace="structure context/@@authenticator/authenticator" />
-	<span tal:replace="structure python:view.AnalysesView.contents_table()"/>
+	<form
+		name="folderContentsForm"
+		id="folderContentsForm"
+		class="kssattr-serveraction-foldercontents_update_table"
+		method="post">
+
+		<input tal:replace="structure context/@@authenticator/authenticator" />
+		<span tal:replace="structure python:view.AnalysesView.contents_table()"/>
+
+	</form>
 
 </metal:content>
 </body>

@@ -2,8 +2,10 @@
 """
 from AccessControl import Unauthorized
 from Acquisition import aq_parent, aq_inner
-from Products.CMFCore.utils import getToolByName
+from OFS.interfaces import IOrderedContainer
 from Products.CMFCore.WorkflowCore import WorkflowException
+from Products.CMFCore.utils import getToolByName
+from plone.app.content.batching import Batch
 from Products.CMFPlone import PloneMessageFactory
 from Products.CMFPlone.utils import pretty_title_or_id, isExpired, safe_unicode
 from Products.Five.browser import BrowserView
@@ -106,7 +108,7 @@ class BikaListingView(BrowserView):
     show_select_row = False
     show_sort_column = False
     # just set pagesize high to disable batching.
-    pagesize = 50
+    pagesize = 20
 
     """
      The keys of the columns dictionary must all exist in all
@@ -421,6 +423,7 @@ class Table(tableview.Table):
         self.show_filters = show_filters
         self.filters_in_use = filters_in_use
         self.review_states = review_states
+
 
     def get_workflow_actions(self):
         """ Compile a list of possible workflow transitions for items

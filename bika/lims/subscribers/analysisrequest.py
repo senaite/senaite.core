@@ -87,10 +87,8 @@ def ActionSucceededEventHandler(ar, event):
             try:
                     workflow.doActionFor(analysis, event.action)
                     analysis.reindexObject()
-            except WorkflowException, errmsg:
-                transaction.abort()
-                raise WorkflowException, \
-                      _("One or more transitions failed: ") + str(errmsg)
+            except WorkflowException:
+                pass
 
     if event.action == "retract":
         # retract all analyses in this AR.

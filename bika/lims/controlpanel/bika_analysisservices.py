@@ -48,12 +48,15 @@ class AnalysisServicesView(BikaListingView):
                      },
                     ]
 
-        
+
     def folderitems(self):
         items = BikaListingView.folderitems(self)
         out = []
         for x in range(len(items)):
-            if not items[x].has_key('obj'): continue
+            if not items[x].has_key('obj'):
+                items[x]['Title'] = items[x]['path']
+                out.append(items[x])
+                continue
             obj = items[x]['obj'].getObject()
             items[x]['CategoryName'] = obj.getCategoryName()
             items[x]['Unit'] = obj.Unit
@@ -81,7 +84,8 @@ class AnalysisServicesView(BikaListingView):
 
         out = sorted(out, key=itemgetter('Title'))
         for i in range(len(out)):
-            out[i]['table_row_class'] = ((i + 1) % 2 == 0) and "draggable even" or "draggable odd"
+            out[i]['table_row_class'] = ((i + 1) % 2 == 0) and \
+               "draggable even" or "draggable odd"
         return out
 
 schema = ATFolderSchema.copy()
