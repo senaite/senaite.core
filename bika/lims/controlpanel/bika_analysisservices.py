@@ -54,7 +54,6 @@ class AnalysisServicesView(BikaListingView):
         out = []
         for x in range(len(items)):
             if not items[x].has_key('obj'):
-                items[x]['Title'] = items[x]['path']
                 out.append(items[x])
                 continue
             obj = items[x]['obj'].getObject()
@@ -82,7 +81,6 @@ class AnalysisServicesView(BikaListingView):
                 items[x]['after']['Title'] = after_icons
             out.append(items[x])
 
-        out = sorted(out, key=itemgetter('Title'))
         for i in range(len(out)):
             out[i]['table_row_class'] = ((i + 1) % 2 == 0) and \
                "draggable even" or "draggable odd"

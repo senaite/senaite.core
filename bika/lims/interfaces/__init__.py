@@ -64,7 +64,7 @@ class IInstruments(Interface):
     ""
 class IAnalysisSpecs(Interface):
     ""
-class IARProfiles(Interface):
+class ILabARProfiles(Interface):
     ""
 class ILabContacts(Interface):
     ""
