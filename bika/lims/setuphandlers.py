@@ -39,13 +39,33 @@ class BikaGenerator:
             portal.manage_delObjects(ids = del_ids)
 
         # index objects - importing through GenericSetup doesn't
-        for obj_id in ('clients', 'referencesuppliers', 'invoices', 'pricelists', 'worksheets', 'bika_setup' ):
+        for obj_id in ('clients',
+                       'referencesuppliers',
+                       'invoices',
+                       'pricelists',
+                       'worksheets',
+                       'bika_setup' ):
             obj = portal._getOb(obj_id)
             obj.reindexObject()
 
         # index setup objects - importing through GenericSetup doesn't
         bika_setup = portal._getOb('bika_setup')
-        for obj_id in ('bika_analysiscategories', 'bika_analysisservices', 'bika_attachmenttypes', 'bika_calculations', 'bika_departments', 'bika_instruments', 'bika_analysisspecs', 'bika_arprofiles', 'bika_labcontacts', 'bika_methods', 'bika_labproducts', 'bika_samplepoints', 'bika_sampletypes', 'bika_referencemanufacturers', 'bika_referencedefinitions', 'bika_worksheettemplates' ):
+        for obj_id in ('bika_analysiscategories',
+                       'bika_analysisservices',
+                       'bika_attachmenttypes',
+                       'bika_calculations',
+                       'bika_departments',
+                       'bika_instruments',
+                       'bika_analysisspecs',
+                       'bika_arprofiles',
+                       'bika_labcontacts',
+                       'bika_methods',
+                       'bika_labproducts',
+                       'bika_samplepoints',
+                       'bika_sampletypes',
+                       'bika_referencemanufacturers',
+                       'bika_referencedefinitions',
+                       'bika_worksheettemplates' ):
             obj = bika_setup._getOb(obj_id)
             obj.reindexObject()
 
@@ -56,8 +76,13 @@ class BikaGenerator:
 
     def setupGroupsAndRoles(self, portal):
         # add roles
-        for role in ('LabManager', 'LabClerk', 'LabTechnician', 'Verifier',
-                    'Publisher', 'Member', 'Reviewer'):
+        for role in ('LabManager',
+                     'LabClerk',
+                     'LabTechnician',
+                     'Verifier',
+                     'Publisher',
+                     'Member',
+                     'Reviewer'):
             if role not in portal.acl_users.portal_role_manager.listRoleIds():
                 portal.acl_users.portal_role_manager.addRole(role)
             # add roles to the portal
@@ -65,24 +90,31 @@ class BikaGenerator:
 
         # Create groups
         portal_groups = portal.portal_groups
+
         if 'labmanagers' not in portal_groups.listGroupIds():
             portal_groups.addGroup('labmanagers', title = "Lab Managers",
-                roles = ['Member', 'LabManager', 'Reviewer'])
+                roles = ['Member', 'Manager', 'LabManager', 'Reviewer'])
+
         if 'labclerks' not in portal_groups.listGroupIds():
             portal_groups.addGroup('labclerks', title = "Lab Clerks",
                 roles = ['Member', 'LabClerk'])
+
         if 'labtechnicians' not in portal_groups.listGroupIds():
             portal_groups.addGroup('labtechnicians', title = "Lab Technicians",
                 roles = ['Member', 'LabTechnician'])
+
         if 'verifiers' not in portal_groups.listGroupIds():
             portal_groups.addGroup('verifiers', title = "Verifiers",
                 roles = ['Verifier'])
+
         if 'publishers' not in portal_groups.listGroupIds():
             portal_groups.addGroup('publishers', title = "Publishers",
                 roles = ['Publisher'])
+
         if 'clients' not in portal_groups.listGroupIds():
             portal_groups.addGroup('clients', title = "Clients",
                 roles = ['Member', ])
+
         if 'referencesuppliers' not in portal_groups.listGroupIds():
             portal_groups.addGroup('referencesuppliers', title = "",
                 roles = ['Member', ])
@@ -94,46 +126,93 @@ class BikaGenerator:
         # profiles/default/structure
 
         mp = portal.manage_permission
-        mp(permissions.AddPortalContent,
-            ['Manager', 'Owner', 'LabManager'], 0)
-        mp(permissions.ListFolderContents,
-            ['Manager'], 1)
-        mp(permissions.FTPAccess,
-            ['Manager', 'LabManager', 'LabClerk', 'LabTechnician'], 1)
-        mp(permissions.DeleteObjects,
-            ['Manager', 'LabManager', 'LabClerk', 'Owner'], 1)
-        mp(permissions.ModifyPortalContent,
-            ['Manager', 'LabManager', 'LabClerk', 'LabTechnician',
-                'Owner'], 1)
-        mp(permissions.ManageUsers,
-            ['Manager', 'LabManager', ], 1)
-#        mp(ManageGroups,
-#            ['Manager', 'LabManager', ], 1)
 
+        mp(permissions.ListFolderContents,
+           ['Manager'], 1)
+        mp(permissions.AddPortalContent,
+           ['Manager',
+            'Owner',
+            'LabManager'], 0)
+        mp(permissions.FTPAccess,
+           ['Manager',
+            'LabManager',
+            'LabClerk',
+            'LabTechnician'], 1)
+        mp(permissions.DeleteObjects,
+           ['Manager',
+            'LabManager',
+            'LabClerk',
+            'Owner'], 1)
+        mp(permissions.ModifyPortalContent,
+           ['Manager',
+            'LabManager',
+            'LabClerk',
+            'LabTechnician',
+            'Owner'], 1)
+
+        mp(permissions.ManageUsers,
+           ['Manager',
+            'LabManager', ], 1)
+##        mp(ManageGroups,
+##           ['Manager',
+##            'LabManager', ], 1)
+##        mp(permissions.ManagePortal,
+##           ['Manager',
+##            'LabManager', ], 1)
         mp(ManageBika,
-            ['Manager', 'LabManager'], 1)
+            ['Manager',
+             'LabManager'], 1)
+
         mp(ManageClients,
-            ['Manager', 'LabManager', 'LabClerk'], 1)
+            ['Manager',
+             'LabManager',
+             'LabClerk'], 1)
         mp(ManageWorksheets,
-            ['Manager', 'LabManager', 'LabClerk', 'LabTechnician'], 1)
+            ['Manager',
+             'LabManager',
+             'LabClerk',
+             'LabTechnician'], 1)
         mp(ManageOrders,
-            ['Manager', 'LabManager', 'LabClerk'], 1)
+            ['Manager',
+             'LabManager',
+             'LabClerk'], 1)
         mp(ManageAnalysisRequests,
-            ['Manager', 'LabManager', 'LabClerk', 'LabTechnician'], 1)
+            ['Manager',
+             'LabManager',
+             'LabClerk',
+             'LabTechnician'], 1)
         mp(ManageSample,
-            ['Manager', 'LabManager', 'LabClerk', 'LabTechnician'], 1)
+            ['Manager',
+             'LabManager',
+             'LabClerk',
+             'LabTechnician'], 1)
         mp(ManageReferenceSuppliers,
-            ['Manager', 'LabManager', 'LabClerk', 'LabTechnician'], 1)
+            ['Manager',
+             'LabManager',
+             'LabClerk',
+             'LabTechnician'], 1)
         mp(ManageReference,
-            ['Manager', 'LabManager', 'LabClerk', 'LabTechnician'], 1)
+            ['Manager',
+             'LabManager',
+             'LabClerk',
+             'LabTechnician'], 1)
         mp(ViewResults,
-            ['Manager', 'LabManager', 'LabClerk', 'Owner'], 1)
+            ['Manager',
+             'LabManager',
+             'LabClerk',
+             'Owner'], 1)
         mp(ManageInvoices,
-            ['Manager', 'LabManager', 'Owner'], 1)
+            ['Manager',
+             'LabManager',
+             'Owner'], 1)
         mp(ManagePricelists,
-            ['Manager', 'LabManager', 'Owner'], 1)
+            ['Manager',
+             'LabManager',
+             'Owner'], 1)
         mp(PostInvoiceBatch,
-            ['Manager', 'LabManager', 'Owner'], 1)
+            ['Manager',
+             'LabManager',
+             'Owner'], 1)
 
         # Workflow permissions
         mp(ReceiveSample,
