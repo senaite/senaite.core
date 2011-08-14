@@ -41,7 +41,9 @@
 	      id="folderContentsForm"
 		  method="post"
 		  class="kssattr-serveraction-foldercontents_update_table">
-	  <div tal:replace="structure view/contents_table"></div>
+	<div id="folderlisting-main-table">
+		<div tal:replace="structure view/contents_table"></div>
+	</div>
 	  <input tal:replace="structure context/@@authenticator/authenticator" />
 	</form>
 </metal:content-core>

@@ -46,17 +46,6 @@ schema = BikaSchema.copy() + Schema((
             visible = False,
         ),
     ),
-    ReferenceField('ReferenceAnalyses',
-        multiValued = 1,
-        allowed_types = ('ReferenceAnalysis',),
-        relationship = 'WorksheetReferenceAnalysis',
-        widget = ReferenceWidget(
-            label = 'ReferenceAnalyses',
-            label_msgid = 'label_referenceanalyses',
-            i18n_domain = I18N_DOMAIN,
-            visible = False,
-        ),
-    ),
     ReferenceField('LinkedWorksheet',
         multiValued = 1,
         allowed_types = ('Worksheet',),
@@ -72,17 +61,6 @@ schema = BikaSchema.copy() + Schema((
         widget = TextAreaWidget(
             label = 'Notes'
         ),
-    ),
-    # The physical sequence of the analyses in the tray
-    RecordsField('WorksheetLayout',
-        type = 'worksheetanalyses',
-        subfields = ('uid', 'type', 'pos', 'key'),
-        subfield_types = {'pos':'int'},
-        required_subfields = ('uid', 'type', 'pos', 'key'),
-        subfield_labels = {'uid': 'UID',
-                           'type': 'Type',
-                           'pos': 'Position',
-                           'key': 'Key value'},
     ),
     # The lab personnel who performed the analysis
     StringField('Analyser',
@@ -123,6 +101,11 @@ class Worksheet(BaseFolder):
     def Title(self):
         """ Return the Number as title """
         return self.getNumber()
+
+    def getFolderContents(self, contentFilter):
+        # The folder listing machine passes contentFilter to all
+        # contentsMethod methods.  We ignore it.
+        return self.getAnalyses()
 
     security.declareProtected(View, 'getOwnerUserID')
     def getOwnerUserID(self):

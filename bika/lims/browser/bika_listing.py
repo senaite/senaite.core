@@ -140,6 +140,8 @@ class BikaListingView(BrowserView):
 
     def __init__(self, context, request):
         super(BikaListingView, self).__init__(context, request)
+        self.base_url = self.context.absolute_url()
+        self.view_url = self.context.absolute_url()
         if self.show_editable_border: request.set('enable_border', 1)
         if not self.show_editable_border: request.set('disable_border', 1)
         # contentsMethod may return a list of brains or a list of objects.
@@ -180,12 +182,6 @@ class BikaListingView(BrowserView):
                 if self.contentFilter.has_key(key):
                     del self.contentFilter[key]
             return self.contents_table()
-
-        # If a workflow action was selected, redirect
-##        if form.get("workflow_action") or \
-##           form.get("workflow_action_button"):
-##            self.request.response.redirect(
-##                self.context.absolute_url() + "/workflow_action")
 
         return self.template()
 
@@ -315,14 +311,15 @@ class BikaListingView(BrowserView):
             # and try get them from the brain/object.
             for key in self.columns.keys():
                 if hasattr(obj, key):
+                    # if the key is already in the results dict
+                    # then we don't replace it's value
+                    if results_dict.has_key(key):
+                        continue
                     value = getattr(obj, key)
                     # if it's callable call it.
                     if callable(value):
                         value = value()
-                    # if the key is already in the results dict
-                    # then we don't replace it's value
-                    if not results_dict.has_key(key):
-                        results_dict[key] = value
+                    results_dict[key] = value
 
             results.append(results_dict)
 
@@ -339,6 +336,8 @@ class BikaListingView(BrowserView):
         # by the table, so we pass them around wholesale.
         table = BikaListingTable(aq_inner(self.context),
                                  self.request,
+                                 self.base_url,
+                                 self.view_url,
                                  folderitems = self.folderitems,
                                  columns = self.columns,
                                  allow_edit = self.allow_edit,
@@ -355,6 +354,8 @@ class BikaListingTable(FolderContentsTable):
     def __init__(self,
                  context,
                  request,
+                 base_url,
+                 view_url,
                  folderitems,
                  columns,
                  allow_edit,
@@ -370,8 +371,8 @@ class BikaListingTable(FolderContentsTable):
         url = context.absolute_url()
         self.table = Table(context,
                            request,
-                           url,
-                           url + "/view",
+                           base_url,
+                           view_url,
                            folderitems(),
                            columns,
                            allow_edit,

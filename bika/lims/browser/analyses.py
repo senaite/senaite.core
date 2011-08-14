@@ -141,7 +141,7 @@ class AnalysesView(BikaListingView):
                 getSecurityManager().checkPermission(ViewResults, obj)
             can_edit_analysis = self.allow_edit and \
                 getSecurityManager().checkPermission(EditAnalyses, obj) and \
-                item['review_state'] == 'sample_received'
+                item['review_state'] in ('sample_received', 'assigned')
             if can_edit_analysis:
                 item['allow_edit'] = ['Result',]
                 # if the Result field is editable, our interim fields are too

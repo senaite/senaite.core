@@ -5,7 +5,10 @@ from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
+from Products.CMFCore.WorkflowCore import WorkflowException
 from bika.lims.interfaces import IWorksheet
+from bika.lims.browser.analyses import AnalysesView
+from bika.lims.browser.bika_listing import WorkflowAction
 from bika.lims.browser.analyses import AnalysesView
 from plone.app.content.browser.interfaces import IFolderContentsView
 from zope.app.component.hooks import getSite
@@ -13,81 +16,71 @@ from zope.component import getMultiAdapter
 from zope.interface import implements
 import plone, json
 
-class WorksheetAnalysesView(AnalysesView):
+class WorksheetWorkflowAction(WorkflowAction):
+    """ Workflow actions taken in Worksheets
+        This function is called to do the worflow actions
+        that apply to analyses in worksheets
+    """
+    def __call__(self):
+        form = self.request.form
+        plone.protect.CheckAuthenticator(form)
+        workflow = getToolByName(self.context, 'portal_workflow')
+        pc = getToolByName(self.context, 'portal_catalog')
+        rc = getToolByName(self.context, 'reference_catalog')
 
-    def __init__(self, context, request, allow_edit = False, **kwargs):
-        super(WorksheetAnalysesView, self).__init__(context, request)
-        self.show_sort_column = True
-        self.columns = {
-            'Pos': {'title': _('Pos'),
-                    'show_icon':'after'},
-            'Client': {'title': _('Client')},
-            'Order': {'title': _('Order')},
-            'RequestID': {'title': _('Reqest ID')},
-            'DueDate': {'title': _('Due Date')},
-            'Category': {'title': _('Category')},
-            'Service': {'title': _('Analysis')},
-            'Result': {'title': _('Result')},
-            'Uncertainty': {'title': _('+-')},
-            'retested': {'title': _('Retested'), 'type':'boolean'},
-            'Attachments': {'title': _('Attachments')},
-            'state_title': {'title': _('State')},
-        }
-        self.review_states = [
-            {'title': _('All'), 'id':'all',
-             'columns':['Pos',
-                        'Client',
-                        'Order',
-                        'RequestID',
-                        'DueDate',
-                        'Category',
-                        'Service',
-                        'Result',
-                        'retested',
-                        'Attachments',
-                        'state_title'],
-             },
-        ]
+        originating_url = self.request.get_header("referer",
+                                                  self.context.absolute_url())
 
-    def folderitems(self):
-        # get worksheet analyses as a UID keyed dictionary
-        self.contentsMethod = self.context.getAllAnalyses
-        portal = getSite()
-        analyses = {}
-        for analysis in AnalysesView.folderitems(self):
-            analyses[analysis['uid']] = analysis
+        action = form.get("workflow_action_button", '')
+        # XXX some browsers agree better than others about our JS ideas.
+        if type(action) == type([]): action = action[0]
+        if not action:
+            self.context.plone_utils.addPortalMessage("No action provided", 'error')
+            self.request.response.redirect(originating_url)
 
-        # re-order items and add WS specific fields
-        items = []
-        for slot in self.context.getWorksheetLayout():
-            item = analyses[slot['uid']]
-            obj = item['obj']
-            item['UID'] = slot['uid']
-            item['Pos'] = slot['pos']
-            service = item['obj'].getService()
-            item['Category'] = service.getCategory().Title()
-            item['RequestID'] = item['obj'].aq_parent.Title()
-            item['Client'] = item['obj'].aq_parent.aq_parent.Title()
-            item['DueDate'] = hasattr(obj, 'DueDate') and \
-                self.context.toLocalizedTime(obj.DueDate, long_format=0) or ''
-            item['Order'] = hasattr(item['obj'].aq_parent, 'getClientOrderNumber') and \
-                            item['obj'].aq_parent.getClientOrderNumber() or ''
-            if slot['type'] == 'b':
-                item['after'] += '<img width="16" height="16" src="%s/++resource++bika.lims.images/blank.png"/>'%\
-                    (portal.absolute_url())
-            if slot['type'] == 'c':
-                item['after'] += '<img width="16" height="16" src="%s/++resource++bika.lims.images/control.png"/>'%\
-                    (portal.absolute_url())
-            if slot['type'] == 'd':
-                item['after'] += '<img width="16" height="16" src="%s/++resource++bika.lims.images/duplicate.png"/>'%\
-                    (portal.absolute_url())
-            items.append(item)
+        # assign selected analyses to this worksheet
+        if action == 'assign':
+            analyses = []
+            if 'paths' in form:
+                for path in form['paths']:
+                    # get selected analysis object from catalog
+                    item_id = path.split("/")[-1]
+                    item_path = path.replace("/"+item_id, '')
+                    analysis = pc(id=item_id, path={'query':item_path,
+                                                    'depth':1})[0].getObject()
+                    analyses.append(analysis)
+                # add this item to worksheet Analyses field
+                ws_analyses = self.context.getAnalyses()
+                #ws_layout = self.context.getWorksheetLayout()
+                #pos_max = max([p['pos'] for p in ws_layout.values()])
+                for analysis in analyses:
+                    ws_analyses.append(analysis)
+                #    ws_layout.append({'uid':analysis.UID(),
+                #                   'type':'a',
+                #                   'pos':len(ws_layout),
+                #                   'key':analysis.getKeyword()})
+                self.context.setAnalyses(ws_analyses)
+                #self.context.setWorksheetLayout(ws_layout)
+                for analysis in analyses:
+                    workflow.doActionFor(analysis, 'assign')
 
-         # re-do the pretty css odd/even classes
-        for i in range(len(items)):
-            items[i]['table_row_class'] = ((i + 1) % 2 == 0) and "draggable even" or "draggable odd"
+            if len(analyses) > 1:
+                message = _('message_items_assigned',
+                    default = "${items} analyses were assigned.",
+                    mapping = {'items': len(analyses)})
+            elif len(analyses) == 1:
+                message = _('message_item_assigned',
+                    default = "1 analysis was assigned.")
+            else:
+                message = _("No action taken.")
+                self.context.plone_utils.addPortalMessage(message, 'info')
+                return self.request.RESPONSE.redirect(originating_url)
+            self.context.plone_utils.addPortalMessage(message, 'info')
+            return self.request.RESPONSE.redirect(self.context.absolute_url() + "/manage_results")
 
-        return items
+        else:
+            # default bika_listing.py/WorkflowAction for other transitions
+            WorkflowAction.__call__(self)
 
 class WorksheetFolderView(BikaListingView):
     contentFilter = {'portal_type': 'Worksheet'}
@@ -154,7 +147,8 @@ class WorksheetFolderView(BikaListingView):
             items[x]['getNumber'] = obj.getNumber()
             items[x]['getOwnerUserID'] = obj.getOwnerUserID()
             items[x]['CreationDate'] = obj.CreationDate() and \
-                 self.context.toLocalizedTime(obj.CreationDate(), long_format = 0) or ''
+                 self.context.toLocalizedTime(obj.CreationDate(),
+                                              long_format = 0) or ''
             items[x]['getLinkedWorksheet'] = obj.getLinkedWorksheet() and \
                  ",".join(obj.getLinkedWorksheet()) or ''
             items[x]['replace']['getNumber'] = "<a href='%s'>%s</a>" % \
@@ -178,7 +172,7 @@ class WorksheetAddView(BrowserView):
         analyses = []
         analysis_uids = []
         if form.has_key('wstemplate'):
-            if not form['wstemplate'] == 'None':
+            if form['wstemplate'] != '':
                 wst = rc.lookupObject(form['wstemplate'])
 
                 rows = wst.getRow()
@@ -265,10 +259,11 @@ class WorksheetAddView(BrowserView):
                                     no_of_services = references[key]['count']
                                     mostest = key
                             if mostest:
-                                ws.assignReference(Reference = mostest,
-                                                   Position = position,
-                                                   Type = row['type'],
-                                                   Service = references[mostest]['services'])
+                                ws.assignReference(
+                                    Reference = mostest,
+                                    Position = position,
+                                    Type = row['type'],
+                                    Service = references[mostest]['services'])
 
                 if analyses:
                     ws.assignNumberedAnalyses(Analyses = analyses)
@@ -279,9 +274,10 @@ class WorksheetAddView(BrowserView):
                             position = int(row['pos'])
                             dup_pos = int(row['dup'])
                             if used_ars.has_key(dup_pos):
-                                ws.assignDuplicate(AR = used_ars[dup_pos]['ar'],
-                                                   Position = position,
-                                                   Service = used_ars[dup_pos]['serv'])
+                                ws.assignDuplicate(
+                                    AR = used_ars[dup_pos]['ar'],
+                                    Position = position,
+                                    Service = used_ars[dup_pos]['serv'])
 
                 ws.setMaxPositions(len(rows))
 
@@ -290,36 +286,69 @@ class WorksheetAddView(BrowserView):
         dest = ws.absolute_url()
         self.request.RESPONSE.redirect(dest)
 
-class WorksheetManageResultsView(BrowserView):
-    template = ViewPageTemplateFile("templates/worksheet_manage_results.pt")
+class WorksheetManageResultsView(AnalysesView):
 
-    def __init__(self, context, request):
+    def __init__(self, context, request, allow_edit = False, **kwargs):
         super(WorksheetManageResultsView, self).__init__(context, request)
-        self.sequence = sequence
+        self.show_sort_column = True
+        self.allow_edit = True
+        self.columns = {
+            'Pos': {'title': _('Pos')},
+            'Client': {'title': _('Client')},
+            'Order': {'title': _('Order')},
+            'RequestID': {'title': _('Reqest ID')},
+            'DueDate': {'title': _('Due Date')},
+            'Category': {'title': _('Category')},
+            'Service': {'title': _('Analysis')},
+            'Result': {'title': _('Result')},
+            'Uncertainty': {'title': _('+-')},
+            'retested': {'title': _('Retested'), 'type':'boolean'},
+            'Attachments': {'title': _('Attachments')},
+            'state_title': {'title': _('State')},
+        }
+        self.review_states = [
+            {'title': _('All'), 'id':'all',
+             'columns':['Pos',
+                        'Client',
+                        'Order',
+                        'RequestID',
+                        'DueDate',
+                        'Category',
+                        'Service',
+                        'Result',
+                        'Attachments',
+                        'state_title'],
+             },
+        ]
 
-    def __call__(self):
-        self.AnalysesView = WorksheetAnalysesView(self.context,
-                                                  self.request,
-                                                  allow_edit = True)
+    def folderitems(self):
+        self.contentsMethod = self.context.getFolderContents
+        items = AnalysesView.folderitems(self)
+        pos = 0
+        for x, item in enumerate(items):
+            obj = item['obj']
+            pos += 1
+            items[x]['Pos'] = pos
+            service = obj.getService()
+            items[x]['Category'] = service.getCategory().Title()
+            items[x]['RequestID'] = obj.aq_parent.Title()
+            items[x]['Client'] = obj.aq_parent.aq_parent.Title()
+            items[x]['DueDate'] = hasattr(obj, 'DueDate') and \
+                self.context.toLocalizedTime(obj.DueDate, long_format=0) or ''
+            items[x]['Order'] = hasattr(obj.aq_parent, 'getClientOrderNumber') \
+                 and obj.aq_parent.getClientOrderNumber() or ''
+            if obj.portal_type == 'DuplicateAnalysis':
+                items[x]['after']['Pos'] = '<img width="16" height="16" src="%s/++resource++bika.lims.images/duplicate.png"/>'%\
+                    (self.context.absolute_url())
+            elif obj.portal_type == 'ReferenceAnalysis':
+                if obj.ReferenceType == 'b':
+                    items[x]['after'] += '<img width="16" height="16" src="%s/++resource++bika.lims.images/blank.png"/>'%\
+                        (self.context.absolute_url())
+                else:
+                    items[x]['after'] += '<img width="16" height="16" src="%s/++resource++bika.lims.images/control.png"/>'%\
+                        (self.context.absolute_url())
 
-        form = self.request.form
-        if form.has_key("submitted"):
-            import pprint
-            pprint.pprint(form)
-
-        return self.template()
-
-    def tabindex(self):
-        i = 0
-        while True:
-            i += 1
-            yield i
-
-    def now(self):
-        return DateTime()
-
-    def WorksheetLayout(self):
-        return self.context.getWorksheetLayout()
+        return items
 
     def sort_analyses_on_requestid(self, analyses):
         ## Script (Python) "sort_analyses_on_requestid"
@@ -345,67 +374,58 @@ class WorksheetManageResultsView(BrowserView):
         return result
 
 class WorksheetAddAnalysisView(BikaListingView):
-    content_add_actions = {}
-    contentFilter = {'portal_type': 'Analysis',
-                     'review_state':'sample_received',
-                     'path':{'query': '/', 'depth':10}, # XXX path should not be needed?
-						# XXX limit resultset
-                     }
-    show_editable_border = True
-    show_sort_column = False
-    show_select_row = False
-    show_select_column = True
-    show_filters = True
-    pagesize = 20
+    def __init__(self, context, request):
+        super(WorksheetAddAnalysisView, self).__init__(context, request)
+        self.content_add_actions = {}
+        self.contentFilter = {'portal_type': 'Analysis',
+                              'review_state':'sample_received'}
+        self.show_editable_border = True
+        self.base_url = self.context.absolute_url()
+        self.view_url = self.base_url  + "/add_analysis"
+        self.show_sort_column = False
+        self.show_select_row = False
+        self.show_select_column = True
+        self.show_filters = True
+        self.pagesize = 20
 
-    columns = {
-        'getClientName': {'title': _('Client')},
-        'getClientOrderNumber': {'title': _('Order')},
-        'getRequestID': {'title': _('Request ID')},
-        'getCategoryName': {'title': _('Category')},
-        'getTitle': {'title': _('Analysis')},
-        'getDateReceived': {'title': _('Date Received')},
-        'getDueDate': {'title': _('Due Date')},
-    }
-    review_states = [
-        {'title': _('All'), 'id':'all',
-         'transitions': ['assign'],
-         'columns':['getClientName',
-                    'getClientOrderNumber',
-                    'getRequestID',
-                    'getCategoryName',
-                    'getTitle',
-                    'getDateReceived',
-                    'getDueDate'],
-        },
-    ]
+        self.columns = {
+            'ClientName': {'title': _('Client')},
+            'getClientOrderNumber': {'title': _('Order')},
+            'getRequestID': {'title': _('Request ID')},
+            'CategoryName': {'title': _('Category')},
+            'Title': {'title': _('Analysis')},
+            'getDateReceived': {'title': _('Date Received')},
+            'getDueDate': {'title': _('Due Date')},
+        }
+        self.review_states = [
+            {'title': _('All'), 'id':'all',
+             'transitions': ['assign'],
+             'columns':['ClientName',
+                        'getClientOrderNumber',
+                        'getRequestID',
+                        'CategoryName',
+                        'Title',
+                        'getDateReceived',
+                        'getDueDate'],
+            },
+        ]
 
     def folderitems(self):
+        pc = getToolByName(self.context, 'portal_catalog')
+        self.contentsMethod = pc
         items = BikaListingView.folderitems(self)
         for x in range(len(items)):
             if not items[x].has_key('obj'): continue
-            items[x]['getDateReceived'] = self.context.toLocalizedTime(items[x]['getDateReceived'], long_format = 0)
-            items[x]['getDueDate'] = self.context.toLocalizedTime(items[x]['getDueDate'], long_format = 0)
+            obj = items[x]['obj'].getObject()
+            service = obj.getService()
+            client = obj.aq_parent.aq_parent
+            items[x]['getDateReceived'] = self.context.toLocalizedTime(
+                items[x]['getDateReceived'], long_format = 0)
+            items[x]['getDueDate'] = self.context.toLocalizedTime(
+                items[x]['getDueDate'], long_format = 0)
+            items[x]['CategoryName'] = service.getCategory().Title()
+            items[x]['ClientName'] = client.Title()
         return items
-
-    def form_submit(self, form):
-        # the analyses have been set to 'assigned' before this function is invoked.
-        # here, we just want to add the affected analyses to our worksheet
-        pc = getToolByName(self.context, 'portal_catalog')
-        for path in form['paths']:
-            # get selected analysis object from catalog
-            item_id = path.split("/")[-1]
-            item_path = path.replace("/"+item_id, '')
-            analysis = pc(id=item_id, path={'query':item_path, 'depth':1})[0].getObject()
-            # add this item to worksheet Analyses reference field
-            analyses = self.context.getAnalyses()
-            analyses.append(analysis)
-            self.context.setAnalyses(analyses)
-            # add this item to WorksheetLayout field in the next available slot
-            layout = self.context.getWorksheetLayout()
-            layout.append({'uid':analysis.UID(), 'type':'a', 'pos':len(layout), 'key':analysis.getKeyword()})
-            self.context.setWorksheetLayout(layout)
-        self.request.RESPONSE.redirect(self.context.absolute_url() + "/worksheet_manage_results")
 
 class WorksheetAddBlankView(BikaListingView):
     contentFilter = {'portal_type': 'Analysis', 'review_state':'sample_received'}
@@ -450,7 +470,8 @@ class WorksheetAddBlankView(BikaListingView):
             items[x]['getNumber'] = obj.getNumber()
             items[x]['getOwnerUserID'] = obj.getOwnerUserID()
             items[x]['CreationDate'] = obj.CreationDate() and \
-                 self.context.toLocalizedTime(obj.CreationDate(), long_format = 0) or ''
+                 self.context.toLocalizedTime(
+                     obj.CreationDate(), long_format = 0) or ''
             items[x]['getLinkedWorksheet'] = obj.getLinkedWorksheet() and \
                  ",".join(obj.getLinkedWorksheet()) or ''
             items[x]['replace']['getNumber'] = "<a href='%s'>%s</a>" % \
@@ -459,7 +480,8 @@ class WorksheetAddBlankView(BikaListingView):
         return items
 
 class WorksheetAddControlView(BikaListingView):
-    contentFilter = {'portal_type': 'Analysis', 'review_state':'sample_received'}
+    contentFilter = {'portal_type': 'Analysis',
+                     'review_state':'sample_received'}
     content_add_actions = {}
     show_editable_border = True
     show_table_only = True

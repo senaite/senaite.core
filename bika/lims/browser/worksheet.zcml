@@ -4,6 +4,15 @@
     xmlns:i18n="http://namespaces.zope.org/i18n"
     i18n_domain="bika">
 
+    <!-- Workflow action button clicked -->
+    <browser:page
+      for="bika.lims.interfaces.IWorksheet"
+      name="workflow_action"
+      class="bika.lims.browser.worksheet.WorksheetWorkflowAction"
+      permission="zope.Public"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
     <browser:page
       for="bika.lims.interfaces.IWorksheetFolder"
       name="worksheets"
