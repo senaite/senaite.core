@@ -19,6 +19,8 @@ schema = Person.schema.copy() + Schema((
     ),
 ))
 
+schema['description'].schemata = 'default'
+schema['description'].widget.visible = True
 schema['JobTitle'].schemata = 'default'
 schema['Department'].schemata = 'default'
 # Don't make title required - it will be computed from the Person's Fullname

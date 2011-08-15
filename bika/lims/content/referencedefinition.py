@@ -31,6 +31,8 @@ schema = BikaSchema.copy() + Schema((
     ),
 ))
 
+schema['description'].schemata = 'default'
+schema['description'].widget.visible = True
 
 class ReferenceDefinition(BaseContent):
     security = ClassSecurityInfo()

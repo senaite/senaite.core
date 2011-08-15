@@ -5,6 +5,8 @@ from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.config import I18N_DOMAIN, PROJECTNAME
 
 schema = BikaSchema.copy()
+schema['description'].schemata = 'default'
+schema['description'].widget.visible = True
 
 class SamplePoint(BaseContent):
     security = ClassSecurityInfo()

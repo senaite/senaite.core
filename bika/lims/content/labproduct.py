@@ -53,6 +53,9 @@ schema = BikaSchema.copy() + Schema((
     ),
 ))
 
+schema['description'].schemata = 'default'
+schema['description'].widget.visible = True
+
 class LabProduct(BaseContent):
     security = ClassSecurityInfo()
     schema = schema

@@ -63,7 +63,8 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
 ))
-
+schema['description'].widget.visible = True
+schema['description'].schemata = 'default'
 schema['title'].required = False
 schema['title'].widget.visible = False
 

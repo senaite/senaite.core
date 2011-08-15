@@ -40,6 +40,9 @@ schema = BikaSchema.copy() + Schema((
     ),
 ))
 
+schema['description'].schemata = 'default'
+schema['description'].widget.visible = True
+
 class WorksheetTemplate(BaseContent):
     security = ClassSecurityInfo()
     schema = schema

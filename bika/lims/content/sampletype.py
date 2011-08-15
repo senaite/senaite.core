@@ -25,6 +25,9 @@ schema = BikaSchema.copy() + Schema((
     ),
 ))
 
+schema['description'].schemata = 'default'
+schema['description'].widget.visible = True
+
 class SampleType(BaseContent):
     security = ClassSecurityInfo()
     schema = schema
