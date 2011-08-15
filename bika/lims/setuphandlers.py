@@ -26,7 +26,6 @@ class BikaGenerator:
     def setupPortalContent(self, portal):
         """ Setup Bika site structure """
 
-        #apply IPloneSiteRoot interface to index_html
         obj = portal._getOb('index_html')
         alsoProvides(obj, IHaveNoBreadCrumbs)
 

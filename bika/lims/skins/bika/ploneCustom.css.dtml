@@ -182,13 +182,23 @@ table.analysisrequest input {
     text-align: center;
 }
 
-
 /*
  *  General Form Elements
  */
 input.cb {
     border: none;
     background-color: transparent;
+}
+
+.state-inactive {
+	background-color: #ff8888 !important;
+	color: #333333;
+}
+.state-sample_due {
+	color: #2bb800;
+}
+#plone-contentmenu-workflow .state-sample_due {
+	color: white;
 }
 
 /*

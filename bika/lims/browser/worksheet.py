@@ -31,12 +31,24 @@ class WorksheetWorkflowAction(WorkflowAction):
         originating_url = self.request.get_header("referer",
                                                   self.context.absolute_url())
 
-        action = form.get("workflow_action_button", '')
-        # XXX some browsers agree better than others about our JS ideas.
-        if type(action) == type([]): action = action[0]
-        if not action:
-            self.context.plone_utils.addPortalMessage("No action provided", 'error')
-            self.request.response.redirect(originating_url)
+        # use came_from to decide which UI action was clicked.
+        # "workflow_action" is the action name specified in the
+        # portal_workflow transition url.
+        came_from = "workflow_action"
+        action = form.get(came_from, '')
+        # only "activate" workflow_action is allowed on Worksheets which are
+        # inactive. any action on inactive Worksheet's children is also ignored.
+        if action and \
+           'bika_inactive_workflow' in workflow.getChainFor(self.context) and \
+           workflow.getInfoFor(self.context, 'inactive_review_state', '') == 'inactive' and \
+           action != 'activate':
+            message = self.context.translate(
+                'message_item_is_inactive',
+                default='${item} is inactive.',
+                mapping={'item': self.context.Title()},
+                domain="bika")
+            self.context.plone_utils.addPortalMessage(message, 'error')
+            return
 
         # assign selected analyses to this worksheet
         if action == 'assign':

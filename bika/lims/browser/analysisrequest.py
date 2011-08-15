@@ -19,6 +19,7 @@ from plone.app.content.browser.interfaces import IFolderContentsView
 from zope.component import getMultiAdapter
 from zope.interface import implements,alsoProvides
 import json
+from plone.memoize import instance
 import plone
 import transaction
 
@@ -42,6 +43,20 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
         # portal_workflow transition url.
         came_from = "workflow_action"
         action = form.get(came_from, '')
+        # only "activate" workflow_action is allowed on ARs which are inactive.
+        # any action on inactive AR's children is also ignored.
+        if action and \
+           'bika_inactive_workflow' in workflow.getChainFor(self.context) and \
+           workflow.getInfoFor(self.context, 'inactive_review_state', '') == 'inactive' and \
+           action != 'activate':
+            message = self.context.translate(
+                'message_item_is_inactive',
+                default='${item} is inactive.',
+                mapping={'item': self.context.Title()},
+                domain="bika")
+            self.context.plone_utils.addPortalMessage(message, 'error')
+            return
+
         if not action:
             # workflow_action_button is the action name specified in
             # the bika_listing_view table buttons.
@@ -138,29 +153,37 @@ class AnalysisRequestViewView(BrowserView):
     def now(self):
         return DateTime()
 
+    @instance.memoize
     def arprofiles(self):
         """ Return applicable client and Lab ARProfile records
         """
         profiles = []
         pc = getToolByName(self.context, 'portal_catalog')
-        for proxy in pc(portal_type = 'ARProfile', getClientUID = self.context.UID(), sort_on = 'sortable_title'):
-            profiles.append(proxy.getObject())
-        for proxy in pc(portal_type = 'ARProfile', sort_on = 'sortable_title'):
-            profile = proxy.getObject()
-            profile.setTitle("Lab: %s" % profile.Title())
-            profiles.append(proxy.getObject())
+        for proxy in pc(portal_type = 'ARProfile',
+                        getClientUID = self.context.UID(),
+                        inactive_review_state = 'active',
+                        sort_on = 'sortable_title'):
+                profiles.append((proxy.Title, proxy.getObject()))
+        for proxy in pc(portal_type = 'ARProfile',
+                        getClientUID = self.context.bika_setup.bika_arprofiles.UID(),
+                        inactive_review_state = 'active',
+                        sort_on = 'sortable_title'):
+                profiles.append((_('Lab:') + proxy.Title, proxy.getObject()))
         return profiles
 
+    @instance.memoize
     def Categories(self):
-        """ Returns a dictionary with a list of field analyses and a list of lab analyses.
-            This returns only categories which have analyses selected in the current AR.
+        """ Returns a dictionary with a list of field analyses and a list of
+            lab analyses.  This returns only categories which have analyses
+            selected in the current AR.
             Categories which are not used by analyses in this AR are omitted
             Dictionary keys: field/lab
             Dictionary values: (Category Title,category UID)
         """
         pc = getToolByName(self.context, 'portal_catalog')
         cats = {}
-        for analysis in pc(portal_type = "Analysis", getRequestID = self.context.id):
+        for analysis in pc(portal_type = "Analysis",
+                           getRequestID = self.context.id):
             analysis = analysis.getObject()
             service = analysis.getService()
             poc = service.getPointOfCapture()
@@ -170,11 +193,14 @@ class AnalysisRequestViewView(BrowserView):
         return cats
 
     def getDefaultSpec(self):
-        """ Returns 'lab' or 'client' to set the initial value of the specification radios """
+        """ Returns 'lab' or 'client' to set the initial value of the
+            specification radios
+        """
         mt = getToolByName(self.context, 'portal_membership')
         pg = getToolByName(self.context, 'portal_groups')
         member = mt.getAuthenticatedMember();
-        member_groups = [pg.getGroupById(group.id).getGroupName() for group in pg.getGroupsByUserId(member.id)]
+        member_groups = [pg.getGroupById(group.id).getGroupName() \
+                         for group in pg.getGroupsByUserId(member.id)]
         default_spec = ('clients' in member_groups) and 'client' or 'lab'
         return default_spec
 
@@ -182,8 +208,10 @@ class AnalysisRequestViewView(BrowserView):
         return self.context.getSample().getSampleType().getHazardous()
 
     def getARProfileTitle(self):
-        return self.context.getProfile() and self.context.getProfile().Title() or '';
+        return self.context.getProfile() and \
+               self.context.getProfile().Title() or '';
 
+    @instance.memoize
     def get_requested_analyses(self):
         ##
         ##title=Get requested analyses
@@ -210,6 +238,7 @@ class AnalysisRequestViewView(BrowserView):
                 result.append(analyses[analysis_key])
         return result
 
+    @instance.memoize
     def get_analyses_not_requested(self):
         ##
         ##title=Get analyses which have not been requested by the client
@@ -301,13 +330,15 @@ class AnalysisRequestAddView(AnalysisRequestViewView):
     def __call__(self):
         return self.template()
 
+    @instance.memoize
     def Categories(self):
         """ Dictionary keys: poc
             Dictionary values: (Category UID,category Title)
         """
         pc = getToolByName(self.context, 'portal_catalog')
         cats = {}
-        for service in pc(portal_type = "AnalysisService"):
+        for service in pc(portal_type = "AnalysisService",
+                          inactive_review_state = 'active'):
             service = service.getObject()
             poc = service.getPointOfCapture()
             if not cats.has_key(poc): cats[poc] = []
@@ -325,8 +356,10 @@ class AnalysisRequestEditView(AnalysisRequestAddView):
         self.col_count = 1
         self.came_from = "edit"
 
+    @instance.memoize
     def SelectedServices(self):
-        """ return information about services currently selected in the context AR.
+        """ return information about services currently selected in the
+            context AR.
             [[PointOfCapture, category uid, service uid],
              [PointOfCapture, category uid, service uid], ...]
         """
@@ -350,13 +383,15 @@ class AnalysisRequestManageResultsView(AnalysisRequestViewView):
         self.Field = AnalysesView(self.context, self.request,
                                   getPointOfCapture = 'field')
         self.Field.allow_edit = True
-        self.Field.review_states[0]['transitions'] = ['submit','retract','verify']
+        self.Field.review_states[0]['transitions'] = \
+            ['submit','retract','verify']
         self.Field.show_select_column = True
         self.Field = self.Field.contents_table()
         self.Lab = AnalysesView(self.context, self.request,
                                 getPointOfCapture = 'lab')
         self.Lab.allow_edit = True
-        self.Lab.review_states[0]['transitions'] = ['submit','retract','verify']
+        self.Lab.review_states[0]['transitions'] = \
+            ['submit','retract','verify']
         self.Lab.show_select_column = True
         self.Lab = self.Lab.contents_table()
 
@@ -501,7 +536,8 @@ class AnalysisRequestSelectSampleView(BikaListingView):
                 items[x]['checked'] = True
             items[x]['view_url'] = obj.absolute_url() + "/view"
             items[x]['SampleType'] = obj.getSampleType().Title()
-            items[x]['SamplePoint'] = obj.getSamplePoint() and obj.getSamplePoint().Title()
+            items[x]['SamplePoint'] = obj.getSamplePoint() and \
+                 obj.getSamplePoint().Title()
             items[x]['getDateReceived'] = obj.getDateReceived() and \
                  self.context.toLocalizedTime(obj.getDateReceived(), long_format = 0) or ''
             items[x]['getDateSampled'] = obj.getDateSampled() and \
@@ -520,6 +556,7 @@ class AnalysisRequestSelectSampleView(BikaListingView):
             out.append(items[x])
         return out
 
+    @instance.memoize
     def FieldAnalyses(self, sample):
         """ Returns a dictionary of lists reflecting Field Analyses
             linked to this sample (meaning field analyses on this sample's
@@ -605,7 +642,10 @@ class AJAXExpandCategory(BikaListingView):
     def Services(self, poc, CategoryUID):
         """ return a list of services brains """
         pc = getToolByName(self.context, 'portal_catalog')
-        services = pc(portal_type = "AnalysisService", getPointOfCapture = poc, getCategoryUID = CategoryUID)
+        services = pc(portal_type = "AnalysisService",
+                      inactive_review_state = 'active',
+                      getPointOfCapture = poc,
+                      getCategoryUID = CategoryUID)
         return services
 
 class AJAXProfileServices(BrowserView):
@@ -622,7 +662,9 @@ class AJAXProfileServices(BrowserView):
 
         services = {}
         for service in profile.getService():
-            service = pc(portal_type = "AnalysisService", UID = service.UID())[0]
+            service = pc(portal_type = "AnalysisService",
+                         inactive_review_state = 'active',
+                         UID = service.UID())[0]
             categoryUID = service.getCategoryUID
             poc = service.getPointOfCapture
             try: services["%s_%s" % (poc, categoryUID)].append(service.UID)
@@ -687,9 +729,10 @@ class AJAXAnalysisRequestSubmit():
             errors = {}
             def error(field = None, column = None, message = None):
                 if not message:
-                    message = self.context.translate('message_input_required',
-                                                default = 'Input is required but no input given.',
-                                                domain = 'bika')
+                    message = self.context.translate(
+                        'message_input_required',
+                        default = 'Input is required but no input given.',
+                        domain = 'bika')
                 if (column or field):
                     error_key = " column: %s: %s" % (int(column) + 1, field or '')
                 else:
@@ -700,7 +743,8 @@ class AJAXAnalysisRequestSubmit():
             has_analyses = False
             for column in range(int(form['col_count'])):
                 column = "%01d" % column
-                if form.has_key("ar.%s" % column) and form["ar.%s" % column].has_key("Analyses"):
+                if form.has_key("ar.%s" % column) and \
+                   form["ar.%s" % column].has_key("Analyses"):
                     has_analyses = True
             if not has_analyses or not form.has_key('Prices'):
                 error(message = _("No analyses have been selected."))
@@ -712,8 +756,9 @@ class AJAXAnalysisRequestSubmit():
             required = ['Analyses']
             if came_from == "add": required += ['SampleType', 'DateSampled']
             fields = ('SampleID', 'ClientOrderNumber', 'ClientReference',
-                      'ClientSampleID', 'DateSampled', 'SampleType', 'SamplePoint',
-                      'ReportDryMatter', 'InvoiceExclude', 'Analyses')
+                      'ClientSampleID', 'DateSampled', 'SampleType',
+                      'SamplePoint', 'ReportDryMatter', 'InvoiceExclude',
+                      'Analyses')
 
             for column in range(int(form['col_count'])):
                 column = "%01d" % column
@@ -735,18 +780,27 @@ class AJAXAnalysisRequestSubmit():
 
                     if came_from == "add" and field == "SampleID":
                         if not pc(portal_type = 'Sample',
+                                  inactive_review_state = 'active',
                                   getSampleID = ar[field]):
-                            error(field, column, '%s is not a valid sample ID' % ar[field])
+                            error(field,
+                                  column,
+                                  '%s is not a valid sample ID' % ar[field])
 
                     elif came_from == "add" and field == "SampleType":
                         if not pc(portal_type = 'SampleType',
+                                  inactive_review_state = 'active',
                                   Title = ar[field]):
-                            error(field, column, '%s is not a valid sample type' % ar[field])
+                            error(field,
+                                  column,
+                                  '%s is not a valid sample type' % ar[field])
 
                     elif came_from == "add" and field == "SamplePoint":
                         if not pc(portal_type = 'SamplePoint',
+                                  inactive_review_state = 'active',
                                   Title = ar[field]):
-                            error(field, column, '%s is not a valid sample point' % ar[field])
+                            error(field,
+                                  column,
+                                  '%s is not a valid sample point' % ar[field])
 
                 #elif field == "ReportDryMatter":
                 #elif field == "InvoiceExclude":
@@ -777,10 +831,12 @@ class AJAXAnalysisRequestSubmit():
                 if (values.has_key('ARProfile')):
                     profileUID = values['ARProfile']
                     for proxy in pc(portal_type = 'ARProfile',
+                                    inactive_review_state = 'active',
                                     UID = profileUID):
                         profile = proxy.getObject()
                     if profile == None:
                         for proxy in pc(portal_type = 'ARProfile',
+                                        inactive_review_state = 'active',
                                         UID = profileUID):
                             profile = proxy.getObject()
 
@@ -788,19 +844,21 @@ class AJAXAnalysisRequestSubmit():
                     # Secondary AR
                     sample_id = values['SampleID']
                     sample_proxy = pc(portal_type = 'Sample',
+                                      inactive_review_state = 'active',
                                       getSampleID = sample_id)
                     assert len(sample_proxy) == 1
                     sample = sample_proxy[0].getObject()
                     ar_number = sample.getLastARNumber() + 1
                     wf_tool = self.context.portal_workflow
-                    sample_state = wf_tool.getInfoFor(sample, 'review_state', '')
+                    sample_state = wf_tool.getInfoFor(sample, 'review_state')
                     sample.edit(LastARNumber = ar_number)
                     sample.reindexObject()
                 else:
                     # Primary AR or AR Edit both come here
                     if came_from == "add":
                         sample_id = self.context.generateUniqueId('Sample')
-                        self.context.invokeFactory(id = sample_id, type_name = 'Sample')
+                        self.context.invokeFactory(id = sample_id,
+                                                   type_name = 'Sample')
                         sample = self.context[sample_id]
                         sample.edit(
                             SampleID = sample_id,
@@ -824,8 +882,11 @@ class AJAXAnalysisRequestSubmit():
                 del values['Analyses']
 
                 if came_from == "add":
-                    ar_id = self.context.generateARUniqueId('AnalysisRequest', sample_id, ar_number)
-                    self.context.invokeFactory(id = ar_id, type_name = 'AnalysisRequest')
+                    ar_id = self.context.generateARUniqueId('AnalysisRequest',
+                                                            sample_id,
+                                                            ar_number)
+                    self.context.invokeFactory(id = ar_id,
+                                               type_name = 'AnalysisRequest')
                     ar = self.context[ar_id]
                     ar.edit(
                         RequestID = ar_id,
@@ -853,31 +914,35 @@ class AJAXAnalysisRequestSubmit():
 
                 if (values.has_key('profileTitle')):
                     profile_id = self.context.generateUniqueId('ARProfile')
-                    self.context.invokeFactory(id = profile_id, type_name = 'ARProfile')
+                    self.context.invokeFactory(id = profile_id,
+                                               type_name = 'ARProfile')
                     profile = self.context[profile_id]
                     ar.edit(Profile = profile)
                     profile.setTitle(values['profileTitle'])
                     analyses = ar.getAnalyses()
                     services_array = []
                     for a in analyses:
-                        services_array.append(a.getServiceUID())
+                        services_array.append(a.getServiceUID)
                     profile.setService(services_array)
                     profile.reindexObject()
 
-                if values.has_key('SampleID') and wftool.getInfoFor(sample, 'review_state') != 'due':
+                if values.has_key('SampleID') and \
+                   wftool.getInfoFor(sample, 'review_state') != 'due':
                     wftool.doActionFor(ar, 'receive')
 
             ar.setAnalyses(Analyses, prices = prices)
 
             if came_from == "add":
                 if len(ARs) > 1:
-                    message = self.context.translate('message_ars_created',
-                                                default = 'Analysis requests ${ARs} were successfully created.',
-                                                mapping = {'ARs': ', '.join(ARs)}, domain = 'bika')
+                    message = self.context.translate(
+                        'message_ars_created',
+                        default = 'Analysis requests ${ARs} were successfully created.',
+                        mapping = {'ARs': ', '.join(ARs)}, domain = 'bika')
                 else:
-                    message = self.context.translate('message_ar_created',
-                                                default = 'Analysis request ${AR} was successfully created.',
-                                                mapping = {'AR': ', '.join(ARs)}, domain = 'bika')
+                    message = self.context.translate(
+                        'message_ar_created',
+                        default = 'Analysis request ${AR} was successfully created.',
+                        mapping = {'AR': ', '.join(ARs)}, domain = 'bika')
             else:
                 message = "Changes Saved."
         else:
@@ -898,7 +963,8 @@ class AnalysisRequestsView(BikaListingView):
         self.description = ""
         self.show_editable_border = False
         self.show_select_column = True
-        self.contentFilter = {'portal_type':'AnalysisRequest', 'path':{"query": ["/"], "level" : 0 }}
+        self.contentFilter = {'portal_type':'AnalysisRequest',
+                              'path':{"query": ["/"], "level" : 0 }}
 
         self.columns = {
             'getRequestID': {'title': _('Request ID')},

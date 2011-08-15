@@ -32,10 +32,16 @@ class AnalysesView(BikaListingView):
         self.show_sort_column = False
         self.show_select_row = False
         self.show_select_column = True
+        self.pagesize = 1000
+
         # each editable item needs it's own allow_edit
         # which is a list of field names.
         self.allow_edit = False
-        self.pagesize = 1000
+
+        # cheeky - if this is true, bika_listing doesn't check for the
+        # inactive/active transitions.  They show up on Analysis brains
+        # because inactive_review_state is acquired from parent AR brain.
+        self.has_bika_inactive_workflow = True
 
         self.columns = {
             'Service': {'title': _('Analysis')},

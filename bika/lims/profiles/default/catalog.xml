@@ -73,8 +73,8 @@
  <index name="getBusinessPhone" meta_type="FieldIndex">
   <indexed_attr value="getBusinessPhone"/>
  </index>
- <index name="getClientID" meta_type="FieldIndex">
-  <indexed_attr value="getClientID"/>
+ <index name="getClientUID" meta_type="FieldIndex">
+  <indexed_attr value="getClientUID"/>
  </index>
  <index name="getClientName" meta_type="FieldIndex">
   <indexed_attr value="getClientName"/>
@@ -212,6 +212,9 @@
  <index name="review_state" meta_type="FieldIndex">
   <indexed_attr value="review_state"/>
  </index>
+ <index name="inactive_review_state" meta_type="FieldIndex">
+  <indexed_attr value="inactive_review_state"/>
+ </index>
  <index name="sortable_title" meta_type="FieldIndex">
   <indexed_attr value="sortable_title"/>
  </index>
@@ -236,7 +239,7 @@
  <column value="exclude_from_nav"/>
  <column value="expires"/>
  <column value="getBusinessPhone"/>
- <column value="getClientID"/>
+ <column value="getClientUID"/>
  <column value="getClientName"/>
  <column value="getClientOrderNumber"/>
  <column value="getClientReference"/>
@@ -280,5 +283,6 @@
  <column value="modified"/>
  <column value="portal_type"/>
  <column value="review_state"/>
+ <column value="inactive_review_state"/>
  <column value="start"/>
 </object>

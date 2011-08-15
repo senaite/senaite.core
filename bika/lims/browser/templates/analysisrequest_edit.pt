@@ -123,9 +123,9 @@
                     <option value="">None</option>
                     <tal:profile repeat="profile view/arprofiles">
                         <option
-                            tal:content="string:${profile/Title}"
+                            tal:content="python:profile[0]"
                             tal:attributes="
-                                value profile/UID;
+                                value python:profile[1].UID();
                                 tabindex python:column*100+tabindex.next();">Title</option>
                     </tal:profile>
                 </select>

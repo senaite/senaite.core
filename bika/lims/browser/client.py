@@ -51,7 +51,11 @@ class ClientWorkflowAction(WorkflowAction):
                     ar = pc(id = item_id,
                               path = {'query':item_path,
                                       'depth':1})[0].getObject()
-                    ARs_to_publish.append(ar)
+                    # can't publish inactive items
+                    if not(
+                        'bika_inactive_workflow' in workflow.getChainFor(ar) and \
+                        workflow.getInfoFor(ar, 'inactive_review_state', '') == 'inactive'):
+                        ARs_to_publish.append(ar)
 
                 transitioned = Publish(self.context,
                                        self.request,

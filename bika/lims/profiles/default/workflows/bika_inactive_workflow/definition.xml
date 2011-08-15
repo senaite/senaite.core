@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<dc-workflow workflow_id="bika_inactive_workflow" title="Bika Inactive (deleted) items" description="This workflow allows users to 'Delete' items, marking them as inactive and removing them from lists and dropdowns, while honoring existing references to the object" state_variable="inactive_review_state" initial_state="active" manager_bypass="False">
+ <state state_id="active" title="Active">
+  <description>Item is active and visible</description>
+  <exit-transition transition_id="de-activate"/>
+ </state>
+ <state state_id="inactive" title="">
+  <exit-transition transition_id="activate"/>
+ </state>
+ <transition transition_id="activate" title="Activate" new_state="active" trigger="USER" before_script="" after_script="">
+  
+  <guard>
+  </guard>
+ </transition>
+ <transition transition_id="de-activate" title="De-activate" new_state="inactive" trigger="USER" before_script="" after_script="">
+  <description>Flag item as inactive.</description>
+  
+  <guard>
+  </guard>
+ </transition>
+</dc-workflow>
