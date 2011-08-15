@@ -3,6 +3,7 @@ from Products.Archetypes.public import *
 from Products.CMFCore.permissions import View, ModifyPortalContent
 from bika.lims.config import I18N_DOMAIN, PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
+from decimal import Decimal
 
 schema = BikaSchema.copy() + Schema((
     StringField('Volume',
@@ -58,11 +59,12 @@ class LabProduct(BaseContent):
 
     def getTotalPrice(self):
         """ compute total price """
-        price = self.getPrice()
-        vat = self.getVAT()
+        price = Decimal(self.getPrice())
+        vat = Decimal(self.getVAT())
         price = price and price or 0
         vat = vat and vat / 100 or 0
-        return price + price * vat
+        price = price + (price * vat)
+        return price.quantize(Decimal('0.00'))
 
     def getDefaultVAT(self):
         """ return default VAT from bika_setup """
@@ -77,8 +79,10 @@ class LabProduct(BaseContent):
         """ Compute VATAmount
         """
         try:
-            return self.getTotalPrice() - self.getPrice()
+            vatamount = self.getTotalPrice() - Decimal(self.getPrice())
+            return vatamount.quantize(Decimal('0.00'))
         except:
-            return 0
+            vatamount = 0
+            return vatamount.quantize(Decimal('0.00'))
 
 registerType(LabProduct, PROJECTNAME)

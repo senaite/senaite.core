@@ -66,6 +66,7 @@
   <type type_id="InvoiceFolder"/>
   <type type_id="InvoiceLineItem"/>
   <type type_id="LabContact"/>
+  <type type_id="LabProduct"/>
   <type type_id="Method"/>
   <type type_id="Pricelist"/>
   <type type_id="PricelistFolder"/>

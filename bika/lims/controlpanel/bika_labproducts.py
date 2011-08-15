@@ -48,9 +48,9 @@ class LabProductsView(BikaListingView):
         for x in range(len(items)):
             if not items[x].has_key('obj'): continue
             obj = items[x]['obj'].getObject()
-            items[x]['Volume'] = obj.Volume
-            items[x]['Unit'] = obj.Unit
-            items[x]['Price'] = obj.Price
+            items[x]['Volume'] = obj.getVolume()
+            items[x]['Unit'] = obj.getUnit()
+            items[x]['Price'] = obj.getPrice()
             items[x]['VATAmount'] = obj.getVATAmount()
             items[x]['TotalPrice'] = obj.getTotalPrice()
             items[x]['replace']['Title'] = "<a href='%s'>%s</a>" % \
