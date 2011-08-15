@@ -26,17 +26,22 @@ def ActionSucceededEventHandler(analysis, event):
     if event.action == "receive":
         # set the max hours allowed
         service = analysis.getService()
-        maxhours = service.getMaxHoursAllowed()
-        if not maxhours:
-            maxhours = 0
-        analysis.setMaxHoursAllowed(maxhours)
+        maxtime = service.getMaxTimeAllowed()
+
+        if not maxtime:
+            maxtime = {'days':0, 'hours':0, 'minutes':0}
+        analysis.setMaxTimeAllowed(maxtime)
         # set the due date
         starttime = analysis.aq_parent.getDateReceived()
         # default to old calc in case no calendars
         # still need a due time for selection to ws
-        duetime = starttime + maxhours / 24.0
-##        if maxhours:
-##            maxminutes = maxhours * 60
+        max_days = float(maxtime.get('days', 0)) + \
+                 (
+                     (float(maxtime.get('hours', 0)) * 3600 + \
+                      float(maxtime.get('minutes', 0)) * 60 )
+                     / 86400
+                 )
+        duetime = starttime + max_days
 ##            try:
 ##                bct = getToolByName(self, BIKA_CALENDAR_TOOL)
 ##            except:
@@ -152,12 +157,12 @@ def ActionSucceededEventHandler(analysis, event):
         analysis.setDateAnalysisPublished(endtime)
         starttime = analysis.aq_parent.getDateReceived()
         service = analysis.getService()
-        maxhours = service.getMaxHoursAllowed()
+        maxtime = service.getMaxTimeAllowed()
         # set the analysis duration value to default values
         # in case of no calendars or max hours
-        if maxhours:
+        if maxtime:
             duration = (endtime - starttime) * 24 * 60
-            earliness = (maxhours * 60) - duration
+            earliness = duration - maxtime.timedelta()
         else:
             earliness = 0
             duration = 0

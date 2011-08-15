@@ -360,7 +360,7 @@ Table cells for each column from in review_state's column list.
 		tal:condition="python:field_type == 'choices'">		<!-- choices -->
 		<span tal:condition="allow_edit">
 			<select
-				tal:condition="python:column in item['options']"
+				tal:condition="python:column in item['choices']"
 				tal:attributes="
 					field string:column;
 					name string:${column}.${item/uid}:records;

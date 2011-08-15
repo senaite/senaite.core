@@ -5,7 +5,9 @@ from Products.Archetypes.public import *
 from Products.Archetypes.references import HoldingReference
 from Products.CMFCore.permissions import View, ModifyPortalContent
 from Products.CMFCore.utils import getToolByName
-from bika.lims.browser.widgets import ServicesWidget, RecordsWidget
+from bika.lims.browser.fields import DurationField
+from bika.lims.browser.widgets import ServicesWidget, RecordsWidget, \
+     DurationWidget
 from bika.lims.config import ATTACHMENT_OPTIONS, I18N_DOMAIN, PROJECTNAME, \
     POINTS_OF_CAPTURE
 from bika.lims.content.bikaschema import BikaSchema
@@ -125,10 +127,9 @@ schema = BikaSchema.copy() + Schema((
             i18n_domain = I18N_DOMAIN,
         ),
     ),
-    IntegerField('MaxHoursAllowed',
-        widget = IntegerWidget(
-            label = "Maximum Hours Allowed",
-            label_msgid = 'label_maximum_hours_allowed',
+    DurationField('MaxTimeAllowed',
+        widget = DurationWidget(
+            label = "Maximum time allowed",
             description = 'Maximum time allowed for ' \
                         'publication of results',
             description_msgid = 'help_max_hours_allowed',
@@ -350,7 +351,7 @@ class AnalysisService(BaseContent):
             Keyword = self.getKeyword(),
             Instrument = self.getInstrument(),
             Calculation = self.getCalculation(),
-            MaxHoursAllowed = self.getMaxHoursAllowed(),
+            MaxTimeAllowed = self.getMaxTimeAllowed(),
             TitrationUnit = self.getTitrationUnit(),
             DuplicateVariation = self.getDuplicateVariation(),
             AnalysisCategory = self.getAnalysisCategory(),

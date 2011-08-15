@@ -1,4 +1,5 @@
 from datetimewidget import DateTimeWidget
+from durationwidget import DurationWidget
 from recordswidget import RecordsWidget
 from referenceresultswidget import ReferenceResultsWidget
 from serviceswidget import ServicesWidget

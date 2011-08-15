@@ -15,12 +15,15 @@ from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFCore.permissions import View, ModifyPortalContent
 from Products.CMFCore.utils import getToolByName
 from bika.lims.browser.fields import InterimFieldsField
+from bika.lims.browser.fields import DurationField
 from bika.lims.browser.widgets import RecordsWidget as BikaRecordsWidget
+from bika.lims.browser.widgets import DurationWidget
 from bika.lims.config import I18N_DOMAIN, PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IAnalysis
 from decimal import Decimal
 from zope.interface import implements
+import datetime
 
 schema = BikaSchema.copy() + Schema((
     ReferenceField('Service',
@@ -98,9 +101,12 @@ schema = BikaSchema.copy() + Schema((
             visible = {'edit':'hidden'},
         ),
     ),
-    IntegerField('MaxHoursAllowed',
-        widget = IntegerWidget(
-            label = "Maximum Hours Allowed",
+    DurationField('MaxTimeAllowed',
+        widget = DurationWidget(
+            label = "Maximum time allowed",
+            description = 'Maximum time allowed for ' \
+                        'publication of results',
+            description_msgid = 'help_max_hours_allowed',
         ),
     ),
     DateTimeField('DueDate',

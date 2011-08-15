@@ -87,8 +87,8 @@ class ARAnalysesField(ObjectField):
                     Keyword = service.getKeyword(),
                     Price = str(price),
                     Unit = service.getUnit(),
+                    MaxTimeAllowed = service.getMaxTimeAllowed(),
                 )
-
             else:
                 # the price or unit of an existing analysis may have changed
                 if (analysis.getPrice() != price) or \

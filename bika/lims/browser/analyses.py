@@ -135,7 +135,8 @@ class AnalysesView(BikaListingView):
             # choices defined on Service apply result fields.
             choices = service.getResultOptions()
             if choices:
-                item['choices']['Result'] = choices
+                item['choices'] = {'Result': choices}
+
             # Results can only be edited in certain states.
             can_view_result = \
                 getSecurityManager().checkPermission(ViewResults, obj)

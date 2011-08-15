@@ -495,7 +495,7 @@ class LoadSetupData():
         folder = self.context.bika_setup.bika_analysisservices
         price = '15.00'
         corporateprice = '12.00'
-        for PointOfCapture, title, unit, min, max, titration_unit, accred, description, keyword, maxhours, uncertainties, instructions, dup_variation, calculation, dry_matter, cat in services:
+        for PointOfCapture, title, unit, min, max, titration_unit, accred, description, keyword, maxtime, uncertainties, instructions, dup_variation, calculation, dry_matter, cat in services:
             id = folder.generateUniqueId('AnalysisService')
             folder.invokeFactory(id = id, type_name = 'AnalysisService')
             obj = folder[id]
@@ -511,7 +511,7 @@ class LoadSetupData():
                      TitrationUnit = titration_unit,
                      Accredited = accred,
                      Keyword = keyword,
-                     MaxHoursAllowed = maxhours,
+                     MaxTimeAllowed = maxtime,
                      Instructions = instructions,
                      DuplicateVariation = dup_variation,
                      ReportDryMatter = dry_matter)
@@ -531,62 +531,62 @@ class LoadSetupData():
 
     def AnalysisServices1(self):
         services = (
-            ('field', 'Temperature', 'Deg. C', 0, 99, '', False, 'Temperature at time of sample capture', 'Temp', 0, [], 'Simple temperature measurement', '1.00', '', False, 'General'),
-            ('field', 'pH (field)', '', 2, 7, '', False, 'pH measured at sample capture', 'pHField', 2, '', 'Instructions for ph Field', '5.00', '', False, 'General'),
-            ('lab', 'Aflatoxins Total', 'mg/l', 2, 11, '', False, 'Description for Aflatoxins Total', 'Aflatox', 1, [[0, 8, 0.4], [8, 12, 0.6], [12, 999, 0.8]], 'Instructions for Aflatoxins', '5.00', '', False, 'Biogas'),
-            ('lab', 'Ash', '%', 15, 30, '', False, 'Description for total ash analysis', 'Ash', 2, [[0, 20, 1], [20, 40, 2], [40, 999, 3]], 'Instructions for Ash', '5.00', 'Residual Weight', True, 'Mold'),
-            ('lab', 'Calcium', 'mg/l', 5, 10, 'ml', False, 'Description for calcium determination', 'Ca', 3, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'Instructions for Calcium', '0.00', 'Titration', False, 'Water'),
-            ('lab', 'Chlorides', 'mg/l', 3, 10, '', False, 'Description for Chloride analysis', 'Clide', 1, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'Instructions for Chlorides', '0.00', '', False, 'Water'),
-            ('lab', 'Chlorine residual', 'mg/l', 2, 4, 'ml', False, 'Description for residual chlorine testing', 'Cl', 2, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'Instructions for Chlorine residual', '0.00', 'Titration', False, 'Oil'),
-            ('lab', 'COD ', 'mg/l', 1, 99, '', False, 'Description for COD', 'COD', 3, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'Instructions for COD', None, '', False, 'Soil'),
-            ('lab', 'Conductivity @ 25 deg C', 'mS/m', 3, 10, '', False, 'Description for testing ', 'Conductivity', 4, '', 'Instructions for Conductivity @ 25deg C', None, '', False, 'Soil'),
-            ('lab', 'Copper', 'mg/l', 2, 6, 'ml', False, 'Description for copper as Cu', 'Cu', 6, '', 'Instructions for Copper', None, '', False, 'Soil'),
-            ('lab', 'Ether Extract', '%', 2, 6, '', False, 'Ether extract/crude fat', 'EE', 6, '', 'Instructions for ether extract', None, '', False, 'Oil'),
-            ('lab', 'Fat Crude', '%', 2, 45, '', False, 'Description for crude fat', 'FatCrude', 1, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'Instructions for Fat Crude', '5.00', 'Weight Loss (tare)', True, 'Mold'),
-            ('lab', 'Fibre - ADF', '%', 10, 50, '', True, 'Description for fibre testing (ADF)', 'FibADF', 2, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'Instructions for Fibre ADF', '1.00', 'Weight Loss', True, 'Air'),
-            ('lab', 'Fibre - Crude', '%', 3, 30, '', True, 'Description for crude fibre testing', 'CF', 3, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'Instructions for crude fibre', '1.00', '', True, 'General'),
-            ('lab', 'Fibre - NDF', '%', 3, 7, '', False, 'Description for NDF fibre', 'NDF', 4, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'Instructions for NDF fibre', '0.00', 'Residual Weight (tare)', True, 'Water'),
-            ('lab', 'Fluoride', 'mg/l', 2, 10, 'ml', False, 'Description for flouride', 'F', 5, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'Instructions for Flouride', None, '', False, 'Mold'),
-            ('lab', 'Iron', 'mg/l', 5, 10, '', False, 'Description for iron as Fe', 'Fe', 1, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'Instructions for iron', None, '', False, 'Biogas'),
-            ('lab', 'Lignin', 'mg/l', 5, 10, '', True, 'Description for Lignin', 'Lignin', 2, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'Instructions for lignin', None, 'Residual Weight', False, 'Mold'),
-            ('lab', 'Magnesium', 'mg/l', 5, 10, '', False, 'Description for magnesium', 'Mg', 3, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'Instructions for magnesium', None, '', False, 'General'),
-            ('lab', 'Manganese', 'mg/l', 3, 11, '', False, 'Description for manganese', 'Mn', 4, '', 'Instructions for manganese', None, '', False, 'Soil'),
-            ('lab', 'Moisture', '%', 5, 35, '', False, 'Description for percentage moisture testing. The mass of the wet sample, dry sample and container are captured. The result is determined by the formula: (wet sample - dry sample) / (wet sample - container)', 'Moist', 5, [[0, 10, 1], [10, 20, 2], [20, 30, 3], [30, 100, 4]], 'Instructions for moisture', None, 'Weight Loss', False, 'Water'),
-            ('lab', 'Nitrates & Nitrites', 'mg/l', 5, 10, '', False, 'Description for nitrates and nitrites', 'N', 6, '', 'Instructions for nitrates & nitrites', None, '', False, 'Water'),
-            ('lab', 'Phosphorus', 'mg/l', 5, 10, '', False, 'Description for phosphorus testing', 'Phos', 1, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'Instructions for phosphorus', '5.00', '', False, 'Air'),
-            ('lab', 'pH (laboratory)', '', 2, 7, '', False, 'Laboratory method for pH', 'pH', 2, '', 'Instructions for ph Lab', '5.00', '', False, 'Air'),
-            ('lab', 'Phosphorus Total', 'mg/l', 5, 10, '', False, 'Description for total phosphorus', 'PhosTot', 3, '', 'Instructions for total phosphorus', None, '', False, 'Mold'),
-            ('lab', 'Protein - ADIP', 'mg/l', 5, 10, '', False, 'Description for ADIP protein', 'ADIPP', 3, '', 'Instructions for protein', None, '', False, 'Soil'),
-            ('lab', 'Protein - NDIP', 'mg/l', 5, 10, '', False, 'Description for NDIP protein', 'NDIPP', 4, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'Instructions for NDIP protein', None, 'Titration', False, 'Mold'),
-            ('lab', 'Protein (KOH Solubility)', 'mg/l', 5, 10, '', False, 'KOH solubility method for testing protein', 'KOHP', 5, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'Instructions for KOH soluble protein', None, '', False, 'Water'),
-            ('lab', 'Protein (Soluble) ', 'mg/l', 5, 10, '', False, 'Description for testing soluble protein', 'SP', 6, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'Instructions for soluble protein', None, '', False, 'Water'),
-            ('lab', 'Protein Crude', 'mg/l', 5, 10, '', False, 'Description for crude protein', 'CP', 7, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'Instructions for crude protein', None, '', False, 'Water'),
-            ('lab', 'Sodium', 'mg/l', 5, 10, '', False, 'Description for Na', 'Na', 8, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'Instructions for sodium', None, '', False, 'Soil'),
-            ('lab', 'Starch', '%', 5, 10, '', False, '', 'STA', 24, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'Instructions for starch', None, '', False, 'Mold'),
-            ('lab', 'Sugars', '%', 5, 10, '', False, 'Total sugars as invert sugar', 'SUG', 48, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'Instructions for sugars', None, '', False, 'Water'),
-            ('lab', 'Sulphate', 'mg/l', 5, 10, '', False, 'Description for SO4 testing', 'SO4', 4, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'Instructions for sulphate', '10.00', '', False, 'Water'),
-            ('lab', 'Suspended solids', 'mg/l', 5, 10, '', True, 'Suspended solid testing methods', 'SS', 2, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'Instructions for suspended solids', '2.00', '', False, 'Soil'),
-            ('lab', 'TDS (calculated)', 'mg/l', 5, 10, '', False, 'Description for TDS', 'CTDS', 1, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'Instructions for calculated TDS', '2.00', '', False, 'Soil'),
-            ('lab', 'Tot. Alkalinity (CaCO3)', 'mg/l', 5, 10, '', False, 'Description for determining the total alkalinity, or CaCO3 of a sample', 'CaCO3', 2, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'Instructions for total alkalinity', '0.00', '', False, 'Mold'),
-            ('lab', 'Tot. Hardness (THCaCO3)', 'mg/l', 4, 16, '', False, 'Description for testing hardness - CaCO3', 'THCaCO3', 3, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'Instructions for total hardness', '0.00', '', False, 'Water'),
-            ('lab', 'Urea ', 'mg/l', 2, 8, '', False, 'Description for urea testing', 'Urea', 4, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'Instructions for urea', '0.00', '', False, 'Mold'),
-            ('lab', 'Zinc', 'mg/l', 5, 9, '', False, 'Description for zinc testing', 'Zn', 10, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'Instructions for zinc', '0.00', '', False, 'Soil'),
+            ('field', 'Temperature', 'Deg. C', 0, 99, '', False, 'Temperature at time of sample capture', 'Temp', {'minutes':0}, [], 'Simple temperature measurement', '1.00', '', False, 'General'),
+            ('field', 'pH (field)', '', 2, 7, '', False, 'pH measured at sample capture', 'pHField', {'hours':2}, '', 'Instructions for ph Field', '5.00', '', False, 'General'),
+            ('lab', 'Aflatoxins Total', 'mg/l', 2, 11, '', False, 'Description for Aflatoxins Total', 'Aflatox', {'hours':1}, [[0, 8, 0.4], [8, 12, 0.6], [12, 999, 0.8]], 'Instructions for Aflatoxins', '5.00', '', False, 'Biogas'),
+            ('lab', 'Ash', '%', 15, 30, '', False, 'Description for total ash analysis', 'Ash', {'hours':2}, [[0, 20, 1], [20, 40, 2], [40, 999, 3]], 'Instructions for Ash', '5.00', 'Residual Weight', True, 'Mold'),
+            ('lab', 'Calcium', 'mg/l', 5, 10, 'ml', False, 'Description for calcium determination', 'Ca', {'hours':3}, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'Instructions for Calcium', '0.00', 'Titration', False, 'Water'),
+            ('lab', 'Chlorides', 'mg/l', 3, 10, '', False, 'Description for Chloride analysis', 'Clide', {'hours':1}, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'Instructions for Chlorides', '0.00', '', False, 'Water'),
+            ('lab', 'Chlorine residual', 'mg/l', 2, 4, 'ml', False, 'Description for residual chlorine testing', 'Cl', {'hours':2}, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'Instructions for Chlorine residual', '0.00', 'Titration', False, 'Oil'),
+            ('lab', 'COD ', 'mg/l', 1, 99, '', False, 'Description for COD', 'COD', {'hours':3}, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'Instructions for COD', None, '', False, 'Soil'),
+            ('lab', 'Conductivity @ 25 deg C', 'mS/m', 3, 10, '', False, 'Description for testing ', 'Conductivity', {'hours':4}, '', 'Instructions for Conductivity @ 25deg C', None, '', False, 'Soil'),
+            ('lab', 'Copper', 'mg/l', 2, 6, 'ml', False, 'Description for copper as Cu', 'Cu', {'hours':6}, '', 'Instructions for Copper', None, '', False, 'Soil'),
+            ('lab', 'Ether Extract', '%', 2, 6, '', False, 'Ether extract/crude fat', 'EE', {'hours':6}, '', 'Instructions for ether extract', None, '', False, 'Oil'),
+            ('lab', 'Fat Crude', '%', 2, 45, '', False, 'Description for crude fat', 'FatCrude', {'hours':1}, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'Instructions for Fat Crude', '5.00', 'Weight Loss (tare)', True, 'Mold'),
+            ('lab', 'Fibre - ADF', '%', 10, 50, '', True, 'Description for fibre testing (ADF)', 'FibADF', {'hours':2}, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'Instructions for Fibre ADF', '1.00', 'Weight Loss', True, 'Air'),
+            ('lab', 'Fibre - Crude', '%', 3, 30, '', True, 'Description for crude fibre testing', 'CF', {'hours':3}, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'Instructions for crude fibre', '1.00', '', True, 'General'),
+            ('lab', 'Fibre - NDF', '%', 3, 7, '', False, 'Description for NDF fibre', 'NDF', {'hours':4}, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'Instructions for NDF fibre', '0.00', 'Residual Weight (tare)', True, 'Water'),
+            ('lab', 'Fluoride', 'mg/l', 2, 10, 'ml', False, 'Description for flouride', 'F', {'hours':5}, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'Instructions for Flouride', None, '', False, 'Mold'),
+            ('lab', 'Iron', 'mg/l', 5, 10, '', False, 'Description for iron as Fe', 'Fe', {'hours':1}, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'Instructions for iron', None, '', False, 'Biogas'),
+            ('lab', 'Lignin', 'mg/l', 5, 10, '', True, 'Description for Lignin', 'Lignin', {'hours':2}, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'Instructions for lignin', None, 'Residual Weight', False, 'Mold'),
+            ('lab', 'Magnesium', 'mg/l', 5, 10, '', False, 'Description for magnesium', 'Mg', {'hours':3}, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'Instructions for magnesium', None, '', False, 'General'),
+            ('lab', 'Manganese', 'mg/l', 3, 11, '', False, 'Description for manganese', 'Mn', {'hours':4}, '', 'Instructions for manganese', None, '', False, 'Soil'),
+            ('lab', 'Moisture', '%', 5, 35, '', False, 'Description for percentage moisture testing. The mass of the wet sample, dry sample and container are captured. The result is determined by the formula: (wet sample - dry sample) / (wet sample - container)', 'Moist', {'hours':5}, [[0, 10, 1], [10, 20, 2], [20, 30, 3], [30, 100, 4]], 'Instructions for moisture', None, 'Weight Loss', False, 'Water'),
+            ('lab', 'Nitrates & Nitrites', 'mg/l', 5, 10, '', False, 'Description for nitrates and nitrites', 'N', {'hours':6}, '', 'Instructions for nitrates & nitrites', None, '', False, 'Water'),
+            ('lab', 'Phosphorus', 'mg/l', 5, 10, '', False, 'Description for phosphorus testing', 'Phos', {'hours':1}, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'Instructions for phosphorus', '5.00', '', False, 'Air'),
+            ('lab', 'pH (laboratory)', '', 2, 7, '', False, 'Laboratory method for pH', 'pH', {'hours':2}, '', 'Instructions for ph Lab', '5.00', '', False, 'Air'),
+            ('lab', 'Phosphorus Total', 'mg/l', 5, 10, '', False, 'Description for total phosphorus', 'PhosTot', {'hours':3}, '', 'Instructions for total phosphorus', None, '', False, 'Mold'),
+            ('lab', 'Protein - ADIP', 'mg/l', 5, 10, '', False, 'Description for ADIP protein', 'ADIPP', {'hours':3}, '', 'Instructions for protein', None, '', False, 'Soil'),
+            ('lab', 'Protein - NDIP', 'mg/l', 5, 10, '', False, 'Description for NDIP protein', 'NDIPP', {'hours':4}, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'Instructions for NDIP protein', None, 'Titration', False, 'Mold'),
+            ('lab', 'Protein (KOH Solubility)', 'mg/l', 5, 10, '', False, 'KOH solubility method for testing protein', 'KOHP', {'hours':5}, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'Instructions for KOH soluble protein', None, '', False, 'Water'),
+            ('lab', 'Protein (Soluble) ', 'mg/l', 5, 10, '', False, 'Description for testing soluble protein', 'SP', {'hours':6}, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'Instructions for soluble protein', None, '', False, 'Water'),
+            ('lab', 'Protein Crude', 'mg/l', 5, 10, '', False, 'Description for crude protein', 'CP', {'hours':7}, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'Instructions for crude protein', None, '', False, 'Water'),
+            ('lab', 'Sodium', 'mg/l', 5, 10, '', False, 'Description for Na', 'Na', {'hours':8}, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'Instructions for sodium', None, '', False, 'Soil'),
+            ('lab', 'Starch', '%', 5, 10, '', False, '', 'STA', {'days':1}, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'Instructions for starch', None, '', False, 'Mold'),
+            ('lab', 'Sugars', '%', 5, 10, '', False, 'Total sugars as invert sugar', 'SUG', {'days':2}, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'Instructions for sugars', None, '', False, 'Water'),
+            ('lab', 'Sulphate', 'mg/l', 5, 10, '', False, 'Description for SO4 testing', 'SO4', {'hours':4}, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'Instructions for sulphate', '10.00', '', False, 'Water'),
+            ('lab', 'Suspended solids', 'mg/l', 5, 10, '', True, 'Suspended solid testing methods', 'SS', {'hours':2}, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'Instructions for suspended solids', '2.00', '', False, 'Soil'),
+            ('lab', 'TDS (calculated)', 'mg/l', 5, 10, '', False, 'Description for TDS', 'CTDS', {'hours':1}, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'Instructions for calculated TDS', '2.00', '', False, 'Soil'),
+            ('lab', 'Tot. Alkalinity (CaCO3)', 'mg/l', 5, 10, '', False, 'Description for determining the total alkalinity, or CaCO3 of a sample', 'CaCO3', {'hours':2}, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'Instructions for total alkalinity', '0.00', '', False, 'Mold'),
+            ('lab', 'Tot. Hardness (THCaCO3)', 'mg/l', 4, 16, '', False, 'Description for testing hardness - CaCO3', 'THCaCO3', {'hours':3}, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'Instructions for total hardness', '0.00', '', False, 'Water'),
+            ('lab', 'Urea ', 'mg/l', 2, 8, '', False, 'Description for urea testing', 'Urea', {'hours':4}, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'Instructions for urea', '0.00', '', False, 'Mold'),
+            ('lab', 'Zinc', 'mg/l', 5, 9, '', False, 'Description for zinc testing', 'Zn', {'hours':10}, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'Instructions for zinc', '0.00', '', False, 'Soil'),
         )
         self.CreateServiceObjects(services)
 
     def AnalysisServices2(self):
         services = (
-            ('lab', 'Dry Matter', '%', 5, 35, '', False, 'Description for percentage dry matter. Dependant on Moisture', 'DM', 5, [[0, 10, 1], [10, 20, 2], [20, 30, 3], [30, 100, 4]], 'DM (%) = 100 - Moisture %', None, 'Dry Matter', False, 'Biogas'),
-            ('lab', 'Apparent Metabolizable Energy', 'MJ/kg', 5, 9, '', False, 'AME used for poultry feed as no correction is made for faecal or endogenous energy losses', 'AME', 10, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'AME (MJ/kg) = 0.1551 ProteinCrude% + 0.3431 FatCrudeEtherExtraction% + 0.1669 Starch% + 0.1301 Sugars %', '0.00', 'Apparent Metabolizable Energy', True, 'General'),
-            ('lab', 'Metabolizable Energy', 'MJ/kg DM', 5, 9, '', False, 'ME used for ruminant feeds', 'ME', 10, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'ME (MJ/kg DM) = 12 + [0.008 ProteinCrude + 0.023 FatCrudeEtherExtraction] - 0.018 FibreCrude + 0.012 Ash]', '0.00', 'Metabolizable Energy', True, 'General'),
-            ('lab', 'Non-Structural Carbohydrates', '% DM', 5, 9, '', False, 'NSC is used for dairy cattle', 'NSC', 10, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'NSC% (DM) = 100 - [FibreNDF% + ProteinCrude% + FatCrudeEtherExtraction% + Ash%]', '0.00', 'Non-Structural Carbohydrates', False, 'General'),
-            ('lab', 'Digestible Energy', 'MJ/kg', 5, 9, '', False, 'DE is used for pig feeds', 'DE', 10, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'DE MJ/kg = 17.38 + 0.105 ProteinCrude% + 0.114 FatCrudeEtherExtraction% -0.317 FibreCrude% -0.402 Ash%', '0.00', 'Digestible Energy', False, 'General'),
+            ('lab', 'Dry Matter', '%', 5, 35, '', False, 'Description for percentage dry matter. Dependant on Moisture', 'DM', {'hours':5}, [[0, 10, 1], [10, 20, 2], [20, 30, 3], [30, 100, 4]], 'DM (%) = 100 - Moisture %', None, 'Dry Matter', False, 'Biogas'),
+            ('lab', 'Apparent Metabolizable Energy', 'MJ/kg', 5, 9, '', False, 'AME used for poultry feed as no correction is made for faecal or endogenous energy losses', 'AME', {'hours':10}, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'AME (MJ/kg) = 0.1551 ProteinCrude% + 0.3431 FatCrudeEtherExtraction% + 0.1669 Starch% + 0.1301 Sugars %', '0.00', 'Apparent Metabolizable Energy', True, 'General'),
+            ('lab', 'Metabolizable Energy', 'MJ/kg DM', 5, 9, '', False, 'ME used for ruminant feeds', 'ME', {'hours':10}, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'ME (MJ/kg DM) = 12 + [0.008 ProteinCrude + 0.023 FatCrudeEtherExtraction] - 0.018 FibreCrude + 0.012 Ash]', '0.00', 'Metabolizable Energy', True, 'General'),
+            ('lab', 'Non-Structural Carbohydrates', '% DM', 5, 9, '', False, 'NSC is used for dairy cattle', 'NSC', {'hours':10}, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'NSC% (DM) = 100 - [FibreNDF% + ProteinCrude% + FatCrudeEtherExtraction% + Ash%]', '0.00', 'Non-Structural Carbohydrates', False, 'General'),
+            ('lab', 'Digestible Energy', 'MJ/kg', 5, 9, '', False, 'DE is used for pig feeds', 'DE', {'hours':10}, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'DE MJ/kg = 17.38 + 0.105 ProteinCrude% + 0.114 FatCrudeEtherExtraction% -0.317 FibreCrude% -0.402 Ash%', '0.00', 'Digestible Energy', False, 'General'),
         )
         self.CreateServiceObjects(services)
 
     def AnalysisServices3(self):
         services = (
-            ('lab', 'Total Digestible Nutrients', '% DM', 5, 9, '', False, 'TDN % is used for ruminant feeds', 'TDN', 10, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'TDN% (DM) = ME MJ/kg DM * 6.67', '0.00', 'Total Digestible Nutrients', False, 'General'),
+            ('lab', 'Total Digestible Nutrients', '% DM', 5, 9, '', False, 'TDN % is used for ruminant feeds', 'TDN', {'hours':10}, [[0, 5, 0.1], [5, 10, 0.2], [10, 999, 0.3]], 'TDN% (DM) = ME MJ/kg DM * 6.67', '0.00', 'Total Digestible Nutrients', False, 'General'),
         )
         self.CreateServiceObjects(services)
 

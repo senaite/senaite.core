@@ -30,7 +30,7 @@ class AnalysisServicesView(BikaListingView):
                'CategoryName': {'title': _('Category')},
                'Unit': {'title': _('Unit')},
                'Price': {'title': _('Price')},
-               'MaxHoursAllowed': {'title': _('Max Hours')},
+               'MaxTimeAllowed': {'title': _('Max Time')},
                'DuplicateVariation': {'title': _('Dup Var')},
                'Calculation': {'title': _('Calculation')},
               }
@@ -41,7 +41,7 @@ class AnalysisServicesView(BikaListingView):
                                   'CategoryName',
                                   'Unit',
                                   'Price',
-                                  'MaxHoursAllowed',
+                                  'MaxTimeAllowed',
                                   'DuplicateVariation',
                                   'Calculation',
                                  ],
@@ -57,7 +57,17 @@ class AnalysisServicesView(BikaListingView):
             items[x]['CategoryName'] = obj.getCategoryName()
             items[x]['Unit'] = obj.Unit
             items[x]['Price'] = "%s.%02d" % (obj.Price)
-            items[x]['MaxHoursAllowed'] = obj.MaxHoursAllowed
+            maxtime = obj.MaxTimeAllowed
+            items[x]['MaxTimeAllowed'] = 'days' in maxtime and maxtime['days'] \
+                 and "%s%s"%(maxtime['days'], _('D')) or ""
+            items[x]['MaxTimeAllowed'] += 'hours' in maxtime and maxtime['hours'] \
+                 and "%s%s"%(maxtime['hours'], _('H')) or ""
+            items[x]['MaxTimeAllowed'] += 'minutes' in maxtime and maxtime['minutes'] \
+                 and "%s%s"%(maxtime['minutes'], _('M')) \
+                 or not (('hours' in maxtime and maxtime['hours'])) \
+                 and '0%s'%(_('M')) \
+                 or ''
+
             if obj.DuplicateVariation is not None:
                 items[x]['DuplicateVariation'] = "%s.%02d" % (obj.DuplicateVariation)
             else: items[x]['DuplicateVariation'] = ""
