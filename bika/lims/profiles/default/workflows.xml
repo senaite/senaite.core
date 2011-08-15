@@ -79,5 +79,6 @@
   <type type_id="ReferenceSupplierFolder"/>
   <type type_id="SupplierContact"/>
   <type type_id="WorksheetFolder"/>
+  <type type_id="WorksheetTemplate"/>
  </bindings>
 </object>
