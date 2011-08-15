@@ -87,7 +87,8 @@ class ReferenceSamplesView(BikaListingView):
             items[x]['ID'] = obj.id
             items[x]['Title'] = obj.getReferenceTitle()
             items[x]['Supplier'] = obj.aq_parent.Title()
-            items[x]['Manufacturer'] = obj.getReferenceManufacturer().Title()
+            items[x]['Manufacturer'] = obj.getReferenceManufacturer() and \
+                 obj.getReferenceManufacturer().Title() or ''
             items[x]['CatalogueNumber'] = obj.getCatalogueNumber()
             items[x]['LotNumber'] = obj.getLotNumber()
             items[x]['Definition'] = obj.getReferenceDefinition() and \
