@@ -26,6 +26,7 @@ import time
 schema = BikaSchema.copy() + Schema((
     ReferenceField('SampleType',
         required = 1,
+        vocabulary = "getRemainingSampleTypes",
         vocabulary_display_path_bound = sys.maxint,
         allowed_types = ('SampleType',),
         relationship = 'AnalysisSpecSampleType',
@@ -132,5 +133,24 @@ class AnalysisSpec(BaseFolder):
                 sorted_specs.append(services[service_key])
 
         return sorted_specs
+
+    security.declarePublic('getRemainingSampleTypes')
+    def getRemainingSampleTypes(self):
+        """ return all unused sample types """
+        """ plus the current object's sample type, if any """
+        unavailable_sampletypes = []
+        for spec in self.aq_parent.objectValues('AnalysisSpec'):
+            st = spec.getSampleType()
+            own_sampletype = self.getSampleType() and self.getSampleType().UID()
+            if not st.UID() == own_sampletype:
+                unavailable_sampletypes.append(st.UID())
+
+        available_sampletypes = []
+        for st in self.portal_catalog(portal_type = 'SampleType',
+                                      sort_on = 'sortable_title'):
+            if st.UID not in unavailable_sampletypes:
+                available_sampletypes.append((st.UID, st.Title))
+
+        return DisplayList(available_sampletypes)
 
 atapi.registerType(AnalysisSpec, PROJECTNAME)

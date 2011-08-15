@@ -111,28 +111,6 @@ class SpecWidget(RecordsWidget):
         else:
             return ""
 
-    security.declarePublic('getRemainingSampleTypes')
-    def getRemainingSampleTypes(self, field):
-        """ Return a DisplayList containing all sampletypes with no analysis specs defined
-        """
-        unavailable_sampletypes = []
-
-        #XXX  AnalysisSpec or LabAnalysisSec is decided from the type of the field parameter
-        # this came from the laban.spec. type and must be fitted to work with both lab and client specs
-
-        for spec in self.portal_catalog(portal_type = 'AnalysisSpec'):
-            if spec.UID != self.UID():
-                st = spec.getSampleType()
-                if st:
-                    unavailable_sampletypes.append(st.UID())
-
-        available_sampletypes = []
-        for st in self.portal_catalog(portal_type = 'SampleType'):
-            if st.UID not in unavailable_sampletypes:
-                available_sampletypes.append((st.UID, st.Title))
-
-        return DisplayList(available_sampletypes)
-
 registerWidget(SpecWidget,
                title = 'Analysis Services',
                description = ('AnalysisSpec selector.'),

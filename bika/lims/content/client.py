@@ -191,24 +191,6 @@ class Client(Organisation):
     def getARImportOptions(self):
         return ARIMPORT_OPTIONS
 
-    security.declarePublic('getRemainingSampleTypes')
-    def getRemainingSampleTypes(self, current_sampletype):
-        """ return all unused sample types """
-        """ plus the current one being edited """
-        unavailable_sampletypes = []
-        for spec in self.objectValues('AnalysisSpec'):
-            st = spec.getSampleType()
-            if not st.UID() == current_sampletype:
-                unavailable_sampletypes.append(st.UID())
-
-        available_sampletypes = []
-        for st in self.portal_catalog(portal_type = 'SampleType',
-                                      sort_on = 'sortable_title'):
-            if st.UID not in unavailable_sampletypes:
-                available_sampletypes.append((st.UID, st.Title))
-
-        return DisplayList(available_sampletypes)
-
     security.declarePublic('getSampleTypeDisplayList')
     def getSampleTypeDisplayList(self):
         """ return all sample types """
