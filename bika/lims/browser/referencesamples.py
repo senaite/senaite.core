@@ -90,7 +90,8 @@ class ReferenceSamplesView(BikaListingView):
             items[x]['Manufacturer'] = obj.getReferenceManufacturer().Title()
             items[x]['CatalogueNumber'] = obj.getCatalogueNumber()
             items[x]['LotNumber'] = obj.getLotNumber()
-            items[x]['Definition'] = obj.getReferenceDefinition().Title()
+            items[x]['Definition'] = obj.getReferenceDefinition() and \
+                 obj.getReferenceDefinition().Title() or ''
             items[x]['DateSampled'] = \
                  self.context.toLocalizedTime(obj.getDateSampled(), long_format = 0)
             items[x]['DateReceived'] = \
