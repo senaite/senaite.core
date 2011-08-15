@@ -39,4 +39,12 @@
     rendering="link"
     insert-before="*"/>
 
+<stylesheet
+    id="++resource++bika.lims.css/hide_editable_border.css"
+    expression="python:here.portal_type in ['AnalysisService',]"
+    media="screen"
+    rel="stylesheet"
+    rendering="link"
+    insert-before="*"/>
+
 </object>
