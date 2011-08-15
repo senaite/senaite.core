@@ -4,5 +4,5 @@ Doing this the Right Way is very, very messy.
 */
 
 #edit-bar {
-  display:none;
+  display:none !important;
 }
