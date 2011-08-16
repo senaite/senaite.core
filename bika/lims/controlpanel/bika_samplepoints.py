@@ -25,7 +25,7 @@ class SamplePointsView(BikaListingView):
     show_editable_border = False
     show_filters = True
     show_sort_column = False
-    show_select_row = False
+    show_select_row = True
     show_select_column = True
     pagesize = 20
 

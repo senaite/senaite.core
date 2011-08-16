@@ -14,7 +14,7 @@ class ClientFolderContentsView(BikaListingView):
     show_editable_border = False
     show_table_only = False
     show_sort_column = False
-    show_select_row = False
+    show_select_row = True
     show_select_column = True
     show_filters = False
     pagesize = 20

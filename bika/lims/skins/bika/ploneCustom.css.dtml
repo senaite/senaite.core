@@ -191,7 +191,7 @@ input.cb {
 }
 
 .state-inactive {
-	background-color: #ff8888 !important;
+	background-color: #ffd4cc !important;
 	color: #333333;
 }
 .state-sample_due {

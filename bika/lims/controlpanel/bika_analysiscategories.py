@@ -20,7 +20,7 @@ class AnalysisCategoriesView(BikaListingView):
     show_editable_border = False
     show_filters = False
     show_sort_column = False
-    show_select_row = False
+    show_select_row = True
     show_select_column = True
     pagesize = 20
 
@@ -40,7 +40,7 @@ class AnalysisCategoriesView(BikaListingView):
     def folderitems(self):
         items = BikaListingView.folderitems(self)
         for x in range(len(items)):
-            if not items[x].has_key('obj'): 
+            if not items[x].has_key('obj'):
                 continue
             obj = items[x]['obj'].getObject()
             items[x]['Description'] = obj.Description()

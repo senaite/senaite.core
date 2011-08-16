@@ -13,6 +13,7 @@ from bika.lims.browser.client import ClientAnalysisRequestsView
 from bika.lims.browser.publish import Publish
 from bika.lims.config import POINTS_OF_CAPTURE
 from bika.lims import logger
+from bika.lims.utils import isActive
 from decimal import Decimal
 from operator import itemgetter
 from plone.app.content.browser.interfaces import IFolderContentsView
@@ -46,15 +47,10 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
         # only "activate" workflow_action is allowed on ARs which are inactive.
         # any action on inactive AR's children is also ignored.
         if action and \
-           'bika_inactive_workflow' in workflow.getChainFor(self.context) and \
-           workflow.getInfoFor(self.context, 'inactive_review_state', '') == 'inactive' and \
+           not isActive(self.context) and \
            action != 'activate':
-            message = self.context.translate(
-                'message_item_is_inactive',
-                default='${item} is inactive.',
-                mapping={'item': self.context.Title()},
-                domain="bika")
-            self.context.plone_utils.addPortalMessage(message, 'error')
+            message = _("This item is inactive")
+            self.context.plone_utils.addPortalMessage(message, 'info')
             return
 
         if not action:
@@ -378,20 +374,20 @@ class AnalysisRequestManageResultsView(AnalysisRequestViewView):
     template = ViewPageTemplateFile("templates/analysisrequest_manage_results.pt")
 
     def __call__(self):
-        wf_tool = getToolByName(self.context, 'portal_workflow')
+        workflow = getToolByName(self.context, 'portal_workflow')
         pc = getToolByName(self.context, 'portal_catalog')
         self.Field = AnalysesView(self.context, self.request,
                                   getPointOfCapture = 'field')
-        self.Field.allow_edit = True
-        self.Field.review_states[0]['transitions'] = \
-            ['submit','retract','verify']
+
+        self.Field.allow_edit = active or False
+
+        self.Field.review_states[0]['transitions'] = ['submit','retract','verify']
         self.Field.show_select_column = True
         self.Field = self.Field.contents_table()
         self.Lab = AnalysesView(self.context, self.request,
                                 getPointOfCapture = 'lab')
-        self.Lab.allow_edit = True
-        self.Lab.review_states[0]['transitions'] = \
-            ['submit','retract','verify']
+        self.Lab.allow_edit = active or False
+        self.Lab.review_states[0]['transitions'] = ['submit','retract','verify']
         self.Lab.show_select_column = True
         self.Lab = self.Lab.contents_table()
 
@@ -416,8 +412,9 @@ class AnalysisRequestContactCCs(BrowserView):
         returned here, and the #cc_titles textbox is filled with Contact Titles
     """
     def __call__(self):
-        #XXXplone.protect.CheckAuthenticator(self.request)
+        plone.protect.CheckAuthenticator(self.request.form)
         rc = getToolByName(self.context, 'reference_catalog')
+        workflow = getToolByName(self.context, 'portal_workflow')
         uid = self.request.form.keys() and self.request.form.keys()[0] or None
         if not uid:
             return
@@ -425,13 +422,18 @@ class AnalysisRequestContactCCs(BrowserView):
         cc_uids = []
         cc_titles = []
         for cc in contact.getCCContact():
+            active = isActive(contact)
+            if not active:
+                continue
             cc_uids.append(cc.UID())
             cc_titles.append(cc.Title())
-        return json.dumps([",".join(cc_uids), ",".join(cc_titles)])
+        return json.dumps([",".join(cc_uids),
+                           ",".join(cc_titles)])
 
 class AnalysisRequestSelectCCView(BikaListingView):
     """ The CC Selector popup window uses this view"""
-    contentFilter = {'portal_type': 'Contact'}
+    contentFilter = {'portal_type': 'Contact',
+                     'inactive_review_state': 'active'}
     content_add_actions = {}
     title = "Contacts to CC"
     description = ''
@@ -468,17 +470,16 @@ class AnalysisRequestSelectCCView(BikaListingView):
 
     def folderitems(self):
         items = BikaListingView.folderitems(self)
-        out = []
-        for x in range(len(items)):
-            if not items[x].has_key('brain'): continue
+        for x,item in enumerate(items):
+            if not items[x].has_key('obj'): continue
             if items[x]['uid'] in self.request.get('hide_uids', ''): continue
             if items[x]['uid'] in self.request.get('selected_uids', ''):
                 items[x]['checked'] = True
-            out.append(items[x])
-        return out
+        return items
 
 class AnalysisRequestSelectSampleView(BikaListingView):
-    contentFilter = {'portal_type': 'Sample'}
+    contentFilter = {'portal_type': 'Sample',
+                     'inactive_review_state': 'active'}
     content_add_actions = {}
     show_editable_border = False
     show_table_only = True
@@ -527,8 +528,7 @@ class AnalysisRequestSelectSampleView(BikaListingView):
 
     def folderitems(self):
         items = BikaListingView.folderitems(self)
-        out = []
-        for x in range(len(items)):
+        for x,item in enumerate(items):
             if not items[x].has_key('obj'): continue
             obj = items[x]['obj'].getObject()
             if items[x]['uid'] in self.request.get('hide_uids', ''): continue
@@ -553,8 +553,7 @@ class AnalysisRequestSelectSampleView(BikaListingView):
                 'field_analyses': self.FieldAnalyses(obj),
                 'column': self.request.get('column', None),
             })
-            out.append(items[x])
-        return out
+        return items
 
     @instance.memoize
     def FieldAnalyses(self, sample):

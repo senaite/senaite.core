@@ -16,8 +16,8 @@ class WorksheetFolderView(BikaListingView):
     content_add_actions = {_('Worksheet'): "worksheet_add"}
     show_editable_border = False
     show_table_only = False
-    show_sort_column = False
-    show_select_row = False
+    show_sort_column = True
+    show_select_row = True
     show_select_column = True
     pagesize = 50
 

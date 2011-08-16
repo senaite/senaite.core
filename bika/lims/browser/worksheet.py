@@ -385,7 +385,7 @@ class WorksheetManageResultsView(AnalysesView):
             result += r[ar_id]
         return result
 
-class WorksheetAddAnalysisView(BikaListingView):
+class WorksheetAddAnalysisView(AnalysesView):
     def __init__(self, context, request):
         super(WorksheetAddAnalysisView, self).__init__(context, request)
         self.content_add_actions = {}
@@ -395,10 +395,10 @@ class WorksheetAddAnalysisView(BikaListingView):
         self.base_url = self.context.absolute_url()
         self.view_url = self.base_url  + "/add_analysis"
         self.show_sort_column = False
-        self.show_select_row = False
+        self.show_select_row = True
         self.show_select_column = True
         self.show_filters = True
-        self.pagesize = 20
+        self.pagesize = 50
 
         self.columns = {
             'ClientName': {'title': _('Client')},

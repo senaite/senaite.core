@@ -28,10 +28,13 @@ class interim_field_id_validator:
         if re.search(r"\s", value):
             return "Interim field IDs may not contain spaces or tabs"
         pc = getSite().portal_catalog
-        service = [s for s in pc(portal_type='AnalysisService') if s.getKeyword == value]
-        if service:
-            return "Interim field ID '%s' is the same as Analysis Service Keyword from '%s'"%\
-                   (value, service[0].Title)
+        services = pc(portal_type='AnalysisService', getKeyword = value)
+        if services:
+            return self.context.translate(
+                "message_keyword_is_not_unique",
+                default = "Keyword {$keyword} is in use.",
+                mapping = {'keyword': value},
+                domain = "bika")
         return True
 id_validator = interim_field_id_validator()
 
@@ -66,6 +69,7 @@ schema = BikaSchema.copy() + Schema((
         referenceClass = HoldingReference,
         widget = ReferenceWidget(
             checkbox_bound = 1,
+            visible = False,
             label = 'Dependent Analyses',
             label_msgid = 'label_dependent_analyses',
             i18n_domain = I18N_DOMAIN,

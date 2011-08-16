@@ -24,7 +24,7 @@ class WorksheetTemplatesView(BikaListingView):
     show_editable_border = False
     show_filters = False
     show_sort_column = False
-    show_select_row = False
+    show_select_row = True
     show_select_column = True
     pagesize = 20
 

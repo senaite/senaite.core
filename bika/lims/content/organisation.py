@@ -1,7 +1,7 @@
 from AccessControl import ClassSecurityInfo
 from Products.ATExtensions.ateapi import RecordWidget
 from Products.Archetypes.public import *
-from bika.lims import PROJECTNAME
+from bika.lims.config import PROJECTNAME
 from Products.CMFCore import permissions as CMFCorePermissions
 from Products.CMFCore.utils import getToolByName
 from bika.lims.content.bikaschema import BikaSchema, BikaFolderSchema

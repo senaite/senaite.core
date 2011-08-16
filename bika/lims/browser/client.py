@@ -551,6 +551,6 @@ class ClientContactsView(BikaListingView):
             if not items[x].has_key('obj'): continue
 
             items[x]['replace']['getFullName'] = "<a href='%s'>%s</a>" % \
-                 (items[x]['url'], items[x]['getFullName'])
+                 (items[x]['url'], items[x]['getFullname'])
 
         return items

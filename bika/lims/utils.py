@@ -1,6 +1,7 @@
 from AccessControl import ModuleSecurityInfo, allow_module
 from bika.lims import interfaces
 from bika.lims.config import PublishSample
+from Products.CMFCore.utils import getToolByName
 from email.Utils import formataddr
 from zope.component._api import getUtility
 import copy
@@ -28,6 +29,16 @@ def printfile(portal, from_addr, to_addrs, msg):
     """
     pass
 
+def isActive(obj):
+    """ checks the object against it's inactive_review_state.
+    """
+    workflow = getToolByName(obj, 'portal_workflow')
+    state = (hasattr(obj, 'inactive_review_state') \
+                 and obj.inactive_review_state) \
+          or ('bika_inactive_workflow' in workflow.getChainFor(obj) \
+               and workflow.getInfoFor(obj, 'inactive_review_state'))
+
+    return state == 'active'
 
 
 # encode_header function copied from roundup's rfc2822 package.
