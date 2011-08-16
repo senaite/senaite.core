@@ -16,8 +16,10 @@ from operator import itemgetter
 
 class CalculationsView(BikaListingView):
     implements(IFolderContentsView)
-    contentFilter = {'portal_type': 'Calculation', 'sort_on': 'sortable_title'}
-    content_add_actions = {_('Calculation Type'): "createObject?type_name=Calculation"}
+    contentFilter = {'portal_type': 'Calculation',
+                     'sort_on': 'sortable_title'}
+    content_add_actions = {_('Calculation'):
+                           "createObject?type_name=Calculation"}
     title = _("Calculations")
     description = ""
     show_editable_border = False
@@ -33,10 +35,7 @@ class CalculationsView(BikaListingView):
               }
     review_states = [
                     {'title': _('All'), 'id':'all',
-                     'columns': ['Title', 'Description'],
-                     'buttons':[{'cssclass': 'context',
-                                 'Title': _('Delete'),
-                                 'url': 'folder_delete:method'}]},
+                     'columns': ['Title', 'Description']}
                     ]
 
     def folderitems(self):

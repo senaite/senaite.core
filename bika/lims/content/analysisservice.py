@@ -5,8 +5,6 @@ from Products.Archetypes.public import *
 from Products.Archetypes.references import HoldingReference
 from Products.CMFCore.permissions import View, ModifyPortalContent
 from Products.CMFCore.utils import getToolByName
-from Products.validation.ZService import ZService as Service
-from Products.validation.interfaces.IValidator import IValidator
 from bika.lims.browser.fields import DurationField
 from bika.lims.browser.widgets import ServicesWidget, RecordsWidget, \
      DurationWidget
@@ -15,37 +13,6 @@ from bika.lims.config import ATTACHMENT_OPTIONS, I18N_DOMAIN, PROJECTNAME, \
 from bika.lims.content.bikaschema import BikaSchema
 from zope.interface import implements
 import sys
-
-validation = Service()
-
-class isUniqueServiceKeywordValidator:
-    """ Used to verify uniqueness among Service Keywords/Titles and Interim Field IDs
-    """
-    implements(IValidator)
-    def __init__(self, name):
-        self.name = name
-    def __call__(self, value, *args, **kwargs):
-        instance = kwargs.get('instance', None)
-        pc = getToolByName(self, 'portal_catalog')
-        keywords = []
-        for proxy in pc(portal_type="AnalysisService"):
-            keywords.append(service.getKeyword())
-            # XXX service title need only be unique per category
-            keywords.append(service.getTitle())
-            calculation = service.getCalculation()
-            if calculation:
-                interim_fields = calculation.getInterimFields()
-                if interim_fields:
-                    for name in [f['id'] for f in interim_fields]:
-                        keywords.append(name)
-        if value in keywords:
-            return self.context.translate(
-                "message_keyword_is_not_unique",
-                default = "Keyword {$keyword} is in use.",
-                mapping = {'keyword': value},
-                domain = "bika")
-        return True
-isUniqueServiceKeyword = isUniqueServiceKeywordValidator
 
 schema = BikaSchema.copy() + Schema((
     BooleanField('ReportDryMatter',
@@ -128,7 +95,7 @@ schema = BikaSchema.copy() + Schema((
     StringField('Keyword',
         required = 1,
         index = 'FieldIndex:brains',
-        validators = ('isUnixLikeName',isUniqueServiceKeyword),
+        validators = ('isUnixLikeName','ServiceKeywordValidator'),
         widget = StringWidget(
             label = 'Analysis Keyword',
             label_msgid = 'label_analysis_keyword',

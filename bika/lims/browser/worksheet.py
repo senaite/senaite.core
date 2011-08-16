@@ -302,8 +302,13 @@ class WorksheetManageResultsView(AnalysesView):
 
     def __init__(self, context, request, allow_edit = False, **kwargs):
         super(WorksheetManageResultsView, self).__init__(context, request)
+        self.show_select_row = True
         self.show_sort_column = True
         self.allow_edit = True
+
+        # dodge catalog acquisition
+        self.has_bika_inactive_workflow = True
+
         self.columns = {
             'Pos': {'title': _('Pos')},
             'Client': {'title': _('Client')},

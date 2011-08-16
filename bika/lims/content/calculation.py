@@ -3,6 +3,7 @@ from Products.ATExtensions.ateapi import RecordsField as RecordsField
 from Products.Archetypes.public import *
 from Products.Archetypes.references import HoldingReference
 from Products.CMFCore.permissions import ModifyPortalContent, View
+from Products.CMFCore.utils import getToolByName
 from Products.validation.ZService import ZService as Service
 from Products.validation.interfaces.IValidator import IValidator
 from bika.lims import bikaMessageFactory as _
@@ -12,45 +13,11 @@ from bika.lims.config import I18N_DOMAIN, PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from zope.interface import implements
 from zope.site.hooks import getSite
+from zExceptions import Redirect
+from plone.memoize import instance
 import sys,re
 
 validation = Service()
-
-class interim_field_id_validator:
-    implements(IValidator)
-    name = "interim_field_id_validator"
-    title = "Interim Field ID Validator"
-    description = "Interim field IDs must not contain whitespace, and may not be the same as an AnalysisService Keyword."
-    def __call__(self, value, *args, **kwargs):
-        """return True if valid, error string if not"""
-        if not value or len(value) == 0:
-            return "Interim field IDs may not be blank"
-        if re.search(r"\s", value):
-            return "Interim field IDs may not contain spaces or tabs"
-        pc = getSite().portal_catalog
-        services = pc(portal_type='AnalysisService', getKeyword = value)
-        if services:
-            return self.context.translate(
-                "message_keyword_is_not_unique",
-                default = "Keyword {$keyword} is in use.",
-                mapping = {'keyword': value},
-                domain = "bika")
-        return True
-id_validator = interim_field_id_validator()
-
-class interim_field_title_validator:
-    implements(IValidator)
-    name = "interim_field_title_validator"
-    title = "Interim Field Title Validator"
-    description = "Interim field Titles may not be the same as an AnalysisService Keyword."
-    def __call__(self, value, *args, **kwargs):
-        pc = getSite().portal_catalog
-        service = [s for s in pc(portal_type='AnalysisService') if s.getKeyword == value]
-        if service:
-            return "Interim field ID '%s' is the same as Analysis Service Keyword from '%s'"%\
-                   (value, service[0].Title)
-        return True
-title_validator = interim_field_title_validator()
 
 schema = BikaSchema.copy() + Schema((
     InterimFieldsField('InterimFields',
@@ -76,6 +43,7 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     TextField('Formula',
+        validators = ('FormulaValidator',),
         widget = TextAreaWidget(
             label = 'Calculation Formula',
             label_msgid = 'label_calculation_description',
@@ -91,6 +59,24 @@ schema['description'].schemata = 'default'
 class Calculation(BaseFolder):
     security = ClassSecurityInfo()
     schema = schema
+
+    def setFormula(self, Formula=None):
+        """Set the Dependent Services from the text of the calculation Formula
+        """
+        pc = getToolByName(self, 'portal_catalog')
+        if Formula is None:
+            self.setDependentServices(None)
+            self.getField('Formula').set(self, Formula)
+        else:
+            service = getToolByName(self, "portal_catalog")
+            DependentServices = []
+            keywords = re.compile(r"\%\(([^\)]+)\)").findall(Formula)
+            for keyword in keywords:
+                if pc(getKeyword = keyword):
+                    DependentServices.append(service.getObject())
+
+            self.getField('DependentServices').set(self, DependentServices)
+            self.getField('Formula').set(self, Formula)
 
     def getCalculationDependencies(self):
         """ Recursively calculates all dependencies of this calculation.
