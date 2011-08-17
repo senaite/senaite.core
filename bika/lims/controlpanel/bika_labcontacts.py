@@ -49,11 +49,11 @@ class LabContactsView(BikaListingView):
             if not items[x].has_key('obj'): continue
             obj = items[x]['obj'].getObject()
             items[x]['Listingname'] = obj.getListingname()
-            items[x]['Department'] = obj.Department
-            items[x]['BusinessPhone'] = obj.BusinessPhone
-            items[x]['Fax'] = obj.BusinessFax
-            items[x]['MobilePhone'] = obj.MobilePhone
-            items[x]['EmailAddress'] = obj.EmailAddress
+            items[x]['Department'] = obj.getDepartment() and obj.getDepartment().Title() or ''
+            items[x]['BusinessPhone'] = obj.getBusinessPhone()
+            items[x]['Fax'] = obj.getBusinessFax()
+            items[x]['MobilePhone'] = obj.getMobilePhone()
+            items[x]['EmailAddress'] = obj.getEmailAddress()
             items[x]['replace']['Listingname'] = "<a href='%s'>%s</a>" % \
                  (items[x]['url'], items[x]['Listingname'])
 

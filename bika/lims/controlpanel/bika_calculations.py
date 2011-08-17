@@ -32,10 +32,11 @@ class CalculationsView(BikaListingView):
     columns = {
                'Title': {'title': _('Calculation')},
                'Description': {'title': _('Description')},
+               'Formula': {'title': _('Formula')},
               }
     review_states = [
                     {'title': _('All'), 'id':'all',
-                     'columns': ['Title', 'Description']}
+                     'columns': ['Title', 'Description', 'Formula']}
                     ]
 
     def folderitems(self):
@@ -46,6 +47,7 @@ class CalculationsView(BikaListingView):
             items[x]['replace']['Title'] = "<a href='%s'>%s</a>" % \
                  (items[x]['url'], items[x]['Title'])
             items[x]['Description'] = obj.Description()
+            items[x]['Formula'] = obj.getFormula()
 
         return items
 

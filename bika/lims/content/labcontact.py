@@ -7,10 +7,13 @@ from AccessControl.Permissions import manage_users
 from Products.CMFCore import permissions
 from Products.CMFCore.utils import getToolByName
 from Products.Archetypes.public import *
+from Products.Archetypes.references import HoldingReference
 from bika.lims.content.person import Person
-from bika.lims.config import ManageClients, PUBLICATION_PREFS, PROJECTNAME
+from bika.lims.config import ManageClients, PUBLICATION_PREFS, PROJECTNAME, \
+    I18N_DOMAIN        
 from zope.i18nmessageid import MessageFactory
 _ = MessageFactory('bika')
+import sys
 
 schema = Person.schema.copy() + Schema((
     ImageField('Signature',
@@ -19,12 +22,22 @@ schema = Person.schema.copy() + Schema((
             label_msgid = 'label_signature',
         ),
     ),
+    ReferenceField('Department',
+        required = 0,
+        vocabulary_display_path_bound = sys.maxint,
+        allowed_types = ('Department',),
+        relationship = 'LabContactDepartment',
+        referenceClass = HoldingReference,
+        widget = ReferenceWidget(
+            checkbox_bound = 1,
+            label = 'Department',
+            label_msgid = 'label_department',
+            i18n_domain = I18N_DOMAIN,
+        ),
+    ),
 ))
 
-schema['description'].schemata = 'default'
-schema['description'].widget.visible = True
 schema['JobTitle'].schemata = 'default'
-schema['Department'].schemata = 'default'
 # Don't make title required - it will be computed from the Person's Fullname
 schema['title'].required = 0
 schema['title'].widget.visible = False
