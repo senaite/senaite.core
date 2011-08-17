@@ -45,7 +45,7 @@ class LoadSetupData():
         self.request.response.redirect(plone.absolute_url())
 
     def Laboratory(self):
-        name = 'Bika Laboratory'
+        name = 'Laboratory Information'
         name = name.decode('latin-1').encode('utf-8').strip()
         self.context.bika_setup.laboratory.edit(
             Name = name,
@@ -592,8 +592,8 @@ class LoadSetupData():
 
     def Methods(self):
         methods = (
-            ('pH measure', '<p>Remove bottle with storage solution, rinse electrode, blot dry</p><p>Measure pH of 4 buffer, which is pink</p><p>Adjust meter to read 4 with Cal 1 knob</p>'),
-            ('Titration', '<p>A titration is a method of analysis that will allow you to determine the precise endpoint of a reaction and therefore the precise quantity of reactant in the titration flask. A buret is used to deliver the second reactant to the flask and an indicator of pH Meter is used to detect the endpoint of the reaction</p>')
+            ('pH measure', 'Remove bottle with storage solution, rinse electrode, blot dry. Measure pH of 4 buffer, which is pink. Adjust meter to read 4 with Cal 1 knob'),
+            ('Titration', 'A titration is a method of analysis that will allow you to determine the precise endpoint of a reaction and therefore the precise quantity of reactant in the titration flask. A buret is used to deliver the second reactant to the flask and an indicator of pH Meter is used to detect the endpoint of the reaction')
         )
         folder = self.context.bika_setup.bika_methods
         for title, description in methods:

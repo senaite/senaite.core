@@ -11,17 +11,11 @@ import sys
 from zope.i18nmessageid import MessageFactory
 _ = MessageFactory('bika')
 
-schema = BikaSchema.copy() + Schema((
-    TextField('AttachmentTypeDescription',
-        widget = TextAreaWidget(
-            label = 'Description',
-            label_msgid = 'label_description',
-            i18n_domain = I18N_DOMAIN,
-        ),
-    ),
-))
+schema = BikaSchema.copy()
+
 schema['description'].widget.visible = True
 schema['description'].schemata = 'default'
+
 class AttachmentType(BaseContent):
     security = ClassSecurityInfo()
     schema = schema

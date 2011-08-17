@@ -240,6 +240,8 @@ schema = BikaSchema.copy() + Schema((
 ))
 
 schema['id'].widget.visible = False
+schema['description'].schemata = 'default'
+schema['description'].widget.visible = True
 
 class AnalysisService(BaseContent):
     security = ClassSecurityInfo()

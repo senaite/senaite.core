@@ -1,13 +1,13 @@
+bika_analysiscategories,AnalysisCategories
 bika_arprofiles,ARProfiles
 bika_analysisservices,AnalysisServices
-bika_analysiscategories,AnalysisCategories
 bika_analysisspecs,AnalysisSpecs
 bika_attachmenttypes,AttachmentTypes
 bika_calculations,Calculations
-bika_departments,Departments
 bika_instruments,Instruments
-laboratory,Laboratory
 bika_labcontacts,LabContacts
+bika_departments,Departments
+laboratory,Laboratory
 bika_methods,Methods
 bika_labproducts,LabProducts
 bika_referencedefinitions,ReferenceDefinitions

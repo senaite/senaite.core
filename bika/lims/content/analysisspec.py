@@ -68,6 +68,7 @@ Schema((
         ),
     ),
 ))
+schema['description'].schemata = 'default'
 schema['description'].widget.visible = True
 schema['title'].required = False
 schema['title'].widget.visible = False
