@@ -65,25 +65,22 @@ class AnalysesView(BikaListingView):
         ]
 
     def folderitems(self):
-        analyses = super(AnalysesView, self).folderitems(full_objects = True)
-
-        portal = getSite()
-
         pc = getToolByName(self.context, 'portal_catalog')
         workflow = getToolByName(self.context, 'portal_workflow')
+        portal = getSite()
 
         can_edit_analyses = self.allow_edit and \
             getSecurityManager().checkPermission(EditAnalyses, self.context)
 
-        items = []
+        items = super(AnalysesView, self).folderitems(full_objects = True)
+
         self.interim_fields = {}
-        for i, item in enumerate(analyses):
-            if not item.has_key('obj'): continue
+        for i, item in enumerate(items):
             # self.contentsMethod may return brains or objects.
-            if hasattr(item['obj'], 'getObject'):
-                obj = item['obj'].getObject()
+            if hasattr(items[i]['obj'], 'getObject'):
+                obj = items[i]['obj'].getObject()
             else:
-                obj = item['obj']
+                obj = items[i]['obj']
 
             # calculate specs - they are stored in an attribute on each row
             # so that selecting lab/client ranges can re-calculate in javascript
@@ -117,57 +114,60 @@ class AnalysesView(BikaListingView):
             service = obj.getService()
             keyword = service.getKeyword()
             precision = service.getPrecision()
-            item['specs'] = json.dumps(
+            items[i]['specs'] = json.dumps(
                 {'client': specs['client'].has_key(keyword) and \
-                           specs['client'][keyword] or [],
+                 specs['client'][keyword] or [],
                  'lab': specs['lab'].has_key(keyword) and \
-                        specs['lab'][keyword] or [],
+                 specs['lab'][keyword] or [],
                  }
             )
-            item['interim_fields'] = obj.getInterimFields()
-            item['Service'] = service.Title()
-            item['Keyword'] = keyword
-            item['Unit'] = obj.getUnit()
-            item['Result'] = ''
-            item['formatted_result'] = ''
-            item['Uncertainty'] = ''
-            item['retested'] = obj.getRetested()
-            item['class']['retested'] = 'center'
+            items[i]['interim_fields'] = obj.getInterimFields()
+            items[i]['Service'] = service.Title()
+            items[i]['Keyword'] = keyword
+            items[i]['Unit'] = obj.getUnit()
+            items[i]['Result'] = ''
+            items[i]['formatted_result'] = ''
+            items[i]['Uncertainty'] = ''
+            items[i]['retested'] = obj.getRetested()
+            items[i]['class']['retested'] = 'center'
             calculation = service.getCalculation()
-            item['calculation'] = calculation and True or False
-            item['DueDate'] = obj.getDueDate()
-            item['Attachments'] = ''
-            item['item_data'] = json.dumps(item['interim_fields'])
-            # choices defined on Service apply result fields.
+            items[i]['calculation'] = calculation and True or False
+            items[i]['DueDate'] = obj.getDueDate()
+            items[i]['Attachments'] = ''
+            items[i]['item_data'] = json.dumps(item['interim_fields'])
+            # choices defined on Service apply to result fields.
             choices = service.getResultOptions()
             if choices:
-                item['choices'] = {'Result': choices}
+                items[i]['choices'] = {'Result': choices}
 
-            # Results can only be edited in certain states.
+            # permission to view this item's results
             can_view_result = \
                 getSecurityManager().checkPermission(ViewResults, obj)
+
+            # Results can only be edited in certain states.
             can_edit_analysis = self.allow_edit and \
                 getSecurityManager().checkPermission(EditAnalyses, obj) and \
-                item['review_state'] in ('sample_received', 'assigned')
+                items[i]['review_state'] in ('sample_received', 'assigned')
+
             if can_edit_analysis:
-                item['allow_edit'] = ['Result',]
+                items[i]['allow_edit'] = ['Result',]
                 # if the Result field is editable, our interim fields are too
-                for f in item['interim_fields']:
-                    item['allow_edit'].append(f['id'])
+                for f in items[i]['interim_fields']:
+                    items[i]['allow_edit'].append(f['id'])
 
                 # if there isn't a calculation then result must be re-testable,
                 # and if there are interim fields, they too must be re-testable.
-                if not item['calculation'] or \
-                   (item['calculation'] and item['interim_fields']):
-                    item['allow_edit'].append('retested')
+                if not items[i]['calculation'] or \
+                   (items[i]['calculation'] and items[i]['interim_fields']):
+                    items[i]['allow_edit'].append('retested')
 
             # Only display data bearing fields if we have ViewResults
             # permission, otherwise just put an icon in Result column.
             if can_view_result:
-                item['Result'] = result
-                item['formatted_result'] = precision and result and \
+                items[i]['Result'] = result
+                items[i]['formatted_result'] = precision and result and \
                     str("%%.%sf" % precision) % float(result) or result
-                item['Uncertainty'] = obj.getUncertainty(result)
+                items[i]['Uncertainty'] = obj.getUncertainty(result)
 
                 attachments = ""
                 if hasattr(obj, 'getAttachment'):
@@ -180,39 +180,37 @@ class AnalysesView(BikaListingView):
                         attachments += \
                             '<a href="%s/at_download/AttachmentFile"/>%s</a>'%\
                             (attachment.absolute_url(), af.filename)
-                item['replace']['Attachments'] = attachments
+                items[i]['replace']['Attachments'] = attachments
 
-                item['result_in_range'] = hasattr(obj, 'result_in_range') and \
+                items[i]['result_in_range'] = hasattr(obj, 'result_in_range') and \
                     obj.result_in_range(result) or True
 
             if not can_view_result or \
-               (not item['Result'] and not can_edit_analysis):
-                if 'Result' in item['allow_edit']:
-                    item['allow_edit'].remove('Result')
-                item['before']['Result'] = \
+               (not items[i]['Result'] and not can_edit_analysis):
+                if 'Result' in items[i]['allow_edit']:
+                    items[i]['allow_edit'].remove('Result')
+                items[i]['before']['Result'] = \
                     '<img width="16" height="16" ' + \
                     'src="%s/++resource++bika.lims.images/to_follow.png"/>'% \
                     (portal.absolute_url())
 
             # Add this analysis' interim fields to the list
-            for f in item['interim_fields']:
+            for f in items[i]['interim_fields']:
                 if f['id'] not in self.interim_fields.keys():
                     self.interim_fields[f['id']] = f['title']
                 # and to the item itself
-                item[f['id']] = f
+                items[i][f['id']] = f
 
             # check if this analysis is late/overdue
             if (not calculation or (calculation and not calculation.getDependentServices())) and \
-               item['review_state'] not in ['sample_due', 'published'] and \
-               item['DueDate'] < DateTime():
+               items[i]['review_state'] not in ['sample_due', 'published'] and \
+               items[i]['DueDate'] < DateTime():
                 DueDate = self.context.toLocalizedTime(
                     item['DueDate'], long_format = 1)
-                item['after']['Service'] = \
+                items[i]['after']['Service'] = \
                     '<img width="16" height="16" ' + \
                     'src="%s/++resource++bika.lims.images/late.png" title="%s"/>'% \
                     (portal.absolute_url(), _("Due Date: ") + DueDate)
-
-            items.append(item)
 
         # the TAL is lazy, it requires blank values for
         # all interim fields on all items, so we loop

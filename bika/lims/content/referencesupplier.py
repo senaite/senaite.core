@@ -16,6 +16,8 @@ from bika.lims.content.organisation import Organisation
 from bika.lims.utils import generateUniqueId
 from bika.lims.interfaces import IReferenceSupplier
 from zope.interface import implements
+from zope.i18nmessageid import MessageFactory
+_ = MessageFactory('bika')
 
 schema = Organisation.schema.copy()
 

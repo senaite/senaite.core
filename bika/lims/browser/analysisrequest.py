@@ -168,24 +168,39 @@ class AnalysisRequestViewView(BrowserView):
         return profiles
 
     @instance.memoize
+    def SelectedServices(self):
+        """ return information about services currently selected in the
+            context AR.
+            [[PointOfCapture, category uid, service uid],
+             [PointOfCapture, category uid, service uid], ...]
+        """
+        pc = getToolByName(self.context, 'portal_catalog')
+        res = []
+        for analysis in pc(portal_type = "Analysis",
+                           getRequestID = self.context.RequestID):
+            analysis = analysis.getObject()
+            service = analysis.getService()
+            res.append([service.getPointOfCapture(),
+                        service.getCategoryUID(),
+                        service.UID()])
+        return res
+
+    @instance.memoize
     def Categories(self):
-        """ Returns a dictionary with a list of field analyses and a list of
-            lab analyses.  This returns only categories which have analyses
-            selected in the current AR.
-            Categories which are not used by analyses in this AR are omitted
-            Dictionary keys: field/lab
-            Dictionary values: (Category Title,category UID)
+        """ Dictionary keys: poc
+            Dictionary values: (Category UID,category Title)
         """
         pc = getToolByName(self.context, 'portal_catalog')
         cats = {}
-        for analysis in pc(portal_type = "Analysis",
-                           getRequestID = self.context.id):
-            analysis = analysis.getObject()
-            service = analysis.getService()
+        for service in pc(portal_type = "AnalysisService",
+                          inactive_review_state = 'active'):
+            service = service.getObject()
             poc = service.getPointOfCapture()
             if not cats.has_key(poc): cats[poc] = []
-            cat = (service.getCategoryName(), service.getCategoryUID())
-            if cat not in cats[poc]: cats[poc].append(cat)
+            category = service.getCategory()
+            cat = (category.UID(), category.Title())
+            if cat not in cats[poc]:
+                cats[poc].append(cat)
         return cats
 
     def getDefaultSpec(self):
@@ -326,23 +341,6 @@ class AnalysisRequestAddView(AnalysisRequestViewView):
     def __call__(self):
         return self.template()
 
-    @instance.memoize
-    def Categories(self):
-        """ Dictionary keys: poc
-            Dictionary values: (Category UID,category Title)
-        """
-        pc = getToolByName(self.context, 'portal_catalog')
-        cats = {}
-        for service in pc(portal_type = "AnalysisService",
-                          inactive_review_state = 'active'):
-            service = service.getObject()
-            poc = service.getPointOfCapture()
-            if not cats.has_key(poc): cats[poc] = []
-            category = service.getCategory()
-            cat = (category.UID(), category.Title())
-            if cat not in cats[poc]:
-                cats[poc].append(cat)
-        return cats
 
 class AnalysisRequestEditView(AnalysisRequestAddView):
     template = ViewPageTemplateFile("templates/analysisrequest_edit.pt")
@@ -352,42 +350,26 @@ class AnalysisRequestEditView(AnalysisRequestAddView):
         self.col_count = 1
         self.came_from = "edit"
 
-    @instance.memoize
-    def SelectedServices(self):
-        """ return information about services currently selected in the
-            context AR.
-            [[PointOfCapture, category uid, service uid],
-             [PointOfCapture, category uid, service uid], ...]
-        """
-        pc = getToolByName(self.context, 'portal_catalog')
-        res = []
-        for analysis in pc(portal_type = "Analysis",
-                           getRequestID = self.context.RequestID):
-            analysis = analysis.getObject()
-            service = analysis.getService()
-            res.append([service.getPointOfCapture(),
-                        service.getCategoryUID(),
-                        service.UID()])
-        return res
-
 class AnalysisRequestManageResultsView(AnalysisRequestViewView):
     template = ViewPageTemplateFile("templates/analysisrequest_manage_results.pt")
 
     def __call__(self):
         workflow = getToolByName(self.context, 'portal_workflow')
         pc = getToolByName(self.context, 'portal_catalog')
+
         self.Field = AnalysesView(self.context, self.request,
                                   getPointOfCapture = 'field')
-
-        self.Field.allow_edit = active or False
-
-        self.Field.review_states[0]['transitions'] = ['submit','retract','verify']
+        self.Field.allow_edit = True
+        self.Field.review_states[0]['transitions'] = \
+            ['submit','retract','verify']
         self.Field.show_select_column = True
         self.Field = self.Field.contents_table()
+
         self.Lab = AnalysesView(self.context, self.request,
                                 getPointOfCapture = 'lab')
-        self.Lab.allow_edit = active or False
-        self.Lab.review_states[0]['transitions'] = ['submit','retract','verify']
+        self.Lab.allow_edit = True
+        self.Lab.review_states[0]['transitions'] = \
+            ['submit','retract','verify']
         self.Lab.show_select_column = True
         self.Lab = self.Lab.contents_table()
 

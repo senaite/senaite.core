@@ -6,6 +6,8 @@ from Products.CMFCore import permissions
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.config import I18N_DOMAIN, I18N_DOMAIN, ManagePricelists, ManageBika, PRICELIST_TYPES, CLIENT_TYPES, PROJECTNAME
 import sys
+from zope.i18nmessageid import MessageFactory
+_ = MessageFactory('bika')
 
 schema = BikaSchema.copy() + Schema((
     StringField('Type',

@@ -24,6 +24,9 @@ from bika.lims.interfaces import IAnalysis
 from decimal import Decimal
 from zope.interface import implements
 import datetime
+from zope.i18nmessageid import MessageFactory
+_ = MessageFactory('bika')
+
 
 schema = BikaSchema.copy() + Schema((
     ReferenceField('Service',

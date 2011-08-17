@@ -12,6 +12,8 @@ from bika.lims.browser.widgets import ServicesWidget
 from bika.lims.config import I18N_DOMAIN, PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 import sys
+from zope.i18nmessageid import MessageFactory
+_ = MessageFactory('bika')
 
 schema = BikaSchema.copy() + Schema((
     StringField('ProfileKey',

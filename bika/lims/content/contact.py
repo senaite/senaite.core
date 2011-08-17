@@ -11,6 +11,8 @@ from Products.CMFCore import permissions
 from Products.CMFCore.utils import getToolByName
 from bika.lims.config import ManageClients, PUBLICATION_PREFS, PROJECTNAME
 from bika.lims.content.person import Person
+from zope.i18nmessageid import MessageFactory
+_ = MessageFactory('bika')
 
 schema = Person.schema.copy() + Schema((
     LinesField('PublicationPreference',

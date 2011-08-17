@@ -4,7 +4,6 @@ from Products.Archetypes.Registry import registerWidget, registerPropertyType
 from Products.Archetypes.Widget import TypesWidget
 from Products.Archetypes.utils import shasattr
 from Products.CMFCore.utils import getToolByName
-from bika.lims import logger
 from archetypes.referencebrowserwidget import utils
 from bika.lims.config import POINTS_OF_CAPTURE
 from types import StringType

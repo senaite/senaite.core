@@ -80,94 +80,97 @@ class ClientWorkflowAction(WorkflowAction):
             WorkflowAction.__call__(self)
 
 class ClientAnalysisRequestsView(BikaListingView):
-    contentFilter = {'portal_type': 'AnalysisRequest'}
-    content_add_actions = {_('Analysis Request'): "analysisrequest_add"}
-    show_editable_border = True
-    show_sort_column = False
-    show_select_row = False
-    show_select_column = True
-
-    columns = {
-           'getRequestID': {'title': _('Request ID')},
-           'getClientOrderNumber': {'title': _('Client Order')},
-           'getClientReference': {'title': _('Client Ref')},
-           'getClientSampleID': {'title': _('Client Sample')},
-           'getSampleTypeTitle': {'title': _('Sample Type')},
-           'getSamplePointTitle': {'title': _('Sample Point')},
-           'getDateReceived': {'title': _('Date Received')},
-           'getDatePublished': {'title': _('Date Published')},
-           'state_title': {'title': _('State'), },
-    }
-    review_states = [
-                {'title': _('All'), 'id':'all',
-                 'columns':['getRequestID',
-                            'getClientOrderNumber',
-                            'getClientReference',
-                            'getClientSampleID',
-                            'getSampleTypeTitle',
-                            'getSamplePointTitle',
-                            'getDateReceived',
-                            'getDatePublished',
-                            'state_title']},
-                {'title': _('Sample due'), 'id':'sample_due',
-                 'transitions': ['cancel', 'receive'],
-                 'columns':['getRequestID',
-                            'getClientOrderNumber',
-                            'getClientReference',
-                            'getClientSampleID',
-                            'getSampleTypeTitle',
-                            'getSamplePointTitle']},
-                {'title': _('Sample received'), 'id':'sample_received',
-                 'transitions': ['cancel'],
-                 'columns':['getRequestID',
-                            'getClientOrderNumber',
-                            'getClientReference',
-                            'getClientSampleID',
-                            'getSampleTypeTitle',
-                            'getSamplePointTitle',
-                            'getDateReceived']},
-                {'title': _('Assigned to Worksheet'), 'id':'assigned',
-                 'transitions': ['cancel'],
-                 'columns':['getRequestID',
-                            'getClientOrderNumber',
-                            'getClientReference',
-                            'getClientSampleID',
-                            'getSampleTypeTitle',
-                            'getSamplePointTitle',
-                            'getDateReceived']},
-                {'title': _('To be verified'), 'id':'to_be_verified',
-                 'transitions': ['cancel', 'verify'],
-                 'columns':['getRequestID',
-                            'getClientOrderNumber',
-                            'getClientReference',
-                            'getClientSampleID',
-                            'getSampleTypeTitle',
-                            'getSamplePointTitle',
-                            'getDateReceived']},
-                {'title': _('Verified'), 'id':'verified',
-                 'transitions': ['cancel', 'publish'],
-                 'columns':['getRequestID',
-                            'getClientOrderNumber',
-                            'getClientReference',
-                            'getClientSampleID',
-                            'getSampleTypeTitle',
-                            'getSamplePointTitle',
-                            'getDateReceived']},
-                {'title': _('Published'), 'id':'published',
-                 'columns':['getRequestID',
-                            'getClientOrderNumber',
-                            'getClientReference',
-                            'getClientSampleID',
-                            'getSampleTypeTitle',
-                            'getSamplePointTitle',
-                            'getDateReceived',
-                            'getDatePublished']},
-                ]
 
     def __init__(self, context, request):
         super(ClientAnalysisRequestsView, self).__init__(context, request)
-        self.title = "%s: %s" % (self.context.Title(), _("Analysis Requests"))
+        self.contentFilter = {'portal_type': 'AnalysisRequest'}
+        self.content_add_actions = {_('Analysis Request'):
+                                    "analysisrequest_add"}
+        self.show_editable_border = True
+        self.show_sort_column = False
+        self.show_select_row = False
+        self.show_select_column = True
+
+        self.title = "%s: %s" % (self.context.Title(),
+                                 _("Analysis Requests"))
         self.description = ""
+
+        self.columns = {
+            'getRequestID': {'title': _('Request ID')},
+            'getClientOrderNumber': {'title': _('Client Order')},
+            'getClientReference': {'title': _('Client Ref')},
+            'getClientSampleID': {'title': _('Client Sample')},
+            'getSampleTypeTitle': {'title': _('Sample Type')},
+            'getSamplePointTitle': {'title': _('Sample Point')},
+            'getDateReceived': {'title': _('Date Received')},
+            'getDatePublished': {'title': _('Date Published')},
+            'state_title': {'title': _('State'), },
+        }
+        self.review_states = [
+            {'title': _('All'), 'id':'all',
+             'columns':['getRequestID',
+                        'getClientOrderNumber',
+                        'getClientReference',
+                        'getClientSampleID',
+                        'getSampleTypeTitle',
+                        'getSamplePointTitle',
+                        'getDateReceived',
+                        'getDatePublished',
+                        'state_title']},
+            {'title': _('Sample due'), 'id':'sample_due',
+             'transitions': ['cancel', 'receive'],
+             'columns':['getRequestID',
+                        'getClientOrderNumber',
+                        'getClientReference',
+                        'getClientSampleID',
+                        'getSampleTypeTitle',
+                        'getSamplePointTitle']},
+            {'title': _('Sample received'), 'id':'sample_received',
+             'transitions': ['cancel'],
+             'columns':['getRequestID',
+                        'getClientOrderNumber',
+                        'getClientReference',
+                        'getClientSampleID',
+                        'getSampleTypeTitle',
+                        'getSamplePointTitle',
+                        'getDateReceived']},
+            {'title': _('Assigned to Worksheet'), 'id':'assigned',
+             'transitions': ['cancel'],
+             'columns':['getRequestID',
+                        'getClientOrderNumber',
+                        'getClientReference',
+                        'getClientSampleID',
+                        'getSampleTypeTitle',
+                        'getSamplePointTitle',
+                        'getDateReceived']},
+            {'title': _('To be verified'), 'id':'to_be_verified',
+             'transitions': ['cancel', 'verify'],
+             'columns':['getRequestID',
+                        'getClientOrderNumber',
+                        'getClientReference',
+                        'getClientSampleID',
+                        'getSampleTypeTitle',
+                        'getSamplePointTitle',
+                        'getDateReceived']},
+            {'title': _('Verified'), 'id':'verified',
+             'transitions': ['cancel', 'publish'],
+             'columns':['getRequestID',
+                        'getClientOrderNumber',
+                        'getClientReference',
+                        'getClientSampleID',
+                        'getSampleTypeTitle',
+                        'getSamplePointTitle',
+                        'getDateReceived']},
+            {'title': _('Published'), 'id':'published',
+             'columns':['getRequestID',
+                        'getClientOrderNumber',
+                        'getClientReference',
+                        'getClientSampleID',
+                        'getSampleTypeTitle',
+                        'getSamplePointTitle',
+                        'getDateReceived',
+                        'getDatePublished']},
+            ]
 
     def folderitems(self):
         items = BikaListingView.folderitems(self)
@@ -184,72 +187,72 @@ class ClientAnalysisRequestsView(BikaListingView):
         return items
 
 class ClientSamplesView(BikaListingView):
-    contentFilter = {'portal_type': 'Sample'}
-    content_add_actions = {}
-    show_editable_border = True
-    show_table_only = False
-    show_sort_column = False
-    show_select_row = False
-    show_select_column = False
-    pagesize = 20
-
-    columns = {
-           'getSampleID': {'title': _('Sample ID')},
-           'Requests': {'title': _('Requests')},
-           'getClientReference': {'title': _('Client Ref')},
-           'getClientSampleID': {'title': _('Client SID')},
-           'getSampleTypeTitle': {'title': _('Sample Type')},
-           'getSamplePointTitle': {'title': _('Sample Point')},
-           'getDateReceived': {'title': _('Date Received')},
-           'state_title': {'title': _('State')},
-          }
-    review_states = [
-                {'title': _('All'), 'id':'all',
-                 'columns': ['getSampleID',
-                             'Requests',
-                             'getClientReference',
-                             'getClientSampleID',
-                             'getSampleTypeTitle',
-                             'getSamplePointTitle',
-                             'getDateReceived',
-                             'state_title']},
-                {'title': _('Due'), 'id':'due',
-                 'columns': ['getSampleID',
-                             'Requests',
-                             'getClientReference',
-                             'getClientSampleID',
-                             'getSampleTypeTitle',
-                             'getSamplePointTitle']},
-                {'title': _('Received'), 'id':'received',
-                 'columns': ['getSampleID',
-                             'Requests',
-                             'getClientReference',
-                             'getClientSampleID',
-                             'getSampleTypeTitle',
-                             'getSamplePointTitle',
-                             'getDateReceived']},
-                {'title': _('Expired'), 'id':'expired',
-                 'columns': ['getSampleID',
-                             'Requests',
-                             'getClientReference',
-                             'getClientSampleID',
-                             'getSampleTypeTitle',
-                             'getSamplePointTitle',
-                             'getDateReceived']},
-                {'title': _('Disposed'), 'id':'disposed',
-                 'columns': ['getSampleID',
-                             'Requests',
-                             'getClientReference',
-                             'getClientSampleID',
-                             'getSampleTypeTitle',
-                             'getSamplePointTitle',
-                             'getDateReceived']},
-                ]
 
     def __init__(self, context, request):
         super(ClientSamplesView, self).__init__(context, request)
+        self.contentFilter = {'portal_type': 'Sample'}
+        self.content_add_actions = {}
+        self.show_editable_border = True
+        self.show_sort_column = False
+        self.show_select_row = True
+        self.show_select_column = True
+        self.pagesize = 50
+
         self.title = "%s: %s" % (self.context.Title(), _("Samples"))
         self.description = ""
+
+        self.columns = {
+            'getSampleID': {'title': _('Sample ID')},
+            'Requests': {'title': _('Requests')},
+            'getClientReference': {'title': _('Client Ref')},
+            'getClientSampleID': {'title': _('Client SID')},
+            'getSampleTypeTitle': {'title': _('Sample Type')},
+            'getSamplePointTitle': {'title': _('Sample Point')},
+            'getDateReceived': {'title': _('Date Received')},
+            'state_title': {'title': _('State')},
+        }
+        self.review_states = [
+            {'title': _('All'), 'id':'all',
+             'columns': ['getSampleID',
+                         'Requests',
+                         'getClientReference',
+                         'getClientSampleID',
+                         'getSampleTypeTitle',
+                         'getSamplePointTitle',
+                         'getDateReceived',
+                         'state_title']},
+            {'title': _('Due'), 'id':'due',
+             'columns': ['getSampleID',
+                         'Requests',
+                         'getClientReference',
+                         'getClientSampleID',
+                         'getSampleTypeTitle',
+                         'getSamplePointTitle']},
+            {'title': _('Received'), 'id':'received',
+             'columns': ['getSampleID',
+                         'Requests',
+                         'getClientReference',
+                         'getClientSampleID',
+                         'getSampleTypeTitle',
+                         'getSamplePointTitle',
+                         'getDateReceived']},
+            {'title': _('Expired'), 'id':'expired',
+             'columns': ['getSampleID',
+                         'Requests',
+                         'getClientReference',
+                         'getClientSampleID',
+                         'getSampleTypeTitle',
+                         'getSamplePointTitle',
+                         'getDateReceived']},
+            {'title': _('Disposed'), 'id':'disposed',
+             'columns': ['getSampleID',
+                         'Requests',
+                         'getClientReference',
+                         'getClientSampleID',
+                         'getSampleTypeTitle',
+                         'getSamplePointTitle',
+                         'getDateReceived']},
+            ]
 
     def folderitems(self):
         items = BikaListingView.folderitems(self)
@@ -271,45 +274,46 @@ class ClientSamplesView(BikaListingView):
         return items
 
 class ClientARImportsView(BikaListingView):
-    contentFilter = {'portal_type': 'ARImport'}
-    content_add_actions = {_('AR Import'): "createObject?type_name=ARImport"}
-    show_editable_border = True
-    show_table_only = False
-    show_sort_column = False
-    show_select_row = False
-    show_select_column = True
-    pagesize = 20
-
-    columns = {
-           'title': {'title': _('Import')},
-           'getDateImported': {'title': _('Date Imported')},
-           'getStatus': {'title': _('Validity')},
-           'getDateApplied': {'title': _('Date Submitted')},
-           'state_title': {'title': _('State')},
-          }
-    review_states = [
-                {'title': _('All'), 'id':'all',
-                 'columns': ['title',
-                             'getDateImported',
-                             'getStatus',
-                             'getDateApplied',
-                             'state_title']},
-                {'title': _('Imported'), 'id':'imported',
-                 'columns': ['title',
-                             'getDateImported',
-                             'getStatus']},
-                {'title': _('Applied'), 'id':'submitted',
-                 'columns': ['title',
-                             'getDateImported',
-                             'getStatus',
-                             'getDateApplied']},
-                ]
 
     def __init__(self, context, request):
         super(ClientARImportsView, self).__init__(context, request)
+        self.contentFilter = {'portal_type': 'ARImport'}
+        self.content_add_actions = {_('AR Import'): "createObject?type_name=ARImport"}
+        self.show_editable_border = True
+        self.self.show_table_only = False
+        self.show_sort_column = False
+        self.show_select_row = False
+        self.show_select_column = True
+        self.pagesize = 50
+
         self.title = "%s: %s" % (self.context.Title(), \
                                  _("Analysis Request Imports"))
         self.description = ""
+
+        self.columns = {
+            'title': {'title': _('Import')},
+            'getDateImported': {'title': _('Date Imported')},
+            'getStatus': {'title': _('Validity')},
+            'getDateApplied': {'title': _('Date Submitted')},
+            'state_title': {'title': _('State')},
+        }
+        self.review_states = [
+            {'title': _('All'), 'id':'all',
+             'columns': ['title',
+                         'getDateImported',
+                         'getStatus',
+                         'getDateApplied',
+                         'state_title']},
+            {'title': _('Imported'), 'id':'imported',
+             'columns': ['title',
+                         'getDateImported',
+                         'getStatus']},
+            {'title': _('Applied'), 'id':'submitted',
+             'columns': ['title',
+                         'getDateImported',
+                         'getStatus',
+                         'getDateApplied']},
+        ]
 
     def folderitems(self):
         items = BikaListingView.folderitems(self)
@@ -322,30 +326,28 @@ class ClientARImportsView(BikaListingView):
         return items
 
 class ClientARProfilesView(BikaListingView):
-    contentFilter = {'portal_type': 'ARProfile'}
-    content_add_actions = {_('AR Profile'): "createObject?type_name=ARProfile"}
-    show_editable_border = True
-    show_table_only = False
-    show_sort_column = False
-    show_select_row = False
-    show_select_column = True
-    pagesize = 20
-
-    columns = {
-           'title': {'title': _('Title')},
-           'getProfileKey': {'title': _('Profile Key')},
-          }
-    review_states = [
-                {'title': _('All'), 'id':'all',
-                 'columns': ['title',
-                             'getProfileKey']},
-                ]
-
     def __init__(self, context, request):
         super(ClientARProfilesView, self).__init__(context, request)
-        self.title = "%s: %s" % (self.context.Title(), \
+        self.contentFilter = {'portal_type': 'ARProfile'}
+        self.content_add_actions = {_('AR Profile'):
+                                    "createObject?type_name=ARProfile"}
+        self.show_editable_border = True
+        self.show_sort_column = False
+        self.show_select_row = True
+        self.show_select_column = True
+        self.pagesize = 50
+        self.title = "%s: %s" % (self.context.Title(),
                                  _("Analysis Request Profiles"))
         self.description = ""
+
+        self.columns = {
+            'title': {'title': _('Title')},
+            'getProfileKey': {'title': _('Profile Key')},
+        }
+        self.review_states = [
+            {'title': _('All'), 'id':'all',
+             'columns': ['title', 'getProfileKey']},
+        ]
 
     def folderitems(self):
         items = BikaListingView.folderitems(self)
@@ -357,30 +359,31 @@ class ClientARProfilesView(BikaListingView):
         return items
 
 class ClientAnalysisSpecsView(BikaListingView):
-    contentFilter = {'portal_type': 'AnalysisSpec'}
-    content_add_actions = {_('Analysis Spec'): \
-                           "createObject?type_name=AnalysisSpec"}
-    show_editable_border = True
-    show_table_only = False
-    show_sort_column = False
-    show_select_row = False
-    show_select_column = True
-    pagesize = 20
-
-    columns = {
-           'getSampleType': {'title': _('Sample  Type')},
-          }
-    review_states = [
-                     {'title': _('All'), 'id':'all',
-                      'columns': ['getSampleType'],
-                      },
-    ]
 
     def __init__(self, context, request):
         super(ClientAnalysisSpecsView, self).__init__(context, request)
+        self.contentFilter = {'portal_type': 'AnalysisSpec'}
+        self.content_add_actions = {_('Analysis Spec'): \
+                               "createObject?type_name=AnalysisSpec"}
+        self.show_editable_border = True
+        self.show_table_only = False
+        self.show_sort_column = False
+        self.show_select_row = False
+        self.show_select_column = True
+        self.pagesize = 50
+
         self.title = "%s: %s" % (self.context.Title(), \
                                  _("Analysis Specifications"))
         self.description = ""
+
+        self.columns = {
+            'getSampleType': {'title': _('Sample  Type')},
+        }
+        self.review_states = [
+            {'title': _('All'), 'id':'all',
+             'columns': ['getSampleType'],
+             },
+        ]
 
     def folderitems(self):
         items = BikaListingView.folderitems(self)
@@ -400,37 +403,37 @@ class ClientAnalysisSpecsView(BikaListingView):
 
 
 class ClientAttachmentsView(BikaListingView):
-    contentFilter = {'portal_type': 'Attachment'}
-    content_add_actions = {_('Attachment'): "createObject?type_name=Attachment"}
-    show_editable_border = True
-    show_table_only = False
-    show_sort_column = False
-    show_select_row = False
-    show_select_column = True
-    pagesize = 20
-
-    columns = {
-           'getTextTitle': {'title': _('Request ID')},
-           'AttachmentFile': {'title': _('File')},
-           'AttachmentType': {'title': _('Attachment Type')},
-           'ContentType': {'title': _('Content Type')},
-           'FileSize': {'title': _('Size')},
-           'DateLoaded': {'title': _('Date Loaded')},
-          }
-    review_states = [
-                {'title': 'All', 'id':'all',
-                 'columns': ['getTextTitle',
-                             'AttachmentFile',
-                             'AttachmentType',
-                             'ContentType',
-                             'FileSize',
-                             'DateLoaded']},
-                ]
 
     def __init__(self, context, request):
         super(ClientAttachmentsView, self).__init__(context, request)
+        self.contentFilter = {'portal_type': 'Attachment'}
+        self.content_add_actions = {_('Attachment'): "createObject?type_name=Attachment"}
+        self.show_editable_border = True
+        self.show_sort_column = False
+        self.show_select_row = True
+        self.show_select_column = True
+        self.pagesize = 50
+
         self.title = "%s: %s" % (self.context.Title(), _("Attachments"))
         self.description = ""
+
+        self.columns = {
+            'getTextTitle': {'title': _('Request ID')},
+            'AttachmentFile': {'title': _('File')},
+            'AttachmentType': {'title': _('Attachment Type')},
+            'ContentType': {'title': _('Content Type')},
+            'FileSize': {'title': _('Size')},
+            'DateLoaded': {'title': _('Date Loaded')},
+        }
+        self.review_states = [
+            {'title': 'All', 'id':'all',
+             'columns': ['getTextTitle',
+                         'AttachmentFile',
+                         'AttachmentType',
+                         'ContentType',
+                         'FileSize',
+                         'DateLoaded']},
+        ]
 
     def lookupMime(self, name):
         mimetool = getToolByName(self, 'mimetypes_registry')
@@ -465,40 +468,41 @@ class ClientAttachmentsView(BikaListingView):
         return items
 
 class ClientOrdersView(BikaListingView):
-    contentFilter = {'portal_type': 'Order'}
-    content_add_actions = {_('Order'): "createObject?type_name=Order"}
-    show_editable_border = True
-    show_table_only = False
-    show_sort_column = False
-    show_select_row = False
-    show_select_column = True
-    pagesize = 20
-
-    columns = {
-           'OrderNumber': {'title': _('Order Number')},
-           'OrderDate': {'title': _('Order Date')},
-           'DateDispatched': {'title': _('Date dispatched')},
-           'state_title': {'title': _('State')},
-          }
-    review_states = [
-                {'title': _('All'), 'id':'all',
-                 'columns': ['OrderNumber',
-                             'OrderDate',
-                             'DateDispatched',
-                             'state_title']},
-                {'title': _('Pending'), 'id':'pending',
-                 'columns': ['OrderNumber',
-                             'OrderDate']},
-                {'title': _('Dispatched'), 'id':'dispatched',
-                 'columns': ['OrderNumber',
-                             'OrderDate',
-                             'DateDispatched']},
-                ]
 
     def __init__(self, context, request):
         super(ClientOrdersView, self).__init__(context, request)
+        self.contentFilter = {'portal_type': 'Order'}
+        self.content_add_actions = {_('Order'): "createObject?type_name=Order"}
+        self.show_editable_border = True
+        self.show_table_only = False
+        self.show_sort_column = False
+        self.show_select_row = False
+        self.show_select_column = True
+        self.pagesize = 20
+
         self.title = "%s: %s" % (self.context.Title(), _("Orders"))
         self.description = ""
+
+        self.columns = {
+            'OrderNumber': {'title': _('Order Number')},
+            'OrderDate': {'title': _('Order Date')},
+            'DateDispatched': {'title': _('Date dispatched')},
+            'state_title': {'title': _('State')},
+        }
+        self.review_states = [
+            {'title': _('All'), 'id':'all',
+             'columns': ['OrderNumber',
+                         'OrderDate',
+                         'DateDispatched',
+                         'state_title']},
+            {'title': _('Pending'), 'id':'pending',
+             'columns': ['OrderNumber',
+                         'OrderDate']},
+            {'title': _('Dispatched'), 'id':'dispatched',
+             'columns': ['OrderNumber',
+                         'OrderDate',
+                         'DateDispatched']},
+        ]
 
     def folderitems(self):
         items = BikaListingView.folderitems(self)
@@ -515,35 +519,36 @@ class ClientOrdersView(BikaListingView):
         return items
 
 class ClientContactsView(BikaListingView):
-    contentFilter = {'portal_type': 'Contact'}
-    content_add_actions = {_('Contact'): "createObject?type_name=Contact"}
-    show_editable_border = True
-    show_table_only = False
-    show_sort_column = False
-    show_select_row = False
-    show_select_column = True
-    pagesize = 20
-
-    columns = {
-           'getFullname': {'title': _('Full Name')},
-           'getEmailAddress': {'title': _('Email Address')},
-           'getBusinessPhone': {'title': _('Business Phone')},
-           'getMobilePhone': {'title': _('Mobile Phone')},
-           'getFax': {'title': _('Fax')},
-          }
-    review_states = [
-                {'title': 'All', 'id':'all',
-                 'columns': ['getFullname',
-                             'getEmailAddress',
-                             'getBusinessPhone',
-                             'getMobilePhone',
-                             'getFax']},
-                ]
 
     def __init__(self, context, request):
         super(ClientContactsView, self).__init__(context, request)
+        self.contentFilter = {'portal_type': 'Contact'}
+        self.content_add_actions = {_('Contact'):
+                                    "createObject?type_name=Contact"}
+        self.show_editable_border = True
+        self.show_sort_column = False
+        self.show_select_row = True
+        self.show_select_column = True
+        self.pagesize = 50
+
         self.title = "%s: %s" % (self.context.Title(), _("Contacts"))
         self.description = ""
+
+        self.columns = {
+            'getFullname': {'title': _('Full Name')},
+            'getEmailAddress': {'title': _('Email Address')},
+            'getBusinessPhone': {'title': _('Business Phone')},
+            'getMobilePhone': {'title': _('Mobile Phone')},
+            'getFax': {'title': _('Fax')},
+        }
+        self.review_states = [
+            {'title': 'All', 'id':'all',
+             'columns': ['getFullname',
+                         'getEmailAddress',
+                         'getBusinessPhone',
+                         'getMobilePhone',
+                         'getFax']},
+        ]
 
     def folderitems(self):
         items = BikaListingView.folderitems(self)

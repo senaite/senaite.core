@@ -8,6 +8,7 @@
   <five:registerPackage package="." initialize=".initialize" />
   <include file="permissions.zcml" />
 
+  <include package="plone.app.iterate" />
   <include package=".browser" />
   <include package=".content" />
   <include package=".controlpanel" />

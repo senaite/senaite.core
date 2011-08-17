@@ -26,6 +26,8 @@ setup(name='bika.lims',
       install_requires=[
           'setuptools',
           'Products.ATExtensions',
+          'Products.CMFEditions',
+          'plone.app.iterate',
           'reportlab',
       ],
       entry_points="""

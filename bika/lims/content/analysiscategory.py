@@ -12,6 +12,8 @@ from Products.Archetypes.references import HoldingReference
 from Products.Archetypes.config import REFERENCE_CATALOG
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.config import I18N_DOMAIN, PROJECTNAME
+from zope.i18nmessageid import MessageFactory
+_ = MessageFactory('bika')
 
 schema = BikaSchema.copy() + Schema((
     ReferenceField('Department',

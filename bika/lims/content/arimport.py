@@ -13,6 +13,8 @@ from Products.Archetypes.references import HoldingReference
 from Products.ATExtensions.ateapi import DateTimeField, DateTimeWidget
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.config import I18N_DOMAIN, ManageBika, PROJECTNAME
+from zope.i18nmessageid import MessageFactory
+_ = MessageFactory('bika')
 
 schema = BikaSchema.copy() + Schema((
     StringField('ImportOption',

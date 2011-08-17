@@ -7,6 +7,8 @@ from plone.app import folder
 from Products.Archetypes.public import *
 from bika.lims.content.organisation import Organisation
 from bika.lims.config import ManageBika, I18N_DOMAIN, PROJECTNAME
+from zope.i18nmessageid import MessageFactory
+_ = MessageFactory('bika')
 
 schema = Organisation.schema.copy() + Schema((
     IntegerField('Confidence',

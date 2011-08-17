@@ -11,6 +11,8 @@ from bika.lims.utils import generateUniqueId
 from plone.app.folder import folder
 from zope.interface import implements
 import sys
+from zope.i18nmessageid import MessageFactory
+_ = MessageFactory('bika')
 
 class PrefixesField(RecordsField):
     """a list of prefixes per portal_type"""

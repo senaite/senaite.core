@@ -8,6 +8,8 @@ from Products.Archetypes.public import *
 from bika.lims.config import ManageInvoices
 from bika.lims.config import I18N_DOMAIN, PROJECTNAME
 from Products.ATExtensions.ateapi import DateTimeField, DateTimeWidget
+from zope.i18nmessageid import MessageFactory
+_ = MessageFactory('bika')
 
 schema = BaseSchema.copy() + Schema((
     DateTimeField('ItemDate',

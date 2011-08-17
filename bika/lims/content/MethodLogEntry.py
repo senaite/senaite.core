@@ -8,6 +8,8 @@ from Products.Archetypes.public import *
 from Products.ATExtensions.ateapi import DateTimeField
 from AccessControl import getSecurityManager
 from bika.lims.config import PROJECTNAME
+from zope.i18nmessageid import MessageFactory
+_ = MessageFactory('bika')
 
 schema = BaseSchema.copy() + Schema((
     DateTimeField('ChangeDate',

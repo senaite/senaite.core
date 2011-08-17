@@ -9,7 +9,8 @@ from Products.ATContentTypes.content.folder import ATBTreeFolder, \
     ATBTreeFolderSchema
 from Products.CMFCore.utils import UniqueObject
 from Products.CMFCore import permissions
-
+from zope.i18nmessageid import MessageFactory
+_ = MessageFactory('bika')
 from bika.lims.config import ManagePricelists, PROJECTNAME
 
 schema = ATBTreeFolderSchema.copy()

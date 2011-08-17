@@ -319,7 +319,20 @@ class BikaGenerator:
         script = portal.portal_workflow.bika_referenceanalysis_workflow.scripts.default
         script.manage_proxy(roles = ('Manager',))
 
-
+    def setupVersioning(self, portal):
+        from Products.CMFEditions.setuphandlers import DEFAULT_POLICIES
+        portal_repository = getToolByName(portal, 'portal_repository')
+        versionable_types = list(portal_repository.getVersionableContentTypes())
+        for type_id in TYPES_TO_VERSION:
+            if type_id not in versionable_types:
+                # use append() to make sure we don't overwrite any
+                # content-types which may already be under version control
+                versionable_types.append(type_id)
+                # Add default versioning policies to the versioned type
+                # default policies: ('at_edit_autoversion', 'version_on_revert')
+                for policy_id in DEFAULT_POLICIES:
+                    portal_repository.addPolicyForContentType(type_id, policy_id)
+        portal_repository.setVersionableContentTypes(versionable_types)
 
 def setupVarious(context):
     """
@@ -335,6 +348,7 @@ def setupVarious(context):
     gen.setupGroupsAndRoles(site)
     gen.setupPermissions(site)
     gen.setupProxyRoles(site)
+    gen.setupVersioning(site)
 
 
 #    # install mail templates

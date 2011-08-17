@@ -5,10 +5,11 @@ from Products.Archetypes.Registry import registerField
 from Products.Archetypes.public import *
 from Products.CMFCore.utils import getToolByName
 from bika.lims.config import COUNTRY_NAMES
-from bika.lims import bikaMessageFactory as _
 from Products.validation import validation
 from Products.validation.validators.RegexValidator import RegexValidator
 import sys
+from zope.i18nmessageid import MessageFactory
+_ = MessageFactory('bika')
 
 class DurationField(RecordField):
     """ Stores duration in Days/Hours/Minutes """

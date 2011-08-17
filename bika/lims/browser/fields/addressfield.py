@@ -8,7 +8,8 @@ from bika.lims.config import COUNTRY_NAMES
 from Products.validation import validation
 from Products.validation.validators.RegexValidator import RegexValidator
 import sys
-
+from zope.i18nmessageid import MessageFactory
+_ = MessageFactory('bika')
 
 class AddressField(RecordField):
     """ dedicated address field"""

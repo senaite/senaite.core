@@ -6,9 +6,11 @@ from Products.Archetypes.public import *
 from Products.CMFCore.utils import getToolByName
 from Products.validation import validation
 from Products.validation.validators.RegexValidator import RegexValidator
-from bika.lims import bikaMessageFactory as _
 from bika.lims.config import COUNTRY_NAMES
 import sys
+from zope.i18nmessageid import MessageFactory
+_ = MessageFactory('bika')
+
 
 class InterimFieldsField(RecordsField):
     """a list of InterimFields for calculations """
@@ -25,8 +27,8 @@ class InterimFieldsField(RecordsField):
                            'title': 20,
                            'value': 10,
                            'unit': 10},
-        'subfield_validators':{'id': ('isUnixLikeName', 'ServiceKeywordValidator',),
-                           'title': ('InterimFieldTitleValidator',),},
+        'subfield_validators':{'id': ('isUnixLikeName', 'service_keyword_validator',),
+                           'title': ('interim_field_title_validator',),},
         })
     security = ClassSecurityInfo()
 

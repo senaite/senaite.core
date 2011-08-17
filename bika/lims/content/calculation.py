@@ -6,7 +6,6 @@ from Products.CMFCore.permissions import ModifyPortalContent, View
 from Products.CMFCore.utils import getToolByName
 from Products.validation.ZService import ZService as Service
 from Products.validation.interfaces.IValidator import IValidator
-from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.fields import InterimFieldsField
 from bika.lims.browser.widgets import RecordsWidget as BikaRecordsWidget
 from bika.lims.config import I18N_DOMAIN, PROJECTNAME
@@ -16,6 +15,8 @@ from zope.site.hooks import getSite
 from zExceptions import Redirect
 from plone.memoize import instance
 import sys,re
+from zope.i18nmessageid import MessageFactory
+_ = MessageFactory('bika')
 
 validation = Service()
 
@@ -43,7 +44,7 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     TextField('Formula',
-        validators = ('FormulaValidator',),
+        validators = ('formula_validator',),
         widget = TextAreaWidget(
             label = 'Calculation Formula',
             label_msgid = 'label_calculation_description',
@@ -68,12 +69,13 @@ class Calculation(BaseFolder):
             self.setDependentServices(None)
             self.getField('Formula').set(self, Formula)
         else:
-            service = getToolByName(self, "portal_catalog")
+            pc = getToolByName(self, "portal_catalog")
             DependentServices = []
             keywords = re.compile(r"\%\(([^\)]+)\)").findall(Formula)
             for keyword in keywords:
-                if pc(getKeyword = keyword):
-                    DependentServices.append(service.getObject())
+                service = pc(getKeyword = keyword)
+                if service:
+                    DependentServices.append(service[0].getObject())
 
             self.getField('DependentServices').set(self, DependentServices)
             self.getField('Formula').set(self, Formula)

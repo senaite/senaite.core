@@ -13,6 +13,8 @@ from bika.lims.config import ATTACHMENT_OPTIONS, I18N_DOMAIN, PROJECTNAME, \
 from bika.lims.content.bikaschema import BikaSchema
 from zope.interface import implements
 import sys
+from zope.i18nmessageid import MessageFactory
+_ = MessageFactory('bika')
 
 schema = BikaSchema.copy() + Schema((
     BooleanField('ReportDryMatter',

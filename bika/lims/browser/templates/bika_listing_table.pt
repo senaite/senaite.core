@@ -171,7 +171,7 @@ Table data rows start here
 Draggable column for manually ordering items
 ********************************</tal:comment>
 	<td tal:condition="view/show_sort_column" class="draggable">
-	 <tal:block tal:define="quoted_id python:item['obj'].UID();">
+	 <tal:block tal:define="quoted_id item/uid;">
 	  <a href=""
 		 title="Move item up"
 		 i18n:attributes="title title_move_item_up;"

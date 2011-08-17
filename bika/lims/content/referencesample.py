@@ -20,6 +20,8 @@ from bika.lims.utils import sortable_title
 from zope.interface import implements
 import sys
 import time
+from zope.i18nmessageid import MessageFactory
+_ = MessageFactory('bika')
 
 schema = BikaSchema.copy() + Schema((
     StringField('ReferenceTitle',

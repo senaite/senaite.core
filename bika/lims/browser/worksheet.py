@@ -36,12 +36,22 @@ class WorksheetWorkflowAction(WorkflowAction):
         # portal_workflow transition url.
         came_from = "workflow_action"
         action = form.get(came_from, '')
+        if not action:
+            # workflow_action_button is the action name specified in
+            # the bika_listing_view table buttons.
+            came_from = "workflow_action_button"
+            action = form.get(came_from, '')
+            # XXX some browsers agree better than others about our JS ideas.
+            if type(action) == type([]): action = action[0]
+            if not action:
+                logger.warn("No workflow action provided.")
+                return
+
         # only "activate" workflow_action is allowed on Worksheets which are
         # inactive. any action on inactive Worksheet's children is also ignored.
-        if action and \
-           'bika_inactive_workflow' in workflow.getChainFor(self.context) and \
-           workflow.getInfoFor(self.context, 'inactive_review_state', '') == 'inactive' and \
-           action != 'activate':
+        inactive_state = workflow.getInfoFor(self.context,
+                                             'inactive_review_state', '')
+        if inactive_state == 'inactive' and action != 'activate':
             message = self.context.translate(
                 'message_item_is_inactive',
                 default='${item} is inactive.',
@@ -53,42 +63,53 @@ class WorksheetWorkflowAction(WorkflowAction):
         # assign selected analyses to this worksheet
         if action == 'assign':
             analyses = []
+            transitioned_ars = []
             if 'paths' in form:
                 for path in form['paths']:
                     # get selected analysis object from catalog
                     item_id = path.split("/")[-1]
                     item_path = path.replace("/"+item_id, '')
-                    analysis = pc(id=item_id, path={'query':item_path,
-                                                    'depth':1})[0].getObject()
+                    analysis = pc(id=item_id,
+                                  path={'query':item_path,
+                                        'depth':1})[0].getObject()
                     analyses.append(analysis)
-                # add this item to worksheet Analyses field
-                ws_analyses = self.context.getAnalyses()
-                #ws_layout = self.context.getWorksheetLayout()
-                #pos_max = max([p['pos'] for p in ws_layout.values()])
+                    ar = analysis.aq_parent
+                    if ar not in transitioned_ars:
+                        transitioned_ars.append(ar)
                 for analysis in analyses:
-                    ws_analyses.append(analysis)
-                #    ws_layout.append({'uid':analysis.UID(),
-                #                   'type':'a',
-                #                   'pos':len(ws_layout),
-                #                   'key':analysis.getKeyword()})
-                self.context.setAnalyses(ws_analyses)
-                #self.context.setWorksheetLayout(ws_layout)
-                for analysis in analyses:
-                    workflow.doActionFor(analysis, 'assign')
+                    try:
+                        workflow.doActionFor(analysis, 'assign')
+                    except WorkflowException:
+                        pass
+                    # add items worksheet Analyses
+                    self.context.setAnalyses(
+                        self.context.getAnalyses() + analyses)
+                for ar in transitioned_ars:
+                    if len(pc(portal_type = "Analysis",
+                              review_state = 'assigned',
+                              getRequestID = ar.getRequestID())) == \
+                       len(pc(portal_type = "Analysis",
+                              getRequestID = ar.getRequestID())):
+                        try:
+                            workflow.doActionFor(ar, 'assign')
+                        except WorkflowException:
+                            pass
 
             if len(analyses) > 1:
                 message = _('message_items_assigned',
-                    default = "${items} analyses were assigned.",
-                    mapping = {'items': len(analyses)})
+                            default = "${items} analyses were assigned.",
+                            mapping = {'items': len(analyses)})
             elif len(analyses) == 1:
                 message = _('message_item_assigned',
-                    default = "1 analysis was assigned.")
+                            default = "${item} was assigned.",
+                            mapping = {'item': analyses[0]})
             else:
                 message = _("No action taken.")
                 self.context.plone_utils.addPortalMessage(message, 'info')
                 return self.request.RESPONSE.redirect(originating_url)
             self.context.plone_utils.addPortalMessage(message, 'info')
-            return self.request.RESPONSE.redirect(self.context.absolute_url() + "/manage_results")
+            return self.request.RESPONSE.redirect(
+                self.context.absolute_url() + "/manage_results")
 
         else:
             # default bika_listing.py/WorkflowAction for other transitions
@@ -302,6 +323,7 @@ class WorksheetManageResultsView(AnalysesView):
 
     def __init__(self, context, request, allow_edit = False, **kwargs):
         super(WorksheetManageResultsView, self).__init__(context, request)
+        self.contentFilter = {}
         self.show_select_row = True
         self.show_sort_column = True
         self.allow_edit = True

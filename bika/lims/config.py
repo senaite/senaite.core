@@ -11,39 +11,38 @@ ManageBika = 'BIKA: Manage Bika'
 ManageClients = 'BIKA: Manage Clients'
 ManageWorksheets = 'BIKA: Manage Worksheets'
 ManageOrders = 'BIKA: Manage Orders'
+DispatchOrder = 'BIKA: Dispatch Order'
 ManageAnalysisRequests = 'BIKA: Manage Analysis Requests'
+ManageARImport = 'BIKA: Manage ARImport'
 ManageSample = 'BIKA: Manage Sample'
 ManageReferenceSuppliers = 'BIKA: Manage Reference Suppliers'
 ManageReference = 'BIKA: Manage Reference'
 ManageInvoices = 'BIKA: Manage Invoices'
+PostInvoiceBatch = 'BIKA: Post Invoice batch'
 ManagePricelists = 'BIKA: Manage Pricelists'
 ViewMethods = 'BIKA: View Methods'
-EditAnalyses = 'BIKA: Edit analyses'
 ViewResults = 'BIKA: View Results'
-ManageARImport = 'BIKA: Manage ARImport'
+EditAnalyses = 'BIKA: Edit analyses'
+DeleteAnalyses = "BIKA: Delete analyses"
 
 # Workflow permissions
-ReceiveSample = 'BIKA: Receive sample'
 SubmitSample = 'BIKA: Submit sample'
+ReceiveSample = 'BIKA: Receive sample'
+SubmitResults = 'BIKA: Submit results'
 VerifyResults = 'BIKA: Verify Results'
 PublishSample = 'BIKA: Publish sample'
 RetractSample = 'BIKA: Retract sample'
 ImportSample = 'BIKA: Import sample'
-
 SubmitWorksheet = 'BIKA: Submit Worksheet'
 VerifyWorksheet = 'BIKA: Verify Worksheet'
 RetractWorksheet = 'BIKA: Retract Worksheet'
 
-DispatchOrder = 'BIKA: Dispatch Order'
-
-PostInvoiceBatch = 'BIKA: Post Invoice batch'
-
-# Worksheet permissions
 AssignAnalyses = 'BIKA: Assign analyses'
-DeleteAnalyses = 'BIKA: Delete analyses'
-SubmitResults = 'BIKA: Submit results'
 
 I18N_DOMAIN = 'bika'
+
+TYPES_TO_VERSION = ('SampleType',
+                    )
 
 BIKA_PERMISSIONS = (
     (ManageBika, ()),

@@ -26,10 +26,7 @@
 
 <stylesheet
     id="++resource++bika.lims.css/hide_contentmenu.css"
-    expression="python:here.portal_type in ['Client',
-                                            'AnalysisRequest',
-                                            'Worksheet',
-                                            'Sample']"
+    expression="python:here.portal_type in ['Client','AnalysisRequest', 'Worksheet', 'Sample']"
     media="screen"
     rel="stylesheet"
     rendering="link"
@@ -37,23 +34,7 @@
 
 <stylesheet
     id="++resource++bika.lims.css/hide_editable_border.css"
-    expression="python:here.portal_type in ['AnalysisCategory',
-                                            'AnalysisSpec',
-                                            'AttachmentType',
-                                            'Calculation',
-                                            'Department',
-                                            'Instrument',
-                                            'Laboratory',
-                                            'LabContact',
-                                            'Method',
-                                            'Product',
-                                            'ReferenceDefinition',
-                                            'ReferenceManufacturer',
-                                            'ReferenceSample',
-                                            'SamplePoint',
-                                            'SampleType',
-                                            'WorksheetTemplate',
-                                            ]"
+    expression="python:here.portal_type in ['AnalysisCategory', 'AnalysisSpec', 'AttachmentType', 'Calculation', 'Department', 'Instrument', 'Laboratory', 'LabContact', 'Method', 'Product', 'ReferenceDefinition', 'ReferenceManufacturer', 'ReferenceSample', 'SamplePoint', 'WorksheetTemplate', ]"
     media="screen"
     rel="stylesheet"
     rendering="link"

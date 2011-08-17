@@ -8,6 +8,8 @@ from bika.lims.config import COUNTRY_NAMES
 from Products.validation import validation
 from Products.validation.validators.RegexValidator import RegexValidator
 import sys
+from zope.i18nmessageid import MessageFactory
+_ = MessageFactory('bika')
 
 class ReferenceResultsField(RecordsField):
     """a list of reference sample results """

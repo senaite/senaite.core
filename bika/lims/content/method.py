@@ -6,8 +6,9 @@ from Products.ATExtensions.ateapi import RecordsField as RecordsField
 from bika.lims.browser.widgets import RecordsWidget
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.config import I18N_DOMAIN, PROJECTNAME
-from bika.lims import bikaMessageFactory as _
 import sys
+from zope.i18nmessageid import MessageFactory
+_ = MessageFactory('bika')
 
 schema = BikaSchema.copy() + Schema((
     TextField('Instructions',

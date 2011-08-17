@@ -12,7 +12,8 @@ from bika.lims.interfaces import IClientFolder, IHaveNoBreadCrumbs
 from plone.app.folder import folder
 from bika.lims.utils import generateUniqueId
 from zope.interface import implements
-
+from zope.i18nmessageid import MessageFactory
+_ = MessageFactory('bika')
 
 schema = folder.ATFolderSchema.copy()
 schema['id'].widget.visible = {'edit':'hidden', 'view': 'invisible'}

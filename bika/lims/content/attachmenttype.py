@@ -8,6 +8,8 @@ from Products.CMFCore.permissions import ModifyPortalContent
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.config import I18N_DOMAIN, PROJECTNAME
 import sys
+from zope.i18nmessageid import MessageFactory
+_ = MessageFactory('bika')
 
 schema = BikaSchema.copy() + Schema((
     TextField('AttachmentTypeDescription',

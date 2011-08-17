@@ -5,7 +5,7 @@ from DateTime import DateTime
 from AccessControl import ClassSecurityInfo
 from Products.CMFCore.utils import getToolByName
 from Products.CMFCore.permissions import ListFolderContents, \
-    ModifyPortalContent, View
+     ModifyPortalContent, View
 from Products.CMFCore import permissions
 from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.Archetypes.public import *
@@ -13,69 +13,71 @@ from Products.Archetypes.references import HoldingReference
 from Products.ATExtensions.ateapi import DateTimeField, DateTimeWidget
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.config import I18N_DOMAIN, ManageBika, PROJECTNAME
+from zope.i18nmessageid import MessageFactory
+_ = MessageFactory('bika')
 
 schema = BikaSchema.copy() + Schema((
     ReferenceField('Contact',
-        required = 1,
-        vocabulary = 'getContactsDisplayList',
-        default_method = 'getContactUIDForUser',
-        vocabulary_display_path_bound = sys.maxint,
-        allowed_types = ('Contact',),
-        referenceClass = HoldingReference,
-        relationship = 'OrderContact',
-    ),
+                   required = 1,
+                   vocabulary = 'getContactsDisplayList',
+                   default_method = 'getContactUIDForUser',
+                   vocabulary_display_path_bound = sys.maxint,
+                   allowed_types = ('Contact',),
+                   referenceClass = HoldingReference,
+                   relationship = 'OrderContact',
+                   ),
     StringField('OrderNumber',
-        required = 1,
-        default_method = 'getId',
-        index = 'FieldIndex',
-        searchable = True,
-        widget = StringWidget(
-            label = 'Order number',
-            label_msgid = 'label_ordernumber',
-            i18n_domain = I18N_DOMAIN,
-        ),
-    ),
+                required = 1,
+                default_method = 'getId',
+                index = 'FieldIndex',
+                searchable = True,
+                widget = StringWidget(
+                    label = 'Order number',
+                    label_msgid = 'label_ordernumber',
+                    i18n_domain = I18N_DOMAIN,
+                    ),
+                ),
     ReferenceField('Invoice',
-        vocabulary_display_path_bound = sys.maxint,
-        allowed_types = ('Invoice',),
-        referenceClass = HoldingReference,
-        relationship = 'OrderInvoice',
-    ),
+                   vocabulary_display_path_bound = sys.maxint,
+                   allowed_types = ('Invoice',),
+                   referenceClass = HoldingReference,
+                   relationship = 'OrderInvoice',
+                   ),
     DateTimeField('OrderDate',
-        required = 1,
-        default_method = 'current_date',
-        index = 'DateIndex',
-        widget = DateTimeWidget(
-            label = 'Date',
-            label_msgid = 'label_orderdate',
-        ),
-    ),
+                  required = 1,
+                  default_method = 'current_date',
+                  index = 'DateIndex',
+                  widget = DateTimeWidget(
+                      label = 'Date',
+                      label_msgid = 'label_orderdate',
+                      ),
+                  ),
     DateTimeField('DateDispatched',
-        index = 'DateIndex',
-        widget = DateTimeWidget(
-            label = 'Date dispatched',
-            label_msgid = 'label_datedispatched',
-        ),
-    ),
+                  index = 'DateIndex',
+                  widget = DateTimeWidget(
+                      label = 'Date dispatched',
+                      label_msgid = 'label_datedispatched',
+                      ),
+                  ),
     TextField('Notes',
-        widget = TextAreaWidget(
-            label = 'Notes'
-        )
-    ),
+              widget = TextAreaWidget(
+                  label = 'Notes'
+              )
+              ),
     ComputedField('ClientUID',
-        index = 'FieldIndex',
-        expression = 'here.aq_parent.UID()',
-        widget = ComputedWidget(
-            visible = False,
-        ),
-    ),
+                  index = 'FieldIndex',
+                  expression = 'here.aq_parent.UID()',
+                  widget = ComputedWidget(
+                      visible = False,
+                      ),
+                  ),
     ComputedField('ProductUID',
-        index = 'KeywordIndex',
-        expression = 'context.getProductUIDs()',
-        widget = ComputedWidget(
-            visible = False,
-        ),
-    ),
+                  index = 'KeywordIndex',
+                  expression = 'context.getProductUIDs()',
+                  widget = ComputedWidget(
+                      visible = False,
+                      ),
+                  ),
 ),
 )
 
@@ -88,7 +90,7 @@ class Order(BaseFolder):
 
     def hasBeenInvoiced(self):
         if self.getInvoice():
-    	    return True
+            return True
         else:
             return False
 

@@ -15,15 +15,16 @@ from Products.CMFCore import permissions
 from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFCore.permissions import ListFolderContents, View
 from Products.CMFCore.utils import getToolByName
-from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.widgets import SpecWidget
 from bika.lims.config import I18N_DOMAIN, PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from types import ListType, TupleType
 import sys
 import time
+from zope.i18nmessageid import MessageFactory
+_ = MessageFactory('bika')
 
-schema = BikaSchema.copy() + Schema((
+schema = Schema((
     ReferenceField('SampleType',
         required = 1,
         vocabulary = "getRemainingSampleTypes",
@@ -32,6 +33,9 @@ schema = BikaSchema.copy() + Schema((
         relationship = 'AnalysisSpecSampleType',
         referenceClass = HoldingReference,
     ),
+)) + \
+BikaSchema.copy() + \
+Schema((
     RecordsField('ResultsRange',
         required = 1,
         type = 'analysisspec',
@@ -50,7 +54,8 @@ schema = BikaSchema.copy() + Schema((
     ),
     ComputedField('ClientUID',
         index = 'FieldIndex',
-        expression = "here.aq_parent.portal_type == 'Client' and here.aq_parent.UID() or None",
+        expression = "here.aq_parent.portal_type == 'Client'"+\
+                     "and here.aq_parent.UID() or None",
         widget = ComputedWidget(
             visible = False,
         ),
@@ -64,7 +69,6 @@ schema = BikaSchema.copy() + Schema((
     ),
 ))
 schema['description'].widget.visible = True
-schema['description'].schemata = 'default'
 schema['title'].required = False
 schema['title'].widget.visible = False
 
@@ -142,7 +146,8 @@ class AnalysisSpec(BaseFolder):
         unavailable_sampletypes = []
         for spec in self.aq_parent.objectValues('AnalysisSpec'):
             st = spec.getSampleType()
-            own_sampletype = self.getSampleType() and self.getSampleType().UID()
+            own_sampletype = self.getSampleType() and \
+                           self.getSampleType().UID()
             if not st.UID() == own_sampletype:
                 unavailable_sampletypes.append(st.UID())
 

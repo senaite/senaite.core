@@ -19,6 +19,8 @@ import sys
 import time
 from zope.interface import implements
 from bika.lims.interfaces import ISample
+from zope.i18nmessageid import MessageFactory
+_ = MessageFactory('bika')
 
 schema = BikaSchema.copy() + Schema((
     StringField('SampleID',

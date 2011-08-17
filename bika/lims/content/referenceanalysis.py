@@ -14,6 +14,8 @@ from bika.lims.browser.fields import InterimFieldsField
 from bika.lims.browser.widgets import RecordsWidget as BikaRecordsWidget
 from bika.lims.config import I18N_DOMAIN, STD_TYPES, PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
+from zope.i18nmessageid import MessageFactory
+_ = MessageFactory('bika')
 
 #try:
 #    from BikaCalendar.config import TOOL_NAME as BIKA_CALENDAR_TOOL # XXX

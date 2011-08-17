@@ -11,13 +11,14 @@ from Products.Archetypes.utils import DisplayList
 from Products.CMFCore import permissions
 from Products.CMFCore.utils import getToolByName
 from bika.lims.content.organisation import Organisation
-from bika.lims import bikaMessageFactory as _
 from bika.lims.config import *
 from bika.lims.interfaces import IClient
 from bika.lims.utils import generateUniqueId
 from zope.interface import implements
 from zope.interface.declarations import alsoProvides
 import sys
+from zope.i18nmessageid import MessageFactory
+_ = MessageFactory('bika')
 
 schema = Organisation.schema.copy() + atapi.Schema((
     atapi.StringField('ClientID',

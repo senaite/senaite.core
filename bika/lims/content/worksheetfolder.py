@@ -12,6 +12,8 @@ from bika.lims.utils import generateUniqueId
 from plone.app.folder import folder
 from AccessControl import ClassSecurityInfo
 from zope.interface import implements
+from zope.i18nmessageid import MessageFactory
+_ = MessageFactory('bika')
 
 schema = folder.ATFolderSchema.copy()
 schema['id'].widget.visible = {'edit':'hidden', 'view': 'invisible'}
