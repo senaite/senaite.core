@@ -43,6 +43,7 @@
   <type type_id="Analysis">
    <bound-workflow workflow_id="bika_analysis_workflow"/>
   </type>
+  <type type_id="AnalysisCategories"/>
   <type type_id="AnalysisCategory">
    <bound-workflow workflow_id="bika_inactive_workflow"/>
   </type>
@@ -53,14 +54,19 @@
   <type type_id="AnalysisService">
    <bound-workflow workflow_id="bika_inactive_workflow"/>
   </type>
+  <type type_id="AnalysisServices"/>
   <type type_id="AnalysisSpec">
    <bound-workflow workflow_id="bika_inactive_workflow"/>
   </type>
+  <type type_id="AnalysisSpecs"/>
+  <type type_id="ARImportItem"/>
   <type type_id="Attachment"/>
   <type type_id="AttachmentType"/>
+  <type type_id="AttachmentTypes"/>
   <type type_id="Calculation">
    <bound-workflow workflow_id="bika_inactive_workflow"/>
   </type>
+  <type type_id="Calculations"/>
   <type type_id="Client">
    <bound-workflow workflow_id="bika_inactive_workflow"/>
   </type>
@@ -71,6 +77,7 @@
   <type type_id="Department">
    <bound-workflow workflow_id="bika_inactive_workflow"/>
   </type>
+  <type type_id="Departments"/>
   <type type_id="Discussion Item"/>
   <type type_id="DuplicateAnalysis">
    <bound-workflow workflow_id="bika_worksheetanalysis_workflow"/>
@@ -80,6 +87,7 @@
   <type type_id="Instrument">
    <bound-workflow workflow_id="bika_inactive_workflow"/>
   </type>
+  <type type_id="Instruments"/>
   <type type_id="Invoice"/>
   <type type_id="InvoiceBatch"/>
   <type type_id="InvoiceFolder"/>
@@ -87,13 +95,18 @@
   <type type_id="LabContact">
    <bound-workflow workflow_id="bika_inactive_workflow"/>
   </type>
+  <type type_id="LabContacts"/>
+  <type type_id="LabProduct"/>
+  <type type_id="LabProducts"/>
   <type type_id="Method">
    <bound-workflow workflow_id="bika_inactive_workflow"/>
   </type>
+  <type type_id="Methods"/>
   <type type_id="SupplyOrder">
    <bound-workflow workflow_id="bika_order_workflow"/>
    <bound-workflow workflow_id="bika_inactive_workflow"/>
   </type>
+  <type type_id="SupplyOrderItem"/>
   <type type_id="Plone Site"/>
   <type type_id="Pricelist">
    <bound-workflow workflow_id="bika_inactive_workflow"/>
@@ -106,9 +119,11 @@
   <type type_id="ReferenceDefinition">
    <bound-workflow workflow_id="bika_inactive_workflow"/>
   </type>
+  <type type_id="ReferenceDefinitions"/>
   <type type_id="ReferenceManufacturer">
    <bound-workflow workflow_id="bika_inactive_workflow"/>
   </type>
+  <type type_id="ReferenceManufacturers"/>
   <type type_id="ReferenceSample">
    <bound-workflow workflow_id="bika_referencesample_workflow"/>
   </type>
@@ -116,6 +131,7 @@
    <bound-workflow workflow_id="bika_inactive_workflow"/>
   </type>
   <type type_id="ReferenceSupplierFolder"/>
+  <type type_id="RejectAnalysis"/>
   <type type_id="Sample">
    <bound-workflow workflow_id="bika_sample_workflow"/>
    <bound-workflow workflow_id="bika_inactive_workflow"/>
@@ -123,9 +139,11 @@
   <type type_id="SamplePoint">
    <bound-workflow workflow_id="bika_inactive_workflow"/>
   </type>
+  <type type_id="SamplePoints"/>
   <type type_id="SampleType">
    <bound-workflow workflow_id="bika_inactive_workflow"/>
   </type>
+  <type type_id="SampleTypes"/>
   <type type_id="SupplierContact">
    <bound-workflow workflow_id="bika_inactive_workflow"/>
   </type>
@@ -136,5 +154,6 @@
   <type type_id="WorksheetTemplate">
    <bound-workflow workflow_id="bika_inactive_workflow"/>
   </type>
+  <type type_id="WorksheetTemplates"/>
  </bindings>
 </object>
