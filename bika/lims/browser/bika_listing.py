@@ -524,7 +524,7 @@ class Table(tableview.Table):
             # manages the first/review_state workflow for an object.
             if 'bika_inactive_workflow' in workflow.getChainFor(obj):
                 if workflow.getInfoFor(obj, 'inactive_review_state', '') == 'active':
-                    t = workflow.bika_inactive_workflow.transitions['de-activate']
+                    t = workflow.bika_inactive_workflow.transitions['deactivate']
                     if not t in transitions:
                         transitions.append(t)
                 else:
