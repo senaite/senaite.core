@@ -31,8 +31,8 @@ from labcontact import LabContact
 from laboratory import Laboratory
 from labproduct import LabProduct
 from method import Method
-from order import Order
-from orderitem import OrderItem
+from supplyorder import SupplyOrder
+from supplyorderitem import SupplyOrderItem
 from organisation import Organisation
 from person import Person
 from referenceanalysis import ReferenceAnalysis

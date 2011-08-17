@@ -205,7 +205,7 @@ class InvoiceBatch( BaseFolder):
 
         ## query for Orders in date range
         query = {
-            'portal_type': 'Order',
+            'portal_type': 'SupplyOrder',
             'review_state': 'dispatched',
             'getDateDispatched': {
                 'range': 'min:max',
@@ -263,7 +263,7 @@ class InvoiceBatch( BaseFolder):
                 item_description = self.get_invoice_item_description(item)
                 l = [item.getRequestID(), item_description]
                 description = ' '.join(l)
-            elif item.portal_type == 'Order':
+            elif item.portal_type == 'SupplyOrder':
                 lineitem.setItemDate(item.getDateDispatched())
                 description = item.getOrderNumber()
             lineitem.setItemDescription(description)

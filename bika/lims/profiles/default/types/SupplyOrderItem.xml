@@ -1,13 +1,13 @@
 <?xml version="1.0"?>
-<object name="OrderItem"
+<object name="SupplyOrderItem"
    meta_type="Factory-based Type Information with dynamic views"
    xmlns:i18n="http://xml.zope.org/namespaces/i18n">
- <property name="title">OrderItem</property>
+ <property name="title">SupplyOrderItem</property>
  <property name="description"> </property>
  <property name="content_icon">++resource++bika.lims.images/product.png</property>
- <property name="content_meta_type">OrderItem</property>
+ <property name="content_meta_type">SupplyOrderItem</property>
  <property name="product">bika.lims</property>
- <property name="factory">addOrderItem</property>
+ <property name="factory">addSupplyOrderItem</property>
  <property name="add_view_expr"></property>
  <property name="link_target"></property>
  <property name="global_allow">False</property>

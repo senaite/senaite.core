@@ -14,7 +14,7 @@ schema = BikaSchema.copy() + Schema((
     ReferenceField('Product',
         required = 1,
         allowed_types = ('LabProduct',),
-        relationship = 'OrderItemLabProduct',
+        relationship = 'SupplyOrderItemLabProduct',
         referenceClass = HoldingReference,
         widget = ReferenceWidget(
             label = 'Product',
@@ -50,7 +50,7 @@ schema = BikaSchema.copy() + Schema((
 ),
 )
 
-class OrderItem( BaseContent):
+class SupplyOrderItem( BaseContent):
     security = ClassSecurityInfo()
     schema = schema
     displayContentsTab = False
@@ -85,4 +85,4 @@ class OrderItem( BaseContent):
             return 0
 
 
-atapi.registerType(OrderItem, PROJECTNAME)
+atapi.registerType(SupplyOrderItem, PROJECTNAME)

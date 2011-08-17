@@ -24,7 +24,7 @@ schema = BikaSchema.copy() + Schema((
                    vocabulary_display_path_bound = sys.maxint,
                    allowed_types = ('Contact',),
                    referenceClass = HoldingReference,
-                   relationship = 'OrderContact',
+                   relationship = 'SupplyOrderContact',
                    ),
     StringField('OrderNumber',
                 required = 1,
@@ -83,7 +83,7 @@ schema = BikaSchema.copy() + Schema((
 
 schema['title'].required = False
 
-class Order(BaseFolder):
+class SupplyOrder(BaseFolder):
     security = ClassSecurityInfo()
     schema = schema
     displayContentsTab = False
@@ -118,14 +118,14 @@ class Order(BaseFolder):
         """ Compute total qty """
         return sum(
             [obj.getQuantity() \
-             for obj in self.objectValues('OrderItem')])
+             for obj in self.objectValues('SupplyOrderItem')])
 
     security.declareProtected(View, 'getSubtotal')
     def getSubtotal(self):
         """ Compute Subtotal """
         return sum(
             [obj.getTotal() \
-             for obj in self.objectValues('OrderItem')])
+             for obj in self.objectValues('SupplyOrderItem')])
 
     security.declareProtected(View, 'getVAT')
     def getVAT(self):
@@ -137,7 +137,7 @@ class Order(BaseFolder):
         """ Compute TotalPrice """
         return sum(
             [obj.getTotalIncludingVAT() \
-             for obj in self.objectValues('OrderItem')])
+             for obj in self.objectValues('SupplyOrderItem')])
 
     def workflow_script_dispatch(self, state_info):
         """ dispatch order """
@@ -149,7 +149,7 @@ class Order(BaseFolder):
         """ return the uids of the products referenced by order items
         """
         uids = []
-        for orderitem in self.objectValues('OrderItem'):
+        for orderitem in self.objectValues('SupplyOrderItem'):
             product = orderitem.getProduct()
             if product is not None:
                 uids.append(orderitem.getProduct().UID())
@@ -162,4 +162,4 @@ class Order(BaseFolder):
 
 
 
-atapi.registerType(Order, PROJECTNAME)
+atapi.registerType(SupplyOrder, PROJECTNAME)

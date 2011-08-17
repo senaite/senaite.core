@@ -90,7 +90,7 @@
   <type type_id="Method">
    <bound-workflow workflow_id="bika_inactive_workflow"/>
   </type>
-  <type type_id="Order">
+  <type type_id="SupplyOrder">
    <bound-workflow workflow_id="bika_order_workflow"/>
    <bound-workflow workflow_id="bika_inactive_workflow"/>
   </type>

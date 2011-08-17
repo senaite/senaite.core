@@ -17,7 +17,7 @@
   <element value="Sample"/>
   <element value="Attachment"/>
   <element value="Contact"/>
-  <element value="Order"/>
+  <element value="SupplyOrder"/>
   <element value="ARImport"/>
   <element value="ARProfile"/>
   <element value="AnalysisSpec"/>

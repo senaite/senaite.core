@@ -39,8 +39,8 @@
     <element value="LabContact"/>
     <element value="LabProduct"/>
     <element value="Method"/>
-    <element value="Order"/>
-    <element value="OrderItem"/>
+    <element value="SupplyOrder"/>
+    <element value="SupplyOrderItem"/>
     <element value="PricelistLineItem"/>
     <element value="ReferenceAnalysis"/>
     <element value="ReferenceDefinition"/>

@@ -41,8 +41,8 @@
  <object name="Methods" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="Method" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="MethodLogEntry" meta_type="Factory-based Type Information"/>
- <object name="Order" meta_type="Factory-based Type Information with dynamic views"/>
- <object name="OrderItem" meta_type="Factory-based Type Information with dynamic views"/>
+ <object name="SupplyOrder" meta_type="Factory-based Type Information with dynamic views"/>
+ <object name="SupplyOrderItem" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="Pricelist" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="PricelistFolder" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="PricelistLineItem" meta_type="Factory-based Type Information"/>

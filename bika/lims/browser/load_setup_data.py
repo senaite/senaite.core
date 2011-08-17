@@ -743,7 +743,7 @@ class LoadSetupData():
             {'portal_type': 'AnalysisRequest', 'prefix': 'AR-', 'padding': '2'},
             {'portal_type': 'Sample', 'prefix': 'S-', 'padding': '5'},
             {'portal_type': 'Worksheet', 'prefix': 'WS-', 'padding': '5'},
-            {'portal_type': 'Order', 'prefix': 'O-', 'padding': '4', },
+            {'portal_type': 'SupplyOrder', 'prefix': 'O-', 'padding': '4', },
             {'portal_type': 'Invoice', 'prefix': 'I-', 'padding': '4'},
             {'portal_type': 'ARImport', 'prefix': 'B-', 'padding': '4'},
             {'portal_type': 'ReferenceSample', 'prefix': 'RS-', 'padding': '4'},

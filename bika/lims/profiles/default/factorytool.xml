@@ -21,8 +21,8 @@
   <type portal_type="LabContact"/>
   <type portal_type="LabProduct"/>
   <type portal_type="Method"/>
-  <type portal_type="Order"/>
-  <type portal_type="OrderItem"/>
+  <type portal_type="SupplyOrder"/>
+  <type portal_type="SupplyOrderItem"/>
   <type portal_type="ReferenceDefinition"/>
   <type portal_type="ReferenceManufacturer"/>
   <type portal_type="ReferenceSample"/>

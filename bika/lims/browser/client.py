@@ -471,8 +471,8 @@ class ClientOrdersView(BikaListingView):
 
     def __init__(self, context, request):
         super(ClientOrdersView, self).__init__(context, request)
-        self.contentFilter = {'portal_type': 'Order'}
-        self.content_add_actions = {_('Order'): "createObject?type_name=Order"}
+        self.contentFilter = {'portal_type': 'SupplyOrder'}
+        self.content_add_actions = {_('Order'): "createObject?type_name=SupplyOrder"}
         self.show_editable_border = True
         self.show_table_only = False
         self.show_sort_column = False
