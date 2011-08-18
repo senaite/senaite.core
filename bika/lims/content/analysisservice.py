@@ -1,5 +1,6 @@
 from AccessControl import ClassSecurityInfo
 from Products.ATExtensions.ateapi import RecordsField
+from Products.ATContentTypes.lib.historyaware import HistoryAwareMixin
 from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.Archetypes.public import *
 from Products.Archetypes.references import HoldingReference
@@ -97,7 +98,7 @@ schema = BikaSchema.copy() + Schema((
     StringField('Keyword',
         required = 1,
         index = 'FieldIndex:brains',
-        validators = ('isUnixLikeName','ServiceKeywordValidator'),
+        validators = ('isUnixLikeName','servicekeywordvalidator'),
         widget = StringWidget(
             label = 'Analysis Keyword',
             label_msgid = 'label_analysis_keyword',
@@ -243,7 +244,7 @@ schema['id'].widget.visible = False
 schema['description'].schemata = 'default'
 schema['description'].widget.visible = True
 
-class AnalysisService(BaseContent):
+class AnalysisService(BaseContent, HistoryAwareMixin):
     security = ClassSecurityInfo()
     schema = schema
 

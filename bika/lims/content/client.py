@@ -5,6 +5,7 @@ $Id: Client.py 2298 2010-05-19 09:18:43Z anneline $
 from bika.lims import interfaces
 from zope.component import getUtility
 from AccessControl import ClassSecurityInfo
+from Products.ATContentTypes.lib.historyaware import HistoryAwareMixin
 from Products.ATContentTypes.content import schemata
 from Products.Archetypes import atapi
 from Products.Archetypes.utils import DisplayList
@@ -87,7 +88,7 @@ schema['AccountNumber'].write_permission = ManageClients
 schema['title'].widget.visible = False
 schema['description'].widget.visible = False
 
-class Client(Organisation):
+class Client(Organisation, HistoryAwareMixin):
     implements(IClient)
     security = ClassSecurityInfo()
     schema = schema

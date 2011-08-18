@@ -1,6 +1,7 @@
 from DateTime import DateTime
 from AccessControl import ClassSecurityInfo
 from Products.CMFCore.utils import UniqueObject
+from Products.ATContentTypes.lib.historyaware import HistoryAwareMixin
 from Products.CMFCore.permissions import ListFolderContents, \
     ModifyPortalContent, View
 from plone.app import folder
@@ -84,7 +85,7 @@ schema = Organisation.schema.copy() + Schema((
 IdField = schema['id']
 IdField.widget.visible = {'edit':'hidden', 'view': 'invisible'}
 
-class Laboratory(UniqueObject, Organisation):
+class Laboratory(UniqueObject, Organisation, HistoryAwareMixin):
     security = ClassSecurityInfo()
     schema = schema
 

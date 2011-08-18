@@ -27,8 +27,8 @@ class InterimFieldsField(RecordsField):
                            'title': 20,
                            'value': 10,
                            'unit': 10},
-        'subfield_validators':{'id': ('isUnixLikeName', 'service_keyword_validator',),
-                           'title': ('interim_field_title_validator',),},
+        'subfield_validators':{'id': ('isUnixLikeName', 'servicekeywordvalidator',),
+                           'title': ('interimfieldtitlevalidator',),},
         })
     security = ClassSecurityInfo()
 

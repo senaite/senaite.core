@@ -1,12 +1,13 @@
 from AccessControl import ClassSecurityInfo
 from Products.ATExtensions.ateapi import RecordsField as RecordsField
+from Products.ATContentTypes.lib.historyaware import HistoryAwareMixin
 from Products.Archetypes.public import *
 from Products.Archetypes.references import HoldingReference
 from Products.CMFCore.permissions import ModifyPortalContent, View
 from Products.CMFCore.utils import getToolByName
 from Products.validation.ZService import ZService as Service
 from Products.validation.interfaces.IValidator import IValidator
-from bika.lims.browser.fields import InterimFieldsField
+from bika.lims.browser.fields import InterimFieldsField, VersionedReferenceField
 from bika.lims.browser.widgets import RecordsWidget as BikaRecordsWidget
 from bika.lims.config import I18N_DOMAIN, PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
@@ -28,7 +29,7 @@ schema = BikaSchema.copy() + Schema((
             i18n_domain = I18N_DOMAIN,
         )
     ),
-    ReferenceField('DependentServices',
+    VersionedReferenceField('DependentServices',
         required = 0,
         multiValued = 1,
         vocabulary_display_path_bound = sys.maxint,
@@ -44,7 +45,7 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     TextField('Formula',
-        validators = ('formula_validator',),
+        validators = ('formulavalidator',),
         default_content_type = 'text/plain',
         allowable_content_types = ('text/plain',),
         widget = TextAreaWidget(
@@ -59,7 +60,7 @@ schema = BikaSchema.copy() + Schema((
 schema['description'].widget.visible = True
 schema['description'].schemata = 'default'
 
-class Calculation(BaseFolder):
+class Calculation(BaseFolder, HistoryAwareMixin):
     security = ClassSecurityInfo()
     schema = schema
 

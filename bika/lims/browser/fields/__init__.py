@@ -3,3 +3,4 @@ from durationfield import DurationField
 from aranalysesfield import ARAnalysesField
 from interimfieldsfield import InterimFieldsField
 from referenceresultsfield import ReferenceResultsField
+from versionedreferencefield import VersionedReferenceField

@@ -4,6 +4,7 @@ $Id: AnalysisCategory.py $
 """
 import sys
 from AccessControl import ClassSecurityInfo
+from Products.ATContentTypes.lib.historyaware import HistoryAwareMixin
 from Products.CMFCore.utils import getToolByName
 from Products.CMFCore.permissions import View, \
     ModifyPortalContent
@@ -33,7 +34,7 @@ schema = BikaSchema.copy() + Schema((
 schema['description'].widget.visible = True
 schema['description'].schemata = 'default'
 
-class AnalysisCategory(BaseContent):
+class AnalysisCategory(BaseContent, HistoryAwareMixin):
     security = ClassSecurityInfo()
     schema = schema
 

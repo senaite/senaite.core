@@ -3,6 +3,7 @@
 """
 from AccessControl import ClassSecurityInfo
 from DateTime import DateTime
+from Products.ATContentTypes.lib.historyaware import HistoryAwareMixin
 from Products.Archetypes.public import *
 from Products.CMFCore.permissions import View, ModifyPortalContent
 from bika.lims.content.bikaschema import BikaSchema
@@ -36,7 +37,7 @@ schema = BikaSchema.copy() + Schema((
 schema['description'].schemata = 'default'
 schema['description'].widget.visible = True
 
-class ReferenceDefinition(BaseContent):
+class ReferenceDefinition(BaseContent, HistoryAwareMixin):
     security = ClassSecurityInfo()
     schema = schema
 

@@ -5,6 +5,7 @@ $Id: AnalysisSpec.py 443 2006-12-13 23:19:39Z anneline $
 from AccessControl import ClassSecurityInfo
 from AccessControl.Permissions import delete_objects
 from Products.ATContentTypes.content import schemata
+from Products.ATContentTypes.lib.historyaware import HistoryAwareMixin
 from Products.ATExtensions.field.records import RecordsField
 from Products.Archetypes import atapi
 from Products.Archetypes.config import REFERENCE_CATALOG
@@ -73,7 +74,7 @@ schema['description'].widget.visible = True
 schema['title'].required = False
 schema['title'].widget.visible = False
 
-class AnalysisSpec(BaseFolder):
+class AnalysisSpec(BaseFolder, HistoryAwareMixin):
     security = ClassSecurityInfo()
     schema = schema
     displayContentsTab = False

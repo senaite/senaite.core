@@ -42,7 +42,30 @@ AssignAnalyses = 'BIKA: Assign analyses'
 I18N_DOMAIN = 'bika'
 
 TYPES_TO_VERSION = ('SampleType',
+                    'ARProfile',
+                    'AnalysisCategory',
+                    'AnalysisService',
+                    'AnalysisSpec',
+                    'Calculation',
+                    'Client',
+                    'Contact',
+                    'Department',
+                    'Instrument',
+                    'LabContact',
+                    'LabProduct',
+                    'Laboratory',
+                    'Method',
+                    'ReferenceDefinition',
+                    'ReferenceManufacturer',
+                    'ReferenceSupplier',
+                    'Sample',
+                    'SamplePoint',
+                    'SampleType',
+                    'SupplierContact',
+                    'SupplyOrder',
+                    'WorksheetTemplate',
                     )
+
 
 BIKA_PERMISSIONS = (
     (ManageBika, ()),

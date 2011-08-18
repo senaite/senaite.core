@@ -26,13 +26,10 @@ from clientfolder import ClientFolder
 from contact import Contact
 from department import Department
 from instrument import Instrument
-from arprofile import ARProfile
 from labcontact import LabContact
 from laboratory import Laboratory
 from labproduct import LabProduct
 from method import Method
-from supplyorder import SupplyOrder
-from supplyorderitem import SupplyOrderItem
 from organisation import Organisation
 from person import Person
 from referenceanalysis import ReferenceAnalysis
@@ -45,6 +42,8 @@ from rejectanalysis import RejectAnalysis
 from sample import Sample
 from samplepoint import SamplePoint
 from sampletype import SampleType
+from supplyorder import SupplyOrder
+from supplyorderitem import SupplyOrderItem
 from worksheet import Worksheet
 from worksheetfolder import WorksheetFolder
 from worksheettemplate import WorksheetTemplate

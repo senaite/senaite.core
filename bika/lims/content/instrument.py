@@ -1,5 +1,6 @@
 from AccessControl import ClassSecurityInfo
 from DateTime import DateTime
+from Products.ATContentTypes.lib.historyaware import HistoryAwareMixin
 from Products.ATExtensions.ateapi import DateTimeField, DateTimeWidget
 from Products.Archetypes.public import *
 from Products.CMFCore.permissions import View, ModifyPortalContent
@@ -48,7 +49,7 @@ schema = BikaSchema.copy() + Schema((
 schema['description'].widget.visible = True
 schema['description'].schemata = 'default'
 
-class Instrument(BaseContent):
+class Instrument(BaseContent, HistoryAwareMixin):
     security = ClassSecurityInfo()
     schema = schema
 

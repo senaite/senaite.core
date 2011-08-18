@@ -1,6 +1,7 @@
 from AccessControl import ClassSecurityInfo
 from Acquisition import aq_base, aq_inner
 from Products.ATExtensions.field.records import RecordsField
+from Products.ATContentTypes.lib.historyaware import HistoryAwareMixin
 from Products.Archetypes.public import *
 from Products.Archetypes.references import HoldingReference
 from Products.CMFCore.permissions import View, ModifyPortalContent
@@ -45,7 +46,7 @@ schema = BikaSchema.copy() + Schema((
 schema['description'].schemata = 'default'
 schema['description'].widget.visible = True
 
-class WorksheetTemplate(BaseContent):
+class WorksheetTemplate(BaseContent, HistoryAwareMixin):
     security = ClassSecurityInfo()
     schema = schema
 

@@ -26,7 +26,7 @@ setup(name='bika.lims',
       install_requires=[
           'setuptools',
           'Products.ATExtensions',
-          'Products.CMFEditions',
+          'ore.contentmirror',
           'plone.app.iterate',
           'reportlab',
       ],
