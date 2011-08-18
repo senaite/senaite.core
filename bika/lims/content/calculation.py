@@ -45,6 +45,8 @@ schema = BikaSchema.copy() + Schema((
     ),
     TextField('Formula',
         validators = ('formula_validator',),
+        default_content_type = 'text/plain',
+        allowable_content_types = ('text/plain',),
         widget = TextAreaWidget(
             label = 'Calculation Formula',
             label_msgid = 'label_calculation_description',

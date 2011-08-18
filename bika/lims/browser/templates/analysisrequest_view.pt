@@ -16,6 +16,7 @@
 	colspan python:10;
 	ar_attach_allowed here/bika_setup/getARAttachmentsPermitted;
 	review_state python:context.portal_workflow.getInfoFor(context, 'review_state');
+	inactive_review_state python:context.portal_workflow.getInfoFor(context, 'inactive_review_state', 'asdf');
 	analysis_attach_allowed here/bika_setup/getAnalysisAttachmentsPermitted;
 	attachments_allowed here/bika_setup/getAttachmentsPermitted;
 	attachments here/getAttachment | nothing;
@@ -174,6 +175,22 @@
 		</tal:lab_analyses>
 
 	</form>
+
+	<form action="workflow_action">
+		<input
+			tal:condition="python:inactive_review_state == 'active'"
+			class="context workflow_action_button"
+			type="submit"
+			value="deactivate"
+			name="workflow_action">
+		<input
+			tal:condition="python:inactive_review_state == 'inactive'"
+			class="context workflow_action_button"
+			type="submit"
+			value="activate"
+			name="workflow_action">
+	<form>
+
 </metal:content-core>
 </body>
 </html>

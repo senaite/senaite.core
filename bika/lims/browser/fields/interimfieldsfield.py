@@ -19,7 +19,7 @@ class InterimFieldsField(RecordsField):
         'type' : 'InterimFields',
         'subfields' : ('id', 'title', 'value', 'unit'),
         'required_subfields' : ('id','title',),
-        'subfield_labels':{'id': _('Field ID'),
+        'subfield_labels':{'id': _('Keyword'),
                            'title': _('Field Title'),
                            'value': _('Default value'),
                            'unit': _('Unit')},
