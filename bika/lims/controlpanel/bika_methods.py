@@ -29,10 +29,11 @@ class MethodsView(BikaListingView):
 
     columns = {
                'Title': {'title': _('Method')},
+               'Description': {'title': _('Description')},
               }
     review_states = [
                     {'title': _('All'), 'id':'all',
-                     'columns': ['Title'],
+                     'columns': ['Title', 'Description',],
                      'buttons':[{'cssclass': 'context',
                                  'Title': _('Delete'),
                                  'url': 'folder_delete:method'}]},
