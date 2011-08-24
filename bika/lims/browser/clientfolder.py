@@ -6,34 +6,39 @@ from Products.Five.browser import BrowserView
 from zope.interface import implements
 
 class ClientFolderContentsView(BikaListingView):
+
     implements(IFolderContentsView)
-    contentFilter = {'portal_type': 'Client', 'sort_on': 'sortable_title'}
-    content_add_actions = {_('Client'): "createObject?type_name=Client"}
-    title = _("Clients")
-    description = ""
-    show_editable_border = False
-    show_table_only = False
-    show_sort_column = False
-    show_select_row = True
-    show_select_column = True
-    show_filters = False
-    pagesize = 20
 
-    columns = {
-               'title': {'title': _('Name')},
-               'getEmailAddress': {'title': _('Email Address')},
-               'getPhone': {'title': _('Phone')},
-               'getFax': {'title': _('Fax')},
-              }
+    def __init__(self, context, request):
+        super(ClientFolderContentsView, self).__init__(context, request)
+        self.contentFilter = {'portal_type': 'Client',
+                              'sort_on': 'sortable_title'}
+        self.content_add_actions = {_('Client'):
+                                    "createObject?type_name=Client"}
+        self.title = _("Clients")
+        self.description = ""
+        self.show_editable_border = False
+        self.show_sort_column = False
+        self.show_select_row = True
+        self.show_select_column = True
+        self.show_filters = False
+        self.pagesize = 20
 
-    review_states = [
-                    {'title': _('All'), 'id':'all',
-                     'columns':['title',
-                                'getEmailAddress',
-                                'getPhone',
-                                'getFax', ]
-                     },
-    ]
+        self.columns = {
+                   'title': {'title': _('Name')},
+                   'getEmailAddress': {'title': _('Email Address')},
+                   'getPhone': {'title': _('Phone')},
+                   'getFax': {'title': _('Fax')},
+                  }
+
+        self.review_states = [
+                        {'title': _('All'), 'id':'all',
+                         'columns':['title',
+                                    'getEmailAddress',
+                                    'getPhone',
+                                    'getFax', ]
+                         },
+        ]
 
     def folderitems(self):
         items = BikaListingView.folderitems(self)

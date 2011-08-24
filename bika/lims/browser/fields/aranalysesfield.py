@@ -82,7 +82,7 @@ class ARAnalysesField(ObjectField):
             # Using getRaw method on field rather than generated
             # accessor to prevent object lookup
             if analysis.Schema()['Service'].getRaw(analysis) is None:
-            # "if Service field of AR doesn't know about us yet"
+                # if analysis['Service'] is None
                 analysis.edit(
                     Service = service,
                     InterimFields = interim_fields,

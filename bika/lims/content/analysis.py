@@ -14,10 +14,9 @@ from Products.Archetypes.references import HoldingReference
 from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFCore.permissions import View, ModifyPortalContent
 from Products.CMFCore.utils import getToolByName
-from bika.lims.browser.fields import InterimFieldsField
-from bika.lims.browser.fields import DurationField
-from bika.lims.browser.widgets import RecordsWidget as BikaRecordsWidget
-from bika.lims.browser.widgets import DurationWidget
+from bika.lims.browser.fields import InterimFieldsField, DurationField
+from bika.lims.browser.widgets import DurationWidget, \
+     RecordsWidget as BikaRecordsWidget
 from bika.lims.config import I18N_DOMAIN, PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IAnalysis
@@ -31,6 +30,7 @@ _ = MessageFactory('bika')
 schema = BikaSchema.copy() + Schema((
     ReferenceField('Service',
         required = 1,
+        pin_versions = 1,
         allowed_types = ('AnalysisService',),
         relationship = 'AnalysisAnalysisService',
         referenceClass = HoldingReference,
@@ -68,6 +68,7 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     ReferenceField('Calculation',
+        pin_versions = 1,
         allowed_types = ('Calculation',),
         relationship = 'AnalysisCalculation',
         referenceClass = HoldingReference,

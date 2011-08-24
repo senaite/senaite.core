@@ -17,16 +17,17 @@ def ActionSucceededEventHandler(ar, event):
         del ar._skip_ActionSucceededEvent
         return
 
-    if event.action == "receive":
+    elif event.action == "receive":
         ar.setDateReceived(DateTime())
         ar.reindexObject()
         # receive the AR's sample
         sample = ar.getSample()
         try:
+            sample._skip_ActionSucceededEvent = 1
             workflow.doActionFor(sample, event.action)
             sample.reindexObject()
         except WorkflowException, msg:
-            pass
+            return
         # receive all analyses in this AR.
         analyses = ar.getAnalyses()
         if not analyses:
@@ -43,10 +44,10 @@ def ActionSucceededEventHandler(ar, event):
             except WorkflowException, errmsg:
                 pass
 
-    if event.action == "assign":
+    elif event.action == "assign":
         ar._assigned_to_worksheet = True
 
-    if event.action == "submit":
+    elif event.action == "submit":
         # Check all analyses, verify that they are in sample_recieved,
         # and that their Result is anything other than an empty string,
         # and submit them
@@ -63,7 +64,7 @@ def ActionSucceededEventHandler(ar, event):
             except WorkflowException:
                 pass
 
-    if event.action == "verify":
+    elif event.action == "verify":
         # verify all analyses in this AR.
         mt = getToolByName(ar, 'portal_membership')
         member = mt.getAuthenticatedMember()
@@ -90,7 +91,7 @@ def ActionSucceededEventHandler(ar, event):
             except WorkflowException:
                 pass
 
-    if event.action == "retract":
+    elif event.action == "retract":
         # retract all analyses in this AR.
         analyses = ar.getAnalyses()
         for analysis in analyses:
@@ -109,7 +110,7 @@ def ActionSucceededEventHandler(ar, event):
             workflow.doActionFor(ar, 'assign')
         ar.reindexObject()
 
-    if event.action == "publish":
+    elif event.action == "publish":
         ar.setDatePublished(DateTime())
         ar.reindexObject()
         # publish all analyses in this AR.

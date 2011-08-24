@@ -28,6 +28,7 @@ setup(name='bika.lims',
           'Products.ATExtensions',
           'ore.contentmirror',
           'plone.app.iterate',
+          'Products.CMFEditions',
           'reportlab',
       ],
       entry_points="""

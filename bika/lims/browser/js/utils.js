@@ -31,12 +31,13 @@ jQuery( function($) {
 
 	$(document).ready(function(){
 
-		// All jquery autocomplete widgets get a down-arrow keypress when clicked
-	//	this is terrible
-	//	$("input[class~='ui-autocomplete-input']").live('click', function(){
-	//		$(this).trigger({type:'keydown', which:40});
-	//		$(this).trigger({type:'keyup', which:40});
-	//	});
+		// All jquery autocomplete widgets get a down-arrow keypress when
+		// double clicked
+		//	this is terrible
+		$("input[class~='ui-autocomplete-input']").live('click', function(){
+			$(this).trigger({type:'keydown', which:40});
+			$(this).trigger({type:'keyup', which:40});
+		});
 
 
 	});

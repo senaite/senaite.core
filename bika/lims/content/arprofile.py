@@ -4,7 +4,6 @@
 """
 
 from AccessControl import ClassSecurityInfo
-from Products.ATContentTypes.lib.historyaware import HistoryAwareMixin
 from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.Archetypes.public import *
 from Products.Archetypes.references import HoldingReference
@@ -65,7 +64,7 @@ schema['description'].widget.visible = True
 schema['description'].schemata = 'default'
 IdField = schema['id']
 
-class ARProfile(BaseContent, HistoryAwareMixin):
+class ARProfile(BaseContent):
     security = ClassSecurityInfo()
     schema = schema
     displayContentsTab = False

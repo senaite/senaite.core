@@ -98,7 +98,7 @@ schema = BikaSchema.copy() + Schema((
     StringField('Keyword',
         required = 1,
         index = 'FieldIndex:brains',
-        validators = ('isUnixLikeName','servicekeywordvalidator'),
+        validators = ('servicekeywordvalidator'),
         widget = StringWidget(
             label = 'Analysis Keyword',
             label_msgid = 'label_analysis_keyword',

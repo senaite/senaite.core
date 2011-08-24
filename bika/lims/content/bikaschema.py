@@ -15,6 +15,11 @@ BikaSchema['subject'].widget.visible = False
 BikaSchema['language'].widget.visible = False
 BikaSchema['location'].widget.visible = False
 
+BikaSchema['title'].validators = ('uniquetitlevalidator',)
+# Update the validation layer after change the validator in runtime
+BikaSchema['title']._validationLayer()
+
+
 BikaFolderSchema = ATFolderSchema.copy()
 BikaFolderSchema['excludeFromNav'].widget.visible = False
 BikaFolderSchema['nextPreviousEnabled'].widget.visible = False

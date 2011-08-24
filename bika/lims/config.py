@@ -41,8 +41,7 @@ AssignAnalyses = 'BIKA: Assign analyses'
 
 I18N_DOMAIN = 'bika'
 
-TYPES_TO_VERSION = ('SampleType',
-                    'ARProfile',
+TYPES_TO_VERSION = ('ARProfile',
                     'AnalysisCategory',
                     'AnalysisService',
                     'AnalysisSpec',

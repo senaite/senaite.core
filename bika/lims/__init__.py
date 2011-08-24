@@ -1,5 +1,3 @@
-from bika.lims.validators import *
-
 # import this to create messages in the bika domain.
 from zope.i18nmessageid import MessageFactory
 bikaMessageFactory = MessageFactory('bika')
@@ -7,6 +5,7 @@ bikaMessageFactory = MessageFactory('bika')
 import logging
 logger = logging.getLogger('Bika')
 
+from bika.lims.validators import *
 
 from AccessControl import ModuleSecurityInfo, allow_module
 from Products.Archetypes.atapi import process_types, listTypes
@@ -20,7 +19,6 @@ from Products.GenericSetup import EXTENSION, profile_registry
 from bika.lims.config import *
 from content import *
 from controlpanel import *
-
 allow_module('bika.lims')
 allow_module('AccessControl')
 

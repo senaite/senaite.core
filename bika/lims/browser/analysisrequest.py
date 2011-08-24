@@ -911,7 +911,7 @@ class AJAXAnalysisRequestSubmit():
                    wftool.getInfoFor(sample, 'review_state') != 'due':
                     wftool.doActionFor(ar, 'receive')
 
-            ar.setAnalyses(Analyses, prices = prices)
+            #ar.setAnalyses(Analyses, prices = prices)
 
             if came_from == "add":
                 if len(ARs) > 1:
@@ -931,7 +931,6 @@ class AJAXAnalysisRequestSubmit():
 
         self.context.plone_utils.addPortalMessage(message, 'info')
         return json.dumps({'success':message})
-
 
 
 class AnalysisRequestsView(BikaListingView):
