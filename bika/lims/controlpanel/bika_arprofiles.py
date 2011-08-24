@@ -25,12 +25,13 @@ class ARProfilesView(BikaListingView):
     pagesize = 20
 
     columns = {
-               'title': {'title': _('Profile Title')},
+               'title': {'title': _('Profile')},
+               'Description': {'title': _('Description')},
                'getProfileKey': {'title': _('Profile Key')},
               }
     review_states = [
                      {'title': 'All', 'id':'all',
-                      'columns': ['title', 'getProfileKey'],
+                      'columns': ['title', 'Description', 'getProfileKey'],
                      'buttons':[{'cssclass': 'context',
                                  'title': _('Delete'),
                                  'url': 'folder_delete:method'},

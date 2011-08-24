@@ -25,14 +25,6 @@ schema = BikaSchema.copy() + Schema((
             description_msgid = 'help_profile_keyword',
         ),
     ),
-    StringField('CostCode', #XXX CostCode gets dropdown like SampleTypes
-        searchable = True,
-        widget = StringWidget(
-            label = 'Cost code',
-            label_msgid = 'label_costcode',
-            i18n_domain = I18N_DOMAIN,
-        ),
-    ),
     ReferenceField('Service',
         required = 1,
         multiValued = 1,
