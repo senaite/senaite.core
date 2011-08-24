@@ -1,3 +1,9 @@
+from Products.validation import validation
+from bika.lims.content.validators import *
+validation.register(FormulaValidator("formula_validator"))
+validation.register(ServiceKeywordValidator("service_keyword_validator"))
+validation.register(InterimFieldTitleValidator("interim_field_title_validator"))
+
 # import this to create messages in the bika domain.
 from zope.i18nmessageid import MessageFactory
 bikaMessageFactory = MessageFactory('bika')
@@ -19,6 +25,7 @@ from Products.GenericSetup import EXTENSION, profile_registry
 from bika.lims.config import *
 from content import *
 from controlpanel import *
+
 allow_module('bika.lims')
 allow_module('AccessControl')
 

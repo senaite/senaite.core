@@ -2,7 +2,6 @@ import sys
 from Products.ATContentTypes.content import schemata
 from Products.Archetypes import atapi
 from DateTime import DateTime
-from Products.ATContentTypes.lib.historyaware import HistoryAwareMixin
 from AccessControl import ClassSecurityInfo
 from Products.CMFCore.utils import getToolByName
 from Products.CMFCore.permissions import ListFolderContents, \
@@ -84,7 +83,7 @@ schema = BikaSchema.copy() + Schema((
 
 schema['title'].required = False
 
-class SupplyOrder(BaseFolder, HistoryAwareMixin):
+class SupplyOrder(BaseFolder):
     security = ClassSecurityInfo()
     schema = schema
     displayContentsTab = False

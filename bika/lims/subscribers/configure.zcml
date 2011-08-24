@@ -25,10 +25,4 @@
       handler="bika.lims.subscribers.sample.ActionSucceededEventHandler"
     />
 
-    <!-- Version objects in TYPES_TO_VERSION -->
-    <subscriber
-      for="zope.lifecycleevent.interfaces.IObjectModifiedEvent"
-      handler="bika.lims.subscribers.autoversion.ObjectModifiedEventHandler"
-    />
-
 </configure>

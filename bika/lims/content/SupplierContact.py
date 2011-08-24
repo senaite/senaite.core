@@ -4,7 +4,6 @@ $Id: SupplierContact.py 639 2007-03-20 09:35:32Z anneline $
 """
 from AccessControl import ClassSecurityInfo
 from AccessControl.Permissions import manage_users
-from Products.ATContentTypes.lib.historyaware import HistoryAwareMixin
 from Products.Archetypes.public import *
 from bika.lims.content.person import Person
 from Products.CMFCore import permissions
@@ -29,7 +28,7 @@ TitleField.schemata = 'default'
 TitleField.required = 0
 TitleField.widget.visible = False
 
-class SupplierContact(Person, HistoryAwareMixin):
+class SupplierContact(Person):
     security = ClassSecurityInfo()
     archetype_name = 'SupplierContact'
     schema = schema

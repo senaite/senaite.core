@@ -3,7 +3,6 @@
 $Id: Department.py 1000 2007-12-03 11:53:04Z anneline $
 """
 from Products.Archetypes.public import *
-from Products.ATContentTypes.lib.historyaware import HistoryAwareMixin
 from Products.Archetypes.references import HoldingReference
 from bika.lims.config import I18N_DOMAIN, PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
@@ -31,7 +30,7 @@ schema = BikaSchema.copy() + Schema((
 schema['description'].widget.visible = True
 schema['description'].schemata = 'default'
 
-class Department(BaseContent, HistoryAwareMixin):
+class Department(BaseContent):
     security = ClassSecurityInfo()
     schema = schema
 

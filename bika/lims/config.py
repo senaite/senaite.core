@@ -65,7 +65,6 @@ TYPES_TO_VERSION = ('ARProfile',
                     'WorksheetTemplate',
                     )
 
-
 BIKA_PERMISSIONS = (
     (ManageBika, ()),
     (ManageClients, ()),

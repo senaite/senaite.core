@@ -933,6 +933,7 @@ class AJAXAnalysisRequestSubmit():
         return json.dumps({'success':message})
 
 
+
 class AnalysisRequestsView(BikaListingView):
     """ The main portal Analysis Requests action tab
     """

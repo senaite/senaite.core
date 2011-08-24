@@ -1,6 +1,5 @@
 from AccessControl import ClassSecurityInfo
 from Products.ATExtensions.ateapi import RecordsField
-from Products.ATContentTypes.lib.historyaware import HistoryAwareMixin
 from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.Archetypes.public import *
 from Products.Archetypes.references import HoldingReference
@@ -244,7 +243,7 @@ schema['id'].widget.visible = False
 schema['description'].schemata = 'default'
 schema['description'].widget.visible = True
 
-class AnalysisService(BaseContent, HistoryAwareMixin):
+class AnalysisService(BaseContent):
     security = ClassSecurityInfo()
     schema = schema
 

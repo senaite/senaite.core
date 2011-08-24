@@ -1,6 +1,5 @@
 from AccessControl import ClassSecurityInfo
 from Products.ATExtensions.ateapi import RecordsField as RecordsField
-from Products.ATContentTypes.lib.historyaware import HistoryAwareMixin
 from Products.Archetypes.public import *
 from Products.Archetypes.references import HoldingReference
 from Products.CMFCore.permissions import ModifyPortalContent, View
@@ -60,7 +59,7 @@ schema = BikaSchema.copy() + Schema((
 schema['description'].widget.visible = True
 schema['description'].schemata = 'default'
 
-class Calculation(BaseFolder, HistoryAwareMixin):
+class Calculation(BaseFolder):
     security = ClassSecurityInfo()
     schema = schema
 

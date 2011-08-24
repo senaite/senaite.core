@@ -4,7 +4,6 @@ $Id: LabContact.py 639 2007-03-20 09:35:32Z anneline $
 """
 from AccessControl import ClassSecurityInfo
 from AccessControl.Permissions import manage_users
-from Products.ATContentTypes.lib.historyaware import HistoryAwareMixin
 from Products.CMFCore import permissions
 from Products.CMFCore.utils import getToolByName
 from Products.Archetypes.public import *
@@ -43,7 +42,7 @@ schema['JobTitle'].schemata = 'default'
 schema['title'].required = 0
 schema['title'].widget.visible = False
 
-class LabContact(Person, HistoryAwareMixin):
+class LabContact(Person):
     security = ClassSecurityInfo()
     schema = schema
 

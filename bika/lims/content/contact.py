@@ -4,7 +4,6 @@ $Id: Contact.py 2242 2010-04-08 22:17:03Z campbellbasset $
 """
 from AccessControl import ClassSecurityInfo
 from AccessControl.Permissions import manage_users
-from Products.ATContentTypes.lib.historyaware import HistoryAwareMixin
 from Products.ATContentTypes.content import schemata
 from Products.Archetypes import atapi
 from Products.Archetypes.public import *
@@ -52,7 +51,7 @@ schema['Department'].schemata = 'default'
 schema['title'].required = 0
 schema['title'].widget.visible = False
 
-class Contact(Person, HistoryAwareMixin):
+class Contact(Person):
     security = ClassSecurityInfo()
     schema = schema
     displayContentsTab = False

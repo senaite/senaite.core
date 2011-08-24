@@ -13,44 +13,40 @@ from zope.interface.declarations import implements
 from operator import itemgetter
 
 class AnalysisServicesView(BikaListingView):
-
     implements(IFolderContentsView)
+    contentFilter = {'portal_type': 'AnalysisService', 'sort_on': 'sortable_title'}
+    content_add_actions = {_('Analysis Service'): "createObject?type_name=AnalysisService"}
+    title = _("Analysis Services")
+    show_editable_border = False
+    show_filters = False
+    show_sort_column = False
+    show_select_row = True
+    show_select_column = True
+    pagesize = 20
 
-    def __init__(self, context, request):
-        super(AnalysisServicesView, self).__init__(context, request)
-        self.contentFilter = {'portal_type': 'AnalysisService', 'sort_on': 'sortable_title'}
-        self.content_add_actions = {_('Analysis Service'): "createObject?type_name=AnalysisService"}
-        self.title = _("Analysis Services")
-        self.show_editable_border = False
-        self.show_filters = False
-        self.show_sort_column = False
-        self.show_select_row = True
-        self.show_select_column = True
-        self.pagesize = 20
-
-        self.columns = {
-            'Title': {'title': _('Service')},
-            'getKeyword': {'title': _('Keyword')},
-            'CategoryName': {'title': _('Category')},
-            'Unit': {'title': _('Unit')},
-            'Price': {'title': _('Price')},
-            'MaxTimeAllowed': {'title': _('Max Time')},
-            'DuplicateVariation': {'title': _('Dup Var')},
-            'Calculation': {'title': _('Calculation')},
-        }
-        self.review_states = [
-            {'title': _('All'), 'id':'all',
-             'columns': ['Title',
-                         'getKeyword',
-                         'CategoryName',
-                         'Unit',
-                         'Price',
-                         'MaxTimeAllowed',
-                         'DuplicateVariation',
-                         'Calculation',
-                         ],
-             },
-        ]
+    columns = {
+               'Title': {'title': _('Service')},
+               'getKeyword': {'title': _('Keyword')},
+               'CategoryName': {'title': _('Category')},
+               'Unit': {'title': _('Unit')},
+               'Price': {'title': _('Price')},
+               'MaxTimeAllowed': {'title': _('Max Time')},
+               'DuplicateVariation': {'title': _('Dup Var')},
+               'Calculation': {'title': _('Calculation')},
+              }
+    review_states = [
+                     {'title': _('All'), 'id':'all',
+                      'columns': ['Title',
+                                  'getKeyword',
+                                  'CategoryName',
+                                  'Unit',
+                                  'Price',
+                                  'MaxTimeAllowed',
+                                  'DuplicateVariation',
+                                  'Calculation',
+                                 ],
+                     },
+                    ]
 
 
     def folderitems(self):
@@ -76,8 +72,7 @@ class AnalysisServicesView(BikaListingView):
                 items[x]['DuplicateVariation'] = "%s.%02d" % (obj.DuplicateVariation)
             else: items[x]['DuplicateVariation'] = ""
             calculation = obj.getCalculation()
-            items[x]['Calculation'] = calculation and \
-                 calculation.Title() or ''
+            items[x]['Calculation'] = calculation and calculation.Title() or ''
             items[x]['replace']['Title'] = "<a href='%s'>%s</a>" % \
                  (items[x]['url'], items[x]['Title'])
             after_icons = ''
