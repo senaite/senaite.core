@@ -50,4 +50,12 @@ You could also do the following to boost Windows performance radically:
     comment out the whole whole block that begins with:
         if platform == 'win32':
 
+
     (this workaround will no longer be needed in Plone 4.2, i.e. CMF 2.3)
+
+
+Updating the demo:
+on bika2 in usr/local/Plone
+run in zinstance: sudo bin/svnupdate_and_rebuild
+Which will clear db, get fresh copy from svn and rebuild, and start in fg
+If all ok, break, and restart with sudo plone -c "bin/plonectl start"
