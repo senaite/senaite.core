@@ -124,7 +124,7 @@ class AnalysesView(BikaListingView):
             items[i]['interim_fields'] = obj.getInterimFields()
             items[i]['Service'] = service.Title()
             items[i]['Keyword'] = keyword
-            items[i]['Unit'] = obj.getUnit()
+            items[i]['Unit'] = service.getUnit()
             items[i]['Result'] = ''
             items[i]['formatted_result'] = ''
             items[i]['Uncertainty'] = ''

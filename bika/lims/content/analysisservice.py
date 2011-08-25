@@ -3,9 +3,11 @@ from Products.ATExtensions.ateapi import RecordsField
 from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.Archetypes.public import *
 from Products.Archetypes.references import HoldingReference
+from Products.ATContentTypes.lib.historyaware import HistoryAwareMixin
 from Products.CMFCore.permissions import View, ModifyPortalContent
 from Products.CMFCore.utils import getToolByName
 from bika.lims.browser.fields import DurationField
+from bika.lims.browser.fields import HistoryAwareReferenceField
 from bika.lims.browser.widgets import ServicesWidget, RecordsWidget, \
      DurationWidget
 from bika.lims.config import ATTACHMENT_OPTIONS, I18N_DOMAIN, PROJECTNAME, \
@@ -117,7 +119,7 @@ schema = BikaSchema.copy() + Schema((
             i18n_domain = I18N_DOMAIN,
         ),
     ),
-    ReferenceField('Calculation',
+    HistoryAwareReferenceField('Calculation',
         required = 0,
         vocabulary_display_path_bound = sys.maxint,
         allowed_types = ('Calculation',),
@@ -243,7 +245,7 @@ schema['id'].widget.visible = False
 schema['description'].schemata = 'default'
 schema['description'].widget.visible = True
 
-class AnalysisService(BaseContent):
+class AnalysisService(BaseContent, HistoryAwareMixin):
     security = ClassSecurityInfo()
     schema = schema
 

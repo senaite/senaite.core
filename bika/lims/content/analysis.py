@@ -16,6 +16,7 @@ from Products.CMFCore.permissions import View, ModifyPortalContent
 from Products.CMFCore.utils import getToolByName
 from bika.lims.browser.fields import InterimFieldsField
 from bika.lims.browser.fields import DurationField
+from bika.lims.browser.fields import HistoryAwareReferenceField
 from bika.lims.browser.widgets import RecordsWidget as BikaRecordsWidget
 from bika.lims.browser.widgets import DurationWidget
 from bika.lims.config import I18N_DOMAIN, PROJECTNAME
@@ -27,9 +28,8 @@ import datetime
 from zope.i18nmessageid import MessageFactory
 _ = MessageFactory('bika')
 
-
 schema = BikaSchema.copy() + Schema((
-    ReferenceField('Service',
+    HistoryAwareReferenceField('Service',
         required = 1,
         allowed_types = ('AnalysisService',),
         relationship = 'AnalysisAnalysisService',
@@ -54,25 +54,10 @@ schema = BikaSchema.copy() + Schema((
         referenceClass = HoldingReference,
         relationship = 'AnalysisAttachment',
     ),
-    FixedPointField('Price',
-        required = 1,
-        widget = DecimalWidget(
-            label = 'Price',
-            label_msgid = 'label_price',
-            i18n_domain = I18N_DOMAIN,
-        )
-    ),
-    StringField('Unit',
-        widget = StringWidget(
-            label_msgid = 'label_unit',
-        ),
-    ),
-    ReferenceField('Calculation',
+    HistoryAwareReferenceField('Calculation',
         allowed_types = ('Calculation',),
         relationship = 'AnalysisCalculation',
         referenceClass = HoldingReference,
-    ),
-    StringField('Keyword',
     ),
     BooleanField('ReportDryMatter',
         default = False,

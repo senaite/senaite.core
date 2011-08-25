@@ -71,35 +71,38 @@ class ARAnalysesField(ObjectField):
             price = prices[service_uid]
             vat = Decimal(service.getVAT())
 
-            #create the analysis if it doesn't exist
-            if not hasattr(instance, service.getKeyword()):
-                instance.invokeFactory(id = service.getKeyword(), type_name = 'Analysis')
-            analysis = instance._getOb(service.getKeyword())
-
             calc = service.getCalculation()
             interim_fields = calc and calc.getInterimFields() or []
 
-            # Using getRaw method on field rather than generated
-            # accessor to prevent object lookup
-            if analysis.Schema()['Service'].getRaw(analysis) is None:
-                # if analysis['Service'] is None
-                analysis.edit(
-                    Service = service,
-                    InterimFields = interim_fields,
-                    Keyword = service.getKeyword(),
-                    Price = str(price),
-                    Unit = service.getUnit(),
-                    MaxTimeAllowed = service.getMaxTimeAllowed(),
-                )
-            else:
-                # the price or unit of an existing analysis may have changed
-                if (analysis.getPrice() != price) or \
-                   (analysis.getUnit() != service.getUnit()):
-                    analysis.edit(
-                        Keyword = service.getKeyword(),
-                        Price = str(price),
-                        Unit = service.getUnit(),
-                    )
+            #create the analysis if it doesn't exist
+            if not hasattr(instance, service.getKeyword()):
+                instance.invokeFactory(id = service.getKeyword(),
+                                       type_name = 'Analysis',
+                                       Service=service,
+                                       InterimFields = interim_fields,
+                                       MaxTimeAllowed = service.getMaxTimeAllowed())
+
+            analysis = instance._getOb(service.getKeyword())
+
+##            # Using getRaw method on field rather than generated
+##            # accessor to prevent object lookup
+##            if analysis.Schema()['Service'].getRaw(analysis) is None:
+##                # if analysis['Service'] is None
+##                analysis.edit(
+##                    Service = service,
+##                    InterimFields = interim_fields,
+##                    Keyword = service.getKeyword(),
+##                    MaxTimeAllowed = service.getMaxTimeAllowed(),
+##                )
+##            else:
+##                # the price or unit of an existing analysis may have changed
+##                if (analysis.getPrice() != price) or \
+##                   (analysis.getUnit() != service.getUnit()):
+##                    analysis.edit(
+##                        Keyword = service.getKeyword(),
+##                        Price = str(price),
+##                        Unit = service.getUnit(),
+##                    )
 
             review_state = workflow.getInfoFor(analysis, 'review_state', '')
             if ar_state in ('sample_received', 'assigned') and \

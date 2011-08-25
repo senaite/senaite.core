@@ -24,6 +24,7 @@ import json
 import plone
 import transaction
 import urllib
+import App
 
 class WorkflowAction:
     """ Workflow actions taken in any Bika contextAnalysisRequest context
@@ -286,7 +287,8 @@ class BikaListingView(BrowserView):
 
             icon = plone_layout.getIcon(obj)
 
-            review_state = hasattr(obj, 'review_state') and obj.review_state or None
+            review_state = hasattr(obj, 'review_state') \
+                         and obj.review_state or None
             if not review_state:
                 try:
                     review_state = workflow.getInfoFor(obj, 'review_state')
@@ -296,7 +298,8 @@ class BikaListingView(BrowserView):
             url = hasattr(obj, 'getURL') and obj.getURL() or \
                 "/".join(obj.getPhysicalPath())
 
-            relative_url = hasattr(obj, 'getURL') and obj.getURL(relative=True) or \
+            relative_url = hasattr(obj, 'getURL') and \
+                         obj.getURL(relative=True) or \
                          "/".join(obj.getPhysicalPath())
 
             fti = portal_types.get(obj.portal_type)
@@ -312,20 +315,25 @@ class BikaListingView(BrowserView):
                  path,
                  safe_unicode(description))
 
-            modified = plone_view.toLocalizedTime(obj.ModificationDate, long_format = 1)
+            modified = plone_view.toLocalizedTime(obj.ModificationDate,
+                                                  long_format = 1)
 
             # Check for InterimFields attribute on our object,
-            interim_fields = hasattr(obj, 'getInterimFields') and obj.getInterimFields or []
+            interim_fields = hasattr(obj, 'getInterimFields') \
+                           and obj.getInterimFields or []
             if not interim_fields:
-                interim_fields = hasattr(obj, 'InterimFields') and obj.InterimFields or []
+                interim_fields = hasattr(obj, 'InterimFields') \
+                               and obj.InterimFields or []
             if callable(interim_fields): interim_fields = interim_fields()
 
             # element css classes
-            type_class = 'contenttype-' + plone_utils.normalizeString(obj.portal_type)
+            type_class = 'contenttype-' + \
+                       plone_utils.normalizeString(obj.portal_type)
             if item_inactive:
                 state_class = 'state-inactive'
             else:
-                state_class = 'state-' + plone_utils.normalizeString(review_state)
+                state_class = 'state-' + \
+                            plone_utils.normalizeString(review_state)
             if (i + 1) % 2 == 0:
                 table_row_class = "draggable even"
             else:
@@ -367,11 +375,26 @@ class BikaListingView(BrowserView):
                 replace = {},
             )
 
+            # XXX debug - add history_id column
+            if App.config.getConfiguration().debug_mode:
+                from Products.CMFEditions.utilities import dereference
+                pa = getToolByName(self.context, 'portal_archivist')
+                o = hasattr(obj, 'getObject') and obj.getObject() or obj
+                history_id = str(dereference(o)[1])
+                version_id = hasattr(o,'version_id') \
+                           and str(o.version_id) or None
+                if not 'version_id' in self.columns.keys():
+                    self.columns['version_id'] = {'title':'version'}
+                    for x in range(len(self.review_states)):
+                        if self.review_states[x]['id'] == 'all':
+                            self.review_states[x]['columns'].append('version_id')
+                results_dict['version_id'] = '%s/%s' % (version_id, history_id)
+
             # extra classes for individual fields on this item
             results_dict['class'] = {}
 
-            # look through self.columns for object attribute names (the column key),
-            # and try get them from the brain/object.
+            # look through self.columns for object attribute names
+            # (the column key), and try get them from the brain/object.
             for key in self.columns.keys():
                 if hasattr(obj, key):
                     # if the key is already in the results dict
@@ -382,6 +405,8 @@ class BikaListingView(BrowserView):
                     # if it's callable call it.
                     if callable(value):
                         value = value()
+                    # if it's a HistoryAwareReference pointed at a previous
+                    # revision, force (vx/x) into the text.
                     results_dict[key] = value
 
             results.append(results_dict)
@@ -397,6 +422,7 @@ class BikaListingView(BrowserView):
 
         # all these variables are defined by the subclass, but actually required
         # by the table, so we pass them around wholesale.
+        # XXX instead, we should pass references to self...
         table = BikaListingTable(aq_inner(self.context),
                                  self.request,
                                  self.base_url,

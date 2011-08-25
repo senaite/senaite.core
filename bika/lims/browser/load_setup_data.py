@@ -422,7 +422,7 @@ class LoadSetupData():
              "100 - %(Moist)f",
              ),
             ('Apparent Metabolizable Energy',
-             'AME used for poultry feed as no correction is made for faecal or endogenous energy losses',
+             'AME used for poultry feed',
              ['CP', 'EE', 'STA', 'SUG'],
              [],
              "%(CP)f + %(EE)f + %(STA)f + %(SUG)f",

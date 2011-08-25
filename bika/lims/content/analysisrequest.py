@@ -353,7 +353,7 @@ class AnalysisRequest(BaseFolder):
     def getSubtotal(self):
         """ Compute Subtotal """
         return sum(
-            [Decimal(obj.getPrice() or 0) \
+            [Decimal(obj.getService().getPrice() or 0) \
             for obj in self.getBillableItems()])
 
     security.declareProtected(View, 'getVAT')
@@ -367,9 +367,9 @@ class AnalysisRequest(BaseFolder):
         billable = self.getBillableItems()
         TotalPrice = Decimal(0, 2)
         for item in billable:
-            itemPrice = Decimal(item.getPrice() or 0)
             service = item.getService()
-            VAT = service and Decimal(service.getVAT() or 0) or Decimal(0)
+            itemPrice = Decimal(service.getPrice() or 0)
+            VAT = Decimal(service.getVAT() or 0)
             TotalPrice += Decimal(itemPrice) * (Decimal(1,2) + VAT)
         return TotalPrice
     getTotal = getTotalPrice
