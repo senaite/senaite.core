@@ -38,9 +38,13 @@
           <tr><th colspan="2"><b tal:content="python:poc[1]">Analyses</b></th></tr>
         </thead>
 
-        <tal:i repeat="cat python:allservices[poc].keys()">
+        <tal:i tal:define="
+                    cats python:allservices[poc].keys();
+                    dummy python:cats.sort(lambda x, y: cmp(x[1], y[1]))"
+               tal:repeat="cat cats">
 
-          <thead><tr>
+          <thead>
+            <tr>
             <th colspan="2" tal:content="python:cat[1]" tal:attributes="
               id field/getName;
               class python:selectedservices[poc].has_key(cat) and 'initial prefill' or 'initial';

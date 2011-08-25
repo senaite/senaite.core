@@ -52,7 +52,8 @@ class SpecWidget(RecordsWidget):
         """Returns a dictionary of AnalysisCategory[service,service,...]
         """
         categories = {}
-        services = self.portal_catalog(portal_type = 'AnalysisService')
+        services = self.portal_catalog(portal_type = 'AnalysisService',
+                                       sort_on='sortable_title')
         pc = getToolByName(self, 'portal_catalog')
 
         if allservices:

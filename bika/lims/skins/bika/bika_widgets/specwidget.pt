@@ -12,7 +12,10 @@
 			specs widget/getResultsRangeDict;
 			spec_categories python:widget.getSpecCategories(field)">
 	<table class="listing nosort">
-		<tal:repeat repeat="category python:categories.keys()">
+		<tal:i 
+            tal:define="cats python:categories.keys();
+                        dummy python:cats.sort()"
+            tal:repeat="category cats">
 			<tal:define define="services python:categories[category]">
 				<tr tal:condition="python:len(services)>0">
 					<th tal:content="category"/>
@@ -29,7 +32,7 @@
 					</tal:block>
 				</tbody>
 			</tal:define>
-		</tal:repeat>
+		</tal:i>
 	</table>
 	</span>
 </metal:view_macro>
@@ -41,7 +44,9 @@
 		tal:define="categories python:widget.getCategories(field);
 			spec_categories python:widget.getSpecCategories(field)">
 	<table class="listing nosort">
-	<tal:repeat repeat="category python:categories.keys()">
+	<tal:i tal:define="cats python:categories.keys();
+                       dummy python:cats.sort()"
+           tal:repeat="category cats">
 	<tal:define define="cat_uid python:widget.getCategoryUID(category)">
 
 		<!--   -->
@@ -74,7 +79,7 @@
 				id python:'allservices_%s'%cat_uid;"/>
 
 	</tal:define>
-	</tal:repeat>
+	</tal:i>
 	</table>
 	</span>
 </metal:body_macro>

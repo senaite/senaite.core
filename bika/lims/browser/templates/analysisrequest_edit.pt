@@ -372,7 +372,9 @@
             </tr>
         </thead>
 
-    <tal:i repeat="cat python:cats[poc]">
+    <tal:i tal:define="sortedcats python:cats[poc];
+                       dummy python:sortedcats.sort(lambda x, y: cmp(x[1], y[1]))"
+            repeat="cat sortedcats">
         <thead>
             <tr class="analysiscategory">
                 <th tal:content="python:cat[1]"

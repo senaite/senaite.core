@@ -31,7 +31,7 @@ class ServicesWidget(TypesWidget):
             }
         """
         pc = getToolByName(self, 'portal_catalog')
-        allservices = [p.getObject() for p in pc(portal_type = "AnalysisService")]
+        allservices = [p.getObject() for p in pc(portal_type = "AnalysisService", sort_on='sortable_title')]
         selectedservices = getattr(field, field.accessor)()
         res = {}
         for poc_id in POINTS_OF_CAPTURE.keys():
@@ -42,7 +42,7 @@ class ServicesWidget(TypesWidget):
         else:
             services = allservices
         for service in services:
-            cat = (service.getCategory().UID(), service.getCategory().Title())
+            cat = (service.getCategoryUID(), service.getCategoryName())
             poc = (service.getPointOfCapture(), POINTS_OF_CAPTURE.getValue(service.getPointOfCapture()))
             srv = (service.UID(), service.Title())
             if not res[poc].has_key(cat): res[poc][cat] = []
