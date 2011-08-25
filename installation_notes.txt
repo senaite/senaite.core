@@ -59,3 +59,4 @@ on bika2 in usr/local/Plone
 run in zinstance: sudo bin/svnupdate_and_rebuild
 Which will clear db, get fresh copy from svn and rebuild, and start in fg
 If all ok, break, and restart with sudo plone -c "bin/plonectl start"
+Then recreate plone site 'Plone'
