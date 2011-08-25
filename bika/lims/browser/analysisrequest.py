@@ -525,7 +525,7 @@ class AnalysisRequestSelectSampleView(BikaListingView):
             items[x]['getDateSampled'] = obj.getDateSampled() and \
                  self.context.toLocalizedTime(obj.getDateSampled(), long_format = 0) or ''
             items[x]['item_data'] = json.dumps({
-                'SampleID': items[x]['Title'],
+                'SampleID': items[x]['title'],
                 'ClientReference': items[x]['getClientReference'],
                 'ClientSampleID': items[x]['getClientSampleID'],
                 'DateReceived': items[x]['getDateReceived'],
@@ -545,12 +545,12 @@ class AnalysisRequestSelectSampleView(BikaListingView):
             read/written from the first AR.)
             {category_uid: [service_uid, service_uid], ... }
         """
-        rc = getToolByName('reference_catalog')
+        rc = getToolByName(self, 'reference_catalog')
         res = {}
         ars = sample.getAnalysisRequests()
         if len(ars) > 0:
             for analysis in ars[0].getAnalyses():
-                service = rc.lookupObject(analysis.getServiceUID())
+                service = rc.lookupObject(analysis.getServiceUID)
                 if service.getPointOfCapture() == 'field':
                     catuid = service.getCategoryUID()
                     if res.has_key(catuid):
