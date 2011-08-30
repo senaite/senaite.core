@@ -320,7 +320,7 @@ class BikaGenerator:
         script.manage_proxy(roles = ('Manager',))
 
     def setupVersioning(self, portal):
-        from Products.CMFEditions.setuphandlers import DEFAULT_POLICIES
+        DEFAULT_POLICIES = ('at_edit_autoversion', 'version_on_revert')
         portal_repository = getToolByName(portal, 'portal_repository')
         versionable_types = list(portal_repository.getVersionableContentTypes())
         for type_id in TYPES_TO_VERSION:

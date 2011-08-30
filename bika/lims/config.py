@@ -41,6 +41,8 @@ AssignAnalyses = 'BIKA: Assign analyses'
 
 I18N_DOMAIN = 'bika'
 
+# These types will be auto-versioned.  They will need
+# xx_edit.cpt.metadata to be modified in skins.
 TYPES_TO_VERSION = ('AnalysisService',
                     'Calculation',
                     'SamplePoint',
