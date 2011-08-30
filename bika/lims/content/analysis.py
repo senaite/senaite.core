@@ -14,6 +14,7 @@ from Products.Archetypes.references import HoldingReference
 from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFCore.permissions import View, ModifyPortalContent
 from Products.CMFCore.utils import getToolByName
+from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.fields import InterimFieldsField
 from bika.lims.browser.fields import DurationField
 from bika.lims.browser.fields import HistoryAwareReferenceField
@@ -25,8 +26,6 @@ from bika.lims.interfaces import IAnalysis
 from decimal import Decimal
 from zope.interface import implements
 import datetime
-from zope.i18nmessageid import MessageFactory
-_ = MessageFactory('bika')
 
 schema = BikaSchema.copy() + Schema((
     HistoryAwareReferenceField('Service',

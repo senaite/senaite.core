@@ -378,17 +378,19 @@ class BikaListingView(BrowserView):
             # XXX debug - add history_id column
             if App.config.getConfiguration().debug_mode:
                 from Products.CMFEditions.utilities import dereference
-                pa = getToolByName(self.context, 'portal_archivist')
+                pr = getToolByName(self.context, 'portal_repository')
                 o = hasattr(obj, 'getObject') and obj.getObject() or obj
-                history_id = str(dereference(o)[1])
-                version_id = hasattr(o,'version_id') \
-                           and str(o.version_id) or None
-                if not 'version_id' in self.columns.keys():
-                    self.columns['version_id'] = {'title':'version'}
-                    for x in range(len(self.review_states)):
-                        if self.review_states[x]['id'] == 'all':
-                            self.review_states[x]['columns'].append('version_id')
-                results_dict['version_id'] = '%s/%s' % (version_id, history_id)
+                if pr.isVersionable(o):
+                    pa = getToolByName(self.context, 'portal_archivist')
+                    history_id = str(dereference(o)[1])
+                    version_id = hasattr(o,'version_id') \
+                               and str(o.version_id) or None
+                    if not 'version_id' in self.columns.keys():
+                        self.columns['version_id'] = {'title':'version'}
+                        for x in range(len(self.review_states)):
+                            if self.review_states[x]['id'] == 'all':
+                                self.review_states[x]['columns'].append('version_id')
+                    results_dict['version_id'] = '%s/%s' % (version_id, history_id)
 
             # extra classes for individual fields on this item
             results_dict['class'] = {}

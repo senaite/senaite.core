@@ -334,7 +334,7 @@ class AnalysisRequestAddView(AnalysisRequestViewView):
     def __init__(self, context, request):
         self.context = context
         self.request = request
-        self.col_count = 4
+        self.col_count = 6
         self.came_from = "add"
         self.DryMatterService = self.context.bika_setup.getDryMatterService()
 
