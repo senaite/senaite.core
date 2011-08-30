@@ -28,7 +28,7 @@ jQuery( function($) {
 		}
 
 		// Sample Edit ajax form submits
-		$('#edit_form').ajaxForm({
+		$('#sample_edit_form').ajaxForm({
 			url: window.location.href,
 			url: window.location.href.replace("/base_edit","/sample_submit"),
 			dataType:  'json',

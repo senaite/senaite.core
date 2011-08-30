@@ -16,9 +16,9 @@
 	review_state python:context.portal_workflow.getInfoFor(here, 'review_state', '');
 	portal context/@@plone_portal_state/portal;">
 
-	<form name="edit_form"
+	<form name="sample_edit_form"
 		method="post"
-		id="edit_form">
+		id="sample_edit_form">
 
 	<input type="hidden" name="submitted" value="1" />
 	<span tal:replace="structure context/@@authenticator/authenticator"/>

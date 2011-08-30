@@ -17,7 +17,7 @@ class SampleViewView(BrowserView):
         return self.template()
 
 
-class SampleEditView(BrowserView):
+class SampleEditView(SampleViewView):
     """ Sample Edit form
     """
 
