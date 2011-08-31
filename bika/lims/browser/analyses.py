@@ -65,6 +65,7 @@ class AnalysesView(BikaListingView):
         ]
 
     def folderitems(self):
+        rc = getToolByName(self.context, 'reference_catalog')
         pc = getToolByName(self.context, 'portal_catalog')
         workflow = getToolByName(self.context, 'portal_workflow')
         portal = getSite()
@@ -86,7 +87,7 @@ class AnalysesView(BikaListingView):
             # so that selecting lab/client ranges can re-calculate in javascript
             # calculate specs for every analysis, since they may
             # all be for different sample types
-             # worksheet.  XXX Should be like a generalized review_state_filter
+            # worksheet.  XXX Should be like a generalized review_state_filter
             specs = {'client':{}, 'lab':{}}
             if obj.portal_type != 'ReferenceAnalysis':
                 if self.context.portal_type == 'AnalysisRequest':
@@ -122,7 +123,17 @@ class AnalysesView(BikaListingView):
                  }
             )
             items[i]['interim_fields'] = obj.getInterimFields()
-            items[i]['Service'] = service.Title()
+            # if the reference version is older than the object itself,
+            # insert the version number of referenced service after Title
+            service_uid = service.UID()
+            latest_service = rc.lookupObject(service_uid)
+            if hasattr(obj, 'reference_versions') and \
+               service_uid in obj.reference_versions and \
+               latest_service.version_id != obj.reference_versions[service_uid]:
+                items[i]['Service'] = "%s (v%s)" % \
+                     (service.Title(), obj.reference_versions[service_uid])
+            else:
+                items[i]['Service'] = service.Title()
             items[i]['Keyword'] = keyword
             items[i]['Unit'] = service.getUnit()
             items[i]['Result'] = ''

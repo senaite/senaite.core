@@ -351,9 +351,11 @@ class AnalysisRequest(BaseFolder):
 
     security.declareProtected(View, 'getSubtotal')
     def getSubtotal(self):
-        """ Compute Subtotal """
+        """ Compute Subtotal
+            XXX invoked MANY times during a single AR's creation
+        """
         return sum(
-            [Decimal(obj.getService().getPrice() or 0) \
+            [Decimal(obj.getService() and obj.getService().getPrice() or 0) \
             for obj in self.getBillableItems()])
 
     security.declareProtected(View, 'getVAT')
@@ -368,6 +370,9 @@ class AnalysisRequest(BaseFolder):
         TotalPrice = Decimal(0, 2)
         for item in billable:
             service = item.getService()
+            if not service:
+                # XXX invokeFactory can cause us to be catalogued before we're ready.
+                return Decimal(0, 2)
             itemPrice = Decimal(service.getPrice() or 0)
             VAT = Decimal(service.getVAT() or 0)
             TotalPrice += Decimal(itemPrice) * (Decimal(1,2) + VAT)

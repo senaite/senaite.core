@@ -31,8 +31,25 @@ class HistoryAwareReferenceField(ReferenceField):
     def set(self, instance, value, **kwargs):
         """Mutator.
 
-        check that new objects have a version
-        XXX apply versioning on first save.
+        >>> from Products.Archetypes.BaseContent import BaseContent
+        >>> from Products.ATContentTypes.lib.historyaware import HistoryAwareMixin
+        >>> from Products.Archetypes.references import HoldingReference
+        >>> from Products.Archetypes import atapi
+
+        >>> class Thing(BaseContent, HistoryAwareMixin)
+        ...     schema = Schema((
+        ...         OtherThing = HistoryAwareReferenceField(
+        ...             allowed_types = ('Thing',),
+        ...             relationship = "ThingThing",
+        ...             referenceClass = HoldingReference,
+        ...         )
+        ...     ))
+
+        >>> add Thing to versionable types
+
+        >>> t1 = Thing()
+        >>> t2 = Thing()
+
 
         take SaveNewVersion permission
         bump versions,
@@ -51,6 +68,9 @@ class HistoryAwareReferenceField(ReferenceField):
 
         if value is None:
             value = ()
+
+        if not value and not targetUIDs:
+            return
 
         if not isinstance(value, (list, tuple)):
             value = value,
@@ -78,23 +98,22 @@ class HistoryAwareReferenceField(ReferenceField):
         add = [v for v in uids if v and v not in targetUIDs]
 
         if canSaveNewVersion:
-            for uid in [t for t in targetUIDs if t not in sub+add ]:
+            for uid in [t for t in list(targetUIDs) + list(uids) if t not in sub]:
                 # update version_id of all existing references that aren't
-                # in add or sub (default reference leaves these alone).
+                # about to be removed anyway (contents of sub)
                 version_id = hasattr(targets[uid], 'version_id') and \
                            targets[uid].version_id or None
-                if not version_id:
+                if version_id == None:
                     # attempt initial save of unversioned targets
                     pr = getToolByName(instance, 'portal_repository')
                     if pr.isVersionable(targets[uid]):
-                        pr.save(obj=instance, comment=_("Initial revision"))
+                        pr.save(obj=targets[uid], comment=_("Initial revision"))
                     else:
                         raise ValueError, "%s not versionable for field %s at %s" % \
                               (targets[uid],self.getName(), instance)
-                    version_id = 0
                 if not hasattr(instance, 'reference_versions'):
                     instance.reference_versions = {}
-                instance.reference_versions[uid] = version_id
+                instance.reference_versions[uid] = targets[uid].version_id
 
         # tweak keyword arguments for addReference
         addRef_kw = kwargs.copy()
@@ -127,33 +146,38 @@ class HistoryAwareReferenceField(ReferenceField):
 
         res = instance.getRefs(relationship=self.relationship)
 
-        # singlevalued ref fields return only the object, not a list,
-        # unless explicitely specified by the aslist option
-
-        if not self.multiValued:
-            if len(res) > 1:
-                log("%s references for non multivalued field %s of %s" % (len(res),
-                                                                          self.getName(),
-                                                                          instance))
-            if not aslist:
-                if res:
-                    res = res[0]
-                else:
-                    res = None
-
-        if not self.referencesSortable or not hasattr( aq_base(instance), 'at_ordered_refs'):
-            return res
-
         pr = getToolByName(instance, 'portal_repository')
         rd = {}
         for r in res:
             uid = r.UID()
-            if uid in instance.reference_versions[uid]:
+            if hasattr(instance, 'reference_versions') and \
+               hasattr(r, 'version_id') and \
+               uid in instance.reference_versions:
                 version_id = instance.reference_versions[uid]
-                o = pr.retrieve(r, selector=version_id).data.object
+                o = pr.retrieve(r, selector=version_id).object
             else:
                 o = r
             rd[uid] = o
+
+        # singlevalued ref fields return only the object, not a list,
+        # unless explicitely specified by the aslist option
+
+        if not self.multiValued:
+            if len(rd) > 1:
+                log("%s references for non multivalued field %s of %s" % (len(rd),
+                                                                          self.getName(),
+                                                                          instance))
+            if not aslist:
+                if rd:
+                    rd = [rd[uid] for uid in rd.keys()][0]
+                else:
+                    rd = None
+
+        if not self.referencesSortable or not hasattr( aq_base(instance), 'at_ordered_refs'):
+            if isinstance(rd, dict):
+                return [rd[uid] for uid in rd.keys()]
+            else:
+                return rd
         refs = instance.at_ordered_refs
         order = refs[self.relationship]
 

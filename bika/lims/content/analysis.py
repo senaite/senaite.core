@@ -25,6 +25,7 @@ from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IAnalysis
 from decimal import Decimal
 from zope.interface import implements
+from Products.CMFEditions.ArchivistTool import ArchivistRetrieveError
 import datetime
 
 schema = BikaSchema.copy() + Schema((
@@ -155,7 +156,11 @@ class Analysis(BaseContent):
         """ Return the service title as title """
         # We construct the analyses manually in ar_add_submit,
         # and they are without Service attribute for a moment.
-        s = self.getService()
+        try:
+            s = self.getService()
+        except ArchivistRetrieveError:
+            # XXX premature indexing
+            return ""
         if s: return s.Title()
 
     def getUncertainty(self, result=None):
