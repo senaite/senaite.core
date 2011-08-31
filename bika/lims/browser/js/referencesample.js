@@ -62,7 +62,10 @@ $(document).ready(function(){
 		});
 	});
 
-	// $('#ReferenceDefinition\\:list').change(); // THIS is right, but.   The python needs to return values from the existing field, and there needs to be sent a parameter from here to inform python to do so.
-	// we don;t want python sending us existing ref values, when actually we _wanted_ to reset the valyes.
+	$('#ReferenceDefinition\\:list').change(); // THIS is right, but.
+	// The python needs to return values from the existing field, and there needs to be sent
+	// a parameter from here to inform python to do so.
+	// we don't want python sending us existing ref values, when actually
+	// we _wanted_ to reset the values.
 });
 });

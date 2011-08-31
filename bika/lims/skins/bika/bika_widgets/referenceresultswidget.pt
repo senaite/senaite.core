@@ -33,9 +33,9 @@
 						key cat_key;">
 						<th tal:content="python:cat_title"/>
 						<th><span tal:attributes="id string:result_hdr_${cat_uid}"/></th>
+						<th><span tal:attributes="id string:error_hdr_${cat_uid}"/></th>
 						<th><span tal:attributes="id string:min_hdr_${cat_uid}"/></th>
 						<th><span tal:attributes="id string:max_hdr_${cat_uid}"/></th>
-						<th><span tal:attributes="id string:error_hdr_${cat_uid}"/></th>
 					</tr>
 				</thead>
 			<tbody tal:attributes="id python:cat_uid" class="analysisservices"/>

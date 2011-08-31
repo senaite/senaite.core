@@ -36,7 +36,8 @@ class ReferenceResultsWidget(RecordsWidget):
 
     security.declarePublic('getServicesByCategory')
     def getServicesByCategory(self):
-        """Returns a dictionary of AnalysisCategory[service,service,...]
+        """Returns a dictionary of all services:
+        AnalysisCategory[service,service,...]
         """
         categories = {}
         pc = getToolByName(self, 'portal_catalog')
