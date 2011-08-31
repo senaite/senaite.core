@@ -14,27 +14,28 @@ from operator import itemgetter
 
 class AttachmentTypesView(BikaListingView):
     implements(IFolderContentsView)
-    contentFilter = {'portal_type': 'AttachmentType', 'sort_on': 'sortable_title'}
-    content_add_actions = {_('Attachment Type'): "createObject?type_name=AttachmentType"}
-    title = _("Attachment Types")
-    show_editable_border = False
-    show_filters = False
-    show_sort_column = False
-    show_select_row = True
-    show_select_column = True
-    pagesize = 20
+    def __init__(self, context, request):
+        super(AttachmentTypesView, self).__init__(context, request)
+        self.contentFilter = {'portal_type': 'AttachmentType',
+                              'sort_on': 'sortable_title'}
+        self.content_add_actions = {_('Attachment Type'):
+                                    "createObject?type_name=AttachmentType"}
+        self.title = _("Attachment Types")
+        self.show_editable_border = False
+        self.show_filters = False
+        self.show_sort_column = False
+        self.show_select_row = True
+        self.show_select_column = True
+        self.pagesize = 20
 
-    columns = {
-               'Title': {'title': _('Attachment Type')},
-               'Description': {'title': _('Description')},
-              }
-    review_states = [
-                    {'title': _('All'), 'id':'all',
-                     'columns': ['Title', 'Description'],
-                     'buttons':[{'cssclass': 'context',
-                                 'Title': _('Delete'),
-                                 'url': 'folder_delete:method'}]},
-                    ]
+        self.columns = {
+            'Title': {'title': _('Attachment Type')},
+            'Description': {'title': _('Description')},
+        }
+        self.review_states = [
+            {'title': _('All'), 'id':'all',
+             'columns': ['Title', 'Description']},
+        ]
 
     def folderitems(self):
         items = BikaListingView.folderitems(self)

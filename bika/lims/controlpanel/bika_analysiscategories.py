@@ -9,33 +9,34 @@ from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.folder.folder import ATFolderSchema, ATFolder
 from zope.interface.declarations import implements
 from zope.interface import alsoProvides
-from operator import itemgetter
 
 class AnalysisCategoriesView(BikaListingView):
     implements(IFolderContentsView)
-    contentFilter = {'portal_type': 'AnalysisCategory', 'sort_on': 'sortable_title'}
-    content_add_actions = {_('Analysis Category'): "createObject?type_name=AnalysisCategory"}
-    title = _("Analysis Categories")
-    description = ""
-    show_editable_border = False
-    show_filters = False
-    show_sort_column = False
-    show_select_row = True
-    show_select_column = True
-    pagesize = 20
 
-    columns = {
-               'Title': {'title': _('Category')},
-               'Description': {'title': _('Description')},
-               'Department': {'title': _('Department')},
-              }
-    review_states = [
-                    {'title': _('All'), 'id':'all',
-                     'columns': ['Title', 'Description', 'Department'],
-                     'buttons':[{'cssclass': 'context',
-                                 'Title': _('Delete'),
-                                 'url': 'folder_delete:method'}]},
-                    ]
+    def __init__(self, context, request):
+        super(AnalysisCategoriesView, self).__init__(context, request)
+        self.contentFilter = {'portal_type': 'AnalysisCategory',
+                              'sort_on': 'sortable_title'}
+        self.content_add_actions = {_('Analysis Category'):
+                                    "createObject?type_name=AnalysisCategory"}
+        self.title = _("Analysis Categories")
+        self.description = ""
+        self.show_editable_border = False
+        self.show_filters = False
+        self.show_sort_column = False
+        self.show_select_row = True
+        self.show_select_column = True
+        self.pagesize = 20
+
+        self.columns = {
+            'Title': {'title': _('Category')},
+            'Description': {'title': _('Description')},
+            'Department': {'title': _('Department')},
+        }
+        self.review_states = [
+            {'title': _('All'), 'id':'all',
+             'columns': ['Title', 'Description', 'Department']},
+        ]
 
     def folderitems(self):
         items = BikaListingView.folderitems(self)
@@ -55,5 +56,6 @@ class AnalysisCategories(ATFolder):
     implements(IAnalysisCategories)
     schema = schema
     displayContentsTab = False
+
 schemata.finalizeATCTSchema(schema, folderish = True, moveDiscussion = False)
 atapi.registerType(AnalysisCategories, PROJECTNAME)

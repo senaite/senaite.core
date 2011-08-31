@@ -11,29 +11,32 @@ from bika.lims.interfaces import IAnalysisSpecs
 from zope.interface.declarations import implements
 from operator import itemgetter
 
-#XXX multiple additions in one add_form.
-
 class AnalysisSpecsView(BikaListingView):
     implements(IFolderContentsView)
-    contentFilter = {'portal_type': 'AnalysisSpec', 'sort_on': 'sortable_title'}
-    content_add_actions = {_('Analysis Specification'): "createObject?type_name=AnalysisSpec"}
-    title = _("Analysis Specs")
-    description = _("Set up the laboratory analysis service results specifications")
-    show_editable_border = False
-    show_filters = False
-    show_sort_column = False
-    show_select_row = True
-    show_select_column = True
-    pagesize = 20
 
-    columns = {
-               'getSampleType': {'title': _('Sample Type')},
-              }
-    review_states = [
-                     {'title': _('All'), 'id':'all',
-                      'columns': ['getSampleType'],
-                     },
-                    ]
+    def __init__(self, context, request):
+        super(AnalysisSpecsView, self).__init__(context, request)
+        self.contentFilter = {'portal_type': 'AnalysisSpec',
+                              'sort_on': 'sortable_title'}
+        self.content_add_actions = {_('Analysis Specification'):
+                                    "createObject?type_name=AnalysisSpec"}
+        self.title = _("Analysis Specs")
+        self.description = _("Set up the laboratory analysis service results specifications")
+        self.show_editable_border = False
+        self.show_filters = False
+        self.show_sort_column = False
+        self.show_select_row = True
+        self.show_select_column = True
+        self.pagesize = 20
+
+        self.columns = {
+            'getSampleType': {'title': _('Sample Type')},
+        }
+        self.review_states = [
+            {'title': _('All'), 'id':'all',
+             'columns': ['getSampleType'],
+             },
+        ]
 
     def folderitems(self):
         items = BikaListingView.folderitems(self)

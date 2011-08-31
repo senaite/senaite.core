@@ -16,28 +16,30 @@ from operator import itemgetter
 
 class ReferenceDefinitionsView(BikaListingView):
     implements(IFolderContentsView)
-    contentFilter = {'portal_type': 'ReferenceDefinition', 'sort_on': 'sortable_title'}
-    content_add_actions = {_('Reference Definition'): "createObject?type_name=ReferenceDefinition"}
-    title = _("Reference Definitions")
-    description = ""
-    show_editable_border = False
-    show_filters = False
-    show_sort_column = False
-    show_select_row = True
-    show_select_column = True
-    pagesize = 20
+    def __init__(self, context, request):
+        super(ReferenceDefinitionsView, self).__init__(context, request)
+        self.contentFilter = {'portal_type': 'ReferenceDefinition',
+                              'sort_on': 'sortable_title'}
+        self.content_add_actions = {_('Reference Definition'):
+                                    "createObject?type_name=ReferenceDefinition"}
+        self.title = _("Reference Definitions")
+        self.description = _("ReferenceDefinition represents a Reference Definition"
+                             "or sample type used for quality control testing")
+        self.show_editable_border = False
+        self.show_filters = False
+        self.show_sort_column = False
+        self.show_select_row = True
+        self.show_select_column = True
+        self.pagesize = 20
 
-    columns = {
-               'Title': {'title': _('Title')},
-               'Description': {'title': _('Description')},
-              }
-    review_states = [
-                    {'title': _('All'), 'id':'all',
-                     'columns': ['Title', 'Description'],
-                     'buttons':[{'cssclass': 'context',
-                                 'Title': _('Delete'),
-                                 'url': 'folder_delete:method'}]},
-                    ]
+        self.columns = {
+            'Title': {'title': _('Title')},
+            'Description': {'title': _('Description')},
+        }
+        self.review_states = [
+            {'title': _('All'), 'id':'all',
+             'columns': ['Title', 'Description']}
+        ]
 
     def folderitems(self):
         items = BikaListingView.folderitems(self)
@@ -48,7 +50,6 @@ class ReferenceDefinitionsView(BikaListingView):
             items[x]['replace']['Title'] = "<a href='%s'>%s</a>" % \
                  (items[x]['url'], items[x]['Title'])
 
-
         return items
 
 schema = ATFolderSchema.copy()
@@ -56,5 +57,6 @@ class ReferenceDefinitions(ATFolder):
     implements(IReferenceDefinitions)
     schema = schema
     displayContentsTab = False
+
 schemata.finalizeATCTSchema(schema, folderish = True, moveDiscussion = False)
 atapi.registerType(ReferenceDefinitions, PROJECTNAME)

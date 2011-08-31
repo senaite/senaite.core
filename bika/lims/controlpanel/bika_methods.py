@@ -16,28 +16,30 @@ from operator import itemgetter
 
 class MethodsView(BikaListingView):
     implements(IFolderContentsView)
-    contentFilter = {'portal_type': 'Method', 'sort_on': 'sortable_title'}
-    content_add_actions = {_('Method'): "createObject?type_name=Method"}
-    title = _("Methods")
-    description = ""
-    show_editable_border = False
-    show_filters = False
-    show_sort_column = False
-    show_select_row = True
-    show_select_column = True
-    pagesize = 20
 
-    columns = {
-               'Title': {'title': _('Method')},
-               'Description': {'title': _('Description')},
-              }
-    review_states = [
-                    {'title': _('All'), 'id':'all',
-                     'columns': ['Title', 'Description',],
-                     'buttons':[{'cssclass': 'context',
-                                 'Title': _('Delete'),
-                                 'url': 'folder_delete:method'}]},
-                    ]
+    def __init__(self, context, request):
+        super(MethodsView, self).__init__(context, request)
+        self.contentFilter = {'portal_type': 'Method',
+                              'sort_on': 'sortable_title'}
+        self.content_add_actions = {_('Method'):
+                                    "createObject?type_name=Method"}
+        self.title = _("Methods")
+        self.description = ""
+        self.show_editable_border = False
+        self.show_filters = False
+        self.show_sort_column = False
+        self.show_select_row = True
+        self.show_select_column = True
+        self.pagesize = 20
+
+        self.columns = {
+            'Title': {'title': _('Method')},
+            'Description': {'title': _('Description')},
+        }
+        self.review_states = [
+            {'title': _('All'), 'id':'all',
+             'columns': ['Title', 'Description']},
+        ]
 
     def folderitems(self):
         items = BikaListingView.folderitems(self)
@@ -54,5 +56,6 @@ class Methods(ATFolder):
     implements(IMethods)
     schema = schema
     displayContentsTab = False
+
 schemata.finalizeATCTSchema(schema, folderish = True, moveDiscussion = False)
 atapi.registerType(Methods, PROJECTNAME)

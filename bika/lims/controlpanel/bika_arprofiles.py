@@ -13,34 +13,32 @@ from zope.interface.declarations import implements
 
 class ARProfilesView(BikaListingView):
     implements(IFolderContentsView)
-    contentFilter = {'portal_type': 'ARProfile', 'sort_on': 'sortable_title'}
-    content_add_actions = {_('AR Profile'): "createObject?type_name=ARProfile"}
-    title = _("Analysis Request Profiles")
-    description = ""
-    show_editable_border = False
-    show_filters = False
-    show_sort_column = False
-    show_select_row = True
-    show_select_column = True
-    pagesize = 20
 
-    columns = {
-               'title': {'title': _('Profile')},
-               'Description': {'title': _('Description')},
-               'getProfileKey': {'title': _('Profile Key')},
-              }
-    review_states = [
-                     {'title': 'All', 'id':'all',
-                      'columns': ['title', 'Description', 'getProfileKey'],
-                     'buttons':[{'cssclass': 'context',
-                                 'title': _('Delete'),
-                                 'url': 'folder_delete:method'},
-                                {'cssclass':'context',
-                                 'title': 'Duplicate',
-                                 'url': 'duplicate_arprofile:method',
-                                 }],
-                     }
-                    ]
+    def __init__(self, context, request):
+        super(ARProfilesView, self).__init__(context, request)
+        self.contentFilter = {'portal_type': 'ARProfile',
+                              'sort_on': 'sortable_title'}
+        self.content_add_actions = {_('AR Profile'):
+                                    "createObject?type_name=ARProfile"}
+        self.title = _("Analysis Request Profiles")
+        self.description = ""
+        self.show_editable_border = False
+        self.show_filters = False
+        self.show_sort_column = False
+        self.show_select_row = True
+        self.show_select_column = True
+        self.pagesize = 20
+
+        self.columns = {
+            'title': {'title': _('Profile')},
+            'Description': {'title': _('Description')},
+            'getProfileKey': {'title': _('Profile Key')},
+        }
+        self.review_states = [
+            {'title': _('All'), 'id':'all',
+             'columns': ['title', 'Description', 'getProfileKey'],
+             }
+        ]
 
     def folderitems(self):
         items = BikaListingView.folderitems(self)

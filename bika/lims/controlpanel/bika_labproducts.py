@@ -16,32 +16,34 @@ from operator import itemgetter
 
 class LabProductsView(BikaListingView):
     implements(IFolderContentsView)
-    contentFilter = {'portal_type': 'LabProduct', 'sort_on': 'sortable_title'}
-    content_add_actions = {_('Product'): "createObject?type_name=LabProduct"}
-    title = _("Lab Products")
-    description = ""
-    show_editable_border = False
-    show_filters = False
-    show_sort_column = False
-    show_select_row = True
-    show_select_column = True
-    pagesize = 20
 
-    columns = {
-               'Title': {'title': _('Title')},
-               'Volume': {'title': _('Volume')},
-               'Unit': {'title': _('Unit')},
-               'Price': {'title': _('Price')},
-               'VATAmount': {'title': _('VAT Amount')},
-               'TotalPrice': {'title': _('Total Price')},
-              }
-    review_states = [
-                    {'title': _('All'), 'id':'all',
-                     'columns': ['Title', 'Volume', 'Unit', 'Price', 'VATAmount', 'TotalPrice'],
-                     'buttons':[{'cssclass': 'context',
-                                 'Title': _('Delete'),
-                                 'url': 'folder_delete:method'}]},
-                    ]
+    def __init__(self, context, request):
+        super(LabProductsView, self).__init__(context, request)
+        self.contentFilter = {'portal_type': 'LabProduct',
+                              'sort_on': 'sortable_title'}
+        self.content_add_actions = {_('Product'):
+                                    "createObject?type_name=LabProduct"}
+        self.title = _("Lab Products")
+        self.description = ""
+        self.show_editable_border = False
+        self.show_filters = False
+        self.show_sort_column = False
+        self.show_select_row = True
+        self.show_select_column = True
+        self.pagesize = 20
+
+        self.columns = {
+                   'Title': {'title': _('Title')},
+                   'Volume': {'title': _('Volume')},
+                   'Unit': {'title': _('Unit')},
+                   'Price': {'title': _('Price')},
+                   'VATAmount': {'title': _('VAT Amount')},
+                   'TotalPrice': {'title': _('Total Price')},
+        }
+        self.review_states = [
+            {'title': _('All'), 'id':'all',
+             'columns': ['Title', 'Volume', 'Unit', 'Price', 'VATAmount', 'TotalPrice']},
+        ]
 
     def folderitems(self):
         items = BikaListingView.folderitems(self)

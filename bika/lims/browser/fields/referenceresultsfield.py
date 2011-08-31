@@ -18,11 +18,11 @@ class ReferenceResultsField(RecordsField):
         'type' : 'referenceresult',
         'subfields' : ('uid', 'result', 'min', 'max', 'error'),
         'required_subfields' : ('uid',),
-        'subfield_labels':{'uid': 'Analysis Service',
-                           'result': 'Result',
-                           'min': 'Min',
-                           'max': 'Max',
-                           'error': 'Error %'},
+        'subfield_labels':{'uid': _('Analysis Service'),
+                           'result': _('Expected Result'),
+                           'error': _('Permitted Error %'),
+                           'min': _('Min'),
+                           'max': _('Max')},
         })
     security = ClassSecurityInfo()
 
@@ -30,4 +30,3 @@ registerField(ReferenceResultsField,
               title = "Reference Results",
               description = "Used for storing reference results",
               )
-

@@ -13,32 +13,33 @@ from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.folder.folder import ATFolder, ATFolderSchema
 from bika.lims.interfaces import IWorksheetTemplates
 from zope.interface.declarations import implements
-from operator import itemgetter
 
 class WorksheetTemplatesView(BikaListingView):
     implements(IFolderContentsView)
-    contentFilter = {'portal_type': 'WorksheetTemplate', 'sort_on': 'sortable_title'}
-    content_add_actions = {_('Worksheet Template'): "createObject?type_name=WorksheetTemplate"}
-    title = _("Worksheet Templates")
-    description = ""
-    show_editable_border = False
-    show_filters = False
-    show_sort_column = False
-    show_select_row = True
-    show_select_column = True
-    pagesize = 20
 
-    columns = {
-               'Title': {'title': _('Title')},
-               'Description': {'title': _('Description')},
-              }
-    review_states = [
-                    {'title': _('All'), 'id':'all',
-                     'columns': ['Title', 'Description'],
-                     'buttons':[{'cssclass': 'context',
-                                 'Title': _('Delete'),
-                                 'url': 'folder_delete:method'}]},
-                    ]
+    def __init__(self, context, request):
+        super(WorksheetTemplatesView, self).__init__(context, request)
+        self.contentFilter = {'portal_type': 'WorksheetTemplate',
+                              'sort_on': 'sortable_title'}
+        self.content_add_actions = {_('Worksheet Template'):
+                                    "createObject?type_name=WorksheetTemplate"}
+        self.title = _("Worksheet Templates")
+        self.description = ""
+        self.show_editable_border = False
+        self.show_filters = False
+        self.show_sort_column = False
+        self.show_select_row = True
+        self.show_select_column = True
+        self.pagesize = 20
+
+        self.columns = {
+            'Title': {'title': _('Title')},
+            'Description': {'title': _('Description')},
+        }
+        self.review_states = [
+            {'title': _('All'), 'id':'all',
+             'columns': ['Title', 'Description']},
+        ]
 
     def folderitems(self):
         items = BikaListingView.folderitems(self)
@@ -49,7 +50,6 @@ class WorksheetTemplatesView(BikaListingView):
             items[x]['replace']['Title'] = "<a href='%s'>%s</a>" % \
                  (items[x]['url'], items[x]['Title'])
 
-
         return items
 
 schema = ATFolderSchema.copy()
@@ -57,5 +57,6 @@ class WorksheetTemplates(ATFolder):
     implements(IWorksheetTemplates)
     schema = schema
     displayContentsTab = False
+
 schemata.finalizeATCTSchema(schema, folderish = True, moveDiscussion = False)
 atapi.registerType(WorksheetTemplates, PROJECTNAME)

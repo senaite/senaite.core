@@ -14,32 +14,33 @@ from plone.app.folder.folder import ATFolder, ATFolderSchema
 from zope.interface.declarations import implements
 from Products.CMFCore.utils import getToolByName
 import json
-from operator import itemgetter
 
 class SampleTypesView(BikaListingView):
     implements(IFolderContentsView)
-    contentFilter = {'portal_type': 'SampleType', 'sort_on': 'sortable_title'}
-    content_add_actions = {_('Sample Type'): "createObject?type_name=SampleType"}
-    title = _("Sample Types")
-    description = ""
-    show_editable_border = False
-    show_filters = True
-    show_sort_column = False
-    show_select_row = True
-    show_select_column = True
-    pagesize = 20
 
-    columns = {
-               'Title': {'title': _('Sample Type'), 'icon':'sampletype.png'},
-               'Description': {'title': _('Description')},
-              }
-    review_states = [
-                    {'title': _('All'), 'id':'all',
-                     'columns': ['Title', 'Description'],
-                     'buttons':[{'cssclass': 'context',
-                                 'Title': _('Delete'),
-                                 'url': 'folder_delete:method'}]},
-                    ]
+    def __init__(self, context, request):
+        super(SampleTypesView, self).__init__(contex, request)
+        self.contentFilter = {'portal_type': 'SampleType',
+                              'sort_on': 'sortable_title'}
+        self.content_add_actions = {_('Sample Type'):
+                                    "createObject?type_name=SampleType"}
+        self.title = _("Sample Types")
+        self.description = ""
+        self.show_editable_border = False
+        self.show_filters = True
+        self.show_sort_column = False
+        self.show_select_row = True
+        self.show_select_column = True
+        self.pagesize = 20
+
+        self.columns = {
+                   'Title': {'title': _('Sample Type')},
+                   'Description': {'title': _('Description')},
+                  }
+        self.review_states = [
+                        {'title': _('All'), 'id':'all',
+                         'columns': ['Title', 'Description']},
+                        ]
 
     def folderitems(self):
         items = BikaListingView.folderitems(self)

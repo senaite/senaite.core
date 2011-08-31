@@ -16,32 +16,38 @@ from operator import itemgetter
 
 class LabContactsView(BikaListingView):
     implements(IFolderContentsView)
-    contentFilter = {'portal_type': 'LabContact', 'sort_on': 'sortable_title'}
-    content_add_actions = {_('Lab Contact'): "createObject?type_name=LabContact"}
-    title = _("Lab Contacts")
-    description = ""
-    show_editable_border = False
-    show_filters = False
-    show_sort_column = False
-    show_select_row = True
-    show_select_column = True
-    pagesize = 20
+    def __init__(self, context, request):
+        super(LabContactsView, self).__init__(context, request)
+        self.contentFilter = {'portal_type': 'LabContact',
+                              'sort_on': 'sortable_title'}
+        self.content_add_actions = {_('Lab Contact'):
+                                    "createObject?type_name=LabContact"}
+        self.title = _("Lab Contacts")
+        self.description = ""
+        self.show_editable_border = False
+        self.show_filters = False
+        self.show_sort_column = False
+        self.show_select_row = True
+        self.show_select_column = True
+        self.pagesize = 20
 
-    columns = {
-               'Listingname': {'title': _('Name')},
-               'Department': {'title': _('Department')},
-               'BusinessPhone': {'title': _('Phone')},
-               'Fax': {'title': _('Fax')},
-               'MobilePhone': {'title': _('Mobile Phone')},
-               'EmailAddress': {'title': _('Email Address')},
-              }
-    review_states = [
-                    {'title': _('All'), 'id':'all',
-                     'columns': ['Listingname', 'Department', 'BusinessPhone', 'Fax', 'MobilePhone', 'EmailAddress'],
-                     'buttons':[{'cssclass': 'context',
-                                 'title': _('Delete'),
-                                 'url': 'folder_delete:method'}]},
-                    ]
+        self.columns = {
+                   'Listingname': {'title': _('Name')},
+                   'Department': {'title': _('Department')},
+                   'BusinessPhone': {'title': _('Phone')},
+                   'Fax': {'title': _('Fax')},
+                   'MobilePhone': {'title': _('Mobile Phone')},
+                   'EmailAddress': {'title': _('Email Address')},
+                  }
+        self.review_states = [
+            {'title': _('All'), 'id':'all',
+             'columns': ['Listingname',
+                         'Department',
+                         'BusinessPhone',
+                         'Fax',
+                         'MobilePhone',
+                         'EmailAddress']}
+        ]
 
     def folderitems(self):
         items = BikaListingView.folderitems(self)

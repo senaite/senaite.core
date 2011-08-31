@@ -16,25 +16,27 @@ from operator import itemgetter
 
 class CalculationsView(BikaListingView):
     implements(IFolderContentsView)
-    contentFilter = {'portal_type': 'Calculation',
-                     'sort_on': 'sortable_title'}
-    content_add_actions = {_('Calculation'):
-                           "createObject?type_name=Calculation"}
-    title = _("Calculations")
-    description = ""
-    show_editable_border = False
-    show_filters = False
-    show_sort_column = False
-    show_select_row = True
-    show_select_column = True
-    pagesize = 20
+    def __init__(self, context, request):
+        super(CalculationsView, self).__init__(context, request)
+        self.contentFilter = {'portal_type': 'Calculation',
+                              'sort_on': 'sortable_title'}
+        self.content_add_actions = {_('Calculation'):
+                                    "createObject?type_name=Calculation"}
+        self.title = _("Calculations")
+        self.description = ""
+        self.show_editable_border = False
+        self.show_filters = False
+        self.show_sort_column = False
+        self.show_select_row = True
+        self.show_select_column = True
+        self.pagesize = 20
 
-    columns = {
-               'Title': {'title': _('Calculation')},
-               'Description': {'title': _('Description')},
-               'Formula': {'title': _('Formula')},
-              }
-    review_states = [
+        self.columns = {
+                   'Title': {'title': _('Calculation')},
+                   'Description': {'title': _('Description')},
+                   'Formula': {'title': _('Formula')},
+                  }
+        self.review_states = [
                     {'title': _('All'), 'id':'all',
                      'columns': ['Title', 'Description', 'Formula']}
                     ]
