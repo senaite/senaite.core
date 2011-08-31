@@ -93,10 +93,10 @@ class ServiceKeywordValidator:
 validation.register(ServiceKeywordValidator())
 
 class InterimFieldIDValidator:
-    """Validating an InterimField id:
-    may not be the same as any service keyword.
-    title must be identical for all interim fields which
-    share the same id.
+    """Validating InterimFields :
+        ID may not be the same as any service keyword.
+        title must be identical for all interim fields which
+        share the same id.
     """
 
     if issubclass(IValidator, Interface):
@@ -104,7 +104,7 @@ class InterimFieldIDValidator:
     else:
         __implements__ = (IValidator, )
 
-    name = "interimfieldvalidator"
+    name = "interimfieldidvalidator"
 
     def __call__(self, value, *args, **kwargs):
         instance = kwargs['instance']
@@ -117,7 +117,7 @@ class InterimFieldIDValidator:
                 mapping = {'keyword': value},
                 domain="bika")
 
-        # check the value against all AnalysisService keywords
+        # check the id against all AnalysisService keywords
         pc = getToolByName(instance, 'portal_catalog')
         services = pc(portal_type='AnalysisService', getKeyword = value)
         for service in services:
@@ -130,7 +130,7 @@ class InterimFieldIDValidator:
 
         our_calc_uid = instance.UID()
 
-        # check the value against all Calculation Interim Field keywords
+        # check the id against all Calculation Interim Field keywords
         calcs = [c for c in pc(portal_type='Calculation')]
         for calc in calcs:
             calc = calc.getObject()
@@ -143,14 +143,16 @@ class InterimFieldIDValidator:
                         default = "Keyword ${title} is used by ${used_by}.",
                         mapping = {'title': value, 'used_by': calc.Title()},
                         domain = "bika")
-        return True
 
+
+        return True
 validation.register(InterimFieldIDValidator())
 
 class InterimFieldTitleValidator:
-    """Check that the titles of this calculation are unique
-    in this calculation."""
-
+    """Validating InterimFields :
+        title must be identical for all interim fields which
+        share the same id.
+    """
     if issubclass(IValidator, Interface):
         implements(IValidator)
     else:
@@ -159,6 +161,9 @@ class InterimFieldTitleValidator:
     name = "interimfieldtitlevalidator"
 
     def __call__(self, value, *args, **kwargs):
+        """Check that the titles of this calculation are unique
+        in this calculation."""
+
         instance = kwargs['instance']
         pc = getToolByName(instance, 'portal_catalog')
         interim_fields = instance.getInterimFields()
@@ -174,7 +179,6 @@ class InterimFieldTitleValidator:
                     default = "${title}: duplicate field title for field.",
                     mapping = {'title': value},
                     domain = "bika")
-        return True
 
 validation.register(InterimFieldTitleValidator())
 
