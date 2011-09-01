@@ -46,31 +46,53 @@ function expand_analysisservices(cat_key, fieldName){
 
 $(document).ready(function(){
 
-	// expanding categories by clicking on their TR
-	$('tr[class^="initial"]').click(function(){
+	// initial category expansion
+	$('tr[class~="initial"]').live('click', function(){
 		target = $('#'+$(this).attr("name"));
 		fieldName = $(this).attr("id");
-		if($(this).hasClass("expanded")){
-			$(target).toggle();
-			cat_uid = $(this).attr("name");
-			$('#result_hdr_'+cat_uid).toggle();
-			$('#error_hdr_'+cat_uid).toggle();
-			$('#min_hdr_'+cat_uid).toggle();
-			$('#max_hdr_'+cat_uid).toggle();
-		} else {
-			$(this).removeClass("initial");
-			$(this).addClass("expanded");
-			target.html(expand_analysisservices($(this).attr("key"), fieldName));
-		}
+		$(this).addClass("expanded");
+		$(this).removeClass("collapsed");
+		$(this).removeClass("initial");
+		target.html(expand_analysisservices($(this).attr("key"), fieldName));
+	});
+
+	// expanded category collapsion
+	$('tr[class~="expanded"]').live('click', function(){
+		target = $('#'+$(this).attr("name"));
+		fieldName = $(this).attr("id");
+		$(target).toggle();
+		cat_uid = $(this).attr("name");
+		$('#result_hdr_'+cat_uid).toggle();
+		$('#error_hdr_'+cat_uid).toggle();
+		$('#min_hdr_'+cat_uid).toggle();
+		$('#max_hdr_'+cat_uid).toggle();
+		$(this).removeClass("expanded");
+		$(this).addClass("collapsed");
+	});
+
+	// collapsed category expansion
+	$('tr[class~="collapsed"]').live('click', function(){
+		target = $('#'+$(this).attr("name"));
+		fieldName = $(this).attr("id");
+		$(target).toggle();
+		cat_uid = $(this).attr("name");
+		$('#result_hdr_'+cat_uid).toggle();
+		$('#error_hdr_'+cat_uid).toggle();
+		$('#min_hdr_'+cat_uid).toggle();
+		$('#max_hdr_'+cat_uid).toggle();
+		$(this).addClass("expanded");
+		$(this).removeClass("initial");
+		$(this).removeClass("collapsed");
 	});
 
 	// auto-expand-on-load categories
-	$.each($('tr[class$="prefill"]'), function() {
+	$.each($('tr[class~="prefill"]'), function() {
 		target = $('#'+$(this).attr("name"));
 		fieldName = $(this).attr("id");
+		$(this).removeClass("prefill");
 		$(this).removeClass("initial");
 		$(this).addClass("expanded");
-			target.html(expand_analysisservices($(this).attr("key"), fieldName));
+		target.html(expand_analysisservices($(this).attr("key"), fieldName));
 	});
 
 	// "Result" and "Error" trigger min/max recalculation

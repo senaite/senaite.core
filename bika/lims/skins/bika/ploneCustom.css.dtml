@@ -114,8 +114,19 @@ table.analysisrequest .topborder { border-top:1px solid #DDDDDD; }
 table.analysisrequest .noleftborder { border-left: 0; }
 table.analysisrequest th { border-color: #DDDDDD; }
 
-table.analysisrequest th.analysiscategory {
+table.analysisrequest th.analysiscategory.collapsed{
+    background: #DDDDDD url(treeCollapsed.png) no-repeat 6px 50%;
     cursor:pointer;
+	padding-left:20px;
+    text-color: &dtml-linkColor;;
+    font-weight:bold;
+	border:1px solid #CCCCCC;
+}
+
+table.analysisrequest th.analysiscategory.expanded{
+    background: #DDDDDD url(treeExpanded.png) no-repeat 6px 50%;
+    cursor:pointer;
+	padding-left:20px;
     text-color: &dtml-linkColor;;
     font-weight:bold;
 	border:1px solid #CCCCCC;

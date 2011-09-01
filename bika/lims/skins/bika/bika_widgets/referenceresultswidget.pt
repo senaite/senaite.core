@@ -31,7 +31,7 @@
 						class python:cat_uid in selected_cat_uids and 'initial prefill' or 'initial';
 						name cat_uid;
 						key cat_key;">
-						<th tal:content="python:cat_title"/>
+						<th class="title" tal:content="python:cat_title"/>
 						<th><span tal:attributes="id string:result_hdr_${cat_uid}"/></th>
 						<th><span tal:attributes="id string:error_hdr_${cat_uid}"/></th>
 						<th><span tal:attributes="id string:min_hdr_${cat_uid}"/></th>

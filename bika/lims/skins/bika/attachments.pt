@@ -5,30 +5,22 @@
 <body>
 
 <div metal:define-macro="attachments">
-  <fieldset class="attachments">
-    <legend i18n:translate="legend_attachments">Attachments</legend>
-    <table class="attachments" style="display:none">
-      <tr>
-        <td>
-          <span i18n:translate="label_attachments">Attachments</span>:
-          <metal:block use-macro="here/attachments/macros/ar_attachments_list"/>
-        </td>
-        <td tal:define="updateable python:ar_review_state in  ['assigned', 'sample_received', 'to_be_verified']"
-            tal:condition="python:updateable and update_attachments">
-          <metal:block use-macro="here/attachments/macros/attachments_update"/>
-        </td>
-      </tr>
-    </table>
-  </fieldset>
-<script type="text/javascript">
-//<!--
-jQuery( function($) {
-    $('fieldset.attachments > legend').click(function(){
-        $('table.attachments').toggle();
-    });
-});
-//-->
-</script>
+  <dl class="collapsible collapsedOnLoad">
+    <dt class="collapsibleHeader" i18n:translate="legend_attachments">Attachments</dt>
+    <dd class="collapsibleContent">
+      <table class="attachments">
+        <tr>
+          <td>
+            <metal:block use-macro="here/attachments/macros/ar_attachments_list"/>
+          </td>
+          <td tal:define="updateable python:ar_review_state in  ['assigned', 'sample_received', 'to_be_verified']"
+              tal:condition="python:updateable and update_attachments">
+            <metal:block use-macro="here/attachments/macros/attachments_update"/>
+          </td>
+        </tr>
+      </table>
+    </dd>
+  </dl>
 </div>
 
 <div metal:define-macro="ws_attachments">

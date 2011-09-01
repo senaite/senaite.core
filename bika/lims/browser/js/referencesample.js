@@ -11,6 +11,7 @@ $(document).ready(function(){
 	}
 
 	// a reference definition is selected from the dropdown
+	// see referenceresultswidget.js
 	$('#ReferenceDefinition\\:list').change(function(){
 		ref_def_uid = $(this).val();
 
@@ -38,14 +39,15 @@ $(document).ready(function(){
 					results = $.parseJSON(responseText['success']);
 					// expand categories
 					$.each(responseText['categories'], function(i, cat_uid){
-						$('tr[name="'+cat_uid+'"]').click();
+						tr = $('tr[name="'+cat_uid+'"]');
+						if (tr.hasClass('collapsed')){ tr.click(); }
 					});
 					// insert result values
 					$.each(responseText['results'], function(i, result){
 						$($($('#'+result.uid).children()[1]).children()[0]).val(result['result']);
-						$($($('#'+result.uid).children()[2]).children()[0]).val(result['min']);
-						$($($('#'+result.uid).children()[3]).children()[0]).val(result['max']);
-						$($($('#'+result.uid).children()[4]).children()[0]).val(result['error']);
+						$($($('#'+result.uid).children()[2]).children()[0]).val(result['error']);
+						$($($('#'+result.uid).children()[3]).children()[0]).val(result['min']);
+						$($($('#'+result.uid).children()[4]).children()[0]).val(result['max']);
 					});
 				}
 				else {

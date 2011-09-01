@@ -361,6 +361,13 @@ jQuery( function($) {
 		// Clicking the category name will expand the services list for that category
 		$('th[class^="analysiscategory"]').click(function(){
 			toggleCat($(this).attr("poc"), $(this).attr("cat")); // cat is a category uid
+			if($(this).hasClass('expanded')){
+				$(this).addClass('collapsed');
+				$(this).removeClass('expanded');
+			} else {
+				$(this).removeClass('collapsed');
+				$(this).addClass('expanded');
+			}
 		});
 
 		// service category pre-expanded rows

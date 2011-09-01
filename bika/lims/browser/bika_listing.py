@@ -159,8 +159,10 @@ class BikaListingView(BrowserView):
         super(BikaListingView, self).__init__(context, request)
         self.base_url = self.context.absolute_url()
         self.view_url = self.context.absolute_url()
-        if self.show_editable_border: request.set('enable_border', 1)
-        if not self.show_editable_border: request.set('disable_border', 1)
+        if self.show_editable_border:
+            request.set('disable_border', 0)
+        if not self.show_editable_border:
+            request.set('disable_border', 1)
         # contentsMethod may return a list of brains or a list of objects.
         self.contentsMethod = self.context.getFolderContents
 

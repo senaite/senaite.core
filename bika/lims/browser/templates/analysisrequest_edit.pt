@@ -383,7 +383,7 @@
                         poc poc;
                         cat python:cat[0];
                         selectedservices python: ','.join([s[2] for s in ViewSelectedServices if s[1] == cat[0]]);
-                        class python: 'analysiscategory%s' % (edit and [poc,cat[0]] in [[s[0],s[1]] for s in ViewSelectedServices] and ' prefill' or '')"/>
+                        class python: 'analysiscategory collapsed%s' % (edit and [poc,cat[0]] in [[s[0],s[1]] for s in ViewSelectedServices] and ' prefill' or '')"/>
             </tr>
         </thead>
         <tbody class="analysisservices" tal:attributes="

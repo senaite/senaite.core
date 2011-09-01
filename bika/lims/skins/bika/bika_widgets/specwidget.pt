@@ -12,7 +12,7 @@
 			specs widget/getResultsRangeDict;
 			spec_categories python:widget.getSpecCategories(field)">
 	<table class="listing nosort">
-		<tal:i 
+		<tal:i
             tal:define="cats python:categories.keys();
                         dummy python:cats.sort()"
             tal:repeat="category cats">
@@ -55,7 +55,7 @@
 				class python:category in [sc['Title'] for sc in spec_categories] and 'initial prefill' or 'initial';
 				name cat_uid;
 				id field/getName;">
-			<th tal:content="category"/>
+			<th class="title" tal:content="category"/>
 			<th><span tal:attributes="id string:min_hdr_${cat_uid}">&nbsp;</span></th>
 			<th><span tal:attributes="id string:max_hdr_${cat_uid}">&nbsp;</span></th>
 			<th><span tal:attributes="id string:error_hdr_${cat_uid}">&nbsp;</span></th>
