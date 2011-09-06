@@ -1,5 +1,7 @@
 from Products.CMFCore.utils import getToolByName
+from Acquisition import aq_parent
 from Products.validation.interfaces.IValidator import IValidator
+from Products.validation.validators import RegexValidator
 from Products.validation import validation
 from bika.lims.utils import sortable_title
 from zope.interface import Interface, implements
@@ -7,73 +9,85 @@ from zope.site.hooks import getSite
 from zExceptions import Redirect
 from plone.memoize import instance
 import sys,re
-from zope.i18nmessageid import MessageFactory
-_ = MessageFactory('bika')
+from bika.lims import bikaMessageFactory as _
 
-class UniqueTitleValidator:
-    """ Verifies that an item's sortable_title is not the same as any
-    other object of the same type """
+validation.register(
+    RegexValidator('isValidKeyword',
+                   r"^[A-Za-z][\w\d\-\_]+$",
+                   errmsg = _('Keyword contains invalid characters.')))
 
-    if issubclass(IValidator, Interface):
-        implements(IValidator)
-    else:
-        __implements__ = (IValidator, )
+class UniqueFieldValidator:
+    """ Verifies that a field value is unique for items
+    if the same type in this location """
 
-    name = "uniquetitlevalidator"
+    implements(IValidator)
+    name = "uniquefieldvalidator"
 
     def __call__(self, value, *args, **kwargs):
         instance = kwargs['instance']
-        pc = getToolByName(instance, 'portal_catalog')
-        items = pc(portal_type=instance.portal_type,
-                   sortable_title = sortable_title(instance, value))
-        for item in items:
-            if item.UID != instance.UID():
-                return instance.translate(
-                    "message_title_is_not_unique",
-                    default = "Validation failed(UniqueTitleValidator): '${title}': this name is already in use.",
-                    mapping = {'title': value},
-                    domain = "bika")
+        fieldname = kwargs['field'].getName()
+        request = kwargs.get('REQUEST', {})
+        form = request.get('form', {})
+
+        ts = getToolByName(instance, 'translation_service')
+
+        if value == instance.get(fieldname):
+            return True
+
+        for item in aq_parent(instance).objectValues():
+            if item.UID() != instance.UID() and \
+               item.schema.get(fieldname).getAccessor(item)() == value:
+                return ts.translate(
+                    "message_field_is_not_unique",
+                    "bika",
+                    {'value': value},
+                    instance,
+                    default = "Validation failed: '${value}' is in use.")
         return True
 
-validation.register(UniqueTitleValidator())
+validation.register(UniqueFieldValidator())
+
 
 class ServiceKeywordValidator:
-    """Validate Service Keywords
+    """Validate AnalysisService Keywords
+    must match isUnixLikeName
     may not be the same as another service keyword
     may not be the same as any InterimField id.
     """
 
-    if issubclass(IValidator, Interface):
-        implements(IValidator)
-    else:
-        __implements__ = (IValidator, )
-
+    implements(IValidator)
     name = "servicekeywordvalidator"
 
     def __call__(self, value, *args, **kwargs):
         instance = kwargs['instance']
+        fieldname = kwargs['field'].getName()
+        request = kwargs.get('REQUEST', {})
+        form = request.get('form', {})
 
-        # make sure the keyword is a valid content id
-        if not re.match(r"^[A-Za-z\w\d\-\_]+$", value):
-            return instance.translate(
-                "message_invalid_keyword",
-                default = "Keyword '${keyword}' is invalid. Only letters, numbers, spaces, _ and - are allowed.",
-                mapping = {'keyword': value},
-                domain="bika")
+        ts = getToolByName(instance, 'translation_service')
+
+        isUnixLikeName = validation.validatorFor('isUnixLikeName')
+        v = isUnixLikeName(value)
+        if isinstance(v, str):
+            return v
 
         # check the value against all AnalysisService keywords
+        # this has to be done from portal_catalog so we don't
+        # clash with ourself
         pc = getToolByName(instance, 'portal_catalog')
         services = pc(portal_type='AnalysisService', getKeyword = value)
         for service in services:
             if service.UID != instance.UID():
-                return instance.translate(
-                    "message_keyword_is_not_unique",
-                    default = "Keyword ${title} is used by ${used_by}.",
-                    mapping = {'title': value, 'used_by': service.Title},
-                    domain = "bika")
+                return ts.translate(
+                    "message_keyword_used_by_service",
+                    "bika",
+                    {'title': value, 'used_by': service.Title},
+                    instance,
+                    default = "Validation failed: '${title}': This keyword is used by service '${used_by}'.")
 
-        our_calc_uid = instance.getCalculation() and \
-                 instance.getCalculation().UID() or ''
+        calc = hasattr(instance, 'getCalculation') and \
+             instance.getCalculation() or None
+        our_calc_uid = calc and calc.UID() or ''
 
         # check the value against all Calculation Interim Field ids
         calcs = [c for c in pc(portal_type='Calculation')]
@@ -82,113 +96,129 @@ class ServiceKeywordValidator:
             interim_fields = calc.getInterimFields()
             if not interim_fields: continue
             for field in interim_fields:
-                if field['id'] == value and our_calc_uid != calc.UID():
-                    return instance.translate(
-                        "message_keyword_is_not_unique",
-                        default = "Keyword ${title} is used by ${used_by}.",
-                        mapping = {'title': value, 'used_by': calc.Title()},
-                        domain = "bika")
+                if field['keyword'] == value and our_calc_uid != calc.UID():
+                    return ts.translate(
+                        "message_keyword_used_by_calc",
+                        "bika",
+                        {'title': value, 'used_by': calc.Title()},
+                        instance,
+                        default = "Validation failed: '${title}': This keyword is used by calculation '${used_by}'.")
         return True
 
 validation.register(ServiceKeywordValidator())
 
-class InterimFieldIDValidator:
-    """Validating InterimFields :
-        ID may not be the same as any service keyword.
-        title must be identical for all interim fields which
-        share the same id.
+class InterimFieldsValidator:
+    """Validating InterimField keywords.  applied as a subfield validator
+        on keyword subfield, but validates entire InterimFields field form
+        data.
+        keyword must match isUnixLikeName
+        keyword may not be the same as any service keyword.
+        keyword must be unique in this InterimFields field
+        keyword must be unique for all interimfields which share the same title.
+        title must be unique for all interimfields which share the same keyword.
     """
 
-    if issubclass(IValidator, Interface):
-        implements(IValidator)
-    else:
-        __implements__ = (IValidator, )
-
-    name = "interimfieldidvalidator"
+    implements(IValidator)
+    name = "interimfieldsvalidator"
 
     def __call__(self, value, *args, **kwargs):
         instance = kwargs['instance']
+        fieldname = kwargs['field'].getName()
+        request = kwargs.get('REQUEST', {})
+        form = request.form
+        interim_fields = form.get(fieldname)
 
-        # make sure the keyword is a valid content id
-        if not re.match(r"^[A-Za-z\w\d\-\_]+$", value):
-            return instance.translate(
-                "message_invalid_keyword",
-                default = "Keyword '${keyword}' is invalid. Only letters, numbers, spaces, _ and - are allowed.",
-                mapping = {'keyword': value},
-                domain="bika")
-
-        # check the id against all AnalysisService keywords
+        ts = getToolByName(instance, 'translation_service')
         pc = getToolByName(instance, 'portal_catalog')
+
+        isUnixLikeName = validation.validatorFor('isUnixLikeName')
+        v = isUnixLikeName(value)
+        if isinstance(v, str):
+            return v
+
+        # keywords and titles used once only in the submitted form
+        keywords = {}
+        titles = {}
+        for field in interim_fields:
+            if 'keyword' in field:
+                if field['keyword'] in keywords:
+                    keywords[field['keyword']] += 1
+                else:
+                    keywords[field['keyword']] = 1
+            if 'title' in field:
+                if field['title'] in titles:
+                    titles[field['title']] += 1
+                else:
+                    titles[field['title']] = 1
+        for k in [k for k in keywords.keys() if keywords[k] > 1]:
+            return ts.translate(
+                "message_interim_keyword_is_not_unique",
+                "bika",
+                {'keyword': k},
+                instance,
+                default = "Validation failed: '${keyword}': duplicate keyword.")
+        for t in [t for t in titles.keys() if titles[t] > 1]:
+            return ts.translate(
+                "message_interim_title_is_not_unique",
+                "bika",
+                {'title': t},
+                instance,
+                default = "Validation failed: '${title}': duplicate title.")
+
+        # check all keywords against all AnalysisService keywords for dups
         services = pc(portal_type='AnalysisService', getKeyword = value)
         for service in services:
-            if service.UID != instance.UID():
-                return instance.translate(
-                    "message_keyword_is_not_unique",
-                    default = "Keyword ${title} is used by ${used_by}.",
-                    mapping = {'title': value, 'used_by': service.Title},
-                    domain = "bika")
+            if value == service.getKeyword:
+                return ts.translate(
+                    "message_keyword_used_by_service",
+                    "bika",
+                    {'title': value, 'used_by': service.Title},
+                    instance,
+                    default = "Validation failed: '${title}': This keyword is used by service '${used_by}'.")
 
-        our_calc_uid = instance.UID()
-
-        # check the id against all Calculation Interim Field keywords
-        calcs = [c for c in pc(portal_type='Calculation')]
+        # any duplicated interimfield titles must share the same keyword
+        # any duplicated interimfield keywords must share the same title
+        calcs = pc(portal_type='Calculation')
+        keyword_titles = {}
+        title_keywords = {}
         for calc in calcs:
+            if calc.UID == instance.UID():
+                continue
             calc = calc.getObject()
-            interim_fields = calc.getInterimFields()
-            if not interim_fields: continue
-            for field in interim_fields:
-                if field['id'] == value and our_calc_uid != calc.UID():
-                    return instance.translate(
-                        "message_keyword_is_not_unique",
-                        default = "Keyword ${title} is used by ${used_by}.",
-                        mapping = {'title': value, 'used_by': calc.Title()},
-                        domain = "bika")
-
+            for field in calc.getInterimFields():
+                keyword_titles[field['keyword']] = field['title']
+                title_keywords[field['title']] = field['keyword']
+        for field in interim_fields:
+            if field['keyword'] != value:
+                continue
+            if 'title' in field and \
+               field['title'] in title_keywords.keys() and \
+               title_keywords[field['title']] != field['keyword']:
+                return ts.translate(
+                    "message_interimfield_keyword_mismatch",
+                    "bika",
+                    {'title': field['title'],
+                     'keyword': title_keywords[field['title']]},
+                    instance,
+                    default = "Validation failed: column '${title}' must have keyword '${keyword}'.")
+            if 'keyword' in field and \
+               field['keyword'] in keyword_titles.keys() and \
+               keyword_titles[field['keyword']] != field['title']:
+                return ts.translate(
+                    "message_interimfield_title_mismatch",
+                    "bika",
+                    {'keyword': field['keyword'],
+                     'title': keyword_titles[field['keyword']]},
+                    instance,
+                    default = "Validation failed: keyword '${keyword}' must have column title '${title}'.")
 
         return True
-validation.register(InterimFieldIDValidator())
 
-class InterimFieldTitleValidator:
-    """Validating InterimFields :
-        title must be identical for all interim fields which
-        share the same id.
-    """
-    if issubclass(IValidator, Interface):
-        implements(IValidator)
-    else:
-        __implements__ = (IValidator, )
-
-    name = "interimfieldtitlevalidator"
-
-    def __call__(self, value, *args, **kwargs):
-        """Check that the titles of this calculation are unique
-        in this calculation."""
-
-        instance = kwargs['instance']
-        pc = getToolByName(instance, 'portal_catalog')
-        interim_fields = instance.getInterimFields()
-        if not interim_fields:
-            return True
-        found = 0
-        for field in interim_fields:
-            if field['title'] == value:
-                found += 1
-        if found > 1:
-            return instance.translate(
-                    "message_interim_title_is_not_unique",
-                    default = "${title}: duplicate field title for field.",
-                    mapping = {'title': value},
-                    domain = "bika")
-
-validation.register(InterimFieldTitleValidator())
+validation.register(InterimFieldsValidator())
 
 class FormulaValidator:
 
-    if issubclass(IValidator, Interface):
-        implements(IValidator)
-    else:
-        __implements__ = (IValidator, )
-
+    implements(IValidator)
     name = "formulavalidator"
 
     def __call__(self, value, *args, **kwargs):
@@ -196,19 +226,26 @@ class FormulaValidator:
             return True
 
         instance = kwargs['instance']
+        fieldname = kwargs['field'].getName()
+        request = kwargs.get('REQUEST', {})
+        form = request.form
+        interim_fields = form.get('InterimFields')
+
+        ts = getToolByName(instance, 'translation_service')
         pc = getToolByName(instance, 'portal_catalog')
 
-        interim_keywords = [f['id'] for f in instance.getInterimFields()]
+        interim_keywords = [f['keyword'] for f in interim_fields]
         keywords = re.compile(r"\%\(([^\)]+)\)").findall(value)
 
         for keyword in keywords:
             if not pc(getKeyword=keyword) and \
                not keyword in interim_keywords:
-                return instance.translate(
+                return ts.translate(
                     "message_invalid_keyword",
-                    default = "Keyword '${keyword}' is invalid.",
-                    mapping = {'keyword': keyword},
-                    domain="bika")
+                    "bika",
+                    {'keyword': keyword},
+                    instance,
+                    default = "Validation failed: Keyword '${keyword}' does not exist.")
         return True
 
 validation.register(FormulaValidator())

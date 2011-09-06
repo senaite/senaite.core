@@ -1,0 +1,8 @@
+[default]
+title = Update Version on Edit
+
+[validators]
+validators =
+
+[actions]
+action.success = redirect_to_action:string:view

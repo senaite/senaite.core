@@ -159,10 +159,6 @@ class BikaListingView(BrowserView):
         super(BikaListingView, self).__init__(context, request)
         self.base_url = self.context.absolute_url()
         self.view_url = self.context.absolute_url()
-        if self.show_editable_border:
-            request.set('disable_border', 0)
-        if not self.show_editable_border:
-            request.set('disable_border', 1)
         # contentsMethod may return a list of brains or a list of objects.
         self.contentsMethod = self.context.getFolderContents
 
@@ -170,6 +166,11 @@ class BikaListingView(BrowserView):
         """ Any form action in all the TAL rendered by bika_listing*.pt
             is routed to here.
         """
+        if self.show_editable_border:
+            self.request.set('enable_border', 1)
+        if not self.show_editable_border:
+            self.request.set('disable_border', 1)
+
         form = self.request.form
         pc = getToolByName(self.context, 'portal_catalog')
         workflow = getToolByName(self.context, 'portal_workflow')

@@ -24,6 +24,12 @@
     enabled="True" expression=""  inline="False"/>
 -->
 
+<!-- XXX Avoid an odd jQuery.tools is undefined issue -->
+  <javascript cacheable="True" compression="safe"
+              cookable="True" enabled="False" expression=""
+              id="popupforms.js" inline="False"
+              insert-after="form_tabbing.js" />
+
     <javascript authenticated="False"
                 cacheable="True"
                 compression="safe"
@@ -68,7 +74,7 @@
                 inline="False"
                 insert-after="*"/>
 
-    <javascript authenticated="True"
+    <javascript authenticated="False"
                 cacheable="True"
                 compression="safe"
                 conditionalcomment=""
@@ -79,18 +85,18 @@
                 inline="False"
                 insert-after="*"/>
 
-    <javascript authenticated="True"
+    <javascript authenticated="False"
                 cacheable="True"
                 compression="safe"
                 conditionalcomment=""
                 cookable="True"
                 enabled="on"
-                expression=""
+                expression="python:here.portal_type in ['AnalysisRequest','Worksheet',]"
                 id="++resource++bika.lims.js/calcs.js"
                 inline="False"
                 insert-after="*"/>
 
-    <javascript authenticated="True"
+    <javascript authenticated="False"
                 cacheable="True"
                 compression="safe"
                 conditionalcomment=""
@@ -101,29 +107,29 @@
                 inline="False"
                 insert-after="*"/>
 
-    <javascript authenticated="True"
+    <javascript authenticated="False"
                 cacheable="True"
                 compression="safe"
                 conditionalcomment=""
                 cookable="True"
                 enabled="on"
-                expression=""
+                expression="python:here.portal_type in ['Sample',]"
                 id="++resource++bika.lims.js/sample.js"
                 inline="False"
                 insert-after="*"/>
 
-    <javascript authenticated="True"
+    <javascript authenticated="False"
                 cacheable="True"
                 compression="safe"
                 conditionalcomment=""
                 cookable="True"
                 enabled="on"
-                expression=""
+                expression="python:here.portal_type in ['Contact',]"
                 id="++resource++bika.lims.js/contact.js"
                 inline="False"
                 insert-after="*"/>
 
-    <javascript authenticated="True"
+    <javascript authenticated="False"
                 cacheable="True"
                 compression="safe"
                 conditionalcomment=""

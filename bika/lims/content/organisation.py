@@ -14,7 +14,8 @@ _ = MessageFactory('bika')
 schema = BikaFolderSchema.copy() + BikaSchema.copy() + ManagedSchema((
     StringField('Name',
         required = 1,
-        searchable = True
+        searchable = True,
+        validators = ('uniquefieldvalidator',),
     ),
     StringField('TaxNumber',
         widget = StringWidget(

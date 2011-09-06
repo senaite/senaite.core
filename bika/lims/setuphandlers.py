@@ -5,13 +5,11 @@ from Products.CMFCore.utils import getToolByName
 from bika.lims import bikaMessageFactory as _
 from Products.CMFPlone import PloneMessageFactory
 from bika.lims.config import *
-import logging
+from bika.lims import logger
 from zope.interface import alsoProvides
 from bika.lims.interfaces import IHaveNoBreadCrumbs
 
 #from Products.GroupUserFolder.GroupsToolPermissions import ManageGroups
-
-logger = logging.getLogger('bika.lims')
 
 class BikaGenerator:
 
@@ -22,6 +20,17 @@ class BikaGenerator:
             ps = getattr(ptool, 'bika_properties')
             ps._properties = ps._properties + ({'id':'country_names', 'type':'lines', 'mode':'w'},)
             ps._updateProperty('country_names', COUNTRY_NAMES)
+
+    def setupDependencies(self, portal):
+        """Install required products"""
+
+        pq = getToolByName(portal, 'portal_quickinstaller')
+        for product in DEPENDENCIES:
+            if not pq.isProductInstalled(product):
+                if pq.isProductInstallable(product):
+                    pq.installProduct(product)
+                else:
+                    raise "Product %s not installable" % product
 
     def setupPortalContent(self, portal):
         """ Setup Bika site structure """
@@ -297,7 +306,6 @@ class BikaGenerator:
             ['Manager', 'LabManager'], 0)
         portal.pricelists.reindexObject()
 
-
     def setupProxyRoles(self, portal):
         """ Set up proxy roles for workflow scripts
         """
@@ -321,18 +329,18 @@ class BikaGenerator:
 
     def setupVersioning(self, portal):
         DEFAULT_POLICIES = ('at_edit_autoversion', 'version_on_revert')
-        portal_repository = getToolByName(portal, 'portal_repository')
-        versionable_types = list(portal_repository.getVersionableContentTypes())
+        pr = getToolByName(portal, 'portal_repository')
+        versionable_types = list(pr.getVersionableContentTypes())
+
         for type_id in TYPES_TO_VERSION:
             if type_id not in versionable_types:
                 # use append() to make sure we don't overwrite any
                 # content-types which may already be under version control
                 versionable_types.append(type_id)
                 # Add default versioning policies to the versioned type
-                # default policies: ('at_edit_autoversion', 'version_on_revert')
                 for policy_id in DEFAULT_POLICIES:
-                    portal_repository.addPolicyForContentType(type_id, policy_id)
-        portal_repository.setVersionableContentTypes(versionable_types)
+                    pr.addPolicyForContentType(type_id, policy_id)
+        pr.setVersionableContentTypes(versionable_types)
 
 def setupVarious(context):
     """
@@ -344,10 +352,11 @@ def setupVarious(context):
     site = context.getSite()
     gen = BikaGenerator()
     gen.setupPropertiesTool(site)
-    gen.setupPortalContent(site)
+    gen.setupDependencies(site)
     gen.setupGroupsAndRoles(site)
-    gen.setupPermissions(site)
     gen.setupProxyRoles(site)
+    gen.setupPortalContent(site)
+    gen.setupPermissions(site)
     gen.setupVersioning(site)
 
 

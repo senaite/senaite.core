@@ -10,7 +10,7 @@ $(document).ready(function(){
 		$(str).appendTo('#viewlet-above-content');
 	}
 
-	$('#edit_form').ajaxForm({
+	$('#contact_edit_form').ajaxForm({
 		url: window.location.href,
 		dataType:  'json',
 		data: $(this).formToArray(),

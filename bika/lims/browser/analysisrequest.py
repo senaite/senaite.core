@@ -939,7 +939,6 @@ class AnalysisRequestsView(BikaListingView):
     """
 
     def __init__(self, context, request):
-        super(AnalysisRequestsView, self).__init__(context, request)
         self.title = "%s: %s" % (self.context.Title(), _("Analysis Requests"))
         self.description = ""
         self.show_editable_border = False
@@ -1032,6 +1031,7 @@ class AnalysisRequestsView(BikaListingView):
                         'getDateReceived',
                         'getDatePublished']},
         ]
+        super(AnalysisRequestsView, self).__init__(context, request)
 
     def folderitems(self):
         items = BikaListingView.folderitems(self)

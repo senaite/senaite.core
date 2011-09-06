@@ -15,7 +15,7 @@ BikaSchema['subject'].widget.visible = False
 BikaSchema['language'].widget.visible = False
 BikaSchema['location'].widget.visible = False
 
-BikaSchema['title'].validators = ('uniquetitlevalidator',)
+BikaSchema['title'].validators = ('uniquefieldvalidator',)
 # Update the validation layer after change the validator in runtime
 BikaSchema['title']._validationLayer()
 
@@ -34,3 +34,7 @@ BikaFolderSchema['expirationDate'].widget.visible = False
 BikaFolderSchema['subject'].widget.visible = False
 BikaFolderSchema['language'].widget.visible = False
 BikaFolderSchema['location'].widget.visible = False
+
+BikaFolderSchema['title'].validators = ('uniquefieldvalidator',)
+# Update the validation layer after change the validator in runtime
+BikaFolderSchema['title']._validationLayer()

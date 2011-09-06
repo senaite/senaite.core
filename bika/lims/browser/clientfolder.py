@@ -10,7 +10,6 @@ class ClientFolderContentsView(BikaListingView):
     implements(IFolderContentsView)
 
     def __init__(self, context, request):
-        super(ClientFolderContentsView, self).__init__(context, request)
         self.contentFilter = {'portal_type': 'Client',
                               'sort_on': 'sortable_title'}
         self.content_add_actions = {_('Client'):
@@ -39,6 +38,7 @@ class ClientFolderContentsView(BikaListingView):
                                     'getFax', ]
                          },
         ]
+        super(ClientFolderContentsView, self).__init__(context, request)
 
     def folderitems(self):
         items = BikaListingView.folderitems(self)

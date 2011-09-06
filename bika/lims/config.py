@@ -7,6 +7,8 @@ SKINS_DIR = 'skins'
 
 GLOBALS = globals()
 
+DEPENDENCIES = [] #['plone.app.iterate']
+
 ManageBika = 'BIKA: Manage Bika'
 ManageClients = 'BIKA: Manage Clients'
 ManageWorksheets = 'BIKA: Manage Worksheets'

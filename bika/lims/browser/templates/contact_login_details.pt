@@ -33,7 +33,7 @@
 	portal context/@@plone_portal_state/portal;
 	tabindex view/tabindex;">
 
-	<form id="edit_form"
+	<form id="contact_edit_form"
 		method="post"
 		tal:condition="not:here/hasUser">
 

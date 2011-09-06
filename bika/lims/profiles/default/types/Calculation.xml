@@ -3,9 +3,7 @@
    meta_type="Factory-based Type Information with dynamic views"
    xmlns:i18n="http://xml.zope.org/namespaces/i18n">
  <property name="title">Calculation</property>
- <property name="description">
-
- </property>
+ <property name="description"></property>
  <property name="content_icon">++resource++bika.lims.images/calculation.png</property>
  <property name="content_meta_type">Calculation</property>
  <property name="product">bika.lims</property>
@@ -14,8 +12,7 @@
  <property name="link_target"></property>
  <property name="global_allow">False</property>
  <property name="filter_content_types">True</property>
- <property name="allowed_content_types">
- </property>
+ <property name="allowed_content_types"/>
  <property name="allow_discussion">False</property>
  <property name="default_view_fallback">False</property>
  <alias from="(Default)" to="base_edit"/>

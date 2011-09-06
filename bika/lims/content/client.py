@@ -82,7 +82,6 @@ schema = Organisation.schema.copy() + atapi.Schema((
     ),
 ))
 
-
 schema['AccountNumber'].write_permission = ManageClients
 schema['title'].widget.visible = False
 schema['description'].widget.visible = False
@@ -95,8 +94,12 @@ class Client(Organisation):
     setup_state = False
 
     def Title(self):
+        # XXX use title like everyone else.
         """ Return the Organisation's Name as its title """
         return self.getField('Name').get(self)
+
+    def setTitle(self, value):
+        return self.setName(value)
 
     def getSetupState(self):
         """ Flag to show subtabs for client setup pages """

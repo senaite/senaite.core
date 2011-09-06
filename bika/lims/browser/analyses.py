@@ -24,7 +24,6 @@ class AnalysesView(BikaListingView):
         Keyword arguments are passed directly to portal_catalog.
     """
     def __init__(self, context, request, **kwargs):
-        super(AnalysesView, self).__init__(context, request)
         self.contentFilter = dict(kwargs)
         self.contentFilter['portal_type'] = 'Analysis'
         self.content_add_actions = {}
@@ -63,6 +62,7 @@ class AnalysesView(BikaListingView):
                         'Attachments'],
              },
         ]
+        super(AnalysesView, self).__init__(context, request)
 
     def folderitems(self):
         rc = getToolByName(self.context, 'reference_catalog')

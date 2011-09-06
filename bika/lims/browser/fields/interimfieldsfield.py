@@ -1,36 +1,33 @@
 from AccessControl import ClassSecurityInfo
-from Products.ATExtensions.Extensions.utils import makeDisplayList
-from Products.ATExtensions.ateapi import RecordField, RecordsField
+from Products.ATExtensions.ateapi import RecordsField
 from Products.Archetypes.Registry import registerField
 from Products.Archetypes.public import *
-from Products.CMFCore.utils import getToolByName
-from Products.validation import validation
-from Products.validation.validators.RegexValidator import RegexValidator
-from bika.lims.config import COUNTRY_NAMES
-import sys
-from zope.i18nmessageid import MessageFactory
-_ = MessageFactory('bika')
-
+from Products.validation.validators import RegexValidator
+from bika.lims import bikaMessageFactory as _
 
 class InterimFieldsField(RecordsField):
     """a list of InterimFields for calculations """
     _properties = RecordsField._properties.copy()
     _properties.update({
         'type' : 'InterimFields',
-        'subfields' : ('id', 'title', 'value', 'unit'),
-        'required_subfields' : ('id','title',),
-        'subfield_labels':{'id': _('Keyword'),
-                           'title': _('Field Title'),
-                           'value': _('Default value'),
-                           'unit': _('Unit')},
-        'subfield_sizes':{'id': 20,
-                           'title': 20,
-                           'value': 10,
-                           'unit': 10},
-        'subfield_validators':{'id': ('isUnixLikeName', 'interimfieldidvalidator' ),
-                           'title': ('interimfieldtitlevalidator',),},
+        'subfields' : ('keyword', 'title', 'value', 'unit'),
+        'required_subfields' : ('keyword','title',),
+        'subfield_labels' : {'keyword': _('Keyword'),
+                             'title': _('Field Title'),
+                             'value': _('Default value'),
+                             'unit': _('Unit')},
+        'subfield_sizes' : {'keyword': 20,
+                            'title': 20,
+                            'value': 10,
+                            'unit': 10},
+        'subfield_validators' : {'keyword': ('isValidKeyword', 'interimfieldsvalidator',)},
         })
     security = ClassSecurityInfo()
+
+    RegexValidator('isUnixLikeName', r"^[A-Za-z][\w\d\-\_]{0,7}$",
+                   title="", description="",
+                   errmsg=_(u"this name is not a valid identifier")),
+
 
 registerField(InterimFieldsField,
               title = "Interim Fields",
