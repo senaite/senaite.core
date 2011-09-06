@@ -9,6 +9,7 @@ class RecordsWidget(ATRecordsWidget):
         'macro': "bika_widgets/recordswidget",
         'helper_js': ("bika_widgets/recordswidget.js",),
         'helper_css': ("bika_widgets/recordswidget.css",),
+        'allowDelete': True,
     })
 
 registerWidget(RecordsWidget,

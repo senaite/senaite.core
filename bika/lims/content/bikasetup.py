@@ -1,5 +1,6 @@
 from AccessControl import ClassSecurityInfo
 from Products.ATExtensions.ateapi import RecordsField
+from bika.lims.browser.widgets import RecordsWidget
 from Products.Archetypes.public import *
 from Products.Archetypes.references import HoldingReference
 from Products.CMFCore.permissions import View, ModifyPortalContent
@@ -24,6 +25,10 @@ class PrefixesField(RecordsField):
                            'prefix': 'Prefix',
                            'padding': 'Padding',
                            },
+        'subfield_readonly':{'portal_type': True,
+                             'prefix': False, 
+                             'padding': False, 
+                            },
         })
     security = ClassSecurityInfo()
 
@@ -34,7 +39,7 @@ schema = BikaFolderSchema.copy() + Schema((
         widget = IntegerWidget(
             label = 'Password lifetime',
             label_msgid = 'label_password_lifetime',
-            description = 'The number of days before a password expires. 0 disables password expiry.',
+            description = 'The number of days before a password expires. 0 disables password expiry',
             description_msgid = 'help_password_lifetime',
             i18n_domain = I18N_DOMAIN,
         )
@@ -45,7 +50,7 @@ schema = BikaFolderSchema.copy() + Schema((
         widget = IntegerWidget(
             label = 'Automatic log-off',
             label_msgid = 'label_auto_logoff',
-            description = 'The number of minutes before a user is automatically logged off. 0 disable automatic log-off.',
+            description = 'The number of minutes before a user is automatically logged off. 0 disable automatic log-off',
             description_msgid = 'help_auto_logoff',
             i18n_domain = I18N_DOMAIN,
         )
@@ -112,7 +117,7 @@ schema = BikaFolderSchema.copy() + Schema((
         widget = StringWidget(
             label = 'SMS Gateway Email Address',
             label_msgid = 'label_email2smsserver',
-            description = 'The email to SMS Gateway address.  Either a complete email address, or just the domain, like this: "@2way.co.za"; in the second case, the contact\'s Mobile Phone number will be prepended.',
+            description = 'The email to SMS Gateway address.  Either a complete email address, or just the domain, like this: "@2way.co.za"; in the second case, the contact\'s Mobile Phone number will be prepended',
             description_msgid = 'help_email2smsaddress',
             i18n_domain = I18N_DOMAIN,
         ),
@@ -178,8 +183,15 @@ schema = BikaFolderSchema.copy() + Schema((
             i18n_domain = I18N_DOMAIN,
         )
     ),
-    PrefixesField('Prefixes'),
+    PrefixesField('Prefixes',
+         fixedSize=8,
+         widget=RecordsWidget(
+            allowDelete=False),
+    ),
 ))
+schema['title'].validators = ()
+# Update the validation layer after change the validator in runtime
+schema['title']._validationLayer()
 
 
 class BikaSetup(folder.ATFolder):

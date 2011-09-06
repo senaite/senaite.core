@@ -48,7 +48,7 @@ XXX validation: if field ID is same as existing field ID, rest of field values m
 	Label
 	</th>
 	</tal:block>
-	<th>
+	<th tal:condition="widget/allowDelete">
             <span i18n:translate="delete_this_entry"
                   id="delete_this_entry">
              delete</span>
@@ -69,6 +69,7 @@ XXX validation: if field ID is same as existing field ID, rest of field values m
 	       value python:field.getSubfieldValue(values, idx, key);
 	       size python:field.getSubfieldSize(key);
 	       maxlength python:field.getSubfieldMaxlength(key);
+           readonly python:field.subfield_readonly.get(key, False);
 	       tabindex tabindex/next|nothing;"
 	       />
 	</tal:string>
@@ -128,7 +129,7 @@ XXX validation: if field ID is same as existing field ID, rest of field values m
 	</tal:block>
 	</td>
   </tal:keys>
-	<td>
+	<td tal:condition="widget/allowDelete">
 	    <input class="noborder"
                    type="checkbox"
                    value="off"
