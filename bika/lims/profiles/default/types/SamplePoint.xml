@@ -2,7 +2,7 @@
 <object name="SamplePoint"
    meta_type="Factory-based Type Information with dynamic views"
    xmlns:i18n="http://xml.zope.org/namespaces/i18n">
- <property name="title">SamplePoint</property>
+ <property name="title">Sample Point</property>
  <property name="description">
  	Configure sample points of origin
  </property>

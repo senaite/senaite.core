@@ -2,7 +2,7 @@
 <object name="SampleType"
    meta_type="Factory-based Type Information with dynamic views"
    xmlns:i18n="http://xml.zope.org/namespaces/i18n">
- <property name="title">SampleType</property>
+ <property name="title">Sample Type</property>
  <property name="description">
  	Configure Sample Types analyzed by the lab
  </property>

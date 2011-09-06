@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <object name="ReferenceManufacturer" meta_type="Factory-based Type Information with dynamic views" xmlns:i18n="http://xml.zope.org/namespaces/i18n">
- <property name="title">ReferenceManufacturer</property>
+ <property name="title">Reference Manufacturer</property>
  <property name="description">
  	Reference Manufacturers
  </property>
