@@ -20,8 +20,6 @@ Content-Type: text/html
 
 <p class="documentDescription">Thank you for downloading Bika LIMS</p>
 
-<div style="z-index:-1;float:right;margin:1em;"><a href="load_setup_data">Load setup data</a></div>
-
 <h3 class="Subheading">Installation Verification</h3>
 
 <p>Make sure the id-server process is running before trying to add anything to the database</p>

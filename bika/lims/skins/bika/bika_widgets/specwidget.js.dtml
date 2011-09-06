@@ -1,3 +1,5 @@
+jQuery(function($){
+
 function expand_analysisservices(categoryUID, fieldName){
 	html = "";
 	/*
@@ -92,4 +94,5 @@ $(document).ready(function(){
 	});
 
 
+});
 });

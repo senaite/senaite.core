@@ -1,3 +1,4 @@
+jQuery(function($){
 function services_html(poc, cat, allservices, selectedservices, fieldName){
 	html = "";
 	allservices = jq.parseJSON(allservices);
@@ -52,4 +53,4 @@ $(document).ready(function(){
 	});
 
 });
-
+});
