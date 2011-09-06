@@ -52,6 +52,8 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
 ))
+schema['description'].widget.visible = True
+schema['description'].schemata = 'default'
 
 class SamplePoint(BaseContent, HistoryAwareMixin):
     security = ClassSecurityInfo()
