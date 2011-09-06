@@ -19,6 +19,7 @@ class SamplePointsView(BikaListingView):
     implements(IFolderContentsView)
 
     def __init__(self, context, request):
+        super(SamplePointsView, self).__init__(context, request)
         self.contentFilter = {'portal_type': 'SamplePoint',
                               'sort_on': 'sortable_title'}
         self.content_add_actions = {_('Sample Point'):

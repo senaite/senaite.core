@@ -19,7 +19,7 @@ class SampleTypesView(BikaListingView):
     implements(IFolderContentsView)
 
     def __init__(self, context, request):
-        super(SampleTypesView, self).__init__(contex, request)
+        super(SampleTypesView, self).__init__(context, request)
         self.contentFilter = {'portal_type': 'SampleType',
                               'sort_on': 'sortable_title'}
         self.content_add_actions = {_('Sample Type'):
