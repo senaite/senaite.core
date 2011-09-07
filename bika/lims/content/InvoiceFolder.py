@@ -13,8 +13,7 @@ from Products.CMFCore import permissions
 from bika.lims.config import ManageInvoices, PROJECTNAME
 from bika.lims.interfaces import IInvoiceFolder, IHaveNoBreadCrumbs
 from zope.interface import implements
-from zope.i18nmessageid import MessageFactory
-_ = MessageFactory('bika')
+from bika.lims import bikaMessageFactory as _
 
 schema = ATBTreeFolderSchema.copy()
 

@@ -9,8 +9,7 @@ from bika.lims.content.person import Person
 from Products.CMFCore import permissions
 from Products.CMFCore.utils import getToolByName
 from bika.lims.config import ManageClients, PUBLICATION_PREFS, PROJECTNAME
-from zope.i18nmessageid import MessageFactory
-_ = MessageFactory('bika')
+from bika.lims import bikaMessageFactory as _
 
 schema = Person.schema.copy()
 

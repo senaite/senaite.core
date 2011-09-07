@@ -8,8 +8,7 @@ from Products.ATExtensions.ateapi import RecordWidget
 from archetypes.referencebrowserwidget import ReferenceBrowserWidget
 from bika.lims.config import GENDERS, PROJECTNAME
 from bika.lims.browser.fields import AddressField
-from zope.i18nmessageid import MessageFactory
-_ = MessageFactory('bika')
+from bika.lims import bikaMessageFactory as _
 
 schema = BikaSchema.copy() + Schema((
     StringField('Salutation',

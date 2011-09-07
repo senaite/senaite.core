@@ -8,8 +8,7 @@ from bika.lims.content.bikaschema import BikaSchema, BikaFolderSchema
 from archetypes.referencebrowserwidget import ReferenceBrowserWidget
 from plone.app.folder.folder import ATFolder
 from bika.lims.browser.fields import AddressField
-from zope.i18nmessageid import MessageFactory
-_ = MessageFactory('bika')
+from bika.lims import bikaMessageFactory as _
 
 schema = BikaFolderSchema.copy() + BikaSchema.copy() + ManagedSchema((
     StringField('Name',

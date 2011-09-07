@@ -31,8 +31,7 @@ from zope.app.component.hooks import getSite
 from zope.interface import implements
 import sys
 import time
-from zope.i18nmessageid import MessageFactory
-_ = MessageFactory('bika')
+from bika.lims import bikaMessageFactory as _
 
 schema = BikaSchema.copy() + Schema((
     StringField('RequestID',

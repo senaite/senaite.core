@@ -13,8 +13,7 @@ from bika.lims.interfaces import IReferenceSupplierFolder, IHaveNoBreadCrumbs
 from bika.lims.utils import generateUniqueId
 from plone.app.folder.folder import ATFolder
 from zope.interface import implements
-from zope.i18nmessageid import MessageFactory
-_ = MessageFactory('bika')
+from bika.lims import bikaMessageFactory as _
 
 schema = BikaFolderSchema.copy()
 

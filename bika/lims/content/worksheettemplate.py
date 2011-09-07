@@ -9,8 +9,7 @@ from bika.lims.browser.widgets import ServicesWidget
 from bika.lims.browser.widgets import WorksheetTemplateLayoutWidget
 from bika.lims.config import ANALYSIS_TYPES, I18N_DOMAIN, PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
-from zope.i18nmessageid import MessageFactory
-_ = MessageFactory('bika')
+from bika.lims import bikaMessageFactory as _
 
 schema = BikaSchema.copy() + Schema((
     RecordsField('Row',

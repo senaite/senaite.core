@@ -7,8 +7,7 @@ from plone.app import folder
 from Products.Archetypes.public import *
 from bika.lims.content.organisation import Organisation
 from bika.lims.config import ManageBika, I18N_DOMAIN, PROJECTNAME
-from zope.i18nmessageid import MessageFactory
-_ = MessageFactory('bika')
+from bika.lims import bikaMessageFactory as _
 
 schema = Organisation.schema.copy() + Schema((
     IntegerField('Confidence',
@@ -84,9 +83,9 @@ schema = Organisation.schema.copy() + Schema((
 IdField = schema['id']
 IdField.widget.visible = {'edit':'hidden', 'view': 'invisible'}
 
-schema['title'].validators = ()
+schema['Name'].validators = ()
 # Update the validation layer after change the validator in runtime
-schema['title']._validationLayer()
+schema['Name']._validationLayer()
 
 class Laboratory(UniqueObject, Organisation):
     security = ClassSecurityInfo()

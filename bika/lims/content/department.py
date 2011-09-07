@@ -8,8 +8,7 @@ from bika.lims.config import I18N_DOMAIN, PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from AccessControl import ClassSecurityInfo
 import sys
-from zope.i18nmessageid import MessageFactory
-_ = MessageFactory('bika')
+from bika.lims import bikaMessageFactory as _
 
 schema = BikaSchema.copy() + Schema((
     ReferenceField('Manager',

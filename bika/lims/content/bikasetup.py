@@ -12,8 +12,7 @@ from bika.lims.utils import generateUniqueId
 from plone.app.folder import folder
 from zope.interface import implements
 import sys
-from zope.i18nmessageid import MessageFactory
-_ = MessageFactory('bika')
+from bika.lims import bikaMessageFactory as _
 
 class PrefixesField(RecordsField):
     """a list of prefixes per portal_type"""
@@ -26,8 +25,8 @@ class PrefixesField(RecordsField):
                            'padding': 'Padding',
                            },
         'subfield_readonly':{'portal_type': True,
-                             'prefix': False, 
-                             'padding': False, 
+                             'prefix': False,
+                             'padding': False,
                             },
         })
     security = ClassSecurityInfo()
@@ -190,6 +189,7 @@ schema = BikaFolderSchema.copy() + Schema((
     ),
 ))
 schema['title'].validators = ()
+schema['title'].widget.visible = False
 # Update the validation layer after change the validator in runtime
 schema['title']._validationLayer()
 

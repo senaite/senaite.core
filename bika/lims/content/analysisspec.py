@@ -23,8 +23,7 @@ from bika.lims.content.bikaschema import BikaSchema
 from types import ListType, TupleType
 import sys
 import time
-from zope.i18nmessageid import MessageFactory
-_ = MessageFactory('bika')
+from bika.lims import bikaMessageFactory as _
 
 schema = Schema((
     HistoryAwareReferenceField('SampleType',

@@ -17,8 +17,7 @@ from zope.site.hooks import getSite
 from zExceptions import Redirect
 from plone.memoize import instance
 import sys,re
-from zope.i18nmessageid import MessageFactory
-_ = MessageFactory('bika')
+from bika.lims import bikaMessageFactory as _
 
 validation = Service()
 

@@ -7,8 +7,7 @@ from bika.lims.config import I18N_DOMAIN, PROJECTNAME
 from bika.lims.browser.fields import DurationField
 from bika.lims.browser.widgets import DurationWidget
 import sys
-from zope.i18nmessageid import MessageFactory
-_ = MessageFactory('bika')
+from bika.lims import bikaMessageFactory as _
 
 schema = BikaSchema.copy() + Schema((
     StringField('Latitude',

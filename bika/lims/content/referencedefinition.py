@@ -11,8 +11,7 @@ from bika.lims.browser.widgets import ReferenceResultsWidget
 from bika.lims.config import I18N_DOMAIN, PROJECTNAME
 import sys
 import time
-from zope.i18nmessageid import MessageFactory
-_ = MessageFactory('bika')
+from bika.lims import bikaMessageFactory as _
 
 schema = BikaSchema.copy() + Schema((
     ReferenceResultsField('ReferenceResults',

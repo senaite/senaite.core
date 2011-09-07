@@ -17,8 +17,7 @@ from bika.lims.utils import generateUniqueId
 from zope.interface import implements
 from zope.interface.declarations import alsoProvides
 import sys
-from zope.i18nmessageid import MessageFactory
-_ = MessageFactory('bika')
+from bika.lims import bikaMessageFactory as _
 
 schema = Organisation.schema.copy() + atapi.Schema((
     atapi.StringField('ClientID',

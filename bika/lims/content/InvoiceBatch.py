@@ -8,8 +8,7 @@ from Products.CMFCore  import permissions
 from Products.Archetypes.public import *
 from bika.lims.config import PostInvoiceBatch, ManageInvoices, PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
-from zope.i18nmessageid import MessageFactory
-_ = MessageFactory('bika')
+from bika.lims import bikaMessageFactory as _
 
 schema = BikaSchema.copy() + Schema((
     DateTimeField('BatchStartDate',

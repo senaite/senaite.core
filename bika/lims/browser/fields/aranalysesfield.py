@@ -6,8 +6,7 @@ from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.Archetypes.utils import shasattr
 from Products.Archetypes.Registry import registerField
 from decimal import Decimal
-from zope.i18nmessageid import MessageFactory
-_ = MessageFactory('bika')
+from bika.lims import bikaMessageFactory as _
 
 class ARAnalysesField(ObjectField):
 

@@ -11,8 +11,7 @@ from Products.Archetypes.references import HoldingReference
 from bika.lims.content.person import Person
 from bika.lims.config import ManageClients, PUBLICATION_PREFS, PROJECTNAME, \
     I18N_DOMAIN
-from zope.i18nmessageid import MessageFactory
-_ = MessageFactory('bika')
+from bika.lims import bikaMessageFactory as _
 import sys
 
 schema = Person.schema.copy() + Schema((

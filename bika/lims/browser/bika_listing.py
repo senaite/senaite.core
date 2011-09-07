@@ -5,13 +5,13 @@ from Acquisition import aq_parent, aq_inner
 from OFS.interfaces import IOrderedContainer
 from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFCore.utils import getToolByName
-from plone.app.content.batching import Batch
 from Products.CMFPlone import PloneMessageFactory
 from Products.CMFPlone.utils import pretty_title_or_id, isExpired, safe_unicode
 from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
+from plone.app.content.batching import Batch
 from plone.app.content.browser import tableview
 from plone.app.content.browser.foldercontents import FolderContentsView, FolderContentsTable
 from plone.app.content.browser.interfaces import IFolderContentsView
@@ -20,11 +20,11 @@ from zope.component._api import getMultiAdapter
 from zope.i18n import translate
 from zope.i18nmessageid import MessageFactory
 from zope.interface import implements
+import App
 import json
 import plone
 import transaction
 import urllib
-import App
 
 class WorkflowAction:
     """ Workflow actions taken in any Bika contextAnalysisRequest context
@@ -161,14 +161,15 @@ class BikaListingView(BrowserView):
         self.view_url = self.context.absolute_url()
         # contentsMethod may return a list of brains or a list of objects.
         self.contentsMethod = self.context.getFolderContents
+        # the disable_border is done here and in __call__ on purpose
+        if hasattr(self, 'show_editable_border') and self.show_editable_border:
+            self.request.set('disable_border', 1)
 
     def __call__(self):
         """ Any form action in all the TAL rendered by bika_listing*.pt
             is routed to here.
         """
-        if self.show_editable_border:
-            self.request.set('enable_border', 1)
-        if not self.show_editable_border:
+        if hasattr(self, 'show_editable_border') and self.show_editable_border:
             self.request.set('disable_border', 1)
 
         form = self.request.form

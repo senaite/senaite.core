@@ -75,7 +75,8 @@ class BikaGenerator:
                        'bika_sampletypes',
                        'bika_referencemanufacturers',
                        'bika_referencedefinitions',
-                       'bika_worksheettemplates' ):
+                       'bika_worksheettemplates',
+                       'laboratory'):
             obj = bika_setup._getOb(obj_id)
             obj.unmarkCreationFlag()
             obj.reindexObject()

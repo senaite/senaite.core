@@ -6,8 +6,7 @@ from AccessControl import ClassSecurityInfo
 from DateTime import DateTime
 from Products.Archetypes.public import *
 from bika.lims.config import I18N_DOMAIN, PROJECTNAME
-from zope.i18nmessageid import MessageFactory
-_ = MessageFactory('bika')
+from bika.lims import bikaMessageFactory as _
 
 schema = BaseSchema.copy() + Schema((
     TextField('ItemDescription',
