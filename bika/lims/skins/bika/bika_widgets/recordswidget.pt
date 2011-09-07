@@ -69,7 +69,7 @@ XXX validation: if field ID is same as existing field ID, rest of field values m
 	       value python:field.getSubfieldValue(values, idx, key);
 	       size python:field.getSubfieldSize(key);
 	       maxlength python:field.getSubfieldMaxlength(key);
-           readonly python:field.subfield_readonly.get(key, False);
+           readonly python:hasattr(field, 'subfield_readonly') and field.subfield_readonly.get(key, False) or False;
 	       tabindex tabindex/next|nothing;"
 	       />
 	</tal:string>

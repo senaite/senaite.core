@@ -84,6 +84,10 @@ schema = Organisation.schema.copy() + Schema((
 IdField = schema['id']
 IdField.widget.visible = {'edit':'hidden', 'view': 'invisible'}
 
+schema['title'].validators = ()
+# Update the validation layer after change the validator in runtime
+schema['title']._validationLayer()
+
 class Laboratory(UniqueObject, Organisation):
     security = ClassSecurityInfo()
     schema = schema

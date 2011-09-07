@@ -174,6 +174,7 @@ schema = BikaSchema.copy() + Schema((
         allowed_types = ('AnalysisCategory',),
         relationship = 'AnalysisServiceAnalysisCategory',
         referenceClass = HoldingReference,
+        vocabulary = 'getActiveAnalysisCategories',
         widget = ReferenceWidget(
             checkbox_bound = 1,
             label = 'Analysis category',
@@ -248,6 +249,13 @@ schema['description'].widget.visible = True
 class AnalysisService(BaseContent, HistoryAwareMixin):
     security = ClassSecurityInfo()
     schema = schema
+
+    security.declarePublic('getActiveAnalysisCategories')
+    def getActiveAnalysisCategories(self):
+        pc = getToolByName(self, 'portal_catalog')
+        categories = pc(portal_type='AnalysisCategory',
+                        inactive_workflow_state='active')
+        return DisplayList(tuple([(c.UID,c.Title) for c in categories]))
 
     security.declarePublic('getDiscountedPrice')
     def getDiscountedPrice(self):

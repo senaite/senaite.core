@@ -11,9 +11,11 @@ from Products.Archetypes.public import *
 from Products.Archetypes.references import HoldingReference
 from Products.Archetypes.config import REFERENCE_CATALOG
 from bika.lims.content.bikaschema import BikaSchema
+from bika.lims.interfaces import IAnalysisCategory
 from bika.lims.config import I18N_DOMAIN, PROJECTNAME
 from zope.i18nmessageid import MessageFactory
 _ = MessageFactory('bika')
+from zope.interface import implements
 
 schema = BikaSchema.copy() + Schema((
     ReferenceField('Department',
@@ -34,8 +36,8 @@ schema['description'].widget.visible = True
 schema['description'].schemata = 'default'
 
 class AnalysisCategory(BaseContent):
+    implements(IAnalysisCategory)
     security = ClassSecurityInfo()
     schema = schema
-
 
 registerType(AnalysisCategory, PROJECTNAME)

@@ -25,4 +25,18 @@
       handler="bika.lims.subscribers.sample.ActionSucceededEventHandler"
     />
 
+    <!-- Workflow action event for AnalysisCategory objects -->
+    <subscriber
+      for="bika.lims.interfaces.IAnalysisCategory
+           Products.CMFCore.interfaces.IActionSucceededEvent"
+      handler="bika.lims.subscribers.analysiscategory.ActionSucceededEventHandler"
+    />
+
+    <!-- Automatically save an initial revision of versionable types -->
+    <subscriber
+      for="Products.ATContentTypes.interfaces.IHistoryAware
+           Products.Archetypes.interfaces.IObjectInitializedEvent"
+      handler="bika.lims.subscribers.version_on_create.ObjectInitializedEventHandler"
+    />
+
 </configure>

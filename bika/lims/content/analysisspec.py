@@ -5,6 +5,7 @@ $Id: AnalysisSpec.py 443 2006-12-13 23:19:39Z anneline $
 from AccessControl import ClassSecurityInfo
 from AccessControl.Permissions import delete_objects
 from Products.ATContentTypes.content import schemata
+from Products.ATContentTypes.lib.historyaware import HistoryAwareMixin
 from Products.ATExtensions.field.records import RecordsField
 from Products.Archetypes import atapi
 from Products.Archetypes.config import REFERENCE_CATALOG
@@ -16,6 +17,7 @@ from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFCore.permissions import ListFolderContents, View
 from Products.CMFCore.utils import getToolByName
 from bika.lims.browser.widgets import SpecWidget
+from bika.lims.browser.fields import HistoryAwareReferenceField
 from bika.lims.config import I18N_DOMAIN, PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from types import ListType, TupleType
@@ -25,7 +27,7 @@ from zope.i18nmessageid import MessageFactory
 _ = MessageFactory('bika')
 
 schema = Schema((
-    ReferenceField('SampleType',
+    HistoryAwareReferenceField('SampleType',
         required = 1,
         vocabulary = "getRemainingSampleTypes",
         vocabulary_display_path_bound = sys.maxint,
@@ -73,7 +75,7 @@ schema['description'].widget.visible = True
 schema['title'].required = False
 schema['title'].widget.visible = False
 
-class AnalysisSpec(BaseFolder):
+class AnalysisSpec(BaseFolder, HistoryAwareMixin):
     security = ClassSecurityInfo()
     schema = schema
     displayContentsTab = False

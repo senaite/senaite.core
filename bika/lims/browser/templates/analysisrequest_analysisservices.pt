@@ -21,7 +21,7 @@
 		    tal:define="analysis python: hasattr(here, service.id) and here[service.id] or None">
 			<span i18n:translate="label_currency_abbreviation">R</span>
 			<input
-				class="price noborder"
+				class="price numeric noborder"
 				type="text"
 				size="5"
 				tal:attributes="

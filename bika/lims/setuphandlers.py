@@ -1,13 +1,15 @@
 """ Bika setup handlers. """
 
+from Products.Archetypes.event import ObjectInitializedEvent
 from Products.CMFCore import permissions
 from Products.CMFCore.utils import getToolByName
-from bika.lims import bikaMessageFactory as _
 from Products.CMFPlone import PloneMessageFactory
-from bika.lims.config import *
+from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
-from zope.interface import alsoProvides
+from bika.lims.config import *
 from bika.lims.interfaces import IHaveNoBreadCrumbs
+from zope.event import notify
+from zope.interface import alsoProvides
 
 #from Products.GroupUserFolder.GroupsToolPermissions import ManageGroups
 
@@ -54,9 +56,9 @@ class BikaGenerator:
                        'worksheets',
                        'bika_setup' ):
             obj = portal._getOb(obj_id)
+            obj.unmarkCreationFlag()
             obj.reindexObject()
 
-        # index setup objects - importing through GenericSetup doesn't
         bika_setup = portal._getOb('bika_setup')
         for obj_id in ('bika_analysiscategories',
                        'bika_analysisservices',
@@ -75,12 +77,13 @@ class BikaGenerator:
                        'bika_referencedefinitions',
                        'bika_worksheettemplates' ):
             obj = bika_setup._getOb(obj_id)
+            obj.unmarkCreationFlag()
             obj.reindexObject()
 
         # Move calendar and user action to bika
-#        for action in portal.portal_controlpanel.listActions():
-#            if action.id in ('UsersGroups', 'UsersGroups2', 'bika_calendar_tool'):
-#                action.permissions = (ManageBika,)
+##        for action in portal.portal_controlpanel.listActions():
+##            if action.id in ('UsersGroups', 'UsersGroups2', 'bika_calendar_tool'):
+##                action.permissions = (ManageBika,)
 
     def setupGroupsAndRoles(self, portal):
         # add roles

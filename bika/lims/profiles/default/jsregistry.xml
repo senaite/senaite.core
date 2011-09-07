@@ -24,13 +24,21 @@
     enabled="True" expression=""  inline="False"/>
 -->
 
-<!-- XXX Avoid an odd jQuery.tools is undefined issue -->
   <javascript cacheable="True" compression="safe"
               cookable="True" enabled="False" expression=""
               id="popupforms.js" inline="False"
               insert-after="form_tabbing.js" />
 
-    <javascript authenticated="False"
+  <javascript authenticated="True" cacheable="True" compression="safe"
+              conditionalcomment="" cookable="True" enabled="True"
+              expression="" id="++resource++plone.app.jquerytools.form.js"
+              insert-after="form_tabbing.js" inline="False"/>
+  <javascript authenticated="True" cacheable="True" compression="safe"
+              conditionalcomment="" cookable="True" enabled="True"
+              expression="" id="++resource++plone.app.jquerytools.js"
+              insert-after="form_tabbing.js" inline="False"/>
+
+   <javascript authenticated="False"
                 cacheable="True"
                 compression="safe"
                 conditionalcomment=""

@@ -1,3 +1,4 @@
+from Products.Archetypes.event import ObjectInitializedEvent
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
@@ -8,9 +9,7 @@ from zope.interface import implements
 
 class LoadSetupData():
 
-    def __init__(self, context, request=None):
-        # request is only present if we're being requested from the browser.  Tests call us
-        # directly with only portal context argument.
+    def __init__(self, context, request):
         self.context = context
         self.request = request
 
@@ -45,6 +44,7 @@ class LoadSetupData():
         self.request.response.redirect(plone.absolute_url())
 
     def Laboratory(self):
+        laboratory = self.context.bika_setup.laboratory
         name = 'Laboratory Information'
         name = name.decode('latin-1').encode('utf-8').strip()
         self.context.bika_setup.laboratory.edit(
@@ -113,6 +113,7 @@ class LoadSetupData():
             client_id = folder.generateUniqueId('Client')
             folder.invokeFactory(id = client_id, type_name = 'Client')
             client = folder[client_id]
+            client.processForm()
             client.edit(Name = name,
                         AccountNumber = account_nr,
                         MemberDiscountApplies = member,
@@ -125,6 +126,7 @@ class LoadSetupData():
             contact_id = self.context.generateUniqueId('Contact')
             client.invokeFactory(id = contact_id, type_name = 'Contact')
             contact = client[contact_id]
+            contact.processForm()
             contact.edit(Firstname = cname,
                          Surname = csurname,
                          PrimaryEmailAddress = cemail,
@@ -158,6 +160,7 @@ class LoadSetupData():
             labcontact_id = folder.generateUniqueId('LabContact')
             folder.invokeFactory(id = labcontact_id, type_name = 'LabContact')
             labcontact = folder[labcontact_id]
+            labcontact.processForm()
             labcontact.edit(Firstname = firstname,
                             Surname = surname,
                             EmailAddress = email,
@@ -179,6 +182,7 @@ class LoadSetupData():
             dept_id = folder.generateUniqueId('Department')
             folder.invokeFactory(id = dept_id, type_name = 'Department')
             dept = folder[dept_id]
+            dept.processForm()
             dept.edit(title = title,
                       description = descr,
                       Manager = labcontact)
@@ -197,6 +201,7 @@ class LoadSetupData():
             id = folder.generateUniqueId('Instrument')
             folder.invokeFactory(id = id, type_name = 'Instrument')
             obj = folder[id]
+            obj.processForm()
             obj.edit(title = title,
                      description = description,
                      Type = type,
@@ -217,6 +222,7 @@ class LoadSetupData():
             id = folder.generateUniqueId('SamplePoint')
             folder.invokeFactory(id = id, type_name = 'SamplePoint')
             obj = folder[id]
+            obj.processForm()
             obj.edit(title = title, description = description)
 
     def SampleTypes(self):
@@ -349,6 +355,7 @@ class LoadSetupData():
             id = folder.generateUniqueId('SampleType')
             folder.invokeFactory(id = id, type_name = 'SampleType')
             obj = folder[id]
+            obj.processForm()
             obj.edit(title = title,
                      description = description,
                      Hazardous = hazardous)
@@ -361,6 +368,7 @@ class LoadSetupData():
             calc_id = folder.generateUniqueId('Calculation')
             folder.invokeFactory(id = calc_id, type_name = 'Calculation')
             obj = folder[calc_id]
+            obj.processForm()
             obj.edit(title = title,
                       description = CalculationDescription,
                       DependentServices = [self.service_objs[a] for a in DependentServices],
@@ -486,6 +494,7 @@ class LoadSetupData():
             cat_id = folder.generateUniqueId('AnalysisCategory')
             folder.invokeFactory(id = cat_id, type_name = 'AnalysisCategory')
             cat = folder[cat_id]
+            cat.processForm()
             cat.edit(title = title, description = descr, Department = depgen.next())
             self.categories[title] = cat
 
@@ -499,6 +508,7 @@ class LoadSetupData():
             id = folder.generateUniqueId('AnalysisService')
             folder.invokeFactory(id = id, type_name = 'AnalysisService')
             obj = folder[id]
+            obj.processForm()
             obj.edit(PointOfCapture = PointOfCapture,
                      title = title,
                      description = description,
@@ -600,6 +610,7 @@ class LoadSetupData():
             id = folder.generateUniqueId('Method')
             folder.invokeFactory(id = id, type_name = 'Method')
             obj = folder[id]
+            obj.processForm()
             obj.edit(title = title, description = description)
 
     def ReferenceDefinitions(self):
@@ -616,6 +627,7 @@ class LoadSetupData():
             id = folder.generateUniqueId('ReferenceDefinitions')
             folder.invokeFactory(id = id, type_name = 'ReferenceDefinition')
             obj = folder[id]
+            obj.processForm()
             obj.edit(title = title,
                      description = description,
                      Hazardous = hazardous)
@@ -632,6 +644,7 @@ class LoadSetupData():
             referencesupplier_id = folder.generateUniqueId('ReferenceSupplier')
             folder.invokeFactory(id = referencesupplier_id, type_name = 'ReferenceSupplier')
             referencesupplier = folder[referencesupplier_id]
+            referencesupplier.processForm()
             name = name.decode('latin-1').encode('utf-8').strip()
             referencesupplier.edit(Name = name,
                                   AccountNumber = account_nr,
@@ -646,6 +659,7 @@ class LoadSetupData():
             contact_id = self.context.generateUniqueId('SupplierContact')
             referencesupplier.invokeFactory(id = contact_id, type_name = 'SupplierContact')
             contact = referencesupplier[contact_id]
+            contact.processForm()
             contact.edit(Firstname = cname,
                          Surname = csurname,
                          PrimaryEmailAddress = cemail)
@@ -660,6 +674,7 @@ class LoadSetupData():
             attach_id = folder.generateUniqueId('AttachmentType')
             folder.invokeFactory(id = attach_id, type_name = 'AttachmentType')
             attachment = folder[attach_id]
+            attachment.processForm()
             attachment.edit(title = title, description = descr)
 
     def Products(self):
@@ -690,6 +705,7 @@ class LoadSetupData():
             id = folder.generateUniqueId('LabProduct')
             folder.invokeFactory(id = id, type_name = 'LabProduct')
             obj = folder[id]
+            obj.processForm()
             obj.edit(
                 title = title,
                 description = description,
@@ -720,6 +736,7 @@ class LoadSetupData():
             id = folder.generateUniqueId('WorksheetTemplate')
             folder.invokeFactory(id = id, type_name = 'WorksheetTemplate')
             obj = folder[id]
+            obj.processForm()
             obj.edit(title = title,
                      Row = pos,
                      Service = serv)
@@ -734,6 +751,7 @@ class LoadSetupData():
             id = folder.generateUniqueId('ReferenceManufacturer')
             folder.invokeFactory(id = id, type_name = 'ReferenceManufacturer')
             obj = folder[id]
+            obj.processForm()
             obj.edit(title = title,
                      description = description)
 

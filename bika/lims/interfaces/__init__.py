@@ -50,6 +50,8 @@ class IIdServer(Interface):
 
 class IBikaSetup(Interface):
     ""
+class IAnalysisCategory(Interface):
+    ""
 class IAnalysisCategories(Interface):
     ""
 class IAnalysisServices(Interface):
