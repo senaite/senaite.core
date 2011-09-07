@@ -29,14 +29,14 @@
               id="popupforms.js" inline="False"
               insert-after="form_tabbing.js" />
 
-  <javascript authenticated="True" cacheable="True" compression="safe"
-              conditionalcomment="" cookable="True" enabled="True"
-              expression="" id="++resource++plone.app.jquerytools.form.js"
-              insert-after="form_tabbing.js" inline="False"/>
-  <javascript authenticated="True" cacheable="True" compression="safe"
+  <javascript authenticated="False" cacheable="True" compression="safe"
               conditionalcomment="" cookable="True" enabled="True"
               expression="" id="++resource++plone.app.jquerytools.js"
-              insert-after="form_tabbing.js" inline="False"/>
+              insert-after="jquery-integration.js" inline="False"/>
+  <javascript authenticated="False" cacheable="True" compression="safe"
+              conditionalcomment="" cookable="True" enabled="True"
+              expression="" id="++resource++plone.app.jquerytools.form.js"
+              insert-after="++resource++plone.app.jquerytools.js" inline="False"/>
 
    <javascript authenticated="False"
                 cacheable="True"

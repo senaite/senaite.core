@@ -34,7 +34,7 @@
 
 <stylesheet
     id="++resource++bika.lims.css/hide_editable_border.css"
-    expression="python:here.portal_type in ['AnalysisCategory', 'AnalysisSpec', 'AttachmentType', 'Calculation', 'Department', 'Instrument', 'Laboratory', 'LabContact', 'Method', 'Product', 'ReferenceDefinition', 'ReferenceManufacturer', 'ReferenceSample', 'SamplePoint', 'WorksheetTemplate', ]"
+    expression="python:here.portal_type in ['BikaSetup', 'AnalysisCategory', 'AnalysisService', 'AnalysisSpec', 'AttachmentType', 'Calculation', 'Department', 'Instrument', 'Laboratory', 'LabContact', 'Method', 'Product', 'ReferenceDefinition', 'ReferenceManufacturer', 'ReferenceSample', 'SamplePoint', 'WorksheetTemplate', ]"
     media="screen"
     rel="stylesheet"
     rendering="link"

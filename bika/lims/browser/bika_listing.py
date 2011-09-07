@@ -162,14 +162,14 @@ class BikaListingView(BrowserView):
         # contentsMethod may return a list of brains or a list of objects.
         self.contentsMethod = self.context.getFolderContents
         # the disable_border is done here and in __call__ on purpose
-        if hasattr(self, 'show_editable_border') and self.show_editable_border:
+        if hasattr(self, 'show_editable_border') and not self.show_editable_border:
             self.request.set('disable_border', 1)
 
     def __call__(self):
         """ Any form action in all the TAL rendered by bika_listing*.pt
             is routed to here.
         """
-        if hasattr(self, 'show_editable_border') and self.show_editable_border:
+        if hasattr(self, 'show_editable_border') and not self.show_editable_border:
             self.request.set('disable_border', 1)
 
         form = self.request.form
