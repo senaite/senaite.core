@@ -172,6 +172,7 @@ class WorksheetFolderView(BikaListingView):
         self.title = "%s: %s" % (self.context.Title(), _("Analysis Requests"))
         self.description = ""
 
+    @property
     def folderitems(self):
         items = BikaListingView.folderitems(self)
         for x in range(len(items)):
@@ -360,6 +361,7 @@ class WorksheetManageResultsView(AnalysesView):
              },
         ]
 
+    @property
     def folderitems(self):
         self.contentsMethod = self.context.getFolderContents
         items = AnalysesView.folderitems(self)
@@ -449,6 +451,7 @@ class WorksheetAddAnalysisView(AnalysesView):
             },
         ]
 
+    @property
     def folderitems(self):
         pc = getToolByName(self.context, 'portal_catalog')
         self.contentsMethod = pc
@@ -501,6 +504,7 @@ class WorksheetAddBlankView(BikaListingView):
         },
     ]
 
+    @property
     def folderitems(self):
         items = BikaListingView.folderitems(self)
         for x in range(len(items)):
@@ -554,6 +558,7 @@ class WorksheetAddControlView(BikaListingView):
         },
     ]
 
+    @property
     def folderitems(self):
         items = BikaListingView.folderitems(self)
         for x in range(len(items)):
@@ -605,6 +610,7 @@ class WorksheetAddDuplicateView(BikaListingView):
         },
     ]
 
+    @property
     def folderitems(self):
         items = BikaListingView.folderitems(self)
         for x in range(len(items)):

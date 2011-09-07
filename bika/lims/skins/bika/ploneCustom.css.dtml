@@ -171,7 +171,7 @@ table.analysisrequest input {
     visibility: hidden;
 }
 
-.select_sample_select {
+.select_sample {
     color: &dtml-linkColor;;
     font-weight:bold;
     cursor: pointer;

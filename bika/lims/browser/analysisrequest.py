@@ -450,6 +450,7 @@ class AnalysisRequestSelectCCView(BikaListingView):
     def __call__(self):
         return self.contents_table()
 
+    @property
     def folderitems(self):
         items = BikaListingView.folderitems(self)
         for x,item in enumerate(items):
@@ -460,59 +461,57 @@ class AnalysisRequestSelectCCView(BikaListingView):
         return items
 
 class AnalysisRequestSelectSampleView(BikaListingView):
-    contentFilter = {'portal_type': 'Sample',
-                     'inactive_review_state': 'active'}
-    content_add_actions = {}
-    show_editable_border = False
-    show_table_only = True
-    show_sort_column = False
-    show_select_row = False
-    show_select_column = False
-    pagesize = 25
 
-    columns = {
-        'getSampleID': {'title': _('Sample ID'),
-                        'class':'select_sample_select'},
-        'getClientSampleID': {'title': _('Client SID')},
-        'getClientReference': {'title': _('Client Reference')},
-        'SampleType': {'title': _('Sample Type')},
-        'SamplePoint': {'title': _('Sample Point')},
-        'getDateReceived': {'title': _('Date Received')},
-        'state_title': {'title': _('State')},
-    }
-    review_states = [
-        {'title': _('All'), 'id':'all',
-         'columns': ['getSampleID',
-                     'getClientSampleID',
-                     'SampleType',
-                     'SamplePoint',
-                     'state_title']},
-        {'title': _('Due'), 'id':'due',
-         'columns': ['getSampleID',
-                     'getClientSampleID',
-                     'SampleType',
-                     'SamplePoint']},
-        {'title': _('Received'), 'id':'received',
-         'columns': ['getSampleID',
-                     'getClientSampleID',
-                     'SampleType',
-                     'SamplePoint',
-                     'getDateReceived']},
-    ]
+    template = ViewPageTemplateFile("templates/analysisrequest_select_sample.pt")
 
     def __init__(self, context, request):
         super(AnalysisRequestSelectSampleView, self).__init__(context, request)
-        self.title = "%s: %s" % (self.context.Title(), _("Samples"))
-        self.description = ""
+        self.title = _("Select sample")
+        self.description = _("Click the ID of a sample to create a secondary Analysis Request.")
+        self.contentFilter = {'portal_type': 'Sample',
+                              'inactive_review_state': 'active'}
+        self.show_editable_border = False
+        self.show_sort_column = False
+        self.show_select_row = False
+        self.show_select_column = False
+        self.pagesize = 25
 
-    def __call__(self):
-        return self.contents_table()
+        self.columns = {
+            'getSampleID': {'title': _('Sample ID')},
+            'getClientSampleID': {'title': _('Client SID')},
+            'getClientReference': {'title': _('Client Reference')},
+            'SampleType': {'title': _('Sample Type')},
+            'SamplePoint': {'title': _('Sample Point')},
+            'getDateReceived': {'title': _('Date Received')},
+            'state_title': {'title': _('State')},
+        }
+        self.review_states = [
+            {'title': _('All'), 'id':'all',
+             'columns': ['getSampleID',
+                         'getClientSampleID',
+                         'SampleType',
+                         'SamplePoint',
+                         'state_title']},
+            {'title': _('Due'), 'id':'due',
+             'columns': ['getSampleID',
+                         'getClientSampleID',
+                         'SampleType',
+                         'SamplePoint']},
+            {'title': _('Received'), 'id':'received',
+             'columns': ['getSampleID',
+                         'getClientSampleID',
+                         'SampleType',
+                         'SamplePoint',
+                         'getDateReceived']},
+        ]
 
+    @property
     def folderitems(self):
         items = BikaListingView.folderitems(self)
         for x,item in enumerate(items):
             if not items[x].has_key('obj'): continue
             obj = items[x]['obj'].getObject()
+            items[x]['class']['getSampleID'] = "select_sample"
             if items[x]['uid'] in self.request.get('hide_uids', ''): continue
             if items[x]['uid'] in self.request.get('selected_uids', ''):
                 items[x]['checked'] = True
@@ -1033,6 +1032,7 @@ class AnalysisRequestsView(BikaListingView):
                         'getDatePublished']},
         ]
 
+    @property
     def folderitems(self):
         items = BikaListingView.folderitems(self)
         for x, item in enumerate(items):

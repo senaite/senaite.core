@@ -49,6 +49,7 @@ class LabContactsView(BikaListingView):
                          'EmailAddress']}
         ]
 
+    @property
     def folderitems(self):
         items = BikaListingView.folderitems(self)
         for x in range(len(items)):

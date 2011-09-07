@@ -45,6 +45,7 @@ class LabProductsView(BikaListingView):
              'columns': ['Title', 'Volume', 'Unit', 'Price', 'VATAmount', 'TotalPrice']},
         ]
 
+    @property
     def folderitems(self):
         items = BikaListingView.folderitems(self)
         for x in range(len(items)):

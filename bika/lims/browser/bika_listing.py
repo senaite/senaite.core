@@ -161,9 +161,6 @@ class BikaListingView(BrowserView):
         self.view_url = self.context.absolute_url()
         # contentsMethod may return a list of brains or a list of objects.
         self.contentsMethod = self.context.getFolderContents
-        # the disable_border is done here and in __call__ on purpose
-        if hasattr(self, 'show_editable_border') and not self.show_editable_border:
-            self.request.set('disable_border', 1)
 
     def __call__(self):
         """ Any form action in all the TAL rendered by bika_listing*.pt
@@ -331,13 +328,10 @@ class BikaListingView(BrowserView):
             if callable(interim_fields): interim_fields = interim_fields()
 
             # element css classes
-            type_class = 'contenttype-' + \
-                       plone_utils.normalizeString(obj.portal_type)
+            type_class = 'contenttype-' + plone_utils.normalizeString(obj.portal_type)
+            state_class = 'state-' + plone_utils.normalizeString(review_state)
             if item_inactive:
-                state_class = 'state-inactive'
-            else:
-                state_class = 'state-' + \
-                            plone_utils.normalizeString(review_state)
+                state_class += ' state-inactive'
             if (i + 1) % 2 == 0:
                 table_row_class = "draggable even"
             else:
@@ -374,7 +368,7 @@ class BikaListingView(BrowserView):
                 # "before", "after" and replace: dictionary (key is column ID)
                 # A snippet of HTML which will be rendered
                 # before/after/instead of the table cell content.
-                before = {},
+                before = {}, # { before : "<a href=..>" }
                 after = {},
                 replace = {},
             )
@@ -396,11 +390,10 @@ class BikaListingView(BrowserView):
                                 self.review_states[x]['columns'].append('version_id')
                     results_dict['version_id'] = '%s/%s' % (version_id, history_id)
 
-            # extra classes for individual fields on this item
+            # extra classes for individual fields on this item { field_id : "css classes" }
             results_dict['class'] = {}
 
-            # look through self.columns for object attribute names
-            # (the column key), and try get them from the brain/object.
+            # Search for values for all columns in obj
             for key in self.columns.keys():
                 if hasattr(obj, key):
                     # if the key is already in the results dict
@@ -408,118 +401,58 @@ class BikaListingView(BrowserView):
                     if results_dict.has_key(key):
                         continue
                     value = getattr(obj, key)
-                    # if it's callable call it.
                     if callable(value):
                         value = value()
                     # if it's a HistoryAwareReference pointed at a previous
                     # revision, force (vx/x) into the text.
                     results_dict[key] = value
-
             results.append(results_dict)
 
         return results
 
     def contents_table(self):
-        # discover if filters are enabled for any of our column keys
         self.filters_in_use = False
         for key in self.columns.keys():
             if key in self.contentFilter.keys():
                 self.filters_in_use = True
-
-        # all these variables are defined by the subclass, but actually required
-        # by the table, so we pass them around wholesale.
-        # XXX instead, we should pass references to self...
-        table = BikaListingTable(aq_inner(self.context),
-                                 self.request,
-                                 self.base_url,
-                                 self.view_url,
-                                 folderitems = self.folderitems,
-                                 columns = self.columns,
-                                 allow_edit = self.allow_edit,
-                                 review_states = self.review_states,
-                                 pagesize = self.pagesize,
-                                 show_sort_column = self.show_sort_column,
-                                 show_select_row = self.show_select_row,
-                                 show_select_column = self.show_select_column,
-                                 show_filters = self.show_filters,
-                                 filters_in_use = self.filters_in_use)
+        table = BikaListingTable(self)
         return table.render()
 
 class BikaListingTable(FolderContentsTable):
-    def __init__(self,
-                 context,
-                 request,
-                 base_url,
-                 view_url,
-                 folderitems,
-                 columns,
-                 allow_edit,
-                 review_states,
-                 pagesize,
-                 show_sort_column,
-                 show_select_row,
-                 show_select_column,
-                 show_filters,
-                 filters_in_use):
-        self.context = context
-        self.request = request
-        url = context.absolute_url()
-        self.table = Table(context,
-                           request,
-                           base_url,
-                           view_url,
-                           folderitems(),
-                           columns,
-                           allow_edit,
-                           review_states,
-                           show_sort_column = show_sort_column,
-                           show_select_row = show_select_row,
-                           show_select_column = show_select_column,
-                           show_filters = show_filters,
-                           filters_in_use = filters_in_use,
-                           pagesize = pagesize)
+
+    def __init__(self, bika_listing):
+        self.context = bika_listing.context
+        self.request = bika_listing.request
+        self.table = Table(bika_listing)
 
     def render(self):
         return self.table.render()
 
 class Table(tableview.Table):
-    def __init__(self,
-                 context,
-                 request,
-                 base_url,
-                 view_url,
-                 items,
-                 columns,
-                 allow_edit,
-                 review_states,
-                 show_sort_column,
-                 show_select_row,
-                 show_select_column,
-                 show_filters,
-                 filters_in_use,
-                 pagesize):
+    def __init__(self, bika_listing):
+
+        folderitems = bika_listing.folderitems
 
         tableview.Table.__init__(self,
-                                 request,
-                                 base_url,
-                                 view_url,
-                                 items,
-                                 show_select_column = show_select_column,
-                                 show_sort_column = show_sort_column,
-                                 pagesize = pagesize)
+                                 bika_listing.request,
+                                 bika_listing.base_url,
+                                 bika_listing.view_url,
+                                 folderitems,
+                                 show_select_column = bika_listing.show_select_column,
+                                 show_sort_column = bika_listing.show_sort_column,
+                                 pagesize = bika_listing.pagesize)
 
-        self.context = context
-        self.request = request
-        self.columns = columns
-        self.allow_edit = allow_edit
-        self.items = items
-        self.show_sort_column = show_sort_column
-        self.show_select_row = show_select_row
-        self.show_select_column = show_select_column
-        self.show_filters = show_filters
-        self.filters_in_use = filters_in_use
-        self.review_states = review_states
-
+        self.context = bika_listing.context
+        self.request = bika_listing.request
+        self.columns = bika_listing.columns
+        self.allow_edit = bika_listing.allow_edit
+        self.items = folderitems
+        self.show_sort_column = bika_listing.show_sort_column
+        self.show_select_row = bika_listing.show_select_row
+        self.show_select_column = bika_listing.show_select_column
+        self.show_filters = bika_listing.show_filters
+        self.filters_in_use = bika_listing.filters_in_use
+        self.review_states = bika_listing.review_states
 
     def get_workflow_actions(self):
         """ Compile a list of possible workflow transitions for items

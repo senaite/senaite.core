@@ -172,6 +172,7 @@ class ClientAnalysisRequestsView(BikaListingView):
                         'getDatePublished']},
             ]
 
+    @property
     def folderitems(self):
         items = BikaListingView.folderitems(self)
         for x in range(len(items)):
@@ -254,6 +255,7 @@ class ClientSamplesView(BikaListingView):
                          'getDateReceived']},
             ]
 
+    @property
     def folderitems(self):
         items = BikaListingView.folderitems(self)
         for x in range(len(items)):
@@ -315,6 +317,7 @@ class ClientARImportsView(BikaListingView):
                          'getDateApplied']},
         ]
 
+    @property
     def folderitems(self):
         items = BikaListingView.folderitems(self)
         for x in range(len(items)):
@@ -349,6 +352,7 @@ class ClientARProfilesView(BikaListingView):
              'columns': ['title', 'getProfileKey']},
         ]
 
+    @property
     def folderitems(self):
         items = BikaListingView.folderitems(self)
         for x in range(len(items)):
@@ -385,6 +389,7 @@ class ClientAnalysisSpecsView(BikaListingView):
              },
         ]
 
+    @property
     def folderitems(self):
         items = BikaListingView.folderitems(self)
         for x in range(len(items)):
@@ -443,6 +448,7 @@ class ClientAttachmentsView(BikaListingView):
         else:
             return name
 
+    @property
     def folderitems(self):
         items = BikaListingView.folderitems(self)
         for x in range(len(items)):
@@ -504,6 +510,7 @@ class ClientOrdersView(BikaListingView):
                          'DateDispatched']},
         ]
 
+    @property
     def folderitems(self):
         items = BikaListingView.folderitems(self)
         for x in range(len(items)):
@@ -550,6 +557,7 @@ class ClientContactsView(BikaListingView):
                          'getFax']},
         ]
 
+    @property
     def folderitems(self):
         items = BikaListingView.folderitems(self)
         for x in range(len(items)):

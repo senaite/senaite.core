@@ -109,7 +109,7 @@ Item multi-select links in this row
 <tal:comment replace="nothing">***************
 Colum Headers
 ********************************</tal:comment>
-	<tr condition="view/items">
+	<tr tal:condition="view/items">
 		<th class="nosort column"
 			id="foldercontents-order-column"
 			tal:condition="view/show_sort_column"/>

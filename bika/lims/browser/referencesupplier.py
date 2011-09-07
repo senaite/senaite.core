@@ -75,6 +75,7 @@ class ReferenceSamplesView(BikaListingView):
                 ]
 
 
+    @property
     def folderitems(self):
         items = BikaListingView.folderitems(self)
         for x in range(len(items)):
@@ -136,6 +137,7 @@ class ContactsView(BikaListingView):
         self.title = "%s: %s" % (self.context.Title(), _("Contacts"))
         self.description = ""
 
+    @property
     def folderitems(self):
         items = BikaListingView.folderitems(self)
         for x in range(len(items)):

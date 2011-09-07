@@ -42,6 +42,7 @@ class SampleTypesView(BikaListingView):
                          'columns': ['Title', 'Description']},
                         ]
 
+    @property
     def folderitems(self):
         items = BikaListingView.folderitems(self)
         for x in range(len(items)):
@@ -50,8 +51,6 @@ class SampleTypesView(BikaListingView):
             items[x]['Description'] = obj.Description()
             items[x]['replace']['Title'] = "<a href='%s'>%s</a>" % \
                  (items[x]['url'], items[x]['Title'])
-
-
         return items
 
 schema = ATFolderSchema.copy()

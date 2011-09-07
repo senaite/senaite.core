@@ -38,6 +38,7 @@ class AnalysisSpecsView(BikaListingView):
              },
         ]
 
+    @property
     def folderitems(self):
         items = BikaListingView.folderitems(self)
 
