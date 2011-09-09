@@ -21,66 +21,58 @@ schema = BikaSchema.copy() + Schema((
     BooleanField('ReportDryMatter',
         default = False,
         widget = BooleanWidget(
-            label = "Report as dry matter",
-            label_msgid = "label_report_dry_matter",
-            description = "Select if result can be reported as dry matter",
-            description_msgid = 'help_report_dry_matter',
+            label = _("Report as dry matter"),
+            description = _("Select if result can be reported as dry matter"),
         ),
     ),
     StringField('AttachmentOption',
         default = 'p',
         vocabulary = ATTACHMENT_OPTIONS,
         widget = SelectionWidget(
-            label = 'Attachment option',
-            label_msgid = 'label_attachment_option',
+            label = _('Attachment option'),
+            description = _("Indicates whether file attachments, e.g. microscope images,"
+                            " are required for this Analysis and whether file upload function"
+                            " will be available for it on data capturing screens"),
         ),
     ),
     StringField('Unit',
         index = "FieldIndex:brains",
         widget = StringWidget(
-            label_msgid = 'label_unit',
+            label = _('Unit'),
+            description = _("The measurement units for this Analysis Service, e.g. mg/l, ppm, dB, mV, etc."),
         ),
     ),
     IntegerField('Precision',
         widget = IntegerWidget(
-            label = "Precision as number of decimals",
-            label_msgid = 'label_precision',
-            description = 'Define the number of decimals to be used for this result',
-            description_msgid = 'help_precision',
+            label = _("Precision as number of decimals"),
+            description = _('Define the number of decimals to be used for this result'),
         ),
     ),
     FixedPointField('Price',
         index = "FieldIndex:brains",
         default = '0.00',
         widget = DecimalWidget(
-            label = 'Price excluding VAT',
-            label_msgid = 'label_price_excl_vat',
-            i18n_domain = I18N_DOMAIN,
+            label = _('Price (excluding VAT)'),
         ),
     ),
     FixedPointField('CorporatePrice',
         default = '0.00',
         widget = DecimalWidget(
-            label = 'Corporate price excluding VAT',
-            label_msgid = 'label_corporate_price_excl_vat',
-            i18n_domain = I18N_DOMAIN,
+            label = _('Bulk price (excluding VAT)'),
+            description = _('The price charged per analysis for clients who qualify for bulk discounts'),
         ),
     ),
     ComputedField('VATAmount',
         expression = 'context.getVATAmount()',
         widget = ComputedWidget(
-            label = 'VAT',
-            label_msgid = 'label_vat',
-            i18n_domain = I18N_DOMAIN,
+            label = _('VAT'),
             visible = {'edit':'hidden', }
         ),
     ),
     ComputedField('TotalPrice',
         expression = 'context.getTotalPrice()',
         widget = ComputedWidget(
-            label = 'Total price',
-            label_msgid = 'label_totalprice',
-            i18n_domain = I18N_DOMAIN,
+            label = _('Total price'),
             visible = {'edit':'hidden', }
         ),
     ),
@@ -88,11 +80,8 @@ schema = BikaSchema.copy() + Schema((
         index = 'FieldIndex:brains',
         default_method = 'getDefaultVAT',
         widget = DecimalWidget(
-            label = 'VAT %',
-            label_msgid = 'label_vat_percentage',
-            description = 'Enter percentage value eg. 14',
-            description_msgid = 'help_vat_percentage',
-            i18n_domain = I18N_DOMAIN,
+            label = _('VAT %)',
+            description = _('Enter percentage e.g. 14'),
         ),
     ),
     StringField('Keyword',
@@ -100,9 +89,11 @@ schema = BikaSchema.copy() + Schema((
         index = 'FieldIndex:brains',
         validators = ('servicekeywordvalidator'),
         widget = StringWidget(
-            label = 'Analysis Keyword',
-            label_msgid = 'label_analysis_keyword',
-            description = 'This is the name of the service in instrument exports and AR imports.  It is also the service identifier used in user defined calculations.',
+            label = _('Analysis Keyword'),
+            description = _("The unique keyword used to identify the Analysis Service in"
+                            " import files of bulk AR quests and results imports from instruments."
+                            " It is also used to identify dependent Analysis Services in user"
+                            " defined results calculations"),
         ),
     ),
     ReferenceField('Instrument',
@@ -113,9 +104,8 @@ schema = BikaSchema.copy() + Schema((
         referenceClass = HoldingReference,
         widget = ReferenceWidget(
             checkbox_bound = 1,
-            label = 'Instrument',
-            label_msgid = 'label_instrument',
-            i18n_domain = I18N_DOMAIN,
+            label = _('Instrument'),
+            description = _("Select the preferred instrument for this Analysis"),
         ),
     ),
     HistoryAwareReferenceField('Calculation',
@@ -126,33 +116,34 @@ schema = BikaSchema.copy() + Schema((
         referenceClass = HoldingReference,
         widget = ReferenceWidget(
             checkbox_bound = 1,
-            label = 'Calculation',
-            label_msgid = 'label_calculation',
-            i18n_domain = I18N_DOMAIN,
+            label = _('Calculation'),
+            description = _("If required, select a calculation for the Analysis here."
+                            " Calculations can be configured under the Calculations item"
+                            " in the LIMS set-up"),
         ),
     ),
     DurationField('MaxTimeAllowed',
         widget = DurationWidget(
-            label = "Maximum time allowed",
-            description = 'Maximum time allowed for ' \
-                        'publication of results',
-            description_msgid = 'help_max_hours_allowed',
+            label = _("Maximum turn-around time"),
+            description = _('Maximum time allowed for completion of the analysis.'
+                            ' A late analysis alert is raised when this period elapses'),
         ),
     ),
     FixedPointField('DuplicateVariation',
         widget = DecimalWidget(
-            label = 'Duplicate Variation',
-            label_msgid = 'label_duplicate_variation',
-            description = 'Enter duplicate variation permitted as percentage',
-            i18n_domain = I18N_DOMAIN,
+            label = _('Duplicate Variation %'),
+            description = _('When the results of duplicate analyses on worksheets,'
+                            ' carried out on the same sample, differ with more than'
+                            ' this percentage, an alert is raised'),
         ),
     ),
     BooleanField('Accredited',
         index = "FieldIndex:brains",
         default = False,
         widget = BooleanWidget(
-            label = "Accredited",
-            label_msgid = "label_accredited"
+            label = _("Accredited"),
+            description = _("Check this box if the Analysis Service is included in the"
+                            " laboratory's schedule of accredited analyses"),
         ),
     ),
     StringField('PointOfCapture',
@@ -162,9 +153,11 @@ schema = BikaSchema.copy() + Schema((
         vocabulary = POINTS_OF_CAPTURE,
         widget = SelectionWidget(
             format = 'flex',
-            label = 'Analysis Point of Capture',
-            label_msgid = 'label_pointofcapture',
-            description = "This decides when analyses are performed.  A sample's field analyses results are entered when an analysis request is created, and lab analyses are captured into existing ARs.",
+            label = _('Point of Capture'),
+            description = _("The results of field analyses are captured during sampling"
+                            " at the Sample Point, e.g. the temperature of a water Sample"
+                            " in the river where it is sampled. Lab analyses are done in"
+                            " the laboratory"),
         ),
     ),
     ReferenceField('Category',
@@ -176,9 +169,8 @@ schema = BikaSchema.copy() + Schema((
         vocabulary = 'getActiveAnalysisCategories',
         widget = ReferenceWidget(
             checkbox_bound = 1,
-            label = 'Analysis category',
-            label_msgid = 'label_category',
-            i18n_domain = I18N_DOMAIN,
+            label = _('Analysis category'),
+            description = _("The category the Analysis Service belongs to"),
         ),
     ),
     ReferenceField('Department',
@@ -189,16 +181,15 @@ schema = BikaSchema.copy() + Schema((
         referenceClass = HoldingReference,
         widget = ReferenceWidget(
             checkbox_bound = 1,
-            label = 'Department',
-            label_msgid = 'label_department',
-            i18n_domain = I18N_DOMAIN,
+            label = _('Department'),
+            description = _("The lab department responsible for the Analysis Service"),
         ),
     ),
     ComputedField('CategoryName',
         index = 'FieldIndex',
         expression = "context.getCategory() and context.getCategory().Title() or ''",
         widget = ComputedWidget(
-            label = "Analysis category",
+            label = _("Analysis category"),
             visible = {'edit':'hidden', }
         ),
     ),
@@ -206,7 +197,7 @@ schema = BikaSchema.copy() + Schema((
         index = 'FieldIndex',
         expression = "context.getCategory() and context.getCategory().UID() or ''",
         widget = ComputedWidget(
-            label = "Analysis category",
+            label = _("Analysis category"),
             visible = {'edit':'hidden', }
         ),
     ),
@@ -218,14 +209,17 @@ schema = BikaSchema.copy() + Schema((
                            'intercept_max': 10,
                            'errorvalue': 10,
                            },
-        subfield_labels = {'intercept_min': 'Min',
-                           'intercept_max': 'Max',
-                           'errorvalue': 'Actual value',
+        subfield_labels = {'intercept_min': _('Range min'),
+                           'intercept_max': _('Range max'),
+                           'errorvalue': _('Uncertainty value'),
                            },
         widget = RecordsWidget(
-            label = 'Uncertainties',
-            label_msgid = 'label_uncertainties',
-            i18n_domain = I18N_DOMAIN,
+            label = _('Uncertainty'),
+            description = _("Specify the uncertainty value for a given range, e.g. for results"
+                            " in a range with minimum of 0 and maximum of 10, the uncertainty"
+                            " value is 0.5 – a result of 6.67 will be reported as 6.67 ± 0.5."
+                            " Please ensure successive ranges are continues, e.g. 0.00 – 10.00"
+                            " is followed by 10.01 – 20.00, 20.01 - 30 .00 etc."),
         ),
     ),
     RecordsField('ResultOptions',
@@ -234,9 +228,10 @@ schema = BikaSchema.copy() + Schema((
         required_subfields = ('Result',),
         subfield_labels = {'Result': 'Option Text',},
         widget = RecordsWidget(
-            label = 'Result Options',
-            label_msgid = 'label_result_options',
-            i18n_domain = I18N_DOMAIN,
+            label = _('Result Options'),
+            description = _("Please list al options for the Analysis result if you want to restrict"
+                            " it to specific options only, e.g. 'Positive', 'Negative' and"
+                            " 'Indeterminable'",
         ),
     ),
 ))
