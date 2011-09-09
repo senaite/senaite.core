@@ -74,7 +74,8 @@ def ActionSucceededEventHandler(analysis, event):
         # Escalate action to the parent AR
         try:
             workflow.doActionFor(analysis.aq_parent, event.action)
-        except WorkflowException:
+        except:
+##        except WorkflowException:
             pass
 
     if event.action == "verify":
