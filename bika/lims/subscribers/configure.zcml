@@ -37,6 +37,12 @@
            Products.CMFCore.interfaces.IActionSucceededEvent"
       handler="bika.lims.subscribers.analysisservice.ActionSucceededEventHandler"
     />
+    <!-- Workflow action to prevent inappropriate re-activation of Calculations -->
+    <subscriber
+      for="bika.lims.interfaces.ICalculation
+           Products.CMFCore.interfaces.IActionSucceededEvent"
+      handler="bika.lims.subscribers.calculation.ActionSucceededEventHandler"
+    />
 
     <!-- Automatically save an initial revision of versionable types -->
     <subscriber

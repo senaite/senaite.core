@@ -9,6 +9,7 @@ from Products.validation.ZService import ZService as Service
 from Products.validation.interfaces.IValidator import IValidator
 from bika.lims.browser.fields import InterimFieldsField
 from bika.lims.browser.widgets import RecordsWidget as BikaRecordsWidget
+from bika.lims.interfaces import ICalculation
 from bika.lims.browser.fields import HistoryAwareReferenceField
 from bika.lims.config import I18N_DOMAIN, PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
@@ -50,9 +51,17 @@ schema = BikaSchema.copy() + Schema((
         allowable_content_types = ('text/plain',),
         widget = TextAreaWidget(
             label = 'Calculation Formula',
-            label_msgid = 'label_calculation_description',
-            description = 'The formula you type here will be dynamically calculated when an analysis using this calculation is displayed.',
-            description_msgid = 'help_vat_percentage',
+            description_msgid = "msg_calculation_formula_help",
+            description = "<p>The formula you type here will be dynamically calculated "
+                           "when an analysis using this calculation is displayed. </p>"
+                           "<p>The <a href='http://docs.python.org/release/2.6.7/library/stdtypes.html#string-formatting'>standard python string interpolation syntax</a> is used, "
+                           "with all Analysis Service keywords available as values, as "
+                           "well as keywords from this calculation's Interim Fields. "
+                           "The calculation is evaluated as an unrestricted python code snippet.</p> "
+                           "<p>For example, the calculation '%(SUG)f + %(field1)f' will "
+                           "replace %(SUG)f with a floating point value (f) representing "
+                           "the 'Sugars' Analysis Service, and '%(field1)f' with the value "
+                           "of the service or interim field with the keyword 'field1'.</p>",
             i18n_domain = I18N_DOMAIN,
         )
     ),
@@ -63,6 +72,7 @@ schema['description'].schemata = 'default'
 class Calculation(BaseFolder, HistoryAwareMixin):
     security = ClassSecurityInfo()
     schema = schema
+    implements(ICalculation)
 
     def setFormula(self, Formula=None):
         """Set the Dependent Services from the text of the calculation Formula

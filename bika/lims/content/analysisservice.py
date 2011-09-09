@@ -1,4 +1,3 @@
-# coding=utf8
 from AccessControl import ClassSecurityInfo
 from Products.ATExtensions.ateapi import RecordsField
 from Products.Archetypes.config import REFERENCE_CATALOG
