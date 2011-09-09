@@ -59,6 +59,8 @@ class AnalysisServicesView(BikaListingView):
             if not items[x].has_key('obj'): continue
             obj = items[x]['obj'].getObject()
             items[x]['CategoryName'] = obj.getCategoryName()
+            calculation = obj.getCalculation()
+            items[x]['Calculation'] = calculation and calculation.Title()
             items[x]['Unit'] = obj.Unit
             items[x]['Price'] = "%s.%02d" % (obj.Price)
             maxtime = obj.MaxTimeAllowed
@@ -75,8 +77,6 @@ class AnalysisServicesView(BikaListingView):
             if obj.DuplicateVariation is not None:
                 items[x]['DuplicateVariation'] = "%s.%02d" % (obj.DuplicateVariation)
             else: items[x]['DuplicateVariation'] = ""
-            calculation = obj.getCalculation()
-            items[x]['Calculation'] = calculation and calculation.Title() or ''
             items[x]['replace']['Title'] = "<a href='%s'>%s</a>" % \
                  (items[x]['url'], items[x]['Title'])
             after_icons = ''
@@ -90,6 +90,8 @@ class AnalysisServicesView(BikaListingView):
                 after_icons += "<img src='++resource++bika.lims.images/attach_no.png' title='Attachment not permitted'>"
             if after_icons:
                 items[x]['after']['Title'] = after_icons
+            items[x]['replace']['Calculation'] = calculation and "<a href='%s'>%s</a>" % \
+                 (calculation.absolute_url() + "/edit", calculation.Title()) or ''
 
         return items
 
