@@ -431,6 +431,7 @@ class AnalysisRequest(BaseFolder):
             batch_id = invoices.generateUniqueId('InvoiceBatch')
             invoices.invokeFactory(id = batch_id, type_name = 'InvoiceBatch')
             invoice_batch = invoices._getOb(batch_id)
+            invoice_batch.processForm()
             invoice_batch.edit(
                 title = batch_title,
                 BatchStartDate = start_of_month,
@@ -463,6 +464,7 @@ class AnalysisRequest(BaseFolder):
         attachmentid = self.generateUniqueId('Attachment')
         self.aq_parent.invokeFactory(id = attachmentid, type_name = "Attachment")
         attachment = self.aq_parent._getOb(attachmentid)
+        attachment.processForm()
         attachment.edit(
             AttachmentFile = this_file,
             AttachmentType = self.REQUEST.form['AttachmentType'],

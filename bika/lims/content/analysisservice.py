@@ -346,6 +346,7 @@ class AnalysisService(BaseContent, HistoryAwareMixin):
         dup_id = context.generateUniqueId(type_name = 'AnalysisService')
         context.invokeFactory(id = dup_id, type_name = 'AnalysisService')
         dup = context[dup_id]
+        dup.processForm()
         dup.setTitle('! Copy of %s' % self.Title())
         dup.edit(
             description = self.Description(),

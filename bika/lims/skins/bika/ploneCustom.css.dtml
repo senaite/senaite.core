@@ -61,14 +61,12 @@ div.position-1\3a 4 {margin-left:    -81.5%;} /* .position-1:4 */
   float:right;
 }
 
-fieldset.attachments legend {
+dt.attachments {
     color: &dtml-linkColor;;
     font-weight:bold;
-    cursor: pointer;
-}
-fieldset.attachments{
-    padding: 0 1em 0 1em;
-    margin: 0;
+    cursor: pointer !important;
+	font-size:1em !important;
+	line-height:1em !important;
 }
 
 .folderlisting-filter {

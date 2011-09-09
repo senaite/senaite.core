@@ -840,6 +840,7 @@ class AJAXAnalysisRequestSubmit():
                         self.context.invokeFactory(id = sample_id,
                                                    type_name = 'Sample')
                         sample = self.context[sample_id]
+                        sample.processForm()
                         sample.edit(
                             SampleID = sample_id,
                             LastARNumber = ar_number,
@@ -868,6 +869,7 @@ class AJAXAnalysisRequestSubmit():
                     self.context.invokeFactory(id = ar_id,
                                                type_name = 'AnalysisRequest')
                     ar = self.context[ar_id]
+                    ar.processForm()
                     ar.edit(
                         RequestID = ar_id,
                         DateRequested = DateTime(),
@@ -897,6 +899,7 @@ class AJAXAnalysisRequestSubmit():
                     self.context.invokeFactory(id = profile_id,
                                                type_name = 'ARProfile')
                     profile = self.context[profile_id]
+                    profile.processForm()
                     ar.edit(Profile = profile)
                     profile.setTitle(values['profileTitle'])
                     analyses = ar.getAnalyses()

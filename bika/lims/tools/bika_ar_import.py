@@ -77,6 +77,7 @@ class bika_ar_import(UniqueObject, SimpleItem):
                 arimport_id = self.generateUniqueId('ARImport')
                 client.invokeFactory(id = arimport_id, type_name = 'ARImport')
                 arimport = client._getOb(arimport_id)
+                arimport.processForm()
                 continue
             if row_count == 3:
                 sample_count = sample_count + 1
@@ -115,6 +116,7 @@ class bika_ar_import(UniqueObject, SimpleItem):
                 aritem_id = '%s_%s' % (prefix, (str(next_num)))
                 arimport.invokeFactory(id = aritem_id, type_name = 'ARImportItem')
                 aritem = arimport._getOb(aritem_id)
+                aritem.processForm()
                 aritem.edit(
                     SampleName = sample[0],
                     ClientRef = sample[1],
@@ -187,7 +189,6 @@ class bika_ar_import(UniqueObject, SimpleItem):
                     temp_row = True
                     continue
 
-
             if row_count > 11:
                 if row[0] == '':
                     in_footers = True
@@ -255,6 +256,7 @@ class bika_ar_import(UniqueObject, SimpleItem):
             aritem_id = self.generateUniqueId('ARImportItem')
             arimport.invokeFactory(id = aritem_id, type_name = 'ARImportItem')
             aritem = arimport._getOb(aritem_id)
+            aritem.processForm()
             aritem.edit(
                 ClientRef = sample[0],
                 ClientRemarks = sample[1],

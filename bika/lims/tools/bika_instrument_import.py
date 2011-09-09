@@ -137,6 +137,7 @@ class bika_instrument_import(UniqueObject, SimpleItem):
                         ar.invokeFactory(
                             id = service.id, type_name = 'Analysis')
                         analysis = ar._getOb(service_id)
+                        analysis.processForm()
                         discount = ar.getMemberDiscount()
                         if ar.getMemberDiscountApplies():
                             price = service.getDiscountedPrice()

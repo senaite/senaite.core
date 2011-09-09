@@ -5,6 +5,5 @@ from bika.lims import bikaMessageFactory as _
 import transaction
 
 def ObjectInitializedEventHandler(obj, event):
-    # attempt initial save of version aware objects
     pr = getToolByName(obj, 'portal_repository')
-    pr.save(obj=obj, comment=_("Initial revision"))
+    pr.applyVersionControl(obj, comment=_("Initial revision"))

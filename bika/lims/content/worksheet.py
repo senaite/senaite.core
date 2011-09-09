@@ -326,6 +326,7 @@ class Worksheet(BaseFolder):
             client = analysis.aq_parent.aq_parent
             client.invokeFactory(id = attachmentid, type_name = "Attachment")
             attachment = client._getOb(attachmentid)
+            attachment.processForm()
             attachment.edit(
                 AttachmentFile = this_file,
                 AttachmentType = self.REQUEST.form['AttachmentType'],
@@ -351,6 +352,7 @@ class Worksheet(BaseFolder):
                 client = analysis.aq_parent.aq_parent
                 client.invokeFactory(id = attachmentid, type_name = "Attachment")
                 attachment = client._getOb(attachmentid)
+                attachment.processForm()
                 attachment.edit(
                     AttachmentFile = this_file,
                     AttachmentType = self.REQUEST.form['AttachmentType'],
@@ -628,6 +630,7 @@ class Worksheet(BaseFolder):
                 duplicate_id = self.generateUniqueId('DuplicateAnalysis')
                 self.invokeFactory(id = duplicate_id, type_name = 'DuplicateAnalysis')
                 duplicate = self._getOb(duplicate_id)
+                duplicate.processForm()
                 duplicate.edit(
                     Request = ar,
                     Service = service,
@@ -963,6 +966,7 @@ class Worksheet(BaseFolder):
                 reject_id = self.generateUniqueId('RejectAnalysis')
                 self.invokeFactory(id = reject_id, type_name = 'RejectAnalysis')
                 reject = self._getOb(reject_id)
+                reject.processForm()
                 reject.edit(
                     Service = analysis.getService(),
                     Request = analysis.aq_parent,
@@ -997,6 +1001,7 @@ class Worksheet(BaseFolder):
         new_ws_id = worksheets.generateUniqueId('Worksheet')
         worksheets.invokeFactory(id = new_ws_id, type_name = 'Worksheet')
         new_ws = worksheets[new_ws_id]
+        new_ws = processForm()
         new_ws.edit(
             Number = new_ws_id,
             Notes = self.getNotes(),
@@ -1042,6 +1047,7 @@ class Worksheet(BaseFolder):
             duplicate_id = new_ws.generateUniqueId('DuplicateAnalysis')
             new_ws.invokeFactory(id = duplicate_id, type_name = 'DuplicateAnalysis')
             new_duplicate = new_ws._getOb(duplicate_id)
+            new_duplicate.processForm()
             new_duplicate.edit(
                 Request = ar,
                 Service = service,

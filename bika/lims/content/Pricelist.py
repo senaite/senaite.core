@@ -112,6 +112,7 @@ class Pricelist(BaseFolder):
             item_id = self.generateUniqueId('PricelistLineItem')
             self.invokeFactory(id = item_id, type_name = 'PricelistLineItem')
             item = self._getOb(item_id)
+            item.processForm()
             itemDescription = None
             itemAccredited = False
             if not cmp(self.getType(), 'LabProduct'):

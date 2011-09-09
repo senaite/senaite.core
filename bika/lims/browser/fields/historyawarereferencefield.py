@@ -109,8 +109,7 @@ class HistoryAwareReferenceField(ReferenceField):
                     if pr.isVersionable(targets[uid]):
                         pr.save(obj=targets[uid], comment=_("Initial revision"))
                     else:
-                        raise ValueError, "%s not versionable for field %s at %s" % \
-                              (targets[uid],self.getName(), instance)
+                        raise ValueError, "%s not versionable" % targets[uid]
                 if not hasattr(instance, 'reference_versions'):
                     instance.reference_versions = {}
                 instance.reference_versions[uid] = targets[uid].version_id

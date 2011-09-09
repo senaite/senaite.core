@@ -250,6 +250,7 @@ class ReferenceSample(BaseFolder):
         analysis_id = self.generateUniqueId('ReferenceAnalysis')
         self.invokeFactory(id = analysis_id, type_name = 'ReferenceAnalysis')
         analysis = self._getOb(analysis_id)
+        analysis.processForm()
         calculation = service.getCalculation()
         interim_fields = calculation and calculation.getInterimFields() or []
 

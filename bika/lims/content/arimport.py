@@ -323,6 +323,7 @@ class ARImport(BaseFolder):
             next_num += 1
             client.invokeFactory(id = sample_id, type_name = 'Sample')
             sample = client[sample_id]
+            sample.processForm()
             sample.edit(
                 SampleID = sample_id,
                 ClientReference = aritem.getClientRef(),
@@ -339,6 +340,7 @@ class ARImport(BaseFolder):
             ar_id = self.generateARUniqueId('AnalysisRequest', sample_id, 1)
             client.invokeFactory(id = ar_id, type_name = 'AnalysisRequest')
             ar = client[ar_id]
+            ar.processForm()
             if aritem.getReportDryMatter().lower() == 'y':
                 report_dry_matter = True
             else:
@@ -484,6 +486,7 @@ class ARImport(BaseFolder):
             client.invokeFactory(id = sample_id, type_name = 'Sample')
             next_num += 1
             sample = client[sample_id]
+            sample.processForm()
             sample.edit(
                 SampleID = sample_id,
                 ClientReference = aritem.getClientRef(),
@@ -499,6 +502,7 @@ class ARImport(BaseFolder):
             ar_id = self.generateARUniqueId('AnalysisRequest', sample_id, 1)
             client.invokeFactory(id = ar_id, type_name = 'AnalysisRequest')
             ar = client[ar_id]
+            ar.processForm()
             report_dry_matter = False
 
             ar.edit(

@@ -6,7 +6,7 @@
 
 <div metal:define-macro="attachments">
   <dl class="collapsible collapsedOnLoad">
-    <dt class="collapsibleHeader" i18n:translate="legend_attachments">Attachments</dt>
+    <dt class="attachments collapsibleHeader" i18n:translate="legend_attachments">Attachments</dt>
     <dd class="collapsibleContent">
       <table class="attachments">
         <tr>

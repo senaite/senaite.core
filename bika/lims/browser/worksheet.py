@@ -201,6 +201,7 @@ class WorksheetAddView(BrowserView):
         ws_id = self.context.generateUniqueId('Worksheet')
         self.context.invokeFactory(id = ws_id, type_name = 'Worksheet')
         ws = self.context[ws_id]
+        ws.processForm()
         ws.edit(Number = ws_id)
 
         analyses = []
