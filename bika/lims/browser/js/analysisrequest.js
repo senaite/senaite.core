@@ -109,9 +109,20 @@ jQuery( function($) {
 		options = {
 			type: 'POST',
 			async: false,
+			beforeSubmit: function(formData, jqForm, options) {
+				$("input[class~='context']").attr('disabled',true);
+			},
+			success: function(responseText, statusText, xhr, $form) {
+				$("input[class~='context']").removeAttr('disabled');
+			},
 			data: {
 				'uid': $(element).attr('id'),
 				'_authenticator': $('input[name="_authenticator"]').val()},
+			error: function(XMLHttpRequest, statusText, errorThrown) {
+				portalMessage(statusText);
+				window.scroll(0,0);
+				$("input[class~='context']").removeAttr('disabled');
+			},
 			dataType: "json"
 		}
 		if ($(element).attr("checked") == true){

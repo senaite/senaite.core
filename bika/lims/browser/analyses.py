@@ -166,7 +166,7 @@ class AnalysesView(BikaListingView):
                 items[i]['allow_edit'] = ['Result',]
                 # if the Result field is editable, our interim fields are too
                 for f in items[i]['interim_fields']:
-                    items[i]['allow_edit'].append(f['id'])
+                    items[i]['allow_edit'].append(f['keyword'])
 
                 # if there isn't a calculation then result must be re-testable,
                 # and if there are interim fields, they too must be re-testable.
@@ -209,10 +209,10 @@ class AnalysesView(BikaListingView):
 
             # Add this analysis' interim fields to the list
             for f in items[i]['interim_fields']:
-                if f['id'] not in self.interim_fields.keys():
-                    self.interim_fields[f['id']] = f['title']
+                if f['keyword'] not in self.interim_fields.keys():
+                    self.interim_fields[f['keyword']] = f['title']
                 # and to the item itself
-                items[i][f['id']] = f
+                items[i][f['keyword']] = f
 
             # check if this analysis is late/overdue
             if (not calculation or (calculation and not calculation.getDependentServices())) and \
