@@ -256,7 +256,6 @@ class bika_ar_import(UniqueObject, SimpleItem):
             aritem_id = self.generateUniqueId('ARImportItem')
             arimport.invokeFactory(id = aritem_id, type_name = 'ARImportItem')
             aritem = arimport._getOb(aritem_id)
-            aritem.processForm()
             aritem.edit(
                 ClientRef = sample[0],
                 ClientRemarks = sample[1],
@@ -267,6 +266,7 @@ class bika_ar_import(UniqueObject, SimpleItem):
                 AnalysisProfile = profiles,
                 Analyses = analyses,
                 )
+            aritem.processForm()
 
 
         arimport.edit(
@@ -285,6 +285,7 @@ class bika_ar_import(UniqueObject, SimpleItem):
             Temperature = temperature,
             DateImported = DateTime(),
             )
+        arimport.processForm()
 
         valid = self.validate_arimport_s(arimport)
         REQUEST.RESPONSE.write('<script>document.location.href="%s/client_arimports?portal_status_message=%s%%20imported"</script>' % (client.absolute_url(), arimport_id))

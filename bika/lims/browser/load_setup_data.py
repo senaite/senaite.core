@@ -113,20 +113,19 @@ class LoadSetupData():
             client_id = folder.generateUniqueId('Client')
             folder.invokeFactory(id = client_id, type_name = 'Client')
             client = folder[client_id]
-            client.processForm()
             client.edit(Name = name,
                         AccountNumber = account_nr,
                         MemberDiscountApplies = member,
                         EmailAddress = email,
                         Phone = tel,
                         Fax = fax)
+            client.processForm()
 
             cname = cname.decode('latin-1').encode('utf-8').strip()
             csurname = csurname.decode('latin-1').encode('utf-8').strip()
             contact_id = self.context.generateUniqueId('Contact')
             client.invokeFactory(id = contact_id, type_name = 'Contact')
             contact = client[contact_id]
-            contact.processForm()
             contact.edit(Firstname = cname,
                          Surname = csurname,
                          PrimaryEmailAddress = cemail,
@@ -148,7 +147,8 @@ class LoadSetupData():
                 # add user to clients group
                 group = self.context.portal_groups.getGroupById('clients')
                 group.addMember(cusername)
-                contact.reindexObject()
+            contact.processForm()
+            contact.reindexObject()
 
     def LabContacts(self):
         contacts = (
@@ -160,13 +160,13 @@ class LoadSetupData():
             labcontact_id = folder.generateUniqueId('LabContact')
             folder.invokeFactory(id = labcontact_id, type_name = 'LabContact')
             labcontact = folder[labcontact_id]
-            labcontact.processForm()
             labcontact.edit(Firstname = firstname,
                             Surname = surname,
                             EmailAddress = email,
                             BusinessPhone = tel,
                             BusinessFax = fax,
                             MobilePhone = mobile)
+            labcontact.processForm()
 
     def Departments(self):
         # XXX Do Department and LabContact relate?
@@ -182,10 +182,10 @@ class LoadSetupData():
             dept_id = folder.generateUniqueId('Department')
             folder.invokeFactory(id = dept_id, type_name = 'Department')
             dept = folder[dept_id]
-            dept.processForm()
             dept.edit(title = title,
                       description = descr,
                       Manager = labcontact)
+            dept.processForm()
             self.departments.append(dept)
 
     def Instruments(self):
@@ -201,7 +201,6 @@ class LoadSetupData():
             id = folder.generateUniqueId('Instrument')
             folder.invokeFactory(id = id, type_name = 'Instrument')
             obj = folder[id]
-            obj.processForm()
             obj.edit(title = title,
                      description = description,
                      Type = type,
@@ -210,6 +209,7 @@ class LoadSetupData():
                      SerialNo = serialno,
                      CalibrationCertificate = calibrationcertificate,
                      CalibrationExpiryDate = calibrationexpiry)
+            obj.processForm()
 
     def SamplePoints(self):
         folder = self.context.bika_setup.bika_samplepoints
@@ -222,8 +222,8 @@ class LoadSetupData():
             id = folder.generateUniqueId('SamplePoint')
             folder.invokeFactory(id = id, type_name = 'SamplePoint')
             obj = folder[id]
-            obj.processForm()
             obj.edit(title = title, description = description)
+            obj.processForm()
 
     def SampleTypes(self):
         folder = self.context.bika_setup.bika_sampletypes
@@ -355,10 +355,10 @@ class LoadSetupData():
             id = folder.generateUniqueId('SampleType')
             folder.invokeFactory(id = id, type_name = 'SampleType')
             obj = folder[id]
-            obj.processForm()
             obj.edit(title = title,
                      description = description,
                      Hazardous = hazardous)
+            obj.processForm()
 
     def CreateCalculationObjects(self, calcs):
         if not hasattr(self, 'calculations'):
@@ -368,12 +368,12 @@ class LoadSetupData():
             calc_id = folder.generateUniqueId('Calculation')
             folder.invokeFactory(id = calc_id, type_name = 'Calculation')
             obj = folder[calc_id]
-            obj.processForm()
             obj.edit(title = title,
                       description = CalculationDescription,
                       DependentServices = [self.service_objs[a] for a in DependentServices],
                       InterimFields = InterimFields,
                       Formula = Formula)
+            obj.processForm()
             obj.reindexObject()
             self.calculations[title] = obj.UID()
 
@@ -494,8 +494,8 @@ class LoadSetupData():
             cat_id = folder.generateUniqueId('AnalysisCategory')
             folder.invokeFactory(id = cat_id, type_name = 'AnalysisCategory')
             cat = folder[cat_id]
-            cat.processForm()
             cat.edit(title = title, description = descr, Department = depgen.next())
+            cat.processForm()
             self.categories[title] = cat
 
     def CreateServiceObjects(self, services):
@@ -508,7 +508,6 @@ class LoadSetupData():
             id = folder.generateUniqueId('AnalysisService')
             folder.invokeFactory(id = id, type_name = 'AnalysisService')
             obj = folder[id]
-            obj.processForm()
             obj.edit(PointOfCapture = PointOfCapture,
                      title = title,
                      description = description,
@@ -536,6 +535,7 @@ class LoadSetupData():
 
             obj.edit(Uncertainties = uc_out,
                      Category = category)
+            obj.processForm()
             obj.reindexObject()
             self.service_objs[keyword] = obj.UID()
 
@@ -610,8 +610,8 @@ class LoadSetupData():
             id = folder.generateUniqueId('Method')
             folder.invokeFactory(id = id, type_name = 'Method')
             obj = folder[id]
-            obj.processForm()
             obj.edit(title = title, description = description)
+            obj.processForm()
 
     def ReferenceDefinitions(self):
         self.ref_defs = []
@@ -627,10 +627,10 @@ class LoadSetupData():
             id = folder.generateUniqueId('ReferenceDefinitions')
             folder.invokeFactory(id = id, type_name = 'ReferenceDefinition')
             obj = folder[id]
-            obj.processForm()
             obj.edit(title = title,
                      description = description,
                      Hazardous = hazardous)
+            obj.processForm()
             self.ref_defs.append(obj)
 
     def ReferenceSuppliers(self):
@@ -644,13 +644,13 @@ class LoadSetupData():
             referencesupplier_id = folder.generateUniqueId('ReferenceSupplier')
             folder.invokeFactory(id = referencesupplier_id, type_name = 'ReferenceSupplier')
             referencesupplier = folder[referencesupplier_id]
-            referencesupplier.processForm()
             name = name.decode('latin-1').encode('utf-8').strip()
             referencesupplier.edit(Name = name,
                                   AccountNumber = account_nr,
                                   EmailAddress = email,
                                   Phone = tel,
                                   Fax = fax)
+            referencesupplier.processForm()
 
             cname = cname.decode('latin-1').encode('utf-8').strip()
             #XXX cusername is for logins, does it belong here?
@@ -659,10 +659,10 @@ class LoadSetupData():
             contact_id = self.context.generateUniqueId('SupplierContact')
             referencesupplier.invokeFactory(id = contact_id, type_name = 'SupplierContact')
             contact = referencesupplier[contact_id]
-            contact.processForm()
             contact.edit(Firstname = cname,
                          Surname = csurname,
                          PrimaryEmailAddress = cemail)
+            contact.processForm()
 
     def AttachmentTypes(self):
         attachments = (
@@ -674,8 +674,8 @@ class LoadSetupData():
             attach_id = folder.generateUniqueId('AttachmentType')
             folder.invokeFactory(id = attach_id, type_name = 'AttachmentType')
             attachment = folder[attach_id]
-            attachment.processForm()
             attachment.edit(title = title, description = descr)
+            attachment.processForm()
 
     def Products(self):
         folder = self.context.bika_setup.bika_labproducts
@@ -705,7 +705,6 @@ class LoadSetupData():
             id = folder.generateUniqueId('LabProduct')
             folder.invokeFactory(id = id, type_name = 'LabProduct')
             obj = folder[id]
-            obj.processForm()
             obj.edit(
                 title = title,
                 description = description,
@@ -713,6 +712,7 @@ class LoadSetupData():
                 Unit = unit,
                 Price = price,
                 VAT = '14.0')
+            obj.processForm()
 
     def WorksheetTemplates(self):
         templates = (
@@ -736,10 +736,10 @@ class LoadSetupData():
             id = folder.generateUniqueId('WorksheetTemplate')
             folder.invokeFactory(id = id, type_name = 'WorksheetTemplate')
             obj = folder[id]
-            obj.processForm()
             obj.edit(title = title,
                      Row = pos,
                      Service = serv)
+            obj.processForm()
 
     def ReferenceManufacturers(self):
         manufacturers = (
@@ -751,9 +751,9 @@ class LoadSetupData():
             id = folder.generateUniqueId('ReferenceManufacturer')
             folder.invokeFactory(id = id, type_name = 'ReferenceManufacturer')
             obj = folder[id]
-            obj.processForm()
             obj.edit(title = title,
                      description = description)
+            obj.processForm()
 
     def Prefixes(self):
         bs = getToolByName(self.context, 'bika_setup')

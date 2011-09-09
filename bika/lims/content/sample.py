@@ -222,9 +222,9 @@ class Sample(BaseFolder):
                 sp_id = folder.generateUniqueId('SamplePoint')
                 folder.invokeFactory(id = sp_id, type_name = 'SamplePoint')
                 sp = folder[sp_id]
-                sp.processForm()
                 sp.edit(
                     title = value)
+                sp.processForm()
                 sp_uid = sp.UID()
                 sp.reindexObject()
 

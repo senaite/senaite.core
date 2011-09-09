@@ -1,3 +1,4 @@
+# coding=utf8
 from AccessControl import ClassSecurityInfo
 from Products.ATExtensions.ateapi import RecordsField
 from Products.Archetypes.config import REFERENCE_CATALOG
@@ -80,7 +81,7 @@ schema = BikaSchema.copy() + Schema((
         index = 'FieldIndex:brains',
         default_method = 'getDefaultVAT',
         widget = DecimalWidget(
-            label = _('VAT %)',
+            label = _('VAT %'),
             description = _('Enter percentage e.g. 14'),
         ),
     ),
@@ -125,16 +126,16 @@ schema = BikaSchema.copy() + Schema((
     DurationField('MaxTimeAllowed',
         widget = DurationWidget(
             label = _("Maximum turn-around time"),
-            description = _('Maximum time allowed for completion of the analysis.'
-                            ' A late analysis alert is raised when this period elapses'),
+            description = _("Maximum time allowed for completion of the analysis."
+                            " A late analysis alert is raised when this period elapses"),
         ),
     ),
     FixedPointField('DuplicateVariation',
         widget = DecimalWidget(
             label = _('Duplicate Variation %'),
-            description = _('When the results of duplicate analyses on worksheets,'
-                            ' carried out on the same sample, differ with more than'
-                            ' this percentage, an alert is raised'),
+            description = _("When the results of duplicate analyses on worksheets,"
+                            " carried out on the same sample, differ with more than"
+                            " this percentage, an alert is raised"),
         ),
     ),
     BooleanField('Accredited',
@@ -217,9 +218,9 @@ schema = BikaSchema.copy() + Schema((
             label = _('Uncertainty'),
             description = _("Specify the uncertainty value for a given range, e.g. for results"
                             " in a range with minimum of 0 and maximum of 10, the uncertainty"
-                            " value is 0.5 – a result of 6.67 will be reported as 6.67 ± 0.5."
-                            " Please ensure successive ranges are continues, e.g. 0.00 – 10.00"
-                            " is followed by 10.01 – 20.00, 20.01 - 30 .00 etc."),
+                            " value is 0.5 - a result of 6.67 will be reported as 6.67 +- 0.5."
+                            " Please ensure successive ranges are continues, e.g. 0.00 - 10.00"
+                            " is followed by 10.01 - 20.00, 20.01 - 30 .00 etc."),
         ),
     ),
     RecordsField('ResultOptions',
@@ -229,9 +230,9 @@ schema = BikaSchema.copy() + Schema((
         subfield_labels = {'Result': 'Option Text',},
         widget = RecordsWidget(
             label = _('Result Options'),
-            description = _("Please list al options for the Analysis result if you want to restrict"
+            description = _("Please list all options for the Analysis result if you want to restrict"
                             " it to specific options only, e.g. 'Positive', 'Negative' and"
-                            " 'Indeterminable'",
+                            " 'Indeterminable'"),
         ),
     ),
 ))
@@ -346,7 +347,6 @@ class AnalysisService(BaseContent, HistoryAwareMixin):
         dup_id = context.generateUniqueId(type_name = 'AnalysisService')
         context.invokeFactory(id = dup_id, type_name = 'AnalysisService')
         dup = context[dup_id]
-        dup.processForm()
         dup.setTitle('! Copy of %s' % self.Title())
         dup.edit(
             description = self.Description(),
@@ -369,6 +369,7 @@ class AnalysisService(BaseContent, HistoryAwareMixin):
             Uncertainties = self.getUncertainties(),
             ResultOptions = self.getResultOptions(),
             )
+        dup.processForm()
         dup.reindexObject()
         return dup_id
 

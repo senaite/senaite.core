@@ -1,3 +1,4 @@
+# coding=utf-8
 from AccessControl import getSecurityManager, Unauthorized
 from DateTime import DateTime
 from Products.Archetypes.config import REFERENCE_CATALOG

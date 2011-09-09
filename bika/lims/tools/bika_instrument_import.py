@@ -137,7 +137,6 @@ class bika_instrument_import(UniqueObject, SimpleItem):
                         ar.invokeFactory(
                             id = service.id, type_name = 'Analysis')
                         analysis = ar._getOb(service_id)
-                        analysis.processForm()
                         discount = ar.getMemberDiscount()
                         if ar.getMemberDiscountApplies():
                             price = service.getDiscountedPrice()
@@ -166,6 +165,7 @@ class bika_instrument_import(UniqueObject, SimpleItem):
                     if analysis.getCalcType() == 't':
                         analysis.setTitrationVolume(result)
                         analysis.setTitrationFactor('1')
+                    analysis.processForm()
 
         results_ids = {}
         results_ids['results'] = results

@@ -326,11 +326,11 @@ class Worksheet(BaseFolder):
             client = analysis.aq_parent.aq_parent
             client.invokeFactory(id = attachmentid, type_name = "Attachment")
             attachment = client._getOb(attachmentid)
-            attachment.processForm()
             attachment.edit(
                 AttachmentFile = this_file,
                 AttachmentType = self.REQUEST.form['AttachmentType'],
                 AttachmentKeys = self.REQUEST.form['AttachmentKeys'])
+            attachment.processForm()
             attachment.reindexObject()
 
             others = analysis.getAttachment()
@@ -352,11 +352,11 @@ class Worksheet(BaseFolder):
                 client = analysis.aq_parent.aq_parent
                 client.invokeFactory(id = attachmentid, type_name = "Attachment")
                 attachment = client._getOb(attachmentid)
-                attachment.processForm()
                 attachment.edit(
                     AttachmentFile = this_file,
                     AttachmentType = self.REQUEST.form['AttachmentType'],
                     AttachmentKeys = self.REQUEST.form['AttachmentKeys'])
+                attachment.processForm()
                 attachment.reindexObject()
 
                 others = analysis.getAttachment()
@@ -630,7 +630,6 @@ class Worksheet(BaseFolder):
                 duplicate_id = self.generateUniqueId('DuplicateAnalysis')
                 self.invokeFactory(id = duplicate_id, type_name = 'DuplicateAnalysis')
                 duplicate = self._getOb(duplicate_id)
-                duplicate.processForm()
                 duplicate.edit(
                     Request = ar,
                     Service = service,
@@ -640,6 +639,7 @@ class Worksheet(BaseFolder):
                     ServiceUID = service.UID(),
                     WorksheetUID = self.UID()
                 )
+                duplicate.processForm()
                 duplicate.reindexObject()
                 duplicates.append(duplicate.UID())
 
@@ -966,7 +966,6 @@ class Worksheet(BaseFolder):
                 reject_id = self.generateUniqueId('RejectAnalysis')
                 self.invokeFactory(id = reject_id, type_name = 'RejectAnalysis')
                 reject = self._getOb(reject_id)
-                reject.processForm()
                 reject.edit(
                     Service = analysis.getService(),
                     Request = analysis.aq_parent,
@@ -977,6 +976,7 @@ class Worksheet(BaseFolder):
                     CalcType = analysis.getCalcType(),
                     InterimCalcs = analysis.getInterimCalcs(),
                 )
+                reject.processForm()
                 reject.reindexObject()
                 analysis.edit(
                     Result = None,
@@ -1001,7 +1001,6 @@ class Worksheet(BaseFolder):
         new_ws_id = worksheets.generateUniqueId('Worksheet')
         worksheets.invokeFactory(id = new_ws_id, type_name = 'Worksheet')
         new_ws = worksheets[new_ws_id]
-        new_ws = processForm()
         new_ws.edit(
             Number = new_ws_id,
             Notes = self.getNotes(),
@@ -1038,6 +1037,7 @@ class Worksheet(BaseFolder):
             wf_tool.doActionFor(std_analysis, 'reject')
             std_analysis.reindexObject()
             new_ws.setReferenceAnalyses(assigned)
+        new_ws = processForm()
 
         # duplicates
         duplicates = self.objectValues('DuplicateAnalysis')
@@ -1047,13 +1047,13 @@ class Worksheet(BaseFolder):
             duplicate_id = new_ws.generateUniqueId('DuplicateAnalysis')
             new_ws.invokeFactory(id = duplicate_id, type_name = 'DuplicateAnalysis')
             new_duplicate = new_ws._getOb(duplicate_id)
-            new_duplicate.processForm()
             new_duplicate.edit(
                 Request = ar,
                 Service = service,
                 Unit = duplicate.getUnit(),
                 CalcType = duplicate.getCalcType(),
             )
+            new_duplicate.processForm()
             new_duplicate.reindexObject()
             position = new_dict[duplicate.UID()]
             sequence.append({'pos': position,

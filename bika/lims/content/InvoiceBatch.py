@@ -245,18 +245,17 @@ class InvoiceBatch( BaseFolder):
         invoice_id = self.generateUniqueId('Invoice')
         self.invokeFactory(id = invoice_id, type_name = 'Invoice')
         invoice = self._getOb(invoice_id)
-        invoice.processForm()
         invoice.edit(
             Client = client_uid,
             InvoiceNumber = invoice_id,
             InvoiceDate = DateTime(),
         )
+        invoice.processForm()
         for item in items:
             lineitem_id = self.generateUniqueId(
                 'InvoiceLineItem')
             invoice.invokeFactory(id=lineitem_id, type_name='InvoiceLineItem')
             lineitem = invoice._getOb(lineitem_id)
-            lineitem.processForm()
             if item.portal_type == 'AnalysisRequest':
                 lineitem.setItemDate(item.getDatePublished())
                 lineitem.setClientOrderNumber(item.getClientOrderNumber())
@@ -272,6 +271,7 @@ class InvoiceBatch( BaseFolder):
             lineitem.setTotal(item.getTotal())
             lineitem.reindexObject()
             item.setInvoice(invoice)
+            lineitem.processForm()
         invoice.reindexObject()
 
         return

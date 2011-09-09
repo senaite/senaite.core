@@ -270,7 +270,6 @@ class BikaListingView(BrowserView):
 
                     self.has_bika_inactive_workflow = True
 
-
             # avoid creating unnecessary info for items outside the current
             # batch;  only the path is needed for the "select all" case...
             if not show_all and not start <= i < end:

@@ -323,7 +323,6 @@ class ARImport(BaseFolder):
             next_num += 1
             client.invokeFactory(id = sample_id, type_name = 'Sample')
             sample = client[sample_id]
-            sample.processForm()
             sample.edit(
                 SampleID = sample_id,
                 ClientReference = aritem.getClientRef(),
@@ -333,6 +332,7 @@ class ARImport(BaseFolder):
                 DateSampled = sample_date,
                 DateReceived = DateTime(),
                 )
+            sample.processForm()
             sample_uid = sample.UID()
             samples.append(sample_id)
             aritem.setSample(sample_uid)
@@ -340,7 +340,6 @@ class ARImport(BaseFolder):
             ar_id = self.generateARUniqueId('AnalysisRequest', sample_id, 1)
             client.invokeFactory(id = ar_id, type_name = 'AnalysisRequest')
             ar = client[ar_id]
-            ar.processForm()
             if aritem.getReportDryMatter().lower() == 'y':
                 report_dry_matter = True
             else:
@@ -356,6 +355,7 @@ class ARImport(BaseFolder):
                 Sample = sample_uid,
                 Analyses = analyses
                 )
+            ar.processForm()
             ar_uid = ar.UID()
             aritem.setAnalysisRequest(ar_uid)
             ars.append(ar_id)
@@ -486,7 +486,6 @@ class ARImport(BaseFolder):
             client.invokeFactory(id = sample_id, type_name = 'Sample')
             next_num += 1
             sample = client[sample_id]
-            sample.processForm()
             sample.edit(
                 SampleID = sample_id,
                 ClientReference = aritem.getClientRef(),
@@ -496,13 +495,13 @@ class ARImport(BaseFolder):
                 DateReceived = DateTime(),
                 Notes = aritem.getClientRemarks(),
                 )
+            sample.processForm()
             sample_uid = sample.UID()
             aritem.setSample(sample_uid)
 
             ar_id = self.generateARUniqueId('AnalysisRequest', sample_id, 1)
             client.invokeFactory(id = ar_id, type_name = 'AnalysisRequest')
             ar = client[ar_id]
-            ar.processForm()
             report_dry_matter = False
 
             ar.edit(
@@ -517,6 +516,7 @@ class ARImport(BaseFolder):
                 Notes = aritem.getClientRemarks(),
                 Analyses = analyses,
                 )
+            ar.processForm()
             ar_uid = ar.UID()
             aritem.setAnalysisRequest(ar_uid)
             ars.append(ar_id)

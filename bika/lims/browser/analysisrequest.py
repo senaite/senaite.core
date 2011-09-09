@@ -840,7 +840,6 @@ class AJAXAnalysisRequestSubmit():
                         self.context.invokeFactory(id = sample_id,
                                                    type_name = 'Sample')
                         sample = self.context[sample_id]
-                        sample.processForm()
                         sample.edit(
                             SampleID = sample_id,
                             LastARNumber = ar_number,
@@ -848,6 +847,7 @@ class AJAXAnalysisRequestSubmit():
                             SubmittedByUser = sample.current_user(),
                             **dict(values)
                         )
+                        sample.processForm()
                     else:
                         sample = self.context.getSample()
                         sample.edit(
@@ -869,7 +869,6 @@ class AJAXAnalysisRequestSubmit():
                     self.context.invokeFactory(id = ar_id,
                                                type_name = 'AnalysisRequest')
                     ar = self.context[ar_id]
-                    ar.processForm()
                     ar.edit(
                         RequestID = ar_id,
                         DateRequested = DateTime(),
@@ -880,6 +879,7 @@ class AJAXAnalysisRequestSubmit():
                         Profile = profile,
                         **dict(values)
                     )
+                    ar.processForm()
                     ARs.append(ar_id)
                 else:
                     ar_id = self.context.getRequestID()
@@ -898,16 +898,16 @@ class AJAXAnalysisRequestSubmit():
                     profile_id = self.context.generateUniqueId('ARProfile')
                     self.context.invokeFactory(id = profile_id,
                                                type_name = 'ARProfile')
-                    profile = self.context[profile_id]
-                    profile.processForm()
-                    ar.edit(Profile = profile)
-                    profile.setTitle(values['profileTitle'])
                     analyses = ar.getAnalyses()
                     services_array = []
                     for a in analyses:
                         services_array.append(a.getServiceUID)
-                    profile.setService(services_array)
+                    profile = self.context[profile_id]
+                    profile.edit(title = values['profileTitle'],
+                                 Service = services_array)
+                    profile.processForm()
                     profile.reindexObject()
+                    ar.edit(Profile = profile)
 
                 if values.has_key('SampleID') and \
                    wftool.getInfoFor(sample, 'review_state') != 'due':
