@@ -74,11 +74,11 @@ class AJAXCalculateAnalysisEntry():
                                              'formatted_result': ''})
 
                     # Set the new value if it's changed
-                    if i['id'] == self.field:
+                    if i['keyword'] == self.field:
                         i['value'] = self.value
 
                     new_item_data.append(i)
-                    mapping[i['id']] = i['value']
+                    mapping[i['keyword']] = i['value']
 
                 self.item_data = new_item_data
 
@@ -97,7 +97,7 @@ class AJAXCalculateAnalysisEntry():
 
             formula = calculation.getFormula()
             try:
-                # mapping values are keyed by ServiceKeyword or InterimField id
+                # mapping values are keyed by ServiceKeyword or InterimField keyword
                 formula = eval("'%s'%%mapping"%formula,
                                {"__builtins__":None, 'math':math},
                                {'mapping': mapping})
