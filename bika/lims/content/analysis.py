@@ -35,9 +35,7 @@ schema = BikaSchema.copy() + Schema((
         relationship = 'AnalysisAnalysisService',
         referenceClass = HoldingReference,
         widget = ReferenceWidget(
-            label = 'Analysis service',
-            label_msgid = 'label_analysis',
-            i18n_domain = I18N_DOMAIN,
+            label = _("Analysis service"),
         )
     ),
     ComputedField('ServiceUID',
@@ -64,9 +62,7 @@ schema = BikaSchema.copy() + Schema((
     ),
     InterimFieldsField('InterimFields',
         widget = BikaRecordsWidget(
-            label = 'Calculation Interim Fields',
-            label_msgid = 'label_interim_fields',
-            i18n_domain = I18N_DOMAIN,
+            label = _("Calculation Interim Fields"),
         )
     ),
     StringField('Result',
@@ -84,39 +80,32 @@ schema = BikaSchema.copy() + Schema((
     DateTimeField('DateAnalysisPublished',
         index = 'DateIndex',
         widget = DateTimeWidget(
-            label = 'Date published',
-            label_msgid = 'label_datepublished',
-            visible = {'edit':'hidden'},
+            label = _("Date published"),
         ),
     ),
     DurationField('MaxTimeAllowed',
         widget = DurationWidget(
-            label = "Maximum time allowed",
-            description = 'Maximum time allowed for ' \
-                        'publication of results',
-            description_msgid = 'help_max_hours_allowed',
+            label = _("Maximum time allowed"),
+            description = _("Maximum time allowed for "
+                            "publication of results"),
         ),
     ),
     DateTimeField('DueDate',
         index = 'DateIndex:brains',
         widget = DateTimeWidget(
-            label = 'Due Date'
+            label = _("Due Date"
         ),
     ),
     IntegerField('Duration',
         index = 'FieldIndex',
         widget = IntegerWidget(
-            label = 'Duration',
-            label_msgid = 'label_duration',
-            i18n_domain = I18N_DOMAIN,
+            label = _("Duration"),
         )
     ),
     IntegerField('Earliness',
         index = 'FieldIndex',
         widget = IntegerWidget(
-            label = 'Earliness',
-            label_msgid = 'label_earliness',
-            i18n_domain = I18N_DOMAIN,
+            label = _("Earliness"),
         )
     ),
 
