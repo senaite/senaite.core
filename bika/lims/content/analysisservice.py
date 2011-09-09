@@ -9,6 +9,7 @@ from Products.CMFCore.permissions import View, ModifyPortalContent
 from Products.CMFCore.utils import getToolByName
 from bika.lims.browser.fields import DurationField
 from bika.lims.browser.fields import HistoryAwareReferenceField
+from bika.lims.interfaces import IAnalysisService
 from bika.lims.browser.widgets import ServicesWidget, RecordsWidget, \
      DurationWidget
 from bika.lims.config import ATTACHMENT_OPTIONS, I18N_DOMAIN, PROJECTNAME, \
@@ -244,6 +245,7 @@ schema['description'].widget.visible = True
 class AnalysisService(BaseContent, HistoryAwareMixin):
     security = ClassSecurityInfo()
     schema = schema
+    implements(IAnalysisService)
 
     security.declarePublic('getActiveAnalysisCategories')
     def getActiveAnalysisCategories(self):

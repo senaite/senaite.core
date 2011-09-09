@@ -83,7 +83,8 @@ class ServiceKeywordValidator:
                     "bika",
                     {'title': value, 'used_by': service.Title},
                     instance,
-                    default = "Validation failed: '${title}': This keyword is used by service '${used_by}'.")
+                    default = "Validation failed: '${title}': "
+                              "This keyword is used by service '${used_by}'.")
 
         calc = hasattr(instance, 'getCalculation') and \
              instance.getCalculation() or None
@@ -102,7 +103,8 @@ class ServiceKeywordValidator:
                         "bika",
                         {'title': value, 'used_by': calc.Title()},
                         instance,
-                        default = "Validation failed: '${title}': This keyword is used by calculation '${used_by}'.")
+                        default = "Validation failed: '${title}': " \
+                                  "This keyword is used by calculation '${used_by}'.")
         return True
 
 validation.register(ServiceKeywordValidator())
@@ -174,7 +176,8 @@ class InterimFieldsValidator:
                     "bika",
                     {'title': value, 'used_by': service.Title},
                     instance,
-                    default = "Validation failed: '${title}': This keyword is used by service '${used_by}'.")
+                    default = "Validation failed: '${title}': "\
+                              "This keyword is used by service '${used_by}'.")
 
         # any duplicated interimfield titles must share the same keyword
         # any duplicated interimfield keywords must share the same title
@@ -200,7 +203,8 @@ class InterimFieldsValidator:
                     {'title': field['title'],
                      'keyword': title_keywords[field['title']]},
                     instance,
-                    default = "Validation failed: column '${title}' must have keyword '${keyword}'.")
+                    default = "Validation failed: column '${title}' "\
+                              "must have keyword '${keyword}'.")
             if 'keyword' in field and \
                field['keyword'] in keyword_titles.keys() and \
                keyword_titles[field['keyword']] != field['title']:
@@ -210,7 +214,8 @@ class InterimFieldsValidator:
                     {'keyword': field['keyword'],
                      'title': keyword_titles[field['keyword']]},
                     instance,
-                    default = "Validation failed: keyword '${keyword}' must have column title '${title}'.")
+                    default = "Validation failed: keyword '${keyword}' " \
+                              "must have column title '${title}'.")
 
         return True
 
@@ -238,14 +243,16 @@ class FormulaValidator:
         keywords = re.compile(r"\%\(([^\)]+)\)").findall(value)
 
         for keyword in keywords:
-            if not pc(getKeyword=keyword) and \
+            # Check if the service keyword exists and is active.
+            dep_service = pc(getKeyword=keyword, inactive_review_state="active")
+            if not dep_service and \
                not keyword in interim_keywords:
                 return ts.translate(
                     "message_invalid_keyword",
                     "bika",
                     {'keyword': keyword},
                     instance,
-                    default = "Validation failed: Keyword '${keyword}' does not exist.")
+                    default = "Validation failed: Keyword '${keyword}' is invalid.")
         return True
 
 validation.register(FormulaValidator())

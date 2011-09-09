@@ -25,11 +25,17 @@
       handler="bika.lims.subscribers.sample.ActionSucceededEventHandler"
     />
 
-    <!-- Workflow action event for AnalysisCategory objects -->
+    <!-- Workflow action to prevent deactivation of AnalysisCategory objects -->
     <subscriber
       for="bika.lims.interfaces.IAnalysisCategory
            Products.CMFCore.interfaces.IActionSucceededEvent"
       handler="bika.lims.subscribers.analysiscategory.ActionSucceededEventHandler"
+    />
+    <!-- Workflow action to prevent deactivation of AnalysisService objects -->
+    <subscriber
+      for="bika.lims.interfaces.IAnalysisService
+           Products.CMFCore.interfaces.IActionSucceededEvent"
+      handler="bika.lims.subscribers.analysisservice.ActionSucceededEventHandler"
     />
 
     <!-- Automatically save an initial revision of versionable types -->

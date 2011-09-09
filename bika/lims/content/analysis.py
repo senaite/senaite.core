@@ -93,7 +93,7 @@ schema = BikaSchema.copy() + Schema((
     DateTimeField('DueDate',
         index = 'DateIndex:brains',
         widget = DateTimeWidget(
-            label = _("Due Date"
+            label = _("Due Date"),
         ),
     ),
     IntegerField('Duration',

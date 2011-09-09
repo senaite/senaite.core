@@ -54,6 +54,8 @@ class IAnalysisCategory(Interface):
     ""
 class IAnalysisCategories(Interface):
     ""
+class IAnalysisService(Interface):
+    ""
 class IAnalysisServices(Interface):
     ""
 class IAttachmentTypes(Interface):
