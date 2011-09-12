@@ -21,7 +21,10 @@ schema = BikaSchema.copy() + Schema((
     ComputedField('ManagerName',
         expression = 'here.getManagerName()',
         widget = ComputedWidget(
-            label = 'Manager',
+            label = _("Manager"),
+            description = _("Select a manager from the available personnel configured under the "
+                            "'lab contacts' setup item. Departmental managers are referenced on "
+                            "analysis results reports containing analyses by their department."),
             visible = False,
         ),
     ),
