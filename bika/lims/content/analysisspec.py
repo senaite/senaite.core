@@ -27,6 +27,7 @@ from bika.lims import bikaMessageFactory as _
 
 schema = Schema((
     HistoryAwareReferenceField('SampleType',
+        schemata = 'Description',
         required = 1,
         vocabulary = "getRemainingSampleTypes",
         vocabulary_display_path_bound = sys.maxint,
@@ -46,6 +47,7 @@ schema = Schema((
 BikaSchema.copy() + \
 Schema((
     RecordsField('ResultsRange',
+        schemata = 'Valid Range',
         required = 1,
         type = 'analysisspec',
         subfields = ('keyword', 'min', 'max', 'error'),
@@ -56,7 +58,7 @@ Schema((
                            'error': _('% Error')},
         widget = SpecWidget(
             checkbox_bound = 1,
-            label = _("Results Range"),
+            label = _("Valid Range"),
             description = _("Click on Analysis Categories (against shaded background) "
                             "to see Analysis Services in each category. Enter minimum "
                             "and maximum values to indicate a valid results range. "
@@ -84,8 +86,9 @@ Schema((
         ),
     ),
 ))
-schema['description'].schemata = 'default'
+schema['description'].schemata = 'Description'
 schema['description'].widget.visible = True
+schema['title'].schemata = 'Description'
 schema['title'].required = False
 schema['title'].widget.visible = False
 
