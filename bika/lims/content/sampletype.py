@@ -14,16 +14,16 @@ schema = BikaSchema.copy() + Schema((
         required = 1,
         default_method = 'getDefaultLifetime',
         widget = IntegerWidget(
-            label = _('Retention period'),
-            i18n_domain = I18N_DOMAIN,
+            label = _("Retention period"),
+            description = _("The period for which Samples of this type can be kept before "
+                            "they expire and cannot be analysed any further"),
         )
     ),
     BooleanField('Hazardous',
         default = False,
         widget = BooleanWidget(
-            label = "Hazardous",
-            label_msgid = "label_hazardous",
-            i18n_domain = I18N_DOMAIN,
+            label = _("Hazardous"),
+            description = _("Check this box if samples of this type should be treated as hazardous"),
         ),
     ),
 ))
