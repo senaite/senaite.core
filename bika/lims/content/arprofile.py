@@ -16,6 +16,7 @@ from bika.lims import bikaMessageFactory as _
 
 schema = BikaSchema.copy() + Schema((
     StringField('ProfileKey',
+        schemata = 'Description',
         index = 'FieldIndex',
         widget = StringWidget(
             label = _("Profile Keyword"),
@@ -24,6 +25,7 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     ReferenceField('Service',
+        schemata = 'Analyses',
         required = 1,
         multiValued = 1,
         allowed_types = ('AnalysisService',),
@@ -34,6 +36,7 @@ schema = BikaSchema.copy() + Schema((
         )
     ),
     TextField('Remarks',
+        schemata = 'Description',
         default_content_type = 'text/plain',
         allowable_content_types = ('text/plain',),
         widget = TextAreaWidget(
@@ -49,8 +52,10 @@ schema = BikaSchema.copy() + Schema((
     ),
 ),
 )
+schema['title'].widget.visible = True
+schema['title'].schemata = 'Description'
 schema['description'].widget.visible = True
-schema['description'].schemata = 'default'
+schema['description'].schemata = 'Description'
 IdField = schema['id']
 
 class ARProfile(BaseContent):
