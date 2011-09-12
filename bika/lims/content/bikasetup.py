@@ -33,28 +33,28 @@ class PrefixesField(RecordsField):
 
 schema = BikaFolderSchema.copy() + Schema((
     IntegerField('PasswordLifetime',
+        schemata = _("Security"),
         required = 1,
         default = 0,
         widget = IntegerWidget(
-            schemata = _("Security"),
             label = _("Password lifetime"),
             description = _("The number of days before a password expires. 0 disables password expiry"),
         )
     ),
     IntegerField('AutoLogOff',
+        schemata = _("Security"),
         required = 1,
         default = 0,
         widget = IntegerWidget(
-            schemata = _("Security"),
             label = _("Automatic log-off"),
             description = _("The number of minutes before a user is automatically logged off. "
                             "0 disables automatic log-off"),
         )
     ),
     FixedPointField('MemberDiscount',
+        schemata = _("Accounting"),
         default = '33.33',
         widget = DecimalWidget(
-            schemata = _("Accounting"),
             label = _("Member discount %"),
             description = _("The discount percentage entered here, is applied to the prices for Clients "
                             "flagged as 'members', normally co-operative members or associates deserving "
@@ -62,19 +62,19 @@ schema = BikaFolderSchema.copy() + Schema((
         )
     ),
     FixedPointField('VAT',
+        schemata = _("Accounting"),
         default = '14.00',
         widget = DecimalWidget(
-            schemata = _("Accounting"),
             label = _("VAT %"),
             description = _("Enter percentage value eg. 14.0. This percentage is applied system wide "
                             "but can be overwrittem on individual items"),
         )
     ),
     IntegerField('MinimumResults',
+        schemata = _("Results reports"),
         required = 1,
         default = 5,
         widget = IntegerWidget(
-            schemata = _("Results reports"),
             label = _("Minimum number of results for QC stats calculations"),
             description = _("Using to few data points does not make statistical sense. "
                             "Set an acceaptable minimum number of results before QC statistics "
@@ -82,10 +82,10 @@ schema = BikaFolderSchema.copy() + Schema((
         )
     ),
     IntegerField('BatchEmail',
+        schemata = _("Results reports"),
         required = 1,
         default = 5,
         widget = IntegerWidget(
-            schemata = _("Results reports"),
             label = _("Maximum columns per results email"),
             description = _("Set the maximum number of analysis requests per results email. "
                             "Too many columns per email are difficult to read for many clients "
@@ -93,10 +93,10 @@ schema = BikaFolderSchema.copy() + Schema((
         )
     ),
     IntegerField('BatchFax',
+        schemata = _("Results reports"),
         required = 1,
         default = 4,
         widget = IntegerWidget(
-            schemata = _("Results reports"),
             label = _("Maximum columns per results fax"),
             description = _("Too AR columns per fax will see the font size minimised and could "
                             "render faxes illegible. 4 ARs maximum per page is recommended"),
@@ -104,9 +104,9 @@ schema = BikaFolderSchema.copy() + Schema((
     ),
     # XXX stringfield, chars to strip from cell number
     StringField('SMSGatewayAddress',
+        schemata = _("Results reports"),
         required = 0,
         widget = StringWidget(
-            schemata = _("Results reports"),
             label = _("SMS Gateway Email Address"),
             description = _("The email to SMS Gateway address. Either a complete email address, "
                              "or just the domain, e.g. '@2way.co.za', the contact's mobile phone "
@@ -114,33 +114,33 @@ schema = BikaFolderSchema.copy() + Schema((
         )
     ),
     ReferenceField('DryMatterService',
+        schemata = _("Analyses"),
         required = 0,
         vocabulary_display_path_bound = sys.maxint,
         allowed_types = ('AnalysisService',),
         relationship = 'SetupDryAnalysisService',
         referenceClass = HoldingReference,
         widget = ReferenceWidget(
-            schemata = _("Analyses"),
             label = _("Dry matter analysis"),
             description = _("The analysis to be used for determining dry matter."),
         )
     ),
     ReferenceField('MoistureService',
+        schemata = _("Analyses"),
         required = 0,
         vocabulary_display_path_bound = sys.maxint,
         allowed_types = ('AnalysisService',),
         relationship = 'SetupMoistAnalysisService',
         referenceClass = HoldingReference,
         widget = ReferenceWidget(
-            schemata = _("Analyses"),
             label = _("Moisture analysis"),
             description = _("The analysis to be used for determining moisture"),
         )
     ),
     LinesField('ARImportOption',
+        schemata = _("Analyses"),
         vocabulary = ARIMPORT_OPTIONS,
         widget = MultiSelectionWidget(
-            schemata = _("Analyses"),
             label = _("AR Import options"),
             description = _("'Classic' indicates importing Analysis Requests per Sample and "
                             "Analysis Services selection. With 'Profiles', Analysis Profile keywords "
@@ -148,10 +148,10 @@ schema = BikaFolderSchema.copy() + Schema((
         )
     ),
     StringField('ARAttachmentOption',
+        schemata = _("Analyses"),
         default = 'p',
         vocabulary = ATTACHMENT_OPTIONS,
         widget = SelectionWidget(
-            schemata = _("Analyses"),
             label = _("AR Attachment option"),
             description = _("The default configuration for used system wide to indicate "
                             "whether file attachments are required, permitted or not "
@@ -159,10 +159,10 @@ schema = BikaFolderSchema.copy() + Schema((
         )
     ),
     StringField('AnalysisAttachmentOption',
+        schemata = _("Analyses"),
         default = 'p',
         vocabulary = ATTACHMENT_OPTIONS,
         widget = SelectionWidget(
-            schemata = _("Analyses"),
             label = _("Analysis Attachment option"),
             description = _("Same as the above, but sets the default on Anlaysis Services. "
                             "This setting can be set per individual Analysis on its "
@@ -170,10 +170,10 @@ schema = BikaFolderSchema.copy() + Schema((
         )
     ),
     IntegerField('DefaultSampleLifetime',
+        schemata = _("Analyses"),
         required = 1,
         default = 30,
         widget = IntegerWidget(
-            schemata = _("Analyses"),
             label = _("Default sample retention period"),
             description = _("The number of days before a Sample expires and cannot be analysed "
                             "any more. This setting can be overwritten per individual Sample Type "
@@ -181,9 +181,9 @@ schema = BikaFolderSchema.copy() + Schema((
         )
     ),
     PrefixesField('Prefixes',
+         schemata = _("Prefixes"),
          fixedSize=8,
          widget=RecordsWidget(
-            schemata = _("Prefixes"),
             label = _("Prefixes"),
             description = _("Define the prefixes for the unique sequential IDs the system issus "
                             "for objects such as Samples and Analysis Requests. In the 'Padding' "
