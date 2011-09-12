@@ -669,16 +669,16 @@ class Worksheet(BaseFolder):
 
         if not Reference or not Position or not Service:
             if Type == 'b':
-                message = self.translate('message_no_blank_assigned', default = 'No blank analysis assigned', domain = 'bika')
+                addPortalMessage(_('No blank analysis assigned'))
             else:
-                message = self.translate('message_no_reference_assigned', default = 'No reference analysis assigned', domain = 'bika')
+                addPortalMessage(_('No reference analysis assigned'))
         else:
             rc = getToolByName(self, REFERENCE_CATALOG)
             assigned = []
             reference = rc.lookupObject(Reference)
             for service_uid in Service:
-                sa_uid = reference.addReferenceAnalysis(service_uid, Type)
-                assigned.append(sa_uid)
+                ref_uid = reference.addReferenceAnalysis(service_uid, Type)
+                assigned.append(ref_uid)
 
             self._addToSequence(Type, int(Position), assigned)
             assigned = assigned + self.getReferenceAnalyses()

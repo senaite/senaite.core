@@ -14,3 +14,19 @@ label {
 	font-weight:normal;
 }
 
+.collapsed,
+.initial{
+    background: #DDDDDD url(treeCollapsed.png) no-repeat 6px 50% !important;
+    cursor:pointer !important;
+	padding-left:20px !important;
+    font-weight:bold !important;
+	border:1px solid #CCCCCC;
+}
+
+.expanded{
+    background: #DDDDDD url(treeExpanded.png) no-repeat 6px 50% !important;
+    cursor:pointer !important;
+	padding-left:20px !important;
+    font-weight:bold !important;
+	border:1px solid #CCCCCC;
+}

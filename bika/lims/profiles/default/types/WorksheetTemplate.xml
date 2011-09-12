@@ -4,8 +4,8 @@
    xmlns:i18n="http://xml.zope.org/namespaces/i18n">
  <property name="title">Worksheet Template</property>
  <property name="description">
- 	Worksheet templates, including specific QC measures, are configured to be used 
-	for easy worksheet creation without having to go through lengthy manual processes 
+ 	Worksheet templates, including specific QC measures, are configured to be used
+	for easy worksheet creation without having to go through lengthy manual processes
 	every time a new worksheet is required
  </property>
  <property name="content_icon">++resource++bika.lims.images/worksheettemplate.png</property>
@@ -22,8 +22,23 @@
  <alias from="(Default)" to="base_edit"/>
  <alias from="view" to="base_edit"/>
  <alias from="edit" to="base_edit"/>
- <action title="View" action_id="view" category="object" condition_expr=""
-    url_expr="string:${portal_url}/bika_setup/bika_worksheettemplates" visible="False">
+
+ <action title="View"
+         action_id="view"
+         category="object"
+         condition_expr=""
+         url_expr="string:${portal_url}/bika_setup/bika_worksheettemplates"
+         visible="False">
   <permission value="View"/>
  </action>
+
+ <action title="Edit"
+         action_id="edit"
+         category="object"
+         condition_expr=""
+         url_expr="string:${object_url}/edit"
+         visible="False">
+  <permission value="Modify portal content"/>
+ </action>
+
 </object>

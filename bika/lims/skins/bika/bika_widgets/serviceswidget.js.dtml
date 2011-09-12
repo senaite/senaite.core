@@ -24,7 +24,7 @@ function services_html(poc, cat, allservices, selectedservices, fieldName){
 
 $(document).ready(function(){
 
-	$('th[class^="initial"]').click(function(){
+	$.each($('th[class~="prefill"]'), function() {
 		poc = $(this).attr("poc");
 		cat = $(this).attr("cat");
 		allservices = $(this).attr("allservices");
@@ -32,15 +32,13 @@ $(document).ready(function(){
 		targetname =  poc + "_" + cat;
 		target = $("#"+targetname);
 		fieldName = $(this).attr("id");
-		if($(this).hasClass("expanded")){
-			target.toggle();
-		} else {
-			$(this).addClass("expanded");
-			target.append(services_html(poc, cat, allservices, selectedservices, fieldName));
-		}
+		target.append(services_html(poc, cat, allservices, selectedservices, fieldName));
+		$(this).removeClass("initial")
+		$(this).removeClass("prefill")
+		$(this).addClass("expanded");
 	});
 
-	$.each($('th[class$="prefill"]'), function() {
+	$('th[class~="initial"]').live('click', function(){
 		poc = $(this).attr("poc");
 		cat = $(this).attr("cat");
 		allservices = $(this).attr("allservices");
@@ -48,8 +46,28 @@ $(document).ready(function(){
 		targetname =  poc + "_" + cat;
 		target = $("#"+targetname);
 		fieldName = $(this).attr("id");
-		$(this).addClass("expanded");
 		target.append(services_html(poc, cat, allservices, selectedservices, fieldName));
+		$(this).addClass("expanded");
+		$(this).removeClass("initial");
+	});
+
+	$('.collapsed').live('click', function(){
+		poc = $(this).attr("poc");
+		cat = $(this).attr("cat");
+		targetname =  poc + "_" + cat;
+		target = $("#"+targetname);
+		target.toggle();
+		$(this).removeClass("collapsed");
+		$(this).addClass("expanded");
+	});
+	$('.expanded').live('click', function(){
+		poc = $(this).attr("poc");
+		cat = $(this).attr("cat");
+		targetname =  poc + "_" + cat;
+		target = $("#"+targetname);
+		target.toggle();
+		$(this).removeClass("expanded");
+		$(this).addClass("collapsed");
 	});
 
 });

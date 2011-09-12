@@ -110,7 +110,7 @@
                 conditionalcomment=""
                 cookable="True"
                 enabled="on"
-                expression="python:here.portal_type in ['Worksheet',]"
+                expression="python:here.portal_type in ['Worksheet','WorksheetFolder']"
                 id="++resource++bika.lims.js/worksheet.js"
                 inline="False"
                 insert-after="*"/>

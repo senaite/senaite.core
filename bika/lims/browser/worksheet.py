@@ -122,11 +122,11 @@ class WorksheetAddView(BrowserView):
         form = self.request.form
         rc = getToolByName(self.context, "reference_catalog")
         pc = getToolByName(self.context, "portal_catalog")
+        pu = getToolByName(self.context, "plone_utils")
         ws_id = self.context.generateUniqueId('Worksheet')
         self.context.invokeFactory(id = ws_id, type_name = 'Worksheet')
         ws = self.context[ws_id]
         ws.edit(Number = ws_id)
-        ws.processForm()
 
         analyses = []
         analysis_uids = []
@@ -155,6 +155,7 @@ class WorksheetAddView(BrowserView):
                 for a in pc(portal_type = 'Analysis',
                             getServiceUID = service_uids,
                             review_state = 'sample_received',
+                            inactive_review_state = 'active',
                             sort_on = 'getDueDate'):
                     analysis = a.getObject()
                     ar = analysis.aq_parent
@@ -182,12 +183,16 @@ class WorksheetAddView(BrowserView):
                             for analysis in selected[ar]['analyses']:
                                 analyses.append((position, analysis))
                     if row['type'] in ['b', 'c']:
-                        sampletype_uid = row['sub']
+                        ## select a reference sample for this slot
+                        ## a) must be created from the same reference definition selected in ws template
+                        ## b) takes the sample that handles all (or the most) services.
+                        reference_definition_uid = row['sub']
                         references = {}
                         reference_found = False
                         for s in pc(portal_type = 'ReferenceSample',
                                     review_state = 'current',
-                                    getReferenceDefinitionUID = sampletype_uid):
+                                    inactive_review_state = 'active',
+                                    getReferenceDefinitionUID = reference_definition_uid):
                             reference = s.getObject()
                             reference_uid = reference.UID()
                             references[reference_uid] = {}
@@ -199,9 +204,9 @@ class WorksheetAddView(BrowserView):
                                     references[reference_uid]['services'].append(service_uid)
                                     references[reference_uid]['count'] += 1
                             if references[reference_uid]['count'] == len(service_uids):
-                                # this reference has all the services
                                 reference_found = True
                                 break
+                        # reference_found this reference has all the services
                         if reference_found:
                             ws.assignReference(Reference = reference_uid,
                                                Position = position,
@@ -240,6 +245,7 @@ class WorksheetAddView(BrowserView):
 
                 ws.setMaxPositions(len(rows))
 
+        ws.processForm()
         ws.reindexObject()
 
         dest = ws.absolute_url()
