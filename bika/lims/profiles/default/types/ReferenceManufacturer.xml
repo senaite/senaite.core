@@ -2,7 +2,7 @@
 <object name="ReferenceManufacturer" meta_type="Factory-based Type Information with dynamic views" xmlns:i18n="http://xml.zope.org/namespaces/i18n">
  <property name="title">Reference Manufacturer</property>
  <property name="description">
- 	Reference Manufacturers
+ 	Enter reference sample manufacturers here to be used in look-up selections
  </property>
  <property name="content_icon">++resource++bika.lims.images/referencemanufacturer.png</property>
  <property name="content_meta_type">ReferenceManufacturer</property>

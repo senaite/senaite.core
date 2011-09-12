@@ -2,7 +2,7 @@
 <object name="ReferenceDefinition" meta_type="Factory-based Type Information with dynamic views" xmlns:i18n="http://xml.zope.org/namespaces/i18n">
  <property name="title">Reference Definition</property>
  <property name="description">
- 	ReferenceDefinition represents a standard definition or sample type used for quality control testing
+ 	Reference definitions are used as templates for creating QC reference standard Samples in the system
  </property>
  <property name="content_icon">++resource++bika.lims.images/referencedefinition.png</property>
  <property name="content_meta_type">ReferenceDefinition</property>
