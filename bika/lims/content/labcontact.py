@@ -17,8 +17,9 @@ import sys
 schema = Person.schema.copy() + Schema((
     ImageField('Signature',
         widget = ImageWidget(
-            label = 'Signature',
-            label_msgid = 'label_signature',
+            label = _("Signature"),
+            description = _("Upload a scanned signature to be used on printed analysis "
+                            "results reports. Ideal size is 250 pixels wide by 150 high"),
         ),
     ),
     ReferenceField('Department',
@@ -29,8 +30,8 @@ schema = Person.schema.copy() + Schema((
         referenceClass = HoldingReference,
         widget = ReferenceWidget(
             checkbox_bound = 1,
-            label = 'Department',
-            label_msgid = 'label_department',
+            label = _("Department"),
+            description = _("The laboartory department in which this Contact works"),
             i18n_domain = I18N_DOMAIN,
         ),
     ),
