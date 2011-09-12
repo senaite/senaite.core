@@ -17,20 +17,17 @@ schema = BikaSchema.copy() + Schema((
     ReferenceResultsField('ReferenceResults',
         required = 1,
         widget = ReferenceResultsWidget(
-            label = "Reference Results",
-            label_msgid = "label_reference_results",
+            label = _("Reference Results"),
             description = _("Enter the expected results and the min and max allowed values,"
                             "or enter the expected result and an error % for the system to"
                             "calculate min and max values"),
-            i18n_domain = I18N_DOMAIN,
         ),
     ),
     BooleanField('Hazardous',
         default = False,
         widget = BooleanWidget(
-            label = "Hazardous",
-            label_msgid = "label_hazardous",
-            i18n_domain = I18N_DOMAIN,
+            label = _("Hazardous"),
+            description = _("Check this box if these reference samples should be treated as hazardous"),
         ),
     ),
 ))
