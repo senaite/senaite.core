@@ -18,10 +18,9 @@ schema = BikaSchema.copy() + Schema((
     StringField('ProfileKey',
         index = 'FieldIndex',
         widget = StringWidget(
-            label = 'Profile Keyword',
-            label_msgid = 'label_profile_keyword',
-            description = 'The profile identifier',
-            description_msgid = 'help_profile_keyword',
+            label = _("Profile Keyword"),
+            description = _("The Analysis Profile's keyword is used to uniquely identify "
+                            "it in import files. It has to be unique"),
         ),
     ),
     ReferenceField('Service',
@@ -30,18 +29,15 @@ schema = BikaSchema.copy() + Schema((
         allowed_types = ('AnalysisService',),
         relationship = 'ARProfileAnalysisService',
         widget = ServicesWidget(
-            label = 'Analyses',
-            label_msgid = 'label_analyses',
-            i18n_domain = I18N_DOMAIN,
+            label = _("Analyses"),
+            description = _("The analyses included in this Analysis Profile, grouped per category"),
         )
     ),
     TextField('Remarks',
         default_content_type = 'text/plain',
         allowable_content_types = ('text/plain',),
         widget = TextAreaWidget(
-            label = 'Remarks',
-            label_msgid = 'label_remarks',
-            i18n_domain = I18N_DOMAIN,
+            label = _("Remarks"),
         ),
     ),
     ComputedField('ClientUID',
