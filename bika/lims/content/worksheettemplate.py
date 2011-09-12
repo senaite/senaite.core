@@ -13,6 +13,7 @@ from bika.lims import bikaMessageFactory as _
 
 schema = BikaSchema.copy() + Schema((
     RecordsField('Row',
+        schemata = 'Layout',
         required = 1,
         type = 'templateposition',
         subfields = ('pos', 'type', 'sub', 'dup'),
@@ -31,6 +32,7 @@ schema = BikaSchema.copy() + Schema((
         )
     ),
     ReferenceField('Service',
+        schemata = 'Analyses',
         required = 1,
         multiValued = 1,
         allowed_types = ('AnalysisService',),
@@ -43,8 +45,12 @@ schema = BikaSchema.copy() + Schema((
     ),
 ))
 
-schema['description'].schemata = 'default'
+schema['title'].schemata = 'Description'
+schema['title'].widget.visible = True
+
+schema['description'].schemata = 'Description'
 schema['description'].widget.visible = True
+
 
 class WorksheetTemplate(BaseContent):
     security = ClassSecurityInfo()
