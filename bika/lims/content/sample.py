@@ -3,6 +3,7 @@
 from AccessControl import ClassSecurityInfo
 from DateTime import DateTime
 from Products.ATContentTypes.content import schemata
+from Products.ATContentTypes.lib.historyaware import HistoryAwareMixin
 from Products.ATExtensions.ateapi import DateTimeField, DateTimeWidget
 from Products.Archetypes import atapi
 from Products.Archetypes.config import REFERENCE_CATALOG
@@ -182,7 +183,7 @@ schema = BikaSchema.copy() + Schema((
 
 schema['title'].required = False
 
-class Sample(BaseFolder):
+class Sample(BaseFolder, HistoryAwareMixin):
     implements(ISample)
     security = ClassSecurityInfo()
     schema = schema

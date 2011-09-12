@@ -86,22 +86,17 @@ class WorkflowAction:
                           path = {'query':item_path,
                                   'depth':1})[0].getObject()
                 try:
-                    # peform the transition, ignoring items for which the
-                    # transition is not available
-                    # (the only action allowed on inactive items is "activate")
                     if not(
                         'bika_inactive_workflow' in workflow.getChainFor(item) and \
                         workflow.getInfoFor(item, 'inactive_review_state', '') == 'inactive' and \
                         action != 'activate'):
                         workflow.doActionFor(item, action)
                         transitioned.append(item.Title())
-                # any failures get an addPortalMessage,
-                # and the whole transaction aborts.
-                except WorkflowException, errmsg:
+                except WorkflowException:
                     pass
 
         if len(transitioned) > 0:
-            message = _('Action successful.')
+            message = _('Changes saved.')
         else:
             message = _('No items were affected.')
 

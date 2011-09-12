@@ -23,7 +23,9 @@ from bika.lims.browser.widgets import DurationWidget
 from bika.lims.config import I18N_DOMAIN, PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IAnalysis
+from bika.lims import logger
 from decimal import Decimal
+from plone.memoize.instance import memoize
 from zope.interface import implements
 from Products.CMFEditions.ArchivistTool import ArchivistRetrieveError
 import datetime
@@ -158,16 +160,17 @@ class Analysis(BaseContent):
         """
         return self.getService().getUncertainty(result and result or self.getResult())
 
+    @memoize
     def getDependents(self):
         """ Return a list of analyses who depend on us
             to calculate their result
-            XXX This should recurse
         """
         rc = getToolByName(self, 'reference_catalog')
         dependents = []
         service = self.getService()
         # XXX why does getAnalyses here return a brain without getServiceUID()?
-        for sibling in self.aq_parent.getAnalyses(full_objects=True):
+        ar = self.aq_parent
+        for sibling in ar.getAnalyses(full_objects=True):
             if sibling == self:
                 continue
             service = rc.lookupObject(sibling.getServiceUID())
@@ -177,23 +180,20 @@ class Analysis(BaseContent):
             depservices = calculation.getDependentServices()
             if self.getService() in depservices:
                 dependents.append(sibling)
-            for depservice in depservices:
-                keyword = depservice.getKeyword()
-                dependents.append(self.aq_parent[keyword])
         return dependents
 
+    @memoize
     def getDependencies(self):
         """ Return a list of analyses who we depend on
             to calculate our result.
         """
-        # XXX why does getAnalyses here return a brain without getServiceUID()?
         siblings = self.aq_parent.getAnalyses(full_objects=True)
         calculation = self.getService().getCalculation()
         if not calculation:
             return []
-        deps = [d.UID() for d in calculation.getDependentServices()]
-        return [a for a in siblings if a.getServiceUID() in deps]
-
+        dep_services = [d.UID() for d in calculation.getDependentServices()]
+        dep_analyses = [a for a in siblings if a.getServiceUID() in dep_services]
+        return dep_analyses
 
     def result_in_range(self, result=None, specification="lab"):
         """ Check if a result is "in range".

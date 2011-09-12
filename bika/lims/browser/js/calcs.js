@@ -4,8 +4,11 @@ $(document).ready(function(){
 	// XXX when should this run...?
 	$(".listing_string_entry").live('change', function(){
 		uid = $(this).attr('uid');
+		objectId = $(this).attr('objectId');
 		field = $(this).attr('field');
 		value = $(this).attr('value');
+		// check the item's checkbox
+		$('#cb_'+objectId).attr('checked', true);
 		// collect all results for back-dependant calculations
 		var results = {};
 		$.each($("input[field='Result']"), function(i, e){
@@ -78,6 +81,11 @@ $(document).ready(function(){
 						.filter("span[field='formatted_result']")
 						.empty()
 						.append(result.formatted_result);
+					// check the item's checkbox
+					keyword = $("input[uid='"+result.uid+"']")
+						.filter("input[field='Result']")
+						.attr('Keyword');
+					$('#cb_'+objectId).attr('checked', true);
 				}
 			}
 		}

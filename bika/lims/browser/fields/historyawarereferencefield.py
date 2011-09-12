@@ -143,7 +143,9 @@ class HistoryAwareReferenceField(ReferenceField):
         """get() returns the list of objects referenced under the relationship.
         """
 
-        res = instance.getRefs(relationship=self.relationship)
+        try: res = instance.getRefs(relationship=self.relationship)
+        except:
+            pass
 
         pr = getToolByName(instance, 'portal_repository')
         rd = {}
@@ -151,7 +153,8 @@ class HistoryAwareReferenceField(ReferenceField):
             uid = r.UID()
             if hasattr(instance, 'reference_versions') and \
                hasattr(r, 'version_id') and \
-               uid in instance.reference_versions:
+               uid in instance.reference_versions and \
+               instance.reference_versions[uid] != r.version_id:
                 version_id = instance.reference_versions[uid]
                 o = pr.retrieve(r, selector=version_id).object
             else:

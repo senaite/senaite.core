@@ -115,6 +115,10 @@ class AJAXCalculateAnalysisEntry():
                                      'result': result,
                                      'formatted_result': result})
                 self.form_results[uid] = result
+                for d in analysis.getDependents():
+                    if d.getService().getCalculation() and \
+                       not d.getService().getCalculation().getInterimFields():
+                        self.calculate(d.UID())
             except ZeroDivisionError, e:
 ##                self.alerts.append({'uid': uid,
 ##                                    'field': 'Result',
@@ -126,12 +130,6 @@ class AJAXCalculateAnalysisEntry():
                                     'field': 'Result',
                                     'icon': 'exclamation',
                                     'msg': "Key Error: " + str(e.args[0])})
-                return None
-            except Exception, e:
-                self.alerts.append({'uid': uid,
-                                    'field': 'Result',
-                                    'icon': 'exclamation',
-                                    'msg': "Exception: " +  str(e.args[0])})
                 return None
 
         else:

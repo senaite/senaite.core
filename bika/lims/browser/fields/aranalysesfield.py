@@ -7,6 +7,7 @@ from Products.Archetypes.utils import shasattr
 from Products.Archetypes.Registry import registerField
 from decimal import Decimal
 from bika.lims import bikaMessageFactory as _
+from bika.lims import logger
 
 class ARAnalysesField(ObjectField):
 
@@ -60,13 +61,15 @@ class ARAnalysesField(ObjectField):
         workflow = instance.portal_workflow
         # one can only edit Analyses up to a certain state.
         ar_state = workflow.getInfoFor(instance, 'review_state', '')
-        assert ar_state in ('sample_due', 'sample_received', 'assigned')
+        assert ar_state in ('sample_due', 'sample_received', 'assigned', 'to_be_verified')
 
-        services = {}
-        rc = getToolByName(instance, REFERENCE_CATALOG)
-        for service_uid in service_uids:
-            service = rc.lookupObject(service_uid)
-            services[service_uid] = service
+        pc = getToolByName(instance, 'portal_catalog')
+        services = pc(UID=service_uids)
+
+        for service in services:
+            service_uid = service.UID
+            service = service.getObject()
+            keyword = service.getKeyword()
             price = prices[service_uid]
             vat = Decimal(service.getVAT())
 
@@ -74,16 +77,16 @@ class ARAnalysesField(ObjectField):
             interim_fields = calc and calc.getInterimFields() or []
 
             #create the analysis if it doesn't exist
-            if hasattr(instance, service.getKeyword()):
-                analysis = instance._getOb(service.getKeyword())
+            if hasattr(instance, keyword):
+                analysis = instance._getOb(keyword)
             else:
-                instance.invokeFactory(id = service.getKeyword(),
+                instance.invokeFactory(id = keyword,
                                        type_name = 'Analysis',
                                        Service=service,
                                        InterimFields = interim_fields,
                                        MaxTimeAllowed = service.getMaxTimeAllowed())
-                analysis = instance._getOb(service.getKeyword())
-                analysis.processForm()
+                analysis = instance._getOb(keyword)
+                analysis.unmarkCreationFlag()
 
             review_state = workflow.getInfoFor(analysis, 'review_state', '')
             if ar_state in ('sample_received', 'assigned') and \

@@ -49,6 +49,7 @@ TYPES_TO_VERSION = ('AnalysisService',
                     'Calculation',
                     'SamplePoint',
                     'SampleType',
+                    'Sample',
                     'AnalysisSpec'
                     )
 

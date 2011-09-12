@@ -198,7 +198,7 @@ Item select checkboxes.
 			value="#"
 			tal:attributes="
 				value   item/path;
-				id      string:cb_${item/id};
+				id      string:cb_${item/uid};
 				checked item/checked;
 				alt     python:view.msg_select_item(item);
 				uid     item/uid" />
@@ -208,7 +208,7 @@ Item select checkboxes.
 			tal:attributes="value item/relative_url" />
 		<label
 			tal:content="item/title"
-			tal:attributes="for string:cb_${item/id}"
+			tal:attributes="for string:cb_${item/uid}"
 			class="hiddenStructure">Item Title</label>
 	</td>
 
@@ -257,11 +257,12 @@ Table cells for each column from in review_state's column list.
 			<!-- edit -->
 			<input
 				type="text"
-				class="listing_string_entry"
+				class="listing_string_entry numeric"
 				tal:condition="python:allow_edit"
 				tal:attributes="
 					size input_width;
 					uid string:${item/uid};
+					objectId string:${item/id};
 					field python:column;
 					value python:item[column]['value'];"/>
 			<!-- view -->
@@ -286,10 +287,11 @@ Table cells for each column from in review_state's column list.
 			<input
 				type="text"
 				tal:condition="python:allow_edit"
-				class="listing_string_entry"
+				class="listing_string_entry numeric"
 				tal:attributes="
 					size input_width;
 					uid string:${item/uid};
+					objectId string:${item/id};
 					field python:column;
 					name string:${column}.${item/uid}:records;
 					value python:item[column] and
@@ -309,6 +311,7 @@ Table cells for each column from in review_state's column list.
 				tal:attributes="
 					size input_width;
 					uid string:${item/uid};
+					objectId string:${item/id};
 					field python:column;
 					name string:${column}.${item/uid}:records;
 					value python:item[column];"/>
@@ -322,6 +325,7 @@ Table cells for each column from in review_state's column list.
 				tal:attributes="
 					field string:formatted_result;
 					uid item/uid;
+					objectId string:${item/id};
 					size input_width;"
 				tal:content="python:item['Result']"/>
 			<input
@@ -329,6 +333,7 @@ Table cells for each column from in review_state's column list.
 				type="hidden"
 				tal:attributes="
 					uid string:${item/uid};
+					objectId string:${item/id};
 					field string:Result;
 					name string:Result.${item/uid}:records;
 					value python:item['Result'];"/>

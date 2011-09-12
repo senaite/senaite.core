@@ -13,7 +13,6 @@ class BikaLimsLayer(PloneSandboxLayer):
         self.loadZCML(package=bika.lims)
         # Required by Products.CMFPlone:plone-content
         z2.installProduct(app, 'Products.PythonScripts')
-
         z2.installProduct(app, 'bika.lims')
 
     def setUpPloneSite(self, portal):
@@ -21,8 +20,11 @@ class BikaLimsLayer(PloneSandboxLayer):
         self.applyProfile(portal, 'Products.CMFPlone:plone')
         # Install portal content. Including the Members folder!
         self.applyProfile(portal, 'Products.CMFPlone:plone-content')
-
         self.applyProfile(portal, 'bika.lims:default')
+
+        # add client
+        portal.clients.invokeFactory()
+
 
 BIKA_FIXTURE = BikaLimsLayer()
 BIKA_INTEGRATION_TESTING = IntegrationTesting(bases=(BIKA_FIXTURE,), name="BikaLimsLayer:Integration")

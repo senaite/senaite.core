@@ -250,7 +250,7 @@ class AnalysisService(BaseContent, HistoryAwareMixin):
     def getActiveAnalysisCategories(self):
         pc = getToolByName(self, 'portal_catalog')
         categories = pc(portal_type='AnalysisCategory',
-                        inactive_workflow_state='active')
+                        inactive_review_state='active')
         return DisplayList(tuple([(c.UID,c.Title) for c in categories]))
 
     security.declarePublic('getDiscountedPrice')

@@ -13,8 +13,7 @@ wf_tool = context.portal_workflow
 analyses = ['Analysis', 'DuplicateAnalysis', 'ReferenceAnalysis']
 
 if context.portal_type in analyses:
-    return context.getResult() is not None
-
+    return True
 elif context.portal_type == 'AnalysisRequest':
     # Only transition to 'to_be_verified' if all analyses are in the
     # 'to_be_verified' state and if all analyses have values

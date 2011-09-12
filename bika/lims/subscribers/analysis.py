@@ -1,4 +1,5 @@
 from AccessControl import getSecurityManager
+from Acquisition import aq_inner
 from DateTime import DateTime
 from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFCore.utils import getToolByName
@@ -6,24 +7,30 @@ from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
 import transaction
 
-#try:
-#    from bika.limsCalendar.config import TOOL_NAME as BIKA_CALENDAR_TOOL
-#except:
-#    pass
+def ObjectInitializedEventHandler(analysis, event):
+    wf = getToolByName(analysis, 'portal_workflow')
+    ar = obj.aq_parent
 
+    # creating a new analysis retracts parent AR to 'received'
+    ar_state = wf.getInfoFor(ar, 'review_state')
+    if ar_state not in ('sample_due', 'sample_received'):
+        ar._skip_ActionSucceededEventHandler
+        wf.doActionFor(ar, 'retract')
 
 def ActionSucceededEventHandler(analysis, event):
-    workflow = getToolByName(analysis, 'portal_workflow')
+
+    if not hasattr(analysis, '_skip_ActionSucceededEventHandler'):
+        logger.info("%s on %s" % (event.action,analysis.getService().getKeyword()))
+
+    wf = getToolByName(analysis, 'portal_workflow')
     pc = getToolByName(analysis, 'portal_catalog')
     user = getSecurityManager().getUser()
     addPortalMessage = getToolByName(analysis, 'plone_utils').addPortalMessage
 
-    # set this before transitioning to prevent this handler from reacting
-    if hasattr(analysis, '_skip_ActionSucceededEvent'):
-        del analysis._skip_ActionSucceededEvent
+    if hasattr(analysis, '_skip_ActionSucceededEventHandler'):
         return
 
-    if event.action == "receive":
+    elif event.action == "receive":
         # set the max hours allowed
         service = analysis.getService()
         maxtime = service.getMaxTimeAllowed()
@@ -42,49 +49,90 @@ def ActionSucceededEventHandler(analysis, event):
                      / 86400
                  )
         duetime = starttime + max_days
-##            try:
-##                bct = getToolByName(self, BIKA_CALENDAR_TOOL)
-##            except:
-##                bct = None
-##            if bct:
-##                duetime = bct.getDurationAdded(starttime, maxminutes)
         analysis.setDueDate(duetime)
-        analysis.reindexObject()
+        analysis.reindexObject(idxs=["review_state",])
 
-    if event.action == "assign":
+    elif event.action == "assign":
         analysis._assigned_to_worksheet = True
         # Escalate action to the parent AR
-        if event.action in [t['id'] for t in workflow.getTransitionsFor(analysis.aq_parent)]:
-            workflow.doActionFor(analysis.aq_parent, event.action)
+        if event.action in [t['id'] for t in wf.getTransitionsFor(analysis.aq_parent)]:
+            wf.doActionFor(analysis.aq_parent, event.action)
 
-    if event.action == "submit":
-        # Check for dependents, verify that all their dependencies are
-        # ready, and submit them
-        for dependent in analysis.getDependents():
-            if workflow.getInfoFor(dependent, 'review_state') == 'to_be_verified':
-                continue
-            can_submit_dependent = True
-            for dependency in dependent.getDependencies():
-                if workflow.getInfoFor(dependency, 'review_state') == 'sample_received':
-                    can_submit_dependent = False
-                    break
-            if can_submit_dependent:
-                workflow.doActionFor(dependent, event.action)
-
+    elif event.action == "submit":
+        # Submit our dependents
+        dependents = analysis.getDependents()
+        logger.info("dependents: %s" % dependents)
+        for dependent in dependents:
+            try:
+                wf.doActionFor(dependent, 'submit')
+            except WorkflowException:
+                pass
+        # submit our dependencies,
+        dependencies = analysis.getDependencies()
+        logger.info("dependencies: %s" % dependencies)
+        for dependency in dependencies:
+            # if they have a result
+            if not dependency.getResult():
+                raise WorkflowException
+            # and if all their dependents (which are our siblings) are to_be_verified
+            for dependent in dependency.getDependents():
+                #if dependent == analysis:
+                #    continue
+                try:
+                    wf.doActionFor(dependent, 'submit')
+                except WorkflowException:
+                    pass
         # Escalate action to the parent AR
+        ar = aq_inner(analysis.aq_parent)
         try:
-            workflow.doActionFor(analysis.aq_parent, event.action)
+            ar._skip_ActionSucceededEventHandler = True
+            wf.doActionFor(ar, 'submit')
         except:
-##        except WorkflowException:
             pass
+        finally:
+            del ar._skip_ActionSucceededEventHandler
 
-    if event.action == "verify":
+    elif event.action == "retract":
+        # Retract our dependents
+        for dep in analysis.getDependents():
+            try:
+                wf.doActionFor(dep, 'retract')
+                if dep._assigned_to_worksheet:
+                    wf.doActionFor(dep, 'assign')
+            except WorkflowException:
+                pass
+        # retract our dependencies
+        for dependency in analysis.getDependencies():
+            if wf.getInfoFor(dependency, 'review_state') == 'sample_received':
+                continue
+            for dependent in dependency.getDependents():
+                try:
+                    wf.doActionFor(dependent, 'retract')
+                except WorkflowException:
+                    pass
+        # Escalate action to the parent AR
+        ar = aq_inner(analysis.aq_parent)
+        try:
+            ar._skip_ActionSucceededEventHandler = True
+            wf.doActionFor(ar, 'retract')
+            if ar._assigned_to_worksheet:
+                wf.doActionFor(ar, 'assign')
+        except:
+            pass
+        finally:
+            del ar._skip_ActionSucceededEventHandler
+        # if we are assigned to a worksheet, our new
+        # state must be 'assigned', not 'received'.
+        # XXX hacky, analysis should have multiple workflows
+        if analysis._assigned_to_worksheet:
+            wf.doActionFor(analysis, 'assign')
+
+    elif event.action == "verify":
         # fail if we are the same user who submitted this analysis
         mt = getToolByName(analysis, 'portal_membership')
         member = mt.getAuthenticatedMember()
         if 'Manager' not in member.getRoles():
-            # fail if we are the user who submitted this analysis
-            review_history = workflow.getInfoFor(analysis, 'review_history')
+            review_history = wf.getInfoFor(analysis, 'review_history')
             review_history.reverse()
             for e in review_history:
                 if e.get('action') == 'submit':
@@ -92,12 +140,35 @@ def ActionSucceededEventHandler(analysis, event):
                         transaction.abort()
                         raise WorkflowException, _("Results cannot be verified by the submitting user.")
                     break
-        # Verify any dependent services
-        for dep in analysis.getDependents():
-            try:
-                workflow.doActionFor(dep, event.action)
-            except WorkflowException:
-                pass
+        # Check our dependencies, if their deps are satisfied, verify them.
+        for dependency in analysis.getDependencies():
+            if wf.getInfoFor(dependency, 'review_state') == 'verified':
+                continue
+            can_submit_dependency = True
+            for dependent in dependency.getDependents():
+                if wf.getInfoFor(dependent, 'review_state') != 'verified':
+                    can_submit_dependency = False
+                    break
+            if can_submit_dependency:
+                try:
+                    wf.doActionFor(dependency, 'verify')
+                except WorkflowException:
+                    pass
+        # Check for dependents, verify that all their dependencies are
+        # ready, and verify them
+        for dependent in analysis.getDependents():
+            if wf.getInfoFor(dependent, 'review_state') == 'verified':
+                continue
+            can_submit_dependent = True
+            for dependency in dependent.getDependencies():
+                if wf.getInfoFor(dependency, 'review_state') != 'verified':
+                    can_submit_dependent = False
+                    break
+            if can_submit_dependent:
+                try:
+                    wf.doActionFor(dependent, 'verify')
+                except WorkflowException:
+                    pass
         # check for required Analysis Attachments
         service = analysis.getService()
         if not analysis.getAttachment():
@@ -108,52 +179,22 @@ def ActionSucceededEventHandler(analysis, event):
         # If all analyses in this AR are verified
         # escalate the action to the parent AR
         all_verified = True
-        for a in analysis.aq_parent.getAnalyses():
+        ar = analysis.aq_parent
+        for a in ar.getAnalyses():
             if a.review_state in \
                ('sample_due', 'sample_received', 'to_be_verified'):
                 all_verified = False
                 break
         if all_verified:
             try:
-                workflow.doActionFor(analysis.aq_parent, event.action)
-            except WorkflowExfeption:
+                ar._skip_ActionSucceededEventHandler = True
+                wf.doActionFor(ar, event.action)
+            except WorkflowAction:
                 pass
+            finally:
+                del ar._skip_ActionSucceededEventHandler
 
-    if event.action == "retract":
-        # Retract our dependencies
-        for dep in analysis.getDependencies():
-            try:
-                workflow.doActionFor(dep, event.action)
-                if dep._assigned_to_worksheet:
-                    workflow.doActionFor(dep, 'assign')
-            except:
-                pass
-        # Retract our dependents
-        for dep in analysis.getDependents():
-            try:
-                workflow.doActionFor(dep, event.action)
-                if dep._assigned_to_worksheet:
-                    workflow.doActionFor(dep, 'assign')
-            except:
-                pass
-        # Escalate action to the parent AR
-        try:
-            analysis.aq_parent._skip_ActionSucceededEvent = True
-            workflow.doActionFor(analysis.aq_parent, event.action)
-            if analysis.aq_parent._assigned_to_worksheet:
-                workflow.doActionFor(analysis.aq_parent, 'assign')
-            if hasattr(analysis.aq_parent, '_skip_ActionSucceededEvent'):
-                del analysis.aq_parent._skip_ActionSucceededEvent
-        except:
-            pass
-        # if we are assigned to a worksheet, our new
-        # state must be 'assigned', not 'received'.
-        # XXX hacky, analysis should have multiple workflows
-        if analysis._assigned_to_worksheet:
-            workflow.doActionFor(analysis, 'assign')
-            analysis.reindexObject()
-
-    if event.action == "publish":
+    elif event.action == "publish":
         endtime = DateTime()
         analysis.setDateAnalysisPublished(endtime)
         starttime = analysis.aq_parent.getDateReceived()
@@ -180,5 +221,5 @@ def ActionSucceededEventHandler(analysis, event):
 ##                                        self.getDueDate())
         analysis.setDuration(duration)
         analysis.setEarliness(earliness)
-        analysis.reindexObject()
+        analysis.reindexObject(idxs=["review_state",])
 

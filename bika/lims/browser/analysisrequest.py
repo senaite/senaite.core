@@ -39,12 +39,13 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
         originating_url = self.request.get_header("referer",
                                                   self.context.absolute_url())
 
-        # use came_from to decide which UI action was clicked.
         # "workflow_action" is the action name specified in the
         # portal_workflow transition url.
+        # "workflow_action_button" is the action name specified in
+        # the bika_listing_view table buttons.
         came_from = "workflow_action"
         action = form.get(came_from, '')
-        # only "activate" workflow_action is allowed on ARs which are inactive.
+        # only "activate" workflow action is allowed on ARs which are inactive.
         # any action on inactive AR's children is also ignored.
         if action and \
            not isActive(self.context) and \
@@ -54,8 +55,6 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
             return
 
         if not action:
-            # workflow_action_button is the action name specified in
-            # the bika_listing_view table buttons.
             came_from = "workflow_action_button"
             action = form.get(came_from, '')
             # XXX some browsers agree better than others about our JS ideas.
@@ -64,37 +63,7 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
                 logger.warn("No workflow action provided.")
                 return
 
-        if action == 'submit' and self.request.form.has_key("Result"):
-            # all submit actions will submit all records.  The list of
-            # selected analyses, if any, will always be ignored.
-            for analysis_uid, result in self.request.form['Result'][0].items():
-                analysis = rc.lookupObject(analysis_uid)
-                service = analysis.getService()
-                interims = form["InterimFields"][0][analysis_uid]
-                analysis.edit(
-                    Result = result,
-                    InterimFields = json.loads(interims),
-                    Retested = form.has_key('retested') and \
-                               form['retested'].has_key(analysis_uid),
-                    Unit = service.getUnit())
-                if result != '':
-                    try:
-                        # Can't submit analyses with dependencies; they are
-                        # submitted automatically when all their dependencies
-                        # are submitted
-                        calculation = analysis.getService().getCalculation()
-                        if calculation and calculation.getDependentServices():
-                            continue
-                        workflow.doActionFor(analysis, 'submit')
-                    except WorkflowException:
-                        pass
-            if self.context.getReportDryMatter():
-                self.context.setDryMatterResults()
-            message = _("Changes saved.")
-            self.context.plone_utils.addPortalMessage(message, 'info')
-            self.request.response.redirect(originating_url)
-
-        elif action in ('prepublish', 'publish', 'prepublish'):
+        if action in ('prepublish', 'publish', 'prepublish'):
             # XXX publish entire AR.
             transitioned = Publish(self.context,
                                    self.request,
@@ -110,10 +79,52 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
             self.context.plone_utils.addPortalMessage(message, 'info')
             self.request.response.redirect(originating_url)
 
+        if action == 'submit' and self.request.form.has_key("Result"):
+            # draw up list of analysis objects that were selected
+            selected_analysis_uids = []
+            selected_analyses = {}
+            if 'paths' in form:
+                for path in form['paths']:
+                    item_id = path.split("/")[-1]
+                    item_path = path.replace("/" + item_id, '')
+                    item = pc(id = item_id,
+                              path = {'query':item_path,
+                                      'depth':1})[0].getObject()
+                    uid = item.UID()
+                    selected_analysis_uids.append(uid)
+                    selected_analyses[uid] = item
+            # first save selected results
+            for analysis_uid, result in self.request.form['Result'][0].items():
+                if analysis_uid not in selected_analysis_uids:
+                    continue
+                analysis = selected_analyses[analysis_uid]
+                service = analysis.getService()
+                interims = form["InterimFields"][0][analysis_uid]
+                analysis.edit(
+                    Result = result,
+                    InterimFields = json.loads(interims),
+                    Retested = form.has_key('retested') and \
+                               form['retested'].has_key(analysis_uid),
+                    Unit = service.getUnit())
+            # then submit selected items
+            for analysis_uid, result in self.request.form['Result'][0].items():
+                # but only if they are selected
+                if analysis_uid not in selected_analysis_uids:
+                    continue
+                analysis = selected_analyses[analysis_uid]
+                service = analysis.getService()
+                interims = form["InterimFields"][0][analysis_uid]
+                if result:
+                    workflow.doActionFor(analysis, 'submit')
+            if self.context.getReportDryMatter():
+                self.context.setDryMatterResults()
+            message = _("Changes saved.")
+            self.context.plone_utils.addPortalMessage(message, 'info')
+            self.request.response.redirect(originating_url)
+
         else:
             # default bika_listing.py/WorkflowAction for other transitions
             WorkflowAction.__call__(self)
-
 
 
 class AnalysisRequestViewView(BrowserView):

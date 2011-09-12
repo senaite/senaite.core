@@ -7,46 +7,42 @@ from bika.lims import logger
 import transaction
 
 def ActionSucceededEventHandler(ar, event):
-    workflow = getToolByName(ar, 'portal_workflow')
+
+    if not hasattr(ar, '_skip_ActionSucceededEventHandler'):
+        logger.info("Succeeded: %s on %s" % (event.action,ar))
+
+    wf = getToolByName(ar, 'portal_workflow')
     pc = getToolByName(ar, 'portal_catalog')
     user = getSecurityManager().getUser()
     addPortalMessage = getToolByName(ar, 'plone_utils').addPortalMessage
 
-    # set this before transitioning to prevent this handler from reacting
-    if hasattr(ar, '_skip_ActionSucceededEvent'):
-        del ar._skip_ActionSucceededEvent
+    if hasattr(ar, '_skip_ActionSucceededEventHandler'):
         return
 
-    if event.action == "receive":
+    elif event.action == "receive":
         ar.setDateReceived(DateTime())
-        ar.reindexObject()
+        ar.reindexObject(idxs=["review_state",])
+
         # receive the AR's sample
         sample = ar.getSample()
         try:
-            workflow.doActionFor(sample, event.action)
-            sample.reindexObject()
+            sample._skip_ActionSucceededEventHandler = True
+            wf.doActionFor(sample, 'receive')
         except WorkflowException, msg:
             pass
-        # receive all analyses in this AR.
-        analyses = ar.getAnalyses()
-        if not analyses:
-            addPortalMessage(_("Add one or more Analyses first."))
-            transaction.abort()
-        for analysis in analyses:
-            # ignore 'not requested' analyses
-            if analysis.review_state == 'not_requested':
-                continue
-            try:
-                analysis= analysis.getObject()
-                workflow.doActionFor(analysis, event.action)
-                analysis.reindexObject()
-            except WorkflowException, errmsg:
-                pass
+        finally:
+            del sample._skip_ActionSucceededEventHandler
 
-    if event.action == "assign":
+        # receive all analyses in this AR.
+        analyses = ar.getAnalyses(review_state = 'sample_due',
+                                  full_objects = True)
+        for analysis in analyses:
+            wf.doActionFor(analysis, 'receive')
+
+    elif event.action == "assign":
         ar._assigned_to_worksheet = True
 
-    if event.action == "submit":
+    elif event.action == "submit":
         # Check all analyses, verify that they are in sample_recieved,
         # and that their Result is anything other than an empty string,
         # and submit them
@@ -58,12 +54,27 @@ def ActionSucceededEventHandler(ar, event):
                 continue
             try:
                 analysis = analysis.getObject()
-                workflow.doActionFor(analysis, event.action)
-                analysis.reindexObject()
+                wf.doActionFor(analysis, event.action)
+                analysis.reindexObject(idxs=["review_state",])
             except WorkflowException:
                 pass
 
-    if event.action == "verify":
+    elif event.action == "retract":
+        # retract all analyses in this AR.
+        analyses = ar.getAnalyses(review_state=('to_be_verified', 'verified', 'assigned'),
+                                  full_objects = True)
+        for analysis in analyses:
+            try:
+                wf.doActionFor(analysis, 'retract')
+                if analysis._assigned_to_worksheet:
+                    wf.doActionFor(analysis, 'assign')
+            except WorkflowException:
+                pass
+        if ar._assigned_to_worksheet:
+            wf.doActionFor(ar, 'assign')
+        ar.reindexObject(idxs=["review_state",])
+
+    elif event.action == "verify":
         # verify all analyses in this AR.
         mt = getToolByName(ar, 'portal_membership')
         member = mt.getAuthenticatedMember()
@@ -75,7 +86,7 @@ def ActionSucceededEventHandler(ar, event):
             analysis = analysis.getObject()
             if 'Manager' not in member.getRoles():
                 # fail if we are the user who submitted this analysis
-                review_history = workflow.getInfoFor(analysis, 'review_history')
+                review_history = wf.getInfoFor(analysis, 'review_history')
                 review_history.reverse()
                 for e in review_history:
                     if e.get('action') == 'submit':
@@ -85,33 +96,14 @@ def ActionSucceededEventHandler(ar, event):
                             return
                         break
             try:
-                    workflow.doActionFor(analysis, event.action)
-                    analysis.reindexObject()
+                    wf.doActionFor(analysis, event.action)
+                    analysis.reindexObject(idxs=["review_state",])
             except WorkflowException:
                 pass
 
-    if event.action == "retract":
-        # retract all analyses in this AR.
-        analyses = ar.getAnalyses()
-        for analysis in analyses:
-            # ignore 'not requested' analyses
-            if analysis.review_state == 'not_requested':
-                continue
-            analysis = analysis.getObject()
-            try:
-                workflow.doActionFor(analysis, event.action)
-                if analysis._assigned_to_worksheet:
-                    workflow.doActionFor(analysis, 'assign')
-                analysis.reindexObject()
-            except WorkflowException:
-                pass
-        if ar._assigned_to_worksheet:
-            workflow.doActionFor(ar, 'assign')
-        ar.reindexObject()
-
-    if event.action == "publish":
+    elif event.action == "publish":
         ar.setDatePublished(DateTime())
-        ar.reindexObject()
+        ar.reindexObject(idxs=["review_state",])
         # publish all analyses in this AR.
         analyses = ar.getAnalyses()
         for analysis in analyses:
@@ -120,7 +112,7 @@ def ActionSucceededEventHandler(ar, event):
                 continue
             analysis = analysis.getObject()
             try:
-                workflow.doActionFor(analysis, event.action)
-                analysis.reindexObject()
+                wf.doActionFor(analysis, event.action)
+                analysis.reindexObject(idxs=["review_state",])
             except WorkflowException:
                 pass
