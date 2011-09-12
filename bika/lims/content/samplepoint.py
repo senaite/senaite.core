@@ -29,7 +29,7 @@ schema = BikaSchema.copy() + Schema((
     StringField('Elevation',
         schemata = _('Location'),
         widget=StringWidget(
-            label =  _("Elevation",
+            label =  _("Elevation"),
             description = _("The height or depth the Sample has to be taken at"),
         ),
     ),
