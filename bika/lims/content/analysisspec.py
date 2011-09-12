@@ -49,8 +49,15 @@ Schema((
         widget = SpecWidget(
             checkbox_bound = 1,
             label = 'Results Range',
-            label_msgid = 'label_resultsrange',
-            i18n_domain = I18N_DOMAIN,
+            description = _("Click on Analysis Categories (against shaded background) "
+                            "to see Analysis Services in each category. Enter minimum "
+                            "and maximum values to indicate a valid results range. "
+                            "Any result outside this range will raise an alert. "
+                            "The % Error field allows for an % uncertainty to be "
+                            "considered when evaluating results against minimum and "
+                            "maximum values. A result out of range but still in range "
+                            "if the % error is taken into consideration, will raise a "
+                            "less severe alert."),
         ),
     ),
     ComputedField('ClientUID',
