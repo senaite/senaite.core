@@ -49,5 +49,20 @@
         permission="zope2.View"
         layer="bika.lims.interfaces.IBikaLIMS"
     />
-
+    <browser:viewlet
+        name="plone.footer"
+        manager="plone.app.layout.viewlets.interfaces.IPortalFooter"
+        template="footer.pt"
+        for="*"
+        layer="bika.lims.interfaces.IBikaLIMS"
+        permission="zope2.View"
+    />
+    <browser:viewlet
+        name="plone.colophon"
+        manager="plone.app.layout.viewlets.interfaces.IPortalFooter"
+        template="colophon.pt"
+        for="*"
+        layer="bika.lims.interfaces.IBikaLIMS"
+        permission="zope2.View"
+    />
 </configure>
