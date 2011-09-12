@@ -13,41 +13,42 @@ schema = BikaSchema.copy() + Schema((
     StringField('Latitude',
         schemata = _('Location'),
         widget=StringWidget(
-            label='Latitude',
-            label_msgid='label_Latitude',
-            i18n_domain=I18N_DOMAIN,
+            label= _("Latitude"),
+            description = _("Enter the Sample Point's latitude in degrees 0-90, minutes 0-59, "
+                            "seconds 0-59 and N/S indicator"),
         ),
     ),
     StringField('Longitude',
         schemata = _('Location'),
         widget=StringWidget(
-            label='Longitude',
-            label_msgid='label_Longitude',
-            i18n_domain=I18N_DOMAIN,
+            label = _("Longitude"),
+            description = _("Enter the Sample Point's longitude in degrees 0-180, minutes 0-59, "
+                            "seconds 0-59 and E/Windicator"),
         ),
     ),
     StringField('Elevation',
         schemata = _('Location'),
         widget=StringWidget(
-            label='Elevation',
-            label_msgid='label_Elevation',
-            i18n_domain=I18N_DOMAIN,
+            label =  _("Elevation",
+            description = _("The height or depth the Sample has to be taken at"),
         ),
     ),
     DurationField('SamplingFrequency',
         vocabulary_display_path_bound=sys.maxint,
         widget=DurationWidget(
-            label='Sampling Frequency',
-            label_msgid='label_sampling_frequency',
-            i18n_domain=I18N_DOMAIN,
+            label = _("Sampling Frequency"),
+            description = _("If a sample is taken periodically at this sample point, "
+                            " enter frequency here, e.g. weekly"),
         ),
     ),
     BooleanField('Composite',
         default=False,
         widget=BooleanWidget(
-            label="Composite",
-            label_msgid="label_composite",
-            i18n_domain=I18N_DOMAIN,
+            label = _("Composite"),
+            description = _("Check this box if the samples taken at this point are 'composite' "
+                            "and put together from more than one sub sample, e.g. several surface "
+                            "samples from a dam mixed together to be a representative sample for the dam. "
+                            "The default, unchecked, indicates 'grab' samples"),
         ),
     ),
 ))
