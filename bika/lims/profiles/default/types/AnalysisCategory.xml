@@ -4,7 +4,8 @@
    xmlns:i18n="http://xml.zope.org/namespaces/i18n">
  <property name="title">AnalysisCategory</property>
  <property name="description">
- 	Configure Analysis Service Categories
+ 	 To reduce clutter on LIMS screens, Analyses can be logically grouped together 
+	 in Categories and displayed on collapsible sections
  </property>
  <property name="content_icon">++resource++bika.lims.images/category.png</property>
  <property name="content_meta_type">AnalysisCategory</property>
