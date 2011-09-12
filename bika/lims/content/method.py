@@ -12,16 +12,14 @@ from bika.lims import bikaMessageFactory as _
 schema = BikaSchema.copy() + Schema((
     TextField('Instructions',
         widget = TextAreaWidget(
-            label = 'Instructions',
-            label_msgid = 'label_instructions',
-            i18n_domain = I18N_DOMAIN,
+            label = _("Instructions"),
+            description = _("technical description and instructions intended for analysts"),
         ),
     ),
     FileField('MethodDocument',  # XXX Multiple documents please
         widget = FileWidget(
-            label = 'Method document',
-            label_msgid = 'label_method_document',
-            i18n_domain = I18N_DOMAIN,
+            label = _("Method document"),
+            description = _("Load documents describing the method here"),
         )
     ),
 ))
