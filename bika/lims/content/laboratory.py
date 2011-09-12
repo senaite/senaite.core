@@ -11,11 +11,10 @@ from bika.lims import bikaMessageFactory as _
 
 schema = Organisation.schema.copy() + Schema((
     IntegerField('Confidence',
-        schemata = 'default',
+        schemata = 'Accreditation',
         widget = IntegerWidget(
             label = _("Confidence Level %"),
-            description = _("Laboratory Confidence Level % "),
-            i18n_domain = I18N_DOMAIN,
+            description = _("This value is reported at the bottom of all published results"),
         ),
     ),
     StringField('LabURL',
