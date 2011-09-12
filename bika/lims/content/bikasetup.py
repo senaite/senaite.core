@@ -59,7 +59,7 @@ schema = BikaFolderSchema.copy() + Schema((
             description = _("The discount percentage entered here, is applied to the prices for Clients "
                             "flagged as 'members', normally co-operative members or associates deserving "
                             "of this discount"),
-        ),
+        )
     ),
     FixedPointField('VAT',
         default = '14.00',
@@ -68,8 +68,7 @@ schema = BikaFolderSchema.copy() + Schema((
             label = _("VAT %"),
             description = _("Enter percentage value eg. 14.0. This percentage is applied system wide "
                             "but can be overwrittem on individual items"),
-            ),
-        ),
+        )
     ),
     IntegerField('MinimumResults',
         required = 1,
@@ -112,7 +111,7 @@ schema = BikaFolderSchema.copy() + Schema((
             description = _("The email to SMS Gateway address. Either a complete email address, "
                              "or just the domain, e.g. '@2way.co.za', the contact's mobile phone "
                              "number will be prepended to"),
-        ),
+        )
     ),
     ReferenceField('DryMatterService',
         required = 0,
@@ -146,7 +145,7 @@ schema = BikaFolderSchema.copy() + Schema((
             description = _("'Classic' indicates importing Analysis Requests per Sample and "
                             "Analysis Services selection. With 'Profiles', Analysis Profile keywords "
                             "are used to select multiple Analysis Services together"),
-        ),
+        )
     ),
     StringField('ARAttachmentOption',
         default = 'p',
@@ -157,7 +156,7 @@ schema = BikaFolderSchema.copy() + Schema((
             description = _("The default configuration for used system wide to indicate "
                             "whether file attachments are required, permitted or not "
                             "per Analysis Request"),
-        ),
+        )
     ),
     StringField('AnalysisAttachmentOption',
         default = 'p',
@@ -168,7 +167,7 @@ schema = BikaFolderSchema.copy() + Schema((
             description = _("Same as the above, but sets the default on Anlaysis Services. "
                             "This setting can be set per individual Analysis on its "
                             "own configuration"),
-        ),
+        )
     ),
     IntegerField('DefaultSampleLifetime',
         required = 1,
@@ -191,8 +190,8 @@ schema = BikaFolderSchema.copy() + Schema((
                             "field, indicate with how many leading zeros the numbers must be padded. "
                             "E.g. a prefix of AR with padding of 4 for Analysis requests, will see "
                             "them numbered from AR0001 to AR9999"),
-            allowDelete=False),
-        )  
+            allowDelete=False,
+        )
     ),
 ))
 schema['title'].validators = ()
