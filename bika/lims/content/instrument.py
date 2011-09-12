@@ -10,37 +10,40 @@ from bika.lims import bikaMessageFactory as _
 schema = BikaSchema.copy() + Schema((
     StringField('Type',
         widget = StringWidget(
-            label_msgid = 'label_type',
+            label = _("Instrument type"),
+            description = _("The analyses included in this Analysis Profile, grouped per category"),
         )
     ),
     StringField('Brand',
         widget = StringWidget(
-            label_msgid = 'label_brand',
+            label = _("Brand"),
+            description = _("The commercial 'make' of the instrument"),
         )
     ),
     StringField('Model',
         widget = StringWidget(
-            label_msgid = 'label_model',
+            label = _("Model"),
+            description = _("The instrument's model number"),
         )
     ),
     StringField('SerialNo',
         widget = StringWidget(
-            label = 'Serial No',
-            label_msgid = 'label_serialno',
+            label = _("Serial No"),
+            description = _("The serial number that uniquely identifies the instrument"),
         )
     ),
     StringField('CalibrationCertificate',
         widget = StringWidget(
-            label = 'Calibration Certificate',
-            label_msgid = 'label_calibrationcertificate',
+            label = _("Calibration Certificate"),
+            description = _("The instrument's calibration certificate and number"),
         )
     ),
     DateTimeField('CalibrationExpiryDate',
         with_time = 0,
         with_date = 1,
         widget = DateTimeWidget(
-            label = 'Calibration Expiry Date',
-            label_msgid = 'label_calibrationexpirydate',
+            label = _("Calibration Expiry Date"),
+            description = _("Due date for next calibration"),
         ),
     ),
 ))
