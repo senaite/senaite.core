@@ -33,6 +33,14 @@ schema = Schema((
         allowed_types = ('SampleType',),
         relationship = 'AnalysisSpecSampleType',
         referenceClass = HoldingReference,
+        widget = ReferenceWidget(
+            checkbox_bound = 1,
+            label = _("Sample Type"),
+            description = _("If the Sample type you are looking for is not listed here, "
+                            "a specification for it has been created already. To edit those, "
+                            "navigate 1 level up and select the Specification by clicking on "
+                            "the Sample Type in the list"),
+        ),
     ),
 )) + \
 BikaSchema.copy() + \
@@ -48,7 +56,7 @@ Schema((
                            'error': _('% Error')},
         widget = SpecWidget(
             checkbox_bound = 1,
-            label = 'Results Range',
+            label = _("Results Range"),
             description = _("Click on Analysis Categories (against shaded background) "
                             "to see Analysis Services in each category. Enter minimum "
                             "and maximum values to indicate a valid results range. "
