@@ -15,6 +15,7 @@ from bika.lims import bikaMessageFactory as _
 
 schema = BikaSchema.copy() + Schema((
     ReferenceResultsField('ReferenceResults',
+        schemata = 'Valid range',
         required = 1,
         widget = ReferenceResultsWidget(
             label = _("Reference Results"),
@@ -24,6 +25,7 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     BooleanField('Hazardous',
+        schemata = 'Description',
         default = False,
         widget = BooleanWidget(
             label = _("Hazardous"),
@@ -32,7 +34,9 @@ schema = BikaSchema.copy() + Schema((
     ),
 ))
 
-schema['description'].schemata = 'default'
+schema['title'].schemata = 'Description'
+schema['title'].widget.visible = True
+schema['description'].schemata = 'Description'
 schema['description'].widget.visible = True
 
 class ReferenceDefinition(BaseContent):
