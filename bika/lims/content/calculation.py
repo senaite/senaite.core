@@ -24,13 +24,17 @@ validation = Service()
 
 schema = BikaSchema.copy() + Schema((
     InterimFieldsField('InterimFields',
+        schemata = 'Calculation',
         widget = BikaRecordsWidget(
-            label = 'Calculation Interim Fields',
-            label_msgid = 'label_interim_fields',
-            i18n_domain = I18N_DOMAIN,
+            label = _("Calculation Interim Fields"),
+            description =_("Define interim fields such as vessel mass, dilution factors, "
+                           "should your calculation require them. The field title specified "
+                           "here will be used as column headers and field descriptors where"
+                           "the interim fields are displayed"),
         )
     ),
     HistoryAwareReferenceField('DependentServices',
+        schemata = 'Calculation',
         required = 0,
         multiValued = 1,
         vocabulary_display_path_bound = sys.maxint,
@@ -40,17 +44,16 @@ schema = BikaSchema.copy() + Schema((
         widget = ReferenceWidget(
             checkbox_bound = 1,
             visible = False,
-            label = 'Dependent Analyses',
-            label_msgid = 'label_dependent_analyses',
-            i18n_domain = I18N_DOMAIN,
+            label = _("Dependent Analyses"),
         ),
     ),
     TextField('Formula',
+        schemata = 'Calculation',
         validators = ('formulavalidator',),
         default_content_type = 'text/plain',
         allowable_content_types = ('text/plain',),
         widget = TextAreaWidget(
-            label = 'Calculation Formula',
+            label = _("Calculation Formula"),
             description_msgid = "msg_calculation_formula_help",
             description = "<p>The formula you type here will be dynamically calculated "
                            "when an analysis using this calculation is displayed. </p>"
@@ -66,8 +69,10 @@ schema = BikaSchema.copy() + Schema((
         )
     ),
 ))
+schema['title'].widget.visible = True
+schema['title'].schemata = 'Description'
 schema['description'].widget.visible = True
-schema['description'].schemata = 'default'
+schema['description'].schemata = 'Description'
 
 class Calculation(BaseFolder, HistoryAwareMixin):
     security = ClassSecurityInfo()
