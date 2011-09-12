@@ -3,8 +3,10 @@
    meta_type="Factory-based Type Information with dynamic views"
    xmlns:i18n="http://xml.zope.org/namespaces/i18n">
  <property name="title">Sample Point</property>
- <property name="description">
- 	Configure sample points of origin
+ <property name="description"> 	
+   The places where Samples are routinely taken, e.g. a certain bore hole for water samples, 
+   or point on production line in a factory. Geographical co-ordinates are  maintained on 
+   the Sample Point's location page 
  </property>
  <property name="content_icon">++resource++bika.lims.images/samplepoint.png</property>
  <property name="content_meta_type">SamplePoint</property>
