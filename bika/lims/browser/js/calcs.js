@@ -8,7 +8,7 @@ $(document).ready(function(){
 		field = $(this).attr('field');
 		value = $(this).attr('value');
 		// check the item's checkbox
-		$('#cb_'+objectId).attr('checked', true);
+		$('#cb_'+uid).attr('checked', true);
 		// collect all results for back-dependant calculations
 		var results = {};
 		$.each($("input[field='Result']"), function(i, e){
@@ -85,7 +85,7 @@ $(document).ready(function(){
 					keyword = $("input[uid='"+result.uid+"']")
 						.filter("input[field='Result']")
 						.attr('Keyword');
-					$('#cb_'+objectId).attr('checked', true);
+					$('#cb_'+uid).attr('checked', true);
 				}
 			}
 		}

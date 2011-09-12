@@ -7,7 +7,6 @@ from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
 from Products.CMFCore.WorkflowCore import WorkflowException
 from bika.lims.interfaces import IWorksheet
-from bika.lims.browser.analyses import AnalysesView
 from bika.lims.browser.bika_listing import WorkflowAction
 from bika.lims.browser.analyses import AnalysesView
 from plone.app.content.browser.interfaces import IFolderContentsView
@@ -114,81 +113,6 @@ class WorksheetWorkflowAction(WorkflowAction):
         else:
             # default bika_listing.py/WorkflowAction for other transitions
             WorkflowAction.__call__(self)
-
-class WorksheetFolderView(BikaListingView):
-    contentFilter = {'portal_type': 'Worksheet'}
-    content_add_actions = {_('Worksheet'): "worksheet_add"}
-    show_editable_border = False
-    show_table_only = False
-    show_sort_column = False
-    show_select_row = False
-    show_select_column = True
-    pagesize = 50
-
-    columns = {
-           'getNumber': {'title': _('Worksheet Number')},
-           'getOwnerUserID': {'title': _('Username')},
-           'CreationDate': {'title': _('Creation Date')},
-           'getLinkedWorksheet': {'title': _('Linked Worksheets')},
-           'state_title': {'title': _('State')},
-          }
-    review_states = [
-                {'title': _('All'), 'id':'all',
-                 'columns':['getNumber',
-                            'getOwnerUserID',
-                            'CreationDate',
-                            'getLinkedWorksheet',
-                            'state_title']},
-                {'title': _('Worksheet Open'), 'id':'open',
-                 'columns':['getNumber',
-                            'getOwnerUserID',
-                            'CreationDate',
-                            'getLinkedWorksheet',
-                            'state_title']},
-                {'title': _('To Be Verified'), 'id':'to_be_verified',
-                 'columns':['getNumber',
-                            'getOwnerUserID',
-                            'CreationDate',
-                            'getLinkedWorksheet',
-                            'state_title']},
-                {'title': _('Verified'), 'id':'verified',
-                 'columns':['getNumber',
-                            'getOwnerUserID',
-                            'CreationDate',
-                            'getLinkedWorksheet',
-                            'state_title']},
-                {'title': _('Rejected'), 'id':'rejected',
-                 'columns':['getNumber',
-                            'getOwnerUserID',
-                            'CreationDate',
-                            'getLinkedWorksheet',
-                            'state_title'],
-                 'buttons':[{'cssclass': 'context',
-                             'title': _('Delete'),
-                             'url': 'folder_delete:method'}]}
-                  ]
-    def __init__(self, context, request):
-        super(WorksheetFolderView, self).__init__(context, request)
-        self.title = "%s: %s" % (self.context.Title(), _("Analysis Requests"))
-        self.description = ""
-
-    @property
-    def folderitems(self):
-        items = BikaListingView.folderitems(self)
-        for x in range(len(items)):
-            if not items[x].has_key('obj'): continue
-            obj = items[x]['obj'].getObject()
-            items[x]['getNumber'] = obj.getNumber()
-            items[x]['getOwnerUserID'] = obj.getOwnerUserID()
-            items[x]['CreationDate'] = obj.CreationDate() and \
-                 self.context.toLocalizedTime(obj.CreationDate(),
-                                              long_format = 0) or ''
-            items[x]['getLinkedWorksheet'] = obj.getLinkedWorksheet() and \
-                 ",".join(obj.getLinkedWorksheet()) or ''
-            items[x]['replace']['getNumber'] = "<a href='%s'>%s</a>" % \
-                 (items[x]['url'], items[x]['getNumber'])
-
-        return items
 
 class WorksheetAddView(BrowserView):
     """ This creates a new Worksheet and redirects to it.
@@ -365,7 +289,7 @@ class WorksheetManageResultsView(AnalysesView):
     @property
     def folderitems(self):
         self.contentsMethod = self.context.getFolderContents
-        items = AnalysesView.folderitems(self)
+        items = super(WorksheetManageResultsView, self).folderitems
         pos = 0
         for x, item in enumerate(items):
             obj = item['obj']

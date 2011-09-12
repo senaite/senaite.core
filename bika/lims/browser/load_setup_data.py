@@ -45,7 +45,7 @@ class LoadSetupData():
 
     def Laboratory(self):
         laboratory = self.context.bika_setup.laboratory
-        name = 'Laboratory Information'
+        name = 'Bika LIMS'
         name = name.decode('latin-1').encode('utf-8').strip()
         self.context.bika_setup.laboratory.edit(
             Name = name,
