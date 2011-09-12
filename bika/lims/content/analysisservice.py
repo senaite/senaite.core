@@ -19,9 +19,13 @@ import sys
 from bika.lims import bikaMessageFactory as _
 
 schema = BikaSchema.copy() + Schema((
+    
+    
+    
     BooleanField('ReportDryMatter',
         default = False,
         widget = BooleanWidget(
+            schemata = _("Analysis"),
             label = _("Report as dry matter"),
             description = _("Select if result can be reported as dry matter"),
         ),
@@ -30,6 +34,7 @@ schema = BikaSchema.copy() + Schema((
         default = 'p',
         vocabulary = ATTACHMENT_OPTIONS,
         widget = SelectionWidget(
+            schemata = _("Analysis"),
             label = _("Attachment option"),
             description = _("Indicates whether file attachments, e.g. microscope images, "
                             "are required for this Analysis and whether file upload function "
@@ -39,12 +44,14 @@ schema = BikaSchema.copy() + Schema((
     StringField('Unit',
         index = "FieldIndex:brains",
         widget = StringWidget(
+            schemata = _("Analysis"),
             label = _("Unit"),
             description = _("The measurement units for this Analysis Service, e.g. mg/l, ppm, dB, mV, etc."),
         ),
     ),
     IntegerField('Precision',
         widget = IntegerWidget(
+            schemata = _("Analysis"),
             label = _("Precision as number of decimals"),
             description = _("Define the number of decimals to be used for this result"),
         ),
@@ -53,12 +60,14 @@ schema = BikaSchema.copy() + Schema((
         index = "FieldIndex:brains",
         default = '0.00',
         widget = DecimalWidget(
+            schemata = _("Price"),
             label = _("Price (excluding VAT)"),
         ),
     ),
     FixedPointField('CorporatePrice',
         default = '0.00',
         widget = DecimalWidget(
+            schemata = _("Price"),
             label = _("Bulk price (excluding VAT)"),
             description = _("The price charged per analysis for clients who qualify for bulk discounts"),
         ),
@@ -66,6 +75,7 @@ schema = BikaSchema.copy() + Schema((
     ComputedField('VATAmount',
         expression = 'context.getVATAmount()',
         widget = ComputedWidget(
+            schemata = _("Price"),
             label = _("VAT"),
             visible = {'edit':'hidden', }
         ),
@@ -73,6 +83,7 @@ schema = BikaSchema.copy() + Schema((
     ComputedField('TotalPrice',
         expression = 'context.getTotalPrice()',
         widget = ComputedWidget(
+            schemata = _("Price"),
             label = _("Total price"),
             visible = {'edit':'hidden', }
         ),
@@ -81,6 +92,7 @@ schema = BikaSchema.copy() + Schema((
         index = 'FieldIndex:brains',
         default_method = 'getDefaultVAT',
         widget = DecimalWidget(
+            schemata = _("Price"),
             label = _("VAT %"),
             description = _("Enter percentage e.g. 14"),
         ),
@@ -90,6 +102,7 @@ schema = BikaSchema.copy() + Schema((
         index = 'FieldIndex:brains',
         validators = ('servicekeywordvalidator'),
         widget = StringWidget(
+            schemata = _("Description"),
             label = _("Analysis Keyword"),
             description = _("The unique keyword used to identify the Analysis Service in "
                             "import files of bulk AR quests and results imports from instruments. "
@@ -104,6 +117,7 @@ schema = BikaSchema.copy() + Schema((
         relationship = 'AnalysisServiceInstrument',
         referenceClass = HoldingReference,
         widget = ReferenceWidget(
+            schemata = _("Method"),
             checkbox_bound = 1,
             label = _("Instrument"),
             description = _("Select the preferred instrument for this Analysis"),
@@ -116,6 +130,7 @@ schema = BikaSchema.copy() + Schema((
         relationship = 'AnalysisServiceCalculation',
         referenceClass = HoldingReference,
         widget = ReferenceWidget(
+            schemata = _("Method"),
             checkbox_bound = 1,
             label = _("Calculation"),
             description = _("If required, select a calculation for the Analysis here. "
@@ -125,6 +140,7 @@ schema = BikaSchema.copy() + Schema((
     ),
     DurationField('MaxTimeAllowed',
         widget = DurationWidget(
+            schemata = _("Analysis"),
             label = _("Maximum turn-around time"),
             description = _("Maximum time allowed for completion of the analysis. "
                             "A late analysis alert is raised when this period elapses"),
@@ -132,6 +148,7 @@ schema = BikaSchema.copy() + Schema((
     ),
     FixedPointField('DuplicateVariation',
         widget = DecimalWidget(
+            schemata = _("Method"),
             label = _("Duplicate Variation %"),
             description = _("When the results of duplicate analyses on worksheets, "
                             "carried out on the same sample, differ with more than "
@@ -142,6 +159,7 @@ schema = BikaSchema.copy() + Schema((
         index = "FieldIndex:brains",
         default = False,
         widget = BooleanWidget(
+            schemata = _("Method"),
             label = _("Accredited"),
             description = _("Check this box if the Analysis Service is included in the "
                             "laboratory's schedule of accredited analyses"),
@@ -153,6 +171,7 @@ schema = BikaSchema.copy() + Schema((
         default = 'lab',
         vocabulary = POINTS_OF_CAPTURE,
         widget = SelectionWidget(
+            schemata = _("Description"),
             format = 'flex',
             label = _("Point of Capture"),
             description = _("The results of field analyses are captured during sampling "
@@ -169,6 +188,7 @@ schema = BikaSchema.copy() + Schema((
         referenceClass = HoldingReference,
         vocabulary = 'getActiveAnalysisCategories',
         widget = ReferenceWidget(
+            schemata = _("Description"),
             checkbox_bound = 1,
             label = _("Analysis category"),
             description = _("The category the Analysis Service belongs to"),
@@ -181,6 +201,7 @@ schema = BikaSchema.copy() + Schema((
         relationship = 'AnalysisServiceDepartment',
         referenceClass = HoldingReference,
         widget = ReferenceWidget(
+            schemata = _("Description"),
             checkbox_bound = 1,
             label = _("Department"),
             description = _("The lab department responsible for the Analysis Service"),
@@ -190,6 +211,7 @@ schema = BikaSchema.copy() + Schema((
         index = 'FieldIndex',
         expression = "context.getCategory() and context.getCategory().Title() or ''",
         widget = ComputedWidget(
+            schemata = _("Description"),
             label = _("Analysis category"),
             visible = {'edit':'hidden', }
         ),
@@ -198,6 +220,7 @@ schema = BikaSchema.copy() + Schema((
         index = 'FieldIndex',
         expression = "context.getCategory() and context.getCategory().UID() or ''",
         widget = ComputedWidget(
+            schemata = _("Description"),
             label = _("Analysis category"),
             visible = {'edit':'hidden', }
         ),
@@ -215,6 +238,7 @@ schema = BikaSchema.copy() + Schema((
                            'errorvalue': _('Uncertainty value'),
                            },
         widget = RecordsWidget(
+            schemata = _("Uncertainties"),
             label = _("Uncertainty"),
             description = _("Specify the uncertainty value for a given range, e.g. for results "
                             "in a range with minimum of 0 and maximum of 10, the uncertainty "
@@ -229,17 +253,24 @@ schema = BikaSchema.copy() + Schema((
         required_subfields = ('Result',),
         subfield_labels = {'Result': 'Option Text',},
         widget = RecordsWidget(
+            schemata = _("Result options"),
             label = _("Result Options"),
             description = _("Please list all options for the Analysis result if you want to restrict "
                             "it to specific options only, e.g. 'Positive', 'Negative' and "
                             "'Indeterminable'"),
         ),
+        
+        
+        
     ),
 ))
 
 schema['id'].widget.visible = False
-schema['description'].schemata = 'default'
+schema['description'].schemata = 'Description'
 schema['description'].widget.visible = True
+schema['title'].required = True
+schema['title'].widget.visible = True
+schema['title'].schemata = 'Description'
 
 class AnalysisService(BaseContent, HistoryAwareMixin):
     security = ClassSecurityInfo()
