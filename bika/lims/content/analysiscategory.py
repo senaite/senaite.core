@@ -25,9 +25,7 @@ schema = BikaSchema.copy() + Schema((
         referenceClass = HoldingReference,
         widget = ReferenceWidget(
             checkbox_bound = 1,
-            label = 'Department',
-            label_msgid = 'label_department',
-            i18n_domain = I18N_DOMAIN,
+            label = _('Department'),
         ),
     ),
 ))
