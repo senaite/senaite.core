@@ -22,9 +22,12 @@ schema = BikaSchema.copy() + Schema((
                            'sub': 'Subtype',
                            'dup': 'Duplicate Of'},
         widget = WorksheetTemplateLayoutWidget(
-            label = 'Worksheet Layout',
-            label_msgid = 'label_positions',
-            i18n_domain = I18N_DOMAIN,
+            label = _("Worksheet Layout"),
+            description = _("Specify the size of the Worksheet, e.g. corresponding to a "
+                            "specific instrument's tray size. Then select an Analysis 'type' "
+                            "per Worksheet position. Where QC samples are selected, also select "
+                            "which Reference Sample should be used. If a duplicate analysis is "
+                            "selected, indicate which sample position it should be a duplicate of"),
         )
     ),
     ReferenceField('Service',
@@ -34,9 +37,8 @@ schema = BikaSchema.copy() + Schema((
         relationship = 'WorksheetTemplateAnalysisService',
         referenceClass = HoldingReference,
         widget = ServicesWidget(
-            label = 'Analysis service',
-            label_msgid = 'label_analysis',
-            i18n_domain = I18N_DOMAIN,
+            label = _("Analysis service"),
+            description = _("Select which Analyses should be included on the Worksheet"),
         )
     ),
 ))
