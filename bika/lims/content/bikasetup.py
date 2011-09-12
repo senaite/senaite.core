@@ -36,89 +36,74 @@ schema = BikaFolderSchema.copy() + Schema((
         required = 1,
         default = 0,
         widget = IntegerWidget(
-            label = 'Password lifetime',
-            label_msgid = 'label_password_lifetime',
-            description = 'The number of days before a password expires. 0 disables password expiry',
-            description_msgid = 'help_password_lifetime',
-            i18n_domain = I18N_DOMAIN,
+            label = _("Password lifetime"),
+            description = _("The number of days before a password expires. 0 disables password expiry"),
         )
     ),
     IntegerField('AutoLogOff',
         required = 1,
         default = 0,
         widget = IntegerWidget(
-            label = 'Automatic log-off',
-            label_msgid = 'label_auto_logoff',
-            description = 'The number of minutes before a user is automatically logged off. 0 disable automatic log-off',
-            description_msgid = 'help_auto_logoff',
-            i18n_domain = I18N_DOMAIN,
+            label = _("Automatic log-off"),
+            description = _("The number of minutes before a user is automatically logged off. "
+                            "0 disables automatic log-off"),
         )
     ),
     FixedPointField('MemberDiscount',
         default = '33.33',
         widget = DecimalWidget(
-            label = 'Member discount %',
-            label_msgid = 'label_memberdiscount_percentage',
-            description = 'Enter percentage value eg. 33.0',
-            description_msgid = 'help_memberdiscount_percentage',
-            i18n_domain = I18N_DOMAIN,
+            label = _("Member discount %"),
+            description = _("The discount percentage entered here, is applied to the prices for Clients "
+                            "flagged as 'members', normally co-operative members or associates deserving "
+                            "of this discount"),
         ),
     ),
     FixedPointField('VAT',
         default = '14.00',
         widget = DecimalWidget(
-            label = 'VAT %',
-            label_msgid = 'label_vat_percentage',
-            description = 'Enter percentage value eg. 14.0',
-            description_msgid = 'help_vat_percentage',
-            i18n_domain = I18N_DOMAIN,
+            label = _("VAT %"),
+            description = _("Enter percentage value eg. 14.0. This percentage is applied system wide "
+                            "but can be overwrittem on individual items"),
+            ),
         ),
     ),
     IntegerField('MinimumResults',
         required = 1,
         default = 5,
         widget = IntegerWidget(
-            label = 'Minimum number of results',
-            label_msgid = 'label_minimum_results',
-            description = 'The minimum number of results before ' \
-                        'QC statistics are shown',
-            description_msgid = 'help_minimum_results',
-            i18n_domain = I18N_DOMAIN,
+            label = _("Minimum number of results for QC stats calculations"),
+            description = _("Using to few data points does not make statistical sense. "
+                            "Set an acceaptable minimum number of results before QC statistics "
+                            "calculated an plotted"),
         )
     ),
     IntegerField('BatchEmail',
         required = 1,
         default = 5,
         widget = IntegerWidget(
-            label = 'Maximum requests per results email',
-            label_msgid = 'label_max_email',
-            description = 'The maximum number of analysis requests per ' \
-                        'results email',
-            description_msgid = 'help_max_email',
-            i18n_domain = I18N_DOMAIN,
+            label = _("Maximum columns per results email"),
+            description = _("Set the maximum number of analysis requests per results email. "
+                            "Too many columns per email are difficult to read for many clients "
+                            "who prefer fewer results per email"),
         )
     ),
     IntegerField('BatchFax',
         required = 1,
         default = 4,
         widget = IntegerWidget(
-            label = 'Maximum requests per results fax',
-            label_msgid = 'label_max_fax',
-            description = 'The maximum number of analysis requests per ' \
-                        'results fax',
-            description_msgid = 'help_max_fax',
-            i18n_domain = I18N_DOMAIN,
+            label = _("Maximum columns per results fax"),
+            description = _("Too AR columns per fax will see the font size minimised and could "
+                            "render faxes illegible. 4 ARs maximum per page is recommended"),
         )
     ),
     # XXX stringfield, chars to strip from cell number
     StringField('SMSGatewayAddress',
         required = 0,
         widget = StringWidget(
-            label = 'SMS Gateway Email Address',
-            label_msgid = 'label_email2smsserver',
-            description = 'The email to SMS Gateway address.  Either a complete email address, or just the domain, like this: "@2way.co.za"; in the second case, the contact\'s Mobile Phone number will be prepended',
-            description_msgid = 'help_email2smsaddress',
-            i18n_domain = I18N_DOMAIN,
+            label = _("SMS Gateway Email Address"),
+            description = _("The email to SMS Gateway address. Either a complete email address, "
+                             "or just the domain, e.g. '@2way.co.za', the contact's mobile phone "
+                             "number will be prepended to"),
         ),
     ),
     ReferenceField('DryMatterService',
@@ -128,10 +113,8 @@ schema = BikaFolderSchema.copy() + Schema((
         relationship = 'SetupDryAnalysisService',
         referenceClass = HoldingReference,
         widget = ReferenceWidget(
-            label = 'Dry matter analysis',
-            label_msgid = 'label_dry_matter_analysis',
-            description = 'The analysis to be used for determining dry matter',
-            i18n_domain = I18N_DOMAIN,
+            label = _("Dry matter analysis"),
+            description = _("The analysis to be used for determining dry matter."),
         )
     ),
     ReferenceField('MoistureService',
@@ -141,51 +124,60 @@ schema = BikaFolderSchema.copy() + Schema((
         relationship = 'SetupMoistAnalysisService',
         referenceClass = HoldingReference,
         widget = ReferenceWidget(
-            label = 'Moisture analysis',
-            label_msgid = 'label_moisture_analysis',
-            description = 'The analysis to be used for determining moisture',
-            i18n_domain = I18N_DOMAIN,
+            label = _("Moisture analysis"),
+            description = _("The analysis to be used for determining moisture"),
         )
     ),
     LinesField('ARImportOption',
         vocabulary = ARIMPORT_OPTIONS,
         widget = MultiSelectionWidget(
-            label = 'AR Import options',
-            label_msgid = 'label_arimport_option',
+            label = _("AR Import options"),
+            description = _("'Classic' indicates importing Analysis Requests per Sample and "
+                            "Analysis Services selection. With 'Profiles', Analysis Profile keywords "
+                            "are used to select multiple Analysis Services together"),
         ),
     ),
     StringField('ARAttachmentOption',
         default = 'p',
         vocabulary = ATTACHMENT_OPTIONS,
         widget = SelectionWidget(
-            label = 'AR Attachment option',
-            label_msgid = 'label_attachment_option',
+            label = _("AR Attachment option"),
+            description = _("The default configuration for used system wide to indicate "
+                            "whether file attachments are required, permitted or not "
+                            "per Analysis Request"),
         ),
     ),
     StringField('AnalysisAttachmentOption',
         default = 'p',
         vocabulary = ATTACHMENT_OPTIONS,
         widget = SelectionWidget(
-            label = 'Analysis Attachment option',
-            label_msgid = 'label_attachment_option',
+            label = _("Analysis Attachment option"),
+            description = _("Same as the above, but sets the default on Anlaysis Services. "
+                            "This setting can be set per individual Analysis on its "
+                            "own configuration"),
         ),
     ),
     IntegerField('DefaultSampleLifetime',
         required = 1,
         default = 30,
         widget = IntegerWidget(
-            label = 'Default sample retention period',
-            label_msgid = 'label_def_sample_life',
-            description = 'The number of days from creation of analysis request ' \
-                        'to diposal of sample',
-            description_msgid = 'help_def_sample_life',
-            i18n_domain = I18N_DOMAIN,
+            label = _("Default sample retention period"),
+            description = _("The number of days before a Sample expires and cannot be analysed "
+                            "any more. This setting can be overwritten per individual Sample Type "
+                            "in the Sample Types setup"),
         )
     ),
     PrefixesField('Prefixes',
          fixedSize=8,
          widget=RecordsWidget(
+            label = _("Prefixes"),
+            description = _("Define the prefixes for the unique sequential IDs the system issus "
+                            "for objects such as Samples and Analysis Requests. In the 'Padding' "
+                            "field, indicate with how many leading zeros the numbers must be padded. "
+                            "E.g. a prefix of AR with padding of 4 for Analysis requests, will see "
+                            "them numbered from AR0001 to AR9999"),
             allowDelete=False),
+        )  
     ),
 ))
 schema['title'].validators = ()
