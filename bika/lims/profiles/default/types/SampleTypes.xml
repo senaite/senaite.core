@@ -3,7 +3,9 @@
    meta_type="Factory-based Type Information with dynamic views"
    xmlns:i18n="http://xml.zope.org/namespaces/i18n">
  <property name="title">Sample Types</property>
- <property name="description"></property>
+ <property name="description">
+   Sample Types used to categorise Samples 
+ </property>
  <property name="content_icon">++resource++bika.lims.images/sampletype.png</property>
  <property name="content_meta_type">SampleTypes</property>
  <property name="product">bika.lims</property>

@@ -4,7 +4,7 @@
    xmlns:i18n="http://xml.zope.org/namespaces/i18n">
  <property name="title">Sample Type</property>
  <property name="description">
- 	Configure Sample Types analyzed by the lab
+ 	Sample Types used to categorise Samples
  </property>
  <property name="content_icon">++resource++bika.lims.images/sampletype.png</property>
  <property name="content_meta_type">SampleType</property>
