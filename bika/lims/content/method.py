@@ -26,6 +26,9 @@ schema = BikaSchema.copy() + Schema((
 
 schema['description'].schemata = 'default'
 schema['description'].widget.visible = True
+schema['description'].widget.label = _("Description")
+schema['description'].widget.description = _("Describes the method in layman terms. This information is made available to lab clients")
+
 
 class Method(BaseFolder):
     security = ClassSecurityInfo()
