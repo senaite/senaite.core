@@ -1,5 +1,6 @@
 from Products.CMFCore.utils import getToolByName
 import plone, json, sys, math, urllib
+from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
 
 class AJAXCalculateAnalysisEntry():

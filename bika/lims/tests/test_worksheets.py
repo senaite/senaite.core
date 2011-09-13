@@ -33,7 +33,8 @@ class Tests(unittest.TestCase):
         self.portal.portal_workflow.doActionFor(ar_2, 'receive')
         request = self.portal.REQUEST
         request['REQUEST_METHOD'] = 'POST'
-        form = {'wstemplate':self.portal.bika_setup.bika_worksheettemplates.worksheettemplate_1.UID()}
+        form = {'test_worksheet_id':'ws_1',
+                'wstemplate':self.portal.bika_setup.bika_worksheettemplates.worksheettemplate_1.UID()}
         request['form'] = form
         WorksheetAddView(self.portal.worksheets, request)()
         import pdb;pdb.set_trace()

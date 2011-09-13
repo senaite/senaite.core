@@ -96,25 +96,28 @@ class BikaLimsLayer(PloneSandboxLayer):
                  {'pos':'6', 'type':'d', 'sub':'', 'dup':'2'}],
             Service=[services.ash.UID(),services.fibre.UID(),services.protein.UID(),services.titration.UID()])
         client_1.invokeFactory("Sample", id = 'sample_1')
-        client_1.sample_1.processForm()
         client_1.sample_1.edit(
-            SamplePoint = portal.bika_setup.bika_samplepoints.samplepoint_1.UID(),
-            SampleType = portal.bika_setup.bika_sampletypes.sampletype_1.UID(),
+            SampleID = "sample_1",
+            LastARNumber = 0,
+            DateSubmitted = DateTime.DateTime(),
+            SamplePoint = "Sample Point 1",
+            SampleType = "Sample Type 1",
             ClientReference = 'Client Reference',
             ClientSampleID = 'Client Sample ID',
             Contact = client_1.contact_1.UID(),
             DateSampled = DateTime.DateTime())
+        client_1.sample_1.processForm()
         client_1.sample_1.reindexObject()
         client_1.invokeFactory("AnalysisRequest", id='ar_1')
         ar_1 = client_1.ar_1
         ar_1.processForm()
-        ar_1.setSample(client_1.sample_1.UID())
+        ar_1.setSample(client_1.sample_1)
         ar_1.setAnalyses([services.fibre.UID(), services.ash.UID(), services.titration.UID(), services.energy.UID(), services.protein.UID()],
                          prices={services.fibre.UID():'10.00', services.ash.UID():'10.00', services.titration.UID():'10.00', services.energy.UID():'10.00', services.protein.UID():'10.00'})
         client_1.invokeFactory("AnalysisRequest", id='ar_2')
         ar_2 = client_1.ar_2
         ar_2.processForm()
-##        ar_2.setSample(client_1.sample_1.UID())
+        ar_2.setSample(client_1.sample_1.UID())
         ar_2.setAnalyses([services.ash.UID(), services.fibre.UID()],
                          prices={services.ash.UID():'10.00', services.fibre.UID():'10.00'})
 

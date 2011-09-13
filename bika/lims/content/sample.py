@@ -213,13 +213,13 @@ class Sample(BaseFolder, HistoryAwareMixin):
             portal = self.portal_url.getPortalObject()
             sps = self.portal_catalog(
                 portal_type = 'SamplePoint',
-                sortable_title = sortable_title(portal, value)
+                title = value
             )
             if sps:
                 sp_uid = sps[0].UID
             else:
                 # add the SamplePoint
-                folder = portal.bika_samplepoints
+                folder = portal.bika_setup.bika_samplepoints
                 sp_id = folder.generateUniqueId('SamplePoint')
                 folder.invokeFactory(id = sp_id, type_name = 'SamplePoint')
                 sp = folder[sp_id]
