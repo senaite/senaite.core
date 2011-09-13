@@ -1,0 +1,30 @@
+<div id="portal-colophon"
+     metal:define-macro="colophon"
+     i18n:domain="plone">
+<metal:slot define-slot="colophon" />
+<div class="colophonWrapper">
+
+      <a href="http://www.bikalabs.com">
+
+	<img src=""
+	     height="18"
+	     width="76"
+	     alt="Powered by bika"
+	     title="This lab site was built using bika lab information management system. Click for more information."
+	     tal:attributes="src string:++resource++bika.lims.images/logobikalabsfooter.png"
+	     i18n:attributes="alt; title" />
+      </a>
+
+        &nbsp;
+      <a href="http://plone.org">
+	<img src=""
+	     height="15"
+	     width="80"
+	     alt="Powered by Plone"
+	     title="This Plone site was built using the Plone Content Management System. Click for more information."
+	     tal:attributes="src string:++resource++bika.lims.images/plone_logo.png"
+	     i18n:attributes="alt; title" />
+      </a>
+
+</div>
+</div>
