@@ -153,7 +153,7 @@ table.analysisrequest input {
 }
 
 .delAttachmentButton {
-    background: &dtml-globalBackgroundColor; url(&dtml-portal_url;/images/delete.png) center center no-repeat;
+    background: &dtml-globalBackgroundColor; url(++resource++bika.lims.images.delete.png) center center no-repeat;
     border: &dtml-borderWidth; &dtml-borderStyle; &dtml-globalBorderColor; ! important;
     cursor: pointer;
     height: 15px;
@@ -161,7 +161,7 @@ table.analysisrequest input {
 
 }
 .removeButton {
-    background: &dtml-globalBackgroundColor; url(&dtml-portal_url;/images/delete.png) center center no-repeat;
+    background: &dtml-globalBackgroundColor; url(++resource++bika.lims.images.delete.png) center center no-repeat;
     border: &dtml-borderWidth; &dtml-borderStyle; &dtml-globalBorderColor; ! important;
     cursor: pointer;
     height: 15px;
@@ -403,7 +403,7 @@ select.worksheet {
 
 }
 .copyButton {
-    background: &dtml-backgroundColor; url(++resource++bika.lims.images/copy.png) center center no-repeat;
+    background: &dtml-backgroundColor; url(++resource++bika.lims.images.copy.png) center center no-repeat;
     border: none ! important;
     cursor: pointer;
     height: 18px;

@@ -157,7 +157,7 @@
                     style="display:none"
                     tal:attributes="
                         id string:deleteSampleButton_${column};
-                        src string:${portal/absolute_url}/images/delete.png;
+                        src string:++resource++bika.lims.images/delete.png;
                         column column"/>
             </td>
         </tal:linksample>
