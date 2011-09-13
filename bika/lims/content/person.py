@@ -12,7 +12,6 @@ from bika.lims import bikaMessageFactory as _
 
 schema = BikaSchema.copy() + Schema((
     StringField('Salutation',
-        schemata = 'Default',
         widget = StringWidget(
             label = 'Title',
             label_msgid = 'label_salutation',
@@ -21,7 +20,6 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     StringField('Firstname',
-        schemata = 'Default',
         required = 1,
         widget = StringWidget(
             label = 'Firstname',
@@ -29,7 +27,6 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     StringField('Surname',
-        schemata = 'Default',
         required = 1,
         widget = StringWidget(
             label = 'Surname',
@@ -37,7 +34,6 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     ComputedField('Fullname',
-        schemata = 'Default',
         expression = 'context.getFullname()',
         searchable = 1,
         widget = ComputedWidget(
@@ -90,14 +86,12 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     StringField('JobTitle',
-        schemata = 'Default',
         widget = StringWidget(
             label = 'Job title',
             label_msgid = 'label_jobtitle',
         ),
     ),
     StringField('Department',
-        schemata = 'Default',
         widget = StringWidget(
             label = 'Department',
             label_msgid = 'label_department',
