@@ -311,11 +311,11 @@ jQuery( function($) {
 
 		// DateSampled field is readonly to prevent invalid data entry, so
 		// clicking date_sampled field clears existing values.
-		$('input[id$="_DateSampled"]').datepicker({'dateFormat': 'yy-mm-dd', showAnim: ''})
-			.click(function(){$(this).attr('value', '');});
-
-		//clear date widget values if the page is reloaded.
-		$('input[id$="_DateSampled"]').attr('value', '');
+		// clear date widget values if the page is reloaded.
+		$('input[id$="_DateSampled"]')
+			.datepicker({'dateFormat': 'M dd, yy', showAnim: ''})
+			.click(function(){$(this).attr('value', '');})
+			.attr('value', '');
 
 		$(".sampletype").autocomplete({ minLength: 0, source: autocomplete_sampletype});
 		$(".samplepoint").autocomplete({ minLength: 0, source: autocomplete_samplepoint});
@@ -456,8 +456,10 @@ jQuery( function($) {
 			$("#ar_"+column+"_SampleID_button").val($("#ar_"+column+"_SampleID_default").val());
 			$("#ar_"+column+"_SampleID").val('');
 			$("#ar_"+column+"_ClientReference").val('').removeAttr("readonly");
-			$("#ar_"+column+"_DateSampled").val('').removeAttr("readonly");
-			$("#ar_"+column+"_DateSampled").datepicker({'dateFormat': 'yy-mm-dd'});
+			$("#ar_"+column+"_DateSampled")
+				.datepicker({'dateFormat': 'M dd, yy', showAnim: ''})
+				.click(function(){$(this).attr('value', '');})
+				.attr('value', '');
 			$("#ar_"+column+"_ClientSampleID").val('').removeAttr("readonly");
 			$("#ar_"+column+"_SamplePoint").val('').removeAttr("readonly");
 			$("#ar_"+column+"_SampleType").val('').removeAttr("readonly");

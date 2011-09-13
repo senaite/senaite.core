@@ -9,8 +9,11 @@ $(document).ready(function(){
 		window.opener.$("#ar_"+column+"_SampleID_button").val(item_data['SampleID']);
 		window.opener.$("#ar_"+column+"_SampleID").val(item_data['SampleID']);
 		window.opener.$("#deleteSampleButton_" + column).toggle(true);
-		window.opener.$("#ar_"+column+"_DateSampled").val(item_data['DateSampled']).attr('readonly', true);
-		window.opener.$("#ar_"+column+"_DateSampled").unbind();
+		window.opener.$("#ar_"+column+"_DateSampled")
+			.val(item_data['DateSampled'])
+			.removeClass('hasDatepicker')
+			.removeData('datepicker')
+			.unbind();
 		window.opener.$("#ar_"+column+"_ClientReference").val(item_data['ClientReference']).attr('readonly', true);
 		window.opener.$("#ar_"+column+"_ClientSampleID").val(item_data['ClientSampleID']).attr('readonly', true);
 		window.opener.$("#ar_"+column+"_SampleType").val(item_data['SampleType']).attr('readonly', true);
