@@ -46,7 +46,7 @@
 				tal:condition="python:col_count > 1"
 				tal:attributes="
 					id string:${service/UID};
-					src string:${portal/absolute_url}/images/copy.png"/>
+					src string:++resources++bika.lims.images/copy.png"/>
 		</td>
 		<tal:i define="serviceUID service/UID;serviceTitle service/Title">
 			<tal:i repeat="column python:range(int(view.request['col_count']))">

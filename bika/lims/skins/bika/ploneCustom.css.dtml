@@ -403,7 +403,7 @@ select.worksheet {
 
 }
 .copyButton {
-    background: &dtml-backgroundColor; url(&dtml-portal_url;/copy.png) center center no-repeat;
+    background: &dtml-backgroundColor; url(++resource++bika.lims.images/copy.png) center center no-repeat;
     border: none ! important;
     cursor: pointer;
     height: 18px;
