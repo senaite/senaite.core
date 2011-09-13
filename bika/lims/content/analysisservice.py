@@ -12,7 +12,7 @@ from bika.lims.interfaces import IAnalysisService
 from bika.lims.browser.widgets import ServicesWidget, RecordsWidget, \
      DurationWidget
 from bika.lims.config import ATTACHMENT_OPTIONS, I18N_DOMAIN, PROJECTNAME, \
-    POINTS_OF_CAPTURE
+    SERVICE_POINT_OF_CAPTURE
 from bika.lims.content.bikaschema import BikaSchema
 from zope.interface import implements
 import sys
@@ -162,7 +162,7 @@ schema = BikaSchema.copy() + Schema((
         schemata = _("Description"),
         required = 1,
         default = 'lab',
-        vocabulary = POINTS_OF_CAPTURE,
+        vocabulary = SERVICE_POINT_OF_CAPTURE,
         widget = SelectionWidget(
             format = 'flex',
             label = _("Point of Capture"),
