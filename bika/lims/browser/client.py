@@ -587,6 +587,12 @@ class ClientContactsView(BikaListingView):
         for x in range(len(items)):
             if not items[x].has_key('obj'): continue
 
+            obj = items[x]['obj'].getObject()
+            items[x]['getFullname'] = obj.getFullname()
+            items[x]['getEmailAddress'] = obj.getEmailAddress()
+            items[x]['getBusinessPhone'] = obj.getBusinessPhone()
+            items[x]['getMobilePhone'] = obj.getMobilePhone()
+
             items[x]['replace']['getFullName'] = "<a href='%s'>%s</a>" % \
                  (items[x]['url'], items[x]['getFullname'])
 

@@ -37,7 +37,6 @@ class Tests(unittest.TestCase):
                 'wstemplate':self.portal.bika_setup.bika_worksheettemplates.worksheettemplate_1.UID()}
         request['form'] = form
         WorksheetAddView(self.portal.worksheets, request)()
-        import pdb;pdb.set_trace()
 
 def test_suite():
     suite = unittest.TestSuite()

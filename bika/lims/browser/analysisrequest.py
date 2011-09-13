@@ -241,10 +241,10 @@ class AnalysisRequestViewView(BrowserView):
         rc = getToolByName(self.context, 'reference_catalog')
         result = []
         cats = {}
-        for analysis in self.context.getAnalyses():
+        for analysis in self.context.getAnalyses(full_objects=True):
             if analysis.review_state == 'not_requested':
                 continue
-            service = rc.lookupObject(analysis.getServiceUID())
+            service = analysis.getService()
             category_name = service.getCategoryName()
             if not category_name in cats:
                 cats[category_name] = {}
@@ -424,48 +424,48 @@ class AnalysisRequestContactCCs(BrowserView):
                            ",".join(cc_titles)])
 
 class AnalysisRequestSelectCCView(BikaListingView):
-    """ The CC Selector popup window uses this view"""
-    contentFilter = {'portal_type': 'Contact',
-                     'inactive_review_state': 'active'}
-    content_add_actions = {}
-    title = "Contacts to CC"
-    description = ''
-    show_editable_border = False
-    show_sort_column = False
-    show_select_row = False
-    show_select_column = True
-    pagesize = 20
 
-    columns = {
-        'getFullname': {'title': _('Full Name')},
-        'getEmailAddress': {'title': _('Email Address')},
-        'getBusinessPhone': {'title': _('Business Phone')},
-        'getMobilePhone': {'title': _('Mobile Phone')},
-    }
-    review_states = [
-        {'title': _('All'), 'id':'all',
-         'columns': ['getFullname',
-                     'getEmailAddress',
-                     'getBusinessPhone',
-                     'getMobilePhone'],
-         'buttons':[{'cssclass': 'context select_cc_select',
-                     'title': _('Add to CC list'),
-                     'url': ''}]},
-    ]
+    template = ViewPageTemplateFile("templates/analysisrequest_select_cc.pt")
 
     def __init__(self, context, request):
-        super(AnalysisRequestSelectCCView, self).__init__(context, request)
-        self.title = "%s: %s" % (self.context.Title(), _("Contacts to CC"))
-        self.description = ""
+        super(AnalysisRequestSelectSampleView, self).__init__(context, request)
+        self.title = _("Contacts to CC")
+        self.description = _("Select the contacts that will receive analysis results for this request.")
+        self.contentFilter = {'portal_type': 'Contact',
+                              'inactive_review_state': 'active'}
+        self.show_editable_border = False
+        self.show_sort_column = False
+        self.show_select_row = False
+        self.show_select_column = False
+        self.pagesize = 25
 
-    def __call__(self):
-        return self.contents_table()
+        self.columns = {
+            'getFullname': {'title': _('Full Name')},
+            'getEmailAddress': {'title': _('Email Address')},
+            'getBusinessPhone': {'title': _('Business Phone')},
+            'getMobilePhone': {'title': _('Mobile Phone')},
+        }
+        self.review_states = [
+            {'title': _('All'), 'id':'all',
+             'columns': ['getFullname',
+                         'getEmailAddress',
+                         'getBusinessPhone',
+                         'getMobilePhone'],
+             'butt1ons':[{'cssclass': 'context select_cc_select',
+                         'title': _('Add to CC list'),
+                         'url': ''}]},
+        ]
 
     @property
     def folderitems(self):
         items = BikaListingView.folderitems(self)
         for x,item in enumerate(items):
             if not items[x].has_key('obj'): continue
+            obj = items[x]['obj'].getObject()
+            items[x]['getFullname'] = obj.getFullname()
+            items[x]['getEmailAddress'] = obj.getEmailAddress()
+            items[x]['getBusinessPhone'] = obj.getBusinessPhone()
+            items[x]['getMobilePhone'] = obj.getMobilePhone()
             if items[x]['uid'] in self.request.get('hide_uids', ''): continue
             if items[x]['uid'] in self.request.get('selected_uids', ''):
                 items[x]['checked'] = True
@@ -499,17 +499,20 @@ class AnalysisRequestSelectSampleView(BikaListingView):
         self.review_states = [
             {'title': _('All'), 'id':'all',
              'columns': ['getSampleID',
+                         'getClientReference',
                          'getClientSampleID',
                          'SampleType',
                          'SamplePoint',
                          'state_title']},
             {'title': _('Due'), 'id':'due',
              'columns': ['getSampleID',
+                         'getClientReference',
                          'getClientSampleID',
                          'SampleType',
                          'SamplePoint']},
             {'title': _('Received'), 'id':'received',
              'columns': ['getSampleID',
+                         'getClientReference',
                          'getClientSampleID',
                          'SampleType',
                          'SamplePoint',
@@ -527,6 +530,9 @@ class AnalysisRequestSelectSampleView(BikaListingView):
             if items[x]['uid'] in self.request.get('selected_uids', ''):
                 items[x]['checked'] = True
             items[x]['view_url'] = obj.absolute_url() + "/view"
+            items[x]['getClientReference'] = obj.getClientReference()
+            items[x]['getClientSampleID'] = obj.getClientSampleID()
+            items[x]['getSampleID'] = obj.getSampleID()
             items[x]['SampleType'] = obj.getSampleType().Title()
             items[x]['SamplePoint'] = obj.getSamplePoint() and \
                  obj.getSamplePoint().Title()
@@ -559,8 +565,8 @@ class AnalysisRequestSelectSampleView(BikaListingView):
         res = {}
         ars = sample.getAnalysisRequests()
         if len(ars) > 0:
-            for analysis in ars[0].getAnalyses():
-                service = rc.lookupObject(analysis.getServiceUID)
+            for analysis in ars[0].getAnalyses(full_objects=True):
+                service = analysis.getService()
                 if service.getPointOfCapture() == 'field':
                     catuid = service.getCategoryUID()
                     if res.has_key(catuid):
@@ -909,10 +915,10 @@ class AJAXAnalysisRequestSubmit():
                     profile_id = self.context.generateUniqueId('ARProfile')
                     self.context.invokeFactory(id = profile_id,
                                                type_name = 'ARProfile')
-                    analyses = ar.getAnalyses()
+                    analyses = ar.getAnalyses(full_objects=True)
                     services_array = []
                     for a in analyses:
-                        services_array.append(a.getServiceUID)
+                        services_array.append(a.getServiceUID())
                     profile = self.context[profile_id]
                     profile.edit(title = values['profileTitle'],
                                  Service = services_array)

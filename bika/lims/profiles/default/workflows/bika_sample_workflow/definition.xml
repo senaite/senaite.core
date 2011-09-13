@@ -16,7 +16,7 @@
                   acquired="False">
    <permission-role>Manager</permission-role>
    <permission-role>LabManager</permission-role>
-   <permission-role>LabTechnician</permission-role>
+   <permission-role>Analyst</permission-role>
    <permission-role>LabClerk</permission-role>
    <permission-role>Owner</permission-role>
   </permission-map>
@@ -24,7 +24,7 @@
                   acquired="False">
    <permission-role>Manager</permission-role>
    <permission-role>LabManager</permission-role>
-   <permission-role>LabTechnician</permission-role>
+   <permission-role>Analyst</permission-role>
    <permission-role>LabClerk</permission-role>
   </permission-map>
   <permission-map name="BIKA: Retract sample"
@@ -37,14 +37,14 @@
   <permission-map name="BIKA: View Results" acquired="False">
    <permission-role>Manager</permission-role>
    <permission-role>LabManager</permission-role>
-   <permission-role>LabTechnician</permission-role>
+   <permission-role>Analyst</permission-role>
    <permission-role>LabClerk</permission-role>
    <permission-role>Owner</permission-role>
   </permission-map>
   <permission-map name="Delete objects" acquired="False">
    <permission-role>Manager</permission-role>
    <permission-role>LabManager</permission-role>
-   <permission-role>LabTechnician</permission-role>
+   <permission-role>Analyst</permission-role>
    <permission-role>LabClerk</permission-role>
    <permission-role>Owner</permission-role>
   </permission-map>
@@ -52,7 +52,7 @@
                   acquired="False">
    <permission-role>Manager</permission-role>
    <permission-role>LabManager</permission-role>
-   <permission-role>LabTechnician</permission-role>
+   <permission-role>Analyst</permission-role>
    <permission-role>LabClerk</permission-role>
    <permission-role>Owner</permission-role>
   </permission-map>
@@ -69,7 +69,7 @@
                   acquired="False">
    <permission-role>Manager</permission-role>
    <permission-role>LabManager</permission-role>
-   <permission-role>LabTechnician</permission-role>
+   <permission-role>Analyst</permission-role>
    <permission-role>LabClerk</permission-role>
   </permission-map>
   <permission-map name="BIKA: Retract sample"
@@ -79,26 +79,26 @@
                   acquired="False">
    <permission-role>Manager</permission-role>
    <permission-role>LabManager</permission-role>
-   <permission-role>LabTechnician</permission-role>
+   <permission-role>Analyst</permission-role>
    <permission-role>LabClerk</permission-role>
   </permission-map>
   <permission-map name="BIKA: View Results" acquired="False">
    <permission-role>Manager</permission-role>
    <permission-role>LabManager</permission-role>
-   <permission-role>LabTechnician</permission-role>
+   <permission-role>Analyst</permission-role>
    <permission-role>LabClerk</permission-role>
   </permission-map>
   <permission-map name="Delete objects" acquired="False">
    <permission-role>Manager</permission-role>
    <permission-role>LabManager</permission-role>
-   <permission-role>LabTechnician</permission-role>
+   <permission-role>Analyst</permission-role>
    <permission-role>LabClerk</permission-role>
   </permission-map>
   <permission-map name="Modify portal content"
                   acquired="False">
    <permission-role>Manager</permission-role>
    <permission-role>LabManager</permission-role>
-   <permission-role>LabTechnician</permission-role>
+   <permission-role>Analyst</permission-role>
    <permission-role>LabClerk</permission-role>
   </permission-map>
  </state>
@@ -126,7 +126,7 @@
   <permission-map name="BIKA: View Results" acquired="False">
    <permission-role>Manager</permission-role>
    <permission-role>LabManager</permission-role>
-   <permission-role>LabTechnician</permission-role>
+   <permission-role>Analyst</permission-role>
    <permission-role>LabClerk</permission-role>
    <permission-role>Owner</permission-role>
   </permission-map>
@@ -157,7 +157,7 @@
   <permission-map name="BIKA: View Results" acquired="False">
    <permission-role>Manager</permission-role>
    <permission-role>LabManager</permission-role>
-   <permission-role>LabTechnician</permission-role>
+   <permission-role>Analyst</permission-role>
    <permission-role>LabClerk</permission-role>
    <permission-role>Owner</permission-role>
   </permission-map>

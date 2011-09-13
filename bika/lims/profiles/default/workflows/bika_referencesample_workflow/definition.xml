@@ -11,20 +11,20 @@
                   acquired="False">
    <permission-role>Manager</permission-role>
    <permission-role>LabManager</permission-role>
-   <permission-role>LabTechnician</permission-role>
+   <permission-role>Analyst</permission-role>
    <permission-role>LabClerk</permission-role>
   </permission-map>
   <permission-map name="Delete objects" acquired="False">
    <permission-role>Manager</permission-role>
    <permission-role>LabManager</permission-role>
-   <permission-role>LabTechnician</permission-role>
+   <permission-role>Analyst</permission-role>
    <permission-role>LabClerk</permission-role>
   </permission-map>
   <permission-map name="Modify portal content"
                   acquired="False">
    <permission-role>Manager</permission-role>
    <permission-role>LabManager</permission-role>
-   <permission-role>LabTechnician</permission-role>
+   <permission-role>Analyst</permission-role>
    <permission-role>LabClerk</permission-role>
   </permission-map>
  </state>
@@ -34,7 +34,7 @@
                   acquired="False">
    <permission-role>Manager</permission-role>
    <permission-role>LabManager</permission-role>
-   <permission-role>LabTechnician</permission-role>
+   <permission-role>Analyst</permission-role>
    <permission-role>LabClerk</permission-role>
   </permission-map>
   <permission-map name="Modify portal content"
@@ -48,14 +48,14 @@
                   acquired="False">
    <permission-role>Manager</permission-role>
    <permission-role>LabManager</permission-role>
-   <permission-role>LabTechnician</permission-role>
+   <permission-role>Analyst</permission-role>
    <permission-role>LabClerk</permission-role>
   </permission-map>
   <permission-map name="Modify portal content"
                   acquired="False">
    <permission-role>Manager</permission-role>
    <permission-role>LabManager</permission-role>
-   <permission-role>LabTechnician</permission-role>
+   <permission-role>Analyst</permission-role>
    <permission-role>LabClerk</permission-role>
   </permission-map>
  </state>

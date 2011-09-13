@@ -20,7 +20,7 @@
   <permission-map name="Delete objects" acquired="False">
    <permission-role>Manager</permission-role>
    <permission-role>LabManager</permission-role>
-   <permission-role>LabTechnician</permission-role>
+   <permission-role>Analyst</permission-role>
    <permission-role>LabClerk</permission-role>
    <permission-role>Owner</permission-role>
   </permission-map>
@@ -28,7 +28,7 @@
                   acquired="False">
    <permission-role>Manager</permission-role>
    <permission-role>LabManager</permission-role>
-   <permission-role>LabTechnician</permission-role>
+   <permission-role>Analyst</permission-role>
    <permission-role>LabClerk</permission-role>
    <permission-role>Owner</permission-role>
   </permission-map>

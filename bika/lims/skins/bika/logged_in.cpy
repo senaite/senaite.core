@@ -47,7 +47,7 @@ if 'clients' in member_groups:
     for obj in context.clients.objectValues():
         if member.id in obj.users_with_local_role('Owner'):
             return context.REQUEST.response.redirect(obj.absolute_url())
-elif 'labtechnicians' in member_groups:
+elif 'analysts' in member_groups:
     context.REQUEST.RESPONSE.redirect(context.worksheets.absolute_url())
 
 return state

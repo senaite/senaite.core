@@ -90,7 +90,7 @@ class BikaGenerator:
         # add roles
         for role in ('LabManager',
                      'LabClerk',
-                     'LabTechnician',
+                     'Analyst',
                      'Verifier',
                      'Publisher',
                      'Member',
@@ -111,9 +111,9 @@ class BikaGenerator:
             portal_groups.addGroup('labclerks', title = "Lab Clerks",
                 roles = ['Member', 'LabClerk'])
 
-        if 'labtechnicians' not in portal_groups.listGroupIds():
-            portal_groups.addGroup('labtechnicians', title = "Lab Technicians",
-                roles = ['Member', 'LabTechnician'])
+        if 'analysts' not in portal_groups.listGroupIds():
+            portal_groups.addGroup('analysts', title = "Lab Technicians",
+                roles = ['Member', 'Analyst'])
 
         if 'verifiers' not in portal_groups.listGroupIds():
             portal_groups.addGroup('verifiers', title = "Verifiers",
@@ -149,7 +149,7 @@ class BikaGenerator:
            ['Manager',
             'LabManager',
             'LabClerk',
-            'LabTechnician'], 1)
+            'Analyst'], 1)
         mp(permissions.DeleteObjects,
            ['Manager',
             'LabManager',
@@ -159,7 +159,7 @@ class BikaGenerator:
            ['Manager',
             'LabManager',
             'LabClerk',
-            'LabTechnician',
+            'Analyst',
             'Owner'], 1)
 
         mp(permissions.ManageUsers,
@@ -183,7 +183,7 @@ class BikaGenerator:
             ['Manager',
              'LabManager',
              'LabClerk',
-             'LabTechnician'], 1)
+             'Analyst'], 1)
         mp(ManageOrders,
             ['Manager',
              'LabManager',
@@ -192,22 +192,22 @@ class BikaGenerator:
             ['Manager',
              'LabManager',
              'LabClerk',
-             'LabTechnician'], 1)
+             'Analyst'], 1)
         mp(ManageSample,
             ['Manager',
              'LabManager',
              'LabClerk',
-             'LabTechnician'], 1)
+             'Analyst'], 1)
         mp(ManageReferenceSuppliers,
             ['Manager',
              'LabManager',
              'LabClerk',
-             'LabTechnician'], 1)
+             'Analyst'], 1)
         mp(ManageReference,
             ['Manager',
              'LabManager',
              'LabClerk',
-             'LabTechnician'], 1)
+             'Analyst'], 1)
         mp(ViewResults,
             ['Manager',
              'LabManager',
@@ -230,7 +230,7 @@ class BikaGenerator:
         mp(ReceiveSample,
             ['Manager', 'LabManager', 'LabClerk'], 1)
         mp(SubmitSample,
-            ['Manager', 'LabManager', 'LabClerk', 'LabTechnician'], 1)
+            ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 1)
         mp(VerifyResults,
             ['Manager', 'LabManager', 'Reviewer', 'Verifier'], 1)
         mp(PublishSample,
@@ -238,9 +238,9 @@ class BikaGenerator:
         mp(RetractSample,
             ['Manager', 'LabManager', 'LabClerk', 'Reviewer', 'Verifier'], 1)
         mp(ImportSample,
-            ['Manager', 'LabManager', 'LabClerk', 'LabTechnician'], 1)
+            ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 1)
         mp(SubmitWorksheet,
-            ['Manager', 'LabManager', 'LabClerk', 'LabTechnician'], 1)
+            ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 1)
         mp(VerifyWorksheet,
             ['Manager', 'LabManager', 'Reviewer', 'Verifier'], 1)
         mp(RetractWorksheet,
@@ -250,48 +250,48 @@ class BikaGenerator:
 
         # Worksheet permissions
         mp(AssignAnalyses,
-            ['Manager', 'LabManager', 'LabClerk', 'LabTechnician'], 1)
+            ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 1)
         mp(DeleteAnalyses,
-            ['Manager', 'LabManager', 'LabClerk', 'LabTechnician'], 1)
+            ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 1)
         mp(SubmitResults,
-            ['Manager', 'LabManager', 'LabClerk', 'LabTechnician'], 1)
+            ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 1)
 
         mp = portal.clients.manage_permission
         mp(permissions.ListFolderContents,
-            ['Manager', 'LabManager', 'LabClerk', 'LabTechnician'], 1)
+            ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 1)
         mp(permissions.AddPortalContent,
-            ['Manager', 'LabManager', 'LabClerk', 'LabTechnician',
+            ['Manager', 'LabManager', 'LabClerk', 'Analyst',
              'Owner'], 0)
         mp(permissions.View,
-            ['Manager', 'LabManager', 'LabClerk', 'LabTechnician',
+            ['Manager', 'LabManager', 'LabClerk', 'Analyst',
              'Owner'], 0)
         portal.clients.reindexObject()
 
         mp = portal.referencesuppliers.manage_permission
         mp(permissions.ListFolderContents,
-            ['Manager', 'LabManager', 'LabClerk', 'LabTechnician'], 1)
+            ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 1)
         mp(permissions.AddPortalContent,
-            ['Manager', 'LabManager', 'LabClerk', 'LabTechnician',
+            ['Manager', 'LabManager', 'LabClerk', 'Analyst',
              'Owner'], 0)
         mp(permissions.View,
-            ['Manager', 'LabManager', 'LabClerk', 'LabTechnician',
+            ['Manager', 'LabManager', 'LabClerk', 'Analyst',
              'Owner'], 0)
         portal.referencesuppliers.reindexObject()
 
         mp = portal.worksheets.manage_permission
         mp(permissions.ListFolderContents,
-            ['Manager', 'LabManager', 'LabClerk', 'LabTechnician'], 1)
+            ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 1)
         mp(permissions.AddPortalContent,
-            ['Manager', 'LabManager', 'LabClerk', 'LabTechnician'], 0)
+            ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 0)
         mp(permissions.DeleteObjects,
             ['Manager', 'LabManager', 'Owner'], 0)
         mp(permissions.View,
-            ['Manager', 'LabManager', 'LabClerk', 'LabTechnician'], 0)
+            ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 0)
         portal.worksheets.reindexObject()
 
         mp = portal.invoices.manage_permission
         mp(permissions.ListFolderContents,
-            ['Manager', 'LabManager', 'LabClerk', 'LabTechnician'], 1)
+            ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 1)
         mp(permissions.AddPortalContent,
             ['Manager', 'LabManager', 'Owner'], 0)
         mp(permissions.DeleteObjects,

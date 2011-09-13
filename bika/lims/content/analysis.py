@@ -168,7 +168,6 @@ class Analysis(BaseContent):
         rc = getToolByName(self, 'reference_catalog')
         dependents = []
         service = self.getService()
-        # XXX why does getAnalyses here return a brain without getServiceUID()?
         ar = self.aq_parent
         for sibling in ar.getAnalyses(full_objects=True):
             if sibling == self:

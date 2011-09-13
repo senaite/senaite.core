@@ -72,10 +72,8 @@ class Publish(BrowserView):
                     if ar.getReportDryMatter():
                         self.any_drymatter = True
                     states = ("verified", "published")
-                    # XXX Why is getAnalyses here, returning broken brains?
                     for analysis in ar.getAnalyses(full_objects=True,
                                                    review_state=states):
-                        #service = rc.lookupObject(analysis.getServiceUID())
                         service = analysis.getService()
                         poc = POINTS_OF_CAPTURE.getValue(service.getPointOfCapture())
                         cat = service.getCategoryName()

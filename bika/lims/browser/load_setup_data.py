@@ -60,9 +60,9 @@ class LoadSetupData():
         members = (
             ('Lab Manager', 'labmanager01', 'labmanager01', 'labmanager@scapp.co.za', 'labmanager'),
             ('Lab Clerk', 'labclerk01', 'labclerk01', 'labclerk@scapp.co.za', 'labclerk'),
-            ('Lab Techician', 'labtechnician01', 'labtechnician01', 'labtechnician@scapp.co.za', 'labtechnician'),
-            ('Verifier', 'verifier01', 'verifier01', 'verifier@scapp.co.za', 'labtechnician'),
-            ('Publisher', 'publisher01', 'publisher01', 'publisher@scapp.co.za', 'labtechnician'),
+            ('Lab Techician', 'analyst01', 'analyst01', 'analyst@scapp.co.za', 'analyst'),
+            ('Verifier', 'verifier01', 'verifier01', 'verifier@scapp.co.za', 'analyst'),
+            ('Publisher', 'publisher01', 'publisher01', 'publisher@scapp.co.za', 'analyst'),
         )
         for fullname, username, password, email, role in members:
             fullname = fullname.decode('latin-1').encode('utf-8').strip()

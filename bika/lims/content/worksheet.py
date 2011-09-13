@@ -342,12 +342,8 @@ class Worksheet(BaseFolder):
 
         if service_uid:
             wf_tool = self.portal_workflow
-            for analysis in self.getAnalyses():
-                if not analysis.getServiceUID() == service_uid:
-                    continue
-                review_state = wf_tool.getInfoFor(analysis, 'review_state', '')
-                if not review_state in ['assigned', 'to_be_verified']:
-                    continue
+            for analysis in self.getAnalyses(getServiceUID = service_uid,
+                                             review_state = ('assigned', 'to_be_verified')):
                 attachmentid = self.generateUniqueId('Attachment')
                 client = analysis.aq_parent.aq_parent
                 client.invokeFactory(id = attachmentid, type_name = "Attachment")
@@ -1171,7 +1167,7 @@ class Worksheet(BaseFolder):
         mtool = getToolByName(self, 'portal_membership')
         analysers = {}
         pairs = [(' ', ' '), ]
-        analysers = mtool.searchForMembers(roles = ['LabManager', 'LabTechnician'])
+        analysers = mtool.searchForMembers(roles = ['LabManager', 'Analyst'])
         for member in analysers:
             uid = member.getId()
             fullname = member.getProperty('fullname')
