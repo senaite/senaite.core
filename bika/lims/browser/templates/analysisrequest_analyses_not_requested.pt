@@ -13,7 +13,7 @@
 		<span tal:content="here/title_or_id"/>
 		<img
 			tal:condition="here/getInvoiceExclude"
-			tal:attributes="src string:${portal/absolute_url}/no_invoice.png">
+			tal:attributes="src string:++resource++bika.lims.images/no_invoice.png">
 	</h1>
 </metal:title>
 
@@ -64,7 +64,9 @@
 				</td>
 				<td align="right">
 					<img tal:condition="view/getHazardous"
-						src="" tal:attributes="src string:${portal/absolute_url}/images/hazardous.png">
+						src="" 
+                        title="Hazardous"
+                        tal:attributes="src string:++resource.bika.lims.images/hazardous.png">
 				</td>
 			</tr>
 		</table>
@@ -183,7 +185,7 @@
 		</tal:ar_actions>
 
 		<img tal:condition="sampletype/getHazardous"
-			tal:attributes="src string:${portal/absolute_url}/hazardous.png">
+			tal:attributes="src string:++resource++bika.lims.images/hazardous.png">
 
 	</form>
 

@@ -18,7 +18,7 @@
 	<h1 class="documentFirstHeading" tal:content="context/title_or_id"/>
 	<img src=""
 		tal:condition="here/getInvoiceExclude"
-		tal:attributes="src string:${portal/absolute_url}/images/no_invoice.png"/>
+		tal:attributes="src string:++resource++bika.lims.images/no_invoice.png"/>
 </metal:content-title>
 
 <metal:content-description fill-slot="content-description">
@@ -78,7 +78,9 @@
 			</td>
 			<td align="right">
 				<img tal:condition="view/getHazardous"
-					src="" tal:attributes="src string:${portal/absolute_url}/images/hazardous.png">
+                    title="Hazardous"
+					src="" 
+                    tal:attributes="src string:++resource++bika.lims.images/hazardous.png">
 			</td>
 		</tr>
 	</table>

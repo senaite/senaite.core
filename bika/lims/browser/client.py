@@ -193,6 +193,12 @@ class ClientAnalysisRequestsView(BikaListingView):
             items[x]['DatePublished'] = obj.getDatePublished() and \
                 self.context.toLocalizedTime(obj.getDatePublished(), \
                                              long_format = 0) or ''
+            after_icons = ''
+            if obj.getSample().getSampleType().getHazardous():
+                after_icons += "<img src='++resource++bika.lims.images/hazardous_small.png' title='Hazardous'>"
+            if after_icons:
+                items[x]['after']['getRequestID'] = after_icons
+
         return items
 
 class ClientSamplesView(BikaListingView):
@@ -284,6 +290,11 @@ class ClientSamplesView(BikaListingView):
                  self.context.toLocalizedTime(obj.getDateReceived(), \
                                               long_format = 0) or ''
 
+            after_icons = ''
+            if obj.getSampleType().getHazardous():
+                after_icons += "<img src='++resource++bika.lims.images/hazardous_small.png' title='Hazardous'>"
+            if after_icons:
+                items[x]['after']['SampleID'] = after_icons
 
 
         return items
