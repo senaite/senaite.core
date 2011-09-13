@@ -108,10 +108,10 @@ class HistoryAwareReferenceField(ReferenceField):
                     pr = getToolByName(instance, 'portal_repository')
                     if pr.isVersionable(targets[uid]):
                         pr.save(obj=targets[uid], comment=_("Initial revision"))
-                    else:
-                        raise ValueError, "%s not versionable" % targets[uid]
                 if not hasattr(instance, 'reference_versions'):
                     instance.reference_versions = {}
+                if not hasattr(targets[uid], 'version_id'):
+                    targets[uid].version_id = None
                 instance.reference_versions[uid] = targets[uid].version_id
 
         # tweak keyword arguments for addReference
@@ -154,7 +154,8 @@ class HistoryAwareReferenceField(ReferenceField):
             if hasattr(instance, 'reference_versions') and \
                hasattr(r, 'version_id') and \
                uid in instance.reference_versions and \
-               instance.reference_versions[uid] != r.version_id:
+               instance.reference_versions[uid] != r.version_id and\
+               r.version_id != None:
                 version_id = instance.reference_versions[uid]
                 o = pr.retrieve(r, selector=version_id).object
             else:

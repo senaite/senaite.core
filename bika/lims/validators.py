@@ -1,7 +1,6 @@
 from Products.CMFCore.utils import getToolByName
 from Acquisition import aq_parent
 from Products.validation.interfaces.IValidator import IValidator
-from Products.validation.validators import RegexValidator
 from Products.validation import validation
 from bika.lims.utils import sortable_title
 from zope.interface import Interface, implements
@@ -10,11 +9,6 @@ from zExceptions import Redirect
 from plone.memoize import instance
 import sys,re
 from bika.lims import bikaMessageFactory as _
-
-validation.register(
-    RegexValidator('isValidKeyword',
-                   r"^[A-Za-z][\w\d\-\_]+$",
-                   errmsg = _('Keyword contains invalid characters.')))
 
 class UniqueFieldValidator:
     """ Verifies that a field value is unique for items
@@ -66,10 +60,8 @@ class ServiceKeywordValidator:
 
         ts = getToolByName(instance, 'translation_service')
 
-        isUnixLikeName = validation.validatorFor('isUnixLikeName')
-        v = isUnixLikeName(value)
-        if isinstance(v, str):
-            return v
+        if not re.match(r"^[A-Za-z][\w\d\-\_]+$", value):
+            return _("Validation failed: keyword contains invalid characters.")
 
         # check the value against all AnalysisService keywords
         # this has to be done from portal_catalog so we don't
@@ -133,10 +125,8 @@ class InterimFieldsValidator:
         ts = getToolByName(instance, 'translation_service')
         pc = getToolByName(instance, 'portal_catalog')
 
-        isUnixLikeName = validation.validatorFor('isUnixLikeName')
-        v = isUnixLikeName(value)
-        if isinstance(v, str):
-            return v
+        if not re.match(r"^[A-Za-z][\w\d\-\_]+$", value):
+            return _("Validation failed: keyword contains invalid characters.")
 
         # keywords and titles used once only in the submitted form
         keywords = {}

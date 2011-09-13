@@ -1,5 +1,6 @@
 from Products.CMFCore.utils import getToolByName
 import plone, json, sys, math, urllib
+from bika.lims import logger
 
 class AJAXCalculateAnalysisEntry():
     """ This view is called by javascript when an analysis' result or interim field value is
@@ -179,7 +180,9 @@ class AJAXCalculateAnalysisEntry():
         plone.protect.CheckAuthenticator(self.request)
         plone.protect.PostOnly(self.request)
 
+        # uid of submitted analysis
         self.uid = self.request.get('uid')
+        # field last edited
         self.field = self.request.get('field')
         self.value = self.request.get('value')
         self.specification = self.request.get('specification', 'lab')

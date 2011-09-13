@@ -219,8 +219,9 @@ class Analysis(BaseContent):
         service = self.getService()
         keyword = service.getKeyword()
 
+        sampletype = self.aq_parent.getSample().getSampleType()
         proxies = self.portal_catalog(portal_type = 'AnalysisSpec',
-                                      getSampleTypeUID = self.aq_parent.getSample().getSampleType().UID())
+                                      getSampleTypeUID = sampletype and sampletype.UID() or '')
         a = [p for p in proxies if p.getObject().getClientUID() == client_uid]
         if a:
             spec_obj = a[0].getObject()

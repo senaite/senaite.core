@@ -19,8 +19,8 @@ schema = BikaSchema.copy() + Schema((
         required = 1,
         widget = ReferenceResultsWidget(
             label = _("Reference Results"),
-            description = _("Enter the expected results and the min and max allowed values,"
-                            "or enter the expected result and an error % for the system to"
+            description = _("Enter the expected results and the min and max allowed values, "
+                            "or enter the expected result and an error % for the system to "
                             "calculate min and max values"),
         ),
     ),

@@ -2,7 +2,6 @@ from AccessControl import ClassSecurityInfo
 from Products.ATExtensions.ateapi import RecordsField
 from Products.Archetypes.Registry import registerField
 from Products.Archetypes.public import *
-from Products.validation.validators import RegexValidator
 from bika.lims import bikaMessageFactory as _
 
 class InterimFieldsField(RecordsField):
@@ -20,14 +19,9 @@ class InterimFieldsField(RecordsField):
                             'title': 20,
                             'value': 10,
                             'unit': 10},
-        'subfield_validators' : {'keyword': ('isValidKeyword', 'interimfieldsvalidator',)},
+        'subfield_validators' : {'keyword': 'interimfieldsvalidator'},
         })
     security = ClassSecurityInfo()
-
-    RegexValidator('isUnixLikeName', r"^[A-Za-z][\w\d\-\_]{0,7}$",
-                   title="", description="",
-                   errmsg=_(u"this name is not a valid identifier")),
-
 
 registerField(InterimFieldsField,
               title = "Interim Fields",

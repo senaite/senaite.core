@@ -177,7 +177,7 @@ schema = BikaSchema.copy() + Schema((
     ),
     ComputedField('ClientReference',
         index = 'FieldIndex:brains',
-        expression = 'here.getSample() and here.getSample().getClientReference()',
+        expression = 'here.getSample() and here.getSample().getClientReference()' ,
         widget = ComputedWidget(
             visible = False,
         ),
@@ -470,7 +470,6 @@ class AnalysisRequest(BaseFolder):
             AttachmentKeys = self.REQUEST.form['AttachmentKeys'])
         attachment.processForm()
         attachment.reindexObject()
-
 
         if analysis_uid:
             tool = getToolByName(self, REFERENCE_CATALOG)

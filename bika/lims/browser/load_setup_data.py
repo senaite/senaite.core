@@ -517,7 +517,6 @@ class LoadSetupData():
                      CorporatePrice = corporateprice,
                      VAT = '14.0',
                      Precision = 2,
-                     TitrationUnit = titration_unit,
                      Accredited = accred,
                      Keyword = keyword,
                      MaxTimeAllowed = maxtime,

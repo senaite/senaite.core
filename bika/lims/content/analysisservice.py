@@ -387,7 +387,6 @@ class AnalysisService(BaseContent, HistoryAwareMixin):
             Instrument = self.getInstrument(),
             Calculation = self.getCalculation(),
             MaxTimeAllowed = self.getMaxTimeAllowed(),
-            TitrationUnit = self.getTitrationUnit(),
             DuplicateVariation = self.getDuplicateVariation(),
             AnalysisCategory = self.getAnalysisCategory(),
             Department = self.getDepartment(),
