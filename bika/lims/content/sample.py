@@ -3,6 +3,7 @@
 from AccessControl import ClassSecurityInfo
 from DateTime import DateTime
 from Products.ATContentTypes.content import schemata
+from Products.ATContentTypes.lib.historyaware import HistoryAwareMixin
 from Products.ATExtensions.ateapi import DateTimeField, DateTimeWidget
 from Products.Archetypes import atapi
 from Products.Archetypes.config import REFERENCE_CATALOG
@@ -166,7 +167,7 @@ schema = BikaSchema.copy() + Schema((
     ),
     ComputedField('SampleTypeUID',
         index = 'FieldIndex',
-        expression = 'context.getSampleType() and context.getSampleType().UID() or None',
+        expression = 'context.getSampleType().UID()',
         widget = ComputedWidget(
             visible = False,
         ),
@@ -182,7 +183,7 @@ schema = BikaSchema.copy() + Schema((
 
 schema['title'].required = False
 
-class Sample(BaseFolder):
+class Sample(BaseFolder, HistoryAwareMixin):
     implements(ISample)
     security = ClassSecurityInfo()
     schema = schema
@@ -191,6 +192,44 @@ class Sample(BaseFolder):
     def Title(self):
         """ Return the Sample ID as title """
         return self.getSampleID()
+
+    def setSampleType(self, value, **kw):
+        """ convert SampleType title to UID
+        """
+        portal = self.portal_url.getPortalObject()
+        rs = self.portal_catalog(
+            portal_type = 'SampleType',
+            Title = value
+        )
+        value = rs[0].UID
+
+        return self.Schema()['SampleType'].set(self, value)
+
+    def setSamplePoint(self, value, **kw):
+        """ convert SamplePoint title to UID
+        """
+        sp_uid = None
+        if value:
+            portal = self.portal_url.getPortalObject()
+            sps = self.portal_catalog(
+                portal_type = 'SamplePoint',
+                sortable_title = sortable_title(portal, value)
+            )
+            if sps:
+                sp_uid = sps[0].UID
+            else:
+                # add the SamplePoint
+                folder = portal.bika_samplepoints
+                sp_id = folder.generateUniqueId('SamplePoint')
+                folder.invokeFactory(id = sp_id, type_name = 'SamplePoint')
+                sp = folder[sp_id]
+                sp.edit(
+                    title = value)
+                sp.processForm()
+                sp_uid = sp.UID()
+                sp.reindexObject()
+
+        return self.Schema()['SamplePoint'].set(self, sp_uid)
 
     security.declarePublic('getAnalysisRequests')
     def getAnalysisRequests(self):
