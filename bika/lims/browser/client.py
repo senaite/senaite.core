@@ -97,79 +97,79 @@ class ClientAnalysisRequestsView(BikaListingView):
 
         self.columns = {
             'getRequestID': {'title': _('Request ID')},
-            'getClientOrderNumber': {'title': _('Client Order')},
-            'getClientReference': {'title': _('Client Ref')},
-            'getClientSampleID': {'title': _('Client Sample')},
-            'getSampleTypeTitle': {'title': _('Sample Type')},
-            'getSamplePointTitle': {'title': _('Sample Point')},
-            'getDateReceived': {'title': _('Date Received')},
-            'getDatePublished': {'title': _('Date Published')},
+            'ClientOrderNumber': {'title': _('Client Order')},
+            'ClientReference': {'title': _('Client Ref')},
+            'ClientSampleID': {'title': _('Client Sample')},
+            'SampleTypeTitle': {'title': _('Sample Type')},
+            'SamplePointTitle': {'title': _('Sample Point')},
+            'DateReceived': {'title': _('Date Received')},
+            'DatePublished': {'title': _('Date Published')},
             'state_title': {'title': _('State'), },
         }
         self.review_states = [
             {'title': _('All'), 'id':'all',
              'columns':['getRequestID',
-                        'getClientOrderNumber',
-                        'getClientReference',
-                        'getClientSampleID',
-                        'getSampleTypeTitle',
-                        'getSamplePointTitle',
-                        'getDateReceived',
-                        'getDatePublished',
+                        'ClientOrderNumber',
+                        'ClientReference',
+                        'ClientSampleID',
+                        'SampleTypeTitle',
+                        'SamplePointTitle',
+                        'DateReceived',
+                        'DatePublished',
                         'state_title']},
             {'title': _('Sample due'), 'id':'sample_due',
              'transitions': ['cancel', 'receive'],
              'columns':['getRequestID',
-                        'getClientOrderNumber',
-                        'getClientReference',
-                        'getClientSampleID',
-                        'getSampleTypeTitle',
-                        'getSamplePointTitle']},
+                        'ClientOrderNumber',
+                        'ClientReference',
+                        'ClientSampleID',
+                        'SampleTypeTitle',
+                        'SamplePointTitle']},
             {'title': _('Sample received'), 'id':'sample_received',
              'transitions': ['cancel'],
              'columns':['getRequestID',
-                        'getClientOrderNumber',
-                        'getClientReference',
-                        'getClientSampleID',
-                        'getSampleTypeTitle',
-                        'getSamplePointTitle',
-                        'getDateReceived']},
+                        'ClientOrderNumber',
+                        'ClientReference',
+                        'ClientSampleID',
+                        'SampleTypeTitle',
+                        'SamplePointTitle',
+                        'DateReceived']},
             {'title': _('Assigned to Worksheet'), 'id':'assigned',
              'transitions': ['cancel'],
              'columns':['getRequestID',
-                        'getClientOrderNumber',
-                        'getClientReference',
-                        'getClientSampleID',
-                        'getSampleTypeTitle',
-                        'getSamplePointTitle',
-                        'getDateReceived']},
+                        'ClientOrderNumber',
+                        'ClientReference',
+                        'ClientSampleID',
+                        'SampleTypeTitle',
+                        'SamplePointTitle',
+                        'DateReceived']},
             {'title': _('To be verified'), 'id':'to_be_verified',
              'transitions': ['cancel', 'verify'],
              'columns':['getRequestID',
-                        'getClientOrderNumber',
-                        'getClientReference',
-                        'getClientSampleID',
-                        'getSampleTypeTitle',
-                        'getSamplePointTitle',
-                        'getDateReceived']},
+                        'ClientOrderNumber',
+                        'ClientReference',
+                        'ClientSampleID',
+                        'SampleTypeTitle',
+                        'SamplePointTitle',
+                        'DateReceived']},
             {'title': _('Verified'), 'id':'verified',
              'transitions': ['cancel', 'publish'],
              'columns':['getRequestID',
-                        'getClientOrderNumber',
-                        'getClientReference',
-                        'getClientSampleID',
-                        'getSampleTypeTitle',
-                        'getSamplePointTitle',
-                        'getDateReceived']},
+                        'ClientOrderNumber',
+                        'ClientReference',
+                        'ClientSampleID',
+                        'SampleTypeTitle',
+                        'SamplePointTitle',
+                        'DateReceived']},
             {'title': _('Published'), 'id':'published',
              'columns':['getRequestID',
-                        'getClientOrderNumber',
-                        'getClientReference',
-                        'getClientSampleID',
-                        'getSampleTypeTitle',
-                        'getSamplePointTitle',
-                        'getDateReceived',
-                        'getDatePublished']},
+                        'ClientOrderNumber',
+                        'ClientReference',
+                        'ClientSampleID',
+                        'SampleTypeTitle',
+                        'SamplePointTitle',
+                        'DateReceived',
+                        'DatePublished']},
             ]
 
     @property
@@ -177,14 +177,22 @@ class ClientAnalysisRequestsView(BikaListingView):
         items = BikaListingView.folderitems(self)
         for x in range(len(items)):
             if not items[x].has_key('obj'): continue
-            items[x]['getDateReceived'] = items[x]['getDateReceived'] and \
-                self.context.toLocalizedTime(items[x]['getDateReceived'], \
-                                             long_format = 0) or ''
-            items[x]['getDatePublished'] = items[x]['getDatePublished'] and \
-                self.context.toLocalizedTime(items[x]['getDatePublished'], \
-                                             long_format = 0) or ''
+            obj = items[x]['obj'].getObject()
+
             items[x]['replace']['getRequestID'] = "<a href='%s'>%s</a>" % \
                  (items[x]['url'], items[x]['getRequestID'])
+
+            items[x]['ClientOrderNumber'] = obj.getClientOrderNumber()
+            items[x]['ClientReference'] = obj.getClientReference()
+            items[x]['ClientSampleID'] = obj.getClientSampleID()
+            items[x]['SampleTypeTitle'] = obj.getSampleTypeTitle()
+            items[x]['SamplePointTitle'] = obj.getSamplePointTitle()
+            items[x]['DateReceived'] = obj.getDateReceived() and \
+                self.context.toLocalizedTime(obj.getDateReceived(), \
+                                             long_format = 0) or ''
+            items[x]['DatePublished'] = obj.getDatePublished() and \
+                self.context.toLocalizedTime(obj.getDatePublished(), \
+                                             long_format = 0) or ''
         return items
 
 class ClientSamplesView(BikaListingView):
@@ -203,56 +211,56 @@ class ClientSamplesView(BikaListingView):
         self.description = ""
 
         self.columns = {
-            'getSampleID': {'title': _('Sample ID')},
+            'SampleID': {'title': _('Sample ID')},
             'Requests': {'title': _('Requests')},
-            'getClientReference': {'title': _('Client Ref')},
-            'getClientSampleID': {'title': _('Client SID')},
-            'getSampleTypeTitle': {'title': _('Sample Type')},
-            'getSamplePointTitle': {'title': _('Sample Point')},
-            'getDateReceived': {'title': _('Date Received')},
+            'ClientReference': {'title': _('Client Ref')},
+            'ClientSampleID': {'title': _('Client SID')},
+            'SampleTypeTitle': {'title': _('Sample Type')},
+            'SamplePointTitle': {'title': _('Sample Point')},
+            'DateReceived': {'title': _('Date Received')},
             'state_title': {'title': _('State')},
         }
         self.review_states = [
             {'title': _('All'), 'id':'all',
-             'columns': ['getSampleID',
+             'columns': ['SampleID',
                          'Requests',
-                         'getClientReference',
-                         'getClientSampleID',
-                         'getSampleTypeTitle',
-                         'getSamplePointTitle',
-                         'getDateReceived',
+                         'ClientReference',
+                         'ClientSampleID',
+                         'SampleTypeTitle',
+                         'SamplePointTitle',
+                         'DateReceived',
                          'state_title']},
             {'title': _('Due'), 'id':'due',
-             'columns': ['getSampleID',
+             'columns': ['SampleID',
                          'Requests',
-                         'getClientReference',
-                         'getClientSampleID',
-                         'getSampleTypeTitle',
-                         'getSamplePointTitle']},
+                         'ClientReference',
+                         'ClientSampleID',
+                         'SampleTypeTitle',
+                         'SamplePointTitle']},
             {'title': _('Received'), 'id':'received',
-             'columns': ['getSampleID',
+             'columns': ['SampleID',
                          'Requests',
-                         'getClientReference',
-                         'getClientSampleID',
-                         'getSampleTypeTitle',
-                         'getSamplePointTitle',
-                         'getDateReceived']},
+                         'ClientReference',
+                         'ClientSampleID',
+                         'SampleTypeTitle',
+                         'SamplePointTitle',
+                         'DateReceived']},
             {'title': _('Expired'), 'id':'expired',
-             'columns': ['getSampleID',
+             'columns': ['SampleID',
                          'Requests',
-                         'getClientReference',
-                         'getClientSampleID',
-                         'getSampleTypeTitle',
-                         'getSamplePointTitle',
-                         'getDateReceived']},
+                         'ClientReference',
+                         'ClientSampleID',
+                         'SampleTypeTitle',
+                         'SamplePointTitle',
+                         'DateReceived']},
             {'title': _('Disposed'), 'id':'disposed',
-             'columns': ['getSampleID',
+             'columns': ['SampleID',
                          'Requests',
-                         'getClientReference',
-                         'getClientSampleID',
-                         'getSampleTypeTitle',
-                         'getSamplePointTitle',
-                         'getDateReceived']},
+                         'ClientReference',
+                         'ClientSampleID',
+                         'SampleTypeTitle',
+                         'SamplePointTitle',
+                         'DateReceived']},
             ]
 
     @property
@@ -261,17 +269,22 @@ class ClientSamplesView(BikaListingView):
         for x in range(len(items)):
             if not items[x].has_key('obj'): continue
             obj = items[x]['obj'].getObject()
-
-            items[x]['getDateReceived'] = items[x]['getDateReceived'] and \
-                 self.context.toLocalizedTime(items[x]['getDateReceived'], \
-                                              long_format = 0) or ''
-
-            items[x]['replace']['getSampleID'] = "<a href='%s'>%s</a>" % \
-                 (items[x]['url'], items[x]['getSampleID'])
-
+            items[x]['SampleID'] = obj.getSampleID()
+            items[x]['replace']['SampleID'] = "<a href='%s'>%s</a>" % \
+                 (items[x]['url'], items[x]['SampleID'])
             items[x]['replace']['Requests'] = ",".join(
                 ["<a href='%s'>%s</a>"%(o.absolute_url(), o.Title())
                  for o in obj.getAnalysisRequests()])
+            items[x]['ClientReference'] = obj.getClientReference()
+            items[x]['ClientSampleID'] = obj.getClientSampleID()
+            items[x]['SampleTypeTitle'] = obj.getSampleTypeTitle()
+            items[x]['SamplePointTitle'] = obj.getSamplePointTitle()
+
+            items[x]['DateReceived'] = obj.getDateReceived() and \
+                 self.context.toLocalizedTime(obj.getDateReceived(), \
+                                              long_format = 0) or ''
+
+
 
         return items
 

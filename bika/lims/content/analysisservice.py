@@ -40,7 +40,6 @@ schema = BikaSchema.copy() + Schema((
     ),
     StringField('Unit',
         schemata = _("Analysis"),
-        index = "FieldIndex:brains",
         widget = StringWidget(
             label = _("Unit"),
             description = _("The measurement units for this Analysis Service, e.g. mg/l, ppm, dB, mV, etc."),
@@ -55,7 +54,6 @@ schema = BikaSchema.copy() + Schema((
     ),
     FixedPointField('Price',
         schemata = _("Price"),
-        index = "FieldIndex:brains",
         default = '0.00',
         widget = DecimalWidget(
             label = _("Price (excluding VAT)"),
@@ -87,7 +85,6 @@ schema = BikaSchema.copy() + Schema((
     ),
     FixedPointField('VAT',
         schemata = _("Price"),
-        index = 'FieldIndex:brains',
         default_method = 'getDefaultVAT',
         widget = DecimalWidget(
             label = _("VAT %"),
@@ -154,7 +151,6 @@ schema = BikaSchema.copy() + Schema((
     ),
     BooleanField('Accredited',
         schemata = _("Method"),
-        index = "FieldIndex:brains",
         default = False,
         widget = BooleanWidget(
             label = _("Accredited"),
@@ -165,7 +161,6 @@ schema = BikaSchema.copy() + Schema((
     StringField('PointOfCapture',
         schemata = _("Description"),
         required = 1,
-        index = "FieldIndex:brains",
         default = 'lab',
         vocabulary = POINTS_OF_CAPTURE,
         widget = SelectionWidget(
@@ -206,7 +201,6 @@ schema = BikaSchema.copy() + Schema((
     ),
     ComputedField('CategoryName',
         schemata = _("Description"),
-        index = 'FieldIndex',
         expression = "context.getCategory() and context.getCategory().Title() or ''",
         widget = ComputedWidget(
             label = _("Analysis category"),

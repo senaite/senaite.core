@@ -26,17 +26,17 @@ class ClientFolderContentsView(BikaListingView):
 
         self.columns = {
                    'title': {'title': _('Name')},
-                   'getEmailAddress': {'title': _('Email Address')},
-                   'getPhone': {'title': _('Phone')},
-                   'getFax': {'title': _('Fax')},
+                   'EmailAddress': {'title': _('Email Address')},
+                   'Phone': {'title': _('Phone')},
+                   'Fax': {'title': _('Fax')},
                   }
 
         self.review_states = [
                         {'title': _('All'), 'id':'all',
                          'columns':['title',
-                                    'getEmailAddress',
-                                    'getPhone',
-                                    'getFax', ]
+                                    'EmailAddress',
+                                    'Phone',
+                                    'Fax', ]
                          },
         ]
 
@@ -45,15 +45,17 @@ class ClientFolderContentsView(BikaListingView):
         items = BikaListingView.folderitems(self)
         for x in range(len(items)):
             if not items[x].has_key('obj'): continue
+            obj = items[x]['obj'].getObject()
 
             items[x]['replace']['title'] = "<a href='%s'>%s</a>"%\
                  (items[x]['url'], items[x]['title'])
 
-            if items[x]['getEmailAddress']:
-                items[x]['replace']['getEmailAddress'] = "<a href='%s'>%s</a>"%\
-                     ('mailto:%s' % items[x]['getEmailAddress'],
-                      items[x]['getEmailAddress'])
-
+            items[x]['EmailAddress'] = obj.getEmailAddress()
+            items[x]['replace']['EmailAddress'] = "<a href='%s'>%s</a>"%\
+                     ('mailto:%s' % obj.getEmailAddress(),
+                      obj.getEmailAddress())
+            items[x]['Phone'] = obj.getPhone()
+            items[x]['Fax'] = obj.getFax()
         return items
 
     def __call__(self):

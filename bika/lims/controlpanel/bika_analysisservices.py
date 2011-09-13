@@ -30,7 +30,7 @@ class AnalysisServicesView(BikaListingView):
 
         self.columns = {
             'Title': {'title': _('Service')},
-            'getKeyword': {'title': _('Keyword')},
+            'Keyword': {'title': _('Keyword')},
             'CategoryName': {'title': _('Category')},
             'Unit': {'title': _('Unit')},
             'Price': {'title': _('Price')},
@@ -41,7 +41,7 @@ class AnalysisServicesView(BikaListingView):
         self.review_states = [
             {'title': _('All'), 'id':'all',
              'columns': ['Title',
-                         'getKeyword',
+                         'Keyword',
                          'CategoryName',
                          'Unit',
                          'Price',
@@ -58,6 +58,7 @@ class AnalysisServicesView(BikaListingView):
         for x in range(len(items)):
             if not items[x].has_key('obj'): continue
             obj = items[x]['obj'].getObject()
+            items[x]['Keyword'] = obj.getKeyword()
             items[x]['CategoryName'] = obj.getCategoryName()
             calculation = obj.getCalculation()
             items[x]['Calculation'] = calculation and calculation.Title()

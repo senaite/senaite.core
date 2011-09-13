@@ -24,10 +24,12 @@
 				</tr>
 				<tbody>
 					<tal:block tal:repeat="service services">
-						<tr tal:condition="python:service.Keyword in specs.keys()">
+						<tr tal:define="service_obj python:service.getObject();
+                                        service_keyword python:service_obj.getKeyword()"
+                            tal:condition="python:service_keyword in specs.keys()">
 							<td tal:content="service/Title"/>
-							<td tal:content="python:'between %s and %s'%(specs[service.Keyword]['min'],specs[service.Keyword]['max'])"/>
-							<td tal:content="python:specs[service.Keyword]['error']"/>
+							<td tal:content="python:'between %s and %s'%(specs[service_keyword]['min'],specs[service_keyword]['max'])"/>
+							<td tal:content="python:specs[service_keyword]['error']"/>
 						</tr>
 					</tal:block>
 				</tbody>
@@ -75,7 +77,7 @@
 		<input type="hidden"
 			tal:attributes="value python:','.join([s.UID for s in categories[category]]);
 				name python:','.join([s.Title for s in categories[category]]);
-				keyword python:','.join([s.getKeyword for s in categories[category]]);
+				keyword python:','.join([s.getObject().getKeyword() for s in categories[category]]);
 				id python:'allservices_%s'%cat_uid;"/>
 
 	</tal:define>
