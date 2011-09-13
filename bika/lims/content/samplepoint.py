@@ -30,7 +30,7 @@ schema = BikaSchema.copy() + Schema((
         schemata = _('Location'),
         widget=StringWidget(
             label =  _("Elevation"),
-            description = _("The height or depth the Sample has to be taken at"),
+            description = _("The height or depth at which the sample has to be taken"),
         ),
     ),
     DurationField('SamplingFrequency',
