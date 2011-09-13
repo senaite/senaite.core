@@ -104,7 +104,7 @@
 			<property name="permissions">
 				<element value="BIKA: Manage Orders"/>
 			</property>
-			<property name="visible">True</property>
+			<property name="visible">False</property>
 		</object>
 		<object name="referencesuppliers" meta_type="CMF Action">
 			<property name="title">Suppliers</property>
