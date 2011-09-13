@@ -12,6 +12,7 @@ from bika.lims import bikaMessageFactory as _
 
 schema = BikaSchema.copy() + Schema((
     StringField('Salutation',
+        schemata = 'Default',
         widget = StringWidget(
             label = 'Title',
             label_msgid = 'label_salutation',
@@ -20,6 +21,7 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     StringField('Firstname',
+        schemata = 'Default',
         required = 1,
         widget = StringWidget(
             label = 'Firstname',
@@ -27,6 +29,7 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     StringField('Surname',
+        schemata = 'Default',
         required = 1,
         widget = StringWidget(
             label = 'Surname',
@@ -34,6 +37,7 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     ComputedField('Fullname',
+        schemata = 'Default',
         expression = 'context.getFullname()',
         searchable = 1,
         widget = ComputedWidget(
@@ -49,6 +53,7 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     StringField('EmailAddress',
+        schemata = 'Email Telephone Fax',
         searchable = 1,
         widget = StringWidget(
             label = 'Email address',
@@ -56,6 +61,7 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     StringField('BusinessPhone',
+        schemata = 'Email Telephone Fax',
         index = "FieldIndex:Brains",
         widget = StringWidget(
             label = 'Phone (business)',
@@ -63,30 +69,35 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     StringField('BusinessFax',
+        schemata = 'Email Telephone Fax',
         widget = StringWidget(
             label = 'Fax (business)',
             label_msgid = 'label_fax_business',
         ),
     ),
     StringField('HomePhone',
+        schemata = 'Email Telephone Fax',
         widget = StringWidget(
             label = 'Phone (home)',
             label_msgid = 'label_phone_home',
         ),
     ),
     StringField('MobilePhone',
+        schemata = 'Email Telephone Fax',
         widget = StringWidget(
             label = 'Phone (mobile)',
             label_msgid = 'label_phone_mobile',
         ),
     ),
     StringField('JobTitle',
+        schemata = 'Default',
         widget = StringWidget(
             label = 'Job title',
             label_msgid = 'label_jobtitle',
         ),
     ),
     StringField('Department',
+        schemata = 'Default',
         widget = StringWidget(
             label = 'Department',
             label_msgid = 'label_department',
