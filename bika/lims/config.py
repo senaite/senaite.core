@@ -93,6 +93,11 @@ POINTS_OF_CAPTURE = DisplayList((
     ('lab', 'Lab Analyses'),
 ))
 
+SERVICE_POINT_OF_CAPTURE = DisplayList((
+    ('field', 'Field'),
+    ('lab', 'Lab'),
+))
+
 PRICELIST_TYPES = DisplayList((
     ('AnalysisService', 'Analysis services'),
     ('LabProduct', 'Lab products'),
