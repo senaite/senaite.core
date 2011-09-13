@@ -428,7 +428,7 @@ class AnalysisRequestSelectCCView(BikaListingView):
     template = ViewPageTemplateFile("templates/analysisrequest_select_cc.pt")
 
     def __init__(self, context, request):
-        super(AnalysisRequestSelectSampleView, self).__init__(context, request)
+        super(AnalysisRequestSelectCCView, self).__init__(context, request)
         self.title = _("Contacts to CC")
         self.description = _("Select the contacts that will receive analysis results for this request.")
         self.contentFilter = {'portal_type': 'Contact',
@@ -436,8 +436,12 @@ class AnalysisRequestSelectCCView(BikaListingView):
         self.show_editable_border = False
         self.show_sort_column = False
         self.show_select_row = False
-        self.show_select_column = False
+        self.show_workflow_action_buttons = False
+        self.show_select_column = True
         self.pagesize = 25
+
+        # This prevents bika_listing from looking for active/inactive transitions
+        self.has_bika_inactive_workflow = True
 
         self.columns = {
             'getFullname': {'title': _('Full Name')},
@@ -451,24 +455,27 @@ class AnalysisRequestSelectCCView(BikaListingView):
                          'getEmailAddress',
                          'getBusinessPhone',
                          'getMobilePhone'],
-             'butt1ons':[{'cssclass': 'context select_cc_select',
-                         'title': _('Add to CC list'),
-                         'url': ''}]},
+             },
         ]
 
     @property
     def folderitems(self):
-        items = BikaListingView.folderitems(self)
-        for x,item in enumerate(items):
-            if not items[x].has_key('obj'): continue
-            obj = items[x]['obj'].getObject()
-            items[x]['getFullname'] = obj.getFullname()
-            items[x]['getEmailAddress'] = obj.getEmailAddress()
-            items[x]['getBusinessPhone'] = obj.getBusinessPhone()
-            items[x]['getMobilePhone'] = obj.getMobilePhone()
-            if items[x]['uid'] in self.request.get('hide_uids', ''): continue
-            if items[x]['uid'] in self.request.get('selected_uids', ''):
-                items[x]['checked'] = True
+        old_items = BikaListingView.folderitems(self)
+        items = []
+        for x,item in enumerate(old_items):
+            if not item.has_key('obj'):
+                items.append(item)
+                continue
+            obj = item['obj'].getObject()
+            if obj.UID() in self.request.get('hide_uids',()):
+                continue
+            item['getFullname'] = obj.getFullname()
+            item['getEmailAddress'] = obj.getEmailAddress()
+            item['getBusinessPhone'] = obj.getBusinessPhone()
+            item['getMobilePhone'] = obj.getMobilePhone()
+            if self.request.get('selected_uids', '').find(item['uid']) > -1:
+                item['checked'] = True
+            items.append(item)
         return items
 
 class AnalysisRequestSelectSampleView(BikaListingView):

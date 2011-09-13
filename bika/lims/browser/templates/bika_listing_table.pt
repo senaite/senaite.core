@@ -199,7 +199,7 @@ Item select checkboxes.
 			tal:attributes="
 				value   item/path;
 				id      string:cb_${item/uid};
-				checked item/checked;
+				checked python:item.has_key('checked') and item['checked'] and 'yes' or '';
 				alt     python:view.msg_select_item(item);
 				uid     item/uid" />
 		<input type="hidden"
@@ -472,7 +472,8 @@ Table cells for each column from in review_state's column list.
 
 <span class="workflow_action_buttons"
 	tal:define="actions view/get_workflow_actions">
-	<span tal:omit-tag tal:repeat="action actions">
+	<span tal:omit-tag tal:repeat="action actions"
+		tal:condition="view/show_workflow_action_buttons">
 		<input
 			class="context workflow_action_button"
 			type="submit"
