@@ -17,7 +17,6 @@
   <type portal_type="Contact"/>
   <type portal_type="Department"/>
   <type portal_type="Instrument"/>
-  <type portal_type="ARProfile"/>
   <type portal_type="LabContact"/>
   <type portal_type="LabProduct"/>
   <type portal_type="Method"/>

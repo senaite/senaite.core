@@ -4,7 +4,7 @@
    xmlns:i18n="http://xml.zope.org/namespaces/i18n">
  <property name="title">Analysis Categories</property>
  <property name="description">
-     Analyses can be logically grouped together in Categories on displays and reports. 
+     Analyses can be logically grouped together in categories on displays and reports. 
      Create and define them here
  </property>
  <property name="content_icon">++resource++bika.lims.images/category.png</property>

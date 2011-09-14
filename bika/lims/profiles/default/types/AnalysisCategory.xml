@@ -2,10 +2,10 @@
 <object name="AnalysisCategory"
    meta_type="Factory-based Type Information with dynamic views"
    xmlns:i18n="http://xml.zope.org/namespaces/i18n">
- <property name="title">AnalysisCategory</property>
+ <property name="title">Analysis Category</property>
  <property name="description">
- 	 To reduce clutter on LIMS screens, Analyses can be logically grouped together 
-	 in Categories and displayed on collapsible sections
+ 	 To reduce clutter on LIMS screens, analyses can be logically grouped together 
+	 in categories and displayed on collapsible sections
  </property>
  <property name="content_icon">++resource++bika.lims.images/category.png</property>
  <property name="content_meta_type">AnalysisCategory</property>

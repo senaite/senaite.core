@@ -32,11 +32,11 @@ class ARProfilesView(BikaListingView):
         self.columns = {
             'title': {'title': _('Profile')},
             'Description': {'title': _('Description')},
-            'getProfileKey': {'title': _('Profile Key')},
+            'ProfileKey': {'title': _('Profile Key')},
         }
         self.review_states = [
             {'title': _('All'), 'id':'all',
-             'columns': ['title', 'Description', 'getProfileKey'],
+             'columns': ['title', 'Description', 'ProfileKey'],
              }
         ]
 
@@ -45,6 +45,8 @@ class ARProfilesView(BikaListingView):
         items = BikaListingView.folderitems(self)
         for x in range(len(items)):
             if not items[x].has_key('obj'): continue
+            obj = items[x]['obj'].getObject()
+            items[x]['ProfileKey'] = obj.getProfileKey()
             items[x]['replace']['title'] = "<a href='%s'>%s</a>" % \
                  (items[x]['url'], items[x]['title'])
 
