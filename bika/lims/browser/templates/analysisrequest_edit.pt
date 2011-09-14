@@ -157,7 +157,7 @@
                     style="display:none"
                     tal:attributes="
                         id string:deleteSampleButton_${column};
-                        src string:++resource++bika.lims.images/delete.png;
+                        src string:${portal/absolute_url}/++resource++bika.lims.images/delete.png;
                         column column"/>
             </td>
         </tal:linksample>
@@ -167,7 +167,7 @@
         <th colspan="2" i18n:translate="label_client_order_id">Client Order ID</th>
         <td>
             <img class="copyButton" tal:condition="not: edit"
-                tal:attributes="name field_name;src string:++resource++bika.lims.images/copy.png"/>
+                tal:attributes="name field_name;src string:${portal/absolute_url}/++resource++bika.lims.images/copy.png"/>
         </td>
         <tal:block repeat="column python:range(view.col_count)">
             <td tal:define="input_name string:ar.${column}.${field_name}:ignore_empty:record;
@@ -185,7 +185,7 @@
         <th colspan="2" i18n:translate="label_clientreference">Client Reference</th>
         <td>
             <img class="copyButton" tal:condition="not: edit"
-                tal:attributes="name field_name;src string:++resource++bika.lims.images/copy.png"/>
+                tal:attributes="name field_name;src string:${portal/absolute_url}/++resource++bika.lims.images/copy.png"/>
         </td>
         <tal:block repeat="column python:range(view.col_count)">
             <td tal:define="input_name string:ar.${column}.${field_name}:ignore_empty:record;
@@ -203,7 +203,7 @@
         <th colspan="2" i18n:translate="label_clientsampleid">Client Sample ID</th>
         <td>
             <img class="copyButton" tal:condition="not: edit"
-                tal:attributes="name field_name;src string:++resource++bika.lims.images/copy.png"/>
+                tal:attributes="name field_name;src string:${portal/absolute_url}/++resource++bika.lims.images/copy.png"/>
         </td>
         <tal:block repeat="column python:range(view.col_count)">
             <td tal:define="input_name string:ar.${column}.${field_name}:ignore_empty:record;
@@ -225,7 +225,7 @@
         </th>
         <td>
             <img class="copyButton" tal:condition="not: edit"
-                tal:attributes="name field_name;src string:++resource++bika.lims.images/copy.png"/>
+                tal:attributes="name field_name;src string:${portal/absolute_url}/++resource++bika.lims.images/copy.png"/>
         </td>
         <tal:block repeat="column python:range(view.col_count)">
             <td tal:define="input_name string:ar.${column}.${field_name}:ignore_empty:record;
@@ -274,7 +274,7 @@
         </th>
         <td>
             <img class="copyButton" tal:condition="not: edit"
-                tal:attributes="name field_name;src string:++resource++bika.lims.images/copy.png"/>
+                tal:attributes="name field_name;src string:${portal/absolute_url}/++resource++bika.lims.images/copy.png"/>
         </td>
         <tal:block repeat="column python:range(view.col_count)">
             <td tal:define="input_name string:ar.${column}.${field_name}:ignore_empty:record;
@@ -293,7 +293,7 @@
         <th colspan="2"><span id="" i18n:translate="label_samplepoint">Sample Point</span></th>
         <td>
             <img class="copyButton" tal:condition="not: edit"
-                tal:attributes="name field_name;src string:++resource++bika.lims.images/copy.png"/>
+                tal:attributes="name field_name;src string:${portal/absolute_url}/++resource++bika.lims.images/copy.png"/>
         </td>
         <tal:block repeat="column python:range(view.col_count)">
             <td tal:define="input_name string:ar.${column}.${field_name}:ignore_empty:record;
@@ -312,7 +312,7 @@
         <th colspan="2" i18n:translate="label_report_dm">Report as Dry Matter</th>
         <td>
             <img class="copyButton" tal:condition="not: edit"
-                tal:attributes="name field_name;src string:++resource++bika.lims.images/copy.png"/>
+                tal:attributes="name field_name;src string:${portal/absolute_url}/++resource++bika.lims.images/copy.png"/>
         </td>
         <tal:block repeat="column python:range(view.col_count)">
             <td class="cb"
@@ -334,7 +334,7 @@
         <th colspan="2" i18n:translate="label_invoice_exclude">Exclude from invoice</th>
         <td>
             <img class="copyButton" tal:condition="not: edit"
-                tal:attributes="name field_name;src string:++resource++bika.lims.images/copy.png"/>
+                tal:attributes="name field_name;src string:${portal/absolute_url}/++resource++bika.lims.images/copy.png"/>
         </td>
         <tal:block repeat="column python:range(view.col_count)">
             <td class="cb"
@@ -500,17 +500,17 @@
 
     <br/>&nbsp;
 
-    <div class="discreeter"
-        tal:define="portal context/@@plone_portal_state/portal">
+    <div class="discreeter">
+
 
     <p>  <!-- AVS this should be conditional if any dryables present -->
-        <img src="" tal:attributes="src string:++resource++bika.lims.images/dry.png">
+        <img src="" tal:attributes="src string:${portal/absolute_url}/++resource++bika.lims.images/dry.png">
         <span i18n:translate="disclaimer_can_be_dry">
             Can be reported as dry matter</span>
     </p>
 
     <p tal:condition="python:context.bika_setup.laboratory.getLaboratoryAccredited()">
-        <img src="++resource++bika.lims.images/accredited.png">
+        <img tal:attributes="src string:${portal/absolute_url}/++resource++bika.lims.images/accredited.png">
         <span i18n:translate="disclaimer_accred">
             Methods included in the
                 <tal:block
