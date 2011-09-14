@@ -40,7 +40,7 @@ $(document).ready(function(){
 					// expand categories
 					$.each(responseText['categories'], function(i, cat_uid){
 						tr = $('tr[name="'+cat_uid+'"]');
-						if (tr.hasClass('collapsed')){ tr.click(); }
+						if (tr.hasClass('collapsed') | tr.hasClass('initial')){ tr.click(); }
 					});
 					// insert result values
 					$.each(responseText['results'], function(i, result){
@@ -64,10 +64,6 @@ $(document).ready(function(){
 		});
 	});
 
-	$('#ReferenceDefinition\\:list').change(); // THIS is right, but.
-	// The python needs to return values from the existing field, and there needs to be sent
-	// a parameter from here to inform python to do so.
-	// we don't want python sending us existing ref values, when actually
-	// we _wanted_ to reset the values.
+	$('#ReferenceDefinition\\:list').change();
 });
 });

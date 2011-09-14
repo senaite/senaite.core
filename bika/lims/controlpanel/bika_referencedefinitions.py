@@ -23,7 +23,7 @@ class ReferenceDefinitionsView(BikaListingView):
         self.content_add_actions = {_('Reference Definition'):
                                     "createObject?type_name=ReferenceDefinition"}
         self.title = _("Reference Definitions")
-        self.description = _("ReferenceDefinition represents a Reference Definition"
+        self.description = _("ReferenceDefinition represents a Reference Definition "
                              "or sample type used for quality control testing")
         self.show_editable_border = False
         self.show_filters = False

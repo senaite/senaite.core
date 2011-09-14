@@ -47,6 +47,17 @@ schema = BikaSchema.copy() + Schema((
             visible = False,
         ),
     ),
+    ReferenceField('ReferenceAnalyses',
+        multiValued=1,
+        allowed_types=('ReferenceAnalysis',),
+        relationship='WorksheetReferenceAnalysis',
+        widget=ReferenceWidget(
+            label='ReferenceAnalyses',
+            label_msgid='label_referenceanalyses',
+            i18n_domain=I18N_DOMAIN,
+            visible=False,
+        ),
+    ),
     ReferenceField('LinkedWorksheet',
         multiValued = 1,
         allowed_types = ('Worksheet',),
@@ -63,7 +74,6 @@ schema = BikaSchema.copy() + Schema((
             label = 'Notes'
         ),
     ),
-    # The lab personnel who performed the analysis
     StringField('Analyser',
         vocabulary = 'getAnalysersDisplayList',
     ),

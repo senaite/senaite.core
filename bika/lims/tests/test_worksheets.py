@@ -5,7 +5,7 @@ from plone.app.testing import SITE_OWNER_NAME, TEST_USER_NAME, login, setRoles
 from plone.keyring.interfaces import IKeyManager
 from plone.testing import z2
 from zope.component import getUtility
-from hashlib import sha1 as sha
+from hashlib import sha1
 import hmac
 import json
 import plone.protect
@@ -22,21 +22,23 @@ class Tests(unittest.TestCase):
     def _authenticator(self, user):
         manager = getUtility(IKeyManager)
         secret=manager.secret()
-        auth=hmac.new(secret, user, sha).hexdigest()
+        auth=hmac.new(secret, user, sha1).hexdigest()
         return auth
 
     def test_add_worksheet_from_template(self):
         z2.login(self.app['acl_users'], SITE_OWNER_NAME)
-        ar_1 = self.portal.clients.client_1.ar_1
-        self.portal.portal_workflow.doActionFor(ar_1, 'receive')
-        ar_2 = self.portal.clients.client_1.ar_2
-        self.portal.portal_workflow.doActionFor(ar_2, 'receive')
-        request = self.portal.REQUEST
-        request['REQUEST_METHOD'] = 'POST'
-        form = {'test_worksheet_id':'ws_1',
-                'wstemplate':self.portal.bika_setup.bika_worksheettemplates.worksheettemplate_1.UID()}
-        request['form'] = form
-        WorksheetAddView(self.portal.worksheets, request)()
+        client_1 = self.portal.clients.client_1
+        workflow = self.portal.portal_workflow
+        workflow.doActionFor(client_1.ar_1, 'receive')
+        workflow.doActionFor(client_1.ar_2, 'receive')
+        self.portal.REQUEST['REQUEST_METHOD'] = 'POST'
+        self.portal.REQUEST.form = {'wstemplate': self.portal.bika_setup.bika_worksheettemplates.me.UID()}
+        ws_id = self.portal.worksheets.generateUniqueId("Worksheet")
+        WorksheetAddView(self.portal.worksheets, self.portal.REQUEST)()
+        self.assertEqual(1, len(self.portal.worksheets.objectValues()))
+        ws = self.portal.worksheets.objectValues()[0]
+        self.assertEqual(ws.getMaxPositions(), 6)
+        self.assertEqual(ws.getAnalyses(), 'analyses')
 
 def test_suite():
     suite = unittest.TestSuite()

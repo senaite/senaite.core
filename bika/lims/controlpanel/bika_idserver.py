@@ -7,10 +7,8 @@ from Products.CMFCore.utils import getToolByName
 from bika.lims import bikaMessageFactory as _
 from bika.lims.interfaces import IIdServer
 from zope.interface.declarations import implements
-import App
-import os
-import sys
-import urllib
+from hashlib import sha1
+import App,os,sys,random,time,urllib,hmac
 
 class IDServerUnavailable(Exception):
     pass
@@ -24,14 +22,17 @@ class bika_idserver(object):
     def generate_id(self, portal_type, batch_size = None):
         """ Generate a new id for 'portal_type'
         """
-        if portal_type == 'News Item':
-            portal_type = 'NewsItem'
-        idserver_url = os.environ.get('IDServerURL')
-        debug_mode = App.config.getConfiguration().debug_mode
-        if debug_mode and not idserver_url:
-            idserver_url = "http://localhost:8081"
         plone = getSite()
         portal_id = plone.getId()
+
+        if hasattr(plone, 'TEST_MODE'):
+            # bika.lims/testing.py sets this to avoid the ID server in tests
+            return "test_%s"%(random.randint(1, 1000000000))
+
+        if portal_type == 'News Item':
+            portal_type = 'NewsItem'
+
+        idserver_url = os.environ.get('IDServerURL')
         try:
             if batch_size:
                 # GET

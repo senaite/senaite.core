@@ -1,5 +1,6 @@
 from Products.CMFCore.permissions import AddPortalContent
 from Products.Archetypes.public import DisplayList
+from bika.lims import bikaMessageFactory as _
 
 ADD_CONTENT_PERMISSION = AddPortalContent
 PROJECTNAME = "bika.lims"
@@ -80,27 +81,27 @@ BIKA_PERMISSIONS = (
 )
 
 PUBLICATION_PREFS = DisplayList((
-    ('email', 'Email'),
-    ('fax', 'Fax'),
-    ('file', 'File'),
-    ('pdf', 'PDF'),
-    ('print', 'Print'),
-    ('sms', 'SMS'),
+    ('email', _('Email')),
+    ('fax', _('Fax')),
+    ('file', _('File')),
+    ('pdf', _('PDF')),
+    ('print', _('Print')),
+    ('sms', _('SMS')),
 ))
 
 POINTS_OF_CAPTURE = DisplayList((
-    ('field', 'Field Analyses'),
-    ('lab', 'Lab Analyses'),
+    ('field', _('Field Analyses')),
+    ('lab', _('Lab Analyses')),
 ))
 
 SERVICE_POINT_OF_CAPTURE = DisplayList((
-    ('field', 'Field'),
-    ('lab', 'Lab'),
+    ('field', _('Field')),
+    ('lab', _('Lab')),
 ))
 
 PRICELIST_TYPES = DisplayList((
-    ('AnalysisService', 'Analysis services'),
-    ('LabProduct', 'Lab products'),
+    ('AnalysisService', _('Analysis services')),
+    ('LabProduct', _('Lab products')),
 ))
 
 CLIENT_TYPES = DisplayList((
@@ -109,53 +110,53 @@ CLIENT_TYPES = DisplayList((
 ))
 
 ANALYSIS_TYPES = DisplayList((
-    ('a', 'Analysis'),
-    ('b', 'Blank'),
-    ('c', 'Control'),
-    ('d', 'Duplicate'),
+    ('a', _('Analysis')),
+    ('b', _('Blank')),
+    ('c', _('Control')),
+    ('d', _('Duplicate')),
 ))
 STD_TYPES = DisplayList((
-    ('c', 'Control'),
-    ('b', 'Blank'),
+    ('c', _('Control')),
+    ('b', _('Blank')),
 ))
 ATTACHMENT_OPTIONS = DisplayList((
-    ('r', 'Required'),
-    ('p', 'Permitted'),
-    ('n', 'Not Permitted'),
+    ('r', _('Required')),
+    ('p', _('Permitted')),
+    ('n', _('Not Permitted')),
 ))
 ARIMPORT_OPTIONS = DisplayList((
-    ('c', 'Classic'),
-    ('p', 'Profiles'),
-    ('s', 'Special'),
+    ('c', _('Classic')),
+    ('p', _('Profiles')),
+    ('s', _('Special')),
 ))
 EMAIL_SUBJECT_OPTIONS = DisplayList((
-    ('ar', 'Analysis Request ID'),
-    ('co', 'Order ID'),
-    ('cr', 'Client Reference'),
-    ('cs', 'Client Sample ID'),
+    ('ar', _('Analysis Request ID')),
+    ('co', _('Order ID')),
+    ('cr', _('Client Reference')),
+    ('cs', _('Client Sample ID')),
 ))
 INSTRUMENT_EXPORTS = DisplayList((
-    ('instrument1', 'Instrument 1'),
-    ('instrument2', 'Instrument 2'),
-    ('instrument3', 'Instrument 3'),
+    ('instrument1', _('Instrument 1')),
+    ('instrument2', _('Instrument 2')),
+    ('instrument3', _('Instrument 3')),
 ))
 
 INSTRUMENT_IMPORTS = DisplayList((
-    ('instrument1', 'Instrument 1'),
-    ('instrument2', 'Instrument 2'),
-    ('instrument3', 'Instrument 3'),
+    ('instrument1', _('Instrument 1')),
+    ('instrument2', _('Instrument 2')),
+    ('instrument3', _('Instrument 3')),
 ))
 
 GENDERS = DisplayList((
-    ('male', 'Male'),
-    ('female', 'Female'),
+    ('male', _('Male')),
+    ('female', _('Female')),
     ))
 
 ADDRESS_TYPES = DisplayList((
-    ('physical', 'Physical address'),
-    ('mailing', 'Mailing address'),
-    ('billing', 'Billing address'),
-    ('shipping', 'Shipping address'),
+    ('physical', _('Physical address')),
+    ('mailing', _('Mailing address')),
+    ('billing', _('Billing address')),
+    ('shipping', _('Shipping address')),
     ))
 
 countries = [(x, x) for x in (

@@ -127,7 +127,6 @@ class WorksheetAddView(BrowserView):
         self.context.invokeFactory(id = ws_id, type_name = 'Worksheet')
         ws = self.context[ws_id]
         ws.edit(Number = ws_id)
-
         analyses = []
         analysis_uids = []
         if form.has_key('wstemplate'):
@@ -155,7 +154,6 @@ class WorksheetAddView(BrowserView):
                 for a in pc(portal_type = 'Analysis',
                             getServiceUID = service_uids,
                             review_state = 'sample_received',
-                            inactive_review_state = 'active',
                             sort_on = 'getDueDate'):
                     analysis = a.getObject()
                     ar = analysis.aq_parent
@@ -228,7 +226,6 @@ class WorksheetAddView(BrowserView):
                                     Position = position,
                                     Type = row['type'],
                                     Service = references[mostest]['services'])
-
                 if analyses:
                     ws.assignNumberedAnalyses(Analyses = analyses)
 
