@@ -262,7 +262,7 @@ class WorksheetManageResultsView(AnalysesView):
 
         self.columns = {
             'Pos': {'title': _('Pos')},
-            'Client': {'title': _('Client')},
+##            'Client': {'title': _('Client')},
             'Order': {'title': _('Order')},
             'RequestID': {'title': _('Reqest ID')},
             'DueDate': {'title': _('Due Date')},
@@ -277,7 +277,7 @@ class WorksheetManageResultsView(AnalysesView):
         self.review_states = [
             {'title': _('All'), 'id':'all',
              'columns':['Pos',
-                        'Client',
+##                        'Client',
                         'Order',
                         'RequestID',
                         'DueDate',
@@ -301,7 +301,7 @@ class WorksheetManageResultsView(AnalysesView):
             service = obj.getService()
             items[x]['Category'] = service.getCategory().Title()
             items[x]['RequestID'] = obj.aq_parent.Title()
-            items[x]['Client'] = obj.aq_parent.aq_parent.Title()
+##            items[x]['Client'] = obj.aq_parent.aq_parent.Title()
             items[x]['DueDate'] = hasattr(obj, 'DueDate') and \
                 self.context.toLocalizedTime(obj.DueDate, long_format=0) or ''
             items[x]['Order'] = hasattr(obj.aq_parent, 'getClientOrderNumber') \
@@ -389,6 +389,7 @@ class WorksheetAddAnalysisView(AnalysesView):
             obj = items[x]['obj'].getObject()
             service = obj.getService()
             client = obj.aq_parent.aq_parent
+            items[x]['getClientOrderNumber'] = obj.getClientOrderNumber()
             items[x]['getDateReceived'] = self.context.toLocalizedTime(
                 items[x]['getDateReceived'], long_format = 0)
             items[x]['getDueDate'] = self.context.toLocalizedTime(

@@ -36,7 +36,9 @@ class ReferenceResultsWidget(RecordsWidget):
 
     security.declarePublic('getServicesByCategory')
     def getServicesByCategory(self):
-        """Returns a dictionary of all services:
+        """Returns a dictionary of all services that do not have dependents.
+        If a service has dependents, the reference samples should cater for
+        those instead.
         AnalysisCategory[service,service,...]
         """
         categories = {}
@@ -44,6 +46,9 @@ class ReferenceResultsWidget(RecordsWidget):
         services = pc(portal_type = 'AnalysisService')
         for service in services:
             service = service.getObject()
+            calc = service.getCalculation()
+            if calc and calc.getDependentServices():
+                continue
             CategoryUID = service.getCategory().UID()
             CategoryTitle = service.getCategory().Title()
             key = "%s_%s"%(CategoryUID, CategoryTitle)
@@ -65,6 +70,9 @@ class ReferenceResultsWidget(RecordsWidget):
             service = pc(portal_type='AnalysisService',
                          UID=ref['uid'])[0]
             service = service.getObject()
+            calc = service.getCalculation()
+            if calc and calc.getDependentServices():
+                continue
             CategoryUID = service.getCategory().UID()
             CategoryTitle = service.getCategory().Title()
             key = "%s_%s"%(CategoryUID, CategoryTitle)

@@ -77,7 +77,10 @@ schema = BikaSchema.copy() + Schema((
     StringField('Analyser',
         vocabulary = 'getAnalysersDisplayList',
     ),
-
+    RecordsField('WorksheetLayout',
+        required = 1,
+        subfields = ('uid', 'pos', 'type', 'sub', 'dup'),
+    ),
     IntegerField('MaxPositions',
         widget = IntegerWidget(
             label = "Maximum Positions Allowed",
