@@ -18,7 +18,7 @@ from decimal import Decimal
 from operator import itemgetter
 from plone.app.content.browser.interfaces import IFolderContentsView
 from zope.component import getMultiAdapter
-from zope.interface import implements,alsoProvides
+from zope.interface import implements, alsoProvides
 import json
 from plone.memoize import instance
 import plone
@@ -68,7 +68,7 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
             transitioned = Publish(self.context,
                                    self.request,
                                    action,
-                                   [self.context,])()
+                                   [self.context, ])()
 
             if len(transitioned) == 1:
                 message = _('message_item_published',
@@ -241,7 +241,7 @@ class AnalysisRequestViewView(BrowserView):
         rc = getToolByName(self.context, 'reference_catalog')
         result = []
         cats = {}
-        for analysis in self.context.getAnalyses(full_objects=True):
+        for analysis in self.context.getAnalyses(full_objects = True):
             if analysis.review_state == 'not_requested':
                 continue
             service = analysis.getService()
@@ -372,7 +372,7 @@ class AnalysisRequestManageResultsView(AnalysisRequestViewView):
                                   getPointOfCapture = 'field')
         self.Field.allow_edit = True
         self.Field.review_states[0]['transitions'] = \
-            ['submit','retract','verify']
+            ['submit', 'retract', 'verify']
         self.Field.show_select_column = True
         self.Field = self.Field.contents_table()
 
@@ -380,7 +380,7 @@ class AnalysisRequestManageResultsView(AnalysisRequestViewView):
                                 getPointOfCapture = 'lab')
         self.Lab.allow_edit = True
         self.Lab.review_states[0]['transitions'] = \
-            ['submit','retract','verify']
+            ['submit', 'retract', 'verify']
         self.Lab.show_select_column = True
         self.Lab = self.Lab.contents_table()
 
@@ -462,12 +462,12 @@ class AnalysisRequestSelectCCView(BikaListingView):
     def folderitems(self):
         old_items = BikaListingView.folderitems(self)
         items = []
-        for x,item in enumerate(old_items):
+        for x, item in enumerate(old_items):
             if not item.has_key('obj'):
                 items.append(item)
                 continue
             obj = item['obj'].getObject()
-            if obj.UID() in self.request.get('hide_uids',()):
+            if obj.UID() in self.request.get('hide_uids', ()):
                 continue
             item['getFullname'] = obj.getFullname()
             item['getEmailAddress'] = obj.getEmailAddress()
@@ -529,7 +529,7 @@ class AnalysisRequestSelectSampleView(BikaListingView):
     @property
     def folderitems(self):
         items = BikaListingView.folderitems(self)
-        for x,item in enumerate(items):
+        for x, item in enumerate(items):
             if not items[x].has_key('obj'): continue
             obj = items[x]['obj'].getObject()
             items[x]['class']['getSampleID'] = "select_sample"
@@ -572,7 +572,7 @@ class AnalysisRequestSelectSampleView(BikaListingView):
         res = {}
         ars = sample.getAnalysisRequests()
         if len(ars) > 0:
-            for analysis in ars[0].getAnalyses(full_objects=True):
+            for analysis in ars[0].getAnalyses(full_objects = True):
                 service = analysis.getService()
                 if service.getPointOfCapture() == 'field':
                     catuid = service.getCategoryUID()
@@ -838,11 +838,6 @@ class AJAXAnalysisRequestSubmit():
                                     inactive_review_state = 'active',
                                     UID = profileUID):
                         profile = proxy.getObject()
-                    if profile == None:
-                        for proxy in pc(portal_type = 'ARProfile',
-                                        inactive_review_state = 'active',
-                                        UID = profileUID):
-                            profile = proxy.getObject()
 
                 if values.has_key('SampleID'):
                     # Secondary AR
@@ -922,7 +917,7 @@ class AJAXAnalysisRequestSubmit():
                     profile_id = self.context.generateUniqueId('ARProfile')
                     self.context.invokeFactory(id = profile_id,
                                                type_name = 'ARProfile')
-                    analyses = ar.getAnalyses(full_objects=True)
+                    analyses = ar.getAnalyses(full_objects = True)
                     services_array = []
                     for a in analyses:
                         services_array.append(a.getServiceUID())
@@ -930,14 +925,11 @@ class AJAXAnalysisRequestSubmit():
                     profile.edit(title = values['profileTitle'],
                                  Service = services_array)
                     profile.processForm()
-                    profile.reindexObject()
                     ar.edit(Profile = profile)
 
                 if values.has_key('SampleID') and \
                    wftool.getInfoFor(sample, 'review_state') != 'due':
                     wftool.doActionFor(ar, 'receive')
-
-            #ar.setAnalyses(Analyses, prices = prices)
 
             if came_from == "add":
                 if len(ARs) > 1:

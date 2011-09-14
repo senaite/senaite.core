@@ -309,7 +309,7 @@ class Sample(BaseFolder, HistoryAwareMixin):
     def disposal_date(self):
         """ return disposal date """
         delay = self.getSampleType().getRetentionPeriod()
-        dis_date = self.getDateSubmitted() + int(delay)
+        dis_date = self.getDateSampled() + int(delay)
         return dis_date
 
     security.declarePublic('current_user')
