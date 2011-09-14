@@ -27,7 +27,7 @@ $(document).ready(function(){
 		}
 
 		$.ajax({
-			url: 'get_reference_definition_results',
+			url: 'get_reference_definition_info',
 			dataType: 'json',
 			data: {uid: ref_def_uid},
 			beforeSubmit: function(formData, jqForm, options) {
@@ -37,6 +37,20 @@ $(document).ready(function(){
 				if (responseText['results'] != undefined) {
 					// Got correct values from server
 					results = $.parseJSON(responseText['success']);
+					// select Blank if it's specified in the definition
+					if(responseText['blank']){
+						if (!$("#Blank").checked) {$("#Blank").click()};
+					}
+					if(!responseText['blank']){
+						if ($("#Blank").checked) {$("#Blank").click()};
+					}
+					// select Hazardous the same way
+					if(responseText['hazardous']){
+						if (!$("#Hazardous").checked) {$("#Hazardous").click()};
+					}
+					if(!responseText['hazardous']){
+						if ($("#Hazardous").checked) {$("#Hazardous").click()};
+					}
 					// expand categories
 					$.each(responseText['categories'], function(i, cat_uid){
 						tr = $('tr[name="'+cat_uid+'"]');
@@ -64,6 +78,6 @@ $(document).ready(function(){
 		});
 	});
 
-	$('#ReferenceDefinition\\:list').change();
+	//$('#ReferenceDefinition\\:list').change();
 });
 });

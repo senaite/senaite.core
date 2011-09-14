@@ -7,8 +7,8 @@
     <!-- return ReferenceResultsField contents for a selected reference definition -->
     <browser:page
       for="bika.lims.interfaces.IReferenceSample"
-      name="get_reference_definition_results"
-      class="bika.lims.browser.referencesample.AJAXGetReferenceDefinitionResults"
+      name="get_reference_definition_info"
+      class="bika.lims.browser.referencesample.AJAXGetReferenceDefinitionInfo"
       permission="zope.Public"
       layer="bika.lims.interfaces.IBikaLIMS"
     />

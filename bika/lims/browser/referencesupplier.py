@@ -98,8 +98,13 @@ class ReferenceSamplesView(BikaListingView):
             items[x]['ExpiryDate'] = \
                  self.context.toLocalizedTime(obj.getExpiryDate(), long_format = 0)
 
-            items[x]['replace']['ID'] = "<a href='%s'>%s</a>" % \
-                 (items[x]['url'], items[x]['ID'])
+            after_icons = ''
+            if obj.getBlank():
+                after_icons += "<img src='++resource++bika.lims.images/blank.png' title='Blank'>"
+            if obj.getHazardous():
+                after_icons += "<img src='++resource++bika.lims.images/hazardous_small.png' title='Hazardous'>"
+            items[x]['replace']['ID'] = "<a href='%s'>%s</a>%s" % \
+                 (items[x]['url'], items[x]['ID'], after_icons)
 
         return items
 
