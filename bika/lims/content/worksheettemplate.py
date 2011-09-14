@@ -12,7 +12,7 @@ from bika.lims.content.bikaschema import BikaSchema
 from bika.lims import bikaMessageFactory as _
 
 schema = BikaSchema.copy() + Schema((
-    RecordsField('Row',
+    RecordsField('Layout',
         schemata = 'Layout',
         required = 1,
         type = 'templateposition',

@@ -736,7 +736,7 @@ class LoadSetupData():
             folder.invokeFactory(id = id, type_name = 'WorksheetTemplate')
             obj = folder[id]
             obj.edit(title = title,
-                     Row = pos,
+                     Layout = pos,
                      Service = serv)
             obj.processForm()
 

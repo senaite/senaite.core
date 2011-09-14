@@ -56,11 +56,11 @@
 		<span tal:content="row/pos"/>
 		<input  type="hidden"
 			tal:attributes="value row/pos"
-			name="Row.pos:records:ignore_empty"/>
+			name="Layout.pos:records:ignore_empty"/>
 	</td>
 
 	<td>
-		<select name="Row.type:records:ignore_empty"
+		<select name="Layout.type:records:ignore_empty"
 			class="analysis_type"
 			tal:attributes="pos row/pos;">
 		<tal:item
@@ -80,7 +80,7 @@
 	</td>
 
 	<td>
-		<select name="Row.sub:records:ignore_empty"
+		<select name="Layout.sub:records:ignore_empty"
 			tal:attributes="
 				style python: selected_type in ['a','d'] and 'display:none;;' or 'display:inline;;';
 				class string:sst_${row/pos};">
@@ -99,7 +99,7 @@
 
 	<td>
 		<div id="" tal:define="num_rows repeat/row/length">
-			<select name="Row.dup:records:ignore_empty"
+			<select name="Layout.dup:records:ignore_empty"
 				tal:attributes="
 					style python: selected_type == 'd' and 'display:inline;;' or 'display:none;;';
 					class string:dup_${row/pos};">

@@ -50,6 +50,15 @@ class ReferenceDefinitionsView(BikaListingView):
             items[x]['Description'] = obj.Description()
             items[x]['replace']['Title'] = "<a href='%s'>%s</a>" % \
                  (items[x]['url'], items[x]['Title'])
+
+            after_icons = ''
+            if obj.getBlank():
+                after_icons += "<img src='++resource++bika.lims.images/blank.png' title='Blank'>"
+            if obj.getHazardous():
+                after_icons += "<img src='++resource++bika.lims.images/hazardous_small.png' title='Hazardous'>"
+            items[x]['replace']['Title'] = "<a href='%s'>%s</a>&nbsp;%s" % \
+                 (items[x]['url'], items[x]['Title'], after_icons)
+
         return items
 
 schema = ATFolderSchema.copy()

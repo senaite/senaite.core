@@ -100,7 +100,7 @@ class BikaLimsLayer(PloneSandboxLayer):
 
         ws_templates = portal.bika_setup.bika_worksheettemplates
         ws_templates.invokeFactory("WorksheetTemplate", id="me",
-            Row=[{'pos':'1', 'type':'c', 'sub':me_reference, 'dup':''},
+            Layout=[{'pos':'1', 'type':'c', 'sub':me_reference, 'dup':''},
                  {'pos':'2', 'type':'a', 'sub':'', 'dup':''},
                  {'pos':'3', 'type':'a', 'sub':'', 'dup':''},
                  {'pos':'4', 'type':'a', 'sub':'', 'dup':''},

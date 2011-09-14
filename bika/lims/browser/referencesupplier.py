@@ -103,7 +103,7 @@ class ReferenceSamplesView(BikaListingView):
                 after_icons += "<img src='++resource++bika.lims.images/blank.png' title='Blank'>"
             if obj.getHazardous():
                 after_icons += "<img src='++resource++bika.lims.images/hazardous_small.png' title='Hazardous'>"
-            items[x]['replace']['ID'] = "<a href='%s'>%s</a>%s" % \
+            items[x]['replace']['ID'] = "<a href='%s'>%s</a>&nbsp;%s" % \
                  (items[x]['url'], items[x]['ID'], after_icons)
 
         return items
