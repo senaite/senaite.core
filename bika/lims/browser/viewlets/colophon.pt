@@ -1,31 +1,35 @@
 <div id="portal-colophon"
-     metal:define-macro="colophon"
-     i18n:domain="plone">
-<metal:slot define-slot="colophon" />
-<div class="colophonWrapper"
-    tal:define="portal python:context.portal_url.getPortalObject()">
+    metal:define-macro="colophon"
+    i18n:domain="plone">
+  <metal:slot define-slot="colophon" />
+    <div class="colophonWrapper"
+        tal:define="portal python:context.portal_url.getPortalObject()">
+      <ul>
+        <li>
+          <a href="http://www.bikalabs.com">
+            <img src=""
+                 height="18"
+                 width="76"
+                 alt="www.bikalabs.com - Home of Bika Lab Systems, implementers of web based free and open source LIMS"
+                 title="Bika web based free and open source LIMS. For more information visit www.bikalabs.com"
+	             tal:attributes="src string:${portal/absolute_url}/++resource++bika.lims.images/logobikalabsfooter.png"
+                 i18n:attributes="alt; title" />
+</a>
 
-      <a href="http://www.bikalabs.com">
+&nbsp;
+          <a href="http://plone.org">
+            <img src=""
+                 height="16"
+                 width="62"
+                 alt="Powered by Plone, the open source content management system. Customised and maintained by Bika Lab Systems"
+                 title="This site was built by Bika using open source Plone content management systems. For more information visit plone.org"
+	             tal:attributes="src string:${portal/absolute_url}/++resource++bika.lims.images/plone_logo.png"
+                 i18n:attributes="alt; title" />
+          </a>
+        </li>
+      </ul>
+    </div>
+</div> 
 
-	<img src=""
-	     height="18"
-	     width="76"
-	     alt="Powered by bika"
-	     title="This lab site was built using bika lab information management system. Click for more information"
-	     tal:attributes="src string:${portal/absolute_url}/++resource++bika.lims.images/logobikalabsfooter.png"
-	     i18n:attributes="alt; title" />
-      </a>
 
-        &nbsp;
-      <a href="http://plone.org">
-	<img src=""
-	     height="15"
-	     width="80"
-	     alt="Powered by Plone"
-	     title="This Plone site was built using the Plone Content Management System. Click for more information"
-	     tal:attributes="src string:${portal/absolute_url}/++resource++bika.lims.images/plone_logo.png"
-	     i18n:attributes="alt; title" />
-      </a>
 
-</div>
-</div>

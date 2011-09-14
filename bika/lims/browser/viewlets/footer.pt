@@ -7,8 +7,9 @@
 <p>
 <span i18n:translate="description_copyright" tal:omit-tag="">
 Copyright &copy; 2000 - <span i18n:name="current_year" tal:define="now modules/DateTime/DateTime" tal:content="now/year" /> by
-<span i18n:name="label_bika"><a href="http://www.bikalabs.com" i18n:translate="label_bika_url">Bika Lab Systems</a></span>.
+<span i18n:name="label_bika"><a href="http://www.bikalabs.com" i18n:translate="label_bika_url">Bika Lab Systems</a></span>
 </span>
+</p>
 
         </div>
 
