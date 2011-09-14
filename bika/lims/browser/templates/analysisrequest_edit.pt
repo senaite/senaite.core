@@ -502,11 +502,13 @@
 
     <div class="discreeter"
         tal:define="portal context/@@plone_portal_state/portal">
-    <!--<p tal:condition="dry_matter">
-    <img src="" tal:attributes="src string:${view/portal/absolute_url}/dry.png">
-    <span i18n:translate="disclaimer_can_be_dry">
-    Can be reported as dry matter</span>
-    </p>-->
+
+    <p>  <!-- AVS this should be conditional if any dryables present -->
+        <img src="" tal:attributes="src string:++resource++bika.lims.images/dry.png">
+        <span i18n:translate="disclaimer_can_be_dry">
+            Can be reported as dry matter</span>
+    </p>
+
     <p tal:condition="python:context.bika_setup.laboratory.getLaboratoryAccredited()">
         <img src="++resource++bika.lims.images/accredited.png">
         <span i18n:translate="disclaimer_accred">
