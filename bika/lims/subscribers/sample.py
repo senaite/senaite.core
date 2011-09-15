@@ -4,14 +4,14 @@ from Products.CMFCore.utils import getToolByName
 
 def ActionSucceededEventHandler(sample, event):
 
+    if hasattr(sample, '_skip_ActionSucceededEventHandler'):
+        return
+
     workflow = getToolByName(sample, 'portal_workflow')
     pc = getToolByName(sample, 'portal_catalog')
     rc = getToolByName(sample, 'reference_catalog')
 
-    if hasattr(sample, '_skip_ActionSucceededEventHandler'):
-        return
-
-    elif event.action == "receive":
+    if event.action == "receive":
         # when a sample is received, all associated
         # AnalysisRequests are also transitioned
         sample.setDateReceived(DateTime())
@@ -21,3 +21,7 @@ def ActionSucceededEventHandler(sample, event):
                 workflow.doActionFor(ar, 'receive')
             except:
                 pass
+
+    elif event.action == "expire":
+        sample.setDateExpired(DateTime())
+        sample.reindexObject()

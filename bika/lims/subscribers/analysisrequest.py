@@ -9,7 +9,7 @@ import transaction
 def ActionSucceededEventHandler(ar, event):
 
     if not hasattr(ar, '_skip_ActionSucceededEventHandler'):
-        logger.info("Succeeded: %s on %s" % (event.action,ar))
+        logger.info("Succeeded: %s on %s" % (event.action, ar))
 
     wf = getToolByName(ar, 'portal_workflow')
     pc = getToolByName(ar, 'portal_catalog')
@@ -21,7 +21,7 @@ def ActionSucceededEventHandler(ar, event):
 
     elif event.action == "receive":
         ar.setDateReceived(DateTime())
-        ar.reindexObject(idxs=["review_state",])
+        ar.reindexObject(idxs = ["review_state", ])
 
         # receive the AR's sample
         sample = ar.getSample()
@@ -48,20 +48,18 @@ def ActionSucceededEventHandler(ar, event):
         # and submit them
         analyses = ar.getAnalyses()
         for analysis in analyses:
-            if analysis.review_state == 'not_requested':
-                continue
             if analysis.review_state != 'sample_received':
                 continue
             try:
                 analysis = analysis.getObject()
                 wf.doActionFor(analysis, event.action)
-                analysis.reindexObject(idxs=["review_state",])
+                analysis.reindexObject(idxs = ["review_state", ])
             except WorkflowException:
                 pass
 
     elif event.action == "retract":
         # retract all analyses in this AR.
-        analyses = ar.getAnalyses(review_state=('to_be_verified', 'verified', 'assigned'),
+        analyses = ar.getAnalyses(review_state = ('to_be_verified', 'verified', 'assigned'),
                                   full_objects = True)
         for analysis in analyses:
             try:
@@ -72,7 +70,7 @@ def ActionSucceededEventHandler(ar, event):
                 pass
         if ar._assigned_to_worksheet:
             wf.doActionFor(ar, 'assign')
-        ar.reindexObject(idxs=["review_state",])
+        ar.reindexObject(idxs = ["review_state", ])
 
     elif event.action == "verify":
         # verify all analyses in this AR.
@@ -97,13 +95,13 @@ def ActionSucceededEventHandler(ar, event):
                         break
             try:
                     wf.doActionFor(analysis, event.action)
-                    analysis.reindexObject(idxs=["review_state",])
+                    analysis.reindexObject(idxs = ["review_state", ])
             except WorkflowException:
                 pass
 
     elif event.action == "publish":
         ar.setDatePublished(DateTime())
-        ar.reindexObject(idxs=["review_state",])
+        ar.reindexObject(idxs = ["review_state", ])
         # publish all analyses in this AR.
         analyses = ar.getAnalyses()
         for analysis in analyses:
@@ -113,6 +111,6 @@ def ActionSucceededEventHandler(ar, event):
             analysis = analysis.getObject()
             try:
                 wf.doActionFor(analysis, event.action)
-                analysis.reindexObject(idxs=["review_state",])
+                analysis.reindexObject(idxs = ["review_state", ])
             except WorkflowException:
                 pass
