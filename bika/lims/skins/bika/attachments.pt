@@ -13,7 +13,7 @@
           <td>
             <metal:block use-macro="here/attachments/macros/ar_attachments_list"/>
           </td>
-          <td tal:define="updateable python:ar_review_state in  ['assigned', 'sample_received', 'to_be_verified']"
+          <td tal:define="updateable python:ar_review_state in ('sample_received', 'to_be_verified')"
               tal:condition="python:updateable and update_attachments">
             <metal:block use-macro="here/attachments/macros/attachments_update"/>
           </td>
@@ -33,7 +33,7 @@
 
 <div metal:define-macro="ar_attachments_list"
      class="ar_attachments_list"
-    tal:define="deleteable python:delete_attachments and ar_review_state in  ['assigned', 'sample_received', 'to_be_verified']">
+    tal:define="deleteable python:delete_attachments and ar_review_state in  ['sample_received', 'to_be_verified']">
     <metal:block tal:define="dummy python:request.RESPONSE.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate, post-check=0, pre-check=0')" />
 <tal:repeat tal:repeat="attachment attachments">
 <form action="." method="post" name="list_attachment">
@@ -80,7 +80,7 @@
 
 <div metal:define-macro="analysis_attachments_list"
     tal:define="
-        deleteable python:delete_attachments and ar_review_state in  ['assigned', 'sample_received', 'to_be_verified'];
+        deleteable python:delete_attachments and ar_review_state in  ['sample_received', 'to_be_verified'];
         dummy python:request.RESPONSE.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate, post-check=0, pre-check=0')" >
 
 <tal:repeat tal:repeat="attachment attachments">
@@ -250,7 +250,7 @@
     <tal:item
         tal:repeat="item attach_analyses">
     <option
-        tal:condition="python:wtool.getInfoFor(item, 'review_state', '') in ['assigned', 'to_be_verified']"
+        tal:condition="python:wtool.getInfoFor(item, 'review_state', '') in ['to_be_verified']"
         tal:attributes="value item/UID;"
         tal:define="this_title string:${item/getRequestID} - ${item/Title}"
         tal:content="this_title"></option>

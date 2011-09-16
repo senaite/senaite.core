@@ -61,7 +61,7 @@ class ARAnalysesField(ObjectField):
         workflow = instance.portal_workflow
         # one can only edit Analyses up to a certain state.
         ar_state = workflow.getInfoFor(instance, 'review_state', '')
-        assert ar_state in ('sample_due', 'sample_received', 'assigned', 'to_be_verified')
+        assert ar_state in ('sample_due', 'sample_received', 'to_be_verified')
 
         pc = getToolByName(instance, 'portal_catalog')
         services = pc(UID=service_uids)
@@ -89,7 +89,7 @@ class ARAnalysesField(ObjectField):
                 analysis.unmarkCreationFlag()
 
             review_state = workflow.getInfoFor(analysis, 'review_state', '')
-            if ar_state in ('sample_received', 'assigned') and \
+            if ar_state == 'sample_received' and \
                 review_state == 'sample_due':
                 workflow.doActionFor(analysis, 'receive')
 

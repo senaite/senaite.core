@@ -17,6 +17,7 @@ class LoadSetupData():
         logger.info("load_setup_data: Laboratory"); self.Laboratory()
         logger.info("load_setup_data: Members and Groups"); self.MembersAndGroups()
         logger.info("load_setup_data: Lab Contacts"); self.LabContacts()
+        logger.info("load_setup_data: Prefixes"); self.Prefixes()
         logger.info("load_setup_data: Clients"); self.Clients()
         logger.info("load_setup_data: Departments"); self.Departments()
         logger.info("load_setup_data: Instruments"); self.Instruments()
@@ -33,10 +34,10 @@ class LoadSetupData():
         logger.info("load_setup_data: Reference Definitions"); self.ReferenceDefinitions()
         logger.info("load_setup_data: Reference Manufacturers"); self.ReferenceManufacturers()
         logger.info("load_setup_data: Reference Suppliers"); self.ReferenceSuppliers()
+        logger.info("load_setup_data: Reference Samples"); self.ReferenceSamples()
         logger.info("load_setup_data: Attachment Types"); self.AttachmentTypes()
         logger.info("load_setup_data: Products"); self.Products()
         logger.info("load_setup_data: Worksheet Templates"); self.WorksheetTemplates()
-        logger.info("load_setup_data: Prefixes"); self.Prefixes()
 
         self.context.plone_utils.addPortalMessage(_(u'Setup data loaded.'), 'info')
 
@@ -234,10 +235,6 @@ class LoadSetupData():
             ('BR BDR Grower', '', False),
             ('BR BDR Layer Phase 1', '', False),
             ('BR BDR Layer Phase 2', '', False),
-            ('BR BDR Pre Breeder', '', False),
-            ('BR BDR Pre Layer', '', False),
-            ('BR BDR Pre-Starter', '', False),
-            ('BR BDR Starter', '', False),
             ('BR Grower', '', False),
             ('BR Starter', '', False),
             ('BRD. Layer Phase 2', '', False),
@@ -269,87 +266,6 @@ class LoadSetupData():
             ('Karkasmeel/Carcass Meal', '', False),
             ('Katoen Oliekoek/Cotton Oilcake', '', False),
             ('Koring/Wheat', '', False),
-            ('Korog/Triticale', '', True),
-            ('Kragvoer', '', False),
-            ('Kuilvoer droog/Silage dry', '', False),
-            ('Kuilvoer nat/Silage wet', '', False),
-            ('Layer Concentrate', '', True),
-            ('Layer Phase 1', '', False),
-            ('Layer Phase 2', '', False),
-            ('Lohman Breeder', '', False),
-            ('Lohman Developer', '', False),
-            ('Lohman Grower', '', False),
-            ('Lohman Pre-Breeder', '', False),
-            ('Lohman Pre-Layer', '', False),
-            ('Lohman Starter', '', False),
-            ('Lupiene/Lupins', '', False),
-            ('Lusern/Lucern', '', False),
-            ('Medics', '', False),
-            ('Melkpoeier/Milk Powder', '', False),
-            ('Mielies Geel/Yellow Maize', '', False),
-            ('Mielies Wit/White Maize', '', False),
-            ('Milk Prod', '', False),
-            ('Milk Prod 17%', '', False),
-            ('Milk Prod 19%', '', False),
-            ('Mono Calphos', '', False),
-            ('Nulaid', '', False),
-            ('Parrot Food', '', False),
-            ('Pioneer 15%', '', False),
-            ('Pioneer 17%', '', False),
-            ('Pioneer 19%', '', False),
-            ('Pullet Grower', '', False),
-            ('RB Brd. Grower', '', False),
-            ('RB Brd. Layer Phase 1', '', False),
-            ('RB Brd. Layer Phase 2', '', False),
-            ('RB Layer Phase 2', '', False),
-            ('RB. Brd. Pre-breeder', '', False),
-            ('RB4 Finisher', '', False),
-            ('RB4 Grower', '', False),
-            ('RB4 Starter', '', False),
-            ('RB4 Terminal', '', False),
-            ('Rog droog', '', False),
-            ('Rog nat', '', False),
-            ('Rotpille/ Rat Pellets', '', True),
-            ('Semels/Bran', '', False),
-            ('Skulp', '', False),
-            ('Sog-Beer 14%', '', False),
-            ('Sog-Beer 15%', '', False),
-            ('Sog-Beer 17%', '', False),
-            ('Sog-Beer/Sow-Boar', '', False),
-            ('Soja/Soya', '', False),
-            ('Sonneblom/Sunflower', '', False),
-            ('Sonneblomsaad/Sunflower seed', '', False),
-            ('Stof/Dust', '', False),
-            ('Strooi/Straw', '', False),
-            ('Suiwel', '', False),
-            ('Suiwel 17%', '', False),
-            ('Trout Fry Meal', '', False),
-            ('Trustymeel/Meal', '', False),
-            ('Tydstroom 100', '', False),
-            ('Tydstroom 110', '', False),
-            ('Tydstroom 120', '', False),
-            ('Tydstroom 90', '', False),
-            ('Varkgroei Fase 1', '', True),
-            ('Varkgroei/Pig Growth', '', True),
-            ('Varkvoer/Pig Feed', '', True),
-            ('Vetkoek/Fat Cake', '', True),
-            ('Viskos', '', False),
-            ('Vismeel/Fishmeal', '', False),
-            ('Vismeel/Fishmeal Imported', '', False),
-            ('Vismeel/Fishmeal Local', '', False),
-            ('Vismeel/Fishmeal St Helena', '', False),
-            ('Voer/Feed', '', False),
-            ('Volstruisaanvang/Ostrich', '', False),
-            ('Volstruisafrond/Ostrich fin.', '', False),
-            ('Volstruisbroei/Ostrich', '', False),
-            ('Volstruisgroei/Ostrich', '', False),
-            ('Volstruisonderhoud/Ostrich', '', False),
-            ('Volstruispille/Ostrich Pell.', '', False),
-            ('Volstruisslag/Ostrich Slaughter', '', False),
-            ('Volstruisteel/Ostrich', '', False),
-            ('Volvoer', '', False),
-            ('Water', '', False),
-            ('Wei/Whey', '', False),
         )
         for title, description, hazardous in sampletypes:
             id = folder.generateUniqueId('SampleType')
@@ -613,30 +529,51 @@ class LoadSetupData():
             obj.processForm()
 
     def ReferenceDefinitions(self):
-        self.ref_defs = []
+        self.ref_defs = {}
+        services = self.service_objs
         referencedefinitions = (
-            ('wine reference', 'white wine sample', False),
-            ('4g/l sugar', 'Sugar water', False),
-            ('8g/l sugar', 'Sugar water at 8g/l sugar', False),
-            ('distilled water', 'distilled water', False),
-            ('Acid reference', 'HCl 3%', True),
+            ('wine reference', 'white wine sample', False, False, ()),
+            ('4g/l sugar', 'Sugar water', False, False, ()),
+            ('8g/l sugar', 'Sugar water at 8g/l sugar', False, False, ()),
+            ('distilled water', 'distilled water', True, False, ()),
+            ('Acid reference', 'HCl 3%', False, True, ()),
+            ('ME', 'Everything an ME needs', False, False, (services['Ash'], services['CP'], services['CF'], services['EE'])),
         )
         folder = self.context.bika_setup.bika_referencedefinitions
-        for title, description, hazardous in referencedefinitions:
-            id = folder.generateUniqueId('ReferenceDefinitions')
+        for title, description, blank, hazardous, service_uids in referencedefinitions:
+            id = folder.generateUniqueId('ReferenceDefinition')
             folder.invokeFactory(id = id, type_name = 'ReferenceDefinition')
             obj = folder[id]
+
             obj.edit(title = title,
                      description = description,
-                     Hazardous = hazardous)
+                     Blank = blank,
+                     Hazardous = hazardous,
+                     ReferenceResults = [{'uid':uid,
+                                          'result':'100',
+                                          'error':'5',
+                                          'min':'95',
+                                          'max':'105'} for uid in service_uids]
+                     )
             obj.processForm()
-            self.ref_defs.append(obj)
+            self.ref_defs[title] = obj
+
+    def ReferenceManufacturers(self):
+        manufacturers = (
+            ('Bloggs & co', 'Manufacturers of fine products since 2008'),
+        )
+        folder = self.context.bika_setup.bika_referencemanufacturers
+        for title, description in manufacturers:
+            id = folder.generateUniqueId('ReferenceManufacturer')
+            folder.invokeFactory(id = id, type_name = 'ReferenceManufacturer')
+            obj = folder[id]
+            obj.edit(title = title,
+                     description = description)
+            obj.processForm()
 
     def ReferenceSuppliers(self):
         referencesuppliers = (
             ('1', ' Acme Standards', 'acme@scapp.co.za', '021 6162050', '0216162192', 'Bobby', 'Smith', 'bobby', 'bobby@scapp.co.za'),
-            ('2', ' Samples for Africa', 'sfa@scapp.co.za', '021 3491150', '0213491504', 'Bulelani', 'Miyama', 'bulelani', 'bulelani@scapp.co.za'),
-            ('3', ' Everything Normal', 'en@scapp.co.za', '021 3443026', '0213443157', 'Meredith', 'Miller', 'meredith', 'meredith@scapp.co.za'),
         )
         folder = self.context.referencesuppliers
         for account_nr, name, email, tel, fax, cname, csurname, cusername, cemail in referencesuppliers:
@@ -662,6 +599,31 @@ class LoadSetupData():
                          Surname = csurname,
                          PrimaryEmailAddress = cemail)
             contact.processForm()
+
+    def ReferenceSamples(self):
+        self.ref_samples = {}
+        defs = self.ref_defs
+        referencesamples = (
+            ('wine reference', defs['wine reference'], False, False),
+            ('4g/l sugar', defs['4g/l sugar'], False, False),
+            ('8g/l sugar', defs['8g/l sugar'], False, False),
+            ('distilled water', defs['distilled water'], False, True),
+            ('Acid reference', defs['Acid reference'], True, False),
+            ('ME', defs['ME'], False, False),
+        )
+        folder = self.context.referencesuppliers.objectValues()[0]
+        for title, definition, blank, hazardous in referencesamples:
+            id = folder.generateUniqueId('ReferenceSample')
+            folder.invokeFactory(id = id,
+                                 type_name = 'ReferenceSample')
+            folder[id].edit(title = title,
+                            Blank = definition.getBlank(),
+                            Hazardous = definition.getHazardous(),
+                            ReferenceResults = definition.getReferenceResults(),
+                            ReferenceDefinition = definition.UID(),
+                            )
+            folder[id].processForm()
+            self.ref_samples[title] = folder[id]
 
     def AttachmentTypes(self):
         attachments = (
@@ -715,20 +677,18 @@ class LoadSetupData():
 
     def WorksheetTemplates(self):
         templates = (
-            ('Water standard',
-             ({'pos':1, 'type':'b', 'sub':self.ref_defs[3].UID(), 'dup':''}, # distilled water
+            ('ME',
+             ({'pos':1, 'type':'b', 'sub':self.ref_defs['ME'].UID(), 'dup':''},
               {'pos':2, 'type':'a', 'sub':'', 'dup':''},
               {'pos':3, 'type':'a', 'sub':'', 'dup':''},
-              {'pos':4, 'type':'d', 'sub':'', 'dup':'1'}),
-             [self.service_objs['Ca'], # dumb list; these from 'water' category
-              self.service_objs['Clide'],
-              self.service_objs['CaCO3'],
-              self.service_objs['SO4'],
-              self.service_objs['SUG'],
+              {'pos':4, 'type':'a', 'sub':'', 'dup':''},
+              {'pos':5, 'type':'a', 'sub':'', 'dup':''},
+              {'pos':6, 'type':'a', 'sub':'', 'dup':''}),
+             (self.service_objs['Ash'],
+              self.service_objs['EE'],
+              self.service_objs['CF'],
               self.service_objs['CP'],
-              self.service_objs['KOHP'],
-              self.service_objs['N'],
-              self.service_objs['SP']]),
+              self.service_objs['ME'])),
         )
         folder = self.context.bika_setup.bika_worksheettemplates
         for title, pos, serv  in templates:
@@ -738,20 +698,6 @@ class LoadSetupData():
             obj.edit(title = title,
                      Layout = pos,
                      Service = serv)
-            obj.processForm()
-
-    def ReferenceManufacturers(self):
-        manufacturers = (
-            ('Bloggs & co', 'Manufacturers of fine products since 2008'),
-            ('Fred\'s Factory', '"We make stuff" is not just a promise!'),
-        )
-        folder = self.context.bika_setup.bika_referencemanufacturers
-        for title, description in manufacturers:
-            id = folder.generateUniqueId('ReferenceManufacturer')
-            folder.invokeFactory(id = id, type_name = 'ReferenceManufacturer')
-            obj = folder[id]
-            obj.edit(title = title,
-                     description = description)
             obj.processForm()
 
     def Prefixes(self):

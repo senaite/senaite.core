@@ -38,11 +38,6 @@ class AnalysesView(BikaListingView):
         # which is a list of field names.
         self.allow_edit = False
 
-        # cheeky - if this is true, bika_listing doesn't check for the
-        # inactive/active transitions.  They show up on Analysis brains
-        # because inactive_review_state is acquired from parent AR brain.
-        self.has_bika_inactive_workflow = True
-
         self.columns = {
             'Service': {'title': _('Analysis')},
             'state_title': {'title': _('Status')},
@@ -158,9 +153,10 @@ class AnalysesView(BikaListingView):
                 getSecurityManager().checkPermission(ViewResults, obj)
 
             # Results can only be edited in certain states.
+            # XXX should be plain permission from workflow - review_state check should not be required
             can_edit_analysis = self.allow_edit and \
                 getSecurityManager().checkPermission(EditAnalyses, obj) and \
-                items[i]['review_state'] in ('sample_received', 'assigned')
+                items[i]['review_state'] == 'sample_received'
 
             if can_edit_analysis:
                 items[i]['allow_edit'] = ['Result',]
@@ -224,6 +220,10 @@ class AnalysesView(BikaListingView):
                     '<img width="16" height="16" ' + \
                     'src="%s/++resource++bika.lims.images/late.png" title="%s"/>'% \
                     (portal.absolute_url(), _("Due Date: ") + DueDate)
+
+            # if an analysis is assigned to a worksheet, replace the state title
+            if workflow.getInfoFor(items[i]['obj'], 'worksheetanalysis_review_state') == 'assigned':
+                items[i]['state_title'] = workflow.getTitleForStateOnType('assigned', 'Analysis')
 
         # the TAL is lazy, it requires blank values for
         # all interim fields on all items, so we loop

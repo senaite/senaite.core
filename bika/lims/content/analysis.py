@@ -140,7 +140,6 @@ class Analysis(BaseContent):
     schema = schema
     displayContentsTab = False
 
-    _assigned_to_worksheet = False
     _affects_other_analysis = False
 
     def Title(self):

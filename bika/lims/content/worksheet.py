@@ -47,17 +47,6 @@ schema = BikaSchema.copy() + Schema((
             visible = False,
         ),
     ),
-    ReferenceField('ReferenceAnalyses',
-        multiValued=1,
-        allowed_types=('ReferenceAnalysis',),
-        relationship='WorksheetReferenceAnalysis',
-        widget=ReferenceWidget(
-            label='ReferenceAnalyses',
-            label_msgid='label_referenceanalyses',
-            i18n_domain=I18N_DOMAIN,
-            visible=False,
-        ),
-    ),
     ReferenceField('LinkedWorksheet',
         multiValued = 1,
         allowed_types = ('Worksheet',),
@@ -226,25 +215,17 @@ class Worksheet(BaseFolder):
         self._delegating_workflow_action = 1
 
         if Analyses:
-            wf_tool = getToolByName(self, 'portal_workflow')
+            workflow = getToolByName(self, 'portal_workflow')
             rc = getToolByName(self, REFERENCE_CATALOG)
             assigned = []
             for uid in Analyses:
                 analysis = rc.lookupObject(uid)
-                # can only assign to worksheet if state == 'sample_received'
-                if wf_tool.getInfoFor(
-                    analysis, 'review_state', '') != 'sample_received':
-                    continue
-                wf_tool.doActionFor(analysis, 'assign')
-                analysis.reindexObject()
- #               transaction_note('Changed status of %s at %s' % (
-#                    analysis.Title(), analysis.absolute_url()))
+                workflow.doActionFor(analysis, 'assign')
                 assigned.append(uid)
 
             assigned = assigned + self.getAnalyses()
 
             self.setAnalyses(assigned)
-
 
         del self._delegating_workflow_action
 
@@ -278,8 +259,6 @@ class Worksheet(BaseFolder):
             for analysis in real_analyses:
                 analysis._assigned_to_worksheet = False
                 wf_tool.doActionFor(analysis, 'retract')
- #               transaction_note('Changed status of %s at %s' % (
-#                    analysis.Title(), analysis.absolute_url()))
 
             uids = []
             for a in self.getAnalyses():
@@ -295,8 +274,6 @@ class Worksheet(BaseFolder):
             for std_analysis in std_analyses:
                 reference_sample = std_analysis.aq_parent
                 reference_sample.manage_delObjects(std_analysis.getId())
-
-
         """
         if std_uids:
             wf_tool = getToolByName(self, 'portal_workflow')
@@ -306,8 +283,6 @@ class Worksheet(BaseFolder):
                 if review_state != 'assigned':
                     wf_tool.doActionFor(std_analysis, 'retract')
                 wf_tool.doActionFor(std_analysis, 'unassign')
- #               transaction_note('Changed status of %s at %s' % (
-#                    std_analysis.Title(), std_analysis.absolute_url()))
             uids = []
             for a in self.getReferenceAnalyses():
                 if a.UID() not in std_uids:

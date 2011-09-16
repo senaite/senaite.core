@@ -82,7 +82,6 @@ class ReferenceSamplesView(BikaListingView):
             if not items[x].has_key('obj'): continue
             obj = items[x]['obj'].getObject()
             items[x]['ID'] = obj.id
-            items[x]['Title'] = obj.getReferenceTitle()
             items[x]['Manufacturer'] = obj.getReferenceManufacturer() and \
                  obj.getReferenceManufacturer().Title() or ''
             items[x]['CatalogueNumber'] = obj.getCatalogueNumber()

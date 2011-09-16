@@ -63,6 +63,10 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
                 logger.warn("No workflow action provided.")
                 return
 
+        # workflow cascades prevent collisions by adding their
+        # object's UID to this list.
+        self.request['workflow_skiplist'] = []
+
         if action in ('prepublish', 'publish', 'prepublish'):
             # XXX publish entire AR.
             transitioned = Publish(self.context,
@@ -440,9 +444,6 @@ class AnalysisRequestSelectCCView(BikaListingView):
         self.show_select_column = True
         self.pagesize = 25
 
-        # This prevents bika_listing from looking for active/inactive transitions
-        self.has_bika_inactive_workflow = True
-
         self.columns = {
             'getFullname': {'title': _('Full Name')},
             'getEmailAddress': {'title': _('Email Address')},
@@ -665,14 +666,14 @@ class AJAXProfileServices(BrowserView):
         if not profile: return
 
         services = {}
-        for service in profile.getService():
-            service = pc(portal_type = "AnalysisService",
-                         inactive_review_state = 'active',
-                         UID = service.UID())[0]
-            categoryUID = service.getCategoryUID
-            poc = service.getPointOfCapture
-            try: services["%s_%s" % (poc, categoryUID)].append(service.UID)
-            except: services["%s_%s" % (poc, categoryUID)] = [service.UID, ]
+        for service in pc(portal_type = "AnalysisService",
+                          inactive_review_state = "active",
+                          UID = [u.UID() for u in profile.getService()]):
+            service = service.getObject()
+            categoryUID = service.getCategoryUID()
+            poc = service.getPointOfCapture()
+            try: services["%s_%s" % (poc, categoryUID)].append(service.UID())
+            except: services["%s_%s" % (poc, categoryUID)] = [service.UID(), ]
 
         return json.dumps(services)
 

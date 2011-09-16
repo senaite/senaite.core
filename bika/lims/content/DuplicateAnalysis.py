@@ -117,8 +117,6 @@ class DuplicateAnalysis(BaseContent):
     actions = ()
 
 
-    _assigned_to_worksheet = False
-
     def Title(self):
         """ Return the Service ID as title """
         s = self.getService()

@@ -42,6 +42,7 @@
   <type type_id="ATSortCriterion"/>
   <type type_id="Analysis">
    <bound-workflow workflow_id="bika_analysis_workflow"/>
+   <bound-workflow workflow_id="bika_worksheetanalysis_workflow"/>
   </type>
   <type type_id="AnalysisCategories"/>
   <type type_id="AnalysisCategory">

@@ -30,14 +30,11 @@ class WorksheetWorkflowAction(WorkflowAction):
         originating_url = self.request.get_header("referer",
                                                   self.context.absolute_url())
 
-        # use came_from to decide which UI action was clicked.
-        # "workflow_action" is the action name specified in the
-        # portal_workflow transition url.
+        # "workflow_action" is the action name specified in the edit border transition.
         came_from = "workflow_action"
         action = form.get(came_from, '')
         if not action:
-            # workflow_action_button is the action name specified in
-            # the bika_listing_view table buttons.
+            # workflow_action_button is the action name in the bika_listing table buttons.
             came_from = "workflow_action_button"
             action = form.get(came_from, '')
             # XXX some browsers agree better than others about our JS ideas.
@@ -59,13 +56,16 @@ class WorksheetWorkflowAction(WorkflowAction):
             self.context.plone_utils.addPortalMessage(message, 'error')
             return
 
+        # workflow cascades prevent collisions by adding their
+        # object's UID to this list.
+        self.request['workflow_skiplist'] = []
+
         # assign selected analyses to this worksheet
         if action == 'assign':
             analyses = []
-            transitioned_ars = []
             if 'paths' in form:
                 for path in form['paths']:
-                    # get selected analysis object from catalog
+                    # get analyses from catalog
                     item_id = path.split("/")[-1]
                     item_path = path.replace("/"+item_id, '')
                     analysis = pc(id=item_id,
@@ -73,26 +73,10 @@ class WorksheetWorkflowAction(WorkflowAction):
                                         'depth':1})[0].getObject()
                     analyses.append(analysis)
                     ar = analysis.aq_parent
-                    if ar not in transitioned_ars:
-                        transitioned_ars.append(ar)
                 for analysis in analyses:
-                    try:
-                        workflow.doActionFor(analysis, 'assign')
-                    except WorkflowException:
-                        pass
-                    # add items worksheet Analyses
-                    self.context.setAnalyses(
-                        self.context.getAnalyses() + analyses)
-                for ar in transitioned_ars:
-                    if len(pc(portal_type = "Analysis",
-                              review_state = 'assigned',
-                              getRequestID = ar.getRequestID())) == \
-                       len(pc(portal_type = "Analysis",
-                              getRequestID = ar.getRequestID())):
-                        try:
-                            workflow.doActionFor(ar, 'assign')
-                        except WorkflowException:
-                            pass
+                    workflow.doActionFor(analysis, 'assign')
+                # add items to Worksheet Analyses
+                self.context.setAnalyses(analyses)
 
             if len(analyses) > 1:
                 message = _('message_items_assigned',
@@ -109,7 +93,6 @@ class WorksheetWorkflowAction(WorkflowAction):
             self.context.plone_utils.addPortalMessage(message, 'info')
             return self.request.RESPONSE.redirect(
                 self.context.absolute_url() + "/manage_results")
-
         else:
             # default bika_listing.py/WorkflowAction for other transitions
             WorkflowAction.__call__(self)
@@ -133,7 +116,7 @@ class WorksheetAddView(BrowserView):
             if form['wstemplate'] != '':
                 wst = rc.lookupObject(form['wstemplate'])
 
-                rows = wst.getRow()
+                layout = wst.getLayout()
                 services = wst.getService()
                 service_uids = [s.UID() for s in services]
 
@@ -141,7 +124,7 @@ class WorksheetAddView(BrowserView):
                 count_b = 0
                 count_c = 0
                 count_d = 0
-                for row in rows:
+                for row in layout:
                     if row['type'] == 'a': count_a = count_a + 1
                     if row['type'] == 'b': count_b = count_b + 1
                     if row['type'] == 'c': count_c = count_c + 1
@@ -154,6 +137,7 @@ class WorksheetAddView(BrowserView):
                 for a in pc(portal_type = 'Analysis',
                             getServiceUID = service_uids,
                             review_state = 'sample_received',
+                            worksheetanalysis_review_state = 'unassigned',
                             sort_on = 'getDueDate'):
                     analysis = a.getObject()
                     ar = analysis.aq_parent
@@ -170,7 +154,7 @@ class WorksheetAddView(BrowserView):
                     selected[ar.id]['services'].append(analysis.getServiceUID())
 
                 used_ars = {}
-                for row in rows:
+                for row in layout:
                     position = int(row['pos'])
                     if row['type'] == 'a':
                         if ars:
@@ -230,7 +214,7 @@ class WorksheetAddView(BrowserView):
                     ws.assignNumberedAnalyses(Analyses = analyses)
 
                 if count_d:
-                    for row in rows:
+                    for row in layout:
                         if row['type'] == 'd':
                             position = int(row['pos'])
                             dup_pos = int(row['dup'])
@@ -240,7 +224,7 @@ class WorksheetAddView(BrowserView):
                                     Position = position,
                                     Service = used_ars[dup_pos]['serv'])
 
-                ws.setMaxPositions(len(rows))
+                ws.setMaxPositions(len(layout))
 
         ws.processForm()
         ws.reindexObject()
@@ -256,9 +240,6 @@ class WorksheetManageResultsView(AnalysesView):
         self.show_select_row = True
         self.show_sort_column = True
         self.allow_edit = True
-
-        # dodge catalog acquisition
-        self.has_bika_inactive_workflow = True
 
         self.columns = {
             'Pos': {'title': _('Pos')},
@@ -347,7 +328,8 @@ class WorksheetAddAnalysisView(AnalysesView):
         super(WorksheetAddAnalysisView, self).__init__(context, request)
         self.content_add_actions = {}
         self.contentFilter = {'portal_type': 'Analysis',
-                              'review_state':'sample_received'}
+                              'review_state':'sample_received',
+                              'worksheetanalysis_review_state': 'unassigned'}
         self.show_editable_border = True
         self.base_url = self.context.absolute_url()
         self.view_url = self.base_url  + "/add_analysis"

@@ -72,5 +72,5 @@ class AJAX_SampleTypes():
         items = pc(portal_type = "SampleType")
         nr_items = len(items)
         items = [s.Title for s in items if s.Title.lower().find(term.lower()) > -1]
-        return json.dumps(items)
+        return json.dumps(items[:10])
 

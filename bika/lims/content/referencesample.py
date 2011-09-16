@@ -21,124 +21,141 @@ from zope.interface import implements
 import sys
 import time
 from bika.lims import bikaMessageFactory as _
+from bika.lims.config import I18N_DOMAIN
 
 schema = BikaSchema.copy() + Schema((
-    StringField('ReferenceTitle',
-        searchable = True,
-        widget = StringWidget(
-            label = 'Title',
-            label_msgid = 'label_referencetitle',
-            i18n_domain = I18N_DOMAIN,
-        ),
-    ),
     ReferenceField('ReferenceDefinition',
+        ## schemata = "",
         allowed_types = ('ReferenceDefinition',),
         relationship = 'ReferenceSampleReferenceDefinition',
         referenceClass = HoldingReference,
+##        vocabulary = "GetActiveReferenceDefinitions", # XXX vocabulary, really, for all the references that should only display active?
         widget = ReferenceWidget(
             checkbox_bound = 1,
             label = 'Reference Definition',
-            label_msgid = 'label_reference_definition',
+            description = _(""),
             i18n_domain = I18N_DOMAIN,
         ),
     ),
     BooleanField('Blank',
+        ## schemata = "",
         default = False,
         widget = BooleanWidget(
             label = _("Blank"),
             description = _("Check this if the reference sample values are zero or 'blank'"),
+            i18n_domain = I18N_DOMAIN,
         ),
     ),
     BooleanField('Hazardous',
+        ## schemata = "",
         default = False,
         widget = BooleanWidget(
             label = _("Hazardous"),
             description = _("Check this box if these reference samples should be treated as hazardous"),
+            i18n_domain = I18N_DOMAIN,
         ),
     ),
     ReferenceField('ReferenceManufacturer',
+        ## schemata = "",
         allowed_types = ('ReferenceManufacturer',),
         relationship = 'ReferenceSampleReferenceManufacturer',
         referenceClass = HoldingReference,
         widget = ReferenceWidget(
             checkbox_bound = 1,
             label = 'Manufacturer',
-            label_msgid = 'label_manufacturer',
+            description = _(""),
             i18n_domain = I18N_DOMAIN,
         ),
     ),
     StringField('CatalogueNumber',
+        ## schemata = "",
         widget = StringWidget(
             label = 'Catalogue number',
-            label_msgid = 'label_calaloguenumber',
+            description = _(""),
             i18n_domain = I18N_DOMAIN,
         ),
     ),
     StringField('LotNumber',
+        ## schemata = "",
         widget = StringWidget(
             label = 'Lot number',
-            label_msgid = 'label_lotnumber',
+            description = _(""),
             i18n_domain = I18N_DOMAIN,
         ),
     ),
     DateTimeField('DateSampled',
+        ## schemata = "",
         index = 'DateIndex',
         widget = bika_DateTimeWidget(
             label = 'Date sampled',
-            label_msgid = 'label_datesampled',
+            description = _(""),
+            i18n_domain = I18N_DOMAIN,
         ),
     ),
     DateTimeField('DateReceived',
+        ## schemata = "",
         index = 'DateIndex',
         default_method = 'current_date',
         widget = bika_DateTimeWidget(
             label = 'Date received',
-            label_msgid = 'label_datereceived',
+            description = _(""),
+            i18n_domain = I18N_DOMAIN,
         ),
     ),
     DateTimeField('DateOpened',
+        ## schemata = "",
         index = 'DateIndex',
         widget = bika_DateTimeWidget(
             label = 'Date opened',
-            label_msgid = 'label_dateopened',
+            description = _(""),
+            i18n_domain = I18N_DOMAIN,
         ),
     ),
     DateTimeField('ExpiryDate',
+        ## schemata = "",
         required = 1,
         index = 'DateIndex',
         widget = bika_DateTimeWidget(
             label = 'Expiry date',
-            label_msgid = 'label_expirydate',
+            description = _(""),
+            i18n_domain = I18N_DOMAIN,
         ),
     ),
     DateTimeField('DateExpired',
+        ## schemata = "",
         index = 'DateIndex',
         widget = bika_DateTimeWidget(
             label = 'Date expired',
-            label_msgid = 'label_dateexpired',
+            description = _(""),
+            i18n_domain = I18N_DOMAIN,
             visible = {'edit':'hidden'},
         ),
     ),
     DateTimeField('DateDisposed',
+        ## schemata = "",
         index = 'DateIndex',
         widget = bika_DateTimeWidget(
             label = 'Date disposed',
-            label_msgid = 'label_datedisposed',
+            description = _(""),
+            i18n_domain = I18N_DOMAIN,
             visible = {'edit':'hidden'},
         ),
     ),
     ReferenceResultsField('ReferenceResults',
+        ## schemata = "",
         required = 1,
         widget = ReferenceResultsWidget(
             label = "Reference Results",
-            label_msgid = "label_reference_results",
+            description = _(""),
             i18n_domain = I18N_DOMAIN,
         ),
     ),
     TextField('Notes',
+        ## schemata = "",
         widget = TextAreaWidget(
             label = 'Notes',
-            label_msgid = 'label_notes',
+            description = _(""),
+            i18n_domain = I18N_DOMAIN,
         ),
     ),
     ComputedField('ReferenceSupplierUID',
@@ -157,17 +174,19 @@ schema = BikaSchema.copy() + Schema((
     ),
 ))
 
-schema['title'].required = 0
-schema['title'].widget.visible = False
+##schema['title'].schemata = default
 
 class ReferenceSample(BaseFolder):
     implements(IReferenceSample)
     security = ClassSecurityInfo()
     schema = schema
 
-    def Title(self):
-        """ Return the Reference ID as title """
-        return self.id
+##    security.declarePublic('getActiveReferenceDefinitions')
+##    def getActiveReferenceDefinitions(self):
+##        pc = getToolByName(self, 'portal_catalog')
+##        defs = pc(portal_type='ReferenceDefinition',
+##                  inactive_review_state='active')
+##        return DisplayList(tuple([(d.UID,d.Title) for d in defs]))
 
     security.declarePublic('current_date')
     def current_date(self):

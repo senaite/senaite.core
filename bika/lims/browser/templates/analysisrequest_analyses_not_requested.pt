@@ -64,7 +64,7 @@
 				</td>
 				<td align="right">
 					<img tal:condition="view/getHazardous"
-						src="" 
+						src=""
                         title="Hazardous"
                         tal:attributes="src string:++resource.bika.lims.images/hazardous.png">
 				</td>
@@ -120,7 +120,7 @@
 				</td>
 				<td tal:content="item/Title"/>
 				<td tal:content="item/getUnit"/>
-				<td tal:condition="python:review_state in ('sample_received', 'assigned')">
+				<td tal:condition="python:review_state == 'sample_received'">
 					<input size="10" name="" value="10"
 						tal:attributes="
 							value item/getResult;
@@ -129,7 +129,7 @@
 				</td>
 
 				<tal:result
-					tal:condition="python:review_state not in ('sample_received', 'assigned')"
+					tal:condition="python:review_state != 'sample_received'"
 					tal:define="result_class python:view.result_in_range(item, sampletype.UID(), specification)">
 					<td tal:attributes="class result_class" tal:content="item/getResult"/>
 				</tal:result>

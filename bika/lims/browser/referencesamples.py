@@ -23,7 +23,6 @@ class ReferenceSamplesView(BikaListingView):
            'Definition': {'title': _('Reference Definition')},
            'DateSampled': {'title': _('Date Sampled')},
            'DateReceived': {'title': _('Date Received')},
-           'DateOpened': {'title': _('Date Opened')},
            'ExpiryDate': {'title': _('Expiry Date')},
            'state_title': {'title': _('State')},
           }
@@ -38,7 +37,6 @@ class ReferenceSamplesView(BikaListingView):
                              'Definition',
                              'DateSampled',
                              'DateReceived',
-                             'DateOpened',
                              'ExpiryDate',
                              'state_title']},
                 {'title': _('Current'), 'id':'current',
@@ -51,7 +49,6 @@ class ReferenceSamplesView(BikaListingView):
                              'Definition',
                              'DateSampled',
                              'DateReceived',
-                             'DateOpened',
                              'ExpiryDate']},
                 {'title': _('Expired'), 'id':'expired',
                  'columns': ['ID',
@@ -63,7 +60,6 @@ class ReferenceSamplesView(BikaListingView):
                              'Definition',
                              'DateSampled',
                              'DateReceived',
-                             'DateOpened',
                              'ExpiryDate']},
                 {'title': _('Disposed'), 'id':'disposed',
                  'columns': ['ID',
@@ -75,7 +71,6 @@ class ReferenceSamplesView(BikaListingView):
                              'Definition',
                              'DateSampled',
                              'DateReceived',
-                             'DateOpened',
                              'ExpiryDate']},
                 ]
 
@@ -86,7 +81,6 @@ class ReferenceSamplesView(BikaListingView):
             if not items[x].has_key('obj'): continue
             obj = items[x]['obj'].getObject()
             items[x]['ID'] = obj.id
-            items[x]['Title'] = obj.getReferenceTitle()
             items[x]['Supplier'] = obj.aq_parent.Title()
             items[x]['Manufacturer'] = obj.getReferenceManufacturer() and \
                  obj.getReferenceManufacturer().Title() or ''
@@ -98,8 +92,6 @@ class ReferenceSamplesView(BikaListingView):
                  self.context.toLocalizedTime(obj.getDateSampled(), long_format = 0)
             items[x]['DateReceived'] = \
                  self.context.toLocalizedTime(obj.getDateReceived(), long_format = 0)
-            items[x]['DateOpened'] = \
-                 self.context.toLocalizedTime(obj.getDateOpened(), long_format = 0)
             items[x]['ExpiryDate'] = \
                  self.context.toLocalizedTime(obj.getExpiryDate(), long_format = 0)
 

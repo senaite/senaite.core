@@ -88,7 +88,6 @@
  <index name="getUsername" meta_type="FieldIndex"> <indexed_attr value="getUsername"/> </index>
  <index name="id" meta_type="FieldIndex"> <indexed_attr value="id"/> </index>
  <index name="in_reply_to" meta_type="FieldIndex"> <indexed_attr value="in_reply_to"/> </index>
- <index name="inactive_review_state" meta_type="FieldIndex"> <indexed_attr value="inactive_review_state"/> </index>
  <index name="is_default_page" meta_type="FieldIndex"> <indexed_attr value="is_default_page"/> </index>
  <index name="is_folderish" meta_type="FieldIndex"> <indexed_attr value="is_folderish"/> </index>
  <index name="meta_type" meta_type="FieldIndex"> <indexed_attr value="meta_type"/> </index>
@@ -96,9 +95,11 @@
  <index name="object_provides" meta_type="KeywordIndex"> <indexed_attr value="object_provides"/> </index>
  <index name="path" meta_type="ExtendedPathIndex"/>
  <index name="portal_type" meta_type="FieldIndex"> <indexed_attr value="portal_type"/> </index>
- <index name="review_state" meta_type="FieldIndex"> <indexed_attr value="review_state"/> </index>
  <index name="sortable_title" meta_type="FieldIndex"> <indexed_attr value="sortable_title"/> </index>
  <index name="start" meta_type="DateIndex"> <property name="index_naive_time_as_local">True</property> </index>
+ <index name="review_state" meta_type="FieldIndex"> <indexed_attr value="review_state"/> </index>
+ <index name="inactive_review_state" meta_type="FieldIndex"> <indexed_attr value="inactive_review_state"/> </index>
+ <index name="worksheetanalysis_review_state" meta_type="FieldIndex"> <indexed_attr value="worksheetanalysis_review_state"/> </index>
 
  <column value="CreationDate"/>
  <column value="Creator"/>
@@ -127,7 +128,6 @@
  <column value="getRemoteUrl"/>
  <column value="getRequestID"/>
  <column value="id"/>
- <column value="inactive_review_state"/>
  <column value="is_folderish"/>
  <column value="listCreators"/>
  <column value="location"/>
