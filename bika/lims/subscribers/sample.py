@@ -1,27 +1,25 @@
 from DateTime import DateTime
-from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFCore.utils import getToolByName
+from Products.CMFCore.WorkflowCore import WorkflowException
+from bika.lims import logger
 
 def ActionSucceededEventHandler(sample, event):
 
-    if hasattr(sample, '_skip_ActionSucceededEventHandler'):
-        return
+    logger.info("Succeeded: %s on %s" % (event.action, sample))
 
-    workflow = getToolByName(sample, 'portal_workflow')
-    pc = getToolByName(sample, 'portal_catalog')
-    rc = getToolByName(sample, 'reference_catalog')
+    skiplist = sample.REQUEST["workflow_skiplist"]
+    skiplist.append(sample.UID())
 
     if event.action == "receive":
+        sample.setDateReceived(DateTime())
+        sample.reindexObject(idxs = ["getDateReceived", ])
         # when a sample is received, all associated
         # AnalysisRequests are also transitioned
-        sample.setDateReceived(DateTime())
-        sample.reindexObject()
+        workflow = getToolByName(sample, 'portal_workflow')
         for ar in sample.getAnalysisRequests():
-            try:
-                workflow.doActionFor(ar, 'receive')
-            except:
-                pass
+            if not ar.UID() in skiplist:
+                workflow.doActionFor(ar, "receive")
 
     elif event.action == "expire":
         sample.setDateExpired(DateTime())
-        sample.reindexObject()
+        sample.reindexObject(idxs = ["getDateExpired", ])
