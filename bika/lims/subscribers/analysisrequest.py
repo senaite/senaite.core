@@ -11,6 +11,7 @@ def ActionSucceededEventHandler(ar, event):
 
     if not ar.REQUEST.has_key('workflow_skiplist'):
         ar.REQUEST['workflow_skiplist'] = [ar.UID(), ]
+        skiplist = ar.REQUEST['workflow_skiplist']
     else:
         skiplist = ar.REQUEST['workflow_skiplist']
         if ar.UID() in skiplist:
