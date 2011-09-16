@@ -115,6 +115,7 @@ class BikaListingView(BrowserView):
     title = ""
     description = ""
     contentFilter = {}
+    merged_contentFilter = {}
     allow_edit = True
     content_add_actions = {}    # XXX menu.zcml/menu.py
     show_editable_border = True # XXX viewlets.zcml entries
@@ -157,7 +158,7 @@ class BikaListingView(BrowserView):
     def __init__(self, context, request):
         super(BikaListingView, self).__init__(context, request)
         self.base_url = self.context.absolute_url()
-        self.view_url = self.context.absolute_url()
+        self.view_url = self.base_url
         # contentsMethod may return a list of brains or a list of objects.
         self.contentsMethod = self.context.getFolderContents
 
@@ -175,25 +176,19 @@ class BikaListingView(BrowserView):
         # inserted before ajax form submit by bika_listing.js
         # when review_state radio is clicked
         if form.has_key('review_state_clicked'):
-            # modify contentFilter with review_state radio value
+            # if review_state has contentFilter dict, apply it to our contentFilter
+            # otherwise, add {review_state:radio_value} to contentFilter
+            # for the 'all' case, we just use the base contentFilter
+            self.merged_contentFilter = self.contentFilter
             if form.has_key("review_state"):
-                if self.request['review_state'] == 'all':
-                    if self.contentFilter.has_key('review_state'):
-                        del(self.contentFilter['review_state'])
-                    if self.contentFilter.has_key('inactive_review_state'):
-                        del(self.contentFilter['inactive_review_state'])
-                elif self.request['review_state'] == 'active':
-                    if self.contentFilter.has_key('review_state'):
-                        del(self.contentFilter['review_state'])
-                    self.contentFilter['inactive_review_state'] = 'active'
-                elif self.request['review_state'] == 'inactive':
-                    if self.contentFilter.has_key('review_state'):
-                        del(self.contentFilter['review_state'])
-                    self.contentFilter['inactive_review_state'] = 'inactive'
+                review_state = [rs for rs in self.review_states if \
+                                rs['id']==form['review_state']][0]
+                if review_state.has_key('contentFilter'):
+                    for k,v in review_state.items():
+                        self.merged_contentFilter[k] = v
                 else:
-                    if self.contentFilter.has_key('inactive_review_state'):
-                        del(self.contentFilter['inactive_review_state'])
-                    self.contentFilter['review_state'] = form['review_state']
+                    if form['review_state'] != 'all':
+                        self.merged_contentFilter['review_state'] = form['review_state']
 
             return self.contents_table()
 

@@ -83,7 +83,8 @@ class ClientAnalysisRequestsView(BikaListingView):
 
     def __init__(self, context, request):
         super(ClientAnalysisRequestsView, self).__init__(context, request)
-        self.contentFilter = {'portal_type': 'AnalysisRequest'}
+        self.contentFilter = {'portal_type':'AnalysisRequest'}
+        self.review_state = 'all'
         self.content_add_actions = {_('Analysis Request'):
                                     "analysisrequest_add"}
         self.show_editable_border = True
@@ -118,6 +119,7 @@ class ClientAnalysisRequestsView(BikaListingView):
                         'DatePublished',
                         'state_title']},
             {'title': _('Sample due'), 'id':'sample_due',
+             'contentFilter': {'review_state': 'sample_due'},
              'transitions': ['cancel', 'receive'],
              'columns':['getRequestID',
                         'ClientOrderNumber',
@@ -126,6 +128,7 @@ class ClientAnalysisRequestsView(BikaListingView):
                         'SampleTypeTitle',
                         'SamplePointTitle']},
             {'title': _('Sample received'), 'id':'sample_received',
+             'contentFilter': {'review_state': 'sample_received'},
              'transitions': ['cancel'],
              'columns':['getRequestID',
                         'ClientOrderNumber',
@@ -135,6 +138,9 @@ class ClientAnalysisRequestsView(BikaListingView):
                         'SamplePointTitle',
                         'DateReceived']},
             {'title': _('Assigned to Worksheet'), 'id':'assigned',
+             'contentFilter': {'worksheetanalysis_review_state': 'assigned',
+                               'review_state': ('sample_received', 'to_be_verified',
+                                                'verified', 'published')},
              'transitions': ['cancel'],
              'columns':['getRequestID',
                         'ClientOrderNumber',
@@ -144,6 +150,7 @@ class ClientAnalysisRequestsView(BikaListingView):
                         'SamplePointTitle',
                         'DateReceived']},
             {'title': _('To be verified'), 'id':'to_be_verified',
+             'contentFilter': {'review_state': 'to_be_verified'},
              'transitions': ['cancel', 'verify'],
              'columns':['getRequestID',
                         'ClientOrderNumber',
@@ -153,6 +160,7 @@ class ClientAnalysisRequestsView(BikaListingView):
                         'SamplePointTitle',
                         'DateReceived']},
             {'title': _('Verified'), 'id':'verified',
+             'contentFilter': {'review_state': 'verified'},
              'transitions': ['cancel', 'publish'],
              'columns':['getRequestID',
                         'ClientOrderNumber',
@@ -162,6 +170,7 @@ class ClientAnalysisRequestsView(BikaListingView):
                         'SamplePointTitle',
                         'DateReceived']},
             {'title': _('Published'), 'id':'published',
+             'contentFilter': {'review_state': 'published'},
              'columns':['getRequestID',
                         'ClientOrderNumber',
                         'ClientReference',
