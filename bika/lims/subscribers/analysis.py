@@ -9,26 +9,23 @@ import transaction
 
 def ObjectInitializedEventHandler(analysis, event):
 
-    if not analysis.REQUEST.has_key('workflow_skiplist'):
-        analysis.REQUEST['workflow_skiplist'] = [analysis.UID(),]
-    else:
-        analysis.REQUEST["workflow_skiplist"].append(analysis.UID())
-    skiplist = analysis.REQUEST['workflow_skiplist']
-
     logger.info("%s on %s" % (event.action, analysis.getService().getKeyword()))
 
     # creating a new analysis retracts parent AR to 'received'
     ar = analysis.aq_parent
-    if not ar.UID() in skiplist:
-        wf = getToolByName(analysis, 'portal_workflow')
-        ar_state = wf.getInfoFor(ar, 'review_state')
-        if ar_state not in ('sample_due', 'sample_received'):
-            wf.doActionFor(ar, 'retract')
+    wf = getToolByName(analysis, 'portal_workflow')
+    ar_state = wf.getInfoFor(ar, 'review_state')
+    if ar_state not in ('sample_due', 'sample_received'):
+        if not analysis.REQUEST.has_key('workflow_skiplist'):
+            analysis.REQUEST['workflow_skiplist'] = [ar.UID(), ]
+        else:
+            analysis.REQUEST["workflow_skiplist"].append(ar.UID())
+        wf.doActionFor(ar, 'retract')
 
 def ActionSucceededEventHandler(analysis, event):
 
     if not analysis.REQUEST.has_key('workflow_skiplist'):
-        analysis.REQUEST['workflow_skiplist'] = [analysis.UID(),]
+        analysis.REQUEST['workflow_skiplist'] = [analysis.UID(), ]
     else:
         analysis.REQUEST["workflow_skiplist"].append(analysis.UID())
     skiplist = analysis.REQUEST['workflow_skiplist']
