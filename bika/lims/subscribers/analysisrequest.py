@@ -8,10 +8,13 @@ import transaction
 
 def ActionSucceededEventHandler(ar, event):
 
-    logger.info("Succeeded: %s on %s" % (event.action, ar))
+    if not ar.REQUEST.has_key('workflow_skiplist'):
+        ar.REQUEST['workflow_skiplist'] = [ar.UID(),]
+    else:
+        ar.REQUEST["workflow_skiplist"].append(ar.UID())
+    skiplist = ar.REQUEST['workflow_skiplist']
 
-    skiplist = ar.REQUEST["workflow_skiplist"]
-    skiplist.append(ar.UID())
+    logger.info("Succeeded: %s on %s" % (event.action, ar))
 
     wf = getToolByName(ar, 'portal_workflow')
 

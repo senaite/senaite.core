@@ -5,10 +5,13 @@ from bika.lims import logger
 
 def ActionSucceededEventHandler(sample, event):
 
-    logger.info("Succeeded: %s on %s" % (event.action, sample))
+    if not sample.REQUEST.has_key('workflow_skiplist'):
+        sample.REQUEST['workflow_skiplist'] = [sample.UID(),]
+    else:
+        sample.REQUEST["workflow_skiplist"].append(sample.UID())
+    skiplist = sample.REQUEST['workflow_skiplist']
 
-    skiplist = sample.REQUEST["workflow_skiplist"]
-    skiplist.append(sample.UID())
+    logger.info("Succeeded: %s on %s" % (event.action, sample))
 
     if event.action == "receive":
         sample.setDateReceived(DateTime())

@@ -9,10 +9,13 @@ import transaction
 
 def ObjectInitializedEventHandler(analysis, event):
 
-    logger.info("%s on %s" % (event.action, analysis.getService().getKeyword()))
+    if not analysis.REQUEST.has_key('workflow_skiplist'):
+        analysis.REQUEST['workflow_skiplist'] = [analysis.UID(),]
+    else:
+        analysis.REQUEST["workflow_skiplist"].append(analysis.UID())
+    skiplist = analysis.REQUEST['workflow_skiplist']
 
-    skiplist = analysis.REQUEST["workflow_skiplist"]
-    skiplist.append(analysis.UID())
+    logger.info("%s on %s" % (event.action, analysis.getService().getKeyword()))
 
     # creating a new analysis retracts parent AR to 'received'
     ar = analysis.aq_parent
@@ -24,10 +27,13 @@ def ObjectInitializedEventHandler(analysis, event):
 
 def ActionSucceededEventHandler(analysis, event):
 
-    logger.info("%s on %s" % (event.action, analysis.getService().getKeyword()))
+    if not analysis.REQUEST.has_key('workflow_skiplist'):
+        analysis.REQUEST['workflow_skiplist'] = [analysis.UID(),]
+    else:
+        analysis.REQUEST["workflow_skiplist"].append(analysis.UID())
+    skiplist = analysis.REQUEST['workflow_skiplist']
 
-    skiplist = analysis.REQUEST["workflow_skiplist"]
-    skiplist.append(analysis.UID())
+    logger.info("%s on %s" % (event.action, analysis.getService().getKeyword()))
 
     wf = getToolByName(analysis, 'portal_workflow')
     ar = analysis.aq_parent
