@@ -56,10 +56,6 @@ class WorksheetWorkflowAction(WorkflowAction):
             self.context.plone_utils.addPortalMessage(message, 'error')
             return
 
-        # workflow cascades prevent collisions by adding their
-        # object's UID to this list.
-        self.request['workflow_skiplist'] = []
-
         # assign selected analyses to this worksheet
         if action == 'assign':
             analyses = []

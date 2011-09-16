@@ -63,10 +63,6 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
                 logger.warn("No workflow action provided.")
                 return
 
-        # workflow cascades prevent collisions by adding their
-        # object's UID to this list.
-        self.request['workflow_skiplist'] = []
-
         if action in ('prepublish', 'publish', 'prepublish'):
             # XXX publish entire AR.
             transitioned = Publish(self.context,

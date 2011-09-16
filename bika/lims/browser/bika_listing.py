@@ -60,10 +60,6 @@ class WorkflowAction:
                 logger.warn("No workflow action provided.")
                 return
 
-        # workflow cascades prevent collisions by adding their
-        # object's UID to this list.
-        self.request['workflow_skiplist'] = []
-
         # transition the context object.
         if came_from == "workflow_action":
             obj = self.context
