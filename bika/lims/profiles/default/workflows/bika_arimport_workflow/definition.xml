@@ -39,7 +39,7 @@
   <action url="" category="workflow">Submit</action>
   <guard>
    <guard-permission>BIKA: Manage ARImport</guard-permission>
-   <guard-expression>python:here.guard_submit_arimport()</guard-expression>
+   <guard-expression></guard-expression>
   </guard>
  </transition>
  <worklist worklist_id="reviewer_queue" title="">
