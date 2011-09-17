@@ -53,11 +53,12 @@ def ActionSucceededEventHandler(ar, event):
 
     elif event.action == "retract":
         ar.reindexObject(idxs = ["review_state", ])
-        # retract all analyses in this AR.
-        analyses = ar.getAnalyses(review_state = ('to_be_verified', 'verified',))
-        for analysis in analyses:
-            if not analysis.UID in skiplist:
-                wf.doActionFor(analysis.getObject(), 'retract')
+        if not "retract all analyses" in skiplist:
+            # retract all analyses in this AR.
+            analyses = ar.getAnalyses(review_state = ('to_be_verified', 'verified',))
+            for analysis in analyses:
+                if not analysis.UID in skiplist:
+                    wf.doActionFor(analysis.getObject(), 'retract')
 
     elif event.action == "verify":
         ar.reindexObject(idxs = ["review_state", ])
@@ -76,10 +77,18 @@ def ActionSucceededEventHandler(ar, event):
             if not analysis.UID in skiplist:
                 wf.doActionFor(analysis.getObject(), "publish")
 
+    elif event.action == "activate":
+        # activate all analyses in this AR.
+        analyses = ar.getAnalyses(inactive_review_state = 'inactive')
+        for analysis in analyses:
+            if not analysis.UID in skiplist:
+                wf.doActionFor(analysis.getObject(), 'activate')
+
+    elif event.action == "deactivate":
+        # deactivate all analyses in this AR.
+        analyses = ar.getAnalyses(inactive_review_state = 'active')
+        for analysis in analyses:
+            if not analysis.UID in skiplist:
+                wf.doActionFor(analysis.getObject(), 'deactivate')
+
     logger.info("Finished with: %s on %s" % (event.action, ar))
-
-
-
-
-
-

@@ -65,6 +65,13 @@ def ActionSucceededEventHandler(analysis, event):
         analysis.setDueDate(duetime)
         analysis.reindexObject()
 
+    elif event.action == "assign":
+        # If all analyses in this AR have been assigned
+        # escalate the action to the parent AR
+        if not ar.UID() in skiplist:
+            if not ar.getAnalyses(worksheetanalysis_review_state = 'unassigned'):
+                wf.doActionFor(ar, 'assign')
+
     elif event.action == "submit":
         analysis.reindexObject(idxs = ["review_state", ])
         # submit our dependencies,
@@ -124,7 +131,11 @@ def ActionSucceededEventHandler(analysis, event):
                     wf.doActionFor(dep, 'retract')
         # Escalate action to the parent AR
         if not ar.UID() in skiplist:
-            if wf.getInfoFor(ar, 'review_state') != 'sample_received':
+            if wf.getInfoFor(ar, 'review_state') == 'sample_received':
+                analysis.REQUEST["workflow_skiplist"].append(ar.UID())
+            else:
+                if not "retract all analyses" in skiplist:
+                    analysis.REQUEST["workflow_skiplist"].append("retract all analyses")
                 wf.doActionFor(ar, 'retract')
 
     elif event.action == "verify":
