@@ -105,7 +105,7 @@ def ActionSucceededEventHandler(analysis, event):
         # retract our dependencies
         for dependency in analysis.getDependencies():
             if not dependency.UID() in skiplist:
-                if wf.getInfoFor(dependency, 'review_state') in ('to_be_verified', 'verified',):
+                if wf.getInfoFor(dependency, 'review_state') in ('attachment_due', 'to_be_verified', 'verified',):
                     # (NB: don't retract if it's published)
                     wf.doActionFor(dependency, 'retract')
         # Retract our dependents
@@ -140,9 +140,10 @@ def ActionSucceededEventHandler(analysis, event):
 
         # Verify our dependencies.
         for dependency in analysis.getDependencies():
+            # Don't have to check if they're 'to_be_verified'.
+            # If this analysis is, they must be too.
             if not dependency.UID() in skiplist:
-                if wf.getInfoFor(dependency, 'review_state') == 'to_be_verified':
-                    wf.doActionFor(dependency, 'verify')
+                wf.doActionFor(dependency, 'verify')
 
         # Check for dependents, ensure all their dependencies
         # have been verified, and verify them
@@ -153,7 +154,7 @@ def ActionSucceededEventHandler(analysis, event):
                     for dependency in dependent.getDependencies():
                         if not dependency.UID() in skiplist:
                             if wf.getInfoFor(dependency, 'review_state') in \
-                               ('sample_due', 'sample_received', 'to_be_verified'):
+                               ('sample_due', 'sample_received', 'attachment_due', 'to_be_verified'):
                                 can_verify_dependent = False
                                 break
                     if can_verify_dependent:
@@ -165,7 +166,7 @@ def ActionSucceededEventHandler(analysis, event):
             all_verified = True
             for a in ar.getAnalyses():
                 if a.review_state in \
-                   ('sample_due', 'sample_received', 'to_be_verified'):
+                   ('sample_due', 'sample_received', 'attachment_due', 'to_be_verified'):
                     all_verified = False
                     break
             if all_verified:

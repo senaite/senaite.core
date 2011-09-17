@@ -39,19 +39,18 @@ def ActionSucceededEventHandler(ar, event):
 
     elif event.action == "submit":
         ar.reindexObject(idxs = ["review_state", ])
-        # Submit analyses
-        analyses = ar.getAnalyses(review_state = 'sample_received')
-        for analysis in analyses:
-            if not analysis.UID in skiplist:
-                a = analysis.getObject()
-                if a.getResult():
-                    wf.doActionFor(a, "submit")
+        # Don't cascade. Shouldn't be submitting ARs for now.
+
+    elif event.action == "attach":
+        ar.reindexObject(idxs = ["review_state", ])
+        # Don't cascade. Shouldn't be attaching ARs for now (if ever).
 
     elif event.action == "retract":
         ar.reindexObject(idxs = ["review_state", ])
         if not "retract all analyses" in skiplist:
             # retract all analyses in this AR.
-            analyses = ar.getAnalyses(review_state = ('to_be_verified', 'verified',))
+            # (NB: don't retract if it's published)
+            analyses = ar.getAnalyses(review_state = ('attachment_due', 'to_be_verified', 'verified',))
             for analysis in analyses:
                 if not analysis.UID in skiplist:
                     wf.doActionFor(analysis.getObject(), 'retract')
