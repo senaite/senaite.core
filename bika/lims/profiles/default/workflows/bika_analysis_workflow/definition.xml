@@ -221,53 +221,53 @@
    <permission-role>Manager</permission-role>
   </permission-map>
  </state>
- <transition transition_id="import" title="Import" new_state="not_requested" trigger="USER" before_script="" after_script="default">
-  
+ <transition transition_id="import" title="Import" new_state="not_requested" trigger="USER" before_script="" after_script="">
+
   <guard>
    <guard-permission>BIKA: Import sample</guard-permission>
   </guard>
  </transition>
- <transition transition_id="prepublish" title="Prepublish" new_state="" trigger="USER" before_script="" after_script="default">
+ <transition transition_id="prepublish" title="Prepublish" new_state="" trigger="USER" before_script="" after_script="">
   <action url="workflow_action?workflow_action=prepublish" category="workflow" icon="">Prepublish</action>
   <guard>
    <guard-permission>BIKA: Publish sample</guard-permission>
    <guard-expression>python:here.guard_prepublish_ar()</guard-expression>
   </guard>
  </transition>
- <transition transition_id="publish" title="Publish" new_state="published" trigger="USER" before_script="" after_script="default">
+ <transition transition_id="publish" title="Publish" new_state="published" trigger="USER" before_script="" after_script="">
   <action url="workflow_action?workflow_action=publish" category="workflow" icon="">Publish</action>
   <guard>
    <guard-permission>BIKA: Publish sample</guard-permission>
    <guard-expression>python:here.guard_publish_analysis()</guard-expression>
   </guard>
  </transition>
- <transition transition_id="receive" title="Receive sample" new_state="sample_received" trigger="USER" before_script="" after_script="default">
+ <transition transition_id="receive" title="Receive sample" new_state="sample_received" trigger="USER" before_script="" after_script="">
   <action url="workflow_action?workflow_action=receive" category="workflow" icon="">Receive sample</action>
   <guard>
    <guard-permission>BIKA: Receive sample</guard-permission>
   </guard>
  </transition>
- <transition transition_id="republish" title="Republish" new_state="" trigger="USER" before_script="" after_script="default">
+ <transition transition_id="republish" title="Republish" new_state="" trigger="USER" before_script="" after_script="">
   <action url="workflow_action?workflow_action=republish" category="workflow" icon="">Republish</action>
   <guard>
    <guard-permission>BIKA: Publish sample</guard-permission>
   </guard>
  </transition>
- <transition transition_id="retract" title="Retract" new_state="sample_received" trigger="USER" before_script="" after_script="default">
+ <transition transition_id="retract" title="Retract" new_state="sample_received" trigger="USER" before_script="" after_script="">
   <action url="workflow_action?workflow_action=retract" category="workflow" icon="">Retract</action>
   <guard>
    <guard-permission>BIKA: Retract sample</guard-permission>
    <guard-expression>python:here.guard_retract_sample()</guard-expression>
   </guard>
  </transition>
- <transition transition_id="submit" title="Submit for verification" new_state="to_be_verified" trigger="USER" before_script="" after_script="default">
+ <transition transition_id="submit" title="Submit for verification" new_state="to_be_verified" trigger="USER" before_script="" after_script="">
   <action url="workflow_action?workflow_action=submit" category="workflow" icon="">Submit for verification</action>
   <guard>
    <guard-permission>BIKA: Submit sample</guard-permission>
    <guard-expression>python:here.guard_submit_analysis()</guard-expression>
   </guard>
  </transition>
- <transition transition_id="verify" title="Verify" new_state="verified" trigger="USER" before_script="" after_script="default">
+ <transition transition_id="verify" title="Verify" new_state="verified" trigger="USER" before_script="" after_script="">
   <action url="workflow_action?workflow_action=verify" category="workflow" icon="">Verify</action>
   <guard>
    <guard-permission>BIKA: Verify Results</guard-permission>
@@ -284,7 +284,7 @@
  <variable variable_id="action" for_catalog="False" for_status="True" update_always="True">
   <description>The last transition</description>
   <default>
-   
+
    <expression>transition/getId|nothing</expression>
   </default>
   <guard>
@@ -293,7 +293,7 @@
  <variable variable_id="actor" for_catalog="False" for_status="True" update_always="True">
   <description>The ID of the user who performed the last transition</description>
   <default>
-   
+
    <expression>user/getId</expression>
   </default>
   <guard>
@@ -302,7 +302,7 @@
  <variable variable_id="comments" for_catalog="False" for_status="True" update_always="True">
   <description>Comments about the last transition</description>
   <default>
-   
+
    <expression>python:state_change.kwargs.get('comment', '')</expression>
   </default>
   <guard>
@@ -311,7 +311,7 @@
  <variable variable_id="review_history" for_catalog="False" for_status="False" update_always="False">
   <description>Provides access to workflow history</description>
   <default>
-   
+
    <expression>state_change/getHistory</expression>
   </default>
   <guard>
@@ -320,11 +320,10 @@
  <variable variable_id="time" for_catalog="False" for_status="True" update_always="True">
   <description>Time of the last transition</description>
   <default>
-   
+
    <expression>state_change/getDateTime</expression>
   </default>
   <guard>
   </guard>
  </variable>
- <script script_id="default" type="Script (Python)" filename="workflows/bika_analysis_workflow/scripts/default.py" module="" function=""/>
 </dc-workflow>

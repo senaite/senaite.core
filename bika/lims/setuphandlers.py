@@ -310,27 +310,6 @@ class BikaGenerator:
             ['Manager', 'LabManager'], 0)
         portal.pricelists.reindexObject()
 
-    def setupProxyRoles(self, portal):
-        """ Set up proxy roles for workflow scripts
-        """
-        # XXX: Need to figure out how to do this with GenericSetup
-        script = portal.portal_workflow.bika_analysis_workflow.scripts.default
-        script.manage_proxy(roles = ('Manager',))
-        script = portal.portal_workflow.bika_arimport_workflow.scripts.default
-        script.manage_proxy(roles = ('Manager',))
-        script = portal.portal_workflow.bika_order_workflow.scripts.default
-        script.manage_proxy(roles = ('Manager',))
-        script = portal.portal_workflow.bika_sample_workflow.scripts.default
-        script.manage_proxy(roles = ('Manager',))
-        script = portal.portal_workflow.bika_referencesample_workflow.scripts.default
-        script.manage_proxy(roles = ('Manager',))
-        script = portal.portal_workflow.bika_worksheet_workflow.scripts.default
-        script.manage_proxy(roles = ('Manager',))
-        script = portal.portal_workflow.bika_worksheetanalysis_workflow.scripts.default
-        script.manage_proxy(roles = ('Manager',))
-        script = portal.portal_workflow.bika_referenceanalysis_workflow.scripts.default
-        script.manage_proxy(roles = ('Manager',))
-
     def setupVersioning(self, portal):
         DEFAULT_POLICIES = ('at_edit_autoversion', 'version_on_revert')
         pr = getToolByName(portal, 'portal_repository')
@@ -358,7 +337,6 @@ def setupVarious(context):
     gen.setupPropertiesTool(site)
     gen.setupDependencies(site)
     gen.setupGroupsAndRoles(site)
-    gen.setupProxyRoles(site)
     gen.setupPortalContent(site)
     gen.setupPermissions(site)
     gen.setupVersioning(site)

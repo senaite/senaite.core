@@ -190,7 +190,7 @@ class BikaListingView(BrowserView):
 
         if form.has_key('clear_filters'):
             if hasattr(self, 'modified_contentFilter'):
-                del(self.modified_contentFilter
+                del self.modified_contentFilter
             return self.contents_table()
 
         return self.template()
