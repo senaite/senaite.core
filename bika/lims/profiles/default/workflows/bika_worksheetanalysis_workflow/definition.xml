@@ -8,7 +8,6 @@
  <permission>Delete objects</permission>
  <permission>Modify portal content</permission>
  <state state_id="assigned" title="Assigned to Worksheet">
-  <exit-transition transition_id="submit"/>
   <permission-map name="BIKA: Edit analyses" acquired="False">
    <permission-role>Manager</permission-role>
    <permission-role>LabManager</permission-role>

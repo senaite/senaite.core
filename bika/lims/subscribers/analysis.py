@@ -57,6 +57,13 @@ def ActionSucceededEventHandler(analysis, event):
         analysis.setDueDate(duetime)
         analysis.reindexObject()
 
+    elif event.action == "assign":
+        # If all analyses in this AR have been assigned
+        # escalate the action to the parent AR
+        if not ar.UID() in skiplist:
+            if not ar.getAnalyses(worksheetanalysis_review_state = 'unassigned'):
+                wf.doActionFor(ar, 'assign')
+
     elif event.action == "submit":
         # submit our dependencies,
         dependencies = analysis.getDependencies()
@@ -86,13 +93,8 @@ def ActionSucceededEventHandler(analysis, event):
         # If all analyses in this AR have been submitted
         # escalate the action to the parent AR
         if not ar.UID() in skiplist:
-            all_submitted = True
-            for a in ar.getAnalyses():
-                if a.review_state in \
-                   ('sample_due', 'sample_received',):
-                    all_submitted = False
-                    break
-            if all_submitted:
+            if not ar.getAnalyses(review_state = \
+                                  ('sample_due', 'sample_received')):
                 wf.doActionFor(ar, 'submit')
 
     elif event.action == "retract":
@@ -150,13 +152,8 @@ def ActionSucceededEventHandler(analysis, event):
         # If all analyses in this AR are verified
         # escalate the action to the parent AR
         if not ar.UID() in skiplist:
-            all_verified = True
-            for a in ar.getAnalyses():
-                if a.review_state in \
-                   ('sample_due', 'sample_received', 'to_be_verified'):
-                    all_verified = False
-                    break
-            if all_verified:
+            if not ar.getAnalyses(review_state = \
+                                  ('sample_due', 'sample_received', 'to_be_verified')):
                 wf.doActionFor(ar, "verify")
 
     elif event.action == "publish":

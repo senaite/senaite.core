@@ -71,9 +71,16 @@ def ActionSucceededEventHandler(ar, event):
             if not analysis.UID in skiplist:
                 wf.doActionFor(analysis.getObject(), "publish")
 
+    if event.action == "activate":
+        # activate all analyses in this AR.
+        analyses = ar.getAnalyses(inactive_review_state = 'inactive')
+        for analysis in analyses:
+            if not analysis.UID in skiplist:
+                wf.doActionFor(analysis.getObject(), 'activate')
 
-
-
-
-
-
+    if event.action == "deactivate":
+        # deactivate all analyses in this AR.
+        analyses = ar.getAnalyses(inactive_review_state = 'active')
+        for analysis in analyses:
+            if not analysis.UID in skiplist:
+                wf.doActionFor(analysis.getObject(), 'deactivate')

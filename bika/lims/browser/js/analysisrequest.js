@@ -312,11 +312,13 @@ jQuery( function($) {
 		// DateSampled field is readonly to prevent invalid data entry, so
 		// clicking date_sampled field clears existing values.
 		// clear date widget values if the page is reloaded.
-		$('input[id$="_DateSampled"]')
+		e = $('input[id$="_DateSampled"]')
+		if(e.length > 0){
+			$(e)
 			.datepicker({'dateFormat': 'M dd, yy', showAnim: ''})
 			.click(function(){$(this).attr('value', '');})
 			.attr('value', '');
-
+		}
 		$(".sampletype").autocomplete({ minLength: 0, source: autocomplete_sampletype});
 		$(".samplepoint").autocomplete({ minLength: 0, source: autocomplete_samplepoint});
 		$("select[class='ARProfile']").change(setARProfile);

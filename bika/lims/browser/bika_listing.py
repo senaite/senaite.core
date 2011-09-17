@@ -111,7 +111,6 @@ class BikaListingView(BrowserView):
     title = ""
     description = ""
     contentFilter = {}
-    merged_contentFilter = {}
     allow_edit = True
     content_add_actions = {}    # XXX menu.zcml/menu.py
     show_editable_border = True # XXX viewlets.zcml entries
@@ -159,8 +158,7 @@ class BikaListingView(BrowserView):
         self.contentsMethod = self.context.getFolderContents
 
     def __call__(self):
-        """ Any form action in all the TAL rendered by bika_listing*.pt
-            is routed to here.
+        """ bika_listing view initial display and form handler
         """
         if hasattr(self, 'show_editable_border') and not self.show_editable_border:
             self.request.set('disable_border', 1)
@@ -169,38 +167,30 @@ class BikaListingView(BrowserView):
         pc = getToolByName(self.context, 'portal_catalog')
         workflow = getToolByName(self.context, 'portal_workflow')
 
-        # inserted before ajax form submit by bika_listing.js
-        # when review_state radio is clicked
         if form.has_key('review_state_clicked'):
-            # if review_state has contentFilter dict, apply it to our contentFilter
-            # otherwise, add {review_state:radio_value} to contentFilter
-            # for the 'all' case, we just use the base contentFilter
-            self.merged_contentFilter = self.contentFilter
+            self.modified_contentFilter = self.contentFilter
             if form.has_key("review_state"):
-                review_state = [rs for rs in self.review_states if \
-                                rs['id']==form['review_state']][0]
+                review_state = [r for r in self.review_states if \
+                                r['id'] == form['review_state']][0]
                 if review_state.has_key('contentFilter'):
-                    for k,v in review_state.items():
-                        self.merged_contentFilter[k] = v
+                    for k,v in review_state['contentFilter'].items():
+                        self.modified_contentFilter[k] = v
                 else:
                     if form['review_state'] != 'all':
-                        self.merged_contentFilter['review_state'] = form['review_state']
+                        self.modified_contentFilter['review_state'] = form['review_state']
 
             return self.contents_table()
 
-        # bika_listing.js submits this when the user
-        # pressed enter in a filter input
         if form.has_key('filter_input_keypress'):
-            # modify contentFilter with text filters if specified
+            self.modified_contentFilter = self.contentFilter
             for key, value in form.items():
                 if key.endswith("column-filter-input") and value:
-                    self.contentFilter[key.split("-")[1]] = value
+                    self.modified_contentFilter[key.split("-")[1]] = value
             return self.contents_table()
 
         if form.has_key('clear_filters'):
-            for key in self.columns.keys():
-                if self.contentFilter.has_key(key):
-                    del self.contentFilter[key]
+            if hasattr(self, 'modified_contentFilter'):
+                del(self.modified_contentFilter
             return self.contents_table()
 
         return self.template()
@@ -223,8 +213,12 @@ class BikaListingView(BrowserView):
         start = (pagenumber - 1) * pagesize
         end = start + pagesize
 
+        # XXX temporary
+        if not hasattr(self, 'modified_contentFilter'):
+            self.modified_contentFilter = self.contentFilter
+
         results = []
-        for i, obj in enumerate(self.contentsMethod(self.contentFilter)):
+        for i, obj in enumerate(self.contentsMethod(self.modified_contentFilter)):
             # we still don't know if it's a brain or an object
             path = hasattr(obj, 'getPath') and obj.getPath() or \
                  "/".join(obj.getPhysicalPath())

@@ -369,9 +369,9 @@ class WorksheetAddAnalysisView(AnalysesView):
             client = obj.aq_parent.aq_parent
             items[x]['getClientOrderNumber'] = obj.getClientOrderNumber()
             items[x]['getDateReceived'] = self.context.toLocalizedTime(
-                items[x]['getDateReceived'], long_format = 0)
+                obj.getDateReceived(), long_format = 0)
             items[x]['getDueDate'] = self.context.toLocalizedTime(
-                items[x]['getDueDate'], long_format = 0)
+                obj.getDueDate(), long_format = 0)
             items[x]['CategoryName'] = service.getCategory().Title()
             items[x]['ClientName'] = client.Title()
         return items
