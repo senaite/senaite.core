@@ -100,6 +100,46 @@ def ActionSucceededEventHandler(analysis, event):
             if all_submitted:
                 wf.doActionFor(ar, 'submit')
 
+    elif event.action == "attach":
+        analysis.reindexObject(idxs = ["review_state", ])
+        # Dependencies are already at least 'to_be_verified', ignore them.
+
+        # Check our dependents:
+        # If    it is 'attachment_due'
+        # And   it's attachments are OK
+        # And   all it's dependencies are at least 'to_be_verified'
+        # Then: 'attach' it.:
+        dependents = analysis.getDependents()
+        for dependent in dependents:
+            if not dependent.UID() in skiplist:
+                can_attach = True
+                if wf.getInfoFor(dependent, 'review_state') != 'attachment_due':
+                    can_attach = False
+                else:
+                    if not dependent.getAttachment():
+                        service = dependent.getService()
+                        if service.getAttachmentOption() == 'r':
+                            can_attach = False
+                if can_attach:
+                    dependencies = dependent.getDependencies()
+                    for dependency in dependencies:
+                        if wf.getInfoFor(dependency, 'review_state') in ('sample_due', 'sample_received', 'attachment_due',):
+                            can_attach = False
+                if can_attach:
+                    wf.doActionFor(dependent, 'attach')
+
+        # If all analyses in this AR have been attached
+        # escalate the action to the parent AR
+        if not ar.UID() in skiplist:
+            can_attach = True
+            for a in ar.getAnalyses():
+                if a.review_state in \
+                   ('sample_due', 'sample_received', 'attachment_due',):
+                    can_attach = False
+                    break
+            if can_attach:
+                wf.doActionFor(ar, 'attach')
+
     elif event.action == "retract":
         analysis.reindexObject(idxs = ["review_state", ])
         # retract our dependencies
