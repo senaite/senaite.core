@@ -15,9 +15,9 @@ analyses = ['Analysis', 'DuplicateAnalysis', 'ReferenceAnalysis']
 if context.portal_type in analyses:
     return True
 elif context.portal_type == 'AnalysisRequest':
-    # Only transition to 'attachment_due' if all analyses are at least there.
+    # Only transition to 'to_be_verified' if all analyses are at least there.
     for a in context.objectValues('Analysis'):
         review_state = wf_tool.getInfoFor(a, 'review_state', '')
-        if review_state in ('sample_due', 'sample_received',):
+        if review_state in ('sample_due', 'sample_received', 'attachment_due'):
             return False
     return True
