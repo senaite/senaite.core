@@ -73,6 +73,13 @@ def ActionSucceededEventHandler(analysis, event):
             if not ar.getAnalyses(worksheetanalysis_review_state = 'unassigned'):
                 wf.doActionFor(ar, 'assign')
 
+    elif event.action == "unassign":
+        analysis.reindexObject(idxs = ["worksheetanalysis_review_state", ])
+        # Escalate the action to the parent AR if it is assigned
+        if not ar.UID() in skiplist:
+            if wf.getInfoFor(ar, 'worksheetanalysis_review_state') == 'assigned':
+                wf.doActionFor(ar, 'unassign')
+
     elif event.action == "submit":
         analysis.reindexObject(idxs = ["review_state", ])
         # submit our dependencies,
