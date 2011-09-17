@@ -11,36 +11,6 @@
  <state state_id="attachment_due" title="Attachment Outstanding">
   <exit-transition transition_id="attach"/>
   <exit-transition transition_id="retract"/>
-  <permission-map name="BIKA: Edit analyses" acquired="False">
-  </permission-map>
-  <permission-map name="BIKA: Manage Analysis Requests" acquired="False">
-   <permission-role>Manager</permission-role>
-   <permission-role>LabManager</permission-role>
-   <permission-role>LabClerk</permission-role>
-   <permission-role>Analyst</permission-role>
-   <permission-role>Verifier</permission-role>
-  </permission-map>
-  <permission-map name="BIKA: Retract sample" acquired="True">
-  </permission-map>
-  <permission-map name="BIKA: Submit results" acquired="False">
-  </permission-map>
-  <permission-map name="BIKA: Verify Results" acquired="False">
-   <permission-role>Verifier</permission-role>
-  </permission-map>
-  <permission-map name="BIKA: View Results" acquired="False">
-   <permission-role>Manager</permission-role>
-   <permission-role>LabManager</permission-role>
-   <permission-role>Analyst</permission-role>
-   <permission-role>LabClerk</permission-role>
-  </permission-map>
-  <permission-map name="Delete objects" acquired="False">
-   <permission-role>Manager</permission-role>
-   <permission-role>LabManager</permission-role>
-   <permission-role>Reviewer</permission-role>
-  </permission-map>
-  <permission-map name="Modify portal content" acquired="False">
-   <permission-role>Manager</permission-role>
-  </permission-map>
  </state>
  <state state_id="not_requested" title="Not requested">
   <exit-transition transition_id="verify"/>
@@ -262,7 +232,6 @@
   </guard>
  </transition>
  <transition transition_id="import" title="Import" new_state="not_requested" trigger="USER" before_script="" after_script="">
-
   <guard>
    <guard-permission>BIKA: Import sample</guard-permission>
   </guard>
