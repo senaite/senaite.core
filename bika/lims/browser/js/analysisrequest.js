@@ -385,8 +385,7 @@ jQuery( function($) {
 				},
 				dataType: "json"
 			}
-
-		}
+		});
 
 
 		// Clicking the category name will expand the services list for that category
