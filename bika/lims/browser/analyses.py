@@ -181,14 +181,15 @@ class AnalysesView(BikaListingView):
                 attachments = ""
                 if hasattr(obj, 'getAttachment'):
                     for attachment in obj.getAttachment():
+                        if attachments: attachments += "<br/>"
                         af = attachment.getAttachmentFile()
                         icon = af.getBestIcon()
                         if icon:
-                            attachments += "<img src='%s/%s'/>"%\
-                                        (portal.absolute_url(), icon)
-                        attachments += \
-                            '<a href="%s/at_download/AttachmentFile"/>%s</a>'%\
-                            (attachment.absolute_url(), af.filename)
+                            attachments += "<img src='%s/%s'/>" % (portal.absolute_url(), icon)
+                        attachments += '<a href="%s/at_download/AttachmentFile"/>%s</a>' % \
+                                    (attachment.absolute_url(), af.filename)
+                        attachments += "<img class='deleteAttachmentbutton' attachment='%s' src='%s'/>" % \
+                                    (af.id, "++resource++bika.lims.images/delete.png")
                 items[i]['replace']['Attachments'] = attachments
 
                 items[i]['result_in_range'] = hasattr(obj, 'result_in_range') and \
@@ -221,9 +222,12 @@ class AnalysesView(BikaListingView):
                     'src="%s/++resource++bika.lims.images/late.png" title="%s"/>'% \
                     (portal.absolute_url(), _("Due Date: ") + DueDate)
 
-            # if an analysis is assigned to a worksheet, replace the state title
+            # add icon for assigned analyses
             if workflow.getInfoFor(items[i]['obj'], 'worksheetanalysis_review_state') == 'assigned':
-                items[i]['state_title'] = workflow.getTitleForStateOnType('assigned', 'Analysis')
+                ws = items[i]['obj'].getBackReferences('WorksheetAnalysis')[0]
+                items[i]['before']['state_title'] = \
+                     "<a href='%s'><img src='++resource++bika.lims.images/worksheet.png' title='Assigned to worksheet: %s'/></a>" % \
+                     (ws.absolute_url(), ws.id)
 
         # the TAL is lazy, it requires blank values for
         # all interim fields on all items, so we loop

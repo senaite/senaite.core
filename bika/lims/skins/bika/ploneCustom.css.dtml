@@ -83,6 +83,7 @@ dt.attachments {
 .workflow_action_button {
 }
 
+
 /*
  * Analysis Request tables
  */
@@ -176,10 +177,17 @@ table.analysisrequest input {
 }
 
 .copyButton{
+    border: 0;
+	cursor: pointer;
+}
+
+.deleteAttachmentbutton {
+    border: 0;
 	cursor: pointer;
 }
 
 .deleteSampleButton{
+    border: 0;
 	cursor: pointer;
 }
 

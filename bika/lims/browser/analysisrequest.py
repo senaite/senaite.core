@@ -20,7 +20,6 @@ from plone.app.content.browser.interfaces import IFolderContentsView
 from zope.component import getMultiAdapter
 from zope.interface import implements, alsoProvides
 import json
-from plone.memoize import instance
 import plone
 import transaction
 
@@ -39,20 +38,10 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
         originating_url = self.request.get_header("referer",
                                                   self.context.absolute_url())
 
-        # "workflow_action" is the action name specified in the
-        # portal_workflow transition url.
-        # "workflow_action_button" is the action name specified in
-        # the bika_listing_view table buttons.
+        # "workflow_action" is the edit border transition
+        # "workflow_action_button" is the bika_listing table buttons
         came_from = "workflow_action"
         action = form.get(came_from, '')
-        # only "activate" workflow action is allowed on ARs which are inactive.
-        # any action on inactive AR's children is also ignored.
-        if action and \
-           not isActive(self.context) and \
-           action != 'activate':
-            message = _("This item is inactive")
-            self.context.plone_utils.addPortalMessage(message, 'info')
-            return
 
         if not action:
             came_from = "workflow_action_button"
@@ -62,6 +51,14 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
             if not action:
                 logger.warn("No workflow action provided.")
                 return
+
+        # only "activate" workflow action is allowed on ARs which are inactive.
+        if action and \
+           not isActive(self.context) and \
+           action != 'activate':
+            message = _("This item is inactive")
+            self.context.plone_utils.addPortalMessage(message, 'info')
+            return
 
         if action in ('prepublish', 'publish', 'prepublish'):
             # XXX publish entire AR.
@@ -115,7 +112,11 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
                 service = analysis.getService()
                 interims = form["InterimFields"][0][analysis_uid]
                 if result:
-                    workflow.doActionFor(analysis, 'submit')
+                    if hasattr(self.request, 'workflow_skiplist') and \
+                       analysis.UID() in self.request['workflow_skiplist']:
+                        pass
+                    else:
+                        workflow.doActionFor(analysis, 'submit')
             if self.context.getReportDryMatter():
                 self.context.setDryMatterResults()
             message = _("Changes saved.")
@@ -160,7 +161,6 @@ class AnalysisRequestViewView(BrowserView):
     def now(self):
         return DateTime()
 
-    @instance.memoize
     def arprofiles(self):
         """ Return applicable client and Lab ARProfile records
         """
@@ -178,7 +178,6 @@ class AnalysisRequestViewView(BrowserView):
                 profiles.append((_('Lab:') + proxy.Title, proxy.getObject()))
         return profiles
 
-    @instance.memoize
     def SelectedServices(self):
         """ return information about services currently selected in the
             context AR.
@@ -196,7 +195,6 @@ class AnalysisRequestViewView(BrowserView):
                         service.UID()])
         return res
 
-    @instance.memoize
     def Categories(self):
         """ Dictionary keys: poc
             Dictionary values: (Category UID,category Title)
@@ -233,7 +231,6 @@ class AnalysisRequestViewView(BrowserView):
         return self.context.getProfile() and \
                self.context.getProfile().Title() or '';
 
-    @instance.memoize
     def get_requested_analyses(self):
         ##
         ##title=Get requested analyses
@@ -260,7 +257,6 @@ class AnalysisRequestViewView(BrowserView):
                 result.append(analyses[analysis_key])
         return result
 
-    @instance.memoize
     def get_analyses_not_requested(self):
         ##
         ##title=Get analyses which have not been requested by the client
@@ -557,7 +553,6 @@ class AnalysisRequestSelectSampleView(BikaListingView):
             })
         return items
 
-    @instance.memoize
     def FieldAnalyses(self, sample):
         """ Returns a dictionary of lists reflecting Field Analyses
             linked to this sample (meaning field analyses on this sample's

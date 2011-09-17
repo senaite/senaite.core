@@ -25,7 +25,6 @@ from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IAnalysis
 from bika.lims import logger
 from decimal import Decimal
-from plone.memoize.instance import memoize
 from zope.interface import implements
 from Products.CMFEditions.ArchivistTool import ArchivistRetrieveError
 import datetime
@@ -159,7 +158,6 @@ class Analysis(BaseContent):
         """
         return self.getService().getUncertainty(result and result or self.getResult())
 
-    @memoize
     def getDependents(self):
         """ Return a list of analyses who depend on us
             to calculate their result
@@ -180,7 +178,6 @@ class Analysis(BaseContent):
                 dependents.append(sibling)
         return dependents
 
-    @memoize
     def getDependencies(self):
         """ Return a list of analyses who we depend on
             to calculate our result.

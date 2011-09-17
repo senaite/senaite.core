@@ -44,14 +44,11 @@ class WorkflowAction:
         originating_url = self.request.get_header("referer",
                                                   self.context.absolute_url())
 
-        # use came_from to decide which UI action was clicked.
-        # "workflow_action" is the action name specified in the
-        # portal_workflow transition url.
+        # "workflow_action" is the edit border transition
+        # "workflow_action_button" is the bika_listing table buttons
         came_from = "workflow_action"
         action = form.get(came_from, '')
         if not action:
-            # workflow_action_button is the action name specified in
-            # the bika_listing_view table buttons.
             came_from = "workflow_action_button"
             action = form.get(came_from, '')
             # XXX some browsers agree better than others about our JS ideas.
@@ -64,15 +61,17 @@ class WorkflowAction:
         if came_from == "workflow_action":
             obj = self.context
             # the only action allowed on inactive items is "activate"
-            if 'bika_inactive_workflow' in workflow.getChainFor(obj) and \
-               workflow.getInfoFor(obj, 'inactive_review_state', '') == 'inactive' and \
-               action != 'activate':
+            if not isActive(obj):
                 message = _('No items were affected.')
                 self.context.plone_utils.addPortalMessage(message, 'info')
                 self.request.response.redirect(originating_url)
                 return
             else:
-                workflow.doActionFor(obj, action)
+                if hasattr(self.request, 'workflow_skiplist') and \
+                   obj.UID() in self.request['workflow_skiplist']:
+                    pass
+                else:
+                    workflow.doActionFor(obj, action)
                 self.request.response.redirect(originating_url)
                 return
 
@@ -85,15 +84,13 @@ class WorkflowAction:
                 item = pc(id = item_id,
                           path = {'query':item_path,
                                   'depth':1})[0].getObject()
-                try:
-                    if not(
-                        'bika_inactive_workflow' in workflow.getChainFor(item) and \
-                        workflow.getInfoFor(item, 'inactive_review_state', '') == 'inactive' and \
-                        action != 'activate'):
+                if isActive(item):
+                    if hasattr(self.request, 'workflow_skiplist') and \
+                       item.UID() in self.request['workflow_skiplist']:
+                        pass
+                    else:
                         workflow.doActionFor(item, action)
                         transitioned.append(item.Title())
-                except WorkflowException:
-                    pass
 
         if len(transitioned) > 0:
             message = _('Changes saved.')

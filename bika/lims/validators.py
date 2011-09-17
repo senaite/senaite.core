@@ -6,7 +6,6 @@ from bika.lims.utils import sortable_title
 from zope.interface import Interface, implements
 from zope.site.hooks import getSite
 from zExceptions import Redirect
-from plone.memoize import instance
 import sys,re
 from bika.lims import bikaMessageFactory as _
 

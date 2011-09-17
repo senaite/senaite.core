@@ -16,7 +16,6 @@ from bika.lims.content.bikaschema import BikaSchema
 from zope.interface import implements
 from zope.site.hooks import getSite
 from zExceptions import Redirect
-from plone.memoize import instance
 import sys,re
 from bika.lims import bikaMessageFactory as _
 

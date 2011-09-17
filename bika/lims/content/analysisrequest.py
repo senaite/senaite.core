@@ -479,6 +479,8 @@ class AnalysisRequest(BaseFolder):
                 attachments.append(other.UID())
             attachments.append(attachment.UID())
             analysis.setAttachment(attachments)
+            if workflow.getInfoFor(analysis, 'review_state') == 'attachment_due':
+                workflow.doActionFor(analysis, 'attach')
         else:
             others = self.getAttachment()
             attachments = []

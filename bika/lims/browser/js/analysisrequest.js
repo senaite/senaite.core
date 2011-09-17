@@ -371,6 +371,24 @@ jQuery( function($) {
 			}
 		});
 
+		$('.deleteAttachmentButton').live("click", function(){
+			attachment_id = $(this).attr("attachment");
+			options = {
+				type: 'POST',
+				async: false,
+				success: function(responseText, statusText, xhr, $form) {
+					$("input[class~='context']").removeAttr('disabled');
+				},
+				data: {
+					'uid': $(element).attr('id'),
+					'_authenticator': $('input[name="_authenticator"]').val()
+				},
+				dataType: "json"
+			}
+
+		}
+
+
 		// Clicking the category name will expand the services list for that category
 		$('th[class^="analysiscategory"]').click(function(){
 			toggleCat($(this).attr("poc"), $(this).attr("cat")); // cat is a category uid
