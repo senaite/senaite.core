@@ -14,12 +14,11 @@ def ActionSucceededEventHandler(ar, event):
     else:
         skiplist = ar.REQUEST['workflow_skiplist']
         if ar.UID() in skiplist:
-            logger.info("%s says: Oh, FFS, not %s again!!" % (ar, event.action))
             return
         else:
             ar.REQUEST["workflow_skiplist"].append(ar.UID())
 
-    logger.info("Processing: %s on %s" % (event.action, ar))
+    logger.info("Starting: %s on %s" % (event.action, ar))
 
     wf = getToolByName(ar, 'portal_workflow')
 
@@ -30,14 +29,12 @@ def ActionSucceededEventHandler(ar, event):
         # receive the AR's sample
         sample = ar.getSample()
         if not sample.UID() in skiplist:
-            logger.info("%s involking: %s on %s" % (ar, event.action, sample))
             wf.doActionFor(sample, 'receive')
 
         # receive all analyses in this AR.
         analyses = ar.getAnalyses(review_state = 'sample_due')
         for analysis in analyses:
             if not analysis.UID in skiplist:
-                logger.info("%s involking: %s on %s" % (ar, event.action, analysis.getObject().getService().getKeyword()))
                 wf.doActionFor(analysis.getObject(), 'receive')
 
     elif event.action == "submit":
@@ -48,7 +45,6 @@ def ActionSucceededEventHandler(ar, event):
             if not analysis.UID in skiplist:
                 a = analysis.getObject()
                 if a.getResult():
-                    logger.info("%s involking: %s on %s" % (ar, event.action, a.getService().getKeyword()))
                     wf.doActionFor(a, "submit")
 
     elif event.action == "retract":
@@ -76,6 +72,10 @@ def ActionSucceededEventHandler(ar, event):
         for analysis in analyses:
             if not analysis.UID in skiplist:
                 wf.doActionFor(analysis.getObject(), "publish")
+
+    #---------------------
+    # Secondary workflows:
+    #---------------------
 
     elif event.action == "activate":
         ar.reindexObject(idxs = ["inactive_review_state", ])

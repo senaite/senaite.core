@@ -9,7 +9,7 @@ import transaction
 
 def ObjectInitializedEventHandler(analysis, event):
 
-    logger.info("Processing: %s on %s" % (event.action, analysis.getService().getKeyword()))
+    logger.info("Starting: %s on %s" % (event.action, analysis.getService().getKeyword()))
 
     # creating a new analysis retracts parent AR to 'received'
     ar = analysis.aq_parent
@@ -20,7 +20,6 @@ def ObjectInitializedEventHandler(analysis, event):
             analysis.REQUEST['workflow_skiplist'] = [ar.UID(), ]
         else:
             analysis.REQUEST["workflow_skiplist"].append(ar.UID())
-        logger.info("%s involking: retract on %s" % (analysis, ar))
         wf.doActionFor(ar, 'retract')
 
     logger.info("Finished with: %s on %s" % (event.action, analysis.getService().getKeyword()))
@@ -33,12 +32,11 @@ def ActionSucceededEventHandler(analysis, event):
     else:
         skiplist = analysis.REQUEST['workflow_skiplist']
         if analysis.UID() in skiplist:
-            logger.info("%s says: Oh, FFS, not %s again!!" % (analysis, event.action))
             return
         else:
             analysis.REQUEST["workflow_skiplist"].append(analysis.UID())
 
-    logger.info("Processing: %s on %s" % (event.action, analysis.getService().getKeyword()))
+    logger.info("Starting: %s on %s" % (event.action, analysis.getService().getKeyword()))
 
     wf = getToolByName(analysis, 'portal_workflow')
     ar = analysis.aq_parent
@@ -65,36 +63,18 @@ def ActionSucceededEventHandler(analysis, event):
         analysis.setDueDate(duetime)
         analysis.reindexObject()
 
-    elif event.action == "assign":
-        analysis.reindexObject(idxs = ["worksheetanalysis_review_state", ])
-        # If all analyses in this AR have been assigned
-        # escalate the action to the parent AR
-        if not ar.UID() in skiplist:
-            if not ar.getAnalyses(worksheetanalysis_review_state = 'unassigned'):
-                wf.doActionFor(ar, 'assign')
-
-    elif event.action == "unassign":
-        analysis.reindexObject(idxs = ["worksheetanalysis_review_state", ])
-        # Escalate the action to the parent AR if it is assigned
-        if not ar.UID() in skiplist:
-            if wf.getInfoFor(ar, 'worksheetanalysis_review_state') == 'assigned':
-                wf.doActionFor(ar, 'unassign')
-
     elif event.action == "submit":
         analysis.reindexObject(idxs = ["review_state", ])
         # submit our dependencies,
         dependencies = analysis.getDependencies()
-        logger.info("dependencies: %s" % dependencies)
         for dependency in dependencies:
             if not dependency.UID() in skiplist:
                 if wf.getInfoFor(dependency, 'review_state') == 'sample_received':
-                    logger.info("%s involking: %s on %s" % (analysis.getService().getKeyword(), event.action, dependency))
                     wf.doActionFor(dependency, 'submit')
 
         # Submit our dependents
         # Need to check for result and attachment first
         dependents = analysis.getDependents()
-        logger.info("dependents: %s" % dependents)
         for dependent in dependents:
             if not dependent.UID() in skiplist:
                 can_submit = True
@@ -106,22 +86,18 @@ def ActionSucceededEventHandler(analysis, event):
                         if service.getAttachmentOption() == 'r':
                             can_submit = False
                 if can_submit:
-                    logger.info("%s involking: %s on %s" % (analysis.getService().getKeyword(), event.action, dependent))
                     wf.doActionFor(dependent, 'submit')
 
         # If all analyses in this AR have been submitted
         # escalate the action to the parent AR
         if not ar.UID() in skiplist:
-            logger.info("ar not in skiplist. checking analyses review states.....")
             all_submitted = True
             for a in ar.getAnalyses():
-                logger.info("    ..... %s is %s" % (a.getObject().getService().getKeyword(), a.review_state))
                 if a.review_state in \
                    ('sample_due', 'sample_received',):
                     all_submitted = False
                     break
             if all_submitted:
-                logger.info("%s involking: %s on %s" % (analysis.getService().getKeyword(), event.action, ar))
                 wf.doActionFor(ar, 'submit')
 
     elif event.action == "retract":
@@ -223,6 +199,25 @@ def ActionSucceededEventHandler(analysis, event):
         analysis.setDuration(duration)
         analysis.setEarliness(earliness)
         analysis.reindexObject()
+
+    #---------------------
+    # Secondary workflows:
+    #---------------------
+
+    elif event.action == "assign":
+        analysis.reindexObject(idxs = ["worksheetanalysis_review_state", ])
+        # If all analyses in this AR have been assigned
+        # escalate the action to the parent AR
+        if not ar.UID() in skiplist:
+            if not ar.getAnalyses(worksheetanalysis_review_state = 'unassigned'):
+                wf.doActionFor(ar, 'assign')
+
+    elif event.action == "unassign":
+        analysis.reindexObject(idxs = ["worksheetanalysis_review_state", ])
+        # Escalate the action to the parent AR if it is assigned
+        if not ar.UID() in skiplist:
+            if wf.getInfoFor(ar, 'worksheetanalysis_review_state') == 'assigned':
+                wf.doActionFor(ar, 'unassign')
 
     logger.info("Finished with: %s on %s" % (event.action, analysis.getService().getKeyword()))
 

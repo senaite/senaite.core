@@ -11,12 +11,11 @@ def ActionSucceededEventHandler(sample, event):
     else:
         skiplist = sample.REQUEST['workflow_skiplist']
         if sample.UID() in skiplist:
-            logger.info("%s says: Oh, FFS, not %s again!!" % (sample, event.action))
             return
         else:
             sample.REQUEST["workflow_skiplist"].append(sample.UID())
 
-    logger.info("Processing: %s on %s" % (event.action, sample))
+    logger.info("Starting: %s on %s" % (event.action, sample))
 
     if event.action == "receive":
         sample.setDateReceived(DateTime())
@@ -26,7 +25,6 @@ def ActionSucceededEventHandler(sample, event):
         workflow = getToolByName(sample, 'portal_workflow')
         for ar in sample.getAnalysisRequests():
             if not ar.UID() in skiplist:
-                logger.info("%s involking: %s on %s" % (sample, event.action, ar))
                 workflow.doActionFor(ar, "receive")
 
     elif event.action == "expire":
