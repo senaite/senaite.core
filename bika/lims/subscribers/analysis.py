@@ -66,6 +66,7 @@ def ActionSucceededEventHandler(analysis, event):
         analysis.reindexObject()
 
     elif event.action == "assign":
+        analysis.reindexObject(idxs = ["worksheetanalysis_review_state", ])
         # If all analyses in this AR have been assigned
         # escalate the action to the parent AR
         if not ar.UID() in skiplist:

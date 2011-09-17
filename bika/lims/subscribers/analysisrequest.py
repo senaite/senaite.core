@@ -78,6 +78,7 @@ def ActionSucceededEventHandler(ar, event):
                 wf.doActionFor(analysis.getObject(), "publish")
 
     elif event.action == "activate":
+        ar.reindexObject(idxs = ["inactive_review_state", ])
         # activate all analyses in this AR.
         analyses = ar.getAnalyses(inactive_review_state = 'inactive')
         for analysis in analyses:
@@ -85,6 +86,7 @@ def ActionSucceededEventHandler(ar, event):
                 wf.doActionFor(analysis.getObject(), 'activate')
 
     elif event.action == "deactivate":
+        ar.reindexObject(idxs = ["inactive_review_state", ])
         # deactivate all analyses in this AR.
         analyses = ar.getAnalyses(inactive_review_state = 'active')
         for analysis in analyses:
