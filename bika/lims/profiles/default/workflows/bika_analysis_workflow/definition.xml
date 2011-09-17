@@ -8,6 +8,9 @@
  <permission>BIKA: View Results</permission>
  <permission>Delete objects</permission>
  <permission>Modify portal content</permission>
+ <state state_id="attachment_due" title="Attachment Outstanding">
+  <exit-transition transition_id="attach"/>
+ </state>
  <state state_id="not_requested" title="Not requested">
   <exit-transition transition_id="verify"/>
   <permission-map name="BIKA: Edit analyses" acquired="False">
@@ -221,8 +224,14 @@
    <permission-role>Manager</permission-role>
   </permission-map>
  </state>
+ <transition transition_id="attach" title="Attach" new_state="to_be_verified" trigger="USER" before_script="" after_script="">
+  <action url="workflow_action?workflow_action=submit" category="workflow" icon="">Add attachmnt</action>
+  <guard>
+   <guard-permission>BIKA: Submit sample</guard-permission>
+  </guard>
+ </transition>
  <transition transition_id="import" title="Import" new_state="not_requested" trigger="USER" before_script="" after_script="">
-
+  
   <guard>
    <guard-permission>BIKA: Import sample</guard-permission>
   </guard>
@@ -260,7 +269,7 @@
    <guard-expression>python:here.guard_retract_sample()</guard-expression>
   </guard>
  </transition>
- <transition transition_id="submit" title="Submit for verification" new_state="to_be_verified" trigger="USER" before_script="" after_script="">
+ <transition transition_id="submit" title="Submit for verification" new_state="attachment_due" trigger="USER" before_script="" after_script="">
   <action url="workflow_action?workflow_action=submit" category="workflow" icon="">Submit for verification</action>
   <guard>
    <guard-permission>BIKA: Submit sample</guard-permission>
@@ -284,7 +293,7 @@
  <variable variable_id="action" for_catalog="False" for_status="True" update_always="True">
   <description>The last transition</description>
   <default>
-
+   
    <expression>transition/getId|nothing</expression>
   </default>
   <guard>
@@ -293,7 +302,7 @@
  <variable variable_id="actor" for_catalog="False" for_status="True" update_always="True">
   <description>The ID of the user who performed the last transition</description>
   <default>
-
+   
    <expression>user/getId</expression>
   </default>
   <guard>
@@ -302,7 +311,7 @@
  <variable variable_id="comments" for_catalog="False" for_status="True" update_always="True">
   <description>Comments about the last transition</description>
   <default>
-
+   
    <expression>python:state_change.kwargs.get('comment', '')</expression>
   </default>
   <guard>
@@ -311,7 +320,7 @@
  <variable variable_id="review_history" for_catalog="False" for_status="False" update_always="False">
   <description>Provides access to workflow history</description>
   <default>
-
+   
    <expression>state_change/getHistory</expression>
   </default>
   <guard>
@@ -320,7 +329,7 @@
  <variable variable_id="time" for_catalog="False" for_status="True" update_always="True">
   <description>Time of the last transition</description>
   <default>
-
+   
    <expression>state_change/getDateTime</expression>
   </default>
   <guard>
