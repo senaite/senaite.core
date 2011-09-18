@@ -44,7 +44,7 @@ class AnalysisCategoriesView(BikaListingView):
         for x in range(len(items)):
             if not items[x].has_key('obj'):
                 continue
-            obj = items[x]['obj'].getObject()
+            obj = items[x]['obj']
             items[x]['Description'] = obj.Description()
             items[x]['Department'] = obj.getDepartment().Title()
             items[x]['replace']['Title'] = "<a href='%s'>%s</a>" % \

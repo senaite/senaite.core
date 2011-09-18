@@ -12,9 +12,11 @@ member = membership_tool.getAuthenticatedMember()
 
 wf_tool = context.portal_workflow
 review_state = wf_tool.getInfoFor(context, 'review_state', '')
-if review_state != 'assigned' and \
-        not ('LabManager' in member.getRoles() or 
-             'Manager' in member.getRoles()):
+if ('LabManager' in member.getRoles() or
+    'Manager' in member.getRoles()):
+    return 1
+
+if review_state in ('sample_due', 'verified', 'published'):
     return 0
 
 return 1

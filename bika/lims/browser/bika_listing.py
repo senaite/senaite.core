@@ -65,7 +65,7 @@ class WorkflowAction:
             obj = self.context
             # the only action allowed on inactive items is "activate"
             if not isActive(obj) and action != 'activate':
-                message = _('No items were affected.')
+                message = _('Item is inactive.')
                 self.context.plone_utils.addPortalMessage(message, 'info')
                 self.request.response.redirect(originating_url)
                 return
@@ -84,10 +84,15 @@ class WorkflowAction:
                 item = pc(id = item_id,
                           path = {'query':item_path,
                                   'depth':1})[0].getObject()
-                if isActive(item):
-                    if item.UID() not in skiplist:
+                # the only action allowed on inactive items is "activate"
+                if not isActive(item) and action != 'activate':
+                    continue
+                if item.UID() not in skiplist:
+                    try:
                         workflow.doActionFor(item, action)
                         transitioned.append(item.Title())
+                    except WorkflowException:
+                        pass
 
         if len(transitioned) > 0:
             message = _('Changes saved.')
@@ -207,13 +212,12 @@ class BikaListingView(BrowserView):
         start = (pagenumber - 1) * pagesize
         end = start + pagesize
 
-        # XXX temporary
         if not hasattr(self, 'modified_contentFilter'):
             self.modified_contentFilter = self.contentFilter
 
         results = []
         for i, obj in enumerate(self.contentsMethod(self.modified_contentFilter)):
-            # we still don't know if it's a brain or an object
+            # we don't know yet if it's a brain or an object
             path = hasattr(obj, 'getPath') and obj.getPath() or \
                  "/".join(obj.getPhysicalPath())
 
@@ -223,45 +227,15 @@ class BikaListingView(BrowserView):
                 results.append(dict(path = path))
                 continue
 
-            if full_objects and hasattr(obj, 'getObject'):
+            if hasattr(obj, 'getObject'):
                 obj = obj.getObject()
 
-            uid = hasattr(obj, 'getUID') and obj.getUID() or obj.UID
-            if callable(uid): uid = uid()
-
-            title = hasattr(obj, 'getTitle') and obj.getTitle() or obj.Title
-            if callable(title): title = title()
-
+            uid = obj.UID()
+            title = obj.Title()
+            description = obj.Description()
             icon = plone_layout.getIcon(obj)
-
-            if hasattr(obj, 'review_state'):
-                review_state = obj.review_state
-            else:
-                try:
-                    review_state = workflow.getInfoFor(obj, 'review_state')
-                except:
-                    review_state = ''
-            if hasattr(obj, 'inactive_review_state'):
-                inactive_review_state = obj.inactive_review_state
-            else:
-                try:
-                    inactive_review_state = workflow.getInfoFor(obj, 'inactive_review_state')
-                except:
-                    inactive_review_state = ''
-            if hasattr(obj, 'worksheetanalysis_review_state'):
-                worksheetanalysis_review_state = obj.worksheetanalysis_review_state
-            else:
-                try:
-                    worksheetanalysis_review_state = workflow.getInfoFor(obj, 'worksheetanalysis_review_state')
-                except:
-                    worksheetanalysis_review_state = ''
-
-            url = hasattr(obj, 'getURL') and obj.getURL() or \
-                "/".join(obj.getPhysicalPath())
-
-            relative_url = hasattr(obj, 'getURL') and \
-                         obj.getURL(relative=True) or \
-                         "/".join(obj.getPhysicalPath())
+            url = obj.absolute_url()
+            relative_url = obj.absolute_url(relative=True)
 
             fti = portal_types.get(obj.portal_type)
             if fti is not None:
@@ -269,8 +243,6 @@ class BikaListingView(BrowserView):
             else:
                 type_title_msgid = obj.portal_type
 
-            description = obj.Description
-            if callable(description): description = description()
             url_href_title = u'%s at %s: %s' % \
                 (translate(type_title_msgid, context = self.request),
                  path,
@@ -281,27 +253,22 @@ class BikaListingView(BrowserView):
 
             # Check for InterimFields attribute on our object,
             interim_fields = hasattr(obj, 'getInterimFields') \
-                           and obj.getInterimFields or []
-            if not interim_fields:
-                interim_fields = hasattr(obj, 'InterimFields') \
-                               and obj.InterimFields or []
-            if callable(interim_fields): interim_fields = interim_fields()
+                           and obj.getInterimFields() or []
 
             # element css classes
-            for w in workflow.getWorkflowsFor(obj):
-                pass
             type_class = 'contenttype-' + plone_utils.normalizeString(obj.portal_type)
-            state_class = ''
-            if review_state:
-                state_class += 'state-' + plone_utils.normalizeString(review_state)
-            if inactive_review_state:
-                state_class += ' state-' + plone_utils.normalizeString(inactive_review_state)
-            if worksheetanalysis_review_state:
-                state_class += ' state-' + plone_utils.normalizeString(worksheetanalysis_review_state)
+
             if (i + 1) % 2 == 0:
                 table_row_class = "draggable even"
             else:
                 table_row_class = "draggable odd"
+
+            state_class = ''
+            states = {}
+            for w in workflow.getWorkflowsFor(obj):
+                state = w._getWorkflowStateOf(obj).id
+                states[w.state_var] = state
+                state_class += "state-"+state
 
             results_dict = dict(
                 obj = obj,
@@ -319,13 +286,8 @@ class BikaListingView(BrowserView):
                 modified = modified,
                 icon = icon.html_tag(),
                 type_class = type_class,
-                review_state = review_state,
-                inactive_review_state = inactive_review_state,
-                worksheetanalysis_review_state = worksheetanalysis_review_state,
                 # a list of lookups for single-value-select fields
                 choices = [],
-                state_title = workflow.getTitleForStateOnType(review_state,
-                                                        obj.portal_type),
                 state_class = state_class,
                 relative_url = relative_url,
                 view_url = url,
@@ -340,6 +302,18 @@ class BikaListingView(BrowserView):
                 after = {},
                 replace = {},
             )
+            try:
+                review_state = workflow.getInfoFor(obj, 'review_state')
+                state_title = workflow.getTitleForStateOnType(review_state,
+                                                              obj.portal_type)
+            except:
+                state_title = None
+            for state_var,state in states.items():
+                if not state_title:
+                    state_title = workflow.getTitleForStateOnType(state,
+                                                                  obj.portal_type)[0],
+                results_dict[state_var] = state
+            results_dict['state_title'] = state_title
 
             # XXX debug - add history_id column
             if App.config.getConfiguration().debug_mode:
@@ -371,8 +345,6 @@ class BikaListingView(BrowserView):
                     value = getattr(obj, key)
                     if callable(value):
                         value = value()
-                    # if it's a HistoryAwareReference pointed at a previous
-                    # revision, force (vx/x) into the text.
                     results_dict[key] = value
             results.append(results_dict)
 

@@ -391,7 +391,7 @@ class WorksheetAddAnalysisView(AnalysesView):
         items = BikaListingView.folderitems(self)
         for x in range(len(items)):
             if not items[x].has_key('obj'): continue
-            obj = items[x]['obj'].getObject()
+            obj = items[x]['obj']
             service = obj.getService()
             client = obj.aq_parent.aq_parent
             items[x]['getClientOrderNumber'] = obj.getClientOrderNumber()
@@ -443,7 +443,7 @@ class WorksheetAddBlankView(BikaListingView):
         items = BikaListingView.folderitems(self)
         for x in range(len(items)):
             if not items[x].has_key('obj'): continue
-            obj = items[x]['obj'].getObject()
+            obj = items[x]['obj']
             items[x]['getNumber'] = obj.getNumber()
             items[x]['getOwnerUserID'] = obj.getOwnerUserID()
             items[x]['CreationDate'] = obj.CreationDate() and \
@@ -495,7 +495,7 @@ class WorksheetAddControlView(BikaListingView):
         items = BikaListingView.folderitems(self)
         for x in range(len(items)):
             if not items[x].has_key('obj'): continue
-            obj = items[x]['obj'].getObject()
+            obj = items[x]['obj']
             items[x]['getNumber'] = obj.getNumber()
             items[x]['getOwnerUserID'] = obj.getOwnerUserID()
             items[x]['CreationDate'] = obj.CreationDate() and \
@@ -545,7 +545,7 @@ class WorksheetAddDuplicateView(BikaListingView):
         items = BikaListingView.folderitems(self)
         for x in range(len(items)):
             if not items[x].has_key('obj'): continue
-            obj = items[x]['obj'].getObject()
+            obj = items[x]['obj']
             items[x]['getNumber'] = obj.getNumber()
             items[x]['getOwnerUserID'] = obj.getOwnerUserID()
             items[x]['CreationDate'] = obj.CreationDate() and \

@@ -224,7 +224,7 @@ class AnalysesView(BikaListingView):
             if self.context.portal_type == 'AnalysisRequest' and \
                workflow.getInfoFor(items[i]['obj'], 'worksheetanalysis_review_state') == 'assigned':
                 ws = items[i]['obj'].getBackReferences('WorksheetAnalysis')[0]
-                items[i]['before']['state_title'] = \
+                items[i]['after']['state_title'] = \
                      "<a href='%s'><img src='++resource++bika.lims.images/worksheet.png' title='Assigned to worksheet: %s'/></a>" % \
                      (ws.absolute_url(), ws.id)
 

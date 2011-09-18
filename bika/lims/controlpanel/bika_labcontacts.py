@@ -54,7 +54,7 @@ class LabContactsView(BikaListingView):
         items = BikaListingView.folderitems(self)
         for x in range(len(items)):
             if not items[x].has_key('obj'): continue
-            obj = items[x]['obj'].getObject()
+            obj = items[x]['obj']
             items[x]['Listingname'] = obj.getListingname()
             items[x]['Department'] = obj.getDepartment() and obj.getDepartment().Title() or ''
             items[x]['BusinessPhone'] = obj.getBusinessPhone()

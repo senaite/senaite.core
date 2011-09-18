@@ -44,7 +44,7 @@ class AnalysisSpecsView(BikaListingView):
 
         for x in range(len(items)):
             if not items[x].has_key('obj'): continue
-            obj = items[x]['obj'].getObject()
+            obj = items[x]['obj']
             items[x]['getSampleType'] = obj.getSampleType() and obj.getSampleType().Title()
             items[x]['replace']['getSampleType'] = "<a href='%s'>%s</a>" % \
                  (items[x]['url'], items[x]['getSampleType'])

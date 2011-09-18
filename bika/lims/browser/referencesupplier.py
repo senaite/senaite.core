@@ -80,7 +80,7 @@ class ReferenceSamplesView(BikaListingView):
         items = BikaListingView.folderitems(self)
         for x in range(len(items)):
             if not items[x].has_key('obj'): continue
-            obj = items[x]['obj'].getObject()
+            obj = items[x]['obj']
             items[x]['ID'] = obj.id
             items[x]['Manufacturer'] = obj.getReferenceManufacturer() and \
                  obj.getReferenceManufacturer().Title() or ''
@@ -147,7 +147,7 @@ class ContactsView(BikaListingView):
         for x in range(len(items)):
             if not items[x].has_key('obj'): continue
 
-            obj = items[x]['obj'].getObject()
+            obj = items[x]['obj']
             items[x]['getFullname'] = obj.getFullname()
             items[x]['getEmailAddress'] = obj.getEmailAddress()
             items[x]['getBusinessPhone'] = obj.getBusinessPhone()

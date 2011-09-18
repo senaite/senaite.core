@@ -109,6 +109,7 @@ class ClientAnalysisRequestsView(BikaListingView):
         }
         self.review_states = [
             {'title': _('All'), 'id':'all',
+             'transitions': ['receive', 'submit', 'retract', 'activate', 'deactivate'],
              'columns':['getRequestID',
                         'ClientOrderNumber',
                         'ClientReference',
@@ -140,7 +141,8 @@ class ClientAnalysisRequestsView(BikaListingView):
             {'title': _('Assigned to Worksheet'), 'id':'assigned',
              'contentFilter': {'worksheetanalysis_review_state': 'assigned',
                                'review_state': ('sample_received', 'to_be_verified',
-                                                'verified', 'published')},
+                                                'attachment_due', 'verified',
+                                                'published')},
              'transitions': ['cancel'],
              'columns':['getRequestID',
                         'ClientOrderNumber',
@@ -183,10 +185,11 @@ class ClientAnalysisRequestsView(BikaListingView):
 
     @property
     def folderitems(self):
+        workflow = getToolByName(self.context, "portal_workflow")
         items = BikaListingView.folderitems(self)
         for x in range(len(items)):
             if not items[x].has_key('obj'): continue
-            obj = items[x]['obj'].getObject()
+            obj = items[x]['obj']
 
             items[x]['replace']['getRequestID'] = "<a href='%s'>%s</a>" % \
                  (items[x]['url'], items[x]['getRequestID'])
@@ -202,6 +205,12 @@ class ClientAnalysisRequestsView(BikaListingView):
             items[x]['DatePublished'] = obj.getDatePublished() and \
                 self.context.toLocalizedTime(obj.getDatePublished(), \
                                              long_format = 0) or ''
+
+            # add icon for assigned ARs
+            if workflow.getInfoFor(obj, 'worksheetanalysis_review_state') == 'assigned':
+                items[i]['after']['state_title'] = \
+                     "<img src='++resource++bika.lims.images/worksheet.png' title='All analyses assigned'/>"
+
             after_icons = ''
             if obj.getSample().getSampleType().getHazardous():
                 after_icons += "<img src='++resource++bika.lims.images/hazardous_small.png' title='Hazardous'>"
@@ -283,7 +292,7 @@ class ClientSamplesView(BikaListingView):
         items = BikaListingView.folderitems(self)
         for x in range(len(items)):
             if not items[x].has_key('obj'): continue
-            obj = items[x]['obj'].getObject()
+            obj = items[x]['obj']
             items[x]['SampleID'] = obj.getSampleID()
             items[x]['replace']['SampleID'] = "<a href='%s'>%s</a>" % \
                  (items[x]['url'], items[x]['SampleID'])
@@ -428,7 +437,7 @@ class ClientAnalysisSpecsView(BikaListingView):
         for x in range(len(items)):
             if not items[x].has_key('obj'): continue
 
-            obj = items[x]['obj'].getObject()
+            obj = items[x]['obj']
 
             items[x]['getSampleType'] = obj.getSampleType() and \
                  obj.getSampleType().Title()
@@ -486,7 +495,7 @@ class ClientAttachmentsView(BikaListingView):
         items = BikaListingView.folderitems(self)
         for x in range(len(items)):
             if not items[x].has_key('obj'): continue
-            obj = items[x]['obj'].getObject()
+            obj = items[x]['obj']
             obj_url = obj.absolute_url()
             file = obj.getAttachmentFile()
             icon = file.getBestIcon()
@@ -548,7 +557,7 @@ class ClientOrdersView(BikaListingView):
         items = BikaListingView.folderitems(self)
         for x in range(len(items)):
             if not items[x].has_key('obj'): continue
-            obj = items[x]['obj'].getObject()
+            obj = items[x]['obj']
             items[x]['OrderNumber'] = obj.getOrderNumber()
             items[x]['OrderDate'] = obj.getOrderDate()
             items[x]['DateDispatched'] = obj.getDateDispatched()
@@ -596,7 +605,7 @@ class ClientContactsView(BikaListingView):
         for x in range(len(items)):
             if not items[x].has_key('obj'): continue
 
-            obj = items[x]['obj'].getObject()
+            obj = items[x]['obj']
             items[x]['getFullname'] = obj.getFullname()
             items[x]['getEmailAddress'] = obj.getEmailAddress()
             items[x]['getBusinessPhone'] = obj.getBusinessPhone()

@@ -45,7 +45,7 @@ class ClientFolderContentsView(BikaListingView):
         items = BikaListingView.folderitems(self)
         for x in range(len(items)):
             if not items[x].has_key('obj'): continue
-            obj = items[x]['obj'].getObject()
+            obj = items[x]['obj']
 
             items[x]['replace']['title'] = "<a href='%s'>%s</a>"%\
                  (items[x]['url'], items[x]['title'])

@@ -523,7 +523,7 @@ class AnalysisRequestSelectSampleView(BikaListingView):
         items = BikaListingView.folderitems(self)
         for x, item in enumerate(items):
             if not items[x].has_key('obj'): continue
-            obj = items[x]['obj'].getObject()
+            obj = items[x]['obj']
             items[x]['class']['getSampleID'] = "select_sample"
             if items[x]['uid'] in self.request.get('hide_uids', ''): continue
             if items[x]['uid'] in self.request.get('selected_uids', ''):
@@ -1047,7 +1047,7 @@ class AnalysisRequestsView(BikaListingView):
         items = BikaListingView.folderitems(self)
         for x in range(len(items)):
             if not items[x].has_key('obj'): continue
-            obj = items[x]['obj'].getObject()
+            obj = items[x]['obj']
 
             items[x]['replace']['getRequestID'] = "<a href='%s'>%s</a>" % \
                  (items[x]['url'], items[x]['getRequestID'])
