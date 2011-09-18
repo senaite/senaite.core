@@ -64,7 +64,7 @@ class WorkflowAction:
         if came_from == "workflow_action":
             obj = self.context
             # the only action allowed on inactive items is "activate"
-            if not isActive(obj):
+            if not isActive(obj) and action != 'activate':
                 message = _('No items were affected.')
                 self.context.plone_utils.addPortalMessage(message, 'info')
                 self.request.response.redirect(originating_url)
@@ -445,19 +445,15 @@ class Table(tableview.Table):
             obj = hasattr(item['obj'], 'getObject') and \
                 item['obj'].getObject() or \
                 item['obj']
-            this_transitions = []
             for w in workflow.getWorkflowsFor(obj):
                 for tid,t in w.transitions.items():
                     if w.isActionSupported(obj, tid):
-                        this_transitions.append(tid)
                         if t not in transitions:
                             if review_state.has_key('transitions') and \
                                tid not in review_state['transitions']:
                                 pass
                             else:
                                 transitions.append(t)
-            print "calculated transitions: " % this_transitions
-            print "getTransitionsFor: " % workflow.getTransitionsFor(item)
         return transitions
 
     render = ViewPageTemplateFile("templates/bika_listing_table.pt")
