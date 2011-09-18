@@ -25,7 +25,6 @@ class WorksheetFolderView(BikaListingView):
            'getNumber': {'title': _('Worksheet Number')},
            'getOwnerUserID': {'title': _('Username')},
            'CreationDate': {'title': _('Creation Date')},
-           'getLinkedWorksheet': {'title': _('Linked Worksheets')},
            'state_title': {'title': _('State')},
           }
     review_states = [
@@ -33,31 +32,26 @@ class WorksheetFolderView(BikaListingView):
                  'columns':['getNumber',
                             'getOwnerUserID',
                             'CreationDate',
-                            'getLinkedWorksheet',
                             'state_title']},
                 {'title': _('Worksheet Open'), 'id':'open',
                  'columns':['getNumber',
                             'getOwnerUserID',
                             'CreationDate',
-                            'getLinkedWorksheet',
                             'state_title']},
                 {'title': _('To Be Verified'), 'id':'to_be_verified',
                  'columns':['getNumber',
                             'getOwnerUserID',
                             'CreationDate',
-                            'getLinkedWorksheet',
                             'state_title']},
                 {'title': _('Verified'), 'id':'verified',
                  'columns':['getNumber',
                             'getOwnerUserID',
                             'CreationDate',
-                            'getLinkedWorksheet',
                             'state_title']},
                 {'title': _('Rejected'), 'id':'rejected',
                  'columns':['getNumber',
                             'getOwnerUserID',
                             'CreationDate',
-                            'getLinkedWorksheet',
                             'state_title'],
                  'buttons':[{'cssclass': 'context',
                              'title': _('Delete'),
@@ -78,8 +72,6 @@ class WorksheetFolderView(BikaListingView):
             items[x]['getOwnerUserID'] = obj.getOwnerUserID()
             items[x]['CreationDate'] = obj.CreationDate() and \
                  self.context.toLocalizedTime(obj.CreationDate(), long_format = 0) or ''
-            items[x]['getLinkedWorksheet'] = obj.getLinkedWorksheet() and \
-                 ",".join(obj.getLinkedWorksheet()) or ''
             items[x]['replace']['getNumber'] = "<a href='%s'>%s</a>" % \
                  (items[x]['url'], items[x]['getNumber'])
 

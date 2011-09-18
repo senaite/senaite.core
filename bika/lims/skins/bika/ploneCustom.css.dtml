@@ -181,7 +181,7 @@ table.analysisrequest input {
 	cursor: pointer;
 }
 
-.deleteAttachmentbutton {
+.deleteAttachmentButton {
     border: 0;
 	cursor: pointer;
 }

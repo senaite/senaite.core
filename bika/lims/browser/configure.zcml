@@ -3,6 +3,7 @@
     xmlns:browser="http://namespaces.zope.org/browser"
     i18n_domain="bika.lims">
 
+  <include file="attachment.zcml"/>
   <include file="analysisrequest.zcml"/>
   <include file="bika_listing.zcml"/>
   <include file="calcs.zcml"/>

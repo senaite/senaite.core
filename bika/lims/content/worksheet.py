@@ -47,16 +47,9 @@ schema = BikaSchema.copy() + Schema((
             visible = False,
         ),
     ),
-    ReferenceField('LinkedWorksheet',
-        multiValued = 1,
-        allowed_types = ('Worksheet',),
-        relationship = 'WorksheetWorksheet',
-        widget = ReferenceWidget(
-            label = 'Worksheet',
-            label_msgid = 'label_worksheet',
-            i18n_domain = I18N_DOMAIN,
-            visible = False,
-        ),
+    RecordsField('Layout',
+        required = 1,
+        subfields = ('pos', 'container', 'analyses'),
     ),
     TextField('Notes',
         widget = TextAreaWidget(
@@ -66,16 +59,12 @@ schema = BikaSchema.copy() + Schema((
     StringField('Analyser',
         vocabulary = 'getAnalysersDisplayList',
     ),
-    RecordsField('WorksheetLayout',
-        required = 1,
-        subfields = ('uid', 'pos', 'type', 'sub', 'dup'),
-    ),
     IntegerField('MaxPositions',
         widget = IntegerWidget(
             label = "Maximum Positions Allowed",
             label_msgid = 'label_max_positions',
             description = 'Maximum positions allowed on ' \
-                        'the worksheet',
+                          'the worksheet',
             description_msgid = 'help_max_positions',
         ),
     ),
@@ -155,7 +144,7 @@ class Worksheet(BaseFolder):
             return []
         rc = getToolByName(self, REFERENCE_CATALOG)
         analyses = []
-        for item in self.getWorksheetLayout():
+        for item in self.getLayout():
             if item['pos'] == this_pos:
                 analysis = rc.lookupObject(item['uid'])
                 analyses.append(analysis)
@@ -212,8 +201,6 @@ class Worksheet(BaseFolder):
     def _assignAnalyses(self, Analyses = []):
         """ assign selected analyses to worksheet
         """
-        self._delegating_workflow_action = 1
-
         if Analyses:
             workflow = getToolByName(self, 'portal_workflow')
             rc = getToolByName(self, REFERENCE_CATALOG)
@@ -226,8 +213,6 @@ class Worksheet(BaseFolder):
             assigned = assigned + self.getAnalyses()
 
             self.setAnalyses(assigned)
-
-        del self._delegating_workflow_action
 
     security.declareProtected(DeleteAnalyses, 'deleteAnalyses')
     def deleteAnalyses(self, REQUEST, RESPONSE, Analyses = []):
@@ -252,7 +237,6 @@ class Worksheet(BaseFolder):
                 std_analyses.append(analysis)
                 std_uids.append(uid)
 
-        self._delegating_workflow_action = 1
 
         if real_analyses:
             wf_tool = getToolByName(self, 'portal_workflow')
@@ -290,7 +274,6 @@ class Worksheet(BaseFolder):
             self.setReferenceAnalyses(uids)
 
         self._removeFromSequence(Analyses)
-        del self._delegating_workflow_action
 
         RESPONSE.redirect('%s/worksheet_analyses' % self.absolute_url())
 
@@ -485,7 +468,7 @@ class Worksheet(BaseFolder):
         for ar in dm_ars:
             ar.setDryMatterResults()
 
-        # self.setWorksheetLayout(worksheet_seq)
+        # self.setLayout(worksheet_seq)
 
         if RESPONSE:
             RESPONSE.redirect('%s/worksheet_analyses' % self.absolute_url())
@@ -527,7 +510,7 @@ class Worksheet(BaseFolder):
         seq = {}
         positions = {}
 
-        for item in self.getWorksheetLayout():
+        for item in self.getLayout():
             seq[item['uid']] = item['pos']
         services = ''
         for analysis in self.getReferenceAnalyses():
@@ -551,7 +534,7 @@ class Worksheet(BaseFolder):
         dup_pos = 0
 
         seq = {}
-        for item in self.getWorksheetLayout():
+        for item in self.getLayout():
             seq[item['uid']] = item['pos']
 
         services = []
@@ -683,7 +666,7 @@ class Worksheet(BaseFolder):
     def resequenceWorksheet(self, REQUEST = None, RESPONSE = None):
         """  Reset the sequence of analyses in the worksheet """
         """ sequence is [{'pos': , 'type': , 'uid', 'key'},] """
-        old_seq = self.getWorksheetLayout()
+        old_seq = self.getLayout()
         new_dict = {}
         new_seq = []
         other_dict = {}
@@ -727,13 +710,13 @@ class Worksheet(BaseFolder):
                 new_seq.append(item)
             seqno += 1
 
-        self.setWorksheetLayout(new_seq)
+        self.setLayout(new_seq)
         RESPONSE.redirect('%s/worksheet_analyses' % self.absolute_url())
 
     def _addToSequence(self, type, position, analyses):
-        """ WorksheetLayout is [{'uid': , 'type': , 'pos', 'key'},] """
+        """ Layout is [{'uid': , 'type': , 'pos', 'key'},] """
         """ analyses [uids,]       """
-        ws_seq = self.getWorksheetLayout()
+        ws_seq = self.getLayout()
         rc = getToolByName(self, REFERENCE_CATALOG)
 
         if position == 0:
@@ -781,23 +764,22 @@ class Worksheet(BaseFolder):
                        'key': keyvalue}
             ws_seq.append(element)
 
-        self.setWorksheetLayout(ws_seq)
+        self.setLayout(ws_seq)
 
     def _removeFromSequence(self, analyses):
         """ analyses is [analysis.UID] """
-        ws_seq = self.getWorksheetLayout()
+        ws_seq = self.getLayout()
 
         new_seq = []
         for pos in ws_seq:
             if pos['uid'] not in analyses:
                 new_seq.append(pos)
 
-        self.setWorksheetLayout(new_seq)
+        self.setLayout(new_seq)
 
 
     def manage_beforeDelete(self, item, container):
         """ retract all analyses before deleting worksheet """
-        self._delegating_workflow_action = 1
         wf_tool = self.portal_workflow
         for analysis in self.getAnalyses():
             review_state = wf_tool.getInfoFor(
@@ -836,7 +818,6 @@ class Worksheet(BaseFolder):
         self.manage_delObjects(del_ids)
 
         BaseFolder.manage_beforeDelete(self, item, container)
-        del self._delegating_workflow_action
 
 
     def workflow_script_submit(self, state_info):
@@ -845,7 +826,6 @@ class Worksheet(BaseFolder):
         if getattr(self, '_escalating_workflow_action', None):
             return
 
-        self._delegating_workflow_action = 1
         wf_tool = self.portal_workflow
         for analysis in self.getAnalyses():
             review_state = wf_tool.getInfoFor(
@@ -857,7 +837,6 @@ class Worksheet(BaseFolder):
                 analysis.reindexObject()
 
 
-        del self._delegating_workflow_action
 
         for std_analysis in self.getReferenceAnalyses():
             review_state = wf_tool.getInfoFor(
@@ -880,7 +859,6 @@ class Worksheet(BaseFolder):
         if getattr(self, '_escalating_workflow_action', None):
             return
 
-        self._delegating_workflow_action = 1
         wf_tool = self.portal_workflow
         for analysis in self.getAnalyses():
             review_state = wf_tool.getInfoFor(
@@ -890,7 +868,6 @@ class Worksheet(BaseFolder):
             if review_state == 'to_be_verified':
                 wf_tool.doActionFor(analysis, 'verify')
                 analysis.reindexObject()
-        del self._delegating_workflow_action
 
         for std_analysis in self.getReferenceAnalyses():
             review_state = wf_tool.getInfoFor(
@@ -918,13 +895,9 @@ class Worksheet(BaseFolder):
         """
         utils = getToolByName(self, 'plone_utils')
         # create a new worksheet
-        if getattr(self, '_escalating_workflow_action', None):
-            return
-
-        self._delegating_workflow_action = 1
 
         wf_tool = self.portal_workflow
-        seq = self.getWorksheetLayout()
+        seq = self.getLayout()
         new_dict = {}
         for item in seq:
             new_dict[item['uid']] = item['pos']
@@ -980,7 +953,6 @@ class Worksheet(BaseFolder):
 
         self.setAnalyses(old_ws_analyses)
 
-        self._delegating_workflow_action = 1
         worksheets = self.aq_parent
         new_ws_id = worksheets.generateUniqueId('Worksheet')
         worksheets.invokeFactory(id = new_ws_id, type_name = 'Worksheet')
@@ -1052,8 +1024,8 @@ class Worksheet(BaseFolder):
             wf_tool.doActionFor(duplicate, 'reject')
             duplicate.reindexObject()
 
-        new_ws.setWorksheetLayout(new_sequence)
-        self.setWorksheetLayout(sequence)
+        new_ws.setLayout(new_sequence)
+        self.setLayout(sequence)
 
         for analysis in new_ws.getAnalyses():
             review_state = wf_tool.getInfoFor(
@@ -1066,14 +1038,12 @@ class Worksheet(BaseFolder):
         message = self.translate('message_new_worksheet', default = 'New worksheet ${ws} has been created', mapping = {'ws': new_ws_id}, domain = 'bika')
         utils.addPortalMessage(message, type = u'info')
 
-        del self._delegating_workflow_action
 
     def workflow_script_retract(self, state_info):
         """ retract sample """
         if getattr(self, '_escalating_workflow_action', None):
             return
 
-        self._delegating_workflow_action = 1
         wf_tool = self.portal_workflow
         for analysis in self.getAnalyses():
             review_state = wf_tool.getInfoFor(
@@ -1083,7 +1053,6 @@ class Worksheet(BaseFolder):
             if review_state in ('to_be_verified', 'verified'):
                 wf_tool.doActionFor(analysis, 'retract')
                 analysis.reindexObject()
-        del self._delegating_workflow_action
 
         for std_analysis in self.getReferenceAnalyses():
             review_state = wf_tool.getInfoFor(
@@ -1108,9 +1077,6 @@ class Worksheet(BaseFolder):
         """ if all analyses have transitioned to next state then our
             state must change too
         """
-        if getattr(self, '_delegating_workflow_action', None):
-            return
-
         self._escalating_workflow_action = 1
         wf_tool = self.portal_workflow
         analyses_states = {}

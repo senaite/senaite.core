@@ -30,6 +30,8 @@ class WorksheetWorkflowAction(WorkflowAction):
         originating_url = self.request.get_header("referer",
                                                   self.context.absolute_url())
 
+        skiplist = self.request.get('workflow_skiplist', [])
+
         # "workflow_action" is the action name specified in the edit border transition.
         came_from = "workflow_action"
         action = form.get(came_from, '')
@@ -68,11 +70,12 @@ class WorksheetWorkflowAction(WorkflowAction):
                                   path={'query':item_path,
                                         'depth':1})[0].getObject()
                     analyses.append(analysis)
-                    ar = analysis.aq_parent
-                for analysis in analyses:
-                    workflow.doActionFor(analysis, 'assign')
                 # add items to Worksheet Analyses
-                self.context.setAnalyses(analyses)
+                self.context.setAnalyses(self.context.getAnalyses() + analyses)
+                # transition
+                for analysis in analyses:
+                    if analysis.UID() not in skiplist:
+                        workflow.doActionFor(analysis, 'assign')
 
             if len(analyses) > 1:
                 message = _('message_items_assigned',
@@ -86,9 +89,33 @@ class WorksheetWorkflowAction(WorkflowAction):
                 message = _("No action taken.")
                 self.context.plone_utils.addPortalMessage(message, 'info')
                 return self.request.RESPONSE.redirect(originating_url)
+
             self.context.plone_utils.addPortalMessage(message, 'info')
             return self.request.RESPONSE.redirect(
                 self.context.absolute_url() + "/manage_results")
+
+        # Remove the selected analyses from the worksheet
+        elif action == 'unassign':
+            analyses = []
+            if 'paths' in form:
+                for path in form['paths']:
+                    # get analyses from catalog
+                    item_id = path.split("/")[-1]
+                    item_path = path.replace("/"+item_id, '')
+                    analysis = pc(id=item_id,
+                                  path={'query':item_path,
+                                        'depth':1})[0].getObject()
+                    analyses.append(analysis)
+                    ar = analysis.aq_parent
+                # remove items from Worksheet Analyses
+                self.context.setAnalyses([a for a in self.context.getAnalyses()
+                                          if a not in analyses])
+                # add analysis containers to Worksheet Layout
+                layout = self.context.getLayout()
+                # transition
+                for analysis in analyses:
+                    if analysis.UID() not in skiplist:
+                        workflow.doActionFor(analysis, 'unassign')
         else:
             # default bika_listing.py/WorkflowAction for other transitions
             WorkflowAction.__call__(self)
@@ -422,8 +449,6 @@ class WorksheetAddBlankView(BikaListingView):
             items[x]['CreationDate'] = obj.CreationDate() and \
                  self.context.toLocalizedTime(
                      obj.CreationDate(), long_format = 0) or ''
-            items[x]['getLinkedWorksheet'] = obj.getLinkedWorksheet() and \
-                 ",".join(obj.getLinkedWorksheet()) or ''
             items[x]['replace']['getNumber'] = "<a href='%s'>%s</a>" % \
                  (items[x]['url'], items[x]['getNumber'])
 
@@ -475,8 +500,6 @@ class WorksheetAddControlView(BikaListingView):
             items[x]['getOwnerUserID'] = obj.getOwnerUserID()
             items[x]['CreationDate'] = obj.CreationDate() and \
                  self.context.toLocalizedTime(obj.CreationDate(), long_format = 0) or ''
-            items[x]['getLinkedWorksheet'] = obj.getLinkedWorksheet() and \
-                 ",".join(obj.getLinkedWorksheet()) or ''
             items[x]['replace']['getNumber'] = "<a href='%s'>%s</a>" % \
                  (items[x]['url'], items[x]['getNumber'])
 
@@ -527,8 +550,6 @@ class WorksheetAddDuplicateView(BikaListingView):
             items[x]['getOwnerUserID'] = obj.getOwnerUserID()
             items[x]['CreationDate'] = obj.CreationDate() and \
                  self.context.toLocalizedTime(obj.CreationDate(), long_format = 0) or ''
-            items[x]['getLinkedWorksheet'] = obj.getLinkedWorksheet() and \
-                 ",".join(obj.getLinkedWorksheet()) or ''
             items[x]['replace']['getNumber'] = "<a href='%s'>%s</a>" % \
                  (items[x]['url'], items[x]['getNumber'])
 

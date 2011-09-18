@@ -372,21 +372,22 @@ jQuery( function($) {
 		});
 
 		$('.deleteAttachmentButton').live("click", function(){
-			attachment_id = $(this).attr("attachment");
+			attachment_id = $(this).attr("attachment_id");
 			options = {
+				url: 'delete_analysis_attachment',
 				type: 'POST',
-				async: false,
 				success: function(responseText, statusText, xhr, $form) {
-					$("input[class~='context']").removeAttr('disabled');
+					if(responseText == "success"){
+						$("#"+attachment_id).remove();
+					}
 				},
 				data: {
-					'uid': $(element).attr('id'),
+					'attachment_id': attachment_id,
 					'_authenticator': $('input[name="_authenticator"]').val()
 				},
-				dataType: "json"
 			}
+			$.ajax(options);
 		});
-
 
 		// Clicking the category name will expand the services list for that category
 		$('th[class^="analysiscategory"]').click(function(){

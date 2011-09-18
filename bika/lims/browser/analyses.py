@@ -181,16 +181,14 @@ class AnalysesView(BikaListingView):
                 attachments = ""
                 if hasattr(obj, 'getAttachment'):
                     for attachment in obj.getAttachment():
-                        if attachments: attachments += "<br/>"
                         af = attachment.getAttachmentFile()
                         icon = af.getBestIcon()
-                        if icon:
-                            attachments += "<img src='%s/%s'/>" % (portal.absolute_url(), icon)
-                        attachments += '<a href="%s/at_download/AttachmentFile"/>%s</a>' % \
-                                    (attachment.absolute_url(), af.filename)
-                        attachments += "<img class='deleteAttachmentbutton' attachment='%s' src='%s'/>" % \
-                                    (af.id, "++resource++bika.lims.images/delete.png")
-                items[i]['replace']['Attachments'] = attachments
+                        attachments += "<span class='attachment' id='%s'>" % (attachment.id)
+                        if icon: attachments += "<img src='%s/%s'/>" % (portal.absolute_url(), icon)
+                        attachments += '<a href="%s/at_download/AttachmentFile"/>%s</a>' % (attachment.absolute_url(), af.filename)
+                        attachments += "<img class='deleteAttachmentButton' attachment_id='%s' src='%s'/>" % (attachment.id, "++resource++bika.lims.images/delete.png")
+                        attachments += "</br></span>"
+                items[i]['replace']['Attachments'] = attachments[:-12]+"</span>"
 
                 items[i]['result_in_range'] = hasattr(obj, 'result_in_range') and \
                     obj.result_in_range(result) or True
@@ -222,8 +220,9 @@ class AnalysesView(BikaListingView):
                     'src="%s/++resource++bika.lims.images/late.png" title="%s"/>'% \
                     (portal.absolute_url(), _("Due Date: ") + DueDate)
 
-            # add icon for assigned analyses
-            if workflow.getInfoFor(items[i]['obj'], 'worksheetanalysis_review_state') == 'assigned':
+            # add icon for assigned analyses in AR views
+            if self.context.portal_type == 'AnalysisRequest' and \
+               workflow.getInfoFor(items[i]['obj'], 'worksheetanalysis_review_state') == 'assigned':
                 ws = items[i]['obj'].getBackReferences('WorksheetAnalysis')[0]
                 items[i]['before']['state_title'] = \
                      "<a href='%s'><img src='++resource++bika.lims.images/worksheet.png' title='Assigned to worksheet: %s'/></a>" % \

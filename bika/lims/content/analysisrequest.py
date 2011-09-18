@@ -454,6 +454,8 @@ class AnalysisRequest(BaseFolder):
     def addARAttachment(self, REQUEST = None, RESPONSE = None):
         """ Add the file as an attachment
         """
+        workflow = getToolByName(self, 'portal_workflow')
+
         this_file = self.REQUEST.form['AttachmentFile_file']
         if self.REQUEST.form.has_key('Analysis'):
             analysis_uid = self.REQUEST.form['Analysis']

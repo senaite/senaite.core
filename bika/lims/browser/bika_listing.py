@@ -45,6 +45,8 @@ class WorkflowAction:
         originating_url = self.request.get_header("referer",
                                                   self.context.absolute_url())
 
+        skiplist = self.request.get('workflow_skiplist', [])
+
         # "workflow_action" is the edit border transition
         # "workflow_action_button" is the bika_listing table buttons
         came_from = "workflow_action"
@@ -68,10 +70,7 @@ class WorkflowAction:
                 self.request.response.redirect(originating_url)
                 return
             else:
-                if hasattr(self.request, 'workflow_skiplist') and \
-                   obj.UID() in self.request['workflow_skiplist']:
-                    pass
-                else:
+                if obj.UID() not in skiplist:
                     workflow.doActionFor(obj, action)
                 self.request.response.redirect(originating_url)
                 return
@@ -86,10 +85,7 @@ class WorkflowAction:
                           path = {'query':item_path,
                                   'depth':1})[0].getObject()
                 if isActive(item):
-                    if hasattr(self.request, 'workflow_skiplist') and \
-                       item.UID() in self.request['workflow_skiplist']:
-                        pass
-                    else:
+                    if item.UID() not in skiplist:
                         workflow.doActionFor(item, action)
                         transitioned.append(item.Title())
 
@@ -221,12 +217,6 @@ class BikaListingView(BrowserView):
             path = hasattr(obj, 'getPath') and obj.getPath() or \
                  "/".join(obj.getPhysicalPath())
 
-            item_inactive = False
-            if (hasattr(obj,'inactive_review_state') and \
-                obj.inactive_review_state == 'inactive') \
-               or workflow.getInfoFor(obj, 'inactive_review_state', '') == 'inactive':
-                item_inactive = True
-
             # avoid creating unnecessary info for items outside the current
             # batch;  only the path is needed for the "select all" case...
             if not show_all and not start <= i < end:
@@ -244,13 +234,27 @@ class BikaListingView(BrowserView):
 
             icon = plone_layout.getIcon(obj)
 
-            review_state = hasattr(obj, 'review_state') \
-                         and obj.review_state or None
-            if not review_state:
+            if hasattr(obj, 'review_state'):
+                review_state = obj.review_state
+            else:
                 try:
                     review_state = workflow.getInfoFor(obj, 'review_state')
                 except:
                     review_state = ''
+            if hasattr(obj, 'inactive_review_state'):
+                inactive_review_state = obj.inactive_review_state
+            else:
+                try:
+                    inactive_review_state = workflow.getInfoFor(obj, 'inactive_review_state')
+                except:
+                    inactive_review_state = ''
+            if hasattr(obj, 'worksheetanalysis_review_state'):
+                worksheetanalysis_review_state = obj.worksheetanalysis_review_state
+            else:
+                try:
+                    worksheetanalysis_review_state = workflow.getInfoFor(obj, 'worksheetanalysis_review_state')
+                except:
+                    worksheetanalysis_review_state = ''
 
             url = hasattr(obj, 'getURL') and obj.getURL() or \
                 "/".join(obj.getPhysicalPath())
@@ -284,10 +288,16 @@ class BikaListingView(BrowserView):
             if callable(interim_fields): interim_fields = interim_fields()
 
             # element css classes
+            for w in workflow.getWorkflowsFor(obj):
+                pass
             type_class = 'contenttype-' + plone_utils.normalizeString(obj.portal_type)
-            state_class = 'state-' + plone_utils.normalizeString(review_state)
-            if item_inactive:
-                state_class += ' state-inactive'
+            state_class = ''
+            if review_state:
+                state_class += 'state-' + plone_utils.normalizeString(review_state)
+            if inactive_review_state:
+                state_class += ' state-' + plone_utils.normalizeString(inactive_review_state)
+            if worksheetanalysis_review_state:
+                state_class += ' state-' + plone_utils.normalizeString(worksheetanalysis_review_state)
             if (i + 1) % 2 == 0:
                 table_row_class = "draggable even"
             else:
@@ -310,6 +320,8 @@ class BikaListingView(BrowserView):
                 icon = icon.html_tag(),
                 type_class = type_class,
                 review_state = review_state,
+                inactive_review_state = inactive_review_state,
+                worksheetanalysis_review_state = worksheetanalysis_review_state,
                 # a list of lookups for single-value-select fields
                 choices = [],
                 state_title = workflow.getTitleForStateOnType(review_state,
@@ -433,15 +445,19 @@ class Table(tableview.Table):
             obj = hasattr(item['obj'], 'getObject') and \
                 item['obj'].getObject() or \
                 item['obj']
+            this_transitions = []
             for w in workflow.getWorkflowsFor(obj):
                 for tid,t in w.transitions.items():
                     if w.isActionSupported(obj, tid):
+                        this_transitions.append(tid)
                         if t not in transitions:
                             if review_state.has_key('transitions') and \
                                tid not in review_state['transitions']:
                                 pass
                             else:
                                 transitions.append(t)
+            print "calculated transitions: " % this_transitions
+            print "getTransitionsFor: " % workflow.getTransitionsFor(item)
         return transitions
 
     render = ViewPageTemplateFile("templates/bika_listing_table.pt")

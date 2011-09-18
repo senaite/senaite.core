@@ -38,6 +38,8 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
         originating_url = self.request.get_header("referer",
                                                   self.context.absolute_url())
 
+        skiplist = self.request.get('workflow_skiplist', [])
+
         # "workflow_action" is the edit border transition
         # "workflow_action_button" is the bika_listing table buttons
         came_from = "workflow_action"
@@ -112,10 +114,7 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
                 service = analysis.getService()
                 interims = form["InterimFields"][0][analysis_uid]
                 if result:
-                    if hasattr(self.request, 'workflow_skiplist') and \
-                       analysis.UID() in self.request['workflow_skiplist']:
-                        pass
-                    else:
+                    if analysis.UID() not in skiplist:
                         workflow.doActionFor(analysis, 'submit')
             if self.context.getReportDryMatter():
                 self.context.setDryMatterResults()
