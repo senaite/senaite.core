@@ -26,8 +26,6 @@ def ObjectInitializedEventHandler(analysis, event):
 
 def ActionSucceededEventHandler(analysis, event):
 
-    logger.info("Starting: %s on %s" % (event.action, analysis.getService().getKeyword()))
-
     if event.action == "attach":
         # Need a separate skiplist for this due to double-jumps with 'submit'.
         if not analysis.REQUEST.has_key('workflow_attach_skiplist'):
@@ -36,9 +34,12 @@ def ActionSucceededEventHandler(analysis, event):
         else:
             skiplist = analysis.REQUEST['workflow_attach_skiplist']
             if analysis.UID() in skiplist:
+                logger.info("an Skip")
                 return
             else:
                 analysis.REQUEST["workflow_attach_skiplist"].append(analysis.UID())
+
+        logger.info("Starting: %s on %s" % (event.action, analysis.getService().getKeyword()))
 
         wf = getToolByName(analysis, 'portal_workflow')
         ar = analysis.aq_parent
@@ -94,9 +95,12 @@ def ActionSucceededEventHandler(analysis, event):
     else:
         skiplist = analysis.REQUEST['workflow_skiplist']
         if analysis.UID() in skiplist:
+            logger.info("an Skip")
             return
         else:
             analysis.REQUEST["workflow_skiplist"].append(analysis.UID())
+
+    logger.info("Starting: %s on %s" % (event.action, analysis.getService().getKeyword()))
 
     wf = getToolByName(analysis, 'portal_workflow')
     ar = analysis.aq_parent
@@ -156,11 +160,17 @@ def ActionSucceededEventHandler(analysis, event):
                 wf.doActionFor(ar, 'submit')
 
         # If no problem with attachments, do 'attach' action for this analysis.
+        # If no problem with attachments, do 'attach' action for this analysis.
         can_attach = True
         if not analysis.getAttachment():
             service = analysis.getService()
             if service.getAttachmentOption() == 'r':
                 can_attach = False
+        if can_attach:
+            dependencies = analysis.getDependencies()
+            for dependency in dependencies:
+                if wf.getInfoFor(dependency, 'review_state') in ('sample_due', 'sample_received', 'attachment_due',):
+                    can_attach = False
         if can_attach:
             wf.doActionFor(analysis, 'attach')
 

@@ -8,17 +8,19 @@ import transaction
 
 def ActionSucceededEventHandler(ar, event):
 
-    logger.info("Starting: %s on %s" % (event.action, ar))
-
     if event.action == "attach":
         # Need a separate skiplist for this due to double-jumps with 'submit'.
         if not ar.REQUEST.has_key('workflow_attach_skiplist'):
             ar.REQUEST['workflow_attach_skiplist'] = [ar.UID(), ]
         else:
             if ar.UID() in ar.REQUEST['workflow_attach_skiplist']:
+                logger.info("AR Skip")
                 return
             else:
                 ar.REQUEST["workflow_attach_skiplist"].append(ar.UID())
+
+        logger.info("Starting: %s on %s" % (event.action, ar))
+
         ar.reindexObject(idxs = ["review_state", ])
         # Don't cascade. Shouldn't be attaching ARs for now (if ever).
         return
@@ -29,9 +31,12 @@ def ActionSucceededEventHandler(ar, event):
     else:
         skiplist = ar.REQUEST['workflow_skiplist']
         if ar.UID() in skiplist:
+            logger.info("AR Skip")
             return
         else:
             ar.REQUEST["workflow_skiplist"].append(ar.UID())
+
+    logger.info("Starting: %s on %s" % (event.action, ar))
 
     wf = getToolByName(ar, 'portal_workflow')
 
