@@ -22,6 +22,8 @@ def ObjectInitializedEventHandler(analysis, event):
             analysis.REQUEST["workflow_skiplist"].append(ar.UID())
         wf.doActionFor(ar, 'retract')
 
+    return
+
 def ActionSucceededEventHandler(analysis, event):
 
     logger.info("Starting: %s on %s" % (event.action, analysis.getService().getKeyword()))
@@ -79,6 +81,7 @@ def ActionSucceededEventHandler(analysis, event):
                     break
             if can_attach:
                 wf.doActionFor(ar, 'attach')
+
         return
 
     #------------------------------------------------------
@@ -151,6 +154,15 @@ def ActionSucceededEventHandler(analysis, event):
                     break
             if all_submitted:
                 wf.doActionFor(ar, 'submit')
+
+        # If no problem with attachments, do 'attach' action for this analysis.
+        can_attach = True
+        if not analysis.getAttachment():
+            service = analysis.getService()
+            if service.getAttachmentOption() == 'r':
+                can_attach = False
+        if can_attach:
+            wf.doActionFor(analysis, 'attach')
 
     elif event.action == "retract":
         analysis.reindexObject(idxs = ["review_state", ])
@@ -272,3 +284,4 @@ def ActionSucceededEventHandler(analysis, event):
             if wf.getInfoFor(ar, 'worksheetanalysis_review_state') == 'assigned':
                 wf.doActionFor(ar, 'unassign')
 
+    return

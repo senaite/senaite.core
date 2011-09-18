@@ -31,3 +31,4 @@ def ActionSucceededEventHandler(sample, event):
         sample.setDateExpired(DateTime())
         sample.reindexObject(idxs = ["review_state", "getDateExpired", ])
 
+    return

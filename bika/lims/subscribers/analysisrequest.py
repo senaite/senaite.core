@@ -101,3 +101,4 @@ def ActionSucceededEventHandler(ar, event):
             if not analysis.UID in skiplist:
                 wf.doActionFor(analysis.getObject(), 'deactivate')
 
+    return
