@@ -81,6 +81,10 @@ def ActionSucceededEventHandler(analysis, event):
                 wf.doActionFor(ar, 'attach')
         return
 
+    #------------------------------------------------------
+    # End of "attach" code, back to your basic nightmare...
+    #------------------------------------------------------
+
     if not analysis.REQUEST.has_key('workflow_skiplist'):
         analysis.REQUEST['workflow_skiplist'] = [analysis.UID(), ]
         skiplist = analysis.REQUEST['workflow_skiplist']
@@ -118,25 +122,20 @@ def ActionSucceededEventHandler(analysis, event):
 
     elif event.action == "submit":
         analysis.reindexObject(idxs = ["review_state", ])
-        # submit our dependencies,
-        dependencies = analysis.getDependencies()
-        for dependency in dependencies:
-            if not dependency.UID() in skiplist:
-                if wf.getInfoFor(dependency, 'review_state') == 'sample_received':
-                    wf.doActionFor(dependency, 'submit')
-
+        # Dependencies are submitted already, ignore them.
+        #-------------------------------------------------
         # Submit our dependents
-        # Need to check for result and attachment first
+        # Need to check for result and status of dependencies first
         dependents = analysis.getDependents()
         for dependent in dependents:
             if not dependent.UID() in skiplist:
                 can_submit = True
                 if not dependent.getResult():
                     can_submit = False
-                else:
-                    if not dependent.getAttachment():
-                        service = dependent.getService()
-                        if service.getAttachmentOption() == 'r':
+                if can_submit:
+                    dependencies = dependent.getDependencies()
+                    for dependency in dependencies:
+                        if wf.getInfoFor(dependency, 'review_state') in ('sample_due', 'sample_received',):
                             can_submit = False
                 if can_submit:
                     wf.doActionFor(dependent, 'submit')
