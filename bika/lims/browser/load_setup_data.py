@@ -378,7 +378,7 @@ class LoadSetupData():
              'TDN % is used for ruminant feeds',
              ['ME'],
              [{'keyword':'tdnfact', 'title':'TDN Factor', 'type':'int', 'value':0, 'unit':'g'}],
-             '%(ME)f * 6.67',
+             '%(tdnfact)f * 6.67',
             ),
         )
         self.CreateCalculationObjects(calcs)
