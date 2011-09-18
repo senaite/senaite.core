@@ -22,9 +22,64 @@ def ObjectInitializedEventHandler(analysis, event):
             analysis.REQUEST["workflow_skiplist"].append(ar.UID())
         wf.doActionFor(ar, 'retract')
 
-    logger.info("Finished with: %s on %s" % (event.action, analysis.getService().getKeyword()))
-
 def ActionSucceededEventHandler(analysis, event):
+
+    logger.info("Starting: %s on %s" % (event.action, analysis.getService().getKeyword()))
+
+    if event.action == "attach":
+        # Need a separate skiplist for this due to double-jumps with 'submit'.
+        if not analysis.REQUEST.has_key('workflow_attach_skiplist'):
+            analysis.REQUEST['workflow_attach_skiplist'] = [analysis.UID(), ]
+            skiplist = analysis.REQUEST['workflow_attach_skiplist']
+        else:
+            skiplist = analysis.REQUEST['workflow_attach_skiplist']
+            if analysis.UID() in skiplist:
+                return
+            else:
+                analysis.REQUEST["workflow_attach_skiplist"].append(analysis.UID())
+
+        wf = getToolByName(analysis, 'portal_workflow')
+        ar = analysis.aq_parent
+
+        analysis.reindexObject(idxs = ["review_state", ])
+        # Dependencies are already at least 'to_be_verified', ignore them.
+        #----------------------------------------------------------------
+        # Check our dependents:
+        # If    it is 'attachment_due'
+        # And   it's attachments are OK
+        # And   all it's dependencies are at least 'to_be_verified'
+        # Then: 'attach' it.:
+        dependents = analysis.getDependents()
+        for dependent in dependents:
+            if not dependent.UID() in skiplist:
+                can_attach = True
+                if wf.getInfoFor(dependent, 'review_state') != 'attachment_due':
+                    can_attach = False
+                else:
+                    if not dependent.getAttachment():
+                        service = dependent.getService()
+                        if service.getAttachmentOption() == 'r':
+                            can_attach = False
+                if can_attach:
+                    dependencies = dependent.getDependencies()
+                    for dependency in dependencies:
+                        if wf.getInfoFor(dependency, 'review_state') in ('sample_due', 'sample_received', 'attachment_due',):
+                            can_attach = False
+                if can_attach:
+                    wf.doActionFor(dependent, 'attach')
+
+        # If all analyses in this AR have been attached
+        # escalate the action to the parent AR
+        if not ar.UID() in skiplist:
+            can_attach = True
+            for a in ar.getAnalyses():
+                if a.review_state in \
+                   ('sample_due', 'sample_received', 'attachment_due',):
+                    can_attach = False
+                    break
+            if can_attach:
+                wf.doActionFor(ar, 'attach')
+        return
 
     if not analysis.REQUEST.has_key('workflow_skiplist'):
         analysis.REQUEST['workflow_skiplist'] = [analysis.UID(), ]
@@ -35,8 +90,6 @@ def ActionSucceededEventHandler(analysis, event):
             return
         else:
             analysis.REQUEST["workflow_skiplist"].append(analysis.UID())
-
-    logger.info("Starting: %s on %s" % (event.action, analysis.getService().getKeyword()))
 
     wf = getToolByName(analysis, 'portal_workflow')
     ar = analysis.aq_parent
@@ -99,46 +152,6 @@ def ActionSucceededEventHandler(analysis, event):
                     break
             if all_submitted:
                 wf.doActionFor(ar, 'submit')
-
-    elif event.action == "attach":
-        analysis.reindexObject(idxs = ["review_state", ])
-        # Dependencies are already at least 'to_be_verified', ignore them.
-
-        # Check our dependents:
-        # If    it is 'attachment_due'
-        # And   it's attachments are OK
-        # And   all it's dependencies are at least 'to_be_verified'
-        # Then: 'attach' it.:
-        dependents = analysis.getDependents()
-        for dependent in dependents:
-            if not dependent.UID() in skiplist:
-                can_attach = True
-                if wf.getInfoFor(dependent, 'review_state') != 'attachment_due':
-                    can_attach = False
-                else:
-                    if not dependent.getAttachment():
-                        service = dependent.getService()
-                        if service.getAttachmentOption() == 'r':
-                            can_attach = False
-                if can_attach:
-                    dependencies = dependent.getDependencies()
-                    for dependency in dependencies:
-                        if wf.getInfoFor(dependency, 'review_state') in ('sample_due', 'sample_received', 'attachment_due',):
-                            can_attach = False
-                if can_attach:
-                    wf.doActionFor(dependent, 'attach')
-
-        # If all analyses in this AR have been attached
-        # escalate the action to the parent AR
-        if not ar.UID() in skiplist:
-            can_attach = True
-            for a in ar.getAnalyses():
-                if a.review_state in \
-                   ('sample_due', 'sample_received', 'attachment_due',):
-                    can_attach = False
-                    break
-            if can_attach:
-                wf.doActionFor(ar, 'attach')
 
     elif event.action == "retract":
         analysis.reindexObject(idxs = ["review_state", ])
@@ -259,6 +272,4 @@ def ActionSucceededEventHandler(analysis, event):
         if not ar.UID() in skiplist:
             if wf.getInfoFor(ar, 'worksheetanalysis_review_state') == 'assigned':
                 wf.doActionFor(ar, 'unassign')
-
-    logger.info("Finished with: %s on %s" % (event.action, analysis.getService().getKeyword()))
 

@@ -8,6 +8,21 @@ import transaction
 
 def ActionSucceededEventHandler(ar, event):
 
+    logger.info("Starting: %s on %s" % (event.action, ar))
+
+    if event.action == "attach":
+        # Need a separate skiplist for this due to double-jumps with 'submit'.
+        if not ar.REQUEST.has_key('workflow_attach_skiplist'):
+            ar.REQUEST['workflow_attach_skiplist'] = [ar.UID(), ]
+        else:
+            if ar.UID() in ar.REQUEST['workflow_attach_skiplist']:
+                return
+            else:
+                ar.REQUEST["workflow_attach_skiplist"].append(ar.UID())
+        ar.reindexObject(idxs = ["review_state", ])
+        # Don't cascade. Shouldn't be attaching ARs for now (if ever).
+        return
+
     if not ar.REQUEST.has_key('workflow_skiplist'):
         ar.REQUEST['workflow_skiplist'] = [ar.UID(), ]
         skiplist = ar.REQUEST['workflow_skiplist']
@@ -17,8 +32,6 @@ def ActionSucceededEventHandler(ar, event):
             return
         else:
             ar.REQUEST["workflow_skiplist"].append(ar.UID())
-
-    logger.info("Starting: %s on %s" % (event.action, ar))
 
     wf = getToolByName(ar, 'portal_workflow')
 
@@ -40,10 +53,6 @@ def ActionSucceededEventHandler(ar, event):
     elif event.action == "submit":
         ar.reindexObject(idxs = ["review_state", ])
         # Don't cascade. Shouldn't be submitting ARs for now.
-
-    elif event.action == "attach":
-        ar.reindexObject(idxs = ["review_state", ])
-        # Don't cascade. Shouldn't be attaching ARs for now (if ever).
 
     elif event.action == "retract":
         ar.reindexObject(idxs = ["review_state", ])
@@ -92,4 +101,3 @@ def ActionSucceededEventHandler(ar, event):
             if not analysis.UID in skiplist:
                 wf.doActionFor(analysis.getObject(), 'deactivate')
 
-    logger.info("Finished with: %s on %s" % (event.action, ar))
