@@ -268,7 +268,7 @@ class BikaListingView(BrowserView):
             for w in workflow.getWorkflowsFor(obj):
                 state = w._getWorkflowStateOf(obj).id
                 states[w.state_var] = state
-                state_class += "state-"+state
+                state_class += "state-%s " % state
 
             results_dict = dict(
                 obj = obj,

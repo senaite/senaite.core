@@ -82,10 +82,7 @@ $(document).ready(function(){
 						.empty()
 						.append(result.formatted_result);
 					// check the item's checkbox
-					keyword = $("input[uid='"+result.uid+"']")
-						.filter("input[field='Result']")
-						.attr('Keyword');
-					$('#cb_'+uid).attr('checked', true);
+					$('#cb_'+result.uid).attr('checked', true);
 				}
 			}
 		}

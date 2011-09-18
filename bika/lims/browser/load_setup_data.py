@@ -377,7 +377,7 @@ class LoadSetupData():
             ('Total Digestible Nutrients',
              'TDN % is used for ruminant feeds',
              ['ME'],
-             [],
+             [{'keyword':'tdnfact', 'title':'TDN Factor', 'type':'int', 'value':0, 'unit':'g'}],
              '%(ME)f * 6.67',
             ),
         )
