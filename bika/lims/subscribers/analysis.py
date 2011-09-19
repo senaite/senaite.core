@@ -130,8 +130,23 @@ def ActionSucceededEventHandler(analysis, event):
     elif event.action == "submit":
         analysis.reindexObject(idxs = ["review_state", ])
         # Dependencies are submitted already, ignore them.
-        # Dependents are submitted separately, ignore them.
         #-------------------------------------------------
+        # Submit our dependents
+        # Need to check for result and status of dependencies first
+        dependents = analysis.getDependents()
+        for dependent in dependents:
+            if not dependent.UID() in skiplist:
+                can_submit = True
+                if not dependent.getResult():
+                    can_submit = False
+                if can_submit:
+                    dependencies = dependent.getDependencies()
+                    for dependency in dependencies:
+                        if wf.getInfoFor(dependency, 'review_state') in ('sample_due', 'sample_received',):
+                            can_submit = False
+                if can_submit:
+                    wf.doActionFor(dependent, 'submit')
+
         # If all analyses in this AR have been submitted
         # escalate the action to the parent AR
         if not ar.UID() in skiplist:
