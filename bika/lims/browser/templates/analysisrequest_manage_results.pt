@@ -49,8 +49,6 @@
 		action="workflow_action"
 		tal:define="pagenumber string:1">
 
-	<input tal:replace="structure context/@@authenticator/authenticator" />
-
 	<table width="100%">
 		<tr>
 			<td>
@@ -79,7 +77,7 @@
 			<td align="right">
 				<img tal:condition="view/getHazardous"
                     title="Hazardous"
-					src="" 
+					src=""
                     tal:attributes="src string:++resource++bika.lims.images/hazardous.png">
 			</td>
 		</tr>
@@ -90,7 +88,6 @@
 	<input type="hidden" name="show_all" value="True"/>
 
 	<input type="hidden" name="submitted" value="1"/>
-	<input tal:replace="structure context/@@authenticator/authenticator" />
 
 	<tal:field_analyses>
 		<h3 tal:content="python: modules['bika.lims.config'].POINTS_OF_CAPTURE.getValue('field')"/>

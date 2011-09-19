@@ -63,26 +63,25 @@ class AJAXCalculateAnalysisEntry():
 
             # check if all interim fields in this row have values in the form
             # data add field value to the mapping, amd set self.item_data
-            if not recursing:
-                new_item_data = []
-                for i in self.item_data:
+            new_item_data = []
+            for i in self.item_data[uid]:
 
-                    # If an interim field is blank, remove the row
-                    # result from form values
-                    if self.value == '':
-                        self.form_results[uid] = ''
-                        self.results.append({'uid': uid,
-                                             'result': '',
-                                             'formatted_result': ''})
+                # If an interim field is blank, remove the row
+                # result from form values
+                if self.value == '':
+                    self.form_results[uid] = ''
+                    self.results.append({'uid': uid,
+                                         'result': '',
+                                         'formatted_result': ''})
 
-                    # Set the new value if it's changed
-                    if i['keyword'] == self.field:
-                        i['value'] = self.value
+                # Set the new value if it's changed
+                if i['keyword'] == self.field:
+                    i['value'] = self.value
 
-                    new_item_data.append(i)
-                    mapping[i['keyword']] = i['value']
+                new_item_data.append(i)
+                mapping[i['keyword']] = i['value']
 
-                self.item_data = new_item_data
+            self.item_data[uid] = new_item_data
 
             type_error = False
             for key,value in mapping.items():

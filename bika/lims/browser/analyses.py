@@ -127,8 +127,8 @@ class AnalysesView(BikaListingView):
             if hasattr(obj, 'reference_versions') and \
                service_uid in obj.reference_versions and \
                latest_service.version_id != obj.reference_versions[service_uid]:
-                items[i]['Service'] = "%s (v%s)" % \
-                     (service.Title(), obj.reference_versions[service_uid])
+                items[i]['after']['Service'] = "(v%s)" % \
+                     (obj.reference_versions[service_uid])
             else:
                 items[i]['Service'] = service.Title()
             items[i]['Keyword'] = keyword

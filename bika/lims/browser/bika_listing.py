@@ -35,20 +35,11 @@ class WorkflowAction:
         self.context = context
         self.request = request
 
-    def __call__(self):
-        form = self.request.form
-        plone.protect.CheckAuthenticator(form)
-        workflow = getToolByName(self.context, 'portal_workflow')
-        pc = getToolByName(self.context, 'portal_catalog')
-        rc = getToolByName(self.context, 'reference_catalog')
-
-        originating_url = self.request.get_header("referer",
-                                                  self.context.absolute_url())
-
-        skiplist = self.request.get('workflow_skiplist', [])
-
+    def _get_form_workflow_action(self):
+        """ Retrieve the workflow action from the submitted form """
         # "workflow_action" is the edit border transition
         # "workflow_action_button" is the bika_listing table buttons
+        form = self.request.form
         came_from = "workflow_action"
         action = form.get(came_from, '')
         if not action:
@@ -57,8 +48,37 @@ class WorkflowAction:
             # XXX some browsers agree better than others about our JS ideas.
             if type(action) == type([]): action = action[0]
             if not action:
-                logger.warn("No workflow action provided.")
-                return
+                raise WorkflowException(_("No workflow action provided."))
+        return (action, came_from)
+
+    def _get_selected_items(self, full_objects=True):
+        """ return a list of selected form objects
+            full_objects defaults to True
+        """
+        form = self.request.form
+        pc = getToolByName(self.context, 'portal_catalog')
+        selected_items = {}
+        if 'paths' in form:
+            for path in form['paths']:
+                item_id = path.split("/")[-1]
+                item_path = path.replace("/" + item_id, '')
+                item = pc(id = item_id,
+                          path = {'query':item_path,
+                                  'depth':1})[0].getObject()
+                uid = item.UID()
+                selected_items[uid] = item
+            return selected_items
+
+    def __call__(self):
+        form = self.request.form
+        plone.protect.CheckAuthenticator(form)
+        workflow = getToolByName(self.context, 'portal_workflow')
+        pc = getToolByName(self.context, 'portal_catalog')
+        rc = getToolByName(self.context, 'reference_catalog')
+        originating_url = self.request.get_header("referer",
+                                                  self.context.absolute_url())
+        skiplist = self.request.get('workflow_skiplist', [])
+        action,came_from = self._get_form_workflow_action()
 
         # transition the context object.
         if came_from == "workflow_action":

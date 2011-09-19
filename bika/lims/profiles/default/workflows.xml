@@ -43,7 +43,6 @@
   <type type_id="Analysis">
    <bound-workflow workflow_id="bika_analysis_workflow"/>
    <bound-workflow workflow_id="bika_worksheetanalysis_workflow"/>
-   <bound-workflow workflow_id="bika_inactive_workflow"/>
   </type>
   <type type_id="AnalysisCategories"/>
   <type type_id="AnalysisCategory">
@@ -52,7 +51,6 @@
   <type type_id="AnalysisRequest">
    <bound-workflow workflow_id="bika_analysis_workflow"/>
    <bound-workflow workflow_id="bika_worksheetanalysis_workflow"/>
-   <bound-workflow workflow_id="bika_inactive_workflow"/>
   </type>
   <type type_id="AnalysisService">
    <bound-workflow workflow_id="bika_inactive_workflow"/>

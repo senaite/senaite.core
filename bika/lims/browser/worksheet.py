@@ -26,96 +26,90 @@ class WorksheetWorkflowAction(WorkflowAction):
         workflow = getToolByName(self.context, 'portal_workflow')
         pc = getToolByName(self.context, 'portal_catalog')
         rc = getToolByName(self.context, 'reference_catalog')
-
         originating_url = self.request.get_header("referer",
                                                   self.context.absolute_url())
-
         skiplist = self.request.get('workflow_skiplist', [])
+        action,came_from = WorkflowAction._get_form_workflow_action(self)
 
-        # "workflow_action" is the action name specified in the edit border transition.
-        came_from = "workflow_action"
-        action = form.get(came_from, '')
-        if not action:
-            # workflow_action_button is the action name in the bika_listing table buttons.
-            came_from = "workflow_action_button"
-            action = form.get(came_from, '')
-            # XXX some browsers agree better than others about our JS ideas.
-            if type(action) == type([]): action = action[0]
-            if not action:
-                logger.warn("No workflow action provided.")
-                return
-
-        # only "activate" workflow_action is allowed on Worksheets which are
-        # inactive. any action on inactive Worksheet's children is also ignored.
-        inactive_state = workflow.getInfoFor(self.context,
-                                             'inactive_review_state', '')
-        if inactive_state == 'inactive' and action != 'activate':
-            message = self.context.translate(
-                'message_item_is_inactive',
-                default='${item} is inactive.',
-                mapping={'item': self.context.Title()},
-                domain="bika")
-            self.context.plone_utils.addPortalMessage(message, 'error')
-            return
-
-        # assign selected analyses to this worksheet
+## assign
         if action == 'assign':
-            analyses = []
-            if 'paths' in form:
-                for path in form['paths']:
-                    # get analyses from catalog
-                    item_id = path.split("/")[-1]
-                    item_path = path.replace("/"+item_id, '')
-                    analysis = pc(id=item_id,
-                                  path={'query':item_path,
-                                        'depth':1})[0].getObject()
-                    analyses.append(analysis)
-                # add items to Worksheet Analyses
-                self.context.setAnalyses(self.context.getAnalyses() + analyses)
-                # transition
+            analyses = WorkflowAction._get_selected_items(self)
+            if analyses:
+                self.context.setAnalyses(self.context.getAnalyses() + analyses.values())
+                layout = self.context.getLayout() # XXX layout
                 for analysis in analyses:
                     if analysis.UID() not in skiplist:
                         workflow.doActionFor(analysis, 'assign')
 
             if len(analyses) > 1:
                 message = _('message_items_assigned',
-                            default = "${items} analyses were assigned.",
-                            mapping = {'items': len(analyses)})
+                            default = "${count} analyses were assigned to this worksheet.",
+                            mapping = {'count': len(analyses)})
             elif len(analyses) == 1:
-                message = _('message_item_assigned',
-                            default = "${item} was assigned.",
-                            mapping = {'item': analyses[0]})
+                message = _("1 analysis was assigned to this worksheet.")
             else:
                 message = _("No action taken.")
                 self.context.plone_utils.addPortalMessage(message, 'info')
                 return self.request.RESPONSE.redirect(originating_url)
-
             self.context.plone_utils.addPortalMessage(message, 'info')
             return self.request.RESPONSE.redirect(
                 self.context.absolute_url() + "/manage_results")
 
-        # Remove the selected analyses from the worksheet
+## unassign
         elif action == 'unassign':
-            analyses = []
-            if 'paths' in form:
-                for path in form['paths']:
-                    # get analyses from catalog
-                    item_id = path.split("/")[-1]
-                    item_path = path.replace("/"+item_id, '')
-                    analysis = pc(id=item_id,
-                                  path={'query':item_path,
-                                        'depth':1})[0].getObject()
-                    analyses.append(analysis)
-                    ar = analysis.aq_parent
-                # remove items from Worksheet Analyses
+            analyses = WorkflowAction._get_selected_items(self)
+            if analyses:
                 self.context.setAnalyses([a for a in self.context.getAnalyses()
                                           if a not in analyses])
-                # add analysis containers to Worksheet Layout
-                layout = self.context.getLayout()
-                # transition
+                layout = self.context.getLayout() # XXX layout
                 for analysis in analyses:
                     if analysis.UID() not in skiplist:
                         workflow.doActionFor(analysis, 'unassign')
+## submit
+        elif action == 'submit' and self.request.form.has_key("Result"):
+            selected_analyses = WorkflowAction._get_selected_items(self)
+            selected_analysis_uids = selected_analyses.keys()
+
+            # first save results for entire form
+            for analysis_uid, result in self.request.form['Result'][0].items():
+                analysis = selected_analyses[analysis_uid]
+                service = analysis.getService()
+                interims = form["InterimFields"][0][analysis_uid]
+                analysis.edit(
+                    Result = result,
+                    InterimFields = json.loads(interims),
+                    Retested = form.has_key('retested') and \
+                               form['retested'].has_key(analysis_uid),
+                    Unit = service.getUnit())
+
+            # discover which items may be submitted
+            submissable = []
+            for analysis_uid, result in self.request.form['Result'][0].items():
+                analysis = selected_analyses[analysis_uid]
+                service = analysis.getService()
+                # but only if they are selected
+                if analysis_uid not in selected_analysis_uids:
+                    continue
+                # and if all their dependencies are at least 'to_be_verified'
+                can_submit = True
+                for dependency in analysis.getDependencies():
+                    if workflow.getInfoFor(dependency, 'review_state') in \
+                       ('sample_due', 'sample_received'):
+                        can_submit = False
+                if can_submit and result:
+                    submissable.append(analysis)
+
+            # and then submit them.
+            for analysis in submissable:
+                if not analysis.UID() in skiplist:
+                    workflow.doActionFor(analysis, 'submit')
+
+            if self.context.getReportDryMatter():
+                self.context.setDryMatterResults()
+            message = _("Changes saved.")
+            self.context.plone_utils.addPortalMessage(message, 'info')
+            self.request.response.redirect(originating_url)
+
         else:
             # default bika_listing.py/WorkflowAction for other transitions
             WorkflowAction.__call__(self)

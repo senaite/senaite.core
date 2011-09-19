@@ -34,34 +34,12 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
         workflow = getToolByName(self.context, 'portal_workflow')
         pc = getToolByName(self.context, 'portal_catalog')
         rc = getToolByName(self.context, 'reference_catalog')
-
         originating_url = self.request.get_header("referer",
                                                   self.context.absolute_url())
-
         skiplist = self.request.get('workflow_skiplist', [])
+        action,came_from = WorkflowAction._get_form_workflow_action(self)
 
-        # "workflow_action" is the edit border transition
-        # "workflow_action_button" is the bika_listing table buttons
-        came_from = "workflow_action"
-        action = form.get(came_from, '')
-
-        if not action:
-            came_from = "workflow_action_button"
-            action = form.get(came_from, '')
-            # XXX some browsers agree better than others about our JS ideas.
-            if type(action) == type([]): action = action[0]
-            if not action:
-                logger.warn("No workflow action provided.")
-                return
-
-        # only "activate" workflow action is allowed on ARs which are inactive.
-        if action and \
-           not isActive(self.context) and \
-           action != 'activate':
-            message = _("This item is inactive")
-            self.context.plone_utils.addPortalMessage(message, 'info')
-            return
-
+## publish
         if action in ('prepublish', 'publish', 'prepublish'):
             # XXX publish entire AR.
             transitioned = Publish(self.context,
@@ -78,24 +56,13 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
             self.context.plone_utils.addPortalMessage(message, 'info')
             self.request.response.redirect(originating_url)
 
+## submit
         if action == 'submit' and self.request.form.has_key("Result"):
-            # draw up list of analysis objects that were selected
-            selected_analysis_uids = []
-            selected_analyses = {}
-            if 'paths' in form:
-                for path in form['paths']:
-                    item_id = path.split("/")[-1]
-                    item_path = path.replace("/" + item_id, '')
-                    item = pc(id = item_id,
-                              path = {'query':item_path,
-                                      'depth':1})[0].getObject()
-                    uid = item.UID()
-                    selected_analysis_uids.append(uid)
-                    selected_analyses[uid] = item
-            # first save selected results
+            selected_analyses = WorkflowAction._get_selected_items(self)
+            selected_analysis_uids = selected_analyses.keys()
+
+            # first save results for entire form
             for analysis_uid, result in self.request.form['Result'][0].items():
-                if analysis_uid not in selected_analysis_uids:
-                    continue
                 analysis = selected_analyses[analysis_uid]
                 service = analysis.getService()
                 interims = form["InterimFields"][0][analysis_uid]
@@ -105,17 +72,29 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
                     Retested = form.has_key('retested') and \
                                form['retested'].has_key(analysis_uid),
                     Unit = service.getUnit())
-            # then submit selected items
+
+            # discover which items may be submitted
+            submissable = []
             for analysis_uid, result in self.request.form['Result'][0].items():
+                analysis = selected_analyses[analysis_uid]
+                service = analysis.getService()
                 # but only if they are selected
                 if analysis_uid not in selected_analysis_uids:
                     continue
-                analysis = selected_analyses[analysis_uid]
-                service = analysis.getService()
-                interims = form["InterimFields"][0][analysis_uid]
-                if result:
-                    if analysis.UID() not in skiplist:
-                        workflow.doActionFor(analysis, 'submit')
+                # and if all their dependencies are at least 'to_be_verified'
+                can_submit = True
+                for dependency in analysis.getDependencies():
+                    if workflow.getInfoFor(dependency, 'review_state') in \
+                       ('sample_due', 'sample_received'):
+                        can_submit = False
+                if can_submit and result:
+                    submissable.append(analysis)
+
+            # and then submit them.
+            for analysis in submissable:
+                if not analysis.UID() in skiplist:
+                    workflow.doActionFor(analysis, 'submit')
+
             if self.context.getReportDryMatter():
                 self.context.setDryMatterResults()
             message = _("Changes saved.")

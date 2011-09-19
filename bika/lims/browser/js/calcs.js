@@ -14,6 +14,13 @@ $(document).ready(function(){
 		$.each($("input[field='Result']"), function(i, e){
 			results[$(e).attr("uid")] = $(e).val();
 		});
+		// collect all interims by UID for back-dependant calculations
+		var interims = {};
+		$.each($("input[id$='_item_data']"), function(i, e){
+			interims[e.id.split("_")[0]] = $.parseJSON($(e).val());
+		});
+		interims = $.toJSON(interims);
+
 		options = {
 			type: 'POST',
 			url: 'listing_string_entry',
@@ -25,7 +32,7 @@ $(document).ready(function(){
 				'results': $.toJSON(results),
 				'specification': $("input[name='specification']")
 					.filter(":checked").val(),
-				'item_data': $('#'+uid+"_item_data").val(),
+				'item_data': interims,
 				'_authenticator': $('input[name="_authenticator"]').val()
 			},
 			dataType: "json",
@@ -33,7 +40,7 @@ $(document).ready(function(){
 				// Update TR's interim_fields value to reflect
 				// new input field results
 				if('item_data' in data){
-					$('#'+uid+"_item_data").val($.toJSON(data.item_data));
+					$('#'+uid+"_item_data").val($.toJSON(data.item_data[uid]));
 				}
 				// clear out all row alerts for rows with fresh results
 				for(i=0;i<$(data['results']).length;i++){
