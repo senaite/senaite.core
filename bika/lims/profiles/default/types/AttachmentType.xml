@@ -4,8 +4,8 @@
    xmlns:i18n="http://xml.zope.org/namespaces/i18n">
  <property name="title">Attachment Type</property>
  <property name="description">
- 	List and describe the File attachments types the system will list as options for file 
-	attachments to Analysis results, e.g. Photograph, Spectrograph, Raw data file, etc.
+ 	List and describe the file attachments types the system will list as options for 
+	attachments to analysis results, e.g. Photograph, Spectrograph, Raw data file, etc.
  </property>
  <property name="content_icon">++resource++bika.lims.images/attachment.png</property>
  <property name="content_meta_type">AttachmentType</property>
