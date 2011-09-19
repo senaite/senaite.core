@@ -56,7 +56,7 @@ schema = BikaFolderSchema.copy() + Schema((
         default = '33.33',
         widget = DecimalWidget(
             label = _("Member discount %"),
-            description = _("The discount percentage entered here, is applied to the prices for Clients "
+            description = _("The discount percentage entered here, is applied to the prices for clients "
                             "flagged as 'members', normally co-operative members or associates deserving "
                             "of this discount"),
         )
@@ -76,9 +76,9 @@ schema = BikaFolderSchema.copy() + Schema((
         default = 5,
         widget = IntegerWidget(
             label = _("Minimum number of results for QC stats calculations"),
-            description = _("Using to few data points does not make statistical sense. "
-                            "Set an acceaptable minimum number of results before QC statistics "
-                            "calculated an plotted"),
+            description = _("Using too few data points does not make statistical sense. "
+                            "Set an acceptable minimum number of results before QC statistics "
+                            "will be calculated and plotted"),
         )
     ),
     IntegerField('BatchEmail',
@@ -88,7 +88,7 @@ schema = BikaFolderSchema.copy() + Schema((
         widget = IntegerWidget(
             label = _("Maximum columns per results email"),
             description = _("Set the maximum number of analysis requests per results email. "
-                            "Too many columns per email are difficult to read for many clients "
+                            "Too many columns per email are difficult to read for some clients "
                             "who prefer fewer results per email"),
         )
     ),
@@ -98,7 +98,7 @@ schema = BikaFolderSchema.copy() + Schema((
         default = 4,
         widget = IntegerWidget(
             label = _("Maximum columns per results fax"),
-            description = _("Too AR columns per fax will see the font size minimised and could "
+            description = _("Too many AR columns per fax will see the font size minimised and could "
                             "render faxes illegible. 4 ARs maximum per page is recommended"),
         )
     ),
@@ -108,7 +108,7 @@ schema = BikaFolderSchema.copy() + Schema((
         required = 0,
         widget = StringWidget(
             label = _("SMS Gateway Email Address"),
-            description = _("The email to SMS Gateway address. Either a complete email address, "
+            description = _("The email to SMS gateway address. Either a complete email address, "
                              "or just the domain, e.g. '@2way.co.za', the contact's mobile phone "
                              "number will be prepended to"),
         )
@@ -142,9 +142,9 @@ schema = BikaFolderSchema.copy() + Schema((
         vocabulary = ARIMPORT_OPTIONS,
         widget = MultiSelectionWidget(
             label = _("AR Import options"),
-            description = _("'Classic' indicates importing Analysis Requests per Sample and "
-                            "Analysis Services selection. With 'Profiles', Analysis Profile keywords "
-                            "are used to select multiple Analysis Services together"),
+            description = _("'Classic' indicates importing analysis requests per sample and "
+                            "analysis service selection. With 'Profiles', analysis profile keywords "
+                            "are used to select multiple analysis services together"),
         )
     ),
     StringField('ARAttachmentOption',
@@ -153,9 +153,9 @@ schema = BikaFolderSchema.copy() + Schema((
         vocabulary = ATTACHMENT_OPTIONS,
         widget = SelectionWidget(
             label = _("AR Attachment option"),
-            description = _("The default configuration for used system wide to indicate "
+            description = _("The system wide default configuration to indicate "
                             "whether file attachments are required, permitted or not "
-                            "per Analysis Request"),
+                            "per analysis request"),
         )
     ),
     StringField('AnalysisAttachmentOption',
@@ -164,8 +164,8 @@ schema = BikaFolderSchema.copy() + Schema((
         vocabulary = ATTACHMENT_OPTIONS,
         widget = SelectionWidget(
             label = _("Analysis Attachment option"),
-            description = _("Same as the above, but sets the default on Anlaysis Services. "
-                            "This setting can be set per individual Analysis on its "
+            description = _("Same as the above, but sets the default on analysis services. "
+                            "This setting can be set per individual analysis on its "
                             "own configuration"),
         )
     ),
@@ -175,9 +175,9 @@ schema = BikaFolderSchema.copy() + Schema((
         default = 30,
         widget = IntegerWidget(
             label = _("Default sample retention period"),
-            description = _("The number of days before a Sample expires and cannot be analysed "
-                            "any more. This setting can be overwritten per individual Sample Type "
-                            "in the Sample Types setup"),
+            description = _("The number of days before a sample expires and cannot be analysed "
+                            "any more. This setting can be overwritten per individual sample type "
+                            "in the sample types setup"),
         )
     ),
     PrefixesField('Prefixes',
@@ -185,10 +185,10 @@ schema = BikaFolderSchema.copy() + Schema((
          fixedSize=8,
          widget=RecordsWidget(
             label = _("Prefixes"),
-            description = _("Define the prefixes for the unique sequential IDs the system issus "
-                            "for objects such as Samples and Analysis Requests. In the 'Padding' "
+            description = _("Define the prefixes for the unique sequential IDs the system issues "
+                            "for objects such as samples and analysis requests. In the 'Padding' "
                             "field, indicate with how many leading zeros the numbers must be padded. "
-                            "E.g. a prefix of AR with padding of 4 for Analysis requests, will see "
+                            "E.g. a prefix of AR with padding of 4 for analysis requests, will see "
                             "them numbered from AR0001 to AR9999"),
             allowDelete=False,
         )
