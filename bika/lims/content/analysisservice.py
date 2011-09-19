@@ -19,25 +19,6 @@ import sys
 from bika.lims import bikaMessageFactory as _
 
 schema = BikaSchema.copy() + Schema((
-    BooleanField('ReportDryMatter',
-        schemata = _("Analysis"),
-        default = False,
-        widget = BooleanWidget(
-            label = _("Report as dry matter"),
-            description = _("Select if result can be reported as dry matter"),
-        ),
-    ),
-    StringField('AttachmentOption',
-        schemata = _("Analysis"),
-        default = 'p',
-        vocabulary = ATTACHMENT_OPTIONS,
-        widget = SelectionWidget(
-            label = _("Attachment option"),
-            description = _("Indicates whether file attachments, e.g. microscope images, "
-                            "are required for this Analysis and whether file upload function "
-                            "will be available for it on data capturing screens"),
-        ),
-    ),
     StringField('Unit',
         schemata = _("Analysis"),
         widget = StringWidget(
@@ -51,7 +32,27 @@ schema = BikaSchema.copy() + Schema((
             label = _("Precision as number of decimals"),
             description = _("Define the number of decimals to be used for this result"),
         ),
+    ),       
+    BooleanField('ReportDryMatter',
+        schemata = _("Analysis"),
+        default = False,
+        widget = BooleanWidget(
+            label = _("Report as dry matter"),
+            description = _("Select if result can be reported as dry matter"),
+        ),
+    ),    
+    StringField('AttachmentOption',
+        schemata = _("Analysis"),
+        default = 'p',
+        vocabulary = ATTACHMENT_OPTIONS,
+        widget = SelectionWidget(
+            label = _("Attachment option"),
+            description = _("Indicates whether file attachments, e.g. microscope images, "
+                            "are required for this Analysis and whether file upload function "
+                            "will be available for it on data capturing screens"),
+        ),
     ),
+    
     FixedPointField('Price',
         schemata = _("Price"),
         default = '0.00',
@@ -104,19 +105,6 @@ schema = BikaSchema.copy() + Schema((
                             "defined results calculations"),
         ),
     ),
-    ReferenceField('Instrument',
-        schemata = _("Method"),
-        required = 0,
-        vocabulary_display_path_bound = sys.maxint,
-        allowed_types = ('Instrument',),
-        relationship = 'AnalysisServiceInstrument',
-        referenceClass = HoldingReference,
-        widget = ReferenceWidget(
-            checkbox_bound = 1,
-            label = _("Instrument"),
-            description = _("Select the preferred instrument for this Analysis"),
-        ),
-    ),
     ReferenceField('Method',
         schemata = _("Method"),
         required = 0,
@@ -128,6 +116,19 @@ schema = BikaSchema.copy() + Schema((
             checkbox_bound = 1,
             label = _("Method"),
             description = _("Select analysis method"),
+        ),
+    ),
+        ReferenceField('Instrument',
+        schemata = _("Method"),
+        required = 0,
+        vocabulary_display_path_bound = sys.maxint,
+        allowed_types = ('Instrument',),
+        relationship = 'AnalysisServiceInstrument',
+        referenceClass = HoldingReference,
+        widget = ReferenceWidget(
+            checkbox_bound = 1,
+            label = _("Instrument"),
+            description = _("Select the preferred instrument for this Analysis"),
         ),
     ),
     HistoryAwareReferenceField('Calculation',
