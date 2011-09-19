@@ -323,6 +323,7 @@
   <action url="workflow_action?workflow_action=verify" category="workflow" icon="">Verify</action>
   <guard>
    <guard-permission>BIKA: Verify Results</guard-permission>
+   <guard-expression>python:here.guard_verify_analysis()</guard-expression>
   </guard>
  </transition>
  <worklist worklist_id="reviewer_queue" title="">
