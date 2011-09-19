@@ -360,7 +360,7 @@ h1, h2, h3, h4, h5, h6 {
                   tal:attributes="class result_class">
                   <span tal:content="result">10.00</span>
                   <span tal:content="string:${analysis/Unit}"
-                    tal:condition="python:analysis.Unit|nothing"/>
+                    tal:condition="analysis/Unit|nothing"/>
                   <img tal:condition="python:not in_range"
                     tal:attributes="src string:${portal/absolute_url}/++resource++bika.lims.images/exclamation.png">
                   <span tal:content="string:[+/- $uncertainty]"

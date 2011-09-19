@@ -11,6 +11,7 @@ from bika.lims.config import POINTS_OF_CAPTURE
 from email.mime.text import MIMEText
 from os.path import join
 import App
+from smtplib import SMTPRecipientsRefused
 import Globals
 import re
 
