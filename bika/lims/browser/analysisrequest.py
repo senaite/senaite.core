@@ -63,7 +63,10 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
 
             # first save results for entire form
             for analysis_uid, result in self.request.form['Result'][0].items():
-                analysis = selected_analyses[analysis_uid]
+                if analysis_uid in selected_analyses:
+                    analysis = selected_analyses[analysis_uid]
+                else:
+                    analysis = rc.lookupObject(analysis_uid)
                 service = analysis.getService()
                 interims = form["InterimFields"][0][analysis_uid]
                 analysis.edit(
@@ -76,7 +79,10 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
             # discover which items may be submitted
             submissable = []
             for analysis_uid, result in self.request.form['Result'][0].items():
-                analysis = selected_analyses[analysis_uid]
+                if analysis_uid in selected_analyses:
+                    analysis = selected_analyses[analysis_uid]
+                else:
+                    analysis = rc.lookupObject(analysis_uid)
                 service = analysis.getService()
                 # but only if they are selected
                 if analysis_uid not in selected_analysis_uids:
@@ -104,7 +110,6 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
         else:
             # default bika_listing.py/WorkflowAction for other transitions
             WorkflowAction.__call__(self)
-
 
 class AnalysisRequestViewView(BrowserView):
     """ AR View form

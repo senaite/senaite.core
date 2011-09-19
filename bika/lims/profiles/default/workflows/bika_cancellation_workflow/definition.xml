@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<dc-workflow workflow_id="bika_cancellation_workflow"
+             title="Bika Cancelled items"
+             description="This workflow allows users to 'Cancel' ARs, analyses, and worksheets"
+             state_variable="cancellation_review_state"
+             initial_state="active"
+             manager_bypass="False">
+
+ <state state_id="active" title="Active">
+  <description>Item is active and visible</description>
+  <exit-transition transition_id="cancel"/>
+ </state>
+
+ <state state_id="cancelled" title="Cancelled">
+  <description>Item has been cancelled</description>
+  <exit-transition transition_id="reinstate"/>
+ </state>
+
+ <transition transition_id="reinstate"
+             title="Reinstate"
+             new_state="active"
+             trigger="USER"
+             before_script=""
+             after_script="">
+  <guard>
+  </guard>
+ </transition>
+
+ <transition transition_id="cancel"
+             title="Cancel"
+             new_state="cancelled"
+             trigger="USER"
+             before_script=""
+             after_script="">
+  <guard>
+  </guard>
+ </transition>
+</dc-workflow>

@@ -100,6 +100,7 @@
  <index name="review_state" meta_type="FieldIndex"> <indexed_attr value="review_state"/> </index>
  <index name="inactive_review_state" meta_type="FieldIndex"> <indexed_attr value="inactive_review_state"/> </index>
  <index name="worksheetanalysis_review_state" meta_type="FieldIndex"> <indexed_attr value="worksheetanalysis_review_state"/> </index>
+ <index name="cancellation_review_state" meta_type="FieldIndex"> <indexed_attr value="cancellation_review_state"/> </index>
 
  <column value="CreationDate"/>
  <column value="Creator"/>
@@ -135,5 +136,8 @@
  <column value="modified"/>
  <column value="portal_type"/>
  <column value="review_state"/>
+ <column value="inactive_review_state"/>
+ <column value="worksheetanalysis_review_state"/>
+ <column value="cancellation_review_state"/>
  <column value="start"/>
 </object>

@@ -5,6 +5,7 @@
  <object name="bika_analysis_workflow" meta_type="Workflow"/>
  <object name="bika_arimport_workflow" meta_type="Workflow"/>
  <object name="bika_inactive_workflow" meta_type="Workflow"/>
+ <object name="bika_cancellation_workflow" meta_type="Workflow"/>
  <object name="bika_order_workflow" meta_type="Workflow"/>
  <object name="bika_referenceanalysis_workflow" meta_type="Workflow"/>
  <object name="bika_referencesample_workflow" meta_type="Workflow"/>
@@ -43,6 +44,7 @@
   <type type_id="Analysis">
    <bound-workflow workflow_id="bika_analysis_workflow"/>
    <bound-workflow workflow_id="bika_worksheetanalysis_workflow"/>
+   <bound-workflow workflow_id="bika_cancellation_workflow"/>
   </type>
   <type type_id="AnalysisCategories"/>
   <type type_id="AnalysisCategory">
@@ -51,6 +53,7 @@
   <type type_id="AnalysisRequest">
    <bound-workflow workflow_id="bika_analysis_workflow"/>
    <bound-workflow workflow_id="bika_worksheetanalysis_workflow"/>
+   <bound-workflow workflow_id="bika_cancellation_workflow"/>
   </type>
   <type type_id="AnalysisService">
    <bound-workflow workflow_id="bika_inactive_workflow"/>
@@ -150,6 +153,7 @@
   </type>
   <type type_id="Worksheet">
    <bound-workflow workflow_id="bika_worksheet_workflow"/>
+   <bound-workflow workflow_id="bika_cancellation_workflow"/>
   </type>
   <type type_id="WorksheetFolder"/>
   <type type_id="WorksheetTemplate">

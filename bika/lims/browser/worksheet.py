@@ -34,18 +34,20 @@ class WorksheetWorkflowAction(WorkflowAction):
 ## assign
         if action == 'assign':
             analyses = WorkflowAction._get_selected_items(self)
+            assigned = []
             if analyses:
                 self.context.setAnalyses(self.context.getAnalyses() + analyses.values())
                 layout = self.context.getLayout() # XXX layout
-                for analysis in analyses:
-                    if analysis.UID() not in skiplist:
+                for uid,analysis in analyses.items():
+                    if uid not in skiplist:
                         workflow.doActionFor(analysis, 'assign')
+                        assigned.append(analysis)
 
-            if len(analyses) > 1:
+            if len(assigned) > 1:
                 message = _('message_items_assigned',
                             default = "${count} analyses were assigned to this worksheet.",
-                            mapping = {'count': len(analyses)})
-            elif len(analyses) == 1:
+                            mapping = {'count': len(assigned)})
+            elif len(assigned) == 1:
                 message = _("1 analysis was assigned to this worksheet.")
             else:
                 message = _("No action taken.")
@@ -60,10 +62,10 @@ class WorksheetWorkflowAction(WorkflowAction):
             analyses = WorkflowAction._get_selected_items(self)
             if analyses:
                 self.context.setAnalyses([a for a in self.context.getAnalyses()
-                                          if a not in analyses])
+                                          if a not in analyses.values()])
                 layout = self.context.getLayout() # XXX layout
-                for analysis in analyses:
-                    if analysis.UID() not in skiplist:
+                for uid,analysis in analyses.items():
+                    if uid not in skiplist:
                         workflow.doActionFor(analysis, 'unassign')
 ## submit
         elif action == 'submit' and self.request.form.has_key("Result"):

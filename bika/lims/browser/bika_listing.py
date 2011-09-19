@@ -97,22 +97,17 @@ class WorkflowAction:
 
         # transition selected items from the bika_listing/Table.
         transitioned = []
-        if 'paths' in form:
-            for path in form['paths']:
-                item_id = path.split("/")[-1]
-                item_path = path.replace("/" + item_id, '')
-                item = pc(id = item_id,
-                          path = {'query':item_path,
-                                  'depth':1})[0].getObject()
-                # the only action allowed on inactive items is "activate"
-                if not isActive(item) and action != 'activate':
-                    continue
-                if item.UID() not in skiplist:
-                    try:
-                        workflow.doActionFor(item, action)
-                        transitioned.append(item.Title())
-                    except WorkflowException:
-                        pass
+        selected_items = self._get_selected_items()
+        for uid,item in selected_items.items():
+            # the only action allowed on inactive items is "activate"
+            if not isActive(item) and action != 'activate':
+                continue
+            if uid not in skiplist:
+                try:
+                    workflow.doActionFor(item, action)
+                    transitioned.append(item.Title())
+                except WorkflowException:
+                    pass
 
         if len(transitioned) > 0:
             message = _('Changes saved.')

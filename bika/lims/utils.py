@@ -30,16 +30,18 @@ def printfile(portal, from_addr, to_addrs, msg):
     pass
 
 def isActive(obj):
-    """ checks the object against it's inactive_review_state.
+    """ Returns False if the item has been deactivated or cancelled.
     """
-    workflow = getToolByName(obj, 'portal_workflow')
-    state = (hasattr(obj, 'inactive_review_state') \
-                 and obj.inactive_review_state) \
-          or ('bika_inactive_workflow' in workflow.getChainFor(obj) \
-               and workflow.getInfoFor(obj, 'inactive_review_state'))
-
-    return state == 'active'
-
+    wf = getToolByName(obj, 'portal_workflow')
+    if (hasattr(obj, 'inactive_review_state') and \
+        obj.inactive_review_state == 'inactive') or \
+       wf.getInfoFor(obj, 'inactive_review_state', 'active') == 'inactive':
+        return False
+    if (hasattr(obj, 'cancellation_review_state') and \
+        obj.inactive_review_state == 'cancelled') or \
+       wf.getInfoFor(obj, 'cancellation_review_state', 'active') == 'cancelled':
+        return False
+    return True
 
 # encode_header function copied from roundup's rfc2822 package.
 hqre = re.compile(r'^[A-z0-9!"#$%%&\'()*+,-./:;<=>?@\[\]^_`{|}~ ]+$')
