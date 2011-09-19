@@ -11,20 +11,19 @@ def ObjectInitializedEventHandler(analysis, event):
 
     logger.info("ObjectInitialized: %s" % analysis.getService().getKeyword())
 
-    # creating a new analysis retracts parent AR to 'received'
+    # 'receive' analysis if AR is received.
+    # Adding a new analysis to an AR retracts the AR to 'received'
     ar = analysis.aq_parent
     wf = getToolByName(analysis, 'portal_workflow')
     ar_state = wf.getInfoFor(ar, 'review_state')
+    if ar_state != 'sample_due':
+        wf.doActionFor(analysis, 'receive')
     if ar_state not in ('sample_due', 'sample_received'):
         if not analysis.REQUEST.has_key('workflow_skiplist'):
             analysis.REQUEST['workflow_skiplist'] = [ar.UID(), ]
         else:
             analysis.REQUEST["workflow_skiplist"].append(ar.UID())
         wf.doActionFor(ar, 'retract')
-
-    if ar_state != 'sample_due':
-        wf.doActionFor(analysis, 'receive')
-
     return
 
 def ActionSucceededEventHandler(analysis, event):
