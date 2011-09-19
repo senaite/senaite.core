@@ -73,24 +73,24 @@ class WorksheetWorkflowAction(WorkflowAction):
             selected_analysis_uids = selected_analyses.keys()
 
             # first save results for entire form
-            for analysis_uid, result in self.request.form['Result'][0].items():
-                analysis = selected_analyses[analysis_uid]
+            for uid, result in self.request.form['Result'][0].items():
+                analysis = selected_analyses[uid]
                 service = analysis.getService()
-                interims = form["InterimFields"][0][analysis_uid]
+                interims = form["InterimFields"][0][uid]
                 analysis.edit(
                     Result = result,
                     InterimFields = json.loads(interims),
                     Retested = form.has_key('retested') and \
-                               form['retested'].has_key(analysis_uid),
+                               form['retested'].has_key(uid),
                     Unit = service.getUnit())
 
             # discover which items may be submitted
             submissable = []
-            for analysis_uid, result in self.request.form['Result'][0].items():
-                analysis = selected_analyses[analysis_uid]
+            for uid, analysis in selected_analyses.items():
+                analysis = selected_analyses[uid]
                 service = analysis.getService()
                 # but only if they are selected
-                if analysis_uid not in selected_analysis_uids:
+                if uid not in selected_analysis_uids:
                     continue
                 # and if all their dependencies are at least 'to_be_verified'
                 can_submit = True

@@ -83,7 +83,8 @@ class ClientAnalysisRequestsView(BikaListingView):
 
     def __init__(self, context, request):
         super(ClientAnalysisRequestsView, self).__init__(context, request)
-        self.contentFilter = {'portal_type':'AnalysisRequest'}
+        self.contentFilter = {'portal_type':'AnalysisRequest',
+                              'cancellation_review_state': 'active'}
         self.review_state = 'all'
         self.content_add_actions = {_('Analysis Request'):
                                     "analysisrequest_add"}
@@ -188,6 +189,19 @@ class ClientAnalysisRequestsView(BikaListingView):
                         'SampleTypeTitle',
                         'SamplePointTitle',
                         'DateReceived',
+                        'state_title']},
+            {'id':'cancelled',
+             'title': _('Cancelled'),
+             'contentFilter': {'cancellation_review_state': 'cancelled'},
+             'transitions': ['reinstate'],
+             'columns':['getRequestID',
+                        'ClientOrderNumber',
+                        'ClientReference',
+                        'ClientSampleID',
+                        'SampleTypeTitle',
+                        'SamplePointTitle',
+                        'DateReceived',
+                        'DatePublished',
                         'state_title']},
             ]
 
