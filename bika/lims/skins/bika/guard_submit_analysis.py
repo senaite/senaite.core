@@ -13,8 +13,6 @@ wf_tool = context.portal_workflow
 analyses = ['Analysis', 'DuplicateAnalysis', 'ReferenceAnalysis', ]
 
 if context.portal_type in analyses:
-    if not context.getResult():
-        return False
     dependencies = context.getDependencies()
     if dependencies:
         interim_fields = False
