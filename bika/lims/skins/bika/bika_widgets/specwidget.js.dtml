@@ -36,7 +36,7 @@ function expand_analysisservices(categoryUID, fieldName){
 		}
 		$('#min_hdr_'+categoryUID).html('Min');
 		$('#max_hdr_'+categoryUID).html('Max');
-		$('#error_hdr_'+categoryUID).html('Error Permitted');
+		$('#error_hdr_'+categoryUID).html('% Error Permitted');
 	}
 	html = html + "";
 	return html;
