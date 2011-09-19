@@ -633,7 +633,11 @@ class ClientContactsView(BikaListingView):
             items[x]['getBusinessPhone'] = obj.getBusinessPhone()
             items[x]['getMobilePhone'] = obj.getMobilePhone()
 
-            items[x]['replace']['getFullName'] = "<a href='%s'>%s</a>" % \
+            items[x]['replace']['getFullname'] = "<a href='%s'>%s</a>" % \
                  (items[x]['url'], items[x]['getFullname'])
+
+            if items[x]['getEmailAddress']:
+                items[x]['replace']['getEmailAddress'] = "<a href='mailto:%s'>%s</a>" % \
+                     (items[x]['getEmailAddress'], items[x]['getEmailAddress'])
 
         return items

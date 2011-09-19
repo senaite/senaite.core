@@ -1036,7 +1036,8 @@ class AnalysisRequestsView(BikaListingView):
 
             items[x]['replace']['getRequestID'] = "<a href='%s'>%s</a>" % \
                  (items[x]['url'], items[x]['getRequestID'])
-            items[x]['Client'] = obj.aq_parent.Title()
+            items[x]['replace']['Client'] = "<a href='%s'>%s</a>" % \
+                 (obj.aq_parent.absolute_url(), obj.aq_parent.Title())
             items[x]['ClientOrderNumber'] = obj.getClientOrderNumber()
             items[x]['ClientReference'] = obj.getClientReference()
             items[x]['ClientSampleID'] = obj.getClientSampleID()
