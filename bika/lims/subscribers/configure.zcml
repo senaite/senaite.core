@@ -11,6 +11,13 @@
       handler="bika.lims.subscribers.analysis.ActionSucceededEventHandler"
     />
 
+    <!-- Newly created analyses -->
+    <subscriber
+      for="bika.lims.interfaces.IAnalysis
+           Products.Archetypes.interfaces.IObjectInitializedEvent"
+      handler="bika.lims.subscribers.analysis.ObjectInitializedEventHandler"
+    />
+
     <!-- Workflow action event for AnalysisRequest objects -->
     <subscriber
       for="bika.lims.interfaces.IAnalysisRequest

@@ -60,9 +60,11 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
         if action == 'submit' and self.request.form.has_key("Result"):
             selected_analyses = WorkflowAction._get_selected_items(self)
             selected_analysis_uids = selected_analyses.keys()
+            results = {}
 
             # first save results for entire form
             for uid, result in self.request.form['Result'][0].items():
+                results[uid] = result
                 if uid in selected_analyses:
                     analysis = selected_analyses[uid]
                 else:
@@ -89,7 +91,7 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
                     if workflow.getInfoFor(dependency, 'review_state') in \
                        ('sample_due', 'sample_received'):
                         can_submit = False
-                if can_submit and result:
+                if can_submit and results[uid]:
                     submissable.append(analysis)
 
             # and then submit them.

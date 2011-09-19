@@ -81,11 +81,11 @@ class ARAnalysesField(ObjectField):
                 analysis = instance._getOb(keyword)
             else:
                 instance.invokeFactory(id = keyword,
-                                       type_name = 'Analysis',
-                                       Service=service,
-                                       InterimFields = interim_fields,
-                                       MaxTimeAllowed = service.getMaxTimeAllowed())
+                                       type_name = 'Analysis')
                 analysis = instance._getOb(keyword)
+                analysis.edit(Service=service,
+                              InterimFields = interim_fields,
+                              MaxTimeAllowed = service.getMaxTimeAllowed())
                 analysis.processForm()
 
         # delete analyses

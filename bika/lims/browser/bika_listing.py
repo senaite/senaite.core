@@ -437,11 +437,21 @@ class Table(tableview.Table):
                 for tid,t in w.transitions.items():
                     if w.isActionSupported(obj, tid):
                         if t not in transitions:
-                            if review_state.has_key('transitions') and \
+                            if 'transitions' in review_state and \
                                tid not in review_state['transitions']:
                                 pass
                             else:
                                 transitions.append(t)
+
+        # sort the transitions according to the review_state
+        # transitions list, if there is one
+        if 'transitions' in review_state:
+            ordered = []
+            for t in review_state['transitions']:
+                if t in transitions:
+                    ordered.append(t)
+            transitions = ordered
+
         return transitions
 
     render = ViewPageTemplateFile("templates/bika_listing_table.pt")
