@@ -124,13 +124,12 @@ class AnalysesView(BikaListingView):
             # insert the version number of referenced service after Title
             service_uid = service.UID()
             latest_service = rc.lookupObject(service_uid)
+            items[i]['Service'] = service.Title()
             if hasattr(obj, 'reference_versions') and \
                service_uid in obj.reference_versions and \
                latest_service.version_id != obj.reference_versions[service_uid]:
                 items[i]['after']['Service'] = "(v%s)" % \
                      (obj.reference_versions[service_uid])
-            else:
-                items[i]['Service'] = service.Title()
             items[i]['Keyword'] = keyword
             items[i]['Unit'] = service.getUnit()
             items[i]['Result'] = ''
