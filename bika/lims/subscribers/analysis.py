@@ -9,7 +9,7 @@ import transaction
 
 def ObjectInitializedEventHandler(analysis, event):
 
-    logger.info("Starting: %s on %s" % (event.action, analysis.getService().getKeyword()))
+    logger.info("ObjectInitialized: %s" % analysis.getService().getKeyword())
 
     # creating a new analysis retracts parent AR to 'received'
     ar = analysis.aq_parent
