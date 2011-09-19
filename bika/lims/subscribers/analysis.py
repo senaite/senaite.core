@@ -248,21 +248,13 @@ def ActionSucceededEventHandler(analysis, event):
         # in case of no calendars or max hours
         if maxtime:
             duration = (endtime - starttime) * 24 * 60
-            earliness = duration - maxtime.timedelta()
+            maxtime_delta = maxtime.get('hours', 0) * 86400
+            maxtime_delta += maxtime.get('hours', 0) * 3600
+            maxtime_delta += maxtime.get('minutes', 0) * 60
+            earliness = duration - maxtime_delta
         else:
             earliness = 0
             duration = 0
-##        try:
-##            bct = getToolByName(analysis, BIKA_CALENDAR_TOOL)
-##        except:
-##        bct = None
-##        if bct:
-##            duration = bct.getDuration(starttime, endtime)
-##            # set the earliness of the analysis
-##            # will be negative if late
-##            if analysis.getDueDate():
-##                earliness = bct.getDuration(endtime,
-##                                        self.getDueDate())
         analysis.setDuration(duration)
         analysis.setEarliness(earliness)
         analysis.reindexObject()
