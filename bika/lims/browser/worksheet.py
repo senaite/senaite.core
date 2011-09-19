@@ -114,8 +114,6 @@ class WorksheetWorkflowAction(WorkflowAction):
                     except WorkflowException:
                         pass
 
-            if self.context.getReportDryMatter():
-                self.context.setDryMatterResults()
             message = _("Changes saved.")
             self.context.plone_utils.addPortalMessage(message, 'info')
             self.request.response.redirect(originating_url)
