@@ -86,12 +86,7 @@ class ARAnalysesField(ObjectField):
                                        InterimFields = interim_fields,
                                        MaxTimeAllowed = service.getMaxTimeAllowed())
                 analysis = instance._getOb(keyword)
-                analysis.unmarkCreationFlag()
-
-            review_state = workflow.getInfoFor(analysis, 'review_state', '')
-            if ar_state == 'sample_received' and \
-                review_state == 'sample_due':
-                workflow.doActionFor(analysis, 'receive')
+                analysis.processForm()
 
         # delete analyses
         delete_ids = []

@@ -83,8 +83,9 @@ class WorkflowAction:
         # transition the context object.
         if came_from == "workflow_action":
             obj = self.context
-            # the only action allowed on inactive items is "activate"
-            if not isActive(obj) and action != 'activate':
+            # the only actions allowed on inactive/cancelled
+            # items are "reinstate" and "activate"
+            if not isActive(obj) and action not in ('reinstate', 'activate'):
                 message = _('Item is inactive.')
                 self.context.plone_utils.addPortalMessage(message, 'info')
                 self.request.response.redirect(originating_url)
@@ -100,7 +101,7 @@ class WorkflowAction:
         selected_items = self._get_selected_items()
         for uid,item in selected_items.items():
             # the only action allowed on inactive items is "activate"
-            if not isActive(item) and action != 'activate':
+            if not isActive(item) and action not in ('reinstate', 'activate'):
                 continue
             if uid not in skiplist:
                 try:

@@ -138,7 +138,7 @@
   <type type_id="RejectAnalysis"/>
   <type type_id="Sample">
    <bound-workflow workflow_id="bika_sample_workflow"/>
-   <bound-workflow workflow_id="bika_inactive_workflow"/>
+   <bound-workflow workflow_id="bika_cancellation_workflow"/>
   </type>
   <type type_id="SamplePoint">
    <bound-workflow workflow_id="bika_inactive_workflow"/>

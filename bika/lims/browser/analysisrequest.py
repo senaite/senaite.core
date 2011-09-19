@@ -95,7 +95,10 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
             # and then submit them.
             for analysis in submissable:
                 if not analysis.UID() in skiplist:
-                    workflow.doActionFor(analysis, 'submit')
+                    try:
+                        workflow.doActionFor(analysis, 'submit')
+                    except WorkflowException:
+                        pass
 
             if self.context.getReportDryMatter():
                 self.context.setDryMatterResults()

@@ -22,6 +22,9 @@ def ObjectInitializedEventHandler(analysis, event):
             analysis.REQUEST["workflow_skiplist"].append(ar.UID())
         wf.doActionFor(ar, 'retract')
 
+    if ar_state != 'sample_due':
+        wf.doActionFor(analysis, 'receive')
+
     return
 
 def ActionSucceededEventHandler(analysis, event):
