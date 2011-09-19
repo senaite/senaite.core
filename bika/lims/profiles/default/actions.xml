@@ -71,7 +71,7 @@
 			<property name="visible">True</property>
 		</object>
 		<object name="analysisrequests" meta_type="CMF Action">
-			<property name="title">Analysis requests</property>
+			<property name="title">ARs</property>
 			<property name="description"/>
 			<property name="url_expr">string:$portal_url/analysisrequests</property>
 			<property name="link_target"/>
