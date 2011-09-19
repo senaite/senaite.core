@@ -32,10 +32,8 @@ def ActionSucceededEventHandler(analysis, event):
         # Need a separate skiplist for this due to double-jumps with 'submit'.
         if not analysis.REQUEST.has_key('workflow_attach_skiplist'):
             analysis.REQUEST['workflow_attach_skiplist'] = [analysis.UID(), ]
-            skiplist = analysis.REQUEST['workflow_attach_skiplist']
         else:
-            skiplist = analysis.REQUEST['workflow_attach_skiplist']
-            if analysis.UID() in skiplist:
+            if analysis.UID() in analysis.REQUEST['workflow_attach_skiplist']:
                 logger.info("an Skip")
                 return
             else:
@@ -56,7 +54,7 @@ def ActionSucceededEventHandler(analysis, event):
         # Then: 'attach' it.:
         dependents = analysis.getDependents()
         for dependent in dependents:
-            if not dependent.UID() in skiplist:
+            if not dependent.UID() in analysis.REQUEST['workflow_attach_skiplist']:
                 can_attach = True
                 if wf.getInfoFor(dependent, 'review_state') != 'attachment_due':
                     can_attach = False
@@ -75,7 +73,7 @@ def ActionSucceededEventHandler(analysis, event):
 
         # If all analyses in this AR have been attached
         # escalate the action to the parent AR
-        if not ar.UID() in skiplist:
+        if not ar.UID() in analysis.REQUEST['workflow_attach_skiplist']:
             can_attach = True
             for a in ar.getAnalyses():
                 if a.review_state in \
@@ -93,10 +91,8 @@ def ActionSucceededEventHandler(analysis, event):
 
     if not analysis.REQUEST.has_key('workflow_skiplist'):
         analysis.REQUEST['workflow_skiplist'] = [analysis.UID(), ]
-        skiplist = analysis.REQUEST['workflow_skiplist']
     else:
-        skiplist = analysis.REQUEST['workflow_skiplist']
-        if analysis.UID() in skiplist:
+        if analysis.UID() in analysis.REQUEST['workflow_skiplist']:
             logger.info("an Skip")
             return
         else:
@@ -137,7 +133,7 @@ def ActionSucceededEventHandler(analysis, event):
         # Need to check for result and status of dependencies first
         dependents = analysis.getDependents()
         for dependent in dependents:
-            if not dependent.UID() in skiplist:
+            if not dependent.UID() in analysis.REQUEST['workflow_skiplist']:
                 can_submit = True
                 if not dependent.getResult():
                     can_submit = False
@@ -151,7 +147,7 @@ def ActionSucceededEventHandler(analysis, event):
 
         # If all analyses in this AR have been submitted
         # escalate the action to the parent AR
-        if not ar.UID() in skiplist:
+        if not ar.UID() in analysis.REQUEST['workflow_skiplist']:
             all_submitted = True
             for a in ar.getAnalyses():
                 if a.review_state in \
@@ -179,21 +175,21 @@ def ActionSucceededEventHandler(analysis, event):
         analysis.reindexObject(idxs = ["review_state", ])
         # retract our dependencies
         for dependency in analysis.getDependencies():
-            if not dependency.UID() in skiplist:
+            if not dependency.UID() in analysis.REQUEST['workflow_skiplist']:
                 if wf.getInfoFor(dependency, 'review_state') in ('attachment_due', 'to_be_verified', 'verified',):
                     # (NB: don't retract if it's published)
                     wf.doActionFor(dependency, 'retract')
         # Retract our dependents
         for dep in analysis.getDependents():
-            if not dep.UID() in skiplist:
+            if not dep.UID() in analysis.REQUEST['workflow_skiplist']:
                 if wf.getInfoFor(dep, 'review_state') != 'sample_received':
                     wf.doActionFor(dep, 'retract')
         # Escalate action to the parent AR
-        if not ar.UID() in skiplist:
+        if not ar.UID() in analysis.REQUEST['workflow_skiplist']:
             if wf.getInfoFor(ar, 'review_state') == 'sample_received':
                 analysis.REQUEST["workflow_skiplist"].append(ar.UID())
             else:
-                if not "retract all analyses" in skiplist:
+                if not "retract all analyses" in analysis.REQUEST['workflow_skiplist']:
                     analysis.REQUEST["workflow_skiplist"].append("retract all analyses")
                 wf.doActionFor(ar, 'retract')
 
@@ -213,21 +209,16 @@ def ActionSucceededEventHandler(analysis, event):
                         raise WorkflowException, _("Results cannot be verified by the submitting user.")
                     break
 
-        # Verify our dependencies.
-        for dependency in analysis.getDependencies():
-            # Don't have to check if they're 'to_be_verified'.
-            # If this analysis is, they must be too.
-            if not dependency.UID() in skiplist:
-                wf.doActionFor(dependency, 'verify')
-
+        # Don't verify our dependencies, they're done.
+        #-------------------------------------------------
         # Check for dependents, ensure all their dependencies
         # have been verified, and verify them
         for dependent in analysis.getDependents():
-            if not dependent.UID() in skiplist:
+            if not dependent.UID() in analysis.REQUEST['workflow_skiplist']:
                 if wf.getInfoFor(dependent, 'review_state') == 'to_be_verified':
                     can_verify_dependent = True
                     for dependency in dependent.getDependencies():
-                        if not dependency.UID() in skiplist:
+                        if not dependency.UID() in analysis.REQUEST['workflow_skiplist']:
                             if wf.getInfoFor(dependency, 'review_state') in \
                                ('sample_due', 'sample_received', 'attachment_due', 'to_be_verified'):
                                 can_verify_dependent = False
@@ -237,7 +228,7 @@ def ActionSucceededEventHandler(analysis, event):
 
         # If all analyses in this AR are verified
         # escalate the action to the parent AR
-        if not ar.UID() in skiplist:
+        if not ar.UID() in analysis.REQUEST['workflow_skiplist']:
             all_verified = True
             for a in ar.getAnalyses():
                 if a.review_state in \
@@ -284,14 +275,14 @@ def ActionSucceededEventHandler(analysis, event):
         analysis.reindexObject(idxs = ["worksheetanalysis_review_state", ])
         # If all analyses in this AR have been assigned
         # escalate the action to the parent AR
-        if not ar.UID() in skiplist:
+        if not ar.UID() in analysis.REQUEST['workflow_skiplist']:
             if not ar.getAnalyses(worksheetanalysis_review_state = 'unassigned'):
                 wf.doActionFor(ar, 'assign')
 
     elif event.action == "unassign":
         analysis.reindexObject(idxs = ["worksheetanalysis_review_state", ])
         # Escalate the action to the parent AR if it is assigned
-        if not ar.UID() in skiplist:
+        if not ar.UID() in analysis.REQUEST['workflow_skiplist']:
             if wf.getInfoFor(ar, 'worksheetanalysis_review_state') == 'assigned':
                 wf.doActionFor(ar, 'unassign')
 

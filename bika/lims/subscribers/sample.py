@@ -7,10 +7,8 @@ def ActionSucceededEventHandler(sample, event):
 
     if not sample.REQUEST.has_key('workflow_skiplist'):
         sample.REQUEST['workflow_skiplist'] = [sample.UID(), ]
-        skiplist = sample.REQUEST['workflow_skiplist']
     else:
-        skiplist = sample.REQUEST['workflow_skiplist']
-        if sample.UID() in skiplist:
+        if sample.UID() in sample.REQUEST['workflow_skiplist']:
             logger.info("SM Skip")
             return
         else:
@@ -25,7 +23,7 @@ def ActionSucceededEventHandler(sample, event):
         # AnalysisRequests are also transitioned
         workflow = getToolByName(sample, 'portal_workflow')
         for ar in sample.getAnalysisRequests():
-            if not ar.UID() in skiplist:
+            if not ar.UID() in sample.REQUEST['workflow_skiplist']:
                 workflow.doActionFor(ar, "receive")
 
     elif event.action == "expire":

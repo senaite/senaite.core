@@ -27,10 +27,8 @@ def ActionSucceededEventHandler(ar, event):
 
     if not ar.REQUEST.has_key('workflow_skiplist'):
         ar.REQUEST['workflow_skiplist'] = [ar.UID(), ]
-        skiplist = ar.REQUEST['workflow_skiplist']
     else:
-        skiplist = ar.REQUEST['workflow_skiplist']
-        if ar.UID() in skiplist:
+        if ar.UID() in ar.REQUEST['workflow_skiplist']:
             logger.info("AR Skip")
             return
         else:
@@ -46,13 +44,13 @@ def ActionSucceededEventHandler(ar, event):
 
         # receive the AR's sample
         sample = ar.getSample()
-        if not sample.UID() in skiplist:
+        if not sample.UID() in ar.REQUEST['workflow_skiplist']:
             wf.doActionFor(sample, 'receive')
 
         # receive all analyses in this AR.
         analyses = ar.getAnalyses(review_state = 'sample_due')
         for analysis in analyses:
-            if not analysis.UID in skiplist:
+            if not analysis.UID in ar.REQUEST['workflow_skiplist']:
                 wf.doActionFor(analysis.getObject(), 'receive')
 
     elif event.action == "submit":
@@ -61,12 +59,12 @@ def ActionSucceededEventHandler(ar, event):
 
     elif event.action == "retract":
         ar.reindexObject(idxs = ["review_state", ])
-        if not "retract all analyses" in skiplist:
+        if not "retract all analyses" in ar.REQUEST['workflow_skiplist']:
             # retract all analyses in this AR.
             # (NB: don't retract if it's published)
             analyses = ar.getAnalyses(review_state = ('attachment_due', 'to_be_verified', 'verified',))
             for analysis in analyses:
-                if not analysis.UID in skiplist:
+                if not analysis.UID in ar.REQUEST['workflow_skiplist']:
                     wf.doActionFor(analysis.getObject(), 'retract')
 
     elif event.action == "verify":
@@ -74,7 +72,7 @@ def ActionSucceededEventHandler(ar, event):
         # verify all analyses in this AR.
         analyses = ar.getAnalyses(review_state = 'to_be_verified')
         for analysis in analyses:
-            if not analysis.UID in skiplist:
+            if not analysis.UID in ar.REQUEST['workflow_skiplist']:
                 wf.doActionFor(analysis.getObject(), "verify")
 
     elif event.action == "publish":
@@ -83,7 +81,7 @@ def ActionSucceededEventHandler(ar, event):
         # publish all analyses in this AR. (except not requested ones)
         analyses = ar.getAnalyses(review_state = 'verified')
         for analysis in analyses:
-            if not analysis.UID in skiplist:
+            if not analysis.UID in ar.REQUEST['workflow_skiplist']:
                 wf.doActionFor(analysis.getObject(), "publish")
 
     #---------------------
@@ -95,7 +93,7 @@ def ActionSucceededEventHandler(ar, event):
         # activate all analyses in this AR.
         analyses = ar.getAnalyses(inactive_review_state = 'inactive')
         for analysis in analyses:
-            if not analysis.UID in skiplist:
+            if not analysis.UID in ar.REQUEST['workflow_skiplist']:
                 wf.doActionFor(analysis.getObject(), 'activate')
 
     elif event.action == "deactivate":
@@ -103,7 +101,7 @@ def ActionSucceededEventHandler(ar, event):
         # deactivate all analyses in this AR.
         analyses = ar.getAnalyses(inactive_review_state = 'active')
         for analysis in analyses:
-            if not analysis.UID in skiplist:
+            if not analysis.UID in ar.REQUEST['workflow_skiplist']:
                 wf.doActionFor(analysis.getObject(), 'deactivate')
 
     return
