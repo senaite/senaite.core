@@ -475,12 +475,16 @@ Table cells for each column from in review_state's column list.
 	<span tal:omit-tag tal:repeat="action actions"
 		tal:condition="view/show_workflow_action_buttons">
 		<input
+			type="hidden"
+			tal:attributes="name action/title;
+			                value action/id;"/>
+		<input
 			class="context workflow_action_button"
 			type="submit"
 			name="workflow_action_button"
 			tal:attributes="
-				title action/title;
-				value action/id;"/>
+				transition action/id;
+				value action/title;"/>
 	</span>
 </span>
 

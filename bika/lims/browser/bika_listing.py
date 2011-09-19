@@ -49,6 +49,8 @@ class WorkflowAction:
             if type(action) == type([]): action = action[0]
             if not action:
                 raise WorkflowException(_("No workflow action provided."))
+        # convert button text to action id
+        action = form[action]
         return (action, came_from)
 
     def _get_selected_items(self, full_objects=True):
