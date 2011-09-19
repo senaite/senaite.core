@@ -447,6 +447,8 @@ class Table(tableview.Table):
                 if tid in transitions:
                     ordered.append(transitions[tid])
             transitions = ordered
+        else:
+            transitions = transitions.values()
 
         return transitions
 
