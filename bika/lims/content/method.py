@@ -13,7 +13,7 @@ schema = BikaSchema.copy() + Schema((
     TextField('Instructions',
         widget = TextAreaWidget(
             label = _("Instructions"),
-            description = _("technical description and instructions intended for analysts"),
+            description = _("Technical description and instructions intended for analysts"),
         ),
     ),
     FileField('MethodDocument',  # XXX Multiple documents please

@@ -11,7 +11,6 @@ schema = BikaSchema.copy() + Schema((
     StringField('Type',
         widget = StringWidget(
             label = _("Instrument type"),
-            description = _("The analyses included in this Analysis Profile, grouped per category"),
         )
     ),
     StringField('Brand',

@@ -31,7 +31,7 @@ schema = Person.schema.copy() + Schema((
         widget = ReferenceWidget(
             checkbox_bound = 1,
             label = _("Department"),
-            description = _("The laboartory department in which this Contact works"),
+            description = _("The laboratory department in which this contact works"),
             i18n_domain = I18N_DOMAIN,
         ),
     ),
