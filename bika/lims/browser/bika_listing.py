@@ -427,7 +427,7 @@ class Table(tableview.Table):
         # get all transitions for all items.
         # if there is a review_state['some_state']['transitions'] attribute
         # on the BikaListingView, the list is restricted to these transitions
-        transitions = []
+        transitions = {}
         for i, item in enumerate(self.items):
             if not item.has_key('obj'): continue
             obj = hasattr(item['obj'], 'getObject') and \
@@ -436,20 +436,16 @@ class Table(tableview.Table):
             for w in workflow.getWorkflowsFor(obj):
                 for tid,t in w.transitions.items():
                     if w.isActionSupported(obj, tid):
-                        if t not in transitions:
-                            if 'transitions' in review_state and \
-                               tid not in review_state['transitions']:
-                                pass
-                            else:
-                                transitions.append(t)
+                        if tid not in transitions:
+                            transitions[tid] = t
 
         # sort the transitions according to the review_state
         # transitions list, if there is one
         if 'transitions' in review_state:
             ordered = []
-            for t in review_state['transitions']:
-                if t in transitions:
-                    ordered.append(t)
+            for tid in review_state['transitions']:
+                if tid in transitions:
+                    ordered.append(transitions[tid])
             transitions = ordered
 
         return transitions
