@@ -48,7 +48,7 @@ schema = BikaSchema.copy() + Schema((
         widget = SelectionWidget(
             label = _("Attachment option"),
             description = _("Indicates whether file attachments, e.g. microscope images, "
-                            "are required for this Analysis and whether file upload function "
+                            "are required for this analysis and whether file upload function "
                             "will be available for it on data capturing screens"),
         ),
     ),
@@ -181,7 +181,7 @@ schema = BikaSchema.copy() + Schema((
             format = 'flex',
             label = _("Point of Capture"),
             description = _("The results of field analyses are captured during sampling "
-                            "at the sample point, e.g. the temperature of a water Sample "
+                            "at the sample point, e.g. the temperature of a water sample "
                             "in the river where it is sampled. Lab analyses are done in "
                             "the laboratory"),
         ),
