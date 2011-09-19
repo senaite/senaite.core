@@ -234,8 +234,10 @@ class ClientAnalysisRequestsView(BikaListingView):
                 items[x]['after']['state_title'] = \
                      "<img src='++resource++bika.lims.images/worksheet.png' title='All analyses assigned'/>"
 
-            after_icons = ''
-            if obj.getSample().getSampleType().getHazardous():
+            sample = obj.getSample()
+            after_icons = "<a href='%s'><img src='++resource++bika.lims.images/sample.png' title='Sample: %s'></a>" % \
+                        (sample.absolute_url(),sample.Title())
+            if sample.getSampleType().getHazardous():
                 after_icons += "<img src='++resource++bika.lims.images/hazardous_small.png' title='Hazardous'>"
             if after_icons:
                 items[x]['after']['getRequestID'] = after_icons
@@ -246,7 +248,8 @@ class ClientSamplesView(BikaListingView):
 
     def __init__(self, context, request):
         super(ClientSamplesView, self).__init__(context, request)
-        self.contentFilter = {'portal_type': 'Sample'}
+        self.contentFilter = {'portal_type': 'Sample',
+                              'cancellation_review_state':'active'}
         self.content_add_actions = {}
         self.show_editable_border = True
         self.show_sort_column = False
@@ -268,7 +271,8 @@ class ClientSamplesView(BikaListingView):
             'state_title': {'title': _('State')},
         }
         self.review_states = [
-            {'title': _('All'), 'id':'all',
+            {'id':'all',
+             'title': _('All'),
              'columns': ['SampleID',
                          'Requests',
                          'ClientReference',
@@ -277,14 +281,16 @@ class ClientSamplesView(BikaListingView):
                          'SamplePointTitle',
                          'DateReceived',
                          'state_title']},
-            {'title': _('Due'), 'id':'due',
+            {'id':'due',
+             'title': _('Due'),
              'columns': ['SampleID',
                          'Requests',
                          'ClientReference',
                          'ClientSampleID',
                          'SampleTypeTitle',
                          'SamplePointTitle']},
-            {'title': _('Received'), 'id':'received',
+            {'id':'received',
+             'title': _('Received'),
              'columns': ['SampleID',
                          'Requests',
                          'ClientReference',
@@ -292,7 +298,8 @@ class ClientSamplesView(BikaListingView):
                          'SampleTypeTitle',
                          'SamplePointTitle',
                          'DateReceived']},
-            {'title': _('Expired'), 'id':'expired',
+            {'id':'expired',
+             'title': _('Expired'),
              'columns': ['SampleID',
                          'Requests',
                          'ClientReference',
@@ -300,7 +307,8 @@ class ClientSamplesView(BikaListingView):
                          'SampleTypeTitle',
                          'SamplePointTitle',
                          'DateReceived']},
-            {'title': _('Disposed'), 'id':'disposed',
+            {'id':'disposed',
+             'title': _('Disposed'),
              'columns': ['SampleID',
                          'Requests',
                          'ClientReference',
@@ -308,6 +316,18 @@ class ClientSamplesView(BikaListingView):
                          'SampleTypeTitle',
                          'SamplePointTitle',
                          'DateReceived']},
+            {'id':'cancelled',
+             'title': _('Cancelled'),
+             'contentFilter': {'cancellation_review_state': 'cancelled'},
+             'transitions': ['reinstate'],
+             'columns': ['SampleID',
+                         'Requests',
+                         'ClientReference',
+                         'ClientSampleID',
+                         'SampleTypeTitle',
+                         'SamplePointTitle',
+                         'DateReceived',
+                         'state_title']},
             ]
 
     @property

@@ -14,10 +14,10 @@ from bika.lims.browser.publish import Publish
 from bika.lims.config import POINTS_OF_CAPTURE, EditAnalyses
 from bika.lims import logger
 from bika.lims.utils import isActive
-from plone.app.layout.globals.interfaces import IViewView
 from decimal import Decimal
 from operator import itemgetter
 from plone.app.content.browser.interfaces import IFolderContentsView
+from plone.app.layout.globals.interfaces import IViewView
 from zope.component import getMultiAdapter
 from zope.interface import implements, alsoProvides
 import json
@@ -1058,8 +1058,11 @@ class AnalysisRequestsView(BikaListingView):
             items[x]['DatePublished'] = obj.getDatePublished() and \
                 self.context.toLocalizedTime(obj.getDatePublished(), \
                                              long_format = 0) or ''
-            after_icons = ''
-            if obj.getSample().getSampleType().getHazardous():
+
+            sample = obj.getSample()
+            after_icons = "<a href='%s'><img src='++resource++bika.lims.images/sample.png' title='Sample: %s'></a>" % \
+                        (sample.absolute_url(),sample.Title())
+            if sample.getSampleType().getHazardous():
                 after_icons += "<img src='++resource++bika.lims.images/hazardous_small.png' title='Hazardous'>"
             if after_icons:
                 items[x]['after']['getRequestID'] = after_icons

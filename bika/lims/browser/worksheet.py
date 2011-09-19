@@ -76,7 +76,10 @@ class WorksheetWorkflowAction(WorkflowAction):
             # first save results for entire form
             for uid, result in self.request.form['Result'][0].items():
                 results[uid] = result
-                analysis = selected_analyses[uid]
+                if uid in selected_analyses:
+                    analysis = selected_analyses[uid]
+                else:
+                    analysis = rc.lookupObject(uid)
                 service = analysis.getService()
                 interims = form["InterimFields"][0][uid]
                 analysis.edit(
@@ -267,9 +270,9 @@ class WorksheetManageResultsView(AnalysesView):
 
         self.columns = {
             'Pos': {'title': _('Pos')},
-##            'Client': {'title': _('Client')},
+            'Client': {'title': _('Client')},
             'Order': {'title': _('Order')},
-            'RequestID': {'title': _('Reqest ID')},
+            'RequestID': {'title': _('Request ID')},
             'DueDate': {'title': _('Due Date')},
             'Category': {'title': _('Category')},
             'Service': {'title': _('Analysis')},
@@ -282,7 +285,7 @@ class WorksheetManageResultsView(AnalysesView):
         self.review_states = [
             {'title': _('All'), 'id':'all',
              'columns':['Pos',
-##                        'Client',
+                        'Client',
                         'Order',
                         'RequestID',
                         'DueDate',
@@ -305,12 +308,16 @@ class WorksheetManageResultsView(AnalysesView):
             items[x]['Pos'] = pos
             service = obj.getService()
             items[x]['Category'] = service.getCategory().Title()
-            items[x]['RequestID'] = obj.aq_parent.Title()
-##            items[x]['Client'] = obj.aq_parent.aq_parent.Title()
+            ar = obj.aq_parent
+            items[x]['replace']['RequestID'] = "<a href='%s'>%s</a>" % \
+                 (ar.absolute_url(), ar.Title())
+            client = ar.aq_parent
+            items[x]['replace']['Client'] = "<a href='%s'>%s</a>" % \
+                 (client.absolute_url(), client.Title())
             items[x]['DueDate'] = hasattr(obj, 'DueDate') and \
                 self.context.toLocalizedTime(obj.DueDate, long_format=0) or ''
-            items[x]['Order'] = hasattr(obj.aq_parent, 'getClientOrderNumber') \
-                 and obj.aq_parent.getClientOrderNumber() or ''
+            items[x]['Order'] = hasattr(ar, 'getClientOrderNumber') \
+                 and ar.getClientOrderNumber() or ''
             if obj.portal_type == 'DuplicateAnalysis':
                 items[x]['after']['Pos'] = '<img width="16" height="16" src="%s/++resource++bika.lims.images/duplicate.png"/>'%\
                     (self.context.absolute_url())

@@ -111,7 +111,10 @@
     <!-- AR Profile -->
     <tr tal:define="field_name string:ARProfile">
         <th colspan="2" i18n:translate="label_arprofiles">Profile</th>
-        <td>&nbsp;</td>
+        <td>
+            <img class="copyButton" tal:condition="not: edit"
+                tal:attributes="name field_name;src string:${portal/absolute_url}/++resource++bika.lims.images/copy.png"/>
+        </td>
         <tal:block repeat="column python:range(view.col_count)">
             <td class="topborder" tal:define="input_name string:ar.${column}.${field_name}:ignore_empty:record;
                 input_id string:ar_${column}_${field_name}">

@@ -4,6 +4,7 @@ from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims.browser.client import ClientSamplesView
 from plone.app.content.browser.interfaces import IFolderContentsView
+from plone.app.layout.globals.interfaces import IViewView
 from zope.interface import implements
 import json
 import plone
@@ -11,16 +12,17 @@ import plone
 class SampleViewView(BrowserView):
     """ Sample View form
     """
+    implements(IViewView)
     template = ViewPageTemplateFile("templates/sample_view.pt")
 
     def __call__(self):
         return self.template()
 
-
 class SampleEditView(SampleViewView):
     """ Sample Edit form
     """
 
+    implements(IViewView)
     template = ViewPageTemplateFile("templates/sample_edit.pt")
 
     def __call__(self):

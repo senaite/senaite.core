@@ -325,7 +325,10 @@ jQuery( function($) {
 
 		$(".copyButton").live('click',  function (){
 			field_name = $(this).attr("name");
-			if ($(this).parent().attr('class') == 'service'){ // Analysis service checkbox
+			if ($(this).parent().attr('class') == 'service'){ // Profile selector
+			  console.log(1);
+			}
+			else if ($(this).parent().attr('class') == 'service'){ // Analysis service checkbox
 				first_val = $('input[column="0"]').filter('#'+this.id).attr("checked");
 				affected_elements = [];
 				// 0 is the first column; we only want to change cols 1 onward.
