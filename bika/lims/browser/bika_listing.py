@@ -68,6 +68,7 @@ class WorkflowAction:
                 uid = item.UID()
                 selected_items[uid] = item
             return selected_items
+        return {}
 
     def __call__(self):
         form = self.request.form
