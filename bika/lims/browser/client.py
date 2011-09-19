@@ -81,6 +81,7 @@ class ClientWorkflowAction(WorkflowAction):
 
 class ClientAnalysisRequestsView(BikaListingView):
 
+
     def __init__(self, context, request):
         super(ClientAnalysisRequestsView, self).__init__(context, request)
         self.contentFilter = {'portal_type':'AnalysisRequest',

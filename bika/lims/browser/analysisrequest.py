@@ -11,9 +11,10 @@ from bika.lims.browser.analyses import AnalysesView
 from bika.lims.browser.bika_listing import BikaListingView, WorkflowAction
 from bika.lims.browser.client import ClientAnalysisRequestsView
 from bika.lims.browser.publish import Publish
-from bika.lims.config import POINTS_OF_CAPTURE
+from bika.lims.config import POINTS_OF_CAPTURE, EditAnalyses
 from bika.lims import logger
 from bika.lims.utils import isActive
+from plone.app.layout.globals.interfaces import IViewView
 from decimal import Decimal
 from operator import itemgetter
 from plone.app.content.browser.interfaces import IFolderContentsView
@@ -117,12 +118,15 @@ class AnalysisRequestViewView(BrowserView):
         The AR fields are printed in a table, using analysisrequest_view.py
     """
 
+    implements(IViewView)
     template = ViewPageTemplateFile("templates/analysisrequest_view.pt")
 
     def __init__(self, context, request):
         super(AnalysisRequestViewView, self).__init__(context, request)
 
     def __call__(self):
+        if getSecurityManager().checkPermission(EditAnalyses, self.context):
+            self.request.RESPONSE.redirect(self.context.absolute_url() + "/manage_results")
         self.Field = AnalysesView(self.context, self.request,
                                   getPointOfCapture = 'field')
         self.Field.allow_edit = False
@@ -320,6 +324,7 @@ class AnalysisRequestViewView(BrowserView):
 class AnalysisRequestAddView(AnalysisRequestViewView):
     """ The main AR Add form
     """
+    implements(IViewView)
     template = ViewPageTemplateFile("templates/analysisrequest_edit.pt")
 
     def __init__(self, context, request):
@@ -334,6 +339,7 @@ class AnalysisRequestAddView(AnalysisRequestViewView):
 
 
 class AnalysisRequestEditView(AnalysisRequestAddView):
+    implements(IViewView)
     template = ViewPageTemplateFile("templates/analysisrequest_edit.pt")
 
     def __init__(self, context, request):
@@ -342,12 +348,14 @@ class AnalysisRequestEditView(AnalysisRequestAddView):
         self.came_from = "edit"
 
 class AnalysisRequestManageResultsView(AnalysisRequestViewView):
+    implements(IViewView)
     template = ViewPageTemplateFile("templates/analysisrequest_manage_results.pt")
 
     def __call__(self):
         workflow = getToolByName(self.context, 'portal_workflow')
         pc = getToolByName(self.context, 'portal_catalog')
-
+        if not getSecurityManager().checkPermission(EditAnalyses, self.context):
+            self.request.RESPONSE.redirect(self.context.absolute_url())
         self.Field = AnalysesView(self.context, self.request,
                                   getPointOfCapture = 'field')
         self.Field.allow_edit = True
@@ -373,6 +381,7 @@ class AnalysisRequestManageResultsView(AnalysisRequestViewView):
 
 
 class AnalysisRequestResultsNotRequestedView(AnalysisRequestManageResultsView):
+    implements(IViewView)
     template = ViewPageTemplateFile("templates/analysisrequest_analyses_not_requested.pt")
 
     def __call__(self):
