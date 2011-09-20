@@ -87,8 +87,13 @@ class ClientAnalysisRequestsView(BikaListingView):
         self.contentFilter = {'portal_type':'AnalysisRequest',
                               'cancellation_review_state': 'active'}
         self.review_state = 'all'
-        self.content_add_actions = {_('Analysis Request'):
-                                    "analysisrequest_add"}
+        if context.objectValues('Contact'):
+            self.content_add_actions = {_('Analysis Request'):
+                                        "analysisrequest_add"}
+            self.description = ""
+        else:
+            self.content_add_actions = {}
+            self.description = "Client contact required before request may be submitted"
         self.show_editable_border = True
         self.show_sort_column = False
         self.show_select_row = False
@@ -96,7 +101,6 @@ class ClientAnalysisRequestsView(BikaListingView):
 
         self.title = "%s: %s" % (self.context.Title(),
                                  _("Analysis Requests"))
-        self.description = ""
 
         self.columns = {
             'getRequestID': {'title': _('Request ID')},
