@@ -83,6 +83,8 @@
  <index name="getRawRelatedItems" meta_type="KeywordIndex"> <indexed_attr value="getRawRelatedItems"/> </index>
  <index name="getRequestID" meta_type="FieldIndex"> <indexed_attr value="getRequestID"/> </index>
  <index name="getSampleID" meta_type="FieldIndex"> <indexed_attr value="getSampleID"/> </index>
+ <index name="getSamplePointTitle" meta_type="FieldIndex"> <indexed_attr value="getSamplePointTitle"/> </index>
+ <index name="getSampleTypeTitle" meta_type="FieldIndex"> <indexed_attr value="getSampleTypeTitle"/> </index>
  <index name="getServiceUID" meta_type="FieldIndex"> <indexed_attr value="getServiceUID"/> </index>
  <index name="getStatus" meta_type="FieldIndex"> <indexed_attr value="getStatus"/> </index>
  <index name="getUsername" meta_type="FieldIndex"> <indexed_attr value="getUsername"/> </index>
@@ -98,9 +100,9 @@
  <index name="sortable_title" meta_type="FieldIndex"> <indexed_attr value="sortable_title"/> </index>
  <index name="start" meta_type="DateIndex"> <property name="index_naive_time_as_local">True</property> </index>
  <index name="review_state" meta_type="FieldIndex"> <indexed_attr value="review_state"/> </index>
- <index name="inactive_review_state" meta_type="FieldIndex"> <indexed_attr value="inactive_review_state"/> </index>
+ <index name="inactive_state" meta_type="FieldIndex"> <indexed_attr value="inactive_state"/> </index>
  <index name="worksheetanalysis_review_state" meta_type="FieldIndex"> <indexed_attr value="worksheetanalysis_review_state"/> </index>
- <index name="cancellation_review_state" meta_type="FieldIndex"> <indexed_attr value="cancellation_review_state"/> </index>
+ <index name="cancellation_state" meta_type="FieldIndex"> <indexed_attr value="cancellation_state"/> </index>
 
  <column value="CreationDate"/>
  <column value="Creator"/>
@@ -136,8 +138,8 @@
  <column value="modified"/>
  <column value="portal_type"/>
  <column value="review_state"/>
- <column value="inactive_review_state"/>
+ <column value="inactive_state"/>
  <column value="worksheetanalysis_review_state"/>
- <column value="cancellation_review_state"/>
+ <column value="cancellation_state"/>
  <column value="start"/>
 </object>

@@ -14,7 +14,7 @@
 
 <metal:content fill-slot="content-core" tal:define="
     review_state python:context.portal_workflow.getInfoFor(here, 'review_state', '');
-    inactive_review_state python:context.portal_workflow.getInfoFor(context, 'inactive_review_state', 'asdf');
+    inactive_state python:context.portal_workflow.getInfoFor(context, 'inactive_state', 'asdf');
     lab_accredited python:context.bika_setup.laboratory.getLaboratoryAccredited();
     portal context/@@plone_portal_state/portal;
     sampletype here/getSampleType;">
@@ -129,13 +129,13 @@
 
     <form action="workflow_action">
         <input
-            tal:condition="python:inactive_review_state == 'active'"
+            tal:condition="python:inactive_state == 'active'"
             class="context workflow_action_button"
             type="submit"
             value="deactivate"
             name="workflow_action">
         <input
-            tal:condition="python:inactive_review_state == 'inactive'"
+            tal:condition="python:inactive_state == 'inactive'"
             class="context workflow_action_button"
             type="submit"
             value="activate"

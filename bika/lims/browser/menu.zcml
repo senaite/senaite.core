@@ -4,5 +4,11 @@
     xmlns:i18n="http://namespaces.zope.org/i18n"
     i18n_domain="bika">
 
+  <adapter
+    for="zope.interface.Interface
+         bika.lims.interfaces.IBikaLIMS"
+    name="plone.contentmenu.workflow"
+    factory="bika.lims.browser.menu.WorkflowSubMenuItem"
+    provides="plone.app.contentmenu.interfaces.IContentMenuItem" />
 
 </configure>

@@ -33,13 +33,13 @@ def isActive(obj):
     """ Returns False if the item has been deactivated or cancelled.
     """
     wf = getToolByName(obj, 'portal_workflow')
-    if (hasattr(obj, 'inactive_review_state') and \
-        obj.inactive_review_state == 'inactive') or \
-       wf.getInfoFor(obj, 'inactive_review_state', 'active') == 'inactive':
+    if (hasattr(obj, 'inactive_state') and \
+        obj.inactive_state == 'inactive') or \
+       wf.getInfoFor(obj, 'inactive_state', 'active') == 'inactive':
         return False
-    if (hasattr(obj, 'cancellation_review_state') and \
-        obj.inactive_review_state == 'cancelled') or \
-       wf.getInfoFor(obj, 'cancellation_review_state', 'active') == 'cancelled':
+    if (hasattr(obj, 'cancellation_state') and \
+        obj.inactive_state == 'cancelled') or \
+       wf.getInfoFor(obj, 'cancellation_state', 'active') == 'cancelled':
         return False
     return True
 

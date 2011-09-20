@@ -4,8 +4,6 @@
     name="title">Contains workflow definitions for your portal</property>
  <object name="bika_analysis_workflow" meta_type="Workflow"/>
  <object name="bika_arimport_workflow" meta_type="Workflow"/>
- <object name="bika_inactive_workflow" meta_type="Workflow"/>
- <object name="bika_cancellation_workflow" meta_type="Workflow"/>
  <object name="bika_order_workflow" meta_type="Workflow"/>
  <object name="bika_referenceanalysis_workflow" meta_type="Workflow"/>
  <object name="bika_referencesample_workflow" meta_type="Workflow"/>
@@ -18,6 +16,8 @@
  <object name="one_state_workflow" meta_type="Workflow"/>
  <object name="plone_workflow" meta_type="Workflow"/>
  <object name="simple_publication_workflow" meta_type="Workflow"/>
+ <object name="bika_inactive_workflow" meta_type="Subtractive Workflow"/>
+ <object name="bika_cancellation_workflow" meta_type="Subtractive Workflow"/>
  <bindings>
   <default>
    <bound-workflow workflow_id="plone_workflow"/>

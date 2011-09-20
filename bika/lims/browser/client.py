@@ -54,7 +54,7 @@ class ClientWorkflowAction(WorkflowAction):
                     # can't publish inactive items
                     if not(
                         'bika_inactive_workflow' in workflow.getChainFor(ar) and \
-                        workflow.getInfoFor(ar, 'inactive_review_state', '') == 'inactive'):
+                        workflow.getInfoFor(ar, 'inactive_state', '') == 'inactive'):
                         ARs_to_publish.append(ar)
 
                 transitioned = Publish(self.context,
@@ -81,11 +81,10 @@ class ClientWorkflowAction(WorkflowAction):
 
 class ClientAnalysisRequestsView(BikaListingView):
 
-
     def __init__(self, context, request):
         super(ClientAnalysisRequestsView, self).__init__(context, request)
         self.contentFilter = {'portal_type':'AnalysisRequest',
-                              'cancellation_review_state': 'active'}
+                              'cancellation_state': 'active'}
         self.review_state = 'all'
         if context.objectValues('Contact'):
             self.content_add_actions = {_('Analysis Request'):
@@ -116,7 +115,7 @@ class ClientAnalysisRequestsView(BikaListingView):
         self.review_states = [
             {'id':'all',
              'title': _('All'),
-             'transitions': ['receive', 'submit', 'retract', 'cancel'],
+             'transitions': ['receive', 'submit', 'retract', 'publish', 'cancel'],
              'columns':['getRequestID',
                         'ClientOrderNumber',
                         'ClientReference',
@@ -197,7 +196,7 @@ class ClientAnalysisRequestsView(BikaListingView):
                         'state_title']},
             {'id':'cancelled',
              'title': _('Cancelled'),
-             'contentFilter': {'cancellation_review_state': 'cancelled'},
+             'contentFilter': {'cancellation_state': 'cancelled'},
              'transitions': ['reinstate'],
              'columns':['getRequestID',
                         'ClientOrderNumber',
@@ -233,7 +232,6 @@ class ClientAnalysisRequestsView(BikaListingView):
                 self.context.toLocalizedTime(obj.getDatePublished(), \
                                              long_format = 0) or ''
 
-            # add icon for assigned ARs
             if workflow.getInfoFor(obj, 'worksheetanalysis_review_state') == 'assigned':
                 items[x]['after']['state_title'] = \
                      "<img src='++resource++bika.lims.images/worksheet.png' title='All analyses assigned'/>"
@@ -253,7 +251,7 @@ class ClientSamplesView(BikaListingView):
     def __init__(self, context, request):
         super(ClientSamplesView, self).__init__(context, request)
         self.contentFilter = {'portal_type': 'Sample',
-                              'cancellation_review_state':'active'}
+                              'cancellation_state':'active'}
         self.content_add_actions = {}
         self.show_editable_border = True
         self.show_sort_column = False
@@ -322,7 +320,7 @@ class ClientSamplesView(BikaListingView):
                          'DateReceived']},
             {'id':'cancelled',
              'title': _('Cancelled'),
-             'contentFilter': {'cancellation_review_state': 'cancelled'},
+             'contentFilter': {'cancellation_state': 'cancelled'},
              'transitions': ['reinstate'],
              'columns': ['SampleID',
                          'Requests',

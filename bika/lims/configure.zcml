@@ -5,10 +5,12 @@
     xmlns:i18n="http://namespaces.zope.org/i18n"
     i18n_domain="bika.lims">
 
+  <include package="collective.subtractiveworkflow" />
+  <include package="plone.app.iterate" />
+
   <five:registerPackage package="." initialize=".initialize" />
   <include file="permissions.zcml" />
 
-  <include package="plone.app.iterate" />
   <include package=".browser" />
   <include package=".content" />
   <include package=".controlpanel" />

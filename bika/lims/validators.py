@@ -233,7 +233,7 @@ class FormulaValidator:
 
         for keyword in keywords:
             # Check if the service keyword exists and is active.
-            dep_service = pc(getKeyword=keyword, inactive_review_state="active")
+            dep_service = pc(getKeyword=keyword, inactive_state="active")
             if not dep_service and \
                not keyword in interim_keywords:
                 return ts.translate(

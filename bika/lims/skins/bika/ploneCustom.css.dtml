@@ -57,6 +57,22 @@ div.width-1\3a 4 { width: 16.5%; } /* .width-1:4 */
 div.width-3\3a 4 { width: 80.2%; } /* .width-1:4 */
 div.position-1\3a 4 {margin-left:    -81.5%;} /* .position-1:4 */
 
+#plone-contentmenu-workflow .state-cancelled {
+    background-color: red;
+    border: 0.1em solid red;
+    border-radius: 0.5em 0.5em 0.5em 0.5em;
+    color: White !important;
+    padding: 0 0.5em;
+}
+#plone-contentmenu-workflow .state-inactive {
+    background-color: red;
+    border: 0.1em solid red;
+    border-radius: 0.5em 0.5em 0.5em 0.5em;
+    color: White !important;
+    padding: 0 0.5em;
+}
+
+
 .documentActions{
   float:right;
 }

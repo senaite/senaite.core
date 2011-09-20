@@ -156,12 +156,12 @@ class AnalysisRequestViewView(BrowserView):
         pc = getToolByName(self.context, 'portal_catalog')
         for proxy in pc(portal_type = 'ARProfile',
                         getClientUID = self.context.UID(),
-                        inactive_review_state = 'active',
+                        inactive_state = 'active',
                         sort_on = 'sortable_title'):
                 profiles.append((proxy.Title, proxy.getObject()))
         for proxy in pc(portal_type = 'ARProfile',
                         getClientUID = self.context.bika_setup.bika_arprofiles.UID(),
-                        inactive_review_state = 'active',
+                        inactive_state = 'active',
                         sort_on = 'sortable_title'):
                 profiles.append((_('Lab:') + proxy.Title, proxy.getObject()))
         return profiles
@@ -190,7 +190,7 @@ class AnalysisRequestViewView(BrowserView):
         pc = getToolByName(self.context, 'portal_catalog')
         cats = {}
         for service in pc(portal_type = "AnalysisService",
-                          inactive_review_state = 'active'):
+                          inactive_state = 'active'):
             service = service.getObject()
             poc = service.getPointOfCapture()
             if not cats.has_key(poc): cats[poc] = []
@@ -421,7 +421,7 @@ class AnalysisRequestSelectCCView(BikaListingView):
         self.title = _("Contacts to CC")
         self.description = _("Select the contacts that will receive analysis results for this request.")
         self.contentFilter = {'portal_type': 'Contact',
-                              'inactive_review_state': 'active'}
+                              'inactive_state': 'active'}
         self.show_editable_border = False
         self.show_sort_column = False
         self.show_select_row = False
@@ -452,7 +452,7 @@ class AnalysisRequestSelectCCView(BikaListingView):
             if not item.has_key('obj'):
                 items.append(item)
                 continue
-            obj = item['obj'].getObject()
+            obj = item['obj']
             if obj.UID() in self.request.get('hide_uids', ()):
                 continue
             item['getFullname'] = obj.getFullname()
@@ -471,46 +471,56 @@ class AnalysisRequestSelectSampleView(BikaListingView):
     def __init__(self, context, request):
         super(AnalysisRequestSelectSampleView, self).__init__(context, request)
         self.title = _("Select sample")
-        self.description = _("Click the ID of a sample to create a secondary Analysis Request.")
+        self.description = _("Click on a sample to create a secondary AR.")
         self.contentFilter = {'portal_type': 'Sample',
-                              'inactive_review_state': 'active'}
+                              'cancellation_state': 'active'}
         self.show_editable_border = False
         self.show_sort_column = False
         self.show_select_row = False
         self.show_select_column = False
+        self.show_filters = True
         self.pagesize = 25
 
         self.columns = {
             'getSampleID': {'title': _('Sample ID')},
             'getClientSampleID': {'title': _('Client SID')},
             'getClientReference': {'title': _('Client Reference')},
-            'SampleType': {'title': _('Sample Type')},
-            'SamplePoint': {'title': _('Sample Point')},
+            'getSampleTypeTitle': {'title': _('Sample Type')},
+            'getSamplePointTitle': {'title': _('Sample Point')},
             'getDateReceived': {'title': _('Date Received')},
             'state_title': {'title': _('State')},
         }
         self.review_states = [
-            {'title': _('All'), 'id':'all',
+            {'id':'all',
+             'title': _('All Samples'),
              'columns': ['getSampleID',
                          'getClientReference',
                          'getClientSampleID',
-                         'SampleType',
-                         'SamplePoint',
+                         'getSampleTypeTitle',
+                         'getSamplePointTitle',
                          'state_title']},
-            {'title': _('Due'), 'id':'due',
+            {'id':'due',
+             'title': _('Sample Due'),
+             'contentFilter': {'review_state': 'due'},
              'columns': ['getSampleID',
                          'getClientReference',
                          'getClientSampleID',
-                         'SampleType',
-                         'SamplePoint']},
-            {'title': _('Received'), 'id':'received',
+                         'getSampleTypeTitle',
+                         'getSamplePointTitle']},
+            {'id':'received',
+             'title': _('Sample Received'),
+             'contentFilter': {'review_state': 'received'},
              'columns': ['getSampleID',
                          'getClientReference',
                          'getClientSampleID',
-                         'SampleType',
-                         'SamplePoint',
+                         'getSampleTypeTitle',
+                         'getSamplePointTitle',
                          'getDateReceived']},
         ]
+
+##    def get_workflow_actions(self):
+##        """ bika_listing_table.pt uses this to display the select button. """
+##        return [{"id":"select", "title":_("Select")}]
 
     @property
     def folderitems(self):
@@ -526,9 +536,11 @@ class AnalysisRequestSelectSampleView(BikaListingView):
             items[x]['getClientReference'] = obj.getClientReference()
             items[x]['getClientSampleID'] = obj.getClientSampleID()
             items[x]['getSampleID'] = obj.getSampleID()
-            items[x]['SampleType'] = obj.getSampleType().Title()
-            items[x]['SamplePoint'] = obj.getSamplePoint() and \
-                 obj.getSamplePoint().Title()
+            if obj.getSampleType().getHazardous():
+                items[x]['after']['getSampleID'] = \
+                     "<img src='++resource++bika.lims.images/hazardous_small.png' title='Hazardous'>"
+            items[x]['getSampleTypeTitle'] = obj.getSampleTypeTitle()
+            items[x]['getSamplePointTitle'] = obj.getSamplePointTitle()
             items[x]['getDateReceived'] = obj.getDateReceived() and \
                  self.context.toLocalizedTime(obj.getDateReceived(), long_format = 0) or ''
             items[x]['getDateSampled'] = obj.getDateSampled() and \
@@ -539,8 +551,8 @@ class AnalysisRequestSelectSampleView(BikaListingView):
                 'ClientSampleID': items[x]['getClientSampleID'],
                 'DateReceived': items[x]['getDateReceived'],
                 'DateSampled': items[x]['getDateSampled'],
-                'SampleType': items[x]['SampleType'],
-                'SamplePoint': items[x]['SamplePoint'],
+                'SampleType': items[x]['getSampleTypeTitle'],
+                'SamplePoint': items[x]['getSamplePointTitle'],
                 'field_analyses': self.FieldAnalyses(obj),
                 'column': self.request.get('column', None),
             })
@@ -632,7 +644,7 @@ class AJAXExpandCategory(BikaListingView):
         """ return a list of services brains """
         pc = getToolByName(self.context, 'portal_catalog')
         services = pc(portal_type = "AnalysisService",
-                      inactive_review_state = 'active',
+                      inactive_state = 'active',
                       getPointOfCapture = poc,
                       getCategoryUID = CategoryUID)
         return services
@@ -651,7 +663,7 @@ class AJAXProfileServices(BrowserView):
 
         services = {}
         for service in pc(portal_type = "AnalysisService",
-                          inactive_review_state = "active",
+                          inactive_state = "active",
                           UID = [u.UID() for u in profile.getService()]):
             service = service.getObject()
             categoryUID = service.getCategoryUID()
@@ -769,7 +781,7 @@ class AJAXAnalysisRequestSubmit():
 
                     if came_from == "add" and field == "SampleID":
                         if not pc(portal_type = 'Sample',
-                                  inactive_review_state = 'active',
+                                  inactive_state = 'active',
                                   getSampleID = ar[field]):
                             error(field,
                                   column,
@@ -777,7 +789,7 @@ class AJAXAnalysisRequestSubmit():
 
                     elif came_from == "add" and field == "SampleType":
                         if not pc(portal_type = 'SampleType',
-                                  inactive_review_state = 'active',
+                                  inactive_state = 'active',
                                   Title = ar[field]):
                             error(field,
                                   column,
@@ -785,7 +797,7 @@ class AJAXAnalysisRequestSubmit():
 
                     elif came_from == "add" and field == "SamplePoint":
                         if not pc(portal_type = 'SamplePoint',
-                                  inactive_review_state = 'active',
+                                  inactive_state = 'active',
                                   Title = ar[field]):
                             error(field,
                                   column,
@@ -820,7 +832,7 @@ class AJAXAnalysisRequestSubmit():
                 if (values.has_key('ARProfile')):
                     profileUID = values['ARProfile']
                     for proxy in pc(portal_type = 'ARProfile',
-                                    inactive_review_state = 'active',
+                                    inactive_state = 'active',
                                     UID = profileUID):
                         profile = proxy.getObject()
 
@@ -828,7 +840,7 @@ class AJAXAnalysisRequestSubmit():
                     # Secondary AR
                     sample_id = values['SampleID']
                     sample_proxy = pc(portal_type = 'Sample',
-                                      inactive_review_state = 'active',
+                                      inactive_state = 'active',
                                       getSampleID = sample_id)
                     assert len(sample_proxy) == 1
                     sample = sample_proxy[0].getObject()
@@ -935,8 +947,6 @@ class AJAXAnalysisRequestSubmit():
         self.context.plone_utils.addPortalMessage(message, 'info')
         return json.dumps({'success':message})
 
-
-
 class AnalysisRequestsView(BikaListingView):
     """ The main portal Analysis Requests action tab
     """
@@ -962,11 +972,12 @@ class AnalysisRequestsView(BikaListingView):
             'DatePublished': {'title': _('Date Published')},
             'state_title': {'title': _('State'), },
         }
-
         self.review_states = [
-            {'title': _('All'), 'id':'all',
+            {'id':'all',
+             'title': _('All'),
+             'transitions': ['receive', 'submit', 'retract', 'publish', 'cancel'],
              'columns':['getRequestID',
-                        'Client',
+                        'Client'
                         'ClientOrderNumber',
                         'ClientReference',
                         'ClientSampleID',
@@ -975,58 +986,58 @@ class AnalysisRequestsView(BikaListingView):
                         'DateReceived',
                         'DatePublished',
                         'state_title']},
-            {'title': _('Sample due'), 'id':'sample_due',
-             'transitions': ['cancel', 'receive'],
+            {'id':'sample_due',
+             'title': _('Sample due'),
+             'contentFilter': {'review_state': 'sample_due'},
+             'transitions': ['receive', 'cancel'],
              'columns':['getRequestID',
-                        'Client',
+                        'Client'
                         'ClientOrderNumber',
                         'ClientReference',
                         'ClientSampleID',
                         'SampleTypeTitle',
                         'SamplePointTitle']},
-            {'title': _('Sample received'), 'id':'sample_received',
+            {'id':'sample_received',
+             'title': _('Sample received'),
+             'contentFilter': {'review_state': 'sample_received'},
              'transitions': ['cancel'],
              'columns':['getRequestID',
-                        'Client',
+                        'Client'
                         'ClientOrderNumber',
                         'ClientReference',
                         'ClientSampleID',
                         'SampleTypeTitle',
                         'SamplePointTitle',
                         'DateReceived']},
-            {'title': _('Assigned to Worksheet'), 'id':'assigned',
-             'transitions': ['cancel'],
+            {'id':'to_be_verified',
+             'title': _('To be verified'),
+             'contentFilter': {'review_state': 'to_be_verified'},
+             'transitions': ['verify', 'retract', 'cancel'],
              'columns':['getRequestID',
-                        'Client',
+                        'Client'
                         'ClientOrderNumber',
                         'ClientReference',
                         'ClientSampleID',
                         'SampleTypeTitle',
                         'SamplePointTitle',
                         'DateReceived']},
-            {'title': _('To be verified'), 'id':'to_be_verified',
-             'transitions': ['cancel', 'verify'],
-             'columns':['getRequestID',
-                        'Client',
-                        'ClientOrderNumber',
-                        'ClientReference',
-                        'ClientSampleID',
-                        'SampleTypeTitle',
-                        'SamplePointTitle',
-                        'DateReceived']},
-            {'title': _('Verified'), 'id':'verified',
+            {'id':'verified',
+             'title': _('Verified'),
+             'contentFilter': {'review_state': 'verified'},
              'transitions': ['cancel', 'publish'],
              'columns':['getRequestID',
-                        'Client',
+                        'Client'
                         'ClientOrderNumber',
                         'ClientReference',
                         'ClientSampleID',
                         'SampleTypeTitle',
                         'SamplePointTitle',
                         'DateReceived']},
-            {'title': _('Published'), 'id':'published',
+            {'id':'published',
+             'title': _('Published'),
+             'contentFilter': {'review_state': 'published'},
              'columns':['getRequestID',
-                        'Client',
+                        'Client'
                         'ClientOrderNumber',
                         'ClientReference',
                         'ClientSampleID',
@@ -1034,17 +1045,49 @@ class AnalysisRequestsView(BikaListingView):
                         'SamplePointTitle',
                         'DateReceived',
                         'DatePublished']},
-        ]
+            {'id':'assigned',
+             'title': _('Assigned to Worksheet'),
+             'contentFilter': {'worksheetanalysis_review_state': 'assigned',
+                               'review_state': ('sample_received', 'to_be_verified',
+                                                'attachment_due', 'verified',
+                                                'published')},
+             'transitions': ['cancel'],
+             'columns':['getRequestID',
+                        'Client'
+                        'ClientOrderNumber',
+                        'ClientReference',
+                        'ClientSampleID',
+                        'SampleTypeTitle',
+                        'SamplePointTitle',
+                        'DateReceived',
+                        'state_title']},
+            {'id':'cancelled',
+             'title': _('Cancelled'),
+             'contentFilter': {'cancellation_state': 'cancelled'},
+             'transitions': ['reinstate'],
+             'columns':['getRequestID',
+                        'Client'
+                        'ClientOrderNumber',
+                        'ClientReference',
+                        'ClientSampleID',
+                        'SampleTypeTitle',
+                        'SamplePointTitle',
+                        'DateReceived',
+                        'DatePublished',
+                        'state_title']},
+            ]
 
     @property
     def folderitems(self):
         items = BikaListingView.folderitems(self)
+        workflow = getToolByName(self.context, 'portal_workflow')
         for x in range(len(items)):
             if not items[x].has_key('obj'): continue
             obj = items[x]['obj']
 
             items[x]['replace']['getRequestID'] = "<a href='%s'>%s</a>" % \
                  (items[x]['url'], items[x]['getRequestID'])
+
             items[x]['replace']['Client'] = "<a href='%s'>%s</a>" % \
                  (obj.aq_parent.absolute_url(), obj.aq_parent.Title())
             items[x]['ClientOrderNumber'] = obj.getClientOrderNumber()
@@ -1058,6 +1101,10 @@ class AnalysisRequestsView(BikaListingView):
             items[x]['DatePublished'] = obj.getDatePublished() and \
                 self.context.toLocalizedTime(obj.getDatePublished(), \
                                              long_format = 0) or ''
+
+            if workflow.getInfoFor(obj, 'worksheetanalysis_review_state') == 'assigned':
+                items[x]['after']['state_title'] = \
+                     "<img src='++resource++bika.lims.images/worksheet.png' title='All analyses assigned'/>"
 
             sample = obj.getSample()
             after_icons = "<a href='%s'><img src='++resource++bika.lims.images/sample.png' title='Sample: %s'></a>" % \

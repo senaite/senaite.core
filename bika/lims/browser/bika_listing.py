@@ -376,21 +376,16 @@ class BikaListingView(BrowserView):
             if key in self.contentFilter.keys():
                 self.filters_in_use = True
         table = BikaListingTable(self)
-        return table.render()
+        return table.render(self)
 
-class BikaListingTable(FolderContentsTable):
+class BikaListingTable(tableview.Table):
+
+    render = ViewPageTemplateFile("templates/bika_listing_table.pt")
+    batching = ViewPageTemplateFile("templates/bika_listing_batching.pt")
 
     def __init__(self, bika_listing):
-        self.context = bika_listing.context
-        self.request = bika_listing.request
-        self.table = Table(bika_listing)
-
-    def render(self):
-        return self.table.render()
-
-class Table(tableview.Table):
-    def __init__(self, bika_listing):
-
+        self.table = self
+        self.bika_listing = bika_listing
         folderitems = bika_listing.folderitems
 
         tableview.Table.__init__(self,
@@ -419,32 +414,32 @@ class Table(tableview.Table):
         """ Compile a list of possible workflow transitions for items
             in this Table.
         """
-        workflow = getToolByName(self.context, 'portal_workflow')
+
+        # bika_listing views can override this.
+        if hasattr(self.bika_listing, 'get_workflow_actions'):
+            return self.bika_listing.get_workflow_actions()
 
         # return empty list if selecting checkboxes are disabled
         if not self.show_select_column:
             return []
 
+        workflow = getToolByName(self.context, 'portal_workflow')
+
         state = self.request.get('review_state', 'all')
         review_state = [i for i in self.review_states if i['id'] == state][0]
 
         # get all transitions for all items.
-        # if there is a review_state['some_state']['transitions'] attribute
-        # on the BikaListingView, the list is restricted to these transitions
         transitions = {}
         for i, item in enumerate(self.items):
-            if not item.has_key('obj'): continue
             obj = hasattr(item['obj'], 'getObject') and \
                 item['obj'].getObject() or \
                 item['obj']
-            for w in workflow.getWorkflowsFor(obj):
-                for tid,t in w.transitions.items():
-                    if w.isActionSupported(obj, tid):
-                        if tid not in transitions:
-                            transitions[tid] = t
+            for t in workflow.getTransitionsFor(obj):
+                transitions[t['id']] = t
 
-        # sort the transitions according to the review_state
-        # transitions list, if there is one
+        # if there is a review_state['some_state']['transitions'] attribute
+        # on the BikaListingView, the list is restricted to and ordered by
+        # these transitions
         if 'transitions' in review_state:
             ordered = []
             for tid in review_state['transitions']:
@@ -455,6 +450,3 @@ class Table(tableview.Table):
             transitions = transitions.values()
 
         return transitions
-
-    render = ViewPageTemplateFile("templates/bika_listing_table.pt")
-    batching = ViewPageTemplateFile("templates/bika_listing_batching.pt")

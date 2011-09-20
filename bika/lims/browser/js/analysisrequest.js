@@ -265,28 +265,41 @@ jQuery( function($) {
 		column = $(this).attr("column");
 		unsetARProfile(column);
 		if(profileUID == "") return;
-		selected_elements = []
-		$.getJSON(
-			'analysisrequest_profileservices',
-			{'profileUID':profileUID,
-			'_authenticator': $('input[name="_authenticator"]').val()},
-			function(data,textStatus){
-				$.each(data, function(poc_categoryUID, selectedservices){
-					if( $("tbody[class*='expanded']").filter("#"+poc_categoryUID).length > 0 ){
-						$.each(selectedservices, function(i,uid){
-							$.each($("input[column='"+column+"']").filter("#"+uid), function(x, e){
-								$(e).attr('checked', true);
-							});
-							recalc_prices(column);
+		selected_elements = [];
+		function success(profile_data){
+			$.each(profile_data, function(poc_categoryUID, selectedservices){
+				if( $("tbody[class*='expanded']").filter("#"+poc_categoryUID).length > 0 ){
+					$.each(selectedservices, function(i,uid){
+						$.each($("input[column='"+column+"']").filter("#"+uid), function(x, e){
+							$(e).attr('checked', true);
 						});
-					} else {
-						p_c = poc_categoryUID.split("_");
-						toggleCat(p_c[0], p_c[1], column, selectedservices);
-					}
-				});
-			},
-			"json"
-		);
+						recalc_prices(column);
+					});
+				} else {
+					p_c = poc_categoryUID.split("_");
+					toggleCat(p_c[0], p_c[1], column, selectedservices);
+				}
+			});
+		}
+		// cached value in #profileUID
+		if($("#"+profileUID).length > 0){
+			success($.parseJSON($("#"+profileUID).attr('data')));
+		} else {
+			options = {
+				url: 'analysisrequest_profileservices',
+				type: 'POST',
+				async: false,
+				data: {
+					'profileUID':profileUID,
+					'_authenticator': $('input[name="_authenticator"]').val()
+				},
+				success: function(data,textStatus,xhr){
+					$(".ARProfile").append("<div style='display:none' id='"+profileUID+"' data='"+data+"'>")
+					success($.parseJSON(data));
+				},
+			}
+			$.ajax(options);
+		}
 	}
 
 	function unsetARProfile(column){
@@ -325,8 +338,12 @@ jQuery( function($) {
 
 		$(".copyButton").live('click',  function (){
 			field_name = $(this).attr("name");
-			if ($(this).parent().attr('class') == 'service'){ // Profile selector
-			  console.log(1);
+			if ($(this).hasClass('ARProfile')){ // Profile selector
+				first_val = $('#ar_0_ARProfile').val();
+				for (col=1; col<parseInt($("#col_count").val()); col++) {
+					$("#ar_"+col+"_ARProfile").val(first_val);
+					$("#ar_"+col+"_ARProfile").change();
+				}
 			}
 			else if ($(this).parent().attr('class') == 'service'){ // Analysis service checkbox
 				first_val = $('input[column="0"]').filter('#'+this.id).attr("checked");
@@ -420,7 +437,7 @@ jQuery( function($) {
 		}
 
 		// Contact dropdown changes
-		$("#contact").live('change', function(){
+		$("#primary_contact").live('change', function(){
 			$.ajax({
 				type: 'POST',
 				url: 'analysisrequest_contact_ccs',
@@ -434,7 +451,7 @@ jQuery( function($) {
 				dataType: "json"
 			});
 		});
-		contact_element = $("#contact");
+		contact_element = $("#primary_contact");
 		if(contact_element.length > 0) {
 			contact_element.change();
 		}
@@ -446,8 +463,8 @@ jQuery( function($) {
 
 		// A button in the AR form displays the CC browser window (select_cc.pt)
 		$('#open_cc_browser').click(function(){
-			contact_uid = $('#contact').attr('value');
-			cc_uids = $('#cc_uids').attr('value');
+			contact_uid = $('#primary_contact').val();
+			cc_uids = $('#cc_uids').val();
 			window.open('analysisrequest_select_cc?hide_uids=' + contact_uid + '&selected_uids=' + cc_uids,
 				'analysisrequest_select_cc','toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=600,height=550');
 		});

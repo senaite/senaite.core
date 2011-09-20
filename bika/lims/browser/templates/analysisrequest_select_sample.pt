@@ -64,6 +64,7 @@
         <metal:styleslot define-slot="style_slot" />
 
         <script type="text/javascript" src="++resource++bika.lims.js/analysisrequest_select_sample.js"></script>
+        <script type="text/javascript" src="++resource++bika.lims.js/bika_listing.js"></script>
 
         <tal:comment replace="nothing"> This is deprecated, please use style_slot instead. </tal:comment>
         <metal:cssslot define-slot="css_slot" />
@@ -109,14 +110,21 @@
 
                         <metal:main define-macro="main">
                             <div tal:replace="structure provider:plone.abovecontenttitle" />
-                                    <h1 class="documentFirstHeading" tal:content="view/title"/>
-
-                                    <div class="documentDescription" tal:content="view/description"/>
+								<h1 class="documentFirstHeading" tal:content="view/title"/>
+								<div class="documentDescription"
+									tal:content="view/description"
+									tal:condition="view/description"/>
 
                             <div id="content-core">
-                                <metal:text define-slot="content-core">
-                                  <div tal:content="structure view/contents_table"/>
-                                </metal:text>
+								<form name="folderContentsForm"
+									  id="folderContentsForm"
+									  method="post"
+									  class="kssattr-serveraction-foldercontents_update_table">
+								<div id="folderlisting-main-table">
+									<div tal:replace="structure view/contents_table"></div>
+								</div>
+								  <input tal:replace="structure context/@@authenticator/authenticator"/>
+								</form>
                             </div>
                         </metal:main>
 

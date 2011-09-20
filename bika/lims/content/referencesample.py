@@ -185,7 +185,7 @@ class ReferenceSample(BaseFolder):
 ##    def getActiveReferenceDefinitions(self):
 ##        pc = getToolByName(self, 'portal_catalog')
 ##        defs = pc(portal_type='ReferenceDefinition',
-##                  inactive_review_state='active')
+##                  inactive_state='active')
 ##        return DisplayList(tuple([(d.UID,d.Title) for d in defs]))
 
     security.declarePublic('current_date')

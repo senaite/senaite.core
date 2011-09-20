@@ -31,6 +31,7 @@ setup(name='bika.lims',
           'Products.CMFEditions',
           'reportlab',
           'openpyxl',
+          'collective.subtractiveworkflow',
       ],
       extras_require = {
           'test': [

@@ -198,7 +198,7 @@ class WorksheetAddView(BrowserView):
                         reference_found = False
                         for s in pc(portal_type = 'ReferenceSample',
                                     review_state = 'current',
-                                    inactive_review_state = 'active',
+                                    inactive_state = 'active',
                                     getReferenceDefinitionUID = reference_definition_uid):
                             reference = s.getObject()
                             reference_uid = reference.UID()

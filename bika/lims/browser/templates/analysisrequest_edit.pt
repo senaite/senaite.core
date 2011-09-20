@@ -74,7 +74,7 @@
         <td class="contact"
             tal:attributes="colspan python: view.col_count+2"
             tal:define="this_contact python:edit and context.getContactUID();">
-        <select name="Contact" id="contact" tal:attributes="tabindex tabindex/next;">
+        <select name="Contact" id="primary_contact" tal:attributes="tabindex tabindex/next;">
             <tal:item
                 tal:define="vocab here/getContactsDisplayList"
                 tal:repeat="item vocab">
@@ -112,7 +112,7 @@
     <tr tal:define="field_name string:ARProfile">
         <th colspan="2" i18n:translate="label_arprofiles">Profile</th>
         <td>
-            <img class="copyButton" tal:condition="not: edit"
+            <img class="copyButton ARProfile" tal:condition="not: edit"
                 tal:attributes="name field_name;src string:${portal/absolute_url}/++resource++bika.lims.images/copy.png"/>
         </td>
         <tal:block repeat="column python:range(view.col_count)">

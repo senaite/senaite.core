@@ -10,6 +10,13 @@ import sys
 from bika.lims import bikaMessageFactory as _
 
 schema = BikaSchema.copy() + Schema((
+# For indexing unique values?
+#    ComputedField('SamplePointTitle',
+#        expression = 'context.getTitle()',
+#        widget = ComputedWidget(
+#            visible=False,
+#        )
+#    ),
     StringField('Latitude',
         schemata = _('Location'),
         widget=StringWidget(

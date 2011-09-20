@@ -75,10 +75,9 @@ class AnalysesView(BikaListingView):
         self.interim_fields = {}
         for i, item in enumerate(items):
             # self.contentsMethod may return brains or objects.
-            if hasattr(items[i]['obj'], 'getObject'):
-                obj = items[i]['obj'].getObject()
-            else:
-                obj = items[i]['obj']
+            obj = hasattr(items[i]['obj'], 'getObject') and \
+                items[i]['obj'].getObject() or \
+                items[i]['obj']
 
             # calculate specs - they are stored in an attribute on each row
             # so that selecting lab/client ranges can re-calculate in javascript

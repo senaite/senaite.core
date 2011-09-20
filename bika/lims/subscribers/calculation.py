@@ -18,7 +18,7 @@ def ActionSucceededEventHandler(instance, event):
         services = instance.getDependentServices()
         inactive_services = []
         for service in services:
-            if wf.getInfoFor(service, "inactive_review_state") == "inactive":
+            if wf.getInfoFor(service, "inactive_state") == "inactive":
                 inactive_services.append(service.Title())
         if inactive_services:
             message = ts.translate(
@@ -34,7 +34,7 @@ def ActionSucceededEventHandler(instance, event):
 
     if event.action == "deactivate":
         # A calculation cannot be deactivated if active services are using it.
-        services = pc(portal_type="AnalysisService", inactive_review_state="active")
+        services = pc(portal_type="AnalysisService", inactive_state="active")
         calc_services = []
         for service in services:
             service = service.getObject()

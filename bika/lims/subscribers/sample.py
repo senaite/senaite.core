@@ -36,22 +36,22 @@ def ActionSucceededEventHandler(sample, event):
     #---------------------
 
     elif event.action == "reinstate":
-        sample.reindexObject(idxs = ["cancellation_review_state", ])
+        sample.reindexObject(idxs = ["cancellation_state", ])
         # reinstate all ARs for this sample.
         ars = sample.getAnalysisRequests()
         for ar in ars:
             if not ar.UID in sample.REQUEST['workflow_skiplist']:
-                ar_state = workflow.getInfoFor(ar, 'cancellation_review_state')
+                ar_state = workflow.getInfoFor(ar, 'cancellation_state')
                 if ar_state == 'cancelled':
                     workflow.doActionFor(ar, 'reinstate')
 
     elif event.action == "cancel":
-        sample.reindexObject(idxs = ["cancellation_review_state", ])
+        sample.reindexObject(idxs = ["cancellation_state", ])
         # cancel all ARs for this sample.
         ars = sample.getAnalysisRequests()
         for ar in ars:
             if not ar.UID in sample.REQUEST['workflow_skiplist']:
-                ar_state = workflow.getInfoFor(ar, 'cancellation_review_state')
+                ar_state = workflow.getInfoFor(ar, 'cancellation_state')
                 if ar_state == 'active':
                     workflow.doActionFor(ar, 'cancel')
 

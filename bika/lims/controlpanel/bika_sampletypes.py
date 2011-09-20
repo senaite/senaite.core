@@ -72,5 +72,10 @@ class AJAX_SampleTypes():
         items = pc(portal_type = "SampleType")
         nr_items = len(items)
         items = [s.Title for s in items if s.Title.lower().find(term.lower()) > -1]
+
+        ##XXX why does it return not all values in index?  only those that are 'referenced' by samples?
+        #values = pc.Indexes['getSampleTypeTitle'].uniqueValues()
+        #items = term and [v for v in values if v.lower().find(term.lower()) > -1]
+        ###
         return json.dumps(items[:10])
 
