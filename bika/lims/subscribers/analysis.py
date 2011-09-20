@@ -182,16 +182,19 @@ def ActionSucceededEventHandler(analysis, event):
     elif event.action == "retract":
         analysis.reindexObject(idxs = ["review_state", ])
         # retract our dependencies
-        for dependency in analysis.getDependencies():
-            if not dependency.UID() in analysis.REQUEST['workflow_skiplist']:
-                if wf.getInfoFor(dependency, 'review_state') in ('attachment_due', 'to_be_verified',):
-                    # (NB: don't retract if it's verified)
-                    wf.doActionFor(dependency, 'retract')
+        if not "retract all dependencies" in analysis.REQUEST['workflow_skiplist']:
+            for dependency in analysis.getDependencies():
+                if not dependency.UID() in analysis.REQUEST['workflow_skiplist']:
+                    if wf.getInfoFor(dependency, 'review_state') in ('attachment_due', 'to_be_verified',):
+                        # (NB: don't retract if it's verified)
+                        wf.doActionFor(dependency, 'retract')
         # Retract our dependents
         for dep in analysis.getDependents():
             if not dep.UID() in analysis.REQUEST['workflow_skiplist']:
                 if wf.getInfoFor(dep, 'review_state') != 'sample_received':
+                    analysis.REQUEST["workflow_skiplist"].append("retract all dependencies")
                     wf.doActionFor(dep, 'retract')
+                    analysis.REQUEST["workflow_skiplist"].remove("retract all dependencies")
         # Escalate action to the parent AR
         if not ar.UID() in analysis.REQUEST['workflow_skiplist']:
             if wf.getInfoFor(ar, 'review_state') == 'sample_received':
