@@ -88,20 +88,20 @@ def ActionSucceededEventHandler(ar, event):
     # Secondary workflows:
     #---------------------
 
-    elif event.action == "activate":
-        ar.reindexObject(idxs = ["inactive_review_state", ])
+    elif event.action == "reinstate":
+        ar.reindexObject(idxs = ["cancellation_review_state", ])
         # activate all analyses in this AR.
-        analyses = ar.getAnalyses(inactive_review_state = 'inactive')
+        analyses = ar.getAnalyses(inactive_review_state = 'cancelled')
         for analysis in analyses:
             if not analysis.UID in ar.REQUEST['workflow_skiplist']:
-                wf.doActionFor(analysis.getObject(), 'activate')
+                wf.doActionFor(analysis.getObject(), 'reinstate')
 
-    elif event.action == "deactivate":
-        ar.reindexObject(idxs = ["inactive_review_state", ])
+    elif event.action == "cancel":
+        ar.reindexObject(idxs = ["cancellation_review_state", ])
         # deactivate all analyses in this AR.
-        analyses = ar.getAnalyses(inactive_review_state = 'active')
+        analyses = ar.getAnalyses(cancellation_review_state = 'active')
         for analysis in analyses:
             if not analysis.UID in ar.REQUEST['workflow_skiplist']:
-                wf.doActionFor(analysis.getObject(), 'deactivate')
+                wf.doActionFor(analysis.getObject(), 'cancel')
 
     return
