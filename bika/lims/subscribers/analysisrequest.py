@@ -55,14 +55,14 @@ def ActionSucceededEventHandler(ar, event):
 
     elif event.action == "submit":
         ar.reindexObject(idxs = ["review_state", ])
-        # Don't cascade. Shouldn't be submitting ARs for now.
+        # Don't cascade. Shouldn't be submitting ARs directly for now.
 
     elif event.action == "retract":
         ar.reindexObject(idxs = ["review_state", ])
         if not "retract all analyses" in ar.REQUEST['workflow_skiplist']:
             # retract all analyses in this AR.
-            # (NB: don't retract if it's published)
-            analyses = ar.getAnalyses(review_state = ('attachment_due', 'to_be_verified', 'verified',))
+            # (NB: don't retract if it's verified)
+            analyses = ar.getAnalyses(review_state = ('attachment_due', 'to_be_verified',))
             for analysis in analyses:
                 if not analysis.UID in ar.REQUEST['workflow_skiplist']:
                     wf.doActionFor(analysis.getObject(), 'retract')

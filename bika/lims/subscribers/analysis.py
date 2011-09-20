@@ -137,6 +137,14 @@ def ActionSucceededEventHandler(analysis, event):
                 can_submit = True
                 if not dependent.getResult():
                     can_submit = False
+                else:
+                    interim_fields = False
+                    service = dependent.getService()
+                    calculation = service.getCalculation()
+                    if calculation:
+                        interim_fields = calculation.getInterimFields()
+                    if interim_fields:
+                        can_submit = False
                 if can_submit:
                     dependencies = dependent.getDependencies()
                     for dependency in dependencies:
@@ -176,8 +184,8 @@ def ActionSucceededEventHandler(analysis, event):
         # retract our dependencies
         for dependency in analysis.getDependencies():
             if not dependency.UID() in analysis.REQUEST['workflow_skiplist']:
-                if wf.getInfoFor(dependency, 'review_state') in ('attachment_due', 'to_be_verified', 'verified',):
-                    # (NB: don't retract if it's published)
+                if wf.getInfoFor(dependency, 'review_state') in ('attachment_due', 'to_be_verified',):
+                    # (NB: don't retract if it's verified)
                     wf.doActionFor(dependency, 'retract')
         # Retract our dependents
         for dep in analysis.getDependents():
@@ -209,22 +217,40 @@ def ActionSucceededEventHandler(analysis, event):
                         raise WorkflowException, _("Results cannot be verified by the submitting user.")
                     break
 
-        # Don't verify our dependencies, they're done.
-        #-------------------------------------------------
+        # Don't verify our dependencies, they're done (or will be done by AR).
+        #---------------------------------------------------------------------
         # Check for dependents, ensure all their dependencies
-        # have been verified, and verify them
+        # have been verified, and submit/verify them
         for dependent in analysis.getDependents():
             if not dependent.UID() in analysis.REQUEST['workflow_skiplist']:
-                if wf.getInfoFor(dependent, 'review_state') == 'to_be_verified':
-                    can_verify_dependent = True
-                    for dependency in dependent.getDependencies():
-                        if not dependency.UID() in analysis.REQUEST['workflow_skiplist']:
-                            if wf.getInfoFor(dependency, 'review_state') in \
-                               ('sample_due', 'sample_received', 'attachment_due', 'to_be_verified'):
-                                can_verify_dependent = False
-                                break
-                    if can_verify_dependent:
-                        wf.doActionFor(dependent, 'verify')
+                if dependent.getResult():
+                    review_state = wf.getInfoFor(dependent, 'review_state')
+                    interim_fields = False
+                    service = dependent.getService()
+                    calculation = service.getCalculation()
+                    if calculation:
+                        interim_fields = calculation.getInterimFields()
+                    dependencies = dependent.getDependencies()
+                    if interim_fields:
+                        if review_state == 'sample_received':
+                            can_submit = True
+                            for dependency in dependencies:
+                                if wf.getInfoFor(dependency, 'review_state') in \
+                                    ('sample_due', 'sample_received', 'attachment_due', 'to_be_verified'):
+                                    can_submit = False
+                                    break
+                            if can_submit:
+                                wf.doActionFor(dependent, 'submit')
+                    else:
+                        if review_state == 'to_be_verified':
+                            can_verify = True
+                            for dependency in dependencies:
+                                if wf.getInfoFor(dependency, 'review_state') in \
+                                    ('sample_due', 'sample_received', 'attachment_due', 'to_be_verified'):
+                                    can_verify = False
+                                    break
+                            if can_verify:
+                                wf.doActionFor(dependent, 'verify')
 
         # If all analyses in this AR are verified
         # escalate the action to the parent AR
