@@ -8,7 +8,7 @@
  <property name="content_meta_type">Client</property>
  <property name="product">bika.lims</property>
  <property name="factory">addClient</property>
- <property name="add_view_expr"></property>
+ <property name="add_view_expr">string:${object/absolute_url}/base_edit</property>
  <property name="link_target"></property>
  <property name="global_allow">False</property>
  <property name="filter_content_types">True</property>
@@ -23,9 +23,11 @@
   <element value="AnalysisSpec"/>
  </property>
  <property name="allow_discussion">False</property>
+ <property name="immediate_view">base_edit</property>
  <property name="default_view_fallback">False</property>
 
  <alias from="(Default)" to="analysisrequests"/>
+ <alias from="edit" to="base_edit"/>
 
  <action title="Edit"
          action_id="edit"
