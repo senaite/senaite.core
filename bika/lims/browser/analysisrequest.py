@@ -735,24 +735,24 @@ class AJAXAnalysisRequestSubmit():
                         default = 'Input is required but no input given.',
                         domain = 'bika')
                 if (column or field):
-                    error_key = " column: %s: %s" % (int(column) + 1, field or '')
+                    error_key = " %s.%s" % (int(column) + 1, field or '')
                 else:
                     error_key = "Form Error"
-                errors["Error"] = error_key + " " + message
+                errors[error_key] = message
 
             # first some basic validation
-            has_analyses = False
             for column in range(int(form['col_count'])):
                 column = "%01d" % column
-                if form.has_key("ar.%s" % column) and \
-                   form["ar.%s" % column].has_key("Analyses"):
-                    has_analyses = True
-            if not has_analyses or not form.has_key('Prices'):
-                error(message = _("No analyses have been selected."))
-                return json.dumps({'errors': errors})
-
-            prices = form['Prices']
-            vat = form['VAT']
+                formkey = "ar.%s" % column
+                # first time in, unused columns not in form
+                if not form.has_key(formkey):
+                    continue
+                ar = form[formkey]
+                if len(ar.keys()) == 3: # three empty price fields
+                    if ar.has_key('subtotal'):
+                        continue
+                if not form["ar.%s" % column].has_key("Analyses"):
+                    error('Analyses', column,  _("No analyses have been selected."))
 
             required = ['Analyses']
             if came_from == "add": required += ['SampleType', 'DateSampled']
@@ -812,6 +812,9 @@ class AJAXAnalysisRequestSubmit():
 
             if errors:
                 return json.dumps({'errors':errors})
+
+            prices = form['Prices']
+            vat = form['VAT']
 
             ARs = []
             services = {} # UID:service

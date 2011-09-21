@@ -540,7 +540,7 @@ jQuery( function($) {
 						for(error in responseText['errors']){
 							x = error.split(".");
 							if (x.length == 2){
-								e = x[1] + " (Column " + (+x[0] + 1) + "): ";
+								e = x[1] + ", Column " + (+x[0]) + ": ";
 							} else {
 								e = "";
 							}
