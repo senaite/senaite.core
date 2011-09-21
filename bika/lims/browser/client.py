@@ -349,7 +349,7 @@ class ClientSamplesView(BikaListingView):
             items[x]['SampleTypeTitle'] = obj.getSampleTypeTitle()
             items[x]['SamplePointTitle'] = obj.getSamplePointTitle()
 
-            items[x]['getDateReceived'] = \
+            items[x]['DateReceived'] = \
                 TimeOrDate(obj.getDateReceived())
 
             after_icons = ''
