@@ -431,6 +431,8 @@ class BikaListingTable(tableview.Table):
         # get all transitions for all items.
         transitions = {}
         for i, item in enumerate(self.items):
+            if not hasattr(item, 'obj'):
+                continue
             obj = hasattr(item['obj'], 'getObject') and \
                 item['obj'].getObject() or \
                 item['obj']

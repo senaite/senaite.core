@@ -15,4 +15,6 @@ class BikaSetupData(BrowserView):
 
     def __init__(self, context, request):
         BrowserView.__init(self, context, request)
+
+    def __call__(self):
         return template()
