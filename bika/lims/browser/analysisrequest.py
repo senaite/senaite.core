@@ -960,7 +960,7 @@ class AnalysisRequestsView(ClientAnalysisRequestsView):
         self.columns['Client'] = {'title': _('Client')}
         review_states = []
         for review_state in self.review_states:
-            review_state['columns'].insert(review_state['columns'].index('ClientOrderNumber'), 'Client')
+            review_state['columns'].insert(review_state['columns'].index('getClientOrderNumber'), 'Client')
 
     def folderitems(self):
         workflow = getToolByName(self.context, "portal_workflow")
