@@ -105,8 +105,8 @@ PRICELIST_TYPES = DisplayList((
 ))
 
 CLIENT_TYPES = DisplayList((
-    ('corporate', 'Corporate'),
-    ('noncorporate', 'Non Corporate'),
+    ('corporate', 'Bulk Discount'),
+    ('noncorporate', 'Standard price'),
 ))
 
 ANALYSIS_TYPES = DisplayList((
