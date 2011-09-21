@@ -767,7 +767,8 @@ class AJAXAnalysisRequestSubmit():
                     continue
                 ar = form["ar.%s" % column]
                 if len(ar.keys()) == 3: # three empty price fields
-                    continue
+                    if came_from == 'add':
+                        continue
                 # check that required fields have values
                 for field in required:
                     if not ar.has_key(field):
