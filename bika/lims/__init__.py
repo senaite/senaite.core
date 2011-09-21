@@ -50,13 +50,10 @@ def initialize(context):
     from content.contact import Contact
     from content.department import Department
     from content.instrument import Instrument
-    from content.arprofile import ARProfile
     from content.labcontact import LabContact
     from content.laboratory import Laboratory
     from content.labproduct import LabProduct
     from content.method import Method
-    from content.supplyorder import SupplyOrder
-    from content.supplyorderitem import SupplyOrderItem
     from content.organisation import Organisation
     from content.person import Person
     from content.referenceanalysis import ReferenceAnalysis
@@ -69,25 +66,27 @@ def initialize(context):
     from content.sample import Sample
     from content.samplepoint import SamplePoint
     from content.sampletype import SampleType
+    from content.supplyorder import SupplyOrder
+    from content.supplyorderitem import SupplyOrderItem
     from content.worksheet import Worksheet
     from content.worksheetfolder import WorksheetFolder
     from content.worksheettemplate import WorksheetTemplate
 
     from controlpanel.bika_analysiscategories import AnalysisCategories
     from controlpanel.bika_analysisservices import AnalysisServices
+    from controlpanel.bika_analysisspecs import AnalysisSpecs
     from controlpanel.bika_arprofiles import ARProfiles
     from controlpanel.bika_attachmenttypes import AttachmentTypes
     from controlpanel.bika_calculations import Calculations
     from controlpanel.bika_departments import Departments
     from controlpanel.bika_instruments import Instruments
-    from controlpanel.bika_analysisspecs import AnalysisSpecs
     from controlpanel.bika_labcontacts import LabContacts
-    from controlpanel.bika_methods import Methods
     from controlpanel.bika_labproducts import LabProducts
+    from controlpanel.bika_methods import Methods
+    from controlpanel.bika_referencedefinitions import ReferenceDefinitions
+    from controlpanel.bika_referencemanufacturers import ReferenceManufacturers
     from controlpanel.bika_samplepoints import SamplePoints
     from controlpanel.bika_sampletypes import SampleTypes
-    from controlpanel.bika_referencemanufacturers import ReferenceManufacturers
-    from controlpanel.bika_referencedefinitions import ReferenceDefinitions
     from controlpanel.bika_worksheettemplates import WorksheetTemplates
 
     content_types, constructors, ftis = process_types(
