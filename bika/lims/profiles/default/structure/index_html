@@ -1,3 +1,23 @@
+id: index_html
+title: Welcome to Bika LIMS 3 "Modjadji"
+description: This is release 3.0 pre-αlpha r3102
+subject:
+relatedItems:
+location:
+language:
+effectiveDate: 2011/01/01 23:00:00 GMT+2
+expirationDate: None
+creation_date: 2011/01/01 23:00:00 GMT+2
+modification_date: 2011/02/01 10:59:31.194263 GMT+2
+creators: admin
+contributors:
+rights:
+allowDiscussion: False
+excludeFromNav: True
+presentation: False
+tableContents: False
+Content-Type: text/html
+
 <p> </p>
 <p><b>Thank you for downloading Bika LIMS. Please see the <a class="internal-link" href="installation-verification">Installation Verification</a> page</b></p>
 <table class="invisible">
@@ -20,7 +40,7 @@
 </tr>
 <tr>
 <td colspan="3">
-<p style="text-align: center; "><img alt="LIMS flow &amp; Analysis status progression" class="image-inline" src="++resource++bika.lims.images/LIMSFlowDiagram201103_600x.jpg" /></p>
+<p style="text-align: center; "><img alt="LIMS flow &amp; Analysis status progression" class="image-inline" src="++resource++bika.lims.images/LIMSFlowDiagram201103_600x.png" /></p>
 </td>
 </tr>
 <tr>
@@ -32,6 +52,7 @@
 <p style="padding-left: 30px; ">Plone    4's versioning is used to maintain references to historical data in the    correct context, e.g. historical Analysis Requests will reflect the    correct historical methods, prices, units etc., after the Analysis    Service records they reference might have been modified</p>
 <p style="padding-left: 30px; ">Plone's    change note functionality is maintained in the Bika setup, as well as    object locking to prevent more than 1 user editing the same item</p>
 <p>Bika's Analysis, Analysis request and Worksheet workflows were also    reworked and are now undergoing testing. Secondary cancellation  workflow was   introduced for these 'transactional' objects too, to keep  cancelled   items in the background but traceable and DB integrity  intact</p>
+<p>The user interface won't show it, but further workflow separation takes care of assigning Analyses to Worksheets, and to differentiate ARs and Worksheets awaiting results file attachments and delaying verification</p>
 <p>Using Ajax, Plone 4's further improved user interface and   a host of  smaller enhancements, many clicks were saved and  general  performance  improved.</p>
 <p>The main Plone index, designed to index  every bit  of of the system  in CMS style, was dismantled in favour of  more LIMS  specific indexes  to further improve performance. This work  continues</p>
 </td>
