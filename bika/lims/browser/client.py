@@ -83,8 +83,7 @@ class ClientAnalysisRequestsView(BikaListingView):
 
     def __init__(self, context, request):
         super(ClientAnalysisRequestsView, self).__init__(context, request)
-        self.contentFilter = {'portal_type':'AnalysisRequest',
-                              'cancellation_state': 'active'}
+        self.contentFilter = {'portal_type':'AnalysisRequest'}
         self.review_state = 'all'
         if context.objectValues('Contact'):
             self.content_add_actions = {_('Analysis Request'):
@@ -115,7 +114,7 @@ class ClientAnalysisRequestsView(BikaListingView):
         self.review_states = [
             {'id':'all',
              'title': _('All'),
-             'transitions': ['receive', 'submit', 'retract', 'publish', 'cancel'],
+             'transitions': ['receive', 'submit', 'retract', 'publish', 'cancel', 'reinstate'],
              'columns':['getRequestID',
                         'ClientOrderNumber',
                         'ClientReference',
@@ -128,7 +127,7 @@ class ClientAnalysisRequestsView(BikaListingView):
             {'id':'sample_due',
              'title': _('Sample due'),
              'contentFilter': {'review_state': 'sample_due'},
-             'transitions': ['receive', 'cancel'],
+             'transitions': ['receive', 'cancel', 'reinstate'],
              'columns':['getRequestID',
                         'ClientOrderNumber',
                         'ClientReference',
@@ -138,7 +137,7 @@ class ClientAnalysisRequestsView(BikaListingView):
             {'id':'sample_received',
              'title': _('Sample received'),
              'contentFilter': {'review_state': 'sample_received'},
-             'transitions': ['cancel'],
+             'transitions': ['cancel', 'reinstate'],
              'columns':['getRequestID',
                         'ClientOrderNumber',
                         'ClientReference',
@@ -149,7 +148,7 @@ class ClientAnalysisRequestsView(BikaListingView):
             {'id':'to_be_verified',
              'title': _('To be verified'),
              'contentFilter': {'review_state': 'to_be_verified'},
-             'transitions': ['verify', 'retract', 'cancel'],
+             'transitions': ['verify', 'retract', 'cancel', 'reinstate'],
              'columns':['getRequestID',
                         'ClientOrderNumber',
                         'ClientReference',
@@ -160,7 +159,7 @@ class ClientAnalysisRequestsView(BikaListingView):
             {'id':'verified',
              'title': _('Verified'),
              'contentFilter': {'review_state': 'verified'},
-             'transitions': ['cancel', 'publish'],
+             'transitions': ['publish', 'cancel', 'reinstate'],
              'columns':['getRequestID',
                         'ClientOrderNumber',
                         'ClientReference',
@@ -185,7 +184,7 @@ class ClientAnalysisRequestsView(BikaListingView):
                                'review_state': ('sample_received', 'to_be_verified',
                                                 'attachment_due', 'verified',
                                                 'published')},
-             'transitions': ['cancel'],
+             'transitions': ['submit', 'retract', 'publish', 'cancel', 'reinstate'],
              'columns':['getRequestID',
                         'ClientOrderNumber',
                         'ClientReference',
@@ -196,7 +195,10 @@ class ClientAnalysisRequestsView(BikaListingView):
                         'state_title']},
             {'id':'cancelled',
              'title': _('Cancelled'),
-             'contentFilter': {'cancellation_state': 'cancelled'},
+             'contentFilter': {'cancellation_state': 'cancelled',
+                               'review_state': ('sample_due', 'sample_received',
+                                                'to_be_verified', 'attachment_due',
+                                                'verified', 'published')},
              'transitions': ['reinstate'],
              'columns':['getRequestID',
                         'ClientOrderNumber',

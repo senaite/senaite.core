@@ -26,12 +26,12 @@ setup(name='bika.lims',
       install_requires=[
           'setuptools',
           'Products.ATExtensions',
+          'Products.CMFEditions',
+          'collective.subtractiveworkflow',
+          'openpyxl',
           'ore.contentmirror',
           'plone.app.iterate',
-          'Products.CMFEditions',
           'reportlab',
-          'openpyxl',
-          'collective.subtractiveworkflow',
       ],
       extras_require = {
           'test': [

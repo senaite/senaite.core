@@ -71,7 +71,17 @@ div.position-1\3a 4 {margin-left:    -81.5%;} /* .position-1:4 */
     color: White !important;
     padding: 0 0.5em;
 }
-
+#listing-table .state-cancelled {
+	background-color: #FF937E  !important;
+	color: #333333;
+}
+#listing-table .state-inactive {
+	background-color: #FF937E  !important;
+	color: #333333;
+}
+#listing-table .state-sample_due {
+	color: #2bb800;
+}
 
 .documentActions{
   float:right;
@@ -175,7 +185,6 @@ table.analysisrequest input {
     cursor: pointer;
     height: 15px;
     width: 15px;
-
 }
 .removeButton {
     background: &dtml-globalBackgroundColor; url(&dtml-portal_url;/++resource++bika.lims.images/delete.png) center center no-repeat;
@@ -221,17 +230,6 @@ table.analysisrequest input {
 input.cb {
     border: none;
     background-color: transparent;
-}
-
-.state-inactive {
-	background-color: #ffd4cc !important;
-	color: #333333;
-}
-.state-sample_due {
-	color: #2bb800;
-}
-#plone-contentmenu-workflow .state-sample_due {
-	color: white;
 }
 
 /*

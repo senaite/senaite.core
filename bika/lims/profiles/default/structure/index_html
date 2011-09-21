@@ -1,79 +1,64 @@
-id: index_html
-title: Welcome to Bika LIMS 3 Pre-Release
-description: This is a prerelease of 3.0
-subject:
-relatedItems:
-location:
-language:
-effectiveDate: 2011/01/01 23:00:00 GMT+2
-expirationDate: None
-creation_date: 2011/01/01 23:00:00 GMT+2
-modification_date: 2011/02/01 10:59:31.194263 GMT+2
-creators: admin
-contributors:
-rights:
-allowDiscussion: True
-excludeFromNav: True
-presentation: False
-tableContents: False
-Content-Type: text/html
-
-<p class="documentDescription">Thank you for downloading Bika LIMS</p>
-
-<h3 class="Subheading">Installation Verification</h3>
-
-<p>Make sure the id-server process is running before trying to add anything to the database</p>
-
-<p>The id-server process has to be running before the LIMS data can be added.</p>
-<p>The id-server port used (default 8081) must not be the same as the Zope
-port (default 8080) and must be specified in the Environment section of etc/zope.conf.
-If you are using a buildout-based install, you will need to add the following to
-[instance] in buildout.cfg:</p>
-
-<pre>
-[instance]
-environment-vars =
-    IDServerURL http://localhost:8081
-</pre>
-
-<p>Ensure write permissions are valid for the  ./var/log and ./var directories.
-
-You can start the id-server with a script as below and run it in the background.
-<pre>
-PYTHON=/usr/bin/python  ## MODIFY FOR YOUR PYTHON
-#MODIFY FOR YOUR SOURCE DIRECTORY
-$PYTHON bika3/bika/lims/scripts/id-server.py \
-        -f var/id.counter -p 8081 T \
-        -l var/log/idserver.log  -d var/idserver.pid
-</pre>
-<p>
-To test if the ID Server is running, use a web browser on the
-URL, eg <a href="http://localhost:8081">http://localhost:8081</a>  --
-you should see an increasing integer count when you reload.
-<p>
-
-<p>
-
-<h3 class="Subheading">Feedback</h3>
-<p>Please post questions, comments and suggestions to the Bika mailing lists</p>
-<p><a href="http://lists.sourceforge.net/lists/listinfo/bika-users">Join the Bika Users list</a><br /><br />
-   <a href="http://lists.sourceforge.net/lists/listinfo/bika-developers">Join the Bika Developers list</a>
-</p>
-
-<h3>Release notes</h3>
-<p>Please find more information about this release on the Bika LIMS project pages<br /><br />
-   <a href="http://www.bikalabs.com/softwarecenter/bika/releases/3.0">Bika LIMS 3.0</a><br /><br />
-</p>
-
+<p> </p>
+<p><b>Thank you for downloading Bika LIMS. Please see the <a class="internal-link" href="installation-verification">Installation Verification</a> page</b></p>
+<table class="invisible">
+<tbody>
+<tr>
+<th>
+<h2>Overview</h2>
+<p>Bika 3 <a class="external-link" href="http://www.vanhunks.com/lowveld1/modjadji1.html">Modjadji</a> is Bika's long awaited upgrade to Plone 4 and SQL</p>
+<p>The opportunity was used to undertake a massive code restructuring in    the interest of future maintenance and performance, as well as adding    much desired new functionality</p>
+</th><th>
+<h2 class="Subheading">Feedback</h2>
+<p>Don't hesitate to post questions, comments and suggestions to the Bika mailing lists: Bika <a class="external-link" href="https://groups.google.com/forum/?hl=en#%21forum/bika-design">LIMS design</a>, <a class="external-link" href="http://lists.sourceforge.net/lists/listinfo/bika-users">Users</a> or <a class="external-link" href="http://lists.sourceforge.net/lists/listinfo/bika-developers">Developers</a>. Please log issues in the <a class="external-link" href="http://sourceforge.net/tracker/?func=browse&amp;group_id=145464&amp;atid=762012">public Bika bug tracker</a> at SourceForge.net</p>
+<h3>Code repository</h3>
+<p>The freshest code can be find in SVN at <b>https://bika.svn.sourceforge.net/svnroot/bika/bika3</b></p>
+<br /></th><th>
+<h3 class="Subheading">Coming soon: Set-up data load scripts</h3>
+<p>We are currently working on standardised  spreadsheets that can be used   to populate the LIMS with setup data of  your choice. We hope to have   these pre-populated for each Bika branch,  e.g. Water, Health, etc.</p>
+<p>For the purpose of testing, we'll use the scripts to populate this  test   instance with consistent data consisting of the uniform  specifications,   QC, uncertainties, turn-around time, precision, price  etc. for all   Analysis Services</p>
+<a class="external-link" href="http://www.bikalabs.com/softwarecenter/bika"></a> </th>
+</tr>
+<tr>
+<td colspan="3">
+<p style="text-align: center; "><img alt="LIMS flow &amp; Analysis status progression" class="image-inline" src="++resource++bika.lims.images/LIMSFlowDiagram201103_600x.jpg" /></p>
+</td>
+</tr>
+<tr>
+<td>
+<h3>Specific to version 3.0 pre-αlpha</h3>
+<p>In this version the LIMS set-up area is near complete:</p>
+<p style="padding-left: 30px; "><a class="external-link" href="bika_setup/bika_calculations">Results calculations</a>,    including interim fields and dependent results, are completely user    configurable now and new calculations can be added by authorised users    without requiring programming skills</p>
+<p style="padding-left: 30px; ">All setup items can now be de-activated, which will remove them from general view while still maintaining database integrity</p>
+<p style="padding-left: 30px; ">Plone    4's versioning is used to maintain references to historical data in the    correct context, e.g. historical Analysis Requests will reflect the    correct historical methods, prices, units etc., after the Analysis    Service records they reference might have been modified</p>
+<p style="padding-left: 30px; ">Plone's    change note functionality is maintained in the Bika setup, as well as    object locking to prevent more than 1 user editing the same item</p>
+<p>Bika's Analysis, Analysis request and Worksheet workflows were also    reworked and are now undergoing testing. Secondary cancellation  workflow was   introduced for these 'transactional' objects too, to keep  cancelled   items in the background but traceable and DB integrity  intact</p>
+<p>Using Ajax, Plone 4's further improved user interface and   a host of  smaller enhancements, many clicks were saved and  general  performance  improved.</p>
+<p>The main Plone index, designed to index  every bit  of of the system  in CMS style, was dismantled in favour of  more LIMS  specific indexes  to further improve performance. This work  continues</p>
+</td>
+<td>
 <h3>Manuals</h3>
-<p>In progress, find the latest here<br /><br />
-   <a href="http://www.bikalabs.com/helpcentre/manual/bikalims20">Inkosi manual</a><br /><br />
-   <a href="http://www.bikalabs.com/helpcentre/inkosivideos">Inkosi training videos</a>
-</p>
-
+<p>To follow. Inkosi Bika 2 functionality applies. <a href="http://www.bikalabs.com/helpcentre/manual/bikalims20">Inkosi manual</a>, <a href="http://www.bikalabs.com/helpcentre/inkosivideos">Inkosi training videos</a></p>
+<h3>Release notes</h3>
+<p>More information about this release can be found on the <a class="external-link" href="http://www.bikalabs.com/softwarecenter/bika">Bika LIMS project pages</a></p>
+<p> </p>
+<p><a class="external-link" href="http://sourceforge.net/donate/index.php?group_id=145464" target="_blank"><img alt="Support the Bika FLOSS LIMS project at SourceForge.net (PayPal)" class="image-inline" src="++resource++bika.lims.images/SFDonateButton.jpg" style="float: left; " /></a></p>
+<p> </p>
+<p> </p>
+<p> </p>
+</td>
+<td scope="col">
+<h3 class="Subheading">Known Bugs</h3>
+<p>Please treat any part of the system outside of the setup area with caution as none of it has been officially tested</p>
+<p>It works everywhere else, but  on Windows Firefox installations,   clicking an Analysis Profile when  creating ARs, does not stick. Please   use the keyboard arrows and  [Enter] key to select a Profile. Dragging   the cursor down onto the  desired Profile without clicking also works</p>
+<p> </p>
 <p>Thank you for your support</p>
 <p>The Bika team</p>
-<p align="center"><img class="image-inline" src="++resource++bika.lims.images/bikalabstellit.png" height="56" width="400" /></p>
-<p><br /><a href="mailto:info@bikalabs.com" target="_self">info@bikalabs.com</a></p>
-
-
+<p><a href="mailto:info@bikalabs.com" target="_self">info@bikalabs.com</a></p>
+<p> </p>
+<p><img alt="Bika Open Source LIMS - Tell it as it is" class="image-inline" src="++resource++bika.lims.images/bikalabstellit200x.png" style="float: left; " /></p>
+<p> </p>
+<p> </p>
+</td>
+</tr>
+</tbody>
+</table>

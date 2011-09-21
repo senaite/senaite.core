@@ -947,7 +947,7 @@ class AJAXAnalysisRequestSubmit():
         self.context.plone_utils.addPortalMessage(message, 'info')
         return json.dumps({'success':message})
 
-class AnalysisRequestsView(BikaListingView):
+class AnalysisRequestsView(ClientAnalysisRequestsView):
     """ The main portal Analysis Requests action tab
     """
 
@@ -956,140 +956,27 @@ class AnalysisRequestsView(BikaListingView):
         self.title = "%s: %s" % (self.context.Title(), _("Analysis Requests"))
         self.description = ""
         self.show_editable_border = False
-        self.show_select_column = True
         self.contentFilter = {'portal_type':'AnalysisRequest',
                               'path':{"query": ["/"], "level" : 0 }}
 
-        self.columns = {
-            'getRequestID': {'title': _('Request ID')},
-            'Client': {'title': _('Client')},
-            'ClientOrderNumber': {'title': _('Client Order')},
-            'ClientReference': {'title': _('Client Ref')},
-            'ClientSampleID': {'title': _('Client Sample')},
-            'SampleTypeTitle': {'title': _('Sample Type')},
-            'SamplePointTitle': {'title': _('Sample Point')},
-            'DateReceived': {'title': _('Date Received')},
-            'DatePublished': {'title': _('Date Published')},
-            'state_title': {'title': _('State'), },
-        }
-        self.review_states = [
-            {'id':'all',
-             'title': _('All'),
-             'transitions': ['receive', 'submit', 'retract', 'publish', 'cancel'],
-             'columns':['getRequestID',
-                        'Client'
-                        'ClientOrderNumber',
-                        'ClientReference',
-                        'ClientSampleID',
-                        'SampleTypeTitle',
-                        'SamplePointTitle',
-                        'DateReceived',
-                        'DatePublished',
-                        'state_title']},
-            {'id':'sample_due',
-             'title': _('Sample due'),
-             'contentFilter': {'review_state': 'sample_due'},
-             'transitions': ['receive', 'cancel'],
-             'columns':['getRequestID',
-                        'Client'
-                        'ClientOrderNumber',
-                        'ClientReference',
-                        'ClientSampleID',
-                        'SampleTypeTitle',
-                        'SamplePointTitle']},
-            {'id':'sample_received',
-             'title': _('Sample received'),
-             'contentFilter': {'review_state': 'sample_received'},
-             'transitions': ['cancel'],
-             'columns':['getRequestID',
-                        'Client'
-                        'ClientOrderNumber',
-                        'ClientReference',
-                        'ClientSampleID',
-                        'SampleTypeTitle',
-                        'SamplePointTitle',
-                        'DateReceived']},
-            {'id':'to_be_verified',
-             'title': _('To be verified'),
-             'contentFilter': {'review_state': 'to_be_verified'},
-             'transitions': ['verify', 'retract', 'cancel'],
-             'columns':['getRequestID',
-                        'Client'
-                        'ClientOrderNumber',
-                        'ClientReference',
-                        'ClientSampleID',
-                        'SampleTypeTitle',
-                        'SamplePointTitle',
-                        'DateReceived']},
-            {'id':'verified',
-             'title': _('Verified'),
-             'contentFilter': {'review_state': 'verified'},
-             'transitions': ['cancel', 'publish'],
-             'columns':['getRequestID',
-                        'Client'
-                        'ClientOrderNumber',
-                        'ClientReference',
-                        'ClientSampleID',
-                        'SampleTypeTitle',
-                        'SamplePointTitle',
-                        'DateReceived']},
-            {'id':'published',
-             'title': _('Published'),
-             'contentFilter': {'review_state': 'published'},
-             'columns':['getRequestID',
-                        'Client'
-                        'ClientOrderNumber',
-                        'ClientReference',
-                        'ClientSampleID',
-                        'SampleTypeTitle',
-                        'SamplePointTitle',
-                        'DateReceived',
-                        'DatePublished']},
-            {'id':'assigned',
-             'title': _('Assigned to Worksheet'),
-             'contentFilter': {'worksheetanalysis_review_state': 'assigned',
-                               'review_state': ('sample_received', 'to_be_verified',
-                                                'attachment_due', 'verified',
-                                                'published')},
-             'transitions': ['cancel'],
-             'columns':['getRequestID',
-                        'Client'
-                        'ClientOrderNumber',
-                        'ClientReference',
-                        'ClientSampleID',
-                        'SampleTypeTitle',
-                        'SamplePointTitle',
-                        'DateReceived',
-                        'state_title']},
-            {'id':'cancelled',
-             'title': _('Cancelled'),
-             'contentFilter': {'cancellation_state': 'cancelled'},
-             'transitions': ['reinstate'],
-             'columns':['getRequestID',
-                        'Client'
-                        'ClientOrderNumber',
-                        'ClientReference',
-                        'ClientSampleID',
-                        'SampleTypeTitle',
-                        'SamplePointTitle',
-                        'DateReceived',
-                        'DatePublished',
-                        'state_title']},
-            ]
+        self.columns['Client'] = {'title': _('Client')}
+        review_states = []
+        for review_state in self.review_states:
+            review_state['columns'].insert(review_state['columns'].index('ClientOrderNumber'), 'Client')
 
     @property
     def folderitems(self):
+        workflow = getToolByName(self.context, "portal_workflow")
         items = BikaListingView.folderitems(self)
-        workflow = getToolByName(self.context, 'portal_workflow')
         for x in range(len(items)):
             if not items[x].has_key('obj'): continue
             obj = items[x]['obj']
 
-            items[x]['replace']['getRequestID'] = "<a href='%s'>%s</a>" % \
-                 (items[x]['url'], items[x]['getRequestID'])
-
             items[x]['replace']['Client'] = "<a href='%s'>%s</a>" % \
                  (obj.aq_parent.absolute_url(), obj.aq_parent.Title())
+
+            items[x]['replace']['getRequestID'] = "<a href='%s'>%s</a>" % \
+                 (items[x]['url'], items[x]['getRequestID'])
             items[x]['ClientOrderNumber'] = obj.getClientOrderNumber()
             items[x]['ClientReference'] = obj.getClientReference()
             items[x]['ClientSampleID'] = obj.getClientSampleID()

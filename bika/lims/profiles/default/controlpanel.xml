@@ -10,6 +10,14 @@
   <permission>BIKA: Manage Bika</permission>
  </configlet>
 
+ <configlet title="LIMS Setup Data" action_id="bika_setup_data"
+    appId="bika.lims" category="bika" condition_expr=""
+    icon_expr="string:++resource++bika.lims.images/setup_data.png"
+	url_expr="string:$portal_url/bika_setup_data"
+    visible="True">
+  <permission>BIKA: Manage Bika</permission>
+ </configlet>
+
  <configlet title="Laboratory Information" action_id="bika_labinfo"
     appId="bika.lims" category="bika" condition_expr=""
     icon_expr="string:++resource++bika.lims.images/lab.png"
@@ -114,7 +122,7 @@
   <permission>BIKA: Manage Bika</permission>
  </configlet>
 
- <configlet title="Products" action_id="bika_labproducts" 
+ <configlet title="Products" action_id="bika_labproducts"
     appId="bika.lims" category="bika" condition_expr=""
     icon_expr="string:++resource++bika.lims.images/product.png"
     url_expr="string:$portal_url/bika_setup/bika_labproducts"
@@ -122,8 +130,8 @@
   <permission>BIKA: Manage Bika</permission>
  </configlet>
 
- <configlet title="Reference Manufacturers" 
-    action_id="bika_referencemanufacturers" 
+ <configlet title="Reference Manufacturers"
+    action_id="bika_referencemanufacturers"
     appId="bika.lims" category="bika" condition_expr=""
     icon_expr="string:++resource++bika.lims.images/referencemanufacturer.png"
     url_expr="string:$portal_url/bika_setup/bika_referencemanufacturers"
