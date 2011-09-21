@@ -386,7 +386,7 @@ class BikaListingTable(tableview.Table):
     def __init__(self, bika_listing):
         self.table = self
         self.bika_listing = bika_listing
-        folderitems = bika_listing.folderitems
+        folderitems = bika_listing.folderitems()
 
         tableview.Table.__init__(self,
                                  bika_listing.request,

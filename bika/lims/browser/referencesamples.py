@@ -7,7 +7,7 @@ class ReferenceSamplesView(BikaListingView):
     contentFilter = {'portal_type': 'ReferenceSample', 'path':{"query": ["/"], "level" : 0 }}
     content_add_actions = {}
     show_editable_border = False
-    show_filters = True
+    show_filters = False
     show_sort_column = False
     show_select_row = True
     show_select_column = True
@@ -74,7 +74,6 @@ class ReferenceSamplesView(BikaListingView):
                              'ExpiryDate']},
                 ]
 
-    @property
     def folderitems(self):
         items = BikaListingView.folderitems(self)
         for x in range(len(items)):

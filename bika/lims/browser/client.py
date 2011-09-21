@@ -1,8 +1,11 @@
+from AccessControl import getSecurityManager, Unauthorized
 from Products.CMFCore.utils import getToolByName
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.browser.publish import Publish
 from bika.lims.browser.bika_listing import WorkflowAction
+from bika.lims.config import EditAnalyses
+from bika.lims.utils import TimeOrDate
 from plone.app.content.browser.interfaces import IFolderContentsView
 from zope.interface import implements
 import plone
@@ -102,13 +105,13 @@ class ClientAnalysisRequestsView(BikaListingView):
 
         self.columns = {
             'getRequestID': {'title': _('Request ID')},
-            'ClientOrderNumber': {'title': _('Client Order')},
-            'ClientReference': {'title': _('Client Ref')},
-            'ClientSampleID': {'title': _('Client Sample')},
-            'SampleTypeTitle': {'title': _('Sample Type')},
-            'SamplePointTitle': {'title': _('Sample Point')},
-            'DateReceived': {'title': _('Date Received')},
-            'DatePublished': {'title': _('Date Published')},
+            'getClientOrderNumber': {'title': _('Client Order')},
+            'getClientReference': {'title': _('Client Ref')},
+            'getClientSampleID': {'title': _('Client Sample')},
+            'getSampleTypeTitle': {'title': _('Sample Type')},
+            'getSamplePointTitle': {'title': _('Sample Point')},
+            'getDateReceived': {'title': _('Date Received')},
+            'getDatePublished': {'title': _('Date Published')},
             'state_title': {'title': _('State'), },
         }
         self.review_states = [
@@ -116,35 +119,35 @@ class ClientAnalysisRequestsView(BikaListingView):
              'title': _('All'),
              'transitions': ['receive', 'submit', 'retract', 'prepublish', 'publish', 'republish', 'cancel', 'reinstate'],
              'columns':['getRequestID',
-                        'ClientOrderNumber',
-                        'ClientReference',
-                        'ClientSampleID',
-                        'SampleTypeTitle',
-                        'SamplePointTitle',
-                        'DateReceived',
-                        'DatePublished',
+                        'getClientOrderNumber',
+                        'getClientReference',
+                        'getClientSampleID',
+                        'getSampleTypeTitle',
+                        'getSamplePointTitle',
+                        'getDateReceived',
+                        'getDatePublished',
                         'state_title']},
             {'id':'sample_due',
              'title': _('Sample due'),
              'contentFilter': {'review_state': 'sample_due'},
              'transitions': ['receive', 'cancel', 'reinstate'],
              'columns':['getRequestID',
-                        'ClientOrderNumber',
-                        'ClientReference',
-                        'ClientSampleID',
-                        'SampleTypeTitle',
-                        'SamplePointTitle']},
+                        'getClientOrderNumber',
+                        'getClientReference',
+                        'getClientSampleID',
+                        'getSampleTypeTitle',
+                        'getSamplePointTitle']},
             {'id':'sample_received',
              'title': _('Sample received'),
              'contentFilter': {'review_state': 'sample_received'},
              'transitions': ['cancel', 'reinstate'],
              'columns':['getRequestID',
-                        'ClientOrderNumber',
-                        'ClientReference',
-                        'ClientSampleID',
-                        'SampleTypeTitle',
-                        'SamplePointTitle',
-                        'DateReceived']},
+                        'getClientOrderNumber',
+                        'getClientReference',
+                        'getClientSampleID',
+                        'getSampleTypeTitle',
+                        'getSamplePointTitle',
+                        'getDateReceived']},
             {'id':'assigned',
              'title': _('Assigned to Worksheet'),
              'contentFilter': {'worksheetanalysis_review_state': 'assigned',
@@ -153,46 +156,46 @@ class ClientAnalysisRequestsView(BikaListingView):
                                                 'published')},
              'transitions': ['submit', 'retract', 'publish', 'prepublish', 'republish', 'cancel', 'reinstate'],
              'columns':['getRequestID',
-                        'ClientOrderNumber',
-                        'ClientReference',
-                        'ClientSampleID',
-                        'SampleTypeTitle',
-                        'SamplePointTitle',
-                        'DateReceived',
+                        'getClientOrderNumber',
+                        'getClientReference',
+                        'getClientSampleID',
+                        'getSampleTypeTitle',
+                        'getSamplePointTitle',
+                        'getDateReceived',
                         'state_title']},
             {'id':'to_be_verified',
              'title': _('To be verified'),
              'contentFilter': {'review_state': 'to_be_verified'},
              'transitions': ['verify', 'prepublish', 'retract', 'cancel', 'reinstate'],
              'columns':['getRequestID',
-                        'ClientOrderNumber',
-                        'ClientReference',
-                        'ClientSampleID',
-                        'SampleTypeTitle',
-                        'SamplePointTitle',
-                        'DateReceived']},
+                        'getClientOrderNumber',
+                        'getClientReference',
+                        'getClientSampleID',
+                        'getSampleTypeTitle',
+                        'getSamplePointTitle',
+                        'getDateReceived']},
             {'id':'verified',
              'title': _('Verified'),
              'contentFilter': {'review_state': 'verified'},
              'transitions': ['publish', 'republish', 'cancel', 'reinstate'],
              'columns':['getRequestID',
-                        'ClientOrderNumber',
-                        'ClientReference',
-                        'ClientSampleID',
-                        'SampleTypeTitle',
-                        'SamplePointTitle',
-                        'DateReceived']},
+                        'getClientOrderNumber',
+                        'getClientReference',
+                        'getClientSampleID',
+                        'getSampleTypeTitle',
+                        'getSamplePointTitle',
+                        'getDateReceived']},
             {'id':'published',
              'title': _('Published'),
              'contentFilter': {'review_state': 'published'},
              'columns':['getRequestID',
-                        'ClientOrderNumber',
-                        'ClientReference',
-                        'ClientSampleID',
-                        'SampleTypeTitle',
-                        'SamplePointTitle',
-                        'DateReceived',
-                        'DatePublished']},
+                        'getClientOrderNumber',
+                        'getClientReference',
+                        'getClientSampleID',
+                        'getSampleTypeTitle',
+                        'getSamplePointTitle',
+                        'getDateReceived',
+                        'getDatePublished']},
             {'id':'cancelled',
              'title': _('Cancelled'),
              'contentFilter': {'cancellation_state': 'cancelled',
@@ -201,17 +204,16 @@ class ClientAnalysisRequestsView(BikaListingView):
                                                 'verified', 'published')},
              'transitions': ['republish', 'reinstate'],
              'columns':['getRequestID',
-                        'ClientOrderNumber',
-                        'ClientReference',
-                        'ClientSampleID',
-                        'SampleTypeTitle',
-                        'SamplePointTitle',
-                        'DateReceived',
-                        'DatePublished',
+                        'getClientOrderNumber',
+                        'getClientReference',
+                        'getClientSampleID',
+                        'getSampleTypeTitle',
+                        'getSamplePointTitle',
+                        'getDateReceived',
+                        'getDatePublished',
                         'state_title']},
             ]
 
-    @property
     def folderitems(self):
         workflow = getToolByName(self.context, "portal_workflow")
         items = BikaListingView.folderitems(self)
@@ -219,20 +221,18 @@ class ClientAnalysisRequestsView(BikaListingView):
             if not items[x].has_key('obj'): continue
             obj = items[x]['obj']
 
+            if getSecurityManager().checkPermission(EditAnalyses, obj):
+                url = obj.absolute_url() + "/manage_results"
+            else:
+                url = obj.absolute_url()
             items[x]['replace']['getRequestID'] = "<a href='%s'>%s</a>" % \
-                 (items[x]['url'], items[x]['getRequestID'])
+                 (url, items[x]['getRequestID'])
 
-            items[x]['ClientOrderNumber'] = obj.getClientOrderNumber()
-            items[x]['ClientReference'] = obj.getClientReference()
-            items[x]['ClientSampleID'] = obj.getClientSampleID()
-            items[x]['SampleTypeTitle'] = obj.getSampleTypeTitle()
-            items[x]['SamplePointTitle'] = obj.getSamplePointTitle()
-            items[x]['DateReceived'] = obj.getDateReceived() and \
-                self.context.toLocalizedTime(obj.getDateReceived(), \
-                                             long_format = 0) or ''
-            items[x]['DatePublished'] = obj.getDatePublished() and \
-                self.context.toLocalizedTime(obj.getDatePublished(), \
-                                             long_format = 0) or ''
+            items[x]['getDateReceived'] = \
+                TimeOrDate(obj.getDateReceived())
+
+            items[x]['getDatePublished'] = \
+                TimeOrDate(obj.getDatePublished())
 
             if workflow.getInfoFor(obj, 'worksheetanalysis_review_state') == 'assigned':
                 items[x]['after']['state_title'] = \
@@ -252,8 +252,7 @@ class ClientSamplesView(BikaListingView):
 
     def __init__(self, context, request):
         super(ClientSamplesView, self).__init__(context, request)
-        self.contentFilter = {'portal_type': 'Sample',
-                              'cancellation_state':'active'}
+        self.contentFilter = {'portal_type': 'Sample'}
         self.content_add_actions = {}
         self.show_editable_border = True
         self.show_sort_column = False
@@ -334,7 +333,6 @@ class ClientSamplesView(BikaListingView):
                          'state_title']},
             ]
 
-    @property
     def folderitems(self):
         items = BikaListingView.folderitems(self)
         for x in range(len(items)):
@@ -351,9 +349,8 @@ class ClientSamplesView(BikaListingView):
             items[x]['SampleTypeTitle'] = obj.getSampleTypeTitle()
             items[x]['SamplePointTitle'] = obj.getSamplePointTitle()
 
-            items[x]['DateReceived'] = obj.getDateReceived() and \
-                 self.context.toLocalizedTime(obj.getDateReceived(), \
-                                              long_format = 0) or ''
+            items[x]['getDateReceived'] = \
+                TimeOrDate(obj.getDateReceived())
 
             after_icons = ''
             if obj.getSampleType().getHazardous():
@@ -406,7 +403,6 @@ class ClientARImportsView(BikaListingView):
                          'getDateApplied']},
         ]
 
-    @property
     def folderitems(self):
         items = BikaListingView.folderitems(self)
         for x in range(len(items)):
@@ -441,7 +437,6 @@ class ClientARProfilesView(BikaListingView):
              'columns': ['title', 'getProfileKey']},
         ]
 
-    @property
     def folderitems(self):
         items = BikaListingView.folderitems(self)
         for x in range(len(items)):
@@ -478,7 +473,6 @@ class ClientAnalysisSpecsView(BikaListingView):
              },
         ]
 
-    @property
     def folderitems(self):
         items = BikaListingView.folderitems(self)
         for x in range(len(items)):
@@ -537,7 +531,6 @@ class ClientAttachmentsView(BikaListingView):
         else:
             return name
 
-    @property
     def folderitems(self):
         items = BikaListingView.folderitems(self)
         for x in range(len(items)):
@@ -599,7 +592,6 @@ class ClientOrdersView(BikaListingView):
                          'DateDispatched']},
         ]
 
-    @property
     def folderitems(self):
         items = BikaListingView.folderitems(self)
         for x in range(len(items)):
@@ -646,7 +638,6 @@ class ClientContactsView(BikaListingView):
                          'getFax']},
         ]
 
-    @property
     def folderitems(self):
         items = BikaListingView.folderitems(self)
         for x in range(len(items)):

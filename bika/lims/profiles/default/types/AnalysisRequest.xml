@@ -55,7 +55,7 @@
 	link_target=""
 	url_expr="string:${object_url}/manage_results"
 	visible="True">
-	<permission value="BIKA: Manage Analysis Requests"/>
+	<permission value="BIKA: Edit analyses"/>
 </action>
 
 <action title="Results not requested"

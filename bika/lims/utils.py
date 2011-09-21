@@ -1,4 +1,5 @@
 from AccessControl import ModuleSecurityInfo, allow_module
+from DateTime import DateTime
 from bika.lims import interfaces
 from bika.lims.config import PublishSample
 from Products.CMFCore.utils import getToolByName
@@ -42,6 +43,16 @@ def isActive(obj):
        wf.getInfoFor(obj, 'cancellation_state', 'active') == 'cancelled':
         return False
     return True
+
+def TimeOrDate(datetime):
+    """ Return the Time date is today,
+        otherwise return the Date. """
+    if hasattr(datetime, 'Date'):
+        if datetime.Date() == DateTime().Date():
+            return datetime.Time()[:-3]
+        else:
+            return datetime.Date()
+    return ''
 
 # encode_header function copied from roundup's rfc2822 package.
 hqre = re.compile(r'^[A-z0-9!"#$%%&\'()*+,-./:;<=>?@\[\]^_`{|}~ ]+$')

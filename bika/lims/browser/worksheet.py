@@ -9,6 +9,7 @@ from Products.CMFCore.WorkflowCore import WorkflowException
 from bika.lims.interfaces import IWorksheet
 from bika.lims.browser.bika_listing import WorkflowAction
 from bika.lims.browser.analyses import AnalysesView
+from bika.lims.utils import TimeOrDate
 from plone.app.content.browser.interfaces import IFolderContentsView
 from zope.app.component.hooks import getSite
 from zope.component import getMultiAdapter
@@ -295,10 +296,9 @@ class WorksheetManageResultsView(AnalysesView):
              },
         ]
 
-    @property
     def folderitems(self):
         self.contentsMethod = self.context.getFolderContents
-        items = super(WorksheetManageResultsView, self).folderitems
+        items = AnalysesView.folderitems(self)
         pos = 0
         for x, item in enumerate(items):
             obj = item['obj']
@@ -312,8 +312,8 @@ class WorksheetManageResultsView(AnalysesView):
             client = ar.aq_parent
             items[x]['replace']['Client'] = "<a href='%s'>%s</a>" % \
                  (client.absolute_url(), client.Title())
-            items[x]['DueDate'] = hasattr(obj, 'DueDate') and \
-                self.context.toLocalizedTime(obj.DueDate, long_format=0) or ''
+            items[x]['DueDate'] = \
+                TimeOrDate(obj.getDueDate)
             items[x]['Order'] = hasattr(ar, 'getClientOrderNumber') \
                  and ar.getClientOrderNumber() or ''
             if obj.portal_type == 'DuplicateAnalysis':
@@ -365,7 +365,7 @@ class WorksheetAddAnalysisView(AnalysesView):
         self.show_sort_column = False
         self.show_select_row = True
         self.show_select_column = True
-        self.show_filters = True
+        self.show_filters = False
         self.pagesize = 50
 
         self.columns = {
@@ -390,7 +390,6 @@ class WorksheetAddAnalysisView(AnalysesView):
             },
         ]
 
-    @property
     def folderitems(self):
         pc = getToolByName(self.context, 'portal_catalog')
         self.contentsMethod = pc
@@ -401,10 +400,10 @@ class WorksheetAddAnalysisView(AnalysesView):
             service = obj.getService()
             client = obj.aq_parent.aq_parent
             items[x]['getClientOrderNumber'] = obj.getClientOrderNumber()
-            items[x]['getDateReceived'] = self.context.toLocalizedTime(
-                obj.getDateReceived(), long_format = 0)
-            items[x]['getDueDate'] = self.context.toLocalizedTime(
-                obj.getDueDate(), long_format = 0)
+            items[x]['getDateReceived'] = \
+                TimeOrDate(obj.getDateReceived())
+            items[x]['getDueDate'] = \
+                TimeOrDate(obj.getDueDate())
             items[x]['CategoryName'] = service.getCategory().Title()
             items[x]['ClientName'] = client.Title()
         return items
@@ -417,7 +416,7 @@ class WorksheetAddBlankView(BikaListingView):
     show_sort_column = False
     show_select_row = False
     show_select_column = True
-    show_filters = True
+    show_filters = False
     pagesize = 20
 
     columns = {
@@ -444,7 +443,6 @@ class WorksheetAddBlankView(BikaListingView):
         },
     ]
 
-    @property
     def folderitems(self):
         items = BikaListingView.folderitems(self)
         for x in range(len(items)):
@@ -469,7 +467,7 @@ class WorksheetAddControlView(BikaListingView):
     show_sort_column = False
     show_select_row = False
     show_select_column = True
-    show_filters = True
+    show_filters = False
     pagesize = 20
 
     columns = {
@@ -496,7 +494,6 @@ class WorksheetAddControlView(BikaListingView):
         },
     ]
 
-    @property
     def folderitems(self):
         items = BikaListingView.folderitems(self)
         for x in range(len(items)):
@@ -519,7 +516,7 @@ class WorksheetAddDuplicateView(BikaListingView):
     show_sort_column = False
     show_select_row = False
     show_select_column = True
-    show_filters = True
+    show_filters = False
     pagesize = 20
 
     columns = {
@@ -546,7 +543,6 @@ class WorksheetAddDuplicateView(BikaListingView):
         },
     ]
 
-    @property
     def folderitems(self):
         items = BikaListingView.folderitems(self)
         for x in range(len(items)):

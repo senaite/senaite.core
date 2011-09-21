@@ -38,7 +38,6 @@ class AnalysisCategoriesView(BikaListingView):
              'columns': ['Title', 'Description', 'Department']},
         ]
 
-    @property
     def folderitems(self):
         items = BikaListingView.folderitems(self)
         for x in range(len(items)):

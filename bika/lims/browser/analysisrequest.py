@@ -13,7 +13,7 @@ from bika.lims.browser.client import ClientAnalysisRequestsView
 from bika.lims.browser.publish import Publish
 from bika.lims.config import POINTS_OF_CAPTURE, EditAnalyses
 from bika.lims import logger
-from bika.lims.utils import isActive
+from bika.lims.utils import isActive, TimeOrDate
 from decimal import Decimal
 from operator import itemgetter
 from plone.app.content.browser.interfaces import IFolderContentsView
@@ -125,8 +125,6 @@ class AnalysisRequestViewView(BrowserView):
         super(AnalysisRequestViewView, self).__init__(context, request)
 
     def __call__(self):
-        if getSecurityManager().checkPermission(EditAnalyses, self.context):
-            self.request.RESPONSE.redirect(self.context.absolute_url() + "/manage_results")
         self.Field = AnalysesView(self.context, self.request,
                                   getPointOfCapture = 'field')
         self.Field.allow_edit = False
@@ -354,8 +352,6 @@ class AnalysisRequestManageResultsView(AnalysisRequestViewView):
     def __call__(self):
         workflow = getToolByName(self.context, 'portal_workflow')
         pc = getToolByName(self.context, 'portal_catalog')
-        if not getSecurityManager().checkPermission(EditAnalyses, self.context):
-            self.request.RESPONSE.redirect(self.context.absolute_url())
         self.Field = AnalysesView(self.context, self.request,
                                   getPointOfCapture = 'field')
         self.Field.allow_edit = True
@@ -444,7 +440,6 @@ class AnalysisRequestSelectCCView(BikaListingView):
              },
         ]
 
-    @property
     def folderitems(self):
         old_items = BikaListingView.folderitems(self)
         items = []
@@ -478,7 +473,7 @@ class AnalysisRequestSelectSampleView(BikaListingView):
         self.show_sort_column = False
         self.show_select_row = False
         self.show_select_column = False
-        self.show_filters = True
+        self.show_filters = False
         self.pagesize = 25
 
         self.columns = {
@@ -522,7 +517,6 @@ class AnalysisRequestSelectSampleView(BikaListingView):
 ##        """ bika_listing_table.pt uses this to display the select button. """
 ##        return [{"id":"select", "title":_("Select")}]
 
-    @property
     def folderitems(self):
         items = BikaListingView.folderitems(self)
         for x, item in enumerate(items):
@@ -968,7 +962,6 @@ class AnalysisRequestsView(ClientAnalysisRequestsView):
         for review_state in self.review_states:
             review_state['columns'].insert(review_state['columns'].index('ClientOrderNumber'), 'Client')
 
-    @property
     def folderitems(self):
         workflow = getToolByName(self.context, "portal_workflow")
         items = BikaListingView.folderitems(self)
@@ -981,17 +974,12 @@ class AnalysisRequestsView(ClientAnalysisRequestsView):
 
             items[x]['replace']['getRequestID'] = "<a href='%s'>%s</a>" % \
                  (items[x]['url'], items[x]['getRequestID'])
-            items[x]['ClientOrderNumber'] = obj.getClientOrderNumber()
-            items[x]['ClientReference'] = obj.getClientReference()
-            items[x]['ClientSampleID'] = obj.getClientSampleID()
-            items[x]['SampleTypeTitle'] = obj.getSampleTypeTitle()
-            items[x]['SamplePointTitle'] = obj.getSamplePointTitle()
-            items[x]['DateReceived'] = obj.getDateReceived() and \
-                self.context.toLocalizedTime(obj.getDateReceived(), \
-                                             long_format = 0) or ''
-            items[x]['DatePublished'] = obj.getDatePublished() and \
-                self.context.toLocalizedTime(obj.getDatePublished(), \
-                                             long_format = 0) or ''
+
+            items[x]['getDateReceived'] = \
+                TimeOrDate(obj.getDateReceived())
+
+            items[x]['getDatePublished'] = \
+                TimeOrDate(obj.getDatePublished())
 
             if workflow.getInfoFor(obj, 'worksheetanalysis_review_state') == 'assigned':
                 items[x]['after']['state_title'] = \
