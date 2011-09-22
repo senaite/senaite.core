@@ -355,7 +355,7 @@ def ActionSucceededEventHandler(analysis, event):
         analysis.reindexObject(idxs = ["worksheetanalysis_review_state", ])
         # Add the analysis to the worksheet and retract the worksheet to 'open'
         rc = getToolByName(analysis, 'reference_catalog')
-        wsUID = analysis.REQUEST['worksheet_uid']
+        wsUID = analysis.REQUEST['context_uid']
         ws = rc.lookupObject(wsUID)
         ass = ws.getAnalyses()
         ass = ass + [analysis, ]
