@@ -25,7 +25,7 @@ from bika.lims.config import I18N_DOMAIN
 
 schema = BikaSchema.copy() + Schema((
     ReferenceField('ReferenceDefinition',
-        ## schemata = "",
+        schemata = 'Description',
         allowed_types = ('ReferenceDefinition',),
         relationship = 'ReferenceSampleReferenceDefinition',
         referenceClass = HoldingReference,
@@ -38,7 +38,7 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     BooleanField('Blank',
-        ## schemata = "",
+        schemata = 'Description',
         default = False,
         widget = BooleanWidget(
             label = _("Blank"),
@@ -47,7 +47,7 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     BooleanField('Hazardous',
-        ## schemata = "",
+        schemata = 'Description',
         default = False,
         widget = BooleanWidget(
             label = _("Hazardous"),
@@ -56,7 +56,7 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     ReferenceField('ReferenceManufacturer',
-        ## schemata = "",
+        schemata = 'Description',
         allowed_types = ('ReferenceManufacturer',),
         relationship = 'ReferenceSampleReferenceManufacturer',
         referenceClass = HoldingReference,
@@ -68,7 +68,7 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     StringField('CatalogueNumber',
-        ## schemata = "",
+        schemata = 'Description',
         widget = StringWidget(
             label = 'Catalogue number',
             description = _(""),
@@ -76,7 +76,7 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     StringField('LotNumber',
-        ## schemata = "",
+        schemata = 'Description',
         widget = StringWidget(
             label = 'Lot number',
             description = _(""),
@@ -84,7 +84,7 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     DateTimeField('DateSampled',
-        ## schemata = "",
+        schemata = 'Description',
         index = 'DateIndex',
         widget = bika_DateTimeWidget(
             label = 'Date sampled',
@@ -93,7 +93,7 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     DateTimeField('DateReceived',
-        ## schemata = "",
+        schemata = 'Description',
         index = 'DateIndex',
         default_method = 'current_date',
         widget = bika_DateTimeWidget(
@@ -103,7 +103,7 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     DateTimeField('DateOpened',
-        ## schemata = "",
+        schemata = 'Description',
         index = 'DateIndex',
         widget = bika_DateTimeWidget(
             label = 'Date opened',
@@ -112,7 +112,7 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     DateTimeField('ExpiryDate',
-        ## schemata = "",
+        schemata = 'Description',
         required = 1,
         index = 'DateIndex',
         widget = bika_DateTimeWidget(
@@ -122,7 +122,7 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     DateTimeField('DateExpired',
-        ## schemata = "",
+        schemata = 'Description',
         index = 'DateIndex',
         widget = bika_DateTimeWidget(
             label = 'Date expired',
@@ -132,7 +132,7 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     DateTimeField('DateDisposed',
-        ## schemata = "",
+        schemata = 'Description',
         index = 'DateIndex',
         widget = bika_DateTimeWidget(
             label = 'Date disposed',
@@ -142,16 +142,16 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     ReferenceResultsField('ReferenceResults',
-        ## schemata = "",
+        schemata = 'Valid range',
         required = 1,
         widget = ReferenceResultsWidget(
-            label = "Reference Results",
+            label = "Expected Results",
             description = _(""),
             i18n_domain = I18N_DOMAIN,
         ),
     ),
     TextField('Notes',
-        ## schemata = "",
+        schemata = 'Description',
         widget = TextAreaWidget(
             label = 'Notes',
             description = _(""),
