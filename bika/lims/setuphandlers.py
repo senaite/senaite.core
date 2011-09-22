@@ -103,32 +103,32 @@ class BikaGenerator:
         # Create groups
         portal_groups = portal.portal_groups
 
-        if 'labmanagers' not in portal_groups.listGroupIds():
-            portal_groups.addGroup('labmanagers', title = "Lab Managers",
+        if 'LabManagers' not in portal_groups.listGroupIds():
+            portal_groups.addGroup('LabManagers', title = "Lab Managers",
                 roles = ['Member', 'Manager', 'LabManager', 'Reviewer'])
 
-        if 'labclerks' not in portal_groups.listGroupIds():
-            portal_groups.addGroup('labclerks', title = "Lab Clerks",
+        if 'LabClerks' not in portal_groups.listGroupIds():
+            portal_groups.addGroup('LabClerks', title = "Lab Clerks",
                 roles = ['Member', 'LabClerk'])
 
-        if 'analysts' not in portal_groups.listGroupIds():
-            portal_groups.addGroup('analysts', title = "Lab Technicians",
+        if 'Analysts' not in portal_groups.listGroupIds():
+            portal_groups.addGroup('Analysts', title = "Lab Technicians",
                 roles = ['Member', 'Analyst'])
 
-        if 'verifiers' not in portal_groups.listGroupIds():
-            portal_groups.addGroup('verifiers', title = "Verifiers",
+        if 'Verifiers' not in portal_groups.listGroupIds():
+            portal_groups.addGroup('Verifiers', title = "Verifiers",
                 roles = ['Verifier'])
 
-        if 'publishers' not in portal_groups.listGroupIds():
-            portal_groups.addGroup('publishers', title = "Publishers",
+        if 'Publishers' not in portal_groups.listGroupIds():
+            portal_groups.addGroup('Publishers', title = "Publishers",
                 roles = ['Publisher'])
 
-        if 'clients' not in portal_groups.listGroupIds():
-            portal_groups.addGroup('clients', title = "Clients",
+        if 'Clients' not in portal_groups.listGroupIds():
+            portal_groups.addGroup('Clients', title = "Clients",
                 roles = ['Member', ])
 
-        if 'referencesuppliers' not in portal_groups.listGroupIds():
-            portal_groups.addGroup('referencesuppliers', title = "",
+        if 'ReferenceSuppliers' not in portal_groups.listGroupIds():
+            portal_groups.addGroup('ReferenceSuppliers', title = "",
                 roles = ['Member', ])
 
     def setupPermissions(self, portal):

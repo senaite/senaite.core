@@ -257,6 +257,7 @@ Table cells for each column from in review_state's column list.
 			<!-- edit -->
 			<input
 				type="text"
+				autocomplete="off"
 				class="listing_string_entry numeric"
 				tal:condition="python:allow_edit"
 				tal:attributes="
@@ -286,6 +287,7 @@ Table cells for each column from in review_state's column list.
 			<!-- edit -->
 			<input
 				type="text"
+				autocomplete="off"
 				tal:condition="python:allow_edit"
 				class="listing_string_entry numeric"
 				tal:attributes="

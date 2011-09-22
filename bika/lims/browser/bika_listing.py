@@ -34,6 +34,8 @@ class WorkflowAction:
     def __init__(self, context, request):
         self.context = context
         self.request = request
+        # Save worksheet UID for benefit of event subscribers.
+        self.request['context_uid'] = self.context.UID()
 
     def _get_form_workflow_action(self):
         """ Retrieve the workflow action from the submitted form """

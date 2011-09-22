@@ -74,7 +74,7 @@ def contact_logindetails_submit(context, request):
 
         if not confirm:
             missing('confirm')
-        
+
         if not errors.has_key('password'):
             if len(password) < 5:
                 minlimit('password')
@@ -101,8 +101,8 @@ def contact_logindetails_submit(context, request):
     pm.setLocalRoles( obj=context.aq_parent, member_ids=[username],
         member_role='Owner')
 
-    # add user to clients group 
-    group=context.portal_groups.getGroupById('clients')
+    # add user to Clients group
+    group=context.portal_groups.getGroupById('Clients')
     group.addMember(username)
 
     if properties.validate_email or request.get('mail_me', 0):
@@ -110,13 +110,13 @@ def contact_logindetails_submit(context, request):
             reg_tool.registeredNotify(username)
         except ConflictError:
             raise
-        except Exception, err: 
+        except Exception, err:
 
             #XXX registerdNotify calls into various levels.  Lets catch all exceptions.
             #    Should not fail.  They cant CHANGE their password ;-)  We should notify them.
             #
             # (MSL 12/28/03) We also need to delete the just made member and return to the join_form.
-               
+
 
 
             message = context.translate('email_invalid',

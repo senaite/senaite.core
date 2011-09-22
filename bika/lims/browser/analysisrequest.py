@@ -207,7 +207,7 @@ class AnalysisRequestViewView(BrowserView):
         member = mt.getAuthenticatedMember();
         member_groups = [pg.getGroupById(group.id).getGroupName() \
                          for group in pg.getGroupsByUserId(member.id)]
-        default_spec = ('clients' in member_groups) and 'client' or 'lab'
+        default_spec = ('Clients' in member_groups) and 'client' or 'lab'
         return default_spec
 
     def getHazardous(self):

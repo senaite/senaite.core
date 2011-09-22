@@ -43,11 +43,11 @@ groups_tool=context.portal_groups
 member_groups = [groups_tool.getGroupById(group.id).getGroupName()
                  for group in groups_tool.getGroupsByUserId(member.id)]
 
-if 'clients' in member_groups:
+if 'Clients' in member_groups:
     for obj in context.clients.objectValues():
         if member.id in obj.users_with_local_role('Owner'):
             return context.REQUEST.response.redirect(obj.absolute_url())
-elif 'analysts' in member_groups:
+elif 'Analysts' in member_groups:
     context.REQUEST.RESPONSE.redirect(context.worksheets.absolute_url())
 
 return state

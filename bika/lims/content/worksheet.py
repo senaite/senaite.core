@@ -1115,7 +1115,7 @@ class Worksheet(BaseFolder):
         """ return current date """
         return DateTime()
 
-    # Present the labmanagers and labtechnicans as options for analyser
+    # Present the LabManagers and labtechnicans as options for analyser
     # set the first entry to blank to force selection
     security.declarePublic('getAnalysersDisplayList')
     def getAnalysersDisplayList(self):

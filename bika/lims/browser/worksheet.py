@@ -84,8 +84,6 @@ class WorksheetWorkflowAction(WorkflowAction):
 
         else:
             # default bika_listing.py/WorkflowAction for other transitions
-            # XXX Save worksheet UID for benefit of "assign" subscriber. 
-            self.request['worksheet_uid'] = self.context.UID()
             WorkflowAction.__call__(self)
 
 class WorksheetAddView(BrowserView):

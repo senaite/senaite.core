@@ -13,4 +13,4 @@ member = membership_tool.getAuthenticatedMember()
 member_groups = [groups_tool.getGroupById(group.id).getGroupName()
                  for group in groups_tool.getGroupsByUserId(member.id)]
 
-return 'clients' in member_groups
+return 'Clients' in member_groups
