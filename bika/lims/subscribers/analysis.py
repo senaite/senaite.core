@@ -20,9 +20,9 @@ def ObjectInitializedEventHandler(analysis, event):
         wf.doActionFor(analysis, 'receive')
     if ar_state not in ('sample_due', 'sample_received'):
         if not analysis.REQUEST.has_key('workflow_skiplist'):
-            analysis.REQUEST['workflow_skiplist'] = [ar.UID(), ]
+            analysis.REQUEST['workflow_skiplist'] = ['retract all analyses', ]
         else:
-            analysis.REQUEST["workflow_skiplist"].append(ar.UID())
+            analysis.REQUEST["workflow_skiplist"].append('retract all analyses')
         wf.doActionFor(ar, 'retract')
     return
 
@@ -82,6 +82,21 @@ def ActionSucceededEventHandler(analysis, event):
                     break
             if can_attach:
                 wf.doActionFor(ar, 'attach')
+
+        # If assigned to a worksheet and all analyses on the worksheet have been attached,
+        # then attach the worksheet.
+        ws = analysis.getWorksheet()
+        if ws:
+            if not ws.UID() in analysis.REQUEST['workflow_attach_skiplist']:
+                can_attach = True
+                for a in ws.getAnalyses():
+                    if wf.getInfoFor(a, 'review_state') in \
+                       ('sample_due', 'sample_received', 'attachment_due', 'assigned',):
+                        # Note: referenceanalyses can still have review_state = "assigned" (as at 21 Sep 2011).
+                        can_attach = False
+                        break
+                if can_attach:
+                    wf.doActionFor(ws, 'attach')
 
         return
 
@@ -165,6 +180,21 @@ def ActionSucceededEventHandler(analysis, event):
             if all_submitted:
                 wf.doActionFor(ar, 'submit')
 
+        # If assigned to a worksheet and all analyses on the worksheet have been submitted,
+        # then submit the worksheet.
+        ws = analysis.getWorksheet()
+        if ws:
+            if not ws.UID() in analysis.REQUEST['workflow_skiplist']:
+                all_submitted = True
+                for a in ws.getAnalyses():
+                    if wf.getInfoFor(a, 'review_state') in \
+                       ('sample_due', 'sample_received', 'assigned',):
+                        # Note: referenceanalyses can still have review_state = "assigned" (as at 21 Sep 2011).
+                        all_submitted = False
+                        break
+                if all_submitted:
+                    wf.doActionFor(ws, 'submit')
+
         # If no problem with attachments, do 'attach' action for this analysis.
         can_attach = True
         if not analysis.getAttachment():
@@ -203,6 +233,16 @@ def ActionSucceededEventHandler(analysis, event):
                 if not "retract all analyses" in analysis.REQUEST['workflow_skiplist']:
                     analysis.REQUEST["workflow_skiplist"].append("retract all analyses")
                 wf.doActionFor(ar, 'retract')
+        # Escalate action to the Worksheet (if it's on one).
+        ws = analysis.getWorksheet()
+        if ws:
+            if not ws.UID() in analysis.REQUEST['workflow_skiplist']:
+                if wf.getInfoFor(ws, 'review_state') == 'open':
+                    analysis.REQUEST["workflow_skiplist"].append(ws.UID())
+                else:
+                    if not "retract all analyses" in analysis.REQUEST['workflow_skiplist']:
+                        analysis.REQUEST["workflow_skiplist"].append("retract all analyses")
+                    wf.doActionFor(ws, 'retract')
 
     elif event.action == "verify":
         analysis.reindexObject(idxs = ["review_state", ])
@@ -265,7 +305,26 @@ def ActionSucceededEventHandler(analysis, event):
                     all_verified = False
                     break
             if all_verified:
+                if not "verify all analyses" in analysis.REQUEST['workflow_skiplist']:
+                    analysis.REQUEST["workflow_skiplist"].append("verify all analyses")
                 wf.doActionFor(ar, "verify")
+
+        # If this is on a worksheet and all it's other analyses are verified,
+        # then verify the worksheet.
+        ws = analysis.getWorksheet()
+        if ws:
+            if not ws.UID() in analysis.REQUEST['workflow_skiplist']:
+                all_verified = True
+                for a in ws.getAnalyses():
+                    if wf.getInfoFor(a, 'review_state') in \
+                       ('sample_due', 'sample_received', 'attachment_due', 'to_be_verified', 'assigned'):
+                        # Note: referenceanalyses can still have review_state = "assigned" (as at 21 Sep 2011).
+                        all_verified = False
+                        break
+                if all_verified:
+                    if not "verify all analyses" in analysis.REQUEST['workflow_skiplist']:
+                        analysis.REQUEST["workflow_skiplist"].append("verify all analyses")
+                    wf.doActionFor(ws, "verify")
 
     elif event.action == "publish":
         endtime = DateTime()
@@ -294,7 +353,25 @@ def ActionSucceededEventHandler(analysis, event):
 
     elif event.action == "assign":
         analysis.reindexObject(idxs = ["worksheetanalysis_review_state", ])
-        # If all analyses in this AR have been assigned
+        # Add the analysis to the worksheet and retract the worksheet to 'open'
+        rc = getToolByName(analysis, 'reference_catalog')
+        wsUID = analysis.REQUEST['worksheet_uid']
+        ws = rc.lookupObject(wsUID)
+        ass = ws.getAnalyses()
+        ass = ass + [analysis, ]
+        ws.setAnalyses(ass)
+        #XXX Do something about layout.
+        #XXX randomly setting Analyser here because it's not on the screen yet.
+        ws.setAnalyser('fred')
+        ws_state = wf.getInfoFor(ws, 'review_state')
+        if ws_state != 'open':
+            if not analysis.REQUEST.has_key('workflow_skiplist'):
+                analysis.REQUEST['workflow_skiplist'] = ['retract all analyses', ]
+            else:
+                analysis.REQUEST["workflow_skiplist"].append('retract all analyses')
+            wf.doActionFor(ws, 'retract')
+
+        # If all analyses in this AR have been assigned,
         # escalate the action to the parent AR
         if not ar.UID() in analysis.REQUEST['workflow_skiplist']:
             if not ar.getAnalyses(worksheetanalysis_review_state = 'unassigned'):
@@ -302,6 +379,10 @@ def ActionSucceededEventHandler(analysis, event):
 
     elif event.action == "unassign":
         analysis.reindexObject(idxs = ["worksheetanalysis_review_state", ])
+        # Remove the analysis from the worksheet
+        ws = analysis.getWorksheet()
+        ws.setAnalyses([a for a in ws.getAnalyses() if a != analysis])
+
         # Escalate the action to the parent AR if it is assigned
         if not ar.UID() in analysis.REQUEST['workflow_skiplist']:
             if wf.getInfoFor(ar, 'worksheetanalysis_review_state') == 'assigned':

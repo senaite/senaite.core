@@ -6,6 +6,7 @@
  <permission>Modify portal content</permission>
  <permission>Delete objects</permission>
  <permission>BIKA: Submit results</permission>
+ 
  <state state_id="open" title="Worksheet open">
   <exit-transition transition_id="submit"/>
   <permission-map name="BIKA: Submit results"
@@ -32,6 +33,36 @@
    <permission-role>Owner</permission-role>
   </permission-map>
  </state>
+ 
+ <state state_id="attachment_due" title="Attachment Outstanding">
+  <exit-transition transition_id="attach"/>
+  <exit-transition transition_id="retract"/>
+  <exit-transition transition_id="reject"/>
+  <permission-map name="BIKA: Submit results"
+                  acquired="False">
+   <permission-role>Manager</permission-role>
+   <permission-role>LabManager</permission-role>
+   <permission-role>Analyst</permission-role>
+   <permission-role>LabClerk</permission-role>
+   <permission-role>Owner</permission-role>
+  </permission-map>
+  <permission-map name="Delete objects" acquired="False">
+   <permission-role>Manager</permission-role>
+   <permission-role>LabManager</permission-role>
+   <permission-role>Analyst</permission-role>
+   <permission-role>LabClerk</permission-role>
+   <permission-role>Owner</permission-role>
+  </permission-map>
+  <permission-map name="Modify portal content"
+                  acquired="False">
+   <permission-role>Manager</permission-role>
+   <permission-role>LabManager</permission-role>
+   <permission-role>Analyst</permission-role>
+   <permission-role>LabClerk</permission-role>
+   <permission-role>Owner</permission-role>
+  </permission-map>
+ </state>
+ 
  <state state_id="to_be_verified" title="To be verified">
   <exit-transition transition_id="verify"/>
   <exit-transition transition_id="retract"/>
@@ -40,10 +71,6 @@
                   acquired="False">
    <permission-role>Manager</permission-role>
   </permission-map>
-  <permission-map name="BIKA: Verify Worksheet"
-                  acquired="False">
-   <permission-role>Verifier</permission-role>
-  </permission-map>
   <permission-map name="Delete objects" acquired="False">
    <permission-role>Manager</permission-role>
    <permission-role>LabManager</permission-role>
@@ -54,8 +81,8 @@
    <permission-role>LabManager</permission-role>
   </permission-map>
  </state>
+ 
  <state state_id="verified" title="Verified">
-  <exit-transition transition_id="retract"/>
   <permission-map name="BIKA: Submit results"
                   acquired="False">
    <permission-role>Manager</permission-role>
@@ -70,6 +97,7 @@
    <permission-role>LabManager</permission-role>
   </permission-map>
  </state>
+ 
  <state state_id="rejected" title="Rejected">
   <permission-map name="BIKA: Submit results"
                   acquired="False">
@@ -85,42 +113,57 @@
    <permission-role>LabManager</permission-role>
   </permission-map>
  </state>
+ 
  <transition transition_id="reject"
              title="Reject worksheet" new_state="rejected"
              trigger="USER" before_script=""
-             after_script="default">
+             after_script="">
   <action url="" category="workflow">Reject</action>
   <guard>
    <guard-permission>BIKA: Verify Worksheet</guard-permission>
   </guard>
  </transition>
+ 
  <transition transition_id="retract"
              title="Retract worksheet" new_state="open"
              trigger="USER" before_script=""
-             after_script="default">
+             after_script="">
   <action url="" category="workflow">Retract</action>
   <guard>
    <guard-permission>BIKA: Retract Worksheet</guard-permission>
   </guard>
  </transition>
+ 
  <transition transition_id="submit" title="Submit worksheet"
-             new_state="to_be_verified" trigger="USER"
-             before_script="" after_script="default">
+             new_state="attachment_due" trigger="USER"
+             before_script="" after_script="">
   <action url="" category="workflow">Submit for verification</action>
   <guard>
    <guard-permission>BIKA: Submit Worksheet</guard-permission>
    <guard-expression>python:here.guard_submit_worksheet()</guard-expression>
   </guard>
  </transition>
+ 
+ <transition transition_id="attach" title="Submit worksheet"
+             new_state="to_be_verified" trigger="USER"
+             before_script="" after_script="">
+  <action url="" category="workflow">Submit for verification</action>
+  <guard>
+   <guard-permission>BIKA: Submit Worksheet</guard-permission>
+   <guard-expression>python:here.guard_attach_worksheet()</guard-expression>
+  </guard>
+ </transition>
+ 
  <transition transition_id="verify" title="Verify worksheet"
              new_state="verified" trigger="USER"
-             before_script="" after_script="default">
+             before_script="" after_script="">
   <action url="" category="workflow">Verify worksheet</action>
   <guard>
    <guard-permission>BIKA: Verify Worksheet</guard-permission>
    <guard-expression>python:here.guard_verify_worksheet()</guard-expression>
   </guard>
  </transition>
+ 
  <worklist worklist_id="reviewer_queue" title="">
   <description>Lab manager tasks</description>
   <action url="%(portal_url)s/search?review_state=pending"

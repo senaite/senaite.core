@@ -30,46 +30,9 @@ class WorksheetWorkflowAction(WorkflowAction):
         originating_url = self.request.get_header("referer",
                                                   self.context.absolute_url())
         skiplist = self.request.get('workflow_skiplist', [])
-        action,came_from = WorkflowAction._get_form_workflow_action(self)
+        action, came_from = WorkflowAction._get_form_workflow_action(self)
 
-## assign
-        if action == 'assign':
-            analyses = WorkflowAction._get_selected_items(self)
-            assigned = []
-            if analyses:
-                self.context.setAnalyses(self.context.getAnalyses() + analyses.values())
-                layout = self.context.getLayout() # XXX layout
-                for uid,analysis in analyses.items():
-                    if uid not in skiplist:
-                        workflow.doActionFor(analysis, 'assign')
-                        assigned.append(analysis)
-
-            if len(assigned) > 1:
-                message = _('message_items_assigned',
-                            default = "${count} analyses were assigned to this worksheet.",
-                            mapping = {'count': len(assigned)})
-            elif len(assigned) == 1:
-                message = _("1 analysis was assigned to this worksheet.")
-            else:
-                message = _("No action taken.")
-                self.context.plone_utils.addPortalMessage(message, 'info')
-                return self.request.RESPONSE.redirect(originating_url)
-            self.context.plone_utils.addPortalMessage(message, 'info')
-            return self.request.RESPONSE.redirect(
-                self.context.absolute_url() + "/manage_results")
-
-## unassign
-        elif action == 'unassign':
-            analyses = WorkflowAction._get_selected_items(self)
-            if analyses:
-                self.context.setAnalyses([a for a in self.context.getAnalyses()
-                                          if a not in analyses.values()])
-                layout = self.context.getLayout() # XXX layout
-                for uid,analysis in analyses.items():
-                    if uid not in skiplist:
-                        workflow.doActionFor(analysis, 'unassign')
-## submit
-        elif action == 'submit' and self.request.form.has_key("Result"):
+        if action == 'submit' and self.request.form.has_key("Result"):
             selected_analyses = WorkflowAction._get_selected_items(self)
             selected_analysis_uids = selected_analyses.keys()
             results = {}
@@ -121,6 +84,8 @@ class WorksheetWorkflowAction(WorkflowAction):
 
         else:
             # default bika_listing.py/WorkflowAction for other transitions
+            # XXX Save worksheet UID for benefit of "assign" subscriber. 
+            self.request['worksheet_uid'] = self.context.UID()
             WorkflowAction.__call__(self)
 
 class WorksheetAddView(BrowserView):
@@ -317,14 +282,14 @@ class WorksheetManageResultsView(AnalysesView):
             items[x]['Order'] = hasattr(ar, 'getClientOrderNumber') \
                  and ar.getClientOrderNumber() or ''
             if obj.portal_type == 'DuplicateAnalysis':
-                items[x]['after']['Pos'] = '<img width="16" height="16" src="%s/++resource++bika.lims.images/duplicate.png"/>'%\
+                items[x]['after']['Pos'] = '<img width="16" height="16" src="%s/++resource++bika.lims.images/duplicate.png"/>' % \
                     (self.context.absolute_url())
             elif obj.portal_type == 'ReferenceAnalysis':
                 if obj.ReferenceType == 'b':
-                    items[x]['after'] += '<img width="16" height="16" src="%s/++resource++bika.lims.images/blank.png"/>'%\
+                    items[x]['after'] += '<img width="16" height="16" src="%s/++resource++bika.lims.images/blank.png"/>' % \
                         (self.context.absolute_url())
                 else:
-                    items[x]['after'] += '<img width="16" height="16" src="%s/++resource++bika.lims.images/control.png"/>'%\
+                    items[x]['after'] += '<img width="16" height="16" src="%s/++resource++bika.lims.images/control.png"/>' % \
                         (self.context.absolute_url())
 
         return items
@@ -361,7 +326,7 @@ class WorksheetAddAnalysisView(AnalysesView):
                               'worksheetanalysis_review_state': 'unassigned'}
         self.show_editable_border = True
         self.base_url = self.context.absolute_url()
-        self.view_url = self.base_url  + "/add_analysis"
+        self.view_url = self.base_url + "/add_analysis"
         self.show_sort_column = False
         self.show_select_row = True
         self.show_select_column = True
@@ -569,6 +534,6 @@ class AJAXGetWorksheetTemplates():
         plone.protect.PostOnly(self.request)
         pc = getToolByName(self.context, "portal_catalog")
         templates = []
-        for t in pc(portal_type="WorksheetTemplate"):
+        for t in pc(portal_type = "WorksheetTemplate"):
             templates.append((t.UID, t.Title))
         return json.dumps(templates)

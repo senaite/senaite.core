@@ -169,9 +169,10 @@
    <permission-role>Manager</permission-role>
   </permission-map>
  </state>
+ 
  <transition transition_id="receive" title="Receive"
              new_state="received" trigger="USER"
-             before_script="" after_script="default">
+             before_script="" after_script="">
   <action url="" category="workflow">Receive</action>
   <guard>
    <guard-permission>BIKA: Receive sample</guard-permission>
@@ -180,7 +181,7 @@
  <transition transition_id="expire"
              title="Expire"
              new_state="expired" trigger="USER"
-             before_script="" after_script="default">
+             before_script="" after_script="">
   <action url="" category="workflow">Expire</action>
   <guard>
    <guard-permission>BIKA: Manage Sample</guard-permission>
@@ -188,7 +189,7 @@
  </transition>
  <transition transition_id="dispose" title="Dispose"
              new_state="disposed" trigger="USER"
-             before_script="" after_script="default">
+             before_script="" after_script="">
   <action url="" category="workflow">Dispose</action>
   <guard>
    <guard-permission>BIKA: Manage Sample</guard-permission>

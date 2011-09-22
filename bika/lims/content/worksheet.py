@@ -385,7 +385,7 @@ class Worksheet(BaseFolder):
                 if result:
                     precision = service.getPrecision()
                     if precision:
-                        result = "%%.%df"%precision % result
+                        result = "%%.%df" % precision % result
                     uncertainty = self.get_uncertainty(result, service)
 
                 titrationvolume = value.get('TitrationVolume')
@@ -482,7 +482,7 @@ class Worksheet(BaseFolder):
             REQUEST = REQUEST, RESPONSE = RESPONSE,
             template_id = 'worksheet_analyses')
 
-    def getAllAnalyses(self, contentFilter=None):
+    def getAllAnalyses(self, contentFilter = None):
         """ get all the analyses of different types linked to this WS
             contentFilter is supplied by BikaListingView, and ignored.
         """
@@ -822,6 +822,7 @@ class Worksheet(BaseFolder):
 
     def workflow_script_submit(self, state_info):
         """ submit sample """
+        #XXX All this workflow stuff must get taken out eventually
 
         if getattr(self, '_escalating_workflow_action', None):
             return

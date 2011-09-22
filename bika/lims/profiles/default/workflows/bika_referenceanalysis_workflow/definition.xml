@@ -145,7 +145,6 @@
   </permission-map>
  </state>
  <state state_id="verified" title="Verified">
-  <exit-transition transition_id="retract"/>
   <permission-map name="BIKA: Edit analyses"
                   acquired="False">
    <permission-role>Manager</permission-role>

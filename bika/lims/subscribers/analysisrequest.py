@@ -69,11 +69,12 @@ def ActionSucceededEventHandler(ar, event):
 
     elif event.action == "verify":
         ar.reindexObject(idxs = ["review_state", ])
-        # verify all analyses in this AR.
-        analyses = ar.getAnalyses(review_state = 'to_be_verified')
-        for analysis in analyses:
-            if not analysis.UID in ar.REQUEST['workflow_skiplist']:
-                wf.doActionFor(analysis.getObject(), "verify")
+        if not "verify all analyses" in ar.REQUEST['workflow_skiplist']:
+            # verify all analyses in this AR.
+            analyses = ar.getAnalyses(review_state = 'to_be_verified')
+            for analysis in analyses:
+                if not analysis.UID in ar.REQUEST['workflow_skiplist']:
+                    wf.doActionFor(analysis.getObject(), "verify")
 
     elif event.action == "publish":
         ar.setDatePublished(DateTime())

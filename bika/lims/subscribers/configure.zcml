@@ -25,6 +25,13 @@
       handler="bika.lims.subscribers.analysisrequest.ActionSucceededEventHandler"
     />
 
+    <!-- Workflow action event for Worksheet objects -->
+    <subscriber
+      for="bika.lims.interfaces.IWorksheet
+           Products.CMFCore.interfaces.IActionSucceededEvent"
+      handler="bika.lims.subscribers.worksheet.ActionSucceededEventHandler"
+    />
+
     <!-- Workflow action event for Sample objects -->
     <subscriber
       for="bika.lims.interfaces.ISample
