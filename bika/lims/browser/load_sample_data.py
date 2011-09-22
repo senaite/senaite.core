@@ -59,11 +59,11 @@ class LoadSetupData():
         pg = getToolByName(self.context, 'portal_groups')
         pm = getToolByName(self.context, 'portal_membership')
         members = (
-            ('Lab Manager', 'labmanager01', 'labmanager01', 'labmanager@scapp.co.za', 'labmanager'),
-            ('Lab Clerk', 'labclerk01', 'labclerk01', 'labclerk@scapp.co.za', 'labclerk'),
-            ('Lab Techician', 'analyst01', 'analyst01', 'analyst@scapp.co.za', 'analyst'),
-            ('Verifier', 'verifier01', 'verifier01', 'verifier@scapp.co.za', 'analyst'),
-            ('Publisher', 'publisher01', 'publisher01', 'publisher@scapp.co.za', 'analyst'),
+            ('Lab Manager', 'labmanager01', 'labmanager01', 'labmanager@scapp.co.za', 'Labmanager'),
+            ('Lab Clerk', 'labclerk01', 'labclerk01', 'labclerk@scapp.co.za', 'Labclerk'),
+            ('Lab Techician', 'analyst01', 'analyst01', 'analyst@scapp.co.za', 'Analyst'),
+            ('Verifier', 'verifier01', 'verifier01', 'verifier@scapp.co.za', 'Analyst'),
+            ('Publisher', 'publisher01', 'publisher01', 'publisher@scapp.co.za', 'Analyst'),
         )
         for fullname, username, password, email, role in members:
             fullname = fullname.decode('latin-1').encode('utf-8').strip()
@@ -83,10 +83,10 @@ class LoadSetupData():
             # verifiers and publishers get their normal permissions from a standard lab
             # group. Verifying and publishing permissions are added to this.
             if fullname == 'verifier':
-                group = pg.getGroupById('verifiers')
+                group = pg.getGroupById('Verifiers')
                 group.addMember(username)
             if fullname == 'publisher':
-                group = pg.getGroupById('publishers')
+                group = pg.getGroupById('Publishers')
                 group.addMember(username)
 
         # Give labmanager an Owner local role on clients folder
@@ -146,7 +146,7 @@ class LoadSetupData():
                     member_role = 'Owner')
 
                 # add user to clients group
-                group = self.context.portal_groups.getGroupById('clients')
+                group = self.context.portal_groups.getGroupById('Clients')
                 group.addMember(cusername)
             contact.processForm()
             contact.reindexObject()
