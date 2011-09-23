@@ -26,6 +26,61 @@ def ObjectInitializedEventHandler(analysis, event):
         wf.doActionFor(ar, 'retract')
     return
 
+def ObjectRemovedEventHandler(analysis, event):
+
+    logger.info("ObjectRemoved: %s" % analysis)
+
+    # May need to promote the AR's review_state
+    #  if all other analyses are at a higher state than this one was.
+    wf = getToolByName(analysis, 'portal_workflow')
+    ar = analysis.aq_parent
+    ar_UID = ar.UID()
+    can_submit = True
+    can_attach = True
+    can_verify = True
+    can_publish = True
+
+    for a in ar.getAnalyses():
+        a_state = a.review_state
+        if a_state in \
+           ('sample_due', 'sample_received',):
+            can_submit = False
+        if a_state in \
+           ('sample_due', 'sample_received', 'attachment_due',):
+            can_attach = False
+        if a_state in \
+           ('sample_due', 'sample_received', 'attachment_due', 'to_be_verified',):
+            can_verify = False
+        if a_state in \
+           ('sample_due', 'sample_received', 'attachment_due', 'to_be_verified', 'verified',):
+            can_publish = False
+
+    # Note: AR adds itself to the skiplist so we have to take it off again
+    #       to allow multiple promotions (maybe by more than one deleted analysis).
+    if can_submit and wf.getInfoFor(ar, 'review_state') == 'sample_received':
+        wf.doActionFor(ar, 'submit')
+        analysis.REQUEST["workflow_skiplist"].remove(ar_UID)
+    if can_attach and wf.getInfoFor(ar, 'review_state') == 'attachment_due':
+        wf.doActionFor(ar, 'attach')
+        analysis.REQUEST["workflow_attach_skiplist"].remove(ar_UID)
+    if can_verify and wf.getInfoFor(ar, 'review_state') == 'to_be_verified':
+        analysis.REQUEST["workflow_skiplist"].append('verify all analyses')
+        wf.doActionFor(ar, 'verify')
+        analysis.REQUEST["workflow_skiplist"].remove(ar_UID)
+    if can_publish and wf.getInfoFor(ar, 'review_state') == 'verified':
+        analysis.REQUEST["workflow_skiplist"].append('publish all analyses')
+        wf.doActionFor(ar, 'publish')
+        analysis.REQUEST["workflow_skiplist"].remove(ar_UID)
+
+    ar_ws_state = wf.getInfoFor(ar, 'worksheetanalysis_review_state')
+    if ar_ws_state == 'unassigned':
+        if not ar.getAnalyses(worksheetanalysis_review_state = 'unassigned'):
+            if ar.getAnalyses(worksheetanalysis_review_state = 'assigned'):
+                wf.doActionFor(ar, 'assign')
+                analysis.REQUEST["workflow_skiplist"].remove(ar_UID)
+
+    return
+
 def ActionSucceededEventHandler(analysis, event):
 
     if event.action == "attach":
@@ -381,11 +436,46 @@ def ActionSucceededEventHandler(analysis, event):
         analysis.reindexObject(idxs = ["worksheetanalysis_review_state", ])
         # Remove the analysis from the worksheet
         ws = analysis.getWorksheet()
+        ws_UID = ws.UID()
         ws.setAnalyses([a for a in ws.getAnalyses() if a != analysis])
 
         # Escalate the action to the parent AR if it is assigned
-        if not ar.UID() in analysis.REQUEST['workflow_skiplist']:
-            if wf.getInfoFor(ar, 'worksheetanalysis_review_state') == 'assigned':
-                wf.doActionFor(ar, 'unassign')
+        # Note: AR adds itself to the skiplist so we have to take it off again
+        #       to allow multiple promotions/demotions (maybe by more than one analysis).
+        ar_UID = ar.UID()
+        if wf.getInfoFor(ar, 'worksheetanalysis_review_state') == 'assigned':
+            wf.doActionFor(ar, 'unassign')
+            analysis.REQUEST["workflow_skiplist"].remove(ar_UID)
+
+        # May need to promote the Worksheet's review_state
+        #  if all other analyses are at a higher state than this one was.
+        can_submit = True
+        can_attach = True
+        can_verify = True
+
+        for a in ws.getAnalyses():
+            a_state = wf.getInfoFor(a, 'review_state')
+            if a_state in \
+               ('sample_due', 'sample_received',):
+                can_submit = False
+            if a_state in \
+               ('sample_due', 'sample_received', 'attachment_due',):
+                can_attach = False
+            if a_state in \
+               ('sample_due', 'sample_received', 'attachment_due', 'to_be_verified',):
+                can_verify = False
+
+        # Note: WS adds itself to the skiplist so we have to take it off again
+        #       to allow multiple promotions (maybe by more than one analysis).
+        if can_submit and wf.getInfoFor(ws, 'review_state') == 'open':
+            wf.doActionFor(ws, 'submit')
+            analysis.REQUEST["workflow_skiplist"].remove(ws_UID)
+        if can_attach and wf.getInfoFor(ws, 'review_state') == 'attachment_due':
+            wf.doActionFor(ws, 'attach')
+            analysis.REQUEST["workflow_attach_skiplist"].remove(ws_UID)
+        if can_verify and wf.getInfoFor(ws, 'review_state') == 'to_be_verified':
+            analysis.REQUEST["workflow_skiplist"].append('verify all analyses')
+            wf.doActionFor(ws, 'verify')
+            analysis.REQUEST["workflow_skiplist"].remove(ws_UID)
 
     return

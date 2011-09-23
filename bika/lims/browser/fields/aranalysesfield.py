@@ -24,7 +24,7 @@ class ARAnalysesField(ObjectField):
         'default' : None,
         })
 
-    security  = ClassSecurityInfo()
+    security = ClassSecurityInfo()
 
     security.declarePrivate('get')
     def get(self, instance, **kwargs):
@@ -48,7 +48,7 @@ class ARAnalysesField(ObjectField):
         return analyses
 
     security.declarePrivate('set')
-    def set(self, instance, service_uids, prices=None, **kwargs):
+    def set(self, instance, service_uids, prices = None, **kwargs):
         """ service_uids are the services selected on the AR Add/Edit form.
             prices is a service_uid keyed dictionary containing the prices entered on the form.
         """
@@ -61,10 +61,10 @@ class ARAnalysesField(ObjectField):
         workflow = instance.portal_workflow
         # one can only edit Analyses up to a certain state.
         ar_state = workflow.getInfoFor(instance, 'review_state', '')
-        assert ar_state in ('sample_due', 'sample_received', 'to_be_verified')
+        assert ar_state in ('sample_due', 'sample_received', 'attachment_due', 'to_be_verified')
 
         pc = getToolByName(instance, 'portal_catalog')
-        services = pc(UID=service_uids)
+        services = pc(UID = service_uids)
 
         for service in services:
             service_uid = service.UID
@@ -83,7 +83,7 @@ class ARAnalysesField(ObjectField):
                 instance.invokeFactory(id = keyword,
                                        type_name = 'Analysis')
                 analysis = instance._getOb(keyword)
-                analysis.edit(Service=service,
+                analysis.edit(Service = service,
                               InterimFields = interim_fields,
                               MaxTimeAllowed = service.getMaxTimeAllowed())
                 analysis.processForm()
@@ -93,8 +93,12 @@ class ARAnalysesField(ObjectField):
         for analysis in instance.objectValues('Analysis'):
             service_uid = analysis.Schema()['Service'].getRaw(analysis)
             if service_uid not in service_uids:
+                # If it is assigned to a worksheet, unassign it before deletion.
+                if workflow.getInfoFor(analysis, 'worksheetanalysis_review_state') == 'assigned':
+                    workflow.doActionFor(analysis, 'unassign')
+                    analysis.REQUEST["workflow_skiplist"].remove(analysis.UID())
                 delete_ids.append(analysis.getId())
-        instance.manage_delObjects(ids=delete_ids)
+        instance.manage_delObjects(ids = delete_ids)
 
     security.declarePublic('Vocabulary')
     def Vocabulary(self, content_instance = None):

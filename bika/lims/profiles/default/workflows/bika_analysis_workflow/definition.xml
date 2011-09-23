@@ -95,17 +95,14 @@
  <state state_id="published" title="Published">
   <exit-transition transition_id="republish"/>
   <permission-map name="BIKA: Edit analyses" acquired="False">
-   <permission-role>Manager</permission-role>
   </permission-map>
   <permission-map name="BIKA: Manage Analysis Requests" acquired="False">
-   <permission-role>Manager</permission-role>
   </permission-map>
   <permission-map name="BIKA: Manage Invoices" acquired="True">
   </permission-map>
   <permission-map name="BIKA: Retract sample" acquired="True">
   </permission-map>
   <permission-map name="BIKA: Submit results" acquired="False">
-   <permission-role>Manager</permission-role>
   </permission-map>
   <permission-map name="BIKA: View Results" acquired="False">
    <permission-role>Manager</permission-role>

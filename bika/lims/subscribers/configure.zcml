@@ -18,6 +18,13 @@
       handler="bika.lims.subscribers.analysis.ObjectInitializedEventHandler"
     />
 
+    <!-- Deleted analyses -->
+    <subscriber
+      for="bika.lims.interfaces.IAnalysis
+           zope.lifecycleevent.interfaces.IObjectRemovedEvent"
+      handler="bika.lims.subscribers.analysis.ObjectRemovedEventHandler"
+    />
+
     <!-- Workflow action event for AnalysisRequest objects -->
     <subscriber
       for="bika.lims.interfaces.IAnalysisRequest

@@ -79,11 +79,12 @@ def ActionSucceededEventHandler(ar, event):
     elif event.action == "publish":
         ar.setDatePublished(DateTime())
         ar.reindexObject(idxs = ["review_state", "getDatePublished", ])
-        # publish all analyses in this AR. (except not requested ones)
-        analyses = ar.getAnalyses(review_state = 'verified')
-        for analysis in analyses:
-            if not analysis.UID in ar.REQUEST['workflow_skiplist']:
-                wf.doActionFor(analysis.getObject(), "publish")
+        if not "publish all analyses" in ar.REQUEST['workflow_skiplist']:
+            # publish all analyses in this AR. (except not requested ones)
+            analyses = ar.getAnalyses(review_state = 'verified')
+            for analysis in analyses:
+                if not analysis.UID in ar.REQUEST['workflow_skiplist']:
+                    wf.doActionFor(analysis.getObject(), "publish")
 
     #---------------------
     # Secondary workflows:
