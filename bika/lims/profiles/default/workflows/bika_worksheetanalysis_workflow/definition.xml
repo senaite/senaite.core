@@ -1,69 +1,26 @@
 <?xml version="1.0"?>
 <dc-workflow workflow_id="bika_worksheetanalysis_workflow" title="Worksheet Analysis Workflow [bika]" description="" state_variable="worksheetanalysis_review_state" initial_state="unassigned" manager_bypass="False">
- <permission>BIKA: Edit analyses</permission>
- <permission>BIKA: Manage Analysis Requests</permission>
- <permission>BIKA: Retract sample</permission>
- <permission>BIKA: Submit results</permission>
- <permission>BIKA: View Results</permission>
- <permission>Delete objects</permission>
- <permission>Modify portal content</permission>
+ 
  <state state_id="assigned" title="Assigned to Worksheet">
   <exit-transition transition_id="unassign"/>
-  <permission-map name="BIKA: Edit analyses" acquired="False">
-   <permission-role>Manager</permission-role>
-   <permission-role>LabManager</permission-role>
-   <permission-role>LabClerk</permission-role>
-  </permission-map>
-  <permission-map name="BIKA: Manage Analysis Requests" acquired="False">
-   <permission-role>Manager</permission-role>
-   <permission-role>LabManager</permission-role>
-   <permission-role>Analyst</permission-role>
-   <permission-role>LabClerk</permission-role>
-  </permission-map>
-  <permission-map name="BIKA: Retract sample" acquired="True">
-   <permission-role>Analyst</permission-role>
-   <permission-role>LabClerk</permission-role>
-   <permission-role>Reviewer</permission-role>
-   <permission-role>Verifier</permission-role>
-  </permission-map>
-  <permission-map name="BIKA: Submit results" acquired="False">
-   <permission-role>Manager</permission-role>
-   <permission-role>LabManager</permission-role>
-   <permission-role>Analyst</permission-role>
-   <permission-role>LabClerk</permission-role>
-  </permission-map>
-  <permission-map name="BIKA: View Results" acquired="False">
-   <permission-role>Manager</permission-role>
-   <permission-role>LabManager</permission-role>
-   <permission-role>Analyst</permission-role>
-   <permission-role>LabClerk</permission-role>
-  </permission-map>
-  <permission-map name="Delete objects" acquired="False">
-   <permission-role>Manager</permission-role>
-   <permission-role>LabManager</permission-role>
-   <permission-role>Analyst</permission-role>
-   <permission-role>LabClerk</permission-role>
-  </permission-map>
-  <permission-map name="Modify portal content" acquired="False">
-   <permission-role>Manager</permission-role>
-   <permission-role>LabManager</permission-role>
-   <permission-role>Analyst</permission-role>
-   <permission-role>LabClerk</permission-role>
-  </permission-map>
  </state>
+ 
  <state state_id="unassigned" title="Unassigned">
   <exit-transition transition_id="assign"/>
  </state>
+ 
  <transition transition_id="assign" title="Assign" new_state="assigned" trigger="USER" before_script="" after_script="">
   <action url="workflow_action?workflow_action=assign" category="workflow" icon="">Assign</action>
   <guard>
   </guard>
  </transition>
+ 
  <transition transition_id="unassign" title="Remove" new_state="unassigned" trigger="USER" before_script="" after_script="">
   <action url="workflow_action?workflow_action=unassign" category="workflow" icon="">Remove</action>
   <guard>
   </guard>
  </transition>
+ 
  <worklist worklist_id="reviewer_queue" title="">
   <description>Lab manager tasks</description>
   <action url="%(portal_url)s/search?review_state=pending" category="global" icon="">To be verified (%(count)d)</action>
