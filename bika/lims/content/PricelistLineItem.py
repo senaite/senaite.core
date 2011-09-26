@@ -11,47 +11,39 @@ from bika.lims import bikaMessageFactory as _
 schema = BaseSchema.copy() + Schema((
     TextField('ItemDescription',
         widget = TextAreaWidget(
-            label = 'Description'
+            label = _("Description")
         )
     ),
     TextField('CategoryName',
         widget = TextAreaWidget(
-            label = 'Description'
+            label = _("Description")
         )
     ),
     BooleanField('Accredited',
         default = False,
         widget = BooleanWidget(
-            label = "Accredited",
-            label_msgid = "label_accredited",
-            i18n_domain = I18N_DOMAIN,
+            label = _("Accredited"),
         ),
     ),
     FixedPointField('Subtotal',
         required = 1,
         default = '0.0',
         widget = DecimalWidget(
-            label = 'Subtotal',
-            label_msgid = 'label_subtotal',
-            i18n_domain = I18N_DOMAIN,
+            label = _("Subtotal"),
         )
     ),
     FixedPointField('VAT',
         required = 1,
         default = '0.0',
         widget = DecimalWidget(
-            label = 'VAT',
-            label_msgid = 'label_vat',
-            i18n_domain = I18N_DOMAIN,
+            label = _("VAT"),
         )
     ),
     FixedPointField('Total',
         required = 1,
         default = '0.0',
         widget = DecimalWidget(
-            label = 'Total',
-            label_msgid = 'label_total',
-            i18n_domain = I18N_DOMAIN,
+            label = _("Total"),
         )
     ),
 ),
