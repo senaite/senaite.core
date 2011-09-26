@@ -24,8 +24,7 @@ schema = Organisation.schema.copy() + atapi.Schema((
         index = 'FieldIndex:brains',
         searchable = True,
         widget = atapi.StringWidget(
-            label = 'Client ID',
-            i18n_domain = I18N_DOMAIN,
+            label = _("Client ID"),
         ),
     ),
     atapi.BooleanField('MemberDiscountApplies',
@@ -33,8 +32,7 @@ schema = Organisation.schema.copy() + atapi.Schema((
         schemata = 'default',
         write_permission = ManageClients,
         widget = atapi.BooleanWidget(
-            label = "Member discount applies",
-            i18n_domain = I18N_DOMAIN,
+            label = _("Member discount applies"),
         ),
     ),
     atapi.StringField('ClientType',
@@ -43,8 +41,7 @@ schema = Organisation.schema.copy() + atapi.Schema((
         write_permission = ManageClients,
         vocabulary = CLIENT_TYPES,
         widget = atapi.SelectionWidget(
-            label = 'Client type',
-            i18n_domain = I18N_DOMAIN,
+            label = _("Client type"),
         ),
     ),
     atapi.LinesField('EmailSubject',
@@ -53,8 +50,7 @@ schema = Organisation.schema.copy() + atapi.Schema((
         vocabulary = EMAIL_SUBJECT_OPTIONS,
         widget = atapi.MultiSelectionWidget(
             description = 'Items to be included in email subject lines',
-            label = 'Email subject line',
-            i18n_domain = I18N_DOMAIN,
+            label = _("Email subject line"),
         ),
     ),
     atapi.ReferenceField('DefaultCategory',
@@ -66,17 +62,14 @@ schema = Organisation.schema.copy() + atapi.Schema((
         relationship = 'ClientAnalysisCategory',
         widget = atapi.ReferenceWidget(
             checkbox_bound = 1,
-            label = 'Default analysis categories',
-            label_msgid = 'label_default_categories',
-            i18n_domain = I18N_DOMAIN,
+            label = _("Default analysis categories"),
         ),
     ),
     atapi.BooleanField('RestrictCategories',
         default = False,
         schemata = 'preferences',
         widget = atapi.BooleanWidget(
-            label = "Restrict client to selected categories",
-            i18n_domain = I18N_DOMAIN,
+            label = _("Restrict client to selected categories"),
         ),
     ),
 ))
