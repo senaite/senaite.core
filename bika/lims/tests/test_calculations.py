@@ -32,8 +32,9 @@ class Tests(unittest.TestCase):
         request = self.portal.REQUEST
         request['REQUEST_METHOD'] = 'POST'
         request['_authenticator'] = self._authenticator(SITE_OWNER_NAME)
-        request['item_data'] = json.dumps([{'keyword':'TV', 'title':'Titr Vol', 'type':'int', 'value':10, 'unit':'g'},
-                                           {'keyword':'TF', 'title':'Titr Fact', 'type':'int', 'value':10, 'unit':''}])
+        request['item_data'][client_1.ar_2.titration.UID()] = \
+            json.dumps([{'keyword':'TV', 'title':'Titr Vol', 'type':'int', 'value':10, 'unit':'g'},
+                        {'keyword':'TF', 'title':'Titr Fact', 'type':'int', 'value':10, 'unit':''}])
         request['results'] = json.dumps({client_1.ar_2.titration.UID():'0'})
         request['uid'] = client_1.ar_2.titration.UID()
         request['field'] = 'TV'

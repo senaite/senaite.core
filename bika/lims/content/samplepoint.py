@@ -19,19 +19,23 @@ schema = BikaSchema.copy() + Schema((
 #    ),
     StringField('Latitude',
         schemata = _('Location'),
+        default = "52 12 17.0 N",
         widget=StringWidget(
             label= _("Latitude"),
             description = _("Enter the Sample Point's latitude in degrees 0-90, minutes 0-59, "
                             "seconds 0-59 and N/S indicator"),
         ),
+        validators = ("latitude_validator",),
     ),
     StringField('Longitude',
         schemata = _('Location'),
+        default = "000 08 26.0 E",
         widget=StringWidget(
             label = _("Longitude"),
             description = _("Enter the Sample Point's longitude in degrees 0-180, minutes 0-59, "
-                            "seconds 0-59 and E/Windicator"),
+                            "seconds 0-59 and E/W indicator"),
         ),
+        validators = ("longitude_validator",),
     ),
     StringField('Elevation',
         schemata = _('Location'),

@@ -26,7 +26,7 @@
   <browser:page
       for="*"
       name="load_setup_data"
-      class="bika.lims.browser.load_sample_data.LoadSetupData"
+      class="bika.lims.browser.load_setup_data.LoadSetupData"
       permission="bika.lims.ManageBika"
       layer="bika.lims.interfaces.IBikaLIMS"
     />

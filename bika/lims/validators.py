@@ -40,7 +40,6 @@ class UniqueFieldValidator:
 
 validation.register(UniqueFieldValidator())
 
-
 class ServiceKeywordValidator:
     """Validate AnalysisService Keywords
     must match isUnixLikeName
@@ -211,7 +210,8 @@ class InterimFieldsValidator:
 validation.register(InterimFieldsValidator())
 
 class FormulaValidator:
-
+    """ Validate keywords in calculation formula entry
+    """
     implements(IValidator)
     name = "formulavalidator"
 
@@ -245,3 +245,38 @@ class FormulaValidator:
         return True
 
 validation.register(FormulaValidator())
+
+class LatLongValidator:
+    """ Validate latitude or longitude field values
+      52<nondigits>12<nondigits>17.0<nondigits>N == 52deg12'17.0"N etc.
+    """
+    implements(IValidator)
+    def __init__(self, name):
+        self.name = name
+
+    def __call__(self, value, *args, **kwargs):
+        if not value:
+            return True
+
+        instance = kwargs['instance']
+        fieldname = kwargs['field'].getName()
+        request = kwargs.get('REQUEST', {})
+
+        ts = getToolByName(instance, 'translation_service')
+        pc = getToolByName(instance, 'portal_catalog')
+
+        if self.name == 'latitude_validator':
+            parts = re.compile(r"(\d+)\D+(\d+)\D+([\d\.]+)\D*([nsNS]{1})").findall(value)
+            if not parts:
+                return _("Invalid Latitude. Use DEG MIN SEC N/S")
+        else:
+            parts = re.compile(r"(\d+)\D+(\d+)\D+([\d\.]+)\D*([ewEW]{1})").findall(value)
+            if not parts:
+                return _("Invalid Longitude. Use DEG MIN SEC E/W")
+
+        return True
+
+
+
+validation.register(LatLongValidator("latitude_validator"))
+validation.register(LatLongValidator("longitude_validator"))
