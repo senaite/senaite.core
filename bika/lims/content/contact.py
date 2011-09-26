@@ -18,16 +18,14 @@ schema = Person.schema.copy() + Schema((
         vocabulary = PUBLICATION_PREFS,
         schemata = 'Publication preference',
         widget = MultiSelectionWidget(
-            label = 'Publication preference',
-            label_msgid = 'label_publicationpreference',
+            label = _("Publication preference"),
         ),
     ),
     BooleanField('AttachmentsPermitted',
         default = False,
         schemata = 'Publication preference',
         widget = BooleanWidget(
-            label = "Attachments Permitted",
-            label_msgid = "label_attachments_permitted"
+            label = _("Attachments Permitted"),
         ),
     ),
     ReferenceField('CCContact',
@@ -38,8 +36,7 @@ schema = Person.schema.copy() + Schema((
         relationship = 'ContactContact',
         widget = ReferenceWidget(
             checkbox_bound = 0,
-            label = 'Contacts to cc',
-            label_msgid = 'label_contacts_cc',
+            label = _("Contacts to cc"),
         ),
     ),
 ))

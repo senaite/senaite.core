@@ -27,58 +27,44 @@ schema = BikaSchema.copy() + Schema((
         relationship = 'DuplicateAnalysisAnalysisService',
         referenceClass = HoldingReference,
         widget = ReferenceWidget(
-            label = 'Analysis service',
-            label_msgid = 'label_analysis',
-            i18n_domain = I18N_DOMAIN,
+            label = _("Analysis service"),
         )
     ),
     StringField('Unit',
         widget = StringWidget(
-            label_msgid = 'label_unit',
+            label = _("Unit"),
         ),
     ),
     StringField('CalcType',
         widget = StringWidget(
-            label = 'Calculation Type',
-            label_msgid = 'label_calculationtype',
-            i18n_domain = I18N_DOMAIN,
+            label = _("Calculation Type"),
         )
     ),
     StringField('Result',
         widget = StringWidget(
-            label = 'Result',
-            label_msgid = 'label_result',
-            i18n_domain = I18N_DOMAIN,
+            label = _("Result"),
         )
     ),
     StringField('InterimCalcs',
         widget = StringWidget(
-            label = 'Interim Calculations',
-            label_msgid = 'label_interim',
-            i18n_domain = I18N_DOMAIN,
+            label = _("Interim Calculations"),
         )
     ),
     BooleanField('Retested',
         default = False,
         widget = BooleanWidget(
-            label = "Retested",
-            label_msgid = "label_retested",
-            i18n_domain = I18N_DOMAIN,
+            label = _("Retested"),
         ),
     ),
     StringField('Uncertainty',
         widget = StringWidget(
-            label = 'Uncertainty',
-            label_msgid = 'label_uncertainty',
-            i18n_domain = I18N_DOMAIN,
+            label = _("Uncertainty"),
         )
     ),
     DateTimeField('DateVerified',
         index = 'DateIndex',
         widget = DateTimeWidget(
-            label = 'Date Verified',
-            label_msgid = 'label_dateverified',
-            visible = {'edit':'hidden'},
+            label = _("Date Verified"),
         ),
     ),
     ComputedField('ServiceUID',
