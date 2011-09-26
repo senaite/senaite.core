@@ -9,46 +9,37 @@ from bika.lims import bikaMessageFactory as _
 schema = BikaSchema.copy() + Schema((
     StringField('Volume',
         widget = StringWidget(
-            label_msgid = 'label_volume',
+            label = _("Volume"),
         )
     ),
     StringField('Unit',
         widget = StringWidget(
-            label_msgid = 'label_unit',
+            label = _("Unit"),
         )
     ),
     FixedPointField('VAT',
         default_method = 'getDefaultVAT',
         widget = DecimalWidget(
-            label = 'VAT %',
-            label_msgid = 'label_vat_percentage',
-            description = 'Enter percentage value eg. 14',
-            description_msgid = 'help_vat_percentage',
-            i18n_domain = I18N_DOMAIN,
+            label = _("VAT %"),
+            description = _("Enter percentage value eg. 14"),
         ),
     ),
     FixedPointField('Price',
         widget = DecimalWidget(
-            label = 'Price excluding VAT',
-            label_msgid = 'label_price_excluding_vat',
-            i18n_domain = I18N_DOMAIN,
+            label = _("Price excluding VAT"),
         )
     ),
     ComputedField('VATAmount',
         expression = 'context.getVATAmount',
         widget = ComputedWidget(
-            label = 'VAT',
-            label_msgid = 'label_vat',
-            i18n_domain = I18N_DOMAIN,
+            label = _("VAT"),
             visible = {'edit':'hidden', }
         ),
     ),
     ComputedField('TotalPrice',
         expression = 'context.getTotalPrice()',
         widget = ComputedWidget(
-            label = 'Total price',
-            label_msgid = 'label_totalprice',
-            i18n_domain = I18N_DOMAIN,
+            label = _("Total price"),
             visible = {'edit':'hidden', }
         ),
     ),
