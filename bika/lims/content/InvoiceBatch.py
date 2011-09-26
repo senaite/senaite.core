@@ -16,8 +16,7 @@ schema = BikaSchema.copy() + Schema((
         default_method = 'current_date',
         index = 'DateIndex',
         widget = CalendarWidget(
-            label = 'Batch start date',
-            label_msgid = 'label_batch_start_date',
+            label = _("Batch start date"),
         ),
     ),
     DateTimeField('BatchEndDate',
@@ -25,8 +24,7 @@ schema = BikaSchema.copy() + Schema((
         default_method = 'current_date',
         index = 'DateIndex',
         widget = CalendarWidget(
-            label = 'Batch end date',
-            label_msgid = 'label_batch_end_date',
+            label = _("Batch end date"),
         ),
     ),
 ),

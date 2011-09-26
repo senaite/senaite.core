@@ -15,26 +15,21 @@ schema = BaseSchema.copy() + Schema((
         required = 1,
         default_method = 'current_date',
         widget = DateTimeWidget(
-            label = 'Date',
-            label_msgid = 'label_date',
+            label = _("Date"),
         ),
     ),
     StringField('ItemDescription',
         default = '',
         searchable = 1,
         widget = StringWidget(
-            label = 'Description',
-            label_msgid = 'label_description',
-            i18n_domain = I18N_DOMAIN,
+            label = _("Description"),
         ),
     ),
     StringField('ClientOrderNumber',
         index = 'FieldIndex',
         searchable = 1,
         widget = StringWidget(
-            label = 'Order number',
-            label_msgid = 'label_ordernumber',
-            i18n_domain = I18N_DOMAIN,
+            label = _("Order number"),
         ),
     ),
 
@@ -42,27 +37,21 @@ schema = BaseSchema.copy() + Schema((
         required = 1,
         default = '0.0',
         widget = DecimalWidget(
-            label = 'Subtotal',
-            label_msgid = 'label_subtotal',
-            i18n_domain = I18N_DOMAIN,
+            label = _("Subtotal"),
         )
     ),
     FixedPointField('VAT',
         required = 1,
         default = '0.0',
         widget = DecimalWidget(
-            label = 'VAT',
-            label_msgid = 'label_vat',
-            i18n_domain = I18N_DOMAIN,
+            label = _("VAT"),
         )
     ),
     FixedPointField('Total',
         required = 1,
         default = '0.0',
         widget = DecimalWidget(
-            label = 'Total',
-            label_msgid = 'label_total',
-            i18n_domain = I18N_DOMAIN,
+            label = _("Total"),
         )
     ),
 ),

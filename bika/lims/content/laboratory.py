@@ -31,7 +31,7 @@ schema = Organisation.schema.copy() + Schema((
         schemata = 'Accreditation',
         write_permission = ManageBika,
         widget = BooleanWidget(
-            label = "Laboratory Accredited",
+            label = _("Laboratory Accredited"),
             description = _("Check this box if your laboratory is accredited"),
         ),
     ),
@@ -39,7 +39,7 @@ schema = Organisation.schema.copy() + Schema((
         schemata = 'Accreditation',
         write_permission = ManageBika,
         widget = StringWidget(
-            label = "Accreditation Body Abbreviation",
+            label = _("Accreditation Body Abbreviation"),
             description = _("E.g. SANAS, APLAC, etc."),
         ),
     ),
@@ -48,7 +48,7 @@ schema = Organisation.schema.copy() + Schema((
         write_permission = ManageBika,
         widget = StringWidget(
             size = 60,
-            label = "Accreditation Body",
+            label = _("Accreditation Body"),
             description = _("The name of the accreditation body corresponding to the abbreviation above, "
                             " e.g. South African National Accreditation Service for SANAS"),
         ),
@@ -57,7 +57,7 @@ schema = Organisation.schema.copy() + Schema((
         schemata = 'Accreditation',
         write_permission = ManageBika,
         widget = StringWidget(
-            label = "Accreditation Body URL",
+            label = _("Accreditation Body URL"),
             description = _("Web address for the accreditation body"),
         ),
     ),
@@ -65,7 +65,7 @@ schema = Organisation.schema.copy() + Schema((
         schemata = 'Accreditation',
         write_permission = ManageBika,
         widget = StringWidget(
-            label = "Accreditation",
+            label = _("Accreditation"),
             description = _("The accreditation standard that applies, e.g. ISO 17025"),
         ),
     ),
@@ -73,7 +73,7 @@ schema = Organisation.schema.copy() + Schema((
         schemata = 'Accreditation',
         write_permission = ManageBika,
         widget = StringWidget(
-            label = "Accreditation Reference",
+            label = _("Accreditation Reference"),
             description = _("The reference code issued to the lab by the accreditation body"),
         ),
     ),
