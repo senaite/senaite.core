@@ -12,86 +12,62 @@ from bika.lims import bikaMessageFactory as _
 schema = BikaSchema.copy() + Schema((
     StringField('SampleName',
         widget = StringWidget(
-            label = 'Sample',
-            label_msgid = 'label_samplename',
-            i18n_domain = I18N_DOMAIN,
+            label = _("Sample"),
         )
     ),
     StringField('ClientRef',
         widget = StringWidget(
-            label = 'Client Ref',
-            label_msgid = 'label_clientref',
-            i18n_domain = I18N_DOMAIN,
+            label = _("Client Ref"),
         )
     ),
     StringField('ClientRemarks',
         widget = StringWidget(
-            label = 'Client Remarks',
-            label_msgid = 'label_clientremarks',
-            i18n_domain = I18N_DOMAIN,
+            label = _("Client Remarks"),
         )
     ),
     StringField('ClientSid',
         widget = StringWidget(
-            label = 'Client Sid',
-            label_msgid = 'label_clientsid',
-            i18n_domain = I18N_DOMAIN,
+            label = _("Client Sid"),
         )
     ),
     StringField('SampleType',
         widget = StringWidget(
-            label = 'Sample Type',
-            label_msgid = 'label_sampletype',
-            i18n_domain = I18N_DOMAIN,
+            label = _("Sample Type"),
         )
     ),
     StringField('SampleDate',
         widget = StringWidget(
-            label = 'Sample Date',
-            label_msgid = 'label_sampledate',
-            i18n_domain = I18N_DOMAIN,
+            label = _("Sample Date"),
         )
     ),
     StringField('NoContainers',
         widget = StringWidget(
-            label = 'No of containers',
-            label_msgid = 'label_no_containers',
-            i18n_domain = I18N_DOMAIN,
+            label = _("No of containers"),
         )
     ),
     StringField('PickingSlip',
         widget = StringWidget(
-            label = 'Picking Slip',
-            label_msgid = 'label_pickingslip',
-            i18n_domain = I18N_DOMAIN,
+            label = _("Picking Slip"),
         )
     ),
     StringField('ReportDryMatter',
         widget = StringWidget(
-            label = 'Report as Dry Matter',
-            label_msgid = 'label_report_dry_matter',
-            i18n_domain = I18N_DOMAIN,
+            label = _("Report as Dry Matter"),
         )
     ),
     LinesField('AnalysisProfile',
         widget = LinesWidget(
-            label = 'Analysis Profile',
-            label_msgid = 'label_analysis_profile',
-            i18n_domain = I18N_DOMAIN,
+            label = _("Analysis Profile"),
         )
     ),
     LinesField('Analyses',
         widget = LinesWidget(
-            label = 'Analyses',
-            label_msgid = 'label_analyses',
-            i18n_domain = I18N_DOMAIN,
+            label = _("Analyses"),
         )
     ),
     LinesField('Remarks',
         widget = LinesWidget(
-            label = 'Remarks',
-            label_msgid = 'label_remarks',
-            i18n_domain = I18N_DOMAIN,
+            label = _("Remarks"),
         )
     ),
     ReferenceField('AnalysisRequest',
