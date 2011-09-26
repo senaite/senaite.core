@@ -27,11 +27,8 @@ schema = BikaSchema.copy() + Schema((
         index = 'FieldIndex',
         searchable = True,
         widget = StringWidget(
-            label = 'ReferenceAnalysis ID',
-            label_msgid = 'label_requestid',
-            description = 'The ID assigned to the reference analysis',
-            description_msgid = 'help_referenceanalysis_id',
-            i18n_domain = I18N_DOMAIN,
+            label = _("ReferenceAnalysis ID"),
+            description = _("The ID assigned to the reference analysis"),
             visible = {'edit':'hidden'},
         ),
     ),
@@ -39,9 +36,7 @@ schema = BikaSchema.copy() + Schema((
         vocabulary = STD_TYPES,
         index = 'FieldIndex',
         widget = SelectionWidget(
-            label = 'Reference Type',
-            label_msgid = 'label_referencetype',
-            i18n_domain = I18N_DOMAIN,
+            label = _("Reference Type"),
         ),
     ),
     ReferenceField('Service',
@@ -50,14 +45,12 @@ schema = BikaSchema.copy() + Schema((
         relationship = 'ReferenceAnalysisAnalysisService',
         referenceClass = HoldingReference,
         widget = ReferenceWidget(
-            label = 'Analysis service',
-            label_msgid = 'label_analysis',
-            i18n_domain = I18N_DOMAIN,
+            label = _("Analysis service"),
         )
     ),
     StringField('Unit',
         widget = StringWidget(
-            label_msgid = 'label_unit',
+            label = _("Unit"),
         ),
     ),
     ReferenceField('Calculation',
@@ -67,31 +60,23 @@ schema = BikaSchema.copy() + Schema((
     ),
     InterimFieldsField('InterimFields',
         widget = BikaRecordsWidget(
-            label = 'Calculation Interim Fields',
-            label_msgid = 'label_interim_fields',
-            i18n_domain = I18N_DOMAIN,
+            label = _("Calculation Interim Fields"),
         )
     ),
     StringField('Result',
         widget = StringWidget(
-            label = 'Result',
-            label_msgid = 'label_result',
-            i18n_domain = I18N_DOMAIN,
+            label = _("Result"),
         )
     ),
     StringField('InterimCalcs',
         widget = StringWidget(
-            label = 'Interim Calculations',
-            label_msgid = 'label_interim',
-            i18n_domain = I18N_DOMAIN,
+            label = _("Interim Calculations"),
         )
     ),
     BooleanField('Retested',
         default = False,
         widget = BooleanWidget(
-            label = "Retested",
-            label_msgid = "label_retested",
-            i18n_domain = I18N_DOMAIN,
+            label = _("Retested"),
         ),
     ),
     DateTimeField('DateRequested',
@@ -99,17 +84,13 @@ schema = BikaSchema.copy() + Schema((
         default_method = 'current_date',
         index = 'DateIndex',
         widget = DateTimeWidget(
-            label = 'Date Requested',
-            label_msgid = 'label_daterequested',
-            visible = {'edit':'hidden'},
+            label = _("Date Requested"),
         ),
     ),
     DateTimeField('DateVerified',
         index = 'DateIndex',
         widget = DateTimeWidget(
-            label = 'Date Verified',
-            label_msgid = 'label_dateverified',
-            visible = {'edit':'hidden'},
+            label = _("Date Verified"),
         ),
     ),
     ComputedField('ReferenceSampleUID',
