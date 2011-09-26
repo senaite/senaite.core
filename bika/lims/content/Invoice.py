@@ -15,9 +15,7 @@ schema = BikaSchema.copy() + Schema((
         index = 'FieldIndex',
         searchable = True,
         widget = StringWidget(
-            label = 'Invoice number',
-            label_msgid = 'label_invoicenumber',
-            i18n_domain = I18N_DOMAIN,
+            label = _("Invoice number"),
         ),
     ),
     ReferenceField('Client',
@@ -31,39 +29,32 @@ schema = BikaSchema.copy() + Schema((
         default_method = 'current_date',
         index = 'DateIndex',
         widget = DateTimeWidget(
-            label = 'Date',
-            label_msgid = 'label_invoicedate',
+            label = _("Date"),
         ),
     ),
     TextField('Notes',
         widget = TextAreaWidget(
-            label = 'Notes'
+            label = _("Notes")
         )
     ),
     ComputedField('Subtotal',
         expression = 'context.getSubtotal()',
         widget = ComputedWidget(
-            label = 'Subtotal',
-            label_msgid = 'label_subtotal',
-            i18n_domain = I18N_DOMAIN,
+            label = _("Subtotal"),
             visible = False,
         ),
     ),
     ComputedField('VAT',
         expression = 'context.getVAT()',
         widget = ComputedWidget(
-            label = 'VAT',
-            label_msgid = 'label_vat',
-            i18n_domain = I18N_DOMAIN,
+            label = _("VAT"),
             visible = False,
         ),
     ),
     ComputedField('Total',
         expression = 'context.getTotal()',
         widget = ComputedWidget(
-            label = 'Total',
-            label_msgid = 'label_total',
-            i18n_domain = I18N_DOMAIN,
+            label = _("Total"),
             visible = False,
         ),
     ),
