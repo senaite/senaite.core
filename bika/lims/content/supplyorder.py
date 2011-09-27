@@ -31,9 +31,7 @@ schema = BikaSchema.copy() + Schema((
                 index = 'FieldIndex',
                 searchable = True,
                 widget = StringWidget(
-                    label = 'Order number',
-                    label_msgid = 'label_ordernumber',
-                    i18n_domain = I18N_DOMAIN,
+                    label = _("Order number"),
                     ),
                 ),
     ReferenceField('Invoice',
@@ -47,20 +45,18 @@ schema = BikaSchema.copy() + Schema((
                   default_method = 'current_date',
                   index = 'DateIndex',
                   widget = DateTimeWidget(
-                      label = 'Date',
-                      label_msgid = 'label_orderdate',
+                      label = _("Date"),
                       ),
                   ),
     DateTimeField('DateDispatched',
                   index = 'DateIndex',
                   widget = DateTimeWidget(
-                      label = 'Date dispatched',
-                      label_msgid = 'label_datedispatched',
+                      label = _("Date dispatched"),
                       ),
                   ),
     TextField('Notes',
               widget = TextAreaWidget(
-                  label = 'Notes'
+                  label = _("Notes")
               )
               ),
     ComputedField('ClientUID',
