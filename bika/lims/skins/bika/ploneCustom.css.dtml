@@ -131,6 +131,10 @@ table.analysisrequest .pointofcapture th {
 	font-size:1.1em;
 }
 
+.ARProfile {
+  width: 100%;
+}
+
 /* silly table border games */
 table.analysisrequest .pointofcapture tr{ border-left: 0; }
 table.analysisrequest { border-left: 0; }

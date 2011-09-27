@@ -9,15 +9,6 @@
       name="workflow_action"
       class="bika.lims.browser.bika_listing.WorkflowAction"
       permission="zope.Public"
-      layer="bika.lims.interfaces.IBikaLIMS"
-    />
-
-    <browser:page
-      for="Products.CMFPlone.interfaces.IPloneSiteRoot"
-      name="workflow_action"
-      class="bika.lims.browser.bika_listing.WorkflowAction"
-      permission="zope.Public"
-      layer="bika.lims.interfaces.IBikaLIMS"
     />
 
 </configure>

@@ -42,4 +42,5 @@ class AJAXGetReferenceDefinitionInfo():
 
         return json.dumps({'results':results,
                            'categories':categories,
-                           'blank':ref_def.getBlank()})
+                           'blank':ref_def.getBlank(),
+                           'hazardous':ref_def.getHazardous()})

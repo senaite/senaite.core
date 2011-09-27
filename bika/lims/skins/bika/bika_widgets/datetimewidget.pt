@@ -26,7 +26,7 @@
            size="30"
            tal:attributes="name fieldName;
                            id fieldName;
-                           value value;
+                           value value/Date | value;
                            size widget/size|nothing;
                            DatePicker string:1;
                            maxlength widget/maxlength|nothing;"/>

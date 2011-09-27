@@ -52,11 +52,10 @@ jQuery( function($) {
 
 		// All jquery autocomplete widgets get a down-arrow keypress when
 		// double clicked
-		// XXX doesn't work on the second click?
-		$("input[class~='ui-autocomplete-input']").live('click', function(){
-			$(this).trigger({type:'keydown', which:40});
-			$(this).trigger({type:'keyup', which:40});
-		});
+//		$("input[class~='ui-autocomplete-input']").live('click', function(){
+//			$(this).trigger({type:'keydown', which:40});
+//			$(this).trigger({type:'keyup', which:40});
+//		});
 
 
 	});
