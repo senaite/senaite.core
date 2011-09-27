@@ -16,7 +16,7 @@ class ReferenceResultsField(RecordsField):
     _properties.update({
         'type' : 'referenceresult',
         'subfields' : ('uid', 'result', 'min', 'max', 'error'),
-        'required_subfields' : ('uid',),
+        'required_subfields' : ('uid','result','min','max'),
         'subfield_labels':{'uid': _('Analysis Service'),
                            'result': _('Expected Result'),
                            'error': _('Permitted Error %'),

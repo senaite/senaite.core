@@ -74,6 +74,8 @@ schema = Organisation.schema.copy() + atapi.Schema((
     ),
 ))
 
+schema['Name'].validators = ('uniquefieldvalidator')
+schema['Name']._validationLayer()
 schema['AccountNumber'].write_permission = ManageClients
 schema['title'].widget.visible = False
 schema['description'].widget.visible = False
