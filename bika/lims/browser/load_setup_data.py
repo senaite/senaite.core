@@ -334,7 +334,7 @@ class LoadSetupData(BrowserView):
 
             contact.processForm()
 
-    def fix_client_contact_ccs(self, contacts):
+    def fix_client_contact_ccs(self):
         for row in self.client_contacts:
             client = self.portal_catalog(portal_type = "Client",
                                          Title = unicode(row['_Client_Name']))
@@ -343,7 +343,7 @@ class LoadSetupData(BrowserView):
                                      getUsername = [c.strip() for c in \
                                                     unicode(row['CC']).split(',')])
             if cc:
-                contact.setCCContact(cc)
+                contact.setCCContact([c.UID for c in cc])
 
     def load_instruments(self, sheet):
         nr_rows = sheet.get_highest_row()
