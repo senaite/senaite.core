@@ -19,6 +19,7 @@ class LoadSetupData(BrowserView):
         BrowserView.__init__(self, context, request)
         self.title = _("Load Setup Data")
         self.description = _("Please.")
+        self.text = _("The values in the imported spreadsheet will evade validation.")
         # dependencies to resolve
         self.deferred = {}
 
@@ -26,6 +27,7 @@ class LoadSetupData(BrowserView):
         form = self.request.form
 
         self.portal_catalog = getToolByName(self.context, 'portal_catalog')
+        self.reference_catalog = getToolByName(self.context, 'reference_catalog')
         self.portal_registration = getToolByName(self.context, 'portal_registration')
         self.portal_groups = getToolByName(self.context, 'portal_groups')
         self.portal_membership = getToolByName(self.context, 'portal_membership')
@@ -52,7 +54,9 @@ class LoadSetupData(BrowserView):
         self.departments = {}
         self.load_lab_departments(sheets['Lab Departments'])
         self.load_clients(sheets['Clients'])
+        self.client_contacts = []
         self.load_client_contacts(sheets['Client Contacts'])
+        self.fix_client_contact_ccs()
         self.instruments = {}
         self.load_instruments(sheets['Instruments'])
         self.load_sample_points(sheets['Sample Points'])
@@ -64,6 +68,8 @@ class LoadSetupData(BrowserView):
         self.services = {}
         self.load_analysis_services(sheets['Analysis Services'])
         self.load_calculations(sheets['Calculations'])
+
+        # process deferred services and calculations which depend on each other
         nr_deferred = 0
         while self.deferred['Analysis Services'] or \
               self.deferred['Calculations']:
@@ -84,6 +90,7 @@ class LoadSetupData(BrowserView):
             if not self.deferred['Calculations'] and \
                not self.deferred['Analysis Services']:
                 break
+
         self.load_analysis_profiles(sheets['Analysis Profiles'])
         self.load_reference_definitions(sheets['Reference Definitions'])
         self.load_reference_suppliers(sheets['Reference Suppliers'])
@@ -280,6 +287,9 @@ class LoadSetupData(BrowserView):
             contact = client[contact_id]
             cc = self.portal_catalog(portal_type="Contact",
                                      getUsername = [c.strip() for c in unicode(row['CC']).split(',')])
+            if row['CC'] and not cc:
+                row['uid'] = contact.UID()
+                self.client_contacts.append(row)
             contact.edit(Salutation = unicode(row['Salutation']),
                          Firstname = unicode(row['Firstname']),
                          Surname = unicode(row['Surname']),
@@ -293,7 +303,6 @@ class LoadSetupData(BrowserView):
                          PublicationPreference = unicode(row['PublicationPreference']),
                          CCContact = [c.UID for c in cc],
                          AttachmentsPermitted = row['AttachmentsPermitted'] and True or False)
-
             if 'Username' in row and \
                'EmailAddress' in row and \
                'Password' in row:
@@ -324,6 +333,17 @@ class LoadSetupData(BrowserView):
                 group.addMember(row['Username'])
 
             contact.processForm()
+
+    def fix_client_contact_ccs(self, contacts):
+        for row in self.client_contacts:
+            client = self.portal_catalog(portal_type = "Client",
+                                         Title = unicode(row['_Client_Name']))
+            contact = self.reference_catalog.lookupObject(row['uid'])
+            cc = self.portal_catalog(portal_type="Contact",
+                                     getUsername = [c.strip() for c in \
+                                                    unicode(row['CC']).split(',')])
+            if cc:
+                contact.setCCContact(cc)
 
     def load_instruments(self, sheet):
         nr_rows = sheet.get_highest_row()
@@ -635,11 +655,17 @@ class LoadSetupData(BrowserView):
                          Hazardous = row['Hazardous'] and True or False)
                 obj.processForm()
             service = self.services[row['keyword']]
+            try: result = int(row['result'])
+            except: result = 0
+            try: Min = int(row['min'])
+            except: Min = 0
+            try: Max = int(row['max'])
+            except: Max = 0
             obj.setReferenceResults(
                 obj.getReferenceResults() + [{'uid': service.UID(),
-                                              'result':unicode(row['result']),
-                                              'min':unicode(row['min']),
-                                              'max':unicode(row['max'])}])
+                                              'result':unicode(result),
+                                              'min':unicode(Min),
+                                              'max':unicode(Max)}])
 
     def load_reference_suppliers(self, sheet):
         nr_rows = sheet.get_highest_row()
@@ -741,13 +767,14 @@ class LoadSetupData(BrowserView):
         folder = self.context.bika_setup.bika_worksheettemplates
         for row in rows[3:]:
             row = dict(zip(fields, row))
-            if not row['title'] and \
-               row['pos']:
-                l = [{'pos':unicode(row['pos']),
-                      'type':unicode(row['type']),
-                      'sub':unicode(row['sub']),
-                      'dup':unicode(row['dup'])}]
-                wst_obj.setLayout(wst_obj.getLayout() + l)
+            if not row['title']:
+                if row['pos']:
+                    l = [{'pos':unicode(row['pos']),
+                          'type':unicode(row['type']),
+                          'sub':unicode(row['sub']),
+                          'dup':unicode(row['dup'])}]
+                    wst_obj.setLayout(wst_obj.getLayout() + l)
+                continue
             _id = folder.generateUniqueId('WorksheetTemplate')
             folder.invokeFactory('WorksheetTemplate', id = _id)
             obj = folder[_id]

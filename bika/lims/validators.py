@@ -58,7 +58,7 @@ class ServiceKeywordValidator:
 
         ts = getToolByName(instance, 'translation_service')
 
-        if not re.match(r"^[A-Za-z][\w\d\-\_]+$", value):
+        if re.findall(r"[^A-Za-z\w\d\-\_]", value):
             return _("Validation failed: keyword contains invalid characters.")
 
         # check the value against all AnalysisService keywords
