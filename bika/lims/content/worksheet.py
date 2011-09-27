@@ -22,18 +22,14 @@ schema = BikaSchema.copy() + Schema((
         searchable = 1,
         default_method = 'getNextWorksheetNumber',
         widget = StringWidget(
-            label = 'Worksheet number',
-            label_msgid = 'label_worksheetnumber',
-            i18n_domain = I18N_DOMAIN,
+            label = _("Worksheet number"),
             visible = False,
         ),
     ),
     ComputedField('Owner',
         expression = 'context.getOwnerUserID()',
         widget = ComputedWidget(
-            label = 'Owner',
-            label_msgid = 'label_owner',
-            i18n_domain = I18N_DOMAIN,
+            label = _("Owner"),
         ),
     ),
     ReferenceField('Analyses',
@@ -41,9 +37,7 @@ schema = BikaSchema.copy() + Schema((
         allowed_types = ('Analysis',),
         relationship = 'WorksheetAnalysis',
         widget = ReferenceWidget(
-            label = 'Analyses',
-            label_msgid = 'label_analyses',
-            i18n_domain = I18N_DOMAIN,
+            label = _("Analyses"),
             visible = False,
         ),
     ),
@@ -53,7 +47,7 @@ schema = BikaSchema.copy() + Schema((
     ),
     TextField('Notes',
         widget = TextAreaWidget(
-            label = 'Notes'
+            label = _("Notes")
         ),
     ),
     StringField('Analyser',
@@ -61,11 +55,8 @@ schema = BikaSchema.copy() + Schema((
     ),
     IntegerField('MaxPositions',
         widget = IntegerWidget(
-            label = "Maximum Positions Allowed",
-            label_msgid = 'label_max_positions',
-            description = 'Maximum positions allowed on ' \
-                          'the worksheet',
-            description_msgid = 'help_max_positions',
+            label = _("Maximum Positions Allowed"),
+            description = _("Maximum positions allowed on the worksheet"),
         ),
     ),
     ComputedField('Status',
