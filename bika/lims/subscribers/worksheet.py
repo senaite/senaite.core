@@ -50,7 +50,7 @@ def ActionSucceededEventHandler(ws, event):
             analyses = ws.getAnalyses(review_state = ('attachment_due', 'to_be_verified',))
             for analysis in analyses:
                 if not analysis.UID in ws.REQUEST['workflow_skiplist']:
-                    wf.doActionFor(analysis.getObject(), 'retract')
+                    wf.doActionFor(analysis, 'retract')
 
     elif event.action == "verify":
         ws.reindexObject(idxs = ["review_state", ])
@@ -59,6 +59,6 @@ def ActionSucceededEventHandler(ws, event):
             analyses = ws.getAnalyses(review_state = 'to_be_verified')
             for analysis in analyses:
                 if not analysis.UID in ws.REQUEST['workflow_skiplist']:
-                    wf.doActionFor(analysis.getObject(), "verify")
+                    wf.doActionFor(analysis, "verify")
 
     return
