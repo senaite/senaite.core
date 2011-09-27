@@ -489,7 +489,7 @@ class LoadSetupData(BrowserView):
                      Uncertanties = u,
                      ReportDryMatter = row['ReportDryMatter'] and True or False)
             if row['Instrument']:
-                obj.setCalculation(self.instruments[row['Instrument']].UID())
+                obj.setInstrument(self.instruments[row['Instrument']].UID())
             if row['Calculation']:
                 obj.setCalculation(self.calcs[row['Calculation']])
             if '_uncert' in row:
