@@ -16,34 +16,26 @@ schema = BikaSchema.copy() + Schema((
         relationship = 'SupplyOrderItemLabProduct',
         referenceClass = HoldingReference,
         widget = ReferenceWidget(
-            label = 'Product',
-            label_msgid = 'label_product',
-            i18n_domain = I18N_DOMAIN,
+            label = _("Product"),
         )
     ),
     IntegerField('Quantity',
         required = 1,
         default = '0',
         widget = IntegerWidget(
-            label = 'Quantity',
-            label_msgid = 'label_price',
-            i18n_domain = I18N_DOMAIN,
+            label = _("Quantity"),
         )
     ),
     FixedPointField('Price',
         required = 1,
         widget = DecimalWidget(
-            label = 'Unit price',
-            label_msgid = 'label_price',
-            i18n_domain = I18N_DOMAIN,
+            label = _("Unit price"),
         )
     ),
     FixedPointField('VAT',
         required = 1,
         widget = DecimalWidget(
-            label = 'VAT',
-            label_msgid = 'label_vat',
-            i18n_domain = I18N_DOMAIN,
+            label = _("VAT"),
         ),
     ),
 ),
