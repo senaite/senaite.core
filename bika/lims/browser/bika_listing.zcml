@@ -9,6 +9,7 @@
       name="workflow_action"
       class="bika.lims.browser.bika_listing.WorkflowAction"
       permission="zope.Public"
+      layer="bika.lims.interfaces.IBikaLIMS"
     />
 
 </configure>

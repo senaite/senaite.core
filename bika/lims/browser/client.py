@@ -6,6 +6,7 @@ from bika.lims.browser.publish import Publish
 from bika.lims.browser.bika_listing import WorkflowAction
 from bika.lims.config import EditAnalyses
 from bika.lims.utils import TimeOrDate
+from operator import itemgetter
 from plone.app.content.browser.interfaces import IFolderContentsView
 from zope.interface import implements
 import plone
@@ -246,6 +247,12 @@ class ClientAnalysisRequestsView(BikaListingView):
             if after_icons:
                 items[x]['after']['getRequestID'] = after_icons
 
+        items = sorted(items, key=itemgetter('getRequestID'))
+        items.reverse()
+        # re-do the pretty css odd/even classes
+        for i in range(len(items)):
+            items[i]['table_row_class'] = ((i + 1) % 2 == 0) and \
+                 "draggable even" or "draggable odd"
         return items
 
 class ClientSamplesView(BikaListingView):
