@@ -114,7 +114,11 @@ Colum Headers
 			id="foldercontents-order-column"
 			tal:condition="view/show_sort_column"/>
 		<th class="nosort column"
-			tal:condition="view/show_select_column"/>
+			tal:condition="view/show_select_column">
+			<input type="checkbox"
+				class="noborder"
+				id="select_all"/>
+		</th>
 		<th class="nosort column"
 			tal:repeat="column column_list"
 			tal:attributes="id string:foldercontents-${column}-column">

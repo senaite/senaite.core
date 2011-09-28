@@ -17,6 +17,27 @@ $(document).ready(function(){
 		form.ajaxSubmit(options);
 	}
 
+	$("#select_all").click(function(){
+		checked = $(this).attr("checked");
+		$.each($("input[id^='cb_']"), function(i,v){
+			$(v).attr("checked", checked);
+		});
+	});
+
+	$("input[id^='cb_']").click(function(){
+		all_selected = true;
+		$.each($("input[id^='cb_']"), function(i,v){
+			if($(v).attr("checked") == false){
+				all_selected = false;
+			}
+		});
+		if(all_selected){
+			$("#select_all").attr("checked", true);
+		} else {
+			$("#select_all").attr("checked", false);
+		}
+	});
+
 	$(".folderlisting-filter").live('keyup', function(key){
 		if(key.which == 13) {
 			$('#folderContentsForm').append("<input type='hidden' value='1' name='filter_input_keypress' id='filter_input_keypress'/>");
