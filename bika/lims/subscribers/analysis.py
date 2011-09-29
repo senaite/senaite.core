@@ -449,11 +449,14 @@ def ActionSucceededEventHandler(analysis, event):
 
         # May need to promote the Worksheet's review_state
         #  if all other analyses are at a higher state than this one was.
+        # (or maybe retract it if there are no analyses left)
         can_submit = True
         can_attach = True
         can_verify = True
+        ws_empty = True
 
         for a in ws.getAnalyses():
+            ws_empty = False
             a_state = wf.getInfoFor(a, 'review_state')
             if a_state in \
                ('sample_due', 'sample_received',):
@@ -465,17 +468,21 @@ def ActionSucceededEventHandler(analysis, event):
                ('sample_due', 'sample_received', 'attachment_due', 'to_be_verified',):
                 can_verify = False
 
+        if not ws_empty:
         # Note: WS adds itself to the skiplist so we have to take it off again
         #       to allow multiple promotions (maybe by more than one analysis).
-        if can_submit and wf.getInfoFor(ws, 'review_state') == 'open':
-            wf.doActionFor(ws, 'submit')
-            analysis.REQUEST["workflow_skiplist"].remove(ws_UID)
-        if can_attach and wf.getInfoFor(ws, 'review_state') == 'attachment_due':
-            wf.doActionFor(ws, 'attach')
-            analysis.REQUEST["workflow_attach_skiplist"].remove(ws_UID)
-        if can_verify and wf.getInfoFor(ws, 'review_state') == 'to_be_verified':
-            analysis.REQUEST["workflow_skiplist"].append('verify all analyses')
-            wf.doActionFor(ws, 'verify')
-            analysis.REQUEST["workflow_skiplist"].remove(ws_UID)
+            if can_submit and wf.getInfoFor(ws, 'review_state') == 'open':
+                wf.doActionFor(ws, 'submit')
+                analysis.REQUEST["workflow_skiplist"].remove(ws_UID)
+            if can_attach and wf.getInfoFor(ws, 'review_state') == 'attachment_due':
+                wf.doActionFor(ws, 'attach')
+                analysis.REQUEST["workflow_attach_skiplist"].remove(ws_UID)
+            if can_verify and wf.getInfoFor(ws, 'review_state') == 'to_be_verified':
+                analysis.REQUEST["workflow_skiplist"].append('verify all analyses')
+                wf.doActionFor(ws, 'verify')
+                analysis.REQUEST["workflow_skiplist"].remove(ws_UID)
+        else:
+            if wf.getInfoFor(ws, 'review_state') != 'open':
+                wf.doActionFor(ws, 'retract')
 
     return
