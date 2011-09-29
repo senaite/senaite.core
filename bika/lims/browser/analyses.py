@@ -7,7 +7,7 @@ from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import transaction_note
 from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from bika.lims import ManageResults, ViewResults
+from bika.lims import ManageResults, ViewResults, EditResults
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.config import POINTS_OF_CAPTURE
@@ -149,11 +149,9 @@ class AnalysesView(BikaListingView):
             can_view_result = \
                 getSecurityManager().checkPermission(ViewResults, obj)
 
-            # Results can only be edited in certain states.
-            # XXX should be plain permission from workflow - review_state check should not be required
+            # permission to edit this item's results
             can_edit_analysis = self.allow_edit and \
-                getSecurityManager().checkPermission(ManageResults, obj) and \
-                items[i]['review_state'] == 'sample_received'
+                getSecurityManager().checkPermission(EditResults, obj)
 
             if can_edit_analysis:
                 items[i]['allow_edit'] = ['Result', ]

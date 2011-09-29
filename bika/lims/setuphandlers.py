@@ -252,6 +252,8 @@ class BikaGenerator:
             ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 1)
         mp(ViewResults,
             ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 1)
+        mp(EditResults,
+            ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 1)
 
         # End of interesting stuff
         mp = portal.clients.manage_permission

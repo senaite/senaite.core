@@ -42,6 +42,7 @@ ManageInvoices = 'BIKA: Manage Invoices'
 CreateAndDeleteAnalyses = 'BIKA: Create and delete Analyses'
 AddAndRemoveAnalyses = 'BIKA: Add and remove Analyses'
 ViewResults = 'BIKA: View Results'
+EditResults = 'BIKA: Edit Results'
 
 I18N_DOMAIN = 'bika.lims'
 
@@ -85,6 +86,7 @@ BIKA_PERMISSIONS = (
     (CreateAndDeleteAnalyses, ()),
     (AddAndRemoveAnalyses, ()),
     (ViewResults, ()),
+    (EditResults, ()),
 )
 
 
