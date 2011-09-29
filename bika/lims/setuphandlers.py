@@ -230,6 +230,8 @@ class BikaGenerator:
             ['Manager', 'LabManager', 'Verifier'], 1)
         mp(Verify,
             ['Manager', 'LabManager', 'Verifier'], 1)
+        mp(VerifyOwnResults,
+            ['Manager', ], 1)
         mp(Publish,
             ['Manager', 'LabManager', 'Publisher'], 1)
         mp(EditSample,

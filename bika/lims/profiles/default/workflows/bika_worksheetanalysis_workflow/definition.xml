@@ -12,12 +12,14 @@
  <transition transition_id="assign" title="Assign" new_state="assigned" trigger="USER" before_script="" after_script="">
   <action url="workflow_action?workflow_action=assign" category="workflow" icon="">Assign</action>
   <guard>
+   <guard-expression>python:here.guard_assign()</guard-expression>
   </guard>
  </transition>
  
  <transition transition_id="unassign" title="Remove" new_state="unassigned" trigger="USER" before_script="" after_script="">
   <action url="workflow_action?workflow_action=unassign" category="workflow" icon="">Remove</action>
   <guard>
+   <guard-expression>python:here.guard_unassign()</guard-expression>
   </guard>
  </transition>
  

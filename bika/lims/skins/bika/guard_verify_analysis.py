@@ -16,6 +16,10 @@ for d in context.getDependencies():
     if review_state in ('sample_due', 'sample_received', 'attachment_due', 'to_be_verified',):
         return False
 
+checkPermission = context.portal_membership.checkPermission
+if checkPermission('VerifyOwnResults', context):
+    return True
+
 # Check if submitted by same user.
 from AccessControl import getSecurityManager
 user_id = getSecurityManager().getUser().getId()

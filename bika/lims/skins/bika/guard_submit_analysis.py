@@ -10,19 +10,20 @@
 
 wf_tool = context.portal_workflow
 
-dependencies = context.getDependencies()
-if dependencies:
-    interim_fields = False
-    service = context.getService()
-    calculation = service.getCalculation()
-    if calculation:
-        interim_fields = calculation.getInterimFields()
-    for dep in dependencies:
-        review_state = wf_tool.getInfoFor(dep, 'review_state')
-        if interim_fields:
-            if review_state in ('sample_due', 'sample_received', 'attachment_due', 'to_be_verified',):
-                return False
-        else:
-            if review_state in ('sample_due', 'sample_received',):
-                return False
-return True
+analyses = ['Analysis', 'DuplicateAnalysis', 'ReferenceAnalysis']
+
+if context.portal_type in analyses:
+    return True
+elif context.portal_type == 'AnalysisRequest':
+    # Only transition to 'to_be_verified' if all analyses are in the
+    # 'to_be_verified' state and if all analyses have values
+    for a in context.objectValues('Analysis'):
+        review_state = wf_tool.getInfoFor(a, 'review_state', '')
+        if review_state in ('sample_due',):
+            return False
+
+        value = a.getResult()
+        if (value is None) or (value == ''):
+            return False
+
+    return True

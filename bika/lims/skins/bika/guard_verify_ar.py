@@ -19,6 +19,9 @@ if not checkPermission('Verify', context):
             return False
     return True
 
+if checkPermission('VerifyOwnResults', context):
+    return True
+
 # Check for self-submitted analyses.
 from AccessControl import getSecurityManager
 user_id = getSecurityManager().getUser().getId()

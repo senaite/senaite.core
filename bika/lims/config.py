@@ -31,6 +31,7 @@ ImportAnalysis = 'BIKA: Import Analysis'
 RejectWorksheet = 'BIKA: Reject Worksheet'
 Retract = "BIKA: Retract"
 Verify = 'BIKA: Verify'
+VerifyOwnResults = 'BIKA: Verify own results'
 Publish = 'BIKA: Publish'
 EditSample = 'BIKA: Edit Sample'
 EditAR = 'BIKA: Edit AR'
@@ -73,6 +74,7 @@ BIKA_PERMISSIONS = (
     (RejectWorksheet, ()),
     (Retract, ()),
     (Verify, ()),
+    (VerifyOwnResults, ()),
     (Publish, ()),
     (EditSample, ()),
     (EditAR, ()),
