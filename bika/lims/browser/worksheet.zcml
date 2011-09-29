@@ -14,18 +14,10 @@
     />
 
     <browser:page
-      for="bika.lims.interfaces.IWorksheetFolder"
-      name="worksheet_add"
-      class="bika.lims.browser.worksheet.WorksheetAddView"
-      permission="zope.Public"
-      layer="bika.lims.interfaces.IBikaLIMS"
-    />
-
-    <browser:page
       for="bika.lims.interfaces.IWorksheet"
       name="manage_results"
       class="bika.lims.browser.worksheet.WorksheetManageResultsView"
-      permission="zope.Public"
+      permission="bika.lims.ManageResults"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
@@ -33,7 +25,7 @@
       for="bika.lims.interfaces.IWorksheet"
       name="add_analysis"
       class="bika.lims.browser.worksheet.WorksheetAddAnalysisView"
-      permission="zope.Public"
+      permission="bika.lims.AddAndRemoveAnalyses"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
@@ -41,7 +33,7 @@
       for="bika.lims.interfaces.IWorksheet"
       name="add_blank"
       class="bika.lims.browser.worksheet.WorksheetAddBlankView"
-      permission="zope.Public"
+      permission="bika.lims.AddAndRemoveAnalyses"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
@@ -49,23 +41,7 @@
       for="bika.lims.interfaces.IWorksheet"
       name="add_control"
       class="bika.lims.browser.worksheet.WorksheetAddControlView"
-      permission="zope.Public"
-      layer="bika.lims.interfaces.IBikaLIMS"
-    />
-
-    <browser:page
-      for="bika.lims.interfaces.IWorksheet"
-      name="add_duplicate"
-      class="bika.lims.browser.worksheet.WorksheetAddDuplicateView"
-      permission="zope.Public"
-      layer="bika.lims.interfaces.IBikaLIMS"
-    />
-
-    <browser:page
-      for="bika.lims.interfaces.IWorksheetFolder"
-      name="get_worksheet_templates"
-      class="bika.lims.browser.worksheet.AJAXGetWorksheetTemplates"
-      permission="zope.Public"
+      permission="bika.lims.AddAndRemoveAnalyses"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 

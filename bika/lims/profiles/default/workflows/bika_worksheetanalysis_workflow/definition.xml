@@ -21,57 +21,49 @@
   </guard>
  </transition>
  
- <worklist worklist_id="reviewer_queue" title="">
-  <description>Lab manager tasks</description>
-  <action url="%(portal_url)s/search?review_state=pending" category="global" icon="">To be verified (%(count)d)</action>
-  <guard>
-   <guard-permission>Review portal content</guard-permission>
-  </guard>
-  <match name="review_state" values="to_be_verified"/>
- </worklist>
  <variable variable_id="action" for_catalog="False" for_status="True" update_always="True">
   <description>The last transition</description>
   <default>
-
    <expression>transition/getId|nothing</expression>
   </default>
   <guard>
   </guard>
  </variable>
+ 
  <variable variable_id="actor" for_catalog="False" for_status="True" update_always="True">
   <description>The ID of the user who performed the last transition</description>
   <default>
-
    <expression>user/getId</expression>
   </default>
   <guard>
   </guard>
  </variable>
+ 
  <variable variable_id="comments" for_catalog="False" for_status="True" update_always="True">
   <description>Comments about the last transition</description>
   <default>
-
    <expression>python:state_change.kwargs.get('comment', '')</expression>
   </default>
   <guard>
   </guard>
  </variable>
+ 
  <variable variable_id="review_history" for_catalog="False" for_status="False" update_always="False">
   <description>Provides access to workflow history</description>
   <default>
-
    <expression>state_change/getHistory</expression>
   </default>
   <guard>
   </guard>
  </variable>
+ 
  <variable variable_id="time" for_catalog="False" for_status="True" update_always="True">
   <description>Time of the last transition</description>
   <default>
-
    <expression>state_change/getDateTime</expression>
   </default>
   <guard>
   </guard>
  </variable>
+ 
 </dc-workflow>

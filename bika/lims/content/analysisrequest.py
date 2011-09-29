@@ -19,7 +19,7 @@ from Products.CMFCore.permissions import View, ModifyPortalContent
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import transaction_note
 from bika.lims.browser.fields import ARAnalysesField
-from bika.lims.config import I18N_DOMAIN, SubmitResults, PROJECTNAME, \
+from bika.lims.config import I18N_DOMAIN, PROJECTNAME, \
     ManageInvoices
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IAnalysisRequest
@@ -103,7 +103,7 @@ schema = BikaSchema.copy() + Schema((
         relationship = 'AnalysisRequestInvoice',
     ),
     ReferenceField('Profile',
-        allowed_types = ('ARProfile', ),
+        allowed_types = ('ARProfile',),
         referenceClass = HoldingReference,
         relationship = 'AnalysisRequestProfile',
     ),
@@ -373,7 +373,7 @@ class AnalysisRequest(BaseFolder):
                 return Decimal(0, 2)
             itemPrice = Decimal(service.getPrice() or 0)
             VAT = Decimal(service.getVAT() or 0)
-            TotalPrice += Decimal(itemPrice) * (Decimal(1,2) + VAT)
+            TotalPrice += Decimal(itemPrice) * (Decimal(1, 2) + VAT)
         return TotalPrice
     getTotal = getTotalPrice
 
@@ -383,7 +383,7 @@ class AnalysisRequest(BaseFolder):
         DryMatter = None
         settings = getToolByName(self, 'bika_setup')
         dry_service = settings.getDryMatterService()
-        for analysis in self.getAnalyses(full_objects=True):
+        for analysis in self.getAnalyses(full_objects = True):
             if analysis.getReportDryMatter():
                 analyses.append(analysis)
             try:
@@ -522,8 +522,8 @@ class AnalysisRequest(BaseFolder):
 
     security.declarePublic('getContactUIDForUser')
     def get_verifier(self):
-        wtool = getToolByName(self,'portal_workflow')
-        mtool = getToolByName(self,'portal_membership')
+        wtool = getToolByName(self, 'portal_workflow')
+        mtool = getToolByName(self, 'portal_membership')
 
         verifier = None
         try:

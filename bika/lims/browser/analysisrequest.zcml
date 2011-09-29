@@ -42,7 +42,7 @@
       for="bika.lims.interfaces.IAnalysisRequest"
       name="base_edit"
       class="bika.lims.browser.analysisrequest.AnalysisRequestEditView"
-      permission="cmf.ModifyPortalContent"
+      permission="bika.lims.EditAR"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
@@ -50,7 +50,7 @@
       for="bika.lims.interfaces.IAnalysisRequest"
       name="manage_results"
       class="bika.lims.browser.analysisrequest.AnalysisRequestManageResultsView"
-      permission="bika.lims.ManageAnalysisRequests"
+      permission="bika.lims.ManageResults"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
@@ -58,7 +58,7 @@
       for="bika.lims.interfaces.IAnalysisRequest"
       name="not_requested"
       class="bika.lims.browser.analysisrequest.AnalysisRequestResultsNotRequestedView"
-      permission="bika.lims.ManageAnalysisRequests"
+      permission="bika.lims.ResultsNotRequested"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 

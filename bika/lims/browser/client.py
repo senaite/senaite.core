@@ -4,7 +4,7 @@ from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.browser.publish import Publish
 from bika.lims.browser.bika_listing import WorkflowAction
-from bika.lims.config import EditAnalyses
+from bika.lims.config import ManageResults
 from bika.lims.utils import TimeOrDate
 from operator import itemgetter
 from plone.app.content.browser.interfaces import IFolderContentsView
@@ -118,7 +118,7 @@ class ClientAnalysisRequestsView(BikaListingView):
         self.review_states = [
             {'id':'all',
              'title': _('All'),
-             'transitions': ['receive', 'submit', 'retract', 'prepublish', 'publish', 'republish', 'cancel', 'reinstate'],
+             'transitions': ['receive', 'submit', 'retract', 'verify', 'prepublish', 'publish', 'republish', 'cancel', 'reinstate'],
              'columns':['getRequestID',
                         'getClientOrderNumber',
                         'getClientReference',
@@ -222,7 +222,7 @@ class ClientAnalysisRequestsView(BikaListingView):
             if not items[x].has_key('obj'): continue
             obj = items[x]['obj']
 
-            if getSecurityManager().checkPermission(EditAnalyses, obj):
+            if getSecurityManager().checkPermission(ManageResults, obj):
                 url = obj.absolute_url() + "/manage_results"
             else:
                 url = obj.absolute_url()
@@ -241,7 +241,7 @@ class ClientAnalysisRequestsView(BikaListingView):
 
             sample = obj.getSample()
             after_icons = "<a href='%s'><img src='++resource++bika.lims.images/sample.png' title='Sample: %s'></a>" % \
-                        (sample.absolute_url(),sample.Title())
+                        (sample.absolute_url(), sample.Title())
             if sample.getSampleType().getHazardous():
                 after_icons += "<img src='++resource++bika.lims.images/hazardous_small.png' title='Hazardous'>"
             if after_icons:
@@ -349,7 +349,7 @@ class ClientSamplesView(BikaListingView):
             items[x]['replace']['SampleID'] = "<a href='%s'>%s</a>" % \
                  (items[x]['url'], items[x]['SampleID'])
             items[x]['replace']['Requests'] = ",".join(
-                ["<a href='%s'>%s</a>"%(o.absolute_url(), o.Title())
+                ["<a href='%s'>%s</a>" % (o.absolute_url(), o.Title())
                  for o in obj.getAnalysisRequests()])
             items[x]['ClientReference'] = obj.getClientReference()
             items[x]['ClientSampleID'] = obj.getClientSampleID()

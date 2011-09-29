@@ -54,7 +54,7 @@ class BikaGenerator:
                        'invoices',
                        'pricelists',
                        'worksheets',
-                       'bika_setup' ):
+                       'bika_setup'):
             obj = portal._getOb(obj_id)
             obj.unmarkCreationFlag()
             obj.reindexObject()
@@ -165,16 +165,11 @@ class BikaGenerator:
         mp(permissions.ManageUsers,
            ['Manager',
             'LabManager', ], 1)
-##        mp(ManageGroups,
-##           ['Manager',
-##            'LabManager', ], 1)
-##        mp(permissions.ManagePortal,
-##           ['Manager',
-##            'LabManager', ], 1)
+
+        # Start of old stuff
         mp(ManageBika,
             ['Manager',
              'LabManager'], 1)
-
         mp(ManageClients,
             ['Manager',
              'LabManager',
@@ -208,54 +203,55 @@ class BikaGenerator:
              'LabManager',
              'LabClerk',
              'Analyst'], 1)
-        mp(ViewResults,
-            ['Manager',
-             'LabManager',
-             'LabClerk',
-             'Owner'], 1)
-        mp(ManageInvoices,
-            ['Manager',
-             'LabManager',
-             'Owner'], 1)
         mp(ManagePricelists,
             ['Manager',
              'LabManager',
              'Owner'], 1)
+        # ManageARImport is missing :/
+        mp(DispatchOrder,
+            ['Manager', 'LabManager', 'LabClerk'], 1)
         mp(PostInvoiceBatch,
             ['Manager',
              'LabManager',
              'Owner'], 1)
 
-        # Workflow permissions
+        # Start of interesting stuff
         mp(ReceiveSample,
             ['Manager', 'LabManager', 'LabClerk'], 1)
-        mp(SubmitSample,
-            ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 1)
-        mp(VerifyResults,
-            ['Manager', 'LabManager', 'Reviewer', 'Verifier'], 1)
-        mp(PublishSample,
-            ['Manager', 'LabManager', 'Reviewer', 'Publisher'], 1)
-        mp(RetractSample,
-            ['Manager', 'LabManager', 'LabClerk', 'Reviewer', 'Verifier'], 1)
-        mp(ImportSample,
-            ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 1)
-        mp(SubmitWorksheet,
-            ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 1)
-        mp(VerifyWorksheet,
-            ['Manager', 'LabManager', 'Reviewer', 'Verifier'], 1)
-        mp(RetractWorksheet,
-            ['Manager', 'LabManager', 'Reviewer', 'Verifier'], 1)
-        mp(DispatchOrder,
+        mp(ExpireSample,
             ['Manager', 'LabManager', 'LabClerk'], 1)
+        mp(DisposeSample,
+            ['Manager', 'LabManager', 'LabClerk'], 1)
+        mp(ImportAnalysis,
+            ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 1)
+        mp(RejectWorksheet,
+            ['Manager', 'LabManager', 'Verifier'], 1)
+        mp(Retract,
+            ['Manager', 'LabManager', 'Verifier'], 1)
+        mp(Verify,
+            ['Manager', 'LabManager', 'Verifier'], 1)
+        mp(Publish,
+            ['Manager', 'LabManager', 'Publisher'], 1)
+        mp(EditSample,
+            ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 1)
+        mp(EditAR,
+            ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 1)
+        mp(EditWorksheet,
+            ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 1)
+        mp(ManageResults,
+            ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 1)
+        mp(ResultsNotRequested,
+            ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 1)
+        mp(ManageInvoices,
+            ['Manager', 'LabManager', 'Owner'], 1)
+        mp(CreateAndDeleteAnalyses,
+            ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 1)
+        mp(AddAndRemoveAnalyses,
+            ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 1)
+        mp(ViewResults,
+            ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 1)
 
-        # Worksheet permissions
-        mp(AssignAnalyses,
-            ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 1)
-        mp(DeleteAnalyses,
-            ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 1)
-        mp(SubmitResults,
-            ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 1)
-
+        # End of interesting stuff
         mp = portal.clients.manage_permission
         mp(permissions.ListFolderContents,
             ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 1)

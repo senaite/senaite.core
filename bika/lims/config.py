@@ -10,6 +10,7 @@ GLOBALS = globals()
 
 DEPENDENCIES = [] #['plone.app.iterate']
 
+# Old permissions:
 ManageBika = 'BIKA: Manage Bika'
 ManageClients = 'BIKA: Manage Clients'
 ManageWorksheets = 'BIKA: Manage Worksheets'
@@ -20,27 +21,26 @@ ManageARImport = 'BIKA: Manage ARImport'
 ManageSample = 'BIKA: Manage Sample'
 ManageReferenceSuppliers = 'BIKA: Manage Reference Suppliers'
 ManageReference = 'BIKA: Manage Reference'
-ManageInvoices = 'BIKA: Manage Invoices'
 PostInvoiceBatch = 'BIKA: Post Invoice batch'
 ManagePricelists = 'BIKA: Manage Pricelists'
-ViewMethods = 'BIKA: View Methods'
+# New or changed permissions:
+ReceiveSample = 'BIKA: Receive Sample'
+ExpireSample = 'BIKA: Expire Sample'
+DisposeSample = 'BIKA: Dispose Sample'
+ImportAnalysis = 'BIKA: Import Analysis'
+RejectWorksheet = 'BIKA: Reject Worksheet'
+Retract = "BIKA: Retract"
+Verify = 'BIKA: Verify'
+Publish = 'BIKA: Publish'
+EditSample = 'BIKA: Edit Sample'
+EditAR = 'BIKA: Edit AR'
+EditWorksheet = 'BIKA: Edit Worksheet'
+ManageResults = 'BIKA: Manage Results'
+ResultsNotRequested = 'BIKA: Results not requested'
+ManageInvoices = 'BIKA: Manage Invoices'
+CreateAndDeleteAnalyses = 'BIKA: Create and delete Analyses'
+AddAndRemoveAnalyses = 'BIKA: Add and remove Analyses'
 ViewResults = 'BIKA: View Results'
-EditAnalyses = 'BIKA: Edit analyses'
-DeleteAnalyses = "BIKA: Delete analyses"
-
-# Workflow permissions
-SubmitSample = 'BIKA: Submit sample'
-ReceiveSample = 'BIKA: Receive sample'
-SubmitResults = 'BIKA: Submit results'
-VerifyResults = 'BIKA: Verify Results'
-PublishSample = 'BIKA: Publish sample'
-RetractSample = 'BIKA: Retract sample'
-ImportSample = 'BIKA: Import sample'
-SubmitWorksheet = 'BIKA: Submit Worksheet'
-VerifyWorksheet = 'BIKA: Verify Worksheet'
-RetractWorksheet = 'BIKA: Retract Worksheet'
-
-AssignAnalyses = 'BIKA: Assign analyses'
 
 I18N_DOMAIN = 'bika.lims'
 
@@ -62,23 +62,29 @@ BIKA_PERMISSIONS = (
     (ManageSample, ()),
     (ManageReferenceSuppliers, ()),
     (ManageReference, ()),
-    (EditAnalyses, ()),
-    (ViewResults, ()),
-    (ViewMethods, ()),
-    (ReceiveSample, ()),
-    (SubmitSample, ()),
-    (VerifyResults, ()),
-    (PublishSample, ()),
-    (RetractSample, ()),
-    (ImportSample, ()),
+    (ManagePricelists, ()),
     (ManageARImport, ()),
-    (SubmitWorksheet, ()),
-    (VerifyWorksheet, ()),
-    (RetractWorksheet, ()),
     (DispatchOrder, ()),
-    (DeleteAnalyses, ()),
-    (SubmitResults, ()),
+    (PostInvoiceBatch, ()),
+    (ReceiveSample, ()),
+    (ExpireSample, ()),
+    (DisposeSample, ()),
+    (ImportAnalysis, ()),
+    (RejectWorksheet, ()),
+    (Retract, ()),
+    (Verify, ()),
+    (Publish, ()),
+    (EditSample, ()),
+    (EditAR, ()),
+    (EditWorksheet, ()),
+    (ManageResults, ()),
+    (ResultsNotRequested, ()),
+    (ManageInvoices, ()),
+    (CreateAndDeleteAnalyses, ()),
+    (AddAndRemoveAnalyses, ()),
+    (ViewResults, ()),
 )
+
 
 PUBLICATION_PREFS = DisplayList((
     ('email', _('Email')),

@@ -1,4 +1,4 @@
-## Script (Python) "guard_attach_worksheet"
+## Script (Python) "guard_submit_ar"
 ##bind container=container
 ##bind context=context
 ##bind namespace=
@@ -11,9 +11,8 @@
 wf_tool = context.portal_workflow
 
 # Only transition to 'to_be_verified' if all analyses are at least there.
-for a in context.getAnalyses():
+for a in context.objectValues('Analysis'):
     review_state = wf_tool.getInfoFor(a, 'review_state')
-    if review_state in ('sample_due', 'sample_received', 'attachment_due', 'assigned',):
-        # Note: referenceanalyses can still have review_state = "assigned" (as at 21 Sep 2011).
+    if review_state in ('sample_due', 'sample_received', 'attachment_due'):
         return False
 return True

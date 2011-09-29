@@ -8,8 +8,7 @@ from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.Archetypes.Registry import registerField
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.config import I18N_DOMAIN, INSTRUMENT_EXPORTS, PROJECTNAME
-from bika.lims.config import AssignAnalyses, DeleteAnalyses, \
-    SubmitResults, ManageWorksheets, ManageBika
+from bika.lims.config import AddAndRemoveAnalyses, ManageResults, ManageWorksheets, ManageBika
 from Products.ATExtensions.ateapi import RecordsField
 from zope.interface import implements
 from bika.lims.interfaces import IWorksheet
@@ -151,7 +150,7 @@ class Worksheet(BaseFolder):
             template_id = 'worksheet_analyses')
 
 
-    security.declareProtected(AssignAnalyses, 'assignNumberedAnalyses')
+    security.declareProtected(AddAndRemoveAnalyses, 'assignNumberedAnalyses')
     def assignNumberedAnalyses(self, REQUEST = None, RESPONSE = None, Analyses = []):
         """ assign selected analyses to worksheet
             Analyses = [(pos, uid),]
@@ -171,7 +170,7 @@ class Worksheet(BaseFolder):
         if REQUEST:
             RESPONSE.redirect('%s/worksheet_analyses' % self.absolute_url())
 
-    security.declareProtected(AssignAnalyses, 'assignUnnumberedAnalyses')
+    security.declareProtected(AddAndRemoveAnalyses, 'assignUnnumberedAnalyses')
     def assignUnnumberedAnalyses(self, REQUEST = None, RESPONSE = None, Analyses = []):
         """ assign selected analyses to worksheet
             Analyses = [uid,]
@@ -205,7 +204,7 @@ class Worksheet(BaseFolder):
 
             self.setAnalyses(assigned)
 
-    security.declareProtected(DeleteAnalyses, 'deleteAnalyses')
+    security.declareProtected(AddAndRemoveAnalyses, 'deleteAnalyses')
     def deleteAnalyses(self, REQUEST, RESPONSE, Analyses = []):
         """ delete analyses from the worksheet and set their state back to
             'sample_received'
@@ -327,7 +326,7 @@ class Worksheet(BaseFolder):
         if RESPONSE:
             RESPONSE.redirect('%s/worksheet_analyses' % self.absolute_url())
 
-    security.declareProtected(SubmitResults, 'submitResults')
+    security.declareProtected(ManageResults, 'submitResults')
     def submitResults(self, analyser = None, results = {}, Notes = None, REQUEST = None, RESPONSE = None):
         """ Submit results, interim results and Analyser
         """
@@ -571,7 +570,7 @@ class Worksheet(BaseFolder):
             REQUEST = REQUEST, RESPONSE = RESPONSE,
             template_id = 'worksheet_analyses')
 
-    security.declareProtected(AssignAnalyses, 'assignDuplicate')
+    security.declareProtected(AddAndRemoveAnalyses, 'assignDuplicate')
     def assignDuplicate(self, AR = None, Position = None, Service = [], REQUEST = None, RESPONSE = None):
         """ assign selected analyses to worksheet
         """
@@ -619,7 +618,7 @@ class Worksheet(BaseFolder):
             REQUEST = REQUEST, RESPONSE = RESPONSE,
             template_id = 'worksheet_analyses')
 
-    security.declareProtected(AssignAnalyses, 'assignReference')
+    security.declareProtected(AddAndRemoveAnalyses, 'assignReference')
     def assignReference(self, Reference = None, Position = None, Type = None, Service = [], REQUEST = None, RESPONSE = None):
         """ assign selected reference analyses to worksheet
             Reference=uid, Position=number or 'new', Service=[uids]

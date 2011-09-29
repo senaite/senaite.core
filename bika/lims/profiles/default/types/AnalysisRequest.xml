@@ -16,13 +16,9 @@
 	<element value="Analysis"/>
 </property>
 <property name="allow_discussion">False</property>
+
 <property name="default_view_fallback">False</property>
 <property name="default_view">base_view</property>
-<property name="view_methods">
-	<element value="base_view"/>
-	<element value="base_edit"/>
-	<element value="manage_results"/>
-</property>
 <alias from="(Default)" to="base_view"/>
 
 <action title="View"
@@ -44,7 +40,7 @@
 	link_target=""
 	url_expr="string:${object_url}/base_edit"
 	visible="True">
-	<permission value="Modify portal content"/>
+	<permission value="BIKA: Edit AR"/>
 </action>
 
 <action title="Manage results"
@@ -55,7 +51,7 @@
 	link_target=""
 	url_expr="string:${object_url}/manage_results"
 	visible="True">
-	<permission value="BIKA: Edit analyses"/>
+	<permission value="BIKA: Manage Results"/>
 </action>
 
 <action title="Results not requested"
@@ -66,7 +62,7 @@
 	link_target=""
 	url_expr="string:${object_url}/not_requested"
 	visible="True">
-	<permission value="BIKA: Manage Bika"/>
+	<permission value="BIKA: Results not requested"/>
 </action>
 
 <action title="Large Sticker"

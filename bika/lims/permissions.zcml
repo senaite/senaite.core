@@ -11,6 +11,8 @@
 	They are duplicated in python code in config.py so they can be imported in our own code
 /-->
 
+# Old stuff I haven't looked at
+# =============================
 <permission id="bika.lims.ManageBika" title="BIKA: Manage Bika"/>
 <permission id="bika.lims.ManageClients" title="BIKA: Manage Clients"/>
 <permission id="bika.lims.ManageWorksheets" title="BIKA: Manage Worksheets"/>
@@ -19,29 +21,42 @@
 <permission id="bika.lims.ManageSample" title="BIKA: Manage Sample"/>
 <permission id="bika.lims.ManageReferenceSuppliers" title="BIKA: Manage Reference Suppliers"/>
 <permission id="bika.lims.ManageReference" title="BIKA: Manage Reference"/>
-<permission id="bika.lims.ManageInvoices" title="BIKA: Manage Invoices"/>
 <permission id="bika.lims.ManagePricelists" title="BIKA: Manage Pricelists"/>
-<permission id="bika.lims.ViewMethods" title="BIKA: View Methods"/>
-<permission id="bika.lims.EditAnalyses" title="BIKA: Edit analyses"/>
-<permission id="bika.lims.ViewResults" title="BIKA: View Results"/>
 <permission id="bika.lims.ManageARImport" title="BIKA: Manage ARImport"/>
 
-# Workflow permissions
-<permission id="bika.lims.ReceiveSample" title="BIKA: Receive sample"/>
-<permission id="bika.lims.SubmitSample" title="BIKA: Submit sample"/>
-<permission id="bika.lims.VerifyResults" title="BIKA: Verify Results"/>
-<permission id="bika.lims.PublishSample" title="BIKA: Publish sample"/>
-<permission id="bika.lims.RetractSample" title="BIKA: Retract sample"/>
-<permission id="bika.lims.ImportSample" title="BIKA: Import sample"/>
-<permission id="bika.lims.SubmitWorksheet" title="BIKA: Submit Worksheet"/>
-<permission id="bika.lims.VerifyWorksheet" title="BIKA: Verify Worksheet"/>
-<permission id="bika.lims.RetractWorksheet" title="BIKA: Retract Worksheet"/>
 <permission id="bika.lims.DispatchOrder" title="BIKA: Dispatch Order"/>
 <permission id="bika.lims.PostInvoiceBatch" title="BIKA: Post Invoice batch"/>
 
-# Worksheet permissions
-<permission id="bika.lims.AssignAnalyses" title="BIKA: Assign analyses"/>
-<permission id="bika.lims.DeleteAnalyses" title="BIKA: Delete analyses"/>
-<permission id="bika.lims.SubmitResults" title="BIKA: Submit results"/>
+# Stuff I sorted out
+# ==================
+# For workflow transitions:
+# -------------------------
+<permission id="bika.lims.ReceiveSample" title="BIKA: Receive Sample"/>
+<permission id="bika.lims.ExpireSample" title="BIKA: Expire Sample"/>
+<permission id="bika.lims.DisposeSample" title="BIKA: Dispose Sample"/>
+
+<permission id="bika.lims.ImportAnalysis" title="BIKA: Import Analysis"/>
+<permission id="bika.lims.RejectWorksheet" title="BIKA: Reject Worksheet"/>
+
+<permission id="bika.lims.Retract" title="BIKA: Retract"/>
+<permission id="bika.lims.Verify" title="BIKA: Verify"/>
+<permission id="bika.lims.Publish" title="BIKA: Publish"/>
+
+# For screen navigation:
+# ----------------------
+<permission id="bika.lims.EditSample" title="BIKA: Edit Sample"/>
+<permission id="bika.lims.EditAR" title="BIKA: Edit AR"/>
+<permission id="bika.lims.EditWorksheet" title="BIKA: Edit Worksheet"/>
+
+<permission id="bika.lims.ManageResults" title="BIKA: Manage Results"/>
+<permission id="bika.lims.ResultsNotRequested" title="BIKA: Results not requested"/>
+<permission id="bika.lims.ManageInvoices" title="BIKA: Manage Invoices"/>
+
+# Other:
+# ------
+<permission id="bika.lims.CreateAndDeleteAnalyses" title="BIKA: Create and delete Analyses"/>
+<permission id="bika.lims.AddAndRemoveAnalyses" title="BIKA: Add and remove Analyses"/>
+<permission id="bika.lims.ViewResults" title="BIKA: View Results"/>
+
 
 </configure>

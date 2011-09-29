@@ -10,6 +10,8 @@
  <permission>BIKA: View Results</permission>
  <permission>BIKA: Edit analyses</permission>
  <permission>BIKA: Retract sample</permission>
+ 
+ 
  <state state_id="assigned" title="Assigned to Worksheet">
   <exit-transition transition_id="submit"/>
   <exit-transition transition_id="unassign"/>
@@ -60,6 +62,7 @@
    <permission-role>LabClerk</permission-role>
   </permission-map>
  </state>
+ 
  <state state_id="not_requested" title="Not requested">
   <exit-transition transition_id="verify"/>
   <permission-map name="BIKA: Edit analyses"
@@ -105,6 +108,7 @@
    <permission-role>LabClerk</permission-role>
   </permission-map>
  </state>
+ 
  <state state_id="to_be_verified" title="To be verified">
   <exit-transition transition_id="verify"/>
   <exit-transition transition_id="retract"/>
@@ -144,6 +148,7 @@
    <permission-role>Manager</permission-role>
   </permission-map>
  </state>
+ 
  <state state_id="verified" title="Verified">
   <permission-map name="BIKA: Edit analyses"
                   acquired="False">
@@ -179,6 +184,7 @@
    <permission-role>Manager</permission-role>
   </permission-map>
  </state>
+ 
  <state state_id="rejected" title="Rejected">
   <permission-map name="BIKA: Edit analyses"
                   acquired="False">
@@ -210,6 +216,7 @@
    <permission-role>Manager</permission-role>
   </permission-map>
  </state>
+ 
  <state state_id="unassigned" title="Unassigned">
   <permission-map name="BIKA: Edit analyses"
                   acquired="False">
@@ -234,41 +241,46 @@
    <permission-role>Manager</permission-role>
   </permission-map>
  </state>
+ 
+ 
  <transition transition_id="import" title="Import"
              new_state="not_requested" trigger="USER"
-             before_script="" after_script="default">
-
+             before_script="" after_script="">
   <guard>
    <guard-permission>BIKA: Import sample</guard-permission>
   </guard>
  </transition>
+ 
  <transition transition_id="retract" title="Retract"
              new_state="assigned" trigger="USER"
-             before_script="" after_script="default">
+             before_script="" after_script="">
   <action url="" category="workflow">Retract</action>
   <guard>
    <guard-permission>BIKA: Retract sample</guard-permission>
    <guard-expression>python:here.guard_retract_sample()</guard-expression>
   </guard>
  </transition>
+ 
  <transition transition_id="submit"
              title="Submit for verification"
              new_state="to_be_verified" trigger="USER"
-             before_script="" after_script="default">
+             before_script="" after_script="">
   <action url="" category="workflow">Submit for verification</action>
   <guard>
    <guard-permission>BIKA: Submit sample</guard-permission>
    <guard-expression>python:here.guard_submit_analysis()</guard-expression>
   </guard>
  </transition>
+ 
  <transition transition_id="verify" title="Verify"
              new_state="verified" trigger="USER"
-             before_script="" after_script="default">
+             before_script="" after_script="">
   <action url="" category="workflow">Verify</action>
   <guard>
    <guard-permission>BIKA: Verify Results</guard-permission>
   </guard>
  </transition>
+ 
  <transition transition_id="reject" title="Reject"
              new_state="rejected" trigger="USER"
              before_script="" after_script="">
@@ -277,6 +289,7 @@
    <guard-permission>BIKA: Verify Results</guard-permission>
   </guard>
  </transition>
+ 
  <transition transition_id="unassign" title="Unassign"
              new_state="unassigned" trigger="USER"
              before_script="" after_script="">
@@ -285,66 +298,56 @@
    <guard-permission>BIKA: Verify Results</guard-permission>
   </guard>
  </transition>
- <worklist worklist_id="reviewer_queue" title="">
-  <description>Lab manager tasks</description>
-  <action url="%(portal_url)s/search?review_state=pending"
-          category="global">To be verified (%(count)d)</action>
-  <guard>
-   <guard-permission>Review portal content</guard-permission>
-  </guard>
-  <match name="review_state" values="to_be_verified"/>
- </worklist>
+ 
+ 
  <variable variable_id="action" for_catalog="False"
            for_status="True" update_always="True">
   <description>The last transition</description>
   <default>
-
    <expression>transition/getId|nothing</expression>
   </default>
   <guard>
   </guard>
  </variable>
+ 
  <variable variable_id="actor" for_catalog="False"
            for_status="True" update_always="True">
   <description>The ID of the user who performed the last transition</description>
   <default>
-
    <expression>user/getId</expression>
   </default>
   <guard>
   </guard>
  </variable>
+ 
  <variable variable_id="comments" for_catalog="False"
            for_status="True" update_always="True">
   <description>Comments about the last transition</description>
   <default>
-
    <expression>python:state_change.kwargs.get('comment', '')</expression>
   </default>
   <guard>
   </guard>
  </variable>
+ 
  <variable variable_id="review_history" for_catalog="False"
            for_status="False" update_always="False">
   <description>Provides access to workflow history</description>
   <default>
-
    <expression>state_change/getHistory</expression>
   </default>
   <guard>
   </guard>
  </variable>
+ 
  <variable variable_id="time" for_catalog="False"
            for_status="True" update_always="True">
   <description>Time of the last transition</description>
   <default>
-
    <expression>state_change/getDateTime</expression>
   </default>
   <guard>
   </guard>
  </variable>
- <script script_id="default" type="Script (Python)"
-         filename="workflows/bika_referenceanalysis_workflow/scripts/default.py"
-         module="" function=""/>
+ 
 </dc-workflow>

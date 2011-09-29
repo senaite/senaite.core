@@ -1,7 +1,7 @@
 from AccessControl import ModuleSecurityInfo, allow_module
 from DateTime import DateTime
 from bika.lims import interfaces
-from bika.lims.config import PublishSample
+from bika.lims.config import Publish
 from Products.CMFCore.utils import getToolByName
 from email.Utils import formataddr
 from zope.component._api import getUtility
@@ -14,7 +14,7 @@ allow_module('csv')
 # Wrapper for PortalTransport's sendmail - don't know why there sendmail
 # method is marked private
 ModuleSecurityInfo('Products.bika.utils').declarePublic('sendmail')
-#Protected( PublishSample, 'sendmail')
+#Protected( Publish, 'sendmail')
 def sendmail(portal, from_addr, to_addrs, msg):
     mailspool = portal.portal_mailspool
     mailspool.sendmail(from_addr, to_addrs, msg)

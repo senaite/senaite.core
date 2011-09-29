@@ -11,7 +11,7 @@ from bika.lims.browser.analyses import AnalysesView
 from bika.lims.browser.bika_listing import BikaListingView, WorkflowAction
 from bika.lims.browser.client import ClientAnalysisRequestsView
 from bika.lims.browser.publish import Publish
-from bika.lims.config import POINTS_OF_CAPTURE, EditAnalyses
+from bika.lims.config import POINTS_OF_CAPTURE
 from bika.lims import logger
 from bika.lims.utils import isActive, TimeOrDate
 from decimal import Decimal
@@ -38,7 +38,7 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
         originating_url = self.request.get_header("referer",
                                                   self.context.absolute_url())
         skiplist = self.request.get('workflow_skiplist', [])
-        action,came_from = WorkflowAction._get_form_workflow_action(self)
+        action, came_from = WorkflowAction._get_form_workflow_action(self)
 
 ## publish
         if action in ('prepublish', 'publish', 'prepublish'):
@@ -81,7 +81,7 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
 
             # discover which items may be submitted
             submissable = []
-            for uid,analysis in selected_analyses.items():
+            for uid, analysis in selected_analyses.items():
                 service = analysis.getService()
                 # but only if they are selected
                 if uid not in selected_analysis_uids:
@@ -746,7 +746,7 @@ class AJAXAnalysisRequestSubmit():
                     if ar.has_key('subtotal'):
                         continue
                 if not form["ar.%s" % column].has_key("Analyses"):
-                    error('Analyses', column,  _("No analyses have been selected."))
+                    error('Analyses', column, _("No analyses have been selected."))
 
             required = ['Analyses']
             if came_from == "add": required += ['SampleType', 'DateSampled']
@@ -987,7 +987,7 @@ class AnalysisRequestsView(ClientAnalysisRequestsView):
 
             sample = obj.getSample()
             after_icons = "<a href='%s'><img src='++resource++bika.lims.images/sample.png' title='Sample: %s'></a>" % \
-                        (sample.absolute_url(),sample.Title())
+                        (sample.absolute_url(), sample.Title())
             if sample.getSampleType().getHazardous():
                 after_icons += "<img src='++resource++bika.lims.images/hazardous_small.png' title='Hazardous'>"
             if after_icons:

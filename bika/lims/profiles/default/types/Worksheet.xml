@@ -18,45 +18,42 @@
   <element value="RejectAnalysis"/>
  </property>
  <property name="allow_discussion">False</property>
+ 
  <property name="default_view_fallback">False</property>
-
+ <property name="default_view">manage_results</property>
  <alias from="(Default)" to="manage_results"/>
  <alias from="view" to="manage_results"/>
- <alias from="edit" to="base_edit"/>
 
- <action title="View" action_id="view" category="object" condition_expr=""
-    icon_expr="" link_target="" url_expr="string:${object_url}/base_view"
-    visible="False">
-  <permission value="View"/>
+<!--
+ <action title="Edit" action_id="edit" category="object"
+    condition_expr="" icon_expr="" link_target=""
+	url_expr="string:${object_url}/base_edit" visible="True">
+  <permission value="BIKA: Edit Worksheet"/>
  </action>
- <action title="Edit" action_id="edit" category="object" condition_expr=""
-    icon_expr="" link_target="" url_expr="string:${object_url}/worksheet"
-    visible="False">
-  <permission value="List folder contents"/>
- </action>
+-->
 
  <action title="Analyses" action_id="manage_results" category="object"
     condition_expr="" icon_expr="" link_target=""
     url_expr="string:${object_url}/manage_results" visible="True">
-  <permission value="BIKA: Manage Worksheets"/>
+  <permission value="BIKA: Manage Results"/>
  </action>
 
   <action title="Add Analysis" action_id="add_analyses" category="object"
     condition_expr="" icon_expr="" link_target=""
     url_expr="string:${object_url}/add_analysis" visible="True">
-  <permission value="BIKA: Manage Worksheets"/>
+  <permission value="BIKA: Add and remove Analyses"/>
  </action>
 
   <action title="Add Blank" action_id="add_blank" category="object"
     condition_expr="" icon_expr="" link_target=""
     url_expr="string:${object_url}/add_blank" visible="True">
-  <permission value="BIKA: Manage Worksheets"/>
+  <permission value="BIKA: Add and remove Analyses"/>
  </action>
 
   <action title="Add Control" action_id="add_control" category="object"
     condition_expr="" icon_expr="" link_target=""
     url_expr="string:${object_url}/add_control" visible="True">
-  <permission value="BIKA: Manage Worksheets"/>
+  <permission value="BIKA: Add and remove Analyses"/>
  </action>
 
 <!--
@@ -65,13 +62,13 @@
     url_expr="string:${object_url}/add_duplicate" visible="True">
   <permission value="BIKA: Manage Worksheets"/>
  </action>
--->
 
 <action title="Attachments" action_id="attachments" category="object"
     condition_expr="" icon_expr="" link_target=""
     url_expr="string:${object_url}/attachments" visible="True">
-  <permission value="BIKA: Manage Worksheets"/>
+  <permission value="BIKA: Edit Worksheet"/>
  </action>
+-->
 
  <action title="Log" action_id="log" category="object" condition_expr=""
     icon_expr="" link_target="" url_expr="string:${object_url}/status_log"

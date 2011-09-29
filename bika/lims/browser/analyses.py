@@ -7,7 +7,7 @@ from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import transaction_note
 from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from bika.lims import EditAnalyses, ViewResults
+from bika.lims import ManageResults, ViewResults
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.config import POINTS_OF_CAPTURE
@@ -15,7 +15,7 @@ from decimal import Decimal
 from operator import itemgetter
 from zope.app.component.hooks import getSite
 from zope.component import getMultiAdapter
-from zope.interface import implements,	alsoProvides, implementsOnly
+from zope.interface import implements, 	alsoProvides, implementsOnly
 import json
 import plone
 
@@ -67,7 +67,7 @@ class AnalysesView(BikaListingView):
         portal = getSite()
 
         can_edit_analyses = self.allow_edit and \
-            getSecurityManager().checkPermission(EditAnalyses, self.context)
+            getSecurityManager().checkPermission(ManageResults, self.context)
 
         items = super(AnalysesView, self).folderitems(full_objects = True)
 
@@ -152,11 +152,11 @@ class AnalysesView(BikaListingView):
             # Results can only be edited in certain states.
             # XXX should be plain permission from workflow - review_state check should not be required
             can_edit_analysis = self.allow_edit and \
-                getSecurityManager().checkPermission(EditAnalyses, obj) and \
+                getSecurityManager().checkPermission(ManageResults, obj) and \
                 items[i]['review_state'] == 'sample_received'
 
             if can_edit_analysis:
-                items[i]['allow_edit'] = ['Result',]
+                items[i]['allow_edit'] = ['Result', ]
                 # if the Result field is editable, our interim fields are too
                 for f in items[i]['interim_fields']:
                     items[i]['allow_edit'].append(f['keyword'])
@@ -185,7 +185,7 @@ class AnalysesView(BikaListingView):
                         attachments += '<a href="%s/at_download/AttachmentFile"/>%s</a>' % (attachment.absolute_url(), af.filename)
                         attachments += "<img class='deleteAttachmentButton' attachment_id='%s' src='%s'/>" % (attachment.id, "++resource++bika.lims.images/delete.png")
                         attachments += "</br></span>"
-                items[i]['replace']['Attachments'] = attachments[:-12]+"</span>"
+                items[i]['replace']['Attachments'] = attachments[:-12] + "</span>"
 
                 items[i]['result_in_range'] = hasattr(obj, 'result_in_range') and \
                     obj.result_in_range(result) or True
@@ -196,7 +196,7 @@ class AnalysesView(BikaListingView):
                     items[i]['allow_edit'].remove('Result')
                 items[i]['before']['Result'] = \
                     '<img width="16" height="16" ' + \
-                    'src="%s/++resource++bika.lims.images/to_follow.png"/>'% \
+                    'src="%s/++resource++bika.lims.images/to_follow.png"/>' % \
                     (portal.absolute_url())
 
             # Add this analysis' interim fields to the list
@@ -214,7 +214,7 @@ class AnalysesView(BikaListingView):
                     item['DueDate'], long_format = 1)
                 items[i]['after']['Service'] = \
                     '<img width="16" height="16" ' + \
-                    'src="%s/++resource++bika.lims.images/late.png" title="%s"/>'% \
+                    'src="%s/++resource++bika.lims.images/late.png" title="%s"/>' % \
                     (portal.absolute_url(), _("Due Date: ") + DueDate)
 
             # add icon for assigned analyses in AR views
@@ -233,7 +233,7 @@ class AnalysesView(BikaListingView):
                 if field not in item:
                     item[field] = ''
 
-        items = sorted(items, key=itemgetter('Service'))
+        items = sorted(items, key = itemgetter('Service'))
 
         # XXX order the list of interim columns
         interim_keys = self.interim_fields.keys()
@@ -256,7 +256,7 @@ class AnalysesView(BikaListingView):
                         state['columns'].insert(pos, col_id)
                 # retested column is added after Result.
                 pos = 'Result' in state['columns'] and \
-                    state['columns'].index('Result')+1 or len(state['columns'])
+                    state['columns'].index('Result') + 1 or len(state['columns'])
                 state['columns'].insert(pos, 'retested')
                 new_states.append(state)
             self.review_states = new_states
