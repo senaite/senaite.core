@@ -78,7 +78,7 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     DateTimeField('DateSampled',
-        schemata = 'Description',
+        schemata = 'Dates',
         index = 'DateIndex',
         widget = bika_DateTimeWidget(
             label = _("Date sampled"),
@@ -86,7 +86,7 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     DateTimeField('DateReceived',
-        schemata = 'Description',
+        schemata = 'Dates',
         index = 'DateIndex',
         default_method = 'current_date',
         widget = bika_DateTimeWidget(
@@ -95,7 +95,7 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     DateTimeField('DateOpened',
-        schemata = 'Description',
+        schemata = 'Dates',
         index = 'DateIndex',
         widget = bika_DateTimeWidget(
             label = _("Date opened"),
@@ -103,7 +103,7 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     DateTimeField('ExpiryDate',
-        schemata = 'Description',
+        schemata = 'Dates',
         required = 1,
         index = 'DateIndex',
         widget = bika_DateTimeWidget(
@@ -112,7 +112,7 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     DateTimeField('DateExpired',
-        schemata = 'Description',
+        schemata = 'Dates',
         index = 'DateIndex',
         widget = bika_DateTimeWidget(
             label = _("Date expired"),
@@ -121,7 +121,7 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     DateTimeField('DateDisposed',
-        schemata = 'Description',
+        schemata = 'Dates',
         index = 'DateIndex',
         widget = bika_DateTimeWidget(
             label = _("Date disposed"),
