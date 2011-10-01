@@ -161,6 +161,7 @@ schema = BikaSchema.copy() + Schema((
 ))
 
 ##schema['title'].schemata = default
+schema['title'].schemata = 'Description'
 
 class ReferenceSample(BaseFolder):
     implements(IReferenceSample)
