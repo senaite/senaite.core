@@ -116,7 +116,7 @@
 			<property name="permissions">
 				<element value="BIKA: Manage Reference Suppliers"/>
 			</property>
-			<property name="visible">True</property>
+			<property name="visible">False</property>
 		</object>
 		<object name="referencesamples" meta_type="CMF Action">
 			<property name="title">Reference Samples</property>
