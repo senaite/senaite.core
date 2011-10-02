@@ -71,7 +71,7 @@
 			<property name="visible">True</property>
 		</object>
 		<object name="analysisrequests" meta_type="CMF Action">
-			<property name="title">ARs</property>
+			<property name="title">Analysis Requests</property>
 			<property name="description"/>
 			<property name="url_expr">string:$portal_url/analysisrequests</property>
 			<property name="link_target"/>
@@ -119,7 +119,7 @@
 			<property name="visible">True</property>
 		</object>
 		<object name="referencesamples" meta_type="CMF Action">
-			<property name="title">References</property>
+			<property name="title">Reference Samples</property>
 			<property name="description"/>
 			<property name="url_expr">string:$portal_url/referencesamples</property>
 			<property name="link_target"/>
@@ -140,7 +140,7 @@
 			<property name="permissions">
 				<element value="List portal members"/>
 			</property>
-			<property name="visible">True</property>
+			<property name="visible">False</property>
 		</object>
 		<object name="reports" meta_type="CMF Action">
 			<property name="title">Reports</property>
@@ -152,7 +152,7 @@
 			<property name="permissions">
 				<element value="List portal members"/>
 			</property>
-			<property name="visible">True</property>
+			<property name="visible">False</property>
 		</object>
 		<object name="extracts" meta_type="CMF Action">
 			<property name="title">Extracts</property>
@@ -164,7 +164,7 @@
 			<property name="permissions">
 				<element value="List portal members"/>
 			</property>
-			<property name="visible">True</property>
+			<property name="visible">False</property>
 		</object>
 		<object name="reset_services" meta_type="CMF Action">
 			<property name="title">Prices</property>
@@ -176,7 +176,7 @@
 			<property name="permissions">
 				<element value="List portal members"/>
 			</property>
-			<property name="visible">True</property>
+			<property name="visible">False</property>
 		</object>
 		<object name="import" meta_type="CMF Action">
 			<property name="title">Import instrument</property>
@@ -188,7 +188,7 @@
 			<property name="permissions">
 				<element value="BIKA: Manage Analysis Requests"/>
 			</property>
-			<property name="visible">True</property>
+			<property name="visible">False</property>
 		</object>
 	</object>
 </object>
