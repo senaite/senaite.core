@@ -412,6 +412,13 @@ def ActionSucceededEventHandler(analysis, event):
     # Secondary workflows:
     #---------------------
 
+    elif event.action == "cancel":
+        analysis.reindexObject(idxs = ["worksheetanalysis_review_state", ])
+        # If it is assigned to a worksheet, unassign it before cancelation.
+        if wf.getInfoFor(analysis, 'worksheetanalysis_review_state') == 'assigned':
+            wf.doActionFor(analysis, 'unassign')
+            analysis.REQUEST["workflow_skiplist"].remove(analysis.UID())
+
     elif event.action == "assign":
         analysis.reindexObject(idxs = ["worksheetanalysis_review_state", ])
         # Add the analysis to the worksheet and retract the worksheet to 'open'

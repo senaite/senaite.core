@@ -13,7 +13,6 @@ from bika.lims.browser.fields import ReferenceResultsField
 from bika.lims.browser.widgets import ReferenceResultsWidget
 from bika.lims.browser.widgets import DateTimeWidget as bika_DateTimeWidget
 from bika.lims.config import I18N_DOMAIN, PROJECTNAME
-from bika.lims.config import ManageReference, ManageBika
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IReferenceSample
 from bika.lims.utils import sortable_title

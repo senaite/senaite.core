@@ -8,10 +8,12 @@
 ##title=
 ##
 
+from bika.lims import Retract
+
 wf_tool = context.portal_workflow
 
 checkPermission = context.portal_membership.checkPermission
-if checkPermission('Retract', context):
+if checkPermission(Retract, context):
     return True
 else:
     # Allow automatic retract if any analysis is 'sample_received'.

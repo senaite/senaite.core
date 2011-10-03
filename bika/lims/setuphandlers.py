@@ -105,7 +105,7 @@ class BikaGenerator:
 
         if 'LabManagers' not in portal_groups.listGroupIds():
             portal_groups.addGroup('LabManagers', title = "Lab Managers",
-                roles = ['Member', 'Manager', 'LabManager', 'Reviewer'])
+                roles = ['Member', 'Manager', 'LabManager'])
 
         if 'LabClerks' not in portal_groups.listGroupIds():
             portal_groups.addGroup('LabClerks', title = "Lab Clerks",
@@ -207,7 +207,8 @@ class BikaGenerator:
             ['Manager',
              'LabManager',
              'Owner'], 1)
-        # ManageARImport is missing :/
+        mp(ManageARImport,
+            ['Manager', 'LabManager', 'LabClerk'], 1)
         mp(DispatchOrder,
             ['Manager', 'LabManager', 'LabClerk'], 1)
         mp(PostInvoiceBatch,
@@ -254,6 +255,8 @@ class BikaGenerator:
             ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 1)
         mp(EditResults,
             ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 1)
+        mp(CancelAndReinstate,
+            ['Manager', 'LabManager', 'Owner'], 1)
 
         # End of interesting stuff
         mp = portal.clients.manage_permission

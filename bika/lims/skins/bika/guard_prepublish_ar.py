@@ -7,7 +7,12 @@
 ##parameters=
 ##title=
 ##
+
 wf_tool = context.portal_workflow
+
+# Can't prepublish if AR is cancelled
+if wf_tool.getInfoFor(context, 'cancellation_state') == "cancelled":
+    return False
 
 # Only prepublish if any analyses are in 'verified' or 'published' state
 for a in context.getAnalyses(full_objects = False):

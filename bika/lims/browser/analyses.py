@@ -69,6 +69,10 @@ class AnalysesView(BikaListingView):
         can_edit_analyses = self.allow_edit and \
             getSecurityManager().checkPermission(ManageResults, self.context)
 
+        context_active = True
+        if workflow.getInfoFor(self.context, 'cancellation_state') == "cancelled":
+            context_active = False
+
         items = super(AnalysesView, self).folderitems(full_objects = True)
 
         self.interim_fields = {}
@@ -155,7 +159,7 @@ class AnalysesView(BikaListingView):
                 getSecurityManager().checkPermission(ViewResults, obj)
 
             # permission to edit this item's results
-            can_edit_analysis = self.allow_edit and \
+            can_edit_analysis = self.allow_edit and context_active and \
                 getSecurityManager().checkPermission(EditResults, obj)
 
             if can_edit_analysis:

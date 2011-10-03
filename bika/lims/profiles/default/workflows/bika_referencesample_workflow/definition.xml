@@ -8,15 +8,10 @@
  <permission>BIKA: Manage Reference</permission>
  
  
- <state state_id="disposed" title="Disposed">
+ <state state_id="current" title="Current">
+  <exit-transition transition_id="expire"/>
   <permission-map name="BIKA: Manage Reference"
                   acquired="False">
-   <permission-role>Manager</permission-role>
-   <permission-role>LabManager</permission-role>
-   <permission-role>Analyst</permission-role>
-   <permission-role>LabClerk</permission-role>
-  </permission-map>
-  <permission-map name="Delete objects" acquired="False">
    <permission-role>Manager</permission-role>
    <permission-role>LabManager</permission-role>
    <permission-role>Analyst</permission-role>
@@ -46,10 +41,15 @@
   </permission-map>
  </state>
  
- <state state_id="current" title="Current">
-  <exit-transition transition_id="expire"/>
+ <state state_id="disposed" title="Disposed">
   <permission-map name="BIKA: Manage Reference"
                   acquired="False">
+   <permission-role>Manager</permission-role>
+   <permission-role>LabManager</permission-role>
+   <permission-role>Analyst</permission-role>
+   <permission-role>LabClerk</permission-role>
+  </permission-map>
+  <permission-map name="Delete objects" acquired="False">
    <permission-role>Manager</permission-role>
    <permission-role>LabManager</permission-role>
    <permission-role>Analyst</permission-role>
@@ -65,19 +65,19 @@
  </state>
  
  
- <transition transition_id="dispose" title="Dispose"
-             new_state="disposed" trigger="USER"
+ <transition transition_id="expire" title="Expire"
+             new_state="expired" trigger="USER"
              before_script="" after_script="">
-  <action url="" category="workflow">Dispose of Reference</action>
+  <action url="" category="workflow">Expire Reference</action>
   <guard>
    <guard-permission>BIKA: Manage Reference</guard-permission>
   </guard>
  </transition>
  
- <transition transition_id="expire" title="Expire"
-             new_state="expired" trigger="USER"
+ <transition transition_id="dispose" title="Dispose"
+             new_state="disposed" trigger="USER"
              before_script="" after_script="">
-  <action url="" category="workflow">Expire Reference</action>
+  <action url="" category="workflow">Dispose of Reference</action>
   <guard>
    <guard-permission>BIKA: Manage Reference</guard-permission>
   </guard>

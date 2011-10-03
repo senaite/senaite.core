@@ -93,7 +93,7 @@ def ActionSucceededEventHandler(ar, event):
     elif event.action == "reinstate":
         ar.reindexObject(idxs = ["cancellation_state", ])
         # activate all analyses in this AR.
-        analyses = ar.getAnalyses(inactive_state = 'cancelled')
+        analyses = ar.getAnalyses(cancellation_state = 'cancelled')
         for analysis in analyses:
             if not analysis.UID in ar.REQUEST['workflow_skiplist']:
                 wf.doActionFor(analysis.getObject(), 'reinstate')

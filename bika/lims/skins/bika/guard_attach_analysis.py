@@ -10,6 +10,10 @@
 
 wf_tool = context.portal_workflow
 
+# Can't do anything to the object if it's cancelled
+if wf_tool.getInfoFor(context, 'cancellation_state') == "cancelled":
+    return False
+
 # For now, more thorough than strictly needed.
 if not context.getAttachment():
     service = context.getService()

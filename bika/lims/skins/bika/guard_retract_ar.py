@@ -8,10 +8,16 @@
 ##title=
 ##
 
+from bika.lims import Retract
+
 wf_tool = context.portal_workflow
 
+# Can't do anything to the object if it's cancelled
+if wf_tool.getInfoFor(context, 'cancellation_state') == "cancelled":
+    return False
+
 checkPermission = context.portal_membership.checkPermission
-if checkPermission('Retract', context):
+if checkPermission(Retract, context):
     return True
 else:
     # Allow automatic retract if any analysis is 'sample_due' or 'sample_received'.

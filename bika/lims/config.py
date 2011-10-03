@@ -43,6 +43,7 @@ CreateAndDeleteAnalyses = 'BIKA: Create and delete Analyses'
 AddAndRemoveAnalyses = 'BIKA: Add and remove Analyses'
 ViewResults = 'BIKA: View Results'
 EditResults = 'BIKA: Edit Results'
+CancelAndReinstate = 'BIKA: Cancel and reinstate'
 
 I18N_DOMAIN = 'bika.lims'
 
@@ -88,6 +89,7 @@ BIKA_PERMISSIONS = (
     (AddAndRemoveAnalyses, ()),
     (ViewResults, ()),
     (EditResults, ()),
+    (CancelAndReinstate, ()),
 )
 
 

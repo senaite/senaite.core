@@ -6,7 +6,7 @@ from Products.ATContentTypes.content import schemata
 from Products.Archetypes import atapi
 from Products.CMFCore import permissions
 from Products.CMFCore.utils import getToolByName
-from bika.lims.config import ManageWorksheets, PROJECTNAME, PROJECTNAME
+from bika.lims.config import PROJECTNAME
 from bika.lims.interfaces import IWorksheetFolder, IHaveNoBreadCrumbs
 from bika.lims.utils import generateUniqueId
 from plone.app.folder import folder

@@ -17,8 +17,8 @@
  <object name="one_state_workflow" meta_type="Workflow"/>
  <object name="plone_workflow" meta_type="Workflow"/>
  <object name="simple_publication_workflow" meta_type="Workflow"/>
- <object name="bika_inactive_workflow" meta_type="Subtractive Workflow"/>
- <object name="bika_cancellation_workflow" meta_type="Subtractive Workflow"/>
+ <object name="bika_inactive_workflow" meta_type="Workflow"/>
+ <object name="bika_cancellation_workflow" meta_type="Workflow"/>
  <bindings>
   <default>
    <bound-workflow workflow_id="plone_workflow"/>
@@ -64,109 +64,148 @@
   <type type_id="AnalysisService">
    <bound-workflow workflow_id="bika_inactive_workflow"/>
   </type>
+  
   <type type_id="AnalysisServices"/>
   <type type_id="AnalysisSpec">
    <bound-workflow workflow_id="bika_inactive_workflow"/>
   </type>
+  
   <type type_id="AnalysisSpecs"/>
   <type type_id="ARImportItem"/>
   <type type_id="Attachment"/>
   <type type_id="AttachmentType"/>
   <type type_id="AttachmentTypes"/>
   <type type_id="BikaSetup"/>
+  
   <type type_id="Calculation">
    <bound-workflow workflow_id="bika_inactive_workflow"/>
   </type>
+  
   <type type_id="Calculations"/>
+  
   <type type_id="Client">
    <bound-workflow workflow_id="bika_inactive_workflow"/>
   </type>
+  
   <type type_id="ClientFolder"/>
+  
   <type type_id="Contact">
    <bound-workflow workflow_id="bika_inactive_workflow"/>
   </type>
+  
   <type type_id="Department">
    <bound-workflow workflow_id="bika_inactive_workflow"/>
   </type>
+  
   <type type_id="Departments"/>
   <type type_id="Discussion Item"/>
+  
   <type type_id="DuplicateAnalysis">
    <bound-workflow workflow_id="bika_worksheetanalysis_workflow"/>
   </type>
+  
   <type type_id="File"/>
   <type type_id="Image"/>
+  
   <type type_id="Instrument">
    <bound-workflow workflow_id="bika_inactive_workflow"/>
   </type>
+  
   <type type_id="Instruments"/>
   <type type_id="Invoice"/>
   <type type_id="InvoiceBatch"/>
   <type type_id="InvoiceFolder"/>
   <type type_id="InvoiceLineItem"/>
+  
   <type type_id="LabContact">
    <bound-workflow workflow_id="bika_inactive_workflow"/>
   </type>
+  
   <type type_id="LabContacts"/>
   <type type_id="Laboratory"/>
   <type type_id="LabProduct"/>
   <type type_id="LabProducts"/>
+  
   <type type_id="Method">
    <bound-workflow workflow_id="bika_inactive_workflow"/>
   </type>
+  
   <type type_id="Methods"/>
+  
   <type type_id="SupplyOrder">
    <bound-workflow workflow_id="bika_order_workflow"/>
    <bound-workflow workflow_id="bika_inactive_workflow"/>
   </type>
+  
   <type type_id="SupplyOrderItem"/>
   <type type_id="Plone Site"/>
+  
   <type type_id="Pricelist">
    <bound-workflow workflow_id="bika_inactive_workflow"/>
   </type>
+  
   <type type_id="PricelistFolder"/>
   <type type_id="PricelistLineItem"/>
+  
   <type type_id="ReferenceAnalysis">
    <bound-workflow workflow_id="bika_referenceanalysis_workflow"/>
   </type>
+  
   <type type_id="ReferenceDefinition">
    <bound-workflow workflow_id="bika_inactive_workflow"/>
   </type>
+  
   <type type_id="ReferenceDefinitions"/>
+  
   <type type_id="ReferenceManufacturer">
    <bound-workflow workflow_id="bika_inactive_workflow"/>
   </type>
+  
   <type type_id="ReferenceManufacturers"/>
+  
   <type type_id="ReferenceSample">
    <bound-workflow workflow_id="bika_referencesample_workflow"/>
   </type>
+  
   <type type_id="ReferenceSupplier">
    <bound-workflow workflow_id="bika_inactive_workflow"/>
   </type>
+  
   <type type_id="ReferenceSupplierFolder"/>
   <type type_id="RejectAnalysis"/>
+  
   <type type_id="Sample">
    <bound-workflow workflow_id="bika_sample_workflow"/>
    <bound-workflow workflow_id="bika_cancellation_workflow"/>
   </type>
+  
   <type type_id="SamplePoint">
    <bound-workflow workflow_id="bika_inactive_workflow"/>
   </type>
+  
   <type type_id="SamplePoints"/>
+  
   <type type_id="SampleType">
    <bound-workflow workflow_id="bika_inactive_workflow"/>
   </type>
+  
   <type type_id="SampleTypes"/>
+  
   <type type_id="SupplierContact">
    <bound-workflow workflow_id="bika_inactive_workflow"/>
   </type>
+  
   <type type_id="Worksheet">
    <bound-workflow workflow_id="bika_worksheet_workflow"/>
-   <bound-workflow workflow_id="bika_cancellation_workflow"/>
   </type>
+  
+  
   <type type_id="WorksheetFolder"/>
   <type type_id="WorksheetTemplate">
    <bound-workflow workflow_id="bika_inactive_workflow"/>
   </type>
+  
   <type type_id="WorksheetTemplates"/>
+  
  </bindings>
 </object>

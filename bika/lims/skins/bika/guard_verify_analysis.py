@@ -8,7 +8,13 @@
 ##title=
 ##
 
+from bika.lims import VerifyOwnResults
+
 wf_tool = context.portal_workflow
+
+# Can't do anything to the object if it's cancelled
+if wf_tool.getInfoFor(context, 'cancellation_state') == "cancelled":
+    return False
 
 # Check if all dependencies are at least 'verified'.
 for d in context.getDependencies():
@@ -17,7 +23,7 @@ for d in context.getDependencies():
         return False
 
 checkPermission = context.portal_membership.checkPermission
-if checkPermission('VerifyOwnResults', context):
+if checkPermission(VerifyOwnResults, context):
     return True
 
 # Check if submitted by same user.

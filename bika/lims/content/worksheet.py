@@ -10,7 +10,7 @@ from Products.Archetypes.Registry import registerField
 from bika.lims.browser.fields import HistoryAwareReferenceField
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.config import I18N_DOMAIN, INSTRUMENT_EXPORTS, PROJECTNAME
-from bika.lims.config import AddAndRemoveAnalyses, ManageResults, ManageWorksheets, ManageBika
+from bika.lims.config import AddAndRemoveAnalyses, ManageResults
 from Products.ATExtensions.ateapi import RecordsField
 from zope.interface import implements
 from bika.lims.interfaces import IWorksheet
@@ -596,7 +596,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         if REQUEST:
             RESPONSE.redirect('%s/manage_results' % self.absolute_url())
 
-    security.declareProtected(ManageWorksheets, 'resequenceWorksheet')
+    security.declareProtected(AddAndRemoveAnalyses, 'resequenceWorksheet')
     def resequenceWorksheet(self, REQUEST = None, RESPONSE = None):
         """  Reset the sequence of analyses in the worksheet """
         """ sequence is [{'pos': , 'type': , 'uid', 'key'},] """

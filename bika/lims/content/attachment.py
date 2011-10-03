@@ -8,7 +8,7 @@ from Products.Archetypes.public import *
 from Products.CMFCore.permissions import ListFolderContents, View
 from Products.CMFCore.utils import getToolByName
 from bika.lims.content.bikaschema import BikaSchema
-from bika.lims.config import I18N_DOMAIN, PROJECTNAME, ManageBika, ManageAnalysisRequests
+from bika.lims.config import I18N_DOMAIN, PROJECTNAME
 from bika.lims import bikaMessageFactory as _
 
 schema = BikaSchema.copy() + Schema((

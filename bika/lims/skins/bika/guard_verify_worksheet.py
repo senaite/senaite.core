@@ -8,10 +8,12 @@
 ##title=
 ##
 
+from bika.lims import Verify, VerifyOwnResults
+
 wf_tool = context.portal_workflow
 
 checkPermission = context.portal_membership.checkPermission
-if not checkPermission('Verify', context):
+if not checkPermission(Verify, context):
     # Allow automatic verification if all analyses are already verified.
     for analysis in context.getAnalyses(full_objects = True):
         review_state = wf_tool.getInfoFor(analysis, 'review_state')
@@ -19,7 +21,7 @@ if not checkPermission('Verify', context):
             return False
     return True
 
-if checkPermission('VerifyOwnResults', context):
+if checkPermission(VerifyOwnResults, context):
     return True
 
 # Check for self-submitted analyses.
