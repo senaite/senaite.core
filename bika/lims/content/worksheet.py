@@ -15,55 +15,27 @@ from bika.lims.interfaces import IWorksheet
 from bika.lims import bikaMessageFactory as _
 
 schema = BikaSchema.copy() + Schema((
-    StringField('Number',
-        index = 'FieldIndex',
-        required = 1,
-        searchable = 1,
-        default_method = 'getNextWorksheetNumber',
-        widget = StringWidget(
-            label = _("Worksheet number"),
-            visible = False,
-        ),
-    ),
-    ComputedField('Owner',
-        expression = 'context.getOwnerUserID()',
-        widget = ComputedWidget(
-            label = _("Owner"),
-        ),
-    ),
-    ReferenceField('Analyses',
-        multiValued = 1,
-        allowed_types = ('Analysis',),
-        relationship = 'WorksheetAnalysis',
-        widget = ReferenceWidget(
-            label = _("Analyses"),
-            visible = False,
-        ),
-    ),
-    RecordsField('Layout',
-        required = 1,
-        subfields = ('pos', 'container', 'analyses'),
-    ),
-    TextField('Notes',
-        widget = TextAreaWidget(
-            label = _("Notes")
-        ),
+    HistoryAwareReferenceField('WorksheetTemplate',
+        allowed_types = ('WorksheetTemplate',),
+        relationship = 'WorksheetAnalysisTemplate',
     ),
     StringField('Analyser',
         vocabulary = 'getAnalysersDisplayList',
     ),
-    IntegerField('MaxPositions',
-        widget = IntegerWidget(
-            label = _("Maximum Positions Allowed"),
-            description = _("Maximum positions allowed on the worksheet"),
-        ),
+    ReferenceField('Analyses',
+        required = 1,
+        multiValued = 1,
+        allowed_types = ('Analysis',),
+        relationship = 'WorksheetAnalysis',
     ),
-    ComputedField('Status',
-        expression = 'context.getWorkflowState()',
-        widget = ComputedWidget(
-            visible = False,
-        )
+    ReferenceField('Layout',
+        required = 1,
+        multiValued = 1,
+        allowed_types = ('AnalysisRequest','Worksheet','ReferenceSample'),
+        relationship = 'WorksheetAnalysisContainer',
     ),
+    TextField('Notes'),
+    IntegerField('MaxPositions'),
 ),
 )
 
@@ -81,37 +53,39 @@ class Worksheet(BaseFolder):
     schema = schema
 
     def Title(self):
-        """ Return the Number as title """
-        return self.getNumber()
+        return self.id
 
     def getFolderContents(self, contentFilter):
-        # The folder listing machine passes contentFilter to all
+        # The bika_listing machine passes contentFilter to all
         # contentsMethod methods.  We ignore it.
         return self.getAnalyses()
 
-    security.declareProtected(View, 'getOwnerUserID')
-    def getOwnerUserID(self):
-        """ Return the owner's user id """
-        owner_tuple = self.getOwnerTuple()
-        return owner_tuple[1]
 
-    def getNextWorksheetNumber(self):
-        """ return the next worksheet number """
-        return self.getId()
 
-    security.declareProtected(View, 'getWorkflowState')
-    def getWorkflowState(self):
-        """ compute our own workflow state """
-        wf_tool = getToolByName(self, 'portal_workflow')
-        return wf_tool.getInfoFor(self, 'review_state', '')
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     def getInstrumentExports(self):
         """ return the possible instrument export formats """
         return INSTRUMENT_EXPORTS
 
     def instrument_export_form(self, REQUEST, RESPONSE):
-      """ Redirect to the instrument export form template """
-      RESPONSE.redirect('%s/instrument_export' % self.absolute_url())
+        """ Redirect to the instrument export form template """
+        RESPONSE.redirect('%s/instrument_export' % self.absolute_url())
 
     def exportAnalyses(self, REQUEST = None, RESPONSE = None):
         """ Export analyses from this worksheet """
@@ -147,28 +121,22 @@ class Worksheet(BaseFolder):
         """
         return self.worksheet_search_analysis(
             REQUEST = REQUEST, RESPONSE = RESPONSE,
-            template_id = 'worksheet_analyses')
-
+            template_id = 'manage_results')
 
     security.declareProtected(AddAndRemoveAnalyses, 'assignNumberedAnalyses')
-    def assignNumberedAnalyses(self, REQUEST = None, RESPONSE = None, Analyses = []):
+    def assignNumberedAnalyses(self, analyses):
         """ assign selected analyses to worksheet
             Analyses = [(pos, uid),]
         """
-        analyses = []
-        analysis_seq = []
-        if Analyses:
-            for pos_uid in Analyses:
-                pos = pos_uid[0]
-                uid = pos_uid[1]
-                self._assignAnalyses([uid, ])
-                self._addToSequence('a', pos, [uid, ])
+        for pos_uid in analyses:
+            pos = pos_uid[0]
+            uid = pos_uid[1]
+            self._assignAnalyses([uid, ])
+            self._addToSequence('a', pos, [uid, ])
 
-            message = self.translate('message_analyses_assigned', default = 'Analyses assigned', domain = 'bika')
-            utils = getToolByName(self, 'plone_utils')
-            utils.addPortalMessage(message, type = u'info')
-        if REQUEST:
-            RESPONSE.redirect('%s/worksheet_analyses' % self.absolute_url())
+        message = self.translate('message_analyses_assigned', default = 'Analyses assigned', domain = 'bika')
+        utils = getToolByName(self, 'plone_utils')
+        utils.addPortalMessage(message, type = u'info')
 
     security.declareProtected(AddAndRemoveAnalyses, 'assignUnnumberedAnalyses')
     def assignUnnumberedAnalyses(self, REQUEST = None, RESPONSE = None, Analyses = []):
@@ -186,7 +154,7 @@ class Worksheet(BaseFolder):
             utils = getToolByName(self, 'plone_utils')
             utils.addPortalMessage(message, type = u'info')
         if REQUEST:
-            RESPONSE.redirect('%s/worksheet_analyses' % self.absolute_url())
+            RESPONSE.redirect('%s/manage_results' % self.absolute_url())
 
     def _assignAnalyses(self, Analyses = []):
         """ assign selected analyses to worksheet
@@ -200,9 +168,7 @@ class Worksheet(BaseFolder):
                 workflow.doActionFor(analysis, 'assign')
                 assigned.append(uid)
 
-            assigned = assigned + self.getAnalyses()
-
-            self.setAnalyses(assigned)
+            self.setAnalyses(self.getAnalyses() + assigned)
 
     security.declareProtected(AddAndRemoveAnalyses, 'deleteAnalyses')
     def deleteAnalyses(self, REQUEST, RESPONSE, Analyses = []):
@@ -265,7 +231,7 @@ class Worksheet(BaseFolder):
 
         self._removeFromSequence(Analyses)
 
-        RESPONSE.redirect('%s/worksheet_analyses' % self.absolute_url())
+        RESPONSE.redirect('%s/manage_results' % self.absolute_url())
 
     def addWSAttachment(self, REQUEST = None, RESPONSE = None):
         """ Add the file as an attachment
@@ -324,7 +290,7 @@ class Worksheet(BaseFolder):
                 analysis.setAttachment(attachments)
 
         if RESPONSE:
-            RESPONSE.redirect('%s/worksheet_analyses' % self.absolute_url())
+            RESPONSE.redirect('%s/manage_results' % self.absolute_url())
 
     security.declareProtected(ManageResults, 'submitResults')
     def submitResults(self, analyser = None, results = {}, Notes = None, REQUEST = None, RESPONSE = None):
@@ -461,7 +427,7 @@ class Worksheet(BaseFolder):
         # self.setLayout(worksheet_seq)
 
         if RESPONSE:
-            RESPONSE.redirect('%s/worksheet_analyses' % self.absolute_url())
+            RESPONSE.redirect('%s/manage_results' % self.absolute_url())
 
     security.declarePublic('addBlankAnalysis')
     def addBlankAnalysis(self, REQUEST, RESPONSE):
@@ -470,7 +436,7 @@ class Worksheet(BaseFolder):
 
         return self.worksheet_add_blank(
             REQUEST = REQUEST, RESPONSE = RESPONSE,
-            template_id = 'worksheet_analyses')
+            template_id = 'manage_results')
 
     def getAllAnalyses(self, contentFilter = None):
         """ get all the analyses of different types linked to this WS
@@ -568,47 +534,44 @@ class Worksheet(BaseFolder):
         """
         return self.worksheet_add_duplicate(
             REQUEST = REQUEST, RESPONSE = RESPONSE,
-            template_id = 'worksheet_analyses')
+            template_id = 'manage_results')
 
     security.declareProtected(AddAndRemoveAnalyses, 'assignDuplicate')
     def assignDuplicate(self, AR = None, Position = None, Service = [], REQUEST = None, RESPONSE = None):
         """ assign selected analyses to worksheet
         """
         if not AR or not Position or not Service:
-            message = self.translate('message_no_dup_assigned', default = 'No duplicate analysis assigned', domain = 'bika')
+            message = self.translate('message_no_dup_assigned',
+                                     default = 'No duplicate analysis assigned',
+                                     domain = 'bika')
         else:
             rc = getToolByName(self, REFERENCE_CATALOG)
+            wf = getToolByName(self, 'portal_workflow')
+
             ar = rc.lookupObject(AR)
             duplicates = []
             for service_uid in Service:
                 service = rc.lookupObject(service_uid)
-                service_id = service.getId()
+                service_id = service.getKeyword()
                 analysis = ar[service_id]
                 duplicate_id = self.generateUniqueId('DuplicateAnalysis')
-                self.invokeFactory(id = duplicate_id, type_name = 'DuplicateAnalysis')
-                duplicate = self._getOb(duplicate_id)
-                duplicate.edit(
-                    Request = ar,
-                    Service = service,
-                    Unit = analysis.getUnit(),
-                    Uncertainty = analysis.getUncertainty(),
-                    CalcType = analysis.getCalcType(),
-                    ServiceUID = service.UID(),
-                    WorksheetUID = self.UID()
-                )
+                self.invokeFactory('DuplicateAnalysis', id = duplicate_id)
+                duplicate = self[duplicate_id]
+                duplicate.setAnalysis(analysis)
                 duplicate.processForm()
-                duplicate.reindexObject()
+                wf.doActionFor(duplicate, 'assign')
                 duplicates.append(duplicate.UID())
 
             self._addToSequence('d', int(Position), duplicates)
 
-            message = self.translate('message_dups_assigned', default = 'Duplicate analyses assigned', domain = 'bika')
+            message = self.translate('message_dups_assigned',
+                                     default = 'Duplicate analyses assigned',
+                                     domain = 'bika')
 
-        utils = getToolByName(self, 'plone_utils')
-        utils.addPortalMessage(message, type = u'info')
+        self.plone_utils.addPortalMessage(message)
 
         if REQUEST:
-            RESPONSE.redirect('%s/worksheet_analyses' % self.absolute_url())
+            RESPONSE.redirect('%s/manage_results' % self.absolute_url())
 
     security.declarePublic('addControlAnalysis')
     def addControlAnalysis(self, REQUEST, RESPONSE):
@@ -616,7 +579,7 @@ class Worksheet(BaseFolder):
         """
         return self.worksheet_add_control(
             REQUEST = REQUEST, RESPONSE = RESPONSE,
-            template_id = 'worksheet_analyses')
+            template_id = 'manage_results')
 
     security.declareProtected(AddAndRemoveAnalyses, 'assignReference')
     def assignReference(self, Reference = None, Position = None, Type = None, Service = [], REQUEST = None, RESPONSE = None):
@@ -650,7 +613,7 @@ class Worksheet(BaseFolder):
         utils.addPortalMessage(message, type = u'info')
 
         if REQUEST:
-            RESPONSE.redirect('%s/worksheet_analyses' % self.absolute_url())
+            RESPONSE.redirect('%s/manage_results' % self.absolute_url())
 
     security.declareProtected(ManageWorksheets, 'resequenceWorksheet')
     def resequenceWorksheet(self, REQUEST = None, RESPONSE = None):
@@ -701,7 +664,7 @@ class Worksheet(BaseFolder):
             seqno += 1
 
         self.setLayout(new_seq)
-        RESPONSE.redirect('%s/worksheet_analyses' % self.absolute_url())
+        RESPONSE.redirect('%s/manage_results' % self.absolute_url())
 
     def _addToSequence(self, type, position, analyses):
         """ Layout is [{'uid': , 'type': , 'pos', 'key'},] """
@@ -766,339 +729,6 @@ class Worksheet(BaseFolder):
                 new_seq.append(pos)
 
         self.setLayout(new_seq)
-
-
-    def manage_beforeDelete(self, item, container):
-        """ retract all analyses before deleting worksheet """
-        wf_tool = self.portal_workflow
-        for analysis in self.getAnalyses():
-            review_state = wf_tool.getInfoFor(
-                analysis, 'review_state', '')
-            if review_state == 'assigned':
-                wf_tool.doActionFor(analysis, 'retract')
-            analysis._assigned_to_worksheet = False
-
-        for std_analysis in self.getReferenceAnalyses():
-            review_state = wf_tool.getInfoFor(
-                std_analysis, 'review_state', '')
-            if review_state != 'assigned':
-                wf_tool.doActionFor(std_analysis, 'retract')
-            wf_tool.doActionFor(std_analysis, 'unassign')
-
-        """ AVS - leave reference analyses on Reference Sample?
-        std_samples = []
-        std_analyses = {}
-        for std_analysis in self.getReferenceAnalyses():
-            parent_uid = std_analysis.aq_parent.UID()
-            if not std_analyses.has_key(parent_uid):
-                std_samples.append(std_analysis.aq_parent)
-                std_analyses[parent_uid] = []
-
-            std_analyses[parent_uid].append(std_analysis.getID())
-
-        for std_sample in std_samples:
-            std_sample.manage_delObjects(std_analyses[std_sample.getId()])
-        """
-
-        del_ids = [dup.getId() for dup in self.objectValues('DuplicateAnalysis')]
-        self.manage_delObjects(del_ids)
-
-
-        del_ids = [rej.getId() for rej in self.objectValues('RejectAnalysis')]
-        self.manage_delObjects(del_ids)
-
-        BaseFolder.manage_beforeDelete(self, item, container)
-
-
-    def workflow_script_submit(self, state_info):
-        """ submit sample """
-        #XXX All this workflow stuff must get taken out eventually
-
-        if getattr(self, '_escalating_workflow_action', None):
-            return
-
-        wf_tool = self.portal_workflow
-        for analysis in self.getAnalyses():
-            review_state = wf_tool.getInfoFor(
-                analysis, 'review_state', '')
-            if review_state == 'published':
-                continue
-            if review_state == 'assigned':
-                wf_tool.doActionFor(analysis, 'submit')
-                analysis.reindexObject()
-
-
-
-        for std_analysis in self.getReferenceAnalyses():
-            review_state = wf_tool.getInfoFor(
-                std_analysis, 'review_state', '')
-            if review_state == 'assigned':
-                wf_tool.doActionFor(std_analysis, 'submit')
-                std_analysis.reindexObject()
-
-        duplicates = self.objectValues('DuplicateAnalysis')
-        for duplicate in duplicates:
-            review_state = wf_tool.getInfoFor(
-                duplicate, 'review_state', '')
-            if review_state == 'assigned':
-                wf_tool.doActionFor(duplicate, 'submit')
-                duplicate.reindexObject()
-
-
-    def workflow_script_verify(self, state_info):
-        """ verify sample """
-        if getattr(self, '_escalating_workflow_action', None):
-            return
-
-        wf_tool = self.portal_workflow
-        for analysis in self.getAnalyses():
-            review_state = wf_tool.getInfoFor(
-                analysis, 'review_state', '')
-            if review_state == 'published':
-                continue
-            if review_state == 'to_be_verified':
-                wf_tool.doActionFor(analysis, 'verify')
-                analysis.reindexObject()
-
-        for std_analysis in self.getReferenceAnalyses():
-            review_state = wf_tool.getInfoFor(
-                std_analysis, 'review_state', '')
-            if review_state == 'to_be_verified':
-                wf_tool.doActionFor(std_analysis, 'verify')
-                std_analysis.reindexObject()
-
-        duplicates = self.objectValues('DuplicateAnalysis')
-        for duplicate in duplicates:
-            review_state = wf_tool.getInfoFor(
-                duplicate, 'review_state', '')
-            if review_state == 'to_be_verified':
-                wf_tool.doActionFor(duplicate, 'verify')
-                duplicate.reindexObject()
-
-
-    def workflow_script_reject(self, state_info):
-        """ reject sample  """
-        """
-            copy real analyses to RejectAnalysis, with link to real
-            create a new worksheet, with the original analyses, and new
-            duplicates and references to match the rejected
-            worksheet.
-        """
-        utils = getToolByName(self, 'plone_utils')
-        # create a new worksheet
-
-        wf_tool = self.portal_workflow
-        seq = self.getLayout()
-        new_dict = {}
-        for item in seq:
-            new_dict[item['uid']] = item['pos']
-        sequence = []
-        new_sequence = []
-
-        # analyses
-        analyses = self.getAnalyses()
-        new_ws_analyses = []
-        old_ws_analyses = []
-        for analysis in analyses:
-            position = new_dict[analysis.UID()]
-            review_state = wf_tool.getInfoFor(
-                analysis, 'review_state', '')
-            if review_state in ['published', 'verified']:
-                old_ws_analyses.append(analysis.UID())
-                sequence.append({'pos': position,
-                                 'type':'a',
-                                 'uid':analysis.UID(),
-                                 'key':analysis.getRequestID()})
-            else:
-                new_ws_analyses.append(analysis.UID())
-                reject_id = self.generateUniqueId('RejectAnalysis')
-                self.invokeFactory(id = reject_id, type_name = 'RejectAnalysis')
-                reject = self._getOb(reject_id)
-                reject.edit(
-                    Service = analysis.getService(),
-                    Request = analysis.aq_parent,
-                    Unit = analysis.getUnit(),
-                    Result = analysis.getResult(),
-                    Retested = analysis.getRetested(),
-                    Uncertainty = analysis.getUncertainty(),
-                    CalcType = analysis.getCalcType(),
-                    InterimCalcs = analysis.getInterimCalcs(),
-                )
-                reject.processForm()
-                reject.reindexObject()
-                analysis.edit(
-                    Result = None,
-                    Retested = True,
-                    InterimCalcs = None,
-                )
-                analysis.reindexObject()
-                keyvalue = analysis.getRequestID()
-                new_sequence.append({'pos': position,
-                                     'type':'a',
-                                     'uid':analysis.UID(),
-                                     'key':keyvalue})
-                sequence.append({'pos': position,
-                                 'type':'r',
-                                 'uid':reject.UID(),
-                                 'key':''})
-
-        self.setAnalyses(old_ws_analyses)
-
-        worksheets = self.aq_parent
-        new_ws_id = worksheets.generateUniqueId('Worksheet')
-        worksheets.invokeFactory(id = new_ws_id, type_name = 'Worksheet')
-        new_ws = worksheets[new_ws_id]
-        new_ws.edit(
-            Number = new_ws_id,
-            Notes = self.getNotes(),
-            Analyses = new_ws_analyses,
-            LinkedWorksheet = self.UID()
-        )
-
-        current_links = self.getLinkedWorksheet()
-        new_links = []
-        new_links.append(new_ws.UID())
-        for link in current_links:
-            new_links.append(link.UID())
-        self.setLinkedWorksheet(new_links)
-
-        # Reference analyses
-        assigned = []
-        std_analyses = self.getReferenceAnalyses()
-        for std_analysis in std_analyses:
-            service_uid = std_analysis.getService().UID()
-            reference = std_analysis.aq_parent
-            reference_type = std_analysis.getReferenceType()
-            new_std_uid = reference.addReferenceAnalysis(service_uid, reference_type)
-            assigned.append(new_std_uid)
-            position = new_dict[std_analysis.UID()]
-            sequence.append({'pos': position,
-                             'type':reference_type,
-                             'uid':std_analysis.UID(),
-                             'key':''})
-            new_sequence.append({'pos': position,
-                                 'type':reference_type,
-                                 'uid':new_std_uid,
-                                 'key':''})
-
-            wf_tool.doActionFor(std_analysis, 'reject')
-            std_analysis.reindexObject()
-            new_ws.setReferenceAnalyses(assigned)
-        new_ws = processForm()
-
-        # duplicates
-        duplicates = self.objectValues('DuplicateAnalysis')
-        for duplicate in duplicates:
-            ar = duplicate.getRequest()
-            service = duplicate.getService()
-            duplicate_id = new_ws.generateUniqueId('DuplicateAnalysis')
-            new_ws.invokeFactory(id = duplicate_id, type_name = 'DuplicateAnalysis')
-            new_duplicate = new_ws._getOb(duplicate_id)
-            new_duplicate.edit(
-                Request = ar,
-                Service = service,
-                Unit = duplicate.getUnit(),
-                CalcType = duplicate.getCalcType(),
-            )
-            new_duplicate.processForm()
-            new_duplicate.reindexObject()
-            position = new_dict[duplicate.UID()]
-            sequence.append({'pos': position,
-                             'type':'d',
-                             'uid':duplicate.UID(),
-                             'key':''})
-            new_sequence.append({'pos': position,
-                                 'type':'d',
-                                 'uid':new_duplicate.UID(),
-                                 'key':''})
-
-            wf_tool.doActionFor(duplicate, 'reject')
-            duplicate.reindexObject()
-
-        new_ws.setLayout(new_sequence)
-        self.setLayout(sequence)
-
-        for analysis in new_ws.getAnalyses():
-            review_state = wf_tool.getInfoFor(
-                analysis, 'review_state', '')
-            if review_state == 'to_be_verified':
-                wf_tool.doActionFor(analysis, 'retract')
-                analysis.reindexObject()
-
-#        transaction_note('New worksheet created: %s' % (new_ws_id))
-        message = self.translate('message_new_worksheet', default = 'New worksheet ${ws} has been created', mapping = {'ws': new_ws_id}, domain = 'bika')
-        utils.addPortalMessage(message, type = u'info')
-
-
-    def workflow_script_retract(self, state_info):
-        """ retract sample """
-        if getattr(self, '_escalating_workflow_action', None):
-            return
-
-        wf_tool = self.portal_workflow
-        for analysis in self.getAnalyses():
-            review_state = wf_tool.getInfoFor(
-                analysis, 'review_state', '')
-            if review_state == 'published':
-                continue
-            if review_state in ('to_be_verified', 'verified'):
-                wf_tool.doActionFor(analysis, 'retract')
-                analysis.reindexObject()
-
-        for std_analysis in self.getReferenceAnalyses():
-            review_state = wf_tool.getInfoFor(
-                std_analysis, 'review_state', '')
-            if review_state in ('to_be_verified', 'verified'):
-                wf_tool.doActionFor(std_analysis, 'retract')
-                std_analysis.setDateVerified(None)
-                std_analysis.reindexObject()
-
-        duplicates = self.objectValues('DuplicateAnalysis')
-        for duplicate in duplicates:
-            review_state = wf_tool.getInfoFor(
-                duplicate, 'review_state', '')
-            if review_state in ('to_be_verified', 'verified'):
-                wf_tool.doActionFor(duplicate, 'retract')
-                duplicate.setDateVerified(None)
-                duplicate.reindexObject()
-
-
-
-    def _escalateWorkflowAction(self):
-        """ if all analyses have transitioned to next state then our
-            state must change too
-        """
-        self._escalating_workflow_action = 1
-        wf_tool = self.portal_workflow
-        analyses_states = {}
-        for analysis in self.getAllAnalyses():
-            review_state = wf_tool.getInfoFor(analysis, 'review_state', '')
-            analyses_states[review_state] = 1
-
-        # build a state to transition map
-        transitions = wf_tool.getTransitionsFor(self)
-        workflow = wf_tool.getWorkflowById('bika_worksheet_workflow')
-        # make a map of transitions
-        transition_map = {}
-        for t in transitions:
-            transition = workflow.transitions.get(t['id'])
-            transition_map[transition.new_state_id] = transition.id
-
-        state_map = {'assigned': 'open', 'published': 'verified'}
-        worksheet_state = wf_tool.getInfoFor(self, 'review_state', '')
-        # change the Worksheet to the lowest possible state
-        for state_id in ('assigned', 'to_be_verified', 'verified',
-                         'published'):
-            if analyses_states.has_key(state_id):
-                state_id = state_map.get(state_id, state_id)
-                if worksheet_state == state_id:
-                    break
-                elif transition_map.has_key(state_id):
-                    wf_tool.doActionFor(self,
-                        transition_map.get(state_id))
-                    break
-
-        del self._escalating_workflow_action
 
     security.declarePublic('current_date')
     def current_date(self):

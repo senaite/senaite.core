@@ -41,7 +41,7 @@
                   acquired="False">
   </permission-map>
  </state>
- 
+
  
  <transition transition_id="receive" title="Receive"
              new_state="received" trigger="USER"

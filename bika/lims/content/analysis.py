@@ -198,30 +198,29 @@ class Analysis(BaseContent):
             return '1' if in shoulder
         """
 
-        if specification == "client":
-            client_uid = self.getClientUID()
-        else:
-            client_uid = None
+        client_uid = specification == "client" and self.getClientUID() or None
 
         result = result and result or self.getResult()
 
+        # if it is not a number we assume it is in range
         try:
             result = float(str(result))
-        except:
-            # if it is not a number we assume it is in range
+        except ValueError:
             return True
 
         service = self.getService()
         keyword = service.getKeyword()
-
         sampletype = self.aq_parent.getSample().getSampleType()
+        sampletype_uid = sampletype and sampletype.UID() or ''
+
         proxies = self.portal_catalog(portal_type = 'AnalysisSpec',
-                                      getSampleTypeUID = sampletype and sampletype.UID() or '')
+                                      getSampleTypeUID = sampletype_uid)
         a = [p for p in proxies if p.getObject().getClientUID() == client_uid]
         if a:
             spec_obj = a[0].getObject()
             spec = spec_obj.getResultsRangeDict()
         else:
+            # if no range is specified we assume it is in range
             return True
 
         if spec.has_key(keyword):
@@ -241,38 +240,6 @@ class Analysis(BaseContent):
         else:
             return True
         return False
-
-##
-##        elif analysis.portal_type == 'DuplicateAnalysis':
-##            service = analysis.getService()
-##            service_id = service.getId()
-##            service_uid = service.UID()
-##            wf_tool = self.context.portal_workflow
-##            if wf_tool.getInfoFor(analysis, 'review_state', '') == 'rejected':
-##                ws_uid = self.context.UID()
-##                for orig in self.context.portal_catalog(portal_type = 'RejectAnalysis',
-##                                                        getWorksheetUID = ws_uid,
-##                                                        getServiceUID = service_uid):
-##                    orig_analysis = orig.getObject()
-##                    if orig_analysis.getRequest().getRequestID() == analysis.getRequest().getRequestID():
-##                        break
-##            else:
-##                ar = analysis.getRequest()
-##                orig_analysis = ar[service_id]
-##            orig_result = orig_analysis.getResult()
-##            try:
-##                orig_result = float(orig_result)
-##            except ValueError:
-##                return ''
-##            dup_variation = service.getDuplicateVariation()
-##            dup_variation = dup_variation and dup_variation or 0
-##            range_min = result - (result * dup_variation / 100)
-##            range_max = result + (result * dup_variation / 100)
-##            if range_min <= orig_result <= range_max:
-##                result_class = ''
-##            else:
-##                result_class = 'out_of_range'
-
 
     security.declarePublic('getWorksheet')
     def getWorksheet(self):

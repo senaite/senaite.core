@@ -333,9 +333,9 @@ class BikaListingView(BrowserView):
                 state_title = None
             for state_var,state in states.items():
                 if not state_title:
-                    state_title = workflow.getTitleForStateOnType(state,
-                                                                  obj.portal_type)[0],
-                results_dict[state_var] = state
+                    state_title = workflow.getTitleForStateOnType(
+                        state, obj.portal_type)
+                results_dict[state_var] = state_var
             results_dict['state_title'] = state_title
 
             # XXX debug - add history_id column

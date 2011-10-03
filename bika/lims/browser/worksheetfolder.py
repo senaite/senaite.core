@@ -22,35 +22,35 @@ class WorksheetFolderView(BikaListingView):
     pagesize = 50
 
     columns = {
-           'getNumber': {'title': _('Worksheet Number')},
-           'getOwnerUserID': {'title': _('Username')},
+           'Title': {'title': _('Worksheet Number')},
+           'Owner': {'title': _('Username')},
            'CreationDate': {'title': _('Creation Date')},
            'state_title': {'title': _('State')},
           }
     review_states = [
                 {'title': _('All'), 'id':'all',
-                 'columns':['getNumber',
-                            'getOwnerUserID',
+                 'columns':['Title',
+                            'Owner',
                             'CreationDate',
                             'state_title']},
                 {'title': _('Worksheet Open'), 'id':'open',
-                 'columns':['getNumber',
-                            'getOwnerUserID',
+                 'columns':['Title',
+                            'Owner',
                             'CreationDate',
                             'state_title']},
                 {'title': _('To Be Verified'), 'id':'to_be_verified',
-                 'columns':['getNumber',
-                            'getOwnerUserID',
+                 'columns':['Title',
+                            'Owner',
                             'CreationDate',
                             'state_title']},
                 {'title': _('Verified'), 'id':'verified',
-                 'columns':['getNumber',
-                            'getOwnerUserID',
+                 'columns':['Title',
+                            'Owner',
                             'CreationDate',
                             'state_title']},
                 {'title': _('Rejected'), 'id':'rejected',
-                 'columns':['getNumber',
-                            'getOwnerUserID',
+                 'columns':['Title',
+                            'Owner',
                             'CreationDate',
                             'state_title'],
                  'buttons':[{'cssclass': 'context',
@@ -67,11 +67,11 @@ class WorksheetFolderView(BikaListingView):
         for x in range(len(items)):
             if not items[x].has_key('obj'): continue
             obj = items[x]['obj']
-            items[x]['getNumber'] = obj.getNumber()
-            items[x]['getOwnerUserID'] = obj.getOwnerUserID()
+            items[x]['Title'] = obj.Title()
+            items[x]['Owner'] = obj.getOwnerTuple()[1]
             items[x]['CreationDate'] = obj.CreationDate() and \
                  self.context.toLocalizedTime(obj.CreationDate(), long_format = 0) or ''
-            items[x]['replace']['getNumber'] = "<a href='%s'>%s</a>" % \
-                 (items[x]['url'], items[x]['getNumber'])
+            items[x]['replace']['Title'] = "<a href='%s'>%s</a>" % \
+                 (items[x]['url'], items[x]['Title'])
 
         return items

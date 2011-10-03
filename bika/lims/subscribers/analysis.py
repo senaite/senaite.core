@@ -9,6 +9,12 @@ import transaction
 
 def ObjectInitializedEventHandler(analysis, event):
 
+    # This handler fires for DuplicateAnalysis because
+    # DuplicateAnalysis also provides IAnalysis.
+    # DuplicateAnalysis doesn't have analysis_workflow.
+    if analysis.portal_type == "DuplicateAnalysis":
+        return
+
     logger.info("ObjectInitialized: %s" % analysis.getService().getKeyword())
 
     # 'receive' analysis if AR is received.
@@ -412,9 +418,8 @@ def ActionSucceededEventHandler(analysis, event):
         rc = getToolByName(analysis, 'reference_catalog')
         wsUID = analysis.REQUEST['context_uid']
         ws = rc.lookupObject(wsUID)
-        ass = ws.getAnalyses()
-        ass = ass + [analysis, ]
-        ws.setAnalyses(ass)
+        ws.setAnalyses(
+            ws.getAnalyses() + [analysis,])
         #XXX Do something about layout.
         #XXX randomly setting Analyser here because it's not on the screen yet.
         ws.setAnalyser('fred')

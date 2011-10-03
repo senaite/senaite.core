@@ -81,18 +81,23 @@ class AnalysesView(BikaListingView):
             # calculate specs - they are stored in an attribute on each row
             # so that selecting lab/client ranges can re-calculate in javascript
             # calculate specs for every analysis, since they may
-            # all be for different sample types
-            # worksheet.  XXX Should be like a generalized review_state_filter
+            # all be for different sample types (worksheet manage results)
             specs = {'client':{}, 'lab':{}}
             if obj.portal_type != 'ReferenceAnalysis':
                 if self.context.portal_type == 'AnalysisRequest':
                     sample = self.context.getSample()
                     proxies = pc(portal_type = 'AnalysisSpec',
                         getSampleTypeUID = sample.getSampleType().UID())
-                else:
-                    sample = obj.aq_parent.getSample()
+                elif self.context.portal_type == "Worksheet":
+                    if obj.portal_type == "DuplicateAnalysis":
+                        sample = obj.getAnalysis().getSample()
+                    else:
+                        sample = obj.aq_parent.getSample()
                     proxies = pc(portal_type = 'AnalysisSpec',
                         getSampleTypeUID = sample.getSampleType().UID())
+                else:
+                    logger.log("Failed to get specs for %s" % self.context)
+                    proxies = []
                 for spec in proxies:
                     spec = spec.getObject()
                     client_or_lab = ""
@@ -205,15 +210,13 @@ class AnalysesView(BikaListingView):
                 items[i][f['keyword']] = f
 
             # check if this analysis is late/overdue
-            if (not calculation or (calculation and not calculation.getDependentServices())) and \
-               items[i]['review_state'] not in ['sample_due', 'published'] and \
-               items[i]['DueDate'] < DateTime():
-                DueDate = self.context.toLocalizedTime(
-                    item['DueDate'], long_format = 1)
-                items[i]['after']['Service'] = \
-                    '<img width="16" height="16" ' + \
-                    'src="%s/++resource++bika.lims.images/late.png" title="%s"/>' % \
-                    (portal.absolute_url(), _("Due Date: ") + DueDate)
+            if items[i]['obj'].portal_type != "DuplicateAnalysis":
+                if (not calculation or (calculation and not calculation.getDependentServices())) and \
+                   items[i]['review_state'] not in ['sample_due', 'published'] and \
+                   items[i]['DueDate'] < DateTime():
+                    DueDate = self.context.toLocalizedTime(item['DueDate'], long_format = 1)
+                    items[i]['after']['Service'] = '<img width="16" height="16" src="%s/++resource++bika.lims.images/late.png" title="%s"/>' % \
+                        (portal.absolute_url(), _("Due Date: ") + DueDate)
 
             # add icon for assigned analyses in AR views
             if self.context.portal_type == 'AnalysisRequest' and \

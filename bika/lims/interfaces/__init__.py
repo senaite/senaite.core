@@ -19,6 +19,9 @@ class IAnalysisRequest(Interface):
 class IAnalysis(Interface):
     """Analysis"""
 
+class IDuplicateAnalysis(Interface):
+    """DuplicateAnalysis"""
+
 class ISample(Interface):
     """Sample"""
 

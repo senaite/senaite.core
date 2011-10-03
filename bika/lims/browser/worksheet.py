@@ -1,15 +1,16 @@
 from DateTime import DateTime
 from DocumentTemplate import sequence
+from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import bikaMessageFactory as _
-from bika.lims.browser.bika_listing import BikaListingView
-from Products.CMFCore.WorkflowCore import WorkflowException
-from bika.lims.interfaces import IWorksheet
-from bika.lims.browser.bika_listing import WorkflowAction
 from bika.lims.browser.analyses import AnalysesView
+from bika.lims.browser.bika_listing import BikaListingView
+from bika.lims.browser.bika_listing import WorkflowAction
+from bika.lims.interfaces import IWorksheet
 from bika.lims.utils import TimeOrDate
+from operator import itemgetter
 from plone.app.content.browser.interfaces import IFolderContentsView
 from zope.app.component.hooks import getSite
 from zope.component import getMultiAdapter
@@ -94,139 +95,136 @@ class WorksheetAddView(BrowserView):
         form = self.request.form
         rc = getToolByName(self.context, "reference_catalog")
         pc = getToolByName(self.context, "portal_catalog")
-        pu = getToolByName(self.context, "plone_utils")
+
         ws_id = self.context.generateUniqueId('Worksheet')
         self.context.invokeFactory(id = ws_id, type_name = 'Worksheet')
         ws = self.context[ws_id]
-        ws.edit(Number = ws_id)
+
+        # overwrite saved context UID for event subscribers
+        self.request['context_uid'] = ws.UID()
+
+        # if no template was specified, redirect to blank worksheet
+        if not form.has_key('wstemplate') or not form['wstemplate']:
+            ws.processForm()
+            self.request.RESPONSE.redirect(ws.absolute_url())
+
+        wst = rc.lookupObject(form['wstemplate'])
+        wstlayout = wst.getLayout()
+        services = wst.getService()
+        service_uids = [s.UID() for s in services]
+
+        count_a = count_b = count_c = count_d = 0
+        for row in wstlayout:
+            if row['type'] == 'a': count_a = count_a + 1
+            if row['type'] == 'b': count_b = count_b + 1
+            if row['type'] == 'c': count_c = count_c + 1
+            if row['type'] == 'd': count_d = count_d + 1
+
         analyses = []
-        analysis_uids = []
-        if form.has_key('wstemplate'):
-            if form['wstemplate'] != '':
-                wst = rc.lookupObject(form['wstemplate'])
+        selected = {} # ar.id : {analyses,services,uids}
+        ars = [] # for keeping track of order of ARs
 
-                layout = wst.getLayout()
-                services = wst.getService()
-                service_uids = [s.UID() for s in services]
+        # get the oldest analyses first
+        for a in pc(portal_type = 'Analysis',
+                    getServiceUID = service_uids,
+                    review_state = 'sample_received',
+                    worksheetanalysis_review_state = 'unassigned',
+                    sort_on = 'getDueDate'):
+            analysis = a.getObject()
+            ar = analysis.aq_parent
+            if not selected.has_key(ar.id):
+                if len(selected) < count_a:
+                    selected[ar.id] = {}
+                    selected[ar.id]['analyses'] = []
+                    selected[ar.id]['services'] = []
+                    ars.append(ar.id)
+                else:
+                    continue
+            selected[ar.id]['analyses'].append(analysis.UID())
+            selected[ar.id]['services'].append(analysis.getServiceUID())
 
-                count_a = 0
-                count_b = 0
-                count_c = 0
-                count_d = 0
-                for row in layout:
-                    if row['type'] == 'a': count_a = count_a + 1
-                    if row['type'] == 'b': count_b = count_b + 1
-                    if row['type'] == 'c': count_c = count_c + 1
-                    if row['type'] == 'd': count_d = count_d + 1
+        used_ars = {}
+        for row in wstlayout:
+            position = int(row['pos'])
+            if row['type'] == 'a':
+                if ars:
+                    ar = ars.pop(0)
+                    used_ars[position] = {}
+                    used_ars[position]['ar'] = ar.UID()
+                    used_ars[position]['serv'] = selected[ar]['services']
+                    for analysis in selected[ar]['analyses']:
+                        analyses.append((position, analysis))
+            if row['type'] in ['b', 'c']:
+                # XXX This doesn't seem to cater for b and c differently
+                ## select a reference sample for this slot
+                ## a) must be created from the same reference definition selected in ws template
+                ## b) takes the sample that handles all (or the most) services.
+                reference_definition_uid = row['sub']
+                references = {}
+                reference_found = False
+                for s in pc(portal_type = 'ReferenceSample',
+                            review_state = 'current',
+                            inactive_state = 'active',
+                            getReferenceDefinitionUID = reference_definition_uid):
+                    reference = s.getObject()
+                    reference_uid = reference.UID()
+                    references[reference_uid] = {}
+                    references[reference_uid]['services'] = []
+                    references[reference_uid]['count'] = 0
+                    specs = reference.getResultsRangeDict()
+                    for service_uid in service_uids:
+                        if specs.has_key(service_uid):
+                            references[reference_uid]['services'].append(service_uid)
+                            references[reference_uid]['count'] += 1
+                    if references[reference_uid]['count'] == len(service_uids):
+                        reference_found = True
+                        break
+                # reference_found this reference has all the services
+                if reference_found:
+                    ws.assignReference(Reference = reference_uid,
+                                       Position = position,
+                                       Type = row['type'],
+                                       Service = service_uids)
+                else:
+                    # find the reference with the most services
+                    these_services = service_uids
+                    reference_keys = references.keys()
+                    no_of_services = 0
+                    mostest = None
+                    for key in reference_keys:
+                        if references[key]['count'] > no_of_services:
+                            no_of_services = references[key]['count']
+                            mostest = key
+                    if mostest:
+                        ws.assignReference(
+                            Reference = mostest,
+                            Position = position,
+                            Type = row['type'],
+                            Service = references[mostest]['services'])
+        if analyses:
+            ws.assignNumberedAnalyses(analyses)
 
-                selected = {}
-                ars = []
-                analysis_services = []
-                # get the oldest analyses first
-                for a in pc(portal_type = 'Analysis',
-                            getServiceUID = service_uids,
-                            review_state = 'sample_received',
-                            worksheetanalysis_review_state = 'unassigned',
-                            sort_on = 'getDueDate'):
-                    analysis = a.getObject()
-                    ar = analysis.aq_parent
-                    if not selected.has_key(ar.id):
-                        if len(selected) < count_a:
-                            selected[ar.id] = {}
-                            selected[ar.id]['analyses'] = []
-                            selected[ar.id]['services'] = []
-                            selected[ar.id]['uid'] = ar.UID()
-                            ars.append(ar.id)
-                        else:
-                            continue
-                    selected[ar.id]['analyses'].append(analysis.UID())
-                    selected[ar.id]['services'].append(analysis.getServiceUID())
-
-                used_ars = {}
-                for row in layout:
+        if count_d:
+            for row in wstlayout:
+                if row['type'] == 'd':
                     position = int(row['pos'])
-                    if row['type'] == 'a':
-                        if ars:
-                            ar = ars.pop(0)
-                            used_ars[position] = {}
-                            used_ars[position]['ar'] = selected[ar]['uid']
-                            used_ars[position]['serv'] = selected[ar]['services']
-                            for analysis in selected[ar]['analyses']:
-                                analyses.append((position, analysis))
-                    if row['type'] in ['b', 'c']:
-                        ## select a reference sample for this slot
-                        ## a) must be created from the same reference definition selected in ws template
-                        ## b) takes the sample that handles all (or the most) services.
-                        reference_definition_uid = row['sub']
-                        references = {}
-                        reference_found = False
-                        for s in pc(portal_type = 'ReferenceSample',
-                                    review_state = 'current',
-                                    inactive_state = 'active',
-                                    getReferenceDefinitionUID = reference_definition_uid):
-                            reference = s.getObject()
-                            reference_uid = reference.UID()
-                            references[reference_uid] = {}
-                            references[reference_uid]['services'] = []
-                            references[reference_uid]['count'] = 0
-                            specs = reference.getResultsRangeDict()
-                            for service_uid in service_uids:
-                                if specs.has_key(service_uid):
-                                    references[reference_uid]['services'].append(service_uid)
-                                    references[reference_uid]['count'] += 1
-                            if references[reference_uid]['count'] == len(service_uids):
-                                reference_found = True
-                                break
-                        # reference_found this reference has all the services
-                        if reference_found:
-                            ws.assignReference(Reference = reference_uid,
-                                               Position = position,
-                                               Type = row['type'],
-                                               Service = service_uids)
-                        else:
-                            # find the reference with the most services
-                            these_services = service_uids
-                            reference_keys = references.keys()
-                            no_of_services = 0
-                            mostest = None
-                            for key in reference_keys:
-                                if references[key]['count'] > no_of_services:
-                                    no_of_services = references[key]['count']
-                                    mostest = key
-                            if mostest:
-                                ws.assignReference(
-                                    Reference = mostest,
-                                    Position = position,
-                                    Type = row['type'],
-                                    Service = references[mostest]['services'])
-                if analyses:
-                    ws.assignNumberedAnalyses(Analyses = analyses)
-
-                if count_d:
-                    for row in layout:
-                        if row['type'] == 'd':
-                            position = int(row['pos'])
-                            dup_pos = int(row['dup'])
-                            if used_ars.has_key(dup_pos):
-                                ws.assignDuplicate(
-                                    AR = used_ars[dup_pos]['ar'],
-                                    Position = position,
-                                    Service = used_ars[dup_pos]['serv'])
-
-                ws.setMaxPositions(len(layout))
-
+                    dup_pos = int(row['dup'])
+                    if used_ars.has_key(dup_pos):
+                        ws.assignDuplicate(
+                            AR = used_ars[dup_pos]['ar'],
+                            Position = position,
+                            Service = used_ars[dup_pos]['serv'])
+        ws.edit(MaxPositions = len(wstlayout))
         ws.processForm()
-        ws.reindexObject()
 
-        dest = ws.absolute_url()
-        self.request.RESPONSE.redirect(dest)
+        self.request.RESPONSE.redirect(ws.absolute_url())
 
 class WorksheetManageResultsView(AnalysesView):
 
     def __init__(self, context, request, allow_edit = False, **kwargs):
         super(WorksheetManageResultsView, self).__init__(context, request)
         self.contentFilter = {}
-        self.show_select_row = True
+        self.show_select_row = False
         self.show_sort_column = True
         self.allow_edit = True
 
@@ -234,7 +232,7 @@ class WorksheetManageResultsView(AnalysesView):
             'Pos': {'title': _('Pos')},
             'Client': {'title': _('Client')},
             'Order': {'title': _('Order')},
-            'RequestID': {'title': _('Request ID')},
+            'getRequestID': {'title': _('Request ID')},
             'DueDate': {'title': _('Due Date')},
             'Category': {'title': _('Category')},
             'Service': {'title': _('Analysis')},
@@ -249,7 +247,7 @@ class WorksheetManageResultsView(AnalysesView):
              'columns':['Pos',
                         'Client',
                         'Order',
-                        'RequestID',
+                        'getRequestID',
                         'DueDate',
                         'Category',
                         'Service',
@@ -270,7 +268,7 @@ class WorksheetManageResultsView(AnalysesView):
             service = obj.getService()
             items[x]['Category'] = service.getCategory().Title()
             ar = obj.aq_parent
-            items[x]['replace']['RequestID'] = "<a href='%s'>%s</a>" % \
+            items[x]['replace']['getRequestID'] = "<a href='%s'>%s</a>" % \
                  (ar.absolute_url(), ar.Title())
             client = ar.aq_parent
             items[x]['replace']['Client'] = "<a href='%s'>%s</a>" % \
@@ -290,30 +288,10 @@ class WorksheetManageResultsView(AnalysesView):
                     items[x]['after'] += '<img width="16" height="16" src="%s/++resource++bika.lims.images/control.png"/>' % \
                         (self.context.absolute_url())
 
+        items = sorted(items, key = itemgetter('getRequestID'))
+
         return items
 
-    def sort_analyses_on_requestid(self, analyses):
-        ## Script (Python) "sort_analyses_on_requestid"
-        ##bind container=container
-        ##bind context=context
-        ##bind namespace=
-        ##bind script=script
-        ##bind subpath=traverse_subpath
-        ##parameters=analyses
-        ##title=
-        ##
-        r = {}
-        for a in analyses:
-            ar_id = a.aq_parent.getRequestID()
-            l = r.get(ar_id, [])
-            l.append(a)
-            r[ar_id] = l
-        k = r.keys()
-        k.sort()
-        result = []
-        for ar_id in k:
-            result += r[ar_id]
-        return result
 
 class WorksheetAddAnalysisView(AnalysesView):
     def __init__(self, context, request):
@@ -411,13 +389,13 @@ class WorksheetAddBlankView(BikaListingView):
         for x in range(len(items)):
             if not items[x].has_key('obj'): continue
             obj = items[x]['obj']
-            items[x]['getNumber'] = obj.getNumber()
-            items[x]['getOwnerUserID'] = obj.getOwnerUserID()
+            items[x]['Title'] = obj.Title()
+            items[x]['Owner'] = obj.getOwnerTuple()[1]
             items[x]['CreationDate'] = obj.CreationDate() and \
                  self.context.toLocalizedTime(
                      obj.CreationDate(), long_format = 0) or ''
-            items[x]['replace']['getNumber'] = "<a href='%s'>%s</a>" % \
-                 (items[x]['url'], items[x]['getNumber'])
+            items[x]['replace']['Title'] = "<a href='%s'>%s</a>" % \
+                 (items[x]['url'], items[x]['Title'])
 
         return items
 
@@ -462,12 +440,12 @@ class WorksheetAddControlView(BikaListingView):
         for x in range(len(items)):
             if not items[x].has_key('obj'): continue
             obj = items[x]['obj']
-            items[x]['getNumber'] = obj.getNumber()
-            items[x]['getOwnerUserID'] = obj.getOwnerUserID()
+            items[x]['Title'] = obj.Title()
+            items[x]['Owner'] = obj.obj.getOwnerTuple()[1]
             items[x]['CreationDate'] = obj.CreationDate() and \
                  self.context.toLocalizedTime(obj.CreationDate(), long_format = 0) or ''
-            items[x]['replace']['getNumber'] = "<a href='%s'>%s</a>" % \
-                 (items[x]['url'], items[x]['getNumber'])
+            items[x]['replace']['Title'] = "<a href='%s'>%s</a>" % \
+                 (items[x]['url'], items[x]['Title'])
 
         return items
 
@@ -511,12 +489,12 @@ class WorksheetAddDuplicateView(BikaListingView):
         for x in range(len(items)):
             if not items[x].has_key('obj'): continue
             obj = items[x]['obj']
-            items[x]['getNumber'] = obj.getNumber()
-            items[x]['getOwnerUserID'] = obj.getOwnerUserID()
+            items[x]['Title'] = obj.Title()
+            items[x]['Owner'] = obj.obj.getOwnerTuple()[1]
             items[x]['CreationDate'] = obj.CreationDate() and \
                  self.context.toLocalizedTime(obj.CreationDate(), long_format = 0) or ''
-            items[x]['replace']['getNumber'] = "<a href='%s'>%s</a>" % \
-                 (items[x]['url'], items[x]['getNumber'])
+            items[x]['replace']['Title'] = "<a href='%s'>%s</a>" % \
+                 (items[x]['url'], items[x]['Title'])
 
         return items
 

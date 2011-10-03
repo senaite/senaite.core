@@ -76,5 +76,5 @@ class AJAX_SampleTypes():
         #values = pc.Indexes['getSampleTypeTitle'].uniqueValues()
         #items = term and [v for v in values if v.lower().find(term.lower()) > -1]
         ###
-        return json.dumps(items[:10])
+        return json.dumps(items)
 

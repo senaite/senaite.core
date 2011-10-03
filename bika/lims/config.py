@@ -52,7 +52,8 @@ TYPES_TO_VERSION = ('AnalysisService',
                     'Calculation',
                     'SamplePoint',
                     'SampleType',
-                    'AnalysisSpec'
+                    'AnalysisSpec',
+                    'WorksheetTemplate',
                     )
 
 BIKA_PERMISSIONS = (

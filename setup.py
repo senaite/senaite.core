@@ -29,10 +29,10 @@ setup(name='bika.lims',
           'Products.CMFEditions',
           'collective.subtractiveworkflow',
           'openpyxl',
-          'ore.contentmirror',
           'plone.app.iterate',
           'reportlab',
       ],
+#          'ore.contentmirror',
       extras_require = {
           'test': [
                   'plone.app.testing',

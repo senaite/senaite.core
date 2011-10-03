@@ -22,7 +22,6 @@ allow_module('AccessControl')
 
 def initialize(context):
 
-    from content.DuplicateAnalysis import DuplicateAnalysis
     from content.Invoice import Invoice
     from content.InvoiceBatch import InvoiceBatch
     from content.InvoiceFolder import InvoiceFolder
@@ -49,6 +48,7 @@ def initialize(context):
     from content.clientfolder import ClientFolder
     from content.contact import Contact
     from content.department import Department
+    from content.duplicateanalysis import DuplicateAnalysis
     from content.instrument import Instrument
     from content.labcontact import LabContact
     from content.laboratory import Laboratory
