@@ -12,7 +12,6 @@ schema = BikaSchema.copy() + Schema((
     StringField('InvoiceNumber',
         required = 1,
         default_method = 'getId',
-        index = 'FieldIndex',
         searchable = True,
         widget = StringWidget(
             label = _("Invoice number"),
@@ -27,7 +26,6 @@ schema = BikaSchema.copy() + Schema((
     DateTimeField('InvoiceDate',
         required = 1,
         default_method = 'current_date',
-        index = 'DateIndex',
         widget = DateTimeWidget(
             label = _("Date"),
         ),
@@ -59,14 +57,12 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     ComputedField('ClientUID',
-        index = 'FieldIndex',
         expression = 'here.getClient() and here.getClient().UID()',
         widget = ComputedWidget(
             visible = False,
         ),
     ),
     ComputedField('InvoiceSearchableText',
-        index = 'TextIndex',
         expression = 'here.getInvoiceSearchableText()',
         widget = ComputedWidget(
             visible = False,

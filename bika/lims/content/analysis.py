@@ -40,11 +40,9 @@ schema = BikaSchema.copy() + Schema((
         )
     ),
     ComputedField('ServiceUID',
-        index = 'FieldIndex:brains',
         expression = 'context.getService() and context.getService().UID() or ""',
     ),
     ComputedField('Category',
-        index = 'FieldIndex:brains',
         expression = 'context.getService() and context.getService().getCategoryName() or ""',
     ),
     ReferenceField('Attachment',
@@ -72,14 +70,12 @@ schema = BikaSchema.copy() + Schema((
         default = False,
     ),
     ComputedField('DateReceived',
-        index = 'FieldIndex:brains',
         expression = 'context.aq_parent.getDateReceived()',
         widget = ComputedWidget(
             visible = False,
         ),
     ),
     DateTimeField('DateAnalysisPublished',
-        index = 'DateIndex',
         widget = DateTimeWidget(
             label = _("Date published"),
         ),
@@ -92,19 +88,16 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     DateTimeField('DueDate',
-        index = 'DateIndex:brains',
         widget = DateTimeWidget(
             label = _("Due Date"),
         ),
     ),
     IntegerField('Duration',
-        index = 'FieldIndex',
         widget = IntegerWidget(
             label = _("Duration"),
         )
     ),
     IntegerField('Earliness',
-        index = 'FieldIndex',
         widget = IntegerWidget(
             label = _("Earliness"),
         )
@@ -113,18 +106,15 @@ schema = BikaSchema.copy() + Schema((
     ###
 
     ComputedField('ClientUID',
-        index = 'FieldIndex',
         expression = 'context.aq_parent.aq_parent.UID()',
     ),
     ComputedField('RequestID',
-        index = 'FieldIndex:brains',
         expression = 'context.aq_parent.getRequestID()',
         widget = ComputedWidget(
             visible = False,
         ),
     ),
     ComputedField('PointOfCapture',
-        index = 'FieldIndex',
         expression = 'context.getService() and context.getService().getPointOfCapture()',
         widget = ComputedWidget(
             visible = False,

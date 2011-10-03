@@ -13,7 +13,6 @@ from bika.lims import bikaMessageFactory as _
 schema = BaseSchema.copy() + Schema((
     DateTimeField('ChangeDate',
         default_method = 'current_date',
-        index = 'DateIndex'
     ),
     StringField('UserName',
         default_method = 'current_user'

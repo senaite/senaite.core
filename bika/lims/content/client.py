@@ -21,7 +21,6 @@ from bika.lims import bikaMessageFactory as _
 
 schema = Organisation.schema.copy() + atapi.Schema((
     atapi.StringField('ClientID',
-        index = 'FieldIndex:brains',
         searchable = True,
         widget = atapi.StringWidget(
             label = _("Client ID"),

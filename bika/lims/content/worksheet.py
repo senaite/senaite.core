@@ -1,11 +1,13 @@
 from DateTime import DateTime
 from AccessControl import ClassSecurityInfo
+from Products.ATContentTypes.lib.historyaware import HistoryAwareMixin
 from Products.CMFCore.permissions import ListFolderContents, View
 from Products.CMFCore.utils import getToolByName
 #from Products.CMFPlone import transaction_note
 from Products.Archetypes.public import *
 from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.Archetypes.Registry import registerField
+from bika.lims.browser.fields import HistoryAwareReferenceField
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.config import I18N_DOMAIN, INSTRUMENT_EXPORTS, PROJECTNAME
 from bika.lims.config import AddAndRemoveAnalyses, ManageResults, ManageWorksheets, ManageBika
@@ -46,7 +48,7 @@ TitleField = schema['title']
 TitleField.required = 0
 TitleField.widget.visible = {'edit': 'hidden', 'view': 'invisible'}
 
-class Worksheet(BaseFolder):
+class Worksheet(BaseFolder, HistoryAwareMixin):
     security = ClassSecurityInfo()
     implements(IWorksheet)
     archetype_name = 'Worksheet'
@@ -59,25 +61,6 @@ class Worksheet(BaseFolder):
         # The bika_listing machine passes contentFilter to all
         # contentsMethod methods.  We ignore it.
         return self.getAnalyses()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     def getInstrumentExports(self):
         """ return the possible instrument export formats """

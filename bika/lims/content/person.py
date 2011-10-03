@@ -38,7 +38,6 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     StringField('Username',
-        index = 'FieldIndex',
         widget = StringWidget(
             visible = False
         ),
@@ -52,7 +51,6 @@ schema = BikaSchema.copy() + Schema((
     ),
     StringField('BusinessPhone',
         schemata = 'Email Telephone Fax',
-        index = "FieldIndex:Brains",
         widget = StringWidget(
             label = _("Phone (business)"),
         ),

@@ -71,7 +71,6 @@ Schema((
         ),
     ),
     ComputedField('ClientUID',
-        index = 'FieldIndex',
         expression = "here.aq_parent.portal_type == 'Client'"+\
                      "and here.aq_parent.UID() or None",
         widget = ComputedWidget(
@@ -79,7 +78,6 @@ Schema((
         ),
     ),
     ComputedField('SampleTypeUID',
-        index = 'FieldIndex',
         expression = 'here.getSampleType().UID()',
         widget = ComputedWidget(
             visible = False,

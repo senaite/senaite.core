@@ -26,7 +26,6 @@ schema = BaseSchema.copy() + Schema((
         ),
     ),
     StringField('ClientOrderNumber',
-        index = 'FieldIndex',
         searchable = 1,
         widget = StringWidget(
             label = _("Order number"),

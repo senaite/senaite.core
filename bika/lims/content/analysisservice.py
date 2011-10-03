@@ -94,7 +94,6 @@ schema = BikaSchema.copy() + Schema((
     StringField('Keyword',
         schemata = _("Description"),
         required = 1,
-        index = 'FieldIndex:brains',
         validators = ('servicekeywordvalidator'),
         widget = StringWidget(
             label = _("Analysis Keyword"),
@@ -222,7 +221,6 @@ schema = BikaSchema.copy() + Schema((
     ),
     ComputedField('CategoryUID',
         schemata = _("Description"),
-        index = 'FieldIndex',
         expression = "context.getCategory() and context.getCategory().UID() or ''",
         widget = ComputedWidget(
             label = _("Analysis category"),

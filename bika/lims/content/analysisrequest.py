@@ -36,7 +36,6 @@ from bika.lims import bikaMessageFactory as _
 schema = BikaSchema.copy() + Schema((
     StringField('RequestID',
         required = 1,
-        index = 'FieldIndex:brains',
         searchable = True,
         widget = StringWidget(
             label = 'Request ID',
@@ -88,7 +87,6 @@ schema = BikaSchema.copy() + Schema((
         required = 1,
     ),
     StringField('ClientOrderNumber',
-        index = 'FieldIndex:brains',
         searchable = True,
         widget = StringWidget(
             label = 'Client Order ID',
@@ -109,7 +107,6 @@ schema = BikaSchema.copy() + Schema((
     ),
     BooleanField('InvoiceExclude',
         default = False,
-        index = 'FieldIndex',
         widget = BooleanWidget(
             label = "Invoice Exclude",
             label_msgid = "label_invoice_exclude",
@@ -119,7 +116,6 @@ schema = BikaSchema.copy() + Schema((
     ),
     BooleanField('ReportDryMatter',
         default = False,
-        index = 'FieldIndex',
         widget = BooleanWidget(
             label = "Report as dry matter",
             label_msgid = "label_report_dry_matter",
@@ -130,7 +126,6 @@ schema = BikaSchema.copy() + Schema((
     DateTimeField('DateRequested',
         required = 1,
         default_method = 'current_date',
-        index = 'DateIndex',
         widget = DateTimeWidget(
             label = 'Date requested',
             label_msgid = 'label_daterequested',
@@ -138,7 +133,6 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     DateTimeField('DateReceived',
-        index = 'DateIndex:brains',
         widget = DateTimeWidget(
             label = 'Date received',
             label_msgid = 'label_datereceived',
@@ -146,7 +140,6 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     DateTimeField('DatePublished',
-        index = 'DateIndex:brains',
         widget = DateTimeWidget(
             label = 'Date published',
             label_msgid = 'label_datepublished',
@@ -169,21 +162,18 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     ComputedField('ClientUID',
-        index = 'FieldIndex',
         expression = 'here.aq_parent.UID()',
         widget = ComputedWidget(
             visible = False,
         ),
     ),
     ComputedField('ClientReference',
-        index = 'FieldIndex:brains',
         expression = 'here.getSample() and here.getSample().getClientReference()' ,
         widget = ComputedWidget(
             visible = False,
         ),
     ),
     ComputedField('ClientSampleID',
-        index = 'FieldIndex:brains',
         expression = 'here.getSample() and here.getSample().getClientSampleID()',
         widget = ComputedWidget(
             visible = False,
@@ -202,21 +192,18 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     ComputedField('SampleUID',
-        index = 'FieldIndex',
         expression = 'here.getSample() and here.getSample().UID()',
         widget = ComputedWidget(
             visible = False,
         ),
     ),
     ComputedField('ContactUID',
-        index = 'FieldIndex',
         expression = 'here.getContact() and here.getContact().UID()',
         widget = ComputedWidget(
             visible = False,
         ),
     ),
     ComputedField('ProfileUID',
-        index = 'FieldIndex',
         expression = 'here.getProfile( and here.getProfile().UID()',
         widget = ComputedWidget(
             visible = False,

@@ -24,7 +24,6 @@ from bika.lims import bikaMessageFactory as _
 schema = BikaSchema.copy() + Schema((
     StringField('ReferenceAnalysisID',
         required = 1,
-        index = 'FieldIndex',
         searchable = True,
         widget = StringWidget(
             label = _("ReferenceAnalysis ID"),
@@ -34,7 +33,6 @@ schema = BikaSchema.copy() + Schema((
     ),
     StringField('ReferenceType',
         vocabulary = STD_TYPES,
-        index = 'FieldIndex',
         widget = SelectionWidget(
             label = _("Reference Type"),
         ),
@@ -82,33 +80,28 @@ schema = BikaSchema.copy() + Schema((
     DateTimeField('DateRequested',
         required = 1,
         default_method = 'current_date',
-        index = 'DateIndex',
         widget = DateTimeWidget(
             label = _("Date Requested"),
         ),
     ),
     DateTimeField('DateVerified',
-        index = 'DateIndex',
         widget = DateTimeWidget(
             label = _("Date Verified"),
         ),
     ),
     ComputedField('ReferenceSampleUID',
-        index = 'FieldIndex',
         expression = 'context.aq_parent.UID()',
         widget = ComputedWidget(
             visible = False,
         ),
     ),
     ComputedField('ReferenceSupplierUID',
-        index = 'FieldIndex',
         expression = 'context.aq_parent.aq_parent.UID()',
         widget = ComputedWidget(
             visible = False,
         ),
     ),
     ComputedField('ServiceUID',
-        index = 'FieldIndex',
         expression = 'context.getService().UID()',
         widget = ComputedWidget(
             visible = False,

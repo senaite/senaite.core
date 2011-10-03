@@ -24,6 +24,8 @@ class WorksheetFolderView(BikaListingView):
     columns = {
            'Title': {'title': _('Worksheet Number')},
            'Owner': {'title': _('Username')},
+           'Template': {'title': _('Template')},
+           'Analyses': {'title': _('Analyses')},
            'CreationDate': {'title': _('Creation Date')},
            'state_title': {'title': _('State')},
           }
@@ -31,31 +33,38 @@ class WorksheetFolderView(BikaListingView):
                 {'title': _('All'), 'id':'all',
                  'columns':['Title',
                             'Owner',
+                            'Template',
+                            'Analyses',
                             'CreationDate',
                             'state_title']},
                 {'title': _('Worksheet Open'), 'id':'open',
                  'columns':['Title',
                             'Owner',
+                            'Template',
+                            'Analyses',
                             'CreationDate',
                             'state_title']},
                 {'title': _('To Be Verified'), 'id':'to_be_verified',
                  'columns':['Title',
                             'Owner',
+                            'Template',
+                            'Analyses',
                             'CreationDate',
                             'state_title']},
                 {'title': _('Verified'), 'id':'verified',
                  'columns':['Title',
                             'Owner',
+                            'Template',
+                            'Analyses',
                             'CreationDate',
                             'state_title']},
                 {'title': _('Rejected'), 'id':'rejected',
                  'columns':['Title',
                             'Owner',
+                            'Template',
+                            'Analyses',
                             'CreationDate',
-                            'state_title'],
-                 'buttons':[{'cssclass': 'context',
-                             'title': _('Delete'),
-                             'url': 'folder_delete:method'}]}
+                            'state_title']}
                   ]
     def __init__(self, context, request):
         super(WorksheetFolderView, self).__init__(context, request)
@@ -69,6 +78,9 @@ class WorksheetFolderView(BikaListingView):
             obj = items[x]['obj']
             items[x]['Title'] = obj.Title()
             items[x]['Owner'] = obj.getOwnerTuple()[1]
+            items[x]['Template'] = obj.getWorksheetTemplate() and \
+                obj.getWorksheetTemplate().Title() or ''
+            items[x]['Analyses'] = len(obj.getAnalyses())
             items[x]['CreationDate'] = obj.CreationDate() and \
                  self.context.toLocalizedTime(obj.CreationDate(), long_format = 0) or ''
             items[x]['replace']['Title'] = "<a href='%s'>%s</a>" % \

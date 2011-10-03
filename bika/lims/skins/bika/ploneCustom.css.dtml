@@ -83,6 +83,10 @@ div.position-1\3a 4 {margin-left:    -81.5%;} /* .position-1:4 */
 	color: #2bb800;
 }
 
+#listing-table td {
+	vertical-align:bottom;
+}
+
 .documentActions{
   float:right;
 }

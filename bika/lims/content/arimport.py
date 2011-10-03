@@ -22,14 +22,12 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     StringField('FileName',
-        index = 'FieldIndex',
         searchable = True,
         widget = StringWidget(
             label = _("File name"),
         ),
     ),
     StringField('ClientName',
-        index = 'FieldIndex',
         searchable = True,
         widget = StringWidget(
             label = _("Client name"),
@@ -56,7 +54,6 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     StringField('ClientID',
-        index = 'FieldIndex',
         searchable = True,
         widget = StringWidget(
             label = _("Client ID"),
@@ -102,14 +99,12 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     StringField('OrderID',
-        index = 'FieldIndex',
         searchable = True,
         widget = StringWidget(
             label = _("Order ID"),
         ),
     ),
     StringField('QuoteID',
-        index = 'FieldIndex',
         searchable = True,
         widget = StringWidget(
             label = _("QuoteID"),
@@ -129,13 +124,11 @@ schema = BikaSchema.copy() + Schema((
     DateTimeField('DateImported',
         required = 1,
         default_method = 'current_date',
-        index = 'DateIndex',
         widget = DateTimeWidget(
             label = _("Date"),
         ),
     ),
     DateTimeField('DateApplied',
-        index = 'DateIndex',
         widget = DateTimeWidget(
             label = _("Date"),
         ),
@@ -146,7 +139,6 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     BooleanField('Status',
-        index = 'FieldIndex',
         searchable = True,
         widget = StringWidget(
             label = _("Status"),
@@ -163,7 +155,6 @@ schema = BikaSchema.copy() + Schema((
         )
     ),
     ComputedField('ClientUID',
-        index = 'FieldIndex',
         expression = 'here.aq_parent.UID()',
         widget = ComputedWidget(
             visible = False,

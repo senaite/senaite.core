@@ -28,7 +28,6 @@ schema = BikaSchema.copy() + Schema((
     StringField('OrderNumber',
                 required = 1,
                 default_method = 'getId',
-                index = 'FieldIndex',
                 searchable = True,
                 widget = StringWidget(
                     label = _("Order number"),
@@ -43,13 +42,11 @@ schema = BikaSchema.copy() + Schema((
     DateTimeField('OrderDate',
                   required = 1,
                   default_method = 'current_date',
-                  index = 'DateIndex',
                   widget = DateTimeWidget(
                       label = _("Date"),
                       ),
                   ),
     DateTimeField('DateDispatched',
-                  index = 'DateIndex',
                   widget = DateTimeWidget(
                       label = _("Date dispatched"),
                       ),
@@ -60,14 +57,12 @@ schema = BikaSchema.copy() + Schema((
               )
               ),
     ComputedField('ClientUID',
-                  index = 'FieldIndex',
                   expression = 'here.aq_parent.UID()',
                   widget = ComputedWidget(
                       visible = False,
                       ),
                   ),
     ComputedField('ProductUID',
-                  index = 'KeywordIndex',
                   expression = 'context.getProductUIDs()',
                   widget = ComputedWidget(
                       visible = False,

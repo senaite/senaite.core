@@ -13,7 +13,6 @@ from bika.lims import bikaMessageFactory as _
 
 schema = BikaSchema.copy() + Schema((
     ComputedField('RequestID',
-        index = 'FieldIndex',
         expression = 'here.getRequestID()',
         widget = ComputedWidget(
             visible = True,
@@ -33,7 +32,6 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     StringField('AttachmentKeys',
-        index = 'FieldIndex',
         searchable = True,
         widget = StringWidget(
             label = _("Attachment Keys"),
@@ -42,20 +40,17 @@ schema = BikaSchema.copy() + Schema((
     DateTimeField('DateLoaded',
         required = 1,
         default_method = 'current_date',
-        index = 'DateIndex',
         widget = DateTimeWidget(
             label = _("Date loaded"),
         ),
     ),
     ComputedField('AttachmentTypeUID',
-        index = 'FieldIndex',
         expression = 'context.getAttachmentType().UID()',
         widget = ComputedWidget(
             visible = False,
         ),
     ),
     ComputedField('ClientUID',
-        index = 'FieldIndex',
         expression = 'here.aq_parent.UID()',
         widget = ComputedWidget(
             visible = False,

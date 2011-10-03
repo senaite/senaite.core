@@ -120,7 +120,6 @@ class WorksheetAddView(BrowserView):
             if row['type'] == 'c': count_c = count_c + 1
             if row['type'] == 'd': count_d = count_d + 1
 
-        analyses = []
         selected = {} # ar.id : {analyses,services,uids}
         ars = [] # for keeping track of order of ARs
 
@@ -143,7 +142,8 @@ class WorksheetAddView(BrowserView):
             selected[ar.id]['analyses'].append(analysis.UID())
             selected[ar.id]['services'].append(analysis.getServiceUID())
 
-        used_ars = {}
+        analyses = []
+        used_ars = {} # position : {analyses,services,uids}
         for row in wstlayout:
             position = int(row['pos'])
             if row['type'] == 'a':

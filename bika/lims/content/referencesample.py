@@ -79,7 +79,6 @@ schema = BikaSchema.copy() + Schema((
     ),
     DateTimeField('DateSampled',
         schemata = 'Dates',
-        index = 'DateIndex',
         widget = bika_DateTimeWidget(
             label = _("Date sampled"),
             description = _(""),
@@ -87,7 +86,6 @@ schema = BikaSchema.copy() + Schema((
     ),
     DateTimeField('DateReceived',
         schemata = 'Dates',
-        index = 'DateIndex',
         default_method = 'current_date',
         widget = bika_DateTimeWidget(
             label = _("Date received"),
@@ -96,7 +94,6 @@ schema = BikaSchema.copy() + Schema((
     ),
     DateTimeField('DateOpened',
         schemata = 'Dates',
-        index = 'DateIndex',
         widget = bika_DateTimeWidget(
             label = _("Date opened"),
             description = _(""),
@@ -105,7 +102,6 @@ schema = BikaSchema.copy() + Schema((
     DateTimeField('ExpiryDate',
         schemata = 'Dates',
         required = 1,
-        index = 'DateIndex',
         widget = bika_DateTimeWidget(
             label = _("Expiry date"),
             description = _(""),
@@ -113,7 +109,6 @@ schema = BikaSchema.copy() + Schema((
     ),
     DateTimeField('DateExpired',
         schemata = 'Dates',
-        index = 'DateIndex',
         widget = bika_DateTimeWidget(
             label = _("Date expired"),
             description = _(""),
@@ -122,7 +117,6 @@ schema = BikaSchema.copy() + Schema((
     ),
     DateTimeField('DateDisposed',
         schemata = 'Dates',
-        index = 'DateIndex',
         widget = bika_DateTimeWidget(
             label = _("Date disposed"),
             description = _(""),
@@ -145,14 +139,12 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     ComputedField('ReferenceSupplierUID',
-        index = 'FieldIndex',
         expression = 'context.aq_parent.UID()',
         widget = ComputedWidget(
             visible = False,
         ),
     ),
     ComputedField('ReferenceDefinitionUID',
-        index = 'FieldIndex',
         expression = 'here.getReferenceDefinition() and here.getReferenceDefinition().UID() or None',
         widget = ComputedWidget(
             visible = False,

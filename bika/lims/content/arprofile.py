@@ -17,7 +17,6 @@ from bika.lims import bikaMessageFactory as _
 schema = BikaSchema.copy() + Schema((
     StringField('ProfileKey',
         schemata = 'Description',
-        index = 'FieldIndex',
         widget = StringWidget(
             label = _("Profile Keyword"),
             description = _("The profile's keyword is used to uniquely identify "
@@ -44,7 +43,6 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     ComputedField('ClientUID',
-        index = 'FieldIndex',
         expression = 'here.aq_parent.UID()',
         widget = ComputedWidget(
             visible = False,
