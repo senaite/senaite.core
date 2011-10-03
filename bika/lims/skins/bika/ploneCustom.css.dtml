@@ -51,8 +51,19 @@ table.invisible td, table.invisible th, table.plain td, table.plain th, table.li
 dl.portlet ul.navTreeLevel0 > .navTreeItem {
 	line-height: 1.5em;
 }
+
+/* Pretty table classes
+*/
+.three_column_table td {
+    width:33% !important;
+}
+.two_column_table td {
+    width:50% !important;
+}
+
 /* Shrink and expand theme columns (from columns.css)
  */
+
 div.width-1\3a 4 { width: 16.5%; } /* .width-1:4 */
 div.width-3\3a 4 { width: 80.2%; } /* .width-1:4 */
 div.position-1\3a 4 {margin-left:    -81.5%;} /* .position-1:4 */

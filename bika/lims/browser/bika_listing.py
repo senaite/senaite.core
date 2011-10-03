@@ -419,6 +419,7 @@ class BikaListingTable(tableview.Table):
         """
 
         # bika_listing views can override this.
+        # (They don't though...)
         if hasattr(self.bika_listing, 'get_workflow_actions'):
             return self.bika_listing.get_workflow_actions()
 

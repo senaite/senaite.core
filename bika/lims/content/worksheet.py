@@ -30,11 +30,9 @@ schema = BikaSchema.copy() + Schema((
         allowed_types = ('Analysis',),
         relationship = 'WorksheetAnalysis',
     ),
-    ReferenceField('Layout',
+    RecordsField('Layout',
         required = 1,
-        multiValued = 1,
-        allowed_types = ('AnalysisRequest','Worksheet','ReferenceSample'),
-        relationship = 'WorksheetAnalysisContainer',
+        subfields = ('position', 'container_uid')
     ),
     TextField('Notes'),
     IntegerField('MaxPositions'),

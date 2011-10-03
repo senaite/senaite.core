@@ -42,6 +42,7 @@
 		  method="post"
 		  class="kssattr-serveraction-foldercontents_update_table">
 	<div id="folderlisting-main-table">
+		<!-- include the table itself  -->
 		<div tal:replace="structure view/contents_table"></div>
 	</div>
 	  <input tal:replace="structure context/@@authenticator/authenticator" />

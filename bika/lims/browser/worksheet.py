@@ -111,7 +111,7 @@ class WorksheetAddView(BrowserView):
         wst = rc.lookupObject(form['wstemplate'])
         wstlayout = wst.getLayout()
         services = wst.getService()
-        service_uids = [s.UID() for s in services]
+        wst_service_uids = [s.UID() for s in services]
 
         count_a = count_b = count_c = count_d = 0
         for row in wstlayout:
@@ -120,87 +120,77 @@ class WorksheetAddView(BrowserView):
             if row['type'] == 'c': count_c = count_c + 1
             if row['type'] == 'd': count_d = count_d + 1
 
-        selected = {} # ar.id : {analyses,services,uids}
-        ars = [] # for keeping track of order of ARs
+        Layout = [] # list of dict [{position:x, container_uid:x},]
+        Analyses = [] # list of analysis objects
 
-        # get the oldest analyses first
-        for a in pc(portal_type = 'Analysis',
-                    getServiceUID = service_uids,
-                    review_state = 'sample_received',
-                    worksheetanalysis_review_state = 'unassigned',
-                    sort_on = 'getDueDate'):
-            analysis = a.getObject()
-            ar = analysis.aq_parent
-            if not selected.has_key(ar.id):
-                if len(selected) < count_a:
-                    selected[ar.id] = {}
-                    selected[ar.id]['analyses'] = []
-                    selected[ar.id]['services'] = []
-                    ars.append(ar.id)
-                else:
+        # insert matching analyses and add their ARs to Layout
+        for analysis in pc(portal_type = 'Analysis',
+                           getServiceUID = wst_service_uids,
+                           review_state = 'sample_received',
+                           worksheetanalysis_review_state = 'unassigned',
+                           cancellation_state = 'active',
+                           sort_on = 'getDueDate'):
+            analysis = analysis.getObject()
+            service_uid = analysis.getService().UID()
+            ar_uid = analysis.aq_parent.UID()
+            if service_uid not in wst_service_uids:
+                continue
+            if ar_uid in [slot['container_uid'] for slot in Layout]:
+                Analyses.append(analysis)
+            else:
+                used_positions = [slot['position'] for slot in Layout]
+                available_positions = [row['pos'] for row in wstlayout \
+                     if row['pos'] not in used_positions and row['type'] == 'a']
+                if not available_positions:
                     continue
-            selected[ar.id]['analyses'].append(analysis.UID())
-            selected[ar.id]['services'].append(analysis.getServiceUID())
+                Layout.append({'position':available_positions[0],
+                               'container_uid':ar_uid})
+                Analyses.append(analysis)
 
-        analyses = []
-        used_ars = {} # position : {analyses,services,uids}
-        for row in wstlayout:
-            position = int(row['pos'])
-            if row['type'] == 'a':
-                if ars:
-                    ar = ars.pop(0)
-                    used_ars[position] = {}
-                    used_ars[position]['ar'] = ar.UID()
-                    used_ars[position]['serv'] = selected[ar]['services']
-                    for analysis in selected[ar]['analyses']:
-                        analyses.append((position, analysis))
-            if row['type'] in ['b', 'c']:
-                # XXX This doesn't seem to cater for b and c differently
-                ## select a reference sample for this slot
-                ## a) must be created from the same reference definition selected in ws template
-                ## b) takes the sample that handles all (or the most) services.
-                reference_definition_uid = row['sub']
-                references = {}
-                reference_found = False
-                for s in pc(portal_type = 'ReferenceSample',
-                            review_state = 'current',
-                            inactive_state = 'active',
-                            getReferenceDefinitionUID = reference_definition_uid):
-                    reference = s.getObject()
-                    reference_uid = reference.UID()
-                    references[reference_uid] = {}
-                    references[reference_uid]['services'] = []
-                    references[reference_uid]['count'] = 0
-                    specs = reference.getResultsRangeDict()
-                    for service_uid in service_uids:
-                        if specs.has_key(service_uid):
-                            references[reference_uid]['services'].append(service_uid)
-                            references[reference_uid]['count'] += 1
-                    if references[reference_uid]['count'] == len(service_uids):
-                        reference_found = True
-                        break
-                # reference_found this reference has all the services
-                if reference_found:
-                    ws.assignReference(Reference = reference_uid,
-                                       Position = position,
-                                       Type = row['type'],
-                                       Service = service_uids)
-                else:
-                    # find the reference with the most services
-                    these_services = service_uids
-                    reference_keys = references.keys()
-                    no_of_services = 0
-                    mostest = None
-                    for key in reference_keys:
-                        if references[key]['count'] > no_of_services:
-                            no_of_services = references[key]['count']
-                            mostest = key
-                    if mostest:
-                        ws.assignReference(
-                            Reference = mostest,
-                            Position = position,
-                            Type = row['type'],
-                            Service = references[mostest]['services'])
+        # find best maching Blank reference samples.
+        for row in [r for r in wst_layout if r['type'] == 'b']:
+            reference_definition_uid = row['sub']
+            references = {}
+            reference_found = False
+            for s in pc(portal_type = 'ReferenceSample',
+                        review_state = 'current',
+                        inactive_state = 'active',
+                        getReferenceDefinitionUID = reference_definition_uid):
+                reference = s.getObject()
+                reference_uid = reference.UID()
+                references[reference_uid] = {}
+                references[reference_uid]['services'] = []
+                references[reference_uid]['count'] = 0
+                specs = reference.getResultsRangeDict()
+                for service_uid in service_uids:
+                    if specs.has_key(service_uid):
+                        references[reference_uid]['services'].append(service_uid)
+                        references[reference_uid]['count'] += 1
+                if references[reference_uid]['count'] == len(service_uids):
+                    reference_found = True
+                    break
+            # reference_found this reference has all the services
+            if reference_found:
+                ws.assignReference(Reference = reference_uid,
+                                   Position = position,
+                                   Type = row['type'],
+                                   Service = service_uids)
+            else:
+                # find the reference with the most services
+                these_services = service_uids
+                reference_keys = references.keys()
+                no_of_services = 0
+                mostest = None
+                for key in reference_keys:
+                    if references[key]['count'] > no_of_services:
+                        no_of_services = references[key]['count']
+                        mostest = key
+                if mostest:
+                    ws.assignReference(
+                        Reference = mostest,
+                        Position = position,
+                        Type = row['type'],
+                        Service = references[mostest]['services'])
         if analyses:
             ws.assignNumberedAnalyses(analyses)
 
@@ -225,7 +215,7 @@ class WorksheetManageResultsView(AnalysesView):
         super(WorksheetManageResultsView, self).__init__(context, request)
         self.contentFilter = {}
         self.show_select_row = False
-        self.show_sort_column = True
+        self.show_sort_column = False
         self.allow_edit = True
 
         self.columns = {
@@ -291,7 +281,6 @@ class WorksheetManageResultsView(AnalysesView):
         items = sorted(items, key = itemgetter('getRequestID'))
 
         return items
-
 
 class WorksheetAddAnalysisView(AnalysesView):
     def __init__(self, context, request):
