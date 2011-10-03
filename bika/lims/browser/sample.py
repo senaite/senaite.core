@@ -79,8 +79,6 @@ class AJAXSampleSubmit():
             for ar in ars:
                 ar.reindexObject()
             message = "Changes Saved."
-        else:
-            message = "Changes Cancelled."
         self.context.plone_utils.addPortalMessage(message, 'info')
         return json.dumps({'success':message})
 
@@ -88,7 +86,7 @@ class SamplesView(ClientSamplesView):
     """ The main portal Samples action tab
     """
     def __init__(self, context, request):
-        super(SamplesView, self).__init__(context,request)
+        super(SamplesView, self).__init__(context, request)
         self.contentFilter = {'portal_type':'Sample',
                               'path':{"query": ["/"], "level" : 0 }}
         self.show_editable_border = False

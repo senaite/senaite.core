@@ -149,13 +149,6 @@
 		value="Save"
 		i18n:attributes="value"/>
 
-	<input class="context"
-		tabindex=""
-		type="submit"
-		name="cancel_button"
-		value="Cancel"
-		i18n:attributes="value"/>
-
 	<img id="spinner" style="display:none"
 		tal:attributes="src python:portal.absolute_url()+ '/images/spinner.gif'"/>
 

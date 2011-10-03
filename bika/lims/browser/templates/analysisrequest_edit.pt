@@ -493,10 +493,6 @@
         type="submit"
         name="save_button"
         value="Save"/>
-    <input class="context"
-        type="submit"
-        name="cancel_button"
-        value="Cancel"/>
     <span id="spinner" style="display:none">
         <img tal:attributes="src python:portal.absolute_url()+ '/images/spinner.gif';"/>
     </span>
