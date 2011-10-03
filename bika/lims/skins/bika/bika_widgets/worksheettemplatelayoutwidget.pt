@@ -21,7 +21,10 @@
 					current_field_value accessor;
 					sort_on python:(('Title', 'nocase', 'asc'),);
 					ReferenceDefinitions python:[p.getObject() for p in context.portal_catalog(portal_type='ReferenceDefinition')];
-					ReferenceDefinitions python:sequence.sort(ReferenceDefinitions, sort_on);
+					BlankDefinitions python: [r for r in ReferenceDefinitions if r['Blank']];
+					ControlDefinitions python: [r for r in ReferenceDefinitions if not r['Blank']];
+					BlankDefinitions python: sequence.sort(BlankDefinitions, sort_on);
+					ControlReferenceDefinitions python:sequence.sort(ControlDefinitions, sort_on);
 					types context/getAnalysisTypes;
 					num_positions request/NoOfPositions | python:0;
 					num_positions python:int(num_positions);
@@ -80,33 +83,50 @@
 	</td>
 
 	<td>
-		<select name="Layout.sub:records:ignore_empty"
+	  <!-- dropdown for Blank references -->
+		<select name="Layout.blank_ref:records:ignore_empty"
 			tal:attributes="
-				style python: selected_type in ['a','d'] and 'display:none;;' or 'display:inline;;';
-				class string:sst_${row/pos};">
-		<tal:item tal:repeat="sst ReferenceDefinitions">
+				style python: selected_type == 'b' and 'display:inline;;' or 'display:none;;';
+				class string:blank_ref_dropdown_${row/pos};">
+		<tal:item tal:repeat="ref BlankDefinitions">
 			<option selected="selected"
 				tal:define="
-					sst_uid sst/UID;
-					this_selected python:sst_uid == row['sub']"
+					ref_uid ref/UID;
+					this_selected python:ref_uid == 'blank_ref' in row and row['blank_ref'] or ''"
 				tal:attributes="
-					value sst_uid;
+					value ref_uid;
 					selected this_selected"
-				tal:content="sst/Title"></option>
+				tal:content="ref/Title"></option>
+		</tal:item>
+		</select>
+	  <!-- dropdown for Control references -->
+		<select name="Layout.control_ref:records:ignore_empty"
+			tal:attributes="
+				style python: selected_type == 'c' and 'display:inline;;' or 'display:none;;';
+				class string:control_ref_dropdown_${row/pos};">
+		<tal:item tal:repeat="ref ControlDefinitions">
+			<option selected="selected"
+				tal:define="
+					ref_uid ref/UID;
+					this_selected python:ref_uid == 'control_ref' in row and row['control_ref'] or ''"
+				tal:attributes="
+					value ref_uid;
+					selected this_selected"
+				tal:content="ref/Title"></option>
 		</tal:item>
 		</select>
 	</td>
-
+	<!-- Dropdown for Duplicate Analysis -->
 	<td>
 		<div id="" tal:define="num_rows repeat/row/length">
 			<select name="Layout.dup:records:ignore_empty"
 				tal:attributes="
 					style python: selected_type == 'd' and 'display:inline;;' or 'display:none;;';
-					class string:dup_${row/pos};">
+					class string:duplicate_analysis_dropdown_${row/pos};">
 			<tal:item tal:repeat="i python:range(1,(num_rows+1))">
-				<option selected="selected"
+				<option
 					tal:condition="python:i <> repeat['row'].number()"
-					tal:define="this_selected python:str(i) == row['sub']"
+					tal:define="this_selected python:str(i) == 'dup' in row and row['dup'] or 1"
 					tal:attributes="value i; selected this_selected"
 					tal:content="i"></option>
 			</tal:item>

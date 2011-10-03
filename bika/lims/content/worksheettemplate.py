@@ -16,12 +16,13 @@ schema = BikaSchema.copy() + Schema((
         schemata = 'Layout',
         required = 1,
         type = 'templateposition',
-        subfields = ('pos', 'type', 'sub', 'dup'),
+        subfields = ('pos', 'type', 'blank_ref', 'control_ref', 'dup'),
         required_subfields = ('pos', 'type'),
-        subfield_labels = {'pos': 'Position',
-                           'type': 'Type',
-                           'sub': 'Subtype',
-                           'dup': 'Duplicate Of'},
+        subfield_labels = {'pos': _('Position'),
+                           'type': _('Analysis Type'),
+                           'blank_ref': _('Reference'),
+                           'control_ref': _('Reference'),
+                           'dup': _('Duplicate Of')},
         widget = WorksheetTemplateLayoutWidget(
             label = _("Worksheet Layout"),
             description = _("Specify the size of the Worksheet, e.g. corresponding to a "
@@ -44,7 +45,6 @@ schema = BikaSchema.copy() + Schema((
         )
     ),
 ))
-
 schema['title'].schemata = 'Description'
 schema['title'].widget.visible = True
 

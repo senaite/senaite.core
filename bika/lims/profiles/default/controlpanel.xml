@@ -3,7 +3,7 @@
 <object name="portal_controlpanel" meta_type="Plone Control Panel Tool">
 
  <configlet title="Bika Setup" action_id="bika_setup"
-    appId="bika.lims" category="bika" condition_expr=""
+    appId="bika.lims" category="Products" condition_expr=""
     icon_expr="string:++resource++bika.lims.images/setup.png"
 	url_expr="string:$portal_url/bika_setup/edit"
     visible="True">
@@ -11,7 +11,7 @@
  </configlet>
 
  <configlet title="Laboratory Information" action_id="bika_labinfo"
-    appId="bika.lims" category="bika" condition_expr=""
+    appId="bika.lims" category="Products" condition_expr=""
     icon_expr="string:++resource++bika.lims.images/lab.png"
 	url_expr="string:$portal_url/bika_setup/laboratory/base_edit"
     visible="True">
@@ -19,7 +19,7 @@
  </configlet>
 
  <configlet title="Lab Departments" action_id="bika_departments"
-    appId="bika.lims" category="bika" condition_expr=""
+    appId="bika.lims" category="Products" condition_expr=""
     icon_expr="string:++resource++bika.lims.images/department.png"
     url_expr="string:$portal_url/bika_setup/bika_departments"
 	visible="True">
@@ -27,7 +27,7 @@
  </configlet>
 
  <configlet title="Lab Contacts" action_id="bika_labcontacts"
-    appId="bika.lims" category="bika" condition_expr=""
+    appId="bika.lims" category="Products" condition_expr=""
     icon_expr="string:++resource++bika.lims.images/contact.png"
     url_expr="string:$portal_url/bika_setup/bika_labcontacts"
 	visible="True">
@@ -35,7 +35,7 @@
  </configlet>
 
  <configlet title="Analysis Categories" action_id="bika_analysiscategories"
-    appId="bika.lims" category="bika" condition_expr=""
+    appId="bika.lims" category="Products" condition_expr=""
     icon_expr="string:++resource++bika.lims.images/category.png"
     url_expr="string:$portal_url/bika_setup/bika_analysiscategories"
     visible="True">
@@ -43,7 +43,7 @@
  </configlet>
 
  <configlet title="Analysis Services" action_id="bika_analysisservices"
-    appId="bika.lims" category="bika" condition_expr=""
+    appId="bika.lims" category="Products" condition_expr=""
     icon_expr="string:++resource++bika.lims.images/service.png"
     url_expr="string:$portal_url/bika_setup/bika_analysisservices"
     visible="True">
@@ -51,7 +51,7 @@
  </configlet>
 
  <configlet title="Analysis Specs" action_id="bika_analysisspecs"
-    appId="bika.lims" category="bika" condition_expr=""
+    appId="bika.lims" category="Products" condition_expr=""
     icon_expr="string:++resource++bika.lims.images/service.png"
     url_expr="string:$portal_url/bika_setup/bika_analysisspecs"
     visible="True">
@@ -59,7 +59,7 @@
  </configlet>
 
  <configlet title="Sample Types" action_id="bika_sampletypes"
-    appId="bika.lims" category="bika" condition_expr=""
+    appId="bika.lims" category="Products" condition_expr=""
     icon_expr="string:++resource++bika.lims.images/sampletype.png"
     url_expr="string:$portal_url/bika_setup/bika_sampletypes"
 	visible="True">
@@ -67,7 +67,7 @@
  </configlet>
 
  <configlet title="Sample Points" action_id="bika_samplepoints"
-    appId="bika.lims" category="bika" condition_expr=""
+    appId="bika.lims" category="Products" condition_expr=""
     icon_expr="string:++resource++bika.lims.images/samplepoint.png"
     url_expr="string:$portal_url/bika_setup/bika_samplepoints"
 	visible="True">
@@ -75,7 +75,7 @@
  </configlet>
 
  <configlet title="Instruments" action_id="bika_instruments"
-    appId="bika.lims" category="bika" condition_expr=""
+    appId="bika.lims" category="Products" condition_expr=""
     icon_expr="string:++resource++bika.lims.images/instrument.png"
     url_expr="string:$portal_url/bika_setup/bika_instruments"
     visible="True">
@@ -83,7 +83,7 @@
  </configlet>
 
  <configlet title="Methods" action_id="bika_methods"
-    appId="bika.lims" category="bika" condition_expr=""
+    appId="bika.lims" category="Products" condition_expr=""
     icon_expr="string:++resource++bika.lims.images/method.png"
     url_expr="string:$portal_url/bika_setup/bika_methods"
     visible="True">
@@ -91,7 +91,7 @@
  </configlet>
 
  <configlet title="Attachment Types" action_id="bika_attachmenttypes"
-    appId="bika.lims" category="bika" condition_expr=""
+    appId="bika.lims" category="Products" condition_expr=""
     icon_expr="string:++resource++bika.lims.images/attachment.png"
     url_expr="string:$portal_url/bika_setup/bika_attachmenttypes"
     visible="True">
@@ -99,7 +99,7 @@
  </configlet>
 
  <configlet title="Calculations" action_id="bika_calculations"
-    appId="bika.lims" category="bika" condition_expr=""
+    appId="bika.lims" category="Products" condition_expr=""
     icon_expr="string:++resource++bika.lims.images/calculation.png"
     url_expr="string:$portal_url/bika_setup/bika_calculations"
     visible="True">
@@ -107,7 +107,7 @@
  </configlet>
 
  <configlet title="Analysis Profiles" action_id="bika_arprofiles"
-    appId="bika.lims" category="bika" condition_expr=""
+    appId="bika.lims" category="Products" condition_expr=""
     icon_expr="string:++resource++bika.lims.images/service.png"
     url_expr="string:$portal_url/bika_setup/bika_arprofiles"
     visible="True">
@@ -115,7 +115,7 @@
  </configlet>
 
  <configlet title="Products" action_id="bika_labproducts"
-    appId="bika.lims" category="bika" condition_expr=""
+    appId="bika.lims" category="Products" condition_expr=""
     icon_expr="string:++resource++bika.lims.images/product.png"
     url_expr="string:$portal_url/bika_setup/bika_labproducts"
     visible="True">
@@ -124,7 +124,7 @@
 
  <configlet title="Reference Manufacturers"
     action_id="bika_referencemanufacturers"
-    appId="bika.lims" category="bika" condition_expr=""
+    appId="bika.lims" category="Products" condition_expr=""
     icon_expr="string:++resource++bika.lims.images/referencemanufacturer.png"
     url_expr="string:$portal_url/bika_setup/bika_referencemanufacturers"
     visible="True">
@@ -132,7 +132,7 @@
  </configlet>
 
  <configlet title="Reference Definitions" action_id="bika_referencedefinitions"
-    appId="bika.lims" category="bika" condition_expr=""
+    appId="bika.lims" category="Products" condition_expr=""
     icon_expr="string:++resource++bika.lims.images/referencedefinition.png"
     url_expr="string:$portal_url/bika_setup/bika_referencedefinitions"
     visible="True">
@@ -140,7 +140,7 @@
  </configlet>
 
  <configlet title="Worksheet Templates" action_id="bika_worksheettemplates"
-    appId="bika.lims" category="bika" condition_expr=""
+    appId="bika.lims" category="Products" condition_expr=""
     icon_expr="string:++resource++bika.lims.images/worksheettemplate.png"
     url_expr="string:$portal_url/bika_setup/bika_worksheettemplates"
     visible="True">

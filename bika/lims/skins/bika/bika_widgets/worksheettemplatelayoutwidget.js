@@ -4,17 +4,22 @@ $(document).ready(function(){
 	$(".analysis_type").change(function(){
 		pos = $(this).attr('pos');
 		val = $(this).val();
-		if(val == 'b' || val == 'c'){
-			$(".sst_" + pos).toggle(true);
+		if(val == 'b') {
+			$(".blank_ref_dropdown_" + pos).toggle(true);
 		} else {
-			$(".sst_" + pos).toggle(false);
+			$(".blank_ref_dropdown_" + pos).toggle(false);
+		}
+		if (val == 'c'){
+			$(".control_ref_dropdown_" + pos).toggle(true);
+		} else {
+			$(".control_ref_dropdown_" + pos).toggle(false);
 		}
 		if(val == 'd'){
-			$(".dup_" + pos).toggle(true);
+			$(".duplicate_analysis_dropdown_" + pos).toggle(true);
 		} else {
-			$(".dup_" + pos).toggle(false);
+			$(".duplicate_analysis_dropdown_" + pos).toggle(false);
 		}
 	});
-	
+
 });
 });

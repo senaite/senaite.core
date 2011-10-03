@@ -3,6 +3,7 @@
   <version>1000</version>
   <dependencies>
     <dependency>profile-Products.ATExtensions:default</dependency>
+    <dependency>profile-Products.PloneHelpCenter:default</dependency>
     <dependency>profile-plone.app.iterate:plone.app.iterate</dependency>
   </dependencies>
 </metadata>
