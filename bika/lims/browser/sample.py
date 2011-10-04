@@ -26,7 +26,16 @@ class SampleEditView(SampleViewView):
     template = ViewPageTemplateFile("templates/sample_edit.pt")
 
     def __call__(self):
-        return self.template()
+        workflow = getToolByName(self.context, 'portal_workflow')
+        if workflow.getInfoFor(self.context, 'cancellation_state') == "cancelled":
+            self.request.response.redirect(self.context.absolute_url())
+        else:
+            ars = self.context.getAnalysisRequests()
+            for ar in ars:
+                for a in ar.getAnalyses():
+                    if workflow.getInfoFor(a.getObject(), 'review_state') in ('verified', 'published'):
+                        self.request.response.redirect(self.context.absolute_url())
+            return self.template()
 
     def tabindex(self):
         i = 0

@@ -1,4 +1,4 @@
-## Script (Python) "guard_cancellation"
+## Script (Python) "guard_cancelled_object"
 ##bind container=container
 ##bind context=context
 ##bind namespace=

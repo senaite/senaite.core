@@ -33,7 +33,7 @@
  <action title="Edit"
     action_id="edit"
 	category="object"
-	condition_expr="python:here.guard_cancellation()"
+	condition_expr="python:here.guard_edit_sample()"
     icon_expr=""
 	link_target=""
 	url_expr="string:${object_url}/base_edit"

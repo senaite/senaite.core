@@ -49,7 +49,7 @@
   <action url="" category="workflow">Receive</action>
   <guard>
    <guard-permission>BIKA: Receive Sample</guard-permission>
-   <guard-expression>python:here.guard_cancellation()</guard-expression>
+   <guard-expression>python:here.guard_cancelled_object()</guard-expression>
   </guard>
  </transition>
  
@@ -59,7 +59,7 @@
   <action url="" category="workflow">Expire</action>
   <guard>
    <guard-permission>BIKA: Expire Sample</guard-permission>
-   <guard-expression>python:here.guard_cancellation()</guard-expression>
+   <guard-expression>python:here.guard_cancelled_object()</guard-expression>
   </guard>
  </transition>
  
@@ -69,7 +69,7 @@
   <action url="" category="workflow">Dispose</action>
   <guard>
    <guard-permission>BIKA: Dispose Sample</guard-permission>
-   <guard-expression>python:here.guard_cancellation()</guard-expression>
+   <guard-expression>python:here.guard_cancelled_object()</guard-expression>
   </guard>
  </transition>
  

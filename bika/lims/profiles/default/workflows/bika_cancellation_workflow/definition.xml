@@ -21,7 +21,7 @@
   <action url="workflow_action?workflow_action=cancel" category="" icon="">Cancel</action>
   <guard>
    <guard-permission>BIKA: Cancel and reinstate</guard-permission>
-   <guard-expression>python:here.guard_cancel_reinstate()</guard-expression>
+   <guard-expression>python:here.guard_cancel()</guard-expression>
   </guard>
  </transition>
 
@@ -29,7 +29,7 @@
   <action url="workflow_action?workflow_action=reinstate" category="" icon="">Reinstate</action>
   <guard>
    <guard-permission>BIKA: Cancel and reinstate</guard-permission>
-   <guard-expression>python:here.guard_cancel_reinstate()</guard-expression>
+   <guard-expression>python:here.guard_reinstate()</guard-expression>
   </guard>
  </transition>
 

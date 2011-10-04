@@ -24,7 +24,7 @@
       for="bika.lims.interfaces.ISample"
       name="base_view"
       class="bika.lims.browser.sample.SampleViewView"
-      permission="zope.Public"
+      permission="zope2.View"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
@@ -32,7 +32,7 @@
       for="bika.lims.interfaces.ISample"
       name="base_edit"
       class="bika.lims.browser.sample.SampleEditView"
-      permission="bika.lims.EditSample"
+      permission="zope2.View"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 

@@ -213,6 +213,7 @@ class Sample(BaseFolder, HistoryAwareMixin):
             ars.append(ar)
         return ars
 
+    # XXX not used anywhere???
     security.declarePublic('getAnalyses')
     def getAnalyses(self):
         """ return list of titles of analyses linked to this sample """

@@ -345,35 +345,50 @@ class AnalysisRequestEditView(AnalysisRequestAddView):
         self.col_count = 1
         self.came_from = "edit"
 
+    def __call__(self):
+        workflow = getToolByName(self.context, 'portal_workflow')
+        if workflow.getInfoFor(self.context, 'cancellation_state') == "cancelled":
+            self.request.response.redirect(self.context.absolute_url())
+        elif workflow.getInfoFor(self.context, 'review_state') in ('verified', 'published'):
+            self.request.response.redirect(self.context.absolute_url())
+        else:
+            return self.template()
+
+
 class AnalysisRequestManageResultsView(AnalysisRequestViewView):
     implements(IViewView)
     template = ViewPageTemplateFile("templates/analysisrequest_manage_results.pt")
 
     def __call__(self):
         workflow = getToolByName(self.context, 'portal_workflow')
-        pc = getToolByName(self.context, 'portal_catalog')
-        self.Field = AnalysesView(self.context, self.request,
-                                  getPointOfCapture = 'field')
-        self.Field.allow_edit = True
-        self.Field.review_states[0]['transitions'] = \
-            ['submit', 'retract', 'verify']
-        self.Field.show_select_column = True
-        self.Field = self.Field.contents_table()
+        if workflow.getInfoFor(self.context, 'cancellation_state') == "cancelled":
+            self.request.response.redirect(self.context.absolute_url())
+        elif workflow.getInfoFor(self.context, 'review_state') in ('verified', 'published'):
+            self.request.response.redirect(self.context.absolute_url())
+        else:
+            self.Field = AnalysesView(self.context, self.request,
+                                      getPointOfCapture = 'field')
+            self.Field.allow_edit = True
+            self.Field.review_states[0]['transitions'] = \
+                ['submit', 'retract', 'verify']
+            self.Field.show_select_column = True
+            self.Field = self.Field.contents_table()
 
-        self.Lab = AnalysesView(self.context, self.request,
-                                getPointOfCapture = 'lab')
-        self.Lab.allow_edit = True
-        self.Lab.review_states[0]['transitions'] = \
-            ['submit', 'retract', 'verify']
-        self.Lab.show_select_column = True
-        self.Lab = self.Lab.contents_table()
+            self.Lab = AnalysesView(self.context, self.request,
+                                    getPointOfCapture = 'lab')
+            self.Lab.allow_edit = True
+            self.Lab.review_states[0]['transitions'] = \
+                ['submit', 'retract', 'verify']
+            self.Lab.show_select_column = True
+            self.Lab = self.Lab.contents_table()
 
-        form = self.request.form
-        if form.has_key("submitted"):
-            import pprint
-            pprint.pprint(form)
+            # XXX for debugging only:
+            form = self.request.form
+            if form.has_key("submitted"):
+                import pprint
+                pprint.pprint(form)
 
-        return self.template()
+            return self.template()
 
 
 class AnalysisRequestResultsNotRequestedView(AnalysisRequestManageResultsView):
