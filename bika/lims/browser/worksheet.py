@@ -107,6 +107,7 @@ class WorksheetAddView(BrowserView):
         if not form.has_key('wstemplate') or not form['wstemplate']:
             ws.processForm()
             self.request.RESPONSE.redirect(ws.absolute_url())
+            return
 
         wst = rc.lookupObject(form['wstemplate'])
         wstlayout = wst.getLayout()
@@ -123,7 +124,7 @@ class WorksheetAddView(BrowserView):
         Layout = [] # list of dict [{position:x, container_uid:x},]
         Analyses = [] # list of analysis objects
 
-        # insert matching analyses and add their ARs to Layout
+        # assign matching AR analyses
         for analysis in pc(portal_type = 'Analysis',
                            getServiceUID = wst_service_uids,
                            review_state = 'sample_received',
@@ -132,78 +133,79 @@ class WorksheetAddView(BrowserView):
                            sort_on = 'getDueDate'):
             analysis = analysis.getObject()
             service_uid = analysis.getService().UID()
-            ar_uid = analysis.aq_parent.UID()
             if service_uid not in wst_service_uids:
                 continue
-            if ar_uid in [slot['container_uid'] for slot in Layout]:
-                Analyses.append(analysis)
-            else:
-                used_positions = [slot['position'] for slot in Layout]
+
+            # if our parent object is already in the worksheet layout we're done.
+            # this is a more specific version of ws.assignAnalysis()
+            parent_uid = analysis.aq_parent.UID()
+            if parent_uid in [l[1] for l in ws.getLayout()]:
+                return
+            wslayout = ws.getLayout() # xxx
+            position = len(wslayout) + 1
+            if wst:
+                used_positions = [slot['position'] for slot in wslayout]
                 available_positions = [row['pos'] for row in wstlayout \
-                     if row['pos'] not in used_positions and row['type'] == 'a']
+                                       if row['pos'] not in used_positions and \
+                                          row['type'] == 'a']
                 if not available_positions:
                     continue
-                Layout.append({'position':available_positions[0],
-                               'container_uid':ar_uid})
-                Analyses.append(analysis)
+                ws.setLayout(wslayout + [{'position': available_positions[0],
+                                        'container_uid': parent_uid},])
 
-        # find best maching Blank reference samples.
-        for row in [r for r in wst_layout if r['type'] == 'b']:
-            reference_definition_uid = row['sub']
-            references = {}
-            reference_found = False
-            for s in pc(portal_type = 'ReferenceSample',
-                        review_state = 'current',
-                        inactive_state = 'active',
-                        getReferenceDefinitionUID = reference_definition_uid):
-                reference = s.getObject()
-                reference_uid = reference.UID()
-                references[reference_uid] = {}
-                references[reference_uid]['services'] = []
-                references[reference_uid]['count'] = 0
-                specs = reference.getResultsRangeDict()
-                for service_uid in service_uids:
-                    if specs.has_key(service_uid):
-                        references[reference_uid]['services'].append(service_uid)
-                        references[reference_uid]['count'] += 1
-                if references[reference_uid]['count'] == len(service_uids):
-                    reference_found = True
-                    break
-            # reference_found this reference has all the services
-            if reference_found:
-                ws.assignReference(Reference = reference_uid,
-                                   Position = position,
-                                   Type = row['type'],
-                                   Service = service_uids)
-            else:
-                # find the reference with the most services
-                these_services = service_uids
-                reference_keys = references.keys()
-                no_of_services = 0
-                mostest = None
-                for key in reference_keys:
-                    if references[key]['count'] > no_of_services:
-                        no_of_services = references[key]['count']
-                        mostest = key
-                if mostest:
-                    ws.assignReference(
-                        Reference = mostest,
-                        Position = position,
-                        Type = row['type'],
-                        Service = references[mostest]['services'])
-        if analyses:
-            ws.assignNumberedAnalyses(analyses)
+        # find best maching reference samples for Blanks and Controls
+        for t in ('b','c'):
+            if t == 'b': form_key = 'blank_ref'
+            else: form_key = 'control_ref'
+            for row in [r for r in wstlayout if r['type'] == t]:
+                reference_definition_uid = row[form_key]
+                samples = pc(portal_type = 'ReferenceSample',
+                             review_state = 'current',
+                             inactive_state = 'active',
+                             getReferenceDefinitionUID = reference_definition_uid)
+                samples = [s.getObject() for s in samples]
+                samples = [s for s in samples if s.getBlank == True]
+                complete_reference_found = False
+                references = {}
+                for reference in samples:
+                    reference_uid = reference.UID()
+                    references[reference_uid] = {}
+                    references[reference_uid]['services'] = []
+                    references[reference_uid]['count'] = 0
+                    specs = reference.getResultsRangeDict()
+                    for service_uid in wst_service_uids:
+                        if specs.has_key(service_uid):
+                            references[reference_uid]['services'].append(service_uid)
+                            references[reference_uid]['count'] += 1
+                    if references[reference_uid]['count'] == len(wst_service_uids):
+                        complete_reference_found = True
+                        break
+                if complete_reference_found:
+                    wf.doActionFor(reference, 'assign')
+                else:
+                    # find the most complete reference sample instead
+                    these_services = wst_service_uids
+                    reference_keys = references.keys()
+                    no_of_services = 0
+                    reference = None
+                    for key in reference_keys:
+                        if references[key]['count'] > no_of_services:
+                            no_of_services = references[key]['count']
+                            reference = key
+                    if reference:
+                        wf.doActionFor(reference, 'assign')
 
-        if count_d:
-            for row in wstlayout:
-                if row['type'] == 'd':
-                    position = int(row['pos'])
-                    dup_pos = int(row['dup'])
-                    if used_ars.has_key(dup_pos):
-                        ws.assignDuplicate(
-                            AR = used_ars[dup_pos]['ar'],
-                            Position = position,
-                            Service = used_ars[dup_pos]['serv'])
+        # fill duplicate positions
+##        if count_d:
+##            for row in wstlayout:
+##                if row['type'] == 'd':
+##                    position = int(row['pos'])
+##                    duplicated_position = int(row['dup'])
+##                    if duplicate_position in [l[0] for l in ws.getLayout()]:
+##                        dup_analysis = ws.createDuplicateAnalyis()
+##                            AR = used_ars[dup_pos]['ar'],
+##                            Position = position,
+##                            Service = used_ars[dup_pos]['serv'])
         ws.edit(MaxPositions = len(wstlayout))
         ws.processForm()
 

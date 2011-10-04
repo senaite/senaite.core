@@ -34,7 +34,7 @@ schema = BikaSchema.copy() + Schema((
     ),
     HistoryAwareReferenceField('DependentServices',
         schemata = 'Calculation',
-        required = 0,
+        required = 1,
         multiValued = 1,
         vocabulary_display_path_bound = sys.maxint,
         allowed_types = ('AnalysisService',),

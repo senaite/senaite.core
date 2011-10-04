@@ -70,8 +70,11 @@ class AnalysesView(BikaListingView):
             getSecurityManager().checkPermission(ManageResults, self.context)
 
         context_active = True
-        if workflow.getInfoFor(self.context, 'cancellation_state') == "cancelled":
-            context_active = False
+        try:
+            if workflow.getInfoFor(self.context, 'cancellation_state') == "cancelled":
+                context_active = False
+        except WorkflowException:
+            pass
 
         items = super(AnalysesView, self).folderitems(full_objects = True)
 

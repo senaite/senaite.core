@@ -68,7 +68,7 @@ class WorksheetFolderView(BikaListingView):
                   ]
     def __init__(self, context, request):
         super(WorksheetFolderView, self).__init__(context, request)
-        self.title = "%s: %s" % (self.context.bika_setup.laboratory.getName(), _("Worksheets"))
+        self.title = "%s: %s" % (self.context.Title(), _("Worksheets"))
         self.description = ""
 
     def folderitems(self):

@@ -421,15 +421,16 @@ def ActionSucceededEventHandler(analysis, event):
 
     elif event.action == "assign":
         analysis.reindexObject(idxs = ["worksheetanalysis_review_state", ])
-        # Add the analysis to the worksheet and retract the worksheet to 'open'
+        # Add the analysis to the worksheet
         rc = getToolByName(analysis, 'reference_catalog')
         wsUID = analysis.REQUEST['context_uid']
         ws = rc.lookupObject(wsUID)
-        ws.setAnalyses(
-            ws.getAnalyses() + [analysis,])
-        #XXX Do something about layout.
         #XXX randomly setting Analyser here because it's not on the screen yet.
         ws.setAnalyser('fred')
+
+        ws.assignAnalysis(analysis)
+
+        # retract the worksheet to 'open'
         ws_state = wf.getInfoFor(ws, 'review_state')
         if ws_state != 'open':
             if not analysis.REQUEST.has_key('workflow_skiplist'):

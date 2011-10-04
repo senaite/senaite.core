@@ -60,6 +60,42 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         # contentsMethod methods.  We ignore it.
         return self.getAnalyses()
 
+    def assignAnalysis(analysis):
+        # - add the analysis to self.Analyses()
+        # - try to add the analysis parent in the worksheet layout according to
+        #   the worksheet's template, if possible.
+
+        self.setAnalyses(self.getAnalyses() + [analysis,])
+
+        # if our parent object is already in the worksheet layout we're done.
+        parent_uid = analysis.aq_parent.UID()
+        if parent_uid in [l[1] for l in self.getLayout()]:
+            return
+        wst = self.getWorksheetTemplate()
+        wstlayout = wst.getLayout()
+        if analysis.portal_type == 'Analysis':
+            analysis_type = 'a'
+        elif analysis.portal_type == 'DuplicateAnalysis':
+            analysis_type = 'd'
+        elif analysis.portal_type == 'ReferenceAnalysis':
+            if analysis.getBlank():
+                analysis_type = 'b'
+            else:
+                analysis_type = 'c'
+        else:
+            raise WorkflowException, _("Invalid Analysis Type")
+        wslayout = self.getLayout()
+        position = len(wslayout) + 1
+        if wst:
+            used_positions = [slot['position'] for slot in wslayout]
+            available_positions = [row['pos'] for row in wstlayout \
+                                   if row['pos'] not in used_positions and \
+                                      row['type'] == analysis_type]
+            if available_positions:
+                position = available_positions[0]
+        self.setLayout(layout + [{'position': position,
+                                'container_uid': parent_uid},])
+
     def getInstrumentExports(self):
         """ return the possible instrument export formats """
         return INSTRUMENT_EXPORTS

@@ -977,40 +977,10 @@ class AnalysisRequestsView(ClientAnalysisRequestsView):
 
     def folderitems(self):
         workflow = getToolByName(self.context, "portal_workflow")
-        items = BikaListingView.folderitems(self)
+        items = ClientAnalysisRequestsView.folderitems(self)
         for x in range(len(items)):
-            if not items[x].has_key('obj'): continue
             obj = items[x]['obj']
-
             items[x]['replace']['Client'] = "<a href='%s'>%s</a>" % \
                  (obj.aq_parent.absolute_url(), obj.aq_parent.Title())
-
-            items[x]['replace']['getRequestID'] = "<a href='%s'>%s</a>" % \
-                 (items[x]['url'], items[x]['getRequestID'])
-
-            items[x]['getDateReceived'] = \
-                TimeOrDate(obj.getDateReceived())
-
-            items[x]['getDatePublished'] = \
-                TimeOrDate(obj.getDatePublished())
-
-            if workflow.getInfoFor(obj, 'worksheetanalysis_review_state') == 'assigned':
-                items[x]['after']['state_title'] = \
-                     "<img src='++resource++bika.lims.images/worksheet.png' title='All analyses assigned'/>"
-
-            sample = obj.getSample()
-            after_icons = "<a href='%s'><img src='++resource++bika.lims.images/sample.png' title='Sample: %s'></a>" % \
-                        (sample.absolute_url(), sample.Title())
-            if sample.getSampleType().getHazardous():
-                after_icons += "<img src='++resource++bika.lims.images/hazardous_small.png' title='Hazardous'>"
-            if after_icons:
-                items[x]['after']['getRequestID'] = after_icons
-
-        items = sorted(items, key = itemgetter('getRequestID'))
-        items.reverse()
-        # re-do the pretty css odd/even classes
-        for i in range(len(items)):
-            items[i]['table_row_class'] = ((i + 1) % 2 == 0) and \
-                 "draggable even" or "draggable odd"
 
         return items

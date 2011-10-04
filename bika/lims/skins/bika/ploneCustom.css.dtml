@@ -52,6 +52,12 @@ dl.portlet ul.navTreeLevel0 > .navTreeItem {
 	line-height: 1.5em;
 }
 
+
+/************ columns.css overrides */
+
+
+
+
 /* Pretty table classes
 */
 .three_column_table td {
@@ -61,12 +67,30 @@ dl.portlet ul.navTreeLevel0 > .navTreeItem {
     width:50% !important;
 }
 
+
 /* Shrink and expand theme columns (from columns.css)
  */
 
 div.width-1\3a 4 { width: 16.5%; } /* .width-1:4 */
 div.width-3\3a 4 { width: 80.2%; } /* .width-1:4 */
 div.position-1\3a 4 {margin-left:    -81.5%;} /* .position-1:4 */
+
+div.position-3\:4 {
+    margin-left: -16.855%;
+	width:81%
+}
+div.width-3\:4 {
+	width:81.2%
+}
+div.width-1\:2 {
+    width: 64.4% !important;
+}
+div.width-1\:4 {
+    width: 15.75% !important;
+}
+div.position-1\:4 {
+    margin-left: -82.25%;
+}
 
 #plone-contentmenu-workflow .state-cancelled {
     background-color: red;
@@ -118,12 +142,24 @@ dt.attachments {
     width:100%;
 }
 
+
+
 .workflow_action_buttons {
   margin-left: 1.5em;
 }
 .workflow_action_button {
 }
 
+
+dl.portlet dt, div.portletAssignments div.portletHeader {
+    background-color: #ddd;
+    border:d0d0d0;
+    line-height: normal;
+    padding: .25em .25em .25em .3em;
+    color: #666666 !important;
+    font: bold 1.1em "Helvetica Neue",Arial,FreeSans,sans-serif;
+    margin-left: 0;
+}
 
 /*
  * Analysis Request tables
