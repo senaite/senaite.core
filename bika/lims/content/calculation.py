@@ -28,7 +28,7 @@ schema = BikaSchema.copy() + Schema((
             label = _("Calculation Interim Fields"),
             description =_("Define interim fields such as vessel mass, dilution factors, "
                            "should your calculation require them. The field title specified "
-                           "here will be used as column headers and field descriptors where"
+                           "here will be used as column headers and field descriptors where "
                            "the interim fields are displayed"),
         )
     ),
