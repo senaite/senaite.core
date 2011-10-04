@@ -11,7 +11,7 @@
           directory="bika.lims:skins/bika"/>
 
   <skin-path name="*">
-    <layer name="bika" insert-before="*"/>
+    <layer name="bika" insert-after="custom"/>
   </skin-path>
 
 </object>

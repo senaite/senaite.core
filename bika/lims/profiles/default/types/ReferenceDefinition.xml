@@ -25,7 +25,7 @@
 		condition_expr=""
 		icon_expr=""
 		link_target=""
-		url_expr="string:${portal_url}/bika_setup/bika_samplepoints"
+		url_expr="string:${portal_url}/bika_setup/bika_referencedefinitions"
 		visible="False">
 </action>
 

@@ -115,7 +115,9 @@ Colum Headers
 			tal:condition="view/show_sort_column"/>
 		<th class="nosort column"
 			tal:condition="view/show_select_column">
-			<input type="checkbox"
+			<input
+				type="checkbox"
+				tal:condition="view/show_select_all_checkbox"
 				class="noborder"
 				id="select_all"/>
 		</th>

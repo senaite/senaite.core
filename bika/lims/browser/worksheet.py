@@ -2,6 +2,7 @@ from DateTime import DateTime
 from DocumentTemplate import sequence
 from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFCore.utils import getToolByName
+from Products.Archetypes.public import DisplayList
 from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import bikaMessageFactory as _
@@ -95,6 +96,7 @@ class WorksheetAddView(BrowserView):
         form = self.request.form
         rc = getToolByName(self.context, "reference_catalog")
         pc = getToolByName(self.context, "portal_catalog")
+        wf = getToolByName(self.context, "portal_workflow")
 
         ws_id = self.context.generateUniqueId('Worksheet')
         self.context.invokeFactory(id = ws_id, type_name = 'Worksheet')
@@ -113,6 +115,8 @@ class WorksheetAddView(BrowserView):
         wstlayout = wst.getLayout()
         services = wst.getService()
         wst_service_uids = [s.UID() for s in services]
+
+        ws.setWorksheetTemplate(wst)
 
         count_a = count_b = count_c = count_d = 0
         for row in wstlayout:
@@ -133,25 +137,26 @@ class WorksheetAddView(BrowserView):
                            sort_on = 'getDueDate'):
             analysis = analysis.getObject()
             service_uid = analysis.getService().UID()
-            if service_uid not in wst_service_uids:
-                continue
 
-            # if our parent object is already in the worksheet layout we're done.
-            # this is a more specific version of ws.assignAnalysis()
+            # if our parent object is already in the worksheet layout
+            # we just add the analysis to Analyses
             parent_uid = analysis.aq_parent.UID()
-            if parent_uid in [l[1] for l in ws.getLayout()]:
-                return
-            wslayout = ws.getLayout() # xxx
+            wslayout = ws.getLayout()
+            if parent_uid in [l['container_uid'] for l in wslayout]:
+                wf.doActionFor(analysis, 'assign')
+                ws.setAnalyses(ws.getAnalyses() + [analysis,])
+                continue
             position = len(wslayout) + 1
-            if wst:
-                used_positions = [slot['position'] for slot in wslayout]
-                available_positions = [row['pos'] for row in wstlayout \
-                                       if row['pos'] not in used_positions and \
-                                          row['type'] == 'a']
-                if not available_positions:
-                    continue
-                ws.setLayout(wslayout + [{'position': available_positions[0],
-                                        'container_uid': parent_uid},])
+            used_positions = [slot['position'] for slot in wslayout]
+            available_positions = [row['pos'] for row in wstlayout \
+                                   if row['pos'] not in used_positions and \
+                                      row['type'] == 'a']
+            if not available_positions:
+                continue
+            ws.setLayout(wslayout + [{'position': available_positions[0],
+                                    'container_uid': parent_uid},])
+            wf.doActionFor(analysis, 'assign')
+            ws.setAnalyses(ws.getAnalyses() + [analysis,])
 
         # find best maching reference samples for Blanks and Controls
         for t in ('b','c'):
@@ -159,10 +164,18 @@ class WorksheetAddView(BrowserView):
             else: form_key = 'control_ref'
             for row in [r for r in wstlayout if r['type'] == t]:
                 reference_definition_uid = row[form_key]
+                reference_definition = rc.lookupObject(reference_definition_uid)
                 samples = pc(portal_type = 'ReferenceSample',
                              review_state = 'current',
                              inactive_state = 'active',
                              getReferenceDefinitionUID = reference_definition_uid)
+                if not samples:
+                    self.context.translate(
+                        mapping={'position':position,
+                                 'definition':reference_definition.Title()},
+                        default="No reference samples found for ${definition} at position ${position}.",
+                        domain="bika.lims")
+                    break
                 samples = [s.getObject() for s in samples]
                 samples = [s for s in samples if s.getBlank == True]
                 complete_reference_found = False
@@ -181,6 +194,7 @@ class WorksheetAddView(BrowserView):
                         complete_reference_found = True
                         break
                 if complete_reference_found:
+                    ws.assignAnalysis(reference)
                     wf.doActionFor(reference, 'assign')
                 else:
                     # find the most complete reference sample instead
@@ -193,6 +207,7 @@ class WorksheetAddView(BrowserView):
                             no_of_services = references[key]['count']
                             reference = key
                     if reference:
+                        ws.assignAnalysis(reference)
                         wf.doActionFor(reference, 'assign')
 
         # fill duplicate positions
@@ -206,7 +221,6 @@ class WorksheetAddView(BrowserView):
 ##                            AR = used_ars[dup_pos]['ar'],
 ##                            Position = position,
 ##                            Service = used_ars[dup_pos]['serv'])
-        ws.edit(MaxPositions = len(wstlayout))
         ws.processForm()
 
         self.request.RESPONSE.redirect(ws.absolute_url())
@@ -236,6 +250,7 @@ class WorksheetManageResultsView(AnalysesView):
         }
         self.review_states = [
             {'title': _('All'), 'id':'all',
+             'transitions': ['submit', 'verify', 'retract', 'unassign'],
              'columns':['Pos',
                         'Client',
                         'Order',
@@ -279,10 +294,38 @@ class WorksheetManageResultsView(AnalysesView):
                 else:
                     items[x]['after'] += '<img width="16" height="16" src="%s/++resource++bika.lims.images/control.png"/>' % \
                         (self.context.absolute_url())
-
-        items = sorted(items, key = itemgetter('getRequestID'))
-
+        # order the analyses into the worksheet.Layout parent ordering
+        # and renumber their positions.
+        layout = self.context.getLayout()
+        items_by_parent = {}
+        for item in items:
+            obj = item['obj']
+            parent_uid = obj.aq_parent.UID()
+            item['Pos'] = [l['position'] for l in layout \
+                           if l['container_uid'] == parent_uid][0]
+            if parent_uid in items_by_parent:
+                items_by_parent[parent_uid].append(item)
+            else:
+                items_by_parent[parent_uid] = [item,]
+        items = []
+        for slot in layout:
+            items += items_by_parent[slot['container_uid']]
         return items
+
+    # Present the LabManagers and labtechnicans as options for analyser
+    # set the first entry to blank to force selection
+    def getAnalysersDisplayList(self):
+        mtool = getToolByName(self, 'portal_membership')
+        analysers = {}
+        pairs = [(' ', ' '), ]
+        analysers = mtool.searchForMembers(roles = ['LabManager', 'Analyst'])
+        for member in analysers:
+            uid = member.getId()
+            fullname = member.getProperty('fullname')
+            if fullname is None:
+                fullname = uid
+            pairs.append((uid, fullname))
+        return DisplayList(pairs)
 
 class WorksheetAddAnalysisView(AnalysesView):
     def __init__(self, context, request):

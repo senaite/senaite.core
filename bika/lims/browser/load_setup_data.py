@@ -91,6 +91,7 @@ class LoadSetupData(BrowserView):
                not self.deferred['Analysis Services']:
                 break
 
+        self.load_analysis_specifications(sheets['Analysis Specifications'])
         self.load_analysis_profiles(sheets['Analysis Profiles'])
         self.load_reference_definitions(sheets['Reference Definitions'])
         self.load_reference_suppliers(sheets['Reference Suppliers'])
@@ -398,11 +399,13 @@ class LoadSetupData(BrowserView):
         rows = [[sheet.cell(row=row_nr, column=col_nr).value for col_nr in range(nr_cols)] for row_nr in range(nr_rows)]
         fields = rows[1]
         folder = self.context.bika_setup.bika_sampletypes
+        self.sampletypes = {}
         for row in rows[3:]:
             row = dict(zip(fields, row))
             st_id = folder.generateUniqueId('SampleType')
             folder.invokeFactory('SampleType', id = st_id)
             obj = folder[st_id]
+            self.sampletypes[row['title']] = obj
             obj.edit(title = unicode(row['title']),
                      description = unicode(row['description']),
                      RetentionPeriod = int(row['RetentionPeriod']),
@@ -667,6 +670,32 @@ class LoadSetupData(BrowserView):
                                               'min':unicode(Min),
                                               'max':unicode(Max)}])
 
+    def load_analysis_specifications(self, sheet):
+        nr_rows = sheet.get_highest_row()
+        nr_cols = sheet.get_highest_column()
+##        self.request.response.write("<input type='hidden' id='load_section' value='Analysis Specifications' max='%s'/>"%(nr_rows-3))
+##        self.request.response.flush()
+        rows = [[sheet.cell(row=row_nr, column=col_nr).value for col_nr in range(nr_cols)] for row_nr in range(nr_rows)]
+        fields = rows[1]
+        folder = self.context.bika_setup.bika_analysisspecs
+        ResultsRange = []
+        for row in rows[3:]:
+            row = dict(zip(fields, row))
+            if row['SampleType']:
+                if ResultsRange:
+                    obj.setResultsRange(ResultsRange)
+                    ResultsRange = []
+                _id = folder.generateUniqueId('AnalysisSpec')
+                folder.invokeFactory('AnalysisSpec', id = _id)
+                obj = folder[_id]
+                obj.edit(SampleType = self.sampletypes[row['SampleType']].UID())
+                obj.processForm()
+            else:
+                ResultsRange.append({'keyword': row['keyword'],
+                                     'min': str(row['min']),
+                                     'max': str(row['max']),
+                                     'error': str(row['error'])},)
+
     def load_reference_suppliers(self, sheet):
         nr_rows = sheet.get_highest_row()
         nr_cols = sheet.get_highest_column()
@@ -771,7 +800,8 @@ class LoadSetupData(BrowserView):
                 if row['pos']:
                     l = [{'pos':unicode(row['pos']),
                           'type':unicode(row['type']),
-                          'sub':unicode(row['sub']),
+                          'blank_ref':unicode(row['blank_ref']),
+                          'control_ref':unicode(row['control_ref']),
                           'dup':unicode(row['dup'])}]
                     wst_obj.setLayout(wst_obj.getLayout() + l)
                 continue
@@ -789,7 +819,8 @@ class LoadSetupData(BrowserView):
                      Service = services,
                      Layout = [{'pos':unicode(row['pos']),
                                 'type':unicode(row['type']),
-                                'sub':unicode(row['sub']),
+                                'blank_ref':unicode(row['blank_ref']),
+                                'control_ref':unicode(row['control_ref']),
                                 'dup':unicode(row['dup'])}])
             wst_obj = obj
             obj.processForm()

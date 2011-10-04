@@ -43,6 +43,14 @@ class LabProductsView(BikaListingView):
         self.review_states = [
             {'title': _('All'), 'id':'all',
              'columns': ['Title', 'Volume', 'Unit', 'Price', 'VATAmount', 'TotalPrice']},
+            {'title': _('Active'), 'id':'active',
+             'contentFilter': {'inactive_state': 'active'},
+             'transitions': ['deactivate'],
+             'columns': ['Title', 'Volume', 'Unit', 'Price', 'VATAmount', 'TotalPrice']},
+            {'title': _('Inactive'), 'id':'inactive',
+             'contentFilter': {'inactive_state': 'inactive'},
+             'transitions': ['activate',],
+             'columns': ['Title', 'Volume', 'Unit', 'Price', 'VATAmount', 'TotalPrice']},
         ]
 
     def folderitems(self):

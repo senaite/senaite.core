@@ -44,6 +44,22 @@ class DepartmentsView(BikaListingView):
                          'Manager',
                          'ManagerPhone',
                          'ManagerEmail']},
+            {'title': _('Active'), 'id':'active',
+             'contentFilter': {'inactive_state': 'active'},
+             'transitions': ['deactivate'],
+             'columns': ['Title',
+                         'Description',
+                         'Manager',
+                         'ManagerPhone',
+                         'ManagerEmail']},
+            {'title': _('Inactive'), 'id':'inactive',
+             'contentFilter': {'inactive_state': 'inactive'},
+             'transitions': ['activate',],
+             'columns': ['Title',
+                         'Description',
+                         'Manager',
+                         'ManagerPhone',
+                         'ManagerEmail']},
         ]
 
     def folderitems(self):

@@ -37,9 +37,17 @@ class CalculationsView(BikaListingView):
                    'Formula': {'title': _('Formula')},
                   }
         self.review_states = [
-                    {'title': _('All'), 'id':'all',
-                     'columns': ['Title', 'Description', 'Formula']}
-                    ]
+            {'title': _('All'), 'id':'all',
+                     'columns': ['Title', 'Description', 'Formula']},
+            {'title': _('Active'), 'id':'active',
+             'contentFilter': {'inactive_state': 'active'},
+             'transitions': ['deactivate'],
+                     'columns': ['Title', 'Description', 'Formula']},
+            {'title': _('Inactive'), 'id':'inactive',
+             'contentFilter': {'inactive_state': 'inactive'},
+             'transitions': ['activate',],
+                     'columns': ['Title', 'Description', 'Formula']},
+        ]
 
     def folderitems(self):
         items = BikaListingView.folderitems(self)

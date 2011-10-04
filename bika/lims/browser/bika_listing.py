@@ -139,6 +139,7 @@ class BikaListingView(BrowserView):
     show_filters = False
     show_select_column = False
     show_select_row = False
+    show_select_all_checkbox = True
     show_sort_column = False
     show_workflow_action_buttons = True
     # just set pagesize high to disable batching.
@@ -408,6 +409,7 @@ class BikaListingTable(tableview.Table):
         self.show_sort_column = bika_listing.show_sort_column
         self.show_select_row = bika_listing.show_select_row
         self.show_select_column = bika_listing.show_select_column
+        self.show_select_all_checkbox = bika_listing.show_select_all_checkbox
         self.show_filters = bika_listing.show_filters
         self.show_workflow_action_buttons = bika_listing.show_workflow_action_buttons
         self.filters_in_use = bika_listing.filters_in_use

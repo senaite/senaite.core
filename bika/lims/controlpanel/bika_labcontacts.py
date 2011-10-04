@@ -46,7 +46,25 @@ class LabContactsView(BikaListingView):
                          'BusinessPhone',
                          'Fax',
                          'MobilePhone',
-                         'EmailAddress']}
+                         'EmailAddress']},
+            {'title': _('Active'), 'id':'active',
+             'contentFilter': {'inactive_state': 'active'},
+             'transitions': ['deactivate'],
+             'columns': ['Listingname',
+                         'Department',
+                         'BusinessPhone',
+                         'Fax',
+                         'MobilePhone',
+                         'EmailAddress']},
+            {'title': _('Inactive'), 'id':'inactive',
+             'contentFilter': {'inactive_state': 'inactive'},
+             'transitions': ['activate',],
+             'columns': ['Listingname',
+                         'Department',
+                         'BusinessPhone',
+                         'Fax',
+                         'MobilePhone',
+                         'EmailAddress']},
         ]
 
     def folderitems(self):

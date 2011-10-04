@@ -3,7 +3,6 @@ from AccessControl import ClassSecurityInfo
 from Products.ATContentTypes.lib.historyaware import HistoryAwareMixin
 from Products.CMFCore.permissions import ListFolderContents, View
 from Products.CMFCore.utils import getToolByName
-#from Products.CMFPlone import transaction_note
 from Products.Archetypes.public import *
 from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.Archetypes.Registry import registerField
@@ -21,8 +20,10 @@ schema = BikaSchema.copy() + Schema((
         allowed_types = ('WorksheetTemplate',),
         relationship = 'WorksheetAnalysisTemplate',
     ),
-    StringField('Analyser',
+    ReferenceField('Analyser',
         vocabulary = 'getAnalysersDisplayList',
+        allowed_types = ("PloneUser"),
+        relationship = "WorksheetPloneUser",
     ),
     ReferenceField('Analyses',
         required = 1,
@@ -32,10 +33,10 @@ schema = BikaSchema.copy() + Schema((
     ),
     RecordsField('Layout',
         required = 1,
-        subfields = ('position', 'container_uid')
+        subfields = ('position', 'container_uid'),
     ),
-    TextField('Notes'),
-    IntegerField('MaxPositions'),
+    TextField('Notes',
+              ),
 ),
 )
 
@@ -69,10 +70,10 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
 
         # if our parent object is already in the worksheet layout we're done.
         parent_uid = analysis.aq_parent.UID()
-        if parent_uid in [l[1] for l in self.getLayout()]:
+        wstlayout = wst.getLayout()
+        if parent_uid in [l['container_uid'] for l in wslayout]:
             return
         wst = self.getWorksheetTemplate()
-        wstlayout = wst.getLayout()
         if analysis.portal_type == 'Analysis':
             analysis_type = 'a'
         elif analysis.portal_type == 'DuplicateAnalysis':
@@ -95,6 +96,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
                 position = available_positions[0]
         self.setLayout(layout + [{'position': position,
                                 'container_uid': parent_uid},])
+
 
     def getInstrumentExports(self):
         """ return the possible instrument export formats """
@@ -751,37 +753,5 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
     def current_date(self):
         """ return current date """
         return DateTime()
-
-    # Present the LabManagers and labtechnicans as options for analyser
-    # set the first entry to blank to force selection
-    security.declarePublic('getAnalysersDisplayList')
-    def getAnalysersDisplayList(self):
-        mtool = getToolByName(self, 'portal_membership')
-        analysers = {}
-        pairs = [(' ', ' '), ]
-        analysers = mtool.searchForMembers(roles = ['LabManager', 'Analyst'])
-        for member in analysers:
-            uid = member.getId()
-            fullname = member.getProperty('fullname')
-            if fullname is None:
-                fullname = uid
-            pairs.append((uid, fullname))
-        return DisplayList(pairs)
-
-    # find the name of the person who performed the analysis
-    security.declarePublic('getAnalyserName')
-    def getAnalyserName(self):
-        uid = self.getAnalyser()
-        if uid is None:
-            return ' '
-        mtool = getToolByName(self, 'portal_membership')
-        member = mtool.getMemberById(uid)
-        if member is None:
-            return uid
-        else:
-            fullname = member.getProperty('fullname')
-        if fullname is None:
-            return uid
-        return fullname
 
 registerType(Worksheet, PROJECTNAME)

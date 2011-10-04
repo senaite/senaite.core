@@ -45,6 +45,22 @@ class InstrumentsView(BikaListingView):
                          'Brand',
                          'Model',
                          'ExpiryDate']},
+            {'title': _('Active'), 'id':'active',
+             'contentFilter': {'inactive_state': 'active'},
+             'transitions': ['deactivate'],
+             'columns': ['Title',
+                         'Type',
+                         'Brand',
+                         'Model',
+                         'ExpiryDate']},
+            {'title': _('Inactive'), 'id':'inactive',
+             'contentFilter': {'inactive_state': 'inactive'},
+             'transitions': ['activate',],
+             'columns': ['Title',
+                         'Type',
+                         'Brand',
+                         'Model',
+                         'ExpiryDate']},
         ]
 
     def folderitems(self):
@@ -55,7 +71,8 @@ class InstrumentsView(BikaListingView):
             items[x]['Type'] = obj.Type
             items[x]['Brand'] = obj.Brand
             items[x]['Model'] = obj.Model
-            items[x]['ExpiryDate'] = obj.CalibrationExpiryDate
+            items[x]['ExpiryDate'] = obj.CalibrationExpiryDate and \
+                obj.CalibrationExpiryDate.Date() or ''
             items[x]['replace']['Title'] = "<a href='%s'>%s</a>" % \
                  (items[x]['url'], items[x]['Title'])
 

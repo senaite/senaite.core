@@ -36,8 +36,15 @@ class ARProfilesView(BikaListingView):
         }
         self.review_states = [
             {'title': _('All'), 'id':'all',
-             'columns': ['title', 'Description', 'ProfileKey'],
-             }
+             'columns': ['title', 'Description', 'ProfileKey']},
+            {'title': _('Active'), 'id':'active',
+             'contentFilter': {'inactive_state': 'active'},
+             'transitions': ['deactivate'],
+             'columns': ['title', 'Description', 'ProfileKey']},
+            {'title': _('Inactive'), 'id':'inactive',
+             'contentFilter': {'inactive_state': 'inactive'},
+             'transitions': ['activate',],
+             'columns': ['title', 'Description', 'ProfileKey']},
         ]
 
     def folderitems(self):

@@ -36,6 +36,14 @@ class AnalysisCategoriesView(BikaListingView):
         self.review_states = [
             {'title': _('All'), 'id':'all',
              'columns': ['Title', 'Description', 'Department']},
+            {'title': _('Active'), 'id':'active',
+             'contentFilter': {'inactive_state': 'active'},
+             'transitions': ['deactivate'],
+             'columns': ['Title', 'Description', 'Department']},
+            {'title': _('Inactive'), 'id':'inactive',
+             'contentFilter': {'inactive_state': 'inactive'},
+             'transitions': ['activate',],
+             'columns': ['Title', 'Description', 'Department']},
         ]
 
     def folderitems(self):

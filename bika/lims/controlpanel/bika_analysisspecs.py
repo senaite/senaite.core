@@ -34,8 +34,15 @@ class AnalysisSpecsView(BikaListingView):
         }
         self.review_states = [
             {'title': _('All'), 'id':'all',
-             'columns': ['getSampleType'],
-             },
+             'columns': ['getSampleType']},
+            {'title': _('Active'), 'id':'active',
+             'contentFilter': {'inactive_state': 'active'},
+             'transitions': ['deactivate'],
+             'columns': ['getSampleType']},
+            {'title': _('Inactive'), 'id':'inactive',
+             'contentFilter': {'inactive_state': 'inactive'},
+             'transitions': ['activate',],
+             'columns': ['getSampleType']},
         ]
 
     def folderitems(self):
