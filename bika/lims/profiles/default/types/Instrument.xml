@@ -24,4 +24,6 @@
     url_expr="string:${portal_url}/bika_setup/bika_instruments" visible="False">
   <permission value="View"/>
  </action>
-</object>
+
+
+  </object>

@@ -497,7 +497,7 @@ class LoadSetupData(BrowserView):
             obj.edit(title = unicode(row['title']),
                      description = unicode(row['description']),
                      PointOfCapture = unicode(row['PointOfCapture']),
-                     Unit = unicode(row['Unit']),
+                     Unit = unicode(row['Unit'] and row['Unit'] or ''),
                      Category = self.cats[unicode(row['Category'])].UID(),
                      Price = "%02f" % float(row['Price']),
                      CorporatePrice = "%02f" % float(row['BulkPrice']),
@@ -782,7 +782,7 @@ class LoadSetupData(BrowserView):
             obj.edit(title = unicode(row['title']),
                      description = unicode(row['description']),
                      Volume = unicode(row['Volume']),
-                     Unit = unicode(row['Unit']),
+                     Unit = unicode(row['Unit'] and row['Unit'] or ''),
                      Price = "%02f" % float(row['Price']))
             obj.processForm()
 
