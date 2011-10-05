@@ -660,7 +660,7 @@ class ClientContactsView(BikaListingView):
     def __init__(self, context, request):
         super(ClientContactsView, self).__init__(context, request)
         self.contentFilter = {'portal_type': 'Contact',
-                              'sort_on':'Title'}
+                              'sort_on':'sortable_title'}
         self.content_add_actions = {_('Contact'):
                                     "createObject?type_name=Contact"}
         self.show_editable_border = True

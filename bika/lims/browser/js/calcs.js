@@ -150,5 +150,7 @@ $(document).ready(function(){
 		}
 	});
 
+	$("input[name='specification']").filter(":checked").click();
+
 });
 });
