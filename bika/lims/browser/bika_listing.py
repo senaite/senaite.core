@@ -196,6 +196,7 @@ class BikaListingView(BrowserView):
             if form.has_key("review_state"):
                 review_state = [r for r in self.review_states if \
                                 r['id'] == form['review_state']][0]
+                print review_state, '----------------------'
                 if review_state.has_key('contentFilter'):
                     for k, v in review_state['contentFilter'].items():
                         self.modified_contentFilter[k] = v
@@ -332,11 +333,13 @@ class BikaListingView(BrowserView):
                                                               obj.portal_type)
             except:
                 state_title = None
-            for state_var, state in states.items():
+            if review_state:
+                results_dict['review_state'] = review_state
+            for state_var,state in states.items():
                 if not state_title:
                     state_title = workflow.getTitleForStateOnType(
                         state, obj.portal_type)
-                results_dict[state_var] = state_var
+                results_dict[state_var] = state
             results_dict['state_title'] = state_title
 
             # XXX debug - add history_id column

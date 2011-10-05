@@ -138,7 +138,8 @@ class AnalysesView(BikaListingView):
                 items[i]['after']['Service'] = "(v%s)" % \
                      (obj.reference_versions[service_uid])
             items[i]['Keyword'] = keyword
-            items[i]['Unit'] = service.getUnit()
+            unit = service.getUnit()
+            items[i]['Unit'] = unit and unit or ''
             items[i]['Result'] = ''
             items[i]['formatted_result'] = ''
             items[i]['Uncertainty'] = ''
