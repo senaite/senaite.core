@@ -6,13 +6,12 @@ from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import transaction_note
 from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from bika.lims import logger, bikaMessageFactory as _
+from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.analyses import AnalysesView
 from bika.lims.browser.bika_listing import BikaListingView, WorkflowAction
 from bika.lims.browser.client import ClientAnalysisRequestsView
 from bika.lims.browser.publish import Publish
 from bika.lims.config import POINTS_OF_CAPTURE
-from bika.lims import logger
 from bika.lims.utils import isActive, TimeOrDate
 from decimal import Decimal
 from operator import itemgetter
@@ -35,8 +34,6 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
         workflow = getToolByName(self.context, 'portal_workflow')
         pc = getToolByName(self.context, 'portal_catalog')
         rc = getToolByName(self.context, 'reference_catalog')
-        originating_url = self.request.get_header("referer",
-                                                  self.context.absolute_url())
         skiplist = self.request.get('workflow_skiplist', [])
         action, came_from = WorkflowAction._get_form_workflow_action(self)
 
@@ -55,10 +52,12 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
             else:
                 message = _('No ARs were published.')
             self.context.plone_utils.addPortalMessage(message, 'info')
-            self.request.response.redirect(originating_url)
+            self.destination_url = self.request.get_header("referer",
+                                   self.context.absolute_url())
+            self.request.response.redirect(self.destination_url)
 
         ## submit
-        if action == 'submit' and self.request.form.has_key("Result"):
+        elif action == 'submit' and self.request.form.has_key("Result"):
             selected_analyses = WorkflowAction._get_selected_items(self)
             selected_analysis_uids = selected_analyses.keys()
             results = {}
@@ -107,7 +106,15 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
                 self.context.setDryMatterResults()
             message = _("Changes saved.")
             self.context.plone_utils.addPortalMessage(message, 'info')
-            self.request.response.redirect(originating_url)
+            self.destination_url = self.request.get_header("referer",
+                                   self.context.absolute_url())
+            self.request.response.redirect(self.destination_url)
+
+## verify
+        elif action == 'verify':
+            # default bika_listing.py/WorkflowAction, but then go to view screen.
+            self.destination_url = self.context.absolute_url()
+            WorkflowAction.__call__(self)
 
         else:
             # default bika_listing.py/WorkflowAction for other transitions

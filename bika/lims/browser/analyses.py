@@ -10,7 +10,7 @@ from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import ManageResults, ViewResults, EditResults
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
-from bika.lims.utils import TimeOrDate
+from bika.lims.utils import isActive, TimeOrDate
 from bika.lims.config import POINTS_OF_CAPTURE
 from decimal import Decimal
 from operator import itemgetter
@@ -71,11 +71,8 @@ class AnalysesView(BikaListingView):
             getSecurityManager().checkPermission(ManageResults, self.context)
 
         context_active = True
-        try:
-            if workflow.getInfoFor(self.context, 'cancellation_state') == "cancelled":
-                context_active = False
-        except WorkflowException:
-            pass
+        if not isActive(self.context):
+            context_active = False
 
         items = super(AnalysesView, self).folderitems(full_objects = True)
 
@@ -104,7 +101,6 @@ class AnalysesView(BikaListingView):
                     proxies = pc(portal_type = 'AnalysisSpec',
                         getSampleTypeUID = sample.getSampleType().UID())
                 else:
-                    logger.log("Failed to get specs for %s" % self.context)
                     proxies = []
                 brains = (p.getObject() for p in proxies)
                 for spec in brains:

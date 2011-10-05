@@ -10,7 +10,6 @@ from Products.CMFPlone.utils import pretty_title_or_id, isExpired, safe_unicode
 from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import bikaMessageFactory as _
-from bika.lims import logger
 from bika.lims.utils import isActive, TimeOrDate
 from plone.app.content.batching import Batch
 from plone.app.content.browser import tableview
@@ -32,6 +31,7 @@ class WorkflowAction:
         This function is called to do the worflow actions
     """
     def __init__(self, context, request):
+        self.destination_url = ""
         self.context = context
         self.request = request
         # Save context UID for benefit of event subscribers.
@@ -57,7 +57,7 @@ class WorkflowAction:
             action = form[action]
         return (action, came_from)
 
-    def _get_selected_items(self, full_objects=True):
+    def _get_selected_items(self, full_objects = True):
         """ return a list of selected form objects
             full_objects defaults to True
         """
@@ -82,10 +82,11 @@ class WorkflowAction:
         workflow = getToolByName(self.context, 'portal_workflow')
         pc = getToolByName(self.context, 'portal_catalog')
         rc = getToolByName(self.context, 'reference_catalog')
-        originating_url = self.request.get_header("referer",
-                                                  self.context.absolute_url())
+        if self.destination_url == "":
+            self.destination_url = self.request.get_header("referer",
+                                   self.context.absolute_url())
         skiplist = self.request.get('workflow_skiplist', [])
-        action,came_from = self._get_form_workflow_action()
+        action, came_from = self._get_form_workflow_action()
 
         # transition the context object.
         if came_from == "workflow_action":
@@ -95,18 +96,18 @@ class WorkflowAction:
             if not isActive(obj) and action not in ('reinstate', 'activate'):
                 message = _('Item is inactive.')
                 self.context.plone_utils.addPortalMessage(message, 'info')
-                self.request.response.redirect(originating_url)
+                self.request.response.redirect(self.destination_url)
                 return
             else:
                 if obj.UID() not in skiplist:
                     workflow.doActionFor(obj, action)
-                self.request.response.redirect(originating_url)
+                self.request.response.redirect(self.destination_url)
                 return
 
         # transition selected items from the bika_listing/Table.
         transitioned = []
         selected_items = self._get_selected_items()
-        for uid,item in selected_items.items():
+        for uid, item in selected_items.items():
             # the only action allowed on inactive items is "activate"
             if not isActive(item) and action not in ('reinstate', 'activate'):
                 continue
@@ -123,7 +124,7 @@ class WorkflowAction:
  ##        else:
 ##            message = _('No items were affected.')
 
-        self.request.response.redirect(originating_url)
+        self.request.response.redirect(self.destination_url)
 
 class BikaListingView(BrowserView):
     """
@@ -169,7 +170,7 @@ class BikaListingView(BrowserView):
     review_states = [
         {'id':'all',
          'title': _('All'),
-         'columns':['state_title',]
+         'columns':['state_title', ]
          },
     ]
 
@@ -196,7 +197,7 @@ class BikaListingView(BrowserView):
                 review_state = [r for r in self.review_states if \
                                 r['id'] == form['review_state']][0]
                 if review_state.has_key('contentFilter'):
-                    for k,v in review_state['contentFilter'].items():
+                    for k, v in review_state['contentFilter'].items():
                         self.modified_contentFilter[k] = v
                 else:
                     if form['review_state'] != 'all':
@@ -218,7 +219,7 @@ class BikaListingView(BrowserView):
 
         return self.template()
 
-    def folderitems(self, full_objects=False):
+    def folderitems(self, full_objects = False):
         """
         """
         context = aq_inner(self.context)
@@ -259,7 +260,7 @@ class BikaListingView(BrowserView):
             description = obj.Description()
             icon = plone_layout.getIcon(obj)
             url = obj.absolute_url()
-            relative_url = obj.absolute_url(relative=True)
+            relative_url = obj.absolute_url(relative = True)
 
             fti = portal_types.get(obj.portal_type)
             if fti is not None:
@@ -331,7 +332,7 @@ class BikaListingView(BrowserView):
                                                               obj.portal_type)
             except:
                 state_title = None
-            for state_var,state in states.items():
+            for state_var, state in states.items():
                 if not state_title:
                     state_title = workflow.getTitleForStateOnType(
                         state, obj.portal_type)
@@ -346,7 +347,7 @@ class BikaListingView(BrowserView):
                 if pr.isVersionable(o):
                     pa = getToolByName(self.context, 'portal_archivist')
                     history_id = str(dereference(o)[1])
-                    version_id = hasattr(o,'version_id') \
+                    version_id = hasattr(o, 'version_id') \
                                and str(o.version_id) or None
                     if not 'version_id' in self.columns.keys():
                         self.columns['version_id'] = {'title':'version'}
@@ -430,7 +431,7 @@ class BikaListingTable(tableview.Table):
 
         # get all transitions for all items.
         transitions = {}
-        for obj in [i.get('obj','') for i in self.items]:
+        for obj in [i.get('obj', '') for i in self.items]:
             obj = hasattr(obj, 'getObject') and \
                 obj.getObject() or \
                 obj

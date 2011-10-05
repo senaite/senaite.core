@@ -29,8 +29,6 @@ class WorksheetWorkflowAction(WorkflowAction):
         workflow = getToolByName(self.context, 'portal_workflow')
         pc = getToolByName(self.context, 'portal_catalog')
         rc = getToolByName(self.context, 'reference_catalog')
-        originating_url = self.request.get_header("referer",
-                                                  self.context.absolute_url())
         skiplist = self.request.get('workflow_skiplist', [])
         action, came_from = WorkflowAction._get_form_workflow_action(self)
 
@@ -82,7 +80,9 @@ class WorksheetWorkflowAction(WorkflowAction):
 
             message = _("Changes saved.")
             self.context.plone_utils.addPortalMessage(message, 'info')
-            self.request.response.redirect(originating_url)
+            self.destination_url = self.request.get_header("referer",
+                                   self.context.absolute_url())
+            self.request.response.redirect(self.destination_url)
 
         else:
             # default bika_listing.py/WorkflowAction for other transitions
@@ -137,7 +137,7 @@ class WorksheetAddView(BrowserView):
             wslayout = ws.getLayout()
             if parent_uid in [l['container_uid'] for l in wslayout]:
                 wf.doActionFor(analysis, 'assign')
-                ws.setAnalyses(ws.getAnalyses() + [analysis,])
+                ws.setAnalyses(ws.getAnalyses() + [analysis, ])
                 continue
             position = len(wslayout) + 1
             used_positions = [slot['position'] for slot in wslayout]
@@ -147,12 +147,12 @@ class WorksheetAddView(BrowserView):
             if not available_positions:
                 continue
             ws.setLayout(wslayout + [{'position': available_positions[0],
-                                    'container_uid': parent_uid},])
+                                    'container_uid': parent_uid}, ])
             wf.doActionFor(analysis, 'assign')
-            ws.setAnalyses(ws.getAnalyses() + [analysis,])
+            ws.setAnalyses(ws.getAnalyses() + [analysis, ])
 
         # find best maching reference samples for Blanks and Controls
-        for t in ('b','c'):
+        for t in ('b', 'c'):
             if t == 'b': form_key = 'blank_ref'
             else: form_key = 'control_ref'
             for row in [r for r in wstlayout if r['type'] == t]:
@@ -165,11 +165,11 @@ class WorksheetAddView(BrowserView):
                 if not samples:
                     self.context.translate(
                         "message_no_references_found",
-                        mapping={'position':position,
+                        mapping = {'position':position,
                                  'definition':reference_definition and \
                                  reference_definition.Title() or ''},
-                        default="No reference samples found for ${definition} at position ${position}.",
-                        domain="bika.lims")
+                        default = "No reference samples found for ${definition} at position ${position}.",
+                        domain = "bika.lims")
                     break
                 samples = [s.getObject() for s in samples]
                 samples = [s for s in samples if s.getBlank == True]
@@ -291,7 +291,7 @@ class WorksheetManageResultsView(AnalysesView):
             items[x]['replace']['Client'] = "<a href='%s'>%s</a>" % \
                  (client.absolute_url(), client.Title())
             items[x]['DueDate'] = \
-                TimeOrDate(self.context, obj.getDueDate(), long_format=0)
+                TimeOrDate(self.context, obj.getDueDate(), long_format = 0)
             items[x]['Order'] = ''
             if hasattr(ar, 'getClientOrderNumber'):
                 order_nr = ar.getClientOrderNumber() or ''
@@ -310,7 +310,7 @@ class WorksheetManageResultsView(AnalysesView):
                         (self.context.absolute_url())
         # hide non_empty_columns (possible Client, Order, and Attachments
         for col_id in self.review_states[0]['columns']:
-            if col_id not in non_empty_columns and col_id in ('Client','Order','Attachments'):
+            if col_id not in non_empty_columns and col_id in ('Client', 'Order', 'Attachments'):
                 self.review_states[0]['columns'].remove(col_id)
         # order the analyses into the worksheet.Layout parent ordering
         # and renumber their positions.
@@ -324,7 +324,7 @@ class WorksheetManageResultsView(AnalysesView):
             if parent_uid in items_by_parent:
                 items_by_parent[parent_uid].append(item)
             else:
-                items_by_parent[parent_uid] = [item,]
+                items_by_parent[parent_uid] = [item, ]
         items = []
         for slot in layout:
             items += items_by_parent[slot['container_uid']]

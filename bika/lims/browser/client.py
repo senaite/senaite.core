@@ -19,15 +19,13 @@ class ClientWorkflowAction(WorkflowAction):
         that apply to objects transitioned directly
         from Client views
     """
+
     def __call__(self):
         form = self.request.form
         plone.protect.CheckAuthenticator(form)
         workflow = getToolByName(self.context, 'portal_workflow')
         pc = getToolByName(self.context, 'portal_catalog')
         rc = getToolByName(self.context, 'reference_catalog')
-
-        originating_url = self.request.get_header("referer",
-                                                  self.context.absolute_url())
 
         # use came_from to decide which UI action was clicked.
         # "workflow_action" is the action name specified in the
@@ -43,7 +41,10 @@ class ClientWorkflowAction(WorkflowAction):
             if type(action) == type([]): action = action[0]
             if not action:
                 logger.info("No workflow action provided")
-                self.request.response.redirect(originating_url)
+                self.destination_url = self.request.get_header("referer",
+                                       self.context.absolute_url())
+                self.request.response.redirect(self.destination_url)
+                return
 
         if action in ('prepublish', 'publish', 'prepublish'):
             # We pass a list of AR objects to Publish.
@@ -79,7 +80,9 @@ class ClientWorkflowAction(WorkflowAction):
             else:
                 message = _('No ARs were published.')
             self.context.plone_utils.addPortalMessage(message, 'info')
-            self.request.response.redirect(originating_url)
+            self.destination_url = self.request.get_header("referer",
+                                   self.context.absolute_url())
+            self.request.response.redirect(self.destination_url)
 
         else:
             # default bika_listing.py/WorkflowAction for other transitions
