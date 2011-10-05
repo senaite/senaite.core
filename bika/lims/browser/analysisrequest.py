@@ -71,12 +71,13 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
                     analysis = rc.lookupObject(uid)
                 service = analysis.getService()
                 interims = form["InterimFields"][0][uid]
+                unit = service.getUnit()
                 analysis.edit(
                     Result = result,
                     InterimFields = json.loads(interims),
                     Retested = form.has_key('retested') and \
                                form['retested'].has_key(uid),
-                    Unit = service.getUnit())
+                    Unit = unit and unit or '')
 
             # discover which items may be submitted
             submissable = []

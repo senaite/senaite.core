@@ -9,6 +9,7 @@ from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.config import PROJECTNAME
 from bika.lims import bikaMessageFactory as _
 from bika.lims.content.bikaschema import BikaFolderSchema
+from plone.app.layout.globals.interfaces import IViewView
 from ZODB.POSException import ConflictError
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.folder.folder import ATFolder, ATFolderSchema
@@ -17,7 +18,7 @@ from zope.interface.declarations import implements
 import plone, json
 
 class WorksheetTemplatesView(BikaListingView):
-    implements(IFolderContentsView)
+    implements(IFolderContentsView, IViewView)
 
     def __init__(self, context, request):
         super(WorksheetTemplatesView, self).__init__(context, request)
@@ -27,7 +28,7 @@ class WorksheetTemplatesView(BikaListingView):
                                     "createObject?type_name=WorksheetTemplate"}
         self.title = _("Worksheet Templates")
         self.description = ""
-        self.show_editable_border = False
+        self.show_editable_border = True
         self.show_filters = False
         self.show_sort_column = False
         self.show_select_row = False

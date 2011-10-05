@@ -6,12 +6,13 @@ from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.config import PROJECTNAME
 from bika.lims.interfaces import IAnalysisCategories
 from plone.app.content.browser.interfaces import IFolderContentsView
+from plone.app.layout.globals.interfaces import IViewView
 from plone.app.folder.folder import ATFolderSchema, ATFolder
 from zope.interface.declarations import implements
 from zope.interface import alsoProvides
 
 class AnalysisCategoriesView(BikaListingView):
-    implements(IFolderContentsView)
+    implements(IFolderContentsView, IViewView)
 
     def __init__(self, context, request):
         super(AnalysisCategoriesView, self).__init__(context, request)
@@ -22,7 +23,7 @@ class AnalysisCategoriesView(BikaListingView):
         self.title = _("Analysis Categories")
         self.description = ""
         self.show_editable_border = False
-        self.show_filters = False
+        self.show_editable_border = True
         self.show_sort_column = False
         self.show_select_row = False
         self.show_select_column = True

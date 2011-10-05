@@ -6,6 +6,7 @@ from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.config import PROJECTNAME
 from bika.lims import bikaMessageFactory as _
 from bika.lims.content.bikaschema import BikaFolderSchema
+from plone.app.layout.globals.interfaces import IViewView
 from bika.lims.interfaces import IAttachmentTypes
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.folder.folder import ATFolder, ATFolderSchema
@@ -13,7 +14,7 @@ from zope.interface.declarations import implements
 from operator import itemgetter
 
 class AttachmentTypesView(BikaListingView):
-    implements(IFolderContentsView)
+    implements(IFolderContentsView, IViewView)
     def __init__(self, context, request):
         super(AttachmentTypesView, self).__init__(context, request)
         self.contentFilter = {'portal_type': 'AttachmentType',

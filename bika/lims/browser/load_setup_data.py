@@ -547,15 +547,15 @@ class LoadSetupData(BrowserView):
                           'title': unicode(row['interim_title']),
                           'type': unicode(row['interim_type']),
                           'value': unicode(row['interim_value']),
-                          'unit': unicode(row['interim_unit'])}
+                          'unit': unicode(row['interim_unit'] and row['interim_unit'] or '')}
                     self.deferred['Calculations'][-1]['_interim'].append(i)
                     continue
                 if row['interim_keyword']:
                     i = [{'keyword': unicode(row['interim_keyword']),
-                         'title': unicode(row['interim_title']),
-                         'type': unicode(row['interim_type']),
-                         'value': unicode(row['interim_value']),
-                         'unit': unicode(row['interim_unit'])}]
+                          'title': unicode(row['interim_title']),
+                          'type': unicode(row['interim_type']),
+                          'value': unicode(row['interim_value']),
+                          'unit': unicode(row['interim_unit'] and row['interim_unit'] or '')}]
                     calc_obj.setInterimFields(
                         calc_obj.getInterimFields() + i
                     )
@@ -581,10 +581,10 @@ class LoadSetupData(BrowserView):
             obj = folder[c_id]
             if row['interim_keyword']:
                 i = [{'keyword': unicode(row['interim_keyword']),
-                     'title': unicode(row['interim_title']),
-                     'type': unicode(row['interim_type']),
-                     'value': unicode(row['interim_value']),
-                     'unit': unicode(row['interim_unit'])}]
+                      'title': unicode(row['interim_title']),
+                      'type': unicode(row['interim_type']),
+                      'value': unicode(row['interim_value']),
+                      'unit': unicode(row['interim_unit'] and row['interim_unit'] or '')}]
             else:
                 i = []
             obj.edit(title = unicode(row['title']),

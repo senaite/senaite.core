@@ -6,6 +6,7 @@ from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.config import PROJECTNAME
 from bika.lims import bikaMessageFactory as _
 from bika.lims.content.bikaschema import BikaFolderSchema
+from plone.app.layout.globals.interfaces import IViewView
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.folder.folder import ATFolder, ATFolderSchema
 from bika.lims.interfaces import IAnalysisServices
@@ -13,7 +14,7 @@ from zope.interface.declarations import implements
 from operator import itemgetter
 
 class AnalysisServicesView(BikaListingView):
-    implements(IFolderContentsView)
+    implements(IFolderContentsView, IViewView)
     def __init__(self, context, request):
         super(AnalysisServicesView, self).__init__(context, request)
         self.contentFilter = {'portal_type': 'AnalysisService',
@@ -21,7 +22,7 @@ class AnalysisServicesView(BikaListingView):
         self.content_add_actions = {_('Analysis Service'):
                                     "createObject?type_name=AnalysisService"}
         self.title = _("Analysis Services")
-        self.show_editable_border = False
+        self.show_editable_border = True
         self.show_filters = False
         self.show_sort_column = False
         self.show_select_row = False

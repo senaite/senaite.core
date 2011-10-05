@@ -6,6 +6,7 @@ from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.browser.publish import Publish
 from bika.lims.browser.bika_listing import WorkflowAction
 from bika.lims.config import ManageResults
+from plone.app.layout.globals.interfaces import IViewView
 from bika.lims import logger
 from bika.lims.utils import TimeOrDate
 from operator import itemgetter
@@ -89,6 +90,7 @@ class ClientWorkflowAction(WorkflowAction):
             WorkflowAction.__call__(self)
 
 class ClientAnalysisRequestsView(BikaListingView):
+    implements(IViewView)
 
     def __init__(self, context, request):
         super(ClientAnalysisRequestsView, self).__init__(context, request)
@@ -102,7 +104,7 @@ class ClientAnalysisRequestsView(BikaListingView):
         wf = getToolByName(self.context, 'portal_workflow')
         active_contacts = [c for c in context.objectValues('Contact') if \
                            wf.getInfoFor(c, 'inactive_state', '') == 'active']
-        if not active_contacts:
+        if context.portal_type == "Client" and not active_contacts:
             self.content_add_actions = {}
             self.context.plone_utils.addPortalMessage(
                 _("Client contact required before request may be submitted"))
@@ -276,6 +278,7 @@ class ClientAnalysisRequestsView(BikaListingView):
         return items
 
 class ClientSamplesView(BikaListingView):
+    implements(IViewView)
 
     def __init__(self, context, request):
         super(ClientSamplesView, self).__init__(context, request)
@@ -408,6 +411,7 @@ class ClientSamplesView(BikaListingView):
         return items
 
 class ClientARImportsView(BikaListingView):
+    implements(IViewView)
 
     def __init__(self, context, request):
         super(ClientARImportsView, self).__init__(context, request)
@@ -460,6 +464,8 @@ class ClientARImportsView(BikaListingView):
         return items
 
 class ClientARProfilesView(BikaListingView):
+    implements(IViewView)
+
     def __init__(self, context, request):
         super(ClientARProfilesView, self).__init__(context, request)
         self.contentFilter = {'portal_type': 'ARProfile'}
@@ -493,6 +499,7 @@ class ClientARProfilesView(BikaListingView):
         return items
 
 class ClientAnalysisSpecsView(BikaListingView):
+    implements(IViewView)
 
     def __init__(self, context, request):
         super(ClientAnalysisSpecsView, self).__init__(context, request)
@@ -537,6 +544,7 @@ class ClientAnalysisSpecsView(BikaListingView):
 
 
 class ClientAttachmentsView(BikaListingView):
+    implements(IViewView)
 
     def __init__(self, context, request):
         super(ClientAttachmentsView, self).__init__(context, request)
@@ -603,6 +611,7 @@ class ClientAttachmentsView(BikaListingView):
         return items
 
 class ClientOrdersView(BikaListingView):
+    implements(IViewView)
 
     def __init__(self, context, request):
         super(ClientOrdersView, self).__init__(context, request)
@@ -656,6 +665,7 @@ class ClientOrdersView(BikaListingView):
         return items
 
 class ClientContactsView(BikaListingView):
+    implements(IViewView)
 
     def __init__(self, context, request):
         super(ClientContactsView, self).__init__(context, request)

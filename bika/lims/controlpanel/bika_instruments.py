@@ -9,13 +9,14 @@ from bika.lims.config import PROJECTNAME
 from bika.lims import bikaMessageFactory as _
 from bika.lims.content.bikaschema import BikaFolderSchema
 from bika.lims.interfaces import IInstruments
+from plone.app.layout.globals.interfaces import IViewView
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.folder.folder import ATFolder, ATFolderSchema
 from zope.interface.declarations import implements
 from operator import itemgetter
 
 class InstrumentsView(BikaListingView):
-    implements(IFolderContentsView)
+    implements(IFolderContentsView, IViewView)
     def __init__(self, context, request):
         super(InstrumentsView, self).__init__(context, request)
         self.contentFilter = {'portal_type': 'Instrument',
@@ -24,7 +25,7 @@ class InstrumentsView(BikaListingView):
                                     "createObject?type_name=Instrument"}
         self.title = _("Instruments")
         self.description = ""
-        self.show_editable_border = False
+        self.show_editable_border = True
         self.show_filters = False
         self.show_sort_column = False
         self.show_select_row = False
@@ -75,7 +76,6 @@ class InstrumentsView(BikaListingView):
                 obj.CalibrationExpiryDate.Date() or ''
             items[x]['replace']['Title'] = "<a href='%s'>%s</a>" % \
                  (items[x]['url'], items[x]['Title'])
-
 
         return items
 

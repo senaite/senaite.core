@@ -6,6 +6,7 @@ from Products.CMFCore import permissions
 from Products.Five.browser import BrowserView
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.config import PROJECTNAME
+from plone.app.layout.globals.interfaces import IViewView
 from bika.lims import bikaMessageFactory as _
 from bika.lims.interfaces import ISamplePoints
 from bika.lims.content.bikaschema import BikaFolderSchema
@@ -16,7 +17,7 @@ from Products.CMFCore.utils import getToolByName
 import json
 
 class SamplePointsView(BikaListingView):
-    implements(IFolderContentsView)
+    implements(IFolderContentsView, IViewView)
 
     def __init__(self, context, request):
         super(SamplePointsView, self).__init__(context, request)
@@ -26,7 +27,7 @@ class SamplePointsView(BikaListingView):
                                     "createObject?type_name=SamplePoint"}
         self.title = _("Sample Points")
         self.description = ""
-        self.show_editable_border = False
+        self.show_editable_border = True
         self.show_filters = False
         self.show_sort_column = False
         self.show_select_row = False

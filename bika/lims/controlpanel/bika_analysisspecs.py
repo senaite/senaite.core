@@ -9,10 +9,11 @@ from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.folder.folder import ATFolder, ATFolderSchema
 from bika.lims.interfaces import IAnalysisSpecs
 from zope.interface.declarations import implements
+from plone.app.layout.globals.interfaces import IViewView
 from operator import itemgetter
 
 class AnalysisSpecsView(BikaListingView):
-    implements(IFolderContentsView)
+    implements(IFolderContentsView, IViewView)
 
     def __init__(self, context, request):
         super(AnalysisSpecsView, self).__init__(context, request)
@@ -22,7 +23,7 @@ class AnalysisSpecsView(BikaListingView):
                                     "createObject?type_name=AnalysisSpec"}
         self.title = _("Analysis Specs")
         self.description = _("Set up the laboratory analysis service results specifications")
-        self.show_editable_border = False
+        self.show_editable_border = True
         self.show_filters = False
         self.show_sort_column = False
         self.show_select_row = False

@@ -6,6 +6,7 @@ from Products.CMFCore import permissions
 from Products.Five.browser import BrowserView
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.config import PROJECTNAME
+from plone.app.layout.globals.interfaces import IViewView
 from bika.lims import bikaMessageFactory as _
 from bika.lims.content.bikaschema import BikaFolderSchema
 from plone.app.content.browser.interfaces import IFolderContentsView
@@ -15,7 +16,7 @@ from zope.interface.declarations import implements
 from operator import itemgetter
 
 class ReferenceDefinitionsView(BikaListingView):
-    implements(IFolderContentsView)
+    implements(IFolderContentsView, IViewView)
     def __init__(self, context, request):
         super(ReferenceDefinitionsView, self).__init__(context, request)
         self.contentFilter = {'portal_type': 'ReferenceDefinition',
@@ -25,7 +26,7 @@ class ReferenceDefinitionsView(BikaListingView):
         self.title = _("Reference Definitions")
         self.description = _("ReferenceDefinition represents a Reference Definition "
                              "or sample type used for quality control testing")
-        self.show_editable_border = False
+        self.show_editable_border = True
         self.show_filters = False
         self.show_sort_column = False
         self.show_select_row = False
