@@ -270,10 +270,22 @@ class WorksheetManageResultsView(AnalysesView):
             items[x]['Pos'] = pos
             service = obj.getService()
             items[x]['Category'] = service.getCategory().Title()
+            # ar is either an AR, a Worksheet, or a ReferenceSample (analysis parent).
             ar = obj.aq_parent
-            items[x]['replace']['getRequestID'] = "<a href='%s'>%s</a>" % \
-                 (ar.absolute_url(), ar.Title())
+            # client is either a Client, a ReferenceSupplier, or the worksheet folder.
             client = ar.aq_parent
+            if ar.portal_type == 'AnalysisRequest':
+                sample = obj.getSample()
+                sample_icon = "<a href='%s'><img title='Sample: %s' src='++resource++bika.lims.images/sample.png'></a>" % \
+                    (sample.absolute_url(), sample.Title())
+            elif ar.portal_type == 'ReferenceSample':
+                sample_icon = "<a href='%s'><img title='Reference: %s' src='++resource++bika.lims.images/referencesample.png'></a>" % \
+                    (sample.absolute_url(), ar.Title())
+            else:
+                sample_icon = ''
+            items[x]['replace']['getRequestID'] = "<a href='%s'>%s</a>%s" % \
+                 (ar.absolute_url(), ar.Title(), sample_icon)
+
             if client and 'Client' not in non_empty_columns:
                 non_empty_columns.append('Client')
             items[x]['replace']['Client'] = "<a href='%s'>%s</a>" % \

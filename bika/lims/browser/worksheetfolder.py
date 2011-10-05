@@ -12,7 +12,9 @@ from zope.interface import implements
 import plone, json
 
 class WorksheetFolderView(BikaListingView):
-    contentFilter = {'portal_type': 'Worksheet'}
+    contentFilter = {'portal_type': 'Worksheet',
+                              'sort_on':'id',
+                              'sort_order': 'reverse'}
     content_add_actions = {_('Worksheet'): "worksheet_add"}
     show_editable_border = False
     show_table_only = False

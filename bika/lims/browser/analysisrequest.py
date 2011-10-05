@@ -40,7 +40,7 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
         skiplist = self.request.get('workflow_skiplist', [])
         action, came_from = WorkflowAction._get_form_workflow_action(self)
 
-## publish
+        ## publish
         if action in ('prepublish', 'publish', 'prepublish'):
             # XXX publish entire AR.
             transitioned = Publish(self.context,
@@ -57,7 +57,7 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
             self.context.plone_utils.addPortalMessage(message, 'info')
             self.request.response.redirect(originating_url)
 
-## submit
+        ## submit
         if action == 'submit' and self.request.form.has_key("Result"):
             selected_analyses = WorkflowAction._get_selected_items(self)
             selected_analysis_uids = selected_analyses.keys()
@@ -423,6 +423,7 @@ class AnalysisRequestSelectCCView(BikaListingView):
         self.title = _("Contacts to CC")
         self.description = _("Select the contacts that will receive analysis results for this request.")
         self.contentFilter = {'portal_type': 'Contact',
+                              'sort_on':'Title',
                               'inactive_state': 'active'}
         self.show_editable_border = False
         self.show_sort_column = False
@@ -474,6 +475,8 @@ class AnalysisRequestSelectSampleView(BikaListingView):
         self.title = _("Select sample")
         self.description = _("Click on a sample to create a secondary AR.")
         self.contentFilter = {'portal_type': 'Sample',
+                              'sort_on':'id',
+                              'sort_order': 'reverse',
                               'cancellation_state': 'active'}
         self.show_editable_border = False
         self.show_sort_column = False
@@ -957,6 +960,8 @@ class AnalysisRequestsView(ClientAnalysisRequestsView):
         self.description = ""
         self.show_editable_border = False
         self.contentFilter = {'portal_type':'AnalysisRequest',
+                              'sort_on':'id',
+                              'sort_order': 'reverse',
                               'path':{"query": ["/"], "level" : 0 }}
 
         self.columns['Client'] = {'title': _('Client')}

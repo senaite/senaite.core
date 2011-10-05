@@ -89,7 +89,9 @@ class ClientAnalysisRequestsView(BikaListingView):
 
     def __init__(self, context, request):
         super(ClientAnalysisRequestsView, self).__init__(context, request)
-        self.contentFilter = {'portal_type':'AnalysisRequest'}
+        self.contentFilter = {'portal_type':'AnalysisRequest',
+                              'sort_on':'id',
+                              'sort_order': 'reverse'}
         self.review_state = 'all'
         self.content_add_actions = {_('Analysis Request'):
                                     "analysisrequest_add"}
@@ -135,7 +137,9 @@ class ClientAnalysisRequestsView(BikaListingView):
                         'state_title']},
             {'id':'sample_due',
              'title': _('Sample due'),
-             'contentFilter': {'review_state': 'sample_due'},
+             'contentFilter': {'review_state': 'sample_due',
+                               'sort_on':'id',
+                               'sort_order': 'reverse'},
              'transitions': ['receive', 'cancel', 'reinstate'],
              'columns':['getRequestID',
                         'getClientOrderNumber',
@@ -145,7 +149,9 @@ class ClientAnalysisRequestsView(BikaListingView):
                         'getSamplePointTitle']},
             {'id':'sample_received',
              'title': _('Sample received'),
-             'contentFilter': {'review_state': 'sample_received'},
+             'contentFilter': {'review_state': 'sample_received',
+                               'sort_on':'id',
+                               'sort_order': 'reverse'},
              'transitions': ['cancel', 'reinstate'],
              'columns':['getRequestID',
                         'getClientOrderNumber',
@@ -159,7 +165,9 @@ class ClientAnalysisRequestsView(BikaListingView):
              'contentFilter': {'worksheetanalysis_review_state': 'assigned',
                                'review_state': ('sample_received', 'to_be_verified',
                                                 'attachment_due', 'verified',
-                                                'published')},
+                                                'published'),
+                               'sort_on':'id',
+                               'sort_order': 'reverse'},
              'transitions': ['submit', 'retract', 'publish', 'prepublish', 'republish', 'cancel', 'reinstate'],
              'columns':['getRequestID',
                         'getClientOrderNumber',
@@ -171,7 +179,9 @@ class ClientAnalysisRequestsView(BikaListingView):
                         'state_title']},
             {'id':'to_be_verified',
              'title': _('To be verified'),
-             'contentFilter': {'review_state': 'to_be_verified'},
+             'contentFilter': {'review_state': 'to_be_verified',
+                               'sort_on':'id',
+                               'sort_order': 'reverse'},
              'transitions': ['verify', 'prepublish', 'retract', 'cancel', 'reinstate'],
              'columns':['getRequestID',
                         'getClientOrderNumber',
@@ -182,7 +192,9 @@ class ClientAnalysisRequestsView(BikaListingView):
                         'getDateReceived']},
             {'id':'verified',
              'title': _('Verified'),
-             'contentFilter': {'review_state': 'verified'},
+             'contentFilter': {'review_state': 'verified',
+                               'sort_on':'id',
+                               'sort_order': 'reverse'},
              'transitions': ['publish', 'republish', 'cancel', 'reinstate'],
              'columns':['getRequestID',
                         'getClientOrderNumber',
@@ -193,7 +205,9 @@ class ClientAnalysisRequestsView(BikaListingView):
                         'getDateReceived']},
             {'id':'published',
              'title': _('Published'),
-             'contentFilter': {'review_state': 'published'},
+             'contentFilter': {'review_state': 'published',
+                               'sort_on':'id',
+                               'sort_order': 'reverse'},
              'columns':['getRequestID',
                         'getClientOrderNumber',
                         'getClientReference',
@@ -207,7 +221,9 @@ class ClientAnalysisRequestsView(BikaListingView):
              'contentFilter': {'cancellation_state': 'cancelled',
                                'review_state': ('sample_due', 'sample_received',
                                                 'to_be_verified', 'attachment_due',
-                                                'verified', 'published')},
+                                                'verified', 'published'),
+                               'sort_on':'id',
+                               'sort_order': 'reverse'},
              'transitions': ['republish', 'reinstate'],
              'columns':['getRequestID',
                         'getClientOrderNumber',
@@ -223,8 +239,8 @@ class ClientAnalysisRequestsView(BikaListingView):
     def folderitems(self):
         workflow = getToolByName(self.context, "portal_workflow")
         items = BikaListingView.folderitems(self)
+
         for x in range(len(items)):
-            items[x]['getRequestID'] = ''
             if not items[x].has_key('obj'): continue
             obj = items[x]['obj']
 
@@ -254,19 +270,15 @@ class ClientAnalysisRequestsView(BikaListingView):
             if after_icons:
                 items[x]['after']['getRequestID'] = after_icons
 
-        items = sorted(items, key=itemgetter('getRequestID'))
-        items.reverse()
-        # re-do the pretty css odd/even classes
-        for i in range(len(items)):
-            items[i]['table_row_class'] = ((i + 1) % 2 == 0) and \
-                 "draggable even" or "draggable odd"
         return items
 
 class ClientSamplesView(BikaListingView):
 
     def __init__(self, context, request):
         super(ClientSamplesView, self).__init__(context, request)
-        self.contentFilter = {'portal_type': 'Sample'}
+        self.contentFilter = {'portal_type': 'Sample',
+                              'sort_on':'id',
+                              'sort_order': 'reverse'}
         self.content_add_actions = {}
         self.show_editable_border = True
         self.show_sort_column = False
@@ -525,7 +537,8 @@ class ClientAttachmentsView(BikaListingView):
 
     def __init__(self, context, request):
         super(ClientAttachmentsView, self).__init__(context, request)
-        self.contentFilter = {'portal_type': 'Attachment'}
+        self.contentFilter = {'portal_type': 'Attachment',
+                              'sort_order': 'reverse'}
         self.content_add_actions = {_('Attachment'): "createObject?type_name=Attachment"}
         self.show_editable_border = True
         self.show_sort_column = False
@@ -590,7 +603,9 @@ class ClientOrdersView(BikaListingView):
 
     def __init__(self, context, request):
         super(ClientOrdersView, self).__init__(context, request)
-        self.contentFilter = {'portal_type': 'SupplyOrder'}
+        self.contentFilter = {'portal_type': 'SupplyOrder',
+                              'sort_on':'id',
+                              'sort_order': 'reverse'}
         self.content_add_actions = {_('Order'): "createObject?type_name=SupplyOrder"}
         self.show_editable_border = True
         self.show_table_only = False
@@ -641,7 +656,8 @@ class ClientContactsView(BikaListingView):
 
     def __init__(self, context, request):
         super(ClientContactsView, self).__init__(context, request)
-        self.contentFilter = {'portal_type': 'Contact'}
+        self.contentFilter = {'portal_type': 'Contact',
+                              'sort_on':'Title'}
         self.content_add_actions = {_('Contact'):
                                     "createObject?type_name=Contact"}
         self.show_editable_border = True
