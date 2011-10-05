@@ -20,11 +20,6 @@ schema = BikaSchema.copy() + Schema((
         allowed_types = ('WorksheetTemplate',),
         relationship = 'WorksheetAnalysisTemplate',
     ),
-    ReferenceField('Analyser',
-        vocabulary = 'getAnalysersDisplayList',
-        allowed_types = ("PloneUser"),
-        relationship = "WorksheetPloneUser",
-    ),
     ReferenceField('Analyses',
         required = 1,
         multiValued = 1,
@@ -35,8 +30,10 @@ schema = BikaSchema.copy() + Schema((
         required = 1,
         subfields = ('position', 'container_uid'),
     ),
+    StringField('Analyst',
+    ),
     TextField('Notes',
-              ),
+    ),
 ),
 )
 
@@ -312,8 +309,8 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             RESPONSE.redirect('%s/manage_results' % self.absolute_url())
 
     security.declareProtected(ManageResults, 'submitResults')
-    def submitResults(self, analyser = None, results = {}, Notes = None, REQUEST = None, RESPONSE = None):
-        """ Submit results, interim results and Analyser
+    def submitResults(self, analyst = None, results = {}, Notes = None, REQUEST = None, RESPONSE = None):
+        """ Submit results, interim results and Analyst
         """
         self.setNotes(Notes)
         wf_tool = self.portal_workflow
@@ -325,10 +322,10 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         rc = getToolByName(self, REFERENCE_CATALOG)
         states = {}
 
-        if analyser:
-            if analyser.strip() == '':
-                analyser = None
-            self.setAnalyser(analyser)
+        if analyst:
+            if analyst.strip() == '':
+                analyst = None
+            self.setAnalyst(analyst)
 
         worksheet_seq = []
 

@@ -327,8 +327,9 @@ jQuery( function($) {
 		// clear date widget values if the page is reloaded.
 		e = $('input[id$="_DateSampled"]')
 		if(e.length > 0){
+			// XXX Datepicker format is not i18n aware (dd Oct 2011)
 			$(e)
-			.datepicker({'dateFormat': 'M dd, yy', showAnim: ''})
+			.datepicker({'dateFormat': 'dd M yy', showAnim: ''})
 			.click(function(){$(this).attr('value', '');})
 			.attr('value', '');
 		}
@@ -496,8 +497,9 @@ jQuery( function($) {
 			$("#ar_"+column+"_SampleID_button").val($("#ar_"+column+"_SampleID_default").val());
 			$("#ar_"+column+"_SampleID").val('');
 			$("#ar_"+column+"_ClientReference").val('').removeAttr("readonly");
+			// XXX Datepicker format is not i18n aware (dd Oct 2011)
 			$("#ar_"+column+"_DateSampled")
-				.datepicker({'dateFormat': 'M dd, yy', showAnim: ''})
+				.datepicker({'dateFormat': 'dd M yy', showAnim: ''})
 				.click(function(){$(this).attr('value', '');})
 				.attr('value', '');
 			$("#ar_"+column+"_ClientSampleID").val('').removeAttr("readonly");

@@ -1,10 +1,12 @@
 from AccessControl import getSecurityManager, Unauthorized
+from DateTime import DateTime
 from Products.CMFCore.utils import getToolByName
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.browser.publish import Publish
 from bika.lims.browser.bika_listing import WorkflowAction
 from bika.lims.config import ManageResults
+from bika.lims import logger
 from bika.lims.utils import TimeOrDate
 from operator import itemgetter
 from plone.app.content.browser.interfaces import IFolderContentsView
@@ -40,7 +42,7 @@ class ClientWorkflowAction(WorkflowAction):
             # XXX some browsers agree better than others about our JS ideas.
             if type(action) == type([]): action = action[0]
             if not action:
-                self.context.plone_utils.addPortalMessage("No action provided", 'error')
+                logger.info("No workflow action provided")
                 self.request.response.redirect(originating_url)
 
         if action in ('prepublish', 'publish', 'prepublish'):
@@ -89,13 +91,16 @@ class ClientAnalysisRequestsView(BikaListingView):
         super(ClientAnalysisRequestsView, self).__init__(context, request)
         self.contentFilter = {'portal_type':'AnalysisRequest'}
         self.review_state = 'all'
-        if context.objectValues('Contact'):
-            self.content_add_actions = {_('Analysis Request'):
-                                        "analysisrequest_add"}
-            self.description = ""
-        else:
+        self.content_add_actions = {_('Analysis Request'):
+                                    "analysisrequest_add"}
+        self.description = ""
+        wf = getToolByName(self.context, 'portal_workflow')
+        active_contacts = [c for c in context.objectValues('Contact') if \
+                           wf.getInfoFor(c, 'inactive_state', '') == 'active']
+        if not active_contacts:
             self.content_add_actions = {}
-            self.description = "Client contact required before request may be submitted"
+            self.context.plone_utils.addPortalMessage(
+                _("Client contact required before request may be submitted"))
         self.show_editable_border = True
         self.show_sort_column = False
         self.show_select_row = False
@@ -230,10 +235,10 @@ class ClientAnalysisRequestsView(BikaListingView):
                  (url, items[x]['getRequestID'])
 
             items[x]['getDateReceived'] = \
-                TimeOrDate(obj.getDateReceived())
+                TimeOrDate(self.context, obj.getDateReceived())
 
             items[x]['getDatePublished'] = \
-                TimeOrDate(obj.getDatePublished())
+                TimeOrDate(self.context, obj.getDatePublished())
 
             if workflow.getInfoFor(obj, 'worksheetanalysis_review_state') == 'assigned':
                 items[x]['after']['state_title'] = \
@@ -263,7 +268,7 @@ class ClientSamplesView(BikaListingView):
         self.content_add_actions = {}
         self.show_editable_border = True
         self.show_sort_column = False
-        self.show_select_row = True
+        self.show_select_row = False
         self.show_select_column = True
         self.pagesize = 50
 
@@ -277,6 +282,8 @@ class ClientSamplesView(BikaListingView):
             'ClientSampleID': {'title': _('Client SID')},
             'SampleTypeTitle': {'title': _('Sample Type')},
             'SamplePointTitle': {'title': _('Sample Point')},
+            'DateSampled': {'title': _('Date Sampled')},
+            'future_DateSampled': {'title': _('Sampling Date')},
             'DateReceived': {'title': _('Date Received')},
             'state_title': {'title': _('State')},
         }
@@ -289,6 +296,7 @@ class ClientSamplesView(BikaListingView):
                          'ClientSampleID',
                          'SampleTypeTitle',
                          'SamplePointTitle',
+                         'DateSampled',
                          'DateReceived',
                          'state_title']},
             {'id':'due',
@@ -297,6 +305,7 @@ class ClientSamplesView(BikaListingView):
                          'Requests',
                          'ClientReference',
                          'ClientSampleID',
+                         'future_DateSampled',
                          'SampleTypeTitle',
                          'SamplePointTitle']},
             {'id':'received',
@@ -307,6 +316,7 @@ class ClientSamplesView(BikaListingView):
                          'ClientSampleID',
                          'SampleTypeTitle',
                          'SamplePointTitle',
+                         'DateSampled',
                          'DateReceived']},
             {'id':'expired',
              'title': _('Expired'),
@@ -316,6 +326,7 @@ class ClientSamplesView(BikaListingView):
                          'ClientSampleID',
                          'SampleTypeTitle',
                          'SamplePointTitle',
+                         'DateSampled',
                          'DateReceived']},
             {'id':'disposed',
              'title': _('Disposed'),
@@ -325,6 +336,7 @@ class ClientSamplesView(BikaListingView):
                          'ClientSampleID',
                          'SampleTypeTitle',
                          'SamplePointTitle',
+                         'DateSampled',
                          'DateReceived']},
             {'id':'cancelled',
              'title': _('Cancelled'),
@@ -336,6 +348,7 @@ class ClientSamplesView(BikaListingView):
                          'ClientSampleID',
                          'SampleTypeTitle',
                          'SamplePointTitle',
+                         'DateSampled',
                          'DateReceived',
                          'state_title']},
             ]
@@ -356,16 +369,25 @@ class ClientSamplesView(BikaListingView):
             items[x]['SampleTypeTitle'] = obj.getSampleTypeTitle()
             items[x]['SamplePointTitle'] = obj.getSamplePointTitle()
 
-            items[x]['DateReceived'] = \
-                TimeOrDate(obj.getDateReceived())
+            datesampled = obj.getDateSampled()
+            items[x]['DateSampled'] = TimeOrDate(self.context, datesampled)
+            items[x]['future_DateSampled'] = datesampled.Date() > DateTime() and \
+                TimeOrDate(self.context, datesampled) or ''
+
+            items[x]['DateReceived'] = TimeOrDate(self.context, obj.getDateReceived())
 
             after_icons = ''
             if obj.getSampleType().getHazardous():
-                after_icons += "<img src='++resource++bika.lims.images/hazardous_small.png' title='Hazardous'>"
+                after_icons += "<img title='Hazardous' src='++resource++bika.lims.images/hazardous_small.png'>"
             if after_icons:
                 items[x]['after']['SampleID'] = after_icons
 
-
+        items = sorted(items, key=itemgetter('DateSampled'))
+        items.reverse()
+        # re-do the pretty css odd/even classes
+        for i in range(len(items)):
+            items[i]['table_row_class'] = ((i + 1) % 2 == 0) and \
+                 "draggable even" or "draggable odd"
         return items
 
 class ClientARImportsView(BikaListingView):
@@ -428,7 +450,7 @@ class ClientARProfilesView(BikaListingView):
                                     "createObject?type_name=ARProfile"}
         self.show_editable_border = True
         self.show_sort_column = False
-        self.show_select_row = True
+        self.show_select_row = False
         self.show_select_column = True
         self.pagesize = 50
         self.title = "%s: %s" % (self.context.Title(),
@@ -505,7 +527,7 @@ class ClientAttachmentsView(BikaListingView):
         self.content_add_actions = {_('Attachment'): "createObject?type_name=Attachment"}
         self.show_editable_border = True
         self.show_sort_column = False
-        self.show_select_row = True
+        self.show_select_row = False
         self.show_select_column = True
         self.pagesize = 50
 
@@ -605,8 +627,8 @@ class ClientOrdersView(BikaListingView):
             if not items[x].has_key('obj'): continue
             obj = items[x]['obj']
             items[x]['OrderNumber'] = obj.getOrderNumber()
-            items[x]['OrderDate'] = obj.getOrderDate()
-            items[x]['DateDispatched'] = obj.getDateDispatched()
+            items[x]['OrderDate'] = TimeOrDate(self.context, obj.getOrderDate())
+            items[x]['DateDispatched'] = TimeOrDate(self.context, obj.getDateDispatched())
 
             items[x]['replace']['OrderNumber'] = "<a href='%s'>%s</a>" % \
                  (items[x]['url'], items[x]['OrderNumber'])

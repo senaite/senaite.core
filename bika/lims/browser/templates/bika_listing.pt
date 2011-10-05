@@ -35,23 +35,23 @@
 		</form>
 	</tal:add_actions>
 
-	<tal:analyser
-		tal:condition="view/getAnalysersDisplayList|nothing">
-
+	<tal:analyst
+		tal:condition="nocall: view/getAnalysts|nothing">
+		<span class="formQuestion">Analyst: </span>
 		<select
-			name="Analyser">
-			<span class="formQuestion">Analyser: </span>
-			<tal:repeat repeat="analyser view/getAnalysersDisplayList">
+			id = "analyst"
+			name="analyst">
+			<tal:repeat repeat="analyst view/getAnalysts">
 				<option
 					tal:attributes="
-						value python:analyser[0];
-						selected python:analyser[0] == (context.getAnalyser() and context.getAnalyser().UID() or '') and 'selected' or ''"
-					tal:content="python:analyser"></option>
+						value python:analyst[0];
+						selected python:analyst[0] == (context.getAnalyst() and context.getAnalyst() or '') and 'selected' or ''"
+					tal:content="python:analyst[1]"></option>
 			</tal:repeat>
 		</select>
-	</tal:analyser>
-
-	<br/>
+		<br/>
+	</tal:analyst>
+		<br/>
 
 	<form name="folderContentsForm"
 	      id="folderContentsForm"

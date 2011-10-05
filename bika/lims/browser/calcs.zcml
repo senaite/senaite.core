@@ -8,7 +8,7 @@
   <browser:page
     for="*"
     name="listing_string_entry"
-    class="bika.lims.browser.calcs.AJAXCalculateAnalysisEntry"
+    class="bika.lims.browser.calcs.ajaxCalculateAnalysisEntry"
     permission="zope.Public"
     layer="bika.lims.interfaces.IBikaLIMS"
   />

@@ -8,7 +8,7 @@
     <browser:page
       for="bika.lims.interfaces.IReferenceSample"
       name="get_reference_definition_info"
-      class="bika.lims.browser.referencesample.AJAXGetReferenceDefinitionInfo"
+      class="bika.lims.browser.referencesample.ajaxGetReferenceDefinitionInfo"
       permission="zope.Public"
       layer="bika.lims.interfaces.IBikaLIMS"
     />

@@ -4,7 +4,7 @@ from Products.CMFCore.utils import getToolByName
 import json, plone
 import plone.protect
 
-class AJAXDeleteAnalysisAttachment():
+class ajaxDeleteAnalysisAttachment():
     """ Removes an analysis attachment. """
 
     def __init__(self, context, request):

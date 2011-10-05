@@ -2,7 +2,9 @@ from DateTime import DateTime
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.client import ClientSamplesView
+from bika.lims.utils import TimeOrDate
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.layout.globals.interfaces import IViewView
 from zope.interface import implements
@@ -44,12 +46,12 @@ class SampleEditView(SampleViewView):
             yield i
 
     def fmtDateSampled(self):
-        date_sampled = self.request.form.has_key("DateSampled") and \
-                     self.request.form["DateSampled"] or \
-                     self.context.getDateSampled().strftime("%Y-%m-%d")
-        return date_sampled
+        return TimeOrDate(self.context,
+                          self.request.form.has_key("DateSampled") and \
+                          self.request.form["DateSampled"] or \
+                          self.context.getDateSampled())
 
-class AJAXSampleSubmit():
+class ajaxSampleSubmit():
 
     def __init__(self, context, request):
         self.context = context
@@ -87,7 +89,7 @@ class AJAXSampleSubmit():
             ars = sample.getAnalysisRequests()
             for ar in ars:
                 ar.reindexObject()
-            message = "Changes Saved."
+            message = _("Changes Saved.")
         self.context.plone_utils.addPortalMessage(message, 'info')
         return json.dumps({'success':message})
 
@@ -100,7 +102,7 @@ class SamplesView(ClientSamplesView):
                               'path':{"query": ["/"], "level" : 0 }}
         self.show_editable_border = False
         self.show_select_column = True
-        self.title = "Samples"
+        self.title = _("Samples")
         self.description = ""
 
 

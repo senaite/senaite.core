@@ -1,5 +1,6 @@
 from AccessControl import ModuleSecurityInfo, allow_module
 from DateTime import DateTime
+from Products.CMFPlone.TranslationServiceTool import TranslationServiceTool
 from bika.lims import interfaces
 from bika.lims.config import Publish
 from Products.CMFCore.utils import getToolByName
@@ -44,15 +45,21 @@ def isActive(obj):
         return False
     return True
 
-def TimeOrDate(datetime):
+def TimeOrDate(context, datetime, long_format=False):
     """ Return the Time date is today,
         otherwise return the Date. """
+    localLongTimeFormat = context.portal_properties.site_properties.localLongTimeFormat
+    localTimeFormat = context.portal_properties.site_properties.localTimeFormat
+    localTimeOnlyFormat = context.portal_properties.site_properties.localTimeOnlyFormat
+
     if hasattr(datetime, 'Date'):
-        if datetime.Date() == DateTime().Date():
-            return datetime.Time()[:-3]
+        if datetime > DateTime() or long_format:
+            return datetime.asdatetime().strftime(localLongTimeFormat)
+        elif datetime.Date() == DateTime().Date():
+            return datetime.asdatetime().strftime(localTimeOnlyFormat)
         else:
-            return datetime.Date()
-    return ''
+            return datetime.asdatetime().strftime(localTimeFormat)
+    return datetime
 
 # encode_header function copied from roundup's rfc2822 package.
 hqre = re.compile(r'^[A-z0-9!"#$%%&\'()*+,-./:;<=>?@\[\]^_`{|}~ ]+$')

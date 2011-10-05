@@ -10,6 +10,7 @@ from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import ManageResults, ViewResults, EditResults
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
+from bika.lims.utils import TimeOrDate
 from bika.lims.config import POINTS_OF_CAPTURE
 from decimal import Decimal
 from operator import itemgetter
@@ -105,10 +106,10 @@ class AnalysesView(BikaListingView):
                 else:
                     logger.log("Failed to get specs for %s" % self.context)
                     proxies = []
-                for spec in proxies:
-                    spec = spec.getObject()
+                brains = (p.getObject() for p in proxies)
+                for spec in brains:
                     client_or_lab = ""
-                    if spec.getClientUID() == self.context.getClientUID():
+                    if spec.getClientUID() == obj.aq_parent.UID():
                         client_or_lab = 'client'
                     elif spec.getClientUID() == None:
                         client_or_lab = 'lab'
@@ -221,10 +222,11 @@ class AnalysesView(BikaListingView):
                 if (not calculation or (calculation and not calculation.getDependentServices())) and \
                    items[i]['review_state'] not in ['sample_due', 'published'] and \
                    items[i]['DueDate'] < DateTime():
-                    DueDate = self.context.toLocalizedTime(item['DueDate'], long_format = 1)
-                    items[i]['after']['Service'] = '<img width="16" height="16" src="%s/++resource++bika.lims.images/late.png" title="%s"/>' % \
+                    DueDate = TimeOrDate(self.context, item['DueDate'], long_format = 1)
+                    items[i]['after']['DueDate'] = '<img width="16" height="16" src="%s/++resource++bika.lims.images/late.png" title="%s"/>' % \
                         (portal.absolute_url(), _("Due Date: ") + DueDate)
-
+                else:
+                    items[i]['DueDate'] = TimeOrDate(self.context, item['DueDate'])
             # add icon for assigned analyses in AR views
             if self.context.portal_type == 'AnalysisRequest' and \
                workflow.getInfoFor(items[i]['obj'], 'worksheetanalysis_review_state') == 'assigned':

@@ -29,7 +29,7 @@ class SamplePointsView(BikaListingView):
         self.show_editable_border = False
         self.show_filters = False
         self.show_sort_column = False
-        self.show_select_row = True
+        self.show_select_row = False
         self.show_select_column = True
         self.pagesize = 20
 
@@ -69,7 +69,7 @@ class SamplePoints(ATFolder):
 schemata.finalizeATCTSchema(schema, folderish = True, moveDiscussion = False)
 atapi.registerType(SamplePoints, PROJECTNAME)
 
-class AJAX_SamplePoints():
+class ajax_SamplePoints():
     """ autocomplete data source for sample points field
         return JSON data [string,string]
     """

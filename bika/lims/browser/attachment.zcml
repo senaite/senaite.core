@@ -7,7 +7,7 @@
     <browser:page
       for="bika.lims.interfaces.IAnalysisRequest"
       name="delete_analysis_attachment"
-      class="bika.lims.browser.attachment.AJAXDeleteAnalysisAttachment"
+      class="bika.lims.browser.attachment.ajaxDeleteAnalysisAttachment"
       permission="zope.Public"
       layer="bika.lims.interfaces.IBikaLIMS"
     />

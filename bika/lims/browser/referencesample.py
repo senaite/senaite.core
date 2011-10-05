@@ -9,7 +9,7 @@ class QCView(BrowserView):
 #    def __call__(self):
 #        return self.template()
 
-class AJAXGetReferenceDefinitionInfo():
+class ajaxGetReferenceDefinitionInfo():
     """ Returns a JSON encoded copy of the ReferenceResults field for a ReferenceDefinition,
         and a list of category UIDS that contain services with results.
         Also returns the 'blank' boolean, to select the checkbox on the edit form if required.

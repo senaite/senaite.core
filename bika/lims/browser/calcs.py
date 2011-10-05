@@ -3,7 +3,7 @@ import plone, json, sys, math, urllib
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
 
-class AJAXCalculateAnalysisEntry():
+class ajaxCalculateAnalysisEntry():
     """ This view is called by javascript when an analysis' result or interim field value is
         entered. Returns a JSON dictionary, or None if no action is required or possible.
     """

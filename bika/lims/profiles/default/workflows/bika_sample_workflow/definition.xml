@@ -5,8 +5,8 @@
              initial_state="due">
 
  <permission>BIKA: Edit Sample</permission>
- 
- 
+
+
  <state state_id="due" title="Due">
   <exit-transition transition_id="receive"/>
   <permission-map name="BIKA: Edit Sample"
@@ -17,7 +17,7 @@
    <permission-role>LabClerk</permission-role>
   </permission-map>
  </state>
- 
+
  <state state_id="received" title="Received">
   <exit-transition transition_id="expire"/>
   <permission-map name="BIKA: Edit Sample"
@@ -28,31 +28,31 @@
    <permission-role>LabClerk</permission-role>
   </permission-map>
  </state>
- 
+
  <state state_id="expired" title="Expired">
   <exit-transition transition_id="dispose"/>
   <permission-map name="BIKA: Edit Sample"
                   acquired="False">
   </permission-map>
  </state>
- 
+
  <state state_id="disposed" title="Disposed">
   <permission-map name="BIKA: Edit Sample"
                   acquired="False">
   </permission-map>
  </state>
 
- 
+
  <transition transition_id="receive" title="Receive"
              new_state="received" trigger="USER"
              before_script="" after_script="">
   <action url="" category="workflow">Receive</action>
   <guard>
    <guard-permission>BIKA: Receive Sample</guard-permission>
-   <guard-expression>python:here.guard_cancelled_object()</guard-expression>
+   <guard-expression>python:here.guard_cancelled_object() and here.guard_receive_sample()</guard-expression>
   </guard>
  </transition>
- 
+
  <transition transition_id="expire" title="Expire"
              new_state="expired" trigger="USER"
              before_script="" after_script="">
@@ -62,7 +62,7 @@
    <guard-expression>python:here.guard_cancelled_object()</guard-expression>
   </guard>
  </transition>
- 
+
  <transition transition_id="dispose" title="Dispose"
              new_state="disposed" trigger="USER"
              before_script="" after_script="">
@@ -72,8 +72,8 @@
    <guard-expression>python:here.guard_cancelled_object()</guard-expression>
   </guard>
  </transition>
- 
- 
+
+
  <variable variable_id="action" for_catalog="False"
            for_status="True" update_always="True">
   <description>The last transition</description>
@@ -83,7 +83,7 @@
   <guard>
   </guard>
  </variable>
- 
+
  <variable variable_id="actor" for_catalog="False"
            for_status="True" update_always="True">
   <description>The ID of the user who performed the last transition</description>
@@ -93,7 +93,7 @@
   <guard>
   </guard>
  </variable>
- 
+
  <variable variable_id="comments" for_catalog="False"
            for_status="True" update_always="True">
   <description>Comments about the last transition</description>
@@ -103,7 +103,7 @@
   <guard>
   </guard>
  </variable>
- 
+
  <variable variable_id="review_history" for_catalog="False"
            for_status="False" update_always="False">
   <description>Provides access to workflow history</description>
@@ -113,7 +113,7 @@
   <guard>
   </guard>
  </variable>
- 
+
  <variable variable_id="time" for_catalog="False"
            for_status="True" update_always="True">
   <description>Time of the last transition</description>
@@ -123,6 +123,6 @@
   <guard>
   </guard>
  </variable>
- 
+
 </dc-workflow>
 

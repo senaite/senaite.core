@@ -11,7 +11,7 @@ from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
-from bika.lims.utils import isActive
+from bika.lims.utils import isActive, TimeOrDate
 from plone.app.content.batching import Batch
 from plone.app.content.browser import tableview
 from plone.app.content.browser.foldercontents import FolderContentsView, FolderContentsTable
@@ -119,10 +119,10 @@ class WorkflowAction:
 
         if len(transitioned) > 0:
             message = _('Changes saved.')
-        else:
-            message = _('No items were affected.')
+            self.context.plone_utils.addPortalMessage(message, 'info')
+ ##        else:
+##            message = _('No items were affected.')
 
-        self.context.plone_utils.addPortalMessage(message, 'info')
         self.request.response.redirect(originating_url)
 
 class BikaListingView(BrowserView):
@@ -272,8 +272,7 @@ class BikaListingView(BrowserView):
                  path,
                  safe_unicode(description))
 
-            modified = plone_view.toLocalizedTime(obj.ModificationDate,
-                                                  long_format = 1)
+            modified = TimeOrDate(self.context, obj.ModificationDate, long_format = 1)
 
             # Check for InterimFields attribute on our object,
             interim_fields = hasattr(obj, 'getInterimFields') \
@@ -419,11 +418,6 @@ class BikaListingTable(tableview.Table):
         """ Compile a list of possible workflow transitions for items
             in this Table.
         """
-
-        # bika_listing views can override this.
-        # (They don't though...)
-        if hasattr(self.bika_listing, 'get_workflow_actions'):
-            return self.bika_listing.get_workflow_actions()
 
         # return empty list if selecting checkboxes are disabled
         if not self.show_select_column:

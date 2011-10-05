@@ -118,13 +118,6 @@ class WorksheetAddView(BrowserView):
 
         ws.setWorksheetTemplate(wst)
 
-        count_a = count_b = count_c = count_d = 0
-        for row in wstlayout:
-            if row['type'] == 'a': count_a = count_a + 1
-            if row['type'] == 'b': count_b = count_b + 1
-            if row['type'] == 'c': count_c = count_c + 1
-            if row['type'] == 'd': count_d = count_d + 1
-
         Layout = [] # list of dict [{position:x, container_uid:x},]
         Analyses = [] # list of analysis objects
 
@@ -171,8 +164,10 @@ class WorksheetAddView(BrowserView):
                              getReferenceDefinitionUID = reference_definition_uid)
                 if not samples:
                     self.context.translate(
+                        "message_no_references_found",
                         mapping={'position':position,
-                                 'definition':reference_definition.Title()},
+                                 'definition':reference_definition and \
+                                 reference_definition.Title() or ''},
                         default="No reference samples found for ${definition} at position ${position}.",
                         domain="bika.lims")
                     break
@@ -245,7 +240,7 @@ class WorksheetManageResultsView(AnalysesView):
             'Result': {'title': _('Result')},
             'Uncertainty': {'title': _('+-')},
             'retested': {'title': _('Retested'), 'type':'boolean'},
-            'Attachments': {'title': _('Attachments')},
+#            'Attachments': {'title': _('Attachments')},
             'state_title': {'title': _('State')},
         }
         self.review_states = [
@@ -259,7 +254,7 @@ class WorksheetManageResultsView(AnalysesView):
                         'Category',
                         'Service',
                         'Result',
-                        'Attachments',
+#                        'Attachments',
                         'state_title'],
              },
         ]
@@ -268,6 +263,7 @@ class WorksheetManageResultsView(AnalysesView):
         self.contentsMethod = self.context.getFolderContents
         items = AnalysesView.folderitems(self)
         pos = 0
+        non_empty_columns = ['Pos', 'Category', 'getRequestID', 'DueDate', 'Service', 'Result', 'state_title']
         for x, item in enumerate(items):
             obj = item['obj']
             pos += 1
@@ -278,22 +274,32 @@ class WorksheetManageResultsView(AnalysesView):
             items[x]['replace']['getRequestID'] = "<a href='%s'>%s</a>" % \
                  (ar.absolute_url(), ar.Title())
             client = ar.aq_parent
+            if client and 'Client' not in non_empty_columns:
+                non_empty_columns.append('Client')
             items[x]['replace']['Client'] = "<a href='%s'>%s</a>" % \
                  (client.absolute_url(), client.Title())
             items[x]['DueDate'] = \
-                TimeOrDate(obj.getDueDate)
-            items[x]['Order'] = hasattr(ar, 'getClientOrderNumber') \
-                 and ar.getClientOrderNumber() or ''
+                TimeOrDate(self.context, obj.getDueDate(), long_format=0)
+            items[x]['Order'] = ''
+            if hasattr(ar, 'getClientOrderNumber'):
+                order_nr = ar.getClientOrderNumber() or ''
+                items[x]['Order'] = order_nr
+                if order_nr and 'Order' not in non_empty_columns:
+                    non_empty_columns.append('Order')
             if obj.portal_type == 'DuplicateAnalysis':
-                items[x]['after']['Pos'] = '<img width="16" height="16" src="%s/++resource++bika.lims.images/duplicate.png"/>' % \
+                items[x]['after']['Pos'] = '<img title="Duplicate" width="16" height="16" src="%s/++resource++bika.lims.images/duplicate.png"/>' % \
                     (self.context.absolute_url())
             elif obj.portal_type == 'ReferenceAnalysis':
                 if obj.ReferenceType == 'b':
-                    items[x]['after'] += '<img width="16" height="16" src="%s/++resource++bika.lims.images/blank.png"/>' % \
+                    items[x]['after'] += '<img title="Blank"  width="16" height="16" src="%s/++resource++bika.lims.images/blank.png"/>' % \
                         (self.context.absolute_url())
                 else:
-                    items[x]['after'] += '<img width="16" height="16" src="%s/++resource++bika.lims.images/control.png"/>' % \
+                    items[x]['after'] += '<img title="Control" width="16" height="16" src="%s/++resource++bika.lims.images/control.png"/>' % \
                         (self.context.absolute_url())
+        # hide non_empty_columns (possible Client, Order, and Attachments
+        for col_id in self.review_states[0]['columns']:
+            if col_id not in non_empty_columns and col_id in ('Client','Order','Attachments'):
+                self.review_states[0]['columns'].remove(col_id)
         # order the analyses into the worksheet.Layout parent ordering
         # and renumber their positions.
         layout = self.context.getLayout()
@@ -312,20 +318,20 @@ class WorksheetManageResultsView(AnalysesView):
             items += items_by_parent[slot['container_uid']]
         return items
 
-    # Present the LabManagers and labtechnicans as options for analyser
+    # Present the LabManagers and Analysts as options for analyst
     # set the first entry to blank to force selection
-    def getAnalysersDisplayList(self):
+    def getAnalysts(self):
         mtool = getToolByName(self, 'portal_membership')
-        analysers = {}
+        analysts = {}
         pairs = [(' ', ' '), ]
-        analysers = mtool.searchForMembers(roles = ['LabManager', 'Analyst'])
-        for member in analysers:
+        analysts = mtool.searchForMembers(roles = ['LabManager', 'Analyst'])
+        for member in analysts:
             uid = member.getId()
             fullname = member.getProperty('fullname')
             if fullname is None:
-                fullname = uid
+                continue
             pairs.append((uid, fullname))
-        return DisplayList(pairs)
+        return pairs
 
 class WorksheetAddAnalysisView(AnalysesView):
     def __init__(self, context, request):
@@ -338,7 +344,7 @@ class WorksheetAddAnalysisView(AnalysesView):
         self.base_url = self.context.absolute_url()
         self.view_url = self.base_url + "/add_analysis"
         self.show_sort_column = False
-        self.show_select_row = True
+        self.show_select_row = False
         self.show_select_column = True
         self.show_filters = False
         self.pagesize = 50
@@ -376,9 +382,9 @@ class WorksheetAddAnalysisView(AnalysesView):
             client = obj.aq_parent.aq_parent
             items[x]['getClientOrderNumber'] = obj.getClientOrderNumber()
             items[x]['getDateReceived'] = \
-                TimeOrDate(obj.getDateReceived())
+                TimeOrDate(self.context, obj.getDateReceived())
             items[x]['getDueDate'] = \
-                TimeOrDate(obj.getDueDate())
+                TimeOrDate(self.context, obj.getDueDate())
             items[x]['CategoryName'] = service.getCategory().Title()
             items[x]['ClientName'] = client.Title()
         return items
@@ -426,8 +432,7 @@ class WorksheetAddBlankView(BikaListingView):
             items[x]['Title'] = obj.Title()
             items[x]['Owner'] = obj.getOwnerTuple()[1]
             items[x]['CreationDate'] = obj.CreationDate() and \
-                 self.context.toLocalizedTime(
-                     obj.CreationDate(), long_format = 0) or ''
+                 TimeOrDate(self.context, obj.CreationDate()) or ''
             items[x]['replace']['Title'] = "<a href='%s'>%s</a>" % \
                  (items[x]['url'], items[x]['Title'])
 
@@ -477,7 +482,7 @@ class WorksheetAddControlView(BikaListingView):
             items[x]['Title'] = obj.Title()
             items[x]['Owner'] = obj.obj.getOwnerTuple()[1]
             items[x]['CreationDate'] = obj.CreationDate() and \
-                 self.context.toLocalizedTime(obj.CreationDate(), long_format = 0) or ''
+                 TimeOrDate(self.context, obj.CreationDate()) or ''
             items[x]['replace']['Title'] = "<a href='%s'>%s</a>" % \
                  (items[x]['url'], items[x]['Title'])
 
@@ -526,24 +531,27 @@ class WorksheetAddDuplicateView(BikaListingView):
             items[x]['Title'] = obj.Title()
             items[x]['Owner'] = obj.obj.getOwnerTuple()[1]
             items[x]['CreationDate'] = obj.CreationDate() and \
-                 self.context.toLocalizedTime(obj.CreationDate(), long_format = 0) or ''
+                 TimeOrDate(self.context, obj.CreationDate()) or ''
             items[x]['replace']['Title'] = "<a href='%s'>%s</a>" % \
                  (items[x]['url'], items[x]['Title'])
 
         return items
 
-class AJAXGetWorksheetTemplates():
-    """ Return Worksheet Template IDs for add worksheet dropdown """
+class ajaxSetAnalyst():
+    """ The Analysis dropdown sets the analysis immediately on select. """
 
     def __init__(self, context, request):
         self.context = context
         self.request = request
 
     def __call__(self):
+        rc = getToolByName(self.context, 'reference_catalog')
+        mtool = getToolByName(self, 'portal_membership')
         plone.protect.CheckAuthenticator(self.request)
         plone.protect.PostOnly(self.request)
-        pc = getToolByName(self.context, "portal_catalog")
-        templates = []
-        for t in pc(portal_type = "WorksheetTemplate"):
-            templates.append((t.UID, t.Title))
-        return json.dumps(templates)
+        value = request.get('value', '')
+        if not value:
+            return
+        if not mtool.getMemberById(analyst):
+            return
+        self.context.setAnalyst(value)

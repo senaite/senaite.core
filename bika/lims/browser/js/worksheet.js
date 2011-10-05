@@ -1,10 +1,19 @@
 jQuery( function($) {
 $(document).ready(function(){
 
+	function portalMessage(message){
+		str = "<dl class='portalMessage error'>"+
+			"<dt i18n:translate='error'>Error</dt>"+
+			"<dd><ul>" + message +
+			"</ul></dd></dl>";
+		$('.portalMessage').remove();
+		$(str).appendTo('#viewlet-above-content');
+	}
+
 	// add Worksheet Templates dropdown menu
 	if($("input[name='add_Worksheet']").length == 1){
 		$.ajax({
-			url: 'get_worksheet_templates',
+			url: window.location.href + "/getWorksheetTemplates",
 			type: 'POST',
 			data: {'_authenticator': $('input[name="_authenticator"]').val()},
 			dataType: "json",
@@ -20,5 +29,16 @@ $(document).ready(function(){
 		});
 	}
 
+	$("#analyst").change(function(){
+		if ($("#analyst").val() == '') {
+			return false;
+		}
+		$.ajax({
+		  type: 'POST',
+		  url: window.location.href + "/setAnalyst",
+		  data: {'value': $("#analyst").val(),
+				  '_authenticator': $('input[name="_authenticator"]').val()}
+		});
+	});
 });
 });

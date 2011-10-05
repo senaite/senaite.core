@@ -19,6 +19,8 @@ def ActionSucceededEventHandler(sample, event):
     workflow = getToolByName(sample, 'portal_workflow')
 
     if event.action == "receive":
+        if sample.getDateSampled() > DateTime():
+            raise WorkflowException
         sample.setDateReceived(DateTime())
         sample.reindexObject(idxs = ["review_state", "getDateReceived", ])
         # when a sample is received, all associated

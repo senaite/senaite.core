@@ -319,6 +319,7 @@ class AnalysisRequestViewView(BrowserView):
 
         return actions.values()
 
+
 class AnalysisRequestAddView(AnalysisRequestViewView):
     """ The main AR Add form
     """
@@ -366,27 +367,17 @@ class AnalysisRequestManageResultsView(AnalysisRequestViewView):
         elif workflow.getInfoFor(self.context, 'review_state') in ('verified', 'published'):
             self.request.response.redirect(self.context.absolute_url())
         else:
-            self.Field = AnalysesView(self.context, self.request,
-                                      getPointOfCapture = 'field')
+            self.Field = AnalysesView(self.context, self.request, getPointOfCapture = 'field')
             self.Field.allow_edit = True
-            self.Field.review_states[0]['transitions'] = \
-                ['submit', 'retract', 'verify']
+            self.Field.review_states[0]['transitions'] = ['submit', 'retract', 'verify']
             self.Field.show_select_column = True
             self.Field = self.Field.contents_table()
 
-            self.Lab = AnalysesView(self.context, self.request,
-                                    getPointOfCapture = 'lab')
+            self.Lab = AnalysesView(self.context, self.request, getPointOfCapture = 'lab')
             self.Lab.allow_edit = True
-            self.Lab.review_states[0]['transitions'] = \
-                ['submit', 'retract', 'verify']
+            self.Lab.review_states[0]['transitions'] = ['submit', 'retract', 'verify']
             self.Lab.show_select_column = True
             self.Lab = self.Lab.contents_table()
-
-            # XXX for debugging only:
-            form = self.request.form
-            if form.has_key("submitted"):
-                import pprint
-                pprint.pprint(form)
 
             return self.template()
 
@@ -528,10 +519,6 @@ class AnalysisRequestSelectSampleView(BikaListingView):
                          'getDateReceived']},
         ]
 
-##    def get_workflow_actions(self):
-##        """ bika_listing_table.pt uses this to display the select button. """
-##        return [{"id":"select", "title":_("Select")}]
-
     def folderitems(self):
         items = BikaListingView.folderitems(self)
         for x, item in enumerate(items):
@@ -550,21 +537,23 @@ class AnalysisRequestSelectSampleView(BikaListingView):
                      "<img src='++resource++bika.lims.images/hazardous_small.png' title='Hazardous'>"
             items[x]['getSampleTypeTitle'] = obj.getSampleTypeTitle()
             items[x]['getSamplePointTitle'] = obj.getSamplePointTitle()
-            items[x]['getDateReceived'] = obj.getDateReceived() and \
-                 self.context.toLocalizedTime(obj.getDateReceived(), long_format = 0) or ''
-            items[x]['getDateSampled'] = obj.getDateSampled() and \
-                 self.context.toLocalizedTime(obj.getDateSampled(), long_format = 0) or ''
             items[x]['item_data'] = json.dumps({
                 'SampleID': items[x]['title'],
                 'ClientReference': items[x]['getClientReference'],
                 'ClientSampleID': items[x]['getClientSampleID'],
-                'DateReceived': items[x]['getDateReceived'],
-                'DateSampled': items[x]['getDateSampled'],
+                'DateReceived': obj.getDateReceived() and \
+                               obj.getDateReceived().asdatetime().strftime("%d %b %Y") or '',
+                'DateSampled': obj.getDateSampled() and \
+                               obj.getDateSampled().asdatetime().strftime("%d %b %Y") or '',
                 'SampleType': items[x]['getSampleTypeTitle'],
                 'SamplePoint': items[x]['getSamplePointTitle'],
                 'field_analyses': self.FieldAnalyses(obj),
                 'column': self.request.get('column', None),
             })
+            items[x]['getDateReceived'] = obj.getDateReceived() and \
+                 TimeOrDate(self.context, obj.getDateReceived()) or ''
+            items[x]['getDateSampled'] = obj.getDateSampled() and \
+                 TimeOrDate(self.context, obj.getDateSampled()) or ''
         return items
 
     def FieldAnalyses(self, sample):
@@ -624,7 +613,7 @@ def getServiceDependencies(context, service_uid):
     walk(deps)
     return result
 
-class AJAXgetServiceDependencies():
+class ajaxgetServiceDependencies():
     """ Return json(getServiceDependencies) """
 
     def __init__(self, context, request):
@@ -639,8 +628,8 @@ class AJAXgetServiceDependencies():
             result = None
         return json.dumps(result)
 
-class AJAXExpandCategory(BikaListingView):
-    """ AJAX requests pull this view for insertion when category header rows are clicked/expanded. """
+class ajaxExpandCategory(BikaListingView):
+    """ ajax requests pull this view for insertion when category header rows are clicked/expanded. """
     template = ViewPageTemplateFile("templates/analysisrequest_analysisservices.pt")
 
     def __call__(self):
@@ -658,8 +647,8 @@ class AJAXExpandCategory(BikaListingView):
                       getCategoryUID = CategoryUID)
         return services
 
-class AJAXProfileServices(BrowserView):
-    """ AJAX requests pull this to retrieve a list of services in an AR Profile.
+class ajaxProfileServices(BrowserView):
+    """ ajax requests pull this to retrieve a list of services in an AR Profile.
         return JSON data {poc_categoryUID: [serviceUID,serviceUID], ...}
     """
     def __call__(self):
@@ -703,7 +692,7 @@ def getBackReferences(context, service_uid):
 
     return services
 
-class AJAXgetBackReferences():
+class ajaxgetBackReferences():
     """ Return json(getBackReferences) """
 
     def __init__(self, context, request):
@@ -718,7 +707,7 @@ class AJAXgetBackReferences():
             result = []
         return json.dumps([r.UID() for r in result])
 
-class AJAXAnalysisRequestSubmit():
+class ajaxAnalysisRequestSubmit():
 
     def __init__(self, context, request):
         self.context = context
@@ -953,7 +942,7 @@ class AJAXAnalysisRequestSubmit():
                         default = 'Analysis request ${AR} was successfully created.',
                         mapping = {'AR': ', '.join(ARs)}, domain = 'bika')
             else:
-                message = "Changes Saved."
+                message = _("Changes Saved.")
 
         self.context.plone_utils.addPortalMessage(message, 'info')
         return json.dumps({'success':message})

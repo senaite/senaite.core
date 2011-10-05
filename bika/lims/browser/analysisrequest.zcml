@@ -65,7 +65,7 @@
     <browser:page
       for="*"
       name="analysisrequest_analysisservices"
-      class="bika.lims.browser.analysisrequest.AJAXExpandCategory"
+      class="bika.lims.browser.analysisrequest.ajaxExpandCategory"
       permission="zope.Public"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
@@ -73,7 +73,7 @@
     <browser:page
       for="*"
       name="analysisrequest_profileservices"
-      class="bika.lims.browser.analysisrequest.AJAXProfileServices"
+      class="bika.lims.browser.analysisrequest.ajaxProfileServices"
       permission="zope.Public"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
@@ -81,7 +81,7 @@
     <browser:page
       for="*"
       name="get_service_dependencies"
-      class=".analysisrequest.AJAXgetServiceDependencies"
+      class=".analysisrequest.ajaxgetServiceDependencies"
       permission="zope.Public"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
@@ -89,7 +89,7 @@
     <browser:page
       for="*"
       name="get_back_references"
-      class=".analysisrequest.AJAXgetBackReferences"
+      class=".analysisrequest.ajaxgetBackReferences"
       permission="zope.Public"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
@@ -97,7 +97,7 @@
     <browser:page
       for="*"
       name="analysisrequest_submit"
-      class="bika.lims.browser.analysisrequest.AJAXAnalysisRequestSubmit"
+      class="bika.lims.browser.analysisrequest.ajaxAnalysisRequestSubmit"
       permission="zope.Public"
       layer="bika.lims.interfaces.IBikaLIMS"
     />

@@ -18,6 +18,8 @@
     <element value="TempFolder"/>
   </property>
   <property name="metaTypesNotToList" type="lines">
+    <element value="InvoiceFolder"/>
+    <element value="PricelistFolder"/>
     <element value="Address"/>
     <element value="Analysis"/>
     <element value="AnalysisCategory"/>
@@ -76,6 +78,9 @@
   <property name="wf_states_to_show" type="lines"/>
 </object>
 <object name="site_properties" meta_type="Plone Property Sheet">
+  <property name="localTimeFormat" type="string">%d %b %Y</property>
+  <property name="localLongTimeFormat" type="string">%d %b %Y %I:%M %p</property>
+  <property name="localTimeOnlyFormat" type="string">%I:%M %p</property>
   <property name="disable_folder_sections" type="boolean">True</property>
   <property name="disable_nonfolderish_sections" type="boolean">True</property>
 </object>

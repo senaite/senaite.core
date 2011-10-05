@@ -3,6 +3,7 @@ from Products.ATContentTypes.content import schemata
 from Products.Archetypes import atapi
 from Products.Archetypes.public import *
 from Products.CMFCore import permissions
+from Products.CMFCore.utils import getToolByName
 from Products.Five.browser import BrowserView
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.config import PROJECTNAME
@@ -13,6 +14,7 @@ from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.folder.folder import ATFolder, ATFolderSchema
 from bika.lims.interfaces import IWorksheetTemplates
 from zope.interface.declarations import implements
+import plone, json
 
 class WorksheetTemplatesView(BikaListingView):
     implements(IFolderContentsView)
@@ -28,7 +30,7 @@ class WorksheetTemplatesView(BikaListingView):
         self.show_editable_border = False
         self.show_filters = False
         self.show_sort_column = False
-        self.show_select_row = True
+        self.show_select_row = False
         self.show_select_column = True
         self.pagesize = 20
 
@@ -67,3 +69,21 @@ class WorksheetTemplates(ATFolder):
 
 schemata.finalizeATCTSchema(schema, folderish = True, moveDiscussion = False)
 atapi.registerType(WorksheetTemplates, PROJECTNAME)
+
+
+class ajaxGetWorksheetTemplates():
+    """ Return Worksheet Template IDs for add worksheet dropdown in
+        worksheetfolder listing """
+
+    def __init__(self, context, request):
+        self.context = context
+        self.request = request
+
+    def __call__(self):
+        plone.protect.CheckAuthenticator(self.request)
+        plone.protect.PostOnly(self.request)
+        pc = getToolByName(self.context, "portal_catalog")
+        templates = []
+        for t in pc(portal_type = "WorksheetTemplate"):
+            templates.append((t.UID, t.Title))
+        return json.dumps(templates)

@@ -1,5 +1,5 @@
 from Products.validation import validation
-from bika.lims.browser.calcs import AJAXCalculateAnalysisEntry
+from bika.lims.browser.calcs import ajaxCalculateAnalysisEntry
 from bika.lims.testing import BIKA_INTEGRATION_TESTING
 from plone.app.testing import SITE_OWNER_NAME, TEST_USER_NAME, login, setRoles
 from plone.keyring.interfaces import IKeyManager
@@ -39,7 +39,7 @@ class Tests(unittest.TestCase):
         request['uid'] = client_1.ar_2.titration.UID()
         request['field'] = 'TV'
         request['value'] = '10'
-        ret = json.loads(AJAXCalculateAnalysisEntry(client_1.ar_2.titration, request)())
+        ret = json.loads(ajaxCalculateAnalysisEntry(client_1.ar_2.titration, request)())
         self.assertEqual(ret['results'][0]['result'], 100.0)
 
 

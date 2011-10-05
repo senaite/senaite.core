@@ -24,7 +24,7 @@ class AnalysisCategoriesView(BikaListingView):
         self.show_editable_border = False
         self.show_filters = False
         self.show_sort_column = False
-        self.show_select_row = True
+        self.show_select_row = False
         self.show_select_column = True
         self.pagesize = 20
 

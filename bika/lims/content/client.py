@@ -127,9 +127,11 @@ class Client(Organisation):
 
     security.declarePublic('getContactsDisplayList')
     def getContactsDisplayList(self):
+        wf = getToolByName(self, 'portal_workflow')
         pairs = []
         for contact in self.objectValues('Contact'):
-            pairs.append((contact.UID(), contact.Title()))
+            if wf.getInfoFor(contact, 'inactive_state', '') == 'active':
+                pairs.append((contact.UID(), contact.Title()))
         # sort the list by the second item
         pairs.sort(lambda x, y:cmp(x[1], y[1]))
         return DisplayList(pairs)
@@ -153,12 +155,13 @@ class Client(Organisation):
             cc_uids = ''
             cc_titles = ''
             for cc_contact in contact.getCCContact():
-                if cc_uids:
-                    cc_uids = cc_uids + ', ' + cc_contact.UID()
-                    cc_titles = cc_titles + ', ' + cc_contact.Title()
-                else:
-                    cc_uids = cc_contact.UID()
-                    cc_titles = cc_contact.Title()
+                if wf.getInfoFor(cc_contact, 'inactive_state', '') == 'active':
+                    if cc_uids:
+                        cc_uids = cc_uids + ', ' + cc_contact.UID()
+                        cc_titles = cc_titles + ', ' + cc_contact.Title()
+                    else:
+                        cc_uids = cc_contact.UID()
+                        cc_titles = cc_contact.Title()
             cc_contacts.append(contact.UID())
             cc_contacts.append(cc_uids)
             cc_contacts.append(cc_titles)

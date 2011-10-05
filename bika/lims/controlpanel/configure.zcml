@@ -135,7 +135,7 @@
     <browser:page
       for="*"
       name="ajax_samplepoints"
-      class="bika.lims.controlpanel.bika_samplepoints.AJAX_SamplePoints"
+      class=".bika_samplepoints.ajax_SamplePoints"
       permission="zope.Public"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
@@ -143,7 +143,15 @@
     <browser:page
       for="*"
       name="ajax_sampletypes"
-      class="bika.lims.controlpanel.bika_sampletypes.AJAX_SampleTypes"
+      class=".bika_sampletypes.ajax_SampleTypes"
+      permission="zope.Public"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
+      for="*"
+      name="getWorksheetTemplates"
+      class=".bika_worksheettemplates.ajaxGetWorksheetTemplates"
       permission="zope.Public"
       layer="bika.lims.interfaces.IBikaLIMS"
     />

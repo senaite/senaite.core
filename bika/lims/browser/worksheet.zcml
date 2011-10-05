@@ -45,9 +45,11 @@
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
-    <browser:resource
-      name="worksheet.js"
-      file="js/worksheet.js"
+    <browser:page
+      for="bika.lims.interfaces.IWorksheet"
+      name="setAnalyst"
+      class="bika.lims.browser.worksheet.ajaxSetAnalyst"
+      permission="zope.Public"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 

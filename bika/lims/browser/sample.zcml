@@ -15,7 +15,7 @@
     <browser:page
       for="*"
       name="sample_submit"
-      class="bika.lims.browser.sample.AJAXSampleSubmit"
+      class="bika.lims.browser.sample.ajaxSampleSubmit"
       permission="zope.Public"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
