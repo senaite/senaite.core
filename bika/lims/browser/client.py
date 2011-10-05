@@ -224,6 +224,7 @@ class ClientAnalysisRequestsView(BikaListingView):
         workflow = getToolByName(self.context, "portal_workflow")
         items = BikaListingView.folderitems(self)
         for x in range(len(items)):
+            items[x]['getRequestID'] = ''
             if not items[x].has_key('obj'): continue
             obj = items[x]['obj']
 
@@ -231,6 +232,7 @@ class ClientAnalysisRequestsView(BikaListingView):
                 url = obj.absolute_url() + "/manage_results"
             else:
                 url = obj.absolute_url()
+            items[x]['getRequestID'] = obj.getRequestID()
             items[x]['replace']['getRequestID'] = "<a href='%s'>%s</a>" % \
                  (url, items[x]['getRequestID'])
 

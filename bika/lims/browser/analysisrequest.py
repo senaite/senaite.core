@@ -968,6 +968,8 @@ class AnalysisRequestsView(ClientAnalysisRequestsView):
         workflow = getToolByName(self.context, "portal_workflow")
         items = ClientAnalysisRequestsView.folderitems(self)
         for x in range(len(items)):
+            if not items[x].has_key('obj'):
+                continue
             obj = items[x]['obj']
             items[x]['replace']['Client'] = "<a href='%s'>%s</a>" % \
                  (obj.aq_parent.absolute_url(), obj.aq_parent.Title())
