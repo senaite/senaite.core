@@ -93,8 +93,11 @@ class ARAnalysesField(ObjectField):
         for analysis in instance.objectValues('Analysis'):
             service_uid = analysis.Schema()['Service'].getRaw(analysis)
             if service_uid not in service_uids:
+                # If it is verified or published, don't delete it.
+                if workflow.getInfoFor(analysis, 'review_state') in ('verified', 'published'):
+                    break
                 # If it is assigned to a worksheet, unassign it before deletion.
-                if workflow.getInfoFor(analysis, 'worksheetanalysis_review_state') == 'assigned':
+                elif workflow.getInfoFor(analysis, 'worksheetanalysis_review_state') == 'assigned':
                     workflow.doActionFor(analysis, 'unassign')
                     analysis.REQUEST["workflow_skiplist"].remove(analysis.UID())
                 delete_ids.append(analysis.getId())
