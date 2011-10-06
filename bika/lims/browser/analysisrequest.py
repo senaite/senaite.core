@@ -131,7 +131,7 @@ class AnalysisRequestViewView(BrowserView):
 
     def __init__(self, context, request):
         super(AnalysisRequestViewView, self).__init__(context, request)
-        
+
         self.TimeOrDate = TimeOrDate
 
     def __call__(self):
@@ -337,8 +337,7 @@ class AnalysisRequestAddView(AnalysisRequestViewView):
     template = ViewPageTemplateFile("templates/analysisrequest_edit.pt")
 
     def __init__(self, context, request):
-        self.context = context
-        self.request = request
+        AnalysisRequestViewView.__init__(self, context, request)
         self.col_count = 6
         self.came_from = "add"
         self.DryMatterService = self.context.bika_setup.getDryMatterService()

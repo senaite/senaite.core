@@ -97,6 +97,8 @@ class ajaxCalculateAnalysisEntry():
                 return None
 
             formula = calculation.getFormula()
+            formula = formula.replace('[','%(').replace(']',')f')
+
             try:
                 # mapping values are keyed by ServiceKeyword or InterimField keyword
                 formula = eval("'%s'%%mapping"%formula,
