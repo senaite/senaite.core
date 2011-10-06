@@ -54,16 +54,15 @@ schema = BikaSchema.copy() + Schema((
         widget = TextAreaWidget(
             label = _("Calculation Formula"),
             description_msgid = "msg_calculation_formula_help",
-            description = "<p>The formula you type here will be dynamically calculated "
-                           "when an analysis using this calculation is displayed. </p>"
-                           "<p>The <a href='http://docs.python.org/release/2.6.7/library/stdtypes.html#string-formatting'>standard python string interpolation syntax</a> is used, "
-                           "with all Analysis Service keywords available as values, as "
-                           "well as keywords from this calculation's Interim Fields. "
-                           "The calculation is evaluated as an unrestricted python code snippet.</p> "
-                           "<p>For example, the calculation '%(SUG)f + %(field1)f' will "
-                           "replace %(SUG)f with a floating point value (f) representing "
-                           "the 'Sugars' Analysis Service, and '%(field1)f' with the value "
-                           "of the service or interim field with the keyword 'field1'.</p>",
+            description = "<p>The formula you type here will be dynamically calculated when "
+            "an analysis using this calculation is displayed.</p>"
+            "<p>To enter a Calculation, use standard maths operators,  + - * / ( ), "
+            "and all keywords available, both from other Analysis Services and the "
+            "Interim Fields specified here, as variables. "
+            "Enclose them in square brackets [ ].</p>"
+            "<p>E.g, the calculation for Total Hardness, the total of  Calcium (ppm) "
+            "and Magnesium (ppm) ions in water, is entered as [Ca] + [Mg], where Ca and MG "
+            "are the keywords for those two Analysis Services.</p>",
             i18n_domain = I18N_DOMAIN,
         )
     ),
