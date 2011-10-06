@@ -445,7 +445,6 @@ def ActionSucceededEventHandler(analysis, event):
         # Remove the analysis from the worksheet
         ws = analysis.getWorksheet()
         ws_UID = ws.UID()
-        ws.setAnalyses([a for a in ws.getAnalyses() if a != analysis])
 
         # Escalate the action to the parent AR if it is assigned
         # Note: AR adds itself to the skiplist so we have to take it off again

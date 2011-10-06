@@ -189,7 +189,7 @@ class WorksheetAddView(BrowserView):
                         complete_reference_found = True
                         break
                 if complete_reference_found:
-                    ws.assignAnalysis(reference)
+                    ws.addAnalysis(reference)
                     wf.doActionFor(reference, 'assign')
                 else:
                     # find the most complete reference sample instead
@@ -202,7 +202,7 @@ class WorksheetAddView(BrowserView):
                             no_of_services = references[key]['count']
                             reference = key
                     if reference:
-                        ws.assignAnalysis(reference)
+                        ws.addAnalysis(reference)
                         wf.doActionFor(reference, 'assign')
 
         # fill duplicate positions

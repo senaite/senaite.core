@@ -58,7 +58,8 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         # contentsMethod methods.  We ignore it.
         return self.getAnalyses()
 
-    def assignAnalysis(analysis):
+    security.declareProtected(AddAndRemoveAnalyses, 'addAnalysis')
+    def addAnalysis(analysis):
         # - add the analysis to self.Analyses()
         # - try to add the analysis parent in the worksheet layout according to
         #   the worksheet's template, if possible.
@@ -88,12 +89,32 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             used_positions = [slot['position'] for slot in wslayout]
             available_positions = [row['pos'] for row in wstlayout \
                                    if row['pos'] not in used_positions and \
-                                      row['type'] == analysis_type]
-            if available_positions:
-                position = available_positions[0]
+                                      row['type'] == analysis_type] or [position,]
+            position = available_positions[0]
         self.setLayout(layout + [{'position': position,
                                 'container_uid': parent_uid},])
 
+    security.declareProtected(AddAndRemoveAnalyses, 'removeAnalysis')
+    def removeAnalysis(analysis):
+        """ delete an analyses from the worksheet and un-assign it
+        """
+        Analyses = self.getAnalyses()
+        Analyses.remove(analysis)
+        self.setAnalyses(Analyses)
+
+        # perhaps it's entire slot is now removed.
+        parents = {}
+        for A in Analyses:
+            parent_uid = A.aq_parent.UID()
+            if parent_uid in parents:
+                parents[parent_uid]['analyses'].append(A)
+            else:
+                parents[parent_uid] = {'parent':A.aq_parent, 'analyses': [A,]}
+        Layout = self.getLayout()
+        for slot in self.getLayout():
+            if not slot['container_uid'] in parents:
+                Layout.remove(slot)
+        self.setLayout(Layout)
 
     def getInstrumentExports(self):
         """ return the possible instrument export formats """
@@ -185,69 +206,6 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
                 assigned.append(uid)
 
             self.setAnalyses(self.getAnalyses() + assigned)
-
-    security.declareProtected(AddAndRemoveAnalyses, 'deleteAnalyses')
-    def deleteAnalyses(self, REQUEST, RESPONSE, Analyses = []):
-        """ delete analyses from the worksheet and set their state back to
-            'sample_received'
-            Analyses = [uid,]
-        """
-        rc = getToolByName(self, REFERENCE_CATALOG)
-        real_analyses = []
-        real_uids = []
-        dup_ids = []
-        std_uids = []
-        std_analyses = []
-        for uid in Analyses:
-            analysis = rc.lookupObject(uid)
-            if analysis.portal_type == 'Analysis':
-                real_analyses.append(analysis)
-                real_uids.append(uid)
-            elif analysis.portal_type == 'DuplicateAnalysis':
-                dup_ids.append(analysis.getId())
-            elif analysis.portal_type == 'ReferenceAnalysis':
-                std_analyses.append(analysis)
-                std_uids.append(uid)
-
-
-        if real_analyses:
-            wf_tool = getToolByName(self, 'portal_workflow')
-            for analysis in real_analyses:
-                analysis._assigned_to_worksheet = False
-                wf_tool.doActionFor(analysis, 'retract')
-
-            uids = []
-            for a in self.getAnalyses():
-                if a.UID() not in real_uids:
-                    uids.append(a.UID())
-            self.setAnalyses(uids)
-
-        if dup_ids:
-            self.manage_delObjects(dup_ids)
-
-        """ Leave analysis on Reference Sample? AVS
-        if std_analyses:
-            for std_analysis in std_analyses:
-                reference_sample = std_analysis.aq_parent
-                reference_sample.manage_delObjects(std_analysis.getId())
-        """
-        if std_uids:
-            wf_tool = getToolByName(self, 'portal_workflow')
-            for std_analysis in std_analyses:
-                review_state = wf_tool.getInfoFor(
-                    std_analysis, 'review_state', '')
-                if review_state != 'assigned':
-                    wf_tool.doActionFor(std_analysis, 'retract')
-                wf_tool.doActionFor(std_analysis, 'unassign')
-            uids = []
-            for a in self.getReferenceAnalyses():
-                if a.UID() not in std_uids:
-                    uids.append(a.UID())
-            self.setReferenceAnalyses(uids)
-
-        self._removeFromSequence(Analyses)
-
-        RESPONSE.redirect('%s/manage_results' % self.absolute_url())
 
     def addWSAttachment(self, REQUEST = None, RESPONSE = None):
         """ Add the file as an attachment
