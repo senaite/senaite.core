@@ -18,6 +18,7 @@
     <element value="TempFolder"/>
   </property>
   <property name="metaTypesNotToList" type="lines">
+    <element value="Contact"/>
     <element value="InvoiceFolder"/>
     <element value="PricelistFolder"/>
     <element value="Address"/>

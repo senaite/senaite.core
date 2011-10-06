@@ -6,6 +6,7 @@ from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.interfaces import IWorksheet
+from bika.lims.utils import TimeOrDate
 from bika.lims.browser.analyses import AnalysesView
 from plone.app.content.browser.interfaces import IFolderContentsView
 from zope.interface import implements
@@ -84,6 +85,7 @@ class WorksheetFolderView(BikaListingView):
         super(WorksheetFolderView, self).__init__(context, request)
         self.title = "%s: %s" % (self.context.Title(), _("Worksheets"))
         self.description = ""
+        self.TimeOrDate = TimeOrDate
 
     def folderitems(self):
         items = BikaListingView.folderitems(self)
@@ -99,8 +101,7 @@ class WorksheetFolderView(BikaListingView):
             items[x]['Template'] = obj.getWorksheetTemplate() and \
                 obj.getWorksheetTemplate().Title() or ''
             items[x]['Analyses'] = len(obj.getAnalyses())
-            items[x]['CreationDate'] = obj.CreationDate() and \
-                 self.context.toLocalizedTime(obj.CreationDate(), long_format = 0) or ''
+            items[x]['CreationDate'] = TimeOrDate(self.context, obj.creation_date)
             items[x]['replace']['Title'] = "<a href='%s'>%s</a>" % \
                  (items[x]['url'], items[x]['Title'])
 

@@ -8,6 +8,7 @@ from email.Utils import formataddr
 from email.mime.image import MIMEImage
 from email.mime.multipart import MIMEMultipart
 from bika.lims.config import POINTS_OF_CAPTURE
+from bika.lims.utils import TimeOrDate
 from email.mime.text import MIMEText
 from os.path import join
 import App
@@ -22,6 +23,7 @@ class Publish(BrowserView):
     def __init__(self, context, request, action, analysis_requests):
         self.context = context
         self.request = request
+        self.TimeOrDate = TimeOrDate
         # the workflow transition that invoked us
         self.action = action
         # the list of ARs that we will process.

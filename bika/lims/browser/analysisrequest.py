@@ -131,6 +131,8 @@ class AnalysisRequestViewView(BrowserView):
 
     def __init__(self, context, request):
         super(AnalysisRequestViewView, self).__init__(context, request)
+        
+        self.TimeOrDate = TimeOrDate
 
     def __call__(self):
         self.Field = AnalysesView(self.context, self.request,

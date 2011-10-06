@@ -17,8 +17,13 @@ class SampleViewView(BrowserView):
     implements(IViewView)
     template = ViewPageTemplateFile("templates/sample_view.pt")
 
+    def __init__(self, context, request):
+        BrowserView.__init__(self, context, request)
+        self.TimeOrDate = TimeOrDate
+
     def __call__(self):
         return self.template()
+
 
 class SampleEditView(SampleViewView):
     """ Sample Edit form
@@ -26,6 +31,10 @@ class SampleEditView(SampleViewView):
 
     implements(IViewView)
     template = ViewPageTemplateFile("templates/sample_edit.pt")
+
+    def __init__(self, context, request):
+        BrowserView.__init__(self, context, request)
+        self.TimeOrDate = TimeOrDate
 
     def __call__(self):
         workflow = getToolByName(self.context, 'portal_workflow')

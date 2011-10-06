@@ -88,7 +88,9 @@ class Calculation(BaseFolder, HistoryAwareMixin):
         else:
             pc = getToolByName(self, "portal_catalog")
             DependentServices = []
-            keywords = re.compile(r"\%\(([^\)]+)\)").findall(Formula)
+            # this one was for %(xx)f
+            #keywords = re.compile(r"\%\(([^\)]+)\)").findall(Formula)
+            keywords = re.compile(r"\[([^\]]+)\]").findall(Formula)
             for keyword in keywords:
                 service = pc(getKeyword = keyword)
                 if service:

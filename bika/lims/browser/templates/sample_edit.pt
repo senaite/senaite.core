@@ -98,7 +98,7 @@
 					tal:attributes="
 						id string:DateSampled;
 						name string:DateSampled;
-						value view/fmtDateSampled"/>
+						value python:view.TimeOrDate(context, here.getDateSampled())"/>
 			</td>
 		</tr>
 
@@ -107,7 +107,7 @@
 			<td class="left">
 				<span
 					tal:define="date_submitted here/getDateSubmitted"
-					tal:content="python:plone_view.toLocalizedTime(date_submitted, long_format=1)"/>
+					tal:content="python:view.TimeOrDate(context, date_submitted, long_format=1)"/>
 			</td>
 		</tr>
 
@@ -117,7 +117,7 @@
 				<span
 					tal:define="date_received here/getDateReceived"
 					tal:condition="date_received"
-					tal:content="python:plone_view.toLocalizedTime(date_received, long_format=1)"/>
+					tal:content="python:view.TimeOrDate(context, date_received, long_format=1)"/>
 			</td>
 		</tr>
 
@@ -127,7 +127,7 @@
 				<span
 					tal:define="disposal_date here/getDisposalDate"
 					tal:condition="disposal_date"
-					tal:content="python:plone_view.toLocalizedTime(disposal_date, long_format=1)"/>
+					tal:content="python:view.TimeOrDate(context, disposal_date, long_format=1)"/>
 			</td>
 		</tr>
 
@@ -137,7 +137,7 @@
 				<span
 					tal:define="date_expired here/getDateExpired"
 					tal:condition="date_expired"
-					tal:content="python:plone_view.toLocalizedTime(date_expired, long_format=1)"/>
+					tal:content="python:view.TimeOrDate(context, date_expired, long_format=1)"/>
 			</td>
 		</tr>
 

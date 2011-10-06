@@ -402,12 +402,6 @@ class ClientSamplesView(BikaListingView):
             if after_icons:
                 items[x]['after']['SampleID'] = after_icons
 
-        items = sorted(items, key=itemgetter('DateSampled'))
-        items.reverse()
-        # re-do the pretty css odd/even classes
-        for i in range(len(items)):
-            items[i]['table_row_class'] = ((i + 1) % 2 == 0) and \
-                 "draggable even" or "draggable odd"
         return items
 
 class ClientARImportsView(BikaListingView):

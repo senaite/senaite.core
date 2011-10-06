@@ -228,8 +228,11 @@ class FormulaValidator:
         ts = getToolByName(instance, 'translation_service')
         pc = getToolByName(instance, 'portal_catalog')
 
-        interim_keywords = [f['keyword'] for f in interim_fields]
-        keywords = re.compile(r"\%\(([^\)]+)\)").findall(value)
+        interim_keywords = interim_fields and \
+                               [f['keyword'] for f in interim_fields] or []
+        # this one was for %(xx)f
+        #keywords = re.compile(r"\%\(([^\)]+)\)").findall(value)
+        keywords = re.compile(r"\[([^\]]+)\]").findall(value)
 
         for keyword in keywords:
             # Check if the service keyword exists and is active.

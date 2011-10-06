@@ -80,7 +80,7 @@
                 <span
                     tal:define="date_sampled here/getDateSampled"
                     tal:condition="date_sampled"
-                    tal:content="python:plone_view.toLocalizedTime(date_sampled, long_format=0)"/>
+                    tal:content="python:view.TimeOrDate(context, date_sampled, long_format=0)"/>
             </td>
         </tr>
 
@@ -90,7 +90,7 @@
                 <span
                     tal:define="date_submitted here/getDateSubmitted"
                     tal:condition="date_submitted"
-                    tal:content="python:plone_view.toLocalizedTime(date_submitted, long_format=1)"/>
+                    tal:content="python:view.TimeOrDate(context, date_submitted, long_format=1)"/>
             </td>
         </tr>
 
@@ -100,7 +100,7 @@
                 <span
                     tal:define="date_received here/getDateReceived"
                     tal:condition="date_received"
-                    tal:content="python:plone_view.toLocalizedTime(date_received, long_format=1)"/>
+                    tal:content="python:view.TimeOrDate(context, date_received, long_format=1)"/>
             </td>
         </tr>
 
@@ -110,7 +110,7 @@
                 <span
                     tal:define="disposal_date here/getDisposalDate"
                     tal:condition="disposal_date"
-                    tal:content="python:plone_view.toLocalizedTime(disposal_date, long_format=1)"/>
+                    tal:content="python:view.TimeOrDate(context, disposal_date, long_format=1)"/>
             </td>
         </tr>
 
@@ -120,7 +120,7 @@
                 <span
                     tal:define="date_expired here/getDateExpired"
                     tal:condition="date_expired"
-                    tal:content="python:plone_view.toLocalizedTime(date_expired, long_format=1)"/>
+                    tal:content="python:view.TimeOrDate(context, date_expired, long_format=1)"/>
             </td>
         </tr>
 

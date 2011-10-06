@@ -5,7 +5,7 @@ from plone.testing import z2
 
 import unittest
 
-class TestValidation(unittest.TestCase):
+class Tests(unittest.TestCase):
 
     layer = BIKA_INTEGRATION_TESTING
 
@@ -91,6 +91,11 @@ class TestValidation(unittest.TestCase):
         self.portal.REQUEST.form['Formula'] = formula
         self.assertEqual(None, calcs.titration.schema.get('Formula').validate(formula, calcs.titration, REQUEST=self.portal.REQUEST))
 
+        formula = "[TV] * [TF] * [Ash]"
+        self.portal.REQUEST.form['InterimFields'] = interim_fields
+        self.portal.REQUEST.form['Formula'] = formula
+        self.assertEqual(None, calcs.titration.schema.get('Formula').validate(formula, calcs.titration, REQUEST=self.portal.REQUEST))
+
     def test_LatLongValidator(self):
         z2.login(self.app['acl_users'], SITE_OWNER_NAME)
 
@@ -106,15 +111,15 @@ class TestValidation(unittest.TestCase):
                          "Invalid Latitude. Use DEG MIN SEC N/S")
         self.assertEqual(sp_1.schema.get('Latitude').validate('59x25x25xE', sp_1),
                          "Invalid Latitude. Use DEG MIN SEC N/S")
-        self.assertEqual(True, sp_1.schema.get('Latitude').validate('59degrees 25mins 25N' sp_1))
+        self.assertEqual(True, sp_1.schema.get('Latitude').validate('59degrees 25mins 25N', sp_1))
         self.assertEqual(sp_1.schema.get('Longitude').validate('asdf', sp_1),
                          "Invalid Latitude. Use DEG MIN SEC E/W")
         self.assertEqual(sp_1.schema.get('Longitude').validate('59 25 25 N', sp_1),
                          "Invalid Latitude. Use DEG MIN SEC E/W")
-        self.assertEqual(True, sp_1.schema.get('Longitude').validate('59degrees 25mins 25E' sp_1))
+        self.assertEqual(True, sp_1.schema.get('Longitude').validate('59degrees 25mins 25E', sp_1))
 
 def test_suite():
     suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(TestValidation))
+    suite.addTest(unittest.makeSuite(Tests))
     suite.layer = BIKA_INTEGRATION_TESTING
     return suite

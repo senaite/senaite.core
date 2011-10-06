@@ -238,7 +238,7 @@
                     id input_id;name input_name;
                     tabindex python:column*100+tabindex.next();"/>
             <span tal:condition="python:edit"
-                tal:content="python:plone_view.toLocalizedTime(here.getSample().getDateSampled(), long_format=0)"/>
+                tal:content="python:view.TimeOrDate(here, here.getSample().getDateSampled())"/>
             </td>
         </tal:block>
     </tr>
@@ -250,7 +250,7 @@
             <td tal:define="input_name string:ar.${column}.${field_name}:ignore_empty:record;
                 input_id string:ar_${column}_${field_name}">
             <span
-                tal:content="python:plone_view.toLocalizedTime(here.getDateRequested(), long_format=1)"/>
+                tal:content="python:view.TimeOrDate(here, here.getDateRequested(), long_format=1)"/>
             </td>
         </tal:block>
     </tr>

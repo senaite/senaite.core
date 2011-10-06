@@ -124,21 +124,21 @@
 				<span
 					tal:define="date_sampled sample/getDateSampled"
 					tal:condition="date_sampled"
-					tal:content="python:context.toLocalizedTime(date_sampled, long_format=1)"/>
+					tal:content="python:view.TimeOrDate(context, date_sampled, long_format=1)"/>
 			</td>
 			<th i18n:translate="label_daterequested">Date requested</th>
 			<td>
 				<span
 					tal:define="date_requested here/getDateRequested"
 					tal:condition="date_requested"
-					tal:content="python:context.toLocalizedTime(date_requested, long_format=1)"/>
+					tal:content="python:view.TimeOrDate(context, date_requested, long_format=1)"/>
 			</td>
 		</tr>
 
 		<tr tal:condition="python:review_state != 'sample_due'">
 			<th i18n:translate="label_datereceived">Date received</th>
 			<td tal:define="date_received here/getDateReceived"
-				tal:content="python:context.toLocalizedTime(date_received, long_format=1)">
+				tal:content="python:view.TimeOrDate(context, date_received, long_format=1)">
 			</td>
 			<th>
 				<span
@@ -157,7 +157,7 @@
 			<th i18n:translate="label_datepublished">Date published</th>
 			<td
 				tal:define="date_published here/getDatePublished"
-				tal:content="python:context.toLocalizedTime(date_published, long_format=1)"/>
+				tal:content="python:view.TimeOrDate(context, date_published, long_format=1)"/>
 			<th></th>
 			<td></td>
 		</tr>
