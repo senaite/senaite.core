@@ -30,6 +30,9 @@ Workflow review state selector
 		       tal:content="state/title"
 			   i18n:translate=""/>
 	</tal:review_states>
+    <span id="spinner" style="display:none">
+        <img tal:attributes="src python:portal.absolute_url()+ '/images/spinner.gif';"/>
+    </span>
 
 <p class="discreet"
 	tal:condition="not: view/batch"

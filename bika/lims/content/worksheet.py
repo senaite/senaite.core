@@ -68,10 +68,11 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
 
         # if our parent object is already in the worksheet layout we're done.
         parent_uid = analysis.aq_parent.UID()
-        wstlayout = wst.getLayout()
+        wslayout = self.getLayout()
         if parent_uid in [l['container_uid'] for l in wslayout]:
             return
         wst = self.getWorksheetTemplate()
+        wstlayout = wst.getLayout()
         if analysis.portal_type == 'Analysis':
             analysis_type = 'a'
         elif analysis.portal_type == 'DuplicateAnalysis':
@@ -91,8 +92,8 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
                                    if row['pos'] not in used_positions and \
                                       row['type'] == analysis_type] or [position,]
             position = available_positions[0]
-        self.setLayout(layout + [{'position': position,
-                                'container_uid': parent_uid},])
+        self.setLayout(wslayout + [{'position': position,
+                                    'container_uid': parent_uid},])
 
     security.declareProtected(AddAndRemoveAnalyses, 'removeAnalysis')
     def removeAnalysis(self, analysis):

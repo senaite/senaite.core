@@ -9,6 +9,7 @@ $(document).ready(function(){
 			replaceTarget: true,
 			data: form.formToArray(),
 			success: function(){
+				$("#spinner").toggle(false);
 				$('#filter_input_keypress').remove();
 				$('#review_state_clicked').remove();
 				$('#workflow_action_submitted').remove();
@@ -47,6 +48,7 @@ $(document).ready(function(){
 	})
 
 	$(".review_state_filter").live('change', function(){
+		$("#spinner").toggle(true);
 		$('#folderContentsForm').append("<input type='hidden' value='1' name='review_state_clicked' id='review_state_clicked'/>");
 		inplace_submit();
 	});
