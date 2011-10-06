@@ -121,8 +121,6 @@ class WorkflowAction:
         if len(transitioned) > 0:
             message = _('Changes saved.')
             self.context.plone_utils.addPortalMessage(message, 'info')
- ##        else:
-##            message = _('No items were affected.')
 
         self.request.response.redirect(self.destination_url)
 
@@ -196,7 +194,6 @@ class BikaListingView(BrowserView):
             if form.has_key("review_state"):
                 review_state = [r for r in self.review_states if \
                                 r['id'] == form['review_state']][0]
-                print review_state, '----------------------'
                 if review_state.has_key('contentFilter'):
                     for k, v in review_state['contentFilter'].items():
                         self.modified_contentFilter[k] = v

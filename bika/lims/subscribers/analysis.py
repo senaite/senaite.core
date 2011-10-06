@@ -146,8 +146,9 @@ def ActionSucceededEventHandler(analysis, event):
 
         # If assigned to a worksheet and all analyses on the worksheet have been attached,
         # then attach the worksheet.
-        ws = analysis.getWorksheet()
+        ws = analysis.getBackReferences('WorksheetAnalysis')
         if ws:
+            ws = ws[0]
             if not ws.UID() in analysis.REQUEST['workflow_attach_skiplist']:
                 can_attach = True
                 for a in ws.getAnalyses():
@@ -243,8 +244,9 @@ def ActionSucceededEventHandler(analysis, event):
 
         # If assigned to a worksheet and all analyses on the worksheet have been submitted,
         # then submit the worksheet.
-        ws = analysis.getWorksheet()
+        ws = analysis.getBackReferences('WorksheetAnalysis')
         if ws:
+            ws = ws[0]
             if not ws.UID() in analysis.REQUEST['workflow_skiplist']:
                 all_submitted = True
                 for a in ws.getAnalyses():
@@ -295,8 +297,9 @@ def ActionSucceededEventHandler(analysis, event):
                     analysis.REQUEST["workflow_skiplist"].append("retract all analyses")
                 wf.doActionFor(ar, 'retract')
         # Escalate action to the Worksheet (if it's on one).
-        ws = analysis.getWorksheet()
+        ws = analysis.getBackRefereces('WorksheetAnalysis')
         if ws:
+            ws = ws[0]
             if not ws.UID() in analysis.REQUEST['workflow_skiplist']:
                 if wf.getInfoFor(ws, 'review_state') == 'open':
                     analysis.REQUEST["workflow_skiplist"].append(ws.UID())
@@ -372,8 +375,9 @@ def ActionSucceededEventHandler(analysis, event):
 
         # If this is on a worksheet and all it's other analyses are verified,
         # then verify the worksheet.
-        ws = analysis.getWorksheet()
+        ws = analysis.getBackReferences('WorksheetAnalysis')
         if ws:
+            ws = ws[0]
             if not ws.UID() in analysis.REQUEST['workflow_skiplist']:
                 all_verified = True
                 for a in ws.getAnalyses():
@@ -443,7 +447,7 @@ def ActionSucceededEventHandler(analysis, event):
     elif event.action == "unassign":
         analysis.reindexObject(idxs = ["worksheetanalysis_review_state", ])
         # Remove the analysis from the worksheet
-        ws = analysis.getWorksheet()
+        ws = analysis.getBackReferences('WorksheetAnalysis')
         ws_UID = ws.UID()
 
         # Escalate the action to the parent AR if it is assigned

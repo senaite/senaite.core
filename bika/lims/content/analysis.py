@@ -231,17 +231,4 @@ class Analysis(BaseContent):
             return True
         return False
 
-    security.declarePublic('getWorksheet')
-    def getWorksheet(self):
-        tool = getToolByName(self, REFERENCE_CATALOG)
-        worksheet = ''
-        uids = [uid for uid in
-                tool.getBackReferences(self, 'WorksheetAnalysis')]
-        if len(uids) == 1:
-            reference = uids[0]
-            worksheet = tool.lookupObject(reference.sourceUID)
-
-        return worksheet
-
-
 atapi.registerType(Analysis, PROJECTNAME)

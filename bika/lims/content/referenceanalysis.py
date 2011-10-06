@@ -169,17 +169,6 @@ class ReferenceAnalysis(BaseContent):
             return True
         return False
 
-    security.declarePublic('getWorksheet')
-    def getWorksheet(self):
-        tool = getToolByName(self, REFERENCE_CATALOG)
-        worksheet = ''
-        uids = [uid for uid in
-                tool.getBackReferences(self, 'WorksheetReferenceAnalysis')]
-        if len(uids) == 1:
-            reference = uids[0]
-            worksheet = tool.lookupObject(reference.sourceUID)
-        return worksheet
-
     security.declarePublic('current_date')
     def current_date(self):
         """ return current date """

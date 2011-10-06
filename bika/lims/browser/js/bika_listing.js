@@ -17,14 +17,14 @@ $(document).ready(function(){
 		form.ajaxSubmit(options);
 	}
 
-	$("#select_all").click(function(){
+	$("#select_all").live('click', function(){
 		checked = $(this).attr("checked");
 		$.each($("input[id^='cb_']"), function(i,v){
 			$(v).attr("checked", checked);
 		});
 	});
 
-	$("input[id^='cb_']").click(function(){
+	$("input[id^='cb_']").live('click', function(){
 		all_selected = true;
 		$.each($("input[id^='cb_']"), function(i,v){
 			if($(v).attr("checked") == false){

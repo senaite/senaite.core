@@ -59,7 +59,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         return self.getAnalyses()
 
     security.declareProtected(AddAndRemoveAnalyses, 'addAnalysis')
-    def addAnalysis(analysis):
+    def addAnalysis(self, analysis):
         # - add the analysis to self.Analyses()
         # - try to add the analysis parent in the worksheet layout according to
         #   the worksheet's template, if possible.
@@ -95,7 +95,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
                                 'container_uid': parent_uid},])
 
     security.declareProtected(AddAndRemoveAnalyses, 'removeAnalysis')
-    def removeAnalysis(analysis):
+    def removeAnalysis(self, analysis):
         """ delete an analyses from the worksheet and un-assign it
         """
         Analyses = self.getAnalyses()
@@ -192,20 +192,6 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             utils.addPortalMessage(message, type = u'info')
         if REQUEST:
             RESPONSE.redirect('%s/manage_results' % self.absolute_url())
-
-    def _assignAnalyses(self, Analyses = []):
-        """ assign selected analyses to worksheet
-        """
-        if Analyses:
-            workflow = getToolByName(self, 'portal_workflow')
-            rc = getToolByName(self, REFERENCE_CATALOG)
-            assigned = []
-            for uid in Analyses:
-                analysis = rc.lookupObject(uid)
-                workflow.doActionFor(analysis, 'assign')
-                assigned.append(uid)
-
-            self.setAnalyses(self.getAnalyses() + assigned)
 
     def addWSAttachment(self, REQUEST = None, RESPONSE = None):
         """ Add the file as an attachment

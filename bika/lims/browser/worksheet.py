@@ -83,7 +83,34 @@ class WorksheetWorkflowAction(WorkflowAction):
             self.destination_url = self.request.get_header("referer",
                                    self.context.absolute_url())
             self.request.response.redirect(self.destination_url)
+        ## assign
+        elif action == 'assign':
+            selected_analyses = WorkflowAction._get_selected_items(self)
+            selected_analysis_uids = selected_analyses.keys()
 
+            if selected_analyses:
+                for uid in selected_analysis_uids:
+                    analysis = rc.lookupObject(uid)
+                    workflow.doActionFor(analysis, 'assign')
+                    self.context.addAnalysis(analysis)
+
+            self.destination_url = self.request.get_header("referer",
+                                   self.context.absolute_url())
+            self.request.response.redirect(self.destination_url)
+        ## unassign
+        elif action == 'unassign':
+            selected_analyses = WorkflowAction._get_selected_items(self)
+            selected_analysis_uids = selected_analyses.keys()
+
+            if selected_analyses:
+                for uid in selected_analysis_uids:
+                    analysis = rc.lookupObject(uid)
+                    workflow.doActionFor(analysis, 'unassign')
+                    self.context.removeAnalysis(analysis)
+
+            self.destination_url = self.request.get_header("referer",
+                                   self.context.absolute_url())
+            self.request.response.redirect(self.destination_url)
         else:
             # default bika_listing.py/WorkflowAction for other transitions
             WorkflowAction.__call__(self)
