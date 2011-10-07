@@ -179,8 +179,15 @@ class AnalysesView(BikaListingView):
             # permission, otherwise just put an icon in Result column.
             if can_view_result:
                 items[i]['Result'] = result
-                items[i]['formatted_result'] = precision and result and \
-                    str("%%.%sf" % precision) % float(result) or result
+                items[i]['formatted_result'] = result
+                if result != '':
+                    if 'Result' in items[i]['choices'] and items[i]['choices']['Result']:
+                        items[i]['formatted_result'] = \
+                            [r['ResultText'] for r in items[i]['choices']['Result'] \
+                                              if r['ResultValue'] == result][0]
+                    else:
+                        items[i]['formatted_result'] = precision and \
+                            str("%%.%sf" % precision) % float(result) or result
                 items[i]['Uncertainty'] = obj.getUncertainty(result)
 
                 attachments = ""

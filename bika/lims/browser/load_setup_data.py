@@ -460,11 +460,24 @@ class LoadSetupData(BrowserView):
         for row in services:
             if not row['title']:
                 if deferred:
-                    u = {'intercept_min': unicode(row['intercept_min']),
-                         'intercept_max': unicode(row['intercept_max']),
-                         'errorvalue': unicode(row['errorvalue'])}
-                    self.deferred['Analysis Services'][-1]['_uncert'].append(u)
+                    r = []
+                    if (row['ResultValue'] not in ['', None]):
+                        r.append({'ResultValue': str(row['ResultValue']),
+                                  'ResultText': str(row['ResultText'])})
+                        self.deferred['Analysis Services'][-1]['_choices'].append(r)
+                    if row['intercept_min'] and row['errorvalue'] and row['intercept_max']:
+                        u = {'intercept_min': unicode(row['intercept_min']),
+                             'intercept_max': unicode(row['intercept_max']),
+                             'errorvalue': unicode(row['errorvalue'])}
+                        self.deferred['Analysis Services'][-1]['_uncert'].append(u)
                     continue
+                r = []
+                if (row['ResultValue'] not in ['', None]):
+                    r.append({'ResultValue': str(row['ResultValue']),
+                              'ResultText': str(row['ResultText'])})
+                    service_obj.setResultOptions(
+                        service_obj.getResultOptions() + r
+                    )
                 if row['intercept_min'] and \
                    row['intercept_max'] and \
                    row['errorvalue']:
@@ -481,6 +494,8 @@ class LoadSetupData(BrowserView):
                 # for deferred services get stored here
                 if not '_uncert' in row:
                     row['_uncert'] = []
+                if not '_choices' in row:
+                    row['_choices'] = []
                 self.deferred['Analysis Services'].append(row)
                 deferred = 1
                 continue
@@ -495,15 +510,16 @@ class LoadSetupData(BrowserView):
             else:
                 u = []
             resultoptions = []
-            if row['ResultOptions']:
-                for ro in row['ResultOptions']:
-                    resultoptions.append({ro:ro})
+            if (row['ResultValue'] not in ['', None]):
+                resultoptions.append({'ResultValue':str(row['ResultValue']),
+                                      'ResultText': str(row['ResultText'])})
             obj.edit(title = unicode(row['title']),
                      description = unicode(row['description']),
                      PointOfCapture = unicode(row['PointOfCapture']),
                      Unit = unicode(row['Unit'] and row['Unit'] or ''),
                      Category = self.cats[unicode(row['Category'])].UID(),
                      Price = "%02f" % float(row['Price']),
+
                      CorporatePrice = "%02f" % float(row['BulkPrice']),
                      VAT = "%02f" % float(row['VAT']),
                      Precision = unicode(row['Precision']),
@@ -522,6 +538,8 @@ class LoadSetupData(BrowserView):
                 obj.setCalculation(self.calcs[row['Calculation']])
             if '_uncert' in row:
                 obj.setUncertainties(obj.getUncertainties() + row['_uncert'])
+            if '_choices' in row:
+                obj.setResultOptions(obj.getResultOptions() + row['_choices'])
             service_obj = obj
             self.services[row['Keyword']] = obj
             obj.processForm()

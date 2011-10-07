@@ -100,9 +100,8 @@ class ServiceKeywordValidator:
 validation.register(ServiceKeywordValidator())
 
 class InterimFieldsValidator:
-    """Validating InterimField keywords.  applied as a subfield validator
-        on keyword subfield, but validates entire InterimFields field form
-        data.
+    """Validating InterimField keywords.
+        XXX Applied as a subfield validator but validates entire field.
         keyword must match isUnixLikeName
         keyword may not be the same as any service keyword.
         keyword must be unique in this InterimFields field
@@ -279,7 +278,35 @@ class LatLongValidator:
 
         return True
 
-
-
 validation.register(LatLongValidator("latitude_validator"))
 validation.register(LatLongValidator("longitude_validator"))
+
+
+class ResultOptionsValidator:
+    """Validating AnalysisService ResultOptions field.
+        XXX Applied as a subfield validator but validates entire field.
+    """
+
+    implements(IValidator)
+    name = "resultoptionsvalidator"
+
+    def __call__(self, value, *args, **kwargs):
+        instance = kwargs['instance']
+        fieldname = kwargs['field'].getName()
+        request = kwargs.get('REQUEST', {})
+        form = request.form
+        form_value = form.get(fieldname)
+
+        ts = getToolByName(instance, 'translation_service')
+        pc = getToolByName(instance, 'portal_catalog')
+
+        # ResultValue must always be a number
+        for field in form_value:
+            try:
+                f = float(field['ResultValue'])
+            except:
+                return _("Validation failed: Result Values must be numbers.")
+
+        return True
+
+validation.register(ResultOptionsValidator())

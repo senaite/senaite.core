@@ -252,9 +252,11 @@ schema = BikaSchema.copy() + Schema((
     RecordsField('ResultOptions',
         schemata = _("Result options"),
         type = 'resultsoptions',
-        subfields = ('Result',),
-        required_subfields = ('Result',),
-        subfield_labels = {'Result': 'Option Text',},
+        subfields = ('ResultValue','ResultText'),
+        required_subfields = ('ResultValue','ResultText'),
+        subfield_labels = {'ResultValue': _('Result'),
+                           'ResultText': _('Display Value'),},
+        subfield_validators = {'ResultValue': 'resultoptionsvalidator'},
         widget = RecordsWidget(
             label = _("Result Options"),
             description = _("Please list all options for the analysis result if you want to restrict "

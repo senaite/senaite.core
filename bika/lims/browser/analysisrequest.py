@@ -432,7 +432,7 @@ class AnalysisRequestSelectCCView(BikaListingView):
         self.title = _("Contacts to CC")
         self.description = _("Select the contacts that will receive analysis results for this request.")
         self.contentFilter = {'portal_type': 'Contact',
-                              'sort_on':'Title',
+                              'sort_on':'sortable_title',
                               'inactive_state': 'active'}
         self.show_editable_border = False
         self.show_sort_column = False
@@ -972,7 +972,7 @@ class AnalysisRequestsView(ClientAnalysisRequestsView):
                               'sort_on':'id',
                               'sort_order': 'reverse',
                               'path':{"query": ["/"], "level" : 0 }}
-
+        self.view_url = self.view_url + "/analysisrequests"
         self.columns['Client'] = {'title': _('Client')}
         review_states = []
         for review_state in self.review_states:

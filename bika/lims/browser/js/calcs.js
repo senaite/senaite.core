@@ -2,7 +2,7 @@ jQuery( function($) {
 $(document).ready(function(){
 
 	// XXX when should this run...?
-	$(".listing_string_entry").live('change', function(){
+	$(".listing_string_entry,.listing_select_entry").live('change', function(){
 		uid = $(this).attr('uid');
 		objectId = $(this).attr('objectId');
 		field = $(this).attr('field');
@@ -11,12 +11,12 @@ $(document).ready(function(){
 		$('#cb_'+uid).attr('checked', true);
 		// collect all results for back-dependant calculations
 		var results = {};
-		$.each($("input[field='Result']"), function(i, e){
+		$.each($("input[field='Result'], select[field='Result']"), function(i, e){
 			results[$(e).attr("uid")] = $(e).val();
 		});
 		// collect all interims by UID for back-dependant calculations
 		var interims = {};
-		$.each($("input[id$='_item_data']"), function(i, e){
+		$.each($("input[id$='_item_data'], select[field='Result']"), function(i, e){
 			interims[e.id.split("_")[0]] = $.parseJSON($(e).val());
 		});
 		interims = $.toJSON(interims);

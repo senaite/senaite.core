@@ -103,15 +103,32 @@ class ajaxSampleSubmit():
         return json.dumps({'success':message})
 
 class SamplesView(ClientSamplesView):
-    """ The main portal Samples action tab
+    """ The main portal Analysis Requests action tab
     """
+
     def __init__(self, context, request):
         super(SamplesView, self).__init__(context, request)
-        self.contentFilter = {'portal_type':'Sample',
-                              'path':{"query": ["/"], "level" : 0 }}
-        self.show_editable_border = False
-        self.show_select_column = True
-        self.title = _("Samples")
+        self.title = "%s: %s" % (self.context.Title(), _("Samples"))
         self.description = ""
+        self.show_editable_border = False
+        self.contentFilter = {'portal_type':'Sample',
+                              'sort_on':'id',
+                              'sort_order': 'reverse',
+                              'path':{"query": ["/"], "level" : 0 }}
+        self.view_url = self.view_url + "/samples"
+        self.columns['Client'] = {'title': _('Client')}
+        review_states = []
+        for review_state in self.review_states:
+            review_state['columns'].insert(review_state['columns'].index('SampleID')+1, 'Client')
 
+    def folderitems(self):
+        workflow = getToolByName(self.context, "portal_workflow")
+        items = ClientSamplesView.folderitems(self)
+        for x in range(len(items)):
+            if not items[x].has_key('obj'):
+                continue
+            obj = items[x]['obj']
+            items[x]['replace']['Client'] = "<a href='%s'>%s</a>" % \
+                 (obj.aq_parent.absolute_url(), obj.aq_parent.Title())
 
+        return items

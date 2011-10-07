@@ -307,7 +307,6 @@ class ClientSamplesView(BikaListingView):
         self.show_sort_column = False
         self.show_select_row = False
         self.show_select_column = True
-        self.pagesize = 50
 
         self.title = "%s: %s" % (self.context.Title(), _("Samples"))
         self.description = ""
@@ -407,7 +406,7 @@ class ClientSamplesView(BikaListingView):
             items[x]['SamplePointTitle'] = obj.getSamplePointTitle()
 
             datesampled = obj.getDateSampled()
-            items[x]['DateSampled'] = TimeOrDate(self.context, datesampled)
+            items[x]['DateSampled'] = TimeOrDate(self.context, datesampled, long_format=1)
             items[x]['future_DateSampled'] = datesampled.Date() > DateTime() and \
                 TimeOrDate(self.context, datesampled) or ''
 

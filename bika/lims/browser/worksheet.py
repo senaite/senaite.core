@@ -447,10 +447,11 @@ class AddAnalyses(AnalysesView):
         form = self.request.form
         rc = getToolByName(self.context, REFERENCE_CATALOG)
         contentFilter = {'portal_type': 'Analysis',
-                         'review_state':'impossible_state'}
+                         'review_state':'impossible_state',
+                         'worksheetanalysis_review_state':'unassigned',
+                         'cancellation_state':'active'}
         if 'submitted' in form:
             contentFilter['review_state'] = 'sample_received'
-            contentFilter['worksheetanalysis_review_state'] = 'unassigned'
             if 'getARProfile' in form and form['getARProfile']:
                 profile = rc.lookupObject(form['getARProfile'])
                 service_uids = [s.UID() for s in profile.getService()]

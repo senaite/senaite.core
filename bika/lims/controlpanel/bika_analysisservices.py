@@ -92,15 +92,17 @@ class AnalysisServicesView(BikaListingView):
             items[x]['Unit'] = obj.Unit
             items[x]['Price'] = "%s.%02d" % (obj.Price)
             maxtime = obj.MaxTimeAllowed
-            items[x]['MaxTimeAllowed'] = 'days' in maxtime and maxtime['days'] \
-                 and "%s%s"%(maxtime['days'], _('D')) or ""
-            items[x]['MaxTimeAllowed'] += 'hours' in maxtime and maxtime['hours'] \
-                 and "%s%s"%(maxtime['hours'], _('H')) or ""
-            items[x]['MaxTimeAllowed'] += 'minutes' in maxtime and maxtime['minutes'] \
-                 and "%s%s"%(maxtime['minutes'], _('M')) \
-                 or not (('hours' in maxtime and maxtime['hours'])) \
-                 and '0%s'%(_('M')) \
-                 or ''
+
+            maxtime = obj.MaxTimeAllowed
+            maxtime_string = ""
+            for field in ('days','hours', 'minutes'):
+                if field in maxtime:
+                    try:
+                        val = int(maxtime[field])
+                        if val > 0:
+                            maxtime_string += "%s%s "%(val, _(field[0]))
+                    except: pass
+            items[x]['MaxTimeAllowed'] = maxtime_string
 
             if obj.DuplicateVariation is not None:
                 items[x]['DuplicateVariation'] = "%s.%02d" % (obj.DuplicateVariation)

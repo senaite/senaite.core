@@ -83,8 +83,10 @@ class ajaxGetWorksheetTemplates():
     def __call__(self):
         plone.protect.CheckAuthenticator(self.request)
         plone.protect.PostOnly(self.request)
-        pc = getToolByName(self.context, "portal_catalog")
+        pc = getToolByName(self.context, "portal_catalog",)
         templates = []
-        for t in pc(portal_type = "WorksheetTemplate"):
+        for t in pc(portal_type = "WorksheetTemplate",
+                    sort_on = 'sortable_title',
+                    inactive_state='active'):
             templates.append((t.UID, t.Title))
         return json.dumps(templates)

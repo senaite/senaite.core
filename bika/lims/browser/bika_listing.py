@@ -309,7 +309,7 @@ class BikaListingView(BrowserView):
                 icon = icon.html_tag(),
                 type_class = type_class,
                 # a list of lookups for single-value-select fields
-                choices = [],
+                choices = {},
                 state_class = state_class,
                 relative_url = relative_url,
                 view_url = url,

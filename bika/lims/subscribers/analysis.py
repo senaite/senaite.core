@@ -297,7 +297,7 @@ def ActionSucceededEventHandler(analysis, event):
                     analysis.REQUEST["workflow_skiplist"].append("retract all analyses")
                 wf.doActionFor(ar, 'retract')
         # Escalate action to the Worksheet (if it's on one).
-        ws = analysis.getBackRefereces('WorksheetAnalysis')
+        ws = analysis.getBackReferences('WorksheetAnalysis')
         if ws:
             ws = ws[0]
             if not ws.UID() in analysis.REQUEST['workflow_skiplist']:

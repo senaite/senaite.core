@@ -66,7 +66,11 @@ class HistoryAwareReferenceField(ReferenceField):
         targetUIDs = [ref.targetUID for ref in
                       rc.getReferences(instance, self.relationship)]
 
-        if value is None:
+        # empty value
+        if not value:
+            value = ()
+        # list with one empty item
+        if type(value) in (list, tuple) and len(value) == 1 and not value[0]:
             value = ()
 
         if not value and not targetUIDs:
