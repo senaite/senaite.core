@@ -11,6 +11,8 @@ from bika.lims import bikaMessageFactory as _
 schema = BaseSchema.copy() + Schema((
     TextField('ItemDescription',
         widget = TextAreaWidget(
+            default_content_type = 'text/plain',
+            allowable_content_types = ('text/plain',),
             label = _("Description")
         )
     ),

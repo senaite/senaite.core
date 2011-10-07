@@ -147,6 +147,8 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     TextField('Notes',
+        default_content_type = 'text/plain',
+        allowable_content_types = ('text/plain',),
         widget = TextAreaWidget(
             label = 'Notes'
         ),

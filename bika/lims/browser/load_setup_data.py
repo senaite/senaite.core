@@ -494,6 +494,10 @@ class LoadSetupData(BrowserView):
                      'errorvalue': unicode(row['errorvalue'])}]
             else:
                 u = []
+            resultoptions = []
+            if row['ResultOptions']:
+                for ro in row['ResultOptions']:
+                    resultoptions.append({ro:ro})
             obj.edit(title = unicode(row['title']),
                      description = unicode(row['description']),
                      PointOfCapture = unicode(row['PointOfCapture']),
@@ -510,6 +514,7 @@ class LoadSetupData(BrowserView):
                                        'minutes':unicode(row['Minutes'])},
                      DuplicateVariation = "%02f" % float(row['DuplicateVariation']),
                      Uncertanties = u,
+                     ResultOptions = resultoptions,
                      ReportDryMatter = row['ReportDryMatter'] and True or False)
             if row['Instrument']:
                 obj.setInstrument(self.instruments[row['Instrument']].UID())
@@ -591,7 +596,7 @@ class LoadSetupData(BrowserView):
                       description = unicode(row['description']),
                       DependentServices = depservices,
                       InterimFields = i,
-                      Formula = unicode(row['Formula']))
+                      Formula = str(row['Formula']))
             if '_interim' in row:
                 obj.setInterimFields(obj.getInterimFields() + row['_interim'])
             calc_obj = obj

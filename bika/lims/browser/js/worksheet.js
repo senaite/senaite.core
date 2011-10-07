@@ -19,7 +19,6 @@ $(document).ready(function(){
 			dataType: "json",
 			success: function(data,textStatus,$XHR){
 				html = "&nbsp;&nbsp;From template:&nbsp;<select name='wstemplate'><option value=''>None</option>";
-				json = $.parseJSON(data);
 				for(i=0; i< data.length; i++){
 					html = html + "<option value='"+data[i][0]+"'>"+data[i][1]+"</option>";
 				}
@@ -29,16 +28,31 @@ $(document).ready(function(){
 		});
 	}
 
-	$("#analyst").change(function(){
-		if ($("#analyst").val() == '') {
-			return false;
+	// search form - selecting a category fills up the service selector
+	$("#CategorySelector").live("change", function(){
+		val = $("#CategorySelector").val();
+		if(val == 'any'){
+			$("#ServiceSelector").empty();
+			$("#ServiceSelector").append("<option value='any'>Any</option>");
+			return;
 		}
 		$.ajax({
-		  type: 'POST',
-		  url: window.location.href + "/setAnalyst",
-		  data: {'value': $("#analyst").val(),
-				  '_authenticator': $('input[name="_authenticator"]').val()}
+			url: window.location.href.replace("/add_analyses","") + "/getServices",
+			type: 'POST',
+			data: {'_authenticator': $('input[name="_authenticator"]').val(),
+			       'getCategoryUID': val},
+			dataType: "json",
+			success: function(data,textStatus,$XHR){
+				$("#ServiceSelector").empty();
+				$("#ServiceSelector").append("<option value='any'>Any</option>");
+				for(i=0; i< data.length; i++){
+					$("#ServiceSelector").append("<option value='"+data[i][0]+"'>"+data[i][1]+"</option>");
+				}
+			}
 		});
 	});
+	$("#CategorySelector").trigger("change");
+
+
 });
 });

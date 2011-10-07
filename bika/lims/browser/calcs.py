@@ -89,10 +89,6 @@ class ajaxCalculateAnalysisEntry():
                     mapping[key] = float(value)
                 except Exception, e:
                     type_error = True
-##                    self.alerts.append({'uid': uid,
-##                                        'field': 'Result',
-##                                        'icon': 'exclamation',
-##                                        'msg': "Type Error in field %s: %s" % (key, e.args[0])})
             if type_error:
                 return None
 
@@ -104,44 +100,26 @@ class ajaxCalculateAnalysisEntry():
                 formula = eval("'%s'%%mapping"%formula,
                                {"__builtins__":None, 'math':math},
                                {'mapping': mapping})
-##                self.alerts.append({'uid': uid,
-##                                    'field': 'Result',
-##                                    'icon': 'calculation',
-##                                    'msg': formula})
                 # calculate
                 result = eval(formula)
                 # always format calculation result to service precision
                 result = precision and str("%%.%sf" % precision) % result or \
                        result
 
-                self.results.append({'uid': uid,
-                                     'result': result,
-                                     'formatted_result': result})
+                self.results.append({'uid': uid, 'result': result, 'formatted_result': result})
                 self.form_results[uid] = result
             except ZeroDivisionError, e:
-##                self.alerts.append({'uid': uid,
-##                                    'field': 'Result',
-##                                    'icon': 'exclamation',
-##                                    'msg': "Calculation failed: division by zero"})
                 return None
             except KeyError, e:
-                self.alerts.append({'uid': uid,
-                                    'field': 'Result',
-                                    'icon': 'exclamation',
-                                    'msg': "Key Error: " + str(e.args[0])})
+                self.alerts.append({'uid': uid, 'field': 'Result','icon': 'exclamation', 'msg': "Key Error: " + str(e.args[0])})
                 return None
             except Exception, e:
-                self.alerts.append({'uid': uid,
-                                    'field': 'Result',
-                                    'icon': 'exclamation',
-                                    'msg': "Exception: " +  str(e.args[0])})
+                self.alerts.append({'uid': uid, 'field': 'Result', 'icon': 'exclamation', 'msg': "Exception: " +  str(e.args[0])})
                 return None
 
         else:
             # if nothing's changed, set form to show the original value
-            self.results.append({'uid': uid,
-                                 'result': form_result,
-                                 'formatted_result': form_result})
+            self.results.append({'uid': uid, 'result': form_result, 'formatted_result': form_result})
 
         # Uncertainty value for this result
         self.uncertainties.append({'uid': uid,
@@ -156,15 +134,9 @@ class ajaxCalculateAnalysisEntry():
             in_range = analysis.result_in_range(result and result or form_result, self.specification)
         if in_range == True: pass
         if in_range == False:
-            self.alerts.append({'uid': uid,
-                    'field': 'Result',
-                    'icon': 'exclamation',
-                    'msg': _("Result out of range")})
+            self.alerts.append({'uid': uid, 'field': 'Result', 'icon': 'exclamation', 'msg': _("Result out of range")})
         if in_range == '1':
-            self.alerts.append({'uid': uid,
-                    'field': 'Result',
-                    'icon': 'warning',
-                    'msg': _("Result out of range: in error shoulder")})
+            self.alerts.append({'uid': uid, 'field': 'Result', 'icon': 'warning', 'msg': _("Result out of range: in error shoulder")})
 
         # maybe a service who depends on us must be recalculated.
         if result != form_result:

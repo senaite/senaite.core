@@ -34,7 +34,7 @@ schema = BikaSchema.copy() + Schema((
             description = _("The analyses included in this profile, grouped per category"),
         )
     ),
-    TextField('Remarks',
+    TextField('Notes',
         schemata = 'Description',
         default_content_type = 'text/plain',
         allowable_content_types = ('text/plain',),

@@ -33,6 +33,11 @@ schema = BikaSchema.copy() + Schema((
     StringField('Analyst',
     ),
     TextField('Notes',
+        default_content_type = 'text/plain',
+        allowable_content_types = ('text/plain',),
+        widget = TextAreaWidget(
+            label = _('Notes')
+        ),
     ),
 ),
 )
@@ -249,143 +254,6 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
                     attachments.append(other.UID())
                 attachments.append(attachment.UID())
                 analysis.setAttachment(attachments)
-
-        if RESPONSE:
-            RESPONSE.redirect('%s/manage_results' % self.absolute_url())
-
-    security.declareProtected(ManageResults, 'submitResults')
-    def submitResults(self, analyst = None, results = {}, Notes = None, REQUEST = None, RESPONSE = None):
-        """ Submit results, interim results and Analyst
-        """
-        self.setNotes(Notes)
-        wf_tool = self.portal_workflow
-        review_state = wf_tool.getInfoFor(
-                self, 'review_state', '')
-        if review_state != 'open':
-            return
-
-        rc = getToolByName(self, REFERENCE_CATALOG)
-        states = {}
-
-        if analyst:
-            if analyst.strip() == '':
-                analyst = None
-            self.setAnalyst(analyst)
-
-        worksheet_seq = []
-
-        dm_ars = []
-        dm_ar_ids = []
-        for key, value in self.REQUEST.form.items():
-            if key.startswith('results'):
-                UID = key.split('.')[-1]
-                analysis = rc.lookupObject(UID)
-                if analysis.getCalcType() == 'dep':
-                    continue
-                # check for no interim state change
-                analysis_review_state = wf_tool.getInfoFor(
-                        analysis, 'review_state', '')
-                if analysis_review_state not in ['assigned']:
-                    continue
-                result = value.get('Result')
-                if result:
-                    if result.strip() == '':
-                        result = None
-                else:
-                    result = None
-
-                retested = value.get('Retested')
-
-                uncertainty = None
-                service = analysis.getService()
-
-                if result:
-                    precision = service.getPrecision()
-                    if precision:
-                        result = "%%.%df" % precision % result
-                    uncertainty = self.get_uncertainty(result, service)
-
-                titrationvolume = value.get('TitrationVolume')
-                if titrationvolume:
-                    if titrationvolume.strip() == '':
-                        titrationvolume = None
-                else:
-                    titrationvolume = None
-
-                titrationfactor = value.get('TitrationFactor')
-                if titrationfactor:
-                    if titrationfactor.strip() == '':
-                        titrationfactor = None
-                else:
-                    titrationfactor = None
-
-                grossmass = value.get('GrossMass')
-                if grossmass:
-                    if grossmass.strip() == '':
-                        grossmass = None
-                else:
-                    grossmass = None
-
-                netmass = value.get('NetMass')
-                if netmass:
-                    if netmass.strip() == '':
-                        netmass = None
-                else:
-                    netmass = None
-
-                vesselmass = value.get('VesselMass')
-                if vesselmass:
-                    if vesselmass.strip() == '':
-                        vesselmass = None
-                else:
-                    vesselmass = None
-
-                samplemass = value.get('SampleMass')
-                if samplemass:
-                    if samplemass.strip() == '':
-                        samplemass = None
-                else:
-                    samplemass = None
-
-                analysis.setTitrationVolume(titrationvolume)
-                analysis.setTitrationFactor(titrationfactor)
-                analysis.setGrossMass(grossmass)
-                analysis.setNetMass(netmass)
-                analysis.setVesselMass(vesselmass)
-                analysis.setSampleMass(samplemass)
-
-                analysis.edit(
-                    Result = result,
-                    Retested = retested,
-                    Uncertainty = uncertainty,
-                    Unit = service.getUnit()
-                )
-
-                """ calculate dependant results """
-                if analysis.portal_type == 'Analysis':
-                    if analysis._affects_other_analysis:
-                        self.get_dependant_results(analysis)
-                    if analysis.aq_parent.getReportDryMatter():
-                        if analysis.aq_parent.getId() not in dm_ar_ids:
-                            dm_ars.append(analysis.aq_parent)
-                            dm_ar_ids.append(analysis.aq_parent.getId())
-
-                """ AVS omit renumbering
-                seq = int(value.get('Pos'))
-                key = value.get('Key')
-                type = value.get('Type')
-                sequence = {}
-                sequence['pos'] = seq
-                sequence['type'] = type
-                sequence['uid'] = analysis.UID()
-                sequence['key'] = key
-                worksheet_seq.append(sequence)
-                """
-
-        for ar in dm_ars:
-            ar.setDryMatterResults()
-
-        # self.setLayout(worksheet_seq)
 
         if RESPONSE:
             RESPONSE.redirect('%s/manage_results' % self.absolute_url())

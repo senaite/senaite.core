@@ -52,10 +52,12 @@ schema = BikaSchema.copy() + Schema((
                       ),
                   ),
     TextField('Notes',
-              widget = TextAreaWidget(
-                  label = _("Notes")
-              )
-              ),
+        default_content_type = 'text/plain',
+        allowable_content_types = ('text/plain',),
+        widget = TextAreaWidget(
+            label = _("Notes")
+        )
+    ),
     ComputedField('ClientUID',
                   expression = 'here.aq_parent.UID()',
                   widget = ComputedWidget(

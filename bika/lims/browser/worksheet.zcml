@@ -16,23 +16,30 @@
     <browser:page
       for="bika.lims.interfaces.IWorksheet"
       name="manage_results"
-      class="bika.lims.browser.worksheet.WorksheetManageResultsView"
+      class="bika.lims.browser.worksheet.ManageResults"
       permission="bika.lims.ManageResults"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
     <browser:page
       for="bika.lims.interfaces.IWorksheet"
-      name="add_analysis"
-      class="bika.lims.browser.worksheet.WorksheetAddAnalysisView"
+      name="add_analyses"
+      class="bika.lims.browser.worksheet.AddAnalyses"
       permission="bika.lims.AddAndRemoveAnalyses"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+    <browser:page
+      for="bika.lims.interfaces.IWorksheet"
+      name="getServices"
+      class="bika.lims.browser.worksheet.ajaxGetServices"
+      permission="zope.Public"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
     <browser:page
       for="bika.lims.interfaces.IWorksheet"
       name="add_blank"
-      class="bika.lims.browser.worksheet.WorksheetAddBlankView"
+      class="bika.lims.browser.worksheet.AddBlankView"
       permission="bika.lims.AddAndRemoveAnalyses"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
@@ -40,16 +47,8 @@
     <browser:page
       for="bika.lims.interfaces.IWorksheet"
       name="add_control"
-      class="bika.lims.browser.worksheet.WorksheetAddControlView"
+      class="bika.lims.browser.worksheet.AddControlView"
       permission="bika.lims.AddAndRemoveAnalyses"
-      layer="bika.lims.interfaces.IBikaLIMS"
-    />
-
-    <browser:page
-      for="bika.lims.interfaces.IWorksheet"
-      name="setAnalyst"
-      class="bika.lims.browser.worksheet.ajaxSetAnalyst"
-      permission="zope.Public"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 

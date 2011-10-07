@@ -126,6 +126,8 @@ schema = BikaSchema.copy() + Schema((
     IntegerField('LastARNumber',
     ),
     TextField('Notes',
+        default_content_type = 'text/plain',
+        allowable_content_types = ('text/plain',),
         widget = TextAreaWidget(
             label = _("Notes")
         ),

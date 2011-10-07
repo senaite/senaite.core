@@ -39,25 +39,16 @@ schema = BikaSchema.copy() + Schema((
             label = _("Analysis service"),
         )
     ),
-    ComputedField('ServiceUID',
-        expression = 'context.getService() and context.getService().UID() or ""',
-    ),
-    ComputedField('Category',
-        expression = 'context.getService() and context.getService().getCategoryName() or ""',
+    HistoryAwareReferenceField('Calculation',
+        allowed_types = ('Calculation',),
+        relationship = 'AnalysisCalculation',
+        referenceClass = HoldingReference,
     ),
     ReferenceField('Attachment',
         multiValued = 1,
         allowed_types = ('Attachment',),
         referenceClass = HoldingReference,
         relationship = 'AnalysisAttachment',
-    ),
-    HistoryAwareReferenceField('Calculation',
-        allowed_types = ('Calculation',),
-        relationship = 'AnalysisCalculation',
-        referenceClass = HoldingReference,
-    ),
-    BooleanField('ReportDryMatter',
-        default = False,
     ),
     InterimFieldsField('InterimFields',
         widget = BikaRecordsWidget(
@@ -69,22 +60,17 @@ schema = BikaSchema.copy() + Schema((
     BooleanField('Retested',
         default = False,
     ),
-    ComputedField('DateReceived',
-        expression = 'context.aq_parent.getDateReceived()',
-        widget = ComputedWidget(
-            visible = False,
-        ),
-    ),
-    DateTimeField('DateAnalysisPublished',
-        widget = DateTimeWidget(
-            label = _("Date published"),
-        ),
-    ),
+
     DurationField('MaxTimeAllowed',
         widget = DurationWidget(
             label = _("Maximum time allowed"),
             description = _("Maximum time allowed for "
                             "publication of results"),
+        ),
+    ),
+    DateTimeField('DateAnalysisPublished',
+        widget = DateTimeWidget(
+            label = _("Date published"),
         ),
     ),
     DateTimeField('DueDate',
@@ -103,6 +89,9 @@ schema = BikaSchema.copy() + Schema((
         )
     ),
 
+    BooleanField('ReportDryMatter',
+        default = False,
+    ),
     ###
 
     ComputedField('ClientUID',
@@ -110,15 +99,18 @@ schema = BikaSchema.copy() + Schema((
     ),
     ComputedField('RequestID',
         expression = 'context.aq_parent.getRequestID()',
-        widget = ComputedWidget(
-            visible = False,
-        ),
+    ),
+    ComputedField('ServiceUID',
+        expression = 'context.getService() and context.getService().UID() or ""',
+    ),
+    ComputedField('CategoryUID',
+        expression = 'context.getService() and context.getService().getCategoryUID() or ""',
     ),
     ComputedField('PointOfCapture',
         expression = 'context.getService() and context.getService().getPointOfCapture()',
-        widget = ComputedWidget(
-            visible = False,
-        ),
+    ),
+    ComputedField('DateReceived',
+        expression = 'context.aq_parent.getDateReceived()',
     ),
 ),
 )

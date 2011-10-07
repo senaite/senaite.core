@@ -132,6 +132,8 @@ schema = BikaSchema.copy() + Schema((
     ),
     TextField('Notes',
         schemata = 'Description',
+        default_content_type = 'text/plain',
+        allowable_content_types = ('text/plain',),
         widget = TextAreaWidget(
             label = _("Notes"),
             description = _(""),
@@ -168,7 +170,7 @@ class ReferenceSample(BaseFolder):
 
     security.declarePublic('current_date')
     def current_date(self):
-        return DateTime().strftime("%Y-%m-%d")
+        return DateTime()
 
     security.declarePublic('getSpecCategories')
     def getSpecCategories(self):

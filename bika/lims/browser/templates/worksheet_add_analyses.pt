@@ -1,0 +1,91 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xml:lang="en" lang="en"
+	xmlns:tal="http://xml.zope.org/namespaces/tal"
+	xmlns:metal="http://xml.zope.org/namespaces/metal"
+	xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+	metal:use-macro="here/main_template/macros/master"
+	i18n:domain="bika">
+<body>
+
+<metal:content-title fill-slot="content-title">
+	<h1 class="documentFirstHeading" tal:content="view/title"/>
+</metal:content-title>
+
+<metal:content-description fill-slot="content-description">
+	<div class="documentDescription"
+		tal:content="view/description"
+		tal:condition="view/description"/>
+</metal:content-description>
+
+<metal:content-core fill-slot="content-core">
+
+	<form name="SearchForm" method="POST">
+	<fieldset name="criteria">
+		<label for="getCategoryUID" i18n:translate="Category">Category</label>
+		<select id="CategorySelector" name="getCategoryUID">
+			<option value="any" i18n:translate="Any">Any</option>
+			<tal:options repeat="category view/getCategories">
+				<option
+					tal:attributes="
+						value python:category[0];
+						selected python: view.request.form.get('getCategoryUID', '') == category[0] and 'selected' or ''"
+					tal:content="python:category[1]"/>
+			</tal:options>
+		</select>
+
+		<label for="getServiceUID" i18n:translate="Service">Service</label>
+		<select id="ServiceSelector" name="getServiceUID">
+			<option value="any" i18n:translate="Any">Any</option>
+		</select>
+
+		<label for="getClientUID" i18n:translate="Client">Client</label>
+		<select id="ClientSelector" name="getClientUID">
+			<option value="any" i18n:translate="Any">Any</option>
+			<tal:options repeat="client view/getClients">
+				<option
+					tal:attributes="
+						value python:client[0];
+						selected python: view.request.get('getClientUID', '') == client[0] and 'selected' or ''"
+					tal:content="python:client[1]"/>
+			</tal:options>
+		</select>
+
+		&nbsp;&nbsp;
+
+		<label for="getARProfile" i18n:translate="OR select a profile">
+			OR select a profile:
+		</label>
+
+		<select id="ProfileSelector" name="getARProfile">
+			<option value=""></option>
+			<tal:profile repeat="profile view/getARProfiles">
+				<option
+					tal:attributes="
+						value python:profile[0];
+						selected python: view.request.get('getARProfile', '') == profile[0] and 'selected' or ''"
+					tal:content="python:profile[1]"/>
+			</tal:profile>
+		</select>
+
+		<input type="submit" value="Search" i18n:attributes="value"/>
+
+	</fieldset>
+	<input type="hidden" name="submitted" value="1"/>
+	<input tal:replace="structure context/@@authenticator/authenticator"/>
+	</form>
+
+	<form name="folderContentsForm"
+	      id="folderContentsForm"
+		  method="POST"
+		  class="kssattr-serveraction-foldercontents_update_table">
+		<div id="folderlisting-main-table">
+			<div tal:replace="structure view/Analyses/contents_table"></div>
+		</div>
+		<input type="hidden" name="submitted" value="1"/>
+		<input tal:replace="structure context/@@authenticator/authenticator"/>
+	</form>
+
+</metal:content-core>
+
+	</body>
+</html>

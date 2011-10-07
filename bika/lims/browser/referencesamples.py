@@ -93,7 +93,7 @@ class ReferenceSamplesView(BikaListingView):
             items[x]['DateReceived'] = \
                  TimeOrDate(self.context, obj.getDateReceived())
             items[x]['ExpiryDate'] = \
-                 TimeOrDate(self.context, obj.getExpiryDate())
+                 TimeOrDate(self.context, obj.getExpiryDate(), long_format=0)
 
             after_icons = ''
             if obj.getBlank():

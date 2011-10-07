@@ -83,10 +83,6 @@
 		</tr>
 	</table>
 
-	<input type="hidden" name="sort_on" tal:attributes="value request/sort_on|string:getObjPositionInParent"/>
-	<input type="hidden" name="pagenumber" value="1"/>
-	<input type="hidden" name="show_all" value="True"/>
-
 	<input type="hidden" name="submitted" value="1"/>
 
 	<tal:field_analyses>

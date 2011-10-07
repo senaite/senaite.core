@@ -67,10 +67,6 @@ dl.portlet ul.navTreeLevel0 > .navTreeItem {
     width:50% !important;
 }
 
-
-/* Shrink and expand theme columns (from columns.css)
- */
-
 div.width-1\3a 4 { width: 16.5%; } /* .width-1:4 */
 div.width-3\3a 4 { width: 80.2%; } /* .width-1:4 */
 div.position-1\3a 4 {margin-left:    -81.5%;} /* .position-1:4 */
@@ -91,6 +87,9 @@ div.width-1\:4 {
 div.position-1\:4 {
     margin-left: -82.25%;
 }
+
+
+
 
 #plone-contentmenu-workflow .state-cancelled {
     background-color: red;
@@ -120,6 +119,11 @@ div.position-1\:4 {
 
 #listing-table td {
 	vertical-align:bottom;
+	white-space:wrap;
+}
+
+.Description {
+  white-space:normal !important;
 }
 
 .documentActions{
@@ -285,6 +289,9 @@ table.analysisrequest input {
 input.cb {
     border: none;
     background-color: transparent;
+}
+fieldset {
+	padding:.5em;
 }
 
 /*

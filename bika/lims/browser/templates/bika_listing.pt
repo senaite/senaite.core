@@ -35,33 +35,26 @@
 		</form>
 	</tal:add_actions>
 
-	<tal:analyst
-		tal:condition="nocall: view/getAnalysts|nothing">
-		<span class="formQuestion">Analyst: </span>
-		<select
-			id = "analyst"
-			name="analyst">
-			<tal:repeat repeat="analyst view/getAnalysts">
-				<option
-					tal:attributes="
-						value python:analyst[0];
-						selected python:analyst[0] == (context.getAnalyst() and context.getAnalyst() or '') and 'selected' or ''"
-					tal:content="python:analyst[1]"></option>
-			</tal:repeat>
-		</select>
-		<br/>
-	</tal:analyst>
-		<br/>
-
 	<form name="folderContentsForm"
 	      id="folderContentsForm"
 		  method="post"
 		  class="kssattr-serveraction-foldercontents_update_table">
-	<div id="folderlisting-main-table">
-		<!-- include the table itself  -->
-		<div tal:replace="structure view/contents_table"></div>
-	</div>
-	  <input tal:replace="structure context/@@authenticator/authenticator" />
+
+		<div id="folderlisting-main-table">
+			<!-- include the table itself  -->
+			<div tal:replace="structure view/contents_table"></div>
+		</div>
+
+		<br/>
+
+		<tal:notes
+			tal:condition="python: hasattr(view.context, 'setNotes')"
+			tal:define="errors python:hasattr(request, 'errors') and request['errors'] or {}">
+			<metal:fieldMacro use-macro="python:view.context.widget('Notes', mode='edit')" />
+		</tal:notes>
+
+		<input tal:replace="structure context/@@authenticator/authenticator" />
+
 	</form>
 </metal:content-core>
 

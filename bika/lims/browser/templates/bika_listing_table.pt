@@ -229,7 +229,6 @@ Table cells for each column from in review_state's column list.
 		tal:repeat="column review_state/columns">
 
 	<td
-		style="white-space: nowrap;"
 		tal:define="
 			input_width python:5;
 			allow_edit python:column in item['allow_edit'];
@@ -246,7 +245,7 @@ Table cells for each column from in review_state's column list.
 			class python:column in item['class'] and
 				item['class'][column] or '';"
 		tal:attributes="
-			class string:$table_row_class $class ${item/state_class}">
+			class string:$table_row_class $class ${item/state_class} $column">
 
 	<!-- before structure -->
 	<tal:before

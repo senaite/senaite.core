@@ -43,7 +43,7 @@
 
   <action title="Add Analyses" action_id="add_analyses" category="object"
     condition_expr="" icon_expr="" link_target=""
-    url_expr="string:${object_url}/add_analysis" visible="True">
+    url_expr="string:${object_url}/add_analyses" visible="True">
   <permission value="BIKA: Add and remove Analyses"/>
  </action>
 
