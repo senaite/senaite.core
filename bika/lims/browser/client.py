@@ -123,6 +123,8 @@ class ClientAnalysisRequestsView(BikaListingView):
             'getClientSampleID': {'title': _('Client Sample')},
             'getSampleTypeTitle': {'title': _('Sample Type')},
             'getSamplePointTitle': {'title': _('Sample Point')},
+            'DateSampled': {'title': _('Date Sampled')},
+            'future_DateSampled': {'title': _('Sampling Date')},
             'getDateReceived': {'title': _('Date Received')},
             'getDatePublished': {'title': _('Date Published')},
             'state_title': {'title': _('State'), },
@@ -137,6 +139,7 @@ class ClientAnalysisRequestsView(BikaListingView):
                         'getClientSampleID',
                         'getSampleTypeTitle',
                         'getSamplePointTitle',
+                        'DateSampled',
                         'getDateReceived',
                         'getDatePublished',
                         'state_title']},
@@ -150,6 +153,7 @@ class ClientAnalysisRequestsView(BikaListingView):
                         'getClientOrderNumber',
                         'getClientReference',
                         'getClientSampleID',
+                        'future_DateSampled',
                         'getSampleTypeTitle',
                         'getSamplePointTitle']},
             {'id':'sample_received',
@@ -164,6 +168,7 @@ class ClientAnalysisRequestsView(BikaListingView):
                         'getClientSampleID',
                         'getSampleTypeTitle',
                         'getSamplePointTitle',
+                        'DateSampled',
                         'getDateReceived']},
             {'id':'assigned',
              'title': _('Assigned to Worksheet'),
@@ -180,6 +185,7 @@ class ClientAnalysisRequestsView(BikaListingView):
                         'getClientSampleID',
                         'getSampleTypeTitle',
                         'getSamplePointTitle',
+                        'DateSampled',
                         'getDateReceived',
                         'state_title']},
             {'id':'unassigned',
@@ -197,6 +203,7 @@ class ClientAnalysisRequestsView(BikaListingView):
                         'getClientSampleID',
                         'getSampleTypeTitle',
                         'getSamplePointTitle',
+                        'DateSampled',
                         'getDateReceived',
                         'state_title']},
             {'id':'to_be_verified',
@@ -211,6 +218,7 @@ class ClientAnalysisRequestsView(BikaListingView):
                         'getClientSampleID',
                         'getSampleTypeTitle',
                         'getSamplePointTitle',
+                        'DateSampled',
                         'getDateReceived']},
             {'id':'verified',
              'title': _('Verified'),
@@ -224,6 +232,7 @@ class ClientAnalysisRequestsView(BikaListingView):
                         'getClientSampleID',
                         'getSampleTypeTitle',
                         'getSamplePointTitle',
+                        'DateSampled',
                         'getDateReceived']},
             {'id':'published',
              'title': _('Published'),
@@ -236,6 +245,7 @@ class ClientAnalysisRequestsView(BikaListingView):
                         'getClientSampleID',
                         'getSampleTypeTitle',
                         'getSamplePointTitle',
+                        'DateSampled',
                         'getDateReceived',
                         'getDatePublished']},
             {'id':'cancelled',
@@ -253,6 +263,7 @@ class ClientAnalysisRequestsView(BikaListingView):
                         'getClientSampleID',
                         'getSampleTypeTitle',
                         'getSamplePointTitle',
+                        'DateSampled',
                         'getDateReceived',
                         'getDatePublished',
                         'state_title']},
@@ -273,6 +284,11 @@ class ClientAnalysisRequestsView(BikaListingView):
             items[x]['getRequestID'] = obj.getRequestID()
             items[x]['replace']['getRequestID'] = "<a href='%s'>%s</a>" % \
                  (url, items[x]['getRequestID'])
+
+            datesampled = obj.getSample().getDateSampled()
+            items[x]['DateSampled'] = TimeOrDate(self.context, datesampled, long_format=0)
+            items[x]['future_DateSampled'] = datesampled.Date() > DateTime() and \
+                TimeOrDate(self.context, datesampled) or ''
 
             items[x]['getDateReceived'] = \
                 TimeOrDate(self.context, obj.getDateReceived())
@@ -406,7 +422,7 @@ class ClientSamplesView(BikaListingView):
             items[x]['SamplePointTitle'] = obj.getSamplePointTitle()
 
             datesampled = obj.getDateSampled()
-            items[x]['DateSampled'] = TimeOrDate(self.context, datesampled, long_format=1)
+            items[x]['DateSampled'] = TimeOrDate(self.context, datesampled, long_format=0)
             items[x]['future_DateSampled'] = datesampled.Date() > DateTime() and \
                 TimeOrDate(self.context, datesampled) or ''
 

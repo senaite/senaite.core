@@ -968,6 +968,7 @@ class AnalysisRequestsView(ClientAnalysisRequestsView):
         self.title = "%s: %s" % (self.context.Title(), _("Analysis Requests"))
         self.description = ""
         self.show_editable_border = False
+        self.content_add_actions = {}
         self.contentFilter = {'portal_type':'AnalysisRequest',
                               'sort_on':'id',
                               'sort_order': 'reverse',

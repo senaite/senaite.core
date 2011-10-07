@@ -196,7 +196,7 @@ class AddView(BrowserView):
                 if not samples:
                     self.context.translate(
                         "message_no_references_found",
-                        mapping = {'position':position,
+                        mapping = {'position':available_positions[0],
                                  'definition':reference_definition and \
                                  reference_definition.Title() or ''},
                         default = "No reference samples found for ${definition} at position ${position}.",

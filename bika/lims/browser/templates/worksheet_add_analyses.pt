@@ -50,10 +50,8 @@
 			</tal:options>
 		</select>
 
-		&nbsp;&nbsp;
-
 		<label for="getARProfile" i18n:translate="OR select a profile">
-			OR select a profile:
+			Or select a template:
 		</label>
 
 		<select id="ProfileSelector" name="getARProfile">

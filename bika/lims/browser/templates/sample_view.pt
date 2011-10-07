@@ -80,7 +80,7 @@
                 <span
                     tal:define="date_sampled here/getDateSampled"
                     tal:condition="date_sampled"
-                    tal:content="python:view.TimeOrDate(context, date_sampled, long_format=0)"/>
+                    tal:content="python:view.TimeOrDate(context, date_sampled, long_format=1)"/>
             </td>
         </tr>
 
