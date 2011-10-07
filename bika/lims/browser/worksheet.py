@@ -14,6 +14,7 @@ from bika.lims.interfaces import IWorksheet
 from bika.lims.utils import TimeOrDate
 from operator import itemgetter
 from plone.app.content.browser.interfaces import IFolderContentsView
+from plone.app.layout.globals.interfaces import IViewView
 from zope.app.component.hooks import getSite
 from zope.component import getMultiAdapter
 from zope.interface import implements
@@ -119,10 +120,11 @@ class WorksheetWorkflowAction(WorkflowAction):
             # default bika_listing.py/WorkflowAction for other transitions
             WorkflowAction.__call__(self)
 
-class AddView(BrowserView):
+class WorksheetAddView(BrowserView):
     """ This creates a new Worksheet and redirects to it.
         If a template was selected, the worksheet is pre-populated here.
     """
+    implements(IViewView)
     def __call__(self):
         form = self.request.form
         rc = getToolByName(self.context, "reference_catalog")
@@ -248,8 +250,10 @@ class AddView(BrowserView):
 ##                            Position = position,
 ##                            Service = used_ars[dup_pos]['serv'])
         ws.processForm()
-
-        self.request.RESPONSE.redirect(ws.absolute_url())
+        if ws.getLayout():
+            self.request.RESPONSE.redirect(ws.absolute_url() + "/manage_results")
+        else:
+            self.request.RESPONSE.redirect(ws.absolute_url() + "/add_analyses")
 
 class WorksheetAnalyses(AnalysesView):
 
@@ -355,6 +359,8 @@ class WorksheetAnalyses(AnalysesView):
 
 
 class ManageResults(BrowserView):
+
+    implements(IViewView)
     template = ViewPageTemplateFile("templates/worksheet_manage_results.pt")
 
     def __init__(self, context, request):
@@ -436,6 +442,7 @@ class AnalysesTable(AnalysesView):
         return items[:100]
 
 class AddAnalyses(AnalysesView):
+    implements(IViewView)
     template = ViewPageTemplateFile("templates/worksheet_add_analyses.pt")
 
     def __init__(self, context, request):

@@ -249,22 +249,22 @@ Table cells for each column from in review_state's column list.
 		tal:attributes="
 			class string:$table_row_class $class ${item/state_class} $column">
 
-	<!-- before structure -->
+	<tal:comment replace="nothing"><!-- before structure --></tal:comment>
 	<tal:before
 		tal:replace="structure before"/>
 
-	<!-- replace structure -->
+	<tal:comment replace="nothing"><!-- replace structure --></tal:comment>
 	<tal:before
 		tal:replace="structure replace"/>
 
 	<span tal:omit-tag
 		tal:condition="not:replace">
 	<span tal:omit-tag
-		tal:condition="python:field_type == 'string'">		<!-- string -->
-		<!-- interim field -->
+		tal:condition="python:field_type == 'string'">		<tal:comment replace="nothing"><!-- string --></tal:comment>
+		<tal:comment replace="nothing"><!-- interim field --></tal:comment>
 		<span tal:omit-tag
 			tal:condition="python:type(item[column]) == type({})">
-			<!-- edit -->
+			<tal:comment replace="nothing"><!-- edit --></tal:comment>
 			<input
 				type="text"
 				autocomplete="off"
@@ -276,7 +276,7 @@ Table cells for each column from in review_state's column list.
 					objectId string:${item/id};
 					field python:column;
 					value python:item[column]['value'];"/>
-			<!-- view -->
+			<tal:comment replace="nothing"><!-- view --></tal:comment>
 			<span
 				tal:condition="python:not allow_edit"
 				tal:content="python:item[column]['value']"
@@ -290,11 +290,11 @@ Table cells for each column from in review_state's column list.
 					field python:column;
 					value python:item[column]['value'];"/>
 		</span>
-		<!-- regular field -->
+		<tal:comment replace="nothing"><!-- regular field --></tal:comment>
 		<span tal:omit-tag
 			tal:condition="python:type(item[column]) != type({}) and
 							not (column == 'Result' and item['calculation'])">
-			<!-- edit -->
+			<tal:comment replace="nothing"><!-- edit --></tal:comment>
 			<input
 				type="text"
 				autocomplete="off"
@@ -308,7 +308,7 @@ Table cells for each column from in review_state's column list.
 					name string:${column}.${item/uid}:records;
 					value python:item[column] and
 									item[column] or '';"/>
-			<!-- view -->
+			<tal:comment replace="nothing"><!-- view --></tal:comment>
 			<span
 				tal:condition="python:not allow_edit and column == 'Result'"
 				tal:content="python:item['formatted_result'] and item['formatted_result'] or item[column]"
@@ -328,7 +328,7 @@ Table cells for each column from in review_state's column list.
 					name string:${column}.${item/uid}:records;
 					value python:item[column];"/>
 		</span>
-		<!-- calculated result field. -->
+		<tal:comment replace="nothing"><!-- calculated result field. --></tal:comment>
 		<span tal:omit-tag
 			tal:condition="python:column == 'Result' and
 								item['calculation']">
@@ -354,7 +354,7 @@ Table cells for each column from in review_state's column list.
 	</span>
 
 	<span tal:omit-tag
-		tal:condition="python:field_type == 'boolean'">		<!-- boolean -->
+		tal:condition="python:field_type == 'boolean'">		<tal:comment replace="nothing"><!-- boolean --></tal:comment>
 		<input
 			type="checkbox"
 			tal:condition="allow_edit"
@@ -364,7 +364,7 @@ Table cells for each column from in review_state's column list.
 				id python:'%s-%s' % (item['uid'], column);
 				name string:${column}.${item/uid}:record:ignore-empty;
 				checked python:item.get(column) and 'yes' or '';"/>
-		<!-- will not display if readonly and false -->
+		<tal:comment replace="nothing"><!-- will not display if readonly and false --></tal:comment>
 		<input
 			type="checkbox"
 			tal:condition="python:not allow_edit and item.get(column)"
@@ -375,7 +375,7 @@ Table cells for each column from in review_state's column list.
 	</span>
 
 	<span tal:omit-tag
-		tal:condition="python:field_type == 'choices'">		<!-- choices -->
+		tal:condition="python:field_type == 'choices'">		<tal:comment replace="nothing"><!-- choices --></tal:comment>
 		<span tal:condition="allow_edit">
 			<select class="listing_select_entry"
 				tal:condition="python:column in item['choices']"
@@ -411,7 +411,7 @@ Table cells for each column from in review_state's column list.
 		</span>
 	</span>
 
-	<!-- unit for interim and result-->
+	<tal:comment replace="nothing"><!-- unit for interim and result--></tal:comment>
 	<em tal:condition="python:'Unit' in item and
 							(column == 'Result' or
 								column in item['interim_fields'])"
@@ -419,11 +419,11 @@ Table cells for each column from in review_state's column list.
 		style="white-space:nowrap;"
 		tal:content="python:item['Unit']"/>
 
-	<!-- alert container -->
+	<tal:comment replace="nothing"><!-- alert container --></tal:comment>
 	<span class="alert" tal:attributes="
 		uid python:item['uid'];
 		field column;">
-		<!-- initial out-of-range indicators -->
+		<tal:comment replace="nothing"><!-- initial out-of-range indicators --></tal:comment>
 		<img
 			tal:condition="python:column == 'Result' and
 			                      item['Result'] and
@@ -443,9 +443,9 @@ Table cells for each column from in review_state's column list.
 			title="Result out of range: in error shoulder"
 			icon="warning"/>
 	</span>
-	</span> <!-- </span tal:condition="not:replace"> -->
+	</span> <tal:comment replace="nothing"><!-- </span tal:condition="not:replace"> --></tal:comment>
 
-	<!-- after structure -->
+	<tal:comment replace="nothing"><!-- after structure --></tal:comment>
 	<tal:after
 		tal:replace="structure after"/>
 

@@ -6,8 +6,8 @@
  <permission>Modify portal content</permission>
  <permission>Delete objects</permission>
  <permission>BIKA: Manage Reference</permission>
- 
- 
+
+
  <state state_id="current" title="Current">
   <exit-transition transition_id="expire"/>
   <permission-map name="BIKA: Manage Reference"
@@ -25,7 +25,7 @@
    <permission-role>LabClerk</permission-role>
   </permission-map>
  </state>
- 
+
  <state state_id="expired" title="Expired">
   <exit-transition transition_id="dispose"/>
   <permission-map name="BIKA: Manage Reference"
@@ -40,7 +40,7 @@
    <permission-role>Manager</permission-role>
   </permission-map>
  </state>
- 
+
  <state state_id="disposed" title="Disposed">
   <permission-map name="BIKA: Manage Reference"
                   acquired="False">
@@ -63,27 +63,27 @@
    <permission-role>LabClerk</permission-role>
   </permission-map>
  </state>
- 
- 
+
+
  <transition transition_id="expire" title="Expire"
              new_state="expired" trigger="USER"
              before_script="" after_script="">
-  <action url="" category="workflow">Expire Reference</action>
+  <action url="workflow_action?workflow_action=expire" category="workflow">Expire Reference</action>
   <guard>
    <guard-permission>BIKA: Manage Reference</guard-permission>
   </guard>
  </transition>
- 
+
  <transition transition_id="dispose" title="Dispose"
              new_state="disposed" trigger="USER"
              before_script="" after_script="">
-  <action url="" category="workflow">Dispose of Reference</action>
+  <action url="workflow_action?workflow_action=dispose" category="workflow">Dispose of Reference</action>
   <guard>
    <guard-permission>BIKA: Manage Reference</guard-permission>
   </guard>
  </transition>
- 
- 
+
+
  <variable variable_id="action" for_catalog="False"
            for_status="True" update_always="True">
   <description>The last transition</description>
@@ -93,7 +93,7 @@
   <guard>
   </guard>
  </variable>
- 
+
  <variable variable_id="actor" for_catalog="False"
            for_status="True" update_always="True">
   <description>The ID of the user who performed the last transition</description>
@@ -103,7 +103,7 @@
   <guard>
   </guard>
  </variable>
- 
+
  <variable variable_id="comments" for_catalog="False"
            for_status="True" update_always="True">
   <description>Comments about the last transition</description>
@@ -113,7 +113,7 @@
   <guard>
   </guard>
  </variable>
- 
+
  <variable variable_id="review_history" for_catalog="False"
            for_status="False" update_always="False">
   <description>Provides access to workflow history</description>
@@ -123,7 +123,7 @@
   <guard>
   </guard>
  </variable>
- 
+
  <variable variable_id="time" for_catalog="False"
            for_status="True" update_always="True">
   <description>Time of the last transition</description>
@@ -133,5 +133,5 @@
   <guard>
   </guard>
  </variable>
- 
+
 </dc-workflow>

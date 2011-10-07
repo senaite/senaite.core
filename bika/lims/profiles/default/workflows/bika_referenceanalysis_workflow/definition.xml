@@ -10,8 +10,8 @@
  <permission>BIKA: View Results</permission>
  <permission>BIKA: Edit analyses</permission>
  <permission>BIKA: Retract sample</permission>
- 
- 
+
+
  <state state_id="assigned" title="Assigned to Worksheet">
   <exit-transition transition_id="submit"/>
   <exit-transition transition_id="unassign"/>
@@ -62,7 +62,7 @@
    <permission-role>LabClerk</permission-role>
   </permission-map>
  </state>
- 
+
  <state state_id="not_requested" title="Not requested">
   <exit-transition transition_id="verify"/>
   <permission-map name="BIKA: Edit analyses"
@@ -108,7 +108,7 @@
    <permission-role>LabClerk</permission-role>
   </permission-map>
  </state>
- 
+
  <state state_id="to_be_verified" title="To be verified">
   <exit-transition transition_id="verify"/>
   <exit-transition transition_id="retract"/>
@@ -148,7 +148,7 @@
    <permission-role>Manager</permission-role>
   </permission-map>
  </state>
- 
+
  <state state_id="verified" title="Verified">
   <permission-map name="BIKA: Edit analyses"
                   acquired="False">
@@ -184,7 +184,7 @@
    <permission-role>Manager</permission-role>
   </permission-map>
  </state>
- 
+
  <state state_id="rejected" title="Rejected">
   <permission-map name="BIKA: Edit analyses"
                   acquired="False">
@@ -216,7 +216,7 @@
    <permission-role>Manager</permission-role>
   </permission-map>
  </state>
- 
+
  <state state_id="unassigned" title="Unassigned">
   <permission-map name="BIKA: Edit analyses"
                   acquired="False">
@@ -241,65 +241,66 @@
    <permission-role>Manager</permission-role>
   </permission-map>
  </state>
- 
- 
+
+
  <transition transition_id="import" title="Import"
              new_state="not_requested" trigger="USER"
              before_script="" after_script="">
+  <action url="workflow_action?workflow_action=import" category="workflow" icon="">Import</action>
   <guard>
    <guard-permission>BIKA: Import sample</guard-permission>
   </guard>
  </transition>
- 
+
  <transition transition_id="retract" title="Retract"
              new_state="assigned" trigger="USER"
              before_script="" after_script="">
-  <action url="" category="workflow">Retract</action>
+  <action url="workflow_action?workflow_action=retract" category="workflow" icon="">Retract</action>
   <guard>
    <guard-permission>BIKA: Retract sample</guard-permission>
    <guard-expression>python:here.guard_retract_sample()</guard-expression>
   </guard>
  </transition>
- 
+
  <transition transition_id="submit"
              title="Submit for verification"
              new_state="to_be_verified" trigger="USER"
              before_script="" after_script="">
-  <action url="" category="workflow">Submit for verification</action>
+  <action url="workflow_action?workflow_action=submit" category="workflow" icon="">Submit for verification</action>
   <guard>
    <guard-permission>BIKA: Submit sample</guard-permission>
    <guard-expression>python:here.guard_submit_analysis()</guard-expression>
   </guard>
  </transition>
- 
+
  <transition transition_id="verify" title="Verify"
              new_state="verified" trigger="USER"
              before_script="" after_script="">
-  <action url="" category="workflow">Verify</action>
+  <action url="workflow_action?workflow_action=verify" category="workflow" icon="">Verify</action>
   <guard>
    <guard-permission>BIKA: Verify Results</guard-permission>
   </guard>
  </transition>
- 
+
  <transition transition_id="reject" title="Reject"
              new_state="rejected" trigger="USER"
              before_script="" after_script="">
-  <action url="" category="workflow">Reject</action>
+  <action url="workflow_action?workflow_action=reject" category="workflow" icon="">Reject</action>
   <guard>
    <guard-permission>BIKA: Verify Results</guard-permission>
   </guard>
  </transition>
- 
+
  <transition transition_id="unassign" title="Unassign"
              new_state="unassigned" trigger="USER"
              before_script="" after_script="">
-  <action url="" category="workflow">Unassign</action>
+  <action url="workflow_action?workflow_action=unassign" category="workflow" icon="">Remove</action>
   <guard>
    <guard-permission>BIKA: Verify Results</guard-permission>
   </guard>
  </transition>
- 
- 
+
+
  <variable variable_id="action" for_catalog="False"
            for_status="True" update_always="True">
   <description>The last transition</description>
@@ -309,7 +310,7 @@
   <guard>
   </guard>
  </variable>
- 
+
  <variable variable_id="actor" for_catalog="False"
            for_status="True" update_always="True">
   <description>The ID of the user who performed the last transition</description>
@@ -319,7 +320,7 @@
   <guard>
   </guard>
  </variable>
- 
+
  <variable variable_id="comments" for_catalog="False"
            for_status="True" update_always="True">
   <description>Comments about the last transition</description>
@@ -329,7 +330,7 @@
   <guard>
   </guard>
  </variable>
- 
+
  <variable variable_id="review_history" for_catalog="False"
            for_status="False" update_always="False">
   <description>Provides access to workflow history</description>
@@ -339,7 +340,7 @@
   <guard>
   </guard>
  </variable>
- 
+
  <variable variable_id="time" for_catalog="False"
            for_status="True" update_always="True">
   <description>Time of the last transition</description>
@@ -349,5 +350,5 @@
   <guard>
   </guard>
  </variable>
- 
+
 </dc-workflow>

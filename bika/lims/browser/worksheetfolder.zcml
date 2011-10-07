@@ -15,7 +15,7 @@
     <browser:page
       for="bika.lims.interfaces.IWorksheetFolder"
       name="worksheet_add"
-      class="bika.lims.browser.worksheet.AddView"
+      class="bika.lims.browser.worksheet.WorksheetAddView"
       permission="zope.Public"
       layer="bika.lims.interfaces.IBikaLIMS"
     />

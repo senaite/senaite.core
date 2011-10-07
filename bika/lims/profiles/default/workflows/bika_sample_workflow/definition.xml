@@ -46,7 +46,7 @@
  <transition transition_id="receive" title="Receive"
              new_state="received" trigger="USER"
              before_script="" after_script="">
-  <action url="" category="workflow">Receive</action>
+  <action url="workflow_action?workflow_action=receive" category="workflow" icon="">Receive</action>
   <guard>
    <guard-permission>BIKA: Receive Sample</guard-permission>
    <guard-expression>python:here.guard_cancelled_object() and here.guard_receive_sample()</guard-expression>
@@ -56,7 +56,7 @@
  <transition transition_id="expire" title="Expire"
              new_state="expired" trigger="USER"
              before_script="" after_script="">
-  <action url="" category="workflow">Expire</action>
+  <action url="workflow_action?workflow_action=expire" category="workflow" icon="">Expire</action>
   <guard>
    <guard-permission>BIKA: Expire Sample</guard-permission>
    <guard-expression>python:here.guard_cancelled_object()</guard-expression>
@@ -66,7 +66,7 @@
  <transition transition_id="dispose" title="Dispose"
              new_state="disposed" trigger="USER"
              before_script="" after_script="">
-  <action url="" category="workflow">Dispose</action>
+  <action url="dispose" category="workflow">Dispose</action>
   <guard>
    <guard-permission>BIKA: Dispose Sample</guard-permission>
    <guard-expression>python:here.guard_cancelled_object()</guard-expression>

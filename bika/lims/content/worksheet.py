@@ -238,8 +238,9 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
 
         if service_uid:
             wf_tool = self.portal_workflow
-            for analysis in self.getAnalyses(getServiceUID = service_uid,
-                                             review_state = ('assigned', 'to_be_verified')):
+            for analysis in self.getAnalyses():
+##            getServiceUID = service_uid,
+##                                             review_state = ('assigned', 'to_be_verified')):
                 attachmentid = self.generateUniqueId('Attachment')
                 client = analysis.aq_parent.aq_parent
                 client.invokeFactory(id = attachmentid, type_name = "Attachment")

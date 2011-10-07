@@ -47,8 +47,11 @@ def ActionSucceededEventHandler(ws, event):
         if not "retract all analyses" in ws.REQUEST['workflow_skiplist']:
             # retract all analyses in this WS.
             # (NB: don't retract if it's verified)
-            analyses = ws.getAnalyses(review_state = ('attachment_due', 'to_be_verified',))
+            analyses = ws.getAnalyses()
             for analysis in analyses:
+                if wf.getInfoFor(analysis, 'review_state', '') not in ('attachment_due', 'to_be_verified',) or \
+                   wf.getInfoFor(analysis, 'cancellation_state', '') != 'active':
+                    continue
                 if not analysis.UID in ws.REQUEST['workflow_skiplist']:
                     wf.doActionFor(analysis, 'retract')
 
@@ -56,8 +59,11 @@ def ActionSucceededEventHandler(ws, event):
         ws.reindexObject(idxs = ["review_state", ])
         if not "verify all analyses" in ws.REQUEST['workflow_skiplist']:
             # verify all analyses in this WS.
-            analyses = ws.getAnalyses(review_state = 'to_be_verified')
+            analyses = ws.getAnalyses()
             for analysis in analyses:
+                if wf.getInfoFor(analysis, 'review_state', '') != 'to_be_verified' or \
+                   wf.getInfoFor(analysis, 'cancellation_state', '') != 'active':
+                    continue
                 if not analysis.UID in ws.REQUEST['workflow_skiplist']:
                     wf.doActionFor(analysis, "verify")
 

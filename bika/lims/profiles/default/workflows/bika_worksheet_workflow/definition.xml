@@ -90,12 +90,12 @@
   </permission-map>
  </state>
 
- 
+
  <transition transition_id="reject"
              title="Reject worksheet" new_state="rejected"
              trigger="USER" before_script=""
              after_script="">
-  <action url="" category="workflow">Reject</action>
+  <action url="workflow_action?workflow_action=reject" category="workflow" icon="">Reject</action>
   <guard>
    <guard-permission>BIKA: Reject Worksheet</guard-permission>
   </guard>
@@ -105,7 +105,7 @@
              title="Retract worksheet" new_state="open"
              trigger="USER" before_script=""
              after_script="">
-  <action url="" category="workflow">Retract</action>
+  <action url="workflow_action?workflow_action=retract" category="workflow" icon="">Retract</action>
   <guard>
    <guard-expression>python:here.guard_retract_worksheet()</guard-expression>
   </guard>
@@ -114,7 +114,7 @@
  <transition transition_id="submit" title="Submit worksheet"
              new_state="attachment_due" trigger="USER"
              before_script="" after_script="">
-  <action url="" category="workflow">Submit for verification</action>
+  <action url="workflow_action?workflow_action=submit" category="workflow" icon="">Submit for verification</action>
   <guard>
    <guard-expression>python:here.guard_submit_worksheet()</guard-expression>
   </guard>
@@ -123,7 +123,7 @@
  <transition transition_id="attach" title="Submit worksheet"
              new_state="to_be_verified" trigger="USER"
              before_script="" after_script="">
-  <action url="" category="workflow">Submit for verification</action>
+  <action url="workflow_action?workflow_action=attach" category="workflow" icon="">Submit for verification</action>
   <guard>
    <guard-expression>python:here.guard_attach_worksheet()</guard-expression>
   </guard>
@@ -132,7 +132,7 @@
  <transition transition_id="verify" title="Verify worksheet"
              new_state="verified" trigger="USER"
              before_script="" after_script="">
-  <action url="" category="workflow">Verify worksheet</action>
+  <action url="workflow_action?workflow_action=verify" category="workflow" icon="">Verify Worksheet</action>
   <guard>
    <guard-expression>python:here.guard_verify_worksheet()</guard-expression>
   </guard>
@@ -148,7 +148,7 @@
   <guard>
   </guard>
  </variable>
- 
+
  <variable variable_id="actor" for_catalog="False"
            for_status="True" update_always="True">
   <description>The ID of the user who performed the last transition</description>
@@ -158,7 +158,7 @@
   <guard>
   </guard>
  </variable>
- 
+
  <variable variable_id="comments" for_catalog="False"
            for_status="True" update_always="True">
   <description>Comments about the last transition</description>
@@ -168,7 +168,7 @@
   <guard>
   </guard>
  </variable>
- 
+
  <variable variable_id="review_history" for_catalog="False"
            for_status="False" update_always="False">
   <description>Provides access to workflow history</description>
@@ -180,7 +180,7 @@
    <guard-permission>Review portal content</guard-permission>
   </guard>
  </variable>
- 
+
  <variable variable_id="time" for_catalog="False"
            for_status="True" update_always="True">
   <description>Time of the last transition</description>
@@ -190,5 +190,5 @@
   <guard>
   </guard>
  </variable>
- 
+
 </dc-workflow>

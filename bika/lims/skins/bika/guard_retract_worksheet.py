@@ -17,7 +17,7 @@ if checkPermission(Retract, context):
     return True
 else:
     # Allow automatic retract if any analysis is 'sample_received'.
-    for analysis in context.getAnalyses(full_objects = True):
+    for analysis in context.getAnalyses():
         review_state = wf_tool.getInfoFor(analysis, 'review_state')
         if review_state == 'sample_received':
             return True
