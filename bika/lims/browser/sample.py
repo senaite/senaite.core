@@ -71,7 +71,21 @@ class ajaxSampleSubmit():
         plone.protect.CheckAuthenticator(self.request.form)
         plone.protect.PostOnly(self.request.form)
 
-        if form.has_key("save_button"):
+        can_edit = True
+        workflow = getToolByName(self.context, 'portal_workflow')
+        if workflow.getInfoFor(self.context, 'cancellation_state') == "cancelled":
+            can_edit = False
+        else:
+            ars = self.context.getAnalysisRequests()
+            for ar in ars:
+                for a in ar.getAnalyses():
+                    if workflow.getInfoFor(a.getObject(), 'review_state') in ('verified', 'published'):
+                        can_edit = False
+                        break
+                if not can_edit:
+                    break
+
+        if can_edit:
             sample = self.context
             sampleType = form['SampleType']
             samplePoint = form['SamplePoint']
@@ -99,6 +113,9 @@ class ajaxSampleSubmit():
             for ar in ars:
                 ar.reindexObject()
             message = _("Changes Saved.")
+        else:
+            message = _("Changes not allowed.")
+
         self.context.plone_utils.addPortalMessage(message, 'info')
         return json.dumps({'success':message})
 
