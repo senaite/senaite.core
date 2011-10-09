@@ -53,6 +53,16 @@ $(document).ready(function(){
 	});
 	$("#CategorySelector").trigger("change");
 
-
+	$("#analyst").change(function(){
+		if ($("#analyst").val() == '') {
+			return false;
+		}
+		$.ajax({
+			type:'POST',
+			url: window.location.href + "/setAnalyst",
+			data: {'value': $("#analyst").val(),
+				'_authenticator': $('input[name="_authenticator"]').val()}
+		});
+	});
 });
 });

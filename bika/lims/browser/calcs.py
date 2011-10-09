@@ -136,7 +136,7 @@ class ajaxCalculateAnalysisEntry():
         if in_range == False:
             self.alerts.append({'uid': uid, 'field': 'Result', 'icon': 'exclamation', 'msg': _("Result out of range")})
         if in_range == '1':
-            self.alerts.append({'uid': uid, 'field': 'Result', 'icon': 'warning', 'msg': _("Result out of range: in error shoulder")})
+            self.alerts.append({'uid': uid, 'field': 'Result', 'icon': 'warning', 'msg': _("Result out of range")}) # : shoulder
 
         # maybe a service who depends on us must be recalculated.
         if result != form_result:

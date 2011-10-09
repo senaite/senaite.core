@@ -36,8 +36,8 @@ class WorksheetWorkflowAction(WorkflowAction):
 
         if 'Notes' in form:
             self.context.setNotes(form['Notes'])
-        if 'Analyst' in form:
-            self.context.setAnalyst(form['Analyst'])
+##   ->js     if 'Analyst' in form:
+##            self.context.setAnalyst(form['Analyst'])
 
         if action == 'submit' and self.request.form.has_key("Result"):
             selected_analyses = WorkflowAction._get_selected_items(self)
@@ -649,21 +649,21 @@ class AddDuplicateView(BikaListingView):
 
         return items
 
-##class ajaxSetAnalyst():
-##    """ The Analysis dropdown sets the analysis immediately on select. """
-##
-##    def __init__(self, context, request):
-##        self.context = context
-##        self.request = request
-##
-##    def __call__(self):
-##        rc = getToolByName(self.context, 'reference_catalog')
-##        mtool = getToolByName(self, 'portal_membership')
-##        plone.protect.CheckAuthenticator(self.request)
-##        plone.protect.PostOnly(self.request)
-##        value = request.get('value', '')
-##        if not value:
-##            return
-##        if not mtool.getMemberById(analyst):
-##            return
-##        self.context.setAnalyst(value)
+class ajaxSetAnalyst():
+    """ The Analysis dropdown sets the analysis immediately on select. """
+
+    def __init__(self, context, request):
+        self.context = context
+        self.request = request
+
+    def __call__(self):
+        rc = getToolByName(self.context, 'reference_catalog')
+        mtool = getToolByName(self, 'portal_membership')
+        plone.protect.CheckAuthenticator(self.request)
+        plone.protect.PostOnly(self.request)
+        value = request.get('value', '')
+        if not value:
+            return
+        if not mtool.getMemberById(analyst):
+            return
+        self.context.setAnalyst(value)
