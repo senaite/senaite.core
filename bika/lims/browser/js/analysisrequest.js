@@ -521,8 +521,8 @@ jQuery( function($) {
 		}
 
 		// AR Add/Edit ajax form submits
-		analysisrequest_edit_form = $('#analysisrequest_edit_form');
-		if (analysisrequest_edit_form.ajaxForm != undefined){
+		ar_edit_form = $('#analysisrequest_edit_form');
+		if (ar_edit_form.ajaxForm != undefined){
 			var options = {
 				url: window.location.href.replace("/analysisrequest_add","/analysisrequest_submit").
 					 replace("/base_edit","/analysisrequest_submit"),
