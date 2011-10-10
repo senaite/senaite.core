@@ -32,7 +32,7 @@ class SupplierContact(Person):
     archetype_name = 'SupplierContact'
     schema = schema
     allowed_content_types = ('Address',)
-    content_icon = 'contact.png'
+    content_icon = 'referencesupplier_contact.png'
     default_view = 'base_edit'
     immediate_view = 'base_edit'
     global_allow = 0

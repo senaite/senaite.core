@@ -28,7 +28,7 @@
 
  <configlet title="Lab Contacts" action_id="bika_labcontacts"
     appId="bika.lims" category="Products" condition_expr=""
-    icon_expr="string:++resource++bika.lims.images/contact.png"
+    icon_expr="string:++resource++bika.lims.images/lab_contact.png"
     url_expr="string:$portal_url/bika_setup/bika_labcontacts"
 	visible="True">
   <permission>BIKA: Manage Bika</permission>
@@ -52,7 +52,7 @@
 
  <configlet title="Analysis Specs" action_id="bika_analysisspecs"
     appId="bika.lims" category="Products" condition_expr=""
-    icon_expr="string:++resource++bika.lims.images/service.png"
+    icon_expr="string:++resource++bika.lims.images/analysisspec.png"
     url_expr="string:$portal_url/bika_setup/bika_analysisspecs"
     visible="True">
   <permission>BIKA: Manage Bika</permission>
@@ -108,7 +108,7 @@
 
  <configlet title="Analysis Profiles" action_id="bika_arprofiles"
     appId="bika.lims" category="Products" condition_expr=""
-    icon_expr="string:++resource++bika.lims.images/service.png"
+    icon_expr="string:++resource++bika.lims.images/arprofile.png"
     url_expr="string:$portal_url/bika_setup/bika_arprofiles"
     visible="True">
   <permission>BIKA: Manage Bika</permission>

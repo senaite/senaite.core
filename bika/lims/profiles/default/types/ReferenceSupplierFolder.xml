@@ -4,7 +4,7 @@
    xmlns:i18n="http://xml.zope.org/namespaces/i18n">
  <property name="title">ReferenceSupplierFolder</property>
  <property name="description">Container for Reference Suppliers</property>
- <property name="icon_expr">string:${portal_url}/folder_icon.gif</property>
+ <property name="content_icon">++resource++bika.lims.images/referencesupplier.png</property>
  <property name="content_meta_type">ReferenceSupplierFolder</property>
  <property name="product">bika.lims</property>
  <property name="factory">addReferenceSupplierFolder</property>

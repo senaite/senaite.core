@@ -6,7 +6,7 @@
  <property name="description">
 	Contact
   </property>
- <property name="content_icon">++resource++bika.lims.images/contact.png</property>
+ <property name="content_icon">++resource++bika.lims.images/referencesupplier_contact.png</property>
  <property name="content_meta_type">SupplierContact</property>
  <property name="product">bika.lims</property>
  <property name="factory">addSupplierContact</property>

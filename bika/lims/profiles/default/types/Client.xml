@@ -38,7 +38,7 @@
  <action title="Contacts"
          action_id="contacts"
          category="object"
-         icon_expr="string:${portal_url}/images/contact.png"
+         icon_expr="string:${portal_url}/images/client_contact.png"
          url_expr="string:${object_url}/contacts"
          visible="True">
   <permission value="List folder contents"/>
