@@ -253,6 +253,7 @@ class WorksheetAddView(BrowserView):
         if ws.getLayout():
             self.request.RESPONSE.redirect(ws.absolute_url() + "/manage_results")
         else:
+            self.context.plone_utils.addPortalMessage(_("No analyses were added to this worksheet."))
             self.request.RESPONSE.redirect(ws.absolute_url() + "/add_analyses")
 
 class WorksheetAnalyses(AnalysesView):

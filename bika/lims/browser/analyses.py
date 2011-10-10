@@ -205,7 +205,7 @@ class AnalysesView(BikaListingView):
                 if hasattr(obj, 'result_in_range'):
                     items[i]['result_in_range'] = obj.result_in_range(result)
                 else:
-                     items[i]['result_in_range'] = True
+                    items[i]['result_in_range'] = True
 
 
             if not can_view_result or \

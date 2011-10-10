@@ -370,7 +370,7 @@ class AnalysisService(BaseContent, HistoryAwareMixin):
                 return None
 
             for d in uncertainties:
-                if float(d['intercept_min']) <= result < float(d['intercept_max']):
+                if float(d['intercept_min']) <= result <= float(d['intercept_max']):
                     return d['errorvalue']
             return None
         else:

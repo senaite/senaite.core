@@ -119,7 +119,11 @@ class WorksheetFolderView(BikaListingView):
                 obj.getWorksheetTemplate().Title() or ''
             items[x]['Analyses'] = len(obj.getAnalyses())
             items[x]['CreationDate'] = TimeOrDate(self.context, obj.creation_date)
-            items[x]['replace']['Title'] = "<a href='%s'>%s</a>" % \
-                 (items[x]['url'], items[x]['Title'])
+            if len(obj.getLayout()) > 0:
+                items[x]['replace']['Title'] = "<a href='%s/manage_results'>%s</a>" % \
+                     (items[x]['url'], items[x]['Title'])
+            else:
+                items[x]['replace']['Title'] = "<a href='%s/add_analyses'>%s</a>" % \
+                    (items[x]['url'], items[x]['Title'])
 
         return items
