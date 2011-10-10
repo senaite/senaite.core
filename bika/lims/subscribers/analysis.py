@@ -247,7 +247,9 @@ def ActionSucceededEventHandler(analysis, event):
         ws = analysis.getBackReferences('WorksheetAnalysis')
         if ws:
             ws = ws[0]
-            if not ws.UID() in analysis.REQUEST['workflow_skiplist']:
+            # if the worksheet analyst is not assigned, the worksheet transition
+            # be transitioned.
+            if ws.getAnalyst() and not ws.UID() in analysis.REQUEST['workflow_skiplist']:
                 all_submitted = True
                 for a in ws.getAnalyses():
                     if wf.getInfoFor(a, 'review_state') in \

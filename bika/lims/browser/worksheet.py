@@ -120,11 +120,31 @@ class WorksheetWorkflowAction(WorkflowAction):
             # default bika_listing.py/WorkflowAction for other transitions
             WorkflowAction.__call__(self)
 
+# Present the LabManagers and Analysts as options for analyst
+# set the first entry to blank to force selection
+def getAnalysts(context):
+    mtool = getToolByName(context, 'portal_membership')
+    analysts = {}
+    pairs = [(' ', ' '), ]
+    analysts = mtool.searchForMembers(roles = ['LabManager', 'Analyst'])
+    for member in analysts:
+        uid = member.getId()
+        fullname = member.getProperty('fullname')
+        if fullname is None:
+            continue
+        pairs.append((uid, fullname))
+    return pairs
+
+
 class WorksheetAddView(BrowserView):
     """ This creates a new Worksheet and redirects to it.
         If a template was selected, the worksheet is pre-populated here.
     """
     implements(IViewView)
+
+    def getAnalysts(self):
+        return getAnalysts(self.context)
+
     def __call__(self):
         form = self.request.form
         rc = getToolByName(self.context, "reference_catalog")
@@ -296,6 +316,9 @@ class WorksheetAnalyses(AnalysesView):
              },
         ]
 
+    def getAnalysts(self):
+        return getAnalysts(self.context)
+
     def folderitems(self):
         self.contentsMethod = self.context.getFolderContents
         items = AnalysesView.folderitems(self)
@@ -371,20 +394,8 @@ class ManageResults(BrowserView):
         self.Analyses = WorksheetAnalyses(self.context, self.request)
         return self.template()
 
-    # Present the LabManagers and Analysts as options for analyst
-    # set the first entry to blank to force selection
     def getAnalysts(self):
-        mtool = getToolByName(self, 'portal_membership')
-        analysts = {}
-        pairs = [(' ', ' '), ]
-        analysts = mtool.searchForMembers(roles = ['LabManager', 'Analyst'])
-        for member in analysts:
-            uid = member.getId()
-            fullname = member.getProperty('fullname')
-            if fullname is None:
-                continue
-            pairs.append((uid, fullname))
-        return pairs
+        return getAnalysts(self.context)
 
 class AnalysesTable(AnalysesView):
     ## The table used to display Analysis search results
@@ -450,6 +461,9 @@ class AddAnalyses(AnalysesView):
         AnalysesView.__init__(self, context, request)
         self.title = "%s: %s" % (context.Title(), _("Add Analyses"))
         self.description = _("")
+
+    def getAnalysts(self):
+        return getAnalysts(self.context)
 
     def __call__(self):
         form = self.request.form

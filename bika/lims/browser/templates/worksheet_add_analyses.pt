@@ -20,6 +20,22 @@
 <metal:content-core fill-slot="content-core">
 
 	<form name="SearchForm" method="POST">
+	<tal:analyst
+		tal:condition="nocall: view/getAnalysts|nothing">
+		<span class="formQuestion">Analyst: </span>
+		<select
+			id = "analyst"
+			name="Analyst">
+			<tal:repeat repeat="analyst view/getAnalysts">
+				<option
+					tal:attributes="
+						value python:analyst[0];
+						selected python:analyst[0] == (context.getAnalyst() and context.getAnalyst() or '') and 'selected' or ''"
+					tal:content="python:analyst[1]"></option>
+			</tal:repeat>
+		</select>
+		<br/>
+	</tal:analyst>
 	<fieldset name="criteria">
 		<label for="getCategoryUID" i18n:translate="Category">Category</label>
 		<select id="CategorySelector" name="getCategoryUID">

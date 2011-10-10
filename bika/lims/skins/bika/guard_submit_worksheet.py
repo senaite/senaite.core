@@ -7,7 +7,8 @@
 ##parameters=
 ##title=
 ##
-if (context.getAnalyst() is None) or (context.getAnalyst() == ''):
+
+if not context.getAnalyst():
     return False
 
 # Only transition to 'attachment_due' if all analyses are at least there.

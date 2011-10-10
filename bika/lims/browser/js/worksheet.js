@@ -53,6 +53,22 @@ $(document).ready(function(){
 	});
 	$("#CategorySelector").trigger("change");
 
+	// search form - selecting a category, service, or client, sets the profile
+	// dropdown to empty value
+	$("#CategorySelector, #ServiceSelector, #ClientSelector").live("change", function(){
+		$("#ProfileSelector").val('');
+	});
+
+	// search form - selecting a profile sets the category, service, and client
+	// dropdowns to empty values
+	$("#ProfileSelector").live("change", function(){
+		$("#CategorySelector").val('');
+		$("#ServiceSelector").val('').empty().append("<option value='any'>Any</option>");
+		$("#ClientSelector").val('');
+	});
+
+
+	// instant update of analyst when selection is made in dropdown
 	$("#analyst").change(function(){
 		if ($("#analyst").val() == '') {
 			return false;
