@@ -26,7 +26,7 @@ environment-vars =
     IDServerURL http://localhost:8081
 
 5. Run bin/buildout -n -c develop.cfg
-6. Run bin/plonectl fg
+6. Run bin/plonectl fg or bin\instance console
 7. Load sample data with url/load_setup_data
 8. Make sure the idserver is running
 9. Load sample data with url/load_setup_data
