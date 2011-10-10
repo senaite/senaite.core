@@ -141,7 +141,7 @@ class WorksheetAddView(BrowserView):
         # if no template was specified, redirect to blank worksheet
         if not form.has_key('wstemplate') or not form['wstemplate']:
             ws.processForm()
-            self.request.RESPONSE.redirect(ws.absolute_url())
+            self.request.RESPONSE.redirect(ws.absolute_url() + "/add_analyses")
             return
 
         wst = rc.lookupObject(form['wstemplate'])
