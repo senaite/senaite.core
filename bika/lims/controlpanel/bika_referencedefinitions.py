@@ -24,6 +24,7 @@ class ReferenceDefinitionsView(BikaListingView):
         self.content_add_actions = {_('Reference Definition'):
                                     "createObject?type_name=ReferenceDefinition"}
         self.title = _("Reference Definitions")
+        self.icon = "++resource++bika.lims.images/referencedefinition_big.png"
         self.description = _("ReferenceDefinition represents a Reference Definition "
                              "or sample type used for quality control testing")
         self.show_editable_border = True
@@ -63,7 +64,7 @@ class ReferenceDefinitionsView(BikaListingView):
             if obj.getBlank():
                 after_icons += "<img src='++resource++bika.lims.images/blank.png' title='Blank'>"
             if obj.getHazardous():
-                after_icons += "<img src='++resource++bika.lims.images/hazardous_small.png' title='Hazardous'>"
+                after_icons += "<img src='++resource++bika.lims.images/hazardous.png' title='Hazardous'>"
             items[x]['replace']['Title'] = "<a href='%s'>%s</a>&nbsp;%s" % \
                  (items[x]['url'], items[x]['Title'], after_icons)
 

@@ -21,6 +21,7 @@ class AnalysisServicesView(BikaListingView):
                               'sort_on': 'sortable_title'}
         self.content_add_actions = {_('Analysis Service'):
                                     "createObject?type_name=AnalysisService"}
+        self.icon = "++resource++bika.lims.images/service_big.png"
         self.title = _("Analysis Services")
         self.show_editable_border = True
         self.show_filters = False

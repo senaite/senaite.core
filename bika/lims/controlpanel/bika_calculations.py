@@ -24,6 +24,7 @@ class CalculationsView(BikaListingView):
         self.content_add_actions = {_('Calculation'):
                                     "createObject?type_name=Calculation"}
         self.title = _("Calculations")
+        self.icon = "++resource++bika.lims.images/calculation_big.png"
         self.description = ""
         self.show_editable_border = True
         self.show_filters = False

@@ -21,6 +21,7 @@ class ReferenceManufacturersView(BikaListingView):
         self.contentFilter = {'portal_type': 'ReferenceManufacturer', 'sort_on': 'sortable_title'}
         self.content_add_actions = {_('Reference Manufacturer'): "createObject?type_name=ReferenceManufacturer"}
         self.title = _("Reference Manufacturers")
+        self.icon = "++resource++bika.lims.images/referencemanufacturer_big.png"
         self.description = ""
         self.show_editable_border = True
         self.show_filters = False

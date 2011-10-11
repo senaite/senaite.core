@@ -21,6 +21,7 @@ class AnalysisSpecsView(BikaListingView):
                               'sort_on': 'sortable_title'}
         self.content_add_actions = {_('Analysis Specification'):
                                     "createObject?type_name=AnalysisSpec"}
+        self.icon = "++resource++bika.lims.images/analysisspec_big.png"
         self.title = _("Analysis Specs")
         self.description = _("Set up the laboratory analysis service results specifications")
         self.show_editable_border = True

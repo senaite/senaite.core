@@ -113,6 +113,7 @@ class ClientAnalysisRequestsView(BikaListingView):
         self.show_select_row = False
         self.show_select_column = True
 
+        self.icon = "++resource++bika.lims.images/analysisrequest_big.png"
         self.title = "%s: %s" % (self.context.Title(),
                                  _("Analysis Requests"))
 
@@ -304,7 +305,7 @@ class ClientAnalysisRequestsView(BikaListingView):
             after_icons = "<a href='%s'><img src='++resource++bika.lims.images/sample.png' title='Sample: %s'></a>" % \
                         (sample.absolute_url(), sample.Title())
             if sample.getSampleType().getHazardous():
-                after_icons += "<img src='++resource++bika.lims.images/hazardous_small.png' title='Hazardous'>"
+                after_icons += "<img src='++resource++bika.lims.images/hazardous.png' title='Hazardous'>"
             if after_icons:
                 items[x]['after']['getRequestID'] = after_icons
 
@@ -324,6 +325,7 @@ class ClientSamplesView(BikaListingView):
         self.show_select_row = False
         self.show_select_column = True
 
+        self.icon = "++resource++bika.lims.images/sample_big.png"
         self.title = "%s: %s" % (self.context.Title(), _("Samples"))
         self.description = ""
 
@@ -430,7 +432,7 @@ class ClientSamplesView(BikaListingView):
 
             after_icons = ''
             if obj.getSampleType().getHazardous():
-                after_icons += "<img title='Hazardous' src='++resource++bika.lims.images/hazardous_small.png'>"
+                after_icons += "<img title='Hazardous' src='++resource++bika.lims.images/hazardous.png'>"
             if after_icons:
                 items[x]['after']['SampleID'] = after_icons
 
@@ -450,6 +452,7 @@ class ClientARImportsView(BikaListingView):
         self.show_select_column = True
         self.pagesize = 50
 
+        self.icon = "++resource++bika.lims.images/arimport_big.png"
         self.title = "%s: %s" % (self.context.Title(), \
                                  _("Analysis Request Imports"))
         self.description = ""
@@ -502,6 +505,7 @@ class ClientARProfilesView(BikaListingView):
         self.show_select_row = False
         self.show_select_column = True
         self.pagesize = 50
+        self.icon = "++resource++bika.lims.images/arprofile_big.png"
         self.title = "%s: %s" % (self.context.Title(),
                                  _("Analysis Request Profiles"))
         self.description = ""
@@ -539,6 +543,7 @@ class ClientAnalysisSpecsView(BikaListingView):
         self.show_select_column = True
         self.pagesize = 50
 
+        self.icon = "++resource++bika.lims.images/analysisspec_big.png"
         self.title = "%s: %s" % (self.context.Title(), \
                                  _("Analysis Specifications"))
         self.description = ""
@@ -583,6 +588,7 @@ class ClientAttachmentsView(BikaListingView):
         self.show_select_column = True
         self.pagesize = 50
 
+        self.icon = "++resource++bika.lims.images/attachment_big.png"
         self.title = "%s: %s" % (self.context.Title(), _("Attachments"))
         self.description = ""
 
@@ -652,6 +658,7 @@ class ClientOrdersView(BikaListingView):
         self.show_select_column = True
         self.pagesize = 20
 
+        self.icon = "++resource++bika.lims.images/order_big.png"
         self.title = "%s: %s" % (self.context.Title(), _("Orders"))
         self.description = ""
 
@@ -705,6 +712,7 @@ class ClientContactsView(BikaListingView):
         self.show_select_column = True
         self.pagesize = 50
 
+        self.icon = "++resource++bika.lims.images/client_contact_big.png"
         self.title = "%s: %s" % (self.context.Title(), _("Contacts"))
         self.description = ""
 

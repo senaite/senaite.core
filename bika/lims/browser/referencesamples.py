@@ -4,6 +4,7 @@ from bika.lims.utils import TimeOrDate
 
 class ReferenceSamplesView(BikaListingView):
     title = _("Reference Samples")
+    icon = "++resource++bika.lims.images/referencesample_big.png"
     description = _("")
     contentFilter = {'portal_type': 'ReferenceSample', 'path':{"query": ["/"], "level" : 0 }}
     content_add_actions = {}
@@ -99,7 +100,7 @@ class ReferenceSamplesView(BikaListingView):
             if obj.getBlank():
                 after_icons += "<img src='++resource++bika.lims.images/blank.png' title='Blank'>"
             if obj.getHazardous():
-                after_icons += "<img src='++resource++bika.lims.images/hazardous_small.png' title='Hazardous'>"
+                after_icons += "<img src='++resource++bika.lims.images/hazardous.png' title='Hazardous'>"
             items[x]['replace']['ID'] = "<a href='%s'>%s</a>&nbsp;%s" % \
                  (items[x]['url'], items[x]['ID'], after_icons)
 

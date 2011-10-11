@@ -25,6 +25,7 @@ class MethodsView(BikaListingView):
         self.content_add_actions = {_('Method'):
                                     "createObject?type_name=Method"}
         self.title = _("Methods")
+        self.icon = "++resource++bika.lims.images/method_big.png"
         self.description = ""
         self.show_editable_border = True
         self.show_filters = False

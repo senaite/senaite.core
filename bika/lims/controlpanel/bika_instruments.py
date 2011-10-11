@@ -24,6 +24,7 @@ class InstrumentsView(BikaListingView):
         self.content_add_actions = {_('Instrument'):
                                     "createObject?type_name=Instrument"}
         self.title = _("Instruments")
+        self.icon = "++resource++bika.lims.images/instrument_big.png"
         self.description = ""
         self.show_editable_border = True
         self.show_filters = False

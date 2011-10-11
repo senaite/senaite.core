@@ -27,6 +27,7 @@ class WorksheetTemplatesView(BikaListingView):
         self.content_add_actions = {_('Worksheet Template'):
                                     "createObject?type_name=WorksheetTemplate"}
         self.title = _("Worksheet Templates")
+        self.icon = "++resource++bika.lims.images/worksheettemplate_big.png"
         self.description = ""
         self.show_editable_border = True
         self.show_filters = False

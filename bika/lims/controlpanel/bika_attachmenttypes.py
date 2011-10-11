@@ -21,6 +21,7 @@ class AttachmentTypesView(BikaListingView):
                               'sort_on': 'sortable_title'}
         self.content_add_actions = {_('Attachment Type'):
                                     "createObject?type_name=AttachmentType"}
+        self.icon = "++resource++bika.lims.images/attachment_big.png"
         self.title = _("Attachment Types")
         self.show_editable_border = False
         self.show_filters = False

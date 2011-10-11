@@ -546,7 +546,7 @@ class AnalysisRequestSelectSampleView(BikaListingView):
             items[x]['getSampleID'] = obj.getSampleID()
             if obj.getSampleType().getHazardous():
                 items[x]['after']['getSampleID'] = \
-                     "<img src='++resource++bika.lims.images/hazardous_small.png' title='Hazardous'>"
+                     "<img src='++resource++bika.lims.images/hazardous.png' title='Hazardous'>"
             items[x]['getSampleTypeTitle'] = obj.getSampleTypeTitle()
             items[x]['getSamplePointTitle'] = obj.getSamplePointTitle()
             items[x]['item_data'] = json.dumps({

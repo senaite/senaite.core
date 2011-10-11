@@ -25,6 +25,7 @@ class LabProductsView(BikaListingView):
         self.content_add_actions = {_('Product'):
                                     "createObject?type_name=LabProduct"}
         self.title = _("Lab Products")
+        self.icon = "++resource++bika.lims.images/product_big.png"
         self.description = ""
         self.show_editable_border = True
         self.show_filters = False

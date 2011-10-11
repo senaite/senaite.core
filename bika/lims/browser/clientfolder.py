@@ -15,6 +15,7 @@ class ClientFolderContentsView(BikaListingView):
                               'sort_on': 'sortable_title'}
         self.content_add_actions = {_('Client'):
                                     "createObject?type_name=Client"}
+        self.icon = "++resource++bika.lims.images/client_big.png"
         self.title = _("Clients")
         self.description = ""
         self.show_editable_border = False

@@ -8,9 +8,9 @@
 <body>
 
 <metal:content-title fill-slot="content-title">
-    <h1 tal:define="plone_view context/@@plone;
-                    folder_icon python:plone_view.getIcon(context)">
-	<img src="" tal:attributes="src folder_icon/url"/>
+    <h1>
+	<img tal:condition="view/icon | nothing"
+         src="" tal:attributes="src view/icon"/>
 	<span class="documentFirstHeading" tal:content="view/title"/>
     </h1>
 </metal:content-title>

@@ -55,7 +55,7 @@
 				<td align="right">
 					<img tal:condition="view/getHazardous"
                         title="Hazardous"
-						tal:attributes="src string:++resource++bika.lims.images/hazardous.png">
+						tal:attributes="src string:++resource++bika.lims.images/hazardous_big.png">
 				</td>
 			</tr>
 		</table>

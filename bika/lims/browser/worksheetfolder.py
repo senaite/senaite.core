@@ -98,6 +98,7 @@ class WorksheetFolderView(BikaListingView):
                   ]
     def __init__(self, context, request):
         super(WorksheetFolderView, self).__init__(context, request)
+        self.icon = "++resource++bika.lims.images/worksheet_big.png"
         self.title = "%s: %s" % (self.context.Title(), _("Worksheets"))
         self.description = ""
         self.TimeOrDate = TimeOrDate

@@ -3,6 +3,7 @@ from bika.lims import bikaMessageFactory as _
 
 class ReferenceSuppliersView(BikaListingView):
     title = _("Reference Suppliers")
+    icon = "++resource++bika.lims.images/referencesupplier_big.png"
     description = _("")
     contentFilter = {'portal_type': 'ReferenceSupplier'}
     content_add_actions = {_('Reference Supplier'): "createObject?type_name=ReferenceSupplier"}

@@ -24,6 +24,7 @@ class LabContactsView(BikaListingView):
         self.content_add_actions = {_('Lab Contact'):
                                     "createObject?type_name=LabContact"}
         self.title = _("Lab Contacts")
+        self.icon = "++resource++bika.lims.images/lab_contact_big.png"
         self.description = ""
         self.show_editable_border = True
         self.show_filters = False

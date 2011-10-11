@@ -26,6 +26,7 @@ class SamplePointsView(BikaListingView):
         self.content_add_actions = {_('Sample Point'):
                                     "createObject?type_name=SamplePoint"}
         self.title = _("Sample Points")
+        self.icon = "++resource++bika.lims.images/samplepoint_big.png"
         self.description = ""
         self.show_editable_border = True
         self.show_filters = False

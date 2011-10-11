@@ -26,6 +26,7 @@ class SampleTypesView(BikaListingView):
         self.content_add_actions = {_('Sample Type'):
                                     "createObject?type_name=SampleType"}
         self.title = _("Sample Types")
+        self.icon = "++resource++bika.lims.images/sampletype_big.png"
         self.description = ""
         self.show_editable_border = True
         self.show_filters = False

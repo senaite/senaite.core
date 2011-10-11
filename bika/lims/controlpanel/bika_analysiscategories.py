@@ -20,6 +20,7 @@ class AnalysisCategoriesView(BikaListingView):
                               'sort_on': 'sortable_title'}
         self.content_add_actions = {_('Analysis Category'):
                                     "createObject?type_name=AnalysisCategory"}
+        self.icon = "++resource++bika.lims.images/category_big.png"
         self.title = _("Analysis Categories")
         self.description = ""
         self.show_editable_border = False
