@@ -73,7 +73,7 @@
          icon_expr="string:${portal_url}/images/arimport.png"
          link_target=""
          url_expr="string:${object_url}/arimports"
-         visible="True">
+         visible="False">
   <permission value="List folder contents"/>
  </action>
 
@@ -117,7 +117,7 @@
          icon_expr="string:${portal_url}/images/order.png"
          link_target=""
          url_expr="string:${object_url}/orders"
-         visible="True">
+         visible="False">
   <permission value="List folder contents"/>
  </action>
 
