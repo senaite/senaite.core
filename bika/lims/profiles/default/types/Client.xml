@@ -55,7 +55,7 @@
   <permission value="List folder contents"/>
  </action>
 
- <action title="ARs"
+ <action title="Analysis Requests"
          action_id="view"
          category="object"
          condition_expr=""
