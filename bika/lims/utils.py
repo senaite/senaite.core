@@ -53,16 +53,20 @@ def TimeOrDate(context, datetime, long_format=False):
     localTimeOnlyFormat = context.portal_properties.site_properties.localTimeOnlyFormat
 
     if hasattr(datetime, 'Date'):
-        if datetime > DateTime() or long_format:
-            return datetime.asdatetime().strftime(localLongTimeFormat)
+        if (datetime.Date() > DateTime().Date()) or long_format:
+            dt = datetime.asdatetime().strftime(localLongTimeFormat)
         elif datetime.Date() == DateTime().Date():
-            return datetime.asdatetime().strftime(localTimeOnlyFormat)
+            dt = datetime.asdatetime().strftime(localTimeOnlyFormat)
         else:
-            return datetime.asdatetime().strftime(localTimeFormat)
-        datetime = datetime.replace("PM","pm").replace("AM","am")
-        if len(datetime) > 10:
-            datetime = datetime.replace("12:00 am","")
-    return datetime
+            dt = datetime.asdatetime().strftime(localTimeFormat)
+        dt = dt.replace("PM","pm").replace("AM","am")
+        if len(dt) > 10:
+            dt = dt.replace("12:00 am","")
+        if dt == "12:00 am":
+            dt = datetime.asdatetime().strftime(localTimeFormat)
+    else:
+        dt = datetime
+    return dt
 
 # encode_header function copied from roundup's rfc2822 package.
 hqre = re.compile(r'^[A-z0-9!"#$%%&\'()*+,-./:;<=>?@\[\]^_`{|}~ ]+$')

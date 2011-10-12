@@ -671,7 +671,7 @@ class ajaxAddReferenceAnalyses(BrowserView):
         if parent:
             for analysis in analyses:
                 if analysis.aq_parent.UID() == reference_uid:
-                    existing_services_in_pos.append(analysis.UID())
+                    existing_services_in_pos.append(analysis.getService().UID())
 
         ref_analysis_uids = []
         for service_uid in service_uids:
