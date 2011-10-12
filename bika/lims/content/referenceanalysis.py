@@ -11,10 +11,14 @@ from Products.Archetypes.references import HoldingReference
 from Products.CMFCore.permissions import View, ModifyPortalContent
 from Products.CMFCore.utils import getToolByName
 from bika.lims.browser.fields import InterimFieldsField
+from bika.lims.browser.fields import DurationField
+from bika.lims.browser.fields import HistoryAwareReferenceField
 from bika.lims.browser.widgets import RecordsWidget as BikaRecordsWidget
 from bika.lims.config import I18N_DOMAIN, STD_TYPES, PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
+from bika.lims.interfaces import IReferenceAnalysis
 from bika.lims import bikaMessageFactory as _
+from zope.interface import implements
 
 #try:
 #    from BikaCalendar.config import TOOL_NAME as BIKA_CALENDAR_TOOL # XXX
@@ -37,7 +41,7 @@ schema = BikaSchema.copy() + Schema((
             label = _("Reference Type"),
         ),
     ),
-    ReferenceField('Service',
+    HistoryAwareReferenceField('Service',
         required = 1,
         allowed_types = ('AnalysisService',),
         relationship = 'ReferenceAnalysisAnalysisService',
@@ -45,16 +49,6 @@ schema = BikaSchema.copy() + Schema((
         widget = ReferenceWidget(
             label = _("Analysis service"),
         )
-    ),
-    StringField('Unit',
-        widget = StringWidget(
-            label = _("Unit"),
-        ),
-    ),
-    ReferenceField('Calculation',
-        allowed_types = ('Calculation',),
-        relationship = 'AnalysisCalculation',
-        referenceClass = HoldingReference,
     ),
     InterimFieldsField('InterimFields',
         widget = BikaRecordsWidget(
@@ -64,11 +58,6 @@ schema = BikaSchema.copy() + Schema((
     StringField('Result',
         widget = StringWidget(
             label = _("Result"),
-        )
-    ),
-    StringField('InterimCalcs',
-        widget = StringWidget(
-            label = _("Interim Calculations"),
         )
     ),
     BooleanField('Retested',
@@ -83,6 +72,13 @@ schema = BikaSchema.copy() + Schema((
         widget = DateTimeWidget(
             label = _("Date Requested"),
         ),
+    ),
+    DateTimeField('DueDate',
+        widget = DateTimeWidget(
+            label = _("Due Date"),
+        ),
+    ),
+    DurationField('MaxTimeAllowed',
     ),
     DateTimeField('DateVerified',
         widget = DateTimeWidget(
@@ -111,15 +107,9 @@ schema = BikaSchema.copy() + Schema((
 )
 
 class ReferenceAnalysis(BaseContent):
+    implements(IReferenceAnalysis)
     security = ClassSecurityInfo()
-    archetype_name = 'ReferenceAnalysis'
     schema = schema
-    allowed_content_types = ()
-    immediate_view = 'base_view'
-    global_allow = 0
-    filter_content_types = 0
-    use_folder_tabs = 0
-    actions = ()
 
     def Title(self):
         """ Return the Service ID as title """
@@ -173,10 +163,6 @@ class ReferenceAnalysis(BaseContent):
     def current_date(self):
         """ return current date """
         return DateTime()
-
-    def workflow_script_verify(self, state_info):
-        """ reference analysis """
-        self.setDateVerified(DateTime())
 
 registerType(ReferenceAnalysis, PROJECTNAME)
 

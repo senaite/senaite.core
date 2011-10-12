@@ -60,7 +60,6 @@ schema = BikaSchema.copy() + Schema((
     BooleanField('Retested',
         default = False,
     ),
-
     DurationField('MaxTimeAllowed',
         widget = DurationWidget(
             label = _("Maximum time allowed"),

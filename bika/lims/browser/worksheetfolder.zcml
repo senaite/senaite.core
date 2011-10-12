@@ -7,7 +7,7 @@
     <browser:page
       for="bika.lims.interfaces.IWorksheetFolder"
       name="base_view"
-      class="bika.lims.browser.worksheetfolder.WorksheetFolderView"
+      class="bika.lims.browser.worksheetfolder.WorksheetFolderListingView"
       permission="zope.Public"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
@@ -15,7 +15,7 @@
     <browser:page
       for="bika.lims.interfaces.IWorksheetFolder"
       name="worksheet_add"
-      class="bika.lims.browser.worksheet.WorksheetAddView"
+      class="bika.lims.browser.worksheetfolder.AddWorksheetView"
       permission="zope.Public"
       layer="bika.lims.interfaces.IBikaLIMS"
     />

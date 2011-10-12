@@ -127,10 +127,11 @@ div.position-1\:4 {
 
 #listing-table td {
 	vertical-align:bottom;
-	white-space:wrap;
+	white-space:nowrap;
 }
 
-.Description {
+td .Services,
+td .Description {
   white-space:normal !important;
 }
 
@@ -291,6 +292,35 @@ table.analysisrequest input {
     text-align: center;
 }
 
+
+/***********************
+* worksheets
+*/
+
+.worksheet_add_control {
+    width:100%;
+	text-align:center !important;
+	vertical-align:top !important;
+}
+.worksheet_add_control_services {
+	text-align:center !important;
+	vertical-align:top !important;
+}
+.worksheet_add_control_references {
+	padding-left:5px;
+	text-align:center !important;
+	vertical-align:top !important;
+}
+
+.worksheet_add_control_references tr:hover,
+.worksheet_add_control_references tr:hover td {
+    cursor:pointer;
+	background:&dtml-notifyBackgroundColor; !important;
+
+}
+
+
+
 /*
  *  General Form Elements
  */
@@ -302,64 +332,7 @@ fieldset {
 	padding:.5em;
 }
 
-/*
-.analysisrequest .top {
-    border-left: &dtml-borderWidth; &dtml-borderStyle; &dtml-backgroundColor;;
-    border-top: &dtml-borderWidth; &dtml-borderStyle; &dtml-backgroundColor; ! important;
-    border-right: &dtml-borderWidth; &dtml-borderStyle; &dtml-backgroundColor; ! important;
-    text-align: right ! important;
-    padding: 0em 0em 1em 0em;
-}
-.sampleButton {
-    font-size: &dtml-fontSmallSize;;
-    background: &dtml-globalBackgroundColor;;
-    border: &dtml-borderWidth; &dtml-borderStyle; &dtml-globalBorderColor; ! important;
-    cursor: pointer;
-    height: 90%;
-    width: 90%;
-    padding: 1px 1px 1px 1px;
-    text-transform: &dtml-textTransform;;
-}
-.analysisrequest .odd {
-    background-color: &dtml-oddRowBackgroundColor;;
-}
-.analysisrequest .even {
-    background-color: &dtml-evenRowBackgroundColor;;
-}
-.analysisrequest .listingCheckbox {
-    text-align: center;
-}
-.analysisrequest td.center {
-    vertical-align: middle;
-}
-.analysisrequest a:hover {
-    text-decoration: underline;
-}
-.analysisrequest img {
-    vertical-align: middle;
-}
 
-
-.analysisrequest .amount {
-    text-align: right;
-    padding-right: 1em;
-}
-.analysisrequest .calculated {
-    text-align: right;
-    padding-right: 1em;
-    border: none ! important;
-    background: &dtml-backgroundColor;;
-}
-.analysisrequest .dryhead {
-    background-color: #a6b5db;
-}
-.analysisrequest .drybody {
-    background-color: #dae0f0;
-}
-
-
-*
-*/
 
 /*
 

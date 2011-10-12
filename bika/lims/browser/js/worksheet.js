@@ -67,18 +67,69 @@ $(document).ready(function(){
 		$("#ClientSelector").val('');
 	});
 
-
 	// instant update of analyst when selection is made in dropdown
 	$("#analyst").change(function(){
 		if ($("#analyst").val() == '') {
 			return false;
 		}
+		url = window.location.href
+				.replace("/manage_results", "")
+				.replace("/add_analyses", "") + "/setAnalyst";
 		$.ajax({
 			type:'POST',
-			url: window.location.href + "/setAnalyst",
+			url: url,
 			data: {'value': $("#analyst").val(),
-				'_authenticator': $('input[name="_authenticator"]').val()}
+				'_authenticator': $('input[name="_authenticator"]').val()},
+			success: function(responseText, statusText, xhr, $form) {
+				$('#analyst_changed').toggle(true);
+				setTimeout(function(){$('#analyst_changed').toggle(false);}, 1000)
+			}
 		});
 	});
+
+	// adding Controls and Blanks - selecting services re-renders the list
+	// of applicable reference samples
+	$("#worksheet_services input[id*='cb_']").live('click', function(){
+//		$("input[id*='cb_']").attr("disabled", true);
+		$("#ajax_spinner").toggle(true);
+		selected_service_uids = [];
+		$.each($("input:checked"), function(i,e){
+			selected_service_uids.push($(e).attr('uid'));
+		});
+		url = window.location.href
+			.replace("/add_blank", "")
+			.replace("/add_control", "") + "/getWorksheetReferences"
+		$("#reference_samples").load(url,
+			{'service_uids': selected_service_uids.join(","),
+			 '_authenticator': $('input[name="_authenticator"]').val()},
+			function(responseText, statusText, xhr, $form) {
+				$("#ajax_spinner").toggle(false);
+//				$("input[id*='cb_']").removeAttr('disabled');
+			}
+		);
+	});
+
+	$("#reference_samples tr").live('click', function(){
+		url = window.location.href
+			.replace("/add_blank", "")
+			.replace("/add_control", "");
+		selected_service_uids = [];
+		$.each($("input:checked"), function(i,e){
+			selected_service_uids.push($(e).attr('uid'));
+		});
+		$.ajax({
+			type:'POST',
+			url: url + "/addReferenceAnalyses",
+			data: {'service_uids': selected_service_uids.join(","),
+					'position':$("#position").val(),
+					'reference_uid':$(this).attr("uid"),
+					'_authenticator': $('input[name="_authenticator"]').val()},
+			success: function(responseText, statusText, xhr, $form) {
+				window.location.href = url + "/manage_results";
+			}
+
+		});
+	})
+
 });
 });

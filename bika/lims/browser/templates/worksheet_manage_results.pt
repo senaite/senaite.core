@@ -30,8 +30,7 @@
 
 		<tal:analyst
 			tal:condition="nocall: view/getAnalysts|nothing">
-			<span class="formQuestion">Analyst: </span>
-			<select
+			<span class="formQuestion">Analyst: </span>&nbsp;<select
 				id = "analyst"
 				name="Analyst">
 				<tal:repeat repeat="analyst view/getAnalysts">
@@ -41,7 +40,7 @@
 							selected python:analyst[0] == (context.getAnalyst() and context.getAnalyst() or '') and 'selected' or ''"
 						tal:content="python:analyst[1]"></option>
 				</tal:repeat>
-			</select>
+			</select>&nbsp;<span id="analyst_changed" style="display:none" i18n:translate="">Analyst changed.</span>
 			<br/>
 		</tal:analyst>
 

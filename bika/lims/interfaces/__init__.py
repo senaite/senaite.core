@@ -22,6 +22,9 @@ class IAnalysis(Interface):
 class IDuplicateAnalysis(Interface):
     """DuplicateAnalysis"""
 
+class IReferenceAnalysis(Interface):
+    """Reference Analyses """
+
 class ISample(Interface):
     """Sample"""
 

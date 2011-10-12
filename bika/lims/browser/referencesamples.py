@@ -11,7 +11,7 @@ class ReferenceSamplesView(BikaListingView):
     show_editable_border = False
     show_filters = False
     show_sort_column = False
-    show_select_row = True
+    show_select_row = False
     show_select_column = True
     pagesize = 50
 
@@ -90,9 +90,9 @@ class ReferenceSamplesView(BikaListingView):
             items[x]['Definition'] = obj.getReferenceDefinition() and \
                  obj.getReferenceDefinition().Title() or ''
             items[x]['DateSampled'] = \
-                 TimeOrDate(self.context, obj.getDateSampled())
+                 TimeOrDate(self.context, obj.getDateSampled(), long_format=0)
             items[x]['DateReceived'] = \
-                 TimeOrDate(self.context, obj.getDateReceived())
+                 TimeOrDate(self.context, obj.getDateReceived(), long_format=0)
             items[x]['ExpiryDate'] = \
                  TimeOrDate(self.context, obj.getExpiryDate(), long_format=0)
 

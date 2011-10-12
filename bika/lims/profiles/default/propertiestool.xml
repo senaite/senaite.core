@@ -20,6 +20,7 @@
   <property name="metaTypesNotToList" type="lines">
     <element value="Contact"/>
     <element value="InvoiceFolder"/>
+
     <element value="PricelistFolder"/>
     <element value="Address"/>
     <element value="Analysis"/>
@@ -71,6 +72,7 @@
     <element value="MethodLogEntry"/>
     <element value="Plone Site"/>
     <element value="TempFolder"/>
+    <element value="Image"/>
     <element value="ATCurrentAuthorCriterion"/>
     <element value="ATPathCriterion"/>
     <element value="ATRelativePathCriterion"/>

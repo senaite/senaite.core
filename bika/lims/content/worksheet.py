@@ -262,15 +262,6 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         if RESPONSE:
             RESPONSE.redirect('%s/manage_results' % self.absolute_url())
 
-    security.declarePublic('addBlankAnalysis')
-    def addBlankAnalysis(self, REQUEST, RESPONSE):
-        """ Add a blank analysis to the first available entry
-        """
-
-        return self.worksheet_add_blank(
-            REQUEST = REQUEST, RESPONSE = RESPONSE,
-            template_id = 'manage_results')
-
     def getAllAnalyses(self, contentFilter = None):
         """ get all the analyses of different types linked to this WS
             contentFilter is supplied by BikaListingView, and ignored.
@@ -402,48 +393,6 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
                                      domain = 'bika')
 
         self.plone_utils.addPortalMessage(message)
-
-        if REQUEST:
-            RESPONSE.redirect('%s/manage_results' % self.absolute_url())
-
-    security.declarePublic('addControlAnalysis')
-    def addControlAnalysis(self, REQUEST, RESPONSE):
-        """ Add a reference analysis to the first available entry
-        """
-        return self.worksheet_add_control(
-            REQUEST = REQUEST, RESPONSE = RESPONSE,
-            template_id = 'manage_results')
-
-    security.declareProtected(AddAndRemoveAnalyses, 'assignReference')
-    def assignReference(self, Reference = None, Position = None, Type = None, Service = [], REQUEST = None, RESPONSE = None):
-        """ assign selected reference analyses to worksheet
-            Reference=uid, Position=number or 'new', Service=[uids]
-        """
-
-        if not Reference or not Position or not Service:
-            if Type == 'b':
-                addPortalMessage(_('No blank analysis assigned'))
-            else:
-                addPortalMessage(_('No reference analysis assigned'))
-        else:
-            rc = getToolByName(self, REFERENCE_CATALOG)
-            assigned = []
-            reference = rc.lookupObject(Reference)
-            for service_uid in Service:
-                ref_uid = reference.addReferenceAnalysis(service_uid, Type)
-                assigned.append(ref_uid)
-
-            self._addToSequence(Type, int(Position), assigned)
-            assigned = assigned + self.getReferenceAnalyses()
-            self.setReferenceAnalyses(assigned)
-
-            if Type == 'b':
-                message = self.translate('message_blank_assigned', default = 'Blank analysis has been assigned', domain = 'bika')
-            else:
-                message = self.translate('message_control_assigned', default = 'Control analysis has been assigned', domain = 'bika')
-
-        utils = getToolByName(self, 'plone_utils')
-        utils.addPortalMessage(message, type = u'info')
 
         if REQUEST:
             RESPONSE.redirect('%s/manage_results' % self.absolute_url())

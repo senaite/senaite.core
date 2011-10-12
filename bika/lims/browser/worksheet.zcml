@@ -16,7 +16,7 @@
     <browser:page
       for="bika.lims.interfaces.IWorksheet"
       name="manage_results"
-      class="bika.lims.browser.worksheet.ManageResults"
+      class="bika.lims.browser.worksheet.ManageResultsView"
       permission="bika.lims.ManageResults"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
@@ -24,15 +24,8 @@
     <browser:page
       for="bika.lims.interfaces.IWorksheet"
       name="add_analyses"
-      class="bika.lims.browser.worksheet.AddAnalyses"
+      class="bika.lims.browser.worksheet.AddAnalysesView"
       permission="bika.lims.AddAndRemoveAnalyses"
-      layer="bika.lims.interfaces.IBikaLIMS"
-    />
-    <browser:page
-      for="bika.lims.interfaces.IWorksheet"
-      name="getServices"
-      class="bika.lims.browser.worksheet.ajaxGetServices"
-      permission="zope.Public"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
@@ -49,6 +42,29 @@
       name="add_control"
       class="bika.lims.browser.worksheet.AddControlView"
       permission="bika.lims.AddAndRemoveAnalyses"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
+
+    <browser:page
+      for="bika.lims.interfaces.IWorksheet"
+      name="getServices"
+      class="bika.lims.browser.worksheet.ajaxGetServices"
+      permission="zope.Public"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+    <browser:page
+      for="bika.lims.interfaces.IWorksheet"
+      name="getWorksheetReferences"
+      class="bika.lims.browser.worksheet.ajaxGetWorksheetReferences"
+      permission="zope.Public"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+    <browser:page
+      for="bika.lims.interfaces.IWorksheet"
+      name="addReferenceAnalyses"
+      class="bika.lims.browser.worksheet.ajaxAddReferenceAnalyses"
+      permission="zope.Public"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 

@@ -33,7 +33,7 @@
 						selected python:analyst[0] == (context.getAnalyst() and context.getAnalyst() or '') and 'selected' or ''"
 					tal:content="python:analyst[1]"></option>
 			</tal:repeat>
-		</select>
+		</select> <span id="analyst_changed" style="display:none" i18n:translate="">Analyst changed.</span>
 		<br/>
 	</tal:analyst>
 	<fieldset name="criteria">

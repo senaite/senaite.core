@@ -39,17 +39,17 @@ $(document).ready(function(){
 					results = $.parseJSON(responseText['success']);
 					// select Blank if it's specified in the definition
 					if(responseText['blank']){
-						if (!$("#Blank").checked) {$("#Blank").click()};
+						$("#Blank").attr("checked", true);
 					}
 					if(!responseText['blank']){
-						if ($("#Blank").checked) {$("#Blank").click()};
+						$("#Blank").attr("checked", false);
 					}
 					// select Hazardous the same way
 					if(responseText['hazardous']){
-						if (!$("#Hazardous").checked) {$("#Hazardous").click()};
+						$("#Hazardous").attr("checked", true);
 					}
 					if(!responseText['hazardous']){
-						if ($("#Hazardous").checked) {$("#Hazardous").click()};
+						$("#Hazardous").attr("checked", false);
 					}
 					// expand categories
 					$.each(responseText['categories'], function(i, cat_uid){

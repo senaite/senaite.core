@@ -40,10 +40,10 @@ jQuery( function($) {
 		  // Some browsers just don't raise events for control keys. Easy.
 		  // e.g. Safari backspace.
 		  if (!event.which || // Control keys in most browsers. e.g. Firefox tab is 0
-			  (49 <= event.which && event.which <= 57) || // Always 1 through 9
-			  (48 == event.which && $(this).attr("value")) || // No 0 first digit
+			  (48 <= event.which && event.which <= 57) || // Always 1 through 9
 			  isControlKey) { // Opera assigns values for control keys.
 			return;
+//			  (48 == event.which && $(this).attr("value")) || // No 0 first digit
 		  } else {
 			event.preventDefault();
 		  }
