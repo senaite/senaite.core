@@ -1,0 +1,72 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xml:lang="en" lang="en"
+	xmlns:tal="http://xml.zope.org/namespaces/tal"
+	xmlns:metal="http://xml.zope.org/namespaces/metal"
+	xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+	metal:use-macro="here/main_template/macros/master"
+	i18n:domain="bika">
+<body>
+
+<metal:content-title fill-slot="content-title">
+	<h1 class="documentFirstHeading" tal:content="view/title"/>
+</metal:content-title>
+
+<metal:content-description fill-slot="content-description">
+	<div class="documentDescription"
+		tal:content="view/description"
+		tal:condition="view/description"/>
+</metal:content-description>
+
+<metal:content-core fill-slot="content-core">
+
+	<form name="folderContentsForm"
+	      id="folderContentsForm"
+		  method="POST"
+		  class="kssattr-serveraction-foldercontents_update_table">
+	<fieldset tal:define="portal context/@@plone_portal_state/portal;">
+		<table class="worksheet_add_control">
+			<tr>
+				<td colspan="2"
+					style="vertical-align:center;text-align:left;">
+					<span
+						i18n:translate=""
+						style="line-height:20px;"
+						tal:content="string:Insert into worksheet at position: "/>
+					<select
+						id="position"
+						name="position">
+						<tal:options
+							repeat="position view/getAvailablePositions">
+							<option
+								value="position"
+								tal:content="position"/>
+						</tal:options>
+						<option
+							value="new"
+							tal:content="string:new"/>
+					</select>
+					<span class="worksheet_add_control_spinner">
+						<img id="ajax_spinner" style="display:none" tal:attributes="src python:portal.absolute_url()+ '/images/spinner.gif';"/>
+					</span>
+				</td>
+			</tr>
+			<tr>
+				<td class="worksheet_add_control_services">
+					<span
+						id="worksheet_services"
+						tal:content="structure view/Services/contents_table"/>
+				</td>
+				<td class="worksheet_add_control_references">
+					<span id="reference_samples"/>
+				</td>
+			</tr>
+		</table>
+		<input type="hidden" name="submitted" value="1"/>
+		<input tal:replace="structure context/@@authenticator/authenticator"/>
+	</fieldset>
+	</form>
+
+</metal:content-core>
+
+	</body>
+</html>
