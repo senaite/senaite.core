@@ -41,7 +41,7 @@ class ReferenceManufacturersView(BikaListingView):
              'contentFilter': {'inactive_state': 'active'},
              'transitions': ['deactivate'],
              'columns': ['Title', 'Description']},
-            {'title': _('Inactive'), 'id':'inactive',
+            {'title': _('Dormant'), 'id':'inactive',
              'contentFilter': {'inactive_state': 'inactive'},
              'transitions': ['activate',],
              'columns': ['Title', 'Description']},

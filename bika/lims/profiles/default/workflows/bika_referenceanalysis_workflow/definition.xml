@@ -291,7 +291,7 @@
   </guard>
  </transition>
 
- <transition transition_id="unassign" title="Unassign"
+ <transition transition_id="unassign" title="Remove"
              new_state="unassigned" trigger="USER"
              before_script="" after_script="">
   <action url="workflow_action?workflow_action=unassign" category="workflow" icon="">Remove</action>

@@ -66,7 +66,7 @@ class AnalysisServicesView(BikaListingView):
                          'Calculation',
                          ],
              },
-            {'title': _('Inactive'), 'id':'inactive',
+            {'title': _('Dormant'), 'id':'inactive',
              'contentFilter': {'inactive_state': 'inactive'},
              'transitions': ['activate',],
              'columns': ['Title',

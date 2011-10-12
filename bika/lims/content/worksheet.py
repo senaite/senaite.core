@@ -76,11 +76,10 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         wslayout = self.getLayout()
         if parent_uid in [l['container_uid'] for l in wslayout]:
             return
+
         wst = self.getWorksheetTemplate()
-        if wst:
-            wstlayout = wst.getLayout()
-        else:
-            wstlayout = []
+        wstlayout = wst and wst.getLayout() or []
+
         if analysis.portal_type == 'Analysis':
             analysis_type = 'a'
         elif analysis.portal_type == 'DuplicateAnalysis':

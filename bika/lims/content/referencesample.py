@@ -191,7 +191,7 @@ class ReferenceSample(BaseFolder):
             specs[uid]['result'] = spec['result']
             specs[uid]['min'] = spec['min']
             specs[uid]['max'] = spec['max']
-            specs[uid]['error'] = spec['error']
+            specs[uid]['error'] = 'error' in spec and spec['error'] or 0
         return specs
 
     security.declarePublic('getResultsRangeSorted')

@@ -14,6 +14,10 @@ wf_tool = context.portal_workflow
 if wf_tool.getInfoFor(context, 'cancellation_state') == "cancelled":
     return False
 
+# reference analyses don't happen on services with dependencies
+if context.portal_type == "ReferenceAnalysis":
+    return True
+
 dependencies = context.getDependencies()
 if dependencies:
     interim_fields = False

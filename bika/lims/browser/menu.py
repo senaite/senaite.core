@@ -60,10 +60,10 @@ class WorkflowSubMenuItem(WorkflowSubMenuItem):
         stateTitle = self._currentStateTitle()
 
         if workflow.getInfoFor(self.context, 'cancellation_state', '') == 'cancelled':
-            title2 = workflow.getTitleForStateOnType('cancelled', self.context.portal_type)
+            title2 = _('Cancelled')
             # cater for bika_one_state_workflow (always Active)
             if not stateTitle or \
-               workflow.getInfoFor(self.context, 'review_state', '') == 'Active':
+               workflow.getInfoFor(self.context, 'review_state', '') == 'active':
                 stateTitle = 'Cancelled'
             else:
                 stateTitle = "%s (%s)" % (stateTitle,_(title2))
@@ -72,11 +72,11 @@ class WorkflowSubMenuItem(WorkflowSubMenuItem):
                     'state'      : state,
                     'stateTitle' : stateTitle,}
         elif workflow.getInfoFor(self.context, 'inactive_state', '') == 'inactive':
-            title2 = workflow.getTitleForStateOnType('inactive', self.context.portal_type)
+            title2 = _('Dormant')
             # cater for bika_one_state_workflow (always Active)
             if not stateTitle or \
-               workflow.getInfoFor(self.context, 'review_state', '') == 'Active':
-                stateTitle = 'Inactive'
+               workflow.getInfoFor(self.context, 'review_state', '') == 'active':
+                stateTitle = 'Dormant'
             else:
                 stateTitle = "%s (%s)" % (stateTitle,_(title2))
             return {'id'         : 'plone-contentmenu-workflow',

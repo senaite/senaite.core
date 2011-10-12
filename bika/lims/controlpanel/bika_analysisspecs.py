@@ -41,7 +41,7 @@ class AnalysisSpecsView(BikaListingView):
              'contentFilter': {'inactive_state': 'active'},
              'transitions': ['deactivate'],
              'columns': ['getSampleType']},
-            {'title': _('Inactive'), 'id':'inactive',
+            {'title': _('Dormant'), 'id':'inactive',
              'contentFilter': {'inactive_state': 'inactive'},
              'transitions': ['activate',],
              'columns': ['getSampleType']},

@@ -96,11 +96,19 @@ $(document).ready(function(){
 		$.each($("input:checked"), function(i,e){
 			selected_service_uids.push($(e).attr('uid'));
 		});
+
+		if (window.location.href.indexOf("blank") > -1) {
+		  control_type = 'b';
+		} else {
+		  control_type = 'c';
+		}
+
 		url = window.location.href
 			.replace("/add_blank", "")
 			.replace("/add_control", "") + "/getWorksheetReferences"
 		$("#reference_samples").load(url,
 			{'service_uids': selected_service_uids.join(","),
+			 'control_type': control_type,
 			 '_authenticator': $('input[name="_authenticator"]').val()},
 			function(responseText, statusText, xhr, $form) {
 				$("#ajax_spinner").toggle(false);

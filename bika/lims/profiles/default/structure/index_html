@@ -1,6 +1,6 @@
 id: index_html
-title: Welcome to Bika LIMS 3 "Modjadji"
-description: This is release 3.0 pre-αlpha r3181
+title: Welcome to Bika LIMS 3
+description: This is release 3.0 pre-αlpha r3213 on Plone 4.1
 subject:
 relatedItems:
 location:
@@ -18,21 +18,21 @@ presentation: False
 tableContents: False
 Content-Type: text/html
 
-<p> </p>
-<p><b>Thank you for downloading Bika LIMS. Please see the <a class="internal-link" href="installation-verification">Installation Verification</a> page</b></p>
+<p>&nbsp;</p>
+<p><strong>Thank you for downloading Bika LIMS. Please see the <a class="internal-link" href="installation-verification">Installation Verification</a> page</strong></p>
 <table class="invisible three_column_table">
 <tbody>
 <tr>
 <td>
 <h2>Overview</h2>
-<p>Bika 3 <a class="external-link" href="http://www.vanhunks.com/lowveld1/modjadji1.html">Modjadji,</a> <i>The Rain Queen</i>, is Bika's long awaited upgrade to Plone 4 and SQL</p>
+<p>Bika 3 <a class="external-link" href="http://www.vanhunks.com/lowveld1/modjadji1.html">Modjadji,</a> <em>The Rain Queen</em>, is Bika's long awaited upgrade to Plone 4 and SQL</p>
 <p>In    the interest of future maintenance and performance, and  facilitating new functionality, the opportunity was used to undertake  significant code restructuring</p>
 <h3>Note to Testers</h3>
 <p>With this release, please concentrate (and try to break) the LIMS' setup and basic workflow for Samples, Analyses, Analysis Requests and Worksheets. Please do test Analysis profiles, Specifications and Worksheet templates</p>
 </td>
 <td>
 <h2 class="Subheading">Set-up data</h2>
-<p>We are finalising standardised  and open XLSX<b> </b>spreadsheets that can be used   to  populate the LIMS with setup data of  your choice. Please contribute standard setup data to guide us    in pre-populating setup data  for each of the Bika branches,  e.g. Water, Health, Interlab, etc.</p>
+<p>We are finalising standardised  and open XLSX<strong> </strong>spreadsheets that can be used   to  populate the LIMS with setup data of  your choice. Please contribute standard setup data to guide us    in pre-populating setup data  for each of the Bika branches,  e.g. Water, Health, Interlab, etc.</p>
 <h3><a class="internal-link" href="setup-data-in-this-installation">Test data</a></h3>
 <p>For the purpose of testing, we use these to populate this   instance with data of uniform   nature for for most setup items, e.g. Analysis specifications,   QC, uncertainties, turn-around time, precision, price   etc. Please see <a class="internal-link" href="setup-data-in-this-installation">Setup data used to configure this installation</a></p>
 </td>
@@ -45,52 +45,56 @@ Content-Type: text/html
 </tr>
 <tr>
 <td colspan="3">
-<p style="text-align: center; "><img alt="LIMS flow &amp; Analysis status progression" class="image-inline" src="++resource++bika.lims.images/LIMSFlowDiagram201103_600x.png" /></p>
+<p style="text-align: center;"><img class="image-inline" src="++resource++bika.lims.images/LIMSFlowDiagram201103_600x.png" alt="LIMS flow &amp; Analysis status progression" /></p>
 </td>
 </tr>
 <tr>
 <td>
 <h3>Specific to version 3.0 pre-αlpha</h3>
-<p>In this version the LIMS set-up area is ready for beta testing. New:</p>
-<p style="padding-left: 30px; "><a class="external-link" href="bika_setup/bika_calculations">Results calculations</a>,    including interim fields and dependent results, are completely user    configurable now and new calculations can be added by authorised users    without requiring programming skills</p>
-<p style="padding-left: 30px; ">All setup items can now be de-activated, which will remove them from general view while maintaining database integrity</p>
-<p style="padding-left: 30px; ">Plone    4's versioning is used to  maintain references to historical data in the    correct context, e.g.  historical Analysis Requests will reflect the    correct historical  methods, prices, units etc., after the Analysis    Service records they  reference might have been modified</p>
-<p style="padding-left: 30px; ">Plone's    change note functionality is  maintained in the Bika setup, as well as    object locking to prevent  more than 1 user editing the same item</p>
-<p>Bika's Analysis, Analysis request and Worksheet workflows were also       reworked and are now undergoing testing. Secondary cancellation     workflow was   introduced for these 'transactional' objects, to keep     cancelled   items in the background but traceable and DB integrity     intact</p>
-<p>The user interface won't show it, but further workflow separation    takes care of assigning Analyses to Worksheets, and to differentiate ARs    and Worksheets awaiting results file attachments and delaying    verification</p>
-<p>Using Ajax, Plone 4's further improved user interface and   a host of     smaller enhancements, many clicks were saved and  general    performance   improved</p>
-<p>The main Plone index, designed to index  every bit  of of the system     in CMS style, is being dismantled in favour of  more LIMS  specific   indexes   to further improve performance</p>
+<p>In this version the LIMS set-up area is ready for beta testing.&nbsp;</p>
+<div align="center"><img src="http://www.bikalabs.com/images/umhlathuze" alt="" /></div>
+<p>New items sponsored by the water quality lab at the City of uMhlathuze (COU), Richards Bay:</p>
+<blockquote>
+<a class="external-link" href="bika_setup/bika_calculations">Configurable results calculations</a>,    including interim fields and dependent results, are completely user    configurable now and new calculations can be added by authorised users    without requiring programming skills<br /><br />All setup items can now be de-activated, which will remove them from general view while maintaining database integrity<br /><br />Other COU sponsored enhancements include various worksheet and QC handling improvements and cancellation workflows for samples and analysis requests<br /><br /></blockquote>
+<p align="center">***</p>
+<p class="discreet">Plone    4's versioning is used to  maintain references to historical
+data in the    correct context, e.g.  historical Analysis Requests will
+reflect the    correct historical  methods, prices, units etc., after
+the Analysis    Service records they  reference might have been modified</p>
+<p class="discreet">Change note functionality is used in the Bika setup, as well as    object locking to prevent  more than 1 user editing the same item</p>
+<p class="discreet">Bika's Analysis, Analysis request and Worksheet workflows were reworked and are now undergoing testing. Secondary cancellation     workflow was   introduced for these 'transactional' objects, to keep     cancelled   items in the background but traceable and DB integrity     intact</p>
+<p class="discreet">The user interface won't show it, but further workflow separation    takes care of assigning Analyses to Worksheets, and to differentiate ARs    and Worksheets awaiting results file attachments and delaying    verification</p>
+<p class="discreet">Using Ajax, Plone 4's further improved user interface and   a host of     smaller enhancements, many clicks were saved and  general    performance   improved</p>
+<p class="discreet">The main Plone index, designed to index  every bit  of of the system     in CMS style, is being dismantled in favour of  more LIMS  specific   indexes   to further improve performance</p>
 </td>
 <td>
-<h3><a class="external-link" href="knowledge-centre/manual/bika-3-user-manual"><img src="maintenance_icon.png" /><i> User Manual </i></a></h3>
-<p><i>Under construction and describing new topics </i><i>at first: editable </i><i>calculations, versioning, cancellation and deactivation</i></p>
-<p><i>Inkosi LIMS 2 principles still apply, and if you are new to Bika, also consult the <a class="external-link" href="http://www.bikalabs.com/helpcentre/manual/bikalims20">Inkosi manual</a><br /></i></p>
+<h3><a class="external-link" href="knowledge-centre/manual/bika-3-user-manual"><img src="maintenance_icon.png" alt="" /><em> User Manual </em></a></h3>
+<p><em>Under construction and describing new topics </em><em>at first: editable </em><em>calculations, versioning, cancellation and deactivation</em></p>
+<p><em>Inkosi LIMS 2 principles still apply, and if you are new to Bika, also consult the <a class="external-link" href="http://www.bikalabs.com/helpcentre/manual/bikalims20">Inkosi manual</a><br /></em></p>
 <ol>
-<li> <a href="knowledge-centre/manual/bika-3-user-manual/introduction-and-overview"> <span class="state-published">Introduction and Overview</span></a> <ol>
+<li> <a href="knowledge-centre/manual/bika-3-user-manual/introduction-and-overview"> <span class="state-published">Introduction and Overview</span></a>
+<ol>
 <li> <a href="knowledge-centre/manual/bika-3-user-manual/introduction-and-overview/bikas-web-based-workflow"> <span class="state-published">Bika's web based workflow </span></a> </li>
 <li> <a href="knowledge-centre/manual/bika-3-user-manual/introduction-and-overview/icons"> <span class="state-published">Icons</span></a> </li>
-<li> <a href="knowledge-centre/manual/bika-3-user-manual/introduction-and-overview/definitions-and-acronyms"> <span class="state-published">Definitions and Acronyms</span></a> </li>
-</ol> </li>
-<li> <a href="knowledge-centre/manual/bika-3-user-manual/setup-and-configuration"> <span class="state-published">Setup and Configuration</span></a> <ol>
+<li> <a href="knowledge-centre/manual/bika-3-user-manual/introduction-and-overview/definitions-and-acronyms"> <span class="state-published">Definitions and Acronyms</span></a> </li></ol>
+</li>
+<li> <a href="knowledge-centre/manual/bika-3-user-manual/setup-and-configuration"> <span class="state-published">Setup and Configuration</span></a>
+<ol>
 <li> <a href="knowledge-centre/manual/bika-3-user-manual/setup-and-configuration/navigating-the-lims-setup"> <span class="state-published">Navigating the LIMS setup</span></a> </li>
 <li> <a href="knowledge-centre/manual/bika-3-user-manual/setup-and-configuration/de-activating-setup-items"> <span class="state-published">De-activating setup items</span></a> </li>
 <li> <a href="knowledge-centre/manual/bika-3-user-manual/setup-and-configuration/versioning"> <span class="state-published">Versioning</span></a> </li>
 <li> <a href="knowledge-centre/manual/bika-3-user-manual/setup-and-configuration/calculations"> <span class="state-published">Calculations</span></a></li>
-<li><span class="state-published"><i>....<br /></i></span></li>
-</ol> </li>
-</ol>
-<p> </p>
+<li><span class="state-published"><em>....<br /></em></span></li></ol>
+</li></ol>
+<p>&nbsp;</p>
+<h3><br /></h3>
+<p style="text-align: center;" class="callout"><strong>Micro-sponsorship appeal</strong><br /><br /><img class="image-inline" src="++resource++bika.lims.images/SFDonateButton.jpg" alt="Support the Bika FLOSS LIMS project at SourceForge.net (PayPal)" /><br />At <a class="external-link" href="https://sourceforge.net/">SourceForge.net</a>. Paypal. $10 - $250</p>
 <h3>Release notes</h3>
 <p>More information about this release can be found on the <a class="external-link" href="http://www.bikalabs.com/softwarecenter/bika">Bika LIMS project pages</a></p>
-<h3>Micro-sponsorship appeal</h3>
-<p> </p>
-<p style="text-align: center; "><img alt="Support the Bika FLOSS LIMS project at SourceForge.net (PayPal)" class="image-inline" src="++resource++bika.lims.images/SFDonateButton.jpg" /></p>
-<p style="text-align: center; ">At <a class="external-link" href="https://sourceforge.net/">SourceForge.net</a>. Paypal. $10 - $250</p>
-<p> </p>
-<p> </p>
-<p> </p>
-<p> </p>
-<p> </p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
 </td>
 <td scope="col">
 <h3 class="Subheading">Under construction</h3>
@@ -98,34 +102,31 @@ Content-Type: text/html
 <li>Setup data import (98%)</li>
 <li>Analysis, AR, Sample and Worksheet workflow cascades (90% though one never knows)</li>
 <li>Data filters on tables &amp; lists (50%)</li>
-<li>Iconography (50%)</li>
+<li>Iconography (80%)</li>
 <li>Barcoding (60%)</li>
-<li>Manual &amp; Technical documentation (10%)</li>
-</ul>
+<li>Manual &amp; Technical documentation (10%)</li></ul>
 <h3 class="Subheading">To do</h3>
 <ul>
-<li>Alerts</li>
+<li>Alerts</li><li>Column sorting<br /></li>
 <li>Instrument Interface</li>
 <li>Logs</li>
 <li>Working hours calendar</li>
 <li>PDF, SMS and Fax results publication options</li>
 <li>Reports and Queries</li>
-<li>ERP Interface</li>
-</ul>
+<li>ERP Interface</li></ul>
 <ul>
 <li>Relstorage &amp; Content Mirror</li>
-<li>Invoices</li>
-</ul>
+<li>Invoices</li></ul>
 <h3 class="Subheading">Known Bugs</h3>
 <p>It works everywhere else, but  on Windows Firefox installations,   clicking an Analysis Profile when  creating ARs, does not stick. Please   use the keyboard arrows and  [Enter] key to select a Profile. Dragging   the cursor down onto the  desired Profile without clicking also works</p>
-<p> </p>
+<p>&nbsp;</p>
 <p>Thank you for your support</p>
 <p>The Bika team</p>
 <p><a href="mailto:info@bikalabs.com" target="_self">info@bikalabs.com</a></p>
-<p> </p>
-<p><img alt="Bika Open Source LIMS - Tell it as it is" class="image-inline" src="++resource++bika.lims.images/bikalabstellit200x.png" style="float: left; " /></p>
-<p> </p>
-<p> </p>
+<p>&nbsp;</p>
+<p><img style="float: left;" class="image-inline" src="++resource++bika.lims.images/bikalabstellit200x.png" alt="Bika Open Source LIMS - Tell it as it is" /></p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
 </td>
 </tr>
 </tbody>

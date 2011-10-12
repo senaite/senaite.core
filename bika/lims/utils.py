@@ -59,6 +59,9 @@ def TimeOrDate(context, datetime, long_format=False):
             return datetime.asdatetime().strftime(localTimeOnlyFormat)
         else:
             return datetime.asdatetime().strftime(localTimeFormat)
+        datetime = datetime.replace("PM","pm").replace("AM","am")
+        if len(datetime) > 10:
+            datetime = datetime.replace("12:00 am","")
     return datetime
 
 # encode_header function copied from roundup's rfc2822 package.

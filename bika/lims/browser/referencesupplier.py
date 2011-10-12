@@ -11,7 +11,7 @@ class ReferenceSamplesView(BikaListingView):
     show_editable_border = True
     show_filters = False
     show_sort_column = False
-    show_select_row = True
+    show_select_row = False
     show_select_column = True
     pagesize = 50
 

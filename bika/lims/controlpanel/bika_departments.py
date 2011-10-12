@@ -54,7 +54,7 @@ class DepartmentsView(BikaListingView):
                          'Manager',
                          'ManagerPhone',
                          'ManagerEmail']},
-            {'title': _('Inactive'), 'id':'inactive',
+            {'title': _('Dormant'), 'id':'inactive',
              'contentFilter': {'inactive_state': 'inactive'},
              'transitions': ['activate',],
              'columns': ['Title',

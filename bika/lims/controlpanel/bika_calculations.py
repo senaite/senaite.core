@@ -45,7 +45,7 @@ class CalculationsView(BikaListingView):
              'contentFilter': {'inactive_state': 'active'},
              'transitions': ['deactivate'],
                      'columns': ['Title', 'Description', 'Formula']},
-            {'title': _('Inactive'), 'id':'inactive',
+            {'title': _('Dormant'), 'id':'inactive',
              'contentFilter': {'inactive_state': 'inactive'},
              'transitions': ['activate',],
                      'columns': ['Title', 'Description', 'Formula']},

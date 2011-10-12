@@ -38,7 +38,7 @@
 						<tal:options
 							repeat="position view/getAvailablePositions">
 							<option
-								value="position"
+								tal:attributes="value position"
 								tal:content="position"/>
 						</tal:options>
 						<option

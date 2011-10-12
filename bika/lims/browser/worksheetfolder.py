@@ -116,8 +116,11 @@ class WorksheetFolderListingView(BikaListingView):
                 items[x]['Analyst'] = mtool.getMemberById(analyst).getProperty('fullname')
             else:
                 items[x]['Analyst'] = ''
-            items[x]['Template'] = obj.getWorksheetTemplate() and \
-                obj.getWorksheetTemplate().Title() or ''
+            wst = obj.getWorksheetTemplate()
+            items[x]['Template'] = wst and wst.Title() or ''
+            if wst:
+                items[x]['replace']['Template'] = "<a href='%s'>%s</a>" % \
+                     (wst.absolute_url(), wst.Title())
             items[x]['Analyses'] = len(obj.getAnalyses())
             items[x]['CreationDate'] = TimeOrDate(self.context, obj.creation_date)
             if len(obj.getLayout()) > 0:

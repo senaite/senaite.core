@@ -19,6 +19,9 @@
     line-height: 1em;
     margin: 0 0.25em 1em;
 }
+#content h1 {
+    margin-top: .1em;
+}
 dl.portalMessage {
     margin-top:0;
 }
@@ -51,7 +54,12 @@ table.invisible td, table.invisible th, table.plain td, table.plain th, table.li
 dl.portlet ul.navTreeLevel0 > .navTreeItem {
 	line-height: 1.5em;
 }
-
+#content-core {
+  margin-top:.5em !important;
+}
+.folderlisting-main-table {
+  margin-top:.5em;
+}
 
 /************ columns.css overrides */
 

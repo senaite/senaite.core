@@ -187,10 +187,11 @@ class WorksheetAnalysesView(AnalysesView):
     def folderitems(self):
         self.contentsMethod = self.context.getFolderContents
         items = AnalysesView.folderitems(self)
-        pos = 0
+        layout = self.context.getLayout()
         for x, item in enumerate(items):
             obj = item['obj']
-            pos += 1
+            pos = int([slot['position'] for slot in layout if \
+                   slot['container_uid']==obj.aq_parent.UID()][0])
             items[x]['Pos'] = pos
             service = obj.getService()
             items[x]['Category'] = service.getCategory().Title()
@@ -223,27 +224,13 @@ class WorksheetAnalysesView(AnalysesView):
                     (self.context.absolute_url())
             elif obj.portal_type == 'ReferenceAnalysis':
                 if obj.ReferenceType == 'b':
-                    items[x]['after']['Service'] = '<img title="Blank"  width="16" height="16" src="%s/++resource++bika.lims.images/blank.png"/>' % \
+                    items[x]['after']['Pos'] = '<img title="Blank"  width="16" height="16" src="%s/++resource++bika.lims.images/blank.png"/>' % \
                         (self.context.absolute_url())
                 else:
-                    items[x]['after']['Service'] = '<img title="Control" width="16" height="16" src="%s/++resource++bika.lims.images/control.png"/>' % \
+                    items[x]['after']['Pos'] = '<img title="Control" width="16" height="16" src="%s/++resource++bika.lims.images/control.png"/>' % \
                         (self.context.absolute_url())
-        # order the analyses into the worksheet.Layout parent ordering
-        # and renumber their positions.
-        layout = self.context.getLayout()
-        items_by_parent = {}
-        for item in items:
-            obj = item['obj']
-            parent_uid = obj.aq_parent.UID()
-            item['Pos'] = [l['position'] for l in layout \
-                           if l['container_uid'] == parent_uid][0]
-            if parent_uid in items_by_parent:
-                items_by_parent[parent_uid].append(item)
-            else:
-                items_by_parent[parent_uid] = [item, ]
-        items = []
-        for slot in layout:
-            items += items_by_parent[slot['container_uid']]
+        items = sorted(items, key=itemgetter('Service'))
+        items = sorted(items, key=itemgetter('Pos'))
         return items
 
 class ManageResultsView(BrowserView):
@@ -380,8 +367,8 @@ class AddBlankView(BrowserView):
         self.description = _("Select services in the left column.  A list of " \
                             "Blank Reference Samples which specify standard " \
                             "results for the selected services will be " \
-                            "displayed.  Select the reference sample to use, "
-                            "and the position in which it will be inserted.")
+                            "displayed.  Select a reference by clicking it in " \
+                            "the list.")
 
     def __call__(self):
         self.Services = WorksheetServicesView(self.context, self.request)
@@ -403,55 +390,38 @@ class AddBlankView(BrowserView):
                                       slot['type'] == 'b']
         return available_positions
 
-class AddControlView(BikaListingView):
-    contentFilter = {'portal_type': 'Analysis',
-                     'review_state':'sample_received'}
-    content_add_actions = {}
-    show_editable_border = True
-    show_table_only = True
-    show_sort_column = False
-    show_select_row = False
-    show_select_column = True
-    show_filters = False
-    pagesize = 20
+class AddControlView(BrowserView):
+    implements(IViewView)
+    template = ViewPageTemplateFile("templates/worksheet_add_control.pt")
 
-    columns = {
-        'Client': {'title': _('Client')},
-        'Order': {'title': _('Order')},
-        'RequestID': {'title': _('Request ID')},
-        'Category': {'title': _('Category')},
-        'Analysis': {'title': _('Analysis')},
-        'DateReceived': {'title': _('Analysis')},
-        'Due': {'title': _('Analysis')},
-    }
-    review_states = [
-        {'title': _('All'), 'id':'all',
-         'columns':['Client',
-                    'Order',
-                    'RequestID',
-                    'Category',
-                    'Analysis',
-                    'DateReceived',
-                    'Due'],
-         'buttons':[{'cssclass': 'context',
-                     'title': _('Add to worksheet'),
-                     'url': ''}]
-        },
-    ]
+    def __init__(self, context, request):
+        BrowserView.__init__(self, context, request)
+        self.title = "%s: %s" % (context.Title(), _("Add Control Reference Analysis"))
+        self.description = _("Select services in the left column.  A list of " \
+                            "Control Reference Samples which specify standard " \
+                            "results for the selected services will be " \
+                            "displayed.  Select a reference by clicking it in " \
+                            "the list.")
 
-    def folderitems(self):
-        items = BikaListingView.folderitems(self)
-        for x in range(len(items)):
-            if not items[x].has_key('obj'): continue
-            obj = items[x]['obj']
-            items[x]['Title'] = obj.Title()
-            items[x]['Owner'] = obj.obj.getOwnerTuple()[1]
-            items[x]['CreationDate'] = obj.CreationDate() and \
-                 TimeOrDate(self.context, obj.CreationDate()) or ''
-            items[x]['replace']['Title'] = "<a href='%s'>%s</a>" % \
-                 (items[x]['url'], items[x]['Title'])
+    def __call__(self):
+        self.Services = WorksheetServicesView(self.context, self.request)
+        return self.template()
 
-        return items
+    def getAvailablePositions(self):
+        """ Return 'c' control positions defined by the worksheettemplate
+            if the worksheet doesn't already have a control reference there
+        """
+        positions = []
+        layout = self.context.getLayout()
+        used_positions = [slot['position'] for slot in layout \
+                          if slot['container_uid']]
+        wst = self.context.getWorksheetTemplate()
+        if wst:
+            wstlayout = wst.getLayout()
+            available_positions = [slot['pos'] for slot in wstlayout \
+                                   if slot['pos'] not in used_positions and \
+                                      slot['type'] == 'c']
+        return available_positions
 
 class AddDuplicateView(BikaListingView):
     contentFilter = {'portal_type': 'Analysis', 'review_state':'sample_received'}
@@ -549,6 +519,10 @@ class WorksheetServicesView(BikaListingView):
         for k,v in services.items():
             path = hasattr(v['obj'], 'getPath') and v['obj'].getPath() or \
                  "/".join(v['obj'].getPhysicalPath())
+            # if the service has dependencies, it can't have reference analyses
+            calculation = v['obj'].getCalculation()
+            if calculation and calculation.getDependentServices():
+                continue
             # this folderitems doesn't subclass from the bika_listing.py
             # version, so there's lots of other stuff we have to insert here
             item = {
@@ -604,6 +578,8 @@ class ajaxGetWorksheetReferences(ReferenceSamplesView):
         self.pagesize = 100
         # must set service_uids in __call__ before delegating to super
         self.service_uids = []
+        # must set control_type='b' or 'c' in __call__ before delegating
+        self.control_type = ""
         self.columns['Services'] = {'title': _('Services')}
         self.review_states = [
             {'title': _('All'), 'id':'all',
@@ -628,7 +604,8 @@ class ajaxGetWorksheetReferences(ReferenceSamplesView):
         for x in range(len(items)):
             if not items[x].has_key('obj'): continue
             obj = items[x]['obj']
-            if not obj.getBlank(): continue
+            if self.control_type == 'b' and not obj.getBlank(): continue
+            if self.control_type == 'c' and obj.getBlank(): continue
             ref_services = obj.getServices()
             ws_ref_services = [rs for rs in ref_services if \
                                rs.UID() in self.service_uids]
@@ -651,6 +628,9 @@ class ajaxGetWorksheetReferences(ReferenceSamplesView):
 
     def __call__(self):
         self.service_uids = self.request.get('service_uids', '').split(",")
+        self.control_type = self.request.get('control_type', '')
+        if not self.control_type:
+            return _("No control type specified")
         return super(ajaxGetWorksheetReferences, self).contents_table()
 
 class ajaxAddReferenceAnalyses(BrowserView):
@@ -663,26 +643,52 @@ class ajaxAddReferenceAnalyses(BrowserView):
         plone.protect.PostOnly(self.request)
         plone.protect.CheckAuthenticator(self.request)
 
+        reference_uid = self.request.get('reference_uid', '')
+        if not reference_uid:
+            return
+
+        analyses = self.context.getAnalyses()
+        layout = self.context.getLayout()
+        wst = self.context.getWorksheetTemplate()
+        wstlayout = wst and wst.getLayout() or []
+
         position = self.request.position
-
+        highest_existing_position = len(wstlayout)
+        for pos in [int(slot['position']) for slot in layout]:
+            if pos > highest_existing_position:
+                highest_existing_position = pos
+        if position == 'new':
+            position = highest_existing_position + 1
         service_uids = self.request.service_uids.split(",")
-
-        reference = rc.lookupObject(self.request.reference_uid)
+        reference = rc.lookupObject(reference_uid)
         ref_type = reference.getBlank() and 'b' or 'c'
 
-        ref_analysis_uids = []
+        # If the reference sample already has a slot, get a list of services
+        # that exist there, so as not to duplicate them
+        existing_services_in_pos = []
+        parent = [slot['container_uid'] for slot in layout if \
+                      slot['container_uid'] == reference_uid]
+        if parent:
+            for analysis in analyses:
+                if analysis.aq_parent.UID() == reference_uid:
+                    existing_services_in_pos.append(analysis.UID())
 
+        ref_analysis_uids = []
         for service_uid in service_uids:
+            if service_uid in existing_services_in_pos:
+                continue
             ref_uid = reference.addReferenceAnalysis(service_uid, ref_type)
             ref_analysis_uids.append(ref_uid)
 
         self.context.setLayout(
-            self.context.getLayout() + [{'position' : position,
-                                        'container_uid' : reference.UID()},])
+            layout + [{'position' : position,
+                       'container_uid' : reference.UID()},])
         self.context.setAnalyses(
             self.context.getAnalyses() + ref_analysis_uids)
 
-        if ref_type == 'b':
+        if not ref_analysis_uids:
+            message = _('No reference analyses were created')
+        elif ref_type == 'b':
             message = _('Blank analysis has been assigned')
         else:
             message = _('Control analysis has been assigned')
