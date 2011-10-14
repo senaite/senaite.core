@@ -260,6 +260,12 @@ jQuery( function($) {
 		recalc_prices();
 	};
 
+	function unsetARProfile(column){
+		$.each($('input[name^="ar.'+column+'.Analyses"]'), function(){
+			if($(this).attr("checked")) $(this).attr("checked", "");
+		});
+	}
+
 	function setARProfile(){
 		profileUID = $(this).val();
 		column = $(this).attr("column");
@@ -302,12 +308,6 @@ jQuery( function($) {
 		}
 	}
 
-	function unsetARProfile(column){
-		$.each($('input[name^="ar.'+column+'.Analyses"]'), function(){
-			if($(this).attr("checked")) $(this).attr("checked", "");
-		});
-	}
-
 	function autocomplete_sampletype(request,callback){
 		$.getJSON('ajax_sampletypes', {'term':request.term}, function(data,textStatus){
 			callback(data);
@@ -339,7 +339,7 @@ jQuery( function($) {
 
 		$(".copyButton").live('click',  function (){
 			field_name = $(this).attr("name");
-			if ($(this).hasClass('ARProfile')){ // Profile selector
+			if ($(this).hasClass('ARProfileCopyButton')){ // Profile selector
 				first_val = $('#ar_0_ARProfile').val();
 				for (col=1; col<parseInt($("#col_count").val()); col++) {
 					$("#ar_"+col+"_ARProfile").val(first_val);

@@ -792,8 +792,8 @@ class ajaxAnalysisRequestSubmit():
 
                     if came_from == "add" and field == "SampleID":
                         if not pc(portal_type = 'Sample',
-                                  inactive_state = 'active',
-                                  getSampleID = ar[field]):
+                                  cancellation_state = 'active',
+                                  id = ar[field]):
                             error(field,
                                   column,
                                   '%s is not a valid sample ID' % ar[field])
@@ -854,8 +854,8 @@ class ajaxAnalysisRequestSubmit():
                     # Secondary AR
                     sample_id = values['SampleID']
                     sample_proxy = pc(portal_type = 'Sample',
-                                      inactive_state = 'active',
-                                      getSampleID = sample_id)
+                                      cancellation_state = 'active',
+                                      id = sample_id)
                     assert len(sample_proxy) == 1
                     sample = sample_proxy[0].getObject()
                     ar_number = sample.getLastARNumber() + 1

@@ -62,7 +62,7 @@
 </tal:i>
 
 <table summary="Add analysis requests"
-    class="listing analysisrequest add nosort"
+    class="listing analysisrequest ar_add add nosort"
     cellpadding="0" cellspacing="0">
 <thead>
     <!-- Contact -->
@@ -112,11 +112,11 @@
     <tr tal:define="field_name string:ARProfile">
         <th colspan="2" i18n:translate="label_arprofiles">Profile</th>
         <td>
-            <img class="copyButton ARProfile" tal:condition="not: edit"
+            <img class="copyButton ARProfileCopyButton" tal:condition="not: edit"
                 tal:attributes="name field_name;src string:${portal/absolute_url}/++resource++bika.lims.images/copy.png"/>
         </td>
         <tal:block repeat="column python:range(view.col_count)">
-            <td class="topborder" tal:define="input_name string:ar.${column}.${field_name}:ignore_empty:record;
+            <td class="topborder ar_column" tal:define="input_name string:ar.${column}.${field_name}:ignore_empty:record;
                 input_id string:ar_${column}_${field_name}">
                 <select tal:attributes="
                     class field_name;

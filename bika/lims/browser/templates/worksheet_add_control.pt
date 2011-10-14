@@ -43,7 +43,8 @@
 						</tal:options>
 						<option
 							value="new"
-							tal:content="string:new"/>
+							tal:content="string:new or existing"
+							i18n:translate=""/>
 					</select>
 					<span class="worksheet_add_control_spinner">
 						<img id="ajax_spinner" style="display:none" tal:attributes="src python:portal.absolute_url()+ '/images/spinner.gif';"/>

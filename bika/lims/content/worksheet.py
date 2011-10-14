@@ -61,7 +61,10 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
     def getFolderContents(self, contentFilter):
         # The bika_listing machine passes contentFilter to all
         # contentsMethod methods.  We ignore it.
-        return self.getAnalyses()
+        analyses = list(self.getAnalyses())
+        dups = [o for o in self.objectValues() if \
+                o.portal_type == "DuplicateAnalysis"]
+        return analyses + dups
 
     security.declareProtected(AddAndRemoveAnalyses, 'addAnalysis')
     def addAnalysis(self, analysis):
@@ -123,6 +126,93 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             if not slot['container_uid'] in parents:
                 Layout.remove(slot)
         self.setLayout(Layout)
+
+    def addReferenceAnalyses(self, position, reference, service_uids):
+        """ Add reference analyses to reference, and add to worksheet layout
+        """
+        wf = getToolByName(self, 'portal_workflow')
+        rc = getToolByName(self, 'reference_catalog')
+
+        analyses = self.getAnalyses()
+        layout = self.getLayout()
+        wst = self.getWorksheetTemplate()
+        wstlayout = wst and wst.getLayout() or []
+
+        ref_type = reference.getBlank() and 'b' or 'c'
+
+        # discover valid worksheet position for the reference sample
+        highest_existing_position = len(wstlayout)
+        for pos in [int(slot['position']) for slot in layout]:
+            if pos > highest_existing_position:
+                highest_existing_position = pos
+        if position == 'new':
+            position = highest_existing_position + 1
+
+        # If the reference sample already has a slot, get a list of services
+        # that exist there, so as not to duplicate them
+        existing_services_in_pos = []
+        parent = [slot['container_uid'] for slot in layout if \
+                      slot['container_uid'] == reference.UID()]
+        if parent:
+            for analysis in analyses:
+                if analysis.aq_parent.UID() == reference.UID():
+                    existing_services_in_pos.append(analysis.getService().UID())
+
+        ref_analyses = []
+        for service_uid in service_uids:
+            if service_uid in existing_services_in_pos:
+                continue
+            ref_uid = reference.addReferenceAnalysis(service_uid, ref_type)
+            reference_analysis = rc.lookupObject(ref_uid)
+            ref_analyses.append(reference_analysis)
+
+        if ref_analyses:
+            self.setLayout(
+                layout + [{'position' : position,
+                           'container_uid' : reference.UID()},])
+            self.setAnalyses(
+                self.getAnalyses() + ref_analyses)
+        return ref_analyses
+
+    security.declareProtected(AddAndRemoveAnalyses, 'addDuplicateAnalyses')
+    def addDuplicateAnalyses(self, src_slot, dest_slot):
+        """ add duplicate analyses to worksheet
+        """
+        rc = getToolByName(self, REFERENCE_CATALOG)
+        wf = getToolByName(self, 'portal_workflow')
+
+        analyses = self.getAnalyses()
+        src_parent = [p['container_uid'] for p in layout if \
+                      p['position'] == src_slot]
+        src_analyses = [a for a in analyses if \
+                        a.aq_parent.UID() == src_paremt.UID()]
+
+        wsdups = [o for o in self.objectValues() if \
+                   o.portal_type == 'DuplicateAnalysis']
+        wsdup_src_uids = [d.getAnalysis().UID for d in wsdups]
+
+        new_dups = []
+        for analysis in src_analyses:
+            # if the duplicate already exists do nothing
+            if analysis.UID() in wsdup_src_uids:
+                continue
+            service = analysis.getService()
+            keyword = service.getKeyword()
+            duplicate_id = self.generateUniqueId('DuplicateAnalysis')
+            self.invokeFactory('DuplicateAnalysis', id = duplicate_id)
+            duplicate = self[duplicate_id]
+            duplicate.setAnalysis(analysis)
+            duplicate.processForm()
+            wf.doActionFor(duplicate, 'assign')
+            new_dups.append(duplicate)
+
+        if new_dups:
+            message = _('Duplicate analyses assigned')
+        else:
+            message = _('No duplicate analysis assigned')
+
+        self.plone_utils.addPortalMessage(message)
+        return new_dups
 
     def getInstrumentExports(self):
         """ return the possible instrument export formats """
@@ -359,42 +449,6 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             REQUEST = REQUEST, RESPONSE = RESPONSE,
             template_id = 'manage_results')
 
-    security.declareProtected(AddAndRemoveAnalyses, 'assignDuplicate')
-    def assignDuplicate(self, AR = None, Position = None, Service = [], REQUEST = None, RESPONSE = None):
-        """ assign selected analyses to worksheet
-        """
-        if not AR or not Position or not Service:
-            message = self.translate('message_no_dup_assigned',
-                                     default = 'No duplicate analysis assigned',
-                                     domain = 'bika')
-        else:
-            rc = getToolByName(self, REFERENCE_CATALOG)
-            wf = getToolByName(self, 'portal_workflow')
-
-            ar = rc.lookupObject(AR)
-            duplicates = []
-            for service_uid in Service:
-                service = rc.lookupObject(service_uid)
-                service_id = service.getKeyword()
-                analysis = ar[service_id]
-                duplicate_id = self.generateUniqueId('DuplicateAnalysis')
-                self.invokeFactory('DuplicateAnalysis', id = duplicate_id)
-                duplicate = self[duplicate_id]
-                duplicate.setAnalysis(analysis)
-                duplicate.processForm()
-                wf.doActionFor(duplicate, 'assign')
-                duplicates.append(duplicate.UID())
-
-            self._addToSequence('d', int(Position), duplicates)
-
-            message = self.translate('message_dups_assigned',
-                                     default = 'Duplicate analyses assigned',
-                                     domain = 'bika')
-
-        self.plone_utils.addPortalMessage(message)
-
-        if REQUEST:
-            RESPONSE.redirect('%s/manage_results' % self.absolute_url())
 
     security.declareProtected(AddAndRemoveAnalyses, 'resequenceWorksheet')
     def resequenceWorksheet(self, REQUEST = None, RESPONSE = None):

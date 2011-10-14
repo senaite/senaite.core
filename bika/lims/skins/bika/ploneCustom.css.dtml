@@ -132,6 +132,12 @@ div.position-1\:4 {
 #listing-table .state-sample_due {
 	color: #2bb800;
 }
+#listing-table .state-empty-worksheet {
+	color: #b1b1b1;
+}
+#listing-table .state-empty-worksheet .empty {
+	font-weight: bold;
+}
 
 #listing-table td {
 	vertical-align:bottom;
@@ -190,8 +196,16 @@ table.analysisrequest {
 	border-top: 1px solid #dddddd;
 }
 
+table.ar_add{
+	width:100%;
+}
+
 table.add td {
     text-align: center;
+	border-bottom:1px solid #eee;
+}
+table.add td.ar_column {
+    width:8em;
 }
 
 table.analysisrequest .pointofcapture th {
@@ -204,7 +218,7 @@ table.analysisrequest .pointofcapture th {
 }
 
 .ARProfile {
-  width: 100%;
+  width: 95%;
 }
 
 /* silly table border games */

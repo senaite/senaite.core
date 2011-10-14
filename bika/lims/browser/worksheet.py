@@ -203,13 +203,19 @@ class WorksheetAnalysesView(AnalysesView):
                 sample = obj.getSample()
                 sample_icon = "<a href='%s'><img title='Sample: %s' src='++resource++bika.lims.images/sample.png'></a>" % \
                     (sample.absolute_url(), sample.Title())
+                items[x]['replace']['getRequestID'] = "<a href='%s'>%s</a>%s" % \
+                     (ar.absolute_url(), ar.Title(), sample_icon)
             elif ar.portal_type == 'ReferenceSample':
                 sample_icon = "<a href='%s'><img title='Reference: %s' src='++resource++bika.lims.images/referencesample.png'></a>" % \
                     (ar.absolute_url(), ar.Title())
-            else:
-                sample_icon = ''
-            items[x]['replace']['getRequestID'] = "<a href='%s'>%s</a>%s" % \
-                 (ar.absolute_url(), ar.Title(), sample_icon)
+                items[x]['replace']['getRequestID'] = "<a href='%s'>%s</a>%s" % \
+                     (ar.absolute_url(), ar.Title(), sample_icon)
+            elif ar.portal_type == 'Worksheet':
+                sample = obj.getSample()
+                sample_icon = "<a href='%s'><img title='Sample: %s' src='++resource++bika.lims.images/sample.png'></a>" % \
+                    (sample.absolute_url(), sample.Title())
+                items[x]['replace']['getRequestID'] = "<a href='%s'>%s</a>%s" % \
+                     (obj.getAnalysis().aq_parent.absolute_url(), ar.Title(), sample_icon)
 
             items[x]['replace']['Client'] = "<a href='%s'>%s</a>" % \
                  (client.absolute_url(), client.Title())
@@ -643,50 +649,24 @@ class ajaxAddReferenceAnalyses(BrowserView):
         plone.protect.PostOnly(self.request)
         plone.protect.CheckAuthenticator(self.request)
 
-        reference_uid = self.request.get('reference_uid', '')
-        if not reference_uid:
+        # parse request
+        service_uids = self.request.get('service_uids', '').split(",")
+        if not service_uids:
             return
-
-        analyses = self.context.getAnalyses()
-        layout = self.context.getLayout()
-        wst = self.context.getWorksheetTemplate()
-        wstlayout = wst and wst.getLayout() or []
-
-        position = self.request.position
-        highest_existing_position = len(wstlayout)
-        for pos in [int(slot['position']) for slot in layout]:
-            if pos > highest_existing_position:
-                highest_existing_position = pos
-        if position == 'new':
-            position = highest_existing_position + 1
-        service_uids = self.request.service_uids.split(",")
+        position = self.request.get('position', '')
+        if not position:
+            return
+        reference_uid = self.request.get('reference_uid', '')
         reference = rc.lookupObject(reference_uid)
+        if not reference:
+            return
         ref_type = reference.getBlank() and 'b' or 'c'
 
-        # If the reference sample already has a slot, get a list of services
-        # that exist there, so as not to duplicate them
-        existing_services_in_pos = []
-        parent = [slot['container_uid'] for slot in layout if \
-                      slot['container_uid'] == reference_uid]
-        if parent:
-            for analysis in analyses:
-                if analysis.aq_parent.UID() == reference_uid:
-                    existing_services_in_pos.append(analysis.getService().UID())
+        ref_analyses = self.context.addReferenceAnalyses(position,
+                                                         reference,
+                                                         service_uids)
 
-        ref_analysis_uids = []
-        for service_uid in service_uids:
-            if service_uid in existing_services_in_pos:
-                continue
-            ref_uid = reference.addReferenceAnalysis(service_uid, ref_type)
-            ref_analysis_uids.append(ref_uid)
-
-        self.context.setLayout(
-            layout + [{'position' : position,
-                       'container_uid' : reference.UID()},])
-        self.context.setAnalyses(
-            self.context.getAnalyses() + ref_analysis_uids)
-
-        if not ref_analysis_uids:
+        if not ref_analyses:
             message = _('No reference analyses were created')
         elif ref_type == 'b':
             message = _('Blank analysis has been assigned')

@@ -112,16 +112,20 @@ class WorksheetFolderListingView(BikaListingView):
             items[x]['Title'] = obj.Title()
             items[x]['Owner'] = obj.getOwnerTuple()[1]
             analyst = obj.getAnalyst().strip()
-            if analyst:
+            try:
                 items[x]['Analyst'] = mtool.getMemberById(analyst).getProperty('fullname')
-            else:
-                items[x]['Analyst'] = ''
+            except:
+                items[x]['Analyst'] = analyst
             wst = obj.getWorksheetTemplate()
             items[x]['Template'] = wst and wst.Title() or ''
             if wst:
                 items[x]['replace']['Template'] = "<a href='%s'>%s</a>" % \
                      (wst.absolute_url(), wst.Title())
-            items[x]['Analyses'] = len(obj.getAnalyses())
+            items[x]['Analyses'] = str(len(obj.getAnalyses()))
+            if items[x]['Analyses'] == '0':
+                items[x]['table_row_class'] = 'state-empty-worksheet'
+                items[x]['Analyses'] = _("None")
+                items[x]['class']['Analyses'] = "empty"
             items[x]['CreationDate'] = TimeOrDate(self.context, obj.creation_date)
             if len(obj.getLayout()) > 0:
                 items[x]['replace']['Title'] = "<a href='%s/manage_results'>%s</a>" % \
@@ -144,10 +148,14 @@ class AddWorksheetView(BrowserView):
         rc = getToolByName(self.context, "reference_catalog")
         pc = getToolByName(self.context, "portal_catalog")
         wf = getToolByName(self.context, "portal_workflow")
+        pm = getToolByName(self.context, "portal_membership")
 
         ws_id = self.context.generateUniqueId('Worksheet')
         self.context.invokeFactory(id = ws_id, type_name = 'Worksheet')
         ws = self.context[ws_id]
+
+        # Current member as analyst
+        ws.setAnalyst(pm.getAuthenticatedMember().getProperty('fullname'))
 
         # overwrite saved context UID for event subscribers
         self.request['context_uid'] = ws.UID()
@@ -200,8 +208,7 @@ class AddWorksheetView(BrowserView):
 
         # find best maching reference samples for Blanks and Controls
         for t in ('b', 'c'):
-            if t == 'b': form_key = 'blank_ref'
-            else: form_key = 'control_ref'
+            form_key = t == 'b' and 'blank_ref' or 'control_ref'
             for row in [r for r in wstlayout if r['type'] == t]:
                 reference_definition_uid = row[form_key]
                 reference_definition = rc.lookupObject(reference_definition_uid)
@@ -212,7 +219,7 @@ class AddWorksheetView(BrowserView):
                 if not samples:
                     self.context.translate(
                         "message_no_references_found",
-                        mapping = {'position':available_positions[0],
+                        mapping = {'position':row['pos'],
                                  'definition':reference_definition and \
                                  reference_definition.Title() or ''},
                         default = "No reference samples found for " +\
@@ -220,7 +227,10 @@ class AddWorksheetView(BrowserView):
                         domain = "bika.lims")
                     break
                 samples = [s.getObject() for s in samples]
-                samples = [s for s in samples if s.getBlank == True]
+                if t == 'b':
+                    samples = [s for s in samples if s.getBlank()]
+                else:
+                    samples = [s for s in samples if not s.getBlank()]
                 complete_reference_found = False
                 references = {}
                 for reference in samples:
@@ -237,8 +247,9 @@ class AddWorksheetView(BrowserView):
                         complete_reference_found = True
                         break
                 if complete_reference_found:
-                    ws.addAnalysis(reference)
-                    wf.doActionFor(reference, 'assign')
+                    ws.addReferenceAnalyses(int(row['pos']),
+                                            reference,
+                                            wst_service_uids)
                 else:
                     # find the most complete reference sample instead
                     these_services = wst_service_uids
@@ -250,20 +261,18 @@ class AddWorksheetView(BrowserView):
                             no_of_services = references[key]['count']
                             reference = key
                     if reference:
-                        ws.addAnalysis(reference)
-                        wf.doActionFor(reference, 'assign')
+                        ws.addReferenceAnalyses(int(row['pos']),
+                                                rc.lookupObject(reference),
+                                                wst_service_uids)
 
         # fill duplicate positions
-##        if count_d:
-##            for row in wstlayout:
-##                if row['type'] == 'd':
-##                    position = int(row['pos'])
-##                    duplicated_position = int(row['dup'])
-##                    if duplicate_position in [l[0] for l in ws.getLayout()]:
-##                        dup_analysis = ws.createDuplicateAnalyis()
-##                            AR = used_ars[dup_pos]['ar'],
-##                            Position = position,
-##                            Service = used_ars[dup_pos]['serv'])
+        layout = ws.getLayout()
+        for row in [r for r in wstlayout if r['type'] == 'd']:
+            dest_pos = int(row['pos'])
+            src_pos = int(row['dup'])
+            if src_pos in [slot['position'] for slot in layout]:
+                ws.addDuplicateAnalyses(src_pos, dest_pos)
+
         ws.processForm()
         if ws.getLayout():
             self.request.RESPONSE.redirect(ws.absolute_url() + "/manage_results")
