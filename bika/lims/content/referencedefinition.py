@@ -1,5 +1,4 @@
-"""ReferenceDefinition represents a Reference Definition or sample type used for
-    quality control testing
+"""Reference Definitions represent standard specifications for reference samples used in quality control
 """
 from AccessControl import ClassSecurityInfo
 from DateTime import DateTime
