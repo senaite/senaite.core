@@ -99,17 +99,22 @@ class ClientAnalysisRequestsView(BikaListingView):
                               'sort_order': 'reverse'}
         wf = getToolByName(self.context, 'portal_workflow')
         self.review_state = 'all'
+
         self.content_add_actions = {}
+
+        # add actions enabled only for active clients
         if wf.getInfoFor(self.context, 'inactive_state', '') == 'active':
             self.content_add_actions[_('Analysis Request')] = \
                 "analysisrequest_add"
 
+        # client contact required
         active_contacts = [c for c in context.objectValues('Contact') if \
                            wf.getInfoFor(c, 'inactive_state', '') == 'active']
         if context.portal_type == "Client" and not active_contacts:
             self.content_add_actions = {}
             self.context.plone_utils.addPortalMessage(
                 _("Client contact required before request may be submitted"))
+
         self.show_editable_border = True
         self.show_sort_column = False
         self.show_select_row = False

@@ -15,6 +15,7 @@ import plone, json
 class WorksheetFolderListingView(BikaListingView):
     contentFilter = {'portal_type': 'Worksheet',
                      'review_state':['open','to_be_verified','verified','rejected'],
+                     'cancellation_state':'active',
                      'sort_on':'id',
                      'sort_order': 'reverse'}
     content_add_actions = {_('Worksheet'): "worksheet_add"}
@@ -39,8 +40,10 @@ class WorksheetFolderListingView(BikaListingView):
                 {'title': _('All'), 'id':'all',
                  'contentFilter': {'portal_type': 'Worksheet',
                                    'review_state':['open','to_be_verified','verified','rejected'],
+                                   'cancellation_state':'active',
                                    'sort_on':'id',
                                    'sort_order': 'reverse'},
+                 'transitions':[],
                  'columns':['Title',
                             'Owner',
                             'Analyst',
@@ -51,8 +54,10 @@ class WorksheetFolderListingView(BikaListingView):
                 {'title': _('Worksheet Open'), 'id':'open',
                  'contentFilter': {'portal_type': 'Worksheet',
                                    'review_state':'open',
+                                   'cancellation_state':'active',
                                    'sort_on':'id',
                                    'sort_order': 'reverse'},
+                 'transitions':[],
                  'columns':['Title',
                             'Owner',
                             'Analyst',
@@ -65,6 +70,7 @@ class WorksheetFolderListingView(BikaListingView):
                                    'review_state':'to_be_verified',
                                    'sort_on':'id',
                                    'sort_order': 'reverse'},
+                 'transitions':[],
                  'columns':['Title',
                             'Owner',
                             'Analyst',
@@ -77,6 +83,20 @@ class WorksheetFolderListingView(BikaListingView):
                                    'review_state':'verified',
                                    'sort_on':'id',
                                    'sort_order': 'reverse'},
+                 'transitions':[],
+                 'columns':['Title',
+                            'Owner',
+                            'Analyst',
+                            'Template',
+                            'Analyses',
+                            'CreationDate',
+                            'state_title']},
+                {'title': _('Cancelled'), 'id':'cancelled',
+                 'contentFilter': {'portal_type': 'Worksheet',
+                                   'cancellation_state':'cancelled',
+                                   'sort_on':'id',
+                                   'sort_order': 'reverse'},
+                 'transitions':[],
                  'columns':['Title',
                             'Owner',
                             'Analyst',
@@ -106,15 +126,18 @@ class WorksheetFolderListingView(BikaListingView):
     def folderitems(self):
         items = BikaListingView.folderitems(self)
         mtool = getToolByName(self, 'portal_membership')
+        wf = getToolByName(self, 'portal_workflow')
+        member = mtool.getAuthenticatedMember()
         for x in range(len(items)):
             if not items[x].has_key('obj'): continue
             obj = items[x]['obj']
             items[x]['Title'] = obj.Title()
             items[x]['Owner'] = obj.getOwnerTuple()[1]
             analyst = obj.getAnalyst().strip()
-            try:
-                items[x]['Analyst'] = mtool.getMemberById(analyst).getProperty('fullname')
-            except:
+            analyst_member = mtool.getMemberById(analyst)
+            if analyst_member != None:
+                items[x]['Analyst'] = analyst_member.getProperty('fullname')
+            else:
                 items[x]['Analyst'] = analyst
             wst = obj.getWorksheetTemplate()
             items[x]['Template'] = wst and wst.Title() or ''
@@ -123,9 +146,14 @@ class WorksheetFolderListingView(BikaListingView):
                      (wst.absolute_url(), wst.Title())
             items[x]['Analyses'] = str(len(obj.getAnalyses()))
             if items[x]['Analyses'] == '0':
+                # cancel our own blank worksheets now
+                if member.getId() == analyst:
+                    if wf.getInfoFor(obj, 'cancellation_state', '') == 'active':
+                        wf.doActionFor(obj, 'cancel')
+                # give empties pretty classes.
                 items[x]['table_row_class'] = 'state-empty-worksheet'
                 items[x]['Analyses'] = _("None")
-                items[x]['class']['Analyses'] = "empty"
+                #items[x]['class']['Analyses'] = "empty"
             items[x]['CreationDate'] = TimeOrDate(self.context, obj.creation_date)
             if len(obj.getLayout()) > 0:
                 items[x]['replace']['Title'] = "<a href='%s/manage_results'>%s</a>" % \
@@ -155,7 +183,7 @@ class AddWorksheetView(BrowserView):
         ws = self.context[ws_id]
 
         # Current member as analyst
-        ws.setAnalyst(pm.getAuthenticatedMember().getProperty('fullname'))
+        ws.setAnalyst(pm.getAuthenticatedMember().getId())
 
         # overwrite saved context UID for event subscribers
         self.request['context_uid'] = ws.UID()

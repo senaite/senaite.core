@@ -394,6 +394,8 @@ class AddBlankView(BrowserView):
             available_positions = [slot['pos'] for slot in wstlayout \
                                    if slot['pos'] not in used_positions and \
                                       slot['type'] == 'b']
+        else:
+            available_positions = []
         return available_positions
 
 class AddControlView(BrowserView):

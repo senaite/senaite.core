@@ -68,9 +68,16 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
 
     security.declareProtected(AddAndRemoveAnalyses, 'addAnalysis')
     def addAnalysis(self, analysis):
-        # - add the analysis to self.Analyses()
-        # - try to add the analysis parent in the worksheet layout according to
-        #   the worksheet's template, if possible.
+        """- add the analysis to self.Analyses().
+           - try to add the analysis parent in the worksheet layout according
+             to the worksheet's template, if possible.
+        """
+        wf = getToolByName(self, 'portal_workflow')
+        rc = getToolByName(self, 'reference_catalog')
+
+        # adding analyses to cancelled worksheet reinstates it
+        if wf.getInfoFor(self, 'cancellation_state', '') == 'cancelled':
+            wf.doActionFor(self, 'reinstate')
 
         self.setAnalyses(self.getAnalyses() + [analysis,])
 
@@ -132,6 +139,10 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         """
         wf = getToolByName(self, 'portal_workflow')
         rc = getToolByName(self, 'reference_catalog')
+
+        # adding analyses to cancelled worksheet reinstates it
+        if wf.getInfoFor(self, 'cancellation_state', '') == 'cancelled':
+            wf.doActionFor(self, 'reinstate')
 
         analyses = self.getAnalyses()
         layout = self.getLayout()
