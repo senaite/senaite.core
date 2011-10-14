@@ -331,7 +331,7 @@ jQuery( function($) {
 			$(e)
 			.datepicker({'dateFormat': 'dd M yy', showAnim: ''})
 			.click(function(){$(this).attr('value', '');})
-			.attr('value', '');
+		//	.attr('value', '');
 		}
 		$(".sampletype").autocomplete({ minLength: 0, source: autocomplete_sampletype});
 		$(".samplepoint").autocomplete({ minLength: 0, source: autocomplete_samplepoint});

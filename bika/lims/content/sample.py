@@ -167,7 +167,6 @@ class Sample(BaseFolder, HistoryAwareMixin):
     def setSampleType(self, value, **kw):
         """ convert SampleType title to UID
         """
-        portal = self.portal_url.getPortalObject()
         rs = self.portal_catalog(
             portal_type = 'SampleType',
             Title = value
@@ -181,24 +180,12 @@ class Sample(BaseFolder, HistoryAwareMixin):
         """
         sp_uid = None
         if value:
-            portal = self.portal_url.getPortalObject()
             sps = self.portal_catalog(
                 portal_type = 'SamplePoint',
-                title = value
+                Title = value
             )
             if sps:
                 sp_uid = sps[0].UID
-            else:
-                # add the SamplePoint
-                folder = portal.bika_setup.bika_samplepoints
-                sp_id = folder.generateUniqueId('SamplePoint')
-                folder.invokeFactory(id = sp_id, type_name = 'SamplePoint')
-                sp = folder[sp_id]
-                sp.edit(
-                    title = value)
-                sp.processForm()
-                sp_uid = sp.UID()
-                sp.reindexObject()
 
         return self.Schema()['SamplePoint'].set(self, sp_uid)
 

@@ -12,13 +12,6 @@
   <permission-map name="BIKA: Edit AR" acquired="False">
    <permission-role>Manager</permission-role>
    <permission-role>LabManager</permission-role>
-   <permission-role>Analyst</permission-role>
-   <permission-role>LabClerk</permission-role>
-   <permission-role>Owner</permission-role>
-  </permission-map>
-  <permission-map name="BIKA: Create and delete Analyses" acquired="False">
-   <permission-role>Manager</permission-role>
-   <permission-role>LabManager</permission-role>
    <permission-role>LabClerk</permission-role>
    <permission-role>Owner</permission-role>
   </permission-map>
@@ -41,19 +34,12 @@
   <permission-map name="BIKA: Edit AR" acquired="False">
    <permission-role>Manager</permission-role>
    <permission-role>LabManager</permission-role>
-   <permission-role>Analyst</permission-role>
-   <permission-role>LabClerk</permission-role>
-  </permission-map>
-  <permission-map name="BIKA: Create and delete Analyses" acquired="False">
-   <permission-role>Manager</permission-role>
-   <permission-role>LabManager</permission-role>
    <permission-role>LabClerk</permission-role>
   </permission-map>
   <permission-map name="BIKA: Manage Results" acquired="False">
    <permission-role>Manager</permission-role>
    <permission-role>LabManager</permission-role>
    <permission-role>Analyst</permission-role>
-   <permission-role>LabClerk</permission-role>
   </permission-map>
   <permission-map name="BIKA: Results not requested" acquired="True">
    <permission-role>Manager</permission-role>
@@ -77,15 +63,10 @@
    <permission-role>Manager</permission-role>
    <permission-role>LabManager</permission-role>
   </permission-map>
-  <permission-map name="BIKA: Create and delete Analyses" acquired="False">
-   <permission-role>Manager</permission-role>
-   <permission-role>LabManager</permission-role>
-  </permission-map>
   <permission-map name="BIKA: Manage Results" acquired="False">
    <permission-role>Manager</permission-role>
    <permission-role>LabManager</permission-role>
    <permission-role>Analyst</permission-role>
-   <permission-role>LabClerk</permission-role>
   </permission-map>
   <permission-map name="BIKA: Results not requested" acquired="True">
    <permission-role>Manager</permission-role>
@@ -109,15 +90,10 @@
    <permission-role>Manager</permission-role>
    <permission-role>LabManager</permission-role>
   </permission-map>
-  <permission-map name="BIKA: Create and delete Analyses" acquired="False">
-   <permission-role>Manager</permission-role>
-   <permission-role>LabManager</permission-role>
-  </permission-map>
   <permission-map name="BIKA: Manage Results" acquired="False">
    <permission-role>Manager</permission-role>
    <permission-role>LabManager</permission-role>
    <permission-role>Analyst</permission-role>
-   <permission-role>LabClerk</permission-role>
   </permission-map>
   <permission-map name="BIKA: Results not requested" acquired="True">
    <permission-role>Manager</permission-role>
@@ -137,8 +113,6 @@
   <exit-transition transition_id="publish"/>
   <permission-map name="BIKA: Edit AR" acquired="False">
   </permission-map>
-  <permission-map name="BIKA: Create and delete Analyses" acquired="False">
-  </permission-map>
   <permission-map name="BIKA: Manage Results" acquired="False">
   </permission-map>
   <permission-map name="BIKA: Results not requested" acquired="True">
@@ -152,8 +126,6 @@
  <state state_id="published" title="Published">
   <exit-transition transition_id="republish"/>
   <permission-map name="BIKA: Edit AR" acquired="False">
-  </permission-map>
-  <permission-map name="BIKA: Create and delete Analyses" acquired="False">
   </permission-map>
   <permission-map name="BIKA: Manage Results" acquired="False">
   </permission-map>

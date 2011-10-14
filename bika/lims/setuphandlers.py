@@ -238,17 +238,15 @@ class BikaGenerator:
         mp(EditSample,
             ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 1)
         mp(EditAR,
-            ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 1)
+            ['Manager', 'LabManager', 'LabClerk'], 1)
         mp(EditWorksheet,
             ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 1)
         mp(ManageResults,
-            ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 1)
+            ['Manager', 'LabManager', 'Analyst'], 1)
         mp(ResultsNotRequested,
             ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 1)
         mp(ManageInvoices,
             ['Manager', 'LabManager', 'Owner'], 1)
-        mp(CreateAndDeleteAnalyses,
-            ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 1)
         mp(AddAndRemoveAnalyses,
             ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 1)
         mp(ViewResults,
@@ -263,7 +261,7 @@ class BikaGenerator:
         mp(permissions.ListFolderContents,
             ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 1)
         mp(permissions.AddPortalContent,
-            ['Manager', 'LabManager', 'LabClerk', 'Analyst',
+            ['Manager', 'LabManager', 'LabClerk',
              'Owner'], 0)
         mp(permissions.View,
             ['Manager', 'LabManager', 'LabClerk', 'Analyst',

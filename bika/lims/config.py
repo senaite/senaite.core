@@ -39,7 +39,6 @@ EditWorksheet = 'BIKA: Edit Worksheet'
 ManageResults = 'BIKA: Manage Results'
 ResultsNotRequested = 'BIKA: Results not requested'
 ManageInvoices = 'BIKA: Manage Invoices'
-CreateAndDeleteAnalyses = 'BIKA: Create and delete Analyses'
 AddAndRemoveAnalyses = 'BIKA: Add and remove Analyses'
 ViewResults = 'BIKA: View Results'
 EditResults = 'BIKA: Edit Results'
@@ -85,7 +84,6 @@ BIKA_PERMISSIONS = (
     (ManageResults, ()),
     (ResultsNotRequested, ()),
     (ManageInvoices, ()),
-    (CreateAndDeleteAnalyses, ()),
     (AddAndRemoveAnalyses, ()),
     (ViewResults, ()),
     (EditResults, ()),

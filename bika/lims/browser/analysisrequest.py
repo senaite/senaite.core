@@ -13,8 +13,6 @@ from bika.lims.browser.client import ClientAnalysisRequestsView
 from bika.lims.browser.publish import Publish
 from bika.lims.config import POINTS_OF_CAPTURE
 from bika.lims.utils import isActive, TimeOrDate
-from decimal import Decimal
-from operator import itemgetter
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.layout.globals.interfaces import IViewView
 from zope.component import getMultiAdapter
@@ -32,7 +30,6 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
         form = self.request.form
         plone.protect.CheckAuthenticator(form)
         workflow = getToolByName(self.context, 'portal_workflow')
-        pc = getToolByName(self.context, 'portal_catalog')
         rc = getToolByName(self.context, 'reference_catalog')
         skiplist = self.request.get('workflow_skiplist', [])
         action, came_from = WorkflowAction._get_form_workflow_action(self)
@@ -231,7 +228,6 @@ class AnalysisRequestViewView(BrowserView):
         ##
         ##title=Get requested analyses
         ##
-        rc = getToolByName(self.context, 'reference_catalog')
         result = []
         cats = {}
         for analysis in self.context.getAnalyses(full_objects = True):
@@ -258,7 +254,6 @@ class AnalysisRequestViewView(BrowserView):
         ##title=Get analyses which have not been requested by the client
         ##
 
-        wf_tool = getToolByName(self.context, 'portal_workflow')
         result = []
         for analysis in self.context.getAnalyses():
             if analysis.review_state == 'not_requested':
@@ -313,7 +308,6 @@ class AnalysisRequestViewView(BrowserView):
         ##parameters=
         ##title=
         ##
-        wf_tool = self.context.portal_workflow
         actions_tool = self.context.portal_actions
 
         actions = {}
@@ -340,6 +334,8 @@ class AnalysisRequestAddView(AnalysisRequestViewView):
         AnalysisRequestViewView.__init__(self, context, request)
         self.col_count = 6
         self.came_from = "add"
+        self.can_edit_sample = True
+        self.can_edit_ar = True
         self.DryMatterService = self.context.bika_setup.getDryMatterService()
 
     def __call__(self):
@@ -356,14 +352,44 @@ class AnalysisRequestEditView(AnalysisRequestAddView):
         self.came_from = "edit"
 
     def __call__(self):
+        ar = self.context
         workflow = getToolByName(self.context, 'portal_workflow')
-        if workflow.getInfoFor(self.context, 'cancellation_state') == "cancelled":
+
+        if workflow.getInfoFor(ar, 'cancellation_state') == "cancelled":
             self.request.response.redirect(self.context.absolute_url())
-        elif workflow.getInfoFor(self.context, 'review_state') in ('verified', 'published'):
+        elif workflow.getInfoFor(ar, 'review_state') in ('verified', 'published'):
             self.request.response.redirect(self.context.absolute_url())
         else:
+            can_edit_sample = True
+            can_edit_ar = True
+            if can_edit_ar:
+                for a in ar.getAnalyses():
+                    if workflow.getInfoFor(a.getObject(), 'review_state') in ('verified', 'published'):
+                        can_edit_sample = False
+                        can_edit_ar = False
+                        break
+            if can_edit_sample:
+                sample = ar.getSample()
+                if workflow.getInfoFor(sample, 'cancellation_state') == "cancelled":
+                # Redundant check. If sample is cancelled then AR is too (in theory).
+                    can_edit_sample = False
+                else:
+                    sars = sample.getAnalysisRequests()
+                    for sar in sars:
+                        if sar != ar:
+                            for a in sar.getAnalyses():
+                                if workflow.getInfoFor(a.getObject(), 'review_state') in ('verified', 'published'):
+                                    can_edit_sample = False
+                                    break
+                            if not can_edit_sample:
+                                break
+            self.can_edit_sample = can_edit_sample
+            self.can_edit_ar = can_edit_ar
             return self.template()
 
+    def getARProfileUID(self):
+        return self.context.getProfile() and \
+               self.context.getProfile().UID() or '';
 
 class AnalysisRequestManageResultsView(AnalysisRequestViewView):
     implements(IViewView)
@@ -407,7 +433,6 @@ class AnalysisRequestContactCCs(BrowserView):
     def __call__(self):
         plone.protect.CheckAuthenticator(self.request.form)
         rc = getToolByName(self.context, 'reference_catalog')
-        workflow = getToolByName(self.context, 'portal_workflow')
         uid = self.request.form.keys() and self.request.form.keys()[0] or None
         if not uid:
             return
@@ -575,7 +600,6 @@ class AnalysisRequestSelectSampleView(BikaListingView):
             read/written from the first AR.)
             {category_uid: [service_uid, service_uid], ... }
         """
-        rc = getToolByName(self, 'reference_catalog')
         res = {}
         ars = sample.getAnalysisRequests()
         if len(ars) > 0:
@@ -730,29 +754,197 @@ class ajaxAnalysisRequestSubmit():
         plone.protect.CheckAuthenticator(self.request.form)
         plone.protect.PostOnly(self.request.form)
 
-        if form.has_key("save_button"):
-            portal = getToolByName(self.context, 'portal_url').getPortalObject()
-            rc = getToolByName(self.context, 'reference_catalog')
-            wftool = getToolByName(self.context, 'portal_workflow')
-            pc = getToolByName(self.context, 'portal_catalog')
-            came_from = form.has_key('came_from') and form['came_from'] or 'add'
+        came_from = form.has_key('came_from') and form['came_from'] or 'add'
+        wftool = getToolByName(self.context, 'portal_workflow')
+        pc = getToolByName(self.context, 'portal_catalog')
 
-            errors = {}
-            def error(field = None, column = None, message = None):
-                if not message:
-                    message = self.context.translate(
-                        'message_input_required',
-                        default = 'Input is required but no input given.',
-                        domain = 'bika')
-                if (column or field):
-                    error_key = " %s.%s" % (int(column) + 1, field or '')
+        errors = {}
+        def error(field = None, column = None, message = None):
+            if not message:
+                message = self.context.translate(
+                    'message_input_required',
+                    default = 'Input is required but no input given.',
+                    domain = 'bika')
+            if (column or field):
+                error_key = " %s.%s" % (int(column) + 1, field or '')
+            else:
+                error_key = "Form Error"
+            errors[error_key] = message
+
+
+        if came_from == "edit":
+
+            # First figure out what can be updated
+            # ------------------------------------
+
+            ar = self.context
+
+            can_edit = True
+
+            if wftool.getInfoFor(ar, 'cancellation_state') == "cancelled":
+                can_edit = False
+            elif wftool.getInfoFor(ar, 'review_state') in ('verified', 'published'):
+                can_edit = False
+
+            if not can_edit:
+                # Go back to 'View' screen with message.
+                message = _("Changes not allowed.")
+                ar.plone_utils.addPortalMessage(message, 'info')
+                return json.dumps({'success':message})
+
+            can_edit_sample = True
+            can_edit_ar = True
+
+            if can_edit_ar:
+                for a in ar.getAnalyses():
+                    if wftool.getInfoFor(a.getObject(), 'review_state') in ('verified', 'published'):
+                        can_edit_sample = False
+                        can_edit_ar = False
+                        break
+
+            if can_edit_sample:
+                sample = ar.getSample()
+                if wftool.getInfoFor(sample, 'cancellation_state') == "cancelled":
+                # Redundant check. If sample is cancelled then AR is too (in theory).
+                    can_edit_sample = False
                 else:
-                    error_key = "Form Error"
-                errors[error_key] = message
+                    sars = sample.getAnalysisRequests()
+                    for sar in sars:
+                        if sar != ar:
+                            for a in sar.getAnalyses():
+                                if wftool.getInfoFor(a.getObject(), 'review_state') in ('verified', 'published'):
+                                    can_edit_sample = False
+                                    break
+                            if not can_edit_sample:
+                                break
 
-            # first some basic validation
+
+            # Now see what's on the form and validate it
+            # ------------------------------------------
+
+            values = form["ar.0"].copy()
+
+            # Validate sample info (if there is any)
+            if can_edit_sample:
+                if not form['can_edit_sample']:
+                    # Was greyed-out on the screen.
+                    can_edit_sample = False
+
+            if can_edit_sample:
+                required_fields = ['SampleType', 'DateSampled']
+                for field in required_fields:
+                    if not values.has_key(field):
+                        error(field, 0)
+                validated_fields = ('SampleType', 'SamplePoint')
+                for field in validated_fields:
+                    # ignore empty field values
+                    if not values.has_key(field):
+                        continue
+                    if field == "SampleType":
+                        if not pc(portal_type = 'SampleType',
+                                  inactive_state = 'active',
+                                  Title = values[field]):
+                            error(field, 0, '%s is not a valid sample type' % values[field])
+                    elif field == "SamplePoint":
+                        if not pc(portal_type = 'SamplePoint',
+                                  inactive_state = 'active',
+                                  Title = values[field]):
+                            error(field, 0, '%s is not a valid sample point' % values[field])
+
+            # Check if there is any general AR info
+            if can_edit_ar:
+                if not form['can_edit_ar']:
+                    # Was greyed-out on the screen.
+                    can_edit_ar = False
+
+            # Check for analyses
+            if not values.has_key("Analyses"):
+                error(message = _("No analyses have been selected."))
+
+            if errors:
+                return json.dumps({'errors':errors})
+
+            # OK, so there's something to update...
+            # -------------------------------------
+
+            Analyses = values['Analyses']
+            del values['Analyses']
+
+            if can_edit_sample:
+            # update Sample
+                sample.edit(
+                    ClientReference = values.has_key('ClientReference') and values['ClientReference'] or '',
+                    ClientSampleID = values.has_key('ClientSampleID') and values['ClientSampleID'] or '',
+                    DateSampled = values.has_key('DateSampled') and values['DateSampled'] or '',
+                    SampleType = values.has_key('SampleType') and values['SampleType'] or '',
+                    SamplePoint = values.has_key('SamplePoint') and values['SamplePoint'] or ''
+                )
+                dis_date = sample.disposal_date()
+                sample.setDisposalDate(dis_date)
+
+            if can_edit_ar:
+            # update general AR info
+                ar.edit(
+                    Contact = form['Contact'],
+                    CCContact = form['cc_uids'].split(","),
+                    CCEmails = form['CCEmails'],
+                    ClientOrderNumber = values.has_key('ClientOrderNumber') and values['ClientOrderNumber'] or ''
+                )
+
+            # update Analyses and related info
+            setProfile = False
+            if not (values.has_key('ARProfile') and values['ARProfile'] != ""):
+                # Profile may have been cleared due to addition/removal of analyses.
+                # Note: User is not allowed to select a profile on the edit screen.
+                setProfile = True
+                profile = None
+            if values.has_key('profileTitle'):
+                # User wants to save a new profile.
+                client = ar.aq_parent
+                profile_id = client.generateUniqueId('ARProfile')
+                client.invokeFactory(id = profile_id,
+                                           type_name = 'ARProfile')
+                profile = client[profile_id]
+                profile.edit(title = values['profileTitle'],
+                             Service = Analyses)
+                profile.processForm()
+                setProfile = True
+
+            if values.has_key('ReportDryMatter'):
+                reportDryMatter = True
+            else:
+                reportDryMatter = False
+
+            if values.has_key('InvoiceExclude'):
+                invoiceExclude = True
+            else:
+                invoiceExclude = False
+
+            if setProfile:
+                ar.edit(
+                    ReportDryMatter = reportDryMatter,
+                    InvoiceExclude = invoiceExclude,
+                    Profile = profile
+                )
+            else:
+                ar.edit(
+                    ReportDryMatter = reportDryMatter,
+                    InvoiceExclude = invoiceExclude
+                )
+
+            prices = form['Prices']
+            ar.setAnalyses(Analyses, prices = prices)
+
+            message = _("Changes Saved.")
+
+
+        else:
+        # came_from == "add"
+        # ------------------
+
+            # First make a list of non-empty columns
+            columns = []
             for column in range(int(form['col_count'])):
-                column = "%01d" % column
                 formkey = "ar.%s" % column
                 # first time in, unused columns not in form
                 if not form.has_key(formkey):
@@ -761,87 +953,65 @@ class ajaxAnalysisRequestSubmit():
                 if len(ar.keys()) == 3: # three empty price fields
                     if ar.has_key('subtotal'):
                         continue
-                if not form["ar.%s" % column].has_key("Analyses"):
+                columns.append(column)
+
+            if len(columns) == 0:
+                error(message = _("No data was entered."))
+                return json.dumps({'errors':errors})
+
+            # Now some basic validation
+            required_fields = ['SampleType', 'DateSampled']
+            validated_fields = ('SampleID', 'SampleType', 'SamplePoint')
+
+            for column in columns:
+                formkey = "ar.%s" % column
+                ar = form[formkey]
+                if not ar.has_key("Analyses"):
                     error('Analyses', column, _("No analyses have been selected."))
 
-            required = ['Analyses']
-            if came_from == "add": required += ['SampleType', 'DateSampled']
-            fields = ('SampleID', 'ClientOrderNumber', 'ClientReference',
-                      'ClientSampleID', 'DateSampled', 'SampleType',
-                      'SamplePoint', 'ReportDryMatter', 'InvoiceExclude',
-                      'Analyses')
-
-            for column in range(int(form['col_count'])):
-                column = "%01d" % column
-                if not form.has_key("ar.%s" % column):
-                    continue
-                ar = form["ar.%s" % column]
-                if len(ar.keys()) == 3: # three empty price fields
-                    if came_from == 'add':
-                        continue
                 # check that required fields have values
-                for field in required:
+                for field in required_fields:
                     if not ar.has_key(field):
                         error(field, column)
 
-                # validate all field values
-                for field in fields:
+                # validate field values
+                for field in validated_fields:
                     # ignore empty field values
                     if not ar.has_key(field):
                         continue
 
-                    if came_from == "add" and field == "SampleID":
+                    if field == "SampleID":
                         if not pc(portal_type = 'Sample',
                                   cancellation_state = 'active',
                                   id = ar[field]):
-                            error(field,
-                                  column,
+                            error(field, column,
                                   '%s is not a valid sample ID' % ar[field])
 
-                    elif came_from == "add" and field == "SampleType":
+                    elif field == "SampleType":
                         if not pc(portal_type = 'SampleType',
                                   inactive_state = 'active',
                                   Title = ar[field]):
-                            error(field,
-                                  column,
+                            error(field, column,
                                   '%s is not a valid sample type' % ar[field])
 
-                    elif came_from == "add" and field == "SamplePoint":
+                    elif field == "SamplePoint":
                         if not pc(portal_type = 'SamplePoint',
                                   inactive_state = 'active',
                                   Title = ar[field]):
-                            error(field,
-                                  column,
+                            error(field, column,
                                   '%s is not a valid sample point' % ar[field])
-
-                #elif field == "ReportDryMatter":
-                #elif field == "InvoiceExclude":
-                #elif field == "DateSampled":
-                #elif field == "ClientOrderNumber":
-                #elif field == "ClientReference":
-                #elif field == "ClientSampleID":
 
             if errors:
                 return json.dumps({'errors':errors})
 
             prices = form['Prices']
-            vat = form['VAT']
-
             ARs = []
-            services = {} # UID:service
 
             # The actual submission
-
-            for column in range(int(form['col_count'])):
-                if not form.has_key("ar.%s" % column):
-                    continue
-                values = form["ar.%s" % column].copy()
-                if len(values.keys()) == 3:
-                    continue
-
+            for column in columns:
+                formkey = "ar.%s" % column
+                values = form[formkey].copy()
                 ar_number = 1
-                sample_state = 'due'
-
                 profile = None
                 if (values.has_key('ARProfile')):
                     profileUID = values['ARProfile']
@@ -859,68 +1029,49 @@ class ajaxAnalysisRequestSubmit():
                     assert len(sample_proxy) == 1
                     sample = sample_proxy[0].getObject()
                     ar_number = sample.getLastARNumber() + 1
-                    wf_tool = self.context.portal_workflow
-                    sample_state = wf_tool.getInfoFor(sample, 'review_state')
                     sample.edit(LastARNumber = ar_number)
                     sample.reindexObject()
                 else:
-                    # Primary AR or AR Edit both come here
-                    if came_from == "add":
-                        sample_id = self.context.generateUniqueId('Sample')
-                        self.context.invokeFactory(id = sample_id,
-                                                   type_name = 'Sample')
-                        sample = self.context[sample_id]
-                        sample.edit(
-                            SampleID = sample_id,
-                            LastARNumber = ar_number,
-                            DateSubmitted = DateTime(),
-                            SubmittedByUser = sample.current_user(),
-                            **dict(values)
-                        )
-                        sample.processForm()
-                    else:
-                        sample = self.context.getSample()
-                        sample.edit(
-                            **dict(values)
-                        )
+                    # Primary AR
+                    sample_id = self.context.generateUniqueId('Sample')
+                    self.context.invokeFactory(id = sample_id,
+                                               type_name = 'Sample')
+                    sample = self.context[sample_id]
+                    sample.edit(
+                        SampleID = sample_id,
+                        LastARNumber = ar_number,
+                        DateSubmitted = DateTime(),
+                        SubmittedByUser = sample.current_user(),
+                        **dict(values)
+                    )
+                    sample.processForm()
                     dis_date = sample.disposal_date()
                     sample.setDisposalDate(dis_date)
                 sample_uid = sample.UID()
 
-                # create AR
+                # create the AR
 
                 Analyses = values['Analyses']
                 del values['Analyses']
 
-                if came_from == "add":
-                    ar_id = self.context.generateARUniqueId('AnalysisRequest',
-                                                            sample_id,
-                                                            ar_number)
-                    self.context.invokeFactory(id = ar_id,
-                                               type_name = 'AnalysisRequest')
-                    ar = self.context[ar_id]
-                    ar.edit(
-                        RequestID = ar_id,
-                        DateRequested = DateTime(),
-                        Contact = form['Contact'],
-                        CCContact = form['cc_uids'].split(","),
-                        CCEmails = form['CCEmails'],
-                        Sample = sample_uid,
-                        Profile = profile,
-                        **dict(values)
-                    )
-                    ar.processForm()
-                    ARs.append(ar_id)
-                else:
-                    ar_id = self.context.getRequestID()
-                    ar = self.context
-                    ar.edit(
-                        Contact = form['Contact'],
-                        CCContact = form['cc_uids'].split(","),
-                        CCEmails = form['CCEmails'],
-                        Profile = profile,
-                        **dict(values)
-                    )
+                ar_id = self.context.generateARUniqueId('AnalysisRequest',
+                                                        sample_id,
+                                                        ar_number)
+                self.context.invokeFactory(id = ar_id,
+                                           type_name = 'AnalysisRequest')
+                ar = self.context[ar_id]
+                ar.edit(
+                    RequestID = ar_id,
+                    DateRequested = DateTime(),
+                    Contact = form['Contact'],
+                    CCContact = form['cc_uids'].split(","),
+                    CCEmails = form['CCEmails'],
+                    Sample = sample_uid,
+                    Profile = profile,
+                    **dict(values)
+                )
+                ar.processForm()
+                ARs.append(ar_id)
 
                 ar.setAnalyses(Analyses, prices = prices)
 
@@ -928,13 +1079,9 @@ class ajaxAnalysisRequestSubmit():
                     profile_id = self.context.generateUniqueId('ARProfile')
                     self.context.invokeFactory(id = profile_id,
                                                type_name = 'ARProfile')
-                    analyses = ar.getAnalyses(full_objects = True)
-                    services_array = []
-                    for a in analyses:
-                        services_array.append(a.getServiceUID())
                     profile = self.context[profile_id]
                     profile.edit(title = values['profileTitle'],
-                                 Service = services_array)
+                                 Service = Analyses)
                     profile.processForm()
                     ar.edit(Profile = profile)
 
@@ -942,19 +1089,17 @@ class ajaxAnalysisRequestSubmit():
                    wftool.getInfoFor(sample, 'review_state') != 'due':
                     wftool.doActionFor(ar, 'receive')
 
-            if came_from == "add":
-                if len(ARs) > 1:
-                    message = self.context.translate(
-                        'message_ars_created',
-                        default = 'Analysis requests ${ARs} were successfully created.',
-                        mapping = {'ARs': ', '.join(ARs)}, domain = 'bika')
-                else:
-                    message = self.context.translate(
-                        'message_ar_created',
-                        default = 'Analysis request ${AR} was successfully created.',
-                        mapping = {'AR': ', '.join(ARs)}, domain = 'bika')
+            if len(ARs) > 1:
+                message = self.context.translate(
+                    'message_ars_created',
+                    default = 'Analysis requests ${ARs} were successfully created.',
+                    mapping = {'ARs': ', '.join(ARs)}, domain = 'bika')
             else:
-                message = _("Changes Saved.")
+                message = self.context.translate(
+                    'message_ar_created',
+                    default = 'Analysis request ${AR} was successfully created.',
+                    mapping = {'AR': ', '.join(ARs)}, domain = 'bika')
+
 
         self.context.plone_utils.addPortalMessage(message, 'info')
         return json.dumps({'success':message})
