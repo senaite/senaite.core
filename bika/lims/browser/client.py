@@ -97,11 +97,13 @@ class ClientAnalysisRequestsView(BikaListingView):
         self.contentFilter = {'portal_type':'AnalysisRequest',
                               'sort_on':'id',
                               'sort_order': 'reverse'}
-        self.review_state = 'all'
-        self.content_add_actions = {_('Analysis Request'):
-                                    "analysisrequest_add"}
-        self.description = ""
         wf = getToolByName(self.context, 'portal_workflow')
+        self.review_state = 'all'
+        self.content_add_actions = {}
+        if wf.getInfoFor(self.context, 'inactive_state', '') == 'active':
+            self.content_add_actions[_('Analysis Request')] = \
+                "analysisrequest_add"
+
         active_contacts = [c for c in context.objectValues('Contact') if \
                            wf.getInfoFor(c, 'inactive_state', '') == 'active']
         if context.portal_type == "Client" and not active_contacts:
@@ -114,8 +116,8 @@ class ClientAnalysisRequestsView(BikaListingView):
         self.show_select_column = True
 
         self.icon = "++resource++bika.lims.images/analysisrequest_big.png"
-        self.title = "%s: %s" % (self.context.Title(),
-                                 _("Analysis Requests"))
+        self.title = "%s - %s" % (self.context.Title(), _("Analysis Requests"))
+        self.description = ""
 
         self.columns = {
             'getRequestID': {'title': _('Request ID')},
@@ -326,7 +328,7 @@ class ClientSamplesView(BikaListingView):
         self.show_select_column = True
 
         self.icon = "++resource++bika.lims.images/sample_big.png"
-        self.title = "%s: %s" % (self.context.Title(), _("Samples"))
+        self.title = "%s - %s" % (self.context.Title(), _("Samples"))
         self.description = ""
 
         self.columns = {
@@ -453,7 +455,7 @@ class ClientARImportsView(BikaListingView):
         self.pagesize = 50
 
         self.icon = "++resource++bika.lims.images/arimport_big.png"
-        self.title = "%s: %s" % (self.context.Title(), \
+        self.title = "%s - %s" % (self.context.Title(), \
                                  _("Analysis Request Imports"))
         self.description = ""
 
@@ -506,7 +508,7 @@ class ClientARProfilesView(BikaListingView):
         self.show_select_column = True
         self.pagesize = 50
         self.icon = "++resource++bika.lims.images/arprofile_big.png"
-        self.title = "%s: %s" % (self.context.Title(),
+        self.title = "%s - %s" % (self.context.Title(),
                                  _("Analysis Request Profiles"))
         self.description = ""
 
@@ -544,7 +546,7 @@ class ClientAnalysisSpecsView(BikaListingView):
         self.pagesize = 50
 
         self.icon = "++resource++bika.lims.images/analysisspec_big.png"
-        self.title = "%s: %s" % (self.context.Title(), \
+        self.title = "%s - %s" % (self.context.Title(), \
                                  _("Analysis Specifications"))
         self.description = ""
 
@@ -589,7 +591,7 @@ class ClientAttachmentsView(BikaListingView):
         self.pagesize = 50
 
         self.icon = "++resource++bika.lims.images/attachment_big.png"
-        self.title = "%s: %s" % (self.context.Title(), _("Attachments"))
+        self.title = "%s - %s" % (self.context.Title(), _("Attachments"))
         self.description = ""
 
         self.columns = {
@@ -659,7 +661,7 @@ class ClientOrdersView(BikaListingView):
         self.pagesize = 20
 
         self.icon = "++resource++bika.lims.images/order_big.png"
-        self.title = "%s: %s" % (self.context.Title(), _("Orders"))
+        self.title = "%s - %s" % (self.context.Title(), _("Orders"))
         self.description = ""
 
         self.columns = {
@@ -713,7 +715,7 @@ class ClientContactsView(BikaListingView):
         self.pagesize = 50
 
         self.icon = "++resource++bika.lims.images/client_contact_big.png"
-        self.title = "%s: %s" % (self.context.Title(), _("Contacts"))
+        self.title = "%s - %s" % (self.context.Title(), _("Contacts"))
         self.description = ""
 
         self.columns = {

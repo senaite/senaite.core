@@ -1,6 +1,6 @@
 id: index_html
 title: Welcome to Bika LIMS 3
-description: This is release 3.0 pre-αlpha r3213 on Plone 4.1
+description: This is release 3.0 pre-αlpha r3217 on Plone 4.1
 subject:
 relatedItems:
 location:
@@ -117,8 +117,6 @@ the Analysis    Service records they  reference might have been modified</p>
 <ul>
 <li>Relstorage &amp; Content Mirror</li>
 <li>Invoices</li></ul>
-<h3 class="Subheading">Known Bugs</h3>
-<p>It works everywhere else, but  on Windows Firefox installations,   clicking an Analysis Profile when  creating ARs, does not stick. Please   use the keyboard arrows and  [Enter] key to select a Profile. Dragging   the cursor down onto the  desired Profile without clicking also works</p>
 <p>&nbsp;</p>
 <p>Thank you for your support</p>
 <p>The Bika team</p>
