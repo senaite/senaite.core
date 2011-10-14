@@ -196,15 +196,19 @@ table.analysisrequest {
 	border-top: 1px solid #dddddd;
 }
 
-table.ar_add{
+table.analysisrequest.add{
 	width:100%;
 }
 
-table.add td {
+table.analysisrequest.add td {
     text-align: center;
 	border-bottom:1px solid #eee;
 }
-table.add td.ar_column {
+table.analysisrequest.edit td {
+    text-align: center;
+	border-bottom:1px solid #eee;
+}
+table.analysisrequest.add td.ar_column {
     width:8em;
 }
 
