@@ -1,13 +1,15 @@
-from types import ListType, TupleType, DictType
 from AccessControl import ClassSecurityInfo
-from Products.CMFCore.utils import getToolByName
-from Products.Archetypes.public import *
-from Products.Archetypes.config import REFERENCE_CATALOG
-from Products.Archetypes.utils import shasattr
 from Products.Archetypes.Registry import registerField
-from decimal import Decimal
+from Products.Archetypes.config import REFERENCE_CATALOG
+from Products.Archetypes.event import ObjectInitializedEvent
+from Products.Archetypes.public import *
+from Products.Archetypes.utils import shasattr
+from Products.CMFCore.utils import getToolByName
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
+from decimal import Decimal
+from types import ListType, TupleType, DictType
+import zope.event
 
 class ARAnalysesField(ObjectField):
 
@@ -87,6 +89,7 @@ class ARAnalysesField(ObjectField):
                               InterimFields = interim_fields,
                               MaxTimeAllowed = service.getMaxTimeAllowed())
                 analysis.unmarkCreationFlag()
+                zope.event.notify(ObjectInitializedEvent(analysis))
 
         # delete analyses
         delete_ids = []

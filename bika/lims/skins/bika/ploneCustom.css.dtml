@@ -334,6 +334,11 @@ table.analysisrequest input {
 * worksheets
 */
 
+.template-manage_results .Pos {
+  padding:0;
+  vertical-align:center;
+  border-bottom:1px solid #ccc;
+}
 .template-manage_results #listing-table td {
   vertical-align:top;
 }
@@ -341,6 +346,20 @@ table.analysisrequest input {
   padding:0;
   margin:0;
 }
+.template-manage_results #listing-table td table td {
+  padding:0;
+  margin:0;
+  border: 0;
+}
+.template-manage_results #listing-table td table .pos {
+  font-size:120%;
+  padding:5px;
+}
+.template-manage_results #listing-table td table .pos_top {
+  font-size:110%;
+  padding:5px;
+}
+
 
 .worksheet_add_control {
     width:100%;

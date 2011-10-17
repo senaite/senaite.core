@@ -39,8 +39,6 @@ class WorksheetWorkflowAction(WorkflowAction):
 
         if 'Notes' in form:
             self.context.setNotes(form['Notes'])
-##   ->js     if 'Analyst' in form:
-##            self.context.setAnalyst(form['Analyst'])
 
         if action == 'submit' and self.request.form.has_key("Result"):
             selected_analyses = WorkflowAction._get_selected_items(self)
@@ -213,20 +211,22 @@ class WorksheetAnalysesView(AnalysesView):
         for pos,pos_items in slot_items.items():
             x = pos_items[0]
             items[x]['rowspan'] = {'Pos': len(pos_items)}
-            items[x]['class']['Pos'] = " .nopadding"
+            items[x]['table_row_class'] = ((items[x]['Pos']) % 2 == 0) and \
+                "draggable even" or "draggable odd"
             # ar is either an AR, a Worksheet, or a ReferenceSample (analysis parent).
-            ar = items[x]['obj'].aq_parent
+            obj = items[x]['obj']
+            ar = obj.aq_parent
             # client is either a Client, a ReferenceSupplier, or the worksheet folder.
             client = ar.aq_parent
-            pos_text = "<table width='100%%' cellpadding='0' cellspacing='0' cellborder='0'><tr><td>%s</td>" % pos
-            pos_text += "<td><a href='%s'>%s</a></td>" % (client.absolute_url(), client.Title())
+            pos_text = "<table width='100%%' cellpadding='0' cellspacing='0' cellborder='0'><tr><td class='pos'>%s</td>" % pos
+            pos_text += "<td class='pos_top'><a href='%s'>%s</a></td>" % (client.absolute_url(), client.Title())
             if obj.portal_type == 'DuplicateAnalysis':
-                pos_text += '<td><img title="Duplicate" width="16" height="16" src="%s/++resource++bika.lims.images/duplicate.png"/></td>' % (self.context.absolute_url())
+                pos_text += '<td class="pos_top"><img title="Duplicate" width="16" height="16" src="%s/++resource++bika.lims.images/duplicate.png"/></td>' % (self.context.absolute_url())
             elif obj.portal_type == 'ReferenceAnalysis':
                 if obj.ReferenceType == 'b':
-                    pos_text += '<td><img title="Blank"  width="16" height="16" src="%s/++resource++bika.lims.images/blank.png"/></td>' % (self.context.absolute_url())
+                    pos_text += '<td class="pos_top"><img title="Blank"  width="16" height="16" src="%s/++resource++bika.lims.images/blank.png"/></td>' % (self.context.absolute_url())
                 else:
-                    pos_text += '<td><img title="Control" width="16" height="16" src="%s/++resource++bika.lims.images/control.png"/></td>' % (self.context.absolute_url())
+                    pos_text += '<td class="pos_top"><img title="Control" width="16" height="16" src="%s/++resource++bika.lims.images/control.png"/></td>' % (self.context.absolute_url())
             else:
                 pos_text += "<td></td>"
             pos_text += "</tr><tr><td></td>"
@@ -238,7 +238,7 @@ class WorksheetAnalysesView(AnalysesView):
                 sample_icon = "<a href='%s'><img title='Reference: %s' src='++resource++bika.lims.images/referencesample.png'></a>" % (ar.absolute_url(), ar.Title())
                 pos_text += "<td><a href='%s'>%s</a></td><td>%s</td>" % (ar.absolute_url(), ar.Title(), sample_icon)
             elif ar.portal_type == 'Worksheet':
-                ar = items[x]['obj'].getAnalysis().aq_parent
+                ar = obj.getAnalysis().aq_parent
                 pos_text += "<td><a href='%s'>(%s)</a></td><td></td>" % (ar.absolute_url(), ar.Title())
             pos_text += "</tr>"
             if hasattr(ar, 'getClientOrderNumber'):
