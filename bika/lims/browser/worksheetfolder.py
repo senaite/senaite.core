@@ -5,16 +5,15 @@ from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
-from bika.lims.interfaces import IWorksheet
 from bika.lims.utils import TimeOrDate
-from bika.lims.browser.analyses import AnalysesView
+from bika.lims.browser.worksheet import getAnalysts
 from plone.app.content.browser.interfaces import IFolderContentsView
 from zope.interface import implements
-import plone, json
+import plone
 
 class WorksheetFolderListingView(BikaListingView):
     contentFilter = {'portal_type': 'Worksheet',
-                     'review_state':['open','to_be_verified','verified','rejected'],
+                     'review_state':['open', 'to_be_verified', 'verified', 'rejected'],
                      'cancellation_state':'active',
                      'sort_on':'id',
                      'sort_order': 'reverse'}
@@ -39,7 +38,7 @@ class WorksheetFolderListingView(BikaListingView):
     review_states = [
         {'title': _('All'), 'id':'all',
          'contentFilter': {'portal_type': 'Worksheet',
-                           'review_state':['open','to_be_verified','verified','rejected'],
+                           'review_state':['open', 'to_be_verified', 'verified', 'rejected'],
                            'cancellation_state':'active',
                            'sort_on':'id',
                            'sort_order': 'reverse'},
@@ -169,8 +168,6 @@ class AddWorksheetView(BrowserView):
     """ Handler for the "Add Worksheet" button in Worksheet Folder.
         If a template was selected, the worksheet is pre-populated here.
     """
-    def getAnalysts(self):
-        return getAnalysts(self.context)
 
     def __call__(self):
         form = self.request.form
@@ -186,8 +183,8 @@ class AddWorksheetView(BrowserView):
 
         # Current member as analyst
         member_id = pm.getAuthenticatedMember().getId()
-        if member_id in self.getAnalysts():
-            ws.setAnalyst()
+        if member_id in [m[0] for m in getAnalysts(self.context)]:
+            ws.setAnalyst(member_id)
 
         # overwrite saved context UID for event subscribers
         self.request['context_uid'] = ws.UID()
@@ -254,7 +251,7 @@ class AddWorksheetView(BrowserView):
                         mapping = {'position':row['pos'],
                                    'definition':reference_definition and \
                                    reference_definition.Title() or ''},
-                        default = "No reference samples found for " +\
+                        default = "No reference samples found for " + \
                         "${definition} at position ${position}.",
                         domain = "bika.lims")
                     self.context.plone_utils.addPortalMessage(msg)
