@@ -56,7 +56,7 @@ class ARAnalysesField(ObjectField):
             return
 
         assert type(service_uids) in (list, tuple)
-        assert type(prices) == dict
+   #     assert type(prices) == dict
 
         workflow = instance.portal_workflow
         # one can only edit Analyses up to a certain state.
