@@ -95,7 +95,7 @@ class ARAnalysesField(ObjectField):
             if service_uid not in service_uids:
                 # If it is verified or published, don't delete it.
                 if workflow.getInfoFor(analysis, 'review_state') in ('verified', 'published'):
-                    break
+                    continue
                 # If it is assigned to a worksheet, unassign it before deletion.
                 elif workflow.getInfoFor(analysis, 'worksheetanalysis_review_state') == 'assigned':
                     ws = analysis.getBackReferences("WorksheetAnalysis")[0]

@@ -46,7 +46,6 @@
    <permission-role>Manager</permission-role>
    <permission-role>LabManager</permission-role>
    <permission-role>Analyst</permission-role>
-   <permission-role>LabClerk</permission-role>
   </permission-map>
   <permission-map name="BIKA: Cancel and reinstate" acquired="False">
    <permission-role>Manager</permission-role>

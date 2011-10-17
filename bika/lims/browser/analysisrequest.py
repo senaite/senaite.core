@@ -17,6 +17,7 @@ from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.layout.globals.interfaces import IViewView
 from zope.component import getMultiAdapter
 from zope.interface import implements, alsoProvides
+from bika.lims import EditResults
 import json
 import plone
 import transaction
@@ -36,12 +37,17 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
 
         ## publish
         if action in ('prepublish', 'publish', 'prepublish'):
+            if not isActive(self.context):
+                message = _('Item is inactive.')
+                self.context.plone_utils.addPortalMessage(message, 'info')
+                self.request.response.redirect(self.context.absolute_url())
+                return
+
             # XXX publish entire AR.
             transitioned = Publish(self.context,
                                    self.request,
                                    action,
                                    [self.context, ])()
-
             if len(transitioned) == 1:
                 message = _('message_item_published',
                     default = '${items} was published.',
@@ -55,23 +61,41 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
 
         ## submit
         elif action == 'submit' and self.request.form.has_key("Result"):
+            if not isActive(self.context):
+                message = _('Item is inactive.')
+                self.context.plone_utils.addPortalMessage(message, 'info')
+                self.request.response.redirect(self.context.absolute_url())
+                return
+
             selected_analyses = WorkflowAction._get_selected_items(self)
-            selected_analysis_uids = selected_analyses.keys()
             results = {}
+            hasInterims = {}
 
             # first save results for entire form
             for uid, result in self.request.form['Result'][0].items():
-                results[uid] = result
                 if uid in selected_analyses:
                     analysis = selected_analyses[uid]
                 else:
-                    analysis = rc.lookupObject(uid)
+                    try:
+                        analysis = rc.lookupObject(uid)
+                    except:
+                        # ignore result if analysis object no longer exists
+                        continue
+                if not(getSecurityManager().checkPermission(EditResults, analysis)):
+                        # or changes no longer allowed
+                    continue
+                results[uid] = result
                 service = analysis.getService()
                 interims = form["InterimFields"][0][uid]
+                interimFields = json.loads(interims)
+                if len(interimFields) > 0:
+                    hasInterims[uid] = True
+                else:
+                    hasInterims[uid] = False
                 unit = service.getUnit()
                 analysis.edit(
                     Result = result,
-                    InterimFields = json.loads(interims),
+                    InterimFields = interimFields,
                     Retested = form.has_key('retested') and \
                                form['retested'].has_key(uid),
                     Unit = unit and unit or '')
@@ -79,17 +103,20 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
             # discover which items may be submitted
             submissable = []
             for uid, analysis in selected_analyses.items():
-                service = analysis.getService()
-                # but only if they are selected
-                if uid not in selected_analysis_uids:
+                if not results[uid]:
                     continue
-                # and if all their dependencies are at least 'to_be_verified'
                 can_submit = True
                 for dependency in analysis.getDependencies():
-                    if workflow.getInfoFor(dependency, 'review_state') in \
-                       ('sample_due', 'sample_received'):
-                        can_submit = False
-                if can_submit and results[uid]:
+                    dep_state = workflow.getInfoFor(dependency, 'review_state')
+                    if hasInterims[uid]:
+                        if dep_state in ('sample_due', 'sample_received', 'attachment_due', 'to_be_verified',):
+                            can_submit = False
+                            break
+                    else:
+                        if dep_state in ('sample_due', 'sample_received',):
+                            can_submit = False
+                            break
+                if can_submit:
                     submissable.append(analysis)
 
             # and then submit them.
@@ -102,6 +129,7 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
 
             if self.context.getReportDryMatter():
                 self.context.setDryMatterResults()
+
             message = _("Changes saved.")
             self.context.plone_utils.addPortalMessage(message, 'info')
             self.destination_url = self.request.get_header("referer",

@@ -68,9 +68,13 @@ class WorkflowAction:
             for path in form['paths']:
                 item_id = path.split("/")[-1]
                 item_path = path.replace("/" + item_id, '')
-                item = pc(id = item_id,
-                          path = {'query':item_path,
+                try:
+                    item = pc(id = item_id,
+                              path = {'query':item_path,
                                   'depth':1})[0].getObject()
+                except:
+                # ignore selected item if object no longer exists
+                    continue
                 uid = item.UID()
                 selected_items[uid] = item
             return selected_items
@@ -80,8 +84,6 @@ class WorkflowAction:
         form = self.request.form
         plone.protect.CheckAuthenticator(form)
         workflow = getToolByName(self.context, 'portal_workflow')
-        pc = getToolByName(self.context, 'portal_catalog')
-        rc = getToolByName(self.context, 'reference_catalog')
         if self.destination_url == "":
             self.destination_url = self.request.get_header("referer",
                                    self.context.absolute_url())
@@ -333,7 +335,7 @@ class BikaListingView(BrowserView):
                 state_title = None
             if review_state:
                 results_dict['review_state'] = review_state
-            for state_var,state in states.items():
+            for state_var, state in states.items():
                 if not state_title:
                     state_title = workflow.getTitleForStateOnType(
                         state, obj.portal_type)
