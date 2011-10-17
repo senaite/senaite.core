@@ -1,11 +1,15 @@
+
 from AccessControl import ModuleSecurityInfo, allow_module
 from DateTime import DateTime
+from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.TranslationServiceTool import TranslationServiceTool
+from reportlab.graphics.barcode import getCodes,getCodeNames,createBarcodeDrawing
+from Products.Five.browser import BrowserView
 from bika.lims import interfaces
 from bika.lims.config import Publish
-from Products.CMFCore.utils import getToolByName
 from email.Utils import formataddr
 from zope.component._api import getUtility
+import plone.protect
 import copy
 import re
 
@@ -32,15 +36,13 @@ def printfile(portal, from_addr, to_addrs, msg):
     pass
 
 def isActive(obj):
-    """ Returns False if the item has been deactivated or cancelled.
+    """ Check if obj is inactive or cancelled.
     """
     wf = getToolByName(obj, 'portal_workflow')
-    if (hasattr(obj, 'inactive_state') and \
-        obj.inactive_state == 'inactive') or \
+    if (hasattr(obj, 'inactive_state') and obj.inactive_state == 'inactive') or \
        wf.getInfoFor(obj, 'inactive_state', 'active') == 'inactive':
         return False
-    if (hasattr(obj, 'cancellation_state') and \
-        obj.inactive_state == 'cancelled') or \
+    if (hasattr(obj, 'cancellation_state') and obj.inactive_state == 'cancelled') or \
        wf.getInfoFor(obj, 'cancellation_state', 'active') == 'cancelled':
         return False
     return True
@@ -67,6 +69,20 @@ def TimeOrDate(context, datetime, long_format=False):
     else:
         dt = datetime
     return dt
+
+class ajaxGetObject(BrowserView):
+    """ return redirect url if the item exists
+        passes the request to portal_catalog
+        requires '_authenticator' in request.
+    """
+    def __call__(self):
+        plone.protect.CheckAuthenticator(self.request)
+        plone.protect.PostOnly(self.request)
+        pc = getToolByName(self.context, 'portal_catalog')
+        id = self.request.get("id", '').replace("*","")
+        items = pc(self.request)
+        if items:
+            return items[0].getObject().absolute_url()
 
 # encode_header function copied from roundup's rfc2822 package.
 hqre = re.compile(r'^[A-z0-9!"#$%%&\'()*+,-./:;<=>?@\[\]^_`{|}~ ]+$')

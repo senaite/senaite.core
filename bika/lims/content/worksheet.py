@@ -20,15 +20,15 @@ schema = BikaSchema.copy() + Schema((
         allowed_types = ('WorksheetTemplate',),
         relationship = 'WorksheetAnalysisTemplate',
     ),
+    RecordsField('Layout',
+        required = 1,
+        subfields = ('position', 'container_uid', 'analysis_uids'),
+    ),
     ReferenceField('Analyses',
         required = 1,
         multiValued = 1,
         allowed_types = ('Analysis',),
         relationship = 'WorksheetAnalysis',
-    ),
-    RecordsField('Layout',
-        required = 1,
-        subfields = ('position', 'container_uid'),
     ),
     StringField('Analyst',
     ),
@@ -134,7 +134,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
                 Layout.remove(slot)
         self.setLayout(Layout)
 
-    def addReferenceAnalyses(self, position, reference, service_uids):
+    def addReferences(self, position, reference, service_uids):
         """ Add reference analyses to reference, and add to worksheet layout
         """
         wf = getToolByName(self, 'portal_workflow')
@@ -193,14 +193,25 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         wf = getToolByName(self, 'portal_workflow')
 
         analyses = self.getAnalyses()
-        src_parent = [p['container_uid'] for p in layout if \
-                      p['position'] == src_slot]
+        layout = self.getLayout()
+
+        if dest_slot == 'new':
+            dest_slot = max([slot['position'] for slot in layout])
+
+        src_parent_uid = [p['container_uid'] for p in layout if \
+                      int(p['position']) == src_slot][0]
         src_analyses = [a for a in analyses if \
-                        a.aq_parent.UID() == src_paremt.UID()]
+                        a.aq_parent.UID() == src_parent_uid]
 
         wsdups = [o for o in self.objectValues() if \
                    o.portal_type == 'DuplicateAnalysis']
         wsdup_src_uids = [d.getAnalysis().UID for d in wsdups]
+
+        layout_dest_slot = [s for s in layout if int(s['position']) == dest_slot]
+        layout_dest_slot = layout_dest_slot and layout_dest_slot[0] or \
+                                 {'position':dest_slot,
+                                  'container_uid':self.UID(),
+                                  'analysis_uids':''}
 
         new_dups = []
         for analysis in src_analyses:
@@ -218,11 +229,13 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             new_dups.append(duplicate)
 
         if new_dups:
-            message = _('Duplicate analyses assigned')
-        else:
-            message = _('No duplicate analysis assigned')
+            dup_uids = ",".join([a.UID() for a in new_dups])
+            layout = [slot for slot in self.getLayout() if \
+                      slot['container_uid'] != self.UID()]
+            layout_dest_slot['analysis_uids'] += dup_uids
+            layout.append(layout_dest_slot)
+            self.setLayout(layout)
 
-        self.plone_utils.addPortalMessage(message)
         return new_dups
 
     def getInstrumentExports(self):
@@ -452,14 +465,16 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             results.append(ars[ar_id])
         return results
 
-    security.declarePublic('addDuplicateAnalysis')
-    def addDuplicateAnalysis(self, REQUEST, RESPONSE):
-        """ Add a duplicate analysis to the first available entry
+    security.declarePublic('getWorksheetServices')
+    def getWorksheetServices(self):
+        """ get list of analysis services present on this worksheet
         """
-        return self.worksheet_add_duplicate(
-            REQUEST = REQUEST, RESPONSE = RESPONSE,
-            template_id = 'manage_results')
-
+        services = []
+        for analysis in self.getAnalyses():
+            service = analysis.getService()
+            if service not in services:
+                services.append(service)
+        return services
 
     security.declareProtected(AddAndRemoveAnalyses, 'resequenceWorksheet')
     def resequenceWorksheet(self, REQUEST = None, RESPONSE = None):

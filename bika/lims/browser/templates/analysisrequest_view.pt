@@ -9,7 +9,19 @@
 
 <body>
 
-<metal:content-core fill-slot="content-core" tal:define="
+<metal:content-title fill-slot="content-title">
+    <h1>
+	<img tal:condition="view/icon | nothing"
+         src="" tal:attributes="src view/icon|nothing"/>
+	<span class="documentFirstHeading" tal:content="context/id"/>
+	<span
+		class="barcode"
+		tal:attributes="value context/id"/>
+    </h1>
+</metal:content-title>
+
+
+	<metal:content-core fill-slot="content-core" tal:define="
 	portal context/@@plone_portal_state/portal;
 	specification python:request.get('specification', view.getDefaultSpec());
 	sample here/getSample;
@@ -23,12 +35,15 @@
 	delete_attachments python:True;
 	update_attachments python:True">
 
-	<div tal:condition="attachments_allowed"
+
+	<div
+		tal:condition="attachments_allowed"
 		tal:define="ar_review_state review_state">
 		<metal:block use-macro="here/attachments/macros/attachments"/>
 	</div>
 
-	<form id="analysisrequest_edit_form"
+	<form
+		id="analysisrequest_edit_form"
 		name="analysisrequest_edit_form"
 		method="POST"
 		enctype="multipart/form-data">

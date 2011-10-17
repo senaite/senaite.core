@@ -8,7 +8,20 @@
 
 <body>
 
-<div metal:fill-slot="main"
+<metal:title fill-slot="content-title"
+        tal:define="edit python:view.came_from == 'edit' and True or False;">
+<h1>
+	<img tal:condition="view/icon | nothing"
+         src="" tal:attributes="src view/icon"/>
+    <tal:new i18n:translate="heading_request_new_analyses"
+        tal:condition="python:not edit">Request new analyses</tal:new>
+	<span class="documentFirstHeading"
+		tal:condition="edit"
+		tal:content="view/title"/>
+</h1>
+</metal:title>
+
+<div metal:fill-slot="content-core"
     tal:define="portal context/@@plone_portal_state/portal;
         plone_view context/@@plone;
         tabindex view/tabindex;
@@ -16,9 +29,6 @@
         can_edit_sample python:view.can_edit_sample;
         can_edit_ar python:view.can_edit_ar;
         review_state python:edit and context.portal_workflow.getInfoFor(view.context, 'review_state') or ''">
-
-<h1 i18n:translate="heading_request_new_analyses" tal:condition="python:not edit">Request new analyses</h1>
-<h1 tal:content="here/title_or_id" tal:condition="edit"/>
 
 <form id="analysisrequest_edit_form"
     name="analysisrequest_edit_form"

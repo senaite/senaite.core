@@ -24,11 +24,19 @@
 </div>
 
 <div metal:define-macro="ws_attachments">
-<table class="attachments">
-<tr>
-<td tal:condition="update_attachments">
-<metal:block use-macro="here/attachments/macros/ws_attachments_update"/>
-</td></tr></table>
+  <dl class="collapsible collapsedOnLoad">
+    <dt class="attachments collapsibleHeader" i18n:translate="legend_attachments">Attachments</dt>
+    <dd class="collapsibleContent">
+      <table class="attachments">
+        <tr>
+          <td tal:condition="update_attachments">
+            <metal:block use-macro="here/attachments/macros/ws_attachments_update"/>
+          </td>
+        </tr>
+      </table>
+    </dd>
+  </dl>
+</div>
 </div>
 
 <div metal:define-macro="ar_attachments_list"
@@ -248,12 +256,16 @@
         onchange="enableAddAttachment('Analysis')">
     <option value='' selected></option>
     <tal:item
-        tal:repeat="item attach_analyses">
-    <option
-        tal:condition="python:wtool.getInfoFor(item, 'review_state', '') in ['to_be_verified']"
-        tal:attributes="value item/UID;"
-        tal:define="this_title string:${item/getRequestID} - ${item/Title}"
-        tal:content="this_title"></option>
+        tal:repeat="item attach_analyses"
+        tal:define="wtool python:context.portal_workflow">
+    <tal:options
+        tal:condition="python:item.portal_type=='Analysis'">
+        <option
+            tal:condition="python:wtool.getInfoFor(item, 'review_state', '') in ['to_be_verified']"
+            tal:attributes="value item/UID;"
+            tal:define="this_title string:${item/getRequestID} - ${item/Title}"
+            tal:content="this_title"></option>
+    </tal:options>
     </tal:item>
     </select>
 </tal:analyses>

@@ -19,7 +19,7 @@ class LoadSetupData(BrowserView):
         BrowserView.__init__(self, context, request)
         self.title = _("Load Setup Data")
         self.description = _("Please.")
-        self.text = _("The values in the imported spreadsheet will evade validation.")
+        self.text = _("")
         # dependencies to resolve
         self.deferred = {}
 

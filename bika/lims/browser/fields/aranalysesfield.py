@@ -55,8 +55,8 @@ class ARAnalysesField(ObjectField):
         if not service_uids:
             return
 
-        assert type(service_uids) in (ListType, TupleType)
-        assert prices
+        assert type(service_uids) in (list, tuple)
+        assert type(prices) == dict
 
         workflow = instance.portal_workflow
         # one can only edit Analyses up to a certain state.
@@ -86,7 +86,7 @@ class ARAnalysesField(ObjectField):
                 analysis.edit(Service = service,
                               InterimFields = interim_fields,
                               MaxTimeAllowed = service.getMaxTimeAllowed())
-                analysis.processForm()
+                analysis.unmarkCreationFlag()
 
         # delete analyses
         delete_ids = []

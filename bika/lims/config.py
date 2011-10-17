@@ -56,6 +56,21 @@ TYPES_TO_VERSION = ('AnalysisService',
                     'WorksheetTemplate',
                     )
 
+BARCODE_TYPES = DisplayList((
+##    codabar
+##    msi
+    ('code11', _('Code 11')),
+    ('code39', _('Code 39')),
+    ('code93', _('Code 93')),
+    ('code93', _('Code 93')),
+    ('code128', _('Code 128')),
+    ('ean8', _('ean 8')),
+    ('ean13', _('ean 13')),
+    ('std25', _('standard 2 of 5 - industrial 2 of 5')),
+    ('int25', _('interleaved 2 of 5')),
+    ('datamatrix', _('ASCII + extended')),
+))
+
 BIKA_PERMISSIONS = (
     (ManageBika, ()),
     (ManageClients, ()),

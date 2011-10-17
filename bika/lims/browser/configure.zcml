@@ -31,6 +31,14 @@
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
+  <browser:page
+      for="*"
+      name="load_test_data"
+      class="bika.lims.browser.load_test_data.LoadTestData"
+      permission="bika.lims.ManageBika"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
   <!-- Zope 3 browser resources -->
 
   <browser:resourceDirectory

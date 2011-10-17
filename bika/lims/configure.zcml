@@ -1,5 +1,6 @@
 <configure
     xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
     xmlns:five="http://namespaces.zope.org/five"
     xmlns:cmf="http://namespaces.zope.org/cmf"
     xmlns:i18n="http://namespaces.zope.org/i18n"
@@ -20,5 +21,14 @@
   <i18n:registerTranslations directory="locales" />
 
   <cmf:registerDirectory name="skins" directory="skins" recursive="True" />
+
+  <!-- jquery redirects here when values are entered into 'document' context (barcodes) -->
+  <browser:page
+    for="*"
+    name="getObject"
+    class="bika.lims.utils.ajaxGetObject"
+    permission="zope.Public"
+    layer="bika.lims.interfaces.IBikaLIMS"
+  />
 
 </configure>

@@ -16,7 +16,18 @@
 <metal:content-description fill-slot="content-description">
 </metal:content-description>
 
-<metal:content-core fill-slot="content-core">
+<metal:content-core fill-slot="content-core"
+	tal:define="
+		analysis_attach_allowed here/bika_setup/getAnalysisAttachmentsPermitted;
+		attachments_allowed here/bika_setup/getAttachmentsPermitted;
+		delete_attachments python:True;
+		update_attachments python:True;
+		attach_services python:context.getWorksheetServices();
+		attach_analyses python:context.getAnalyses()">
+
+<!--	<div tal:condition="attachments_allowed"> -->
+<!--		<metal:block use-macro="here/attachments/macros/ws_attachments"/> -->
+<!--	</div> -->
 
 	<form
 		name="folderContentsForm"

@@ -6,6 +6,18 @@
  * Remove boring whitespace in sunburst
  */
 
+@font-face {
+    font-family: 'free3of9';
+    src: url('++resource++bika.lims.css/fonts/free3of9.eot');
+    src: url('++resource++bika.lims.css/fonts/free3of9.eot?#iefix') format('embedded-opentype'),
+         url('++resource++bika.lims.css/fonts/free3of9.woff') format('woff'),
+         url('++resource++bika.lims.css/fonts/free3of9.ttf') format('truetype'),
+         url('++resource++bika.lims.css/fonts/free3of9.svg#free3of9') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+
+
 #portal-breadcrumbs{
     margin-bottom: .3em;
 }
@@ -64,8 +76,6 @@ dl.portlet ul.navTreeLevel0 > .navTreeItem {
 /************ columns.css overrides */
 
 
-
-
 /* Pretty table classes
 */
 .three_column_table td {
@@ -95,8 +105,6 @@ div.width-1\:4 {
 div.position-1\:4 {
     margin-left: -82.25%;
 }
-
-
 
 
 #plone-contentmenu-workflow .state-cancelled {
@@ -129,6 +137,7 @@ div.position-1\:4 {
 #listing-table .state-inactive a {
     font-weight: bold;
 }
+#listing-table .state-due,
 #listing-table .state-sample_due {
 	color: #2bb800;
 }
@@ -196,9 +205,11 @@ table.analysisrequest {
 	border-top: 1px solid #dddddd;
 }
 
+/*
 table.analysisrequest.add{
 	width:100%;
 }
+*/
 
 table.analysisrequest.add td {
     text-align: center;
@@ -339,7 +350,9 @@ table.analysisrequest input {
 }
 
 .worksheet_add_control_references tr:hover,
-.worksheet_add_control_references tr:hover td {
+.worksheet_add_control_references tr:hover td,
+#worksheet_ars tr:hover,
+#worksheet_ars tr:hover td {
     cursor:pointer;
 	background:&dtml-notifyBackgroundColor; !important;
 

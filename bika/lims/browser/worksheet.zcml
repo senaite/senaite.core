@@ -45,6 +45,13 @@
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
+    <browser:page
+      for="bika.lims.interfaces.IWorksheet"
+      name="add_duplicate"
+      class="bika.lims.browser.worksheet.AddDuplicateView"
+      permission="bika.lims.AddAndRemoveAnalyses"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
 
     <browser:page
       for="bika.lims.interfaces.IWorksheet"
@@ -53,6 +60,7 @@
       permission="zope.Public"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
+
     <browser:page
       for="bika.lims.interfaces.IWorksheet"
       name="getWorksheetReferences"
@@ -60,10 +68,19 @@
       permission="zope.Public"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
+
     <browser:page
       for="bika.lims.interfaces.IWorksheet"
       name="addReferenceAnalyses"
       class="bika.lims.browser.worksheet.ajaxAddReferenceAnalyses"
+      permission="zope.Public"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
+      for="bika.lims.interfaces.IWorksheet"
+      name="addDuplicate"
+      class="bika.lims.browser.worksheet.ajaxAddDuplicate"
       permission="zope.Public"
       layer="bika.lims.interfaces.IBikaLIMS"
     />

@@ -117,6 +117,7 @@ $(document).ready(function(){
 		);
 	});
 
+	// click reference sample TR in add_blank or add_control
 	$("#reference_samples tr").live('click', function(){
 		url = window.location.href
 			.replace("/add_blank", "")
@@ -130,8 +131,26 @@ $(document).ready(function(){
 			url: url + "/addReferenceAnalyses",
 			data: {'service_uids': selected_service_uids.join(","),
 					'position':$("#position").val(),
-					'reference_uid':$(this).attr("uid"),
+					'reference':$(this).attr("uid"),
 					'_authenticator': $('input[name="_authenticator"]').val()},
+			success: function(responseText, statusText, xhr, $form) {
+				window.location.href = url + "/manage_results";
+			}
+
+		});
+	})
+
+	// click AR TR in add_duplicate
+	$("#worksheet_ars tr").live('click', function(){
+		url = window.location.href.replace("/add_duplicate", "");
+		$.ajax({
+			type:'POST',
+			url: url + "/addDuplicate",
+			data: {
+				'position':$("#position").val(),
+				'ar_uid':$(this).attr("uid"),
+				'_authenticator': $('input[name="_authenticator"]').val()
+			},
 			success: function(responseText, statusText, xhr, $form) {
 				window.location.href = url + "/manage_results";
 			}

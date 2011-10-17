@@ -130,7 +130,8 @@ def getAnalysts(context):
     """
     mtool = getToolByName(context, 'portal_membership')
     analysts = {}
-    pairs = [(' ', ' '), ]
+    member = mtool.getAuthenticatedMember()
+    pairs = [(member.getId(), member.getProperty('fullname')), ]
     analysts = mtool.searchForMembers(roles = ['LabManager', 'Analyst'])
     for member in analysts:
         uid = member.getId()
@@ -211,11 +212,9 @@ class WorksheetAnalysesView(AnalysesView):
                 items[x]['replace']['getRequestID'] = "<a href='%s'>%s</a>%s" % \
                      (ar.absolute_url(), ar.Title(), sample_icon)
             elif ar.portal_type == 'Worksheet':
-                sample = obj.getSample()
-                sample_icon = "<a href='%s'><img title='Sample: %s' src='++resource++bika.lims.images/sample.png'></a>" % \
-                    (sample.absolute_url(), sample.Title())
-                items[x]['replace']['getRequestID'] = "<a href='%s'>%s</a>%s" % \
-                     (obj.getAnalysis().aq_parent.absolute_url(), ar.Title(), sample_icon)
+                ar = obj.getAnalysis().aq_parent
+                items[x]['replace']['getRequestID'] = "<a href='%s'>(%s)</a>" % \
+                     (ar.absolute_url(), ar.Title())
 
             items[x]['replace']['Client'] = "<a href='%s'>%s</a>" % \
                  (client.absolute_url(), client.Title())
@@ -250,7 +249,7 @@ class ManageResultsView(BrowserView):
     def getAnalysts(self):
         return getAnalysts(self.context)
 
-class AnalysesSearchResults(BikaListingView):
+class AnalysesSearchResultsView(BikaListingView):
     ## The table used to display Analysis search results for AddAnalysesView
     def __init__(self, context, request):
         BikaListingView.__init__(self, context, request)
@@ -335,7 +334,7 @@ class AddAnalysesView(AnalysesView):
                 for field in ['getCategoryUID', 'getServiceUID', 'getClientUID',]:
                     if field in form and 'any' not in form[field]:
                         contentFilter[field] = form[field]
-        self.Analyses = AnalysesSearchResults(self.context, self.request)
+        self.Analyses = AnalysesSearchResultsView(self.context, self.request)
         self.Analyses.contentFilter = contentFilter
         return self.template()
 
@@ -369,12 +368,9 @@ class AddBlankView(BrowserView):
 
     def __init__(self, context, request):
         BrowserView.__init__(self, context, request)
-        self.title = "%s: %s" % (context.Title(), _("Add Blank Reference Analysis"))
-        self.description = _("Select services in the left column.  A list of " \
-                            "Blank Reference Samples which specify standard " \
-                            "results for the selected services will be " \
-                            "displayed.  Select a reference by clicking it in " \
-                            "the list.")
+        self.title = "%s: %s" % (context.Title(), _("Add Blank Reference"))
+        self.description = _("Select services in the left column to locate " \
+                             "reference samples. Select a reference by clicking it. ")
 
     def __call__(self):
         self.Services = WorksheetServicesView(self.context, self.request)
@@ -404,13 +400,9 @@ class AddControlView(BrowserView):
 
     def __init__(self, context, request):
         BrowserView.__init__(self, context, request)
-        self.title = "%s: %s" % (context.Title(), _("Add Control Reference Analysis"))
-        self.description = _("Select services in the left column.  A list of " \
-                            "Control Reference Samples which specify standard " \
-                            "results for the selected services will be " \
-                            "displayed.  Select a reference by clicking it in " \
-                            "the list.")
-
+        self.title = "%s: %s" % (context.Title(), _("Add Control Reference"))
+        self.description = _("Select services in the left column to locate " \
+                             "reference samples. Select a reference by clicking it. ")
     def __call__(self):
         self.Services = WorksheetServicesView(self.context, self.request)
         return self.template()
@@ -428,55 +420,111 @@ class AddControlView(BrowserView):
             wstlayout = wst.getLayout()
             available_positions = [slot['pos'] for slot in wstlayout \
                                    if slot['pos'] not in used_positions and \
-                                      slot['type'] == 'c']
+                                      slot['type'] == '']
+        else:
+            available_positions = []
         return available_positions
 
-class AddDuplicateView(BikaListingView):
-    contentFilter = {'portal_type': 'Analysis', 'review_state':'sample_received'}
-    content_add_actions = {}
-    show_editable_border = True
-    show_table_only = True
-    show_sort_column = False
-    show_select_row = False
-    show_select_column = True
-    show_filters = False
-    pagesize = 20
+class AddDuplicateView(BrowserView):
+    implements(IViewView)
+    template = ViewPageTemplateFile("templates/worksheet_add_duplicate.pt")
 
-    columns = {
-        'Client': {'title': _('Client')},
-        'Order': {'title': _('Order')},
-        'RequestID': {'title': _('Request ID')},
-        'Category': {'title': _('Category')},
-        'Analysis': {'title': _('Analysis')},
-        'DateReceived': {'title': _('Analysis')},
-        'Due': {'title': _('Analysis')},
-    }
-    review_states = [
-        {'title': _('All'), 'id':'all',
-         'columns':['Client',
-                    'Order',
-                    'RequestID',
-                    'Category',
-                    'Analysis',
-                    'DateReceived',
-                    'Due'],
-         'buttons':[{'cssclass': 'context',
-                     'title': _('Add to worksheet'),
-                     'url': ''}]
-        },
-    ]
+    def __init__(self, context, request):
+        BrowserView.__init__(self, context, request)
+        self.title = "%s: %s" % (context.Title(), _("Add Duplicates"))
+        self.description = _("Select a destinaton position and the AR to duplicate.")
+
+    def __call__(self):
+        self.ARs = WorksheetARsView(self.context, self.request)
+        return self.template()
+
+    def getAvailablePositions(self):
+        """ Return 'd' duplicate positions defined by the worksheettemplate
+            if the worksheet layout doesn't already have data for that slot
+        """
+        positions = []
+        layout = self.context.getLayout()
+        used_positions = [slot['position'] for slot in layout \
+                          if slot['container_uid']]
+        wst = self.context.getWorksheetTemplate()
+        if wst:
+            wstlayout = wst.getLayout()
+            available_positions = [slot['pos'] for slot in wstlayout \
+                                   if slot['pos'] not in used_positions and \
+                                      slot['type'] == 'd']
+        else:
+            available_positions = []
+        return available_positions
+
+class WorksheetARsView(BikaListingView):
+    ## This table displays a list of ARs referenced by this worksheet.
+    ## used in add_duplicate view.
+    def __init__(self, context, request):
+        BikaListingView.__init__(self, context, request)
+        self.content_add_actions = {}
+        self.contentFilter = {'portal_type': 'Analysis',
+                              'review_state':'impossible_state'}
+        self.show_editable_border = True
+        self.base_url = self.context.absolute_url()
+        self.view_url = self.base_url + "/add_blank"
+        self.show_sort_column = False
+        self.show_select_row = False
+        self.show_select_all_checkbox = False
+        self.show_select_column = False
+        self.show_filters = False
+
+        self.columns = {
+            'RequestID': {'title': _('Request ID')},
+            'Client': {'title': _('Client')},
+            'DateRequested': {'title': _('Date Requested')},
+        }
+        self.review_states = [
+            {'title': _('All'), 'id':'all',
+             'transitions': [],
+             'columns':['RequestID', 'Client', 'DateRequested'],
+            },
+        ]
 
     def folderitems(self):
-        items = BikaListingView.folderitems(self)
-        for x in range(len(items)):
-            if not items[x].has_key('obj'): continue
-            obj = items[x]['obj']
-            items[x]['Title'] = obj.Title()
-            items[x]['Owner'] = obj.obj.getOwnerTuple()[1]
-            items[x]['CreationDate'] = obj.CreationDate() and \
-                 TimeOrDate(self.context, obj.CreationDate()) or ''
-            items[x]['replace']['Title'] = "<a href='%s'>%s</a>" % \
-                 (items[x]['url'], items[x]['Title'])
+        pc = getToolByName(self.context, 'portal_catalog')
+        rc = getToolByName(self.context, 'reference_catalog')
+        services = {} # uid:item_dict
+        ars = [slot['container_uid'] for slot in self.context.getLayout()]
+        items = []
+        for ar in ars:
+            ar = rc.lookupObject(ar)
+            path = "/".join(ar.getPhysicalPath())
+            if ar.portal_type != 'AnalysisRequest':
+                continue
+            # this folderitems doesn't subclass from the bika_listing.py
+            # so we create items from scratch
+            item = {
+                'obj': ar,
+                'id': ar.id,
+                'uid': ar.UID(),
+                'title': ar.Title(),
+                'type_class': 'contenttype-AnalysisService',
+                'url': ar.absolute_url(),
+                'relative_url': ar.absolute_url(),
+                'view_url': ar.absolute_url(),
+                'path': path,
+                'RequestID': ar.id,
+                'Client': ar.aq_parent.Title(),
+                'DateRequested': TimeOrDate(ar, ar.getDateRequested()),
+                'replace': {},
+                'before': {},
+                'after': {},
+                'choices':{},
+                'class': {},
+                'state_class': 'state-active',
+                'allow_edit': [],
+            }
+            ar_hrefs = []
+            items.append(item)
+
+        for i in range(len(items)):
+            items[i]['table_row_class'] = ((i + 1) % 2 == 0) and \
+                 "draggable even" or "draggable odd"
 
         return items
 
@@ -532,7 +580,7 @@ class WorksheetServicesView(BikaListingView):
             if calculation and calculation.getDependentServices():
                 continue
             # this folderitems doesn't subclass from the bika_listing.py
-            # version, so there's lots of other stuff we have to insert here
+            # so we create items from scratch
             item = {
                 'obj': v['obj'],
                 'id': v['obj'].id,
@@ -553,9 +601,6 @@ class WorksheetServicesView(BikaListingView):
                 'state_class': 'state-active',
                 'allow_edit': [],
             }
-            for i in range(len(items)):
-                items[i]['table_row_class'] = ((i + 1) % 2 == 0) and \
-                     "draggable even" or "draggable odd"
             ar_hrefs = []
             for ar in v['Requests']:
                 if getSecurityManager().checkPermission(ManageResults, ar):
@@ -565,6 +610,10 @@ class WorksheetServicesView(BikaListingView):
                 ar_hrefs.append("<a href='%s'>%s</a>"%(url, ar.Title()))
             item['replace']['Requests'] = ", ".join(ar_hrefs)
             items.append(item)
+
+        for i in range(len(items)):
+            items[i]['table_row_class'] = ((i + 1) % 2 == 0) and \
+                 "draggable even" or "draggable odd"
 
         return items
 
@@ -658,15 +707,15 @@ class ajaxAddReferenceAnalyses(BrowserView):
         position = self.request.get('position', '')
         if not position:
             return
-        reference_uid = self.request.get('reference_uid', '')
+        reference_uid = self.request.get('reference', '')
         reference = rc.lookupObject(reference_uid)
         if not reference:
             return
         ref_type = reference.getBlank() and 'b' or 'c'
 
-        ref_analyses = self.context.addReferenceAnalyses(position,
-                                                         reference,
-                                                         service_uids)
+        ref_analyses = self.context.addReferences(position,
+                                                  reference,
+                                                  service_uids)
 
         if not ref_analyses:
             message = _('No reference analyses were created')
@@ -676,7 +725,26 @@ class ajaxAddReferenceAnalyses(BrowserView):
             message = _('Control analysis has been assigned')
         self.context.plone_utils.addPortalMessage(message)
 
+class ajaxAddDuplicate(BrowserView):
+    """ The add_duplicate view TRs click through to here
+    """
 
+    def __call__(self):
+        rc = getToolByName(self.context, 'reference_catalog')
+        plone.protect.PostOnly(self.request)
+        plone.protect.CheckAuthenticator(self.request)
+
+        ar_uid = self.request.get('ar_uid', '')
+        if not ar_uid:
+            return
+        src_slot = [slot['position'] for slot in self.context.getLayout() if \
+                    slot['container_uid'] == ar_uid][0]
+
+        position = self.request.get('position', '')
+        if not position:
+            return
+        self.request['context_uid'] = self.context.UID()
+        dups = self.context.addDuplicateAnalyses(src_slot, position)
 
 class ajaxSetAnalyst(BrowserView):
     """ The Analysis dropdown uses this to set the analysis immediately when
