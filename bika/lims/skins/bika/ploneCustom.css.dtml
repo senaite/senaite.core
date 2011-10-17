@@ -334,6 +334,14 @@ table.analysisrequest input {
 * worksheets
 */
 
+.template-manage_results #listing-table td {
+  vertical-align:top;
+}
+.template-manage_results #listing-table td table {
+  padding:0;
+  margin:0;
+}
+
 .worksheet_add_control {
     width:100%;
 	text-align:center !important;

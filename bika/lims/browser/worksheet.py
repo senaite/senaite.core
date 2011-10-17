@@ -153,30 +153,30 @@ class WorksheetAnalysesView(AnalysesView):
 
         self.columns = {
             'Pos': {'title': _('Pos')},
-            'Client': {'title': _('Client')},
-            'Order': {'title': _('Order')},
-            'getRequestID': {'title': _('Request ID')},
+##            'Client': {'title': _('Client')},
+##            'Order': {'title': _('Order')},
+##            'getRequestID': {'title': _('Request ID')},
             'DueDate': {'title': _('Due Date')},
             'Category': {'title': _('Category')},
             'Service': {'title': _('Analysis')},
             'Result': {'title': _('Result')},
             'Uncertainty': {'title': _('+-')},
             'retested': {'title': _('Retested'), 'type':'boolean'},
-#            'Attachments': {'title': _('Attachments')},
+##            'Attachments': {'title': _('Attachments')},
             'state_title': {'title': _('State')},
         }
         self.review_states = [
             {'title': _('All'), 'id':'all',
              'transitions': ['submit', 'verify', 'retract', 'unassign'],
              'columns':['Pos',
-                        'Client',
-                        'Order',
-                        'getRequestID',
+##                        'Client',
+##                        'Order',
+##                        'getRequestID',
                         'Category',
                         'Service',
                         'Result',
                         'Uncertainty',
-#                        'Attachments',
+##                        'Attachments',
                         'DueDate',
                         'state_title'],
              },
@@ -196,46 +196,56 @@ class WorksheetAnalysesView(AnalysesView):
             items[x]['Pos'] = pos
             service = obj.getService()
             items[x]['Category'] = service.getCategory().Title()
-            # ar is either an AR, a Worksheet, or a ReferenceSample (analysis parent).
-            ar = obj.aq_parent
-            # client is either a Client, a ReferenceSupplier, or the worksheet folder.
-            client = ar.aq_parent
-            if ar.portal_type == 'AnalysisRequest':
-                sample = obj.getSample()
-                sample_icon = "<a href='%s'><img title='Sample: %s' src='++resource++bika.lims.images/sample.png'></a>" % \
-                    (sample.absolute_url(), sample.Title())
-                items[x]['replace']['getRequestID'] = "<a href='%s'>%s</a>%s" % \
-                     (ar.absolute_url(), ar.Title(), sample_icon)
-            elif ar.portal_type == 'ReferenceSample':
-                sample_icon = "<a href='%s'><img title='Reference: %s' src='++resource++bika.lims.images/referencesample.png'></a>" % \
-                    (ar.absolute_url(), ar.Title())
-                items[x]['replace']['getRequestID'] = "<a href='%s'>%s</a>%s" % \
-                     (ar.absolute_url(), ar.Title(), sample_icon)
-            elif ar.portal_type == 'Worksheet':
-                ar = obj.getAnalysis().aq_parent
-                items[x]['replace']['getRequestID'] = "<a href='%s'>(%s)</a>" % \
-                     (ar.absolute_url(), ar.Title())
 
-            items[x]['replace']['Client'] = "<a href='%s'>%s</a>" % \
-                 (client.absolute_url(), client.Title())
             items[x]['DueDate'] = \
                 TimeOrDate(self.context, obj.getDueDate(), long_format = 0)
             items[x]['Order'] = ''
-            if hasattr(ar, 'getClientOrderNumber'):
-                order_nr = ar.getClientOrderNumber() or ''
-                items[x]['Order'] = order_nr
-            if obj.portal_type == 'DuplicateAnalysis':
-                items[x]['after']['Pos'] = '<img title="Duplicate" width="16" height="16" src="%s/++resource++bika.lims.images/duplicate.png"/>' % \
-                    (self.context.absolute_url())
-            elif obj.portal_type == 'ReferenceAnalysis':
-                if obj.ReferenceType == 'b':
-                    items[x]['after']['Pos'] = '<img title="Blank"  width="16" height="16" src="%s/++resource++bika.lims.images/blank.png"/>' % \
-                        (self.context.absolute_url())
-                else:
-                    items[x]['after']['Pos'] = '<img title="Control" width="16" height="16" src="%s/++resource++bika.lims.images/control.png"/>' % \
-                        (self.context.absolute_url())
         items = sorted(items, key=itemgetter('Service'))
         items = sorted(items, key=itemgetter('Pos'))
+
+        # add rowspan tags for slot headers
+        slot_items = {} # pos:[item_nrs]
+        for x in range(len(items)):
+            if items[x]['Pos'] in slot_items:
+                slot_items[items[x]['Pos']].append(x)
+            else:
+                slot_items[items[x]['Pos']] = [x,]
+        for pos,pos_items in slot_items.items():
+            x = pos_items[0]
+            items[x]['rowspan'] = {'Pos': len(pos_items)}
+            items[x]['class']['Pos'] = " .nopadding"
+            # ar is either an AR, a Worksheet, or a ReferenceSample (analysis parent).
+            ar = items[x]['obj'].aq_parent
+            # client is either a Client, a ReferenceSupplier, or the worksheet folder.
+            client = ar.aq_parent
+            pos_text = "<table width='100%%' cellpadding='0' cellspacing='0' cellborder='0'><tr><td>%s</td>" % pos
+            pos_text += "<td><a href='%s'>%s</a></td>" % (client.absolute_url(), client.Title())
+            if obj.portal_type == 'DuplicateAnalysis':
+                pos_text += '<td><img title="Duplicate" width="16" height="16" src="%s/++resource++bika.lims.images/duplicate.png"/></td>' % (self.context.absolute_url())
+            elif obj.portal_type == 'ReferenceAnalysis':
+                if obj.ReferenceType == 'b':
+                    pos_text += '<td><img title="Blank"  width="16" height="16" src="%s/++resource++bika.lims.images/blank.png"/></td>' % (self.context.absolute_url())
+                else:
+                    pos_text += '<td><img title="Control" width="16" height="16" src="%s/++resource++bika.lims.images/control.png"/></td>' % (self.context.absolute_url())
+            else:
+                pos_text += "<td></td>"
+            pos_text += "</tr><tr><td></td>"
+            if ar.portal_type == 'AnalysisRequest':
+                sample = ar.getSample()
+                sample_icon = "<a href='%s'><img title='Sample: %s' src='++resource++bika.lims.images/sample.png'></a>" % (sample.absolute_url(), sample.Title())
+                pos_text += "<td><a href='%s'>%s</a></td><td>%s</td>" % (ar.absolute_url(), ar.Title(), sample_icon)
+            elif ar.portal_type == 'ReferenceSample':
+                sample_icon = "<a href='%s'><img title='Reference: %s' src='++resource++bika.lims.images/referencesample.png'></a>" % (ar.absolute_url(), ar.Title())
+                pos_text += "<td><a href='%s'>%s</a></td><td>%s</td>" % (ar.absolute_url(), ar.Title(), sample_icon)
+            elif ar.portal_type == 'Worksheet':
+                ar = items[x]['obj'].getAnalysis().aq_parent
+                pos_text += "<td><a href='%s'>(%s)</a></td><td></td>" % (ar.absolute_url(), ar.Title())
+            pos_text += "</tr>"
+            if hasattr(ar, 'getClientOrderNumber'):
+                pos_text += "<tr><td></td><td>Order: %s</td><td></td></tr>" % (ar.getClientOrderNumber() or '')
+            pos_text += "<tr><td colspan='3'><div class='barcode' value='%s'/>&nbsp;</td></tr></tr>" % (ar.id)
+            pos_text += "</table>"
+            items[x]['replace']['Pos'] = pos_text
         return items
 
 class ManageResultsView(BrowserView):

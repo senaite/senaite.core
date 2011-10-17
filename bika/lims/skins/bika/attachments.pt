@@ -37,7 +37,6 @@
     </dd>
   </dl>
 </div>
-</div>
 
 <div metal:define-macro="ar_attachments_list"
      class="ar_attachments_list"

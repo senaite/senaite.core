@@ -1,4 +1,6 @@
 <div class="folderlisting-main-table" tal:define="
+	global rowspan python:{};
+	global rowspan_max python:{};
 	nosortclass view/get_nosort_class;
 	portal context/@@plone_portal_state/portal;
 	review_state python:[t for t in view.review_states
@@ -228,7 +230,12 @@ Table cells for each column from in review_state's column list.
 	<tal:cell
 		tal:repeat="column review_state/columns">
 
+	<tal:rowspan tal:define="dummy python: 'rowspan' in item and column in item['rowspan'] and rowspan_max.update({column: item['rowspan'][column]})"/>
+	<tal:rowspan tal:define="dummy python: column in rowspan_max or rowspan_max.update({column: 1})"/>
+	<tal:rowspan tal:define="dummy python: rowspan.update({column: 'rowspan' in item and column in item['rowspan'] and item['rowspan'][column] or rowspan.get('column', 2)-1})"/>
+
 	<td
+		tal:condition="python:rowspan[column] == rowspan_max[column]"
 		tal:define="
 			input_width python:5;
 			allow_edit python:column in item['allow_edit'];
@@ -247,7 +254,8 @@ Table cells for each column from in review_state's column list.
 			class python:column in item['class'] and
 				item['class'][column] or '';"
 		tal:attributes="
-			class string:$table_row_class $class ${item/state_class} $column">
+			class string:$table_row_class $class ${item/state_class} $column;
+			rowspan python:rowspan[column]">
 
 	<tal:comment replace="nothing"><!-- before structure --></tal:comment>
 	<tal:before

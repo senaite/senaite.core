@@ -25,9 +25,9 @@
 		attach_services python:context.getWorksheetServices();
 		attach_analyses python:context.getAnalyses()">
 
-<!--	<div tal:condition="attachments_allowed"> -->
-<!--		<metal:block use-macro="here/attachments/macros/ws_attachments"/> -->
-<!--	</div> -->
+<!--	<div tal:condition="attachments_allowed">-->
+<!--		<metal:block use-macro="here/attachments/macros/ws_attachments"/>-->
+<!--	</div>-->
 
 	<form
 		name="folderContentsForm"
