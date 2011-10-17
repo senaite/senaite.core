@@ -43,7 +43,8 @@ class ReferenceResultsWidget(RecordsWidget):
         """
         categories = {}
         pc = getToolByName(self, 'portal_catalog')
-        services = pc(portal_type = 'AnalysisService')
+        services = pc(portal_type = 'AnalysisService',
+                      sort_on='sortable_title')
         for service in services:
             service = service.getObject()
             calc = service.getCalculation()
@@ -68,6 +69,7 @@ class ReferenceResultsWidget(RecordsWidget):
         pc = getToolByName(self, 'portal_catalog')
         for ref in getattr(field, field.accessor)():
             service = pc(portal_type='AnalysisService',
+                         sort_on='sortable_title',
                          UID=ref['uid'])[0]
             service = service.getObject()
             calc = service.getCalculation()
@@ -85,7 +87,8 @@ class ReferenceResultsWidget(RecordsWidget):
     security.declarePublic('getCategoryUID')
     def getCategoryUID(self, category_title):
         pc = getToolByName(self, 'portal_catalog')
-        cats = pc(portal_type = "AnalysisCategory")
+        cats = pc(portal_type = "AnalysisCategory", 
+                  sort_on='sortable_title')
         cats = [cat.UID for cat in cats if cat.Title == category_title]
         if cats:
             return cats[0]

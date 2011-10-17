@@ -680,6 +680,7 @@ class ajaxExpandCategory(BikaListingView):
         """ return a list of services brains """
         pc = getToolByName(self.context, 'portal_catalog')
         services = pc(portal_type = "AnalysisService",
+                      sort_on='sortable_title',
                       inactive_state = 'active',
                       getPointOfCapture = poc,
                       getCategoryUID = CategoryUID)
