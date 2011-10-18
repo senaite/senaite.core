@@ -22,8 +22,10 @@ schema = BikaSchema.copy() + Schema((
     ),
     RecordsField('Layout',
         required = 1,
-        subfields = ('position', 'container_uid', 'analysis_uids'),
+        subfields = ('position', 'type', 'container_uid', 'analysis_uid'),
+        subfield_types = {'position':'int'},
     ),
+    # all layout info lives in Layout; Analyses is used for back references.
     ReferenceField('Analyses',
         required = 1,
         multiValued = 1,
@@ -61,13 +63,10 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
     def getFolderContents(self, contentFilter):
         # The bika_listing machine passes contentFilter to all
         # contentsMethod methods.  We ignore it.
-        analyses = list(self.getAnalyses())
-        dups = [o for o in self.objectValues() if \
-                o.portal_type == "DuplicateAnalysis"]
-        return analyses + dups
+        return list(self.getAnalyses())
 
     security.declareProtected(AddAndRemoveAnalyses, 'addAnalysis')
-    def addAnalysis(self, analysis):
+    def addAnalysis(self, analysis, position=None):
         """- add the analysis to self.Analyses().
            - try to add the analysis parent in the worksheet layout according
              to the worksheet's template, if possible.
@@ -75,42 +74,35 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         wf = getToolByName(self, 'portal_workflow')
         rc = getToolByName(self, 'reference_catalog')
 
+        analysis_uid = analysis.UID()
+        parent_uid = analysis.aq_parent.UID()
+        analyses = self.getAnalyses()
+        layout = self.getLayout()
+        wst = self.getWorksheetTemplate()
+        wstlayout = wst and wst.getLayout() or []
+
         # adding analyses to cancelled worksheet reinstates it
         if wf.getInfoFor(self, 'cancellation_state', '') == 'cancelled':
             wf.doActionFor(self, 'reinstate')
 
-        self.setAnalyses(self.getAnalyses() + [analysis,])
-
-        # if our parent object is already in the worksheet layout we're done.
-        parent_uid = analysis.aq_parent.UID()
-        wslayout = self.getLayout()
-        if parent_uid in [l['container_uid'] for l in wslayout]:
+        # check if this analysis is already in the layout
+        if analysis_uid in [l['analysis_uid'] for l in layout]:
             return
 
-        wst = self.getWorksheetTemplate()
-        wstlayout = wst and wst.getLayout() or []
+        self.setAnalyses(analyses + [analysis,])
 
-        if analysis.portal_type == 'Analysis':
-            analysis_type = 'a'
-        elif analysis.portal_type == 'DuplicateAnalysis':
-            analysis_type = 'd'
-        elif analysis.portal_type == 'ReferenceAnalysis':
-            if analysis.getBlank():
-                analysis_type = 'b'
-            else:
-                analysis_type = 'c'
-        else:
-            raise WorkflowException, _("Invalid Analysis Type")
-        wslayout = self.getLayout()
-        position = len(wslayout) + 1
-        if wst:
-            used_positions = [slot['position'] for slot in wslayout]
-            available_positions = [row['pos'] for row in wstlayout \
-                                   if row['pos'] not in used_positions and \
-                                      row['type'] == analysis_type] or [position,]
-            position = available_positions[0]
-        self.setLayout(wslayout + [{'position': position,
-                                    'container_uid': parent_uid},])
+        if not position:
+            position = len(layout) + 1
+            if wst:
+                used_positions = [slot['position'] for slot in wslayout]
+                available_positions = [row['pos'] for row in wstlayout \
+                                       if row['pos'] not in used_positions and \
+                                          row['type'] == analysis_type] or [position,]
+                position = available_positions[0]
+        self.setLayout(layout + [{'position': position,
+                                  'type': 'a',
+                                  'container_uid': parent_uid,
+                                  'analysis_uid': analysis.UID()},])
 
     security.declareProtected(AddAndRemoveAnalyses, 'removeAnalysis')
     def removeAnalysis(self, analysis):
@@ -139,51 +131,46 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         """
         wf = getToolByName(self, 'portal_workflow')
         rc = getToolByName(self, 'reference_catalog')
+        analyses = self.getAnalyses()
+        layout = self.getLayout()
+        wst = self.getWorksheetTemplate()
+        wstlayout = wst and wst.getLayout() or []
+        ref_type = reference.getBlank() and 'b' or 'c'
+        ref_uid = reference.UID()
 
         # adding analyses to cancelled worksheet reinstates it
         if wf.getInfoFor(self, 'cancellation_state', '') == 'cancelled':
             wf.doActionFor(self, 'reinstate')
 
-        analyses = self.getAnalyses()
-        layout = self.getLayout()
-        wst = self.getWorksheetTemplate()
-        wstlayout = wst and wst.getLayout() or []
-
-        ref_type = reference.getBlank() and 'b' or 'c'
-
-        # discover valid worksheet position for the reference sample
-        highest_existing_position = len(wstlayout)
-        for pos in [int(slot['position']) for slot in layout]:
-            if pos > highest_existing_position:
-                highest_existing_position = pos
         if position == 'new':
+            highest_existing_position = len(wstlayout)
+            for pos in [int(slot['position']) for slot in layout]:
+                if pos > highest_existing_position:
+                    highest_existing_position = pos
             position = highest_existing_position + 1
 
-        # If the reference sample already has a slot, get a list of services
-        # that exist there, so as not to duplicate them
+        # find out which services already have analyses in this slot
+        slot_analyses = [slot['analysis_uid'] for slot in layout if \
+                                    slot['container_uid'] == ref_uid]
         existing_services_in_pos = []
-        parent = [slot['container_uid'] for slot in layout if \
-                      slot['container_uid'] == reference.UID()]
-        if parent:
+        if [slot['container_uid'] for slot in layout if slot['container_uid'] == reference.UID()]:
             for analysis in analyses:
                 if analysis.aq_parent.UID() == reference.UID():
                     existing_services_in_pos.append(analysis.getService().UID())
 
-        ref_analyses = []
         for service_uid in service_uids:
             if service_uid in existing_services_in_pos:
                 continue
             ref_uid = reference.addReferenceAnalysis(service_uid, ref_type)
-            reference_analysis = rc.lookupObject(ref_uid)
-            ref_analyses.append(reference_analysis)
-
-        if ref_analyses:
+            ref_analysis = rc.lookupObject(ref_uid)
             self.setLayout(
-                layout + [{'position' : position,
-                           'container_uid' : reference.UID()},])
+                self.getLayout() + [{'position' : position,
+                                     'type':ref_type,
+                                     'container_uid' : reference.UID(),
+                                     'analysis_uid': ref_analysis.UID()}])
             self.setAnalyses(
-                self.getAnalyses() + ref_analyses)
-        return ref_analyses
+                self.getAnalyses() + [ref_analysis,])
+
 
     security.declareProtected(AddAndRemoveAnalyses, 'addDuplicateAnalyses')
     def addDuplicateAnalyses(self, src_slot, dest_slot):
@@ -194,29 +181,35 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
 
         analyses = self.getAnalyses()
         layout = self.getLayout()
+        wst = self.getWorksheetTemplate()
+        wstlayout = wst and wst.getLayout() or []
 
-        if dest_slot == 'new':
-            dest_slot = max([slot['position'] for slot in layout])
+        src_ar = [slot['container_uid'] for slot in layout if \
+                  slot['position'] == src_slot]
 
-        src_parent_uid = [p['container_uid'] for p in layout if \
-                      int(p['position']) == src_slot][0]
-        src_analyses = [a for a in analyses if \
-                        a.aq_parent.UID() == src_parent_uid]
+        # check/overwrite/set dest_slot
+        if src_ar in [slot['container_uid'] for slot in layout if \
+                      slot['type'] == 'd']:
+            dest_slot = [slot['position'] for slot in layout if \
+                         slot['container_uid'] == src_ar and \
+                         slot['type'] == 'd'][0]
+        else:
+            if not dest_slot or dest_slot == 'new':
+                highest_existing_position = len(wstlayout)
+                for pos in [int(slot['position']) for slot in layout]:
+                    if pos > highest_existing_position:
+                        highest_existing_position = pos
+                dest_slot = highest_existing_position + 1
 
-        wsdups = [o for o in self.objectValues() if \
-                   o.portal_type == 'DuplicateAnalysis']
-        wsdup_src_uids = [d.getAnalysis().UID for d in wsdups]
+        src_analyses = [rc.lookupObject(slot['analysis_uid']) \
+                        for slot in layout if \
+                        slot['position'] == src_slot]
+        dest_analyses = [rc.lookupObject(slot['analysis_uid']) \
+                        for slot in layout if \
+                        slot['position'] == dest_slot]
 
-        layout_dest_slot = [s for s in layout if int(s['position']) == dest_slot]
-        layout_dest_slot = layout_dest_slot and layout_dest_slot[0] or \
-                                 {'position':dest_slot,
-                                  'container_uid':self.UID(),
-                                  'analysis_uids':''}
-
-        new_dups = []
         for analysis in src_analyses:
-            # if the duplicate already exists do nothing
-            if analysis.UID() in wsdup_src_uids:
+            if analysis.UID() in [a.UID() for a in dest_analyses]:
                 continue
             service = analysis.getService()
             keyword = service.getKeyword()
@@ -226,17 +219,12 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             duplicate.setAnalysis(analysis)
             duplicate.processForm()
             wf.doActionFor(duplicate, 'assign')
-            new_dups.append(duplicate)
-
-        if new_dups:
-            dup_uids = ",".join([a.UID() for a in new_dups])
-            layout = [slot for slot in self.getLayout() if \
-                      slot['container_uid'] != self.UID()]
-            layout_dest_slot['analysis_uids'] += dup_uids
-            layout.append(layout_dest_slot)
-            self.setLayout(layout)
-
-        return new_dups
+            self.setLayout(
+                self.getLayout() + [{'position':dest_slot,
+                                     'type':'d',
+                                     'container_uid':analysis.aq_parent.UID(),
+                                     'analysis_uid': duplicate.UID()},]
+            )
 
     def getInstrumentExports(self):
         """ return the possible instrument export formats """
@@ -388,9 +376,6 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             analyses.append(analysis)
 
         for analysis in self.objectValues('DuplicateAnalysis'):
-            analyses.append(analysis)
-
-        for analysis in self.objectValues('RejectAnalysis'):
             analyses.append(analysis)
 
         return analyses

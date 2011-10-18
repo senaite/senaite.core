@@ -7,6 +7,8 @@ from bika.lims import logger, bikaMessageFactory as _
 from os.path import join
 import Globals
 import tempfile
+from time import time
+from plone.app.folder.utils import timer
 import transaction
 import random
 
@@ -28,14 +30,13 @@ class LoadTestData(BrowserView):
 
     def load_ars(self):
 
-        counts = {'Digestible Energy': 50,
-                  'Micro-Bio check': 50,
-                  'Micro-Bio counts': 50,
-                  'Trace Metals': 50}
+        counts = {'Digestible Energy': 10,
+                  'Micro-Bio check': 10,
+                  'Micro-Bio counts': 10,
+                  'Trace Metals': 10}
 
         sampletypes = [p.getObject() for p in self.portal_catalog(portal_type="SampleType")]
         samplepoints = [p.getObject() for p in self.portal_catalog(portal_type="SamplePoint")]
-
         for client in self.context.clients.objectValues():
             contacts = [c for c in client.objectValues() if c.portal_type == 'Contact']
             for profile, count_ars in counts.items():
@@ -44,6 +45,7 @@ class LoadTestData(BrowserView):
                 profile_services = profile.getService()
 
                 _ars = []
+                t = timer.gen()
                 for i in range(1, count_ars+1):
                     sample_id = client.generateUniqueId('Sample')
                     client.invokeFactory(id = sample_id, type_name = 'Sample')
@@ -51,9 +53,8 @@ class LoadTestData(BrowserView):
                     sample.edit(
                         SampleID = sample_id,
                         SampleType = random.choice(sampletypes).Title(),
-                        SamplePoint = random.choice(samplepoints),
+                        SamplePoint = random.choice(samplepoints).Title(),
                         ClientReference = "".join([chr(random.randint(32,100)) for r in range(10)]),
-                        ClientOrderNumber = "".join([chr(random.randint(32,100)) for r in range(10)]),
                         ClientSampleID = "".join([chr(random.randint(32,100)) for r in range(10)]),
                         LastARNumber = 1,
                         DateSubmitted = DateTime(),
@@ -73,6 +74,7 @@ class LoadTestData(BrowserView):
                         CCEmails = "",
                         Sample = sample,
                         Profile = profile,
+                        ClientOrderNumber = "".join([chr(random.randint(32,100)) for r in range(10)]),
                     )
                     ar.unmarkCreationFlag()
                     prices = {}
@@ -81,6 +83,7 @@ class LoadTestData(BrowserView):
                         service_uids.append(service.UID())
                         prices[service.UID()] = service.getPrice()
                     ar.setAnalyses(service_uids, prices = prices)
-                for i in range(25):
+                for i in range(5):
                     self.portal_workflow.doActionFor(_ars[i], 'receive')
+                print t.next()
                 transaction.get().commit()

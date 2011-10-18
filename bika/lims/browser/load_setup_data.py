@@ -666,6 +666,7 @@ class LoadSetupData(BrowserView):
         nr_cols = sheet.get_highest_column()
 ##        self.request.response.write("<input type='hidden' id='load_section' value='Reference Definitions' max='%s'/>"%(nr_rows-3))
 ##        self.request.response.flush()
+        self.definitions = {}
         rows = [[sheet.cell(row=row_nr, column=col_nr).value for col_nr in range(nr_cols)] for row_nr in range(nr_rows)]
         fields = rows[1]
         folder = self.context.bika_setup.bika_referencedefinitions
@@ -680,6 +681,7 @@ class LoadSetupData(BrowserView):
                          Blank = row['Blank'] and True or False,
                          Hazardous = row['Hazardous'] and True or False)
                 obj.processForm()
+                self.definitions[unicode(row['title'])] = obj.UID()
             service = self.services[row['keyword']]
             try: result = int(row['result'])
             except: result = 0
@@ -821,10 +823,12 @@ class LoadSetupData(BrowserView):
             row = dict(zip(fields, row))
             if not row['title']:
                 if row['pos']:
+                    control_ref = self.definitions.get(unicode(row['control_ref']), '')
+                    blank_ref = self.definitions.get(unicode(row['blank_ref']), '')
                     l = [{'pos':unicode(row['pos']),
                           'type':unicode(row['type']),
-                          'blank_ref':unicode(row['blank_ref']),
-                          'control_ref':unicode(row['control_ref']),
+                          'control_ref':control_ref,
+                          'blank_ref':blank_ref,
                           'dup':unicode(row['dup'])}]
                     wst_obj.setLayout(wst_obj.getLayout() + l)
                 continue
@@ -837,13 +841,15 @@ class LoadSetupData(BrowserView):
             proxies = services and self.portal_catalog(portal_type="AnalysisService",
                                                        getKeyword = services) or []
             services = [p.UID for p in proxies]
+            control_ref = self.definitions.get(unicode(row['control_ref']), '')
+            blank_ref = self.definitions.get(unicode(row['blank_ref']), '')
             obj.edit(title = unicode(row['title']),
                      description = unicode(row['description']),
                      Service = services,
                      Layout = [{'pos':unicode(row['pos']),
                                 'type':unicode(row['type']),
-                                'blank_ref':unicode(row['blank_ref']),
-                                'control_ref':unicode(row['control_ref']),
+                                'control_ref':control_ref,
+                                'blank_ref':blank_ref,
                                 'dup':unicode(row['dup'])}])
             wst_obj = obj
             obj.processForm()

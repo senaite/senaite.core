@@ -25,7 +25,6 @@ class WorksheetFolderListingView(BikaListingView):
     show_select_all_checkbox = True
     show_select_column = True
     pagesize = 50
-
     columns = {
         'Title': {'title': _('Worksheet Number')},
         'Owner': {'title': _('Owner')},
@@ -199,41 +198,32 @@ class AddWorksheetView(BrowserView):
         wstlayout = wst.getLayout()
         services = wst.getService()
         wst_service_uids = [s.UID() for s in services]
-
         ws.setWorksheetTemplate(wst)
 
-        Layout = [] # list of dict [{position:x, container_uid:x},]
-        Analyses = [] # list of analysis objects
+        analyses = pc(portal_type = 'Analysis',
+                      getServiceUID = wst_service_uids,
+                      review_state = 'sample_received',
+                      worksheetanalysis_review_state = 'unassigned',
+                      cancellation_state = 'active',
+                      sort_on = 'getDueDate')
+        # collect analyses from the first X ARs.
+        ar_analyses = {} # ar_uid : [analyses]
+        ars = [] # for sorting
+        wst_positions = len([row for row in wstlayout if row['type'] == 'a'])
+        for analysis in analyses:
+            ar = analysis.getRequestID
+            if ar in ar_analyses:
+                ar_analyses[ar].append(analysis.getObject())
+            else:
+                if len(ar_analyses.keys()) < wst_positions:
+                    ars.append(ar)
+                    ar_analyses[ar] = [analysis.getObject(),]
 
-        # assign matching AR analyses
-        for analysis in pc(portal_type = 'Analysis',
-                           getServiceUID = wst_service_uids,
-                           review_state = 'sample_received',
-                           worksheetanalysis_review_state = 'unassigned',
-                           cancellation_state = 'active',
-                           sort_on = 'getDueDate'):
-            analysis = analysis.getObject()
-            service_uid = analysis.getService().UID()
-
-            # if our parent object is already in the worksheet layout
-            # we just add the analysis to Analyses
-            parent_uid = analysis.aq_parent.UID()
-            wslayout = ws.getLayout()
-            if parent_uid in [l['container_uid'] for l in wslayout]:
+        positions = [row['pos'] for row in wstlayout if row['type'] == 'a']
+        for ar in ars:
+            for analysis in ar_analyses[ar]:
                 wf.doActionFor(analysis, 'assign')
-                ws.setAnalyses(ws.getAnalyses() + [analysis, ])
-                continue
-            position = len(wslayout) + 1
-            used_positions = [slot['position'] for slot in wslayout]
-            available_positions = [row['pos'] for row in wstlayout \
-                                   if row['pos'] not in used_positions and \
-                                   row['type'] == 'a']
-            if not available_positions:
-                continue
-            ws.setLayout(wslayout + [{'position': available_positions[0],
-                                      'container_uid': parent_uid}, ])
-            wf.doActionFor(analysis, 'assign')
-            ws.setAnalyses(ws.getAnalyses() + [analysis, ])
+                ws.addAnalysis(analysis, positions[ars.index(ar)])
 
         # find best maching reference samples for Blanks and Controls
         for t in ('b', 'c'):
@@ -249,7 +239,7 @@ class AddWorksheetView(BrowserView):
                     msg = self.context.translate(
                         "message_no_references_found",
                         mapping = {'position':row['pos'],
-                                   'definition':reference_definition and \
+                                   'definition':reference_definition.Title() and \
                                    reference_definition.Title() or ''},
                         default = "No reference samples found for " + \
                         "${definition} at position ${position}.",

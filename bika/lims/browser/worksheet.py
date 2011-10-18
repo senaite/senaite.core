@@ -112,6 +112,8 @@ class WorksheetWorkflowAction(WorkflowAction):
             if selected_analyses:
                 for uid in selected_analysis_uids:
                     analysis = rc.lookupObject(uid)
+                    if analysis.portal_type == "DuplicateAnalysis":
+                        continue
                     workflow.doActionFor(analysis, 'unassign')
                     self.context.removeAnalysis(analysis)
 
@@ -151,9 +153,6 @@ class WorksheetAnalysesView(AnalysesView):
 
         self.columns = {
             'Pos': {'title': _('Pos')},
-##            'Client': {'title': _('Client')},
-##            'Order': {'title': _('Order')},
-##            'getRequestID': {'title': _('Request ID')},
             'DueDate': {'title': _('Due Date')},
             'Category': {'title': _('Category')},
             'Service': {'title': _('Analysis')},
@@ -167,9 +166,6 @@ class WorksheetAnalysesView(AnalysesView):
             {'title': _('All'), 'id':'all',
              'transitions': ['submit', 'verify', 'retract', 'unassign'],
              'columns':['Pos',
-##                        'Client',
-##                        'Order',
-##                        'getRequestID',
                         'Category',
                         'Service',
                         'Result',
@@ -194,7 +190,6 @@ class WorksheetAnalysesView(AnalysesView):
             items[x]['Pos'] = pos
             service = obj.getService()
             items[x]['Category'] = service.getCategory().Title()
-
             items[x]['DueDate'] = \
                 TimeOrDate(self.context, obj.getDueDate(), long_format = 0)
             items[x]['Order'] = ''
@@ -430,7 +425,7 @@ class AddControlView(BrowserView):
             wstlayout = wst.getLayout()
             available_positions = [slot['pos'] for slot in wstlayout \
                                    if slot['pos'] not in used_positions and \
-                                      slot['type'] == '']
+                                      slot['type'] == 'c']
         else:
             available_positions = []
         return available_positions
@@ -499,13 +494,12 @@ class WorksheetARsView(BikaListingView):
         pc = getToolByName(self.context, 'portal_catalog')
         rc = getToolByName(self.context, 'reference_catalog')
         services = {} # uid:item_dict
-        ars = [slot['container_uid'] for slot in self.context.getLayout()]
+        ars = [slot['container_uid'] for slot in self.context.getLayout() if \
+               slot['type'] == 'a']
         items = []
         for ar in ars:
             ar = rc.lookupObject(ar)
             path = "/".join(ar.getPhysicalPath())
-            if ar.portal_type != 'AnalysisRequest':
-                continue
             # this folderitems doesn't subclass from the bika_listing.py
             # so we create items from scratch
             item = {
@@ -748,7 +742,7 @@ class ajaxAddDuplicate(BrowserView):
         if not ar_uid:
             return
         src_slot = [slot['position'] for slot in self.context.getLayout() if \
-                    slot['container_uid'] == ar_uid][0]
+                    slot['container_uid'] == ar_uid and slot['type'] == 'a'][0]
 
         position = self.request.get('position', '')
         if not position:
