@@ -448,7 +448,7 @@ def ActionSucceededEventHandler(analysis, event):
 
     elif event.action == "unassign":
         analysis.reindexObject(idxs = ["worksheetanalysis_review_state", ])
-        # Remove the analysis from the worksheet
+        # Analysis will be removed from the worksheet later by higher level code
         ws = analysis.getBackReferences('WorksheetAnalysis')[0]
         ws_UID = ws.UID()
 

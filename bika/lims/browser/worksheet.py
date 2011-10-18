@@ -129,7 +129,7 @@ def getAnalysts(context):
     mtool = getToolByName(context, 'portal_membership')
     analysts = {}
     member = mtool.getAuthenticatedMember()
-    pairs = [(member.getId(), member.getProperty('fullname')), ]
+    pairs = []
     analysts = mtool.searchForMembers(roles = ['LabManager', 'Analyst'])
     for member in analysts:
         uid = member.getId()
@@ -190,7 +190,7 @@ class WorksheetAnalysesView(AnalysesView):
         for x, item in enumerate(items):
             obj = item['obj']
             pos = int([slot['position'] for slot in layout if \
-                   slot['container_uid']==obj.aq_parent.UID()][0])
+                   slot['container_uid'] == obj.aq_parent.UID()][0])
             items[x]['Pos'] = pos
             service = obj.getService()
             items[x]['Category'] = service.getCategory().Title()
@@ -198,8 +198,8 @@ class WorksheetAnalysesView(AnalysesView):
             items[x]['DueDate'] = \
                 TimeOrDate(self.context, obj.getDueDate(), long_format = 0)
             items[x]['Order'] = ''
-        items = sorted(items, key=itemgetter('Service'))
-        items = sorted(items, key=itemgetter('Pos'))
+        items = sorted(items, key = itemgetter('Service'))
+        items = sorted(items, key = itemgetter('Pos'))
 
         # add rowspan tags for slot headers
         slot_items = {} # pos:[item_nrs]
@@ -207,8 +207,8 @@ class WorksheetAnalysesView(AnalysesView):
             if items[x]['Pos'] in slot_items:
                 slot_items[items[x]['Pos']].append(x)
             else:
-                slot_items[items[x]['Pos']] = [x,]
-        for pos,pos_items in slot_items.items():
+                slot_items[items[x]['Pos']] = [x, ]
+        for pos, pos_items in slot_items.items():
             x = pos_items[0]
             items[x]['rowspan'] = {'Pos': len(pos_items)}
             items[x]['table_row_class'] = ((items[x]['Pos']) % 2 == 0) and \
@@ -341,7 +341,7 @@ class AddAnalysesView(AnalysesView):
                 service_uids = [s.UID() for s in profile.getService()]
                 contentFilter['getServiceUID'] = service_uids
             else:
-                for field in ['getCategoryUID', 'getServiceUID', 'getClientUID',]:
+                for field in ['getCategoryUID', 'getServiceUID', 'getClientUID', ]:
                     if field in form and 'any' not in form[field]:
                         contentFilter[field] = form[field]
         self.Analyses = AnalysesSearchResultsView(self.context, self.request)
@@ -351,15 +351,15 @@ class AddAnalysesView(AnalysesView):
     def getClients(self):
         pc = getToolByName(self.context, 'portal_catalog')
         return [(c.UID, c.Title) for c in \
-                pc(portal_type='Client',
-                   inactive_state='active',
+                pc(portal_type = 'Client',
+                   inactive_state = 'active',
                    sort_on = 'sortable_title')]
 
     def getCategories(self):
         pc = getToolByName(self.context, 'portal_catalog')
         return [(c.UID, c.Title) for c in \
-                pc(portal_type='AnalysisCategory',
-                   inactive_state='active',
+                pc(portal_type = 'AnalysisCategory',
+                   inactive_state = 'active',
                    sort_on = 'sortable_title')]
 
     def getARProfiles(self):
@@ -579,10 +579,10 @@ class WorksheetServicesView(BikaListingView):
                 services[service_uid] = {
                     'obj': service,
                     'Service': service.Title(),
-                    'Requests': [ar,]
+                    'Requests': [ar, ]
                 }
         items = []
-        for k,v in services.items():
+        for k, v in services.items():
             path = hasattr(v['obj'], 'getPath') and v['obj'].getPath() or \
                  "/".join(v['obj'].getPhysicalPath())
             # if the service has dependencies, it can't have reference analyses
@@ -617,7 +617,7 @@ class WorksheetServicesView(BikaListingView):
                     url = ar.absolute_url() + "/manage_results"
                 else:
                     url = ar.absolute_url()
-                ar_hrefs.append("<a href='%s'>%s</a>"%(url, ar.Title()))
+                ar_hrefs.append("<a href='%s'>%s</a>" % (url, ar.Title()))
             item['replace']['Requests'] = ", ".join(ar_hrefs)
             items.append(item)
 
@@ -781,6 +781,6 @@ class ajaxGetServices(BrowserView):
         plone.protect.CheckAuthenticator(self.request)
         pc = getToolByName(self.context, 'portal_catalog')
         return json.dumps([(c.UID, c.Title) for c in \
-                pc(portal_type='AnalysisService',
-                   getCategoryUID=self.request.get('getCategoryUID', ''),
-                   inactive_state='active')])
+                pc(portal_type = 'AnalysisService',
+                   getCategoryUID = self.request.get('getCategoryUID', ''),
+                   inactive_state = 'active')])

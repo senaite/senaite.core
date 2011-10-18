@@ -102,8 +102,8 @@ class ARAnalysesField(ObjectField):
                 # If it is assigned to a worksheet, unassign it before deletion.
                 elif workflow.getInfoFor(analysis, 'worksheetanalysis_review_state') == 'assigned':
                     ws = analysis.getBackReferences("WorksheetAnalysis")[0]
-                    ws.removeAnalysis(analysis)
                     workflow.doActionFor(analysis, 'unassign')
+                    ws.removeAnalysis(analysis)
                     analysis.REQUEST["workflow_skiplist"].remove(analysis.UID())
                 delete_ids.append(analysis.getId())
         instance.manage_delObjects(ids = delete_ids)
