@@ -185,8 +185,15 @@ class WorksheetAnalysesView(AnalysesView):
         layout = self.context.getLayout()
         for x, item in enumerate(items):
             obj = item['obj']
-            pos = int([slot['position'] for slot in layout if \
-                   slot['container_uid'] == obj.aq_parent.UID()][0])
+            if obj.portal_type in ('Analysis', 'ReferenceAnalysis'):
+                pos = [slot['position'] for slot in layout if \
+                       slot['container_uid'] == obj.aq_parent.UID() and \
+                       slot['type'] != 'd'][0]
+            elif obj.portal_type == 'DuplicateAnalysis':
+                pos = [slot['position'] for slot in layout if \
+                       slot['container_uid'] == obj.getAnalysis().aq_parent.UID() and \
+                       slot['type'] == 'd'][0]
+            pos = int(pos)
             items[x]['Pos'] = pos
             service = obj.getService()
             items[x]['Category'] = service.getCategory().Title()
@@ -652,12 +659,6 @@ class ajaxGetWorksheetReferences(ReferenceSamplesView):
                          'Services']
              },
         ]
-##                         'DateSampled',
-##                         'Manufacturer',
-##                         'CatalogueNumber',
-##                         'LotNumber',
-##                         'DateReceived',
-##                         'state_title']
 
     def folderitems(self):
         items = super(ajaxGetWorksheetReferences, self).folderitems()

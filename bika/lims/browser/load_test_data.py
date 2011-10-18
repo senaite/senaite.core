@@ -45,7 +45,7 @@ class LoadTestData(BrowserView):
                 profile_services = profile.getService()
 
                 _ars = []
-                t = timer.gen()
+                t = timer()
                 for i in range(1, count_ars+1):
                     sample_id = client.generateUniqueId('Sample')
                     client.invokeFactory(id = sample_id, type_name = 'Sample')
