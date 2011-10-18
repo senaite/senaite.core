@@ -26,6 +26,8 @@
 		<select
 			id = "analyst"
 			name="Analyst">
+			<option value="" i18n:translate="None"
+				tal:attributes="selected python:context.getAnalyst() and '' or 'selected'">None</option>
 			<tal:repeat repeat="analyst view/getAnalysts">
 				<option
 					tal:attributes="

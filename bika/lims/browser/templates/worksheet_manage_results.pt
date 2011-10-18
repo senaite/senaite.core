@@ -41,9 +41,12 @@
 
 		<tal:analyst
 			tal:condition="nocall: view/getAnalysts|nothing">
-			<span class="formQuestion">Analyst: </span>&nbsp;<select
+			<span class="formQuestion">Analyst: </span>
+			<select
 				id = "analyst"
 				name="Analyst">
+				<option value="" i18n:translate="None"
+					tal:attributes="selected python:context.getAnalyst() and '' or 'selected'">None</option>
 				<tal:repeat repeat="analyst view/getAnalysts">
 					<option
 						tal:attributes="

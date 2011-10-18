@@ -69,9 +69,6 @@ $(document).ready(function(){
 
 	// instant update of analyst when selection is made in dropdown
 	$("#analyst").change(function(){
-		if ($("#analyst").val() == '') {
-			return false;
-		}
 		url = window.location.href
 				.replace("/manage_results", "")
 				.replace("/add_analyses", "") + "/setAnalyst";
