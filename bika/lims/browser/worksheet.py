@@ -146,6 +146,7 @@ class WorksheetAnalysesView(AnalysesView):
     """
     def __init__(self, context, request):
         AnalysesView.__init__(self, context, request)
+        self.icon = "++resource++bika.lims.images/worksheet_big.png"
         self.contentFilter = {}
         self.show_select_row = False
         self.show_sort_column = False
@@ -256,6 +257,7 @@ class ManageResultsView(BrowserView):
     def __init__(self, context, request):
         BrowserView.__init__(self, context, request)
     def __call__(self):
+        self.icon = "++resource++bika.lims.images/worksheet_big.png"
         self.Analyses = WorksheetAnalysesView(self.context, self.request)
         return self.template()
     def getAnalysts(self):
@@ -323,6 +325,7 @@ class AddAnalysesView(AnalysesView):
 
     def __init__(self, context, request):
         AnalysesView.__init__(self, context, request)
+        self.icon = "++resource++bika.lims.images/worksheet_big.png"
         self.title = "%s: %s" % (context.Title(), _("Add Analyses"))
         self.description = _("")
 
@@ -380,6 +383,7 @@ class AddBlankView(BrowserView):
 
     def __init__(self, context, request):
         BrowserView.__init__(self, context, request)
+        self.icon = "++resource++bika.lims.images/worksheet_big.png"
         self.title = "%s: %s" % (context.Title(), _("Add Blank Reference"))
         self.description = _("Select services in the left column to locate " \
                              "reference samples. Select a reference by clicking it. ")
@@ -412,6 +416,7 @@ class AddControlView(BrowserView):
 
     def __init__(self, context, request):
         BrowserView.__init__(self, context, request)
+        self.icon = "++resource++bika.lims.images/worksheet_big.png"
         self.title = "%s: %s" % (context.Title(), _("Add Control Reference"))
         self.description = _("Select services in the left column to locate " \
                              "reference samples. Select a reference by clicking it. ")
@@ -443,6 +448,7 @@ class AddDuplicateView(BrowserView):
 
     def __init__(self, context, request):
         BrowserView.__init__(self, context, request)
+        self.icon = "++resource++bika.lims.images/worksheet_big.png"
         self.title = "%s: %s" % (context.Title(), _("Add Duplicates"))
         self.description = _("Select a destinaton position and the AR to duplicate.")
 
