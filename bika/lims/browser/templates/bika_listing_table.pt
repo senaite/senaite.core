@@ -202,7 +202,9 @@ Draggable column for manually ordering items
 Item select checkboxes.
 ********************************</tal:comment>
 	<td tal:condition="view/show_select_column"
-		tal:attributes="class string:notDraggable ${item/state_class}">
+		tal:define="cl python:'select_column' in item['class'] and
+					item['class']['select_column'] or '';"
+		tal:attributes="class string:notDraggable ${item/state_class} $cl">
 		<input type="checkbox"
 			class="noborder"
 			name="paths:list" id="#"

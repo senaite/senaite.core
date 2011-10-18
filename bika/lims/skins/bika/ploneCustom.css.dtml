@@ -345,19 +345,34 @@ table.analysisrequest input {
 .template-manage_results .Pos {
   padding:0;
   vertical-align:center;
-  border-bottom:1px solid #ccc;
 }
+
 .template-manage_results #listing-table td {
   vertical-align:top;
 }
+.template-manage_results #listing-table td.even {
+    background-color: #eee; !important;
+	border-bottom:1px solid #ddd;
+}
+.template-manage_results #listing-table td.odd {
+    background-color: #fff; !important;
+	border-bottom:1px solid #eee;
+}
+
 .template-manage_results #listing-table td table {
+  background-color:transparent !important;
   padding:0;
   margin:0;
 }
 .template-manage_results #listing-table td table td {
+  background-color:transparent !important;
   padding:0;
   margin:0;
   border: 0;
+}
+.template-manage_results #listing-table td table tr.even,
+.template-manage_results #listing-table td table tr.odd{
+  background-color:transparent !important;
 }
 .template-manage_results #listing-table td table .pos {
   font-size:120%;

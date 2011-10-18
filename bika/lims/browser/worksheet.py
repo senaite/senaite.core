@@ -207,15 +207,21 @@ class WorksheetAnalysesView(AnalysesView):
         # add rowspan tags for slot headers
         slot_items = {} # pos:[item_nrs]
         for x in range(len(items)):
-            if items[x]['Pos'] in slot_items:
-                slot_items[items[x]['Pos']].append(x)
+            p = items[x]['Pos']
+            if p in slot_items:
+                slot_items[p].append(x)
             else:
-                slot_items[items[x]['Pos']] = [x, ]
+                slot_items[p] = [x, ]
         for pos, pos_items in slot_items.items():
             x = pos_items[0]
             items[x]['rowspan'] = {'Pos': len(pos_items)}
-            items[x]['table_row_class'] = ((items[x]['Pos']) % 2 == 0) and \
-                "draggable even" or "draggable odd"
+            for y in pos_items:
+                for k in self.columns.keys():
+                    cl = (pos % 2 == 0) and "even" or "odd"
+                    items[y]['class'][k] = cl
+                    items[y]['class']['select_column'] = cl
+                items[y]['table_row_class'] = ""
+
             # ar is either an AR, a Worksheet, or a ReferenceSample (analysis parent).
             obj = items[x]['obj']
             ar = obj.aq_parent
@@ -249,6 +255,7 @@ class WorksheetAnalysesView(AnalysesView):
             pos_text += "<tr><td colspan='3'><div class='barcode' value='%s'/>&nbsp;</td></tr></tr>" % (ar.id)
             pos_text += "</table>"
             items[x]['replace']['Pos'] = pos_text
+
         return items
 
 class ManageResultsView(BrowserView):

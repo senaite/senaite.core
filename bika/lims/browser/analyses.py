@@ -280,9 +280,4 @@ class AnalysesView(BikaListingView):
             # Allow selecting individual analyses
             self.show_select_column = True
 
-        # re-do the pretty css odd/even classes
-        for i in range(len(items)):
-            items[i]['table_row_class'] = ((i + 1) % 2 == 0) and \
-                "draggable even" or "draggable odd"
-
         return items

@@ -94,10 +94,10 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         if not position:
             position = len(layout) + 1
             if wst:
-                used_positions = [slot['position'] for slot in wslayout]
+                used_positions = [slot['position'] for slot in layout]
                 available_positions = [row['pos'] for row in wstlayout \
                                        if row['pos'] not in used_positions and \
-                                          row['type'] == analysis_type] or [position,]
+                                          row['type'] == 'a'] or [position,]
                 position = available_positions[0]
         self.setLayout(layout + [{'position': position,
                                   'type': 'a',
