@@ -214,10 +214,10 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
 
         src_analyses = [rc.lookupObject(slot['analysis_uid']) \
                         for slot in layout if \
-                        slot['position'] == src_slot]
+                        int(slot['position']) == int(src_slot)]
         dest_analyses = [rc.lookupObject(slot['analysis_uid']).getAnalysis().UID() \
                         for slot in layout if \
-                        slot['position'] == dest_slot]
+                        int(slot['position']) == int(dest_slot)]
 
         for analysis in src_analyses:
             if analysis.UID() in dest_analyses:
