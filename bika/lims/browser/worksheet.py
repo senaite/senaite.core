@@ -486,6 +486,7 @@ class WorksheetARsView(BikaListingView):
         self.show_filters = False
 
         self.columns = {
+            'Position': {'title': _('Position')},
             'RequestID': {'title': _('Request ID')},
             'Client': {'title': _('Client')},
             'DateRequested': {'title': _('Date Requested')},
@@ -493,7 +494,7 @@ class WorksheetARsView(BikaListingView):
         self.review_states = [
             {'title': _('All'), 'id':'all',
              'transitions': [],
-             'columns':['RequestID', 'Client', 'DateRequested'],
+             'columns':['Position', 'RequestID', 'Client', 'DateRequested'],
             },
         ]
 
@@ -501,10 +502,15 @@ class WorksheetARsView(BikaListingView):
         pc = getToolByName(self.context, 'portal_catalog')
         rc = getToolByName(self.context, 'reference_catalog')
         services = {} # uid:item_dict
-        ars = [slot['container_uid'] for slot in self.context.getLayout() if \
-               slot['type'] == 'a']
+        ars = {}
+        for slot in self.context.getLayout():
+            if slot['type'] != 'a':
+                continue
+            ar = slot['container_uid']
+            if not ars.has_key(ar):
+                ars[ar] = slot['position']
         items = []
-        for ar in ars:
+        for ar,pos in ars.items():
             ar = rc.lookupObject(ar)
             path = "/".join(ar.getPhysicalPath())
             # this folderitems doesn't subclass from the bika_listing.py
@@ -519,6 +525,7 @@ class WorksheetARsView(BikaListingView):
                 'relative_url': ar.absolute_url(),
                 'view_url': ar.absolute_url(),
                 'path': path,
+                'Position': pos,
                 'RequestID': ar.id,
                 'Client': ar.aq_parent.Title(),
                 'DateRequested': TimeOrDate(ar, ar.getDateRequested()),
@@ -532,7 +539,7 @@ class WorksheetARsView(BikaListingView):
             }
             ar_hrefs = []
             items.append(item)
-
+        items = sorted(items, key = itemgetter('Position'))
         for i in range(len(items)):
             items[i]['table_row_class'] = ((i + 1) % 2 == 0) and \
                  "draggable even" or "draggable odd"

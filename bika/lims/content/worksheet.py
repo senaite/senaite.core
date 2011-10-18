@@ -186,6 +186,8 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
 
         src_ar = [slot['container_uid'] for slot in layout if \
                   slot['position'] == src_slot]
+        if src_ar:
+            src_ar = src_ar[0]
 
         # check/overwrite/set dest_slot
         if src_ar in [slot['container_uid'] for slot in layout if \
@@ -204,12 +206,12 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         src_analyses = [rc.lookupObject(slot['analysis_uid']) \
                         for slot in layout if \
                         slot['position'] == src_slot]
-        dest_analyses = [rc.lookupObject(slot['analysis_uid']) \
+        dest_analyses = [rc.lookupObject(slot['analysis_uid']).getAnalysis().UID() \
                         for slot in layout if \
                         slot['position'] == dest_slot]
 
         for analysis in src_analyses:
-            if analysis.UID() in [a.UID() for a in dest_analyses]:
+            if analysis.UID() in dest_analyses:
                 continue
             service = analysis.getService()
             keyword = service.getKeyword()
