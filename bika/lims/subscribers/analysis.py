@@ -34,6 +34,12 @@ def ObjectInitializedEventHandler(analysis, event):
 
 def ObjectRemovedEventHandler(analysis, event):
 
+    # This handler fires for DuplicateAnalysis because
+    # DuplicateAnalysis also provides IAnalysis.
+    # DuplicateAnalysis doesn't have analysis_workflow.
+    if analysis.portal_type == "DuplicateAnalysis":
+        return
+
     logger.info("ObjectRemoved: %s" % analysis)
 
     # May need to promote the AR's review_state

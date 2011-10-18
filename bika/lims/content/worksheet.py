@@ -120,15 +120,17 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         Analyses = self.getAnalyses()
         Analyses.remove(analysis)
         self.setAnalyses(Analyses)
+        layout = [slot for slot in self.getLayout() if slot['analysis_uid'] != analysis.UID()]
+        self.setLayout(layout)
 
         # perhaps it's entire slot is now removed.
         parents = {}
-        for A in Analyses:
-            parent_uid = A.aq_parent.UID()
+        for a in Analyses:
+            parent_uid = a.aq_parent.UID()
             if parent_uid in parents:
-                parents[parent_uid]['analyses'].append(A)
+                parents[parent_uid]['analyses'].append(a)
             else:
-                parents[parent_uid] = {'parent':A.aq_parent, 'analyses': [A,]}
+                parents[parent_uid] = {'parent':a.aq_parent, 'analyses': [a,]}
         Layout = self.getLayout()
         for slot in self.getLayout():
             if not slot['container_uid'] in parents:
@@ -169,6 +171,11 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
 
         for service_uid in service_uids:
             if service_uid in existing_services_in_pos:
+                continue
+            # services with dependents don't belong in references
+            service = rc.lookupObject(service_uid)
+            calc = service.getCalculation()
+            if calc and calc.getDependentServices():
                 continue
             ref_uid = reference.addReferenceAnalysis(service_uid, ref_type)
             ref_analysis = rc.lookupObject(ref_uid)
@@ -221,6 +228,11 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
 
         for analysis in src_analyses:
             if analysis.UID() in dest_analyses:
+                continue
+            # services with dependents don't belong in references
+            service = analysis.getService()
+            calc = service.getCalculation()
+            if calc and calc.getDependentServices():
                 continue
             service = analysis.getService()
             keyword = service.getKeyword()
