@@ -225,6 +225,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
                                      'container_uid':analysis.aq_parent.UID(),
                                      'analysis_uid': duplicate.UID()},]
             )
+            self.setAnalyses(self.getAnalyses() + [duplicate,])
 
     def getInstrumentExports(self):
         """ return the possible instrument export formats """
