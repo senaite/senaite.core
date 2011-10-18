@@ -40,6 +40,22 @@ class ClientFolderContentsView(BikaListingView):
                                     'Phone',
                                     'Fax', ]
                          },
+                        {'title': _('Active'), 'id':'active',
+                         'contentFilter': {'inactive_state': 'active'},
+                         'transitions': ['deactivate'],
+                         'columns':['title',
+                                    'EmailAddress',
+                                    'Phone',
+                                    'Fax', ]
+                         },
+                        {'title': _('Dormant'), 'id':'inactive',
+                         'contentFilter': {'inactive_state': 'inactive'},
+                         'transitions': ['activate'],
+                         'columns':['title',
+                                    'EmailAddress',
+                                    'Phone',
+                                    'Fax', ]
+                         },
         ]
 
     def folderitems(self):

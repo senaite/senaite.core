@@ -739,6 +739,22 @@ class ClientContactsView(BikaListingView):
                          'getBusinessPhone',
                          'getMobilePhone',
                          'getFax']},
+            {'title': 'Active', 'id':'active',
+             'contentFilter': {'inactive_state': 'active'},
+             'transitions': ['deactivate', ],
+             'columns': ['getFullname',
+                         'getEmailAddress',
+                         'getBusinessPhone',
+                         'getMobilePhone',
+                         'getFax']},
+            {'title': 'Dormant', 'id':'inactive',
+             'contentFilter': {'inactive_state': 'inactive'},
+             'transitions': ['activate', ],
+             'columns': ['getFullname',
+                         'getEmailAddress',
+                         'getBusinessPhone',
+                         'getMobilePhone',
+                         'getFax']},
         ]
 
     def folderitems(self):
