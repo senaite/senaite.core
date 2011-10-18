@@ -267,9 +267,9 @@ class AddWorksheetView(BrowserView):
                         complete_reference_found = True
                         break
                 if complete_reference_found:
-                    ws.addReferenceAnalyses(int(row['pos']),
-                                            reference,
-                                            wst_service_uids)
+                    ws.addReferences(int(row['pos']),
+                                     reference,
+                                     wst_service_uids)
                 else:
                     # find the most complete reference sample instead
                     these_services = wst_service_uids

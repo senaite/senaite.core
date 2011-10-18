@@ -212,12 +212,14 @@ class WorksheetAnalysesView(AnalysesView):
                 slot_items[p].append(x)
             else:
                 slot_items[p] = [x, ]
+        csspos = -1
         for pos, pos_items in slot_items.items():
+            csspos += 1
             x = pos_items[0]
             items[x]['rowspan'] = {'Pos': len(pos_items)}
             for y in pos_items:
                 for k in self.columns.keys():
-                    cl = (pos % 2 == 0) and "even" or "odd"
+                    cl = (csspos % 2 == 0) and "even" or "odd"
                     items[y]['class'][k] = cl
                     items[y]['class']['select_column'] = cl
                 items[y]['table_row_class'] = ""

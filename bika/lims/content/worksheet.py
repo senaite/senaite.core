@@ -91,14 +91,23 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
 
         self.setAnalyses(analyses + [analysis,])
 
-        if not position:
-            position = len(layout) + 1
-            if wst:
-                used_positions = [slot['position'] for slot in layout]
-                available_positions = [row['pos'] for row in wstlayout \
-                                       if row['pos'] not in used_positions and \
-                                          row['type'] == 'a'] or [position,]
-                position = available_positions[0]
+        # if not, get first available position in max(layout)
+        # if not, get next position after max(layout)
+
+        # if our parent has a position, use that one.
+        if analysis.aq_parent.UID() in [slot['container_uid'] for slot in layout if \
+                                        slot['type'] == 'a']:
+            position = [slot['position'] for slot in layout if \
+                        slot['container_uid'] == analysis.aq_parent.UID()][0]
+        else:
+            if not position:
+                position = max([int(slot['position']) for slot in layout])+1
+                if wst:
+                    used_positions = [slot['position'] for slot in layout]
+                    available_positions = [row['pos'] for row in wstlayout \
+                                           if row['pos'] not in used_positions and \
+                                              row['type'] == 'a'] or [position,]
+                    position = available_positions[0]
         self.setLayout(layout + [{'position': position,
                                   'type': 'a',
                                   'container_uid': parent_uid,
