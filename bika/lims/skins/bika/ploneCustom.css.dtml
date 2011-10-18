@@ -34,6 +34,14 @@
 #content h1 {
     margin-top: .1em;
 }
+/* overwrite sunburst special display of description fields */
+/*#content .field textarea[name$=".description"],  */
+#archetypes-fieldname-description textarea#description {
+    font-style: normal;;
+    color: &dtml-inputFontColor;;
+    font-size: &dtml-fontSmallSize;;
+    font-weight: normal;
+}
 dl.portalMessage {
     margin-top:0;
 }
