@@ -90,6 +90,7 @@ class ARAnalysesField(ObjectField):
                               MaxTimeAllowed = service.getMaxTimeAllowed())
                 analysis.unmarkCreationFlag()
                 zope.event.notify(ObjectInitializedEvent(analysis))
+                # Note: subscriber might retract and/or unassign the AR
 
         # delete analyses
         delete_ids = []
@@ -102,11 +103,14 @@ class ARAnalysesField(ObjectField):
                 # If it is assigned to a worksheet, unassign it before deletion.
                 elif workflow.getInfoFor(analysis, 'worksheetanalysis_review_state') == 'assigned':
                     ws = analysis.getBackReferences("WorksheetAnalysis")[0]
-                    workflow.doActionFor(analysis, 'unassign')
                     ws.removeAnalysis(analysis)
-                    analysis.REQUEST["workflow_skiplist"].remove(analysis.UID())
+                    # overwrite saved context UID for event subscriber
+                    instance.REQUEST['context_uid'] = ws.UID()
+                    workflow.doActionFor(analysis, 'unassign')
+                    # Note: subscriber might unassign the AR and/or promote the worksheet
                 delete_ids.append(analysis.getId())
         instance.manage_delObjects(ids = delete_ids)
+        # Note: subscriber might promote the AR
 
     security.declarePublic('Vocabulary')
     def Vocabulary(self, content_instance = None):

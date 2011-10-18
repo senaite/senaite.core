@@ -99,8 +99,9 @@ class WorksheetWorkflowAction(WorkflowAction):
             if selected_analyses:
                 for uid in selected_analysis_uids:
                     analysis = rc.lookupObject(uid)
-                    workflow.doActionFor(analysis, 'assign')
                     self.context.addAnalysis(analysis)
+                    workflow.doActionFor(analysis, 'assign')
+                    # Note: subscriber might assign the AR and/or retract the worksheet
 
             self.destination_url = self.context.absolute_url() + "/manage_results"
             self.request.response.redirect(self.destination_url)
@@ -116,6 +117,7 @@ class WorksheetWorkflowAction(WorkflowAction):
                     if analysis.portal_type == "DuplicateAnalysis":
                         self.context._delObject(analysis.id)
                         continue
+                    self.context.removeAnalysis(analysis)
                     workflow.doActionFor(analysis, 'unassign')
 
             self.destination_url = self.context.absolute_url() + "/manage_results"

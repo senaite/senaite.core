@@ -19,17 +19,31 @@ def ObjectInitializedEventHandler(analysis, event):
 
     # 'receive' analysis if AR is received.
     # Adding a new analysis to an AR retracts the AR to 'received'
+    # AR may have to be unassigned too
+
     ar = analysis.aq_parent
+    ar_UID = ar.UID()
     wf = getToolByName(analysis, 'portal_workflow')
     ar_state = wf.getInfoFor(ar, 'review_state')
+    ar_ws_state = wf.getInfoFor(ar, 'worksheetanalysis_review_state')
+
     if ar_state != 'sample_due':
         wf.doActionFor(analysis, 'receive')
+
+    # Note: AR adds itself to the skiplist so we have to take it off again
+    #       to allow possible promotions if other analyses are deleted.
     if ar_state not in ('sample_due', 'sample_received'):
         if not analysis.REQUEST.has_key('workflow_skiplist'):
             analysis.REQUEST['workflow_skiplist'] = ['retract all analyses', ]
         else:
             analysis.REQUEST["workflow_skiplist"].append('retract all analyses')
         wf.doActionFor(ar, 'retract')
+        analysis.REQUEST["workflow_skiplist"].remove(ar_UID)
+
+    if ar_ws_state == 'assigned':
+        wf.doActionFor(ar, 'unassign')
+        analysis.REQUEST["workflow_skiplist"].remove(ar_UID)
+
     return
 
 def ObjectRemovedEventHandler(analysis, event):
@@ -426,10 +440,15 @@ def ActionSucceededEventHandler(analysis, event):
 
     elif event.action == "cancel":
         analysis.reindexObject(idxs = ["worksheetanalysis_review_state", ])
-        # If it is assigned to a worksheet, unassign it before cancelation.
+        # If it is assigned to a worksheet, unassign it.
         if wf.getInfoFor(analysis, 'worksheetanalysis_review_state') == 'assigned':
-            wf.doActionFor(analysis, 'unassign')
+            ws = analysis.getBackReferences("WorksheetAnalysis")[0]
+            ws.removeAnalysis(analysis)
+            # overwrite saved context UID for event subscriber
+            analysis.REQUEST['context_uid'] = ws.UID()
             analysis.REQUEST["workflow_skiplist"].remove(analysis.UID())
+            analysis.doActionFor(analysis, 'unassign')
+            # Note: subscriber might unassign the AR and/or promote the worksheet
 
     elif event.action == "assign":
         analysis.reindexObject(idxs = ["worksheetanalysis_review_state", ])
@@ -454,9 +473,9 @@ def ActionSucceededEventHandler(analysis, event):
 
     elif event.action == "unassign":
         analysis.reindexObject(idxs = ["worksheetanalysis_review_state", ])
-        # Analysis will be removed from the worksheet later by higher level code
-        ws = analysis.getBackReferences('WorksheetAnalysis')[0]
-        ws_UID = ws.UID()
+        rc = getToolByName(analysis, 'reference_catalog')
+        wsUID = analysis.REQUEST['context_uid']
+        ws = rc.lookupObject(wsUID)
 
         # Escalate the action to the parent AR if it is assigned
         # Note: AR adds itself to the skiplist so we have to take it off again
@@ -480,6 +499,9 @@ def ActionSucceededEventHandler(analysis, event):
             if a_state in \
                ('sample_due', 'sample_received',):
                 can_submit = False
+            else:
+                if not ws.getAnalyst():
+                    can_submit = False
             if a_state in \
                ('sample_due', 'sample_received', 'attachment_due',):
                 can_attach = False
@@ -492,16 +514,17 @@ def ActionSucceededEventHandler(analysis, event):
         #       to allow multiple promotions (maybe by more than one analysis).
             if can_submit and wf.getInfoFor(ws, 'review_state') == 'open':
                 wf.doActionFor(ws, 'submit')
-                analysis.REQUEST["workflow_skiplist"].remove(ws_UID)
+                analysis.REQUEST["workflow_skiplist"].remove(wsUID)
             if can_attach and wf.getInfoFor(ws, 'review_state') == 'attachment_due':
                 wf.doActionFor(ws, 'attach')
-                analysis.REQUEST["workflow_attach_skiplist"].remove(ws_UID)
+                analysis.REQUEST["workflow_attach_skiplist"].remove(wsUID)
             if can_verify and wf.getInfoFor(ws, 'review_state') == 'to_be_verified':
                 analysis.REQUEST["workflow_skiplist"].append('verify all analyses')
                 wf.doActionFor(ws, 'verify')
-                analysis.REQUEST["workflow_skiplist"].remove(ws_UID)
+                analysis.REQUEST["workflow_skiplist"].remove(wsUID)
         else:
             if wf.getInfoFor(ws, 'review_state') != 'open':
                 wf.doActionFor(ws, 'retract')
+                analysis.REQUEST["workflow_skiplist"].remove(wsUID)
 
     return
