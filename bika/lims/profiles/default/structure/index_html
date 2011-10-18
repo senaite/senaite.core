@@ -1,6 +1,6 @@
 id: index_html
 title: Welcome to Bika LIMS 3
-description: This is release 3.0 pre-αlpha r3217 on Plone 4.1
+description: This is release 3.0 pre-αlpha r3256 on Plone 4.1
 subject:
 relatedItems:
 location:
@@ -51,7 +51,7 @@ Content-Type: text/html
 <tr>
 <td>
 <h3>Specific to version 3.0 pre-αlpha</h3>
-<p>In this version the LIMS set-up area is ready for beta testing.&nbsp;</p>
+<p>In this version the LIMS set-up area and fundamental workflow is ready for beta testing.&nbsp;</p>
 <div align="center"><img src="http://www.bikalabs.com/images/umhlathuze" alt="" /></div>
 <p>New items sponsored by the water quality lab at the City of uMhlathuze (COU), Richards Bay:</p>
 <blockquote>
@@ -69,26 +69,91 @@ the Analysis    Service records they  reference might have been modified</p>
 </td>
 <td>
 <h3><a class="external-link" href="knowledge-centre/manual/bika-3-user-manual"><img src="maintenance_icon.png" alt="" /><em> User Manual </em></a></h3>
-<p><em>Under construction and describing new topics </em><em>at first: editable </em><em>calculations, versioning, cancellation and deactivation</em></p>
-<p><em>Inkosi LIMS 2 principles still apply, and if you are new to Bika, also consult the <a class="external-link" href="http://www.bikalabs.com/helpcentre/manual/bikalims20">Inkosi manual</a><br /></em></p>
-<ol>
-<li> <a href="knowledge-centre/manual/bika-3-user-manual/introduction-and-overview"> <span class="state-published">Introduction and Overview</span></a>
-<ol>
-<li> <a href="knowledge-centre/manual/bika-3-user-manual/introduction-and-overview/bikas-web-based-workflow"> <span class="state-published">Bika's web based workflow </span></a> </li>
-<li> <a href="knowledge-centre/manual/bika-3-user-manual/introduction-and-overview/icons"> <span class="state-published">Icons</span></a> </li>
-<li> <a href="knowledge-centre/manual/bika-3-user-manual/introduction-and-overview/definitions-and-acronyms"> <span class="state-published">Definitions and Acronyms</span></a> </li></ol>
-</li>
-<li> <a href="knowledge-centre/manual/bika-3-user-manual/setup-and-configuration"> <span class="state-published">Setup and Configuration</span></a>
-<ol>
-<li> <a href="knowledge-centre/manual/bika-3-user-manual/setup-and-configuration/navigating-the-lims-setup"> <span class="state-published">Navigating the LIMS setup</span></a> </li>
-<li> <a href="knowledge-centre/manual/bika-3-user-manual/setup-and-configuration/de-activating-setup-items"> <span class="state-published">De-activating setup items</span></a> </li>
-<li> <a href="knowledge-centre/manual/bika-3-user-manual/setup-and-configuration/versioning"> <span class="state-published">Versioning</span></a> </li>
-<li> <a href="knowledge-centre/manual/bika-3-user-manual/setup-and-configuration/calculations"> <span class="state-published">Calculations</span></a></li>
-<li><span class="state-published"><em>....<br /></em></span></li></ol>
+<p><em>Under construction and describing new topics </em><em>at first:</em></p>
+<p><em>LIMS 2 principles still apply, and if you are new to Bika, also consult the <a class="external-link" href="http://www.bikalabs.com/helpcentre/manual/bikalims20">Inkosi manual</a></em></p>
+<ol><li>
+
+                <a href="knowledge-centre/manual/bika-3-user-manual/introduction-and-overview">
+                <span class="state-published">Introduction and Overview [...]</span></a>&nbsp;
+</li><li>
+
+                <a href="knowledge-centre/manual/bika-3-user-manual/setup-and-configuration">
+                <span class="state-published">Setup and Configuration</span></a>
+<ol><li>
+
+                <a href="knowledge-centre/manual/bika-3-user-manual/setup-and-configuration/setup-overview">
+                <span class="state-published">Setup Overview</span></a>
+<ol><li>
+
+                <a href="knowledge-centre/manual/bika-3-user-manual/setup-and-configuration/setup-overview/navigating-the-lims-setup">
+                <span class="state-published">Navigating the LIMS setup</span></a>
+
+
+
+
+
+
+        </li><li>
+
+                <a href="knowledge-centre/manual/bika-3-user-manual/setup-and-configuration/setup-overview/de-activating-setup-items">
+                <span class="state-published">De-activating setup items</span></a>
+
+
+
+
+
+
+        </li><li>
+
+                <a href="knowledge-centre/manual/bika-3-user-manual/setup-and-configuration/setup-overview/versioning">
+                <span class="state-published">Versioning</span></a>
+
+
+
+
+
+
+        </li></ol>
+</li><li>
+
+                <a href="knowledge-centre/manual/bika-3-user-manual/setup-and-configuration/analysis-services">
+                <span class="state-published">Analysis Services</span></a>
+
+
+
+
+
+
+        </li><li>
+
+                <a href="knowledge-centre/manual/bika-3-user-manual/setup-and-configuration/analysis-categories">
+                <span class="state-published">Analysis Categories</span></a>
+
+
+
+
+
+
+        </li><li>
+
+                <a href="knowledge-centre/manual/bika-3-user-manual/setup-and-configuration/analysis-profiles">
+                <span class="state-published">Analysis Profiles</span></a>
+
+
+
+
+
+
+        </li><li>
+
+                <a href="knowledge-centre/manual/bika-3-user-manual/setup-and-configuration/calculations">
+                <span class="state-published">Calculations</span></a></li><li><a href="knowledge-centre/manual/bika-3-user-manual/setup-and-configuration/reference-definitions"><span class="state-published">Reference Definitions</span></a></li><li>
+
+                <a href="knowledge-centre/manual/bika-3-user-manual/setup-and-configuration/worksheet-templates">
+                <span class="state-published">Worksheet Templates<br /><br /></span></a></li></ol>
 </li></ol>
-<p>&nbsp;</p>
-<h3><br /></h3>
-<p style="text-align: center;" class="callout"><strong>Micro-sponsorship appeal</strong><br /><br /><img class="image-inline" src="++resource++bika.lims.images/SFDonateButton.jpg" alt="Support the Bika FLOSS LIMS project at SourceForge.net (PayPal)" /><br />At <a class="external-link" href="https://sourceforge.net/">SourceForge.net</a>. Paypal. $10 - $250</p>
+<ol></ol>
+<p style="text-align: center;" class="callout"><strong>Micro-sponsorship appeal</strong><br /><br /><img class="image-inline" src="++resource++bika.lims.images/SFDonateButton.jpg" alt="Support the Bika FLOSS LIMS project at SourceForge.net (PayPal)" /><br /><br />At <a class="external-link" href="https://sourceforge.net/">SourceForge.net</a>. Paypal. $10 - $250</p>
 <h3>Release notes</h3>
 <p>More information about this release can be found on the <a class="external-link" href="http://www.bikalabs.com/softwarecenter/bika">Bika LIMS project pages</a></p>
 <p>&nbsp;</p>
@@ -99,12 +164,12 @@ the Analysis    Service records they  reference might have been modified</p>
 <td scope="col">
 <h3 class="Subheading">Under construction</h3>
 <ul>
-<li>Setup data import (98%)</li>
+<li>Setup data import (85%)</li>
 <li>Analysis, AR, Sample and Worksheet workflow cascades (90% though one never knows)</li>
 <li>Data filters on tables &amp; lists (50%)</li>
 <li>Iconography (80%)</li>
 <li>Barcoding (60%)</li>
-<li>Manual &amp; Technical documentation (10%)</li></ul>
+<li>User manual &amp; Technical documentation (10%)</li></ul>
 <h3 class="Subheading">To do</h3>
 <ul>
 <li>Alerts</li><li>Column sorting<br /></li>
@@ -122,7 +187,7 @@ the Analysis    Service records they  reference might have been modified</p>
 <p>The Bika team</p>
 <p><a href="mailto:info@bikalabs.com" target="_self">info@bikalabs.com</a></p>
 <p>&nbsp;</p>
-<p><img style="float: left;" class="image-inline" src="++resource++bika.lims.images/bikalabstellit200x.png" alt="Bika Open Source LIMS - Tell it as it is" /></p>
+<p>&nbsp;</p>
 <p>&nbsp;</p>
 <p>&nbsp;</p>
 </td>

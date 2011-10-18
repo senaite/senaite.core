@@ -23,36 +23,38 @@ Content-Type: text/html
 <tr>
 <td>
 <h3></h3>
-<h3><a href="bika_setup/bika_analysisservices"><img src="++resource++bika.lims.images/service.png" /> Analysis Services </a></h3>
-<p style="padding-left: 30px; ">Expected turnaround time (TAT) of 2 hours<br /><br />Price of R10<br /><br />Maximum duplicate variation 10%<br /><br />Uncertainties (Range minimum, maximum,</p>
-<p style="padding-left: 60px; ">Between 0 and 2, uncertainty value of ± 0.1<br /><br /> "          2.01 -  4.00,  ± 0.2<br /><br /> "          4.01 -  6.00,  ± 0.3<br /><br /> "          6.01 -  8.00,  ± 0.4<br /><br /> "          8.01 - 999,   ± 0.5</p>
-<h3><a href="bika_setup/bika_analysisspecs"><img src="++resource++bika.lims.images/service.png" /> Analysis Specifications </a></h3>
-<p style="padding-left: 30px; ">All Sample Types: minimum 9,  maximum 11, tolerance 10%</p>
-<h3 class="western"><a href="bika_setup/bika_arprofiles"><img src="++resource++bika.lims.images/service.png" /> Analysis Profiles </a></h3>
-<p class="western" style="padding-left: 30px; "><b>Trace Metals</b></p>
-<p class="western" style="padding-left: 60px; ">Ca, Cu, Fe, Mg, Mn, Na and Zn</p>
-<p class="western" style="padding-left: 30px; "><b>Digestable Energy</b></p>
-<p class="western" style="padding-left: 60px; ">Digestable Energy, Crude Protein, Ether Extract, Crude Fat and Ash</p>
-<p class="western" style="padding-left: 30px; "><b>Micro-Bio</b></p>
-<p class="western" style="padding-left: 60px; ">Clostridia, Ecoli, Salmonella and Enterococcus</p>
-<h3 class="western"><a href="bika_setup/bika_worksheettemplates"><img src="++resource++bika.lims.images/worksheettemplate.png" /> Worksheet Templates </a></h3>
-<p class="western" style="padding-left: 30px; ">A few 10 position Worksheet templates were set up –  always with</p>
-<p class="western" style="padding-left: 60px; ">a Blank in position 1,</p>
-<p class="western" style="padding-left: 60px; ">a Reference sample in position 2</p>
-<p class="western" style="padding-left: 60px; ">and  the Sample in position 10 being a duplicate of that in position 3</p>
+<h3><a href="bika_setup/bika_analysisservices"><img src="++resource++bika.lims.images/service_big.png" alt="" /> Analysis Services </a></h3>
+<p>Expected turnaround time (TAT) of 2 hours<br /><br />Price of R10<br /><br />Maximum duplicate variation 10%<br /><br />Uncertainties (Range minimum, maximum,</p>
+<p>Between 0 and 2, uncertainty value of ± 0.1<br /><br /> "          2.01 -  4.00,  ± 0.2<br /><br /> "          4.01 -  6.00,  ± 0.3<br /><br /> "          6.01 -  8.00,  ± 0.4<br /><br /> "          8.01 - 999,   ± 0.5</p>
+<p>&nbsp;</p>
+<h3><a href="bika_setup/bika_analysisspecs"><img src="++resource++bika.lims.images/analysisspec_big.png" alt="" /> Analysis Specifications </a></h3>
+<p>All Sample Types: minimum 9,  maximum 11, tolerance 10%</p>
+<p>&nbsp;</p>
+<h3 class="western"><a href="bika_setup/bika_arprofiles"><img src="++resource++bika.lims.images/arprofile_big.png" alt="" /> Analysis Profiles </a></h3>
+<p class="western"><strong>Trace Metals</strong></p>
+<p class="western">Ca, Cu, Fe, Mg, Mn, Na and Zn</p>
+<p class="western"><strong>Digestable Energy</strong></p>
+<p class="western">Digestable Energy, Crude Protein, Ether Extract, Crude Fat and Ash</p>
+<p class="western"><strong>Micro-Bio</strong></p>
+<p class="western">Clostridia, Ecoli, Salmonella and Enterococcus</p>
+<p class="western">&nbsp;</p>
+<h3 class="western"><a href="bika_setup/bika_worksheettemplates"><img src="++resource++bika.lims.images/worksheettemplate_big.png" alt="" /> Worksheet Templates </a></h3>
+<p class="western">A few 10 position Worksheet templates were set up –  always with</p>
+<ul><li>a Blank in position 1,</li><li>a Reference sample in position 2</li><li>and  the Sample in position 10 being a duplicate of that in position 3</li></ul>
 </td>
 <td>
 <h3 class="western"></h3>
-<h3 class="western"><a href="bika_setup/bika_calculations"><img src="++resource++bika.lims.images/calculation.png" /> Calculations </a></h3>
-<p style="padding-left: 30px; ">A number of popular results calculations have been pre-configured in the setup</p>
-<p style="padding-left: 30px; ">They include nutrient calculations for</p>
-<p style="padding-left: 60px; ">Apparent Metabolisable Energy,<br />Digestible Energy, <br />Metabolisable Energy, <br />Non-Structural Carbohydrates and <br />Total Digestible Nutrients.</p>
-<p style="padding-left: 30px; ">Others are: Dry Matter results calculations and standard<br />Residual Weight, Residual Weight (tare), Weight Loss, Weight Loss (tare) and<br />Titration</p>
-<h3 class="western"><a href="bika_setup/bika_referencedefinitions"><img src="++resource++bika.lims.images/referencedefinition.png" /> Reference Definitions </a></h3>
-<p class="western"><span> </span></p>
-<p class="western" style="padding-left: 30px; ">1 <b>Blank </b>was configured with all analyses included with<br />Expected value of 0, minimum allowed of 0 and maximum of 1.</p>
-<p class="western" style="padding-left: 30px; ">Any result outside of this range should raise an exception.</p>
-<p class="western" style="padding-left: 30px; "><span>Other Reference Definitions are <b>Feeds</b>, <b>Trace  metals</b> and <b>Microbiology</b> with <br />Expected values of 10, 10%  deviation allowed = minimum 9, maximum 11</span></p>
+<h3 class="western"><a href="bika_setup/bika_calculations"><img src="++resource++bika.lims.images/calculation_big.png" alt="" /> Calculations </a></h3>
+<p>A number of popular results calculations have been pre-configured in the setup</p>
+<p>They include nutrient calculations for</p>
+<ul><li>Apparent Metabolisable Energy</li><li>Digestible Energy</li><li>Metabolisable Energy</li><li>Non-Structural Carbohydrates and&nbsp;</li><li>Total Digestible Nutrients.</li></ul>
+<p>&nbsp;</p>
+<p>Others are: Dry Matter results calculations and standard<br />Residual Weight, Residual Weight (tare), Weight Loss, Weight Loss (tare) and<br />Titration</p>
+<p>&nbsp;</p>
+<h3 class="western"><a href="bika_setup/bika_referencedefinitions"><img src="++resource++bika.lims.images/referencedefinition_big.png" alt="" /> Reference Definitions </a></h3>
+<p>1 <strong>Blank </strong>was configured with all analyses included with<br />Expected value of 0, minimum allowed of 0 and maximum of 1.</p>
+<p>Any result outside of this range should raise an exception.</p>
+<p>Other Reference Definitions are <strong>Feeds</strong>, <strong>Trace  metals</strong> and <strong>Microbiology</strong> with <br />Expected values of 10, 10%  deviation allowed = minimum 9, maximum 11</p>
 </td>
 </tr>
 </tbody>
