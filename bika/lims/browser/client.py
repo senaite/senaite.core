@@ -311,6 +311,8 @@ class ClientAnalysisRequestsView(BikaListingView):
             sample = obj.getSample()
             after_icons = "<a href='%s'><img src='++resource++bika.lims.images/sample.png' title='Sample: %s'></a>" % \
                         (sample.absolute_url(), sample.Title())
+            if obj.getLate():
+                after_icons += "<img src='++resource++bika.lims.images/late.png' title='Hazardous'>"
             if sample.getSampleType().getHazardous():
                 after_icons += "<img src='++resource++bika.lims.images/hazardous.png' title='Hazardous'>"
             if after_icons:

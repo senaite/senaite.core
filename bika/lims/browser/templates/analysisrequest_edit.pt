@@ -12,7 +12,7 @@
         tal:define="edit python:view.came_from == 'edit' and True or False;">
 <h1>
 	<img tal:condition="view/icon | nothing"
-		src="" tal:attributes="src view/icon|nothing"/>
+		src="" tal:attributes="src view/icon"/>
 	<tal:new i18n:translate="heading_request_new_analyses"
 		tal:condition="python:not edit">Request new analyses</tal:new>
 	<span class="documentFirstHeading"

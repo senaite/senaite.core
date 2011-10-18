@@ -11,12 +11,10 @@
 
 <metal:content-title fill-slot="content-title">
     <h1>
-	<img tal:condition="view/icon | nothing"
-         src="" tal:attributes="src view/icon|nothing"/>
-	<span class="documentFirstHeading" tal:content="context/id"/>
-	<span
-		class="barcode"
-		tal:attributes="value context/id"/>
+	    <img tal:condition="view/icon | nothing"
+            src="" tal:attributes="src view/icon"/>
+	    <span class="documentFirstHeading" tal:content="context/id"/>
+	    <span class="barcode" tal:attributes="value context/id"/>
     </h1>
 </metal:content-title>
 

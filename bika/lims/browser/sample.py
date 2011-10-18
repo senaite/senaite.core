@@ -19,6 +19,7 @@ class SampleViewView(BrowserView):
 
     def __init__(self, context, request):
         BrowserView.__init__(self, context, request)
+        self.icon = "++resource++bika.lims.images/sample_big.png"
         self.TimeOrDate = TimeOrDate
 
     def __call__(self):
@@ -34,6 +35,7 @@ class SampleEditView(SampleViewView):
 
     def __init__(self, context, request):
         BrowserView.__init__(self, context, request)
+        self.icon = "++resource++bika.lims.images/sample_big.png"
         self.TimeOrDate = TimeOrDate
 
     def __call__(self):
