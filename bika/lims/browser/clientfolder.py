@@ -74,7 +74,3 @@ class ClientFolderContentsView(BikaListingView):
             items[x]['Phone'] = obj.getPhone()
             items[x]['Fax'] = obj.getFax()
         return items
-
-    def __call__(self):
-        return self.template()
-
