@@ -107,8 +107,12 @@ class BikaGenerator:
         portal_groups = portal.portal_groups
 
         if 'LabManagers' not in portal_groups.listGroupIds():
-            portal_groups.addGroup('LabManagers', title = "Lab Managers",
-                roles = ['Member', 'LabManager', 'Site Administrator']) # 'Manager',
+            try:
+                portal_groups.addGroup('LabManagers', title = "Lab Managers",
+                       roles = ['Member', 'LabManager', 'Site Administrator'])
+            except KeyError:
+                portal_groups.addGroup('LabManagers', title = "Lab Managers",
+                       roles = ['Member', 'LabManager', 'Manager'])# Plone < 4.1
 
         if 'LabClerks' not in portal_groups.listGroupIds():
             portal_groups.addGroup('LabClerks', title = "Lab Clerks",
@@ -144,7 +148,7 @@ class BikaGenerator:
 
         mp(permissions.ListFolderContents,
            ['Manager',
-            'Anonymous',                    # XXX Testing only
+            #'Anonymous',                    # XXX Testing only
             ], 1)
         mp(permissions.AddPortalContent,
            ['Manager',
@@ -165,7 +169,7 @@ class BikaGenerator:
         mp(AccessPreviousVersions,
            ['Manager',
             'LabManager',
-            'Anonymous',                    # XXX Testing only
+            #'Anonymous',                    # XXX Testing only
             'Owner',
             'LabClerk',
             'Analyst'], 1)
@@ -296,7 +300,7 @@ class BikaGenerator:
             'Analyst'], 1)
         mp(AccessPreviousVersions,
            ['Manager',
-            'Anonymous',                    # XXX Testing only
+            #'Anonymous',                    # XXX Testing only
             'LabManager',
             'Owner',
             'LabClerk',
@@ -304,7 +308,7 @@ class BikaGenerator:
         mp(permissions.ListFolderContents,
             ['Manager',
              'LabManager',
-             'Anonymous',                    # XXX Testing only
+             #'Anonymous',                    # XXX Testing only
              'LabClerk',
              'Analyst'], 1)
         mp(permissions.AddPortalContent,
@@ -325,7 +329,7 @@ class BikaGenerator:
         mp(permissions.ListFolderContents,
             ['Manager',
              'LabManager',
-            'Anonymous',                    # XXX Testing only
+             #'Anonymous',                    # XXX Testing only
              'LabClerk',
              'Analyst'], 1)
         mp(permissions.AddPortalContent,
@@ -337,7 +341,7 @@ class BikaGenerator:
         mp(permissions.View,
             ['Manager',
              'LabManager',
-             'Anonymous',                    # XXX Testing only
+             #'Anonymous',                    # XXX Testing only
              'LabClerk',
              'Analyst',
              'Owner'], 0)
@@ -362,7 +366,7 @@ class BikaGenerator:
         mp(permissions.View,
             ['Manager',
              'LabManager',
-             'Anonymous',                    # XXX Testing only
+             #'Anonymous',                    # XXX Testing only
              'LabClerk',
              'Analyst'], 0)
         portal.worksheets.reindexObject()
