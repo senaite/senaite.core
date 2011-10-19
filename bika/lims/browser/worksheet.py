@@ -99,9 +99,13 @@ class WorksheetWorkflowAction(WorkflowAction):
             if selected_analyses:
                 for uid in selected_analysis_uids:
                     analysis = rc.lookupObject(uid)
-                    self.context.addAnalysis(analysis)
-                    workflow.doActionFor(analysis, 'assign')
-                    # Note: subscriber might assign the AR and/or retract the worksheet
+                    # Double-check the state first
+                    if (workflow.getInfoFor(analysis, 'worksheetanalysis_review_state') == 'unassigned'
+                    and workflow.getInfoFor(analysis, 'review_state') == 'sample_received'
+                    and workflow.getInfoFor(analysis, 'cancellation_state') == 'active'):
+                        self.context.addAnalysis(analysis)
+                        workflow.doActionFor(analysis, 'assign')
+                        # Note: subscriber might assign the AR and/or retract the worksheet
 
             self.destination_url = self.context.absolute_url() + "/manage_results"
             self.request.response.redirect(self.destination_url)
@@ -527,7 +531,7 @@ class WorksheetARsView(BikaListingView):
             if not ars.has_key(ar):
                 ars[ar] = slot['position']
         items = []
-        for ar,pos in ars.items():
+        for ar, pos in ars.items():
             ar = rc.lookupObject(ar)
             path = "/".join(ar.getPhysicalPath())
             # this folderitems doesn't subclass from the bika_listing.py

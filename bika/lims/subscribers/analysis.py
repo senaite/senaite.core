@@ -447,7 +447,7 @@ def ActionSucceededEventHandler(analysis, event):
             # overwrite saved context UID for event subscriber
             analysis.REQUEST['context_uid'] = ws.UID()
             analysis.REQUEST["workflow_skiplist"].remove(analysis.UID())
-            analysis.doActionFor(analysis, 'unassign')
+            wf.doActionFor(analysis, 'unassign')
             # Note: subscriber might unassign the AR and/or promote the worksheet
 
     elif event.action == "assign":
