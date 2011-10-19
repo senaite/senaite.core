@@ -232,7 +232,7 @@ class WorksheetAnalysesView(AnalysesView):
             ar = obj.aq_parent
             # client is either a Client, a ReferenceSupplier, or the worksheet folder.
             client = ar.aq_parent
-            pos_text = "<table width='100%%' cellpadding='0' cellspacing='0' cellborder='0'><tr><td rowspan='4' class='pos'>%s</td>" % pos
+            pos_text = "<table width='100%%' cellpadding='0' cellspacing='0' cellborder='0'><tr><td class='pos'>%s</td>" % pos
             pos_text += "<td class='pos_top'><a href='%s'>%s</a></td>" % (client.absolute_url(), client.Title())
             if obj.portal_type == 'DuplicateAnalysis':
                 pos_text += '<td class="pos_top"><img title="Duplicate" width="16" height="16" src="%s/++resource++bika.lims.images/duplicate.png"/></td>' % (self.context.absolute_url())
@@ -257,7 +257,7 @@ class WorksheetAnalysesView(AnalysesView):
             pos_text += "</tr>"
             if hasattr(ar, 'getClientOrderNumber'):
                 pos_text += "<tr><td></td><td>Order: %s</td><td></td></tr>" % (ar.getClientOrderNumber() or '')
-            pos_text += "<tr><td colspan='3'><div class='barcode' value='%s'/>&nbsp;</td></tr></tr>" % (ar.id)
+            pos_text += "<tr><td colspan='2'><div class='barcode' value='%s'/>&nbsp;</td></tr></tr>" % (ar.id)
             pos_text += "</table>"
             items[x]['replace']['Pos'] = pos_text
 
