@@ -4,8 +4,8 @@
    xmlns:i18n="http://xml.zope.org/namespaces/i18n">
  <property name="title">Calculation</property>
  <property name="description">
-   Define the calculations that can be used to derive results from dependent analyses and 
-   interim fileds using standard mathematical operations 
+   Define the calculations that can be used to derive results from dependent analyses and
+   interim fileds using standard mathematical operations
  </property>
  <property name="content_icon">++resource++bika.lims.images/calculation.png</property>
  <property name="content_meta_type">Calculation</property>
@@ -18,19 +18,18 @@
  <property name="allowed_content_types"/>
  <property name="allow_discussion">False</property>
  <property name="default_view_fallback">False</property>
+
  <alias from="(Default)" to="base_edit"/>
  <alias from="view" to="base_edit"/>
  <alias from="edit" to="base_edit"/>
-
  <action title="View"
          action_id="view"
          category="object"
          condition_expr=""
-         url_expr="string:${portal_url}/bika_setup/bika_calculations"
+         url_expr="string:${object/aq_parent/absolute_url}"
          visible="False">
   <permission value="View"/>
  </action>
-
  <action title="Edit"
          action_id="edit"
          category="object"

@@ -29,7 +29,7 @@
 		condition_expr=""
 		icon_expr=""
 		link_target=""
-		url_expr="string:${portal_url}/bika_setup/bika_samplepoints"
+         url_expr="string:${object/aq_parent/absolute_url}"
 		visible="False">
 </action>
 

@@ -19,7 +19,7 @@
 <property name="default_view_fallback">False</property>
 
 <alias from="(Default)" to="base_edit"/>
-<alias from="view" to="base_view"/>
+<alias from="view" to="base_edit"/>
 <alias from="edit" to="base_edit"/>
 
 <action title="View"
@@ -28,8 +28,8 @@
 		condition_expr=""
 		icon_expr=""
 		link_target=""
-		url_expr="string:${object_url}/base_edit"
-		visible="True">
+        url_expr="string:${object/aq_parent/absolute_url}"
+		visible="False">
 	<permission value="View"/>
 </action>
 

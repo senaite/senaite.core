@@ -27,7 +27,7 @@
          action_id="view"
          category="object"
          condition_expr=""
-         url_expr="string:${portal_url}/bika_setup/bika_worksheettemplates"
+         url_expr="string:${object/aq_parent/absolute_url}"
          visible="False">
   <permission value="View"/>
  </action>
