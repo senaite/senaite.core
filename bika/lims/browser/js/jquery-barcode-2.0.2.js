@@ -48,7 +48,7 @@
  *    1.3.3 - 2009/10/17
  *      no wait document is ready to add plugin
  *    2.0.1 - 2010/09/05
- *      CSS fixed to print easily - Thanks to Léo West for this fix
+ *      CSS fixed to print easily - Thanks to LÃ©o West for this fix
  *      datamatrix added - Jonathan Hourez join developper team
  *      canvas renderer added    
  *      code cleaned

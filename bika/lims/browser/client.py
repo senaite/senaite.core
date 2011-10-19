@@ -306,15 +306,15 @@ class ClientAnalysisRequestsView(BikaListingView):
 
             if workflow.getInfoFor(obj, 'worksheetanalysis_review_state') == 'assigned':
                 items[x]['after']['state_title'] = \
-                     "<img src='++resource++bika.lims.images/worksheet.png' title='All analyses assigned'/>"
+                     "<img src='++resource++bika.lims.images/worksheet.png' title='%s'/>" % _("All analyses assigned")
 
             sample = obj.getSample()
-            after_icons = "<a href='%s'><img src='++resource++bika.lims.images/sample.png' title='Sample: %s'></a>" % \
-                        (sample.absolute_url(), sample.Title())
+            after_icons = "<a href='%s'><img src='++resource++bika.lims.images/sample.png' title='%s: %s'></a>" % \
+                        (sample.absolute_url(), _("Sample: "), sample.Title())
             if obj.getLate():
-                after_icons += "<img src='++resource++bika.lims.images/late.png' title='Hazardous'>"
+                after_icons += "<img src='++resource++bika.lims.images/late.png' title='%s'>" % _("Late Analyses")
             if sample.getSampleType().getHazardous():
-                after_icons += "<img src='++resource++bika.lims.images/hazardous.png' title='Hazardous'>"
+                after_icons += "<img src='++resource++bika.lims.images/hazardous.png' title='%s'>" % _("Hazardous")
             if after_icons:
                 items[x]['after']['getRequestID'] = after_icons
 

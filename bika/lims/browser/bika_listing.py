@@ -191,20 +191,6 @@ class BikaListingView(BrowserView):
         pc = getToolByName(self.context, 'portal_catalog')
         workflow = getToolByName(self.context, 'portal_workflow')
 
-        if form.has_key('review_state_clicked'):
-            self.modified_contentFilter = self.contentFilter
-            if form.has_key("review_state"):
-                review_state = [r for r in self.review_states if \
-                                r['id'] == form['review_state']][0]
-                if review_state.has_key('contentFilter'):
-                    for k, v in review_state['contentFilter'].items():
-                        self.modified_contentFilter[k] = v
-                else:
-                    if form['review_state'] != 'all':
-                        self.modified_contentFilter['review_state'] = form['review_state']
-
-            return self.contents_table()
-
         if form.has_key('filter_input_keypress'):
             self.modified_contentFilter = self.contentFilter
             for key, value in form.items():
@@ -216,6 +202,18 @@ class BikaListingView(BrowserView):
             if hasattr(self, 'modified_contentFilter'):
                 del self.modified_contentFilter
             return self.contents_table()
+
+        if form.has_key('review_state'):
+            self.modified_contentFilter = self.contentFilter
+            if form.has_key("review_state"):
+                review_state = [r for r in self.review_states if \
+                                r['id'] == form['review_state']][0]
+                if review_state.has_key('contentFilter'):
+                    for k, v in review_state['contentFilter'].items():
+                        self.modified_contentFilter[k] = v
+                else:
+                    if form['review_state'] != 'all':
+                        self.modified_contentFilter['review_state'] = form['review_state']
 
         return self.template()
 

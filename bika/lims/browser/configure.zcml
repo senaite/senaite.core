@@ -39,6 +39,14 @@
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
+  <browser:page
+      for="*"
+      name="log"
+      class="bika.lims.browser.log.LogView"
+      permission="zope2.View"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
   <!-- Zope 3 browser resources -->
 
   <browser:resourceDirectory

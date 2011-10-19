@@ -47,12 +47,6 @@ $(document).ready(function(){
 		}
 	})
 
-	$(".review_state_filter").live('change', function(){
-		$("#spinner").toggle(true);
-		$('#folderContentsForm').append("<input type='hidden' value='1' name='review_state_clicked' id='review_state_clicked'/>");
-		inplace_submit();
-	});
-
 	$("#clear_filters").live('click', function(){
 		$('#folderContentsForm').append("<input type='hidden' value='1' name='clear_filters' id='clear_filters'/>");
 		inplace_submit();

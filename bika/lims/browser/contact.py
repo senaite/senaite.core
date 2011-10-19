@@ -9,6 +9,7 @@ class ContactLoginDetailsView(BrowserView):
     template = ViewPageTemplateFile("templates/contact_login_details.pt")
 
     def __init__(self, context, request):
+        BrowserView.__init__(self, context, request)
         self.context = context
         self.request = request
 

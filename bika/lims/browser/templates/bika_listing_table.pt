@@ -22,6 +22,7 @@ Workflow review state selector
 		<input class="review_state_filter"
 			type="radio"
 			name="review_state"
+			onclick="this.form.submit()"
 			tal:define="state_id state/id"
 			tal:attributes="
 				value state_id;

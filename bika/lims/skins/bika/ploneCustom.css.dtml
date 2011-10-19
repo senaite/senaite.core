@@ -157,12 +157,13 @@ div.position-1\:4 {
 }
 
 #listing-table td {
-	vertical-align:bottom;
+	vertical-align:middle;
 	white-space:nowrap;
 }
 
-td .Services,
-td .Description {
+td.Services,
+td.Description,
+td.SampleTypes {
   white-space:normal !important;
 }
 

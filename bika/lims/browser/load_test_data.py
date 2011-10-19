@@ -54,8 +54,8 @@ class LoadTestData(BrowserView):
                         SampleID = sample_id,
                         SampleType = random.choice(sampletypes).Title(),
                         SamplePoint = random.choice(samplepoints).Title(),
-                        ClientReference = "".join([chr(random.randint(32,100)) for r in range(10)]),
-                        ClientSampleID = "".join([chr(random.randint(32,100)) for r in range(10)]),
+                        ClientReference = "".join([chr(random.randint(70,90)) for r in range(5)]),
+                        ClientSampleID = "".join([chr(random.randint(70,90)) for r in range(5)]),
                         LastARNumber = 1,
                         DateSubmitted = DateTime(),
                         DateSampled = DateTime(),
@@ -74,7 +74,7 @@ class LoadTestData(BrowserView):
                         CCEmails = "",
                         Sample = sample,
                         Profile = profile,
-                        ClientOrderNumber = "".join([chr(random.randint(32,100)) for r in range(10)]),
+                        ClientOrderNumber = "".join([chr(random.randint(70,90)) for r in range(10)]),
                     )
                     ar.unmarkCreationFlag()
                     prices = {}

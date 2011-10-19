@@ -7,10 +7,11 @@ from cStringIO import StringIO
 from openpyxl.reader.excel import load_workbook
 from os.path import join
 from zipfile import ZipFile, ZIP_DEFLATED
+from zope.app.component.hooks import getSite
+from xml.etree.ElementTree import XML
 import Globals
 import tempfile
 import transaction
-from xml.etree.ElementTree import XML
 
 class LoadSetupData(BrowserView):
     template = ViewPageTemplateFile("templates/load_setup_data.pt")
@@ -26,6 +27,9 @@ class LoadSetupData(BrowserView):
     def __call__(self):
         form = self.request.form
 
+        if not 'submitted' in form:
+            return self.template()
+
         self.portal_catalog = getToolByName(self.context, 'portal_catalog')
         self.reference_catalog = getToolByName(self.context, 'reference_catalog')
         self.portal_registration = getToolByName(self.context, 'portal_registration')
@@ -33,7 +37,7 @@ class LoadSetupData(BrowserView):
         self.portal_membership = getToolByName(self.context, 'portal_membership')
         self.translate = getToolByName(self.context, 'translation_service').translate
         self.plone_utils = getToolByName(self.context, 'plone_utils')
-        self.plone_utils = getToolByName(self.context, 'plone_utils')
+        portal = getSite()
 
         tmp = tempfile.mktemp(prefix=Globals.INSTANCE_HOME)
         file_content = 'xlsx' in form and form['xlsx'].read()
@@ -102,7 +106,7 @@ class LoadSetupData(BrowserView):
         self.load_reference_manufacturers(sheets['Reference Manufacturers'])
 
         self.plone_utils.addPortalMessage(_("Success."))
-        return self.template()
+        self.request.RESPONSE.redirect(portal.absolute_url())
 
     def load_images(self, filename):
         #archive = ZipFile(filename, 'r', ZIP_DEFLATED)
@@ -326,7 +330,7 @@ class LoadSetupData(BrowserView):
                 # Give contact's user an Owner local role on their client
                 pm = getToolByName(contact, 'portal_membership')
                 pm.setLocalRoles(obj = contact.aq_parent,
-                                 member_ids = unicode(row['Username']),
+                                 member_ids = [unicode(row['Username']),],
                                  member_role = 'Owner')
 
                 # add user to Clients group

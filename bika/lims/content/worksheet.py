@@ -101,9 +101,9 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
                         slot['container_uid'] == analysis.aq_parent.UID()][0]
         else:
             if not position:
-                position = max([int(slot['position']) for slot in layout])+1
+                used_positions = [int(slot['position']) for slot in layout]
+                position = used_positions and max(used_positions)+1 or 1
                 if wst:
-                    used_positions = [slot['position'] for slot in layout]
                     available_positions = [row['pos'] for row in wstlayout \
                                            if row['pos'] not in used_positions and \
                                               row['type'] == 'a'] or [position,]

@@ -4,6 +4,7 @@ from Products.CMFCore.utils import getToolByName
 from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import bikaMessageFactory as _
+from bika.lims import logger
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.utils import TimeOrDate
 from bika.lims.browser.worksheet import getAnalysts
@@ -12,83 +13,112 @@ from zope.interface import implements
 import plone
 
 class WorksheetFolderListingView(BikaListingView):
-    contentFilter = {'portal_type': 'Worksheet',
-                     'review_state':['open', 'to_be_verified', 'verified', 'rejected'],
-                     'cancellation_state':'active',
-                     'sort_on':'id',
-                     'sort_order': 'reverse'}
-    content_add_actions = {_('Worksheet'): "worksheet_add"}
-    show_editable_border = False
-    show_table_only = False
-    show_sort_column = False
-    show_select_row = False
-    show_select_all_checkbox = True
-    show_select_column = True
-    pagesize = 50
-    columns = {
-        'Title': {'title': _('Worksheet Number')},
-        'Owner': {'title': _('Owner')},
-        'Analyst': {'title': _('Analyst')},
-        'Template': {'title': _('Template')},
-        'Analyses': {'title': _('Analyses')},
-        'CreationDate': {'title': _('Creation Date')},
-        'state_title': {'title': _('State')},
-    }
-    review_states = [
-        {'title': _('All'), 'id':'all',
-         'contentFilter': {'portal_type': 'Worksheet',
-                           'review_state':['open', 'to_be_verified', 'verified', 'rejected'],
-                           'cancellation_state':'active',
-                           'sort_on':'id',
-                           'sort_order': 'reverse'},
-         'transitions':[],
-         'columns':['Title',
-                    'Owner',
-                    'Analyst',
-                    'Template',
-                    'Analyses',
-                    'CreationDate',
-                    'state_title']},
-        {'title': _('Worksheet Open'), 'id':'open',
-         'contentFilter': {'portal_type': 'Worksheet',
-                           'review_state':'open',
-                           'cancellation_state':'active',
-                           'sort_on':'id',
-                           'sort_order': 'reverse'},
-         'transitions':[],
-         'columns':['Title',
-                    'Owner',
-                    'Analyst',
-                    'Template',
-                    'Analyses',
-                    'CreationDate',
-                    'state_title']},
-        {'title': _('To Be Verified'), 'id':'to_be_verified',
-         'contentFilter': {'portal_type': 'Worksheet',
-                           'review_state':'to_be_verified',
-                           'sort_on':'id',
-                           'sort_order': 'reverse'},
-         'transitions':[],
-         'columns':['Title',
-                    'Owner',
-                    'Analyst',
-                    'Template',
-                    'Analyses',
-                    'CreationDate',
-                    'state_title']},
-        {'title': _('Verified'), 'id':'verified',
-         'contentFilter': {'portal_type': 'Worksheet',
-                           'review_state':'verified',
-                           'sort_on':'id',
-                           'sort_order': 'reverse'},
-         'transitions':[],
-         'columns':['Title',
-                    'Owner',
-                    'Analyst',
-                    'Template',
-                    'Analyses',
-                    'CreationDate',
-                    'state_title']},
+    def __init__(self, context, request):
+        BikaListingView.__init__(self, context, request)
+        self.contentFilter = {
+            'portal_type': 'Worksheet',
+            'review_state':['open', 'to_be_verified', 'verified', 'rejected'],
+            'sort_on':'id',
+            'sort_order': 'reverse'}
+        self.content_add_actions = {_('Worksheet'): "worksheet_add"}
+        self.show_editable_border = False
+        self.show_table_only = False
+        self.show_sort_column = False
+        self.show_select_row = False
+        self.show_select_all_checkbox = True
+        self.show_select_column = True
+        self.pagesize = 50
+
+        self.icon = "++resource++bika.lims.images/worksheet_big.png"
+        self.title = "%s: %s" % (self.context.Title(), _("Worksheets"))
+        self.description = ""
+        self.TimeOrDate = TimeOrDate
+
+        pm = getToolByName(context, "portal_membership")
+        analyst = pm.getAuthenticatedMember().getId()
+
+        self.columns = {
+            'Title': {'title': _('Worksheet Number')},
+            'Owner': {'title': _('Owner')},
+            'Analyst': {'title': _('Analyst')},
+            'Template': {'title': _('Template')},
+            'Analyses': {'title': _('Analyses')},
+            'SampleTypes': {'title': _('Sample Types')},
+            'CreationDate': {'title': _('Creation Date')},
+            'state_title': {'title': _('State')},
+        }
+        self.review_states = [
+            {'title': _('All'), 'id':'all',
+             'contentFilter': {'portal_type': 'Worksheet',
+                               'review_state':['open', 'to_be_verified', 'verified', 'rejected'],
+                               'sort_on':'id',
+                               'sort_order': 'reverse'},
+             'transitions':[],
+             'columns':['Title',
+                        'Owner',
+                        'Analyst',
+                        'Template',
+                        'Analyses',
+                        'SampleTypes',
+                        'CreationDate',
+                        'state_title']},
+            {'title': _('Mine'), 'id':'mine',
+             'contentFilter': {'portal_type': 'Worksheet',
+                               'review_state':['open', 'to_be_verified', 'verified', 'rejected'],
+                               'getAnalyst': analyst,
+                               'sort_on':'id',
+                               'sort_order': 'reverse'},
+             'transitions':[],
+             'columns':['Title',
+                        'Owner',
+                        'Analyst',
+                        'Template',
+                        'Analyses',
+                        'SampleTypes',
+                        'CreationDate',
+                        'state_title']},
+            {'title': _('Worksheet Open'), 'id':'open',
+             'contentFilter': {'portal_type': 'Worksheet',
+                               'review_state':'open',
+                               'sort_on':'id',
+                               'sort_order': 'reverse'},
+             'transitions':[],
+             'columns':['Title',
+                        'Owner',
+                        'Analyst',
+                        'Template',
+                        'Analyses',
+                        'SampleTypes',
+                        'CreationDate',
+                        'state_title']},
+            {'title': _('To Be Verified'), 'id':'to_be_verified',
+             'contentFilter': {'portal_type': 'Worksheet',
+                               'review_state':'to_be_verified',
+                               'sort_on':'id',
+                               'sort_order': 'reverse'},
+             'transitions':[],
+             'columns':['Title',
+                        'Owner',
+                        'Analyst',
+                        'Template',
+                        'Analyses',
+                        'SampleTypes',
+                        'CreationDate',
+                        'state_title']},
+            {'title': _('Verified'), 'id':'verified',
+             'contentFilter': {'portal_type': 'Worksheet',
+                               'review_state':'verified',
+                               'sort_on':'id',
+                               'sort_order': 'reverse'},
+             'transitions':[],
+             'columns':['Title',
+                        'Owner',
+                        'Analyst',
+                        'Template',
+                        'Analyses',
+                        'SampleTypes',
+                        'CreationDate',
+                        'state_title']},
 ##                {'title': _('Cancelled'), 'id':'cancelled',
 ##                 'contentFilter': {'portal_type': 'Worksheet',
 ##                                   'cancellation_state':'cancelled',
@@ -111,20 +141,16 @@ class WorksheetFolderListingView(BikaListingView):
 ##                            'Analyst',
 ##                            'Template',
 ##                            'Analyses',
+##                            'SampleTypes',
 ##                            'CreationDate',
 ##                            'state_title']}
-    ]
-    def __init__(self, context, request):
-        super(WorksheetFolderListingView, self).__init__(context, request)
-        self.icon = "++resource++bika.lims.images/worksheet_big.png"
-        self.title = "%s: %s" % (self.context.Title(), _("Worksheets"))
-        self.description = ""
-        self.TimeOrDate = TimeOrDate
+        ]
 
     def folderitems(self):
         items = BikaListingView.folderitems(self)
         mtool = getToolByName(self, 'portal_membership')
         wf = getToolByName(self, 'portal_workflow')
+        rc = getToolByName(self, 'reference_catalog')
         member = mtool.getAuthenticatedMember()
         new_items = []
         for x in range(len(items)):
@@ -136,10 +162,14 @@ class WorksheetFolderListingView(BikaListingView):
             items[x]['Owner'] = obj.getOwnerTuple()[1]
             analyst = obj.getAnalyst().strip()
             analyst_member = mtool.getMemberById(analyst)
+            # XXX This should not be needed - why is contentFilter/analyst not working?
+            if 'getAnalyst' in self.contentFilter:
+                if analyst != member.getId():
+                    continue
             if analyst_member != None:
                 items[x]['Analyst'] = analyst_member.getProperty('fullname')
             else:
-                items[x]['Analyst'] = analyst
+                items[x]['Analyst'] = ''
             wst = obj.getWorksheetTemplate()
             items[x]['Template'] = wst and wst.Title() or ''
             if wst:
@@ -148,18 +178,43 @@ class WorksheetFolderListingView(BikaListingView):
             items[x]['Analyses'] = str(len(obj.getAnalyses()))
             if items[x]['Analyses'] == '0':
                 # Don't display empty worksheets that aren't ours
-                if member.getId() != analyst:
-                    continue
+##                if member.getId() != analyst:
+##                    continue
                 # give empties pretty classes.
                 items[x]['table_row_class'] = 'state-empty-worksheet'
                 items[x]['class']['Analyses'] = "empty"
             items[x]['CreationDate'] = TimeOrDate(self.context, obj.creation_date)
-            if len(obj.getLayout()) > 0:
+            layout = obj.getLayout()
+            if len(layout) > 0:
                 items[x]['replace']['Title'] = "<a href='%s/manage_results'>%s</a>" % \
                     (items[x]['url'], items[x]['Title'])
             else:
                 items[x]['replace']['Title'] = "<a href='%s/add_analyses'>%s</a>" % \
                     (items[x]['url'], items[x]['Title'])
+
+            # set Sample Types
+            pos_parent = {}
+            for slot in layout:
+                if slot['position'] in pos_parent:
+                    continue
+                pos_parent[slot['position']] = rc.lookupObject(slot['container_uid'])
+            references = []
+            sampletypes = []
+            for container in pos_parent.values():
+                if container.portal_type == 'AnalysisRequest':
+                    st = container.getSample().getSampleType()
+                    if st in sampletypes:
+                        continue
+                    sampletypes.append(st.Title())
+                if container.portal_type == 'ReferenceSample':
+                    st = container.getTitle()
+                    if st in references:
+                        continue
+                    references.append(st)
+            sampletypes = ",".join(references + sampletypes)
+            items[x]['SampleTypes'] = sampletypes
+##            items[x]['replace']['SampleTypes'] = sampletypes
+
             new_items.append(items[x])
         return new_items
 
@@ -204,7 +259,6 @@ class AddWorksheetView(BrowserView):
                       getServiceUID = wst_service_uids,
                       review_state = 'sample_received',
                       worksheetanalysis_review_state = 'unassigned',
-                      cancellation_state = 'active',
                       sort_on = 'getDueDate')
         # collect analyses from the first X ARs.
         ar_analyses = {} # ar_uid : [analyses]

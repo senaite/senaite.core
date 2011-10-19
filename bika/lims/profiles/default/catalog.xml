@@ -62,6 +62,7 @@
  <index name="effectiveRange" meta_type="DateRangeIndex" since_field="effective" until_field="expires"/>
  <index name="end" meta_type="DateIndex"> <property name="index_naive_time_as_local">True</property> </index>
  <index name="expires" meta_type="DateIndex"> <property name="index_naive_time_as_local">True</property> </index>
+ <index name="getAnalyst" meta_type="FieldIndex"> <indexed_attr value="getAnalyst"/> </index>
  <index name="getCategoryName" meta_type="FieldIndex"> <indexed_attr value="getCategoryName"/> </index>
  <index name="getCategoryUID" meta_type="FieldIndex"> <indexed_attr value="getCategoryUID"/> </index>
  <index name="getClientReference" meta_type="FieldIndex"> <indexed_attr value="getClientReference"/> </index>

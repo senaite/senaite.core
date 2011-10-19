@@ -84,11 +84,12 @@ class DuplicateAnalysis(Analysis):
         # if our Analysis' result is not a number, then we assume in range
         try:
             orig_result = float(orig_result)
+            result = float(result)
         except ValueError:
             return True
-        dup_variation = self.getService().getDuplicateVariation() or 0
-        range_min = result - (result * dup_variation / 100)
-        range_max = result + (result * dup_variation / 100)
+        dup_variation = float(self.getService().getDuplicateVariation()) or 0
+        range_min = result - (orig_result * dup_variation / 100)
+        range_max = result + (orig_result * dup_variation / 100)
         if range_min <= orig_result <= range_max:
             return True
         else:

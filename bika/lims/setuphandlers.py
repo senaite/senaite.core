@@ -10,6 +10,9 @@ from bika.lims.config import *
 from bika.lims.interfaces import IHaveNoBreadCrumbs
 from zope.event import notify
 from zope.interface import alsoProvides
+from Products.CMFEditions.Permissions import ApplyVersionControl
+from Products.CMFEditions.Permissions import SaveNewVersion
+from Products.CMFEditions.Permissions import AccessPreviousVersions
 
 #from Products.GroupUserFolder.GroupsToolPermissions import ManageGroups
 
@@ -105,7 +108,7 @@ class BikaGenerator:
 
         if 'LabManagers' not in portal_groups.listGroupIds():
             portal_groups.addGroup('LabManagers', title = "Lab Managers",
-                roles = ['Member', 'Manager', 'LabManager'])
+                roles = ['Member', 'LabManager', 'Site Administrator']) # 'Manager',
 
         if 'LabClerks' not in portal_groups.listGroupIds():
             portal_groups.addGroup('LabClerks', title = "Lab Clerks",
@@ -140,11 +143,32 @@ class BikaGenerator:
         mp = portal.manage_permission
 
         mp(permissions.ListFolderContents,
-           ['Manager'], 1)
+           ['Manager',
+            'Anonymous',                    # XXX Testing only
+            ], 1)
         mp(permissions.AddPortalContent,
            ['Manager',
             'Owner',
             'LabManager'], 0)
+        mp(ApplyVersionControl,
+           ['Manager',
+            'LabManager',
+            'Owner',
+            'LabClerk',
+            'Analyst'], 1)
+        mp(SaveNewVersion,
+           ['Manager',
+            'LabManager',
+            'Owner',
+            'LabClerk',
+            'Analyst'], 1)
+        mp(AccessPreviousVersions,
+           ['Manager',
+            'LabManager',
+            'Anonymous',                    # XXX Testing only
+            'Owner',
+            'LabClerk',
+            'Analyst'], 1)
         mp(permissions.FTPAccess,
            ['Manager',
             'LabManager',
@@ -258,36 +282,89 @@ class BikaGenerator:
 
         # End of interesting stuff
         mp = portal.clients.manage_permission
+        mp(ApplyVersionControl,
+           ['Manager',
+            'LabManager',
+            'Owner',
+            'LabClerk',
+            'Analyst'], 1)
+        mp(SaveNewVersion,
+           ['Manager',
+            'LabManager',
+            'Owner',
+            'LabClerk',
+            'Analyst'], 1)
+        mp(AccessPreviousVersions,
+           ['Manager',
+            'Anonymous',                    # XXX Testing only
+            'LabManager',
+            'Owner',
+            'LabClerk',
+            'Analyst'], 1)
         mp(permissions.ListFolderContents,
-            ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 1)
+            ['Manager',
+             'LabManager',
+             'Anonymous',                    # XXX Testing only
+             'LabClerk',
+             'Analyst'], 1)
         mp(permissions.AddPortalContent,
-            ['Manager', 'LabManager', 'LabClerk',
+            ['Manager',
+             'LabManager',
+             'LabClerk',
              'Owner'], 0)
         mp(permissions.View,
-            ['Manager', 'LabManager', 'LabClerk', 'Analyst',
+            ['Manager',
+             'LabManager',
+             'Anonymous',                    # XXX Testing only
+             'LabClerk',
+             'Analyst',
              'Owner'], 0)
         portal.clients.reindexObject()
 
         mp = portal.referencesuppliers.manage_permission
         mp(permissions.ListFolderContents,
-            ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 1)
+            ['Manager',
+             'LabManager',
+            'Anonymous',                    # XXX Testing only
+             'LabClerk',
+             'Analyst'], 1)
         mp(permissions.AddPortalContent,
-            ['Manager', 'LabManager', 'LabClerk', 'Analyst',
+            ['Manager',
+             'LabManager',
+             'LabClerk',
+             'Analyst',
              'Owner'], 0)
         mp(permissions.View,
-            ['Manager', 'LabManager', 'LabClerk', 'Analyst',
+            ['Manager',
+             'LabManager',
+             'Anonymous',                    # XXX Testing only
+             'LabClerk',
+             'Analyst',
              'Owner'], 0)
         portal.referencesuppliers.reindexObject()
 
         mp = portal.worksheets.manage_permission
         mp(permissions.ListFolderContents,
-            ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 1)
+            ['Manager',
+             'LabManager',
+             'Anonymous',                    # XXX Testing only
+             'LabClerk',
+             'Analyst'], 1)
         mp(permissions.AddPortalContent,
-            ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 0)
+            ['Manager',
+             'LabManager',
+             'LabClerk',
+             'Analyst'], 0)
         mp(permissions.DeleteObjects,
-            ['Manager', 'LabManager', 'Owner'], 0)
+            ['Manager',
+             'LabManager',
+             'Owner'], 0)
         mp(permissions.View,
-            ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 0)
+            ['Manager',
+             'LabManager',
+             'Anonymous',                    # XXX Testing only
+             'LabClerk',
+             'Analyst'], 0)
         portal.worksheets.reindexObject()
 
         mp = portal.invoices.manage_permission
