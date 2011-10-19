@@ -3,7 +3,7 @@
  <permission>BIKA: View Results</permission>
  <permission>BIKA: Edit Results</permission>
  <permission>BIKA: Cancel and reinstate</permission>
- 
+
  <state state_id="sample_due" title="Sample due">
   <exit-transition transition_id="import"/>
   <exit-transition transition_id="receive"/>
@@ -17,7 +17,7 @@
    <permission-role>Owner</permission-role>
   </permission-map>
  </state>
- 
+
  <state state_id="not_requested" title="Not requested">
   <exit-transition transition_id="verify"/>
   <permission-map name="BIKA: View Results" acquired="False">
@@ -33,7 +33,7 @@
    <permission-role>LabManager</permission-role>
   </permission-map>
  </state>
- 
+
  <state state_id="sample_received" title="Sample received">
   <exit-transition transition_id="submit"/>
   <permission-map name="BIKA: View Results" acquired="False">
@@ -52,7 +52,7 @@
    <permission-role>LabManager</permission-role>
   </permission-map>
  </state>
- 
+
  <state state_id="attachment_due" title="Attachment Outstanding">
   <exit-transition transition_id="attach"/>
   <exit-transition transition_id="retract"/>
@@ -69,7 +69,7 @@
    <permission-role>LabManager</permission-role>
   </permission-map>
  </state>
- 
+
  <state state_id="to_be_verified" title="To be verified">
   <exit-transition transition_id="verify"/>
   <exit-transition transition_id="retract"/>
@@ -86,7 +86,7 @@
    <permission-role>LabManager</permission-role>
   </permission-map>
  </state>
- 
+
  <state state_id="verified" title="Verified">
   <exit-transition transition_id="publish"/>
   <permission-map name="BIKA: View Results" acquired="False">
@@ -101,7 +101,7 @@
   <permission-map name="BIKA: Cancel and reinstate" acquired="False">
   </permission-map>
  </state>
- 
+
  <state state_id="published" title="Published">
   <exit-transition transition_id="publish"/>
   <permission-map name="BIKA: View Results" acquired="False">
@@ -116,30 +116,30 @@
   <permission-map name="BIKA: Cancel and reinstate" acquired="False">
   </permission-map>
  </state>
- 
- 
+
+
  <transition transition_id="import" title="Import" new_state="not_requested" trigger="USER" before_script="" after_script="">
   <guard>
    <guard-permission>BIKA: Import analysis</guard-permission>
    <guard-expression>python:here.guard_cancelled_object()</guard-expression>
   </guard>
  </transition>
- 
+
  <transition transition_id="receive" title="Receive Sample" new_state="sample_received" trigger="USER" before_script="" after_script="">
   <action url="workflow_action?workflow_action=receive" category="workflow" icon="">Receive sample</action>
   <guard>
-   <guard-permission>BIKA: Receive sample</guard-permission>
+   <guard-permission>BIKA: Receive Sample</guard-permission>
    <guard-expression>python:here.guard_cancelled_object()</guard-expression>
   </guard>
  </transition>
- 
+
  <transition transition_id="submit" title="Submit for verification" new_state="attachment_due" trigger="USER" before_script="" after_script="">
   <action url="workflow_action?workflow_action=submit" category="workflow" icon="">Submit for verification</action>
   <guard>
    <guard-expression>python:here.guard_submit_analysis()</guard-expression>
   </guard>
  </transition>
- 
+
  <transition transition_id="retract" title="Retract" new_state="sample_received" trigger="USER" before_script="" after_script="">
   <action url="workflow_action?workflow_action=retract" category="workflow" icon="">Retract</action>
   <guard>
@@ -147,14 +147,14 @@
    <guard-expression>python:here.guard_cancelled_object()</guard-expression>
   </guard>
  </transition>
- 
+
  <transition transition_id="attach" title="Attach" new_state="to_be_verified" trigger="USER" before_script="" after_script="">
   <action url="workflow_action?workflow_action=submit" category="workflow" icon="">Add attachmnt</action>
   <guard>
    <guard-expression>python:here.guard_attach_analysis()</guard-expression>
   </guard>
  </transition>
- 
+
  <transition transition_id="verify" title="Verify" new_state="verified" trigger="USER" before_script="" after_script="">
   <action url="workflow_action?workflow_action=verify" category="workflow" icon="">Verify</action>
   <guard>
@@ -162,7 +162,7 @@
    <guard-expression>python:here.guard_verify_analysis()</guard-expression>
   </guard>
  </transition>
- 
+
  <transition transition_id="publish" title="Publish" new_state="published" trigger="USER" before_script="" after_script="">
   <action url="workflow_action?workflow_action=publish" category="workflow" icon="">Publish</action>
   <guard>
@@ -170,8 +170,8 @@
    <guard-expression>python:here.guard_cancelled_object()</guard-expression>
   </guard>
  </transition>
- 
- 
+
+
  <variable variable_id="action" for_catalog="False" for_status="True" update_always="True">
   <description>The last transition</description>
   <default>
@@ -180,7 +180,7 @@
   <guard>
   </guard>
  </variable>
- 
+
  <variable variable_id="actor" for_catalog="False" for_status="True" update_always="True">
   <description>The ID of the user who performed the last transition</description>
   <default>
@@ -189,7 +189,7 @@
   <guard>
   </guard>
  </variable>
- 
+
  <variable variable_id="comments" for_catalog="False" for_status="True" update_always="True">
   <description>Comments about the last transition</description>
   <default>
@@ -198,7 +198,7 @@
   <guard>
   </guard>
  </variable>
- 
+
  <variable variable_id="review_history" for_catalog="False" for_status="False" update_always="False">
   <description>Provides access to workflow history</description>
   <default>
@@ -207,7 +207,7 @@
   <guard>
   </guard>
  </variable>
- 
+
  <variable variable_id="time" for_catalog="False" for_status="True" update_always="True">
   <description>Time of the last transition</description>
   <default>
@@ -216,5 +216,5 @@
   <guard>
   </guard>
  </variable>
- 
+
 </dc-workflow>
