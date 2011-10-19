@@ -125,7 +125,7 @@
   </guard>
  </transition>
  
- <transition transition_id="receive" title="Receive sample" new_state="sample_received" trigger="USER" before_script="" after_script="">
+ <transition transition_id="receive" title="Receive Sample" new_state="sample_received" trigger="USER" before_script="" after_script="">
   <action url="workflow_action?workflow_action=receive" category="workflow" icon="">Receive sample</action>
   <guard>
    <guard-permission>BIKA: Receive sample</guard-permission>
