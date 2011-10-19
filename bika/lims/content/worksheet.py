@@ -105,7 +105,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
                 position = used_positions and max(used_positions)+1 or 1
                 if wst:
                     available_positions = [row['pos'] for row in wstlayout \
-                                           if row['pos'] not in used_positions and \
+                                           if int(row['pos']) not in used_positions and \
                                               row['type'] == 'a'] or [position,]
                     position = available_positions[0]
         self.setLayout(layout + [{'position': position,
