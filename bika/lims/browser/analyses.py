@@ -230,8 +230,12 @@ class AnalysesView(BikaListingView):
                    items[i]['review_state'] not in ['sample_due', 'published'] and \
                    items[i]['DueDate'] < DateTime():
                     DueDate = TimeOrDate(self.context, item['DueDate'], long_format = 1)
-                    items[i]['after']['DueDate'] = '<img width="16" height="16" src="%s/++resource++bika.lims.images/late.png" title="%s"/>' % \
-                        (portal.absolute_url(), _("Due Date: ") + DueDate)
+                    if self.context.portal_type == 'AnalysisRequest':
+                        items[i]['after']['DueDate'] = '<img width="16" height="16" src="%s/++resource++bika.lims.images/late.png" title="%s"/>' % \
+                            (portal.absolute_url(), _("Due Date: ") + DueDate)
+                    else:
+                        items[i]['after']['DueDate'] = '<img width="16" height="16" src="%s/++resource++bika.lims.images/late.png" title="%s"/>' % \
+                            (portal.absolute_url(), _("Late analysis"))
                 else:
                     items[i]['DueDate'] = TimeOrDate(self.context, item['DueDate'])
             # add icon for assigned analyses in AR views

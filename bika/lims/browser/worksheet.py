@@ -117,7 +117,6 @@ class WorksheetWorkflowAction(WorkflowAction):
                     if analysis.portal_type == "DuplicateAnalysis":
                         self.context._delObject(analysis.id)
                         continue
-                    self.context.removeAnalysis(analysis)
                     workflow.doActionFor(analysis, 'unassign')
 
             self.destination_url = self.context.absolute_url() + "/manage_results"

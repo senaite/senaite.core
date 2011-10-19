@@ -89,7 +89,10 @@ $(document).ready(function(){
 						.empty()
 						.append(result.formatted_result);
 					// check the item's checkbox
-					$('#cb_'+result.uid).attr('checked', true);
+					// if value actually was changed from previous form data
+					if (true){
+						$('#cb_'+result.uid).attr('checked', true);
+					}
 				}
 			}
 		}

@@ -319,7 +319,7 @@ class BikaGenerator:
         mp(permissions.View,
             ['Manager',
              'LabManager',
-             'Anonymous',                    # XXX Testing only
+             #'Anonymous',                    # XXX Testing only
              'LabClerk',
              'Analyst',
              'Owner'], 0)
@@ -351,7 +351,7 @@ class BikaGenerator:
         mp(permissions.ListFolderContents,
             ['Manager',
              'LabManager',
-             'Anonymous',                    # XXX Testing only
+             #'Anonymous',                    # XXX Testing only
              'LabClerk',
              'Analyst'], 1)
         mp(permissions.AddPortalContent,

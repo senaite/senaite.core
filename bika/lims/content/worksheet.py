@@ -118,8 +118,12 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         """ delete an analyses from the worksheet and un-assign it
         """
         Analyses = self.getAnalyses()
-        Analyses.remove(analysis)
-        self.setAnalyses(Analyses)
+        try:
+            Analyses.remove(analysis)
+            self.setAnalyses(Analyses)
+        except ValueError:
+            # XXX shouldnt happen
+            pass
         layout = [slot for slot in self.getLayout() if slot['analysis_uid'] != analysis.UID()]
         self.setLayout(layout)
 
