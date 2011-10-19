@@ -161,6 +161,7 @@ class ajaxCalculateAnalysisEntry():
         self.value = self.request.get('value')
         self.specification = self.request.get('specification', 'lab')
         self.form_results = json.loads(self.request.get('results'))
+        self.pristine_form_results = self.form_results
 
         # these are sent back to the js
         try: self.item_data = json.loads(self.request.get('item_data', ''))

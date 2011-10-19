@@ -106,27 +106,8 @@ def contact_logindetails_submit(context, request):
     group=context.portal_groups.getGroupById('Clients')
     group.addMember(username)
 
-    if properties.validate_email or request.get('mail_me', 0):
-        try:
-            reg_tool.registeredNotify(username)
-        except ConflictError:
-            raise
-        except Exception, err:
-
-            #XXX registerdNotify calls into various levels.  Lets catch all exceptions.
-            #    Should not fail.  They cant CHANGE their password ;-)  We should notify them.
-            #
-            # (MSL 12/28/03) We also need to delete the just made member and return to the join_form.
-
-
-
-            message = context.translate('email_invalid',
-                default = 'We were unable to send your password to your email address: %s. Please enter a valid email address' %s(err),
-                domain='bika')
-            errors['email'] = 'email: ' + message
-
-    if errors:
-        return json.dumps({'errors':errors})
+##    if properties.validate_email or request.get('mail_me', 0):
+##        reg_tool.registeredNotify(username)
 
     message = "Registered"
     context.plone_utils.addPortalMessage(message, 'info')

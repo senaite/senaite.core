@@ -61,7 +61,9 @@
 				<input type="text" name="username" size="30"/>
 			</div>
 
-			<div class="field" tal:condition="not: site_properties/validate_email">
+
+		<div class="field"
+			tal:condition="python:context.portal_membership.checkPermission('Add portal member', context)">
 				<label i18n:translate="label_password">Password</label>
 				<span class="fieldRequired" title="Required"
 					i18n:attributes="title"
@@ -72,7 +74,8 @@
 				<input type="password" name="password" size="10"/>
 			</div>
 
-			<div class="field" tal:condition="not: site_properties/validate_email">
+		<div class="field"
+			tal:condition="python:context.portal_membership.checkPermission('Add portal member', context)">
 				<label i18n:translate="label_confirm_password">Confirm password</label>
 				<span class="fieldRequired" title="Required"
 					i18n:attributes="title"
@@ -94,7 +97,8 @@
 					is lost. We respect your privacy, and will not give the address
 					away to any third parties or expose it anywhere.
 				</div>
-				<input type="text" name="email" size="30"/>
+				<input type="text" name="email" size="30"
+					tal:attributes="value python: context.getEmailAddress() and context.getEmailAddress() or ''"/>
 			</div>
 
 			<input class="context allowMultiSubmit"
