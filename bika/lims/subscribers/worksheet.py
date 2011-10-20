@@ -39,8 +39,19 @@ def ActionSucceededEventHandler(ws, event):
     wf = getToolByName(ws, 'portal_workflow')
 
     if event.action == "submit":
+        # Don't cascade. Shouldn't be submitting WSs directly for now,
+        # except edge cases where all analyses are already submitted,
+        # but WS was held back until an analyst was assigned.
         ws.reindexObject(idxs = ["review_state", ])
-        # Don't cascade. Shouldn't be submitting WSs directly for now.
+        can_attach = True
+        for a in ws.getAnalyses():
+            if wf.getInfoFor(a, 'review_state') in \
+               ('sample_due', 'sample_received', 'attachment_due', 'assigned',):
+                # Note: referenceanalyses can still have review_state = "assigned" (as at 21 Sep 2011).
+                can_attach = False
+                break
+        if can_attach:
+            wf.doActionFor(ws, 'attach')
 
     elif event.action == "retract":
         ws.reindexObject(idxs = ["review_state", ])

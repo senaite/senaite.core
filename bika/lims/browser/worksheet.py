@@ -132,13 +132,12 @@ class WorksheetWorkflowAction(WorkflowAction):
 
 def getAnalysts(context):
     """ Present the LabManagers and Analysts as options for analyst
-        set the first entry to blank to force selection
     """
     mtool = getToolByName(context, 'portal_membership')
     analysts = {}
     member = mtool.getAuthenticatedMember()
     pairs = []
-    analysts = mtool.searchForMembers(roles = ['LabManager', 'Analyst'])
+    analysts = mtool.searchForMembers(roles = ['Manager', 'LabManager', 'Analyst'])
     for member in analysts:
         uid = member.getId()
         fullname = member.getProperty('fullname')
@@ -146,6 +145,17 @@ def getAnalysts(context):
             continue
         pairs.append((uid, fullname))
     return pairs
+
+def getAnalystName(context):
+    """ Returns the name of the currently assigned analyst
+    """
+    mtool = getToolByName(context, 'portal_membership')
+    analyst = context.getAnalyst().strip()
+    analyst_member = mtool.getMemberById(analyst)
+    if analyst_member != None:
+        return analyst_member.getProperty('fullname')
+    else:
+        return ''
 
 class WorksheetAnalysesView(AnalysesView):
     """ This renders the table for ManageResultsView.
@@ -185,6 +195,9 @@ class WorksheetAnalysesView(AnalysesView):
 
     def getAnalysts(self):
         return getAnalysts(self.context)
+
+    def getAnalystName(self):
+        return getAnalystName(self.context)
 
     def folderitems(self):
         self.contentsMethod = self.context.getFolderContents
@@ -301,12 +314,17 @@ class ManageResultsView(BrowserView):
     template = ViewPageTemplateFile("templates/worksheet_manage_results.pt")
     def __init__(self, context, request):
         BrowserView.__init__(self, context, request)
+
     def __call__(self):
         self.icon = "++resource++bika.lims.images/worksheet_big.png"
         self.Analyses = WorksheetAnalysesView(self.context, self.request)
         return self.template()
+
     def getAnalysts(self):
         return getAnalysts(self.context)
+
+    def getAnalystName(self):
+        return getAnalystName(self.context)
 
 class AnalysesSearchResultsView(BikaListingView):
     ## The table used to display Analysis search results for AddAnalysesView
@@ -376,6 +394,9 @@ class AddAnalysesView(AnalysesView):
 
     def getAnalysts(self):
         return getAnalysts(self.context)
+
+    def getAnalystName(self):
+        return getAnalystName(self.context)
 
     def __call__(self):
         form = self.request.form
@@ -808,23 +829,6 @@ class ajaxAddDuplicate(BrowserView):
             return
         self.request['context_uid'] = self.context.UID()
         dups = self.context.addDuplicateAnalyses(src_slot, position)
-
-class ajaxSetAnalyst(BrowserView):
-    """ The Analysis dropdown uses this to set the analysis immediately when
-        a name is selected from the Analyst dropdown.
-    """
-
-    def __call__(self):
-        rc = getToolByName(self.context, 'reference_catalog')
-        mtool = getToolByName(self, 'portal_membership')
-        plone.protect.PostOnly(self.request)
-        plone.protect.CheckAuthenticator(self.request)
-        value = request.get('value', '')
-        if not value:
-            return
-        if not mtool.getMemberById(analyst):
-            return
-        self.context.setAnalyst(value)
 
 class ajaxGetServices(BrowserView):
     """ When a Category is selected in the add_analyses search screen, this

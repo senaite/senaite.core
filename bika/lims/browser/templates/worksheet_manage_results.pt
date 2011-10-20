@@ -45,9 +45,10 @@
 		<input type="hidden" name="submitted" value="1"/>
 
 		<tal:analyst
-			tal:condition="nocall: view/getAnalysts|nothing">
+			tal:define="ws_state python: context.portal_workflow.getInfoFor(context, 'review_state')">
 			<span class="formQuestion">Analyst: </span>
 			<select
+				tal:condition="python: ws_state == 'open'"
 				id = "analyst"
 				name="Analyst">
 				<option value="" i18n:translate="None"
@@ -59,7 +60,9 @@
 							selected python:analyst[0] == (context.getAnalyst() and context.getAnalyst() or '') and 'selected' or ''"
 						tal:content="python:analyst[1]"></option>
 				</tal:repeat>
-			</select>&nbsp;<span id="analyst_changed" style="display:none" i18n:translate="">Analyst changed.</span>
+			</select>
+			<span tal:condition="python: ws_state != 'open'" tal:content="view/getAnalystName"></span>
+			<span id="analyst_changed" style="display:none" i18n:translate="">Analyst changed.</span>
 			<br/>
 		</tal:analyst>
 

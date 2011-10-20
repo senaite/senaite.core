@@ -169,7 +169,9 @@ def ActionSucceededEventHandler(analysis, event):
         ws = analysis.getBackReferences('WorksheetAnalysis')
         if ws:
             ws = ws[0]
-            if not ws.UID() in analysis.REQUEST['workflow_attach_skiplist']:
+            ws_state = wf.getInfoFor(ws, 'review_state')
+            if (ws_state == 'attachment_due'
+            and ws.UID() not in analysis.REQUEST['workflow_attach_skiplist']):
                 can_attach = True
                 for a in ws.getAnalyses():
                     if wf.getInfoFor(a, 'review_state') in \
@@ -267,8 +269,7 @@ def ActionSucceededEventHandler(analysis, event):
         ws = analysis.getBackReferences('WorksheetAnalysis')
         if ws:
             ws = ws[0]
-            # if the worksheet analyst is not assigned, the worksheet transition
-            # be transitioned.
+            # if the worksheet analyst is not assigned, the worksheet can't  be transitioned.
             if ws.getAnalyst() and not ws.UID() in analysis.REQUEST['workflow_skiplist']:
                 all_submitted = True
                 for a in ws.getAnalyses():
@@ -400,7 +401,9 @@ def ActionSucceededEventHandler(analysis, event):
         ws = analysis.getBackReferences('WorksheetAnalysis')
         if ws:
             ws = ws[0]
-            if not ws.UID() in analysis.REQUEST['workflow_skiplist']:
+            ws_state = wf.getInfoFor(ws, 'review_state')
+            if (ws_state == 'to_be_verified'
+            and ws.UID() not in analysis.REQUEST['workflow_skiplist']):
                 all_verified = True
                 for a in ws.getAnalyses():
                     if wf.getInfoFor(a, 'review_state') in \
