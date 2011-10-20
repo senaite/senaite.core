@@ -159,8 +159,8 @@ class WorksheetAnalysesView(AnalysesView):
         self.allow_edit = True
 
         self.columns = {
-            'Pos': {'title': _('Pos')},
-            'DueDate': {'title': _('Due Date')},
+            'Pos': {'title': _('Position')},
+            'DueDate': {'title': _('Due date')},
             'Category': {'title': _('Category')},
             'Service': {'title': _('Analysis')},
             'Result': {'title': _('Result')},
@@ -210,7 +210,6 @@ class WorksheetAnalysesView(AnalysesView):
         items = sorted(items, key = itemgetter('Service'))
         items = sorted(items, key = itemgetter('Pos'))
 
-        # add rowspan tags for slot headers
         slot_items = {} # pos:[item_nrs]
         for x in range(len(items)):
             p = items[x]['Pos']
@@ -218,50 +217,81 @@ class WorksheetAnalysesView(AnalysesView):
                 slot_items[p].append(x)
             else:
                 slot_items[p] = [x, ]
-        csspos = -1
+        actual_table_position = -1
+        # The first item in items[this position] gets a rowspan for it's
+        # "Position" column, which spans all other table rows in this position.
         for pos, pos_items in slot_items.items():
-            csspos += 1
+            actual_table_position += 1
             x = pos_items[0]
+            # first set Pos column for this row, to have a rowspan
             items[x]['rowspan'] = {'Pos': len(pos_items)}
             for y in pos_items:
+                # then set our slot's odd/even css
                 for k in self.columns.keys():
-                    cl = (csspos % 2 == 0) and "even" or "odd"
+                    cl = (actual_table_position % 2 == 0) and "even" or "odd"
                     items[y]['class'][k] = cl
                     items[y]['class']['select_column'] = cl
                 items[y]['table_row_class'] = ""
 
-            # ar is either an AR, a Worksheet, or a ReferenceSample (analysis parent).
+            # fill the rowspan with a little table
             obj = items[x]['obj']
-            ar = obj.aq_parent
-            # client is either a Client, a ReferenceSupplier, or the worksheet folder.
-            client = ar.aq_parent
-            pos_text = "<table width='100%%' cellpadding='0' cellspacing='0' cellborder='0'><tr><td class='pos'>%s</td>" % pos
-            pos_text += "<td class='pos_top'><a href='%s'>%s</a></td>" % (client.absolute_url(), client.Title())
-            if obj.portal_type == 'DuplicateAnalysis':
-                pos_text += '<td class="pos_top"><img title="Duplicate" width="16" height="16" src="%s/++resource++bika.lims.images/duplicate.png"/></td>' % (self.context.absolute_url())
-            elif obj.portal_type == 'ReferenceAnalysis':
-                if obj.ReferenceType == 'b':
-                    pos_text += '<td class="pos_top"><img title="Blank"  width="16" height="16" src="%s/++resource++bika.lims.images/blank.png"/></td>' % (self.context.absolute_url())
-                else:
-                    pos_text += '<td class="pos_top"><img title="Control" width="16" height="16" src="%s/++resource++bika.lims.images/control.png"/></td>' % (self.context.absolute_url())
+            # parent is either an AR, a Worksheet, or a
+            # ReferenceSample (analysis parent).
+            parent = obj.aq_parent
+            if parent.aq_parent.portal_type == "WorksheetFolder":
+                # we're a duplicate; get original object's client
+                client = obj.getAnalysis().aq_parent.aq_parent
+            elif parent.aq_parent.portal_type == "ReferenceSupplier":
+                # we're a reference sample; get reference definition
+                client = obj.getReferenceDefinition()
             else:
-                pos_text += "<td></td>"
-            pos_text += "</tr><tr><td></td>"
-            if ar.portal_type == 'AnalysisRequest':
-                sample = ar.getSample()
-                sample_icon = "<a href='%s'><img title='Sample: %s' src='++resource++bika.lims.images/sample.png'></a>" % (sample.absolute_url(), sample.Title())
-                pos_text += "<td><a href='%s'>%s</a></td><td>%s</td>" % (ar.absolute_url(), ar.Title(), sample_icon)
-            elif ar.portal_type == 'ReferenceSample':
-                sample_icon = "<a href='%s'><img title='Reference: %s' src='++resource++bika.lims.images/referencesample.png'></a>" % (ar.absolute_url(), ar.Title())
-                pos_text += "<td><a href='%s'>%s</a></td><td>%s</td>" % (ar.absolute_url(), ar.Title(), sample_icon)
-            elif ar.portal_type == 'Worksheet':
-                ar = obj.getAnalysis().aq_parent
-                pos_text += "<td><a href='%s'>(%s)</a></td><td></td>" % (ar.absolute_url(), ar.Title())
-            pos_text += "</tr>"
-            if hasattr(ar, 'getClientOrderNumber'):
-                pos_text += "<tr><td></td><td>Order: %s</td><td></td></tr>" % (ar.getClientOrderNumber() or '')
-            pos_text += "<tr><td colspan='2'><div class='barcode' value='%s'/>&nbsp;</td></tr></tr>" % (ar.id)
+                client = parent.aq_parent
+            pos_text = "<table width='100%%' cellpadding='0' cellspacing='0'><tr>" + \
+                       "<td class='pos' rowspan='4'>%s</td>" % pos
+            pos_text += "<td class='pos_top'><a href='%s'>%s</a></td>" % \
+                (client.absolute_url(), client.Title())
+            pos_text += "<td class='pos_top' rowspan='4'>"
+            if obj.portal_type == 'DuplicateAnalysis':
+                pos_text += '<img title="Duplicate" width="16" height="16" src="%s/++resource++bika.lims.images/duplicate.png"/>' % (self.context.absolute_url())
+            elif obj.portal_type == 'ReferenceAnalysis' and obj.ReferenceType == 'b':
+                pos_text += '<img title="Blank"  width="16" height="16" src="%s/++resource++bika.lims.images/blank.png"/>' % (self.context.absolute_url())
+            elif obj.portal_type == 'ReferenceAnalysis' and obj.ReferenceType == 'c':
+                pos_text += '<img title="Control" width="16" height="16" src="%s/++resource++bika.lims.images/control.png"/>' % (self.context.absolute_url())
+            pos_text += "<br/>"
+            if parent.portal_type == 'AnalysisRequest':
+                sample = parent.getSample()
+                pos_text += "<a href='%s'><img title='Sample: %s' src='++resource++bika.lims.images/sample.png'></a>" % (sample.absolute_url(), sample.Title())
+            elif parent.portal_type == 'ReferenceSample':
+                pos_text += "<a href='%s'><img title='Reference: %s' src='++resource++bika.lims.images/referencesample.png'></a>" % (parent.absolute_url(), parent.Title())
+            pos_text += "</td></tr>"
+
+            pos_text += "<tr><td>"
+            if parent.portal_type == 'AnalysisRequest':
+                pos_text += "<a href='%s'>%s</a>" % (parent.absolute_url(), parent.Title())
+            elif parent.portal_type == 'ReferenceSample':
+                pos_text += "<a href='%s'>%s</a>" % (parent.absolute_url(), parent.Title())
+            elif parent.portal_type == 'Worksheet':
+                parent = obj.getAnalysis().aq_parent
+                pos_text += "<a href='%s'>(%s)</a>" % (parent.absolute_url(), parent.Title())
+            pos_text += "</td></tr>"
+
+            # barcode
+            pos_text += "<tr><td class='barcode' value='%s'/></tr>" % parent.id
+
+##            if hasattr(parent, 'getClientOrderNumber'):
+##                o = parent.getClientOrderNumber()
+
+            # sampletype
+            pos_text += "<tr><td>"
+            if obj.portal_type == 'Analysis':
+                pos_text += obj.aq_parent.getSample().getSampleType().Title()
+            elif obj.portal_type == 'ReferenceAnalysis':
+                pos_text += "" #obj.aq_parent.getReferenceDefinition().Title()
+            elif obj.portal_type == 'DuplicateAnalysis':
+                pos_text += obj.getAnalysis().aq_parent.getSample().getSampleType().Title()
+            pos_text += "</td></tr>"
             pos_text += "</table>"
+
             items[x]['replace']['Pos'] = pos_text
 
         return items

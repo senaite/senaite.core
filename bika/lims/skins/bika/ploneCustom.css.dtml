@@ -378,10 +378,11 @@ table.analysisrequest input {
 .template-manage_results #listing-table td table .pos {
   font-size:120%;
   padding:5px;
+  width:1ex;
 }
 .template-manage_results #listing-table td table .pos_top {
   font-size:110%;
-  padding:5px;
+  padding-top:5px;
 }
 
 
