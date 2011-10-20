@@ -1,3 +1,4 @@
+from Acquisition import aq_parent, aq_inner, aq_base
 from bika.lims import bikaMessageFactory as _
 from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
@@ -99,10 +100,14 @@ def contact_logindetails_submit(context, request):
     contact.reindexObject()
 
     # Give contact an Owner local role on client
-    pm = getToolByName(contact, 'portal_membership')
-    pm.setLocalRoles(context.aq_parent,
-                     member_ids=[username],
-                     member_role='Owner')
+## This is nicer, but we are not Manager
+##    pm = getToolByName(contact, 'portal_membership')
+##    pm.setLocalRoles(context.aq_parent,
+##                     member_ids=[username],
+##                     member_role='Owner')
+    contact.aq_parent.manage_setLocalRoles( username, ['Owner',] )
+    if hasattr(aq_base(contact.aq_parent), 'reindexObjectSecurity'):
+        contact.aq_parent.reindexObjectSecurity()
 
     # add user to Clients group
     group=context.portal_groups.getGroupById('Clients')

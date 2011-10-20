@@ -14,8 +14,6 @@ from Products.CMFEditions.Permissions import ApplyVersionControl
 from Products.CMFEditions.Permissions import SaveNewVersion
 from Products.CMFEditions.Permissions import AccessPreviousVersions
 
-#from Products.GroupUserFolder.GroupsToolPermissions import ManageGroups
-
 class BikaGenerator:
 
     def setupPropertiesTool(self, portal):

@@ -76,8 +76,11 @@ class ajaxGetObject(BrowserView):
         requires '_authenticator' in request.
     """
     def __call__(self):
-        plone.protect.CheckAuthenticator(self.request)
-        plone.protect.PostOnly(self.request)
+        try:
+            plone.protect.CheckAuthenticator(self.request)
+            plone.protect.PostOnly(self.request)
+        except:
+            return ""
         pc = getToolByName(self.context, 'portal_catalog')
         id = self.request.get("id", '').replace("*","")
         items = pc(self.request)
