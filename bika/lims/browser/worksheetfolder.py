@@ -203,7 +203,7 @@ class WorksheetFolderListingView(BikaListingView):
             for slot in [s for s in layout if s['type'] == 'a']:
                 analysis = rc.lookupObject(slot['analysis_uid'])
                 service = analysis.getService()
-                ws_services[service.getTitle()] = 1
+                ws_services[service.Title()] = 1
             ws_services = ws_services.keys()
             ws_services.sort()
             items[x]['Services'] = ",".join(ws_services)
