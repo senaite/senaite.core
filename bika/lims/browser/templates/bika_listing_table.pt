@@ -16,8 +16,9 @@
 <tal:comment replace="nothing">***************
 Workflow review state selector
 ********************************</tal:comment>
+	<div class="review_state_selector"
+		tal:condition="python:len(view.review_states) > 1">
 	<tal:review_states
-		condition="python:len(view.review_states)>1"
 		repeat="state view/review_states">
 		<input class="review_state_filter"
 			type="radio"
@@ -33,10 +34,7 @@ Workflow review state selector
 		       tal:content="state/title"
 			   i18n:translate=""/>
 	</tal:review_states>
-    <span id="spinner" style="display:none">
-        <img tal:attributes="src python:portal.absolute_url()+ '/images/spinner.gif';"/>
-    </span>
-
+	</div>
 <p class="discreet"
 	tal:condition="not: view/batch"
 		i18n:translate="description_no_visible_items_add_paste">

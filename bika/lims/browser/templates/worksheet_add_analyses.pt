@@ -46,7 +46,8 @@
 		<span id="analyst_changed" style="display:none" i18n:translate="">Analyst changed.</span>
 		<br/>
 	</tal:analyst>
-	<fieldset name="criteria">
+	<fieldset class="criteria" name="criteria">
+		<p>
 		<label for="getCategoryUID" i18n:translate="Category">Category</label>
 		<select id="CategorySelector" name="getCategoryUID">
 			<option value="any" i18n:translate="Any">Any</option>
@@ -76,7 +77,8 @@
 			</tal:options>
 		</select>
 
-		<br/>
+		</p>
+		<p>
 
 		<label for="getARProfile" i18n:translate="OR select a profile">
 			Or select a template:
@@ -93,7 +95,11 @@
 			</tal:profile>
 		</select>
 
+		</p>
+		<p>
+
 		<input type="submit" value="Search" i18n:attributes="value"/>
+		</p>
 
 	</fieldset>
 	<input type="hidden" name="submitted" value="1"/>

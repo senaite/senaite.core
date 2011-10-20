@@ -171,6 +171,16 @@ td.SampleTypes {
   float:right;
 }
 
+.review_state_filter {
+	position:relative;top:.2em;
+}
+.review_state_selector {
+  padding-bottom:0.5em;
+}
+.review_state_selector label{
+  padding-right:2px;
+}
+
 dt.attachments {
     color: &dtml-linkColor;;
     font-weight:bold;
@@ -410,6 +420,14 @@ table.analysisrequest input {
     width:100%;
 	text-align:center !important;
 	vertical-align:top !important;
+}
+fieldset.criteria {
+    padding-top:1em;
+    margin-bottom:0;
+}
+fieldset.criteria p {
+    padding-bottom:0;
+    margin-bottom:.5em;
 }
 .worksheet_add_control_services {
 	text-align:center !important;
