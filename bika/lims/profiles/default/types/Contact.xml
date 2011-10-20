@@ -34,8 +34,8 @@
          category="object"
          condition_expr=""
          url_expr="string:${object_url}/edit"
-         visible="False">
-  <permission value="Modify portal content"/>
+         visible="True">
+  <permission value="BIKA: Manage Clients"/>
  </action>
 
  <action title="Login details"

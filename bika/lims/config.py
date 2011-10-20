@@ -46,19 +46,28 @@ CancelAndReinstate = 'BIKA: Cancel and reinstate'
 
 I18N_DOMAIN = 'bika.lims'
 
-# These types will be auto-versioned.  They will need
-# xx_edit.cpt.metadata to be modified in skins.
 TYPES_TO_VERSION = ('AnalysisService',
                     'Calculation',
                     'SamplePoint',
                     'SampleType',
                     'AnalysisSpec',
                     'WorksheetTemplate',
+
+                    'Worksheet',
+                    'AnalysisRequest',
+                    'Sample',
+                    'Analysis',
                     )
 
+AUTO_VERSION = ('AnalysisService',
+                'Calculation',
+                'SamplePoint',
+                'SampleType',
+                'AnalysisSpec',
+                'WorksheetTemplate',
+                )
+
 BARCODE_TYPES = DisplayList((
-##    codabar
-##    msi
     ('code11', _('Code 11')),
     ('code39', _('Code 39')),
     ('code93', _('Code 93')),

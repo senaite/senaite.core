@@ -402,7 +402,8 @@ table.analysisrequest input {
   margin-bottom:5px;
 }
 .template-manage_results #listing-table td table td.barcode{
-  padding-left:10px;
+  padding-left:5px;
+  padding-right:5px;
 }
 
 .worksheet_add_control {

@@ -1,6 +1,7 @@
 from bika.lims import bikaMessageFactory as _
 from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from Products.CMFCore.utils import getToolByName
 import json
 
 class ContactLoginDetailsView(BrowserView):
@@ -31,19 +32,19 @@ def contact_logindetails_submit(context, request):
         message = context.translate('message_input_required',
             default = 'Input is required but no input given',
             domain='bika')
-        errors[field] = field + ': ' + message
+        errors.append(field + ': ' + message)
 
     def nomatch(field):
         message = context.translate('passwords_no_match',
             default = 'Passwords do not match',
             domain='bika')
-        errors[field] = field + ': ' + message
+        errors.append(field + ': ' + message)
 
     def minlimit(field):
         message = context.translate('password_length',
             default = 'Passwords must contain at least 5 characters',
             domain='bika')
-        errors[field] = field + ': ' + message
+        errors.append(field + ': ' + message)
 
     form = request.form
 
@@ -53,7 +54,7 @@ def contact_logindetails_submit(context, request):
     username = form['username']
     confirm = form['confirm']
     email = form['email']
-    errors = {}
+    errors = []
 
     if not username:
         missing('username')
@@ -63,44 +64,45 @@ def contact_logindetails_submit(context, request):
 
     reg_tool = context.portal_registration
     properties = context.portal_properties.site_properties
-    if properties.validate_email:
-        password = reg_tool.generatePassword()
-    else:
-        if password!=confirm:
-            nomatch('password')
-            nomatch('confirm')
+##    if properties.validate_email:
+##        password = reg_tool.generatePassword()
+##    else:
+    if password!=confirm:
+        nomatch('password')
+        nomatch('confirm')
 
-        if not password:
-            missing('password')
+    if not password:
+        missing('password')
 
-        if not confirm:
-            missing('confirm')
+    if not confirm:
+        missing('confirm')
 
-        if not errors.has_key('password'):
-            if len(password) < 5:
-                minlimit('password')
-                minlimit('confirm')
-
-
-    if not errors.has_key('username') and not reg_tool.isMemberIdAllowed(username):
-        message = context.translate('login_in_use',
-            default = 'The login name you selected is already in use or is not valid. Please choose another',
-            domain='bika')
-        errors['username'] = 'username: ' + message
-
+    if len(password) < 5:
+        minlimit('password')
+        minlimit('confirm')
 
     if errors:
         return json.dumps({'errors':errors})
 
-    reg_tool.addMember(username, password, properties=request)
+    try:
+        reg_tool.addMember(username,
+                           password,
+                           properties = {
+                               'username': username,
+                               'email': email,
+                               'fullname': username})
+    except ValueError, msg:
+        return json.dumps({'errors': [str(msg),]})
+
     contact.setUsername(username)
     contact.setEmailAddress(email)
     contact.reindexObject()
 
     # Give contact an Owner local role on client
-    pm = context.portal_membership
-    pm.setLocalRoles( obj=context.aq_parent, member_ids=[username],
-        member_role='Owner')
+    pm = getToolByName(contact, 'portal_membership')
+    pm.setLocalRoles(context.aq_parent,
+                     member_ids=[username],
+                     member_role='Owner')
 
     # add user to Clients group
     group=context.portal_groups.getGroupById('Clients')
