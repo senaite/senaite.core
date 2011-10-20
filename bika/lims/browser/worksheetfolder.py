@@ -214,18 +214,30 @@ class WorksheetFolderListingView(BikaListingView):
                 if slot['position'] in pos_parent:
                     continue
                 pos_parent[slot['position']] = rc.lookupObject(slot['container_uid'])
-            references = {}
             sampletypes = {}
+            blanks = {}
+            controls = {}
             for container in pos_parent.values():
                 if container.portal_type == 'AnalysisRequest':
-                    sampletypes[container.getSample().getSampleType().Title()] = 1
-                if container.portal_type == 'ReferenceSample':
-                    references[container.Title()] = 1
+                    sampletypes["<a href='%s'>%s</a>" % \
+                               (container.getSample().getSampleType().absolute_url(),
+                                container.getSample().getSampleType().Title())] = 1
+                if container.portal_type == 'ReferenceSample' and container.getBlank():
+                    blanks["<a href='%s' class='blank'>%s</a>" % \
+                           (container.absolute_url(),
+                            container.Title())] = 1
+                if container.portal_type == 'ReferenceSample' and not container.getBlank():
+                    controls["<a href='%s' class='control'>%s</a>" % \
+                           (container.absolute_url(),
+                            container.TItle())] = 1
             sampletypes = list(sampletypes.keys())
             sampletypes.sort()
-            references = list(references.keys())
-            references.sort()
-            items[x]['SampleTypes'] = ",".join(references + sampletypes)
+            blanks = list(blanks.keys())
+            blanks.sort()
+            controls = list(controls.keys())
+            controls.sort()
+            items[x]['SampleTypes'] = ""
+            items[x]['replace']['SampleTypes'] = ",".join(blanks + controls + sampletypes)
 
             new_items.append(items[x])
         return new_items

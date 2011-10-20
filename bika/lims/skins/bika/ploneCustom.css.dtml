@@ -114,7 +114,6 @@ div.position-1\:4 {
     margin-left: -82.25%;
 }
 
-
 #plone-contentmenu-workflow .state-cancelled {
     background-color: red;
     border: 0.1em solid red;
@@ -196,7 +195,6 @@ dt.attachments {
     padding:0;
     width:100%;
 }
-
 
 
 .workflow_action_buttons {
@@ -448,6 +446,13 @@ fieldset.criteria p {
 
 }
 
+/* sample links in ws listing */
+a.control {
+ color:#00B027 !important;
+}
+a.blank {
+ color:#00B027 !important;
+}
 
 
 /*
