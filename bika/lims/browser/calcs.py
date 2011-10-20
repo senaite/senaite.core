@@ -8,11 +8,11 @@ class ajaxCalculateAnalysisEntry():
         entered. Returns a JSON dictionary, or None if no action is required or possible.
     """
 
-    def __init__(self,context,request):
+    def __init__(self, context, request):
         self.context = context
         self.request = request
 
-    def calculate(self, uid=None):
+    def calculate(self, uid = None):
 
         recursing = uid and True or False
         uid = uid or self.uid
@@ -84,7 +84,7 @@ class ajaxCalculateAnalysisEntry():
             self.item_data[uid] = new_item_data
 
             type_error = False
-            for key,value in mapping.items():
+            for key, value in mapping.items():
                 try:
                     mapping[key] = float(value)
                 except Exception, e:
@@ -93,11 +93,11 @@ class ajaxCalculateAnalysisEntry():
                 return None
 
             formula = calculation.getFormula()
-            formula = formula.replace('[','%(').replace(']',')f')
+            formula = formula.replace('[', '%(').replace(']', ')f')
 
             try:
                 # mapping values are keyed by ServiceKeyword or InterimField keyword
-                formula = eval("'%s'%%mapping"%formula,
+                formula = eval("'%s'%%mapping" % formula,
                                {"__builtins__":None, 'math':math},
                                {'mapping': mapping})
                 # calculate
@@ -111,10 +111,10 @@ class ajaxCalculateAnalysisEntry():
             except ZeroDivisionError, e:
                 return None
             except KeyError, e:
-                self.alerts.append({'uid': uid, 'field': 'Result','icon': 'exclamation', 'msg': "Key Error: " + str(e.args[0])})
+                self.alerts.append({'uid': uid, 'field': 'Result', 'icon': 'exclamation', 'msg': "Key Error: " + str(e.args[0])})
                 return None
             except Exception, e:
-                self.alerts.append({'uid': uid, 'field': 'Result', 'icon': 'exclamation', 'msg': "Exception: " +  str(e.args[0])})
+                self.alerts.append({'uid': uid, 'field': 'Result', 'icon': 'exclamation', 'msg': "Exception: " + str(e.args[0])})
                 return None
 
         else:
@@ -144,6 +144,9 @@ class ajaxCalculateAnalysisEntry():
                 # if it's in recurse_uids its my ancestor.
                 if recurse_uid in self.recurse_uids:
                     continue
+                # ignore analyses that no longer exist.
+                if recurse_uid in self.ignore_uids:
+                    continue
                 # recalculate it
                 self.recurse_uids.append(recurse_uid)
                 self.calculate(recurse_uid)
@@ -169,6 +172,7 @@ class ajaxCalculateAnalysisEntry():
         self.uncertainties = []
         self.alerts = []
         self.results = []
+        self.ignore_uids = []
 
         self.services = {}
         self.analyses = {}
@@ -180,6 +184,10 @@ class ajaxCalculateAnalysisEntry():
         self.UIDtoUID = {}
         for analysis_uid, result in self.form_results.items():
             analysis = rc.lookupObject(analysis_uid)
+            if not analysis:
+                # ignore analysis if object no longer exists
+                self.ignore_uids.append(analysis_uid)
+                continue
             service = analysis.getService()
             service_uid = service.UID()
             self.analyses[analysis_uid] = analysis
@@ -187,9 +195,9 @@ class ajaxCalculateAnalysisEntry():
             self.UIDtoUID[service_uid] = analysis_uid
             self.UIDtoUID[analysis_uid] = service_uid
 
-        self.recurse_uids = [self.uid,]
-
-        self.calculate()
+        if self.uid not in self.ignore_uids:
+            self.recurse_uids = [self.uid, ]
+            self.calculate()
 
         return json.dumps({'item_data': self.item_data,
                            'alerts': self.alerts,
