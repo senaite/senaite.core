@@ -49,15 +49,6 @@ jQuery( function($) {
 		  }
 		});
 
-
-		// All jquery autocomplete widgets get a down-arrow keypress when
-		// double clicked
-//		$("input[class~='ui-autocomplete-input']").live('click', function(){
-//			$(this).trigger({type:'keydown', which:40});
-//			$(this).trigger({type:'keyup', which:40});
-//		});
-
-
 	});
 
 });

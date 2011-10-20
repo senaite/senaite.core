@@ -259,23 +259,25 @@ class WorksheetAnalysesView(AnalysesView):
                 client = obj.getReferenceDefinition()
             else:
                 client = parent.aq_parent
-            pos_text = "<table width='100%%' cellpadding='0' cellspacing='0'><tr>" + \
-                       "<td class='pos' rowspan='4'>%s</td>" % pos
+            pos_text = "<table width='100%%' cellpadding='0' cellspacing='0' style='padding-bottom:5px;'><tr>" + \
+                       "<td class='pos' rowspan='3'>%s</td>" % pos
             pos_text += "<td class='pos_top'><a href='%s'>%s</a></td>" % \
                 (client.absolute_url(), client.Title())
-            pos_text += "<td class='pos_top' rowspan='4'>"
+            pos_text += "<td class='pos_top_icons' rowspan='3'>"
             if obj.portal_type == 'DuplicateAnalysis':
-                pos_text += '<img title="Duplicate" width="16" height="16" src="%s/++resource++bika.lims.images/duplicate.png"/>' % (self.context.absolute_url())
+                pos_text += "<img title='%s' src='%s/++resource++bika.lims.images/duplicate.png'/>" % (_("Duplicate"), self.context.absolute_url())
+                pos_text += "<br/>"
             elif obj.portal_type == 'ReferenceAnalysis' and obj.ReferenceType == 'b':
-                pos_text += '<img title="Blank"  width="16" height="16" src="%s/++resource++bika.lims.images/blank.png"/>' % (self.context.absolute_url())
+                pos_text += "<img title='%s' width='16' height='16' src='%s/++resource++bika.lims.images/blank.png'/>" % (_("Blank"), self.context.absolute_url())
+                pos_text += "<br/>"
             elif obj.portal_type == 'ReferenceAnalysis' and obj.ReferenceType == 'c':
-                pos_text += '<img title="Control" width="16" height="16" src="%s/++resource++bika.lims.images/control.png"/>' % (self.context.absolute_url())
-            pos_text += "<br/>"
+                pos_text += "<img title='%s' width='16' height='16' src='%s/++resource++bika.lims.images/control.png'/>" % (_("Control"), self.context.absolute_url())
+                pos_text += "<br/>"
             if parent.portal_type == 'AnalysisRequest':
                 sample = parent.getSample()
-                pos_text += "<a href='%s'><img title='Sample: %s' src='++resource++bika.lims.images/sample.png'></a>" % (sample.absolute_url(), sample.Title())
+                pos_text += "<a href='%s'><img title='%s' src='++resource++bika.lims.images/sample.png'></a>" % (sample.absolute_url(), sample.Title())
             elif parent.portal_type == 'ReferenceSample':
-                pos_text += "<a href='%s'><img title='Reference: %s' src='++resource++bika.lims.images/referencesample.png'></a>" % (parent.absolute_url(), parent.Title())
+                pos_text += "<a href='%s'><img title='%s' src='++resource++bika.lims.images/referencesample.png'></a>" % (parent.absolute_url(), parent.Title())
             pos_text += "</td></tr>"
 
             pos_text += "<tr><td>"
@@ -288,8 +290,6 @@ class WorksheetAnalysesView(AnalysesView):
                 pos_text += "<a href='%s'>(%s)</a>" % (parent.absolute_url(), parent.Title())
             pos_text += "</td></tr>"
 
-            # barcode
-            pos_text += "<tr><td class='barcode' value='%s'/></tr>" % parent.id
 
 ##            if hasattr(parent, 'getClientOrderNumber'):
 ##                o = parent.getClientOrderNumber()
@@ -303,6 +303,15 @@ class WorksheetAnalysesView(AnalysesView):
             elif obj.portal_type == 'DuplicateAnalysis':
                 pos_text += obj.getAnalysis().aq_parent.getSample().getSampleType().Title()
             pos_text += "</td></tr>"
+
+            # barcode
+            barcode = parent.id.replace("-","")
+            if obj.portal_type == 'DuplicateAnalysis':
+                barcode += "D"
+            pos_text += "<tr><td class='barcode' colspan='3'><div id='barcode_%s'></div>" % barcode + \
+                "<script type='text/javascript'>$('#barcode_%s').barcode('%s', 'code39', {'barHeight':15, addQuietZone:false, showHRI: false })</script>" %(barcode, barcode) + \
+                "</td></tr>"
+
             pos_text += "</table>"
 
             items[x]['replace']['Pos'] = pos_text

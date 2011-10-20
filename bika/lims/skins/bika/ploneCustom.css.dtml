@@ -195,6 +195,10 @@ dt.attachments {
 .workflow_action_button {
 }
 
+.barcode {
+  whitespace:nowrap;
+}
+
 
 dl.portlet dt, div.portletAssignments div.portletHeader {
     background-color: #ddd;
@@ -375,16 +379,31 @@ table.analysisrequest input {
 .template-manage_results #listing-table td table tr.odd{
   background-color:transparent !important;
 }
-.template-manage_results #listing-table td table .pos {
-  font-size:120%;
-  padding:5px;
+.template-manage_results #listing-table td table td {
+  padding:1px;
+  vertical-align:middle;
+}
+.template-manage_results #listing-table td table td.pos {
+  font-size:130%;
   width:1ex;
+  padding:5px;
+  vertical-align:top;
 }
-.template-manage_results #listing-table td table .pos_top {
+.template-manage_results #listing-table td table td.pos_top {
   font-size:110%;
-  padding-top:5px;
 }
-
+.template-manage_results #listing-table td table td.pos_top_icons {
+  padding:5px;
+  font-size:110%;
+  width:1ex;
+  vertical-align:top;
+}
+.template-manage_results #listing-table td table td.pos_top_icons img{
+  margin-bottom:5px;
+}
+.template-manage_results #listing-table td table td.barcode{
+  padding-left:10px;
+}
 
 .worksheet_add_control {
     width:100%;
