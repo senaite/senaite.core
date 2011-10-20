@@ -43,6 +43,7 @@ class WorksheetFolderListingView(BikaListingView):
             'Analyst': {'title': _('Analyst')},
             'Template': {'title': _('Template')},
             'Analyses': {'title': _('Analyses')},
+            'Services': {'title': _('Services')},
             'SampleTypes': {'title': _('Sample Types')},
             'CreationDate': {'title': _('Creation Date')},
             'state_title': {'title': _('State')},
@@ -59,6 +60,7 @@ class WorksheetFolderListingView(BikaListingView):
                         'Analyst',
                         'Template',
                         'Analyses',
+                        'Services',
                         'SampleTypes',
                         'CreationDate',
                         'state_title']},
@@ -74,6 +76,7 @@ class WorksheetFolderListingView(BikaListingView):
                         'Analyst',
                         'Template',
                         'Analyses',
+                        'Services',
                         'SampleTypes',
                         'CreationDate',
                         'state_title']},
@@ -88,6 +91,7 @@ class WorksheetFolderListingView(BikaListingView):
                         'Analyst',
                         'Template',
                         'Analyses',
+                        'Services',
                         'SampleTypes',
                         'CreationDate',
                         'state_title']},
@@ -102,6 +106,7 @@ class WorksheetFolderListingView(BikaListingView):
                         'Analyst',
                         'Template',
                         'Analyses',
+                        'Services',
                         'SampleTypes',
                         'CreationDate',
                         'state_title']},
@@ -116,6 +121,7 @@ class WorksheetFolderListingView(BikaListingView):
                         'Analyst',
                         'Template',
                         'Analyses',
+                        'Services',
                         'SampleTypes',
                         'CreationDate',
                         'state_title']},
@@ -178,8 +184,8 @@ class WorksheetFolderListingView(BikaListingView):
             items[x]['Analyses'] = str(len(obj.getAnalyses()))
             if items[x]['Analyses'] == '0':
                 # Don't display empty worksheets that aren't ours
-##                if member.getId() != analyst:
-##                    continue
+                if member.getId() != analyst:
+                    continue
                 # give empties pretty classes.
                 items[x]['table_row_class'] = 'state-empty-worksheet'
                 items[x]['class']['Analyses'] = "empty"
@@ -192,28 +198,34 @@ class WorksheetFolderListingView(BikaListingView):
                 items[x]['replace']['Title'] = "<a href='%s/add_analyses'>%s</a>" % \
                     (items[x]['url'], items[x]['Title'])
 
+            # set Services
+            ws_services = {}
+            for slot in [s for s in layout if s['type'] == 'a']:
+                analysis = rc.lookupObject(slot['analysis_uid'])
+                service = analysis.getService()
+                ws_services[service.getTitle()] = 1
+            ws_services = ws_services.keys()
+            ws_services.sort()
+            items[x]['Services'] = ",".join(ws_services)
+
             # set Sample Types
             pos_parent = {}
             for slot in layout:
                 if slot['position'] in pos_parent:
                     continue
                 pos_parent[slot['position']] = rc.lookupObject(slot['container_uid'])
-            references = []
-            sampletypes = []
+            references = {}
+            sampletypes = {}
             for container in pos_parent.values():
                 if container.portal_type == 'AnalysisRequest':
-                    st = container.getSample().getSampleType()
-                    if st in sampletypes:
-                        continue
-                    sampletypes.append(st.Title())
+                    sampletypes[container.getSample().getSampleType().Title()] = 1
                 if container.portal_type == 'ReferenceSample':
-                    st = container.getTitle()
-                    if st in references:
-                        continue
-                    references.append(st)
-            sampletypes = ",".join(references + sampletypes)
-            items[x]['SampleTypes'] = sampletypes
-##            items[x]['replace']['SampleTypes'] = sampletypes
+                    references[container.Title()] = 1
+            sampletypes = list(sampletypes.keys())
+            sampletypes.sort()
+            references = list(references.keys())
+            references.sort()
+            items[x]['SampleTypes'] = ",".join(references + sampletypes)
 
             new_items.append(items[x])
         return new_items
