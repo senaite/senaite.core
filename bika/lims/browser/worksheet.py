@@ -14,13 +14,14 @@ from bika.lims.browser.bika_listing import WorkflowAction
 from bika.lims.browser.referencesamples import ReferenceSamplesView
 from bika.lims.config import ManageResults
 from bika.lims.interfaces import IWorksheet
-from bika.lims.utils import TimeOrDate
+from bika.lims.utils import isActive, TimeOrDate
 from operator import itemgetter
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.layout.globals.interfaces import IViewView
 from zope.app.component.hooks import getSite
 from zope.component import getMultiAdapter
 from zope.interface import implements
+from bika.lims import EditResults
 import plone, json
 
 class WorksheetWorkflowAction(WorkflowAction):
@@ -42,40 +43,63 @@ class WorksheetWorkflowAction(WorkflowAction):
 
         if action == 'submit' and self.request.form.has_key("Result"):
             selected_analyses = WorkflowAction._get_selected_items(self)
-            selected_analysis_uids = selected_analyses.keys()
             results = {}
+            hasInterims = {}
 
             # first save results for entire form
             for uid, result in self.request.form['Result'][0].items():
-                results[uid] = result
                 if uid in selected_analyses:
                     analysis = selected_analyses[uid]
                 else:
                     analysis = rc.lookupObject(uid)
+                if not analysis:
+                    # ignore result if analysis object no longer exists
+                    continue
+                if not(getSecurityManager().checkPermission(EditResults, analysis)):
+                    # or changes no longer allowed
+                    continue
+                if not isActive(analysis):
+                    # or it's cancelled
+                    continue
+                results[uid] = result
                 service = analysis.getService()
                 interims = form["InterimFields"][0][uid]
+                interimFields = json.loads(interims)
+                if len(interimFields) > 0:
+                    hasInterims[uid] = True
+                else:
+                    hasInterims[uid] = False
+                unit = service.getUnit()
                 analysis.edit(
                     Result = result,
-                    InterimFields = json.loads(interims),
+                    InterimFields = interimFields,
                     Retested = form.has_key('retested') and \
                                form['retested'].has_key(uid),
-                    Unit = service.getUnit())
+                    Unit = unit and unit or '')
 
             # discover which items may be submitted
             submissable = []
             for uid, analysis in selected_analyses.items():
-                analysis = selected_analyses[uid]
-                service = analysis.getService()
-                # but only if they are selected
-                if uid not in selected_analysis_uids:
+                if uid not in results:
                     continue
-                # and if all their dependencies are at least 'to_be_verified'
+                if not results[uid]:
+                    continue
                 can_submit = True
+                for dependency in analysis.getDependencies():
+                    dep_state = workflow.getInfoFor(dependency, 'review_state')
+                    if hasInterims[uid]:
+                        if dep_state in ('sample_due', 'sample_received', 'attachment_due', 'to_be_verified',):
+                            can_submit = False
+                            break
+                    else:
+                        if dep_state in ('sample_due', 'sample_received',):
+                            can_submit = False
+                            break
                 for dependency in analysis.getDependencies():
                     if workflow.getInfoFor(dependency, 'review_state') in \
                        ('sample_due', 'sample_received'):
                         can_submit = False
-                if can_submit and results[uid]:
+                if can_submit:
                     submissable.append(analysis)
 
             # and then submit them.

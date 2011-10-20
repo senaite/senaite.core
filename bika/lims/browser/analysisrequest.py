@@ -76,13 +76,12 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
                 if uid in selected_analyses:
                     analysis = selected_analyses[uid]
                 else:
-                    try:
-                        analysis = rc.lookupObject(uid)
-                    except:
-                        # ignore result if analysis object no longer exists
-                        continue
+                    analysis = rc.lookupObject(uid)
+                if not analysis:
+                    # ignore result if analysis object no longer exists
+                    continue
                 if not(getSecurityManager().checkPermission(EditResults, analysis)):
-                        # or changes no longer allowed
+                    # or changes no longer allowed
                     continue
                 results[uid] = result
                 service = analysis.getService()
@@ -103,6 +102,8 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
             # discover which items may be submitted
             submissable = []
             for uid, analysis in selected_analyses.items():
+                if uid not in results:
+                    continue
                 if not results[uid]:
                     continue
                 can_submit = True
@@ -708,7 +709,7 @@ class ajaxExpandCategory(BikaListingView):
         """ return a list of services brains """
         pc = getToolByName(self.context, 'portal_catalog')
         services = pc(portal_type = "AnalysisService",
-                      sort_on='sortable_title',
+                      sort_on = 'sortable_title',
                       inactive_state = 'active',
                       getPointOfCapture = poc,
                       getCategoryUID = CategoryUID)
