@@ -1139,10 +1139,9 @@ class ajaxAnalysisRequestSubmit():
 class AnalysisRequestsView(ClientAnalysisRequestsView):
     """ The main portal Analysis Requests action tab
     """
-
     def __init__(self, context, request):
         super(AnalysisRequestsView, self).__init__(context, request)
-        self.title = "%s: %s" % (self.context.Title(), _("Analysis Requests"))
+        self.title = "%s: %s" % (self.context.aq_parent.Title(), _("Analysis Requests"))
         self.description = ""
         self.show_editable_border = False
         self.content_add_actions = {}
@@ -1157,8 +1156,7 @@ class AnalysisRequestsView(ClientAnalysisRequestsView):
             review_state['columns'].insert(review_state['columns'].index('getClientOrderNumber'), 'Client')
 
     def folderitems(self):
-        workflow = getToolByName(self.context, "portal_workflow")
-        items = ClientAnalysisRequestsView.folderitems(self)
+        items = super(AnalysisRequestsView, self).folderitems()
         for x in range(len(items)):
             if not items[x].has_key('obj'):
                 continue

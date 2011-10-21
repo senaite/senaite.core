@@ -124,19 +124,9 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         layout = [slot for slot in self.getLayout() if slot['analysis_uid'] != analysis.UID()]
         self.setLayout(layout)
 
-        # perhaps it's entire slot is now removed.
-        parents = {}
-        for a in Analyses:
-            parent_uid = a.aq_parent.UID()
-            if parent_uid in parents:
-                parents[parent_uid]['analyses'].append(a)
-            else:
-                parents[parent_uid] = {'parent':a.aq_parent, 'analyses': [a,]}
-        Layout = self.getLayout()
-        for slot in self.getLayout():
-            if not slot['container_uid'] in parents:
-                Layout.remove(slot)
-        self.setLayout(Layout)
+        # DuplicateAnalysis objects - delete them.
+        if analysis.portal_type == "DuplicateAnalysis":
+            self._delObject(analysis.id)
 
     def addReferences(self, position, reference, service_uids):
         """ Add reference analyses to reference, and add to worksheet layout

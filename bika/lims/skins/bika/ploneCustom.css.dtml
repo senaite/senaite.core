@@ -154,6 +154,9 @@ div.position-1\:4 {
 #listing-table .state-empty-worksheet .empty {
 	font-weight: bold;
 }
+a.state-visible  {
+    color:#205C90 !important;
+}
 
 #listing-table td {
 	vertical-align:middle;

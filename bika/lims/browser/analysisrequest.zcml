@@ -6,10 +6,10 @@
 
     <!-- main site/analysisrequests view -->
     <browser:page
-      for="Products.CMFPlone.interfaces.IPloneSiteRoot"
-      name="analysisrequests"
+      for="bika.lims.interfaces.IAnalysisRequestsFolder"
+      name="base_view"
       class="bika.lims.browser.analysisrequest.AnalysisRequestsView"
-      permission="zope.Public"
+      permission="cmf.ListFolderContents"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 

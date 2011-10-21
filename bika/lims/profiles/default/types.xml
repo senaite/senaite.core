@@ -9,6 +9,7 @@
  <object name="AnalysisCategories" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="AnalysisCategory" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="AnalysisRequest" meta_type="Factory-based Type Information with dynamic views"/>
+ <object name="AnalysisRequestsFolder" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="AnalysisService" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="AnalysisServices" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="AnalysisSpec" meta_type="Factory-based Type Information with dynamic views"/>
@@ -48,12 +49,14 @@
  <object name="ReferenceManufacturer" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="ReferenceManufacturers" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="ReferenceSample" meta_type="Factory-based Type Information with dynamic views"/>
+ <object name="ReferenceSamplesFolder" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="ReferenceSupplier" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="ReferenceSupplierFolder" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="RejectAnalysis" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="Sample" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="SamplePoint" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="SamplePoints" meta_type="Factory-based Type Information with dynamic views"/>
+ <object name="SamplesFolder" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="SampleType" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="SampleTypes" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="SupplierContact" meta_type="Factory-based Type Information with dynamic views"/>

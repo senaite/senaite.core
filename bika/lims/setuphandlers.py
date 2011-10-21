@@ -38,6 +38,8 @@ class BikaGenerator:
     def setupPortalContent(self, portal):
         """ Setup Bika site structure """
 
+        wf = getToolByName(portal, 'portal_workflow')
+
         obj = portal._getOb('index_html')
         alsoProvides(obj, IHaveNoBreadCrumbs)
 
@@ -55,7 +57,10 @@ class BikaGenerator:
                        'invoices',
                        'pricelists',
                        'worksheets',
-                       'bika_setup'):
+                       'bika_setup',
+                       'samples',
+                       'analysisrequests',
+                       'referencesamples'):
             obj = portal._getOb(obj_id)
             obj.unmarkCreationFlag()
             obj.reindexObject()

@@ -49,14 +49,6 @@
 			<div tal:replace="structure view/contents_table"></div>
 		</div>
 
-		<br/>
-
-		<tal:notes
-			tal:condition="python: hasattr(view.context, 'setNotes')"
-			tal:define="errors python:hasattr(request, 'errors') and request['errors'] or {}">
-			<metal:fieldMacro use-macro="python:view.context.widget('Notes', mode='edit')" />
-		</tal:notes>
-
 		<input tal:replace="structure context/@@authenticator/authenticator" />
 
 	</form>

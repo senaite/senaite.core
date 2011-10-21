@@ -7,3 +7,6 @@ referencesuppliers,ReferenceSupplierFolder
 worksheets,WorksheetFolder
 invoices,InvoiceFolder
 pricelists,PricelistFolder
+samples,SamplesFolder
+analysisrequests,AnalysisRequestsFolder
+referencesamples,ReferenceSamplesFolder

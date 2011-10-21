@@ -12,7 +12,6 @@
   <include file="contact.zcml"/>
   <include file="menu.zcml"/>
   <include file="referencesample.zcml"/>
-  <include file="referencesamples.zcml"/>
   <include file="referencesupplier.zcml"/>
   <include file="referencesupplierfolder.zcml"/>
   <include file="sample.zcml"/>

@@ -34,6 +34,7 @@ def initialize(context):
     from content.analysis  import Analysis
     from content.analysiscategory import AnalysisCategory
     from content.analysisrequest import AnalysisRequest
+    from content.analysisrequestsfolder import AnalysisRequestsFolder
     from content.analysisservice import AnalysisService
     from content.analysisspec import AnalysisSpec
     from content.arimport import ARImport
@@ -60,11 +61,13 @@ def initialize(context):
     from content.referencedefinition import ReferenceDefinition
     from content.referencemanufacturer import ReferenceManufacturer
     from content.referencesample import ReferenceSample
+    from content.referencesamplesfolder import ReferenceSamplesFolder
     from content.referencesupplier import ReferenceSupplier
     from content.referencesupplierfolder import ReferenceSupplierFolder
     from content.rejectanalysis import RejectAnalysis
     from content.sample import Sample
     from content.samplepoint import SamplePoint
+    from content.samplesfolder import SamplesFolder
     from content.sampletype import SampleType
     from content.supplyorder import SupplyOrder
     from content.supplyorderitem import SupplyOrderItem

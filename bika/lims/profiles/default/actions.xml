@@ -68,7 +68,7 @@
 			<property name="permissions">
 				<element value="BIKA: Manage Sample"/>
 			</property>
-			<property name="visible">True</property>
+			<property name="visible">False</property>
 		</object>
 		<object name="analysisrequests" meta_type="CMF Action">
 			<property name="title">Analysis Requests</property>
@@ -80,7 +80,7 @@
 			<property name="permissions">
 				<element value="BIKA: Manage Analysis Requests"/>
 			</property>
-			<property name="visible">True</property>
+			<property name="visible">False</property>
 		</object>
 		<object name="worksheets" meta_type="CMF Action">
 			<property name="title">Worksheets</property>
@@ -128,7 +128,7 @@
 			<property name="permissions">
 				<element value="BIKA: Manage Reference"/>
 			</property>
-			<property name="visible">True</property>
+			<property name="visible">False</property>
 		</object>
 		<object name="queries" meta_type="CMF Action">
 			<property name="title">Queries</property>

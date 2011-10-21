@@ -16,6 +16,9 @@ class IClient(Interface):
 class IAnalysisRequest(Interface):
     """Analysis Request"""
 
+class IAnalysisRequestsFolder(Interface):
+    """AnalysisRequests Folder"""
+
 class IAnalysis(Interface):
     """Analysis"""
 
@@ -28,6 +31,9 @@ class IReferenceAnalysis(Interface):
 class ISample(Interface):
     """Sample"""
 
+class ISamplesFolder(Interface):
+    """Samples Folder"""
+
 class IWorksheetFolder(Interface):
     """WorksheetFolder"""
 
@@ -35,7 +41,10 @@ class IWorksheet(Interface):
     """Worksheet"""
 
 class IReferenceSample(Interface):
-    """Reference Suppliers Folder"""
+    """Reference Sample"""
+
+class IReferenceSamplesFolder(Interface):
+    """Reference Samples Folder Folder"""
 
 class IReferenceSupplier(Interface):
     """Reference Suppliers Folder"""

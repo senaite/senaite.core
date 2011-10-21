@@ -229,7 +229,7 @@ class WorksheetFolderListingView(BikaListingView):
                 if container.portal_type == 'ReferenceSample' and not container.getBlank():
                     controls["<a href='%s' class='control'>%s</a>" % \
                            (container.absolute_url(),
-                            container.TItle())] = 1
+                            container.Title())] = 1
             sampletypes = list(sampletypes.keys())
             sampletypes.sort()
             blanks = list(blanks.keys())

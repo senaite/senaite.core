@@ -4,6 +4,15 @@
     xmlns:i18n="http://namespaces.zope.org/i18n"
     i18n_domain="bika">
 
+    <!-- Main samples view -->
+    <browser:page
+      for="bika.lims.interfaces.IReferenceSamplesFolder"
+      name="base_view"
+      class="bika.lims.browser.referencesample.ReferenceSamplesView"
+      permission="cmf.ListFolderContents"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
     <!-- return ReferenceResultsField contents for a selected reference definition -->
     <browser:page
       for="bika.lims.interfaces.IReferenceSample"
