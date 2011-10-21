@@ -226,6 +226,7 @@ class WorksheetAnalysesView(AnalysesView):
         self.contentsMethod = self.context.getFolderContents
         items = AnalysesView.folderitems(self)
         layout = self.context.getLayout()
+        highest_position = 0
         for x, item in enumerate(items):
             obj = item['obj']
             if obj.portal_type in ('Analysis', 'ReferenceAnalysis'):
@@ -237,12 +238,49 @@ class WorksheetAnalysesView(AnalysesView):
                        slot['container_uid'] == obj.getAnalysis().aq_parent.UID() and \
                        slot['type'] == 'd'][0]
             pos = int(pos)
+            highest_position = max(highest_position, pos)
             items[x]['Pos'] = pos
             service = obj.getService()
             items[x]['Category'] = service.getCategory().Title()
             items[x]['DueDate'] = \
                 TimeOrDate(self.context, obj.getDueDate(), long_format = 0)
             items[x]['Order'] = ''
+
+        # insert placeholder row items in the gaps
+        empties = []
+        used = [int(slot['position']) for slot in layout]
+        for pos in range(1, highest_position+1):
+            if pos not in used:
+                empties.append(pos)
+                item = items[-1]
+                item.update({
+                    'allow_edit': False,
+                    'obj': self.context,
+                    'id': self.context.id,
+                    'uid': self.context.UID(),
+                    'title': self.context.Title(),
+                    'type_class': 'contenttype-blank-worksheet-row',
+                    'url': self.context.absolute_url(),
+                    'relative_url': self.context.absolute_url(),
+                    'view_url': self.context.absolute_url(),
+                    'path': "/".join(self.context.getPhysicalPath()),
+                    'before': {},
+                    'after': {},
+                    'choices': {},
+                    'class': {},
+                    'state_class': 'state-empty',
+                    'allow_edit': [],
+                    'colspan': {'Pos':10},
+                    'Pos': pos,
+                    'replace': {'Pos':'empty position %s' % pos},
+                    'Service': '',
+                    'Category': 'cat',
+                    'Result': 'r',
+                    'Uncertainty': 'u',
+                    'DueDate': 'dd',
+                    'state_title': 's'})
+#                items.append(item)
+
         items = sorted(items, key = itemgetter('Service'))
         items = sorted(items, key = itemgetter('Pos'))
 
@@ -257,14 +295,20 @@ class WorksheetAnalysesView(AnalysesView):
         # The first item in items[this position] gets a rowspan for it's
         # "Position" column, which spans all other table rows in this position.
         for pos, pos_items in slot_items.items():
-            actual_table_position += 1
             x = pos_items[0]
+            actual_table_position += 1
+            if pos in empties:
+                # just a short bit for Pos column in empty rows
+                items[x]['replace']['Pos'] = "slot is %s Empty - icon for remove - icon for autofill from template type" % pos
+                continue
+
             # first set Pos column for this row, to have a rowspan
             items[x]['rowspan'] = {'Pos': len(pos_items)}
             for y in pos_items:
                 # then set our slot's odd/even css
                 for k in self.columns.keys():
-                    cl = (actual_table_position % 2 == 0) and "even" or "odd"
+                    even = actual_table_position % 2 == 0
+                    cl = even and "even" or "odd"
                     items[y]['class'][k] = cl
                     items[y]['class']['select_column'] = cl
                 items[y]['table_row_class'] = ""

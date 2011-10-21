@@ -1,6 +1,8 @@
 <div class="folderlisting-main-table" tal:define="
 	global rowspan python:{};
 	global rowspan_max python:{};
+	global colspan python:{};
+	global colspan_max python:{};
 	nosortclass view/get_nosort_class;
 	portal context/@@plone_portal_state/portal;
 	review_state python:[t for t in view.review_states
@@ -53,10 +55,10 @@ Workflow review state selector
 	summary="Content listing"
 	i18n:attributes="summary summary_content_listing;"
 	tal:define="
-		colspan python:len(review_state['columns']);
-		colspan python:view.show_select_column and colspan + 1 or colspan;
-		colspan python:view.show_sort_column and colspan + 1 or colspan;
-		colspan python:str(colspan);
+		nr_cols python:len(review_state['columns']);
+		nr_cols python:view.show_select_column and nr_cols + 1 or nr_cols;
+		nr_cols python:view.show_sort_column and nr_cols + 1 or nr_cols;
+		nr_cols python:str(nr_cols);
 		columns view/columns;
 		column_list python:review_state['columns']">
 
@@ -67,7 +69,7 @@ Item multi-select links in this row
 ********************************</tal:comment>
 	<tal:selectrow condition="python:view.items and view.show_select_row">
 		<tr tal:condition="not:view/selectcurrentbatch">
-			<th tal:attributes="colspan colspan" class="nosort">
+			<th tal:attributes="nr_cols nr_cols" class="nosort">
 				<span i18n:translate="label_select"
 					tal:omit-tag="">Select:</span>
 				<a i18n:translate="label_all"
@@ -76,7 +78,7 @@ Item multi-select links in this row
 			</th>
 		</tr>
 		<tr tal:condition="view/show_select_all_items">
-			<th tal:attributes="colspan colspan" class="nosort">
+			<th tal:attributes="nr_cols nr_cols" class="nosort">
 				<span tal:omit-tag=""
 					i18n:translate="tableheading_all_items_selected">
 					All
@@ -95,7 +97,7 @@ Item multi-select links in this row
 			</th>
 		</tr>
 		<tr tal:condition="view/selectall">
-			<th tal:attributes="colspan colspan" class="nosort">
+			<th tal:attributes="nr_cols nr_cols" class="nosort">
 				<span tal:omit-tag=""
 					i18n:translate="tableheading_all_items_selected_in_folder">
 					All
@@ -231,12 +233,15 @@ Table cells for each column from in review_state's column list.
 	<tal:cell
 		tal:repeat="column review_state/columns">
 
-	<tal:rowspan tal:define="dummy python: 'rowspan' in item and column in item['rowspan'] and rowspan_max.update({column: item['rowspan'][column]})"/>
-	<tal:rowspan tal:define="dummy python: column in rowspan_max or rowspan_max.update({column: 1})"/>
+	<tal:rowspan tal:define="dummy python: 'rowspan' in item and column in item['rowspan'] and rowspan_max.update({column: item['rowspan'][column]}) or rowspan_max.update({column: 1})"/>
 	<tal:rowspan tal:define="dummy python: rowspan.update({column: 'rowspan' in item and column in item['rowspan'] and item['rowspan'][column] or rowspan.get('column', 2)-1})"/>
 
+	<tal:colspan tal:define="dummy python: 'colspan' in item and column in item['colspan'] and colspan_max.update({column: item['colspan'][column]}) or colspan_max.update({column: 1})"/>
+	<tal:colspan tal:define="dummy python: colspan.update({column: 'colspan' in item and column in item['colspan'] and item['colspan'][column] or colspan.get('column', 2)-1})"/>
+
 	<td
-		tal:condition="python:rowspan[column] == rowspan_max[column]"
+		tal:condition="python:rowspan[column] == rowspan_max[column] and
+							  colspan[column] == colspan_max[column]"
 		tal:define="
 			input_width python:5;
 			allow_edit python:column in item['allow_edit'];
@@ -256,7 +261,8 @@ Table cells for each column from in review_state's column list.
 				item['class'][column] or '';"
 		tal:attributes="
 			class string:$table_row_class $class ${item/state_class} $column;
-			rowspan python:rowspan[column]">
+			rowspan python:rowspan[column];
+			colspan python:colspan[column]">
 
 	<tal:comment replace="nothing"><!-- before structure --></tal:comment>
 	<tal:before

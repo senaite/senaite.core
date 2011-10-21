@@ -206,7 +206,7 @@ class WorksheetFolderListingView(BikaListingView):
                 ws_services[service.Title()] = 1
             ws_services = ws_services.keys()
             ws_services.sort()
-            items[x]['Services'] = ",".join(ws_services)
+            items[x]['Services'] = ", ".join(ws_services)
 
             # set Sample Types
             pos_parent = {}
@@ -237,7 +237,7 @@ class WorksheetFolderListingView(BikaListingView):
             controls = list(controls.keys())
             controls.sort()
             items[x]['SampleTypes'] = ""
-            items[x]['replace']['SampleTypes'] = ",".join(blanks + controls + sampletypes)
+            items[x]['replace']['SampleTypes'] = ", ".join(blanks + controls + sampletypes)
 
             new_items.append(items[x])
         return new_items

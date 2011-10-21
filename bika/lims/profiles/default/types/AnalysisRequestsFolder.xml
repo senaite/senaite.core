@@ -18,4 +18,22 @@
 
  <alias from="(Default)" to="base_view"/>
  <alias from="view" to="base_view"/>
+ <alias from="edit" to="base_view"/>
+ <action title="View"
+         action_id="view"
+         category="object"
+         condition_expr=""
+         url_expr="string:${object_url}/base_view"
+         visible="False">
+  <permission value="View"/>
+ </action>
+ <action title="Edit"
+         action_id="edit"
+         category="object"
+         condition_expr=""
+         url_expr="string:${object_url}/base_view"
+         visible="False">
+  <permission value="Modify portal content"/>
+ </action>
+
  </object>

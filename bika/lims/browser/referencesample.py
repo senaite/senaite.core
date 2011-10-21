@@ -48,13 +48,11 @@ class ajaxGetReferenceDefinitionInfo():
                            'hazardous':ref_def.getHazardous()})
 
 
-
-
 class ReferenceSamplesView(BikaListingView):
     """Main reference samples folder view
     """
     def __init__(self, context, request):
-        super(ReferenceSamplesView, self).__init__()
+        super(ReferenceSamplesView, self).__init__(context, request)
         self.title = _("Reference Samples")
         self.icon = "++resource++bika.lims.images/referencesample_big.png"
         self.description = _("")

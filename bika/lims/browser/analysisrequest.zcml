@@ -9,7 +9,7 @@
       for="bika.lims.interfaces.IAnalysisRequestsFolder"
       name="base_view"
       class="bika.lims.browser.analysisrequest.AnalysisRequestsView"
-      permission="cmf.ListFolderContents"
+      permission="bika.lims.ManageAnalysisRequests"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
