@@ -44,6 +44,9 @@ schema = BikaSchema.copy() + Schema((
             description = _("Select which Analyses should be included on the Worksheet"),
         )
     ),
+    BooleanField('ForceWorksheetAdherence',
+        default = False,
+    ),
 ))
 schema['title'].schemata = 'Description'
 schema['title'].widget.visible = True

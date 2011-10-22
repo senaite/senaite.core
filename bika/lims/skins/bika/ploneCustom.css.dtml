@@ -129,17 +129,17 @@ div.position-1\:4 {
     padding: 0 0.5em;
 }
 #listing-table .state-cancelled {
-	background-color: #FF937E  !important;
+	background-color: #FFC8C8  !important;
     font-weight: bold;
-	color: #333333 !important;
+	color: #222 !important;
 }
 #listing-table .state-cancelled a {
     font-weight: bold;
 }
 #listing-table .state-inactive {
-	background-color: #FF937E  !important;
+	background-color: #FFC8C8  !important;
     font-weight: bold;
-	color: #333333 !important;
+	color: #222 !important;
 }
 #listing-table .state-inactive a {
     font-weight: bold;
@@ -153,6 +153,13 @@ div.position-1\:4 {
 }
 #listing-table .state-empty-worksheet .empty {
 	font-weight: bold;
+}
+.state-empty {
+	background-color: #FFC8C8  !important;
+	color: #222 !important;
+	vertical-align:middle !important;
+	padding:5px;
+	border-bottom:1px solid #ddd;
 }
 a.state-visible  {
     color:#205C90 !important;
@@ -395,7 +402,7 @@ table.analysisrequest input {
   vertical-align:middle;
 }
 .template-manage_results #listing-table td table td.pos {
-  font-size:130%;
+  font-size:120%;
   width:1ex;
   padding:5px;
   vertical-align:top;

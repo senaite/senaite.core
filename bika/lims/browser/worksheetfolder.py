@@ -300,7 +300,7 @@ class AddWorksheetView(BrowserView):
         positions = [row['pos'] for row in wstlayout if row['type'] == 'a']
         for ar in ars:
             for analysis in ar_analyses[ar]:
-                ws.addAnalysis(analysis, positions[ars.index(ar)])
+                ws.addAnalysis(analysis, position=positions[ars.index(ar)])
                 wf.doActionFor(analysis, 'assign')
 
         # find best maching reference samples for Blanks and Controls

@@ -106,7 +106,7 @@
          icon_expr="string:${portal_url}/images/attachment.png"
          link_target=""
          url_expr="string:${object_url}/attachments"
-         visible="True">
+         visible="False">
   <permission value="List folder contents"/>
  </action>
 

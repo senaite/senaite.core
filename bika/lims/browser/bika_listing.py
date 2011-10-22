@@ -274,6 +274,7 @@ class BikaListingView(BrowserView):
             modified = TimeOrDate(self.context, obj.ModificationDate, long_format = 1)
 
             # Check for InterimFields attribute on our object,
+            # XXX move interim/itemdata to analyses.py
             interim_fields = hasattr(obj, 'getInterimFields') \
                            and obj.getInterimFields() or []
 

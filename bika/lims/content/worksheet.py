@@ -68,8 +68,10 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
     security.declareProtected(AddAndRemoveAnalyses, 'addAnalysis')
     def addAnalysis(self, analysis, position=None):
         """- add the analysis to self.Analyses().
-           - try to add the analysis parent in the worksheet layout according
-             to the worksheet's template, if possible.
+           - position is overruled if a slot for this analysis' parent exists
+           - if position is None, next available pos is used.
+           - if the template sets ForceWorksheetAdherence=True, the analysis
+             will be added in an existing 'a' slot or 'new'.
         """
         wf = getToolByName(self, 'portal_workflow')
         rc = getToolByName(self, 'reference_catalog')
@@ -91,22 +93,25 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
 
         self.setAnalyses(analyses + [analysis,])
 
-        # if not, get first available position in max(layout)
-        # if not, get next position after max(layout)
-
         # if our parent has a position, use that one.
         if analysis.aq_parent.UID() in [slot['container_uid'] for slot in layout if \
                                         slot['type'] == 'a']:
             position = [slot['position'] for slot in layout if \
                         slot['container_uid'] == analysis.aq_parent.UID()][0]
         else:
+            # prefer supplied position parameter
             if not position:
                 used_positions = [int(slot['position']) for slot in layout]
                 position = used_positions and max(used_positions)+1 or 1
                 if wst:
-                    available_positions = [row['pos'] for row in wstlayout \
-                                           if int(row['pos']) not in used_positions and \
-                                              row['type'] == 'a'] or [position,]
+                    if wst.getForceWorksheetAdherence():
+                        available_positions = [row['pos'] for row in wstlayout \
+                                               if int(row['pos']) not in used_positions and \
+                                               row['type'] == 'a'] or [position,]
+                    else:
+                        available_positions = [row['pos'] for row in wstlayout \
+                                               if int(row['pos']) not in used_positions] \
+                                                                   or [position,]
                     position = available_positions[0]
         self.setLayout(layout + [{'position': position,
                                   'type': 'a',

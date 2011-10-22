@@ -47,7 +47,7 @@
 						</tal:options>
 						<option
 							value="new"
-							tal:content="string:new or existing"
+							tal:content="string:new"
 							i18n:translate=""/>
 					</select>
 					<span class="worksheet_add_control_spinner">
