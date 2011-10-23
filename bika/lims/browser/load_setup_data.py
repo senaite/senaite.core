@@ -391,7 +391,7 @@ class LoadSetupData(BrowserView):
                      description = unicode(row['description']),
                      SamplingFrequency = {'days':unicode(row['Days']), 'hours':unicode(row['Hours']), 'minutes':unicode(row['Minutes'])},
                      Latitude = "%(lat deg)s %(lat min)s %(lat sec)s %(NS)s" % row,
-                     Longitude = "%(long deg)s %(long min)s %(long sec)s %(NS)s" % row,
+                     Longitude = "%(long deg)s %(long min)s %(long sec)s %(EW)s" % row,
                      Elevation = unicode(row['Elevation']))
             obj.processForm()
 

@@ -3,10 +3,10 @@ installation-verification,Document
 setup-data-in-this-installation,Document
 bika_setup,BikaSetup
 clients,ClientFolder
+samples,SamplesFolder
+analysisrequests,AnalysisRequestsFolder
+worksheets,WorksheetFolder
+referencesamples,ReferenceSamplesFolder
 referencesuppliers,ReferenceSupplierFolder
 invoices,InvoiceFolder
 pricelists,PricelistFolder
-analysisrequests,AnalysisRequestsFolder
-referencesamples,ReferenceSamplesFolder
-samples,SamplesFolder
-worksheets,WorksheetFolder
