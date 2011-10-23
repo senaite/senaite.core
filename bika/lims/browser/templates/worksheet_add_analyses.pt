@@ -75,31 +75,28 @@
 						selected python: view.request.get('getClientUID', '') == client[0] and 'selected' or ''"
 					tal:content="python:client[1]"/>
 			</tal:options>
-		</select>
-
+		</select>&nbsp;
+		<input type="submit" value="Search" i18n:attributes="value"/>
 		</p>
-		<p>
 
-		<label for="getARProfile" i18n:translate="OR select a profile">
-			Or select a template:
+		<p>
+		<label for="getWorksheetTemplate" i18n:translate="Or select a template to apply ">
+			Or select a template
 		</label>
 
-		<select id="ProfileSelector" name="getARProfile">
+		<select id="ProfileSelector" name="getWorksheetTemplate">
 			<option value=""></option>
-			<tal:profile repeat="profile view/getARProfiles">
+			<tal:profile repeat="profile view/getWorksheetTemplates">
 				<option
 					tal:attributes="
 						value python:profile[0];
-						selected python: view.request.get('getARProfile', '') == profile[0] and 'selected' or ''"
+						selected python: view.request.get('WorksheetTemplate', '') == profile[0] and 'selected' or ''"
 					tal:content="python:profile[1]"/>
 			</tal:profile>
-		</select>
-
+		</select>&nbsp;
+		<input type="submit" value="Apply" i18n:attributes="value"/>
 		</p>
-		<p>
 
-		<input type="submit" value="Search" i18n:attributes="value"/>
-		</p>
 
 	</fieldset>
 	<input type="hidden" name="submitted" value="1"/>

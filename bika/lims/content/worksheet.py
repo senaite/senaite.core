@@ -246,6 +246,111 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             )
             self.setAnalyses(self.getAnalyses() + [duplicate,])
 
+    def applyWorksheetTemplate(self, wst):
+        """ Add analyses to worksheet according to wst's layout.
+            Will not overwrite slots which are filled already.
+        """
+        rc = getToolByName(self, "reference_catalog")
+        pc = getToolByName(self, "portal_catalog")
+        wf = getToolByName(self, "portal_workflow")
+
+        wstlayout = wst.getLayout()
+        services = wst.getService()
+        wst_service_uids = [s.UID() for s in services]
+
+        analyses = pc(portal_type = 'Analysis',
+                      getServiceUID = wst_service_uids,
+                      review_state = 'sample_received',
+                      worksheetanalysis_review_state = 'unassigned',
+                      sort_on = 'getDueDate')
+        # collect analyses from the first X ARs.
+        ar_analyses = {} # ar_uid : [analyses]
+        ars = [] # for sorting
+        wst_positions = len([row for row in wstlayout if row['type'] == 'a'])
+        for analysis in analyses:
+            ar = analysis.getRequestID
+            if ar in ar_analyses:
+                ar_analyses[ar].append(analysis.getObject())
+            else:
+                if len(ar_analyses.keys()) < wst_positions:
+                    ars.append(ar)
+                    ar_analyses[ar] = [analysis.getObject(), ]
+
+        positions = [row['pos'] for row in wstlayout if row['type'] == 'a']
+        for ar in ars:
+            for analysis in ar_analyses[ar]:
+                self.addAnalysis(analysis, position=positions[ars.index(ar)])
+                wf.doActionFor(analysis, 'assign')
+
+        # find best maching reference samples for Blanks and Controls
+        for t in ('b', 'c'):
+            form_key = t == 'b' and 'blank_ref' or 'control_ref'
+            for row in [r for r in wstlayout if r['type'] == t]:
+                reference_definition_uid = row[form_key]
+                reference_definition = rc.lookupObject(reference_definition_uid)
+                samples = pc(portal_type = 'ReferenceSample',
+                             review_state = 'current',
+                             inactive_state = 'active',
+                             getReferenceDefinitionUID = reference_definition_uid)
+                if not samples:
+##                    msg = self.context.translate(
+##                        "message_no_references_found",
+##                        mapping = {'position':row['pos'],
+##                                   'definition':reference_definition.Title() and \
+##                                   reference_definition.Title() or ''},
+##                        default = "No reference samples found for " + \
+##                        "${definition} at position ${position}.",
+##                        domain = "bika.lims")
+##                    self.context.plone_utils.addPortalMessage(msg)
+                    break
+                samples = [s.getObject() for s in samples]
+                if t == 'b':
+                    samples = [s for s in samples if s.getBlank()]
+                else:
+                    samples = [s for s in samples if not s.getBlank()]
+                complete_reference_found = False
+                references = {}
+                for reference in samples:
+                    reference_uid = reference.UID()
+                    references[reference_uid] = {}
+                    references[reference_uid]['services'] = []
+                    references[reference_uid]['count'] = 0
+                    specs = reference.getResultsRangeDict()
+                    for service_uid in wst_service_uids:
+                        if specs.has_key(service_uid):
+                            references[reference_uid]['services'].append(service_uid)
+                            references[reference_uid]['count'] += 1
+                    if references[reference_uid]['count'] == len(wst_service_uids):
+                        complete_reference_found = True
+                        break
+                if complete_reference_found:
+                    self.addReferences(int(row['pos']),
+                                     reference,
+                                     wst_service_uids)
+                else:
+                    # find the most complete reference sample instead
+                    these_services = wst_service_uids
+                    reference_keys = references.keys()
+                    no_of_services = 0
+                    reference = None
+                    for key in reference_keys:
+                        if references[key]['count'] > no_of_services:
+                            no_of_services = references[key]['count']
+                            reference = key
+                    if reference:
+                        self.addReferences(int(row['pos']),
+                                         rc.lookupObject(reference),
+                                         wst_service_uids)
+
+        # fill duplicate positions
+        layout = self.getLayout()
+        for row in [r for r in wstlayout if r['type'] == 'd']:
+            dest_pos = int(row['pos'])
+            src_pos = int(row['dup'])
+            if src_pos in [int(slot['position']) for slot in layout]:
+                self.addDuplicateAnalyses(src_pos, dest_pos)
+
+
     def getInstrumentExports(self):
         """ return the possible instrument export formats """
         return INSTRUMENT_EXPORTS

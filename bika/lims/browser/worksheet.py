@@ -484,10 +484,17 @@ class AddAnalysesView(AnalysesView):
                          'cancellation_state':'active'}
         if 'submitted' in form:
             contentFilter['review_state'] = 'sample_received'
-            if 'getARProfile' in form and form['getARProfile']:
-                profile = rc.lookupObject(form['getARProfile'])
-                service_uids = [s.UID() for s in profile.getService()]
-                contentFilter['getServiceUID'] = service_uids
+            if 'getWorksheetTemplate' in form and form['getWorksheetTemplate']:
+                layout = self.context.getLayout()
+                wst = rc.lookupObject(form['getWorksheetTemplate'])
+                self.request['context_uid'] = self.context.UID()
+                self.context.applyWorksheetTemplate(wst)
+                if len(self.context.getLayout()) != len(layout):
+                    self.context.plone_utils.addPortalMessage(_("Workshete updated."))
+                    self.request.RESPONSE.redirect(self.context.absolute_url() + "/manage_results")
+                else:
+                    self.context.plone_utils.addPortalMessage(_("No analyses were added to this worksheet."))
+                    self.request.RESPONSE.redirect(self.context.absolute_url() + "/add_analyses")
             else:
                 for field in ['getCategoryUID', 'getServiceUID', 'getClientUID', ]:
                     if field in form and 'any' not in form[field]:
@@ -510,13 +517,12 @@ class AddAnalysesView(AnalysesView):
                    inactive_state = 'active',
                    sort_on = 'sortable_title')]
 
-    def getARProfiles(self):
-        """ Return Lab AR profiles """
+    def getWorksheetTemplates(self):
+        """ Return WS Templates """
         profiles = []
         pc = getToolByName(self.context, 'portal_catalog')
         return [(c.UID, c.Title) for c in \
-                pc(portal_type = 'ARProfile',
-                   getClientUID = self.context.bika_setup.bika_arprofiles.UID(),
+                pc(portal_type = 'WorksheetTemplate',
                    inactive_state = 'active',
                    sort_on = 'sortable_title')]
 

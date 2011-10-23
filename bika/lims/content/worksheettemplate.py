@@ -45,7 +45,14 @@ schema = BikaSchema.copy() + Schema((
         )
     ),
     BooleanField('ForceWorksheetAdherence',
+        schemata = 'Layout',
         default = False,
+        widget = BooleanWidget(
+            visible=False,
+            label = _("Force worksheet adherence"),
+            description = _("Worksheets created using this template can contain only "
+                            "analyses specified by the template in each slot."),
+        )
     ),
 ))
 schema['title'].schemata = 'Description'

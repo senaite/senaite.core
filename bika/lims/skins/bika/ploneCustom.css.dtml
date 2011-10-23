@@ -172,7 +172,8 @@ a.state-visible  {
 
 td.Services,
 td.Description,
-td.SampleTypes {
+td.SampleTypes,
+td.QC {
   white-space:normal !important;
 }
 
