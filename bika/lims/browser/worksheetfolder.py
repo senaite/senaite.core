@@ -45,6 +45,7 @@ class WorksheetFolderListingView(BikaListingView):
             'Analyses': {'title': _('Analyses')},
             'Services': {'title': _('Services')},
             'SampleTypes': {'title': _('Sample Types')},
+            'QC': {'title': _('QC')},
             'CreationDate': {'title': _('Creation Date')},
             'state_title': {'title': _('State')},
         }
@@ -62,6 +63,7 @@ class WorksheetFolderListingView(BikaListingView):
                         'Analyses',
                         'Services',
                         'SampleTypes',
+                        'QC',
                         'CreationDate',
                         'state_title']},
             {'title': _('Mine'), 'id':'mine',
@@ -78,6 +80,7 @@ class WorksheetFolderListingView(BikaListingView):
                         'Analyses',
                         'Services',
                         'SampleTypes',
+                        'QC',
                         'CreationDate',
                         'state_title']},
             {'title': _('Worksheet Open'), 'id':'open',
@@ -93,6 +96,7 @@ class WorksheetFolderListingView(BikaListingView):
                         'Analyses',
                         'Services',
                         'SampleTypes',
+                        'QC',
                         'CreationDate',
                         'state_title']},
             {'title': _('To Be Verified'), 'id':'to_be_verified',
@@ -108,6 +112,7 @@ class WorksheetFolderListingView(BikaListingView):
                         'Analyses',
                         'Services',
                         'SampleTypes',
+                        'QC',
                         'CreationDate',
                         'state_title']},
             {'title': _('Verified'), 'id':'verified',
@@ -123,6 +128,7 @@ class WorksheetFolderListingView(BikaListingView):
                         'Analyses',
                         'Services',
                         'SampleTypes',
+                        'QC',
                         'CreationDate',
                         'state_title']},
 ##                {'title': _('Cancelled'), 'id':'cancelled',
@@ -203,10 +209,14 @@ class WorksheetFolderListingView(BikaListingView):
             for slot in [s for s in layout if s['type'] == 'a']:
                 analysis = rc.lookupObject(slot['analysis_uid'])
                 service = analysis.getService()
-                ws_services[service.Title()] = 1
-            ws_services = ws_services.keys()
+                title = service.Title()
+                if title not in ws_services:
+                    ws_services[title] = "<a href='%s'>%s</a>" % \
+                        (service.absolute_url(), title)
+            ws_services = ws_services.values()
             ws_services.sort()
-            items[x]['Services'] = ", ".join(ws_services)
+            items[x]['Services'] = ""
+            items[x]['replace']['Services'] = ", ".join(ws_services)
 
             # set Sample Types
             pos_parent = {}
@@ -223,11 +233,11 @@ class WorksheetFolderListingView(BikaListingView):
                                (container.getSample().getSampleType().absolute_url(),
                                 container.getSample().getSampleType().Title())] = 1
                 if container.portal_type == 'ReferenceSample' and container.getBlank():
-                    blanks["<a href='%s' class='blank'>%s</a>" % \
+                    blanks["<a href='%s'>%s</a>" % \
                            (container.absolute_url(),
                             container.Title())] = 1
                 if container.portal_type == 'ReferenceSample' and not container.getBlank():
-                    controls["<a href='%s' class='control'>%s</a>" % \
+                    controls["<a href='%s'>%s</a>" % \
                            (container.absolute_url(),
                             container.Title())] = 1
             sampletypes = list(sampletypes.keys())
@@ -237,7 +247,9 @@ class WorksheetFolderListingView(BikaListingView):
             controls = list(controls.keys())
             controls.sort()
             items[x]['SampleTypes'] = ""
-            items[x]['replace']['SampleTypes'] = ", ".join(blanks + controls + sampletypes)
+            items[x]['replace']['SampleTypes'] = ", ".join(sampletypes)
+            items[x]['QC'] = ""
+            items[x]['replace']['QC'] = ", ".join(blanks + controls)
 
             new_items.append(items[x])
         return new_items

@@ -14,11 +14,8 @@ function expand_analysisservices(categoryUID, fieldName){
 	allUID = $("#allservices_"+categoryUID).attr("value").split(',');
 	allTitle = $("#allservices_"+categoryUID).attr("name").split(',');
 	allKeyword = $("#allservices_"+categoryUID).attr("keyword").split(',');
-	for(i in allUID){
+	for(i=0;i<allUID.length;i++){
 		uid = allUID[i];
-		if (typeof(uid) == "function") {
-			continue;
-		}
 		keyword = allKeyword[i];
 		title = allTitle[i];
 		selected_i = selectedKeyword.indexOf(keyword);
