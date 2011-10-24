@@ -246,6 +246,11 @@ class WorksheetFolderListingView(BikaListingView):
             blanks.sort()
             controls = list(controls.keys())
             controls.sort()
+            # remove the comma from the last link in each set
+            if sampletypes:
+                sampletypes[-1] = sampletypes[-1].replace(",","")
+            if controls:
+                controls[-1] = controls[-1].replace(",","")
             items[x]['SampleTypes'] = ""
             items[x]['replace']['SampleTypes'] = " ".join(sampletypes)
             items[x]['QC'] = ""
