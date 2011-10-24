@@ -21,32 +21,174 @@ Content-Type: text/html
 <table class="invisible two_column_table">
 <tbody>
 <tr>
-<td>&nbsp;</td>
-<td>&nbsp;</td>
+<td>
+<h3></h3>
+<h3><a href="bika_setup/bika_analysisservices"><img src="++resource++bika.lims.images/service_big.png" alt="" /> Analysis Services </a></h3>
+<p>&nbsp;</p>
+<table class="invisible two_column_table">
+<tbody>
+<tr>
+<td align="right"><strong>&nbsp;Expected turnaround time (TAT)</strong></td>
+<td>2 hours</td>
 </tr>
 <tr>
-<td>
-<p>Make sure the id-server process is running before trying to add
-anything to the database or loading LIMS setup data.  Installing and
-starting the id-server will need to be done manually during testing.</p>
-<p>The id-server port used (default 8081) must not be the same as the
-Zope port (default 8080) and must be specified in the Environment
-section of etc/zope.conf. If you are using a buildout-based install, you
- will need to add the following to [instance] in buildout.cfg:</p>
-<pre>[instance]
-environment-vars =
-    IDServerURL http://localhost:8081</pre>
+<td align="right"><strong>&nbsp;Price</strong></td>
+<td>R10</td>
+</tr>
+<tr>
+<td align="right"><strong>&nbsp;Maximum duplicate variation</strong></td>
+<td>10%</td>
+</tr>
+<tr>
+<td align="right"><strong>&nbsp;Uncertainties(Range minimum, maximum, uncertainty value)</strong></td>
+<td>From 0 to 2, ± 0.1</td>
+</tr>
+<tr>
+<td>&nbsp;</td>
+<td>from          2.01 to  4.00,  ± 0.2</td>
+</tr>
+<tr>
+<td>&nbsp;</td>
+<td>from          4.01 -  6.00,  ± 0.3</td>
+</tr>
+<tr>
+<td>&nbsp;</td>
+<td>from&nbsp;6.01 -  8.00,  ± 0.4</td>
+</tr>
+<tr>
+<td>&nbsp;</td>
+<td>from 8.01 - 999,   ± 0.5</td>
+</tr>
+</tbody>
+</table>
+<br />
+<h3><a href="bika_setup/bika_analysisspecs"><img src="++resource++bika.lims.images/analysisspec_big.png" alt="" /> Analysis Specifications </a></h3>
+<strong><br /></strong>
+<p><strong>All Sample Types</strong>: minimum 9,  maximum 11, tolerance 10%</p>
+<p>&nbsp;</p>
+<h3 class="western"><a href="bika_setup/bika_arprofiles"><img src="++resource++bika.lims.images/arprofile_big.png" alt="" /> Analysis Profiles </a></h3>
+<br />
+<table class="invisible two_column_table">
+<tbody>
+<tr>
+<td align="right">&nbsp;<strong>Trace Metals</strong></td>
+<td>&nbsp;Ca, Cu, Fe, Mg, Mn, Na and Zn</td>
+</tr>
+<tr>
+<td align="right">&nbsp;<strong>Digestable Energy</strong></td>
+<td>&nbsp;Digestable Energy, Crude Protein, Ether Extract, Crude Fat and Ash</td>
+</tr>
+<tr>
+<td align="right">&nbsp;<strong>Micro-Bio</strong></td>
+<td>&nbsp;Clostridia, Ecoli, Salmonella and Enterococcus</td>
+</tr>
+</tbody>
+</table>
+<h3 class="western"><a href="bika_setup/bika_worksheettemplates"><img src="++resource++bika.lims.images/worksheettemplate_big.png" alt="" /> Worksheet Templates </a></h3>
+<p>&nbsp;</p>
+<p>A few 10 position Worksheet templates were set up –  always with</p>
+<ul><li>a blank reference sample in position 1,</li><li>a reference sample in position 2</li><li>the sample in position 10 being a duplicate of that in position 3:</li></ul>
+<br />
+<table class="invisible two_column_table">
+<tbody>
+<tr>
+<td align="center"><strong>Worksheet Position<br /></strong></td>
+<td align="center"><strong>&nbsp;Analysis</strong></td>
+</tr>
+<tr>
+<td align="center">&nbsp;1</td>
+<td align="center">&nbsp;Blank Reference<br /></td>
+</tr>
+<tr>
+<td align="center">&nbsp;2</td>
+<td align="center">&nbsp;Reference</td>
+</tr>
+<tr>
+<td align="center">&nbsp;3</td>
+<td align="center">&nbsp;Routine</td>
+</tr>
+<tr>
+<td align="center">&nbsp;4</td>
+<td align="center">Routine <br /></td>
+</tr>
+<tr>
+<td align="center">&nbsp;5</td>
+<td align="center">&nbsp;Routine</td>
+</tr>
+<tr>
+<td align="center">&nbsp;6</td>
+<td align="center">&nbsp;Routine</td>
+</tr>
+<tr>
+<td align="center">&nbsp;7</td>
+<td align="center">&nbsp;Routine</td>
+</tr>
+<tr>
+<td align="center">&nbsp;8</td>
+<td align="center">&nbsp;Routine</td>
+</tr>
+<tr>
+<td align="center">&nbsp;9</td>
+<td align="center">&nbsp;Routine</td>
+</tr>
+<tr>
+<td align="center">&nbsp;10</td>
+<td align="center">Duplicate of position 3 <br /></td>
+</tr>
+</tbody>
+</table>
 </td>
 <td>
-<p>Ensure write permissions are valid for the ./var/log and ./var
-directories. You can start the id-server with a script as below and run
-it in the background.</p>
-<pre>PYTHON=/usr/bin/python  ## MODIFY FOR YOUR PYTHON
-#MODIFY FOR YOUR SOURCE DIRECTORY
-$PYTHON bika3/bika/lims/scripts/id-server.py \
-        -f var/id.counter -p 8081 T \
-        -l var/log/idserver.log  -d var/idserver.pid</pre>
-<p>To test if the ID Server is running, use a web browser on the URL, eg <a href="http://localhost:8081/">http://localhost:8081</a> -- you should see an increasing integer count when you reload.</p>
+<h3 class="western"></h3>
+<h3 class="western"><a href="bika_setup/bika_calculations"><img src="++resource++bika.lims.images/calculation_big.png" alt="" /> Calculations </a></h3>
+<br />
+<p>A number of popular results calculations have been pre-configured in the setup</p>
+<p>They include nutrient calculations for</p>
+<ul><li>Apparent Metabolisable Energy</li><li>Digestible Energy</li><li>Metabolisable Energy</li><li>Non-Structural Carbohydrates and&nbsp;</li><li>Total Digestible Nutrients.</li></ul>
+<p>&nbsp;Others are: Dry Matter results calculations and standard Residual Weight, Residual Weight (tare), Weight Loss, Weight Loss (tare) and<br />Titration</p>
+<p>&nbsp;</p>
+<h3 class="western"><a href="bika_setup/bika_referencedefinitions"><img src="++resource++bika.lims.images/referencedefinition_big.png" alt="" /> Reference Definitions </a></h3>
+<br />Configured the same for all analyses:<br />
+<br />
+<table class="invisible">
+<tbody>
+<tr>
+<td align="center"><strong>Definition<br /></strong></td>
+<td align="center"><strong>&nbsp;Expected value<br /></strong></td>
+<td><strong>&nbsp;Tolerance</strong></td>
+<td><strong>&nbsp;Minimum</strong></td>
+<td><strong>Maximum <br /></strong></td>
+</tr>
+<tr>
+<td align="center"><strong>Blank </strong></td>
+<td align="center">0<br /></td>
+<td align="center">&nbsp;....</td>
+<td align="center">&nbsp;0</td>
+<td align="center">&nbsp;1</td>
+</tr>
+<tr>
+<td align="center"><strong>Feeds</strong></td>
+<td align="center">&nbsp;10</td>
+<td align="center">&nbsp;10%</td>
+<td align="center">&nbsp;9</td>
+<td align="center">&nbsp;11</td>
+</tr>
+<tr>
+<td align="center"><strong>Trace  metals</strong></td>
+<td align="center">&nbsp;10</td>
+<td align="center">&nbsp;10%</td>
+<td align="center">&nbsp;9</td>
+<td align="center">&nbsp;11</td>
+</tr>
+<tr>
+<td align="center">&nbsp;<strong>Microbiology</strong></td>
+<td align="center">&nbsp;10</td>
+<td align="center">&nbsp;10%</td>
+<td align="center">&nbsp;9</td>
+<td align="center">&nbsp;11</td>
+</tr>
+</tbody>
+</table>
 </td>
 </tr>
 </tbody>
