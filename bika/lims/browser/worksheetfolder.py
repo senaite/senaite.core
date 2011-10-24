@@ -215,6 +215,8 @@ class WorksheetFolderListingView(BikaListingView):
                         (service.absolute_url(), title)
             ws_services = ws_services.values()
             ws_services.sort()
+            if ws_services:
+                ws_services[-1] = ws_services[-1].replace(",","")
             items[x]['Services'] = ""
             items[x]['replace']['Services'] = " ".join(ws_services)
 
@@ -246,11 +248,16 @@ class WorksheetFolderListingView(BikaListingView):
             blanks.sort()
             controls = list(controls.keys())
             controls.sort()
-            # remove the comma from the last link in each set
+
+            # remove trailing commas
             if sampletypes:
                 sampletypes[-1] = sampletypes[-1].replace(",","")
             if controls:
                 controls[-1] = controls[-1].replace(",","")
+            else:
+                if blanks:
+                    blanks[-1] = blanks[-1].replace(",","")
+
             items[x]['SampleTypes'] = ""
             items[x]['replace']['SampleTypes'] = " ".join(sampletypes)
             items[x]['QC'] = ""
