@@ -78,7 +78,7 @@ class ajax_SamplePoints():
     def __call__(self):
         pc = getToolByName(self, 'portal_catalog')
         term = self.request.get('term', '')
-        items = pc(portal_type = "SamplePoint")
+        items = pc(portal_type = "SamplePoint", sort_on='sortable_title')
         nr_items = len(items)
         items = [s.Title for s in items if s.Title.lower().find(term.lower()) > -1]
         return json.dumps(items)

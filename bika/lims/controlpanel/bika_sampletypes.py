@@ -78,7 +78,7 @@ class ajax_SampleTypes():
     def __call__(self):
         pc = getToolByName(self, 'portal_catalog')
         term = self.request.get('term', '')
-        items = pc(portal_type = "SampleType")
+        items = pc(portal_type = "SampleType", sort_on='sortable_title')
         nr_items = len(items)
         items = [s.Title for s in items if s.Title.lower().find(term.lower()) > -1]
 
