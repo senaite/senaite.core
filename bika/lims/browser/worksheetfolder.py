@@ -211,12 +211,12 @@ class WorksheetFolderListingView(BikaListingView):
                 service = analysis.getService()
                 title = service.Title()
                 if title not in ws_services:
-                    ws_services[title] = "<a href='%s'>%s</a>" % \
+                    ws_services[title] = "<a href='%s'>%s,</a>" % \
                         (service.absolute_url(), title)
             ws_services = ws_services.values()
             ws_services.sort()
             items[x]['Services'] = ""
-            items[x]['replace']['Services'] = ", ".join(ws_services)
+            items[x]['replace']['Services'] = " ".join(ws_services)
 
             # set Sample Types
             pos_parent = {}
@@ -229,15 +229,15 @@ class WorksheetFolderListingView(BikaListingView):
             controls = {}
             for container in pos_parent.values():
                 if container.portal_type == 'AnalysisRequest':
-                    sampletypes["<a href='%s'>%s</a>" % \
+                    sampletypes["<a href='%s'>%s,</a>" % \
                                (container.getSample().getSampleType().absolute_url(),
                                 container.getSample().getSampleType().Title())] = 1
                 if container.portal_type == 'ReferenceSample' and container.getBlank():
-                    blanks["<a href='%s'>%s</a>" % \
+                    blanks["<a href='%s'>%s,</a>" % \
                            (container.absolute_url(),
                             container.Title())] = 1
                 if container.portal_type == 'ReferenceSample' and not container.getBlank():
-                    controls["<a href='%s'>%s</a>" % \
+                    controls["<a href='%s'>%s,</a>" % \
                            (container.absolute_url(),
                             container.Title())] = 1
             sampletypes = list(sampletypes.keys())
@@ -247,9 +247,9 @@ class WorksheetFolderListingView(BikaListingView):
             controls = list(controls.keys())
             controls.sort()
             items[x]['SampleTypes'] = ""
-            items[x]['replace']['SampleTypes'] = ", ".join(sampletypes)
+            items[x]['replace']['SampleTypes'] = " ".join(sampletypes)
             items[x]['QC'] = ""
-            items[x]['replace']['QC'] = ", ".join(blanks + controls)
+            items[x]['replace']['QC'] = " ".join(blanks + controls)
 
             new_items.append(items[x])
         return new_items

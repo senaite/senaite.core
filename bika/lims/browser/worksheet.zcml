@@ -17,7 +17,7 @@
       for="bika.lims.interfaces.IWorksheet"
       name="manage_results"
       class="bika.lims.browser.worksheet.ManageResultsView"
-      permission="bika.lims.ManageResults"
+      permission="zope2.View"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 

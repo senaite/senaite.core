@@ -254,6 +254,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         pc = getToolByName(self, "portal_catalog")
         wf = getToolByName(self, "portal_workflow")
 
+        layout = self.getLayout()
         wstlayout = wst.getLayout()
         services = wst.getService()
         wst_service_uids = [s.UID() for s in services]
@@ -266,17 +267,20 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         # collect analyses from the first X ARs.
         ar_analyses = {} # ar_uid : [analyses]
         ars = [] # for sorting
-        wst_positions = len([row for row in wstlayout if row['type'] == 'a'])
+
+        wst_slots = [row['pos'] for row in wstlayout if row['type'] == 'a']
+        ws_slots = [row['position'] for row in layout if row['type'] == 'a']
+        nr_slots = len(wst_slots) - len(ws_slots)
         for analysis in analyses:
             ar = analysis.getRequestID
             if ar in ar_analyses:
                 ar_analyses[ar].append(analysis.getObject())
             else:
-                if len(ar_analyses.keys()) < wst_positions:
+                if len(ar_analyses.keys()) < nr_slots:
                     ars.append(ar)
                     ar_analyses[ar] = [analysis.getObject(), ]
 
-        positions = [row['pos'] for row in wstlayout if row['type'] == 'a']
+        positions = [pos for pos in wst_slots if pos not in ws_slots]
         for ar in ars:
             for analysis in ar_analyses[ar]:
                 self.addAnalysis(analysis, position=positions[ars.index(ar)])
@@ -285,7 +289,9 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         # find best maching reference samples for Blanks and Controls
         for t in ('b', 'c'):
             form_key = t == 'b' and 'blank_ref' or 'control_ref'
-            for row in [r for r in wstlayout if r['type'] == t]:
+            ws_slots = [row['position'] for row in layout if row['type'] == t]
+            for row in [r for r in wstlayout if \
+                        r['type'] == t and r['pos'] not in ws_slots]:
                 reference_definition_uid = row[form_key]
                 reference_definition = rc.lookupObject(reference_definition_uid)
                 samples = pc(portal_type = 'ReferenceSample',
@@ -344,7 +350,9 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
 
         # fill duplicate positions
         layout = self.getLayout()
-        for row in [r for r in wstlayout if r['type'] == 'd']:
+        ws_slots = [row['position'] for row in layout if row['type'] == 'd']
+        for row in [r for r in wstlayout if \
+                    r['type'] == 'd' and r['pos'] not in ws_slots]:
             dest_pos = int(row['pos'])
             src_pos = int(row['dup'])
             if src_pos in [int(slot['position']) for slot in layout]:
