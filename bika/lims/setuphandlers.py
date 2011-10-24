@@ -241,14 +241,14 @@ class BikaGenerator:
 
         mp = portal.clients.manage_permission
         mp(permissions.ListFolderContents,
-            ['Manager', 'LabManager','LabClerk','Analyst'], 0)
-            #['Manager', 'LabManager','LabClerk','Analyst', 'Anonymous'], 0)
+            ['Manager', 'LabManager','LabClerk','Analyst','Member'], 0)
+            #['Manager', 'LabManager','LabClerk','Analyst','Member', 'Anonymous'], 0)
         mp(permissions.View,
            ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Owner'], 0)
            #['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Owner', 'Anonymous'], 0)
         mp('Access contents information',
-            ['Manager', 'LabManager','LabClerk','Analyst'], 0)
-            #['Manager', 'LabManager','LabClerk','Analyst', 'Anonymous'], 0)
+            ['Manager', 'LabManager','LabClerk','Member','Analyst'], 0)
+            #['Manager', 'LabManager','LabClerk','Member','Analyst', 'Anonymous'], 0)
         mp(permissions.AddPortalContent,
            ['Manager', 'LabManager', 'LabClerk', 'Owner', ], 0)
         portal.clients.reindexObject()

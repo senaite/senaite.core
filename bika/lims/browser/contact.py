@@ -100,11 +100,6 @@ def contact_logindetails_submit(context, request):
     contact.reindexObject()
 
     # Give contact an Owner local role on client
-## This is nicer, but we are not Manager
-##    pm = getToolByName(contact, 'portal_membership')
-##    pm.setLocalRoles(context.aq_parent,
-##                     member_ids=[username],
-##                     member_role='Owner')
     contact.aq_parent.manage_setLocalRoles( username, ['Owner',] )
     if hasattr(aq_base(contact.aq_parent), 'reindexObjectSecurity'):
         contact.aq_parent.reindexObjectSecurity()

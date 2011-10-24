@@ -100,7 +100,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         else:
             # prefer supplied position parameter
             if not position:
-                used_positions = [int(slot['position']) for slot in layout]
+                used_positions = [0,]+[int(slot['position']) for slot in layout]
                 position = [pos for pos in range(1, max(used_positions)+2) \
                             if pos not in used_positions][0]
         self.setLayout(layout + [{'position': position,
