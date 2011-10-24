@@ -11,7 +11,7 @@ from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.analyses import AnalysesView
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.browser.bika_listing import WorkflowAction
-from bika.lims.browser.referencesamples import ReferenceSamplesView
+from bika.lims.browser.referencesample import ReferenceSamplesView
 from bika.lims.config import ManageResults
 from bika.lims.interfaces import IWorksheet
 from bika.lims.utils import isActive, TimeOrDate

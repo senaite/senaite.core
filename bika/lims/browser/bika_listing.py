@@ -51,7 +51,10 @@ class WorkflowAction:
             # XXX some browsers agree better than others about our JS ideas.
             if type(action) == type([]): action = action[0]
             if not action:
-                raise WorkflowException(_("No workflow action provided."))
+                if self.destination_url == "":
+                    self.destination_url = self.request.get_header("referer",
+                                           self.context.absolute_url())
+                self.request.response.redirect(self.destination_url)
         # convert button text to action id
         if came_from == "workflow_action_button":
             action = form[action]

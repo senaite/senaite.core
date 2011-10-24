@@ -94,25 +94,15 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         self.setAnalyses(analyses + [analysis,])
 
         # if our parent has a position, use that one.
-        if analysis.aq_parent.UID() in [slot['container_uid'] for slot in layout if \
-                                        slot['type'] == 'a']:
-            position = [slot['position'] for slot in layout if \
+        if analysis.aq_parent.UID() in [slot['container_uid'] for slot in layout]:
+            position = [int(slot['position']) for slot in layout if \
                         slot['container_uid'] == analysis.aq_parent.UID()][0]
         else:
             # prefer supplied position parameter
             if not position:
                 used_positions = [int(slot['position']) for slot in layout]
-                position = used_positions and max(used_positions)+1 or 1
-                if wst:
-                    if wst.getForceWorksheetAdherence():
-                        available_positions = [row['pos'] for row in wstlayout \
-                                               if int(row['pos']) not in used_positions and \
-                                               row['type'] == 'a'] or [position,]
-                    else:
-                        available_positions = [row['pos'] for row in wstlayout \
-                                               if int(row['pos']) not in used_positions] \
-                                                                   or [position,]
-                    position = available_positions[0]
+                position = [pos for pos in range(1, max(used_positions)+2) \
+                            if pos not in used_positions][0]
         self.setLayout(layout + [{'position': position,
                                   'type': 'a',
                                   'container_uid': parent_uid,
@@ -132,6 +122,9 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         # DuplicateAnalysis objects - delete them.
         if analysis.portal_type == "DuplicateAnalysis":
             self._delObject(analysis.id)
+
+        layout = [slot for slot in self.getLayout() if slot['analysis_uid'] != analysis.UID()]
+        self.setLayout(layout)
 
     def addReferences(self, position, reference, service_uids):
         """ Add reference analyses to reference, and add to worksheet layout

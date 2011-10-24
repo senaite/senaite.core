@@ -41,9 +41,9 @@ class ClientWorkflowAction(WorkflowAction):
             # XXX some browsers agree better than others about our JS ideas.
             if type(action) == type([]): action = action[0]
             if not action:
-                logger.info("No workflow action provided")
-                self.destination_url = self.request.get_header("referer",
-                                       self.context.absolute_url())
+                if self.destination_url == "":
+                    self.destination_url = self.request.get_header("referer",
+                                           self.context.absolute_url())
                 self.request.response.redirect(self.destination_url)
                 return
 
