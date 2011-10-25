@@ -420,6 +420,12 @@ class BikaListingTable(tableview.Table):
         self.filters_in_use = bika_listing.filters_in_use
         self.review_states = bika_listing.review_states
 
+    def tabindex(self):
+        i = 0
+        while True:
+            i += 1
+            yield i
+
     def get_workflow_actions(self):
         """ Compile a list of possible workflow transitions for items
             in this Table.

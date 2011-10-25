@@ -61,5 +61,14 @@ $(document).ready(function(){
 		form.submit();
 	})
 
+	$(".listing_string_entry,.listing_select_entry").live('keypress', function(event) {
+	  var tab = 9;
+	  var enter = 13;
+	  if (event.which == enter) {
+		event.preventDefault();
+	  }
+	});
+
+
 });
 });

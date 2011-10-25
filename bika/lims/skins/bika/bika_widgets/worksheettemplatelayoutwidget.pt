@@ -89,13 +89,10 @@
 				style python: selected_type == 'b' and 'display:inline;;' or 'display:none;;';
 				class string:blank_ref_dropdown_${row/pos};">
 		<tal:item tal:repeat="ref BlankDefinitions">
-			<option selected="selected"
-				tal:define="
-					ref_uid ref/UID;
-					this_selected python:ref_uid == 'blank_ref' in row and row['blank_ref'] or ''"
+			<option
 				tal:attributes="
-					value ref_uid;
-					selected this_selected"
+					value ref/UID;
+					selected python:row['blank_ref'] == ref.UID() and 'selected' or ''"
 				tal:content="ref/Title"></option>
 		</tal:item>
 		</select>
@@ -105,13 +102,10 @@
 				style python: selected_type == 'c' and 'display:inline;;' or 'display:none;;';
 				class string:control_ref_dropdown_${row/pos};">
 		<tal:item tal:repeat="ref ControlDefinitions">
-			<option selected="selected"
-				tal:define="
-					ref_uid ref/UID;
-					this_selected python:ref_uid == 'control_ref' in row and row['control_ref'] or ''"
+			<option
 				tal:attributes="
-					value ref_uid;
-					selected this_selected"
+					value ref/UID;
+					selected python:row['control_ref'] == ref.UID() and 'selected' or ''"
 				tal:content="ref/Title"></option>
 		</tal:item>
 		</select>

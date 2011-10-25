@@ -12,6 +12,7 @@
 	sm python:modules['AccessControl'].getSecurityManager();
 	EditAnalyses python:sm.checkPermission('BIKA: Edit analyses', context);
 	ViewResults python:sm.checkPermission('BIKA: View Results', context);
+	tabindex view/tabindex;
 	user python:sm.getUser();
 	roles python:user.getRoles();">
 
@@ -226,6 +227,7 @@ Item select checkboxes.
 				id      string:cb_${item/uid};
 				checked python:item.has_key('checked') and item['checked'] and 'yes' or '';
 				alt     python:view.msg_select_item(item);
+				tabindex string:1000;
 				uid     item/uid" />
 		<input type="hidden"
 			name="selected_obj_paths:list"
@@ -299,6 +301,7 @@ Table cells for each column from in review_state's column list.
 				class="listing_string_entry numeric"
 				tal:condition="python:allow_edit"
 				tal:attributes="
+					tabindex tabindex/next;
 					size input_width;
 					uid string:${item/uid};
 					objectId string:${item/id};
@@ -329,6 +332,7 @@ Table cells for each column from in review_state's column list.
 				tal:condition="python:allow_edit"
 				class="listing_string_entry numeric"
 				tal:attributes="
+					tabindex tabindex/next;
 					size input_width;
 					uid string:${item/uid};
 					objectId string:${item/id};
@@ -408,6 +412,7 @@ Table cells for each column from in review_state's column list.
 			<select class="listing_select_entry"
 				tal:condition="python:column in item['choices']"
 				tal:attributes="
+					tabindex tabindex/next;
 					field column;
 					name string:${column}.${item/uid}:records;
 					uid item/uid;">
