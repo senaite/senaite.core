@@ -87,7 +87,6 @@ $(document).ready(function(){
 	// adding Controls and Blanks - selecting services re-renders the list
 	// of applicable reference samples
 	$("#worksheet_services input[id*='cb_']").live('click', function(){
-//		$("input[id*='cb_']").attr("disabled", true);
 		$("#ajax_spinner").toggle(true);
 		selected_service_uids = [];
 		$.each($("input:checked"), function(i,e){
@@ -109,50 +108,26 @@ $(document).ready(function(){
 			 '_authenticator': $('input[name="_authenticator"]').val()},
 			function(responseText, statusText, xhr, $form) {
 				$("#ajax_spinner").toggle(false);
-//				$("input[id*='cb_']").removeAttr('disabled');
 			}
 		);
 	});
 
 	// click reference sample TR in add_blank or add_control
 	$("#reference_samples tr").live('click', function(){
-		url = window.location.href
-			.replace("/add_blank", "")
-			.replace("/add_control", "");
 		selected_service_uids = [];
 		$.each($("input:checked"), function(i,e){
 			selected_service_uids.push($(e).attr('uid'));
 		});
-		$.ajax({
-			type:'POST',
-			url: url + "/addReferenceAnalyses",
-			data: {'service_uids': selected_service_uids.join(","),
-					'position':$("#position").val(),
-					'reference':$(this).attr("uid"),
-					'_authenticator': $('input[name="_authenticator"]').val()},
-			success: function(responseText, statusText, xhr, $form) {
-				window.location.href = url + "/manage_results";
-			}
-
-		});
+		ssuids = selected_service_uids.join(",");
+		$('#folderContentsForm').append("<input type='hidden' value='"+ssuids+"' name='selected_service_uids'/>");
+		$('#folderContentsForm').append("<input type='hidden' value='"+$(this).attr("uid")+"' name='reference_uid'/>");
+		$('#folderContentsForm').submit();
 	})
 
 	// click AR TR in add_duplicate
 	$("#worksheet_ars tr").live('click', function(){
-		url = window.location.href.replace("/add_duplicate", "");
-		$.ajax({
-			type:'POST',
-			url: url + "/addDuplicate",
-			data: {
-				'position':$("#position").val(),
-				'ar_uid':$(this).attr("uid"),
-				'_authenticator': $('input[name="_authenticator"]').val()
-			},
-			success: function(responseText, statusText, xhr, $form) {
-				window.location.href = url + "/manage_results";
-			}
-
-		});
+		$('#folderContentsForm').append("<input type='hidden' value='"+$(this).attr("uid")+"' name='ar_uid'/>");
+		$('#folderContentsForm').submit();
 	})
 
 });

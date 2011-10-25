@@ -70,8 +70,6 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         """- add the analysis to self.Analyses().
            - position is overruled if a slot for this analysis' parent exists
            - if position is None, next available pos is used.
-           - if the template sets ForceWorksheetAdherence=True, the analysis
-             will be added in an existing 'a' slot or 'new'.
         """
         wf = getToolByName(self, 'portal_workflow')
         rc = getToolByName(self, 'reference_catalog')
@@ -122,9 +120,6 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         # DuplicateAnalysis objects - delete them.
         if analysis.portal_type == "DuplicateAnalysis":
             self._delObject(analysis.id)
-
-        layout = [slot for slot in self.getLayout() if slot['analysis_uid'] != analysis.UID()]
-        self.setLayout(layout)
 
     def addReferences(self, position, reference, service_uids):
         """ Add reference analyses to reference, and add to worksheet layout
@@ -229,7 +224,9 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             self.invokeFactory('DuplicateAnalysis', id = duplicate_id)
             duplicate = self[duplicate_id]
             duplicate.setAnalysis(analysis)
-            duplicate.processForm()
+            duplicate.unmarkCreationFlag()
+            if calc:
+                duplicate.setInterimFields(calc.getInterimFields())
             wf.doActionFor(duplicate, 'assign')
             self.setLayout(
                 self.getLayout() + [{'position':dest_slot,

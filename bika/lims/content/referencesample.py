@@ -269,13 +269,13 @@ class ReferenceSample(BaseFolder):
         analysis.edit(
             ReferenceAnalysisID = analysis_id,
             ReferenceType = reference_type,
-            Service = service_uid,
+            Service = service,
             Unit = service.getUnit(),
             Calculation = calculation,
             InterimFields = interim_fields,
             ServiceUID = service.UID(),
         )
-        analysis.processForm()
+        analysis.unmarkCreationFlag()
         analysis.reindexObject()
         return analysis.UID()
 

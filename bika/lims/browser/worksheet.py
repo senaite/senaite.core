@@ -141,11 +141,9 @@ class WorksheetWorkflowAction(WorkflowAction):
             if selected_analyses:
                 for uid in selected_analysis_uids:
                     analysis = rc.lookupObject(uid)
-                    if analysis.portal_type == "DuplicateAnalysis":
-                        self.context._delObject(analysis.id)
-                        continue
                     self.context.removeAnalysis(analysis)
-                    workflow.doActionFor(analysis, 'unassign')
+                    if analysis.portal_type == 'Analysis':
+                        workflow.doActionFor(analysis, 'unassign')
 
             self.destination_url = self.context.absolute_url() + "/manage_results"
             self.request.response.redirect(self.destination_url)
@@ -358,10 +356,6 @@ class WorksheetAnalysesView(AnalysesView):
                 pos_text += "<a href='%s'>(%s)</a>" % (parent.absolute_url(), parent.Title())
             pos_text += "</td></tr>"
 
-
-##            if hasattr(parent, 'getClientOrderNumber'):
-##                o = parent.getClientOrderNumber()
-
             # sampletype
             pos_text += "<tr><td>"
             if obj.portal_type == 'Analysis':
@@ -538,29 +532,33 @@ class AddBlankView(BrowserView):
                              "reference samples. Select a reference by clicking it. ")
 
     def __call__(self):
+        form = self.request.form
+        if 'submitted' in form:
+            rc = getToolByName(self.context, 'reference_catalog')
+            # parse request
+            service_uids = form['selected_service_uids'].split(",")
+            position = form['position']
+            reference_uid = form['reference_uid']
+            reference = rc.lookupObject(reference_uid)
+            ref_type = reference.getBlank() and 'b' or 'c'
+            ref_analyses = self.context.addReferences(position,
+                                                      reference,
+                                                      service_uids)
+            self.request.response.redirect(
+                self.context.absolute_url() + "/manage_results")
+            return
+
         self.Services = WorksheetServicesView(self.context, self.request)
         return self.template()
 
     def getAvailablePositions(self):
-        """ Return 'b' blank positions defined by the worksheettemplate
-            if the worksheet doesn't already have a blank reference there
+        """ Return a list of empty slot numbers
         """
         positions = []
         layout = self.context.getLayout()
-        used_positions = [int(slot['position']) for slot in layout \
-                          if slot['container_uid']]
-        wst = self.context.getWorksheetTemplate()
-        if wst:
-            wstlayout = wst.getLayout()
-            if wst.getForceWorksheetAdherence():
-                available_positions = [int(slot['pos']) for slot in wstlayout \
-                                       if int(slot['pos']) not in used_positions and \
-                                       slot['type'] == 'b']
-            else:
-                available_positions = [int(slot['pos']) for slot in wstlayout \
-                                       if int(slot['pos']) not in used_positions]
-        else:
-            available_positions = []
+        used_positions = [int(slot['position']) for slot in layout]
+        available_positions = [pos for pos in range(1, max(used_positions)+1) if \
+                               pos not in used_positions]
         return available_positions
 
 class AddControlView(BrowserView):
@@ -574,30 +572,35 @@ class AddControlView(BrowserView):
         self.description = _("Select services in the left column to locate " \
                              "reference samples. Select a reference by clicking it. ")
     def __call__(self):
+        form = self.request.form
+        if 'submitted' in form:
+            rc = getToolByName(self.context, 'reference_catalog')
+            # parse request
+            service_uids = form['selected_service_uids'].split(",")
+            position = form['position']
+            reference_uid = form['reference_uid']
+            reference = rc.lookupObject(reference_uid)
+            ref_type = reference.getBlank() and 'b' or 'c'
+            ref_analyses = self.context.addReferences(position,
+                                                      reference,
+                                                      service_uids)
+            self.request.response.redirect(
+                self.context.absolute_url() + "/manage_results")
+            return
+
         self.Services = WorksheetServicesView(self.context, self.request)
         return self.template()
 
     def getAvailablePositions(self):
-        """ Return 'c' control positions defined by the worksheettemplate
-            if the worksheet doesn't already have a control reference there
+        """ Return a list of empty slot numbers
         """
         positions = []
         layout = self.context.getLayout()
-        used_positions = [int(slot['position']) for slot in layout \
-                          if slot['container_uid']]
-        wst = self.context.getWorksheetTemplate()
-        if wst:
-            wstlayout = wst.getLayout()
-            if wst.getForceWorksheetAdherence():
-                available_positions = [int(slot['pos']) for slot in wstlayout \
-                                       if int(slot['pos']) not in used_positions and \
-                                       slot['type'] == 'c']
-            else:
-                available_positions = [int(slot['pos']) for slot in wstlayout \
-                                       if int(slot['pos']) not in used_positions]
-        else:
-            available_positions = []
+        used_positions = [int(slot['position']) for slot in layout]
+        available_positions = [pos for pos in range(1, max(used_positions)+1) if \
+                               pos not in used_positions]
         return available_positions
+
 
 class AddDuplicateView(BrowserView):
     implements(IViewView)
@@ -610,30 +613,32 @@ class AddDuplicateView(BrowserView):
         self.description = _("Select a destinaton position and the AR to duplicate.")
 
     def __call__(self):
+        form = self.request.form
+        if 'submitted' in form:
+            rc = getToolByName(self.context, 'reference_catalog')
+            ar_uid = self.request.get('ar_uid', '')
+            src_slot = [slot['position'] for slot in self.context.getLayout() if \
+                        slot['container_uid'] == ar_uid and slot['type'] == 'a'][0]
+            position = self.request.get('position', '')
+            self.request['context_uid'] = self.context.UID()
+            self.context.addDuplicateAnalyses(src_slot, position)
+            self.request.response.redirect(
+                self.context.absolute_url() + "/manage_results")
+            return
+
         self.ARs = WorksheetARsView(self.context, self.request)
         return self.template()
 
     def getAvailablePositions(self):
-        """ Return 'd' duplicate positions defined by the worksheettemplate
-            if the worksheet layout doesn't already have data for that slot
+        """ Return a list of empty slot numbers
         """
         positions = []
         layout = self.context.getLayout()
-        used_positions = [int(slot['position']) for slot in layout \
-                          if slot['container_uid']]
-        wst = self.context.getWorksheetTemplate()
-        if wst:
-            wstlayout = wst.getLayout()
-            if wst.getForceWorksheetAdherence():
-                available_positions = [int(slot['pos']) for slot in wstlayout \
-                                       if int(slot['pos']) not in used_positions and \
-                                       slot['type'] == 'd']
-            else:
-                available_positions = [int(slot['pos']) for slot in wstlayout \
-                                       if int(slot['pos']) not in used_positions]
-        else:
-            available_positions = []
+        used_positions = [int(slot['position']) for slot in layout]
+        available_positions = [pos for pos in range(1, max(used_positions)+1) if \
+                               pos not in used_positions]
         return available_positions
+
 
 class WorksheetARsView(BikaListingView):
     ## This table displays a list of ARs referenced by this worksheet.
@@ -868,62 +873,6 @@ class ajaxGetWorksheetReferences(ReferenceSamplesView):
         if not self.control_type:
             return _("No control type specified")
         return super(ajaxGetWorksheetReferences, self).contents_table()
-
-class ajaxAddReferenceAnalyses(BrowserView):
-    """ The add_control and add_blank screens use this view to add
-        the requested reference analyses to the worksheet.
-    """
-
-    def __call__(self):
-        rc = getToolByName(self.context, 'reference_catalog')
-        plone.protect.PostOnly(self.request)
-        plone.protect.CheckAuthenticator(self.request)
-
-        # parse request
-        service_uids = self.request.get('service_uids', '').split(",")
-        if not service_uids:
-            return
-        position = self.request.get('position', '')
-        if not position:
-            return
-        reference_uid = self.request.get('reference', '')
-        reference = rc.lookupObject(reference_uid)
-        if not reference:
-            return
-        ref_type = reference.getBlank() and 'b' or 'c'
-
-        ref_analyses = self.context.addReferences(position,
-                                                  reference,
-                                                  service_uids)
-
-        if not ref_analyses:
-            message = _('No reference analyses were created')
-        elif ref_type == 'b':
-            message = _('Blank analysis has been assigned')
-        else:
-            message = _('Control analysis has been assigned')
-        self.context.plone_utils.addPortalMessage(message)
-
-class ajaxAddDuplicate(BrowserView):
-    """ The add_duplicate view TRs click through to here
-    """
-
-    def __call__(self):
-        rc = getToolByName(self.context, 'reference_catalog')
-        plone.protect.PostOnly(self.request)
-        plone.protect.CheckAuthenticator(self.request)
-
-        ar_uid = self.request.get('ar_uid', '')
-        if not ar_uid:
-            return
-        src_slot = [slot['position'] for slot in self.context.getLayout() if \
-                    slot['container_uid'] == ar_uid and slot['type'] == 'a'][0]
-
-        position = self.request.get('position', '')
-        if not position:
-            return
-        self.request['context_uid'] = self.context.UID()
-        dups = self.context.addDuplicateAnalyses(src_slot, position)
 
 class ajaxGetServices(BrowserView):
     """ When a Category is selected in the add_analyses search screen, this
