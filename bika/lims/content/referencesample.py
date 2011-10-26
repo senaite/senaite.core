@@ -265,6 +265,16 @@ class ReferenceSample(BaseFolder):
         analysis = self._getOb(analysis_id)
         calculation = service.getCalculation()
         interim_fields = calculation and calculation.getInterimFields() or []
+        maxtime = service.getMaxTimeAllowed() and service.getMaxTimeAllowed() \
+            or {'days':0, 'hours':0, 'minutes':0}
+        starttime = DateTime()
+        max_days = float(maxtime.get('days', 0)) + \
+                 (
+                     (float(maxtime.get('hours', 0)) * 3600 + \
+                      float(maxtime.get('minutes', 0)) * 60)
+                     / 86400
+                 )
+        duetime = starttime + max_days
 
         analysis.edit(
             ReferenceAnalysisID = analysis_id,
@@ -274,7 +284,10 @@ class ReferenceSample(BaseFolder):
             Calculation = calculation,
             InterimFields = interim_fields,
             ServiceUID = service.UID(),
+            MaxTimeAllowed = maxtime,
+            DueDate = duetime,
         )
+
         analysis.unmarkCreationFlag()
         analysis.reindexObject()
         return analysis.UID()

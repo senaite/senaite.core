@@ -142,7 +142,7 @@ class WorksheetWorkflowAction(WorkflowAction):
                 for uid in selected_analysis_uids:
                     analysis = rc.lookupObject(uid)
                     self.context.removeAnalysis(analysis)
-                    if analysis.portal_type == 'Analysis':
+                    if analysis.portal_type != 'DuplicateAnalysis':
                         workflow.doActionFor(analysis, 'unassign')
 
             self.destination_url = self.context.absolute_url() + "/manage_results"
