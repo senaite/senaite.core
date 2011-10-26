@@ -85,20 +85,22 @@ class WorksheetWorkflowAction(WorkflowAction):
                 if not results[uid]:
                     continue
                 can_submit = True
-                for dependency in analysis.getDependencies():
-                    dep_state = workflow.getInfoFor(dependency, 'review_state')
-                    if hasInterims[uid]:
-                        if dep_state in ('sample_due', 'sample_received', 'attachment_due', 'to_be_verified',):
+                if hasattr(analysis, 'getDependencies'):
+                    dependencies = analysis.getDependencies()
+                    for dependency in dependencies:
+                        dep_state = workflow.getInfoFor(dependency, 'review_state')
+                        if hasInterims[uid]:
+                            if dep_state in ('sample_due', 'sample_received', 'attachment_due', 'to_be_verified',):
+                                can_submit = False
+                                break
+                        else:
+                            if dep_state in ('sample_due', 'sample_received',):
+                                can_submit = False
+                                break
+                    for dependency in dependencies:
+                        if workflow.getInfoFor(dependency, 'review_state') in \
+                           ('sample_due', 'sample_received'):
                             can_submit = False
-                            break
-                    else:
-                        if dep_state in ('sample_due', 'sample_received',):
-                            can_submit = False
-                            break
-                for dependency in analysis.getDependencies():
-                    if workflow.getInfoFor(dependency, 'review_state') in \
-                       ('sample_due', 'sample_received'):
-                        can_submit = False
                 if can_submit:
                     submissable.append(analysis)
 
