@@ -426,9 +426,9 @@ def ActionSucceededEventHandler(analysis, event):
         # in case of no calendars or max hours
         if maxtime:
             duration = (endtime - starttime) * 24 * 60
-            maxtime_delta = maxtime.get('hours', 0) * 86400
-            maxtime_delta += maxtime.get('hours', 0) * 3600
-            maxtime_delta += maxtime.get('minutes', 0) * 60
+            maxtime_delta = int(maxtime.get('hours', 0)) * 86400
+            maxtime_delta += int(maxtime.get('hours', 0)) * 3600
+            maxtime_delta += int(maxtime.get('minutes', 0)) * 60
             earliness = duration - maxtime_delta
         else:
             earliness = 0

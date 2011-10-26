@@ -258,7 +258,7 @@
   <action url="workflow_action?workflow_action=retract" category="workflow" icon="">Retract</action>
   <guard>
    <guard-permission>BIKA: Retract sample</guard-permission>
-   <guard-expression>python:here.guard_retract_sample()</guard-expression>
+   <guard-expression></guard-expression>
   </guard>
  </transition>
 
