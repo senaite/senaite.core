@@ -67,13 +67,13 @@
 </div>
 
 <!-- The system configured 'Dry Matter Service' -->
-<tal:i define="dms view/DryMatterService">
+<tal:i define="dms python:context.bika_setup.getDryMatterService()">
     <input type="hidden" id="dry_matter_service" name="dry_matter_service"
         tal:condition="dms"
         tal:attributes="
             poc python: dms.getPointOfCapture();
-            category python: dms.getCategory();
-            uid python: dms.getUID();"/>
+            category python: dms.getCategory().Title();
+            uid python: dms.UID();"/>
 </tal:i>
 
 <table summary="Add analysis requests"
