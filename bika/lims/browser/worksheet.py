@@ -230,15 +230,8 @@ class WorksheetAnalysesView(AnalysesView):
         highest_position = 0
         for x, item in enumerate(items):
             obj = item['obj']
-            if obj.portal_type in ('Analysis', 'ReferenceAnalysis'):
-                pos = [slot['position'] for slot in layout if \
-                       slot['container_uid'] == obj.aq_parent.UID() and \
-                       slot['type'] != 'd'][0]
-            elif obj.portal_type == 'DuplicateAnalysis':
-                pos = [slot['position'] for slot in layout if \
-                       slot['container_uid'] == obj.getAnalysis().aq_parent.UID() and \
-                       slot['type'] == 'd'][0]
-            pos = int(pos)
+            pos = [int(slot['position']) for slot in layout if \
+                   slot['analysis_uid'] == obj.UID()][0]
             highest_position = max(highest_position, pos)
             items[x]['Pos'] = pos
             items[x]['colspan'] = {'Pos':1}

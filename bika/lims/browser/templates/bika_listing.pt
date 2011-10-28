@@ -12,8 +12,51 @@
 	<img tal:condition="view/icon | nothing"
          src="" tal:attributes="src view/icon"/>
 	<span class="documentFirstHeading" tal:content="view/title"/>
+	<tal:add_actions repeat="add_item python:view.content_add_actions.keys()">
+		<a
+			tal:attributes="
+				href python:view.content_add_actions[add_item];
+				class python:'content_add_link %s' % view.content_add_actions[add_item]">
+			<img src="++resource++bika.lims.images/add.png"/>
+			<span tal:replace="string: Add ${add_item}"/>
+		</a>
+		<span class="content_add_link"
+			tal:condition="python:add_item == 'Worksheet'">
+				<select class='wstemplate'>
+					<option value='' i18n:translate="">Or select template</option>
+					<tal:options repeat="option view/getWorksheetTemplates">
+						<option
+							tal:attributes="value python:option['uid']"
+							tal:content="python:option['title']"/>
+					</tal:options>
+				</select>
+		</span>
+	</tal:add_actions>
     </h1>
 </metal:content-title>
+
+<!--<metal:content-title fill-slot="content-title">-->
+<!--    <h1>-->
+<!--	<img tal:condition="view/icon | nothing"-->
+<!--         src="" tal:attributes="src view/icon"/>-->
+<!--	<span class="documentFirstHeading" tal:content="view/title"/>-->
+<!--	<tal:add_actions repeat="add_item python:view.content_add_actions.keys()">-->
+<!--		<form method="post"-->
+<!--			tal:attributes="name string:folderContentsForm_add_${add_item};-->
+<!--				id string:folderContentsForm_add_${add_item};-->
+<!--				action python: view.content_add_actions[add_item];">-->
+<!--			<input-->
+<!--				class="standalone add"-->
+<!--				type="submit"-->
+<!--				name=""-->
+<!--				i18n:attributes="value"-->
+<!--				tal:attributes="value string:Add ${add_item}; name string:add_${add_item}"/>-->
+<!--			<input type="hidden" name="form.submitted" value="1" />-->
+<!--			<input tal:replace="structure context/@@authenticator/authenticator" />-->
+<!--		</form>-->
+<!--	</tal:add_actions>-->
+<!--    </h1>-->
+<!--</metal:content-title>-->
 
 <metal:content-description fill-slot="content-description">
 	<div class="documentDescription"
@@ -22,22 +65,6 @@
 </metal:content-description>
 
 <metal:content-core fill-slot="content-core">
-
-	<tal:add_actions repeat="add_item python:view.content_add_actions.keys()">
-		<form method="post"
-			tal:attributes="name string:folderContentsForm_add_${add_item};
-				id string:folderContentsForm_add_${add_item};
-				action python: view.content_add_actions[add_item];">
-			<input
-				class="standalone add"
-				type="submit"
-				name=""
-				i18n:attributes="value"
-				tal:attributes="value string:Add ${add_item}; name string:add_${add_item}"/>
-			<input type="hidden" name="form.submitted" value="1" />
-			<input tal:replace="structure context/@@authenticator/authenticator" />
-		</form>
-	</tal:add_actions>
 
 	<form name="folderContentsForm"
 	      id="folderContentsForm"

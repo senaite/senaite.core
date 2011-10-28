@@ -1,4 +1,4 @@
-<div class="folderlisting-main-table" tal:define="
+<div class="folderlisting-main-table bika-listing-table" tal:define="
 	global rowspan python:{};
 	global rowspan_max python:{};
 	global colspan python:1;
@@ -21,29 +21,6 @@ If we're going to set rowspan for a column, then rowspan must be applied to the
 column for all items, even if it's rowspan=1. The same applies for colspans.
 </tal:comment>
 
-<tal:comment replace="nothing">***************
-Workflow review state selector
-********************************</tal:comment>
-	<div class="review_state_selector"
-		tal:condition="python:len(view.review_states) > 1">
-	<tal:review_states
-		repeat="state view/review_states">
-		<input class="review_state_filter"
-			type="radio"
-			name="review_state"
-			onclick="this.form.submit()"
-			tal:define="state_id state/id"
-			tal:attributes="
-				value state_id;
-				id state/id;
-				checked python:request.get('review_state', 'all') == state_id
-				               and 'checked' or None"/>
-		<label tal:attributes="for state/id;"
-		       tal:content="state/title"
-			   i18n:translate=""/>
-	</tal:review_states>
-	</div>
-
 <p class="discreet"
 	tal:condition="not: view/batch"
 		i18n:translate="description_no_visible_items_add_paste">
@@ -57,7 +34,6 @@ Workflow review state selector
 <span tal:replace="structure context/@@authenticator/authenticator"/>
 
 <table class="listing"
-	tal:condition="view/items"
 	id="listing-table"
 	summary="Content listing"
 	i18n:attributes="summary summary_content_listing;"
@@ -70,6 +46,32 @@ Workflow review state selector
 		column_list python:review_state['columns']">
 
 	<thead>
+
+<tal:comment replace="nothing">***************
+Workflow review state selector
+********************************</tal:comment>
+	<tr style="border:none;"
+		tal:condition="python:len(view.review_states) > 1">
+	<td tal:attributes="colspan nr_cols"
+		style='padding:0;margin:0;border:0;'>
+		<table cellpadding="0" cellspacing="0" class="review_state_selector">
+		<tr style="border:medium none !important;"><td class="review_state_td">
+			<tal:review_states repeat="state view/review_states">
+				<a
+					tal:define="state_id state/id"
+					tal:attributes="
+						href view/view_url;
+						value state_id;
+						id state/id;
+						class python:request.get('review_state', 'all') == state_id
+									   and 'selected' or ''"
+					tal:content="state/title"/>
+			</tal:review_states>
+		</td>
+		</tr>
+		</table>
+	</td>
+	</tr>
 
 <tal:comment replace="nothing">***************
 Item multi-select links in this row
@@ -168,7 +170,9 @@ Filters
 
 	</thead>
 
-	<tbody>
+	<tbody
+		tal:condition="view/items">
+
 <tal:comment replace="nothing">*************** TR
 Table data rows start here
 ********************************</tal:comment>

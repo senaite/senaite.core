@@ -35,3 +35,13 @@
     font-weight:bold;
 	border:1px solid #CCCCCC;
 }
+
+.expanded span {
+  display:inline;
+}
+.collapsed span {
+  display:none;
+}
+.initial span {
+  display:none;
+}

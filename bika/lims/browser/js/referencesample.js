@@ -15,14 +15,13 @@ $(document).ready(function(){
 	$('#ReferenceDefinition\\:list').change(function(){
 		ref_def_uid = $(this).val();
 
+		// clear out tbody
+		$('tbody.analysisservices').empty();
+		// set initial so manual expansion fires
+		$('tr[class~="expanded"]').removeClass("expanded").addClass("initial");
+
 		if (ref_def_uid == '') {
 			// No reference definition selected; reset widget.
-			$('tbody.analysisservices').empty();
-			$($('tr[class~="expanded"]').children()[1]).empty()
-			$($('tr[class~="expanded"]').children()[2]).empty()
-			$($('tr[class~="expanded"]').children()[3]).empty()
-			$($('tr[class~="expanded"]').children()[4]).empty()
-			$('tr[class~="expanded"]').removeClass("expanded").addClass("initial");
 			return;
 		}
 

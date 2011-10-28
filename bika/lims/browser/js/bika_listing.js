@@ -11,12 +11,17 @@ $(document).ready(function(){
 			success: function(){
 				$("#spinner").toggle(false);
 				$('#filter_input_keypress').remove();
-				$('#review_state_clicked').remove();
 				$('#workflow_action_submitted').remove();
 			}
 		}
 		form.ajaxSubmit(options);
 	}
+
+	// review_state_selector clicks
+	$(".review_state_selector a").click(function(){
+		window.location.href = window.location.href.split("?")[0] + $.query.set("review_state", $(this).attr('value'));
+		return false;
+	});
 
 	$("#select_all").live('click', function(){
 		checked = $(this).attr("checked");

@@ -25,13 +25,6 @@
       handler="bika.lims.subscribers.analysis.ActionSucceededEventHandler"
     />
 
-    <!-- Newly created Reference Analyses -->
-    <subscriber
-      for="bika.lims.interfaces.IReferenceAnalysis
-           Products.Archetypes.interfaces.IObjectInitializedEvent"
-      handler="bika.lims.subscribers.referenceanalysis.ObjectInitializedEventHandler"
-    />
-
     <!-- Workflow action event for Reference Analysis objects -->
     <subscriber
       for="bika.lims.interfaces.IReferenceAnalysis

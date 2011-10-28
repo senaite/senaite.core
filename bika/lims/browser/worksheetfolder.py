@@ -266,12 +266,23 @@ class WorksheetFolderListingView(BikaListingView):
             new_items.append(items[x])
         return new_items
 
+    def getWorksheetTemplates(self):
+        """ Return Worksheet Template IDs for add worksheet dropdown in
+            worksheetfolder listing """
+        pc = getToolByName(self.context, "portal_catalog")
+        templates = []
+        for t in pc(portal_type = "WorksheetTemplate",
+                    sort_on = 'sortable_title',
+                    inactive_state='active'):
+            templates.append({'uid': t.UID, 'title':t.Title})
+        return templates
+
 class AddWorksheetView(BrowserView):
     """ Handler for the "Add Worksheet" button in Worksheet Folder.
         If a template was selected, the worksheet is pre-populated here.
     """
 
-    def __call__(self):
+    def __call__(self, wstemplate=None):
         form = self.request.form
         rc = getToolByName(self.context, "reference_catalog")
         pc = getToolByName(self.context, "portal_catalog")
@@ -292,12 +303,12 @@ class AddWorksheetView(BrowserView):
         self.request['context_uid'] = ws.UID()
 
         # if no template was specified, redirect to blank worksheet
-        if not form.has_key('wstemplate') or not form['wstemplate']:
+        if not wstemplate:
             ws.processForm()
             self.request.RESPONSE.redirect(ws.absolute_url() + "/add_analyses")
             return
 
-        wst = rc.lookupObject(form['wstemplate'])
+        wst = rc.lookupObject(wstemplate)
         ws.setWorksheetTemplate(wst)
         ws.applyWorksheetTemplate(wst)
 
@@ -306,3 +317,4 @@ class AddWorksheetView(BrowserView):
         else:
             self.context.plone_utils.addPortalMessage(_("No analyses were added to this worksheet."))
             self.request.RESPONSE.redirect(ws.absolute_url() + "/add_analyses")
+

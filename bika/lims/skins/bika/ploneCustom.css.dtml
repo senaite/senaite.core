@@ -6,18 +6,14 @@
  * Remove boring whitespace in sunburst
  */
 
-@font-face {
-    font-family: 'free3of9';
-    src: url('++resource++bika.lims.css/fonts/free3of9.eot');
-    src: url('++resource++bika.lims.css/fonts/free3of9.eot?#iefix') format('embedded-opentype'),
-         url('++resource++bika.lims.css/fonts/free3of9.woff') format('woff'),
-         url('++resource++bika.lims.css/fonts/free3of9.ttf') format('truetype'),
-         url('++resource++bika.lims.css/fonts/free3of9.svg#free3of9') format('svg');
-    font-weight: normal;
-    font-style: normal;
+html body{
+    font: 100% "Lucida Grande",Verdana,Lucida,Helvetica,Arial,sans-serif;
+
 }
 
-
+table {
+    font-size: 100%;
+}
 #portal-breadcrumbs{
     margin-bottom: .3em;
 }
@@ -45,7 +41,9 @@
 dl.portalMessage {
     margin-top:0;
 }
+
 dl.portlet ul.navTreeLevel0 > .navTreeItem {
+    border-bottom: 0.1em dotted #EEEEEE;
     padding: 0.25em 0.25em;
 }
 dl.portlet ul.navTreeLevel1 .navTreeItem {
@@ -73,6 +71,14 @@ table.invisible td, table.invisible th, table.plain td, table.plain th, table.li
 }
 dl.portlet ul.navTreeLevel0 > .navTreeItem {
 	line-height: 1.5em;
+}
+#content a:hover, dl.portlet a {
+  color: &dtml-linkColor; !important;
+  text-decoration:none;
+}
+#content a:hover, dl.portlet a:hover {
+  color: &dtml-linkColor; !important;
+  text-decoration:none;
 }
 #content-core {
   margin-top:.5em !important;
@@ -167,28 +173,98 @@ a.state-visible  {
 
 #listing-table td {
 	vertical-align:middle;
-	white-space:nowrap;
+}
+.bika-listing-table {
+    font-size: 100%;
+}
+table.listing {
+  border-left:0;
+}
+table.listing tr {
+  border-left: 1px solid #dddddd;
 }
 
-td.Services,
-td.Description,
-td.SampleTypes,
-td.QC {
-  white-space:normal !important;
+
+.template-analysisrequests .bika-listing-table {
+    font-size: 90% !important;
+}
+
+a .navTreeCurrentNode .navTreeFolderish {
+  border-radius: .25em;
+  background: #eee;
+  border:1px solid #ddd !important;
+  padding:2px 5px 2px 5px !important;
+}
+a .navTreeCurrentItem {
+  border-radius: .25em;
+  background: #eee;
+  padding:2px 5px 2px 5px !important;
+}
+
+td .Result,
+td .getRequestID,
+td .Title {
+  white-space:nowrap !important;
+}
+
+.getRequestID {
+  white-space:nowrap !important;
 }
 
 .documentActions{
   float:right;
 }
 
-.review_state_filter {
-	position:relative;top:.2em;
+.content_add_link {
+    margin-right: .5em;
+    font-size: 50%;
+    border:0 !important;
+    vertical-align: middle !important;
+	font-weight:normal;
+	letter-spacing: 0;
+}
+
+.review_state_td {
+	background-color:#fff !important;
+	border-right:0 !important;
+	border-left:0 !important;
+	padding:0px 0px 0px 0px !important;
 }
 .review_state_selector {
-  padding-bottom:0.5em;
+  margin:0 0 .5em 0 !important;
+  background: #fff;
+  padding:5px 2px 5px 2px !important;
 }
-.review_state_selector label{
-  padding-right:2px;
+
+.review_state_selector a{
+  border-radius: .25em;
+  background: #fff;
+  text-decoration:none;
+  font-weight:normal;
+  padding:2px 5px 2px 5px !important;
+}
+
+.review_state_selector a:hover{
+  border-radius: .25em;
+  background: #eee;
+  text-decoration:none;
+  font-weight:normal;
+  padding:2px 5px 2px 5px !important;
+}
+
+.review_state_selector .selected{
+  border-radius: .25em;
+  background: #eee;
+  border:1px solid #ddd !important;
+  font-weight:bold;
+  padding:2px 5px 2px 5px !important;
+}
+.review_state_selector .selected:hover{
+  border-radius: .25em;
+  background: #eee;
+  border:1px solid #ddd !important;
+  font-weight:bold;
+  padding:2px 5px 2px 5px !important;
 }
 
 dt.attachments {
@@ -476,7 +552,9 @@ input.cb {
 fieldset {
 	padding:.5em;
 }
-
+select {
+    vertical-align: middle !important;
+}
 
 
 /*

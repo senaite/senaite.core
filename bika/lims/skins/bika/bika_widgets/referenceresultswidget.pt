@@ -21,7 +21,7 @@
 	<input type="hidden" id="selected_services" tal:attributes="
 		value python:widget.dumps(selected_services);"/>
 	<table class="listing nosort">
-		<tal:repeat 
+		<tal:repeat
             tal:define="
                 cat_keys python:all_services.keys();
                 dummy python:cat_keys.sort(lambda x, y: cmp(x.split('_')[1], y.split('_')[1]))"
@@ -36,13 +36,15 @@
 						name cat_uid;
 						key cat_key;">
 						<th class="title" tal:content="python:cat_title"/>
-						<th><span tal:attributes="id string:result_hdr_${cat_uid}"/></th>
-						<th><span tal:attributes="id string:error_hdr_${cat_uid}"/></th>
-						<th><span tal:attributes="id string:min_hdr_${cat_uid}"/></th>
-						<th><span tal:attributes="id string:max_hdr_${cat_uid}"/></th>
+						<th><span i18n:translate='Result'>Result</span></th>
+						<th><span i18n:translate='ErrorPercentage'>Error %</span></th>
+						<th><span i18n:translate='Min'>Min</span></th>
+						<th><span i18n:translate='Max'>Max</span></th>
 					</tr>
 				</thead>
-			<tbody tal:attributes="id python:cat_uid" class="analysisservices"/>
+			<tbody
+				tal:attributes="id python:cat_uid"
+				class="analysisservices"/>
 			</tal:define>
 		</tal:repeat>
 	</table>

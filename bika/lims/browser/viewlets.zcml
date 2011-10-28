@@ -9,7 +9,7 @@
         for="Products.CMFPlone.interfaces.IPloneSiteRoot"
         name="plone.path_bar"
         manager="plone.app.layout.viewlets.interfaces.IAboveContent"
-        template="blank.pt"
+        template="templates/blank.pt"
         permission="zope2.View"
         layer="bika.lims.interfaces.IBikaLIMS"
         />
@@ -19,7 +19,7 @@
         for="bika.lims.interfaces.IHaveNoBreadCrumbs"
         name="plone.path_bar"
         manager="plone.app.layout.viewlets.interfaces.IAboveContent"
-        template="blank.pt"
+        template="templates/blank.pt"
         permission="zope2.View"
         layer="bika.lims.interfaces.IBikaLIMS"
         />
@@ -29,7 +29,7 @@
         for="*"
         name="plone.belowcontenttitle.documentbyline"
         manager="plone.app.layout.viewlets.interfaces.IBelowContentTitle"
-        template="blank.pt"
+        template="templates/blank.pt"
         permission="zope2.View"
         layer="bika.lims.interfaces.IBikaLIMS"
         />
@@ -38,21 +38,21 @@
     <browser:viewlet
         name="plone.abovecontenttitle.documentactions"
         manager="plone.app.layout.viewlets.interfaces.IBelowContentBody"
-        template="blank.pt"
+        template="templates/blank.pt"
         permission="zope2.View"
         layer="bika.lims.interfaces.IBikaLIMS"
     />
     <browser:viewlet
         name="plone.abovecontenttitle.documentactions"
         manager="plone.app.layout.viewlets.interfaces.IAboveContentTitle"
-        class=".document_actions.DocumentActionsViewlet"
+        class=".viewlets.DocumentActionsViewlet"
         permission="zope2.View"
         layer="bika.lims.interfaces.IBikaLIMS"
     />
     <browser:viewlet
         name="plone.footer"
         manager="plone.app.layout.viewlets.interfaces.IPortalFooter"
-        template="footer.pt"
+        template="templates/footer.pt"
         for="*"
         layer="bika.lims.interfaces.IBikaLIMS"
         permission="zope2.View"
@@ -60,7 +60,7 @@
     <browser:viewlet
         name="plone.colophon"
         manager="plone.app.layout.viewlets.interfaces.IPortalFooter"
-        template="colophon.pt"
+        template="templates/colophon.pt"
         for="*"
         layer="bika.lims.interfaces.IBikaLIMS"
         permission="zope2.View"

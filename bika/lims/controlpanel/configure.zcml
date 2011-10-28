@@ -148,12 +148,4 @@
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
-    <browser:page
-      for="*"
-      name="getWorksheetTemplates"
-      class=".bika_worksheettemplates.ajaxGetWorksheetTemplates"
-      permission="zope.Public"
-      layer="bika.lims.interfaces.IBikaLIMS"
-    />
-
 </configure>

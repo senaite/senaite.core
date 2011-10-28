@@ -13,7 +13,7 @@ from zope.component import getMultiAdapter
 class DocumentActionsViewlet(ViewletBase):
     """Overload the default to print pretty icons """
 
-    index = ViewPageTemplateFile("document_actions.pt")
+    index = ViewPageTemplateFile("templates/document_actions.pt")
 
     def render(self):
         self.actions = []

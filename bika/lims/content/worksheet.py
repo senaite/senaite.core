@@ -144,18 +144,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
                     highest_existing_position = pos
             position = highest_existing_position + 1
 
-        # find out which services already have analyses in this slot
-        slot_analyses = [slot['analysis_uid'] for slot in layout if \
-                                    slot['container_uid'] == ref_uid]
-        existing_services_in_pos = []
-        if [slot['container_uid'] for slot in layout if slot['container_uid'] == reference.UID()]:
-            for analysis in analyses:
-                if analysis.aq_parent.UID() == reference.UID():
-                    existing_services_in_pos.append(analysis.getService().UID())
-
         for service_uid in service_uids:
-            if service_uid in existing_services_in_pos:
-                continue
             # services with dependents don't belong in references
             service = rc.lookupObject(service_uid)
             calc = service.getCalculation()
@@ -368,64 +357,6 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         func(self, REQUEST, RESPONSE)
         return
 
-    security.declarePublic('getPosAnalyses')
-    def getPosAnalyses(self, pos):
-        """ return the analyses in a particular position
-        """
-        try:
-            this_pos = int(pos)
-        except:
-            return []
-        rc = getToolByName(self, REFERENCE_CATALOG)
-        analyses = []
-        for item in self.getLayout():
-            if item['pos'] == this_pos:
-                analysis = rc.lookupObject(item['uid'])
-                analyses.append(analysis)
-        return analyses
-
-    security.declarePublic('searchAnalyses')
-    def searchAnalyses(self, REQUEST, RESPONSE):
-        """ return search form - analyses action stays active because we
-            set 'template_id'
-        """
-        return self.worksheet_search_analysis(
-            REQUEST = REQUEST, RESPONSE = RESPONSE,
-            template_id = 'manage_results')
-
-    security.declareProtected(AddAndRemoveAnalyses, 'assignNumberedAnalyses')
-    def assignNumberedAnalyses(self, analyses):
-        """ assign selected analyses to worksheet
-            Analyses = [(pos, uid),]
-        """
-        for pos_uid in analyses:
-            pos = pos_uid[0]
-            uid = pos_uid[1]
-            self._assignAnalyses([uid, ])
-            self._addToSequence('a', pos, [uid, ])
-
-        message = self.translate('message_analyses_assigned', default = 'Analyses assigned', domain = 'bika')
-        utils = getToolByName(self, 'plone_utils')
-        utils.addPortalMessage(message, type = u'info')
-
-    security.declareProtected(AddAndRemoveAnalyses, 'assignUnnumberedAnalyses')
-    def assignUnnumberedAnalyses(self, REQUEST = None, RESPONSE = None, Analyses = []):
-        """ assign selected analyses to worksheet
-            Analyses = [uid,]
-        """
-        analysis_seq = []
-        if Analyses:
-            self._assignAnalyses(Analyses)
-            for analysis in Analyses:
-                analysis_seq.append(analysis)
-            self._addToSequence('a', 0, analysis_seq)
-
-            message = self.translate('message_analyses_assigned', default = 'Analyses assigned', domain = 'bika')
-            utils = getToolByName(self, 'plone_utils')
-            utils.addPortalMessage(message, type = u'info')
-        if REQUEST:
-            RESPONSE.redirect('%s/manage_results' % self.absolute_url())
-
     def addWSAttachment(self, REQUEST = None, RESPONSE = None):
         """ Add the file as an attachment
         """
@@ -485,93 +416,6 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
 
         if RESPONSE:
             RESPONSE.redirect('%s/manage_results' % self.absolute_url())
-
-    def getAllAnalyses(self, contentFilter = None):
-        """ get all the analyses of different types linked to this WS
-            contentFilter is supplied by BikaListingView, and ignored.
-        """
-
-        analyses = []
-        for analysis in self.getAnalyses():
-            analyses.append(analysis)
-
-        for analysis in self.getReferenceAnalyses():
-            analyses.append(analysis)
-
-        for analysis in self.objectValues('DuplicateAnalysis'):
-            analyses.append(analysis)
-
-        return analyses
-
-    security.declarePublic('getReferencePositions')
-    def getReferencePositions(self, type, reference_uid):
-        """ get the current reference positions and analyses
-        """
-
-        seq = {}
-        positions = {}
-
-        for item in self.getLayout():
-            seq[item['uid']] = item['pos']
-        services = ''
-        for analysis in self.getReferenceAnalyses():
-            if (analysis.getReferenceType() == type) & \
-               (analysis.getReferenceSampleUID() == reference_uid):
-                pos = seq[analysis.UID()]
-                if not positions.has_key(pos):
-                    positions[pos] = {}
-                    services = analysis.getServiceUID()
-                else:
-                    services = services + ';' + analysis.getServiceUID()
-                positions[pos] = services
-
-
-        return positions
-
-    security.declarePublic('getARServices')
-    def getARServices(self, ar_id):
-        """ get the current AR services
-        """
-        dup_pos = 0
-
-        seq = {}
-        for item in self.getLayout():
-            seq[item['uid']] = item['pos']
-
-        services = []
-        for analysis in self.getAnalyses():
-            if (analysis.getRequestID() == ar_id):
-                services.append(analysis.getService())
-
-        duplicates = []
-        for dup in self.objectValues('DuplicateAnalysis'):
-            if (dup.getRequest().getRequestID() == ar_id):
-                dup_pos = seq[dup.UID()]
-                duplicates.append(dup.getServiceUID())
-
-        results = {'services': services,
-                   'dup_uids': duplicates,
-                   'pos': dup_pos
-                   }
-
-        return results
-
-    security.declarePublic('getAnalysisRequests')
-    def getAnalysisRequests(self):
-        """ get the ars associated with this worksheet
-        """
-        ars = {}
-
-        for analysis in self.getAnalyses():
-            if not ars.has_key(analysis.getRequestID()):
-                ars[analysis.getRequestID()] = analysis.aq_parent
-
-        ar_ids = ars.keys()
-        ar_ids.sort()
-        results = []
-        for ar_id in ar_ids:
-            results.append(ars[ar_id])
-        return results
 
     security.declarePublic('getWorksheetServices')
     def getWorksheetServices(self):
@@ -634,70 +478,6 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
 
         self.setLayout(new_seq)
         RESPONSE.redirect('%s/manage_results' % self.absolute_url())
-
-    def _addToSequence(self, type, position, analyses):
-        """ Layout is [{'uid': , 'type': , 'pos', 'key'},] """
-        """ analyses [uids,]       """
-        ws_seq = self.getLayout()
-        rc = getToolByName(self, REFERENCE_CATALOG)
-
-        if position == 0:
-            used_pos = []
-            key_dict = {}
-            for seq in ws_seq:
-                used_pos.append(seq['pos'])
-                key_dict[seq['key']] = seq['pos']
-
-            used_pos.sort()
-            first_available = 1
-
-        for analysis in analyses:
-            if type == 'a':
-                analysis_obj = rc.lookupObject(analysis)
-                keyvalue = analysis_obj.getRequestID()
-            else:
-                keyvalue = ''
-            if position == 0:
-                new_pos = None
-                if type == 'a':
-                    if key_dict.has_key(keyvalue):
-                        new_pos = key_dict[keyvalue]
-                if not new_pos:
-                    empty_found = False
-                    new_pos = first_available
-                    while not empty_found:
-                        if new_pos in used_pos:
-                            new_pos = new_pos + 1
-                        else:
-                            empty_found = True
-                            first_available = new_pos + 1
-                    used_pos.append(new_pos)
-                    used_pos.sort()
-                    if type == 'a':
-                        key_dict[keyvalue] = new_pos
-                    else:
-                        position = new_pos
-            else:
-                new_pos = position
-
-            element = {'uid': analysis,
-                       'type': type,
-                       'pos': new_pos,
-                       'key': keyvalue}
-            ws_seq.append(element)
-
-        self.setLayout(ws_seq)
-
-    def _removeFromSequence(self, analyses):
-        """ analyses is [analysis.UID] """
-        ws_seq = self.getLayout()
-
-        new_seq = []
-        for pos in ws_seq:
-            if pos['uid'] not in analyses:
-                new_seq.append(pos)
-
-        self.setLayout(new_seq)
 
     security.declarePublic('current_date')
     def current_date(self):

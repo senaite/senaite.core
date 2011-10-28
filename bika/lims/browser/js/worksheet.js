@@ -10,23 +10,10 @@ $(document).ready(function(){
 		$(str).appendTo('#viewlet-above-content');
 	}
 
-	// add Worksheet Templates dropdown menu
-	if($("input[name='add_Worksheet']").length == 1){
-		$.ajax({
-			url: window.location.href + "/getWorksheetTemplates",
-			type: 'POST',
-			data: {'_authenticator': $('input[name="_authenticator"]').val()},
-			dataType: "json",
-			success: function(data,textStatus,$XHR){
-				html = "&nbsp;&nbsp;From template:&nbsp;<select name='wstemplate'><option value=''>None</option>";
-				for(i=0; i< data.length; i++){
-					html = html + "<option value='"+data[i][0]+"'>"+data[i][1]+"</option>";
-				}
-				html = html + "</select>";
-				$('input[name="add_Worksheet"]').after(html);
-			}
-		});
-	}
+	// selecting a template changes the Add Worksheet href
+	$(".wstemplate").change(function(){
+		$(".worksheet_add").attr("href", $(".worksheet_add").attr("href").split("?")[0] + $.query.set("wstemplate",$(this).val()));
+	});
 
 	// search form - selecting a category fills up the service selector
 	$("#CategorySelector").live("change", function(){

@@ -71,23 +71,3 @@ class WorksheetTemplates(ATFolder):
 
 schemata.finalizeATCTSchema(schema, folderish = True, moveDiscussion = False)
 atapi.registerType(WorksheetTemplates, PROJECTNAME)
-
-
-class ajaxGetWorksheetTemplates():
-    """ Return Worksheet Template IDs for add worksheet dropdown in
-        worksheetfolder listing """
-
-    def __init__(self, context, request):
-        self.context = context
-        self.request = request
-
-    def __call__(self):
-        plone.protect.CheckAuthenticator(self.request)
-        plone.protect.PostOnly(self.request)
-        pc = getToolByName(self.context, "portal_catalog",)
-        templates = []
-        for t in pc(portal_type = "WorksheetTemplate",
-                    sort_on = 'sortable_title',
-                    inactive_state='active'):
-            templates.append((t.UID, t.Title))
-        return json.dumps(templates)
