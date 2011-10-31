@@ -21,55 +21,55 @@
     <!-- Workflow action event for Analysis objects -->
     <subscriber
       for="bika.lims.interfaces.IAnalysis
-           Products.CMFCore.interfaces.IActionSucceededEvent"
-      handler="bika.lims.subscribers.analysis.ActionSucceededEventHandler"
+           Products.DCWorkflow.interfaces.IAfterTransitionEvent"
+      handler="bika.lims.subscribers.analysis.AfterTransitionEventHandler"
     />
 
     <!-- Workflow action event for Reference Analysis objects -->
     <subscriber
       for="bika.lims.interfaces.IReferenceAnalysis
-           Products.CMFCore.interfaces.IActionSucceededEvent"
-      handler="bika.lims.subscribers.referenceanalysis.ActionSucceededEventHandler"
+           Products.DCWorkflow.interfaces.IAfterTransitionEvent"
+      handler="bika.lims.subscribers.referenceanalysis.AfterTransitionEventHandler"
     />
 
     <!-- Workflow action event for AnalysisRequest objects -->
     <subscriber
       for="bika.lims.interfaces.IAnalysisRequest
-           Products.CMFCore.interfaces.IActionSucceededEvent"
-      handler="bika.lims.subscribers.analysisrequest.ActionSucceededEventHandler"
+           Products.DCWorkflow.interfaces.IAfterTransitionEvent"
+      handler="bika.lims.subscribers.analysisrequest.AfterTransitionEventHandler"
     />
 
     <!-- Workflow action event for Worksheet objects -->
     <subscriber
       for="bika.lims.interfaces.IWorksheet
-           Products.CMFCore.interfaces.IActionSucceededEvent"
-      handler="bika.lims.subscribers.worksheet.ActionSucceededEventHandler"
+           Products.DCWorkflow.interfaces.IAfterTransitionEvent"
+      handler="bika.lims.subscribers.worksheet.AfterTransitionEventHandler"
     />
 
     <!-- Workflow action event for Sample objects -->
     <subscriber
       for="bika.lims.interfaces.ISample
-           Products.CMFCore.interfaces.IActionSucceededEvent"
-      handler="bika.lims.subscribers.sample.ActionSucceededEventHandler"
+           Products.DCWorkflow.interfaces.IAfterTransitionEvent"
+      handler="bika.lims.subscribers.sample.AfterTransitionEventHandler"
     />
 
     <!-- Workflow action to prevent deactivation of AnalysisCategory objects -->
     <subscriber
       for="bika.lims.interfaces.IAnalysisCategory
-           Products.CMFCore.interfaces.IActionSucceededEvent"
-      handler="bika.lims.subscribers.analysiscategory.ActionSucceededEventHandler"
+           Products.DCWorkflow.interfaces.IAfterTransitionEvent"
+      handler="bika.lims.subscribers.analysiscategory.AfterTransitionEventHandler"
     />
     <!-- Workflow action to prevent deactivation of AnalysisService objects -->
     <subscriber
       for="bika.lims.interfaces.IAnalysisService
-           Products.CMFCore.interfaces.IActionSucceededEvent"
-      handler="bika.lims.subscribers.analysisservice.ActionSucceededEventHandler"
+           Products.DCWorkflow.interfaces.IAfterTransitionEvent"
+      handler="bika.lims.subscribers.analysisservice.AfterTransitionEventHandler"
     />
     <!-- Workflow action to prevent inappropriate re-activation of Calculations -->
     <subscriber
       for="bika.lims.interfaces.ICalculation
-           Products.CMFCore.interfaces.IActionSucceededEvent"
-      handler="bika.lims.subscribers.calculation.ActionSucceededEventHandler"
+           Products.DCWorkflow.interfaces.IAfterTransitionEvent"
+      handler="bika.lims.subscribers.calculation.AfterTransitionEventHandler"
     />
 
     <!-- Automatically save an initial revision of versionable types -->

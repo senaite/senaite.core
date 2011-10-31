@@ -7,7 +7,7 @@ from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
 import transaction
 
-def ActionSucceededEventHandler(analysis, event):
+def AfterTransitionEventHandler(analysis, event):
 
-    if event.action == "verify":
+    if event.transition.id == "verify":
         analysis.setDateVerified(DateTime())

@@ -4,7 +4,7 @@ from Products.CMFCore.utils import getToolByName
 from bika.lims import bikaMessageFactory as _
 import transaction
 
-def ActionSucceededEventHandler(instance, event):
+def AfterTransitionEventHandler(instance, event):
 
     wf = getToolByName(instance, 'portal_workflow')
     pc = getToolByName(instance, 'portal_catalog')
@@ -12,7 +12,7 @@ def ActionSucceededEventHandler(instance, event):
     pu = getToolByName(instance, 'plone_utils')
     ts = getToolByName(instance, 'translation_service')
 
-    if event.action == "activate":
+    if event.transition.id == "activate":
         # A calculation cannot be re-activated if services it depends on
         # are deactivated.
         services = instance.getDependentServices()
@@ -32,7 +32,7 @@ def ActionSucceededEventHandler(instance, event):
             transaction.get().abort()
             raise WorkflowException
 
-    if event.action == "deactivate":
+    if event.transition.id == "deactivate":
         # A calculation cannot be deactivated if active services are using it.
         services = pc(portal_type="AnalysisService", inactive_state="active")
         calc_services = []

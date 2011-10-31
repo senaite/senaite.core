@@ -6,9 +6,9 @@ from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
 import transaction
 
-def ActionSucceededEventHandler(ar, event):
+def AfterTransitionEventHandler(ar, event):
 
-    if event.action == "attach":
+    if event.transition.id == "attach":
         # Need a separate skiplist for this due to double-jumps with 'submit'.
         if not ar.REQUEST.has_key('workflow_attach_skiplist'):
             ar.REQUEST['workflow_attach_skiplist'] = [ar.UID(), ]
@@ -19,7 +19,7 @@ def ActionSucceededEventHandler(ar, event):
             else:
                 ar.REQUEST["workflow_attach_skiplist"].append(ar.UID())
 
-        logger.info("Starting: %s on %s" % (event.action, ar))
+        logger.info("Starting: %s on %s" % (event.transition.id, ar))
 
         ar.reindexObject(idxs = ["review_state", ])
         # Don't cascade. Shouldn't be attaching ARs for now (if ever).
@@ -34,11 +34,11 @@ def ActionSucceededEventHandler(ar, event):
         else:
             ar.REQUEST["workflow_skiplist"].append(ar.UID())
 
-    logger.info("Starting: %s on %s" % (event.action, ar))
+    logger.info("Starting: %s on %s" % (event.transition.id, ar))
 
     wf = getToolByName(ar, 'portal_workflow')
 
-    if event.action == "receive":
+    if event.transition.id == "receive":
         ar.setDateReceived(DateTime())
         ar.reindexObject(idxs = ["review_state", "getDateReceived", ])
 
@@ -53,11 +53,11 @@ def ActionSucceededEventHandler(ar, event):
             if not analysis.UID in ar.REQUEST['workflow_skiplist']:
                 wf.doActionFor(analysis.getObject(), 'receive')
 
-    elif event.action == "submit":
+    elif event.transition.id == "submit":
         ar.reindexObject(idxs = ["review_state", ])
         # Don't cascade. Shouldn't be submitting ARs directly for now.
 
-    elif event.action == "retract":
+    elif event.transition.id == "retract":
         ar.reindexObject(idxs = ["review_state", ])
         if not "retract all analyses" in ar.REQUEST['workflow_skiplist']:
             # retract all analyses in this AR.
@@ -67,7 +67,7 @@ def ActionSucceededEventHandler(ar, event):
                 if not analysis.UID in ar.REQUEST['workflow_skiplist']:
                     wf.doActionFor(analysis.getObject(), 'retract')
 
-    elif event.action == "verify":
+    elif event.transition.id == "verify":
         ar.reindexObject(idxs = ["review_state", ])
         if not "verify all analyses" in ar.REQUEST['workflow_skiplist']:
             # verify all analyses in this AR.
@@ -76,7 +76,7 @@ def ActionSucceededEventHandler(ar, event):
                 if not analysis.UID in ar.REQUEST['workflow_skiplist']:
                     wf.doActionFor(analysis.getObject(), "verify")
 
-    elif event.action == "publish":
+    elif event.transition.id == "publish":
         ar.setDatePublished(DateTime())
         ar.reindexObject(idxs = ["review_state", "getDatePublished", ])
         if not "publish all analyses" in ar.REQUEST['workflow_skiplist']:
@@ -90,7 +90,7 @@ def ActionSucceededEventHandler(ar, event):
     # Secondary workflows:
     #---------------------
 
-    elif event.action == "reinstate":
+    elif event.transition.id == "reinstate":
         ar.reindexObject(idxs = ["cancellation_state", ])
         # activate all analyses in this AR.
         analyses = ar.getAnalyses(cancellation_state = 'cancelled')
@@ -98,7 +98,7 @@ def ActionSucceededEventHandler(ar, event):
             if not analysis.UID in ar.REQUEST['workflow_skiplist']:
                 wf.doActionFor(analysis.getObject(), 'reinstate')
 
-    elif event.action == "cancel":
+    elif event.transition.id == "cancel":
         ar.reindexObject(idxs = ["cancellation_state", ])
         # deactivate all analyses in this AR.
         analyses = ar.getAnalyses(cancellation_state = 'active')

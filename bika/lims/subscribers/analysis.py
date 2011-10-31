@@ -107,9 +107,9 @@ def ObjectRemovedEventHandler(analysis, event):
 
     return
 
-def ActionSucceededEventHandler(analysis, event):
+def AfterTransitionEventHandler(analysis, event):
 
-    if event.action == "attach":
+    if event.transition.id == "attach":
         # Need a separate skiplist for this due to double-jumps with 'submit'.
         if not analysis.REQUEST.has_key('workflow_attach_skiplist'):
             analysis.REQUEST['workflow_attach_skiplist'] = [analysis.UID(), ]
@@ -120,7 +120,7 @@ def ActionSucceededEventHandler(analysis, event):
             else:
                 analysis.REQUEST["workflow_attach_skiplist"].append(analysis.UID())
 
-        logger.info("Starting: %s on %s" % (event.action, analysis.getService().getKeyword()))
+        logger.info("Starting: %s on %s" % (event.transition.id, analysis.getService().getKeyword()))
 
         wf = getToolByName(analysis, 'portal_workflow')
         ar = analysis.aq_parent
@@ -197,12 +197,12 @@ def ActionSucceededEventHandler(analysis, event):
         else:
             analysis.REQUEST["workflow_skiplist"].append(analysis.UID())
 
-    logger.info("Starting: %s on %s" % (event.action, analysis.getService().getKeyword()))
+    logger.info("Starting: %s on %s" % (event.transition.id, analysis.getService().getKeyword()))
 
     wf = getToolByName(analysis, 'portal_workflow')
     ar = analysis.aq_parent
 
-    if event.action == "receive":
+    if event.transition.id == "receive":
         # set the max hours allowed
         service = analysis.getService()
         maxtime = service.getMaxTimeAllowed()
@@ -224,7 +224,7 @@ def ActionSucceededEventHandler(analysis, event):
         analysis.setDueDate(duetime)
         analysis.reindexObject()
 
-    elif event.action == "submit":
+    elif event.transition.id == "submit":
         analysis.reindexObject(idxs = ["review_state", ])
         # Dependencies are submitted already, ignore them.
         #-------------------------------------------------
@@ -295,7 +295,7 @@ def ActionSucceededEventHandler(analysis, event):
         if can_attach:
             wf.doActionFor(analysis, 'attach')
 
-    elif event.action == "retract":
+    elif event.transition.id == "retract":
         analysis.reindexObject(idxs = ["review_state", ])
         # retract our dependencies
         if not "retract all dependencies" in analysis.REQUEST['workflow_skiplist']:
@@ -331,7 +331,7 @@ def ActionSucceededEventHandler(analysis, event):
                         analysis.REQUEST["workflow_skiplist"].append("retract all analyses")
                     wf.doActionFor(ws, 'retract')
 
-    elif event.action == "verify":
+    elif event.transition.id == "verify":
         analysis.reindexObject(idxs = ["review_state", ])
         # fail if we are the same user who submitted this analysis
         mt = getToolByName(analysis, 'portal_membership')
@@ -416,7 +416,7 @@ def ActionSucceededEventHandler(analysis, event):
                         analysis.REQUEST["workflow_skiplist"].append("verify all analyses")
                     wf.doActionFor(ws, "verify")
 
-    elif event.action == "publish":
+    elif event.transition.id == "publish":
         endtime = DateTime()
         analysis.setDateAnalysisPublished(endtime)
         starttime = analysis.aq_parent.getDateReceived()
@@ -441,7 +441,7 @@ def ActionSucceededEventHandler(analysis, event):
     # Secondary workflows:
     #---------------------
 
-    elif event.action == "cancel":
+    elif event.transition.id == "cancel":
         analysis.reindexObject(idxs = ["worksheetanalysis_review_state", ])
         # If it is assigned to a worksheet, unassign it.
         if wf.getInfoFor(analysis, 'worksheetanalysis_review_state') == 'assigned':
@@ -453,7 +453,7 @@ def ActionSucceededEventHandler(analysis, event):
             wf.doActionFor(analysis, 'unassign')
             # Note: subscriber might unassign the AR and/or promote the worksheet
 
-    elif event.action == "assign":
+    elif event.transition.id == "assign":
         analysis.reindexObject(idxs = ["worksheetanalysis_review_state", ])
         rc = getToolByName(analysis, 'reference_catalog')
         wsUID = analysis.REQUEST['context_uid']
@@ -474,7 +474,7 @@ def ActionSucceededEventHandler(analysis, event):
             if not ar.getAnalyses(worksheetanalysis_review_state = 'unassigned'):
                 wf.doActionFor(ar, 'assign')
 
-    elif event.action == "unassign":
+    elif event.transition.id == "unassign":
         analysis.reindexObject(idxs = ["worksheetanalysis_review_state", ])
         rc = getToolByName(analysis, 'reference_catalog')
         wsUID = analysis.REQUEST['context_uid']

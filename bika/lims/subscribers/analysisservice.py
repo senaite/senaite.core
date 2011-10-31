@@ -4,7 +4,7 @@ from Products.CMFCore.utils import getToolByName
 from bika.lims import bikaMessageFactory as _
 import transaction
 
-def ActionSucceededEventHandler(instance, event):
+def AfterTransitionEventHandler(instance, event):
 
     wf = getToolByName(instance, 'portal_workflow')
     pc = getToolByName(instance, 'portal_catalog')

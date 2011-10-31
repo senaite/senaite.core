@@ -3,7 +3,7 @@ from Products.CMFCore.utils import getToolByName
 from Products.CMFCore.WorkflowCore import WorkflowException
 from bika.lims import logger
 
-def ActionSucceededEventHandler(sample, event):
+def AfterTransitionEventHandler(sample, event):
 
     if not sample.REQUEST.has_key('workflow_skiplist'):
         sample.REQUEST['workflow_skiplist'] = [sample.UID(), ]
@@ -14,11 +14,11 @@ def ActionSucceededEventHandler(sample, event):
         else:
             sample.REQUEST["workflow_skiplist"].append(sample.UID())
 
-    logger.info("Starting: %s on %s" % (event.action, sample))
+    logger.info("Starting: %s on %s" % (event.transition.id, sample))
 
     workflow = getToolByName(sample, 'portal_workflow')
 
-    if event.action == "receive":
+    if event.transition.id == "receive":
         if sample.getDateSampled() > DateTime():
             raise WorkflowException
         sample.setDateReceived(DateTime())
@@ -29,7 +29,7 @@ def ActionSucceededEventHandler(sample, event):
             if not ar.UID() in sample.REQUEST['workflow_skiplist']:
                 workflow.doActionFor(ar, "receive")
 
-    elif event.action == "expire":
+    elif event.transition.id == "expire":
         sample.setDateExpired(DateTime())
         sample.reindexObject(idxs = ["review_state", "getDateExpired", ])
 
@@ -37,7 +37,7 @@ def ActionSucceededEventHandler(sample, event):
     # Secondary workflows:
     #---------------------
 
-    elif event.action == "reinstate":
+    elif event.transition.id == "reinstate":
         sample.reindexObject(idxs = ["cancellation_state", ])
         # reinstate all ARs for this sample.
         ars = sample.getAnalysisRequests()
@@ -47,7 +47,7 @@ def ActionSucceededEventHandler(sample, event):
                 if ar_state == 'cancelled':
                     workflow.doActionFor(ar, 'reinstate')
 
-    elif event.action == "cancel":
+    elif event.transition.id == "cancel":
         sample.reindexObject(idxs = ["cancellation_state", ])
         # cancel all ARs for this sample.
         ars = sample.getAnalysisRequests()

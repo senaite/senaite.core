@@ -6,9 +6,9 @@ from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
 import transaction
 
-def ActionSucceededEventHandler(ws, event):
+def AfterTransitionEventHandler(ws, event):
 
-    if event.action == "attach":
+    if event.transition.id == "attach":
         # Need a separate skiplist for this due to double-jumps with 'submit'.
         if not ws.REQUEST.has_key('workflow_attach_skiplist'):
             ws.REQUEST['workflow_attach_skiplist'] = [ws.UID(), ]
@@ -19,7 +19,7 @@ def ActionSucceededEventHandler(ws, event):
             else:
                 ws.REQUEST["workflow_attach_skiplist"].append(ws.UID())
 
-        logger.info("Starting: %s on %s" % (event.action, ws))
+        logger.info("Starting: %s on %s" % (event.transition.id, ws))
 
         ws.reindexObject(idxs = ["review_state", ])
         # Don't cascade. Shouldn't be attaching WSs for now (if ever).
@@ -34,11 +34,11 @@ def ActionSucceededEventHandler(ws, event):
         else:
             ws.REQUEST["workflow_skiplist"].append(ws.UID())
 
-    logger.info("Starting: %s on %s" % (event.action, ws))
+    logger.info("Starting: %s on %s" % (event.transition.id, ws))
 
     wf = getToolByName(ws, 'portal_workflow')
 
-    if event.action == "submit":
+    if event.transition.id == "submit":
         # Don't cascade. Shouldn't be submitting WSs directly for now,
         # except edge cases where all analyses are already submitted,
         # but WS was held back until an analyst was assigned.
@@ -53,7 +53,7 @@ def ActionSucceededEventHandler(ws, event):
         if can_attach:
             wf.doActionFor(ws, 'attach')
 
-    elif event.action == "retract":
+    elif event.transition.id == "retract":
         ws.reindexObject(idxs = ["review_state", ])
         if not "retract all analyses" in ws.REQUEST['workflow_skiplist']:
             # retract all analyses in this WS.
@@ -66,7 +66,7 @@ def ActionSucceededEventHandler(ws, event):
                 if not analysis.UID in ws.REQUEST['workflow_skiplist']:
                     wf.doActionFor(analysis, 'retract')
 
-    elif event.action == "verify":
+    elif event.transition.id == "verify":
         ws.reindexObject(idxs = ["review_state", ])
         if not "verify all analyses" in ws.REQUEST['workflow_skiplist']:
             # verify all analyses in this WS.
