@@ -23,7 +23,7 @@
 		<span class="content_add_link"
 			tal:condition="python:add_item == 'Worksheet'">
 				<select class='wstemplate'>
-					<option value='' i18n:translate="">Or select template</option>
+					<option value='' i18n:translate="">Select template</option>
 					<tal:options repeat="option view/getWorksheetTemplates">
 						<option
 							tal:attributes="value python:option['uid']"
