@@ -109,6 +109,10 @@ def ObjectRemovedEventHandler(analysis, event):
 
 def AfterTransitionEventHandler(analysis, event):
 
+    # creation doesn't have a 'transition'
+    if not event.transition:
+        return
+
     if event.transition.id == "attach":
         # Need a separate skiplist for this due to double-jumps with 'submit'.
         if not analysis.REQUEST.has_key('workflow_attach_skiplist'):

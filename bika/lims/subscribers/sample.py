@@ -5,6 +5,10 @@ from bika.lims import logger
 
 def AfterTransitionEventHandler(sample, event):
 
+    # creation doesn't have a 'transition'
+    if not event.transition:
+        return
+
     if not sample.REQUEST.has_key('workflow_skiplist'):
         sample.REQUEST['workflow_skiplist'] = [sample.UID(), ]
     else:

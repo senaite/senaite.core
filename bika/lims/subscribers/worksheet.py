@@ -8,6 +8,10 @@ import transaction
 
 def AfterTransitionEventHandler(ws, event):
 
+    # creation doesn't have a 'transition'
+    if not event.transition:
+        return
+
     if event.transition.id == "attach":
         # Need a separate skiplist for this due to double-jumps with 'submit'.
         if not ws.REQUEST.has_key('workflow_attach_skiplist'):

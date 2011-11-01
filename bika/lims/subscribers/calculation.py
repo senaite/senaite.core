@@ -6,6 +6,10 @@ import transaction
 
 def AfterTransitionEventHandler(instance, event):
 
+    # creation doesn't have a 'transition'
+    if not event.transition:
+        return
+
     wf = getToolByName(instance, 'portal_workflow')
     pc = getToolByName(instance, 'portal_catalog')
     rc = getToolByName(instance, 'reference_catalog')

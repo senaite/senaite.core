@@ -9,5 +9,9 @@ import transaction
 
 def AfterTransitionEventHandler(analysis, event):
 
+    # creation doesn't have a 'transition'
+    if not event.transition:
+        return
+
     if event.transition.id == "verify":
         analysis.setDateVerified(DateTime())

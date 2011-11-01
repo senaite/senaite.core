@@ -11,6 +11,10 @@ def AfterTransitionEventHandler(category, event):
     rc = getToolByName(category, 'reference_catalog')
     pu = getToolByName(category, 'plone_utils')
 
+    # creation doesn't have a 'transition'
+    if not event.transition:
+        return
+
     if event.transition.id == "deactivate":
         # A category cannot be deactivated if it contains services
         ars = pc(portal_type='AnalysisService', getCategoryUID = category.UID())

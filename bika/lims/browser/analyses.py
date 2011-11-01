@@ -55,6 +55,7 @@ class AnalysesView(BikaListingView):
              'columns':['Service',
                         'Result',
                         'Uncertainty',
+                        'DueDate',
                         'state_title',
                         'Attachments'],
              },
@@ -231,13 +232,13 @@ class AnalysesView(BikaListingView):
                    items[i]['DueDate'] < DateTime():
                     DueDate = TimeOrDate(self.context, item['DueDate'], long_format = 1)
                     if self.context.portal_type == 'AnalysisRequest':
-                        items[i]['after']['DueDate'] = '<img width="16" height="16" src="%s/++resource++bika.lims.images/late.png" title="%s"/>' % \
-                            (portal.absolute_url(), _("Due Date: ") + DueDate)
+                        items[i]['replace']['DueDate'] = '%s <img width="16" height="16" src="%s/++resource++bika.lims.images/late.png" title="%s"/>' % \
+                            (DueDate, portal.absolute_url(), _("Due Date: ") + DueDate)
                     else:
-                        items[i]['after']['DueDate'] = '<img width="16" height="16" src="%s/++resource++bika.lims.images/late.png" title="%s"/>' % \
-                            (portal.absolute_url(), _("Late analysis"))
+                        items[i]['replace']['DueDate'] = '%s <img width="16" height="16" src="%s/++resource++bika.lims.images/late.png" title="%s"/>' % \
+                            (DueDate, portal.absolute_url(), _("Late analysis"))
                 else:
-                    items[i]['DueDate'] = TimeOrDate(self.context, item['DueDate'])
+                    items[i]['replace']['DueDate'] = TimeOrDate(self.context, item['DueDate'])
             # add icon for assigned analyses in AR views
             if self.context.portal_type == 'AnalysisRequest' and \
                workflow.getInfoFor(items[i]['obj'], 'worksheetanalysis_review_state') == 'assigned':
