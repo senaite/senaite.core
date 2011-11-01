@@ -1,4 +1,4 @@
-from AccessControl import getSecurityManager, Unauthorized
+from AccessControl import getSecurityManager
 from DateTime import DateTime
 from Products.CMFCore.utils import getToolByName
 from bika.lims import bikaMessageFactory as _
@@ -294,7 +294,7 @@ class ClientAnalysisRequestsView(BikaListingView):
                  (url, items[x]['getRequestID'])
 
             datesampled = obj.getSample().getDateSampled()
-            items[x]['DateSampled'] = TimeOrDate(self.context, datesampled, long_format=0)
+            items[x]['DateSampled'] = TimeOrDate(self.context, datesampled, long_format = 0)
             items[x]['future_DateSampled'] = datesampled.Date() > DateTime() and \
                 TimeOrDate(self.context, datesampled) or ''
 
@@ -433,7 +433,7 @@ class ClientSamplesView(BikaListingView):
             items[x]['SamplePointTitle'] = obj.getSamplePointTitle()
 
             datesampled = obj.getDateSampled()
-            items[x]['DateSampled'] = TimeOrDate(self.context, datesampled, long_format=0)
+            items[x]['DateSampled'] = TimeOrDate(self.context, datesampled, long_format = 0)
             items[x]['future_DateSampled'] = datesampled.Date() > DateTime() and \
                 TimeOrDate(self.context, datesampled) or ''
 

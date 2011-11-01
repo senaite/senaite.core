@@ -9,7 +9,7 @@ from Products.Archetypes.Registry import registerField
 from bika.lims.browser.fields import HistoryAwareReferenceField
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.config import I18N_DOMAIN, INSTRUMENT_EXPORTS, PROJECTNAME
-from bika.lims.config import AddAndRemoveAnalyses, ManageResults
+from bika.lims.config import EditWorksheet, ManageResults
 from Products.ATExtensions.ateapi import RecordsField
 from zope.interface import implements
 from bika.lims.interfaces import IWorksheet
@@ -65,8 +65,8 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         # contentsMethod methods.  We ignore it.
         return list(self.getAnalyses())
 
-    security.declareProtected(AddAndRemoveAnalyses, 'addAnalysis')
-    def addAnalysis(self, analysis, position=None):
+    security.declareProtected(EditWorksheet, 'addAnalysis')
+    def addAnalysis(self, analysis, position = None):
         """- add the analysis to self.Analyses().
            - position is overruled if a slot for this analysis' parent exists
            - if position is None, next available pos is used.
@@ -89,7 +89,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         if analysis_uid in [l['analysis_uid'] for l in layout]:
             return
 
-        self.setAnalyses(analyses + [analysis,])
+        self.setAnalyses(analyses + [analysis, ])
 
         # if our parent has a position, use that one.
         if analysis.aq_parent.UID() in [slot['container_uid'] for slot in layout]:
@@ -98,15 +98,15 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         else:
             # prefer supplied position parameter
             if not position:
-                used_positions = [0,]+[int(slot['position']) for slot in layout]
-                position = [pos for pos in range(1, max(used_positions)+2) \
+                used_positions = [0, ] + [int(slot['position']) for slot in layout]
+                position = [pos for pos in range(1, max(used_positions) + 2) \
                             if pos not in used_positions][0]
         self.setLayout(layout + [{'position': position,
                                   'type': 'a',
                                   'container_uid': parent_uid,
-                                  'analysis_uid': analysis.UID()},])
+                                  'analysis_uid': analysis.UID()}, ])
 
-    security.declareProtected(AddAndRemoveAnalyses, 'removeAnalysis')
+    security.declareProtected(EditWorksheet, 'removeAnalysis')
     def removeAnalysis(self, analysis):
         """ delete an analyses from the worksheet and un-assign it
         """
@@ -158,10 +158,10 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
                                      'container_uid' : reference.UID(),
                                      'analysis_uid': ref_analysis.UID()}])
             self.setAnalyses(
-                self.getAnalyses() + [ref_analysis,])
+                self.getAnalyses() + [ref_analysis, ])
 
 
-    security.declareProtected(AddAndRemoveAnalyses, 'addDuplicateAnalyses')
+    security.declareProtected(EditWorksheet, 'addDuplicateAnalyses')
     def addDuplicateAnalyses(self, src_slot, dest_slot):
         """ add duplicate analyses to worksheet
         """
@@ -221,9 +221,9 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
                 self.getLayout() + [{'position':dest_slot,
                                      'type':'d',
                                      'container_uid':analysis.aq_parent.UID(),
-                                     'analysis_uid': duplicate.UID()},]
+                                     'analysis_uid': duplicate.UID()}, ]
             )
-            self.setAnalyses(self.getAnalyses() + [duplicate,])
+            self.setAnalyses(self.getAnalyses() + [duplicate, ])
 
     def applyWorksheetTemplate(self, wst):
         """ Add analyses to worksheet according to wst's layout.
@@ -262,7 +262,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         positions = [pos for pos in wst_slots if pos not in ws_slots]
         for ar in ars:
             for analysis in ar_analyses[ar]:
-                self.addAnalysis(analysis, position=positions[ars.index(ar)])
+                self.addAnalysis(analysis, position = positions[ars.index(ar)])
                 wf.doActionFor(analysis, 'assign')
 
         # find best maching reference samples for Blanks and Controls
@@ -428,7 +428,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
                 services.append(service)
         return services
 
-    security.declareProtected(AddAndRemoveAnalyses, 'resequenceWorksheet')
+    security.declareProtected(EditWorksheet, 'resequenceWorksheet')
     def resequenceWorksheet(self, REQUEST = None, RESPONSE = None):
         """  Reset the sequence of analyses in the worksheet """
         """ sequence is [{'pos': , 'type': , 'uid', 'key'},] """

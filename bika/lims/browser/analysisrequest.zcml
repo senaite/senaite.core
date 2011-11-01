@@ -58,7 +58,7 @@
       for="bika.lims.interfaces.IAnalysisRequest"
       name="not_requested"
       class="bika.lims.browser.analysisrequest.AnalysisRequestResultsNotRequestedView"
-      permission="bika.lims.ResultsNotRequested"
+      permission="zope2.View"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 

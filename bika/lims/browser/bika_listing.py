@@ -1,6 +1,5 @@
 """ Display lists of items in tables.
 """
-from AccessControl import Unauthorized
 from Acquisition import aq_parent, aq_inner
 from OFS.interfaces import IOrderedContainer
 from Products.CMFCore.WorkflowCore import WorkflowException
@@ -55,7 +54,7 @@ class WorkflowAction:
                     self.destination_url = self.request.get_header("referer",
                                            self.context.absolute_url())
                 self.request.response.redirect(self.destination_url)
-                return None,None
+                return None, None
         # convert button text to action id
         if came_from == "workflow_action_button":
             action = form[action]

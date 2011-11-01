@@ -1,4 +1,4 @@
-from AccessControl import getSecurityManager, Unauthorized
+from AccessControl import getSecurityManager
 from DateTime import DateTime
 from DocumentTemplate import sequence
 from Products.CMFCore.WorkflowCore import WorkflowException
@@ -21,7 +21,7 @@ from plone.app.layout.globals.interfaces import IViewView
 from zope.app.component.hooks import getSite
 from zope.component import getMultiAdapter
 from zope.interface import implements
-from bika.lims import EditResults
+from bika.lims import EditResults, EditWorksheet
 import plone, json
 
 class WorksheetWorkflowAction(WorkflowAction):
@@ -119,6 +119,10 @@ class WorksheetWorkflowAction(WorkflowAction):
             self.request.response.redirect(self.destination_url)
         ## assign
         elif action == 'assign':
+            if not(getSecurityManager().checkPermission(EditWorksheet, self.context)):
+                self.request.response.redirect(self.context.absolute_url())
+                return
+
             selected_analyses = WorkflowAction._get_selected_items(self)
             selected_analysis_uids = selected_analyses.keys()
 
@@ -137,6 +141,10 @@ class WorksheetWorkflowAction(WorkflowAction):
             self.request.response.redirect(self.destination_url)
         ## unassign
         elif action == 'unassign':
+            if not(getSecurityManager().checkPermission(EditWorksheet, self.context)):
+                self.request.response.redirect(self.context.absolute_url())
+                return
+
             selected_analyses = WorkflowAction._get_selected_items(self)
             selected_analysis_uids = selected_analyses.keys()
 
@@ -244,7 +252,7 @@ class WorksheetAnalysesView(AnalysesView):
         # insert placeholder row items in the gaps
         empties = []
         used = [int(slot['position']) for slot in layout]
-        for pos in range(1, highest_position+1):
+        for pos in range(1, highest_position + 1):
             if pos not in used:
                 empties.append(pos)
                 item = {}
@@ -271,8 +279,8 @@ class WorksheetAnalysesView(AnalysesView):
                     'Service': '',
                     'state_title': 's'})
                 item['replace'] = {
-                    'Pos': "<table width='100%' cellpadding='0' cellspacing='0'>" +\
-                            "<tr><td class='pos'>%s</td>"%pos + \
+                    'Pos': "<table width='100%' cellpadding='0' cellspacing='0'>" + \
+                            "<tr><td class='pos'>%s</td>" % pos + \
                             "<td align='right'>&nbsp;</td></tr></table>",
                     'select_column': '',
                     }
@@ -362,11 +370,11 @@ class WorksheetAnalysesView(AnalysesView):
             pos_text += "</td></tr>"
 
             # barcode
-            barcode = parent.id.replace("-","")
+            barcode = parent.id.replace("-", "")
             if obj.portal_type == 'DuplicateAnalysis':
                 barcode += "D"
             pos_text += "<tr><td class='barcode' colspan='3'><div id='barcode_%s'></div>" % barcode + \
-                "<script type='text/javascript'>$('#barcode_%s').barcode('%s', 'code39', {'barHeight':15, addQuietZone:false, showHRI: false })</script>" %(barcode, barcode) + \
+                "<script type='text/javascript'>$('#barcode_%s').barcode('%s', 'code39', {'barHeight':15, addQuietZone:false, showHRI: false })</script>" % (barcode, barcode) + \
                 "</td></tr>"
 
             pos_text += "</table>"
@@ -465,6 +473,10 @@ class AddAnalysesView(AnalysesView):
         return getAnalystName(self.context)
 
     def __call__(self):
+        if not(getSecurityManager().checkPermission(EditWorksheet, self.context)):
+            self.request.response.redirect(self.context.absolute_url())
+            return
+
         form = self.request.form
         rc = getToolByName(self.context, REFERENCE_CATALOG)
         contentFilter = {'portal_type': 'Analysis',
@@ -479,7 +491,7 @@ class AddAnalysesView(AnalysesView):
                 self.request['context_uid'] = self.context.UID()
                 self.context.applyWorksheetTemplate(wst)
                 if len(self.context.getLayout()) != len(layout):
-                    self.context.plone_utils.addPortalMessage(_("Workshete updated."))
+                    self.context.plone_utils.addPortalMessage(_("Worksheet updated."))
                     self.request.RESPONSE.redirect(self.context.absolute_url() + "/manage_results")
                 else:
                     self.context.plone_utils.addPortalMessage(_("No analyses were added to this worksheet."))
@@ -527,6 +539,10 @@ class AddBlankView(BrowserView):
                              "reference samples. Select a reference by clicking it. ")
 
     def __call__(self):
+        if not(getSecurityManager().checkPermission(EditWorksheet, self.context)):
+            self.request.response.redirect(self.context.absolute_url())
+            return
+
         form = self.request.form
         if 'submitted' in form:
             rc = getToolByName(self.context, 'reference_catalog')
@@ -552,7 +568,7 @@ class AddBlankView(BrowserView):
         positions = []
         layout = self.context.getLayout()
         used_positions = [int(slot['position']) for slot in layout]
-        available_positions = [pos for pos in range(1, max(used_positions)+1) if \
+        available_positions = [pos for pos in range(1, max(used_positions) + 1) if \
                                pos not in used_positions]
         return available_positions
 
@@ -567,6 +583,10 @@ class AddControlView(BrowserView):
         self.description = _("Select services in the left column to locate " \
                              "reference samples. Select a reference by clicking it. ")
     def __call__(self):
+        if not(getSecurityManager().checkPermission(EditWorksheet, self.context)):
+            self.request.response.redirect(self.context.absolute_url())
+            return
+
         form = self.request.form
         if 'submitted' in form:
             rc = getToolByName(self.context, 'reference_catalog')
@@ -592,7 +612,7 @@ class AddControlView(BrowserView):
         positions = []
         layout = self.context.getLayout()
         used_positions = [int(slot['position']) for slot in layout]
-        available_positions = [pos for pos in range(1, max(used_positions)+1) if \
+        available_positions = [pos for pos in range(1, max(used_positions) + 1) if \
                                pos not in used_positions]
         return available_positions
 
@@ -608,6 +628,10 @@ class AddDuplicateView(BrowserView):
         self.description = _("Select a destinaton position and the AR to duplicate.")
 
     def __call__(self):
+        if not(getSecurityManager().checkPermission(EditWorksheet, self.context)):
+            self.request.response.redirect(self.context.absolute_url())
+            return
+
         form = self.request.form
         if 'submitted' in form:
             rc = getToolByName(self.context, 'reference_catalog')
@@ -630,7 +654,7 @@ class AddDuplicateView(BrowserView):
         positions = []
         layout = self.context.getLayout()
         used_positions = [int(slot['position']) for slot in layout]
-        available_positions = [pos for pos in range(1, max(used_positions)+1) if \
+        available_positions = [pos for pos in range(1, max(used_positions) + 1) if \
                                pos not in used_positions]
         return available_positions
 

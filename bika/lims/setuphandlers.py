@@ -185,7 +185,7 @@ class BikaGenerator:
         mp(ManageSample,
             ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 1)
         mp(ManageReferenceSuppliers,
-            ['Manager', 'LabManager', 'LabClerk','Analyst'], 1)
+            ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 1)
         mp(ManageReference,
             ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 1)
         mp(ManagePricelists,
@@ -228,8 +228,6 @@ class BikaGenerator:
             ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 1)
         mp(ManageInvoices,
             ['Manager', 'LabManager', 'Owner'], 1)
-        mp(AddAndRemoveAnalyses,
-            ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 1)
         mp(ViewResults,
             ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 1)
         mp(EditResults,
@@ -241,13 +239,13 @@ class BikaGenerator:
 
         mp = portal.clients.manage_permission
         mp(permissions.ListFolderContents,
-            ['Manager', 'LabManager','LabClerk','Analyst','Member'], 0)
+            ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Member'], 0)
             #['Manager', 'LabManager','LabClerk','Analyst','Member', 'Anonymous'], 0)
         mp(permissions.View,
            ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Owner'], 0)
            #['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Owner', 'Anonymous'], 0)
         mp('Access contents information',
-            ['Manager', 'LabManager','LabClerk','Member','Analyst'], 0)
+            ['Manager', 'LabManager', 'LabClerk', 'Member', 'Analyst'], 0)
             #['Manager', 'LabManager','LabClerk','Member','Analyst', 'Anonymous'], 0)
         mp(permissions.AddPortalContent,
            ['Manager', 'LabManager', 'LabClerk', 'Owner', ], 0)
@@ -255,13 +253,13 @@ class BikaGenerator:
 
         mp = portal.referencesuppliers.manage_permission
         mp(permissions.ListFolderContents,
-            ['Manager', 'LabManager','LabClerk','Analyst'], 0)
+            ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 0)
             #['Manager', 'LabManager','LabClerk','Analyst', 'Anonymous'], 0)
         mp(permissions.View,
            ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Owner'], 0)
            #['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Owner', 'Anonymous'], 0)
         mp('Access contents information',
-            ['Manager', 'LabManager','LabClerk','Analyst'], 0)
+            ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 0)
             #['Manager', 'LabManager','LabClerk','Analyst', 'Anonymous'], 0)
         mp(permissions.AddPortalContent,
            ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Owner'], 0)
@@ -269,16 +267,16 @@ class BikaGenerator:
 
         mp = portal.worksheets.manage_permission
         mp(permissions.ListFolderContents,
-            ['Manager', 'LabManager','LabClerk','Analyst'], 0)
+            ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 0)
             #['Manager', 'LabManager','LabClerk','Analyst', 'Anonymous'], 0)
         mp(permissions.AddPortalContent,
-            ['Manager', 'LabManager','LabClerk','Analyst'], 0)
+            ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 0)
             #['Manager', 'LabManager','LabClerk','Analyst', 'Anonymous'], 0)
         mp(permissions.View,
-            ['Manager', 'LabManager','LabClerk','Analyst'], 0)
+            ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 0)
             #['Manager', 'LabManager','LabClerk','Analyst', 'Anonymous'], 0)
         mp('Access contents information',
-            ['Manager', 'LabManager','LabClerk','Analyst'], 0)
+            ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 0)
             #['Manager', 'LabManager','LabClerk','Analyst', 'Anonymous'], 0)
         mp(permissions.DeleteObjects,
             ['Manager', 'LabManager', 'Owner'], 0)
@@ -286,16 +284,16 @@ class BikaGenerator:
 
         mp = portal.analysisrequests.manage_permission
         mp(permissions.ListFolderContents,
-            ['Manager', 'LabManager','LabClerk','Analyst'], 0)
+            ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 0)
             #['Manager', 'LabManager','LabClerk','Analyst', 'Anonymous'], 0)
         mp(permissions.AddPortalContent,
-            ['Manager', 'LabManager','LabClerk','Analyst'], 0)
+            ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 0)
             #['Manager', 'LabManager','LabClerk','Analyst', 'Anonymous'], 0)
         mp(permissions.View,
-            ['Manager', 'LabManager','LabClerk','Analyst'], 0)
+            ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 0)
             #['Manager', 'LabManager','LabClerk','Analyst', 'Anonymous'], 0)
         mp('Access contents information',
-            ['Manager', 'LabManager','LabClerk','Analyst'], 0)
+            ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 0)
             #['Manager', 'LabManager','LabClerk','Analyst', 'Anonymous'], 0)
         mp(permissions.DeleteObjects,
             ['Manager', 'LabManager', 'Owner'], 0)
@@ -303,16 +301,16 @@ class BikaGenerator:
 
         mp = portal.referencesamples.manage_permission
         mp(permissions.ListFolderContents,
-            ['Manager', 'LabManager','LabClerk','Analyst'], 0)
+            ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 0)
             #['Manager', 'LabManager','LabClerk','Analyst', 'Anonymous'], 0)
         mp(permissions.AddPortalContent,
-            ['Manager', 'LabManager','LabClerk','Analyst'], 0)
+            ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 0)
             #['Manager', 'LabManager','LabClerk','Analyst', 'Anonymous'], 0)
         mp(permissions.View,
-            ['Manager', 'LabManager','LabClerk','Analyst'], 0)
+            ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 0)
             #['Manager', 'LabManager','LabClerk','Analyst', 'Anonymous'], 0)
         mp('Access contents information',
-            ['Manager', 'LabManager','LabClerk','Analyst'], 0)
+            ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 0)
             #['Manager', 'LabManager','LabClerk','Analyst', 'Anonymous'], 0)
         mp(permissions.DeleteObjects,
             ['Manager', 'LabManager', 'Owner'], 0)
@@ -320,16 +318,16 @@ class BikaGenerator:
 
         mp = portal.samples.manage_permission
         mp(permissions.ListFolderContents,
-            ['Manager', 'LabManager','LabClerk','Analyst'], 0)
+            ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 0)
             #['Manager', 'LabManager','LabClerk','Analyst', 'Anonymous'], 0)
         mp(permissions.AddPortalContent,
-            ['Manager', 'LabManager','LabClerk','Analyst'], 0)
+            ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 0)
             #['Manager', 'LabManager','LabClerk','Analyst', 'Anonymous'], 0)
         mp(permissions.View,
-            ['Manager', 'LabManager','LabClerk','Analyst'], 0)
+            ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 0)
             #['Manager', 'LabManager','LabClerk','Analyst', 'Anonymous'], 0)
         mp('Access contents information',
-            ['Manager', 'LabManager','LabClerk','Analyst'], 0)
+            ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 0)
             #['Manager', 'LabManager','LabClerk','Analyst', 'Anonymous'], 0)
         mp(permissions.DeleteObjects,
             ['Manager', 'LabManager', 'Owner'], 0)

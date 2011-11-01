@@ -57,7 +57,7 @@
 <action title="Results not requested"
 	action_id="analyses_not_requested"
 	category="object"
-	condition_expr=""
+	condition_expr="python:here.guard_cancelled_object()"
 	icon_expr=""
 	link_target=""
 	url_expr="string:${object_url}/not_requested"

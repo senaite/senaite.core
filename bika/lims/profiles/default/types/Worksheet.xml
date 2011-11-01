@@ -21,56 +21,42 @@
 
  <property name="default_view_fallback">False</property>
  <property name="default_view">manage_results</property>
- <alias from="(Default)" to="(selected layout)"/>
- <alias from="view" to="base_view"/>
- <alias from="edit" to="base_view"/>
-
- <action title="View" action_id="base_view" category="object"
-    condition_expr="" icon_expr="" link_target=""
-    url_expr="string:${object_url}/manage_results" visible="False">
-  <permission value="BIKA: Manage Results"/>
- </action>
-
- <action title="Edit" action_id="base_edit" category="object"
-    condition_expr="" icon_expr="" link_target=""
-    url_expr="string:${object_url}/manage_results" visible="False">
-  <permission value="BIKA: Manage Results"/>
- </action>
+ <alias from="(Default)" to="manage_results"/>
 
  <action title="Manage Results" action_id="manage_results" category="object"
     condition_expr="" icon_expr="" link_target=""
     url_expr="string:${object_url}/manage_results" visible="True">
-  <permission value="BIKA: Manage Results"/>
+  <permission value="View"/>
  </action>
 
   <action title="Add Analyses" action_id="add_analyses" category="object"
     condition_expr="" icon_expr="" link_target=""
     url_expr="string:${object_url}/add_analyses" visible="True">
-  <permission value="BIKA: Add and remove Analyses"/>
+  <permission value="BIKA: Edit Worksheet"/>
  </action>
 
   <action title="Add Blank" action_id="add_blank" category="object"
     condition_expr="" icon_expr="" link_target=""
     url_expr="string:${object_url}/add_blank" visible="True">
-  <permission value="BIKA: Add and remove Analyses"/>
+  <permission value="BIKA: Edit Worksheet"/>
  </action>
 
   <action title="Add Control" action_id="add_control" category="object"
     condition_expr="" icon_expr="" link_target=""
     url_expr="string:${object_url}/add_control" visible="True">
-  <permission value="BIKA: Add and remove Analyses"/>
+  <permission value="BIKA: Edit Worksheet"/>
  </action>
 
  <action title="Add Duplicate" action_id="add_duplicate" category="object"
     condition_expr="" icon_expr="" link_target=""
     url_expr="string:${object_url}/add_duplicate" visible="True">
-  <permission value="BIKA: Add and remove Analyses"/>
+  <permission value="BIKA: Edit Worksheet"/>
  </action>
 
  <action title="Log" action_id="log" category="object" condition_expr=""
     icon_expr="" link_target="" url_expr="string:${object_url}/log"
     visible="True">
-  <permission value="BIKA: Manage Bika"/>
+  <permission value="View"/>
  </action>
 
 </object>

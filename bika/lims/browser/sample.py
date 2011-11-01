@@ -1,3 +1,4 @@
+from AccessControl import getSecurityManager
 from DateTime import DateTime
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser import BrowserView
@@ -5,6 +6,7 @@ from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.client import ClientSamplesView
 from bika.lims.utils import TimeOrDate
+from bika.lims import EditSample
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.layout.globals.interfaces import IViewView
 from zope.interface import implements
@@ -40,15 +42,25 @@ class SampleEditView(SampleViewView):
 
     def __call__(self):
         workflow = getToolByName(self.context, 'portal_workflow')
+
         if workflow.getInfoFor(self.context, 'cancellation_state') == "cancelled":
             self.request.response.redirect(self.context.absolute_url())
+        elif not(getSecurityManager().checkPermission(EditSample, self.context)):
+            self.request.response.redirect(self.context.absolute_url())
         else:
+            can_edit_sample = True
             ars = self.context.getAnalysisRequests()
             for ar in ars:
                 for a in ar.getAnalyses():
                     if workflow.getInfoFor(a.getObject(), 'review_state') in ('verified', 'published'):
-                        self.request.response.redirect(self.context.absolute_url())
-            return self.template()
+                        can_edit_sample = False
+                        break
+                if not can_edit_sample:
+                    break
+            if not can_edit_sample:
+                self.request.response.redirect(self.context.absolute_url())
+            else:
+                return self.template()
 
     def tabindex(self):
         i = 0
@@ -75,7 +87,10 @@ class ajaxSampleSubmit():
 
         can_edit = True
         workflow = getToolByName(self.context, 'portal_workflow')
+
         if workflow.getInfoFor(self.context, 'cancellation_state') == "cancelled":
+            can_edit = False
+        elif not(getSecurityManager().checkPermission(EditSample, self.context)):
             can_edit = False
         else:
             ars = self.context.getAnalysisRequests()
@@ -138,7 +153,7 @@ class SamplesView(ClientSamplesView):
         self.columns['Client'] = {'title': _('Client')}
         review_states = []
         for review_state in self.review_states:
-            review_state['columns'].insert(review_state['columns'].index('SampleID')+1, 'Client')
+            review_state['columns'].insert(review_state['columns'].index('SampleID') + 1, 'Client')
 
     def folderitems(self):
         workflow = getToolByName(self.context, "portal_workflow")

@@ -1,4 +1,4 @@
-from AccessControl import getSecurityManager, Unauthorized
+from AccessControl import getSecurityManager
 from DateTime import DateTime
 from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.CMFCore.WorkflowCore import WorkflowException
@@ -17,7 +17,7 @@ from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.layout.globals.interfaces import IViewView
 from zope.component import getMultiAdapter
 from zope.interface import implements, alsoProvides
-from bika.lims import EditResults
+from bika.lims import EditResults, EditAR, ManageResults, ResultsNotRequested
 import json
 import plone
 import transaction
@@ -384,21 +384,20 @@ class AnalysisRequestEditView(AnalysisRequestAddView):
 
     def __call__(self):
         ar = self.context
-        workflow = getToolByName(self.context, 'portal_workflow')
+        workflow = getToolByName(ar, 'portal_workflow')
 
         if workflow.getInfoFor(ar, 'cancellation_state') == "cancelled":
-            self.request.response.redirect(self.context.absolute_url())
-        elif workflow.getInfoFor(ar, 'review_state') in ('verified', 'published'):
-            self.request.response.redirect(self.context.absolute_url())
+            self.request.response.redirect(ar.absolute_url())
+        elif not(getSecurityManager().checkPermission(EditAR, ar)):
+            self.request.response.redirect(ar.absolute_url())
         else:
             can_edit_sample = True
             can_edit_ar = True
-            if can_edit_ar:
-                for a in ar.getAnalyses():
-                    if workflow.getInfoFor(a.getObject(), 'review_state') in ('verified', 'published'):
-                        can_edit_sample = False
-                        can_edit_ar = False
-                        break
+            for a in ar.getAnalyses():
+                if workflow.getInfoFor(a.getObject(), 'review_state') in ('verified', 'published'):
+                    can_edit_sample = False
+                    can_edit_ar = False
+                    break
             if can_edit_sample:
                 sample = ar.getSample()
                 if workflow.getInfoFor(sample, 'cancellation_state') == "cancelled":
@@ -427,19 +426,21 @@ class AnalysisRequestManageResultsView(AnalysisRequestViewView):
     template = ViewPageTemplateFile("templates/analysisrequest_manage_results.pt")
 
     def __call__(self):
-        workflow = getToolByName(self.context, 'portal_workflow')
-        if workflow.getInfoFor(self.context, 'cancellation_state') == "cancelled":
-            self.request.response.redirect(self.context.absolute_url())
-        elif workflow.getInfoFor(self.context, 'review_state') in ('verified', 'published'):
-            self.request.response.redirect(self.context.absolute_url())
+        ar = self.context
+        workflow = getToolByName(ar, 'portal_workflow')
+
+        if workflow.getInfoFor(ar, 'cancellation_state') == "cancelled":
+            self.request.response.redirect(ar.absolute_url())
+        elif not(getSecurityManager().checkPermission(ManageResults, ar)):
+            self.request.response.redirect(ar.absolute_url())
         else:
-            self.Field = AnalysesView(self.context, self.request, getPointOfCapture = 'field')
+            self.Field = AnalysesView(ar, self.request, getPointOfCapture = 'field')
             self.Field.allow_edit = True
             self.Field.review_states[0]['transitions'] = ['submit', 'retract', 'verify']
             self.Field.show_select_column = True
             self.Field = self.Field.contents_table()
 
-            self.Lab = AnalysesView(self.context, self.request, getPointOfCapture = 'lab')
+            self.Lab = AnalysesView(ar, self.request, getPointOfCapture = 'lab')
             self.Lab.allow_edit = True
             self.Lab.review_states[0]['transitions'] = ['submit', 'retract', 'verify']
             self.Lab.show_select_column = True
@@ -453,7 +454,15 @@ class AnalysisRequestResultsNotRequestedView(AnalysisRequestManageResultsView):
     template = ViewPageTemplateFile("templates/analysisrequest_analyses_not_requested.pt")
 
     def __call__(self):
-        return self.template()
+        ar = self.context
+        workflow = getToolByName(ar, 'portal_workflow')
+
+        if workflow.getInfoFor(ar, 'cancellation_state') == "cancelled":
+            self.request.response.redirect(ar.absolute_url())
+        elif not(getSecurityManager().checkPermission(ResultsNotRequested, ar)):
+            self.request.response.redirect(ar.absolute_url())
+        else:
+            return self.template()
 
 class AnalysisRequestContactCCs(BrowserView):
     """ Returns lists of UID/Title for preconfigured CC contacts
@@ -815,7 +824,7 @@ class ajaxAnalysisRequestSubmit():
 
             if wftool.getInfoFor(ar, 'cancellation_state') == "cancelled":
                 can_edit = False
-            elif wftool.getInfoFor(ar, 'review_state') in ('verified', 'published'):
+            elif not(getSecurityManager().checkPermission(EditAR, ar)):
                 can_edit = False
 
             if not can_edit:
@@ -827,12 +836,11 @@ class ajaxAnalysisRequestSubmit():
             can_edit_sample = True
             can_edit_ar = True
 
-            if can_edit_ar:
-                for a in ar.getAnalyses():
-                    if wftool.getInfoFor(a.getObject(), 'review_state') in ('verified', 'published'):
-                        can_edit_sample = False
-                        can_edit_ar = False
-                        break
+            for a in ar.getAnalyses():
+                if wftool.getInfoFor(a.getObject(), 'review_state') in ('verified', 'published'):
+                    can_edit_sample = False
+                    can_edit_ar = False
+                    break
 
             if can_edit_sample:
                 sample = ar.getSample()

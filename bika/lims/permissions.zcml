@@ -56,7 +56,6 @@
 
 # Other:
 # ------
-<permission id="bika.lims.AddAndRemoveAnalyses" title="BIKA: Add and remove Analyses"/>
 <permission id="bika.lims.ViewResults" title="BIKA: View Results"/>
 <permission id="bika.lims.EditResults" title="BIKA: Edit Results"/>
 

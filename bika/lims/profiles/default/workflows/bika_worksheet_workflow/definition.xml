@@ -4,25 +4,11 @@
              state_variable="review_state"
              initial_state="open">
 
- <permission>Edit Worksheet</permission>
- <permission>Add and remove Analyses</permission>
- <permission>Manage Results</permission>
+ <permission>BIKA: Edit Worksheet</permission>
 
  <state state_id="open" title="Worksheet open">
   <exit-transition transition_id="submit"/>
-  <permission-map name="Edit Worksheet" acquired="False">
-   <permission-role>Manager</permission-role>
-   <permission-role>LabManager</permission-role>
-   <permission-role>Analyst</permission-role>
-   <permission-role>LabClerk</permission-role>
-  </permission-map>
-  <permission-map name="Add and remove Analyses" acquired="False">
-   <permission-role>Manager</permission-role>
-   <permission-role>LabManager</permission-role>
-   <permission-role>Analyst</permission-role>
-   <permission-role>LabClerk</permission-role>
-  </permission-map>
-  <permission-map name="Manage Results" acquired="False">
+  <permission-map name="BIKA: Edit Worksheet" acquired="False">
    <permission-role>Manager</permission-role>
    <permission-role>LabManager</permission-role>
    <permission-role>Analyst</permission-role>
@@ -34,19 +20,7 @@
   <exit-transition transition_id="attach"/>
   <exit-transition transition_id="retract"/>
   <exit-transition transition_id="reject"/>
-  <permission-map name="Edit Worksheet" acquired="False">
-   <permission-role>Manager</permission-role>
-   <permission-role>LabManager</permission-role>
-   <permission-role>Analyst</permission-role>
-   <permission-role>LabClerk</permission-role>
-  </permission-map>
-  <permission-map name="Add and remove Analyses" acquired="False">
-   <permission-role>Manager</permission-role>
-   <permission-role>LabManager</permission-role>
-   <permission-role>Analyst</permission-role>
-   <permission-role>LabClerk</permission-role>
-  </permission-map>
-  <permission-map name="Manage Results" acquired="False">
+  <permission-map name="BIKA: Edit Worksheet" acquired="False">
    <permission-role>Manager</permission-role>
    <permission-role>LabManager</permission-role>
    <permission-role>Analyst</permission-role>
@@ -58,35 +32,21 @@
   <exit-transition transition_id="verify"/>
   <exit-transition transition_id="retract"/>
   <exit-transition transition_id="reject"/>
-  <permission-map name="Edit Worksheet" acquired="False">
+  <permission-map name="BIKA: Edit Worksheet" acquired="False">
    <permission-role>Manager</permission-role>
    <permission-role>LabManager</permission-role>
-  </permission-map>
-  <permission-map name="Add and remove Analyses" acquired="False">
-   <permission-role>Manager</permission-role>
-   <permission-role>LabManager</permission-role>
-  </permission-map>
-  <permission-map name="Manage Results" acquired="False">
-   <permission-role>Manager</permission-role>
-   <permission-role>LabManager</permission-role>
+   <permission-role>Analyst</permission-role>
+   <permission-role>LabClerk</permission-role>
   </permission-map>
  </state>
 
  <state state_id="verified" title="Verified">
-  <permission-map name="Edit Worksheet" acquired="False">
-  </permission-map>
-  <permission-map name="Add and remove Analyses" acquired="False">
-  </permission-map>
-  <permission-map name="Manage Results" acquired="False">
+  <permission-map name="BIKA: Edit Worksheet" acquired="False">
   </permission-map>
  </state>
 
  <state state_id="rejected" title="Rejected">
-  <permission-map name="Edit Worksheet" acquired="False">
-  </permission-map>
-  <permission-map name="Add and remove Analyses" acquired="False">
-  </permission-map>
-  <permission-map name="Manage Results" acquired="False">
+  <permission-map name="BIKA: Edit Worksheet" acquired="False">
   </permission-map>
  </state>
 

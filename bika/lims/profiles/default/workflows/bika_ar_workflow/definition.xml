@@ -1,7 +1,6 @@
 <?xml version="1.0"?>
 <dc-workflow workflow_id="bika_analysis_workflow" title="Analysis Workflow [bika]" description="" state_variable="review_state" initial_state="sample_due" manager_bypass="False">
  <permission>BIKA: Edit AR</permission>
- <permission>BIKA: Create and delete Analyses</permission>
  <permission>BIKA: Manage Results</permission>
  <permission>BIKA: Results not requested</permission>
  <permission>BIKA: Manage Invoices</permission>
@@ -17,7 +16,7 @@
   </permission-map>
   <permission-map name="BIKA: Manage Results" acquired="False">
   </permission-map>
-  <permission-map name="BIKA: Results not requested" acquired="True">
+  <permission-map name="BIKA: Results not requested" acquired="False">
   </permission-map>
   <permission-map name="BIKA: Manage Invoices" acquired="False">
   </permission-map>
@@ -42,10 +41,6 @@
    <permission-role>Analyst</permission-role>
   </permission-map>
   <permission-map name="BIKA: Results not requested" acquired="True">
-   <permission-role>Manager</permission-role>
-   <permission-role>LabManager</permission-role>
-   <permission-role>Analyst</permission-role>
-   <permission-role>LabClerk</permission-role>
   </permission-map>
   <permission-map name="BIKA: Manage Invoices" acquired="False">
   </permission-map>
@@ -62,6 +57,7 @@
   <permission-map name="BIKA: Edit AR" acquired="False">
    <permission-role>Manager</permission-role>
    <permission-role>LabManager</permission-role>
+   <permission-role>LabClerk</permission-role>
   </permission-map>
   <permission-map name="BIKA: Manage Results" acquired="False">
    <permission-role>Manager</permission-role>
@@ -69,10 +65,6 @@
    <permission-role>Analyst</permission-role>
   </permission-map>
   <permission-map name="BIKA: Results not requested" acquired="True">
-   <permission-role>Manager</permission-role>
-   <permission-role>LabManager</permission-role>
-   <permission-role>Analyst</permission-role>
-   <permission-role>LabClerk</permission-role>
   </permission-map>
   <permission-map name="BIKA: Manage Invoices" acquired="False">
   </permission-map>
@@ -89,6 +81,7 @@
   <permission-map name="BIKA: Edit AR" acquired="False">
    <permission-role>Manager</permission-role>
    <permission-role>LabManager</permission-role>
+   <permission-role>LabClerk</permission-role>
   </permission-map>
   <permission-map name="BIKA: Manage Results" acquired="False">
    <permission-role>Manager</permission-role>
@@ -96,10 +89,6 @@
    <permission-role>Analyst</permission-role>
   </permission-map>
   <permission-map name="BIKA: Results not requested" acquired="True">
-   <permission-role>Manager</permission-role>
-   <permission-role>LabManager</permission-role>
-   <permission-role>Analyst</permission-role>
-   <permission-role>LabClerk</permission-role>
   </permission-map>
   <permission-map name="BIKA: Manage Invoices" acquired="False">
   </permission-map>
