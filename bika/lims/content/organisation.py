@@ -18,7 +18,7 @@ schema = BikaFolderSchema.copy() + BikaSchema.copy() + ManagedSchema((
     ),
     StringField('TaxNumber',
         widget = StringWidget(
-            label = _("Tax number"),
+            label = _("VAT number"),
         ),
     ),
     StringField('Phone',
