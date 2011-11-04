@@ -6,6 +6,8 @@
 	metal:use-macro="here/main_template/macros/master"
 	i18n:domain="bika">
 
+<metal:override fill-slot="column_two_slot" />
+
 <body tal:define="
 	portal context/@@plone_portal_state/portal;
 	specification python:request.get('specification', 'lab');

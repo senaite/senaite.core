@@ -201,9 +201,9 @@ a .navTreeCurrentItem {
   padding:2px 5px 2px 5px !important;
 }
 
-td .Result,
-td .getRequestID,
-td .Title {
+td.Result,
+td.getRequestID,
+td.Title {
   white-space:nowrap !important;
 }
 

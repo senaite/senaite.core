@@ -1154,14 +1154,14 @@ msgid "Sample due"
 msgstr "Monster op weg"
 
 # to be translated
-msgid "Sample received"
-msgstr "Sample received"
+msgid "Received"
+msgstr "Received"
 
 # to be translated
 msgid "sample_received"
 msgstr "sample_received"
 
-msgid "Assigned to Worksheet"
+msgid "Assigned"
 msgstr "Aangehecht aan Werkkaart"
 
 msgid "assigned"
@@ -1209,8 +1209,8 @@ msgid "open"
 msgstr "open"
 
 # to be translated
-msgid "Worksheet open"
-msgstr "Worksheet open"
+msgid "Open"
+msgstr "Open"
 
 # More More
 

@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <dc-workflow workflow_id="bika_worksheetanalysis_workflow" title="Worksheet Analysis Workflow [bika]" description="" state_variable="worksheetanalysis_review_state" initial_state="unassigned" manager_bypass="False">
  
- <state state_id="assigned" title="Assigned to Worksheet">
+ <state state_id="assigned" title="Assigned">
   <exit-transition transition_id="unassign"/>
  </state>
  

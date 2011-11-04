@@ -6,6 +6,8 @@
     metal:use-macro="here/main_template/macros/master"
     i18n:domain="bika">
 
+<metal:override fill-slot="column_two_slot" />
+
 <body>
 
 <metal:title fill-slot="content-title"

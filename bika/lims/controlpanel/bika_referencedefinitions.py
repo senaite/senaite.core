@@ -21,7 +21,7 @@ class ReferenceDefinitionsView(BikaListingView):
         super(ReferenceDefinitionsView, self).__init__(context, request)
         self.contentFilter = {'portal_type': 'ReferenceDefinition',
                               'sort_on': 'sortable_title'}
-        self.content_add_actions = {_('Reference Definition'):
+        self.content_add_actions = {_('Add'):
                                     "createObject?type_name=ReferenceDefinition"}
         self.title = _("Reference Definitions")
         self.icon = "++resource++bika.lims.images/referencedefinition_big.png"

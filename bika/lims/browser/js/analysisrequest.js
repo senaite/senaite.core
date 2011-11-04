@@ -272,6 +272,7 @@ jQuery( function($) {
 		unsetARProfile(column);
 		if(profileUID == "") return;
 		selected_elements = [];
+		$(".ARProfileCopyButton").attr('disabled',true);
 		function success(profile_data){
 			$.each(profile_data, function(poc_categoryUID, selectedservices){
 				if( $("tbody[class*='expanded']").filter("#"+poc_categoryUID).length > 0 ){
@@ -306,6 +307,7 @@ jQuery( function($) {
 			}
 			$.ajax(options);
 		}
+		$(".ARProfileCopyButton").removeAttr('disabled');
 	}
 
 	function autocomplete_sampletype(request,callback){

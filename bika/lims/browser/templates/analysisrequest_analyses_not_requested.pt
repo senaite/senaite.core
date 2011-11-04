@@ -132,7 +132,7 @@
 
 				<tal:result
 					tal:condition="python:review_state != 'sample_received'"
-					tal:define="result_class python:view.result_in_range(item, sampletype.UID(), specification)">
+					tal:define="result_class python:view.XXXresult_in_range(item, sampletype.UID(), specification)">
 					<td tal:attributes="class result_class" tal:content="item/getResult"/>
 				</tal:result>
 

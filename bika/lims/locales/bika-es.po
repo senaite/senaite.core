@@ -1148,13 +1148,13 @@ msgstr "Texto grande"
 msgid "Sample due"
 msgstr "Muestra pendiente de recibir"
 
-msgid "Sample received"
+msgid "Received"
 msgstr "Muestra recibida"
 
 msgid "sample_received"
 msgstr "muestra recibida"
 
-msgid "Assigned to Worksheet"
+msgid "Assigned"
 msgstr "Asignado a hoja de trabajo"
 
 msgid "assigned"
@@ -1199,7 +1199,7 @@ msgstr "enviado"
 msgid "open"
 msgstr "abrir"
 
-msgid "Worksheet open"
+msgid "Open"
 msgstr "Hoja de trabajo abierta"
 
 # More More

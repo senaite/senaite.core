@@ -20,7 +20,7 @@ class WorksheetFolderListingView(BikaListingView):
             'review_state':['open', 'to_be_verified', 'verified', 'rejected'],
             'sort_on':'id',
             'sort_order': 'reverse'}
-        self.content_add_actions = {_('Worksheet'): "worksheet_add"}
+        self.content_add_actions = {_('Add'): "worksheet_add"}
         self.show_editable_border = False
         self.show_table_only = False
         self.show_sort_column = False
@@ -83,7 +83,7 @@ class WorksheetFolderListingView(BikaListingView):
                         'QC',
                         'CreationDate',
                         'state_title']},
-            {'title': _('Worksheet Open'), 'id':'open',
+            {'title': _('Open'), 'id':'open',
              'contentFilter': {'portal_type': 'Worksheet',
                                'review_state':'open',
                                'sort_on':'id',

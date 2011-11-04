@@ -354,14 +354,14 @@ h1, h2, h3, h4, h5, h6 {
                 tal:condition="analysis_found"
                 tal:define="
                   in_range python:analysis.result_in_range(None, 'client');
-                  result_class python:in_range and '' or 'out_of_range';
-                  global out_of_range python:in_range and out_of_range or 1">
+                  result_class python:in_range[0] and '' or 'out_of_range';
+                  global out_of_range python:in_range[0] and out_of_range or 1">
                 <td nowrap align="center"
                   tal:attributes="class result_class">
                   <span tal:content="result">10.00</span>
                   <span tal:content="string:${analysis/Unit}"
                     tal:condition="analysis/Unit|nothing"/>
-                  <img tal:condition="python:not in_range"
+                  <img tal:condition="python:not in_range[0]"
                     tal:attributes="src string:${portal/absolute_url}/++resource++bika.lims.images/exclamation.png">
                   <span tal:content="string:[+/- $uncertainty]"
                     tal:condition="uncertainty"/>

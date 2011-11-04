@@ -905,17 +905,17 @@ msgstr "DE_Sample due"
 msgid "sample due"
 msgstr "DE_sample due"
 
-msgid "Sample received"
-msgstr "DE_Sample received"
+msgid "Received"
+msgstr "DE_Received"
 
-msgid "sample received"
-msgstr "DE_sample received"
+msgid "Received"
+msgstr "DE_Received"
 
 msgid "sample_received"
-msgstr "DE_sample received"
+msgstr "DE_Received"
 
-msgid "Assigned to Worksheet"
-msgstr "DE_Assigned to Worksheet"
+msgid "Assigned"
+msgstr "DE_Assigned"
 
 msgid "assigned"
 msgstr "DE_assigned"
@@ -974,14 +974,14 @@ msgstr "DE_Rejected"
 msgid "open"
 msgstr "DE_open"
 
-msgid "Worksheet open"
-msgstr "DE_Worksheet open"
+msgid "Open"
+msgstr "DE_Open"
 
 msgid "Submit for verification"
 msgstr "DE_Submit for verification"
 
-msgid "Verify worksheet"
-msgstr "DE_Verify worksheet"
+msgid "Verify"
+msgstr "DE_Verify"
 
 msgid "Previous"
 msgstr "DE_Previous"

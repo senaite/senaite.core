@@ -23,7 +23,7 @@ class SampleTypesView(BikaListingView):
         super(SampleTypesView, self).__init__(context, request)
         self.contentFilter = {'portal_type': 'SampleType',
                               'sort_on': 'sortable_title'}
-        self.content_add_actions = {_('Sample Type'):
+        self.content_add_actions = {_('Add'):
                                     "createObject?type_name=SampleType"}
         self.title = _("Sample Types")
         self.icon = "++resource++bika.lims.images/sampletype_big.png"

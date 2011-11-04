@@ -1118,17 +1118,17 @@ msgstr "Sample due"
 msgid "sample due"
 msgstr "sample due"
 
-msgid "Sample received"
-msgstr "Sample received"
+msgid "Received"
+msgstr "Received"
 
-msgid "sample received"
-msgstr "sample received"
+msgid "Received"
+msgstr "Received"
 
 msgid "sample_received"
-msgstr "sample received"
+msgstr "Received"
 
-msgid "Assigned to Worksheet"
-msgstr "Assigned to Worksheet"
+msgid "Assigned"
+msgstr "Assigned"
 
 msgid "assigned"
 msgstr "assigned"
@@ -1175,14 +1175,14 @@ msgstr "dispatched"
 msgid "open"
 msgstr "open"
 
-msgid "Worksheet open"
-msgstr "Worksheet open"
+msgid "Open"
+msgstr "Open"
 
 msgid "Submit for verification"
 msgstr "Submit for verification"
 
-msgid "Verify worksheet"
-msgstr "Verify worksheet"
+msgid "Verify"
+msgstr "Verify"
 
 # More More
 

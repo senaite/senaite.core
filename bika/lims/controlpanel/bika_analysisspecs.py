@@ -19,7 +19,7 @@ class AnalysisSpecsView(BikaListingView):
         super(AnalysisSpecsView, self).__init__(context, request)
         self.contentFilter = {'portal_type': 'AnalysisSpec',
                               'sort_on': 'sortable_title'}
-        self.content_add_actions = {_('Analysis Specification'):
+        self.content_add_actions = {_('Add'):
                                     "createObject?type_name=AnalysisSpec"}
         self.icon = "++resource++bika.lims.images/analysisspec_big.png"
         self.title = _("Analysis Specs")

@@ -21,7 +21,7 @@ class InstrumentsView(BikaListingView):
         super(InstrumentsView, self).__init__(context, request)
         self.contentFilter = {'portal_type': 'Instrument',
                               'sort_on': 'sortable_title'}
-        self.content_add_actions = {_('Instrument'):
+        self.content_add_actions = {_('Add'):
                                     "createObject?type_name=Instrument"}
         self.title = _("Instruments")
         self.icon = "++resource++bika.lims.images/instrument_big.png"

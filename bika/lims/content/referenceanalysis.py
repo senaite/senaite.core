@@ -125,9 +125,9 @@ class ReferenceAnalysis(BaseContent):
     def result_in_range(self, result=None):
         """ Check if the result is in range for the Analysis' service.
             if result is None, self.getResult() is called for the result value.
-            Return False if out of range
-            Return True if in range
-            return '1' if in shoulder
+            Return False,spec if out of range
+            Return True,None if in range
+            return '1',spec if in shoulder
         """
 
         result = result and result or self.getResult()
@@ -136,17 +136,18 @@ class ReferenceAnalysis(BaseContent):
             result = float(str(result))
         except:
             # if it is not a number we assume it is in range
-            return True
+            return True,None
 
         service_uid = self.getService().UID()
         specs = self.aq_parent.getResultsRangeDict()
+        spec = {'min':-1,'max':-1,'error':-1}
         if specs.has_key(service_uid):
             spec = specs[service_uid]
             spec_min = float(spec['min'])
             spec_max = float(spec['max'])
 
             if spec_min <= result <= spec_max:
-                return True
+                return True,None
 
             """ check if in 'shoulder' error range - out of range, but in acceptable error """
             error_amount =  (result/100)*float(spec['error'])
@@ -154,10 +155,10 @@ class ReferenceAnalysis(BaseContent):
             error_max = result + error_amount
             if ((result < spec_min) and (error_max >= spec_min)) or \
                ((result > spec_max) and (error_min <= spec_max)):
-                return '1'
+                return '1',spec
         else:
-            return True
-        return False
+            return True,None
+        return False, spec
 
     security.declarePublic('current_date')
     def current_date(self):

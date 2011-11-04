@@ -24,7 +24,7 @@ class WorksheetTemplatesView(BikaListingView):
         super(WorksheetTemplatesView, self).__init__(context, request)
         self.contentFilter = {'portal_type': 'WorksheetTemplate',
                               'sort_on': 'sortable_title'}
-        self.content_add_actions = {_('Worksheet Template'):
+        self.content_add_actions = {_('Add'):
                                     "createObject?type_name=WorksheetTemplate"}
         self.title = _("Worksheet Templates")
         self.icon = "++resource++bika.lims.images/worksheettemplate_big.png"

@@ -75,24 +75,25 @@ class DuplicateAnalysis(Analysis):
     def result_in_range(self, result=None, specification="lab"):
         """ Check if a result is "in range".
             if result is None, self.getResult() is called for the result value.
-            Return False if out of range
-            Return True if in range
-            return '1' if in shoulder
+            Return False,spec if out of range
+            Return True,None if in range
         """
 
         orig_result = self.getAnalysis().getResult()
         # if our Analysis' result is not a number, then we assume in range
         try:
-            orig_result = float(orig_result)
-            result = float(result)
+            orig_result = float(str(orig_result))
+            result = float(str(result))
         except ValueError:
             return True
         dup_variation = float(self.getService().getDuplicateVariation()) or 0
         range_min = result - (orig_result * dup_variation / 100)
         range_max = result + (orig_result * dup_variation / 100)
         if range_min <= orig_result <= range_max:
-            return True
+            return True, None
         else:
-            return False
+            return False, {'min':range_min,
+                           'max':range_max,
+                           'error':dup_variation}
 
 registerType(DuplicateAnalysis, PROJECTNAME)

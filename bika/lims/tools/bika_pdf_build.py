@@ -811,7 +811,7 @@ class bika_pdf_build(UniqueObject, SimpleItem):
                     analysis = ar_analyses[requestID].get(service_id, None)
                     result = analysis.getResult() or None
                     mou = analysis.getUncertainty() or None
-                    result_class = self.result_in_range(analysis, ar_sampletype[requestID], 'client')
+                    result_class = self.XXXresult_in_range(analysis, ar_sampletype[requestID], 'client')
                     print_result = result
                     if result_class == 'out_of_range':
                         oor.append((ar_cnt, line_cnt))

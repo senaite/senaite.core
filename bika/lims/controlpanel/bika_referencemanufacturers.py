@@ -19,7 +19,7 @@ class ReferenceManufacturersView(BikaListingView):
     def __init__(self, context, request):
         super(ReferenceManufacturersView, self).__init__(context, request)
         self.contentFilter = {'portal_type': 'ReferenceManufacturer', 'sort_on': 'sortable_title'}
-        self.content_add_actions = {_('Reference Manufacturer'): "createObject?type_name=ReferenceManufacturer"}
+        self.content_add_actions = {_('Add'): "createObject?type_name=ReferenceManufacturer"}
         self.title = _("Reference Manufacturers")
         self.icon = "++resource++bika.lims.images/referencemanufacturer_big.png"
         self.description = ""

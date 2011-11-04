@@ -38,6 +38,13 @@ class WorksheetWorkflowAction(WorkflowAction):
         skiplist = self.request.get('workflow_skiplist', [])
         action, came_from = WorkflowAction._get_form_workflow_action(self)
 
+        # XXX combine data from multiple bika listing tables.
+        item_data = {}
+        if 'item_data' in form:
+            for i_d in form['item_data']:
+                for i,d in json.loads(i_d).items():
+                    item_data[i] = d
+
         if 'Notes' in form:
             self.context.setNotes(form['Notes'])
 
@@ -63,8 +70,7 @@ class WorksheetWorkflowAction(WorkflowAction):
                     continue
                 results[uid] = result
                 service = analysis.getService()
-                interims = form["InterimFields"][0][uid]
-                interimFields = json.loads(interims)
+                interimFields = item_data[uid]
                 if len(interimFields) > 0:
                     hasInterims[uid] = True
                 else:

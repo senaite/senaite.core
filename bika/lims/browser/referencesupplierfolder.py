@@ -6,7 +6,7 @@ class ReferenceSuppliersView(BikaListingView):
     icon = "++resource++bika.lims.images/referencesupplier_big.png"
     description = _("")
     contentFilter = {'portal_type': 'ReferenceSupplier'}
-    content_add_actions = {_('Reference Supplier'): "createObject?type_name=ReferenceSupplier"}
+    content_add_actions = {_('Add'): "createObject?type_name=ReferenceSupplier"}
     show_editable_border = False
     show_filters = False
     show_sort_column = False

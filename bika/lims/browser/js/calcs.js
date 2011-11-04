@@ -1,79 +1,69 @@
 jQuery( function($) {
 $(document).ready(function(){
 
-	// XXX when should this run...?
 	$(".listing_string_entry,.listing_select_entry").live('change', function(){
 		uid = $(this).attr('uid');
-		objectId = $(this).attr('objectId');
 		field = $(this).attr('field');
 		value = $(this).attr('value');
+		item_data = $(this).parents('table').prev('input[name="item_data"]').val();
 		// check the item's checkbox
 		$('#cb_'+uid).attr('checked', true);
-		// collect all results for back-dependant calculations
+
+		if ($(this).parents('td').last().hasClass('interim')){
+			// add value to form's item_data
+			item_data = $.parseJSON(item_data);
+			for(i = 0; i < item_data[uid].length;i++){
+				if(item_data[uid][i]['keyword'] == field){
+					item_data[uid][i]['value'] = value;
+					item_data = $.toJSON(item_data);
+					$(this).parents('table').prev('input[name="item_data"]').val(item_data);
+					break;
+				}
+			}
+		}
+		// collect all form results into a hash (by analysis UID)
 		var results = {};
 		$.each($("input[field='Result'], select[field='Result']"), function(i, e){
 			results[$(e).attr("uid")] = $(e).val();
 		});
-		// collect all interims by UID for back-dependant calculations
-		var interims = {};
-		$.each($("input[id$='_item_data'], select[field='Result']"), function(i, e){
-			interims[e.id.split("_")[0]] = $.parseJSON($(e).val());
-		});
-		interims = $.toJSON(interims);
 
 		options = {
 			type: 'POST',
 			url: 'listing_string_entry',
-			async: false,
+			//async: false,
 			data: {
+				'_authenticator': $('input[name="_authenticator"]').val(),
 				'uid': uid,
 				'field': field,
 				'value': value,
 				'results': $.toJSON(results),
+				'item_data': item_data,
 				'specification': $("input[name='specification']")
-					.filter(":checked").val(),
-				'item_data': interims,
-				'_authenticator': $('input[name="_authenticator"]').val()
+					.filter(":checked").val()
 			},
 			dataType: "json",
 			success: function(data,textStatus,$XHR){
-				// Update TR's interim_fields value to reflect
-				// new input field results
-				if('item_data' in data){
-					$('#'+uid+"_item_data").val($.toJSON(data.item_data[uid]));
-				}
 				// clear out all row alerts for rows with fresh results
 				for(i=0;i<$(data['results']).length;i++){
 					result = $(data['results'])[i];
 					$(".alert").filter("span[uid='"+result.uid+"']").empty();
 				}
-				// clear out all row alerts for rows with fresh alerts!
+				// clear out all row alerts for rows with fresh alerts
 				for(i=0;i<$(data['alerts']).length;i++){
 					lert = $(data['alerts'])[i];
 					$("span[uid='"+lert.uid+"']")
 					  .filter("span[field='"+lert.field+"']")
-					  .empty();
-				}
-				// Update uncertainty value
-				for(i=0;i<$(data['uncertainties']).length;i++){
-					u = $(data['uncertainties'])[i];
-					$('#'+u.uid+"-uncertainty").val(u.uncertainty);
-				}
-				// print alert icons / errors
-				for(i=0;i<$(data['alerts']).length;i++){
-					lert = $(data['alerts'])[i];
-					$("span[uid='"+lert.uid+"']")
-					  .filter("span[field='"+lert.field+"']")
+					  .empty()
 					  .append("<img src='++resource++bika.lims.images/"	+
 						lert.icon +".png' title='"+
 						lert.msg+"' uid='"+
 						lert.uid+"' icon='"+
 						lert.icon+"'/>");
-					// remove value from result fields to be re-inserted below
-					$("input[uid='"+uid+"']")
-						.filter("input[field='Result']").val('');
-					$("input[uid='"+uid+"']")
-						.filter("input[field='formatted_result']").val('');
+				}
+				// Update uncertainty value
+				for(i=0;i<$(data['uncertainties']).length;i++){
+					u = $(data['uncertainties'])[i];
+					$('#'+u.uid+"-uncertainty").val(u.uncertainty);
 				}
 				// put result values in their boxes
 				for(i=0;i<$(data['results']).length;i++){
@@ -88,9 +78,8 @@ $(document).ready(function(){
 						.filter("span[field='formatted_result']")
 						.empty()
 						.append(result.formatted_result);
-					// check the item's checkbox
-					// if value actually was changed from previous form data
-					if (true){
+					// check box
+					if (results != ''){
 						$('#cb_'+result.uid).attr('checked', true);
 					}
 				}
@@ -101,55 +90,69 @@ $(document).ready(function(){
 
 	// range specification radio clicks
 	$("input[name='specification']").click(function(){
-		result_elements = $("input[field='Result']");
-		for(i=0; i<result_elements.length; i++){
-			re = result_elements[i];
-			result = $(re).val();
-			if (result == ''){
-				continue
-			}
-			uid = $(re).attr('uid');
-			// remove old alerts
-			$("img[uid='"+uid+"']").filter("img[icon='warning']").remove();
-			$("img[uid='"+uid+"']").filter("img[icon='exclamation']").remove();
-			// get spec data from TR
-			specs = $.parseJSON($('#folder-contents-item-'+uid).attr('specs'));
-			specification = $("input[name='specification']")
-				.filter(":checked").val();
-			if (!specification in specs){
-				continue;
-			}
-
-			spec = specs[specification];
-			if (spec.length == 0){
-				continue;
-			}
-			result = parseFloat(result);
-			spec_min = parseFloat(spec.min);
-			spec_max = parseFloat(spec.max);
-
-			// shoulder first
-            error_amount =  (result/100)*parseFloat(spec['error'])
-            error_min = result - error_amount
-            error_max = result + error_amount
-            if (((result < spec_min) && (error_max >= spec_min)) ||
-				((result > spec_max) && (error_min <= spec_max)) ){
+		tables = $(".bika-listing-table table");
+		for(t=0; t<tables.length; t++){
+			table = tables[t];
+			specs = $.parseJSON($(table).siblings('input[name="specs"]').val());
+			result_elements = $(table).find('input[field="Result"]');
+			for(i=0; i<result_elements.length; i++){
+				re = result_elements[i];
+				result = $(re).val();
+				uid = $(re).attr('uid');
+				st_uid = $(re).attr('st_uid');
+				// remove old alerts
+				$("img[uid='"+uid+"']").filter("img[icon='warning']").remove();
+				$("img[uid='"+uid+"']").filter("img[icon='exclamation']").remove();
+				if (result == ''){
+					continue
+				}
+				spec = specs[st_uid];
+				if (spec == undefined){
+					continue;
+				}
+				// get spec data from TR
+				specification = $("input[name='specification']").filter(":checked").val();
+				if (!specification in spec) {
+					continue;
+				}
+				if (spec.length == 0) {
+					continue;
+				}
+				spec = spec[specification];
+				if (spec == undefined){
+					continue;
+				}
+				re_spec = spec[$(re).attr("objectid")];
+				result = parseFloat(result);
+				spec_min = parseFloat(re_spec.min);
+				spec_max = parseFloat(re_spec.max);
+				// shoulder first
+				error_amount =  (result/100)*parseFloat(re_spec['error'])
+				error_min = result - error_amount
+				error_max = result + error_amount
+				if (((result < spec_min) && (error_max >= spec_min)) ||
+					((result > spec_max) && (error_min <= spec_max)) ){
+					range_str = "min: " + spec_min +
+					            ", max: " + spec_max +
+								", error:" + re_spec['error'] + "%";
+					$("span[uid='"+uid+"']")
+					  .filter("span[field='Result']")
+					  .append("<img src='++resource++bika.lims.images/warning.png' uid='"+
+					  uid+"' icon='warning' title='Result out of range ("+range_str+")'/>");
+					continue;
+				}
+				// then check if in range
+				if (result >= spec_min && result <= spec_max) {
+					continue;
+				}
+				// fall to here; set red.
+				range_str = "min: " + spec_min +
+							", max: " + spec_max;
 				$("span[uid='"+uid+"']")
 				  .filter("span[field='Result']")
-				  .append("<img src='++resource++bika.lims.images/warning.png' uid='"+uid+"' icon='warning' title='Out Of Range: in shoulder'/>");
-				continue;
+				  .append("<img src='++resource++bika.lims.images/exclamation.png' uid='"+
+				  uid+"' icon='exclamation' title='Result out of range ("+range_str+")'/>");
 			}
-
-			// then check if in range
-            if (result >= spec_min && result <= spec_max) {
-				continue;
-			}
-
-			// fall to here; set red
-			$("span[uid='"+uid+"']")
-			  .filter("span[field='Result']")
-			  .append("<img src='++resource++bika.lims.images/exclamation.png' uid='"+uid+"' icon='exclamation' title='Out Of Range'/>");
-
 		}
 	});
 

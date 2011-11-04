@@ -19,7 +19,7 @@ class ARProfilesView(BikaListingView):
         super(ARProfilesView, self).__init__(context, request)
         self.contentFilter = {'portal_type': 'ARProfile',
                               'sort_on': 'sortable_title'}
-        self.content_add_actions = {_('AR Profile'):
+        self.content_add_actions = {_('Add'):
                                     "createObject?type_name=ARProfile"}
         self.icon = "++resource++bika.lims.images/arprofile_big.png"
         self.title = _("Analysis Request Profiles")

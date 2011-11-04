@@ -1150,13 +1150,13 @@ msgstr "Onderweg"
 msgid "sample due"
 msgstr "onderweg"
 
-msgid "Sample received"
+msgid "Received"
 msgstr "Monster ontvang"
 
 msgid "sample_received"
 msgstr "monster_ontvang"
 
-msgid "Assigned to Worksheet"
+msgid "Assigned"
 msgstr "Toegeken"
 
 msgid "assigned"
@@ -1205,7 +1205,7 @@ msgstr "gelewer"
 msgid "open"
 msgstr "oop"
 
-msgid "Worksheet open"
+msgid "Open"
 msgstr "Werkskaart oop"
 
 # More More

@@ -12,7 +12,7 @@
  <permission>BIKA: Retract sample</permission>
 
 
- <state state_id="assigned" title="Assigned to Worksheet">
+ <state state_id="assigned" title="Assigned">
   <exit-transition transition_id="submit"/>
   <exit-transition transition_id="unassign"/>
   <permission-map name="BIKA: Edit analyses"

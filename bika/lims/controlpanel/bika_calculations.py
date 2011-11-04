@@ -21,7 +21,7 @@ class CalculationsView(BikaListingView):
         super(CalculationsView, self).__init__(context, request)
         self.contentFilter = {'portal_type': 'Calculation',
                               'sort_on': 'sortable_title'}
-        self.content_add_actions = {_('Calculation'):
+        self.content_add_actions = {_('Add'):
                                     "createObject?type_name=Calculation"}
         self.title = _("Calculations")
         self.icon = "++resource++bika.lims.images/calculation_big.png"

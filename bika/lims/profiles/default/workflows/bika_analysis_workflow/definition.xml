@@ -34,7 +34,7 @@
   </permission-map>
  </state>
 
- <state state_id="sample_received" title="Sample received">
+ <state state_id="sample_received" title="Received">
   <exit-transition transition_id="submit"/>
   <permission-map name="BIKA: View Results" acquired="False">
    <permission-role>Manager</permission-role>

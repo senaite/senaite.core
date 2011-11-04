@@ -174,9 +174,9 @@ class Analysis(BaseContent):
     def result_in_range(self, result=None, specification="lab"):
         """ Check if a result is "in range".
             if result is None, self.getResult() is called for the result value.
-            Return False if out of range
-            Return True if in range
-            return '1' if in shoulder
+            Return False,failed_spec if out of range
+            Return True,None if in range
+            return '1',None if in shoulder
         """
 
         client_uid = specification == "client" and self.getClientUID() or None
@@ -187,7 +187,7 @@ class Analysis(BaseContent):
         try:
             result = float(str(result))
         except ValueError:
-            return True
+            return True, None
 
         service = self.getService()
         keyword = service.getKeyword()
@@ -202,24 +202,24 @@ class Analysis(BaseContent):
             spec = spec_obj.getResultsRangeDict()
         else:
             # if no range is specified we assume it is in range
-            return True
+            return True, None
 
         if spec.has_key(keyword):
             spec_min = float(spec[keyword]['min'])
             spec_max = float(spec[keyword]['max'])
 
             if spec_min <= result <= spec_max:
-                return True
+                return True, None
 
             """ check if in 'shoulder' error range - out of range, but in acceptable error """
-            error_amount =  (result/100)*float(spec[keyword]['error'])
+            error_amount = (result/100)*float(spec[keyword]['error'])
             error_min = result - error_amount
             error_max = result + error_amount
             if ((result < spec_min) and (error_max >= spec_min)) or \
                ((result > spec_max) and (error_min <= spec_max)):
-                return '1'
+                return '1', spec[keyword]
         else:
-            return True
-        return False
+            return True, None
+        return False, spec[keyword]
 
 atapi.registerType(Analysis, PROJECTNAME)

@@ -16,11 +16,6 @@
 	user python:sm.getUser();
 	roles python:user.getRoles();">
 
-<tal:comment replace="nothing">
-If we're going to set rowspan for a column, then rowspan must be applied to the
-column for all items, even if it's rowspan=1. The same applies for colspans.
-</tal:comment>
-
 <p class="discreet"
 	tal:condition="not: view/batch"
 		i18n:translate="description_no_visible_items_add_paste">
@@ -32,6 +27,14 @@ column for all items, even if it's rowspan=1. The same applies for colspans.
 	<span i18n:translate="clear_filters" class="link">[clear filters]</span></p>
 
 <span tal:replace="structure context/@@authenticator/authenticator"/>
+
+<input type="hidden"
+	name="specs"
+	tal:attributes="value view/bika_listing/json_specs|nothing"/>
+<input type="hidden"
+	id="item_data"
+	name="item_data"
+	tal:attributes="value view/bika_listing/json_interim_fields|nothing"/>
 
 <table class="listing"
 	id="listing-table"
@@ -183,12 +186,7 @@ Table data rows start here
 			tal:attributes="class item/table_row_class;
 				id string:folder-contents-item-${item/uid};
 				uid item/uid;
-				specs python:item.has_key('specs') and item['specs'] or [];
 				keyword keyword;">
-		<input type="hidden" tal:attributes="
-			name string:InterimFields.${item/uid}:records;
-			id string:${item/uid}_item_data;
-			value item/item_data|nothing;"/>
 
 <tal:comment replace="nothing">***************
 Draggable column for manually ordering items
@@ -308,6 +306,7 @@ Table cells for each column from in review_state's column list.
 					tabindex tabindex/next;
 					size input_width;
 					uid string:${item/uid};
+					st_uid string:${item/st_uid};
 					objectId string:${item/id};
 					field python:column;
 					value python:item[column]['value'];"/>
@@ -322,6 +321,7 @@ Table cells for each column from in review_state's column list.
 				tal:attributes="
 					size input_width;
 					uid string:${item/uid};
+					st_uid string:${item/st_uid|nothing};
 					field python:column;
 					value python:item[column]['value'];"/>
 		</span>
@@ -339,6 +339,7 @@ Table cells for each column from in review_state's column list.
 					tabindex tabindex/next;
 					size input_width;
 					uid string:${item/uid};
+					st_uid string:${item/st_uid|nothing};
 					objectId string:${item/id};
 					field python:column;
 					name string:${column}.${item/uid}:records;
@@ -359,6 +360,7 @@ Table cells for each column from in review_state's column list.
 				tal:attributes="
 					size input_width;
 					uid string:${item/uid};
+					st_uid string:${item/st_uid|nothing};
 					objectId string:${item/id};
 					field python:column;
 					name string:${column}.${item/uid}:records;
@@ -381,6 +383,7 @@ Table cells for each column from in review_state's column list.
 				type="hidden"
 				tal:attributes="
 					uid string:${item/uid};
+					st_uid string:${item/st_uid|nothing};
 					objectId string:${item/id};
 					field string:Result;
 					name string:Result.${item/uid}:records;
@@ -389,8 +392,9 @@ Table cells for each column from in review_state's column list.
 
 	</span>
 
+	<tal:comment replace="nothing"><!-- boolean --></tal:comment>
 	<span tal:omit-tag
-		tal:condition="python:field_type == 'boolean'">		<tal:comment replace="nothing"><!-- boolean --></tal:comment>
+		tal:condition="python:field_type == 'boolean'">
 		<input
 			type="checkbox"
 			tal:condition="allow_edit"
@@ -464,21 +468,21 @@ Table cells for each column from in review_state's column list.
 		<img
 			tal:condition="python:column == 'Result' and
 			                      item['Result'] and
-								  not item['result_in_range']"
-			tal:attributes="uid item/uid;"
+								  not item['result_in_range'][0]"
+			tal:attributes="
+				uid item/uid;
+				title python:'Result out of range (min: %(min)s, max: %(max)s)'%(item['result_in_range'][1]);"
 			src='++resource++bika.lims.images/exclamation.png'
-			i18n:attributes="title"
-			title="Result out of range"
 			icon="exclamation"/>
 		<img
 			tal:condition="python:column == 'Result' and
 									item['Result'] and
-									item['result_in_range'] == '1'"
-			tal:attributes="uid item/uid;"
+									item['result_in_range'][0] == '1'"
+			tal:attributes="
+				uid item/uid;
+				title python:'Result out of range (min: %(min)s, max: %(max)s, error: %(error)s%%)'%(item['result_in_range'][1]);"
 			src='++resource++bika.lims.images/warning.png'
-			i18n:attributes="title"
-			title="Result out of range"
-			icon="warning"/> <tal:comment replace="nothing"><!-- shoulder --></tal:comment>
+		icon="warning"/> <tal:comment replace="nothing"><!-- shoulder --></tal:comment>
 	</span>
 	</span> <tal:comment replace="nothing"><!-- </span tal:condition="not:replace"> --></tal:comment>
 

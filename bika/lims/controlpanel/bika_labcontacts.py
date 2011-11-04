@@ -21,7 +21,7 @@ class LabContactsView(BikaListingView):
         super(LabContactsView, self).__init__(context, request)
         self.contentFilter = {'portal_type': 'LabContact',
                               'sort_on': 'sortable_title'}
-        self.content_add_actions = {_('Lab Contact'):
+        self.content_add_actions = {_('Add'):
                                     "createObject?type_name=LabContact"}
         self.title = _("Lab Contacts")
         self.icon = "++resource++bika.lims.images/lab_contact_big.png"

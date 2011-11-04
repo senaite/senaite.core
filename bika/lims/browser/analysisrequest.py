@@ -35,6 +35,13 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
         skiplist = self.request.get('workflow_skiplist', [])
         action, came_from = WorkflowAction._get_form_workflow_action(self)
 
+        # XXX combine data from multiple bika listing tables.
+        item_data = {}
+        if 'item_data' in form:
+            for i_d in form['item_data']:
+                for i,d in json.loads(i_d).items():
+                    item_data[i] = d
+
         ## publish
         if action in ('prepublish', 'publish', 'prepublish'):
             if not isActive(self.context):
@@ -85,8 +92,7 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
                     continue
                 results[uid] = result
                 service = analysis.getService()
-                interims = form["InterimFields"][0][uid]
-                interimFields = json.loads(interims)
+                interimFields = item_data[uid]
                 if len(interimFields) > 0:
                     hasInterims[uid] = True
                 else:
@@ -117,7 +123,7 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
                         if dep_state in ('sample_due', 'sample_received',):
                             can_submit = False
                             break
-                if can_submit:
+                if can_submit and analysis not in submissable:
                     submissable.append(analysis)
 
             # and then submit them.
@@ -586,7 +592,7 @@ class AnalysisRequestSelectSampleView(BikaListingView):
                          'getSampleTypeTitle',
                          'getSamplePointTitle']},
             {'id':'received',
-             'title': _('Sample Received'),
+             'title': _('Received'),
              'contentFilter': {'review_state': 'received'},
              'columns': ['getSampleID',
                          'getClientReference',

@@ -18,10 +18,10 @@
 				href python:view.content_add_actions[add_item];
 				class python:'content_add_link %s' % view.content_add_actions[add_item]">
 			<img src="++resource++bika.lims.images/add.png"/>
-			<span tal:replace="string: Add ${add_item}"/>
+			<span tal:replace="add_item"/>
 		</a>
 		<span class="content_add_link"
-			tal:condition="python:add_item == 'Worksheet'">
+			tal:condition="python:context.portal_type == 'WorksheetFolder'">
 				<select class='wstemplate'>
 					<option value='' i18n:translate="">Select template</option>
 					<tal:options repeat="option view/getWorksheetTemplates">

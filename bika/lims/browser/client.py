@@ -104,7 +104,7 @@ class ClientAnalysisRequestsView(BikaListingView):
 
         # add actions enabled only for active clients
         if wf.getInfoFor(self.context, 'inactive_state', '') == 'active':
-            self.content_add_actions[_('Analysis Request')] = \
+            self.content_add_actions[_('Add')] = \
                 "analysisrequest_add"
 
         # client contact required
@@ -165,7 +165,7 @@ class ClientAnalysisRequestsView(BikaListingView):
                         'getSampleTypeTitle',
                         'getSamplePointTitle']},
             {'id':'sample_received',
-             'title': _('Sample received'),
+             'title': _('Received'),
              'contentFilter': {'review_state': 'sample_received',
                                'sort_on':'id',
                                'sort_order': 'reverse'},
@@ -179,7 +179,7 @@ class ClientAnalysisRequestsView(BikaListingView):
                         'DateSampled',
                         'getDateReceived']},
             {'id':'assigned',
-             'title': _('Assigned to Worksheet'),
+             'title': _('Assigned'),
              'contentFilter': {'worksheetanalysis_review_state': 'assigned',
                                'review_state': ('sample_received', 'to_be_verified',
                                                 'attachment_due', 'verified',
@@ -507,7 +507,7 @@ class ClientARProfilesView(BikaListingView):
     def __init__(self, context, request):
         super(ClientARProfilesView, self).__init__(context, request)
         self.contentFilter = {'portal_type': 'ARProfile'}
-        self.content_add_actions = {_('AR Profile'):
+        self.content_add_actions = {_('Add'):
                                     "createObject?type_name=ARProfile"}
         self.show_editable_border = True
         self.show_sort_column = False
@@ -543,7 +543,7 @@ class ClientAnalysisSpecsView(BikaListingView):
     def __init__(self, context, request):
         super(ClientAnalysisSpecsView, self).__init__(context, request)
         self.contentFilter = {'portal_type': 'AnalysisSpec'}
-        self.content_add_actions = {_('Analysis Spec'): \
+        self.content_add_actions = {_('Add'): \
                                "createObject?type_name=AnalysisSpec"}
         self.show_editable_border = True
         self.show_table_only = False
@@ -590,7 +590,7 @@ class ClientAttachmentsView(BikaListingView):
         super(ClientAttachmentsView, self).__init__(context, request)
         self.contentFilter = {'portal_type': 'Attachment',
                               'sort_order': 'reverse'}
-        self.content_add_actions = {_('Attachment'): "createObject?type_name=Attachment"}
+        self.content_add_actions = {_('Add'): "createObject?type_name=Attachment"}
         self.show_editable_border = True
         self.show_sort_column = False
         self.show_select_row = False
@@ -659,7 +659,7 @@ class ClientOrdersView(BikaListingView):
         self.contentFilter = {'portal_type': 'SupplyOrder',
                               'sort_on':'id',
                               'sort_order': 'reverse'}
-        self.content_add_actions = {_('Order'): "createObject?type_name=SupplyOrder"}
+        self.content_add_actions = {_('Add'): "createObject?type_name=SupplyOrder"}
         self.show_editable_border = True
         self.show_table_only = False
         self.show_sort_column = False
@@ -713,7 +713,7 @@ class ClientContactsView(BikaListingView):
         super(ClientContactsView, self).__init__(context, request)
         self.contentFilter = {'portal_type': 'Contact',
                               'sort_on':'sortable_title'}
-        self.content_add_actions = {_('Contact'):
+        self.content_add_actions = {_('Add'):
                                     "createObject?type_name=Contact"}
         self.show_editable_border = True
         self.show_sort_column = False

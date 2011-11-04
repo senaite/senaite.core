@@ -6,7 +6,7 @@
 
  <permission>BIKA: Edit Worksheet</permission>
 
- <state state_id="open" title="Worksheet open">
+ <state state_id="open" title="Open">
   <exit-transition transition_id="submit"/>
   <permission-map name="BIKA: Edit Worksheet" acquired="False">
    <permission-role>Manager</permission-role>
@@ -89,10 +89,10 @@
   </guard>
  </transition>
 
- <transition transition_id="verify" title="Verify worksheet"
+ <transition transition_id="verify" title="Verify"
              new_state="verified" trigger="USER"
              before_script="" after_script="">
-  <action url="workflow_action?workflow_action=verify" category="workflow" icon="">Verify Worksheet</action>
+  <action url="workflow_action?workflow_action=verify" category="workflow" icon="">Verify</action>
   <guard>
    <guard-expression>python:here.guard_verify_worksheet()</guard-expression>
   </guard>

@@ -19,7 +19,7 @@ class AttachmentTypesView(BikaListingView):
         super(AttachmentTypesView, self).__init__(context, request)
         self.contentFilter = {'portal_type': 'AttachmentType',
                               'sort_on': 'sortable_title'}
-        self.content_add_actions = {_('Attachment Type'):
+        self.content_add_actions = {_('Add'):
                                     "createObject?type_name=AttachmentType"}
         self.icon = "++resource++bika.lims.images/attachment_big.png"
         self.title = _("Attachment Types")

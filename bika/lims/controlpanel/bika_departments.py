@@ -20,7 +20,7 @@ class DepartmentsView(BikaListingView):
         super(DepartmentsView, self).__init__(context, request)
         self.contentFilter = {'portal_type': 'Department',
                               'sort_on': 'sortable_title'}
-        self.content_add_actions = {_('Department'):
+        self.content_add_actions = {_('Add'):
                                     "createObject?type_name=Department"}
         self.title = _("Lab Departments")
         self.icon = "++resource++bika.lims.images/department_big.png"

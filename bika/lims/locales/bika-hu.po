@@ -1262,7 +1262,7 @@ msgstr "laborban"
 msgid "in_the_lab"
 msgstr "laborban"
 
-msgid "Assigned to Worksheet"
+msgid "Assigned"
 msgstr "Hozzárendelve a Munkalaphoz"
 
 msgid "assigned"
@@ -1307,13 +1307,13 @@ msgstr "teljesítve"
 msgid "open"
 msgstr "nyitott"
 
-msgid "Worksheet open"
+msgid "Open"
 msgstr "Nyitott Munkalap"
 
 msgid "Submit for verification"
 msgstr "Elküldés jóváhagyásra"
 
-msgid "Verify worksheet"
+msgid "Verify"
 msgstr "Munkalap jóváhagyása"
 
 # More More
