@@ -1,0 +1,76 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      lang="en"
+      metal:use-macro="context/main_template/macros/master"
+      i18n:domain="bika">
+
+<head>
+    <metal:block fill-slot="top_slot"
+                 tal:define="dummy python:request.set('disable_border', 1)" />
+</head>
+
+
+<body>
+
+<div metal:fill-slot="main">
+<script type="text/javascript" src="utils.js"></script>
+<h1>
+<img src="++resource++bika.lims.images/accredited_big.png"/>
+<span i18n:translate="heading_accreditation">Accreditation</span>
+</h1>
+
+
+<div i18n:translate="accreditation_text">
+<tal:block replace="context/bika_setup/laboratory/Title" i18n:name="name_lab"/>
+has been accredited as
+<tal:block replace="context/bika_setup/laboratory/Accreditation" i18n:name="accreditation"/>
+conformant by
+<tal:block replace="context/bika_setup/laboratory/AccreditationBody" i18n:name="accreditation_body"/>,
+the <tal:block replace="context/bika_setup/laboratory/AccreditationBodyLong" i18n:name="accreditation_body_long"/>
+</div>
+<br>
+<div>
+<a href=""
+    tal:attributes="href context/bika_setup/laboratory/AccreditationBodyURL"
+    i18n:translate="accreditation_body">
+<tal:block replace="context/bika_setup/laboratory/AccreditationBody" i18n:name="accreditation_body"/>
+</a>
+<span i18n:translate="accreditation_body_text">
+is recognised by government as the single national South African accreditation body. It is an independent organisation assessing testing and calibration laboratories for compliance to the <tal:block replace="context/bika_setup/laboratory/Accreditation" i18n:name="accreditation"/> standard, verifying competence through impartial expert assessment
+</span>
+</div>
+<br>
+<div i18n:translate="accredited_services_text">
+The following analysis services have been included in the <tal:block replace="context/bika_setup/laboratory/AccreditationBody" i18n:name="accreditation_body"/> schedule of Accreditation for this Laboratory:
+</div>
+<ul>
+<tal:categories
+ tal:define="
+        categories python:[c for c in context.portal_catalog(portal_type='AnalysisCategory')];
+        sort_on python:(('Title', 'nocase', 'asc'),);
+        categories python:sequence.sort(categories, sort_on)"
+    tal:repeat="category categories">
+<tal:category
+    tal:define="
+        all_services python:[s.getObject() for s in context.portal_catalog(portal_type='AnalysisService', getCategoryUID=category.UID)];
+        services python:[s for s in all_services if s.getAccredited()];
+        sort_on python:(('Title', 'nocase', 'asc'),);
+        services python:sequence.sort(services, sort_on)">
+<div tal:condition="services">
+<li tal:content="category/Title"></li>
+<tal:services tal:repeat="service services">
+<div  tal:define="item_title_or_id service/title_or_id">
+<a   onClick="" title="Click for details"
+     tal:attributes="onClick string:javascript:showMethod('$portal_url', '${service/getId}')"
+     tal:content="service/Title">
+Alcohol
+</a>
+</div>
+</tal:services>
+</div>
+</tal:category>
+</tal:categories>
+</ul>
+</div>
+
+</body>
+</html>

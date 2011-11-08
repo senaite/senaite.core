@@ -41,7 +41,7 @@
                 tal:attributes="href python: o.aq_parent.absolute_url();
                                 title python: o.aq_parent.getId();">
                 <img src="" height="16" width="16"
-                        tal:attributes="src string:${context/portal_url}/${o/aq_parent/getIcon};"/>
+                        tal:attributes="src string:++resource++bika.lims.images/service.png"/>
                 <span tal:replace="o/Title|o/getId"/>
             </a>
 
