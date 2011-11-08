@@ -45,7 +45,7 @@
         </tr>
 
         <tr>
-            <th i18n:translate="label_clientsampleid">Client Sample ID</th>
+            <th i18n:translate="label_clientsampleid">Client SID</th>
             <td class="left" tal:content="here/getClientSampleID">S001</td>
         </tr>
 

@@ -113,7 +113,7 @@
 		<tr>
 			<th i18n:translate="label_clientreference">Client Reference</th>
 			<td tal:content="sample/getClientReference">R001</td>
-			<th i18n:translate="label_clientsampleid">Client Sample ID</th>
+			<th i18n:translate="label_clientsampleid">Client SID</th>
 			<td tal:content="sample/getClientSampleID">S001</td>
 		</tr>
 

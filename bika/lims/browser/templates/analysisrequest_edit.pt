@@ -251,9 +251,9 @@
                 </td>
         </tal:block>
     </tr>
-    <!-- Client Sample ID -->
+    <!-- Client SID -->
     <tr tal:define="field_name string:ClientSampleID">
-        <th colspan="2" i18n:translate="label_clientsampleid">Client Sample ID</th>
+        <th colspan="2" i18n:translate="label_clientsampleid">Client SID</th>
         <td>
             <img class="copyButton" tal:condition="not: edit"
                 tal:attributes="name field_name;src string:${portal/absolute_url}/++resource++bika.lims.images/copy.png"/>

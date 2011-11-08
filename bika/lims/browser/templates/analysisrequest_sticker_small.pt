@@ -83,7 +83,7 @@ td {
 <thead>
 
 <tr>
-<th i18n:translate="label_sticker_sample_id">LIMS Sample ID</th>
+<th i18n:translate="label_sticker_sample_id">Sample ID</th>
 <td>
 <strong tal:content="sample/getSampleID">S-0001</strong></td>
 </tr>

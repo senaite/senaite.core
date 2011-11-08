@@ -44,7 +44,7 @@
 		</tr>
 
 		<tr>
-			<th id="" i18n:translate="label_clientsampleid">Client Sample ID</th>
+			<th id="" i18n:translate="label_clientsampleid">Client SID</th>
 			<td class="left">
 				<input type="text" size="10" name="ClientSampleID"
 					tal:attributes="
