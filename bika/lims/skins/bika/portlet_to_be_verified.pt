@@ -35,7 +35,8 @@
 
         <tal:block repeat="o results">
         <dd tal:define="oddrow repeat/o/odd"
-                tal:attributes="class python:test(oddrow, 'portletItem odd','portletItem even')">
+            style="padding-bottom:2px;padding-top:0px;"
+            tal:attributes="class python:test(oddrow, 'portletItem odd','portletItem even')">
 
             <a href="#"
                 class="marker"
@@ -50,22 +51,26 @@
             </a>
 
             <div class="portletDetails"
-                    tal:define="moddate o/ModificationDate;"
-                    tal:content="python:plone_view.toLocalizedTime(moddate)">July 7, 08:11
+                 style="text-align:right"
+                 tal:define="moddate o/ModificationDate;"
+                 tal:content="python:plone_view.toLocalizedTime(moddate)">July 7, 08:11
             </div>
         </dd>
         </tal:block>
-
-        <dd class="portletFooter" tal:condition="python:len(rs) > 5">
-
-            <a href=""
+        <dd class="portletFooter" tal:condition="python:len(ar)+len(ws) > 5">
+            <a  tal:condition="ws"
                 class="portletMore"
-                tal:attributes="href string:${utool}/analysisrequests?review_state=to_be_verified"
-                i18n:translate="box_morelink"
-                >
-                More...
+                tal:attributes="href string:${context/portal_url}/worksheets?review_state=to_be_verified">
+                <span tal:content="python:str(len(ws))"/>
+                <span i18n:translate="Worksheets">Worksheets...</span>
             </a>
-
+            <br tal:condition="ws"/>
+            <a  tal:condition="ar"
+                class="portletMore"
+                tal:attributes="href string:${context/portal_url}/analysisrequests?review_state=to_be_verified">
+                <span tal:content="python:str(len(ar))"/>
+                <span i18n:translate="Worksheets">ARs...</span>
+            </a>
         </dd>
 
     </dl>

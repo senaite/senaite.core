@@ -73,6 +73,12 @@
         </tr>
 
         <tr>
+            <th i18n:translate="Composite">Composite</th>
+            <td class="left"
+                tal:content="here/getComposite">False</td>
+        </tr>
+
+        <tr>
             <th i18n:translate="label_hazardous">Hazardous</th>
             <td class="left"
                 tal:content="sampletype/getHazardous">False</td>

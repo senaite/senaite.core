@@ -10,6 +10,7 @@
   <include file="client.zcml"/>
   <include file="clientfolder.zcml"/>
   <include file="contact.zcml"/>
+  <include file="late_analyses.zcml"/>
   <include file="menu.zcml"/>
   <include file="referencesample.zcml"/>
   <include file="referencesupplier.zcml"/>

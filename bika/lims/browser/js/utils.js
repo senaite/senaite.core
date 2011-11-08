@@ -30,7 +30,6 @@ jQuery( function($) {
 
 	$(document).ready(function(){
 
-
 		$(".numeric").live('keypress', function(event) {
 		  // Backspace, tab, enter, end, home, left, right
 		  // We don't support the del key in Opera because del == . == 46.

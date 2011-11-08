@@ -32,6 +32,7 @@ class AnalysesView(BikaListingView):
         self.show_sort_column = False
         self.show_select_row = False
         self.show_select_column = True
+        request.set('disable_plone.rightcolumn',1);
         self.pagesize = 1000
 
         # each editable item needs it's own allow_edit

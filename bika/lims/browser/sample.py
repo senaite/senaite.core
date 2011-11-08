@@ -106,6 +106,7 @@ class ajaxSampleSubmit():
             sample = self.context
             sampleType = form['SampleType']
             samplePoint = form['SamplePoint']
+            composite = form['Composite']
             errors = {}
             pc = getToolByName(self.context, 'portal_catalog')
             if sampleType == '':
@@ -123,7 +124,8 @@ class ajaxSampleSubmit():
                 ClientSampleID = form['ClientSampleID'],
                 SampleType = sampleType,
                 SamplePoint = samplePoint,
-                DateSampled = form['DateSampled']
+                DateSampled = form['DateSampled'],
+                Composite = composite
             )
             sample.reindexObject()
             ars = sample.getAnalysisRequests()
@@ -166,3 +168,15 @@ class SamplesView(ClientSamplesView):
                  (obj.aq_parent.absolute_url(), obj.aq_parent.Title())
 
         return items
+
+class Sticker(BrowserView):
+    """ Return html for a Sample label """
+
+    small = ViewPageTemplateFile("templates/sample_sticker_small.pt")
+    large = ViewPageTemplateFile("templates/sample_sticker.pt")
+
+    def __call__(self):
+        if self.request.get('size', '') == 'small':
+            return self.small()
+        else:
+            return self.large()

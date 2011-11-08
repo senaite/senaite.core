@@ -105,6 +105,10 @@ schema = BikaSchema.copy() + Schema((
             visible = {'edit':'hidden'},
         ),
     ),
+    StringField('SampledByUser',
+        index='FieldIndex',
+        searchable=True,
+    ),
     DateTimeField('DateReceived',
         widget = DateTimeWidget(
             label = _("Date received"),
@@ -148,6 +152,14 @@ schema = BikaSchema.copy() + Schema((
         expression = 'context.getSamplePoint() and context.getSamplePoint().UID() or None',
         widget = ComputedWidget(
             visible = False,
+        ),
+    ),
+    BooleanField('Composite',
+        default=False,
+        widget=BooleanWidget(
+            label="Composite",
+            label_msgid="label_composite",
+            i18n_domain=I18N_DOMAIN,
         ),
     ),
 ))

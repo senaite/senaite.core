@@ -369,11 +369,13 @@ class AnalysisRequestAddView(AnalysisRequestViewView):
 
     def __init__(self, context, request):
         AnalysisRequestViewView.__init__(self, context, request)
-        self.col_count = 6
         self.came_from = "add"
         self.can_edit_sample = True
         self.can_edit_ar = True
         self.DryMatterService = self.context.bika_setup.getDryMatterService()
+        request.set('disable_plone.rightcolumn',1);
+
+        self.col_count = 6
 
     def __call__(self):
         return self.template()
@@ -695,12 +697,25 @@ def getServiceDependencies(context, service_uid):
     walk(deps)
     return result
 
-class ajaxgetServiceDependencies():
-    """ Return json(getServiceDependencies) """
+
+class Sticker(BrowserView):
+    """ Return html for an AR label """
+    small = ViewPageTemplateFile("templates/analysisrequest_sticker_small.pt")
+    large = ViewPageTemplateFile("templates/analysisrequest_sticker.pt")
 
     def __init__(self, context, request):
         self.context = context
         self.request = request
+
+    def __call__(self):
+        if self.request.get('size', '') == 'small':
+            return self.small()
+        else:
+            return self.large()
+
+
+class ajaxgetServiceDependencies():
+    """ Return json(getServiceDependencies) """
 
     def __call__(self):
         plone.protect.CheckAuthenticator(self.request)

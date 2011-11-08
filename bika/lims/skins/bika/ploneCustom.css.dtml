@@ -136,19 +136,11 @@ div.position-1\:4 {
 }
 #listing-table .state-cancelled {
 	background-color: #FFC8C8  !important;
-    font-weight: bold;
 	color: #222 !important;
-}
-#listing-table .state-cancelled a {
-    font-weight: bold;
 }
 #listing-table .state-inactive {
 	background-color: #FFC8C8  !important;
-    font-weight: bold;
 	color: #222 !important;
-}
-#listing-table .state-inactive a {
-    font-weight: bold;
 }
 #listing-table .state-due,
 #listing-table .state-sample_due {

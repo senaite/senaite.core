@@ -149,7 +149,6 @@ class ClientAnalysisRequestsView(BikaListingView):
                         'getSamplePointTitle',
                         'DateSampled',
                         'getDateReceived',
-                        'getDatePublished',
                         'state_title']},
             {'id':'sample_due',
              'title': _('Sample due'),

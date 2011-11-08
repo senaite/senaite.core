@@ -1,7 +1,6 @@
 index_html,Document
 installation-verification,Document
 setup-data-in-this-installation,Document
-bika_setup,BikaSetup
 clients,ClientFolder
 samples,SamplesFolder
 analysisrequests,AnalysisRequestsFolder
@@ -10,3 +9,4 @@ referencesamples,ReferenceSamplesFolder
 referencesuppliers,ReferenceSupplierFolder
 invoices,InvoiceFolder
 pricelists,PricelistFolder
+bika_setup,BikaSetup

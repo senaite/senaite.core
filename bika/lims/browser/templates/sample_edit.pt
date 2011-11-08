@@ -93,6 +93,14 @@
 		</tr>
 
 		<tr>
+			<th i18n:translate="Composite">Composite</th>
+			<td class="left">
+				<input type="checkbox" name="Composite" class="noborder" id="Composite"
+					tal:attributes="checked python:here.getComposite() and 'checked' or'';"/>
+			</td>
+		</tr>
+
+   		<tr>
 			<th>
 				<span i18n:translate="label_datesampled">Date sampled</span> &nbsp;
 				<span class="fieldRequired"/>

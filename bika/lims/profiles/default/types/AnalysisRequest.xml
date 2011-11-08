@@ -75,23 +75,23 @@
 </action>
 
 <action title="Large Sticker"
-	action_id="sticker_lrg"
+	action_id="sticker_large"
 	category="document_actions"
 	condition_expr=""
 	icon_expr="string:${object_url}/++resource++bika.lims.images/sticker_large.png"
 	link_target=""
-	url_expr="string:${object_url}/sticker_large"
+	url_expr="string:${object_url}/sticker?size=large"
 	visible="True">
 	<permission value="View"/>
 </action>
 
 <action title="Small Sticker"
-	action_id="sticker_sml"
+	action_id="sticker_small"
 	category="document_actions"
 	condition_expr=""
 	icon_expr="string:${object_url}/++resource++bika.lims.images/sticker_small.png"
 	link_target=""
-	url_expr="string:${object_url}/sticker_small"
+	url_expr="string:${object_url}/sticker?size=small"
 	visible="True">
 	<permission value="View"/>
 </action>

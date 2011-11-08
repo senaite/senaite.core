@@ -22,6 +22,7 @@
     <element value="InvoiceFolder"/>
 
     <element value="PricelistFolder"/>
+
     <element value="Address"/>
     <element value="Analysis"/>
     <element value="AnalysisCategory"/>
@@ -33,7 +34,7 @@
     <element value="ARProfile"/>
     <element value="Attachment"/>
     <element value="AttachmentType"/>
-    <element value="BikaSetup"/>
+<!--    <element value="BikaSetup"/>-->
     <element value="Calculation"/>
     <element value="Client"/>
     <element value="Department"/>

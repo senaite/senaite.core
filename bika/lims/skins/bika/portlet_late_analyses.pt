@@ -6,7 +6,7 @@
 
 <div metal:define-macro="portlet"
      tal:define="member python: context.portal_membership.getAuthenticatedMember()"
-     tal:condition="python:member.has_role(('LabManager', 'LabClerk', 'Analyst'))">
+     tal:condition="python:member.has_role(('LabManager', 'LabClerk', 'Analyst', 'Manager'))">
 
 <tal:late
      tal:define="portal context/portal_url/getPortalObject;
@@ -27,31 +27,27 @@
 
     <dl class="portlet" id="portlet-late-analysis">
 
-        <dt class="portletHeader" style="background-color: #ff0000">
+        <dt class="portletHeader" style="background-color: #ff0000; color:#fff !important;">
         <img src="" tal:attributes="src string:++resource++bika.lims.images/late.png">
         <span i18n:translate="box_late_analyses">Late Analyses</span></dt>
 
         <tal:block repeat="o results">
         <dd tal:define="oddrow repeat/o/odd"
+            style="padding-bottom:2px;padding-top:0px;"
             tal:attributes="class python:test(oddrow, 'portletItem odd','portletItem even')">
 
             <a href="#" class="marker"
                 tal:attributes="href python: o.aq_parent.absolute_url();
-                                title o/Description">
+                                title python: o.aq_parent.getId();">
                 <img src="" height="16" width="16"
-                        tal:attributes="src string:${context/portal_url}/${o/getIcon};
-                                        title o/Type;" />
-                <span tal:replace="o/Title|o/getId">
-                Ph
-                </span>
-                <br />
-                on
-                <span tal:replace="python: o.aq_parent.getId()"></span>
+                        tal:attributes="src string:${context/portal_url}/${o/aq_parent/getIcon};"/>
+                <span tal:replace="o/Title|o/getId"/>
             </a>
 
             <div class="portletDetails"
-                    tal:define="moddate o/ModificationDate;"
-                    tal:content="python:plone_view.toLocalizedTime(moddate)">July 7, 08:11
+                 style="text-align:right"
+                 tal:define="moddate o/ModificationDate;"
+                 tal:content="python:plone_view.toLocalizedTime(moddate)">July 7, 08:11
             </div>
         </dd>
         </tal:block>
@@ -60,10 +56,10 @@
 
             <a href=""
                 class="portletMore"
-                tal:attributes="href string:${context/portal_url}/analyses_late"
-                i18n:translate="box_morelink"
+                tal:attributes="href string:${context/portal_url}/late_analyses"
                 >
-                More...
+                <span tal:content="python:str(len(rs)-5)"/>
+                <span i18n:translate="box_morelink">More...</span>
             </a>
 
         </dd>

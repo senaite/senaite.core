@@ -4,9 +4,12 @@
 
 <body>
 
-<div metal:define-macro="portlet">
+<div metal:define-macro="portlet"
+     tal:define="portal_state context/@@plone_portal_state;
+                 portal_url portal_state/portal_url;
+                 plone_view context/@@plone;">
     <div class="portlet" id="portlet-accreditation"
-         tal:condition="python:context.bika_labinfo.laboratory.getLaboratoryAccredited()" >
+         tal:condition="python:context.bika_setup.laboratory.getLaboratoryAccredited()" >
         <a href="#"
             tal:attributes="href string:${portal_url}/accreditation">
             <img src="" tal:attributes="src string:++resource++bika.lims.images/accreditation_logo.png">
