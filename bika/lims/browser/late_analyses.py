@@ -31,7 +31,7 @@ class LateAnalysesView(BikaListingView):
         self.show_select_row = False
         self.show_select_column = False
         self.pagesize = 100
-        self.view_url = self.view_url + "/late_analyses"x`
+        self.view_url = self.view_url + "/late_analyses"
         self.columns = {'Analysis': {'title': _('Analysis')},
                         'RequestID': {'title': _('Request ID')},
                         'Client': {'title': _('Client')},
@@ -81,7 +81,8 @@ class LateAnalysesView(BikaListingView):
             hours = int((late % 1 ) * 24)
             mins = int((((late % 1) * 24) % 1) * 60)
             late_str = days and "%s day%s" % (days, days > 1 and 's' or '') or ""
-            late_str += hours and " %s hour%s" % (hours, hours > 1 and 's' or '') or ""
+            if days < 2:
+                late_str += hours and " %s hour%s" % (hours, hours > 1 and 's' or '') or ""
             if not days and not hours:
                 late_str = "%s min%s" % (mins, mins > 1 and 's' or '')
 
