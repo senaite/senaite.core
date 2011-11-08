@@ -1308,10 +1308,10 @@ msgid "label_return_to_samples"
 msgstr "DE_Return to samples"
 
 msgid "label_sticker_sample_id"
-msgstr "DE_LIMS Sample ID"
+msgstr "DE_ Sample ID"
 
 msgid "label_sticker_client_sample_id"
-msgstr "DE_Client Sample ID"
+msgstr "DE_Client SID"
 
 msgid "label_sticker_order_id"
 msgstr "DE_Client Order ID"

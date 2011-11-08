@@ -1481,11 +1481,11 @@ msgstr "Return to samples"
 
 # to be translated
 msgid "label_sticker_sample_id"
-msgstr "LIMS Sample ID"
+msgstr "Sample ID"
 
 # to be translated
 msgid "label_sticker_client_sample_id"
-msgstr "Client Sample ID"
+msgstr "Client SID"
 
 # to be translated
 msgid "label_sticker_order_id"
