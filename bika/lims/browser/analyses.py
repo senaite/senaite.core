@@ -107,7 +107,9 @@ class AnalysesView(BikaListingView):
             self.interim_fields[obj.UID()] = obj.getInterimFields()
 
             # calculate specs
-            if obj.portal_type != 'ReferenceAnalysis':
+            if obj.portal_type == 'ReferenceAnalysis':
+                items[i]['st_uid'] = obj.aq_parent.UID()
+            else:
                 if self.context.portal_type == 'AnalysisRequest':
                     sample = self.context.getSample()
                     st_uid = sample.getSampleType().UID()

@@ -195,7 +195,8 @@ a .navTreeCurrentItem {
 
 td.Result,
 td.getRequestID,
-td.Title {
+td.Title,
+td.ID {
   white-space:nowrap !important;
 }
 

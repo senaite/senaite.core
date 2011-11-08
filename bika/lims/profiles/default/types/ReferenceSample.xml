@@ -18,8 +18,8 @@
 <property name="allow_discussion">False</property>
 <property name="default_view_fallback">False</property>
 
-<alias from="(Default)" to="base_edit"/>
-<alias from="view" to="base_edit"/>
+<alias from="(Default)" to="base_view"/>
+<alias from="view" to="base_view"/>
 <alias from="edit" to="base_edit"/>
 
 <action title="View"
@@ -28,8 +28,8 @@
 		condition_expr=""
 		icon_expr=""
 		link_target=""
-        url_expr="string:${object/aq_parent/absolute_url}"
-		visible="False">
+        url_expr="string:${object_url}/base_view"
+		visible="True">
 	<permission value="View"/>
 </action>
 
@@ -41,16 +41,27 @@
 		link_target=""
 		url_expr="string:${object_url}/base_edit"
 		visible="True">
-	<permission value="Modify portal content"/>
+	<permission value="Modify portal content"/>q
+</action>
+
+<action title="Analyses"
+        action_id="analyses"
+		category="object"
+		condition_expr=""
+		icon_expr=""
+		link_target=""
+		url_expr="string:${object_url}/analyses"
+		visible="True">
+	<permission value="View"/>
 </action>
 
 <action title="Sticker"
 		action_id="sticker"
 		category="document_actions"
 		condition_expr=""
-		icon_expr=""
+		icon_expr="string:${object_url}/++resource++bika.lims.images/sticker.png"
 		link_target=""
-		url_expr="string:${object_url}/reference_sticker"
+		url_expr="string:${object_url}/sticker"
 		visible="True">
 	<permission value="View"/>
 </action>

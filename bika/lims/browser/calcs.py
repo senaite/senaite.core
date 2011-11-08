@@ -21,7 +21,12 @@ class ajaxCalculateAnalysisEntry():
         service = analysis.getService()
         precision = service.getPrecision()
         calculation = service.getCalculation()
-        deps = analysis.getDependencies()
+        if analysis.portal_type == 'ReferenceAnalysis':
+            deps = {}
+        else:
+            deps = {}
+            for dep in analysis.getDependencies():
+                deps[dep.UID()] = dep
 
         result = None
         mapping = {}
@@ -30,8 +35,7 @@ class ajaxCalculateAnalysisEntry():
             # add all our dependent analyses results to the mapping.
             # Retrieve value from database if it's not in the current_results.
             unsatisfied = False
-            for dependency in deps:
-                dependency_uid = dependency.UID()
+            for dependency_uid, dependency in deps.items():
                 if dependency_uid in self.ignore_uids:
                     unsatisfied = True
                     break
@@ -88,12 +92,12 @@ class ajaxCalculateAnalysisEntry():
                 # calculate
                 result = eval(formula)
                 # format calculation result to service precision
-                result = precision and str("%%.%sf" % precision) % result or \
-                       result
+                formatted_result = precision and \
+                    str("%%.%sf" % precision) % result or result
 
                 self.results.append({'uid': uid,
                                      'result': result,
-                                     'formatted_result': result})
+                                     'formatted_result': formatted_result})
                 self.current_results[uid] = result
             except ZeroDivisionError, e:
                 return None
@@ -133,12 +137,16 @@ class ajaxCalculateAnalysisEntry():
                                 'msg': _("Result out of range") + " (%s)"%range_str})
 
         # maybe a service who depends on us must be recalculated.
-        dependents = analysis.getDependents()
+        if analysis.portal_type == 'ReferenceAnalysis':
+            dependents = []
+        else:
+            dependents = analysis.getDependents()
         if dependents and not result == form_result:
             for dependent in dependents:
                 dependent_uid = dependent.UID()
                 # ignore analyses that no longer exist.
-                if dependent_uid in self.ignore_uids:
+                if dependent_uid in self.ignore_uids or \
+                   dependent_uid not in self.analyses:
                     continue
                 self.calculate(dependent_uid)
 

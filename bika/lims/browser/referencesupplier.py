@@ -19,8 +19,6 @@ class ReferenceSamplesView(BikaListingView):
            'ID': {'title': _('ID')},
            'Title': {'title': _('Title')},
            'Manufacturer': {'title': _('Manufacturer')},
-           'CatalogueNumber': {'title': _('Catalogue Number')},
-           'LotNumber': {'title': _('Lot Number')},
            'Definition': {'title': _('Reference Definition')},
            'DateSampled': {'title': _('Date Sampled')},
            'DateReceived': {'title': _('Date Received')},
@@ -33,8 +31,6 @@ class ReferenceSamplesView(BikaListingView):
                  'columns': ['ID',
                              'Title',
                              'Manufacturer',
-                             'CatalogueNumber',
-                             'LotNumber',
                              'Definition',
                              'DateSampled',
                              'DateReceived',
@@ -45,8 +41,6 @@ class ReferenceSamplesView(BikaListingView):
                  'columns': ['ID',
                              'Title',
                              'Manufacturer',
-                             'CatalogueNumber',
-                             'LotNumber',
                              'Definition',
                              'DateSampled',
                              'DateReceived',
@@ -56,8 +50,6 @@ class ReferenceSamplesView(BikaListingView):
                  'columns': ['ID',
                              'Title',
                              'Manufacturer',
-                             'CatalogueNumber',
-                             'LotNumber',
                              'Definition',
                              'DateSampled',
                              'DateReceived',
@@ -67,8 +59,6 @@ class ReferenceSamplesView(BikaListingView):
                  'columns': ['ID',
                              'Title',
                              'Manufacturer',
-                             'CatalogueNumber',
-                             'LotNumber',
                              'Definition',
                              'DateSampled',
                              'DateReceived',
@@ -85,8 +75,6 @@ class ReferenceSamplesView(BikaListingView):
             items[x]['ID'] = obj.id
             items[x]['Manufacturer'] = obj.getReferenceManufacturer() and \
                  obj.getReferenceManufacturer().Title() or ''
-            items[x]['CatalogueNumber'] = obj.getCatalogueNumber()
-            items[x]['LotNumber'] = obj.getLotNumber()
             items[x]['Definition'] = obj.getReferenceDefinition() and \
                  obj.getReferenceDefinition().Title() or ''
             items[x]['DateSampled'] = \
@@ -103,7 +91,7 @@ class ReferenceSamplesView(BikaListingView):
                 after_icons += "<img src='++resource++bika.lims.images/blank.png' title='Blank'>"
             if obj.getHazardous():
                 after_icons += "<img src='++resource++bika.lims.images/hazardous.png' title='Hazardous'>"
-            items[x]['replace']['ID'] = "<a href='%s'>%s</a>&nbsp;%s" % \
+            items[x]['replace']['ID'] = "<a href='%s/base_view'>%s</a>&nbsp;%s" % \
                  (items[x]['url'], items[x]['ID'], after_icons)
 
         return items

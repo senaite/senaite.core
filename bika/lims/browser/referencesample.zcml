@@ -24,9 +24,9 @@
 
     <browser:page
       for="bika.lims.interfaces.IReferenceSample"
-      name="qc"
-      class="bika.lims.browser.referencesample.QCView"
-      permission="zope.Public"
+      name="analyses"
+      class="bika.lims.browser.referencesample.AnalysesView"
+      permission="zope2.View"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 

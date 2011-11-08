@@ -73,7 +73,7 @@
  <index name="getDateImported" meta_type="FieldIndex"> <indexed_attr value="getDateImported"/> </index>
  <index name="getDatePublished" meta_type="FieldIndex"> <indexed_attr value="getDatePublished"/> </index>
  <index name="getDateReceived" meta_type="FieldIndex"> <indexed_attr value="getDateReceived"/> </index>
- <index name="getDueDate" meta_type="FieldIndex"> <indexed_attr value="getDueDate"/> </index>
+ <index name="getDueDate" meta_type="DateIndex"> <property name="index_naive_time_as_local">True</property></index>
  <index name="getEmailAddress" meta_type="FieldIndex"> <indexed_attr value="getEmailAddress"/> </index>
  <index name="getFax" meta_type="FieldIndex"> <indexed_attr value="getFax"/> </index>
  <index name="getId" meta_type="FieldIndex"> <indexed_attr value="getId"/> </index>

@@ -41,9 +41,12 @@ class WorksheetWorkflowAction(WorkflowAction):
         # XXX combine data from multiple bika listing tables.
         item_data = {}
         if 'item_data' in form:
-            for i_d in form['item_data']:
-                for i,d in json.loads(i_d).items():
-                    item_data[i] = d
+            if type(form['item_data']) == list:
+                for i_d in form['item_data']:
+                    for i,d in json.loads(i_d).items():
+                        item_data[i] = d
+            else:
+                item_data = json.loads(form['item_data'])
 
         if 'Notes' in form:
             self.context.setNotes(form['Notes'])
@@ -317,7 +320,10 @@ class WorksheetAnalysesView(AnalysesView):
                 # then set our slot's odd/even css
                 for k in self.columns.keys():
                     cl = (actual_table_position % 2 == 0) and "even" or "odd"
-                    items[y]['class'][k] = cl
+                    if k in items[y]['class']:
+                        items[y]['class'][k] += " %s" % cl
+                    else:
+                        items[y]['class'][k] = cl
                     items[y]['class']['select_column'] = cl
                 items[y]['table_row_class'] = ""
 
@@ -343,16 +349,14 @@ class WorksheetAnalysesView(AnalysesView):
                 pos_text += "<img title='%s' src='%s/++resource++bika.lims.images/duplicate.png'/>" % (_("Duplicate"), self.context.absolute_url())
                 pos_text += "<br/>"
             elif obj.portal_type == 'ReferenceAnalysis' and obj.ReferenceType == 'b':
-                pos_text += "<img title='%s' width='16' height='16' src='%s/++resource++bika.lims.images/blank.png'/>" % (_("Blank"), self.context.absolute_url())
+                pos_text += "<a href='%s'><img title='%s' src='++resource++bika.lims.images/blank.png'></a>" % (parent.absolute_url(), parent.Title())
                 pos_text += "<br/>"
             elif obj.portal_type == 'ReferenceAnalysis' and obj.ReferenceType == 'c':
-                pos_text += "<img title='%s' width='16' height='16' src='%s/++resource++bika.lims.images/control.png'/>" % (_("Control"), self.context.absolute_url())
+                pos_text += "<a href='%s'><img title='%s' src='++resource++bika.lims.images/control.png'></a>" % (parent.absolute_url(), parent.Title())
                 pos_text += "<br/>"
             if parent.portal_type == 'AnalysisRequest':
                 sample = parent.getSample()
                 pos_text += "<a href='%s'><img title='%s' src='++resource++bika.lims.images/sample.png'></a>" % (sample.absolute_url(), sample.Title())
-            elif parent.portal_type == 'ReferenceSample':
-                pos_text += "<a href='%s'><img title='%s' src='++resource++bika.lims.images/referencesample.png'></a>" % (parent.absolute_url(), parent.Title())
             pos_text += "</td></tr>"
 
             pos_text += "<tr><td>"

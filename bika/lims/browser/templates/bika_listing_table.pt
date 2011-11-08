@@ -377,7 +377,7 @@ Table cells for each column from in review_state's column list.
 					uid item/uid;
 					objectId string:${item/id};
 					size input_width;"
-				tal:content="python:item['Result']"/>
+				tal:content="python:item['formatted_result']"/>
 			<input
 				tal:condition="python:ViewResults"
 				type="hidden"

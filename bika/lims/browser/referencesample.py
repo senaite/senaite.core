@@ -1,15 +1,59 @@
+from AccessControl import getSecurityManager
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser import BrowserView
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
-from bika.lims.utils import TimeOrDate
+from bika.lims.utils import isActive, TimeOrDate
+from zope.component import getMultiAdapter
 import json, plone
 
-class QCView(BrowserView):
-    pass
-#    template = ViewPageTemplateFile("templates/reference_qc.pt")
-#    def __call__(self):
-#        return self.template()
+class AnalysesView(BikaListingView):
+    """ Reference Analyses on this sample
+    """
+    def __init__(self, context, request):
+        super(AnalysesView, self).__init__(context, request)
+        self.contentsMethod = getToolByName(self.context, 'portal_catalog')
+        self.contentFilter = {'portal_type':'Reference',
+                              'path': {'query':"/".join(context.getPhysicalPath()),'depth':1},
+                              'sort_on':'id',
+                              'sort_order': 'reverse'}
+        self.show_editable_border = True
+        self.title = _("Reference Analyses")
+        self.description = ""
+        self.content_add_actions = {}
+        self.show_sort_column = False
+        self.show_select_row = False
+        self.show_select_column = False
+        self.pagesize = 100
+        self.view_url = self.view_url + "/analyses"
+        self.columns = {'Analysis': {'title': _('Analysis')},
+                        'RequestID': {'title': _('Request ID')},
+                        'state_title': {'title': _('State')},
+                        }
+
+        self.review_states = [
+            {'id':'all',
+             'title': _('All'),
+             'columns':['Analysis',
+                        'RequestID',
+                        'state_title'],
+             },
+        ]
+
+    def folderitems(self):
+        items = super(AnalysesView, self).folderitems()
+        for x in range(len(items)):
+            if not items[x].has_key('obj'):
+                continue
+            obj = items[x]['obj']
+            ar = obj.aq_parent
+            client = ar.aq_parent
+            contact = ar.getContact()
+            items[x]['Analysis'] = obj.Title()
+            items[x]['RequestID'] = ''
+            items[x]['replace']['RequestID'] = "<a href='%s'>%s</a>" % \
+                 (ar.absolute_url(), ar.Title())
+        return items
 
 class ajaxGetReferenceDefinitionInfo():
     """ Returns a JSON encoded copy of the ReferenceResults field for a ReferenceDefinition,
@@ -70,7 +114,6 @@ class ReferenceSamplesView(BikaListingView):
             'Title': {'title': _('Title')},
             'Supplier': {'title': _('Supplier')},
             'Manufacturer': {'title': _('Manufacturer')},
-            'CatalogueNumber': {'title': _('Catalogue Number')},
             'LotNumber': {'title': _('Lot Number')},
             'Definition': {'title': _('Reference Definition')},
             'DateSampled': {'title': _('Date Sampled')},
@@ -84,7 +127,6 @@ class ReferenceSamplesView(BikaListingView):
                          'Title',
                          'Supplier',
                          'Manufacturer',
-                         'CatalogueNumber',
                          'LotNumber',
                          'Definition',
                          'DateSampled',
@@ -96,7 +138,6 @@ class ReferenceSamplesView(BikaListingView):
                          'Title',
                          'Supplier',
                          'Manufacturer',
-                         'CatalogueNumber',
                          'LotNumber',
                          'Definition',
                          'DateSampled',
@@ -107,7 +148,6 @@ class ReferenceSamplesView(BikaListingView):
                          'Title',
                          'Supplier',
                          'Manufacturer',
-                         'CatalogueNumber',
                          'LotNumber',
                          'Definition',
                          'DateSampled',
@@ -118,7 +158,6 @@ class ReferenceSamplesView(BikaListingView):
                          'Title',
                          'Supplier',
                          'Manufacturer',
-                         'CatalogueNumber',
                          'LotNumber',
                          'Definition',
                          'DateSampled',
@@ -135,7 +174,6 @@ class ReferenceSamplesView(BikaListingView):
             items[x]['Supplier'] = obj.aq_parent.Title()
             items[x]['Manufacturer'] = obj.getReferenceManufacturer() and \
                  obj.getReferenceManufacturer().Title() or ''
-            items[x]['CatalogueNumber'] = obj.getCatalogueNumber()
             items[x]['LotNumber'] = obj.getLotNumber()
             items[x]['Definition'] = obj.getReferenceDefinition() and \
                  obj.getReferenceDefinition().Title() or ''
