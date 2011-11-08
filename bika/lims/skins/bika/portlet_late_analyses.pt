@@ -34,7 +34,7 @@
 
         <tal:block repeat="o results">
         <dd tal:define="oddrow repeat/o/odd"
-            style="padding-top:2px;padding-bottom:0px;"
+            style="padding-top:4px;padding-bottom:0px;"
             tal:attributes="class python:test(oddrow, 'portletItem odd','portletItem even')">
 
             <a href="#" class="marker"
