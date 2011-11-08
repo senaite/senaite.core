@@ -115,7 +115,7 @@ class BikaLimsLayer(PloneSandboxLayer):
             SamplePoint = "Sample Point 1",
             SampleType = "Sample Type 1",
             ClientReference = 'Client Reference 1',
-            ClientSampleID = 'Client Sample ID 1',
+            ClientSampleID = 'Client SID 1',
             Contact = client_1.contact_1.UID(),
             )
         client_1.sample_1.processForm()
@@ -131,7 +131,7 @@ class BikaLimsLayer(PloneSandboxLayer):
             SamplePoint = "Sample Point 1",
             SampleType = "Sample Type 1",
             ClientReference = 'Client Reference 2',
-            ClientSampleID = 'Client Sample ID 2',
+            ClientSampleID = 'Client SID 2',
             Contact = client_1.contact_1.UID(),
             )
         client_1.sample_2.processForm()
