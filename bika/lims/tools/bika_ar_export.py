@@ -137,7 +137,7 @@ class bika_ar_export(UniqueObject, SimpleItem):
         rows.append(header)
 
         # column headers
-        header = ['Samples', 'Order ID', 'Client Reference', 'Client Sample ID', 'Sample Type', \
+        header = ['Samples', 'Order ID', 'Client Reference', 'Client SID', 'Sample Type', \
                   'Sample Point', 'Sampling Date', 'Bika Sample ID', \
                   'Bika AR ID', 'Date Received', 'Date Published']
 
