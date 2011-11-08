@@ -16,6 +16,7 @@
                  rs python:context.portal_catalog(
                     portal_type='Analysis',
                     getDueDate={'query': [now,], 'range': 'max'},
+                    sort_on='getDueDate',
                     review_state=['assigned',
                                   'sample_received',
                                   'sample_due',

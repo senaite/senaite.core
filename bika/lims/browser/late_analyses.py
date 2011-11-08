@@ -22,8 +22,7 @@ class LateAnalysesView(BikaListingView):
                                               'to_be_verified',
                                               'verified'],
                               'cancellation_state': 'active',
-                              'sort_on':'id',
-                              'sort_order': 'reverse'}
+                              'sort_on':'getDateReceived'}
         self.show_editable_border = False
         self.title = _("Late Analyses")
         self.description = ""
