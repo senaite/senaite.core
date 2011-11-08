@@ -31,7 +31,7 @@ class LateAnalysesView(BikaListingView):
         self.show_select_row = False
         self.show_select_column = False
         self.pagesize = 100
-        self.view_url = self.view_url + "/late_analyses"
+        self.view_url = self.view_url + "/late_analyses"x`
         self.columns = {'Analysis': {'title': _('Analysis')},
                         'RequestID': {'title': _('Request ID')},
                         'Client': {'title': _('Client')},
