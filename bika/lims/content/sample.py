@@ -41,7 +41,7 @@ schema = BikaSchema.copy() + Schema((
     StringField('ClientSampleID',
         searchable = True,
         widget = StringWidget(
-            label = _("Client Sample ID"),
+            label = _("Client SID"),
         ),
     ),
     StringField('SubmittedByUser',
