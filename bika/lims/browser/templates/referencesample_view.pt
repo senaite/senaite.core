@@ -1,0 +1,169 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+    xml:lang="en" lang="en"
+    xmlns:tal="http://xml.zope.org/namespaces/tal"
+    xmlns:metal="http://xml.zope.org/namespaces/metal"
+    xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+    metal:use-macro="context/main_template/macros/master"
+    i18n:domain="bika">
+
+<body>
+
+<metal:title fill-slot="content-title">
+    <h1>
+        <img tal:condition="view/icon | nothing"
+            src="" tal:attributes="src view/icon"/>
+        <span tal:content="context/title_or_id"/>
+    </h1>
+</metal:title>
+
+<metal:content fill-slot="content-core" tal:define="
+    review_state python:context.portal_workflow.getInfoFor(context, 'review_state', '');
+    inactive_state python:context.portal_workflow.getInfoFor(context, 'inactive_state', 'asdf');
+    portal context/@@plone_portal_state/portal;">
+
+    <table width="100%">
+        <tr>
+            <td align="right">
+                <img tal:condition="context/getHazardous"
+                    title="Hazardous"
+                    tal:attributes="src string:++resource++bika.lims.images/hazardous_big.png">
+            </td>
+        </tr>
+    </table>
+
+    <table
+        summary="Sample view"
+        class="bika-listing analysisrequest listing nosort"
+        cellpadding="0" cellspacing="0">
+    <tbody>
+
+        <tr>
+            <th i18n:translate="ID">ID</th>
+            <td class="left" tal:content="context/id">R001</td>
+        </tr>
+        <tr>
+            <th i18n:translate="Title">Title</th>
+            <td class="left" tal:content="context/Title">Reference Title</td>
+        </tr>
+
+        <tr>
+            <th i18n:translate="Hazardous">Hazardous</th>
+            <td class="left"
+                tal:content="context/getHazardous">False</td>
+        </tr>
+
+        <tr>
+            <th i18n:translate="Blank">Blank</th>
+            <td class="left"
+                tal:content="context/getBlank">False</td>
+        </tr>
+
+        <tr>
+            <th i18n:translate="Manufacturer">Manufacturer</th>
+            <td class="left" tal:content="context/getReferenceManufacturer">S001</td>
+        </tr>
+
+        <tr>
+            <th i18n:translate="CatalogueNumber">Catalogue Number</th>
+            <td class="left" tal:content="context/getCatalogueNumber">Catalogue Number</td>
+        </tr>
+
+        <tr>
+            <th i18n:translate="LotNumber">Lot Number</th>
+            <td class="left" tal:content="context/getLotNumber">Lot Number</td>
+        </tr>
+
+        <tr>
+            <th i18n:translate="ReferenceDefinition">Reference Definition</th>
+            <td class="left" tal:content="python:context.getReferenceDefinition().Title()">Reference Definition</td>
+        </tr>
+
+        <tr>
+            <th i18n:translate="DateSampled">Date sampled</th>
+            <td class="left">
+                <span
+                    tal:define="date_sampled context/getDateSampled"
+                    tal:condition="date_sampled"
+                    tal:content="python:view.TimeOrDate(context, date_sampled, long_format=1)"/>
+            </td>
+        </tr>
+
+        <tr>
+            <th i18n:translate="DateReceived">Date received</th>
+            <td class="left">
+                <span
+                    tal:define="date_received context/getDateReceived"
+                    tal:condition="date_received"
+                    tal:content="python:view.TimeOrDate(context, date_received, long_format=1)"/>
+            </td>
+        </tr>
+
+        <tr>
+            <th i18n:translate="DateOpened">Date opened</th>
+            <td class="left">
+                <span
+                    tal:define="date_opened context/getDateOpened"
+                    tal:condition="date_opened"
+                    tal:content="python:view.TimeOrDate(context, date_opened, long_format=1)"/>
+            </td>
+        </tr>
+
+        <tr>
+            <th i18n:translate="ExpiryDate">Expiry date</th>
+            <td class="left">
+                <span
+                    tal:define="expiry_date context/getExpiryDate"
+                    tal:condition="expiry_date"
+                    tal:content="python:view.TimeOrDate(context, expiry_date, long_format=1)"/>
+            </td>
+        </tr>
+
+    </tbody>
+    </table>
+
+    <table
+        summary="Reference Analyses"
+        class="bika-listing analysisrequest listing nosort"
+        cellpadding="0" cellspacing="0">
+    <tbody>
+
+        <tal:cat repeat="cat view/categories">
+            <tr>
+                <th><span i18n:translate="Analyses">Analyses</span> - <span tal:content="cat"/></th>
+                <th i18n:translate="Result">Result</th>
+                <th i18n:translate="Min">Min</th>
+                <th i18n:translate="Max">Max</th>
+            </tr>
+            <tal:rr repeat="rr python:view.results[cat]">
+                <tr>
+                    <td tal:content="rr/service/Title"></td>
+                    <td tal:content="rr/result"></td>
+                    <td tal:content="rr/min"></td>
+                    <td tal:content="rr/max"></td>
+                <tr>
+            </tal:rr>
+        </tal:cat>
+
+    </tbody>
+    </table>
+
+
+
+    <form action="workflow_action">
+        <input
+            tal:condition="python:inactive_state == 'active'"
+            class="context workflow_action_button"
+            type="submit"
+            value="deactivate"
+            name="workflow_action">
+        <input
+            tal:condition="python:inactive_state == 'inactive'"
+            class="context workflow_action_button"
+            type="submit"
+            value="activate"
+            name="workflow_action">
+    <form>
+
+</metal:content>
+</body>
+</html>

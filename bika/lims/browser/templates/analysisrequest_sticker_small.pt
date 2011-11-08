@@ -1,0 +1,116 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<metal:block use-macro="here/global_defines/macros/defines" />
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      lang="en"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      tal:attributes="lang default_language|default;
+                      xml:lang default_language|default;"
+      i18n:domain="bika"
+      tal:define="portal_state context/@@plone_portal_state;
+                  portal_url portal_state/portal_url;
+                  plone_view context/@@plone;">
+
+<head>
+<title>AR sticker (small)</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"
+          tal:define="charset site_properties/default_charset|string:utf-8"
+          tal:attributes="content string:text/html;;charset=${charset}" />
+
+    <!-- Column style sheet. -->
+    <style type="text/css" media="all" tal:condition="exists: portal/ploneColumns.css"
+           tal:content="string:@import url($portal_url/ploneColumns.css);">
+    </style>
+
+    <!-- Main style sheets for CSS2 capable browsers -->
+    <style type="text/css" media="screen"
+           tal:content="string: @import url($portal_url/plone.css);">
+    </style>
+
+    <!-- Old style sheet from Plone 1.0, remove tal:condition="nothing" if you need to use the old styles.
+         Will be removed in Plone 2.1. -->
+    <style type="text/css" media="screen"
+           tal:condition="nothing"
+           tal:content="string: @import url($portal_url/ploneDeprecated.css);">
+    </style>
+
+    <!-- Alternate style sheets for the bigger/smaller text switcher -->
+    <link rel="alternate stylesheet" type="text/css" media="screen" href="" tal:attributes="href string:$portal_url/ploneTextSmall.css" title="Small Text" />
+    <link rel="alternate stylesheet" type="text/css" media="screen" href="" tal:attributes="href string:$portal_url/ploneTextLarge.css" title="Large Text" />
+
+    <!-- Custom style sheet if available -->
+    <style type="text/css" media="all" tal:condition="exists: portal/ploneCustom.css"
+           tal:content="string:@import url($portal_url/ploneCustom.css);">
+    </style>
+
+    <!-- Style sheet used for printing -->
+    <link rel="stylesheet" type="text/css" media="print" href=""
+          tal:attributes="href string:$portal_url/plonePrint.css" />
+
+    <!-- Internet Explorer CSS Fixes -->
+    <tal:iefixstart replace="structure string:&lt;!--[if IE]&gt;" />
+    <style type="text/css" media="all" tal:condition="exists: portal/ploneIEFixes.css"
+           tal:content="string:@import url($portal_url/ploneIEFixes.css);">
+    </style>
+    <tal:iefixend replace="structure string:&lt;![endif]--&gt;" />
+
+</head>
+
+<body style="margin: 0; padding: 0">
+
+<metal:block define-macro="sticker">
+<style type="text/css">
+table {
+    border-collapse:collapse;
+    margin: 1px 1px 1px 1px;
+    font-size: 5pt
+}
+th {
+    text-align: left;
+    text-transform: none;
+    border: 1pt solid black
+}
+td {
+    border: 1pt solid black
+}
+</style>
+
+<table cellpadding="3" cellspacing="3"
+    tal:define="sample python:here.getSample();
+                sampletype sample/getSampleType">
+<thead>
+
+<tr>
+<th i18n:translate="label_sticker_sample_id">LIMS Sample ID</th>
+<td>
+<strong tal:content="sample/getSampleID">S-0001</strong></td>
+</tr>
+
+<tr>
+<th i18n:translate="label_sticker_order_id">Client Order ID</th>
+<td>
+<strong tal:content="here/getClientOrderNumber|nothing">Order-0001</strong>
+</tr>
+
+<tr>
+<th i18n:translate="label_sticker_disposal_date">Disposal date
+</th>
+<td class="left">
+<span
+    tal:define="disp_date sample/getDisposalDate"
+    tal:condition="disp_date"
+    tal:content="python:plone_view.toLocalizedTime(disp_date, long_format=1)"
+    >2005-01-01 10:00
+</span></td>
+</tr>
+
+</thead>
+
+</table>
+</metal:block>
+
+</body>
+
+</html>

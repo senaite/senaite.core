@@ -153,20 +153,12 @@ schema = BikaSchema.copy() + Schema((
     ),
 ))
 
-##schema['title'].schemata = default
 schema['title'].schemata = 'Description'
 
 class ReferenceSample(BaseFolder):
     implements(IReferenceSample)
     security = ClassSecurityInfo()
     schema = schema
-
-##    security.declarePublic('getActiveReferenceDefinitions')
-##    def getActiveReferenceDefinitions(self):
-##        pc = getToolByName(self, 'portal_catalog')
-##        defs = pc(portal_type='ReferenceDefinition',
-##                  inactive_state='active')
-##        return DisplayList(tuple([(d.UID,d.Title) for d in defs]))
 
     security.declarePublic('current_date')
     def current_date(self):

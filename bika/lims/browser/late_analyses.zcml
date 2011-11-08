@@ -1,0 +1,15 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:i18n="http://namespaces.zope.org/i18n"
+    i18n_domain="bika">
+
+    <browser:page
+      for="*"
+      name="late_analyses"
+      class="bika.lims.browser.late_analyses.LateAnalysesView"
+      permission="bika.lims.ViewResults"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
+</configure>

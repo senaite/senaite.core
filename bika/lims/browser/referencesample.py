@@ -1,59 +1,71 @@
 from AccessControl import getSecurityManager
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser import BrowserView
+from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.utils import isActive, TimeOrDate
+from operator import itemgetter
+from bika.lims.browser.analyses import AnalysesView
+from plone.app.layout.globals.interfaces import IViewView
 from zope.component import getMultiAdapter
+from zope.interface import implements
 import json, plone
 
-class AnalysesView(BikaListingView):
+class ViewView(BrowserView):
+    """ Reference Sample View
+    """
+    implements(IViewView)
+    template = ViewPageTemplateFile("templates/referencesample_view.pt")
+
+    def __init__(self, context, request):
+        BrowserView.__init__(self, context, request)
+        self.icon = "++resource++bika.lims.images/referencesample_big.png"
+        self.TimeOrDate = TimeOrDate
+        rc = getToolByName(context, 'reference_catalog')
+
+        self.results = {} # {category_title: listofdicts}
+        for r in context.getReferenceResults():
+            service = rc.lookupObject(r['uid'])
+            cat = service.getCategory().Title()
+            if cat not in self.results:
+                self.results[cat] = []
+            r['service'] = service
+            self.results[cat].append(r)
+        self.categories = self.results.keys()
+        self.categories.sort()
+
+    def __call__(self):
+        return self.template()
+
+class ReferenceAnalysesView(AnalysesView):
     """ Reference Analyses on this sample
     """
-    def __init__(self, context, request):
-        super(AnalysesView, self).__init__(context, request)
-        self.contentsMethod = getToolByName(self.context, 'portal_catalog')
-        self.contentFilter = {'portal_type':'Reference',
-                              'path': {'query':"/".join(context.getPhysicalPath()),'depth':1},
-                              'sort_on':'id',
-                              'sort_order': 'reverse'}
-        self.show_editable_border = True
-        self.title = _("Reference Analyses")
-        self.description = ""
-        self.content_add_actions = {}
-        self.show_sort_column = False
-        self.show_select_row = False
-        self.show_select_column = False
-        self.pagesize = 100
-        self.view_url = self.view_url + "/analyses"
-        self.columns = {'Analysis': {'title': _('Analysis')},
-                        'RequestID': {'title': _('Request ID')},
-                        'state_title': {'title': _('State')},
-                        }
+    implements(IViewView)
+##    def __init__(self, context, request):
+##        super(ReferenceAnalysesView, self).__init__(context, request)
+##        self.title = _("Reference Analyses")
+##        self.description = ""
+##        self.show_select_column = False
+##        self.pagesize = 100
+##        self.contentsMethod = context.ObjectValues
 
-        self.review_states = [
-            {'id':'all',
-             'title': _('All'),
-             'columns':['Analysis',
-                        'RequestID',
-                        'state_title'],
-             },
-        ]
+##    def folderitems(self):
+##        items = super(ReferenceAnalysesView, self).folderitems()
+##        for x in range(len(items)):
+##            if not items[x].has_key('obj'):
+##                continue
+##            obj = items[x]['obj']
+##            ar = obj.aq_parent
+##            client = ar.aq_parent
+##            items[x]['Analysis'] = obj.Title()
+##            items[x]['RequestID'] = ''
+##            items[x]['replace']['RequestID'] = "<a href='%s'>%s</a>" % \
+##                 (ar.absolute_url(), ar.Title())
+##        return items
 
-    def folderitems(self):
-        items = super(AnalysesView, self).folderitems()
-        for x in range(len(items)):
-            if not items[x].has_key('obj'):
-                continue
-            obj = items[x]['obj']
-            ar = obj.aq_parent
-            client = ar.aq_parent
-            contact = ar.getContact()
-            items[x]['Analysis'] = obj.Title()
-            items[x]['RequestID'] = ''
-            items[x]['replace']['RequestID'] = "<a href='%s'>%s</a>" % \
-                 (ar.absolute_url(), ar.Title())
-        return items
+##    def __call__(self):
+##
 
 class ajaxGetReferenceDefinitionInfo():
     """ Returns a JSON encoded copy of the ReferenceResults field for a ReferenceDefinition,
@@ -193,3 +205,12 @@ class ReferenceSamplesView(BikaListingView):
                  (items[x]['url'], items[x]['ID'], after_icons)
 
         return items
+
+
+class Sticker(BrowserView):
+    """ Return html for a Refernece Sample label """
+
+    template = ViewPageTemplateFile("templates/referencesample_sticker.pt")
+
+    def __call__(self):
+        return self.template()

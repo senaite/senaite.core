@@ -22,11 +22,20 @@
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
+    <!-- Single Reference Sample View -->
+    <browser:page
+      for="bika.lims.interfaces.IReferenceSample"
+      name="base_view"
+      class="bika.lims.browser.referencesample.ViewView"
+      permission="bika.lims.ManageReference"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
     <browser:page
       for="bika.lims.interfaces.IReferenceSample"
       name="analyses"
-      class="bika.lims.browser.referencesample.AnalysesView"
-      permission="zope2.View"
+      class="bika.lims.browser.referencesample.ReferenceAnalysesView"
+      permission="bika.lims.ManageReference"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
