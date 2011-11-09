@@ -168,6 +168,7 @@ class AnalysisRequestViewView(BrowserView):
         super(AnalysisRequestViewView, self).__init__(context, request)
 
         plone_layout = getMultiAdapter((context, request), name = u'plone_layout')
+        #self.view_url = self.absolute_url()
         self.icon = "++resource++bika.lims.images/analysisrequest_big.png"
         self.TimeOrDate = TimeOrDate
 

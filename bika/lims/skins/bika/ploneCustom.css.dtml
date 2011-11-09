@@ -385,6 +385,10 @@ table.analysisrequest th.analysiscategory.expanded{
 table.analysisrequest tr.analysiscategory {
 }
 
+table.analysisrequest .right {
+    text-align: right;
+}
+
 table.analysisrequest .price {
 	border: 0;
 	background:transparent;
