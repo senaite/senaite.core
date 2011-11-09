@@ -4,38 +4,29 @@ from Products.ATContentTypes.lib.historyaware import HistoryAwareMixin
 from Products.CMFCore.permissions import View, ModifyPortalContent
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.config import I18N_DOMAIN, PROJECTNAME
+from bika.lims.browser.fields import CoordinateField
+from bika.lims.browser.widgets import CoordinateWidget
 from bika.lims.browser.fields import DurationField
 from bika.lims.browser.widgets import DurationWidget
 import sys
 from bika.lims import bikaMessageFactory as _
 
 schema = BikaSchema.copy() + Schema((
-# For indexing unique values?
-#    ComputedField('SamplePointTitle',
-#        expression = 'context.getTitle()',
-#        widget = ComputedWidget(
-#            visible=False,
-#        )
-#    ),
-    StringField('Latitude',
+    CoordinateField('Latitude',
         schemata = _('Location'),
-        default = "52 12 17.0 N",
-        widget=StringWidget(
+        widget=CoordinateWidget(
             label= _("Latitude"),
-            description = _("Enter the Sample Point's latitude in degrees 0-90, minutes 0-59, "
-                            "seconds 0-59 and N/S indicator"),
+            description = _("Enter the Sample Point's latitude in "
+                "degrees 0-90, minutes 0-59, seconds 0-59 and N/S indicator"),
         ),
-        validators = ("latitude_validator",),
     ),
-    StringField('Longitude',
+    CoordinateField('Longitude',
         schemata = _('Location'),
-        default = "000 08 26.0 E",
-        widget=StringWidget(
-            label = _("Longitude"),
-            description = _("Enter the Sample Point's longitude in degrees 0-180, minutes 0-59, "
-                            "seconds 0-59 and E/W indicator"),
+        widget=CoordinateWidget(
+            label= _("Longitude"),
+            description = _("Enter the Sample Point's longitude in "
+                "degrees 0-90, minutes 0-59, seconds 0-59 and E/W indicator"),
         ),
-        validators = ("longitude_validator",),
     ),
     StringField('Elevation',
         schemata = _('Location'),

@@ -4,3 +4,4 @@ from aranalysesfield import ARAnalysesField
 from interimfieldsfield import InterimFieldsField
 from referenceresultsfield import ReferenceResultsField
 from historyawarereferencefield import HistoryAwareReferenceField
+from coordinatefield import CoordinateField

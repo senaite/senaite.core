@@ -387,11 +387,19 @@ class LoadSetupData(BrowserView):
             sp_id = folder.generateUniqueId('SamplePoint')
             folder.invokeFactory('SamplePoint', id = sp_id)
             obj = folder[sp_id]
+            latitude = {'degrees': row['lat deg'],
+                        'minutes': row['lat min'],
+                        'seconds': row['lat sec'],
+                        'bearing': row['NS']}
+            longitude = {'degrees': row['long deg'],
+                        'minutes': row['long min'],
+                        'seconds': row['long sec'],
+                        'bearing': row['EW']}
             obj.edit(title = unicode(row['title']),
                      description = unicode(row['description']),
                      SamplingFrequency = {'days':unicode(row['Days']), 'hours':unicode(row['Hours']), 'minutes':unicode(row['Minutes'])},
-                     Latitude = "%(lat deg)s %(lat min)s %(lat sec)s %(NS)s" % row,
-                     Longitude = "%(long deg)s %(long min)s %(long sec)s %(EW)s" % row,
+                     Latitude = latitude,
+                     Longitude = longitude,
                      Elevation = unicode(row['Elevation']))
             obj.processForm()
 

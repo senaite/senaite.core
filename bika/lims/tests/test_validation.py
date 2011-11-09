@@ -96,7 +96,8 @@ class Tests(unittest.TestCase):
         self.portal.REQUEST.form['Formula'] = formula
         self.assertEqual(None, calcs.titration.schema.get('Formula').validate(formula, calcs.titration, REQUEST=self.portal.REQUEST))
 
-    def test_LatLongValidator(self):
+    def test_CoordinateValidator(self):
+        # AVS 
         z2.login(self.app['acl_users'], SITE_OWNER_NAME)
 
         folder = self.portal.bika_setup.bika_samplepoints

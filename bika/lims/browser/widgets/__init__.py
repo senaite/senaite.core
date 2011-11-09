@@ -5,3 +5,4 @@ from referenceresultswidget import ReferenceResultsWidget
 from serviceswidget import ServicesWidget
 from specwidget import SpecWidget
 from worksheettemplatelayoutwidget import WorksheetTemplateLayoutWidget
+from coordinatewidget import CoordinateWidget
