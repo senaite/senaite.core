@@ -23,7 +23,6 @@ class ReferenceManufacturersView(BikaListingView):
         self.title = _("Reference Manufacturers")
         self.icon = "++resource++bika.lims.images/referencemanufacturer_big.png"
         self.description = ""
-        self.show_editable_border = True
         self.show_filters = False
         self.show_sort_column = False
         self.show_select_row = False

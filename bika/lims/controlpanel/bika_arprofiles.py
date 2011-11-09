@@ -24,7 +24,6 @@ class ARProfilesView(BikaListingView):
         self.icon = "++resource++bika.lims.images/arprofile_big.png"
         self.title = _("Analysis Request Profiles")
         self.description = ""
-        self.show_editable_border = True
         self.show_filters = False
         self.show_sort_column = False
         self.show_select_row = False

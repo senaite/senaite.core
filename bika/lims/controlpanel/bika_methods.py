@@ -27,7 +27,6 @@ class MethodsView(BikaListingView):
         self.title = _("Methods")
         self.icon = "++resource++bika.lims.images/method_big.png"
         self.description = ""
-        self.show_editable_border = True
         self.show_filters = False
         self.show_sort_column = False
         self.show_select_row = False

@@ -18,13 +18,14 @@ class ClientFolderContentsView(BikaListingView):
         self.icon = "++resource++bika.lims.images/client_big.png"
         self.title = _("Clients")
         self.description = ""
-        self.show_editable_border = False
         self.show_sort_column = False
         self.show_select_row = False
         self.show_select_all_checkbox = False
         self.show_select_column = True
         self.show_filters = False
         self.pagesize = 20
+
+        request.set('disable_border', 1)
 
         self.columns = {
                    'title': {'title': _('Name')},

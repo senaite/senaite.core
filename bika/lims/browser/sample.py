@@ -146,7 +146,6 @@ class SamplesView(ClientSamplesView):
         super(SamplesView, self).__init__(context, request)
         self.title = "%s: %s" % (self.context.Title(), _("Samples"))
         self.description = ""
-        self.show_editable_border = False
         self.contentFilter = {'portal_type':'Sample',
                               'sort_on':'id',
                               'sort_order': 'reverse',
@@ -156,6 +155,8 @@ class SamplesView(ClientSamplesView):
         review_states = []
         for review_state in self.review_states:
             review_state['columns'].insert(review_state['columns'].index('SampleID') + 1, 'Client')
+
+        request.set('disable_border', 1)
 
     def folderitems(self):
         workflow = getToolByName(self.context, "portal_workflow")

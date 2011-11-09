@@ -26,7 +26,6 @@ class LabContactsView(BikaListingView):
         self.title = _("Lab Contacts")
         self.icon = "++resource++bika.lims.images/lab_contact_big.png"
         self.description = ""
-        self.show_editable_border = True
         self.show_filters = False
         self.show_sort_column = False
         self.show_select_row = False

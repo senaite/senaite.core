@@ -8,7 +8,6 @@ class ReferenceSamplesView(BikaListingView):
     description = _("")
     contentFilter = {'portal_type': 'ReferenceSample'}
     content_add_actions = {_('Add'): "createObject?type_name=ReferenceSample"}
-    show_editable_border = True
     show_filters = False
     show_sort_column = False
     show_select_row = False
@@ -100,7 +99,6 @@ class ReferenceSamplesView(BikaListingView):
 class ContactsView(BikaListingView):
     contentFilter = {'portal_type': 'SupplierContact'}
     content_add_actions = {_('Add'): "createObject?type_name=SupplierContact"}
-    show_editable_border = True
     show_filters = False
     show_table_only = False
     show_sort_column = False

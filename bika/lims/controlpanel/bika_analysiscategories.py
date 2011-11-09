@@ -23,8 +23,6 @@ class AnalysisCategoriesView(BikaListingView):
         self.icon = "++resource++bika.lims.images/category_big.png"
         self.title = _("Analysis Categories")
         self.description = ""
-        self.show_editable_border = False
-        self.show_editable_border = True
         self.show_sort_column = False
         self.show_select_row = False
         self.show_select_column = True

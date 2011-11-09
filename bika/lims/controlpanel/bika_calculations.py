@@ -26,7 +26,6 @@ class CalculationsView(BikaListingView):
         self.title = _("Calculations")
         self.icon = "++resource++bika.lims.images/calculation_big.png"
         self.description = ""
-        self.show_editable_border = True
         self.show_filters = False
         self.show_sort_column = False
         self.show_select_row = False

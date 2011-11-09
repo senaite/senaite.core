@@ -115,7 +115,6 @@ class ClientAnalysisRequestsView(BikaListingView):
             self.context.plone_utils.addPortalMessage(
                 _("Client contact required before request may be submitted"))
 
-        self.show_editable_border = True
         self.show_sort_column = False
         self.show_select_row = False
         self.show_select_column = True
@@ -328,7 +327,6 @@ class ClientSamplesView(BikaListingView):
                               'sort_on':'id',
                               'sort_order': 'reverse'}
         self.content_add_actions = {}
-        self.show_editable_border = True
         self.show_sort_column = False
         self.show_select_row = False
         self.show_select_column = True
@@ -453,8 +451,6 @@ class ClientARImportsView(BikaListingView):
         super(ClientARImportsView, self).__init__(context, request)
         self.contentFilter = {'portal_type': 'ARImport'}
         self.content_add_actions = {_('AR Import'): "createObject?type_name=ARImport"}
-        self.show_editable_border = True
-        self.self.show_table_only = False
         self.show_sort_column = False
         self.show_select_row = False
         self.show_select_column = True
@@ -508,7 +504,6 @@ class ClientARProfilesView(BikaListingView):
         self.contentFilter = {'portal_type': 'ARProfile'}
         self.content_add_actions = {_('Add'):
                                     "createObject?type_name=ARProfile"}
-        self.show_editable_border = True
         self.show_sort_column = False
         self.show_select_row = False
         self.show_select_column = True
@@ -544,8 +539,6 @@ class ClientAnalysisSpecsView(BikaListingView):
         self.contentFilter = {'portal_type': 'AnalysisSpec'}
         self.content_add_actions = {_('Add'): \
                                "createObject?type_name=AnalysisSpec"}
-        self.show_editable_border = True
-        self.show_table_only = False
         self.show_sort_column = False
         self.show_select_row = False
         self.show_select_column = True
@@ -590,7 +583,6 @@ class ClientAttachmentsView(BikaListingView):
         self.contentFilter = {'portal_type': 'Attachment',
                               'sort_order': 'reverse'}
         self.content_add_actions = {_('Add'): "createObject?type_name=Attachment"}
-        self.show_editable_border = True
         self.show_sort_column = False
         self.show_select_row = False
         self.show_select_column = True
@@ -659,7 +651,6 @@ class ClientOrdersView(BikaListingView):
                               'sort_on':'id',
                               'sort_order': 'reverse'}
         self.content_add_actions = {_('Add'): "createObject?type_name=SupplyOrder"}
-        self.show_editable_border = True
         self.show_table_only = False
         self.show_sort_column = False
         self.show_select_row = False
@@ -714,7 +705,6 @@ class ClientContactsView(BikaListingView):
                               'sort_on':'sortable_title'}
         self.content_add_actions = {_('Add'):
                                     "createObject?type_name=Contact"}
-        self.show_editable_border = True
         self.show_sort_column = False
         self.show_select_row = False
         self.show_select_column = True

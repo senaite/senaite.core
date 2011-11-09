@@ -21,13 +21,14 @@ class WorksheetFolderListingView(BikaListingView):
             'sort_on':'id',
             'sort_order': 'reverse'}
         self.content_add_actions = {_('Add'): "worksheet_add"}
-        self.show_editable_border = False
         self.show_table_only = False
         self.show_sort_column = False
         self.show_select_row = False
         self.show_select_all_checkbox = True
         self.show_select_column = True
         self.pagesize = 50
+
+        request.set('disable_border', 1)
 
         self.icon = "++resource++bika.lims.images/worksheet_big.png"
         self.title = "%s: %s" % (self.context.Title(), _("Worksheets"))

@@ -23,7 +23,6 @@ class AnalysisServicesView(BikaListingView):
                                     "createObject?type_name=AnalysisService"}
         self.icon = "++resource++bika.lims.images/service_big.png"
         self.title = _("Analysis Services")
-        self.show_editable_border = True
         self.show_filters = False
         self.show_sort_column = False
         self.show_select_row = False

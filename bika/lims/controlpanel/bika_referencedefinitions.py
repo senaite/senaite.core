@@ -27,7 +27,6 @@ class ReferenceDefinitionsView(BikaListingView):
         self.icon = "++resource++bika.lims.images/referencedefinition_big.png"
         self.description = _("ReferenceDefinition represents a Reference Definition "
                              "or sample type used for quality control testing")
-        self.show_editable_border = True
         self.show_filters = False
         self.show_sort_column = False
         self.show_select_row = False

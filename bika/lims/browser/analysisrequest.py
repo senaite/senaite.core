@@ -510,12 +510,13 @@ class AnalysisRequestSelectCCView(BikaListingView):
         self.contentFilter = {'portal_type': 'Contact',
                               'sort_on':'sortable_title',
                               'inactive_state': 'active'}
-        self.show_editable_border = False
         self.show_sort_column = False
         self.show_select_row = False
         self.show_workflow_action_buttons = False
         self.show_select_column = True
         self.pagesize = 25
+
+        request.set('disable_border', 1)
 
         self.columns = {
             'getFullname': {'title': _('Full Name')},
@@ -563,12 +564,13 @@ class AnalysisRequestSelectSampleView(BikaListingView):
                               'sort_on':'id',
                               'sort_order': 'reverse',
                               'cancellation_state': 'active'}
-        self.show_editable_border = False
         self.show_sort_column = False
         self.show_select_row = False
         self.show_select_column = False
         self.show_filters = False
         self.pagesize = 25
+
+        request.set('disable_border', 1)
 
         self.columns = {
             'getSampleID': {'title': _('Sample ID')},
@@ -1175,13 +1177,15 @@ class AnalysisRequestsView(ClientAnalysisRequestsView):
         super(AnalysisRequestsView, self).__init__(context, request)
         self.title = "%s: %s" % (self.context.aq_parent.Title(), _("Analysis Requests"))
         self.description = ""
-        self.show_editable_border = False
         self.content_add_actions = {}
         self.contentFilter = {'portal_type':'AnalysisRequest',
                               'sort_on':'id',
                               'sort_order': 'reverse',
                               'path':{"query": ["/"], "level" : 0 }}
         self.view_url = self.view_url + "/analysisrequests"
+
+        request.set('disable_border', 1)
+
         self.columns['Client'] = {'title': _('Client')}
         review_states = []
         for review_state in self.review_states:

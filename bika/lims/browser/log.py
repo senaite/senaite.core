@@ -20,7 +20,6 @@ class LogView(BikaListingView):
     def __init__(self, context, request):
         BikaListingView.__init__(self, context, request)
 
-        self.show_editable_border = True
         self.show_sort_column = False
         self.show_select_row = False
         self.show_select_column = False

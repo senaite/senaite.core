@@ -138,14 +138,14 @@ class BikaListingView(BrowserView):
     description = ""
     contentFilter = {}
     allow_edit = True
-    content_add_actions = {}    # XXX menu.zcml/menu.py
-    show_editable_border = True # XXX viewlets.zcml entries
+    content_add_actions = {}
     show_filters = False
     show_select_column = False
     show_select_row = False
     show_select_all_checkbox = True
     show_sort_column = False
     show_workflow_action_buttons = True
+    categories = []
     # just set pagesize high to disable batching.
     pagesize = 20
 
@@ -187,8 +187,7 @@ class BikaListingView(BrowserView):
     def __call__(self):
         """ bika_listing view initial display and form handler
         """
-        if hasattr(self, 'show_editable_border') and not self.show_editable_border:
-            self.request.set('disable_border', 1)
+
 
         form = self.request.form
         pc = getToolByName(self.context, 'portal_catalog')
@@ -274,7 +273,8 @@ class BikaListingView(BrowserView):
                  path,
                  safe_unicode(description))
 
-            modified = TimeOrDate(self.context, obj.ModificationDate, long_format = 1)
+            modified = TimeOrDate(self.context,
+                                  obj.ModificationDate, long_format = 1)
 
             # Check for InterimFields attribute on our object,
             # XXX move interim/itemdata to analyses.py
@@ -282,7 +282,8 @@ class BikaListingView(BrowserView):
                            and obj.getInterimFields() or []
 
             # element css classes
-            type_class = 'contenttype-' + plone_utils.normalizeString(obj.portal_type)
+            type_class = 'contenttype-' + \
+                plone_utils.normalizeString(obj.portal_type)
 
             if (i + 1) % 2 == 0:
                 table_row_class = "draggable even"

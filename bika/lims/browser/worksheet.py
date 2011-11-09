@@ -417,7 +417,6 @@ class AnalysesSearchResultsView(BikaListingView):
         self.content_add_actions = {}
         self.contentFilter = {'portal_type': 'Analysis',
                               'review_state':'impossible_state'}
-        self.show_editable_border = True
         self.base_url = self.context.absolute_url()
         self.view_url = self.base_url + "/add_analyses"
         self.show_sort_column = False
@@ -686,7 +685,6 @@ class WorksheetARsView(BikaListingView):
         self.content_add_actions = {}
         self.contentFilter = {'portal_type': 'Analysis',
                               'review_state':'impossible_state'}
-        self.show_editable_border = True
         self.base_url = self.context.absolute_url()
         self.view_url = self.base_url + "/add_blank"
         self.show_sort_column = False
@@ -764,7 +762,6 @@ class WorksheetServicesView(BikaListingView):
         self.content_add_actions = {}
         self.contentFilter = {'portal_type': 'Analysis',
                               'review_state':'impossible_state'}
-        self.show_editable_border = True
         self.base_url = self.context.absolute_url()
         self.view_url = self.base_url + "/add_blank"
         self.show_sort_column = False
@@ -855,7 +852,6 @@ class ajaxGetWorksheetReferences(ReferenceSamplesView):
         self.contentFilter = {'portal_type': 'ReferenceSample'}
         self.contentsMethod = self.context.portal_catalog
         self.content_add_actions = {}
-        self.show_editable_border = True
         self.show_sort_column = False
         self.show_select_row = False
         self.show_select_all_checkbox = False

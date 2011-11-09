@@ -23,7 +23,6 @@ class LateAnalysesView(BikaListingView):
                                               'verified'],
                               'cancellation_state': 'active',
                               'sort_on':'getDateReceived'}
-        self.show_editable_border = False
         self.title = _("Late Analyses")
         self.description = ""
         self.content_add_actions = {}
@@ -32,6 +31,9 @@ class LateAnalysesView(BikaListingView):
         self.show_select_column = False
         self.pagesize = 100
         self.view_url = self.view_url + "/late_analyses"
+
+        request.set('disable_border', 1)
+
         self.columns = {'Analysis': {'title': _('Analysis')},
                         'RequestID': {'title': _('Request ID')},
                         'Client': {'title': _('Client')},

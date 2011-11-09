@@ -24,7 +24,6 @@ class AnalysisSpecsView(BikaListingView):
         self.icon = "++resource++bika.lims.images/analysisspec_big.png"
         self.title = _("Analysis Specs")
         self.description = _("Set up the laboratory analysis service results specifications")
-        self.show_editable_border = True
         self.show_filters = False
         self.show_sort_column = False
         self.show_select_row = False
