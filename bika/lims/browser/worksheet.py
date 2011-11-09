@@ -922,4 +922,5 @@ class ajaxGetServices(BrowserView):
         return json.dumps([(c.UID, c.Title) for c in \
                 pc(portal_type = 'AnalysisService',
                    getCategoryUID = self.request.get('getCategoryUID', ''),
-                   inactive_state = 'active')])
+                   inactive_state = 'active',
+                   sort_on = 'sortable_title')])
