@@ -755,13 +755,14 @@ class WorksheetARsView(BikaListingView):
         return items
 
 class WorksheetServicesView(BikaListingView):
-    ## This table displays a list of services from this worksheet, for the
-    ## add_blank_analyses and add_control_analyses views.
+    """ This table displays a list of services for the adding controls / blanks.
+        Services which have analyses in this worksheet are selected, and their
+        categories are expanded by default
+    """
     def __init__(self, context, request):
         BikaListingView.__init__(self, context, request)
         self.content_add_actions = {}
-        self.contentFilter = {'portal_type': 'Analysis',
-                              'review_state':'impossible_state'}
+        self.contentFilter = {'review_state':'impossible_state'}
         self.base_url = self.context.absolute_url()
         self.view_url = self.base_url + "/add_blank"
         self.show_sort_column = False
@@ -769,55 +770,54 @@ class WorksheetServicesView(BikaListingView):
         self.show_select_all_checkbox = False
         self.show_select_column = True
         self.show_filters = False
+        self.pagesize = 1000
 
         self.columns = {
             'Service': {'title': _('Service')},
-            'Requests': {'title': _('Requests')},
         }
         self.review_states = [
-            {'title': _('All'), 'id':'all',
+            {'id':'all',
+             'title': _('All'),
              'transitions': [],
-             'columns':['Service'], #, 'Requests'],
+             'columns':['Service'],
             },
         ]
 
     def folderitems(self):
         pc = getToolByName(self.context, 'portal_catalog')
-        services = {} # uid:item_dict
+        ws_services = []
         for analysis in self.context.getAnalyses():
-            service = analysis.getService()
-            service_uid = service.UID()
-            ar = analysis.aq_parent
-            if service_uid in services:
-                services[service_uid]['Requests'].append(ar)
-            else:
-                services[service_uid] = {
-                    'obj': service,
-                    'Service': service.Title(),
-                    'Requests': [ar, ]
-                }
+            service_uid = analysis.getService().UID()
+            if service_uid not in ws_services:
+                ws_services.append(service_uid)
+        self.categories = []
+        services = [s.getObject() for s in pc(portal_type="AnalysisService",
+                                              inactive_state="active")]
         items = []
-        for k, v in services.items():
-            path = hasattr(v['obj'], 'getPath') and v['obj'].getPath() or \
-                 "/".join(v['obj'].getPhysicalPath())
+        for service in services:
+            path = "/".join(service.getPhysicalPath())
             # if the service has dependencies, it can't have reference analyses
-            calculation = v['obj'].getCalculation()
+            calculation = service.getCalculation()
             if calculation and calculation.getDependentServices():
                 continue
+            cat = service.getCategory().Title()
+            if cat not in self.categories:
+                self.categories.append(cat)
             # this folderitems doesn't subclass from the bika_listing.py
             # so we create items from scratch
             item = {
-                'obj': v['obj'],
-                'id': v['obj'].id,
-                'uid': v['obj'].UID(),
-                'title': v['obj'].Title(),
+                'obj': service,
+                'id': service.id,
+                'uid': service.UID(),
+                'title': service.Title(),
+                'category': cat,
+                'selected': service.UID() in ws_services,
                 'type_class': 'contenttype-AnalysisService',
-                'url': v['obj'].absolute_url(),
-                'relative_url': v['obj'].absolute_url(),
-                'view_url': v['obj'].absolute_url(),
+                'url': service.absolute_url(),
+                'relative_url': service.absolute_url(),
+                'view_url': service.absolute_url(),
                 'path': path,
-                'Service': v['Service'],
-                'Requests': '',
+                'Service': service.Title(),
                 'replace': {},
                 'before': {},
                 'after': {},
@@ -826,15 +826,9 @@ class WorksheetServicesView(BikaListingView):
                 'state_class': 'state-active',
                 'allow_edit': [],
             }
-            ar_hrefs = []
-            for ar in v['Requests']:
-                if getSecurityManager().checkPermission(ManageResults, ar):
-                    url = ar.absolute_url() + "/manage_results"
-                else:
-                    url = ar.absolute_url()
-                ar_hrefs.append("<a href='%s'>%s</a>" % (url, ar.Title()))
-            item['replace']['Requests'] = ", ".join(ar_hrefs)
             items.append(item)
+
+        self.categories.sort()
 
         for i in range(len(items)):
             items[i]['table_row_class'] = ((i + 1) % 2 == 0) and \

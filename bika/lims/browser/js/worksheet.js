@@ -73,7 +73,7 @@ $(document).ready(function(){
 
 	// adding Controls and Blanks - selecting services re-renders the list
 	// of applicable reference samples
-	$("#worksheet_services input[id*='cb_']").live('click', function(){
+	function get_updated_controls(){
 		$("#ajax_spinner").toggle(true);
 		selected_service_uids = [];
 		$.each($("input:checked"), function(i,e){
@@ -97,6 +97,23 @@ $(document).ready(function(){
 				$("#ajax_spinner").toggle(false);
 			}
 		);
+	}
+	$("#worksheet_services input[id*='cb_']").live('click', function(){
+		get_updated_controls();
+	});
+	get_updated_controls();
+
+	// clicking service categories in add_control and add_blank expand and
+	// collapse service TRs.
+	$("th.collapsed").live("click", function(){
+		cat = $(this).attr('cat');
+		$("tr[cat='"+cat+"']").toggle(true);
+		$(this).removeClass("collapsed").addClass("expanded");
+	});
+	$("th.expanded").live("click", function(){
+		cat = $(this).attr('cat');
+		$("tr[cat='"+cat+"']").toggle(false);
+		$(this).removeClass("expanded").addClass("collapsed");
 	});
 
 	// click reference sample TR in add_blank or add_control

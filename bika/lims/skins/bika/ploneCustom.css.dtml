@@ -298,6 +298,25 @@ dl.portlet dt, div.portletAssignments div.portletHeader {
     margin-left: 0;
 }
 
+th.collapsed {
+    background: #DDDDDD url(treeCollapsed.png) no-repeat 6px 50% !important;
+    cursor:pointer !important;
+	padding-left:20px !important;
+    text-color: &dtml-linkColor; !important;
+    font-weight:bold !important;
+	border:1px solid #CCCCCC !important;
+}
+
+th.expanded {
+    background: #DDDDDD url(treeExpanded.png) no-repeat 6px 50% !important;
+    cursor:pointer !important;
+	padding-left:20px !important;
+    text-color: &dtml-linkColor; !important;
+    font-weight:bold !important;
+	border:1px solid #CCCCCC !important;
+}
+
+
 /*
  * Analysis Request tables
  */

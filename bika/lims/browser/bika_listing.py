@@ -188,7 +188,6 @@ class BikaListingView(BrowserView):
         """ bika_listing view initial display and form handler
         """
 
-
         form = self.request.form
         pc = getToolByName(self.context, 'portal_catalog')
         workflow = getToolByName(self.context, 'portal_workflow')
@@ -218,6 +217,18 @@ class BikaListingView(BrowserView):
                         self.modified_contentFilter['review_state'] = form['review_state']
 
         return self.template()
+
+    def selected_cats(self, items):
+        """return a list of categories containing 'selected'=True items
+        """
+        cats = []
+        for item in items:
+            if 'selected' in item and \
+               'category' in item and \
+               item['selected'] and \
+               item['category'] not in cats:
+                cats.append(item['category'])
+        return cats
 
     def folderitems(self, full_objects = False):
         """

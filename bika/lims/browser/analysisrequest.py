@@ -548,7 +548,7 @@ class AnalysisRequestSelectCCView(BikaListingView):
             item['getBusinessPhone'] = obj.getBusinessPhone()
             item['getMobilePhone'] = obj.getMobilePhone()
             if self.request.get('selected_uids', '').find(item['uid']) > -1:
-                item['checked'] = True
+                item['selected'] = True
             items.append(item)
         return items
 
@@ -617,7 +617,7 @@ class AnalysisRequestSelectSampleView(BikaListingView):
             items[x]['class']['getSampleID'] = "select_sample"
             if items[x]['uid'] in self.request.get('hide_uids', ''): continue
             if items[x]['uid'] in self.request.get('selected_uids', ''):
-                items[x]['checked'] = True
+                items[x]['selected'] = True
             items[x]['view_url'] = obj.absolute_url() + "/view"
             items[x]['getClientReference'] = obj.getClientReference()
             items[x]['getClientSampleID'] = obj.getClientSampleID()

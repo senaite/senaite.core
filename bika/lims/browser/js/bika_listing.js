@@ -1,7 +1,7 @@
 jQuery( function($) {
 $(document).ready(function(){
 
-	// All actions will refresh only the content table.
+	// actions will refresh only the content table.
 	function inplace_submit(){
 		form = $('#folderContentsForm');
 		options = {
@@ -23,6 +23,7 @@ $(document).ready(function(){
 		return false;
 	});
 
+	// select all (on this screen at least)
 	$("#select_all").live('click', function(){
 		checked = $(this).attr("checked");
 		$.each($("input[id^='cb_']"), function(i,v){
@@ -30,6 +31,7 @@ $(document).ready(function(){
 		});
 	});
 
+	// modify select_all checkbox when regular checkboxes are modified
 	$("input[id^='cb_']").live('click', function(){
 		all_selected = true;
 		$.each($("input[id^='cb_']"), function(i,v){
