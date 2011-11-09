@@ -1,32 +1,9 @@
 <?xml version="1.0"?>
-<!-- This file holds the setup configuration for the portal_css tool. -->
-
 <object name="portal_css">
-
- <!-- Stylesheets that will be registered with the portal_css tool are defined
-      here. You can also specify values for existing resources if you need to
-      modify some of their properties.
-      Stylesheet elements accept these parameters:
-      - 'id' (required): it must respect the name of the css or DTML file
-        (case sensitive). '.dtml' suffixes must be ignored.
-      - 'expression' (optional - default: ''): a tal condition.
-      - 'media' (optional - default: ''): possible values: 'screen', 'print',
-        'projection', 'handheld'...
-      - 'rel' (optional - default: 'stylesheet')
-      - 'title' (optional - default: '')
-      - 'rendering' (optional - default: 'import'): 'import', 'link' or
-        'inline'.
-      - 'enabled' (optional - default: True): boolean
-      - 'cookable' (optional - default: True): boolean (aka 'merging allowed')
-      - 'insert_before', 'insert_after' (optional - default: '') resource id
-      See registerStylesheet() arguments in
-      ResourceRegistries/tools/CSSRegistry.py for the latest list of all
-      available keys and default values.
-      -->
 
 <stylesheet
     id="++resource++bika.lims.css/hide_contentmenu.css"
-    expression="python:here.portal_type in ['Client','AnalysisRequest', 'Worksheet', 'Sample']"
+    expression="python:here.portal_type in ['Client','AnalysisRequest', 'Worksheet', 'Sample', 'ReferenceSupplier', 'ReferenceSample']"
     media="screen"
     rel="stylesheet"
     rendering="link"

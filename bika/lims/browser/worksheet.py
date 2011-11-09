@@ -578,8 +578,11 @@ class AddBlankView(BrowserView):
         positions = []
         layout = self.context.getLayout()
         used_positions = [int(slot['position']) for slot in layout]
-        available_positions = [pos for pos in range(1, max(used_positions) + 1) if \
-                               pos not in used_positions]
+        if used_positions:
+            available_positions = [pos for pos in range(1, max(used_positions) + 1) if \
+                                   pos not in used_positions]
+        else:
+            available_positions = []
         return available_positions
 
 class AddControlView(BrowserView):
@@ -622,8 +625,11 @@ class AddControlView(BrowserView):
         positions = []
         layout = self.context.getLayout()
         used_positions = [int(slot['position']) for slot in layout]
-        available_positions = [pos for pos in range(1, max(used_positions) + 1) if \
-                               pos not in used_positions]
+        if used_positions:
+            available_positions = [pos for pos in range(1, max(used_positions) + 1) if \
+                                   pos not in used_positions]
+        else:
+            available_positions = []
         return available_positions
 
 
@@ -664,8 +670,11 @@ class AddDuplicateView(BrowserView):
         positions = []
         layout = self.context.getLayout()
         used_positions = [int(slot['position']) for slot in layout]
-        available_positions = [pos for pos in range(1, max(used_positions) + 1) if \
-                               pos not in used_positions]
+        if used_positions:
+            available_positions = [pos for pos in range(1, max(used_positions) + 1) if \
+                                   pos not in used_positions]
+        else:
+            available_positions = []
         return available_positions
 
 

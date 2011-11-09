@@ -60,7 +60,7 @@
 
         <tr>
             <th i18n:translate="Manufacturer">Manufacturer</th>
-            <td class="left" tal:content="context/getReferenceManufacturer">S001</td>
+            <td class="left" tal:content="python:context.getReferenceManufacturer() and context.getReferenceManufacturer().Title() or ''">S001</td>
         </tr>
 
         <tr>
@@ -75,7 +75,7 @@
 
         <tr>
             <th i18n:translate="ReferenceDefinition">Reference Definition</th>
-            <td class="left" tal:content="python:context.getReferenceDefinition().Title()">Reference Definition</td>
+            <td class="left" tal:content="python:context.getReferenceDefinition() and context.getReferenceDefinition().Title() or ''">Reference Definition</td>
         </tr>
 
         <tr>

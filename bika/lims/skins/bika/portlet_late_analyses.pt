@@ -6,7 +6,7 @@
 
 <div metal:define-macro="portlet"
      tal:define="member python: context.portal_membership.getAuthenticatedMember()"
-     tal:condition="python:member.has_role(('LabManager', 'LabClerk', 'Analyst', 'Manager'))">
+     tal:condition="python:member.has_role(('LabManager', 'LabClerk', 'Analyst'))">
 
 <tal:late
      tal:define="portal context/portal_url/getPortalObject;

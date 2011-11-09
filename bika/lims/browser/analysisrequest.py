@@ -38,9 +38,12 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
         # XXX combine data from multiple bika listing tables.
         item_data = {}
         if 'item_data' in form:
-            for i_d in form['item_data']:
-                for i,d in json.loads(i_d).items():
-                    item_data[i] = d
+            if type(form['item_data']) == list:
+                for i_d in form['item_data']:
+                    for i,d in json.loads(i_d).items():
+                        item_data[i] = d
+            else:
+                item_data = json.loads(form['item_data'])
 
         ## publish
         if action in ('prepublish', 'publish', 'prepublish'):
