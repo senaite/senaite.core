@@ -44,15 +44,6 @@
 	<permission value="Modify portal content"/>
 </action>
 
-<action title="Log"
-         action_id="log"
-         category="object"
-         condition_expr=""
-         url_expr="string:${object_url}/log"
-         visible="True">
-  <permission value="View"/>
-</action>
-
 <action title="Analyses"
         action_id="analyses"
 		category="object"
@@ -62,6 +53,15 @@
 		url_expr="string:${object_url}/analyses"
 		visible="True">
 	<permission value="View"/>
+</action>
+
+<action title="Log"
+         action_id="log"
+         category="object"
+         condition_expr=""
+         url_expr="string:${object_url}/log"
+         visible="True">
+  <permission value="View"/>
 </action>
 
 <action title="Sticker"
