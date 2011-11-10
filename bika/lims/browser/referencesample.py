@@ -203,12 +203,14 @@ class ReferenceSamplesView(BikaListingView):
             if not items[x].has_key('obj'): continue
             obj = items[x]['obj']
             items[x]['ID'] = obj.id
-            items[x]['Supplier'] = obj.aq_parent.Title()
+            items[x]['replace']['Supplier'] = "<a href='%s'>%s</a>" % \
+                (obj.aq_parent.absolute_url(), obj.aq_parent.Title())
 ##            items[x]['Manufacturer'] = obj.getReferenceManufacturer() and \
 ##                 obj.getReferenceManufacturer().Title() or ''
 ##            items[x]['LotNumber'] = obj.getLotNumber()
-            items[x]['Definition'] = obj.getReferenceDefinition() and \
-                 obj.getReferenceDefinition().Title() or ''
+            if obj.getReferenceDefinition():
+                items[x]['replace']['Definition'] = "<a href='%s'>%s</a>" % \
+                 (obj.getReferenceDefinition().absolute_url(), obj.getReferenceDefinition().Title())
             items[x]['DateSampled'] = \
                  TimeOrDate(self.context, obj.getDateSampled(), long_format=0)
             items[x]['DateReceived'] = \
