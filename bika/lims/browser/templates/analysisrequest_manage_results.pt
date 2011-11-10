@@ -57,23 +57,24 @@
             <img title="range"
                 tal:attributes="src string:++resource++bika.lims.images/analysisspec.png">
             <span i18n:translate="label_range_specification">Range Specification</span>
-            <a class="review_state_selector" id="lab" value="lab"
+            <a class="specification" id="lab" value="lab"
                 href=""
                 tal:attributes="
-                    href python:'%s?specification=lab' %here.absolute_url();
-                    class python:specification == 'lab' and 'selected' or ''"
+                    href python:'%s?specification=lab'%here.absolute_url();
+                    class python:specification == 'lab' and 'specification selected' or 'specification'"
             >lab</a>
-            <a class="review_state_selector" id="client" value="client"
+            <a class="specification" id="client" value="client"
                 href=""
                 tal:attributes="
-                    href python:'%s?specification=client' %here.absolute_url();
-                    class python:specification == 'client' and 'selected' or ''"
+                    href python:'%s?specification=client'%here.absolute_url();
+                    class python:specification == 'client' and 'specification selected' or 'specification'"
             >client</a>
-
 
             </form>
         </tal:range>
     </h3>
+
+    <br/>
 
     <form
         name="folderContentsForm"
@@ -83,7 +84,6 @@
         action="workflow_action"
         tal:define="pagenumber string:1">
 
-    <br/>
     <input type="hidden" name="submitted" value="1"/>
 
     <tal:field_analyses>
@@ -110,4 +110,3 @@
 
 </body>
 </html>
-

@@ -828,6 +828,7 @@ class WorksheetServicesView(BikaListingView):
             }
             items.append(item)
 
+        items = sorted(items, key = itemgetter('Service'))
         self.categories.sort()
 
         for i in range(len(items)):
@@ -860,7 +861,6 @@ class ajaxGetWorksheetReferences(ReferenceSamplesView):
             {'title': _('All'), 'id':'all',
              'columns': ['ID',
                          'Title',
-                         'Supplier',
                          'Definition',
                          'ExpiryDate',
                          'Services']

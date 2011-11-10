@@ -89,8 +89,9 @@ $(document).ready(function(){
 	});
 
 	// range specification radio clicks
-	$("input[name='specification']").click(function(){
+	$("a[class~='specification']").click(function(event){
 		tables = $(".bika-listing-table table");
+		event.preventDefault();
 		for(t=0; t<tables.length; t++){
 			table = tables[t];
 			specs = $.parseJSON($(table).siblings('input[name="specs"]').val());
@@ -111,7 +112,7 @@ $(document).ready(function(){
 					continue;
 				}
 				// get spec data from TR
-				specification = $("input[name='specification']").filter(":checked").val();
+				specification = $(this).attr('value');
 				if (!specification in spec) {
 					continue;
 				}
@@ -146,17 +147,23 @@ $(document).ready(function(){
 					continue;
 				}
 				// fall to here; set red.
-				range_str = "min: " + spec_min +
-							", max: " + spec_max;
+				range_str = "min: " + spec_min + ", max: " + spec_max;
 				$("span[uid='"+uid+"']")
 				  .filter("span[field='Result']")
 				  .append("<img src='++resource++bika.lims.images/exclamation.png' uid='"+
 				  uid+"' icon='exclamation' title='Result out of range ("+range_str+")'/>");
 			}
 		}
+		$(this).addClass('selected');
+		if ($(this).id == 'lab') {
+			$("a[id='client']").removeClass("selected");
+			$("a[id='lab']").addClass("selected");
+		} else {
+			$("a[id='client']").addClass("selected");
+			$("a[id='lab']").removeClass("selected");
+		}
 	});
 
-	$("input[name='specification']").filter(":checked").click();
 
 });
 });

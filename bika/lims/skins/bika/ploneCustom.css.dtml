@@ -260,6 +260,21 @@ td.ID {
   padding:2px 5px 2px 5px !important;
 }
 
+.specification {
+  border-radius: .25em;
+  background: #fff;
+  font-weight:bold;
+  padding:2px 5px 2px 5px !important;
+}
+
+.specification.selected {
+  border-radius: .25em;
+  background: #ddd;
+  border:1px solid #ddd !important;
+  font-weight:bold;
+  padding:2px 5px 2px 5px !important;
+}
+
 dt.attachments {
     color: &dtml-linkColor;;
     font-weight:bold;
