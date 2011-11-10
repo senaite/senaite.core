@@ -173,17 +173,16 @@ class AnalysisRequestViewView(BrowserView):
         self.TimeOrDate = TimeOrDate
 
     def __call__(self):
-        self.Field = AnalysesView(self.context, self.request,
-                                  getPointOfCapture = 'field')
-        self.Field.allow_edit = False
-        self.Field.show_select_column = False
-        self.Field = self.Field.contents_table()
-
-        self.Lab = AnalysesView(self.context, self.request,
-                                getPointOfCapture = 'lab')
-        self.Lab.allow_edit = False
-        self.Lab.show_select_column = False
-        self.Lab = self.Lab.contents_table()
+        ar = self.context
+        self.tables = {}
+        for poc in POINTS_OF_CAPTURE:
+            if self.context.getAnalyses(getPointOfCapture=poc):
+                t = AnalysesView(ar,
+                                 self.request,
+                                 getPointOfCapture = poc)
+                t.allow_edit = False
+                t.show_select_column = False
+                self.tables[POINTS_OF_CAPTURE.getValue(poc)] = t.contents_table()
         return self.template()
 
     def tabindex(self):
@@ -384,7 +383,6 @@ class AnalysisRequestAddView(AnalysisRequestViewView):
     def __call__(self):
         return self.template()
 
-
 class AnalysisRequestEditView(AnalysisRequestAddView):
     implements(IViewView)
     template = ViewPageTemplateFile("templates/analysisrequest_edit.pt")
@@ -446,20 +444,17 @@ class AnalysisRequestManageResultsView(AnalysisRequestViewView):
         elif not(getSecurityManager().checkPermission(ManageResults, ar)):
             self.request.response.redirect(ar.absolute_url())
         else:
-            self.Field = AnalysesView(ar, self.request, getPointOfCapture = 'field')
-            self.Field.allow_edit = True
-            self.Field.review_states[0]['transitions'] = ['submit', 'retract', 'verify']
-            self.Field.show_select_column = True
-            self.Field = self.Field.contents_table()
-
-            self.Lab = AnalysesView(ar, self.request, getPointOfCapture = 'lab')
-            self.Lab.allow_edit = True
-            self.Lab.review_states[0]['transitions'] = ['submit', 'retract', 'verify']
-            self.Lab.show_select_column = True
-            self.Lab = self.Lab.contents_table()
-
+            self.tables = {}
+            for poc in POINTS_OF_CAPTURE:
+                if self.context.getAnalyses(getPointOfCapture=poc):
+                    t = AnalysesView(ar,
+                                     self.request,
+                                     getPointOfCapture = poc)
+                    t.allow_edit = True
+                    t.review_states[0]['transitions'] = ['submit', 'retract', 'verify']
+                    t.show_select_column = True
+                    self.tables[POINTS_OF_CAPTURE.getValue(poc)] = t.contents_table()
             return self.template()
-
 
 class AnalysisRequestResultsNotRequestedView(AnalysisRequestManageResultsView):
     implements(IViewView)
@@ -944,7 +939,8 @@ class ajaxAnalysisRequestSubmit():
                     ClientSampleID = values.has_key('ClientSampleID') and values['ClientSampleID'] or '',
                     DateSampled = values.has_key('DateSampled') and values['DateSampled'] or '',
                     SampleType = values.has_key('SampleType') and values['SampleType'] or '',
-                    SamplePoint = values.has_key('SamplePoint') and values['SamplePoint'] or ''
+                    SamplePoint = values.has_key('SamplePoint') and values['SamplePoint'] or '',
+                    Composite = values.has_key('Composite') and values['Composite'] or ''
                 )
                 dis_date = sample.disposal_date()
                 sample.setDisposalDate(dis_date)
@@ -1096,7 +1092,8 @@ class ajaxAnalysisRequestSubmit():
                     assert len(sample_proxy) == 1
                     sample = sample_proxy[0].getObject()
                     ar_number = sample.getLastARNumber() + 1
-                    sample.edit(LastARNumber = ar_number)
+                    sample.edit(LastARNumber = ar_number,
+                                Composite = 'Composite' in values and values['Composite'] or False)
                     sample.reindexObject()
                 else:
                     # Primary AR

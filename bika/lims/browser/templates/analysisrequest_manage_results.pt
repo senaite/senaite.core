@@ -28,22 +28,23 @@
 <metal:content-description fill-slot="content-description">
 </metal:content-description>
 
-<metal:content-core fill-slot="content-core"
-    tal:define="
-        tabindex view/tabindex;
-        portal context/@@plone_portal_state/portal;
-        specification python: request.get('specification', view.getDefaultSpec());
-        ar_attach_allowed here/bika_setup/getARAttachmentsPermitted;
-        ar_review_state python: context.portal_workflow.getInfoFor(context, 'review_state');
-        analysis_attach_allowed here/bika_setup/getAnalysisAttachmentsPermitted;
-        attachments_allowed here/bika_setup/getAttachmentsPermitted;
-        attachments here/getAttachment | nothing;
-        delete_attachments python:True;
-        update_attachments python:True">
+<metal:content-core fill-slot="content-core" tal:define="
+	tabindex view/tabindex;
+	portal context/@@plone_portal_state/portal;
+	specification python: request.get('specification', view.getDefaultSpec());
+	ar_attach_allowed here/bika_setup/getARAttachmentsPermitted;
+	ar_review_state python: context.portal_workflow.getInfoFor(context, 'review_state');
+	analysis_attach_allowed here/bika_setup/getAnalysisAttachmentsPermitted;
+	attachments_allowed here/bika_setup/getAttachmentsPermitted;
+	attachments here/getAttachment | nothing;
+	delete_attachments python:True;
+	update_attachments python:True">
 
     <div tal:condition="attachments_allowed">
         <metal:block use-macro="here/attachments/macros/attachments"/>
     </div>
+
+	<br/>
 
     <img tal:condition="view/getHazardous"
         title="Hazardous"
@@ -86,23 +87,13 @@
 
     <input type="hidden" name="submitted" value="1"/>
 
-    <tal:field_analyses>
+    <tal:tables tal:repeat="table python:view.tables.items()">
         <h3>
-            <img title="analyses"
-                tal:attributes="src string:++resource++bika.lims.images/service.png">
-            <span tal:content="python: modules['bika.lims.config'].POINTS_OF_CAPTURE.getValue('field')"/>
+            <img title="analyses" src="++resource++bika.lims.images/service.png">
+            <span tal:content="python: table[0]"/>
         </h3>
-        <span tal:replace="structure python: view.Field"/>
-    </tal:field_analyses>
-
-    <tal:lab_analyses>
-        <h3>
-            <img title="analyses"
-                tal:attributes="src string:++resource++bika.lims.images/service.png">
-            <span tal:content="python: modules['bika.lims.config'].POINTS_OF_CAPTURE.getValue('lab')"/>
-        </h3>
-        <span tal:replace="structure python: view.Lab"/>
-    </tal:lab_analyses>
+        <span tal:replace="structure python: table[1]"/>
+    </tal:tables>
 
     </form>
 

@@ -18,20 +18,19 @@
     </h1>
 </metal:content-title>
 
-
     <metal:content-core fill-slot="content-core" tal:define="
-    portal context/@@plone_portal_state/portal;
-    specification python:request.get('specification', view.getDefaultSpec());
-    sample here/getSample;
-    colspan python:10;
-    ar_attach_allowed here/bika_setup/getARAttachmentsPermitted;
-    review_state python:context.portal_workflow.getInfoFor(context, 'review_state');
-    inactive_state python:context.portal_workflow.getInfoFor(context, 'inactive_state', 'asdf');
-    analysis_attach_allowed here/bika_setup/getAnalysisAttachmentsPermitted;
-    attachments_allowed here/bika_setup/getAttachmentsPermitted;
-    attachments here/getAttachment | nothing;
-    delete_attachments python:True;
-    update_attachments python:True">
+		portal context/@@plone_portal_state/portal;
+		specification python:request.get('specification', view.getDefaultSpec());
+		sample here/getSample;
+		colspan python:10;
+		ar_attach_allowed here/bika_setup/getARAttachmentsPermitted;
+		review_state python:context.portal_workflow.getInfoFor(context, 'review_state');
+		inactive_state python:context.portal_workflow.getInfoFor(context, 'inactive_state', 'asdf');
+		analysis_attach_allowed here/bika_setup/getAnalysisAttachmentsPermitted;
+		attachments_allowed here/bika_setup/getAttachmentsPermitted;
+		attachments here/getAttachment | nothing;
+		delete_attachments python:True;
+		update_attachments python:True">
 
 
     <div
@@ -40,13 +39,13 @@
         <metal:block use-macro="here/attachments/macros/attachments"/>
     </div>
 
+	<br/>
+
     <form
         id="analysisrequest_edit_form"
         name="analysisrequest_edit_form"
         method="POST"
         enctype="multipart/form-data">
-
-
 
     <img tal:condition="view/getHazardous"
         title="Hazardous"
@@ -148,7 +147,6 @@
             </td>
         </tr>
 
-
         <tr tal:condition="python:review_state != 'sample_due'">
             <td colspan="2"></td>
             <th i18n:translate="label_datereceived">Date received</th>
@@ -177,16 +175,14 @@
         </thead>
         </table>
 
-
         <h3>
         <tal:profile tal:condition="view/getARProfileTitle">
             <img title="profile"
                 tal:attributes="src string:++resource++bika.lims.images/arprofile.png">
             <span i18n:translate="label_arprofiles">Profile</span>:
             <span tal:content="view/getARProfileTitle">pr01</span>
+	        &nbsp&nbsp&nbsp&nbsp
         </tal:profile>
-
-        &nbsp&nbsp&nbsp&nbsp
 
         <form name="specificationForm"
 					enctype="multipart/form-data"
@@ -214,28 +210,13 @@
         </h3>
         <br/>
 
-        <tal:field_analyses>
-            <h3>
-                <img title="analyses"
-                    tal:attributes="src string:++resource++bika.lims.images/service.png">
-                <span tal:content="python: modules['bika.lims.config'].POINTS_OF_CAPTURE.getValue('field')"/>
-
-
-            </h3>
-
-
-            <span tal:replace="structure python: view.Field"/>
-
-        </tal:field_analyses>
-
-        <tal:lab_analyses>
-            <h3>
-                <img title="analyses"
-                    tal:attributes="src string:++resource++bika.lims.images/service.png">
-                <span tal:content="python: modules['bika.lims.config'].POINTS_OF_CAPTURE.getValue('lab')"/>
-            </h3>
-            <span tal:replace="structure python: view.Lab"/>
-        </tal:lab_analyses>
+		<tal:tables tal:repeat="table python:view.tables.items()">
+			<h3>
+				<img title="analyses" src="++resource++bika.lims.images/service.png">
+				<span tal:content="python: table[0]"/>
+			</h3>
+			<span tal:replace="structure python: table[1]"/>
+		</tal:tables>
 
     </form>
 

@@ -88,7 +88,7 @@ $(document).ready(function(){
 		$.ajax(options);
 	});
 
-	// range specification radio clicks
+	// range specification links
 	$("a[class~='specification']").click(function(event){
 		tables = $(".bika-listing-table table");
 		event.preventDefault();

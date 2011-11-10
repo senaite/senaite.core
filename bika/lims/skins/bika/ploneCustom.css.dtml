@@ -360,10 +360,10 @@ table.analysisrequest.add td.ar_column {
 }
 
 table.analysisrequest .pointofcapture th {
+	padding-top:5px;
     background: #fff;
     border-left: 0;
 	border-right:0;
-	text-align:center;
     background: #fff;
 	font-size:1.1em;
 }

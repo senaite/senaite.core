@@ -365,6 +365,28 @@
             </td>
         </tal:block>
     </tr>
+    <!-- Composite Sample -->
+    <tr tal:define="field_name string:Composite">
+        <th colspan="2" i18n:translate="CompositeSample">Composite Sample</th>
+        <td>
+            <img class="copyButton" tal:condition="not: edit"
+                tal:attributes="name field_name;src string:${portal/absolute_url}/++resource++bika.lims.images/copy.png"/>
+        </td>
+        <tal:block repeat="column python:range(view.col_count)">
+            <td class="cb"
+                tal:define="input_name string:ar.${column}.${field_name}:ignore_empty:record;
+                    input_id string:ar_${column}_${field_name}">
+            <input type="checkbox"
+                class="cb"
+                value="checked"
+                tal:attributes="
+                    checked python:edit and context.getSample().getComposite() and 'yes' or '';
+                    name input_name;
+                    id input_id;
+                    tabindex python:column*100+tabindex.next();"/>
+            </td>
+        </tal:block>
+    </tr>
     <!-- Dry Matter -->
     <tr tal:define="field_name string:ReportDryMatter">
         <th colspan="2" i18n:translate="label_report_dm">Report as Dry Matter</th>
@@ -559,13 +581,13 @@
 
     <div class="discreeter">
 
-
     <p>  <!-- AVS this should be conditional if any dryables present -->
         <img src="" tal:attributes="src string:${portal/absolute_url}/++resource++bika.lims.images/dry.png">
         <span i18n:translate="disclaimer_can_be_dry">
             Can be reported as dry matter</span>
     </p>
 
+	<!-- XXX this also -->
     <p tal:condition="python:context.bika_setup.laboratory.getLaboratoryAccredited()">
         <img tal:attributes="src string:${portal/absolute_url}/++resource++bika.lims.images/accredited.png">
         <span i18n:translate="disclaimer_accred">
