@@ -79,6 +79,7 @@ class ReferenceResultsWidget(RecordsWidget):
             CategoryTitle = service.getCategory().Title()
             key = "%s_%s"%(CategoryUID, CategoryTitle)
             ref['title'] = service.Title()
+            ref['service'] = ref['service'].UID()
             if not categories.has_key(key):
                 categories[key] = {}
             categories[key][service.UID()] = ref
@@ -87,7 +88,7 @@ class ReferenceResultsWidget(RecordsWidget):
     security.declarePublic('getCategoryUID')
     def getCategoryUID(self, category_title):
         pc = getToolByName(self, 'portal_catalog')
-        cats = pc(portal_type = "AnalysisCategory", 
+        cats = pc(portal_type = "AnalysisCategory",
                   sort_on='sortable_title')
         cats = [cat.UID for cat in cats if cat.Title == category_title]
         if cats:
