@@ -8,7 +8,8 @@ class ReferenceSuppliersView(BikaListingView):
         self.title = _("Reference Suppliers")
         self.icon = "++resource++bika.lims.images/referencesupplier_big.png"
         self.description = _("")
-        self.contentFilter = {'portal_type': 'ReferenceSupplier'}
+        self.contentFilter = {'portal_type': 'ReferenceSupplier',
+                              'sort_on': 'sortable_title'}
         self.content_add_actions = {_('Add'): "createObject?type_name=ReferenceSupplier"}
         self.show_filters = False
         self.show_sort_column = False
