@@ -8,7 +8,6 @@
 
 html body{
     font: 100% "Lucida Grande",Verdana,Lucida,Helvetica,Arial,sans-serif;
-
 }
 
 table {
@@ -278,6 +277,7 @@ td.ID {
 dt.attachments {
     color: &dtml-linkColor;;
     font-weight:bold;
+	font-family: "Helvetica Neue",Arial,FreeSans,sans-serif;
 	font-size:1.25em !important;
 	color: #444444 !important;
     cursor: pointer !important;
