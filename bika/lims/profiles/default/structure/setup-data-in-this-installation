@@ -18,11 +18,12 @@ presentation: False
 tableContents: False
 Content-Type: text/html
 
+<p><br /></p>
 <table class="invisible two_column_table">
 <tbody>
 <tr>
 <td>
-<h3></h3>
+<h1>This is a test set up</h1>
 <h3><a href="bika_setup/bika_analysisservices"><img src="++resource++bika.lims.images/service_big.png" alt="" /> Analysis Services </a></h3>
 <p>Expected turnaround time (TAT) of 2 hours<br /><br />Price of R10<br /><br />Maximum duplicate variation 10%<br /><br />Uncertainties (Range minimum, maximum,</p>
 <p>Between 0 and 2, uncertainty value of ± 0.1<br /><br /> "          2.01 -  4.00,  ± 0.2<br /><br /> "          4.01 -  6.00,  ± 0.3<br /><br /> "          6.01 -  8.00,  ± 0.4<br /><br /> "          8.01 - 999,   ± 0.5</p>
@@ -48,8 +49,7 @@ Content-Type: text/html
 <p>A number of popular results calculations have been pre-configured in the setup</p>
 <p>They include nutrient calculations for</p>
 <ul><li>Apparent Metabolisable Energy</li><li>Digestible Energy</li><li>Metabolisable Energy</li><li>Non-Structural Carbohydrates and&nbsp;</li><li>Total Digestible Nutrients.</li></ul>
-<p>&nbsp;</p>
-<p>Others are: Dry Matter results calculations and standard<br />Residual Weight, Residual Weight (tare), Weight Loss, Weight Loss (tare) and<br />Titration</p>
+<p>Others are: Dry Matter results calculations and Residual Weight, Residual Weight (tare), Weight Loss, Weight Loss (tare) and Titration</p>
 <p>&nbsp;</p>
 <h3 class="western"><a href="bika_setup/bika_referencedefinitions"><img src="++resource++bika.lims.images/referencedefinition_big.png" alt="" /> Reference Definitions </a></h3>
 <p>1 <strong>Blank </strong>was configured with all analyses included with<br />Expected value of 0, minimum allowed of 0 and maximum of 1.</p>

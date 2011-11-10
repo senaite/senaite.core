@@ -1,6 +1,6 @@
 id: index_html
 title: Welcome to Bika LIMS 3
-description: This is release 3.0a1.dev3295 on Plone 4.1
+description: Bika LIMS 3 is Bika Lab System's long awaited upgrade to Plone 4 and SQL. In the interest of future maintenance and performance, and facilitating new functionality, the opportunity was used to undertake significant code restructuring. This is version 3.0a1.dev3315 on Plone 4.1
 subject:
 relatedItems:
 location:
@@ -20,31 +20,24 @@ Content-Type: text/html
 
 <p>&nbsp;</p>
 <p><strong>Thank you for downloading Bika LIMS. Please see the <a class="internal-link" href="installation-verification">Installation Verification</a> page</strong></p>
-<table class="invisible three_column_table">
+<table class="invisible two_column_table">
 <tbody>
 <tr>
 <td>
-<h2>Overview</h2>
-<p>Bika LIMS 3 is Bika Lab System's long awaited upgrade to Plone 4 and SQL</p>
-<p>In    the interest of future maintenance and performance, and  facilitating new functionality, the opportunity was used to undertake  significant code restructuring</p>
 <h3>Note to Testers</h3>
 <p>With this release, please concentrate (and try to break) the LIMS' setup and basic workflow for Samples, Analyses, Analysis Requests and Worksheets. Please do test Analysis profiles, Specifications and Worksheet templates</p>
-</td>
-<td>
-<h2 class="Subheading">Set-up data</h2>
-<p>We are finalising standardised  and open XLSX<strong> </strong>spreadsheets that can be used   to  populate the LIMS with setup data of  your choice. Please contribute standard setup data to guide us    in pre-populating setup data  for each of the Bika branches,  e.g. Water, Health, Interlab, etc.</p>
-<h3><a class="internal-link" href="setup-data-in-this-installation">Test data</a></h3>
-<p>For the purpose of testing, we use these to populate this   instance with data of uniform   nature for for most setup items, e.g. Analysis specifications,   QC, uncertainties, turn-around time, precision, price   etc. Please see <a class="internal-link" href="setup-data-in-this-installation">Setup data used to configure this installation</a></p>
-</td>
-<td>
 <h2 class="Subheading">Feedback</h2>
-<p>Don't hesitate to post questions, comments and suggestions to the Bika mailing lists: Bika <a class="external-link" href="https://groups.google.com/forum/?hl=en#%21forum/bika-design">LIMS design</a>, <a class="external-link" href="http://lists.sourceforge.net/lists/listinfo/bika-users">Users</a> or <a class="external-link" href="http://lists.sourceforge.net/lists/listinfo/bika-developers">Developers</a>. Please log issues in the <a class="external-link" href="http://sourceforge.net/tracker/?func=browse&amp;group_id=145464&amp;atid=762012">public Bika bug tracker</a> at SourceForge.net</p>
-<h3>Code repository</h3>
-<p>Fresh code is in SVN at <a class="external-link" href="https://bika.svn.sourceforge.net/svnroot/bika/bika3">https://bika.svn.sourceforge.net/svnroot/bika/bika3</a></p>
+<p>Don't hesitate to post questions, comments and suggestions to the Bika mailing lists: Bika <a class="external-link" href="https://groups.google.com/forum/?hl=en#%21forum/bika-design">LIMS design</a>, <a class="external-link" href="http://lists.sourceforge.net/lists/listinfo/bika-users">Users</a> or <a class="external-link" href="http://lists.sourceforge.net/lists/listinfo/bika-developers">Developers</a>. Please log issues in the <a class="external-link" href="http://sourceforge.net/tracker/?func=browse&amp;group_id=145464&amp;atid=762012">public Bika bug tracker</a> at SourceForge.net. <strong>NB</strong> - assign issues to 'lemoene'</p>
+</td>
+<td>
+<h2 class="Subheading">Set-up data request<br /></h2>
+<p>We standardised open XLSX<strong> </strong>spreadsheets that can be used   to configure the LIMS with setup data of the user's choice. Please contribute setup information to guide us    in pre-populating each of the Bika branches,  e.g. Water, Health, Interlab, etc.</p>
+<h3><a class="internal-link" href="setup-data-in-this-installation">Test data</a></h3>
+<p>For the purpose of testing, we populated this   instance with data of uniform   nature for most setup items, e.g. Analysis specifications,   QC, uncertainties, turn-around time, precision, price   etc. Please see <a class="internal-link" href="setup-data-in-this-installation">Setup data used to configure this installation</a></p>
 </td>
 </tr>
 <tr>
-<td colspan="3">
+<td colspan="2">
 <p style="text-align: center;"><img class="image-inline" src="++resource++bika.lims.images/LIMSFlowDiagram201103_600x.png" alt="LIMS flow &amp; Analysis status progression" /></p>
 </td>
 </tr>
@@ -65,64 +58,48 @@ the Analysis    Service records they  reference might have been modified</p>
 <p class="discreet">The user interface won't show it, but further workflow separation    takes care of assigning Analyses to Worksheets, and to differentiate ARs    and Worksheets awaiting results file attachments and delaying    verification</p>
 <p class="discreet">Using Ajax, Plone 4's further improved user interface and   a host of     smaller enhancements, many clicks were saved and  general    performance   improved</p>
 <p class="discreet">The main Plone index, designed to index  every bit  of of the system     in CMS style, is being dismantled in favour of  more LIMS  specific   indexes   to further improve performance</p>
+<h3>Under construction</h3>
+<ul><li>Data filters on tables &amp; lists (50%)</li><li>Barcoding (60%)</li><li>Instrument Interface (70%)</li><li>QC graphs (45%)<br /></li><li>User manual (20%)</li></ul>
+<br />
+<div align="center"><img src="++resource++bika.lims.images/instrument_big.png" alt="Laboratory instruments in the LIMS/LIS" />&nbsp;
+<img src="++resource++bika.lims.images/referencesample_big.png" alt="Reference samples" />&nbsp; <img src="++resource++bika.lims.images/calculation_big.png" alt="LIMS/LIS analysis results calculations" />&nbsp; <img src="++resource++bika.lims.images/dependencies_big.png" alt="LIMS/LIS analysis results dependencies" />&nbsp; <img src="++resource++bika.lims.images/late_big.png" alt="LIMS/LIS late analyses" />&nbsp; <img src="++resource++bika.lims.images/sampletype_big.png" alt="Sample types in the LIMS/LIS" />&nbsp; <img src="++resource++bika.lims.images/samplepoint_big.png" alt="Sample points in the LIMS/LIS" />&nbsp; <img src="++resource++bika.lims.images/accredited_big.png" alt="Accredited lab analyses" /> <img src="++resource++bika.lims.images/dry_big.png" alt="Analysis results expressed as dry matter" /><br /><br /><a class="external-link" href="knowledge-centre/manual/bika-3-user-manual/introduction-and-overview/icons">New Bika 3 icon set</a></div>
+<p>&nbsp;</p>
+<p style="text-align: center;" class="callout"><strong>Micro-sponsorship appeal</strong><br /><br />
+<a href="http://sourceforge.net/donate/index.php?group_id=145464"><img src="http://images.sourceforge.net/images/project-support.jpg" alt="Support the Bika FLOSS project at SourceForge.net (PayPal)" height="32" width="88" /> </a><br /><br />At <a class="external-link" href="https://sourceforge.net/">SourceForge.net</a>. Paypal. $10 - $250</p>
+<h3>Code repository</h3>
+<p>Fresh code is in SVN at <a class="external-link" href="https://bika.svn.sourceforge.net/svnroot/bika/bika3">https://bika.svn.sourceforge.net/svnroot/bika/bika3</a></p>
+<p><strong><a class="external-link" href="http://www.bikalabs.com/softwarecenter/bika/releases/3.0">Bika 3 Project page</a></strong></p>
+<p>&nbsp;</p>
+<p><a class="external-link" href="https://bika.svn.sourceforge.net/svnroot/bika/bika3"><br /></a></p>
 </td>
 <td>
+<p align="left" style="text-align: center;"><strong>Bika code analysis at <a class="external-link" href="https://www.ohloh.net/p/bika">Ohloh.net</a></strong></p>
+<p align="left" style="text-align: center;"><strong><a class="external-link" href="https://www.ohloh.net/p/bika"><img class="image-inline" src="bika-code-analysis-by-ohloh" alt="Bika code analysis by OHLOH" /><br /></a></strong></p>
 <h3><a class="external-link" href="knowledge-centre/manual/bika-3-user-manual"><img src="maintenance_icon.png" alt="" /><em> User Manual </em></a></h3>
 <p><em>Under construction and describing new topics </em><em>at first:</em></p>
 <p><em>LIMS 2 principles still apply, if you are new to Bika, also consult the <a class="external-link" href="http://www.bikalabs.com/helpcentre/manual/bikalims20">Inkosi Bika LIMS 2 manual</a></em></p>
-<span class="Apple-style-span">
-<h1 class="documentFirstHeading">Bika 3 User manual</h1>
+<p><span class="Apple-style-span">
+</span></p>
 <ol style="list-style-type: decimal;"><li><a href="knowledge-centre/manual/bika-3-user-manual/introduction-and-overview"><span class="state-published">Introduction and Overview ...</span></a><br /></li><li><a href="knowledge-centre/manual/bika-3-user-manual/setup-and-configuration"><span class="state-published">Setup and Configuration</span></a>
-<ol style="list-style-type: decimal;"><li><a href="knowledge-centre/manual/bika-3-user-manual/setup-and-configuration/setup-overview"><span class="state-published">Setup Overview ...<br /></span></a>
+<ol style="list-style-type: decimal;"><li><a href="knowledge-centre/manual/bika-3-user-manual/setup-and-configuration/setup-overview"><span class="state-published">Setup Overview</span></a>
 <ol style="list-style-type: decimal;"><li><a href="knowledge-centre/manual/bika-3-user-manual/setup-and-configuration/setup-overview/navigating-the-lims-setup"><span class="state-published">Navigating the LIMS setup</span></a></li><li><a href="knowledge-centre/manual/bika-3-user-manual/setup-and-configuration/setup-overview/de-activating-setup-items"><span class="state-published">De-activating setup items</span></a></li><li><a href="knowledge-centre/manual/bika-3-user-manual/setup-and-configuration/setup-overview/versioning"><span class="state-published">Versioning</span></a></li></ol>
 </li><li><a href="knowledge-centre/manual/bika-3-user-manual/setup-and-configuration/analysis-services"><span class="state-published">Analysis Services</span></a></li><li><a href="knowledge-centre/manual/bika-3-user-manual/setup-and-configuration/analysis-categories"><span class="state-published">Analysis Categories</span></a></li><li><a href="knowledge-centre/manual/bika-3-user-manual/setup-and-configuration/analysis-profiles"><span class="state-published">Analysis Profiles</span></a></li><li><a href="knowledge-centre/manual/bika-3-user-manual/setup-and-configuration/calculations"><span class="state-published">Calculations</span></a></li><li><a href="knowledge-centre/manual/bika-3-user-manual/setup-and-configuration/analysis-specifications"><span class="state-published">Analysis Specifications</span></a></li><li><a href="knowledge-centre/manual/bika-3-user-manual/setup-and-configuration/reference-definitions"><span class="state-published">Reference Definitions</span></a></li><li><a href="knowledge-centre/manual/bika-3-user-manual/setup-and-configuration/worksheet-templates"><span class="state-published">Worksheet Templates</span></a></li></ol>
 </li><li><a href="knowledge-centre/manual/bika-3-user-manual/samples.-analyses.-analysis-requests"><span class="state-published">Samples. Analyses. Analysis Requests</span></a>
-<ol style="list-style-type: decimal;"><li><a href="knowledge-centre/manual/bika-3-user-manual/samples.-analyses.-analysis-requests/introduction-samples-analysis-requests.-mostly"><span class="state-published">Introduction · Samples = Analysis Requests. Mostly</span></a></li><li><a href="knowledge-centre/manual/bika-3-user-manual/samples.-analyses.-analysis-requests/analysis-request-templates-ar-profiles"><span class="state-published">Analysis Request templates - 'AR Profiles'</span></a></li><li><img src="++resource++bika.lims.images/to_follow.png" alt="" /><span class="state-published">...<br /></span></li></ol>
+<ol style="list-style-type: decimal;"><li><a href="knowledge-centre/manual/bika-3-user-manual/samples.-analyses.-analysis-requests/introduction-samples-analysis-requests.-mostly"><span class="state-published">Samples = Analysis Requests. Mostly</span></a></li><li><a href="knowledge-centre/manual/bika-3-user-manual/samples.-analyses.-analysis-requests/creating-a-simple-analysis-request-ar"><span class="state-published">Creating a simple Analysis Request (AR)</span></a></li><li><a href="knowledge-centre/manual/bika-3-user-manual/samples.-analyses.-analysis-requests/advanced-ar-creation"><span class="state-published">Advanced AR creation</span></a></li><li><span class="Apple-style-span"><span class="Apple-style-span"><img src="++resource++bika.lims.images/to_follow.png" alt="" />...</span></span></li></ol>
 </li><li><a href="knowledge-centre/manual/bika-3-user-manual/worksheets"><span class="state-published">Worksheets</span></a>
-<ol style="list-style-type: decimal;"><li><a href="knowledge-centre/manual/bika-3-user-manual/worksheets/worksheet-overview"><span class="state-published">Worksheet Overview</span></a></li><li><img src="++resource++bika.lims.images/to_follow.png" alt="" /><span class="state-published">...<br /></span></li></ol>
+<ol style="list-style-type: decimal;"><li><a href="knowledge-centre/manual/bika-3-user-manual/worksheets/worksheet-overview"><span class="state-published">Worksheet Overview</span></a></li><li><span class="Apple-style-span"><span class="Apple-style-span"><img src="++resource++bika.lims.images/to_follow.png" alt="" /> ...<br /></span></span></li></ol>
 </li></ol>
-</span><br /><br />
-<ol></ol>
-<p style="text-align: center;" class="callout"><strong>Micro-sponsorship appeal</strong><br /><br />
-<a href="http://sourceforge.net/donate/index.php?group_id=145464"><img src="http://images.sourceforge.net/images/project-support.jpg" alt="Support the Bika FLOSS project at SourceForge.net (PayPal)" height="32" width="88" /> </a><br /><br />At <a class="external-link" href="https://sourceforge.net/">SourceForge.net</a>. Paypal. $10 - $250</p>
-<h3>Release notes</h3>
-<p>More information about this release can be found on the <a class="external-link" href="http://www.bikalabs.com/softwarecenter/bika">Bika LIMS project pages</a></p>
-<p>&nbsp;</p>
-<p>&nbsp;</p>
-<p>&nbsp;</p>
-<p>&nbsp;</p>
-</td>
-<td scope="col">
-<p align="left" style="text-align: center;"><strong>Bika code analysis at <a class="external-link" href="https://www.ohloh.net/p/bika">Ohloh.net</a></strong></p>
-<h3 align="center" class="Subheading"><a class="external-link" href="https://www.ohloh.net/p/bika"><img class="image-inline" src="bika-lims-code-analysis" alt="Bika LIMS code analysis" /></a><br /></h3>
-<p>&nbsp;</p>
-<h3><img src="++resource++bika.lims.images/hazardous_big.png" alt="" height="32" width="32" /> Under construction</h3>
-<ul>
-<li>Setup data import (85%)</li>
-<li>Analysis, AR, Sample and Worksheet workflow cascades (90% though one never knows)</li>
-<li>Data filters on tables &amp; lists (50%)</li><li>Barcoding (60%)</li>
-<li>User manual &amp; Technical documentation (10%)</li>
-<li>Iconography (80%)</li></ul>
-<br />
-<div align="center"><img src="++resource++bika.lims.images/instrument_big.png" alt="" />&nbsp; <img src="++resource++bika.lims.images/referencesample_big.png" alt="" />&nbsp; <img src="++resource++bika.lims.images/calculation_big.png" alt="" />&nbsp; <img src="++resource++bika.lims.images/dependencies_big.png" alt="" />&nbsp; <img src="++resource++bika.lims.images/late_big.png" alt="" />&nbsp; <img src="++resource++bika.lims.images/sampletype_big.png" alt="" />&nbsp; <img src="++resource++bika.lims.images/samplepoint_big.png" alt="" />&nbsp; <img src="++resource++bika.lims.images/accredited_big.png" alt="" /><br /><a class="external-link" href="knowledge-centre/manual/bika-3-user-manual/introduction-and-overview/icons">New Bika 3 icon set</a></div>
 <p>&nbsp;</p>
 <h3 class="Subheading">To do</h3>
-<ul>
-<li>Alerts</li><li>Column sorting<br /></li>
-<li>Instrument Interface</li>
-<li>Logs</li>
-<li>Working hours calendar</li>
-<li>PDF, SMS and Fax results publication options</li>
-<li>Reports and Queries</li>
-<li>ERP Interface</li></ul>
-<ul>
-<li>Relstorage &amp; Content Mirror</li>
-<li>Invoices</li></ul>
+<ul><li>Column sorting<br /></li><li>Working hours calendar</li><li>PDF, SMS and Fax results publication options</li><li>Reports and Queries</li></ul>
+<ul><li>Relstorage &amp; Content Mirror</li><li>Invoices</li></ul>
 <p>&nbsp;</p>
 <p>Thank you for your support</p>
 <p>The Bika team</p>
 <p><a href="mailto:info@bikalabs.com" target="_self">info@bikalabs.com</a></p>
 <p><a class="external-link" href="http://www.bikalabs.com/"><img class="image-inline" src="bika-lab-systems-world-leading-open-source-lims" alt="Bika Lab Systems - World leading Open Source LIMS" /></a></p>
+<br />
+<p>&nbsp;</p>
 <p>&nbsp;</p>
 <p>&nbsp;</p>
 <p>&nbsp;</p>

@@ -502,7 +502,10 @@ def AfterTransitionEventHandler(analysis, event):
 
         for a in ws.getAnalyses():
             ws_empty = False
-            a_state = wf.getInfoFor(a, 'review_state')
+            a_state = wf.getInfoFor(a, 'review_state', '')
+            # duplicateAnalysis doesn't have unassign
+            # this should cover dup/ref till their worflows get fixed up
+            if a_state == '': continue
             if a_state in \
                ('sample_due', 'sample_received',):
                 can_submit = False
