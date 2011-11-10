@@ -102,7 +102,7 @@
         <tr>
             <th>
             <span>&nbsp&nbsp&nbsp&nbsp</span>
-            <span i18n:translate="label_clientsampleid">client SID</span>
+            <span i18n:translate="label_clientsampleid">Client SID</span>
             </th>
             <td tal:content="sample/getClientSampleID">S001</td>
             <th i18n:translate="label_clientreference">Client reference</th>
