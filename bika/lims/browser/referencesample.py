@@ -138,7 +138,7 @@ class ReferenceSamplesView(BikaListingView):
         self.title = _("Reference Samples")
         self.icon = "++resource++bika.lims.images/referencesample_big.png"
         self.description = _("")
-        self.contentFilter = {'portal_type': 'ReferenceSample', 
+        self.contentFilter = {'portal_type': 'ReferenceSample',
                               'sort_on':'id',
                               'sort_order': 'reverse',
                               'path':{"query": ["/"], "level" : 0 }, }
@@ -155,8 +155,6 @@ class ReferenceSamplesView(BikaListingView):
             'ID': {'title': _('ID')},
             'Title': {'title': _('Title')},
             'Supplier': {'title': _('Supplier')},
-            'Manufacturer': {'title': _('Manufacturer')},
-            'LotNumber': {'title': _('Lot Number')},
             'Definition': {'title': _('Reference Definition')},
             'DateSampled': {'title': _('Date Sampled')},
             'DateReceived': {'title': _('Date Received')},
@@ -168,8 +166,6 @@ class ReferenceSamplesView(BikaListingView):
              'columns': ['ID',
                          'Title',
                          'Supplier',
-                         'Manufacturer',
-                         'LotNumber',
                          'Definition',
                          'DateSampled',
                          'DateReceived',
@@ -179,8 +175,6 @@ class ReferenceSamplesView(BikaListingView):
              'columns': ['ID',
                          'Title',
                          'Supplier',
-                         'Manufacturer',
-                         'LotNumber',
                          'Definition',
                          'DateSampled',
                          'DateReceived',
@@ -189,8 +183,6 @@ class ReferenceSamplesView(BikaListingView):
              'columns': ['ID',
                          'Title',
                          'Supplier',
-                         'Manufacturer',
-                         'LotNumber',
                          'Definition',
                          'DateSampled',
                          'DateReceived',
@@ -199,8 +191,6 @@ class ReferenceSamplesView(BikaListingView):
              'columns': ['ID',
                          'Title',
                          'Supplier',
-                         'Manufacturer',
-                         'LotNumber',
                          'Definition',
                          'DateSampled',
                          'DateReceived',
@@ -214,9 +204,9 @@ class ReferenceSamplesView(BikaListingView):
             obj = items[x]['obj']
             items[x]['ID'] = obj.id
             items[x]['Supplier'] = obj.aq_parent.Title()
-            items[x]['Manufacturer'] = obj.getReferenceManufacturer() and \
-                 obj.getReferenceManufacturer().Title() or ''
-            items[x]['LotNumber'] = obj.getLotNumber()
+##            items[x]['Manufacturer'] = obj.getReferenceManufacturer() and \
+##                 obj.getReferenceManufacturer().Title() or ''
+##            items[x]['LotNumber'] = obj.getLotNumber()
             items[x]['Definition'] = obj.getReferenceDefinition() and \
                  obj.getReferenceDefinition().Title() or ''
             items[x]['DateSampled'] = \
