@@ -857,6 +857,7 @@ class ajaxGetWorksheetReferences(ReferenceSamplesView):
         # must set control_type='b' or 'c' in __call__ before delegating
         self.control_type = ""
         self.columns['Services'] = {'title': _('Services')}
+        self.columns['Definition'] = {'title': _('Reference Definition')}
         self.review_states = [
             {'title': _('All'), 'id':'all',
              'columns': ['ID',
@@ -881,6 +882,7 @@ class ajaxGetWorksheetReferences(ReferenceSamplesView):
             if ws_ref_services:
                 services = [rs.Title() for rs in ws_ref_services]
                 items[x]['nr_services'] = len(services)
+                items[x]['Definition'] = obj.getReferenceDefinition().Title()
                 items[x]['Services'] = \
                     ", ".join(services)
                 items[x]['replace'] = {}
