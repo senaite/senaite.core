@@ -42,30 +42,56 @@ class ReferenceAnalysesView(AnalysesView):
     """ Reference Analyses on this sample
     """
     implements(IViewView)
-##    def __init__(self, context, request):
-##        super(ReferenceAnalysesView, self).__init__(context, request)
-##        self.title = _("Reference Analyses")
-##        self.description = ""
-##        self.show_select_column = False
-##        self.pagesize = 100
-##        self.contentsMethod = context.ObjectValues
 
-##    def folderitems(self):
-##        items = super(ReferenceAnalysesView, self).folderitems()
-##        for x in range(len(items)):
-##            if not items[x].has_key('obj'):
-##                continue
-##            obj = items[x]['obj']
-##            ar = obj.aq_parent
-##            client = ar.aq_parent
-##            items[x]['Analysis'] = obj.Title()
-##            items[x]['RequestID'] = ''
-##            items[x]['replace']['RequestID'] = "<a href='%s'>%s</a>" % \
-##                 (ar.absolute_url(), ar.Title())
-##        return items
+    def __init__(self, context, request):
+        AnalysesView.__init__(self, context, request)
+        self.contentFilter = {'portal_type':'ReferenceAnalysis',
+                              'path': {'query':"/".join(self.context.getPhysicalPath()),
+                                       'depth':1}}
+        self.show_select_row = False
+        self.show_sort_column = False
+        self.allow_edit = True
 
-##    def __call__(self):
-##
+        self.columns = {
+            'id': {'title': _('ID')},
+            'Category': {'title': _('Category')},
+            'Service': {'title': _('Service')},
+            'Worksheet': {'title': _('Worksheet')},
+            'Result': {'title': _('Result')},
+            'Uncertainty': {'title': _('+-')},
+            'DueDate': {'title': _('Due date')},
+            'retested': {'title': _('Retested'), 'type':'boolean'},
+            'state_title': {'title': _('State')},
+        }
+        self.review_states = [
+            {'id':'all',
+             'title': _('All'),
+             'transitions': [],
+             'columns':['id',
+                        'Category',
+                        'Service',
+                        'Worksheet',
+                        'Result',
+                        'Uncertainty',
+                        'DueDate',
+                        'state_title'],
+             },
+        ]
+
+    def folderitems(self):
+        self.contentsMethod = getToolByName(self.context, 'portal_catalog')
+        items = super(ReferenceAnalysesView, self).folderitems()
+        for x in range(len(items)):
+            if not items[x].has_key('obj'):
+                continue
+            obj = items[x]['obj']
+            service = obj.getService()
+            items[x]['id'] = obj.getId()
+            items[x]['Category'] = service.getCategory().Title()
+            items[x]['Service'] = service.Title()
+            brefs = obj.getBackReferences("WorksheetAnalysis")
+            items[x]['Worksheet'] = brefs and brefs[0].Title() or ''
+        return items
 
 class ajaxGetReferenceDefinitionInfo():
     """ Returns a JSON encoded copy of the ReferenceResults field for a ReferenceDefinition,

@@ -41,7 +41,7 @@
 		link_target=""
 		url_expr="string:${object_url}/base_edit"
 		visible="True">
-	<permission value="Modify portal content"/>q
+	<permission value="Modify portal content"/>
 </action>
 
 <action title="Analyses"
@@ -59,7 +59,7 @@
 		action_id="sticker"
 		category="document_actions"
 		condition_expr=""
-		icon_expr="string:${object_url}/++resource++bika.lims.images/sticker.png"
+		icon_expr="string:${object_url}/++resource++bika.lims.images/sticker_large.png"
 		link_target=""
 		url_expr="string:${object_url}/sticker"
 		visible="True">
