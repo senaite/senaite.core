@@ -27,7 +27,7 @@ schema = BikaSchema.copy() + Schema((
     ),
     StringField('ClientSid',
         widget = StringWidget(
-            label = _("Client Sid"),
+            label = _("Client SID"),
         )
     ),
     StringField('SampleType',
