@@ -211,6 +211,9 @@ class ReferenceSamplesView(BikaListingView):
             if obj.getReferenceDefinition():
                 items[x]['replace']['Definition'] = "<a href='%s'>%s</a>" % \
                  (obj.getReferenceDefinition().absolute_url(), obj.getReferenceDefinition().Title())
+            else:
+                items[x]['Definition'] = ' '
+
             items[x]['DateSampled'] = \
                  TimeOrDate(self.context, obj.getDateSampled(), long_format=0)
             items[x]['DateReceived'] = \
