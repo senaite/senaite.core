@@ -154,11 +154,11 @@ $(document).ready(function(){
 				  uid+"' icon='exclamation' title='Result out of range ("+range_str+")'/>");
 			}
 		}
-		$(this).addClass('selected');
-		if ($(this).id == 'lab') {
+		if ($(this).attr('value') == 'lab') {
 			$("a[id='client']").removeClass("selected");
 			$("a[id='lab']").addClass("selected");
-		} else {
+		}
+		if ($(this).attr('value') == 'client') {
 			$("a[id='client']").addClass("selected");
 			$("a[id='lab']").removeClass("selected");
 		}

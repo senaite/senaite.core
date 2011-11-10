@@ -269,7 +269,7 @@ td.ID {
 
 .specification.selected {
   border-radius: .25em;
-  background: #ddd;
+  background: #eee;
   border:1px solid #ddd !important;
   font-weight:bold;
   padding:2px 5px 2px 5px !important;
