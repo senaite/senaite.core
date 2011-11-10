@@ -278,8 +278,9 @@ td.ID {
 dt.attachments {
     color: &dtml-linkColor;;
     font-weight:bold;
+	font-size:1.25em !important;
+	color: #444444 !important;
     cursor: pointer !important;
-	font-size:1em !important;
 	line-height:1em !important;
 }
 
