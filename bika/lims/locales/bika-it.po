@@ -1502,7 +1502,7 @@ msgstr "Client Sample&nbsp;ID"
 
 # to be translated (short for client sampleID)
 msgid "label_clientsid"
-msgstr "Client sid"
+msgstr "Client SID"
 
 # to be translated
 msgid "description_query_analysisrequests"

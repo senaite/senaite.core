@@ -1296,7 +1296,7 @@ msgid "label_clientsampleid"
 msgstr "DE_Client Sample&nbsp;ID"
 
 msgid "label_clientsid"
-msgstr "DE_Client sid"
+msgstr "DE_Client SID"
 
 msgid "description_query_analysisrequests"
 msgstr "DE_Query analysis requests on various criteria."
