@@ -60,6 +60,7 @@ class AnalysesView(BikaListingView):
                         'Attachments'],
              },
         ]
+        self.chosen_spec = request.get('specification', 'lab')
         super(AnalysesView, self).__init__(context, request)
 
     def folderitems(self):
@@ -212,7 +213,7 @@ class AnalysesView(BikaListingView):
                 items[i]['replace']['Attachments'] = attachments[:-12] + "</span>"
 
                 if hasattr(obj, 'result_in_range'):
-                    items[i]['result_in_range'] = obj.result_in_range(result)
+                    items[i]['result_in_range'] = obj.result_in_range(result, self.chosen_spec)
                 else:
                     items[i]['result_in_range'] = (True, None)
 

@@ -188,7 +188,9 @@
 
         &nbsp&nbsp&nbsp&nbsp
 
-
+        <form name="specificationForm"
+					enctype="multipart/form-data"
+					method="post">        
         <tal:range>
             <img title="range"
                 tal:attributes="src string:++resource++bika.lims.images/analysisspec.png">
@@ -196,23 +198,19 @@
             <a class="review_state_selector" id="lab" value="lab"
                 href=""
                 tal:attributes="
-                    href python:here.absolute_url();
+                    href python:'%s?specification=lab' %here.absolute_url();
                   class python:specification == 'lab' and 'selected' or ''"
                  >lab</a>
             <a class="review_state_selector" id="client" value="client"
                 href=""
                 tal:attributes="
-                    onClick string:javascript:document.getElementById('spec').value = 'client'; 
-                    href python:here.absolute_url();
+                    href python:'%s?specification=client' %here.absolute_url();
                   class python:specification == 'client' and 'selected' or ''"
              >client</a>
 
-            <input type="HIDDEN" id='spec' name="specification"/>
-            <b tal:content="specification"/>
-
-            
 
         </tal:range>
+        </form>
         </h3>
         <br/>
 
