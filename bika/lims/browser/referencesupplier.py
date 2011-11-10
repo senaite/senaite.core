@@ -6,7 +6,9 @@ class ReferenceSamplesView(BikaListingView):
     title = _("Reference Samples")
     icon = "++resource++bika.lims.images/referencesample_big.png"
     description = _("")
-    contentFilter = {'portal_type': 'ReferenceSample'}
+    contentFilter = {'portal_type': 'ReferenceSample',
+                     'sort_on': 'id',
+                     'sort_order': 'reverse'}
     content_add_actions = {_('Add'): "createObject?type_name=ReferenceSample"}
     show_filters = False
     show_sort_column = False

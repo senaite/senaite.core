@@ -112,7 +112,10 @@ class ReferenceSamplesView(BikaListingView):
         self.title = _("Reference Samples")
         self.icon = "++resource++bika.lims.images/referencesample_big.png"
         self.description = _("")
-        self.contentFilter = {'portal_type': 'ReferenceSample', 'path':{"query": ["/"], "level" : 0 }}
+        self.contentFilter = {'portal_type': 'ReferenceSample', 
+                              'sort_on':'id',
+                              'sort_order': 'reverse',
+                              'path':{"query": ["/"], "level" : 0 }, }
         self.content_add_actions = {}
         self.show_filters = False
         self.show_sort_column = False
