@@ -1,3 +1,4 @@
+from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.PythonScripts.standard import html_quote
 from Products.CMFCore.utils import getToolByName
 import plone, json, sys, math, urllib
@@ -151,7 +152,7 @@ class ajaxCalculateAnalysisEntry():
                 self.calculate(dependent_uid)
 
     def __call__(self):
-        self.rc = getToolByName(self.context, 'reference_catalog')
+        self.rc = getToolByName(self.context, REFERENCE_CATALOG)
         plone.protect.CheckAuthenticator(self.request)
         plone.protect.PostOnly(self.request)
 

@@ -72,7 +72,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
            - if position is None, next available pos is used.
         """
         wf = getToolByName(self, 'portal_workflow')
-        rc = getToolByName(self, 'reference_catalog')
+        rc = getToolByName(self, REFERENCE_CATALOG)
 
         analysis_uid = analysis.UID()
         parent_uid = analysis.aq_parent.UID()
@@ -125,7 +125,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         """ Add reference analyses to reference, and add to worksheet layout
         """
         wf = getToolByName(self, 'portal_workflow')
-        rc = getToolByName(self, 'reference_catalog')
+        rc = getToolByName(self, REFERENCE_CATALOG)
         analyses = self.getAnalyses()
         layout = self.getLayout()
         wst = self.getWorksheetTemplate()
@@ -229,7 +229,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         """ Add analyses to worksheet according to wst's layout.
             Will not overwrite slots which are filled already.
         """
-        rc = getToolByName(self, "reference_catalog")
+        rc = getToolByName(self, REFERENCE_CATALOG)
         pc = getToolByName(self, "portal_catalog")
         wf = getToolByName(self, "portal_workflow")
 

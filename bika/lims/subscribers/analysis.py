@@ -1,4 +1,5 @@
 from AccessControl import getSecurityManager
+from Products.Archetypes.config import REFERENCE_CATALOG
 from Acquisition import aq_inner
 from DateTime import DateTime
 from Products.CMFCore.WorkflowCore import WorkflowException
@@ -459,7 +460,7 @@ def AfterTransitionEventHandler(analysis, event):
 
     elif event.transition.id == "assign":
         analysis.reindexObject(idxs = ["worksheetanalysis_review_state", ])
-        rc = getToolByName(analysis, 'reference_catalog')
+        rc = getToolByName(analysis, REFERENCE_CATALOG)
         wsUID = analysis.REQUEST['context_uid']
         ws = rc.lookupObject(wsUID)
 
@@ -480,7 +481,7 @@ def AfterTransitionEventHandler(analysis, event):
 
     elif event.transition.id == "unassign":
         analysis.reindexObject(idxs = ["worksheetanalysis_review_state", ])
-        rc = getToolByName(analysis, 'reference_catalog')
+        rc = getToolByName(analysis, REFERENCE_CATALOG)
         wsUID = analysis.REQUEST['context_uid']
         ws = rc.lookupObject(wsUID)
 

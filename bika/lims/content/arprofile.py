@@ -4,7 +4,6 @@
 """
 
 from AccessControl import ClassSecurityInfo
-from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.Archetypes.public import *
 from Products.Archetypes.references import HoldingReference
 from Products.CMFCore.permissions import View, ModifyPortalContent

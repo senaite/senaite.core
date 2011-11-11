@@ -1,4 +1,5 @@
 from DateTime import DateTime
+from Products.Archetypes.config import REFERENCE_CATALOG
 from DocumentTemplate import sequence
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser import BrowserView
@@ -163,7 +164,7 @@ class WorksheetFolderListingView(BikaListingView):
         items = BikaListingView.folderitems(self)
         mtool = getToolByName(self, 'portal_membership')
         wf = getToolByName(self, 'portal_workflow')
-        rc = getToolByName(self, 'reference_catalog')
+        rc = getToolByName(self, REFERENCE_CATALOG)
         member = mtool.getAuthenticatedMember()
         new_items = []
         for x in range(len(items)):
@@ -285,7 +286,7 @@ class AddWorksheetView(BrowserView):
 
     def __call__(self, wstemplate=None):
         form = self.request.form
-        rc = getToolByName(self.context, "reference_catalog")
+        rc = getToolByName(self.context, REFERENCE_CATALOG)
         pc = getToolByName(self.context, "portal_catalog")
         wf = getToolByName(self.context, "portal_workflow")
         pm = getToolByName(self.context, "portal_membership")

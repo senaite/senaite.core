@@ -1,4 +1,5 @@
 from App.Common import package_home
+from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
@@ -17,7 +18,7 @@ class LoadTestData(BrowserView):
     def __call__(self):
         self.portal_catalog = getToolByName(self.context, 'portal_catalog')
         self.portal_workflow = getToolByName(self.context, 'portal_workflow')
-        self.reference_catalog = getToolByName(self.context, 'reference_catalog')
+        self.reference_catalog = getToolByName(self.context, REFERENCE_CATALOG)
         self.portal_registration = getToolByName(self.context, 'portal_registration')
         self.portal_groups = getToolByName(self.context, 'portal_groups')
         self.portal_membership = getToolByName(self.context, 'portal_membership')

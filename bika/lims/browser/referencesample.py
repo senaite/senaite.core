@@ -1,4 +1,5 @@
 from AccessControl import getSecurityManager
+from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
@@ -22,7 +23,7 @@ class ViewView(BrowserView):
         BrowserView.__init__(self, context, request)
         self.icon = "++resource++bika.lims.images/referencesample_big.png"
         self.TimeOrDate = TimeOrDate
-        rc = getToolByName(context, 'reference_catalog')
+        rc = getToolByName(context, REFERENCE_CATALOG)
 
         self.results = {} # {category_title: listofdicts}
         for r in context.getReferenceResults():
@@ -50,7 +51,8 @@ class ReferenceAnalysesView(AnalysesView):
                                        'depth':1}}
         self.show_select_row = False
         self.show_sort_column = False
-        self.allow_edit = True
+        self.show_select_column = False
+        self.allow_edit = False
 
         self.columns = {
             'id': {'title': _('ID')},
@@ -124,7 +126,7 @@ class ReferenceResultsView(BikaListingView):
 
     def folderitems(self):
         items = []
-        rc = getToolByName(self.context, 'reference_catalog')
+        rc = getToolByName(self.context, REFERENCE_CATALOG)
         for x in self.context.getReferenceResults():
             service = rc.lookupObject(x['uid'])
             path = "/".join(self.context.getPhysicalPath())
@@ -171,7 +173,7 @@ class ajaxGetReferenceDefinitionInfo():
         uid = self.request.get('uid', None)
         if not uid:
             return json.dumps({'errors':["No UID specified in request.",]})
-        rc = getToolByName(self.context, 'reference_catalog')
+        rc = getToolByName(self.context, REFERENCE_CATALOG)
 
         # first grab the reference results themselves
         ref_def = rc.lookupObject(uid)

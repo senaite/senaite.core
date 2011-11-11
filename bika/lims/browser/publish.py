@@ -1,4 +1,5 @@
 from DateTime import DateTime
+from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser import BrowserView
@@ -40,7 +41,7 @@ class Publish(BrowserView):
 
     def __call__(self):
 
-        rc = getToolByName(self.context, 'reference_catalog')
+        rc = getToolByName(self.context, REFERENCE_CATALOG)
         workflow = getToolByName(self.context, 'portal_workflow')
 
         laboratory = self.context.bika_setup.laboratory

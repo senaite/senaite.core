@@ -1,4 +1,5 @@
 from Products.Five.browser import BrowserView
+from Products.Archetypes.config import REFERENCE_CATALOG
 from bika.lims import bikaMessageFactory as _
 from Products.CMFCore.utils import getToolByName
 import json, plone
@@ -17,7 +18,7 @@ class ajaxDeleteAnalysisAttachment():
         attachment_id = form.get('attachment_id', None)
         if not attachment_id:
             return "error"
-        rc = getToolByName(self.context, 'reference_catalog')
+        rc = getToolByName(self.context, REFERENCE_CATALOG)
         client = self.context.aq_parent
         if attachment_id not in client.objectIds():
             return "error"

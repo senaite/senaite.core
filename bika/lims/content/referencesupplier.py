@@ -5,7 +5,6 @@ $Id: ReferenceSupplier.py 639 2007-03-20 09:35:32Z anneline $
 
 from AccessControl import ClassSecurityInfo
 from DateTime import DateTime
-from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.Archetypes.public import *
 from Products.Archetypes.utils import DisplayList
 from Products.CMFCore import permissions

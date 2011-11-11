@@ -1,6 +1,5 @@
 from AccessControl import ClassSecurityInfo
 from Products.Archetypes.Registry import registerField
-from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.Archetypes.event import ObjectInitializedEvent
 from Products.Archetypes.public import *
 from Products.Archetypes.utils import shasattr

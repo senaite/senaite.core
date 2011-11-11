@@ -7,7 +7,6 @@ from Products.CMFCore.utils import getToolByName
 from Products.CMFCore.permissions import ListFolderContents, \
     ModifyPortalContent, View
 from Products.CMFCore import permissions
-from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.Archetypes.public import *
 from Products.Archetypes.references import HoldingReference
 from Products.ATExtensions.ateapi import DateTimeField, DateTimeWidget

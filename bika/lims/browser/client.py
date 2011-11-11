@@ -5,6 +5,7 @@ from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.browser.publish import Publish
 from bika.lims.browser.bika_listing import WorkflowAction
+from Products.Archetypes.config import REFERENCE_CATALOG
 from bika.lims.config import ManageResults
 from plone.app.layout.globals.interfaces import IViewView
 from bika.lims import logger
@@ -26,7 +27,7 @@ class ClientWorkflowAction(WorkflowAction):
         plone.protect.CheckAuthenticator(form)
         workflow = getToolByName(self.context, 'portal_workflow')
         pc = getToolByName(self.context, 'portal_catalog')
-        rc = getToolByName(self.context, 'reference_catalog')
+        rc = getToolByName(self.context, REFERENCE_CATALOG)
 
         # use came_from to decide which UI action was clicked.
         # "workflow_action" is the action name specified in the

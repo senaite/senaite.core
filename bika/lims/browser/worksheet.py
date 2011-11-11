@@ -34,7 +34,7 @@ class WorksheetWorkflowAction(WorkflowAction):
         plone.protect.CheckAuthenticator(form)
         workflow = getToolByName(self.context, 'portal_workflow')
         pc = getToolByName(self.context, 'portal_catalog')
-        rc = getToolByName(self.context, 'reference_catalog')
+        rc = getToolByName(self.context, REFERENCE_CATALOG)
         skiplist = self.request.get('workflow_skiplist', [])
         action, came_from = WorkflowAction._get_form_workflow_action(self)
 
@@ -553,7 +553,7 @@ class AddBlankView(BrowserView):
 
         form = self.request.form
         if 'submitted' in form:
-            rc = getToolByName(self.context, 'reference_catalog')
+            rc = getToolByName(self.context, REFERENCE_CATALOG)
             # parse request
             service_uids = form['selected_service_uids'].split(",")
             position = form['position']
@@ -600,7 +600,7 @@ class AddControlView(BrowserView):
 
         form = self.request.form
         if 'submitted' in form:
-            rc = getToolByName(self.context, 'reference_catalog')
+            rc = getToolByName(self.context, REFERENCE_CATALOG)
             # parse request
             service_uids = form['selected_service_uids'].split(",")
             position = form['position']
@@ -648,7 +648,7 @@ class AddDuplicateView(BrowserView):
 
         form = self.request.form
         if 'submitted' in form:
-            rc = getToolByName(self.context, 'reference_catalog')
+            rc = getToolByName(self.context, REFERENCE_CATALOG)
             ar_uid = self.request.get('ar_uid', '')
             src_slot = [slot['position'] for slot in self.context.getLayout() if \
                         slot['container_uid'] == ar_uid and slot['type'] == 'a'][0]
@@ -706,7 +706,7 @@ class WorksheetARsView(BikaListingView):
 
     def folderitems(self):
         pc = getToolByName(self.context, 'portal_catalog')
-        rc = getToolByName(self.context, 'reference_catalog')
+        rc = getToolByName(self.context, REFERENCE_CATALOG)
         services = {} # uid:item_dict
         ars = {}
         for slot in self.context.getLayout():

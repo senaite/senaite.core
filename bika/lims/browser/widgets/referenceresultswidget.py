@@ -3,7 +3,6 @@ from Acquisition import aq_base, aq_inner
 from Products.ATExtensions.widget.records import RecordsWidget
 from Products.Archetypes.Registry import registerWidget, registerPropertyType
 from Products.Archetypes.Widget import TypesWidget
-from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.Archetypes.utils import shasattr, DisplayList
 from Products.CMFCore.utils import getToolByName
 from archetypes.referencebrowserwidget import utils

@@ -32,7 +32,7 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
         form = self.request.form
         plone.protect.CheckAuthenticator(form)
         workflow = getToolByName(self.context, 'portal_workflow')
-        rc = getToolByName(self.context, 'reference_catalog')
+        rc = getToolByName(self.context, REFERENCE_CATALOG)
         skiplist = self.request.get('workflow_skiplist', [])
         action, came_from = WorkflowAction._get_form_workflow_action(self)
 
@@ -480,7 +480,7 @@ class AnalysisRequestContactCCs(BrowserView):
     """
     def __call__(self):
         plone.protect.CheckAuthenticator(self.request.form)
-        rc = getToolByName(self.context, 'reference_catalog')
+        rc = getToolByName(self.context, REFERENCE_CATALOG)
         uid = self.request.form.keys() and self.request.form.keys()[0] or None
         if not uid:
             return
@@ -676,7 +676,7 @@ def getServiceDependencies(context, service_uid):
             }
         }
     """
-    rc = getToolByName(context, 'reference_catalog')
+    rc = getToolByName(context, REFERENCE_CATALOG)
     if not service_uid: return None
     service = rc.lookupObject(service_uid)
     if not service: return None
@@ -755,7 +755,7 @@ class ajaxProfileServices(BrowserView):
     """
     def __call__(self):
         plone.protect.CheckAuthenticator(self.request)
-        rc = getToolByName(self, 'reference_catalog')
+        rc = getToolByName(self, REFERENCE_CATALOG)
         pc = getToolByName(self, 'portal_catalog')
 
         profile = rc.lookupObject(self.request['profileUID'])

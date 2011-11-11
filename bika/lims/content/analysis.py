@@ -143,7 +143,7 @@ class Analysis(BaseContent):
         """ Return a list of analyses who depend on us
             to calculate their result
         """
-        rc = getToolByName(self, 'reference_catalog')
+        rc = getToolByName(self, REFERENCE_CATALOG)
         dependents = []
         service = self.getService()
         ar = self.aq_parent

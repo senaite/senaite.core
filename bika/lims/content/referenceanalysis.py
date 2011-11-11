@@ -5,7 +5,6 @@ $Id: ReferenceAnalysis.py 914 2007-10-16 19:49:15Z anneline $
 from AccessControl import ClassSecurityInfo
 from DateTime import DateTime
 from Products.ATExtensions.ateapi import DateTimeField, DateTimeWidget, RecordsField
-from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.Archetypes.public import *
 from Products.Archetypes.references import HoldingReference
 from Products.CMFCore.permissions import View, ModifyPortalContent

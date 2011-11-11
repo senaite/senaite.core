@@ -1,4 +1,5 @@
 from DateTime import DateTime
+from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFCore.utils import getToolByName
 from bika.lims import bikaMessageFactory as _
@@ -8,7 +9,7 @@ def AfterTransitionEventHandler(category, event):
 
     wf = getToolByName(category, 'portal_workflow')
     pc = getToolByName(category, 'portal_catalog')
-    rc = getToolByName(category, 'reference_catalog')
+    rc = getToolByName(category, REFERENCE_CATALOG)
     pu = getToolByName(category, 'plone_utils')
 
     # creation doesn't have a 'transition'

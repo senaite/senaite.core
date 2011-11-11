@@ -1,6 +1,5 @@
 from AccessControl import ClassSecurityInfo
 from Products.ATExtensions.ateapi import RecordsField
-from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.Archetypes.public import *
 from Products.Archetypes.references import HoldingReference
 from Products.ATContentTypes.lib.historyaware import HistoryAwareMixin

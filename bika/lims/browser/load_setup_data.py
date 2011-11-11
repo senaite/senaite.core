@@ -1,4 +1,5 @@
 from App.Common import package_home
+from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
@@ -6,9 +7,9 @@ from bika.lims import logger, bikaMessageFactory as _
 from cStringIO import StringIO
 from openpyxl.reader.excel import load_workbook
 from os.path import join
+from xml.etree.ElementTree import XML
 from zipfile import ZipFile, ZIP_DEFLATED
 from zope.app.component.hooks import getSite
-from xml.etree.ElementTree import XML
 import Globals
 import tempfile
 import transaction
@@ -31,7 +32,7 @@ class LoadSetupData(BrowserView):
             return self.template()
 
         self.portal_catalog = getToolByName(self.context, 'portal_catalog')
-        self.reference_catalog = getToolByName(self.context, 'reference_catalog')
+        self.reference_catalog = getToolByName(self.context, REFERENCE_CATALOG)
         self.portal_registration = getToolByName(self.context, 'portal_registration')
         self.portal_groups = getToolByName(self.context, 'portal_groups')
         self.portal_membership = getToolByName(self.context, 'portal_membership')

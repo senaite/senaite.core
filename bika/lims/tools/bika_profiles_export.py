@@ -1,5 +1,6 @@
 from AccessControl import ClassSecurityInfo
 from App.class_init import InitializeClass
+from Products.Archetypes.config import REFERENCE_CATALOG
 from OFS.SimpleItem import SimpleItem
 from Products.CMFCore import permissions
 from Products.CMFCore.utils import UniqueObject, getToolByName
