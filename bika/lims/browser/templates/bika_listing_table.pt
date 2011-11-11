@@ -30,13 +30,13 @@
 
 <input type="hidden"
 	name="specs"
-	value="[]"
-	tal:attributes="value view/bika_listing/json_specs|nothing"/>
+	tal:attributes="value python:hasattr(view.bika_listing, 'json_specs') and
+	                             view.bika_listing.json_specs or []"/>
 <input type="hidden"
 	id="item_data"
 	name="item_data"
-	value="[]"
-	tal:attributes="value view/bika_listing/json_interim_fields|nothing"/>
+	tal:attributes="value python:hasattr(view.bika_listing, 'json_interim_fields') and
+	                             view.bika_listing.json_interim_fields or []"/>
 
 <table class="listing"
 	id="listing-table"
