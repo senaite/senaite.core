@@ -121,34 +121,6 @@
     </tbody>
     </table>
 
-    <table
-        summary="Reference Analyses"
-        class="bika-listing analysisrequest listing nosort"
-        cellpadding="0" cellspacing="0">
-    <tbody>
-
-        <tal:cat repeat="cat view/categories">
-            <tr>
-                <th><span i18n:translate="Analyses">Analyses</span> - <span tal:content="cat"/></th>
-                <th i18n:translate="Result">Result</th>
-                <th i18n:translate="Min">Min</th>
-                <th i18n:translate="Max">Max</th>
-            </tr>
-            <tal:rr repeat="rr python:view.results[cat]">
-                <tr>
-                    <td tal:content="rr/service/Title"></td>
-                    <td tal:content="rr/result"></td>
-                    <td tal:content="rr/min"></td>
-                    <td tal:content="rr/max"></td>
-                <tr>
-            </tal:rr>
-        </tal:cat>
-
-    </tbody>
-    </table>
-
-
-
     <form action="workflow_action">
         <input
             tal:condition="python:inactive_state == 'active'"

@@ -93,6 +93,71 @@ class ReferenceAnalysesView(AnalysesView):
             items[x]['Worksheet'] = brefs and brefs[0].Title() or ''
         return items
 
+class ReferenceResultsView(BikaListingView):
+    """
+    """
+    def __init__(self, context, request):
+        super(ReferenceResultsView, self).__init__(context, request)
+        self.title = _("")
+        self.description = _("")
+        self.contentFilter = {}
+        self.content_add_actions = {}
+        self.show_filters = False
+        self.show_sort_column = False
+        self.show_select_row = False
+        self.show_select_column = False
+        self.pagesize = 1000
+
+        self.columns = {
+            'Service': {'title': _('Service')},
+            'result': {'title': _('Result')},
+            'min': {'title': _('Min')},
+            'max': {'title': _('Max')},
+        }
+        self.review_states = [
+            {'id':'all',
+             'title': _('All'),
+             'columns': ['Service',
+                         'result',
+                         'min',
+                         'max']},
+        ]
+
+    def folderitems(self):
+        items = []
+        rc = getToolByName(self.context, 'reference_catalog')
+        for x in self.context.getReferenceResults():
+            service = rc.lookupObject(x['uid'])
+            path = "/".join(self.context.getPhysicalPath())
+            item = {
+                'obj': self.context,
+                'id': x['uid'],
+                'uid': x['uid'],
+                'result': x['result'],
+                'min': x['min'],
+                'max': x['max'],
+                'title': service.Title(),
+                'Service': service.Title(),
+                'type_class': 'contenttype-ReferenceResult',
+                'url': service.absolute_url(),
+                'relative_url': service.absolute_url(),
+                'view_url': self.context.absolute_url() + "/results",
+                'path': path,
+                'replace': {},
+                'before': {},
+                'after': {},
+                'choices':{},
+                'class': {},
+                'state_class': 'state-active',
+                'allow_edit': [],
+            }
+            item['replace']['Service'] = "<a href='%s'>%s</a>" % \
+                (service.absolute_url(), service.Title())
+            items.append(item)
+
+        items = sorted(items, key = itemgetter('Service'))
+        return items
+
 class ajaxGetReferenceDefinitionInfo():
     """ Returns a JSON encoded copy of the ReferenceResults field for a ReferenceDefinition,
         and a list of category UIDS that contain services with results.
@@ -233,7 +298,7 @@ class ReferenceSamplesView(BikaListingView):
 
 
 class Sticker(BrowserView):
-    """ Return html for a Refernece Sample label """
+    """ Return html for a Reference Sample label """
 
     template = ViewPageTemplateFile("templates/referencesample_sticker.pt")
 

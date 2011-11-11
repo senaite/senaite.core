@@ -30,10 +30,12 @@
 
 <input type="hidden"
 	name="specs"
+	value="[]"
 	tal:attributes="value view/bika_listing/json_specs|nothing"/>
 <input type="hidden"
 	id="item_data"
 	name="item_data"
+	value="[]"
 	tal:attributes="value view/bika_listing/json_interim_fields|nothing"/>
 
 <table class="listing"

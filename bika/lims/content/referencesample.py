@@ -123,7 +123,7 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     ReferenceResultsField('ReferenceResults',
-        schemata = 'Valid range',
+        schemata = 'Reference Results',
         required = 1,
         widget = ReferenceResultsWidget(
             label = _("Expected Results"),

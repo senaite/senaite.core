@@ -41,6 +41,14 @@
 
     <browser:page
       for="bika.lims.interfaces.IReferenceSample"
+      name="results"
+      class="bika.lims.browser.referencesample.ReferenceResultsView"
+      permission="bika.lims.ManageReference"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
+      for="bika.lims.interfaces.IReferenceSample"
       name="sticker"
       class="bika.lims.browser.referencesample.Sticker"
       permission="zope2.View"
