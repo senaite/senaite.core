@@ -28,7 +28,6 @@ class AnalysesView(BikaListingView):
         self.contentFilter = dict(kwargs)
         self.contentFilter['portal_type'] = 'Analysis'
         self.content_add_actions = {}
-        self.show_filters = False
         self.show_sort_column = False
         self.show_select_row = False
         self.show_select_column = True

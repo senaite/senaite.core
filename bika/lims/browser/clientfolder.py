@@ -22,7 +22,6 @@ class ClientFolderContentsView(BikaListingView):
         self.show_select_row = False
         self.show_select_all_checkbox = False
         self.show_select_column = True
-        self.show_filters = False
         self.pagesize = 20
 
         request.set('disable_border', 1)

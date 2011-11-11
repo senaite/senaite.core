@@ -141,7 +141,6 @@ class BikaListingView(BrowserView):
     contentFilter = {}
     allow_edit = True
     content_add_actions = {}
-    show_filters = False
     show_select_column = False
     show_select_row = False
     show_select_all_checkbox = True
@@ -194,17 +193,9 @@ class BikaListingView(BrowserView):
         pc = getToolByName(self.context, 'portal_catalog')
         workflow = getToolByName(self.context, 'portal_workflow')
 
-        if form.has_key('filter_input_keypress'):
-            self.modified_contentFilter = self.contentFilter
-            for key, value in form.items():
-                if key.endswith("column-filter-input") and value:
-                    self.modified_contentFilter[key.split("-")[1]] = value
-            return self.contents_table()
-
-        if form.has_key('clear_filters'):
-            if hasattr(self, 'modified_contentFilter'):
-                del self.modified_contentFilter
-            return self.contents_table()
+        for c in self.columns.keys():
+            if c in self.request:
+                self.contentFilter[c]=urllib.unquote(self.request[c])
 
         if form.has_key('review_state'):
             self.modified_contentFilter = self.contentFilter
@@ -394,10 +385,6 @@ class BikaListingView(BrowserView):
         return results
 
     def contents_table(self):
-        self.filters_in_use = False
-        for key in self.columns.keys():
-            if key in self.contentFilter.keys():
-                self.filters_in_use = True
         table = BikaListingTable(self)
         return table.render(self)
 
@@ -429,9 +416,7 @@ class BikaListingTable(tableview.Table):
         self.show_select_row = bika_listing.show_select_row
         self.show_select_column = bika_listing.show_select_column
         self.show_select_all_checkbox = bika_listing.show_select_all_checkbox
-        self.show_filters = bika_listing.show_filters
         self.show_workflow_action_buttons = bika_listing.show_workflow_action_buttons
-        self.filters_in_use = bika_listing.filters_in_use
         self.review_states = bika_listing.review_states
 
     def tabindex(self):

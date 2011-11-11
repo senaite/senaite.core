@@ -102,7 +102,6 @@ class ReferenceResultsView(BikaListingView):
         self.description = _("")
         self.contentFilter = {}
         self.content_add_actions = {}
-        self.show_filters = False
         self.show_sort_column = False
         self.show_select_row = False
         self.show_select_column = False
@@ -208,7 +207,6 @@ class ReferenceSamplesView(BikaListingView):
                               'sort_order': 'reverse',
                               'path':{"query": ["/"], "level" : 0 }, }
         self.content_add_actions = {}
-        self.show_filters = False
         self.show_sort_column = False
         self.show_select_row = False
         self.show_select_column = True

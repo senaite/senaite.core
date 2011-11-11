@@ -507,6 +507,7 @@ jQuery( function($) {
 			$("#ar_"+column+"_ClientSampleID").val('').removeAttr("readonly");
 			$("#ar_"+column+"_SamplePoint").val('').removeAttr("readonly");
 			$("#ar_"+column+"_SampleType").val('').removeAttr("readonly");
+			$("#ar_"+column+"_Composite").attr('checked', false).removeAttr("disabled");
 			$("#deleteSampleButton_" + column).toggle(false);
 			// uncheck and enable all visible service checkboxes
 			$("input[id*='_"+column+"_']").filter(".cb").removeAttr('disabled').attr('checked', false);

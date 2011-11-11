@@ -284,15 +284,6 @@ dt.attachments {
 	line-height:1em !important;
 }
 
-.folderlisting-filter {
-    border: 1px solid &dtml-globalBorderColor;;
-    background-color: &dtml-evenRowBackgroundColor;;
-    margin:0px;
-    padding:0;
-    width:100%;
-}
-
-
 .workflow_action_buttons {
   margin-left: 1.5em;
 }
@@ -627,10 +618,6 @@ select {
 .optionsToggle .noborder {
     background: transparent;;
     border: none;
-}
-.filter {
-    background: &dtml-globalBackgroundColor;;
-    font-size: &dtml-fontSmallSize;;
 }
 
 input.worksheet {

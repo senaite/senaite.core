@@ -11,7 +11,6 @@ class ReferenceSuppliersView(BikaListingView):
         self.contentFilter = {'portal_type': 'ReferenceSupplier',
                               'sort_on': 'sortable_title'}
         self.content_add_actions = {_('Add'): "createObject?type_name=ReferenceSupplier"}
-        self.show_filters = False
         self.show_sort_column = False
         self.show_select_row = False
         self.show_select_column = True

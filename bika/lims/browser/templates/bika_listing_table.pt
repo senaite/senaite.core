@@ -21,13 +21,11 @@
 		i18n:translate="description_no_visible_items_add_paste">
 		There are no items to display.</p>
 
-<p class="discreet"
-	id="clear_filters"
-	tal:condition="view/filters_in_use">
-	<span i18n:translate="clear_filters" class="link">[clear filters]</span></p>
-
 <span tal:replace="structure context/@@authenticator/authenticator"/>
 
+<tal:comment replace="nothing">***************
+Specs and Interim Fields (item_data) are stored as table level hidden fields
+********************************</tal:comment>
 <input type="hidden"
 	name="specs"
 	tal:attributes="value python:hasattr(view.bika_listing, 'json_specs') and
@@ -151,28 +149,6 @@ Colum Headers
 		</th>
 	</tr>
 
-<tal:comment replace="nothing">***************
-Filters
-********************************</tal:comment>
-	<tr tal:condition="python:view.items and view.show_filters">
-		<th class="nosort column"
-			id="foldercontents-order-column"
-			tal:condition="view/show_sort_column"/>
-		<th class="nosort column" tal:condition="view/show_select_column"/>
-		<th tal:repeat="column column_list"
-			class="nosort column"
-			style="margin:0;padding:0 2px 0 2px;"
-			tal:attributes="id string:foldercontents-${column}-column-filter">
-		<input type="text"
-			class='folderlisting-filter'
-		tal:attributes="
-			id string:foldercontents-${column}-column-filter-input;
-			name string:foldercontents-${column}-column-filter-input;
-			value python:view.request.get('foldercontents-'+column+
-							'-column-filter-input', '')"/>
-		</th>
-	</tr>
-
 	</thead>
 
 	<tbody
@@ -204,6 +180,17 @@ Table data rows start here
 				id string:folder-contents-item-${item/uid};
 				uid item/uid;
 				keyword keyword;">
+
+		<tal:comment replace="nothing">***************
+		Individual items' row_data is stored on each row (where item_data goes
+		in default Plone listing view). It's just secondary samples that use
+		this atm, for transferring information about selected sample back to
+		the parent window.
+		********************************</tal:comment>
+		<input type="hidden" tal:attributes="
+			name string:row_data.${item/uid}:records;
+			id string:${item/uid}_row_data;
+			value item/row_data|nothing;"/>
 
 <tal:comment replace="nothing">***************
 Draggable column for manually ordering items

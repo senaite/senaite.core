@@ -10,7 +10,6 @@ $(document).ready(function(){
 			data: form.formToArray(),
 			success: function(){
 				$("#spinner").toggle(false);
-				$('#filter_input_keypress').remove();
 				$('#workflow_action_submitted').remove();
 			}
 		}
@@ -45,20 +44,6 @@ $(document).ready(function(){
 			$("#select_all").attr("checked", false);
 		}
 	});
-
-	$(".folderlisting-filter").live('keyup', function(key){
-		if(key.which == 13) {
-			$('#folderContentsForm').append("<input type='hidden' value='1' name='filter_input_keypress' id='filter_input_keypress'/>");
-			inplace_submit();
-			return false;
-		}
-	})
-
-	$("#clear_filters").live('click', function(){
-		$('#folderContentsForm').append("<input type='hidden' value='1' name='clear_filters' id='clear_filters'/>");
-		inplace_submit();
-		$("#clear_filters").toggle(false);
-	})
 
 	// workflow action buttons submit entire form to workflow_action.
 	$(".workflow_action_button").live('click', function(){

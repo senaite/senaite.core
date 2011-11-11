@@ -21,6 +21,7 @@ from bika.lims import EditResults, EditAR, ManageResults, ResultsNotRequested
 import json
 import plone
 import transaction
+import urllib
 
 class AnalysisRequestWorkflowAction(WorkflowAction):
     """ Workflow actions taken in AnalysisRequest context
@@ -563,7 +564,6 @@ class AnalysisRequestSelectSampleView(BikaListingView):
         self.show_sort_column = False
         self.show_select_row = False
         self.show_select_column = False
-        self.show_filters = False
         self.pagesize = 25
 
         request.set('disable_border', 1)
@@ -577,6 +577,7 @@ class AnalysisRequestSelectSampleView(BikaListingView):
             'getDateReceived': {'title': _('Date Received')},
             'state_title': {'title': _('State')},
         }
+
         self.review_states = [
             {'id':'all',
              'title': _('All Samples'),
@@ -623,9 +624,10 @@ class AnalysisRequestSelectSampleView(BikaListingView):
                      "<img src='++resource++bika.lims.images/hazardous.png' title='Hazardous'>"
             items[x]['getSampleTypeTitle'] = obj.getSampleTypeTitle()
             items[x]['getSamplePointTitle'] = obj.getSamplePointTitle()
-            items[x]['item_data'] = json.dumps({
+            items[x]['row_data'] = json.dumps({
                 'SampleID': items[x]['title'],
                 'ClientReference': items[x]['getClientReference'],
+                'Requests': ", ".join([o.Title() for o in obj.getAnalysisRequests()]),
                 'ClientSampleID': items[x]['getClientSampleID'],
                 'DateReceived': obj.getDateReceived() and \
                                obj.getDateReceived().asdatetime().strftime("%d %b %Y") or '',
@@ -633,6 +635,7 @@ class AnalysisRequestSelectSampleView(BikaListingView):
                                obj.getDateSampled().asdatetime().strftime("%d %b %Y") or '',
                 'SampleType': items[x]['getSampleTypeTitle'],
                 'SamplePoint': items[x]['getSamplePointTitle'],
+                'Composite': obj.getComposite(),
                 'field_analyses': self.FieldAnalyses(obj),
                 'column': self.request.get('column', None),
             })
