@@ -48,7 +48,8 @@ class WorkflowAction:
             came_from = "workflow_action_button"
             action = form.get(came_from, '')
             # XXX some browsers agree better than others about our JS ideas.
-            if type(action) == type([]): action = action[0]
+            # Two actions (eg ['submit','submit']) are present in the form.
+            if type(action) in(list,tuple): action = action[0]
             if not action:
                 if self.destination_url == "":
                     self.destination_url = self.request.get_header("referer",
@@ -58,6 +59,7 @@ class WorkflowAction:
         # convert button text to action id
         if came_from == "workflow_action_button":
             action = form[action]
+        if type(action) in(list,tuple): action = action[0]
         return (action, came_from)
 
     def _get_selected_items(self, full_objects = True):
