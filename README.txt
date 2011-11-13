@@ -44,7 +44,7 @@ Add the following, ensure an existing port is not conflicted:
 6.  Note the output of the installer script:
 ######################  Installation Complete  ######################
  
-Plone successfully installed at /home/aavari
+Plone successfully installed at /home/example
 See /home/example/zinstance/README.html
 for startup instructions
  
@@ -105,7 +105,7 @@ sudo bin/buildout -v
 python from the bin/plonectl script
 
 #!/bin/sh
-PYTHON=/home/aavari/Python-2.6/bin/python
+PYTHON=/home/exmple/Python-2.6/bin/python
 BIKA_BASE=/home/example/zinstance
 COUNTER_FILE=$BIKA_BASE/var/id.counter
 LOG_FILE=$BIKA_BASE/var/log/idserver.log
