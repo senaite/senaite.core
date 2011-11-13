@@ -156,16 +156,17 @@ sudo bin/plonectl fg
 2011-11-13 12:06:07 INFO Zope Ready to handle requests
 
 
-16. Access via Web: (NOTE: ACTUAL - CHANGE ASAP)
+16. Access via Web:
 
-http://admin:password@example.bikalabs.com/manage  or http://localhost:8030/manage
+http://admin:password@example.bikalabs.com/manage  or http://admin:password@localhost:8030/manage
 
 17: Add Plone site, noting Instance name (default Plone), and ensure to tick Bika LIMS option
 
-18. Modify apache config to point to instance if required:
+18. Modify apache config to point to instance "Plone" root instead of Zope root if required:
 
     #RewriteRule ^/(.*) http://localhost:8030/VirtualHostBase/http/example.bikalabs.com:80/VirtualHostRoot/$1 [L,P]
-    RewriteRule ^/(.*) http://localhost:8030/VirtualHostBase/http/aavari.bikalabs.com:80/Plone/VirtualHostRoot/$1 [L,P]
+
+    RewriteRule ^/(.*) http://localhost:8030/VirtualHostBase/http/example.bikalabs.com:80/Plone/VirtualHostRoot/$1 [L,P]
 
 
 Reload config:
@@ -175,12 +176,9 @@ sudo apache2ctl graceful
 
 sudo bin/plonectl start
 
-Add similar to /etc/rc.local
+Add similar as below to /etc/rc.local or equivalent:
 
 su plone -c  /home/example/zinstance/start-idserver.sh
 /home/example/zinstance/bin/plonectl start
 
 20. Test on subdomain name URL as above.
-
-
-
