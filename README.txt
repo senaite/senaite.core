@@ -19,7 +19,7 @@ tar xzf Plone-4.1.2-UnifiedInstaller.tgz
 
 4. Run installer and point to new target direction
 
-sudo ./install.sh --target=/home/plone  standalone
+sudo ./install.sh --target=/home/example  standalone
 
 (5. Make new DYN name for site and add apache mapping on server,
 noting new port for instance - Add A or CNAME record, if needed.)
@@ -90,7 +90,13 @@ environment-vars =
 8. Check out the bika3 code:
 
 cd /home/example/zinstance
+
+a. With SVN
 sudo svn co https://bika.svn.sourceforge.net/svnroot/bika/bika3 src/bika3
+
+b. From Git
+
+git clone https://github.com/bikalabs/Bika-LIMS src/bika3
 
 9. Do the buildout of the instance
 sudo bin/buildout -v
