@@ -3,7 +3,7 @@ Introduction
 
 Bika LIMS
 
-Documenting the bika3 installation as done on Bika Gemany server 13/11/11.
+Documenting the bika3 installation as done on Debian server 13/11/11.
 
 1. Get the latest Unified Installer
 
