@@ -110,7 +110,10 @@
 
                         <metal:main define-macro="main">
                             <div tal:replace="structure provider:plone.abovecontenttitle" />
-								<h1 class="documentFirstHeading" tal:content="view/title"/>
+								<h1 class="documentFirstHeading">
+								<img tal:attributes="src view/icon"/>
+								<span tal:content="view/title"/>
+								</h1>
 								<div class="documentDescription"
 									tal:content="view/description"
 									tal:condition="view/description"/>
