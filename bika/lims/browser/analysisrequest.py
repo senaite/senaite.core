@@ -557,6 +557,7 @@ class AnalysisRequestSelectSampleView(BikaListingView):
     def __init__(self, context, request):
         super(AnalysisRequestSelectSampleView, self).__init__(context, request)
         self.title = _("Select sample")
+        self.icon = "++resource++bika.lims.images/sample_big.png"
         self.description = _("Click on a sample to create a secondary AR.")
         self.contentFilter = {'portal_type': 'Sample',
                               'sort_on':'id',
