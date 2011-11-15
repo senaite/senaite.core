@@ -169,15 +169,3 @@ class SamplesView(ClientSamplesView):
                  (obj.aq_parent.absolute_url(), obj.aq_parent.Title())
 
         return items
-
-class Sticker(BrowserView):
-    """ Return html for a Sample label """
-
-    small = ViewPageTemplateFile("templates/sample_sticker_small.pt")
-    large = ViewPageTemplateFile("templates/sample_sticker.pt")
-
-    def __call__(self):
-        if self.request.get('size', '') == 'small':
-            return self.small()
-        else:
-            return self.large()

@@ -295,12 +295,3 @@ class ReferenceSamplesView(BikaListingView):
                  (items[x]['url'], items[x]['ID'], after_icons)
 
         return items
-
-
-class Sticker(BrowserView):
-    """ Return html for a Reference Sample label """
-
-    template = ViewPageTemplateFile("templates/referencesample_sticker.pt")
-
-    def __call__(self):
-        return self.template()

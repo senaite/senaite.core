@@ -37,12 +37,4 @@
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
-    <browser:page
-      for="bika.lims.interfaces.ISample"
-      name="sticker"
-      class="bika.lims.browser.sample.Sticker"
-      permission="zope2.View"
-      layer="bika.lims.interfaces.IBikaLIMS"
-    />
-
 </configure>

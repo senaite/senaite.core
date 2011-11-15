@@ -63,14 +63,6 @@
     />
 
     <browser:page
-      for="bika.lims.interfaces.IAnalysisRequest"
-      name="sticker"
-      class="bika.lims.browser.analysisrequest.Sticker"
-      permission="zope2.View"
-      layer="bika.lims.interfaces.IBikaLIMS"
-    />
-
-    <browser:page
       for="*"
       name="analysisrequest_analysisservices"
       class="bika.lims.browser.analysisrequest.ajaxExpandCategory"

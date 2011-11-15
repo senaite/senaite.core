@@ -16,6 +16,7 @@
   <include file="referencesupplier.zcml"/>
   <include file="referencesupplierfolder.zcml"/>
   <include file="sample.zcml"/>
+  <include file="stickers.zcml"/>
   <include file="worksheet.zcml"/>
   <include file="worksheetfolder.zcml"/>
   <include file="viewlets.zcml"/>

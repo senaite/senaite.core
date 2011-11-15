@@ -36,7 +36,8 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
         skiplist = self.request.get('workflow_skiplist', [])
         action, came_from = WorkflowAction._get_form_workflow_action(self)
 
-        # XXX combine data from multiple bika listing tables.
+        # combine data from multiple bika listing tables.
+        # XXX This should be a single hidden field for all tables rendered
         item_data = {}
         if 'item_data' in form:
             if type(form['item_data']) == list:
@@ -147,7 +148,7 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
                                    self.context.absolute_url())
             self.request.response.redirect(self.destination_url)
 
-## verify
+        ## verify
         elif action == 'verify':
             # default bika_listing.py/WorkflowAction, but then go to view screen.
             self.destination_url = self.context.absolute_url()
@@ -701,23 +702,6 @@ def getServiceDependencies(context, service_uid):
     walk(deps)
     return result
 
-
-class Sticker(BrowserView):
-    """ Return html for an AR label """
-    small = ViewPageTemplateFile("templates/analysisrequest_sticker_small.pt")
-    large = ViewPageTemplateFile("templates/analysisrequest_sticker.pt")
-
-    def __init__(self, context, request):
-        self.context = context
-        self.request = request
-
-    def __call__(self):
-        if self.request.get('size', '') == 'small':
-            return self.small()
-        else:
-            return self.large()
-
-
 class ajaxgetServiceDependencies():
     """ Return json(getServiceDependencies) """
 
@@ -1167,9 +1151,16 @@ class ajaxAnalysisRequestSubmit():
                     default = 'Analysis request ${AR} was successfully created.',
                     mapping = {'AR': ', '.join(ARs)}, domain = 'bika')
 
-
         self.context.plone_utils.addPortalMessage(message, 'info')
-        return json.dumps({'success':message})
+        # automatic label printing
+        # won't print labels for Register on Secondary ARs
+        new_ars = [ar for ar in ARs if ar.split("-")[-1] == '01']
+        if 'register' in self.context.bika_setup.getAutoPrintLabels() and new_ars:
+            return json.dumps({'success':message,
+                               'labels':new_ars,
+                               'labelsize':self.context.bika_setup.getAutoLabelSize()})
+        else:
+            return json.dumps({'success':message})
 
 class AnalysisRequestsView(ClientAnalysisRequestsView):
     """ The main portal Analysis Requests action tab
