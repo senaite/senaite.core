@@ -92,7 +92,7 @@
 			<option
 				tal:attributes="
 					value ref/UID;
-					selected python:row['blank_ref'] == ref.UID() and 'selected' or ''"
+					selected python:'blank_ref' in row and row['blank_ref'] == ref.UID() and 'selected' or ''"
 				tal:content="ref/Title"></option>
 		</tal:item>
 		</select>
@@ -105,7 +105,7 @@
 			<option
 				tal:attributes="
 					value ref/UID;
-					selected python:row['control_ref'] == ref.UID() and 'selected' or ''"
+					selected python:'control_ref' in row and row['control_ref'] == ref.UID() and 'selected' or ''"
 				tal:content="ref/Title"></option>
 		</tal:item>
 		</select>
