@@ -41,7 +41,6 @@ class WorksheetFolderListingView(BikaListingView):
 
         self.columns = {
             'Title': {'title': _('Worksheet Number')},
-            'Owner': {'title': _('Owner')},
             'Analyst': {'title': _('Analyst')},
             'Template': {'title': _('Template')},
             'Analyses': {'title': _('Analyses')},
@@ -59,7 +58,6 @@ class WorksheetFolderListingView(BikaListingView):
                                'sort_order': 'reverse'},
              'transitions':[],
              'columns':['Title',
-                        'Owner',
                         'Analyst',
                         'Template',
                         'Analyses',
@@ -76,7 +74,6 @@ class WorksheetFolderListingView(BikaListingView):
                                'sort_order': 'reverse'},
              'transitions':[],
              'columns':['Title',
-                        'Owner',
                         'Analyst',
                         'Template',
                         'Analyses',
@@ -92,7 +89,6 @@ class WorksheetFolderListingView(BikaListingView):
                                'sort_order': 'reverse'},
              'transitions':[],
              'columns':['Title',
-                        'Owner',
                         'Analyst',
                         'Template',
                         'Analyses',
@@ -108,7 +104,6 @@ class WorksheetFolderListingView(BikaListingView):
                                'sort_order': 'reverse'},
              'transitions':[],
              'columns':['Title',
-                        'Owner',
                         'Analyst',
                         'Template',
                         'Analyses',
@@ -124,7 +119,6 @@ class WorksheetFolderListingView(BikaListingView):
                                'sort_order': 'reverse'},
              'transitions':[],
              'columns':['Title',
-                        'Owner',
                         'Analyst',
                         'Template',
                         'Analyses',
@@ -140,7 +134,6 @@ class WorksheetFolderListingView(BikaListingView):
 ##                                   'sort_order': 'reverse'},
 ##                 'transitions':[],
 ##                 'columns':['Title',
-##                            'Owner',
 ##                            'Analyst',
 ##                            'Template',
 ##                            'Analyses',
@@ -151,7 +144,6 @@ class WorksheetFolderListingView(BikaListingView):
 ##                {'title': _('Rejected'), 'id':'rejected',
 ##                 'contentFilter': {'review_state':'open'},
 ##                 'columns':['Title',
-##                            'Owner',
 ##                            'Analyst',
 ##                            'Template',
 ##                            'Analyses',
@@ -173,7 +165,6 @@ class WorksheetFolderListingView(BikaListingView):
                 continue
             obj = items[x]['obj']
             items[x]['Title'] = obj.Title()
-            items[x]['Owner'] = obj.getOwnerTuple()[1]
             analyst = obj.getAnalyst().strip()
             analyst_member = mtool.getMemberById(analyst)
             # XXX This should not be needed - why is contentFilter/analyst not working?
