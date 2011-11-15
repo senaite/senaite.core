@@ -13,54 +13,9 @@
                   portal_url portal_state/portal_url;
                   plone_view context/@@plone;">
 
-<head>
-<title>Reference sticker</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"
-          tal:define="charset site_properties/default_charset|string:utf-8"
-          tal:attributes="content string:text/html;;charset=${charset}" />
+<body style="margin: 0; padding: 0" onload="this.print()">
 
-    <!-- Column style sheet. -->
-    <style type="text/css" media="all" tal:condition="exists: portal/ploneColumns.css"
-           tal:content="string:@import url($portal_url/ploneColumns.css);">
-    </style>
-
-    <!-- Main style sheets for CSS2 capable browsers -->
-    <style type="text/css" media="screen"
-           tal:content="string: @import url($portal_url/plone.css);">
-    </style>
-
-    <!-- Old style sheet from Plone 1.0, remove tal:condition="nothing" if you need to use the old styles.
-         Will be removed in Plone 2.1. -->
-    <style type="text/css" media="screen"
-           tal:condition="nothing"
-           tal:content="string: @import url($portal_url/ploneDeprecated.css);">
-    </style>
-
-    <!-- Alternate style sheets for the bigger/smaller text switcher -->
-    <link rel="alternate stylesheet" type="text/css" media="screen" href="" tal:attributes="href string:$portal_url/ploneTextSmall.css" title="Small Text" />
-    <link rel="alternate stylesheet" type="text/css" media="screen" href="" tal:attributes="href string:$portal_url/ploneTextLarge.css" title="Large Text" />
-
-    <!-- Custom style sheet if available -->
-    <style type="text/css" media="all" tal:condition="exists: portal/ploneCustom.css"
-           tal:content="string:@import url($portal_url/ploneCustom.css);">
-    </style>
-
-    <!-- Style sheet used for printing -->
-    <link rel="stylesheet" type="text/css" media="print" href=""
-          tal:attributes="href string:$portal_url/plonePrint.css" />
-
-    <!-- Internet Explorer CSS Fixes -->
-    <tal:iefixstart replace="structure string:&lt;!--[if IE]&gt;" />
-    <style type="text/css" media="all" tal:condition="exists: portal/ploneIEFixes.css"
-           tal:content="string:@import url($portal_url/ploneIEFixes.css);">
-    </style>
-    <tal:iefixend replace="structure string:&lt;![endif]--&gt;" />
-
-</head>
-
-<body style="margin: 0; padding: 0">
-
-<metal:block define-macro="sticker">
+<metal:block tal:repeat="reference view/items">
 <style type="text/css">
 table {
     border-collapse:collapse;
@@ -75,15 +30,18 @@ th {
 td {
     border: 1pt solid black
 }
+@media print {
+.noPrint {display:none !important;}
+}
 </style>
 
-<table cellpadding="3" cellspacing="3"
-    tal:define="manufacturer context/getReferenceManufacturer">
+<table cellpadding="0" cellspacing="0"
+    tal:define="manufacturer reference/getReferenceManufacturer">
 <thead>
 
 <tr>
 <th i18n:translate="Reference">Reference</th>
-<td><strong tal:content="context/Title">sugar 4g/l</strong></td>
+<td><strong tal:content="reference/Title">sugar 4g/l</strong></td>
 </tr>
 
 <tr>
@@ -93,14 +51,14 @@ td {
 
 <tr>
 <th i18n:translate="LotNumber">LotNumber</th>
-<td><strong tal:content="context/getLotNumber">42</strong></td>
+<td><strong tal:content="reference/getLotNumber">42</strong></td>
 </tr>
 
 <tr>
 <th i18n:translate="DateReceived">Date received</th>
 <td class="left">
 <span
-    tal:define="date_received context/getDateReceived"
+    tal:define="date_received reference/getDateReceived"
     tal:condition="date_received"
     tal:content="python:plone_view.toLocalizedTime(date_received, long_format=0)"
     >2005-01-01</span>
@@ -110,7 +68,7 @@ td {
 <th i18n:translate="DateOpened">Date opened</th>
 <td class="left">
 <span
-    tal:define="date_opened context/getDateOpened"
+    tal:define="date_opened reference/getDateOpened"
     tal:condition="date_opened"
     tal:content="python:plone_view.toLocalizedTime(date_opened, long_format=0)"
     >2005-01-01</span>
@@ -120,7 +78,7 @@ td {
 <th i18n:translate="ExpiryDate">Expiry date</th>
 <td class="left">
 <span
-    tal:define="expiry_date context/getExpiryDate"
+    tal:define="expiry_date reference/getExpiryDate"
     tal:condition="expiry_date"
     tal:content="python:plone_view.toLocalizedTime(expiry_date, long_format=0)"
     >2005-01-01</span>
@@ -130,7 +88,12 @@ td {
 </thead>
 
 </table>
+<p style="page-break-after: always"/>
 </metal:block>
+
+<p class="noPrint">
+    <a tal:attributes="href python:context.absolute_url()">Back to list</a>
+</p>
 
 </body>
 

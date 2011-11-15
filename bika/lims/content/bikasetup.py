@@ -31,6 +31,17 @@ class PrefixesField(RecordsField):
         })
     security = ClassSecurityInfo()
 
+LABEL_AUTO_OPTIONS = DisplayList((
+    ('None', _('None')),
+    ('register', _('Register')),
+    ('receive', _('Recieve')),
+))
+
+LABEL_AUTO_SIZES = DisplayList((
+    ('small', _('Small')),
+    ('normal', _('Normal')),
+))
+
 schema = BikaFolderSchema.copy() + Schema((
     IntegerField('PasswordLifetime',
         schemata = _("Security"),
@@ -180,6 +191,27 @@ schema = BikaFolderSchema.copy() + Schema((
                             "in the sample types setup"),
         )
     ),
+    LinesField('AutoPrintLabels',
+        schemata = _("Label Printing"),
+        vocabulary = LABEL_AUTO_OPTIONS,
+        widget = SelectionWidget(
+            format = 'select',
+            label = _("Automatic AR label printing"),
+            description = _("Select 'Register' if you want labels to be automatically printed when "
+                            "new ARs are created.  Select 'Receive' to print labels when the 'Receive' "
+                            "transition is invoked on ARs or Samples.  Select None to disable automatic "
+                            "printing"),
+        )
+    ),
+    LinesField('AutoLabelSize',
+        schemata = _("Label Printing"),
+        vocabulary = LABEL_AUTO_SIZES,
+        widget = SelectionWidget(
+            format = 'select',
+            label = _("Automatic AR label sizes"),
+            description = _("Select the size label to print if Automatic label printing is enabled."),
+        )
+    ),
     PrefixesField('Prefixes',
          schemata = _("Prefixes"),
          fixedSize=8,
@@ -194,6 +226,7 @@ schema = BikaFolderSchema.copy() + Schema((
         )
     ),
 ))
+
 schema['title'].validators = ()
 schema['title'].widget.visible = False
 # Update the validation layer after change the validator in runtime

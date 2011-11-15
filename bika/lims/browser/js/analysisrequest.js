@@ -537,9 +537,23 @@ jQuery( function($) {
 				success: function(responseText, statusText, xhr, $form)  {
 					if(responseText['success'] != undefined){
 						$("#spinner").toggle(false);
-						destination = window.location.href.replace("/analysisrequest_add","");
-						destination = destination.replace("/base_edit", "/base_view");
-						window.location.replace(destination);
+						if(responseText['labels'] != undefined){
+							destination = window.location.href.replace("/analysisrequest_add","");
+							destination = destination.replace("/base_edit", "");
+							ars = responseText['labels'];
+							labelsize = responseText['labelsize'];
+							if (labelsize == "small"){
+								q = "/sticker?size=small&items=";
+							} else {
+								q = "/sticker?items=";
+							}
+							q = q + ars.join(",");
+							window.location.replace(destination+q);
+						} else {
+							destination = window.location.href.replace("/analysisrequest_add","");
+							destination = destination.replace("/base_edit", "/base_view");
+							window.location.replace(destination);
+						}
 					} else {
 						msg = ""
 						for(error in responseText['errors']){

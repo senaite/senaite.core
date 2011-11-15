@@ -129,7 +129,14 @@ class WorkflowAction:
             message = _('Changes saved.')
             self.context.plone_utils.addPortalMessage(message, 'info')
 
-        self.request.response.redirect(self.destination_url)
+        # automatic label printing
+        if action == 'receive' and 'receive' in self.context.bika_setup.getAutoPrintLabels():
+            q = "/sticker?size=%s&items="%(self.context.bika_setup.getAutoLabelSize())
+            # selected_items is a list of UIDs (stickers for AR_add use IDs)
+            q += ",".join([i.getId() for i in selected_items.values()])
+            self.request.response.redirect(self.context.absolute_url()+q)
+        else:
+            self.request.response.redirect(self.destination_url)
 
 class BikaListingView(BrowserView):
     """
