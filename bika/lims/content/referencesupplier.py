@@ -31,20 +31,4 @@ class ReferenceSupplier(Organisation):
     def generateUniqueId (self, type_name, batch_size = None):
         return generateUniqueId(self, type_name, batch_size)
 
-##    security.declarePublic('getContactsDisplayList')
-##    def getContactsDisplayList(self):
-##        pairs = []
-##        for contact in self.objectValues('SupplierContact'):
-##            pairs.append((contact.UID(), contact.Title()))
-##        return DisplayList(pairs)
-##
-##    security.declarePublic('getReferenceDefinitionDisplayList')
-##    def getReferenceDefinitionDisplayList(self):
-##        """ return all Reference Definitions """
-##        defs = []
-##        for st in self.portal_catalog(portal_type = 'ReferenceDefinition',
-##                                      sort_on = 'sortable_title'):
-##            defs.append((st.UID, st.Title))
-##        return DisplayList(defs)
-
 registerType(ReferenceSupplier, PROJECTNAME)

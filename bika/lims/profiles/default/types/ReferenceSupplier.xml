@@ -20,6 +20,8 @@
 <property name="default_view_fallback">False</property>
 
 <alias from="(Default)" to="referencesamples"/>
+<alias from="view" to="base_view"/>
+<alias from="edit" to="base_edit"/>
 
 <action action_id="edit"
 	title="Edit"
@@ -29,15 +31,15 @@
 	<permission value="Modify portal content"/>
 </action>
 
-<action title="Contacts"
-	action_id="contacts"
+<action action_id="contacts"
+	title="Contacts"
 	visible="True"
 	category="object"
 	url_expr="string:${object_url}/contacts">
 	<permission value="List folder contents"/>
 </action>
 
-<action action_id="view"
+<action action_id="referencesamples"
 	title="Reference Samples"
 	visible="True"
 	category="object"

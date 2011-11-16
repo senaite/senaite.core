@@ -63,7 +63,6 @@ def initialize(context):
     from content.referencesample import ReferenceSample
     from content.referencesamplesfolder import ReferenceSamplesFolder
     from content.referencesupplier import ReferenceSupplier
-    from content.referencesupplierfolder import ReferenceSupplierFolder
     from content.rejectanalysis import RejectAnalysis
     from content.sample import Sample
     from content.samplepoint import SamplePoint
@@ -88,6 +87,7 @@ def initialize(context):
     from controlpanel.bika_methods import Methods
     from controlpanel.bika_referencedefinitions import ReferenceDefinitions
     from controlpanel.bika_referencemanufacturers import ReferenceManufacturers
+    from controlpanel.bika_referencesuppliers import ReferenceSuppliers
     from controlpanel.bika_samplepoints import SamplePoints
     from controlpanel.bika_sampletypes import SampleTypes
     from controlpanel.bika_worksheettemplates import WorksheetTemplates

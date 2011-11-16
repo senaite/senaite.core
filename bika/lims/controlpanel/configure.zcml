@@ -109,6 +109,14 @@
     />
 
     <browser:page
+      for="bika.lims.interfaces.IReferenceDefinitions"
+      name="folder_view"
+      class=".bika_referencedefinitions.ReferenceDefinitionsView"
+      permission="bika.lims.ManageBika"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
       for="bika.lims.interfaces.IReferenceManufacturers"
       name="folder_view"
       class=".bika_referencemanufacturers.ReferenceManufacturersView"
@@ -117,9 +125,9 @@
     />
 
     <browser:page
-      for="bika.lims.interfaces.IReferenceDefinitions"
+      for="bika.lims.interfaces.IReferenceSuppliers"
       name="folder_view"
-      class=".bika_referencedefinitions.ReferenceDefinitionsView"
+      class=".bika_referencesuppliers.ReferenceSuppliersView"
       permission="bika.lims.ManageBika"
       layer="bika.lims.interfaces.IBikaLIMS"
     />

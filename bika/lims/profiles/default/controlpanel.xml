@@ -131,6 +131,15 @@
   <permission>BIKA: Manage Bika</permission>
  </configlet>
 
+ <configlet title="Reference Suppliers"
+    action_id="bika_referencesuppliers"
+    appId="bika.lims" category="Products" condition_expr=""
+    icon_expr="string:++resource++bika.lims.images/referencesupplier_big.png"
+    url_expr="string:$portal_url/bika_setup/bika_referencesuppliers"
+    visible="True">
+  <permission>BIKA: Manage Bika</permission>
+ </configlet>
+
  <configlet title="Reference Definitions" action_id="bika_referencedefinitions"
     appId="bika.lims" category="Products" condition_expr=""
     icon_expr="string:++resource++bika.lims.images/referencedefinition_big.png"

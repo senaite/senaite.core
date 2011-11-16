@@ -53,7 +53,6 @@ class BikaGenerator:
 
         # index objects - importing through GenericSetup doesn't
         for obj_id in ('clients',
-                       'referencesuppliers',
                        'invoices',
                        'pricelists',
                        'bika_setup',
@@ -80,8 +79,9 @@ class BikaGenerator:
                        'bika_labproducts',
                        'bika_samplepoints',
                        'bika_sampletypes',
-                       'bika_referencemanufacturers',
                        'bika_referencedefinitions',
+                       'bika_referencemanufacturers',
+                       'bika_referencesuppliers',
                        'bika_worksheettemplates',
                        'laboratory'):
             obj = bika_setup._getOb(obj_id)
@@ -250,20 +250,6 @@ class BikaGenerator:
         mp(permissions.AddPortalContent,
            ['Manager', 'LabManager', 'LabClerk', 'Owner', ], 0)
         portal.clients.reindexObject()
-
-        mp = portal.referencesuppliers.manage_permission
-        mp(permissions.ListFolderContents,
-            ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 0)
-            #['Manager', 'LabManager','LabClerk','Analyst', 'Anonymous'], 0)
-        mp(permissions.View,
-           ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Owner'], 0)
-           #['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Owner', 'Anonymous'], 0)
-        mp('Access contents information',
-            ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 0)
-            #['Manager', 'LabManager','LabClerk','Analyst', 'Anonymous'], 0)
-        mp(permissions.AddPortalContent,
-           ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Owner'], 0)
-        portal.referencesuppliers.reindexObject()
 
         mp = portal.worksheets.manage_permission
         mp(permissions.ListFolderContents,

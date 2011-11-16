@@ -44,13 +44,13 @@ class IReferenceSample(Interface):
     """Reference Sample"""
 
 class IReferenceSamplesFolder(Interface):
-    """Reference Samples Folder Folder"""
+    """Reference Samples Folder"""
 
 class IReferenceSupplier(Interface):
-    """Reference Suppliers Folder"""
+    """Reference Supplier"""
 
-class IReferenceSupplierFolder(Interface):
-    """Reference Suppliers Folder"""
+class IReferenceSuppliers(Interface):
+    """Reference Suppliers """
 
 class IInvoiceFolder(Interface):
     """Invoices Folder"""

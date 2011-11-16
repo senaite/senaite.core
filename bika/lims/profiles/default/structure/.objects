@@ -6,7 +6,6 @@ samples,SamplesFolder
 analysisrequests,AnalysisRequestsFolder
 worksheets,WorksheetFolder
 referencesamples,ReferenceSamplesFolder
-referencesuppliers,ReferenceSupplierFolder
 invoices,InvoiceFolder
 pricelists,PricelistFolder
 bika_setup,BikaSetup

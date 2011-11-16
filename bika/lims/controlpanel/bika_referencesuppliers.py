@@ -1,10 +1,30 @@
-from bika.lims.browser.bika_listing import BikaListingView
+"""ReferenceSuppliers is a container for ReferenceSupplier instances.
+"""
+
+from AccessControl.SecurityInfo import ClassSecurityInfo
+from Products.ATContentTypes.content import schemata
+from Products.Archetypes import atapi
+from Products.Archetypes.ArchetypeTool import registerType
+from Products.Archetypes.public import *
+from Products.CMFCore import permissions
+from ZODB.POSException import ConflictError
 from bika.lims import bikaMessageFactory as _
+from bika.lims.browser.bika_listing import BikaListingView
+from bika.lims.config import PROJECTNAME
+from bika.lims.content.bikaschema import BikaFolderSchema
+from bika.lims.interfaces import IReferenceSuppliers
+from bika.lims.interfaces import IHaveNoBreadCrumbs
+from bika.lims.utils import generateUniqueId
+from operator import itemgetter
+from plone.app.content.browser.interfaces import IFolderContentsView
+from plone.app.folder.folder import ATFolder, ATFolderSchema
+from plone.app.layout.globals.interfaces import IViewView
+from zope.interface import implements
 
 class ReferenceSuppliersView(BikaListingView):
-
+    implements(IFolderContentsView, IViewView)
     def __init__(self, context, request):
-        super(ReferenceSuppliersView,self).__init__(context, request)
+        super(ReferenceSuppliersView, self).__init__(context, request)
         self.title = _("Reference Suppliers")
         self.icon = "++resource++bika.lims.images/referencesupplier_big.png"
         self.description = _("")
@@ -45,3 +65,11 @@ class ReferenceSuppliersView(BikaListingView):
                  (items[x]['url'], items[x]['Name'])
 
         return items
+
+schema = ATFolderSchema.copy()
+class ReferenceSuppliers(ATFolder):
+    implements(IReferenceSuppliers)
+    schema = schema
+    displayContentsTab = False
+schemata.finalizeATCTSchema(schema, folderish = True, moveDiscussion = False)
+atapi.registerType(ReferenceSuppliers, PROJECTNAME)
