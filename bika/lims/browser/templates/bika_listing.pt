@@ -13,10 +13,9 @@
          src="" tal:attributes="src view/icon"/>
 	<span class="documentFirstHeading" tal:content="view/title"/>
 	<tal:add_actions repeat="add_item python:view.content_add_actions.keys()">
-		<a
-			tal:attributes="
-				href python:view.content_add_actions[add_item];
-				class python:'content_add_link %s' % view.content_add_actions[add_item]">
+		<a tal:attributes="
+			href python:view.content_add_actions[add_item];
+			class python:'content_add_link %s' % view.content_add_actions[add_item]">
 			<img src="++resource++bika.lims.images/add.png"/>
 			<span tal:replace="add_item"/>
 		</a>
@@ -37,7 +36,7 @@
 
 <metal:content-description fill-slot="content-description">
 	<div class="documentDescription"
-		tal:content="view/description"
+		tal:content="structure view/description"
 		tal:condition="view/description"/>
 </metal:content-description>
 

@@ -201,9 +201,12 @@ class ReferenceSamplesView(BikaListingView):
     """
     def __init__(self, context, request):
         super(ReferenceSamplesView, self).__init__(context, request)
+        portal = getToolByName(context, 'portal_url').getPortalObject()
         self.title = _("Reference Samples")
         self.icon = "++resource++bika.lims.images/referencesample_big.png"
-        self.description = _("")
+        self.description = _("All reference samples in the system are displayed here. <br/>"
+                             "Reference samples can be added in <a href='%s/bika_setup/bika_referencesuppliers'>%s</a>"%\
+                             (portal.absolute_url(), _("Reference Suppliers")))
         self.contentFilter = {'portal_type': 'ReferenceSample',
                               'sort_on':'id',
                               'sort_order': 'reverse',
