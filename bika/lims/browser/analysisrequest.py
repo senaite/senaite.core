@@ -48,7 +48,7 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
                 item_data = json.loads(form['item_data'])
 
         ## publish
-        if action in ('prepublish', 'publish', 'prepublish'):
+        if action in ('prepublish', 'publish', 'republish'):
             if not isActive(self.context):
                 message = _('Item is inactive.')
                 self.context.plone_utils.addPortalMessage(message, 'info')
@@ -61,11 +61,13 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
                                    action,
                                    [self.context, ])()
             if len(transitioned) == 1:
+                action_title = '%sed' %action
                 message = _('message_item_published',
-                    default = '${items} was published.',
-                    mapping = {'items': ', '.join(transitioned)})
+                    default = '${items} was ${actioned}',
+                    mapping = {'items': ', '.join(transitioned),
+                               'actioned': action_title})
             else:
-                message = _('No ARs were published.')
+                message = _('No ARs were published')
             self.context.plone_utils.addPortalMessage(message, 'info')
             self.destination_url = self.request.get_header("referer",
                                    self.context.absolute_url())
