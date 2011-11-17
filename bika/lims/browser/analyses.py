@@ -18,7 +18,7 @@ from zope.component import getMultiAdapter
 from zope.interface import implements, 	alsoProvides, implementsOnly
 import json
 import plone
-
+ 
 class AnalysesView(BikaListingView):
     """ Displays a list of Analyses in a table.
         All InterimFields from all analyses are added to self.columns[].
