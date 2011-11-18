@@ -32,6 +32,8 @@ class AnalysisServicesView(BikaListingView):
             'Title': {'title': _('Service')},
             'Keyword': {'title': _('Keyword')},
             'CategoryName': {'title': _('Category')},
+            'Department': {'title': _('Department')},
+            'Instrument': {'title': _('Instrument')},
             'Unit': {'title': _('Unit')},
             'Price': {'title': _('Price')},
             'MaxTimeAllowed': {'title': _('Max Time')},
@@ -44,6 +46,8 @@ class AnalysisServicesView(BikaListingView):
              'columns': ['Title',
                          'Keyword',
                          'CategoryName',
+                         'Department',
+                         'Instrument',
                          'Unit',
                          'Price',
                          'MaxTimeAllowed',
@@ -57,6 +61,8 @@ class AnalysisServicesView(BikaListingView):
              'columns': ['Title',
                          'Keyword',
                          'CategoryName',
+                         'Department',
+                         'Instrument',
                          'Unit',
                          'Price',
                          'MaxTimeAllowed',
@@ -70,6 +76,8 @@ class AnalysisServicesView(BikaListingView):
              'columns': ['Title',
                          'Keyword',
                          'CategoryName',
+                         'Department',
+                         'Instrument',
                          'Unit',
                          'Price',
                          'MaxTimeAllowed',
@@ -86,6 +94,8 @@ class AnalysisServicesView(BikaListingView):
             obj = items[x]['obj']
             items[x]['Keyword'] = obj.getKeyword()
             items[x]['CategoryName'] = obj.getCategoryName()
+            items[x]['Instrument'] = obj.getInstrument() and obj.getInstrument().Title() or ' '
+            items[x]['Department'] = obj.getDepartment() and obj.getDepartment().Title() or ' '
             calculation = obj.getCalculation()
             items[x]['Calculation'] = calculation and calculation.Title()
             items[x]['Unit'] = obj.Unit
