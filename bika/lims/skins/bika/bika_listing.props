@@ -30,10 +30,10 @@ oddRowBackgroundColor:string=#fff
 
 visibleTextColor:string=#205c90
 visibleBackgroundColor:string=transparent
-cancelledTextColor:string=red
-cancelledBackgroundColor:string=transparent
-inactiveTextColor:string=red
-inactiveBackgroundColor:string=transparent
+cancelledTextColor:string=#000
+cancelledBackgroundColor:string=#FFC8C8
+inactiveTextColor:string=#000
+inactiveBackgroundColor:string=#FFC8C8
 sampleDueTextColor:string=#2bb800
 sampleDueBackgroundColor:string=transparent
 sampleReceivedTextColor:string=#222

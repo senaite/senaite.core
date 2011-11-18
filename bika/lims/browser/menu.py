@@ -75,7 +75,8 @@ class WorkflowSubMenuItem(WorkflowSubMenuItem):
             title2 = _('Dormant')
             # cater for bika_one_state_workflow (always Active)
             if not stateTitle or \
-               workflow.getInfoFor(self.context, 'review_state', '') == 'active':
+               (workflow.getInfoFor(self.context, 'review_state', '') in \
+                                                    ('active', 'current')):
                 stateTitle = 'Dormant'
             else:
                 stateTitle = "%s (%s)" % (stateTitle,_(title2))
