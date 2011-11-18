@@ -80,16 +80,16 @@ $(document).ready(function(){
 			selected_service_uids.push($(e).attr('uid'));
 		});
 
-		if (window.location.href.indexOf("blank") > -1) {
-		  control_type = 'b';
-		} else {
+		if (window.location.href.search('add_control') > -1) {
 		  control_type = 'c';
+		} else {
+		  control_type = 'b';
 		}
 
 		url = window.location.href
 			.replace("/add_blank", "")
 			.replace("/add_control", "") + "/getWorksheetReferences"
-		$("#reference_samples").load(url,
+		$("#worksheet_add_references").load(url,
 			{'service_uids': selected_service_uids.join(","),
 			 'control_type': control_type,
 			 '_authenticator': $('input[name="_authenticator"]').val()},
@@ -101,37 +101,40 @@ $(document).ready(function(){
 	$("#worksheet_services input[id*='cb_']").live('click', function(){
 		get_updated_controls();
 	});
+	// get references for selected services on first load
 	get_updated_controls();
 
-	// clicking service categories in add_control and add_blank expand and
-	// collapse service TRs.
-	$("th.collapsed").live("click", function(){
-		cat = $(this).attr('cat');
-		$("tr[cat='"+cat+"']").toggle(true);
-		$(this).removeClass("collapsed").addClass("expanded");
-	});
-	$("th.expanded").live("click", function(){
-		cat = $(this).attr('cat');
-		$("tr[cat='"+cat+"']").toggle(false);
-		$(this).removeClass("expanded").addClass("collapsed");
-	});
-
-	// click reference sample TR in add_blank or add_control
-	$("#reference_samples tr").live('click', function(){
+	// click a Reference Sample in add_control or add_blank
+	$("#worksheet_add_references tr").live('click', function(){
+		// we want to submit to the worksheet.py/add_control or add_blank views.
+		if(window.location.href.search('add_control') > -1){
+			$(this).parents('form').attr("action", "add_control");
+		} else {
+			$(this).parents('form').attr("action", "add_blank");
+		}
+		// tell the form handler which services were selected
 		selected_service_uids = [];
 		$.each($("input:checked"), function(i,e){
 			selected_service_uids.push($(e).attr('uid'));
 		});
 		ssuids = selected_service_uids.join(",");
-		$('#folderContentsForm').append("<input type='hidden' value='"+ssuids+"' name='selected_service_uids'/>");
-		$('#folderContentsForm').append("<input type='hidden' value='"+$(this).attr("uid")+"' name='reference_uid'/>");
-		$('#folderContentsForm').submit();
+		$(this).parents('form').append("<input type='hidden' value='"+ssuids+"' name='selected_service_uids'/>");
+		// tell the form handler which refernece UID was clicked
+		$(this).parents('form').append("<input type='hidden' value='"+$(this).attr("uid")+"' name='reference_uid'/>");
+		// add the position dropdown's value to the form before submitting.
+		$(this).parents('form').append("<input type='hidden' value='"+$('#position').val()+"' name='position'/>");
+		$(this).parents('form').submit();
 	})
 
-	// click AR TR in add_duplicate
-	$("#worksheet_ars tr").live('click', function(){
-		$('#folderContentsForm').append("<input type='hidden' value='"+$(this).attr("uid")+"' name='ar_uid'/>");
-		$('#folderContentsForm').submit();
+	// click an AR in add_duplicate
+	$("#worksheet_add_duplicate_ars tr").live('click', function(){
+		// we want to submit to the worksheet.py/add_duplicate view.
+		$(this).parents('form').attr("action", "add_duplicate");
+		// add the position dropdown's value to the form before submitting.
+		$(this).parents('form')
+			.append("<input type='hidden' value='"+$(this).attr("uid")+"' name='ar_uid'/>")
+			.append("<input type='hidden' value='"+$('#position').val()+"' name='position'/>");
+		$(this).parents('form').submit();
 	})
 
 });

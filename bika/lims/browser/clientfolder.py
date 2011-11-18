@@ -27,35 +27,39 @@ class ClientFolderContentsView(BikaListingView):
         request.set('disable_border', 1)
 
         self.columns = {
-                   'title': {'title': _('Name')},
-                   'EmailAddress': {'title': _('Email Address')},
-                   'Phone': {'title': _('Phone')},
-                   'Fax': {'title': _('Fax')},
-                  }
+            'title': {'title': _('Name'),
+                      'index': 'sortable_title', },
+            'EmailAddress': {'title': _('Email Address'),
+                             'index': 'getEmailAddress',},
+            'Phone': {'title': _('Phone'),
+                      'index': 'getPhone'},
+            'Fax': {'title': _('Fax'),
+                    'index': 'getFax'},
+        }
 
         self.review_states = [
-                        {'title': _('All'), 'id':'all',
-                         'columns':['title',
-                                    'EmailAddress',
-                                    'Phone',
-                                    'Fax', ]
-                         },
-                        {'title': _('Active'), 'id':'active',
-                         'contentFilter': {'inactive_state': 'active'},
-                         'transitions': ['deactivate'],
-                         'columns':['title',
-                                    'EmailAddress',
-                                    'Phone',
-                                    'Fax', ]
-                         },
-                        {'title': _('Dormant'), 'id':'inactive',
-                         'contentFilter': {'inactive_state': 'inactive'},
-                         'transitions': ['activate'],
-                         'columns':['title',
-                                    'EmailAddress',
-                                    'Phone',
-                                    'Fax', ]
-                         },
+            {'title': _('All'), 'id':'all',
+             'columns':['title',
+                        'EmailAddress',
+                        'Phone',
+                        'Fax', ]
+             },
+            {'title': _('Active'), 'id':'active',
+             'contentFilter': {'inactive_state': 'active'},
+             'transitions': ['deactivate'],
+             'columns':['title',
+                        'EmailAddress',
+                        'Phone',
+                        'Fax', ]
+             },
+            {'title': _('Dormant'), 'id':'inactive',
+             'contentFilter': {'inactive_state': 'inactive'},
+             'transitions': ['activate'],
+             'columns':['title',
+                        'EmailAddress',
+                        'Phone',
+                        'Fax', ]
+             },
         ]
 
     def folderitems(self):
@@ -73,4 +77,5 @@ class ClientFolderContentsView(BikaListingView):
                       obj.getEmailAddress())
             items[x]['Phone'] = obj.getPhone()
             items[x]['Fax'] = obj.getFax()
+
         return items

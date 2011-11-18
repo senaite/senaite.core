@@ -1,58 +1,74 @@
 jQuery( function($) {
 $(document).ready(function(){
 
-	// actions will refresh only the content table.
-	function inplace_submit(){
-		form = $('#folderContentsForm');
-		options = {
-			target: '.folderlisting-main-table',
-			replaceTarget: true,
-			data: form.formToArray(),
-			success: function(){
-				$("#spinner").toggle(false);
-				$('#workflow_action_submitted').remove();
-			}
-		}
-		form.ajaxSubmit(options);
-	}
-
-	// review_state_selector clicks
+	// review_state
 	$(".review_state_selector a").click(function(){
-		window.location.href = window.location.href.split("?")[0] + $.query.set("review_state", $(this).attr('value'));
+		form_id = $(this).parents("form").attr("id");
+		review_state = $(this).attr("value");
+		window.location.href = window.location.href.split("?")[0] +
+		                       $.query.set(form_id + "_review_state", review_state);
 		return false;
 	});
 
+	// pagesize
+	$("select[name='pagesize']").live('change', function(){
+		form_id = $(this).parents("form").attr("id");
+		pagesize = $(this).val();
+		window.location.href = window.location.href.split("?")[0] +
+		                       $.query.set(form_id + "_pagesize", pagesize);
+	});
+
 	// select all (on this screen at least)
-	$("#select_all").live('click', function(){
+	$("input[id*='select_all']").live('click', function(){
+		form_id = $(this).parents("form").attr("id");
 		checked = $(this).attr("checked");
-		$.each($("input[id^='cb_']"), function(i,v){
+		$.each($("input[id^='"+form_id+"_cb_']"), function(i,v){
 			$(v).attr("checked", checked);
 		});
 	});
 
 	// modify select_all checkbox when regular checkboxes are modified
-	$("input[id^='cb_']").live('click', function(){
+	$("input[id*='_cb_']").live('click', function(){
+		form_id = $(this).parents("form").attr("id");
 		all_selected = true;
-		$.each($("input[id^='cb_']"), function(i,v){
+		$.each($("input[id^='"+form_id+"_cb_']"), function(i,v){
 			if($(v).attr("checked") == false){
 				all_selected = false;
 			}
 		});
 		if(all_selected){
-			$("#select_all").attr("checked", true);
+			$("#"+form_id+"_select_all").attr("checked", true);
 		} else {
-			$("#select_all").attr("checked", false);
+			$("#"+form_id+"_select_all").attr("checked", false);
 		}
 	});
 
-	// workflow action buttons submit entire form to workflow_action.
-	$(".workflow_action_button").live('click', function(){
-		form = $('#folderContentsForm');
-		form.append("<input type='hidden' value='"+$(this).val()+"' name='workflow_action_button'/>");
-		form.attr("action", "workflow_action");
-		form.submit();
-	})
+	// Click column header - set or modify sort order.
+	$("th.sortable").click(function(){
+		form_id = $(this).parents("form").attr("id");
+		column_id = this.id.split("-")[1];
+		sort_on = $.query.get(form_id + "_" + "sort_on");
+		sort_order = $.query.get(form_id + "_" + "sort_order");
+		// if this column_id is the current sort
+		if (sort_on == column_id) {
+			// then we reverse sort order
+			if (sort_order == 'descending') {
+				sort_order = 'ascending';
+			} else {
+				sort_order = 'descending';
+			}
+		} else {
+			sort_on = column_id;
+			sort_order = 'ascending';
+		}
+		// remove sort_on class from any previously sort_on columns
+		window.location.href = window.location.href.split("?")[0] +
+		                       $.query.set(form_id + "_" + "sort_on", sort_on)
+									  .set(form_id + "_" + "sort_order", sort_order);
+	});
 
+	// Prevent automatic submissions of manage_results
+	// forms when enter is pressed
 	$(".listing_string_entry,.listing_select_entry").live('keypress', function(event) {
 	  var tab = 9;
 	  var enter = 13;
@@ -61,6 +77,14 @@ $(document).ready(function(){
 	  }
 	});
 
+	// batching pagenumber links
+	$("a[pagenumber]").click(function(){
+		form_id = $(this).parents("form").attr("id");
+		pagenumber = $(this).attr("pagenumber");
+		window.location.href = window.location.href.split("?")[0] +
+		                       $.query.set(form_id + "_pagenumber", pagenumber);
+		return false;
+	});
 
 });
 });

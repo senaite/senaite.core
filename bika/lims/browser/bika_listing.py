@@ -10,6 +10,7 @@ from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import isActive, TimeOrDate
+from operator import itemgetter
 from plone.app.content.batching import Batch
 from plone.app.content.browser import tableview
 from plone.app.content.browser.foldercontents import FolderContentsView, FolderContentsTable
@@ -154,13 +155,19 @@ class BikaListingView(BrowserView):
     show_sort_column = False
     show_workflow_action_buttons = True
     categories = []
-    # just set pagesize high to disable batching.
     pagesize = 20
+    pagenumber = 1
+    # when rendering multiple bika_listing tables, form_id must be unique
+    form_id = "list"
 
     """
+     ### colum definitions
      The keys of the columns dictionary must all exist in all
-     items returned by subclassing view's .foldercontents.
-     possible column dictionary keys are:
+     items returned by subclassing view's .folderitems.  Blank
+     entries are inserted in the default folderitems for all entries
+     without values.
+
+     ### possible column dictionary keys are:
      - allow_edit
        if View.allow_edit is also True, this field is made editable
        Interim fields are always editable
@@ -168,6 +175,10 @@ class BikaListingView(BrowserView):
        possible values: "string", "boolean", "choices".
        if "choices" is selected, item['choices'][column_id] must
        be a list of choice strings.
+     - index
+       the name of the catalog index for the column.  If specified,
+       it will be passed to portal_catalog for column sorting.  If not,
+       the column will be sorted in-place by javascript.
     """
     columns = {
            'obj_type': {'title': _('Type')},
@@ -177,11 +188,14 @@ class BikaListingView(BrowserView):
            'state_title': {'title': _('State')},
     }
 
-    # with just one review_state, the selector won't show.
+    """
+    ### review_state filter
+    with just one review_state, the selector won't show.
+    """
     review_states = [
         {'id':'all',
          'title': _('All'),
-         'columns':['state_title', ]
+         'columns':['obj_type', 'title_or_id', 'modified', 'state_title']
          },
     ]
 
@@ -193,29 +207,75 @@ class BikaListingView(BrowserView):
         self.contentsMethod = self.context.getFolderContents
 
     def __call__(self):
-        """ bika_listing view initial display and form handler
+        """ Handle GET url parameters and render the form.
         """
 
+        form_id = self.form_id
         form = self.request.form
         pc = getToolByName(self.context, 'portal_catalog')
         workflow = getToolByName(self.context, 'portal_workflow')
 
+        # column filters.  If no index is given, they are ignored till later
         for c in self.columns.keys():
-            if c in self.request:
-                self.contentFilter[c]=urllib.unquote(self.request[c])
+            if "%s_%s" % (form_id, c) in self.request:
+                idx = self.columns[c].get('index', '')
+                if idx:
+                    self.contentFilter[c]
 
-        if form.has_key('review_state'):
-            self.modified_contentFilter = self.contentFilter
-            if form.has_key("review_state"):
-                review_state = [r for r in self.review_states if \
-                                r['id'] == form['review_state']][0]
-                if review_state.has_key('contentFilter'):
-                    for k, v in review_state['contentFilter'].items():
-                        self.modified_contentFilter[k] = v
-                else:
-                    if form['review_state'] != 'all':
-                        self.modified_contentFilter['review_state'] = form['review_state']
+        # review_state_selector
+        if form.has_key(form_id+'_review_state'):
+            review_states = [r for r in self.review_states if \
+                             r['id'] == form[form_id+'_review_state']]
+            if review_states:
+                review_state = review_states[0]
+            else:
+                review_state = self.review_states[0]
+            if review_state.has_key('contentFilter'):
+                for k, v in review_state['contentFilter'].items():
+                    self.contentFilter[k] = v
+            else:
+                if form[form_id+'_review_state'] != 'all':
+                    self.contentFilter['review_state'] = form[form_id+'_review_state']
 
+        # sort_order
+        sort_order = self.request.get(form_id+'_sort_order', 'ascending')
+        sort_order = urllib.unquote(sort_order)
+        self.contentFilter['sort_order'] = sort_order
+
+        # sort_on
+        # prefer the request sort_on
+        sort_on = self.request.get(form_id+'_sort_on', '')
+        sort_on = urllib.unquote(sort_on)
+        if sort_on:
+            idx = self.columns[sort_on].get('index', '')
+            if idx:
+                self.contentFilter['sort_on'] = idx
+            else:
+                return
+        # default self.contentFilter/sort_on
+        elif 'sort_on' in self.contentFilter:
+            pass
+        # fallback to ID
+        else:
+            self.contentFilter['sort_on'] = 'id'
+
+        # pagesize
+        try:
+            pagesize = self.request.get(form_id+'_pagesize', self.pagesize)
+            self.pagesize = int(urllib.unquote(pagesize))
+            self.request.set('pagesize', pagesize)
+        except:
+            pass
+
+        # pagenumber
+        try:
+            pagenumber = self.request.get(form_id+'_pagenumber', self.pagenumber)
+            self.pagenumber = int(urllib.unquote(pagenumber))
+            self.request.set('pagenumber', pagenumber)
+        except:
+            pass
+
+        self.modified_contentFilter = self.contentFilter
         return self.template()
 
     def selected_cats(self, items):
@@ -410,21 +470,11 @@ class BikaListingTable(tableview.Table):
                                  bika_listing.base_url,
                                  bika_listing.view_url,
                                  folderitems,
-                                 show_select_column = bika_listing.show_select_column,
-                                 show_sort_column = bika_listing.show_sort_column,
                                  pagesize = bika_listing.pagesize)
 
         self.context = bika_listing.context
         self.request = bika_listing.request
-        self.columns = bika_listing.columns
-        self.allow_edit = bika_listing.allow_edit
         self.items = folderitems
-        self.show_sort_column = bika_listing.show_sort_column
-        self.show_select_row = bika_listing.show_select_row
-        self.show_select_column = bika_listing.show_select_column
-        self.show_select_all_checkbox = bika_listing.show_select_all_checkbox
-        self.show_workflow_action_buttons = bika_listing.show_workflow_action_buttons
-        self.review_states = bika_listing.review_states
 
     def tabindex(self):
         i = 0
@@ -444,7 +494,7 @@ class BikaListingTable(tableview.Table):
         workflow = getToolByName(self.context, 'portal_workflow')
 
         state = self.request.get('review_state', 'all')
-        review_state = [i for i in self.review_states if i['id'] == state][0]
+        review_state = [i for i in self.bika_listing.review_states if i['id'] == state][0]
 
         # get all transitions for all items.
         transitions = {}

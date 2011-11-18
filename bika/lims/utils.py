@@ -57,6 +57,8 @@ def TimeOrDate(context, datetime, long_format=False):
     if hasattr(datetime, 'Date'):
         if (datetime.Date() > DateTime().Date()) or long_format:
             dt = datetime.asdatetime().strftime(localLongTimeFormat)
+        elif (datetime.Date() < DateTime().Date()):
+            dt = datetime.asdatetime().strftime("%d %b %Y")
         elif datetime.Date() == DateTime().Date():
             dt = datetime.asdatetime().strftime(localTimeOnlyFormat)
         else:

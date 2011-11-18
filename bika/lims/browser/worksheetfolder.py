@@ -27,7 +27,6 @@ class WorksheetFolderListingView(BikaListingView):
         self.show_select_row = False
         self.show_select_all_checkbox = True
         self.show_select_column = True
-        self.pagesize = 50
 
         request.set('disable_border', 1)
 
@@ -40,8 +39,10 @@ class WorksheetFolderListingView(BikaListingView):
         analyst = pm.getAuthenticatedMember().getId()
 
         self.columns = {
-            'Title': {'title': _('Worksheet Number')},
-            'Analyst': {'title': _('Analyst')},
+            'Title': {'title': _('Worksheet'),
+                      'index': 'id'},
+            'Analyst': {'title': _('Analyst'),
+                        'index':'getAnalyst'},
             'Template': {'title': _('Template')},
             'Analyses': {'title': _('Analyses')},
             'Services': {'title': _('Services')},

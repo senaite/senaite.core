@@ -9,11 +9,9 @@
 
 <metal:content-title fill-slot="content-title">
 	<h1>
-        <img tal:condition="view/icon | nothing"
-            src="" tal:attributes="src view/icon"/>
+        <img tal:condition="view/icon|nothing" tal:attributes="src view/icon"/>
         <span class="documentFirstHeading" tal:content="view/title"/>
     </h1>
-
 </metal:content-title>
 
 <metal:content-description fill-slot="content-description">
@@ -23,98 +21,88 @@
 </metal:content-description>
 
 <metal:content-core fill-slot="content-core">
-
 	<form name="SearchForm" method="POST">
-	<tal:analyst
-		tal:define="ws_state python: context.portal_workflow.getInfoFor(context, 'review_state')">
-		<span class="formQuestion">Analyst: </span>
-		<select
-			tal:condition="python: ws_state == 'open'"
-			id = "analyst"
-			name="Analyst">
-			<option value="" i18n:translate="None"
-				tal:attributes="selected python:context.getAnalyst() and '' or 'selected'">None</option>
-			<tal:repeat repeat="analyst view/getAnalysts">
-				<option
-					tal:attributes="
-						value python:analyst[0];
-						selected python:analyst[0] == (context.getAnalyst() and context.getAnalyst() or '') and 'selected' or ''"
-					tal:content="python:analyst[1]"></option>
-			</tal:repeat>
-		</select>
-		<span tal:condition="python: ws_state != 'open'" tal:content="view/getAnalystName"></span>
-		<span id="analyst_changed" style="display:none" i18n:translate="">Analyst changed.</span>
-		<br/>
-	</tal:analyst>
-	<fieldset class="criteria" name="criteria">
-		<p>
-		<label for="getCategoryUID" i18n:translate="Category">Category</label>
-		<select id="CategorySelector" name="getCategoryUID">
-			<option value="any" i18n:translate="Any">Any</option>
-			<tal:options repeat="category view/getCategories">
-				<option
-					tal:attributes="
-						value python:category[0];
-						selected python: view.request.form.get('getCategoryUID', '') == category[0] and 'selected' or ''"
-					tal:content="python:category[1]"/>
-			</tal:options>
-		</select>
-
-		<label for="getServiceUID" i18n:translate="Service">Service</label>
-		<select id="ServiceSelector" name="getServiceUID">
-			<option value="any" i18n:translate="Any">Any</option>
-		</select>
-
-		<label for="getClientUID" i18n:translate="Client">Client</label>
-		<select id="ClientSelector" name="getClientUID">
-			<option value="any" i18n:translate="Any">Any</option>
-			<tal:options repeat="client view/getClients">
-				<option
-					tal:attributes="
-						value python:client[0];
-						selected python: view.request.get('getClientUID', '') == client[0] and 'selected' or ''"
-					tal:content="python:client[1]"/>
-			</tal:options>
-		</select>&nbsp;
-		<input type="submit" value="Search" i18n:attributes="value"/>
-		</p>
-
-		<p>
-		<label for="getWorksheetTemplate" i18n:translate="Or select a template to apply ">
-			Or select a template
-		</label>
-
-		<select id="ProfileSelector" name="getWorksheetTemplate">
-			<option value=""></option>
-			<tal:profile repeat="profile view/getWorksheetTemplates">
-				<option
-					tal:attributes="
-						value python:profile[0];
-						selected python: view.request.get('WorksheetTemplate', '') == profile[0] and 'selected' or ''"
-					tal:content="python:profile[1]"/>
-			</tal:profile>
-		</select>&nbsp;
-		<input type="submit" value="Apply" i18n:attributes="value"/>
-		</p>
-
-
-	</fieldset>
-	<input type="hidden" name="submitted" value="1"/>
-	<input tal:replace="structure context/@@authenticator/authenticator"/>
-	</form>
-
-	<form name="folderContentsForm"
-	      id="folderContentsForm"
-		  method="POST"
-		  class="kssattr-serveraction-foldercontents_update_table">
-		<div id="folderlisting-main-table">
-			<div tal:replace="structure view/Analyses/contents_table"></div>
-		</div>
 		<input type="hidden" name="submitted" value="1"/>
 		<input tal:replace="structure context/@@authenticator/authenticator"/>
+		<tal:analyst
+			tal:define="ws_state python: context.portal_workflow.getInfoFor(context, 'review_state')">
+			<span class="formQuestion">Analyst: </span>
+			<select
+				tal:condition="python: ws_state == 'open'"
+				id = "analyst"
+				name="Analyst">
+				<option value="" i18n:translate="None"
+					tal:attributes="selected python:context.getAnalyst() and '' or 'selected'">None</option>
+				<tal:repeat repeat="analyst view/getAnalysts">
+					<option
+						tal:attributes="
+							value python:analyst[0];
+							selected python:analyst[0] == (context.getAnalyst() and context.getAnalyst() or '') and 'selected' or ''"
+						tal:content="python:analyst[1]"></option>
+				</tal:repeat>
+			</select>
+			<span tal:condition="python: ws_state != 'open'" tal:content="view/getAnalystName"></span>
+			<span id="analyst_changed" style="display:none" i18n:translate="">Analyst changed.</span>
+			<br/>
+		</tal:analyst>
+		<fieldset class="criteria" name="criteria">
+			<p>
+			<label for="getCategoryUID" i18n:translate="Category">Category</label>
+			<select id="CategorySelector" name="getCategoryUID">
+				<option value="any" i18n:translate="Any">Any</option>
+				<tal:options repeat="category view/getCategories">
+					<option
+						tal:attributes="
+							value python:category[0];
+							selected python: view.request.form.get('getCategoryUID', '') == category[0] and 'selected' or ''"
+						tal:content="python:category[1]"/>
+				</tal:options>
+			</select>
+
+			<label for="getServiceUID" i18n:translate="Service">Service</label>
+			<select id="ServiceSelector" name="getServiceUID">
+				<option value="any" i18n:translate="Any">Any</option>
+			</select>
+
+			<label for="getClientUID" i18n:translate="Client">Client</label>
+			<select id="ClientSelector" name="getClientUID">
+				<option value="any" i18n:translate="Any">Any</option>
+				<tal:options repeat="client view/getClients">
+					<option
+						tal:attributes="
+							value python:client[0];
+							selected python: view.request.get('getClientUID', '') == client[0] and 'selected' or ''"
+						tal:content="python:client[1]"/>
+				</tal:options>
+			</select>&nbsp;
+			<input type="submit" value="Search" i18n:attributes="value"/>
+			</p>
+
+			<p>
+			<label for="getWorksheetTemplate" i18n:translate="Or select a template to apply ">
+				Or select a template
+			</label>
+
+			<select id="ProfileSelector" name="getWorksheetTemplate">
+				<option value=""></option>
+				<tal:profile repeat="profile view/getWorksheetTemplates">
+					<option
+						tal:attributes="
+							value python:profile[0];
+							selected python: view.request.get('WorksheetTemplate', '') == profile[0] and 'selected' or ''"
+						tal:content="python:profile[1]"/>
+				</tal:profile>
+			</select>&nbsp;
+			<input type="submit" value="Apply" i18n:attributes="value"/>
+			</p>
+
+		</fieldset>
 	</form>
+
+	<div id="folderlisting-main-table"
+		tal:content="structure view/Analyses/contents_table"/>
 
 </metal:content-core>
 
-	</body>
+</body>
 </html>

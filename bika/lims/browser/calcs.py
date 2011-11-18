@@ -69,7 +69,7 @@ class ajaxCalculateAnalysisEntry():
                         return None
                     # all interims are ServiceKeyword.InterimKeyword
                     if i_uid in deps:
-                        key = "%s.%s"%(deps[i_uid].getKeyword(), i['keyword'])
+                        key = "%s.%s"%(deps[i_uid].getService().getKeyword(), i['keyword'])
                         mapping[key] = i['value']
                     # this analysis' interims get extra reference
                     # without service keyword prefix

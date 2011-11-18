@@ -29,17 +29,21 @@ class ReferenceManufacturersView(BikaListingView):
         self.pagesize = 20
 
         self.columns = {
-            'Title': {'title': _('Title')},
+            'Title': {'title': _('Title'),
+                      'index': 'sortable_title'},
             'Description': {'title': _('Description')},
         }
         self.review_states = [
-            {'title': _('All'), 'id':'all',
+            {'id':'all',
+             'title': _('All'),
              'columns': ['Title', 'Description']},
-            {'title': _('Active'), 'id':'active',
+            {'id':'active',
+             'title': _('Active'),
              'contentFilter': {'inactive_state': 'active'},
              'transitions': ['deactivate'],
              'columns': ['Title', 'Description']},
-            {'title': _('Dormant'), 'id':'inactive',
+            {'id':'inactive',
+             'title': _('Dormant'),
              'contentFilter': {'inactive_state': 'inactive'},
              'transitions': ['activate',],
              'columns': ['Title', 'Description']},

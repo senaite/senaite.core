@@ -23,35 +23,26 @@
 
 <metal:content-core fill-slot="content-core">
 
-	<form name="folderContentsForm"
-	      id="folderContentsForm"
-		  method="POST"
-		  class="kssattr-serveraction-foldercontents_update_table">
-
-	<input type="hidden" name="submitted" value="1"/>
-
 	<fieldset tal:define="portal context/@@plone_portal_state/portal;">
+
 		<table class="worksheet_add_control">
 			<tr>
-				<td colspan="2"
-					style="vertical-align:center;text-align:left;">
+				<td colspan="2" style="vertical-align:center;text-align:left;">
 					<span
 						i18n:translate=""
 						style="line-height:20px;"
 						tal:content="string:Insert into worksheet at position: "/>
-					<select
-						id="position"
-						name="position">
+					<tal:comment replace="nothing">
+					The position dropdown's value is not part of the bika_listing form.
+					The value is inserted into form values by worksheet.js
+					</tal:comment>
+					<select id="position">
 						<tal:options
 							repeat="position view/getAvailablePositions">
-							<option
-								tal:attributes="value position"
-								tal:content="position"/>
+							<option tal:attributes="value position" tal:content="position"/>
 						</tal:options>
 						<option
-							value="new"
-							tal:content="string:new"
-							i18n:translate=""/>
+							value="new" tal:content="string:New" i18n:translate=""/>
 					</select>
 					<span class="worksheet_add_control_spinner">
 						<img id="ajax_spinner" style="display:none" tal:attributes="src python:portal.absolute_url()+ '/images/spinner.gif';"/>
@@ -64,15 +55,12 @@
 						id="worksheet_services"
 						tal:content="structure view/Services/contents_table"/>
 				</td>
-				<td class="worksheet_add_control_references">
-					<span id="reference_samples"/>
+				<td class="worksheet_add_references">
+					<span id="worksheet_add_references"/>
 				</td>
 			</tr>
 		</table>
-		<input type="hidden" name="submitted" value="1"/>
-		<input tal:replace="structure context/@@authenticator/authenticator"/>
 	</fieldset>
-	</form>
 
 </metal:content-core>
 

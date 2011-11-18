@@ -119,15 +119,8 @@
 									tal:condition="view/description"/>
 
                             <div id="content-core">
-								<form name="folderContentsForm"
-									  id="folderContentsForm"
-									  method="post"
-									  class="kssattr-serveraction-foldercontents_update_table">
-								<div id="folderlisting-main-table">
-									<div tal:replace="structure view/contents_table"></div>
-								</div>
-								  <input tal:replace="structure context/@@authenticator/authenticator"/>
-								</form>
+								<div id="folderlisting-main-table"
+									tal:content="structure view/contents_table"/>
                             </div>
                         </metal:main>
 

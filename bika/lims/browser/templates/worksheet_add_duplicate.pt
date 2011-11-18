@@ -22,31 +22,23 @@
 </metal:content-description>
 
 <metal:content-core fill-slot="content-core">
-	<form name="folderContentsForm"
-	      id="folderContentsForm"
-		  method="POST"
-		  class="kssattr-serveraction-foldercontents_update_table">
-
-	<input type="hidden" name="submitted" value="1"/>
-
 	<fieldset tal:define="portal context/@@plone_portal_state/portal;">
 
+		<tal:comment replace="nothing">
+		The position dropdown's value is not part of the bika_listing form.
+		The value is inserted into form values by worksheet.js
+		</tal:comment>
 		<span tal:content="string:Insert into worksheet at position: " i18n:translate="" style="line-height:20px;"/>
-		<select id="position" name="position">
+		<select id="position">
 			<tal:options repeat="position view/getAvailablePositions">
 				<option tal:attributes="value position" tal:content="position"/>
 			</tal:options>
-			<option value="new" tal:content="string:new" i18n:translate=""/>
+			<option value="new" tal:content="string:New" i18n:translate=""/>
 		</select>
 
-		<span id="worksheet_ars" tal:content="structure view/ARs/contents_table"/>
-
-		<input type="hidden" name="submitted" value="1"/>
-		<input tal:replace="structure context/@@authenticator/authenticator"/>
+		<span id="worksheet_add_duplicate_ars" tal:content="structure view/ARs/contents_table"/>
 
 	</fieldset>
-
-	</form>
 </metal:content-core>
 
 </body>

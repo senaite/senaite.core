@@ -36,8 +36,7 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
         skiplist = self.request.get('workflow_skiplist', [])
         action, came_from = WorkflowAction._get_form_workflow_action(self)
 
-        # combine data from multiple bika listing tables.
-        # XXX This should be a single hidden field for all tables rendered
+        # calcs.js has kept item_data and form input interim values synced.
         item_data = {}
         if 'item_data' in form:
             if type(form['item_data']) == list:
@@ -452,6 +451,7 @@ class AnalysisRequestManageResultsView(AnalysisRequestViewView):
                     t = AnalysesView(ar,
                                      self.request,
                                      getPointOfCapture = poc)
+                    t.form_id = poc
                     t.allow_edit = True
                     t.review_states[0]['transitions'] = ['submit', 'retract', 'verify']
                     t.show_select_column = True
@@ -517,17 +517,17 @@ class AnalysisRequestSelectCCView(BikaListingView):
         request.set('disable_border', 1)
 
         self.columns = {
-            'getFullname': {'title': _('Full Name')},
-            'getEmailAddress': {'title': _('Email Address')},
-            'getBusinessPhone': {'title': _('Business Phone')},
-            'getMobilePhone': {'title': _('Mobile Phone')},
+            'Fullname': {'title': _('Full Name')},
+            'EmailAddress': {'title': _('Email Address')},
+            'BusinessPhone': {'title': _('Business Phone')},
+            'MobilePhone': {'title': _('Mobile Phone')},
         }
         self.review_states = [
             {'title': _('All'), 'id':'all',
-             'columns': ['getFullname',
-                         'getEmailAddress',
-                         'getBusinessPhone',
-                         'getMobilePhone'],
+             'columns': ['Fullname',
+                         'EmailAddress',
+                         'BusinessPhone',
+                         'MobilePhone'],
              },
         ]
 
@@ -541,10 +541,10 @@ class AnalysisRequestSelectCCView(BikaListingView):
             obj = item['obj']
             if obj.UID() in self.request.get('hide_uids', ()):
                 continue
-            item['getFullname'] = obj.getFullname()
-            item['getEmailAddress'] = obj.getEmailAddress()
-            item['getBusinessPhone'] = obj.getBusinessPhone()
-            item['getMobilePhone'] = obj.getMobilePhone()
+            item['Fullname'] = obj.getFullname()
+            item['EmailAddress'] = obj.getEmailAddress()
+            item['BusinessPhone'] = obj.getBusinessPhone()
+            item['MobilePhone'] = obj.getMobilePhone()
             if self.request.get('selected_uids', '').find(item['uid']) > -1:
                 item['selected'] = True
             items.append(item)
@@ -571,41 +571,48 @@ class AnalysisRequestSelectSampleView(BikaListingView):
         request.set('disable_border', 1)
 
         self.columns = {
-            'getSampleID': {'title': _('Sample ID')},
-            'getClientSampleID': {'title': _('Client SID')},
-            'getClientReference': {'title': _('Client Reference')},
-            'getSampleTypeTitle': {'title': _('Sample Type')},
-            'getSamplePointTitle': {'title': _('Sample Point')},
-            'getDateReceived': {'title': _('Date Received')},
-            'state_title': {'title': _('State')},
+            'SampleID': {'title': _('Sample ID'),
+                         'index': 'getSampleID',},
+            'ClientSampleID': {'title': _('Client SID'),
+                               'index': 'getClientSampleID',},
+            'ClientReference': {'title': _('Client Reference'),
+                                'index': 'getClientReference',},
+            'SampleTypeTitle': {'title': _('Sample Type'),
+                                'index': 'getSampleTypeTitle',},
+            'SamplePointTitle': {'title': _('Sample Point'),
+                                 'index': 'getSamplePointTitle',},
+            'DateReceived': {'title': _('Date Received'),
+                             'index': 'getDateReceived',},
+            'state_title': {'title': _('State'),
+                            'index': 'review_state',},
         }
 
         self.review_states = [
             {'id':'all',
              'title': _('All Samples'),
-             'columns': ['getSampleID',
-                         'getClientReference',
-                         'getClientSampleID',
-                         'getSampleTypeTitle',
-                         'getSamplePointTitle',
+             'columns': ['SampleID',
+                         'ClientReference',
+                         'ClientSampleID',
+                         'SampleTypeTitle',
+                         'SamplePointTitle',
                          'state_title']},
             {'id':'due',
              'title': _('Sample Due'),
              'contentFilter': {'review_state': 'due'},
-             'columns': ['getSampleID',
-                         'getClientReference',
-                         'getClientSampleID',
-                         'getSampleTypeTitle',
-                         'getSamplePointTitle']},
+             'columns': ['SampleID',
+                         'ClientReference',
+                         'ClientSampleID',
+                         'SampleTypeTitle',
+                         'SamplePointTitle']},
             {'id':'received',
              'title': _('Received'),
              'contentFilter': {'review_state': 'received'},
-             'columns': ['getSampleID',
-                         'getClientReference',
-                         'getClientSampleID',
-                         'getSampleTypeTitle',
-                         'getSamplePointTitle',
-                         'getDateReceived']},
+             'columns': ['SampleID',
+                         'ClientReference',
+                         'ClientSampleID',
+                         'SampleTypeTitle',
+                         'SamplePointTitle',
+                         'DateReceived']},
         ]
 
     def folderitems(self):
@@ -613,37 +620,37 @@ class AnalysisRequestSelectSampleView(BikaListingView):
         for x, item in enumerate(items):
             if not items[x].has_key('obj'): continue
             obj = items[x]['obj']
-            items[x]['class']['getSampleID'] = "select_sample"
+            items[x]['class']['SampleID'] = "select_sample"
             if items[x]['uid'] in self.request.get('hide_uids', ''): continue
             if items[x]['uid'] in self.request.get('selected_uids', ''):
                 items[x]['selected'] = True
             items[x]['view_url'] = obj.absolute_url() + "/view"
-            items[x]['getClientReference'] = obj.getClientReference()
-            items[x]['getClientSampleID'] = obj.getClientSampleID()
-            items[x]['getSampleID'] = obj.getSampleID()
+            items[x]['ClientReference'] = obj.getClientReference()
+            items[x]['ClientSampleID'] = obj.getClientSampleID()
+            items[x]['SampleID'] = obj.getSampleID()
             if obj.getSampleType().getHazardous():
-                items[x]['after']['getSampleID'] = \
+                items[x]['after']['SampleID'] = \
                      "<img src='++resource++bika.lims.images/hazardous.png' title='Hazardous'>"
-            items[x]['getSampleTypeTitle'] = obj.getSampleTypeTitle()
-            items[x]['getSamplePointTitle'] = obj.getSamplePointTitle()
+            items[x]['SampleTypeTitle'] = obj.getSampleTypeTitle()
+            items[x]['SamplePointTitle'] = obj.getSamplePointTitle()
             items[x]['row_data'] = json.dumps({
                 'SampleID': items[x]['title'],
-                'ClientReference': items[x]['getClientReference'],
+                'ClientReference': items[x]['ClientReference'],
                 'Requests': ", ".join([o.Title() for o in obj.getAnalysisRequests()]),
-                'ClientSampleID': items[x]['getClientSampleID'],
+                'ClientSampleID': items[x]['ClientSampleID'],
                 'DateReceived': obj.getDateReceived() and \
-                               obj.getDateReceived().asdatetime().strftime("%d %b %Y") or '',
+                               TimeOrDate(self.context, obj.getDateReceived()) or '',
                 'DateSampled': obj.getDateSampled() and \
-                               obj.getDateSampled().asdatetime().strftime("%d %b %Y") or '',
-                'SampleType': items[x]['getSampleTypeTitle'],
-                'SamplePoint': items[x]['getSamplePointTitle'],
+                               TimeOrDate(self.context, obj.getDateSampled()) or '',
+                'SampleType': items[x]['SampleTypeTitle'],
+                'SamplePoint': items[x]['SamplePointTitle'],
                 'Composite': obj.getComposite(),
                 'field_analyses': self.FieldAnalyses(obj),
                 'column': self.request.get('column', None),
             })
-            items[x]['getDateReceived'] = obj.getDateReceived() and \
+            items[x]['DateReceived'] = obj.getDateReceived() and \
                  TimeOrDate(self.context, obj.getDateReceived()) or ''
-            items[x]['getDateSampled'] = obj.getDateSampled() and \
+            items[x]['DateSampled'] = obj.getDateSampled() and \
                  TimeOrDate(self.context, obj.getDateSampled()) or ''
         return items
 
@@ -1155,7 +1162,9 @@ class ajaxAnalysisRequestSubmit():
         self.context.plone_utils.addPortalMessage(message, 'info')
         # automatic label printing
         # won't print labels for Register on Secondary ARs
-        new_ars = [ar for ar in ARs if ar.split("-")[-1] == '01']
+        new_ars = None
+        if came_from == 'add':
+            new_ars = [ar for ar in ARs if ar.split("-")[-1] == '01']
         if 'register' in self.context.bika_setup.getAutoPrintLabels() and new_ars:
             return json.dumps({'success':message,
                                'labels':new_ars,

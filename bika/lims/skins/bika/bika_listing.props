@@ -1,0 +1,57 @@
+title:string=Bika Listing Views
+
+backgroundColor:string=White
+fontFamily:string="Helvetica Neue",Arial,FreeSans,sans-serif
+fontColor:string=#222222
+headingFontFamily:string="Lucida Grande", Verdana, Lucida, Helvetica, Arial, sans-serif
+headingFontBaseSize:string=100%
+fontSmallSize:string=90%
+fontSmallerSize:string=80%
+plone_skin:string=Plone Default
+
+linkColor:string=#205C90
+
+tableHeaderBackgroundColor:string=#ddd
+tableHeaderTextColor:string=#000
+
+tableVerticalGrid:string=1
+tableHorizontalGrid:string=1
+
+borderColor:string=#ddd
+borderWidth:string=1px
+borderWidthStrong:string=2px
+borderStyle:string=solid
+borderStyleAnnotations:string=dashed
+
+evenRowTextColor:string=#eee
+evenRowBackgroundColor:string=#eee
+oddRowTextColor:string=#fff
+oddRowBackgroundColor:string=#fff
+
+visibleTextColor:string=#205c90
+visibleBackgroundColor:string=transparent
+cancelledTextColor:string=red
+cancelledBackgroundColor:string=transparent
+inactiveTextColor:string=red
+inactiveBackgroundColor:string=transparent
+sampleDueTextColor:string=#2bb800
+sampleDueBackgroundColor:string=transparent
+sampleReceivedTextColor:string=#222
+sampleReceivedBackgroundColor:string=transparent
+wsEmptyPositionTextColor:string=#222
+wsEmptyPositionBackgroundColor:string=#FFC8C8
+emptyTextColor:string=#fff
+emptyBackgroundColor:string=#b1b1b1
+
+buttonBorderColor:string=#bbb
+buttonBorderRadius:string=.25em
+buttonBackgroundColor:string=#eee
+buttonTextColor:string=#000
+
+buttonHoverBorderColor:string=#bbb
+buttonHoverBackgroundColor:string=#eee
+buttonHoverTextColor:string=#333
+
+buttonClickBorderColor:string=#bbb
+buttonClickBackgroundColor:string=#fff
+buttonClickTextColor:string=#333

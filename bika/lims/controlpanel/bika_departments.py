@@ -31,7 +31,8 @@ class DepartmentsView(BikaListingView):
         self.pagesize = 20
 
         self.columns = {
-            'Title': {'title': _('Department')},
+            'Title': {'title': _('Department'),
+                      'index':'sortable_title'},
             'Description': {'title': _('Description')},
             'Manager': {'title': _('Manager')},
             'ManagerPhone': {'title': _('Manager Phone')},

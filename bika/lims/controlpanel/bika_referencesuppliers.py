@@ -39,13 +39,18 @@ class ReferenceSuppliersView(BikaListingView):
         self.request.set('disable_border', 1)
 
         self.columns = {
-            'Name': {'title': _('Name')},
-            'Email': {'title': _('Email')},
-            'Phone': {'title': _('Phone')},
-            'Fax': {'title': _('Fax')},
+            'Name': {'title': _('Name'),
+                     'index': 'getName'},
+            'Email': {'title': _('Email'),
+                      'index': 'getEmailAddress'},
+            'Phone': {'title': _('Phone'),
+                      'index': 'getPhone'},
+            'Fax': {'title': _('Fax'),
+                    'index': 'getFax'},
         }
         self.review_states = [
-            {'title': _('All'), 'id':'all',
+            {'id':'all',
+             'title': _('All'),
              'columns': ['Name',
                          'Email',
                          'Phone',

@@ -1,31 +1,29 @@
-<div class="folderlisting-main-table bika-listing-table" tal:define="
-	global rowspan python:{};
-	global rowspan_max python:{};
-	global colspan python:1;
-	global colspan_max python:1;
-	nosortclass view/get_nosort_class;
-	portal context/@@plone_portal_state/portal;
-	review_state python:[t for t in view.review_states
-	                     if t['id'] == request.get('review_state', 'all')][0];
-	specification python:view.request.get('specification', 'lab');
+<form name="bika_listing_form" method="post" action="workflow_action"
+	tal:attributes="id view/bika_listing/form_id"
+	tal:define="
+		global rowspan python:{};
+		global rowspan_max python:{};
+		global colspan python:1;
+		global colspan_max python:1;
+		nosortclass view/get_nosort_class;
+		portal context/@@plone_portal_state/portal;
+		review_state python:[t for t in view.bika_listing.review_states
+							 if t['id'] == request.get('review_state', 'all')][0];
+		specification python:view.request.get('specification', 'lab');
 
-	sm python:modules['AccessControl'].getSecurityManager();
-	EditAnalyses python:sm.checkPermission('BIKA: Edit analyses', context);
-	ViewResults python:sm.checkPermission('BIKA: View Results', context);
-	tabindex view/tabindex;
-	user python:sm.getUser();
-	roles python:user.getRoles();">
+		sm python:modules['AccessControl'].getSecurityManager();
+		EditAnalyses python:sm.checkPermission('BIKA: Edit analyses', context);
+		ViewResults python:sm.checkPermission('BIKA: View Results', context);
+		tabindex view/tabindex;
+		user python:sm.getUser();
+		roles python:user.getRoles();">
 
-<p class="discreet"
-	tal:condition="not: view/batch"
-		i18n:translate="description_no_visible_items_add_paste">
-		There are no items to display.</p>
+<input tal:replace="structure context/@@authenticator/authenticator" />
 
-<span tal:replace="structure context/@@authenticator/authenticator"/>
+<input type="hidden" name="submitted" value="1"/>
 
-<tal:comment replace="nothing">***************
-Specs and Interim Fields (item_data) are stored as table level hidden fields
-********************************</tal:comment>
+<input type="hidden" name="form_id" tal:attributes="value view/bika_listing/form_id"/>
+
 <input type="hidden"
 	name="specs"
 	tal:attributes="value python:hasattr(view.bika_listing, 'json_specs') and
@@ -36,93 +34,62 @@ Specs and Interim Fields (item_data) are stored as table level hidden fields
 	tal:attributes="value python:hasattr(view.bika_listing, 'json_interim_fields') and
 	                             view.bika_listing.json_interim_fields or []"/>
 
-<table class="listing"
-	id="listing-table"
+<p class="discreet"
+	tal:condition="not: view/batch"
+		i18n:translate="description_no_visible_items_add_paste">
+		There are no items to display.</p>
+
+<table
+	class="bika-listing-table"
 	summary="Content listing"
 	i18n:attributes="summary summary_content_listing;"
 	tal:define="
 		nr_cols python:len(review_state['columns']);
-		nr_cols python:view.show_select_column and nr_cols + 1 or nr_cols;
-		nr_cols python:view.show_sort_column and nr_cols + 1 or nr_cols;
+		nr_cols python:view.bika_listing.show_select_column and nr_cols + 1 or nr_cols;
+		nr_cols python:view.bika_listing.show_sort_column and nr_cols + 1 or nr_cols;
 		nr_cols python:str(nr_cols);
-		columns view/columns;
+		columns view/bika_listing/columns;
 		column_list python:review_state['columns']">
 
 	<thead>
 
+	<tr style="border:none !important;"
+		tal:condition="python:len(view.bika_listing.review_states) > 1">
 <tal:comment replace="nothing">***************
 Workflow review state selector
 ********************************</tal:comment>
-	<tr style="border:none;"
-		tal:condition="python:len(view.review_states) > 1">
-	<td tal:attributes="colspan nr_cols"
-		style='padding:0;margin:0;border:0;'>
-		<table cellpadding="0" cellspacing="0" class="review_state_selector">
-		<tr style="border:medium none !important;"><td class="review_state_td">
-			<tal:review_states repeat="state view/review_states">
+	<td tal:attributes="colspan python:nr_cols"
+		style='padding:0;margin:0;border:none !important;'>
+		<table width="100%" cellpadding="0" cellspacing="0" class="noborder nomargin">
+		<tr class="noborder">
+			<td class="review_state_selector noborder">
+				<tal:review_states repeat="state view/bika_listing/review_states">
 				<a
 					tal:define="state_id state/id"
 					tal:attributes="
 						href view/view_url;
 						value state_id;
 						id state/id;
-						class python:request.get('review_state', 'all') == state_id
+						class python:request.get(view.bika_listing.form_id + '_review_state', 'all') == state_id
 									   and 'selected' or ''"
 					tal:content="state/title"/>
-			</tal:review_states>
-		</td>
+				</tal:review_states>
+			</td>
+<tal:comment replace="nothing">***************
+Batch size dropdown
+********************************</tal:comment>
+			<td class="pagesize_selector noborder">
+				<select name="pagesize">
+					<option value="10" tal:attributes="selected python:request.get(view.bika_listing.form_id+'_pagesize', '') in ('',  '10') and 'selected' or ''">10</option>
+					<option value="25" tal:attributes="selected python:request.get(view.bika_listing.form_id+'_pagesize', '') == '25' and 'selected' or ''">25</option>
+					<option value="50" tal:attributes="selected python:request.get(view.bika_listing.form_id+'_pagesize', '') == '50' and 'selected' or ''">50</option>
+					<option value="100" tal:attributes="selected python:request.get(view.bika_listing.form_id+'_pagesize', '') == '100' and 'selected' or ''">100</option>
+				</select>
+			</td>
 		</tr>
 		</table>
 	</td>
 	</tr>
-
-<tal:comment replace="nothing">***************
-Item multi-select links in this row
-********************************</tal:comment>
-	<tal:selectrow condition="python:view.items and view.show_select_row">
-		<tr tal:condition="not:view/selectcurrentbatch">
-			<th tal:attributes="colspan nr_cols" class="nosort">
-				<span i18n:translate="label_select"
-					tal:omit-tag="">Select:</span>
-				<a i18n:translate="label_all"
-					tal:attributes="href view/selectscreen_url"
-					id="foldercontents-selectall">All</a>
-			</th>
-		</tr>
-		<tr tal:condition="view/show_select_all_items">
-			<th tal:attributes="colspan nr_cols" class="nosort">
-				<span tal:omit-tag=""
-					i18n:translate="tableheading_all_items_selected">
-					All
-					<tal:block
-						replace="view/batch/items_on_page"
-						i18n:name="count"/>
-					items on this page are selected.
-				</span>
-				<a tal:attributes="href view/selectall_url"
-					id="foldercontents-selectall-completebatch"
-					i18n:translate="tableheading_select_all_items">
-					Select all
-					<tal:block replace="view/batch/size" i18n:name="count"/>
-					items in this folder.
-				</a>
-			</th>
-		</tr>
-		<tr tal:condition="view/selectall">
-			<th tal:attributes="colspan nr_cols" class="nosort">
-				<span tal:omit-tag=""
-					i18n:translate="tableheading_all_items_selected_in_folder">
-					All
-					<tal:block replace="view/batch/size" i18n:name="count"/>
-					items in this folder are selected.
-				</span>
-				<a tal:attributes="href view/selectnone_url"
-					i18n:translate="tableheading_clear_selection"
-					id="foldercontents-clearselection">Clear selection
-				</a>
-			</th>
-		</tr>
-	</tal:selectrow>
 
 <tal:comment replace="nothing">***************
 Colum Headers
@@ -130,21 +97,25 @@ Colum Headers
 	<tr tal:condition="view/items">
 		<th class="nosort column"
 			id="foldercontents-order-column"
-			tal:condition="view/show_sort_column"/>
+			tal:condition="view/bika_listing/show_sort_column"/>
 		<th class="nosort column"
-			tal:condition="view/show_select_column">
+			tal:condition="view/bika_listing/show_select_column">
 			<input
 				type="checkbox"
-				tal:condition="view/show_select_all_checkbox"
 				class="noborder"
-				id="select_all"/>
+				tal:condition="view/bika_listing/show_select_all_checkbox"
+				tal:attributes="id string:${view/bika_listing/form_id}_select_all"/>
 		</th>
-		<th class="nosort column"
+		<th
 			tal:repeat="column column_list"
-			tal:attributes="id string:foldercontents-${column}-column">
+			tal:attributes="
+				id string:foldercontents-${column}-column;
+				class python:request.get(view.bika_listing.form_id+'_sort_on', '') == column
+				                    and 'sortable column sort_on ' + request.get(view.bika_listing.form_id+'_sort_order','ascending')
+									or 'sortable column';">
 		<span i18n:translate="python:'listingheader_' +
-									view.columns[ column ]['title']">
-			<span tal:content="python:view.columns[  column  ]['title']"/>
+									view.bika_listing.columns[ column ]['title']">
+			<span tal:content="python:view.bika_listing.columns[  column  ]['title']"/>
 		</span>
 		</th>
 	</tr>
@@ -195,7 +166,7 @@ Table data rows start here
 <tal:comment replace="nothing">***************
 Draggable column for manually ordering items
 ********************************</tal:comment>
-	<td tal:condition="view/show_sort_column" class="draggable">
+	<td tal:condition="view/bika_listing/show_sort_column" class="draggable">
 	 <tal:block tal:define="quoted_id item/uid;">
 	  <a href=""
 		 title="Move item up"
@@ -215,7 +186,7 @@ Draggable column for manually ordering items
 <tal:comment replace="nothing">***************
 Item select checkboxes.
 ********************************</tal:comment>
-	<td tal:condition="view/show_select_column"
+	<td tal:condition="view/bika_listing/show_select_column"
 		tal:define="cl python:'select_column' in item['class'] and
 					item['class']['select_column'] or '';"
 		tal:attributes="class string:notDraggable ${item/state_class} $cl">
@@ -229,7 +200,7 @@ Item select checkboxes.
 			name="paths:list"
 			tal:attributes="
 				value   item/path;
-				id      string:cb_${item/uid};
+				id      string:${view/bika_listing/form_id}_cb_${item/uid};
 				alt     python:view.msg_select_item(item);
 				tabindex string:1000;
 				checked python:item.has_key('selected') and item['selected'] and 'yes' or '';
@@ -237,10 +208,12 @@ Item select checkboxes.
 		<input type="hidden"
 			name="selected_obj_paths:list"
 			value="#"
-			tal:attributes="value item/relative_url" />
+			tal:attributes="
+				value item/relative_url;
+				name string:${view/bika_listing/form_id}_selected_obj_paths:list" />
 		<label
 			tal:content="item/title"
-			tal:attributes="for string:cb_${item/uid}"
+			tal:attributes="for string:${view/bika_listing/form_id}cb_${item/uid}"
 			class="hiddenStructure">Item Title</label>
 	</tal:noreplace>
 	</td>
@@ -503,26 +476,6 @@ Table cells for each column from in review_state's column list.
 </tal:cats>
 </tbody>
 
-<tfoot tal:condition="not:view/within_batch_size">
-	<tr tal:condition="not:view/show_all">
-		<th class="nosort" tal:attributes="colspan nr_cols">
-			<a
-				tal:attributes="href view/show_all_url"
-				i18n:translate="label_show_all"
-				id="foldercontents-show-all">
-				Show all
-				<tal:block replace="view/batch/size" i18n:name="count"/>
-				items</a>
-		</th>
-	</tr>
-	<tr tal:condition="view/show_all">
-		<th class="nosort" tal:attributes="colspan nr_cols">
-			<a tal:attributes="href view/view_url"
-				i18n:translate="label_show_batched"
-					id="foldercontents-show-batched">Show batched</a>
-		</th>
-	</tr>
-	</tfoot>
 </table>
 
 <div tal:replace="structure view/batching"
@@ -531,7 +484,7 @@ Table cells for each column from in review_state's column list.
 <span class="workflow_action_buttons"
 	tal:define="actions view/get_workflow_actions">
 	<span tal:omit-tag tal:repeat="action actions"
-		tal:condition="view/show_workflow_action_buttons">
+		tal:condition="view/bika_listing/show_workflow_action_buttons">
 		<input
 			type="hidden"
 			tal:attributes="name action/title;
@@ -547,4 +500,4 @@ Table cells for each column from in review_state's column list.
 	<p tal:condition="actions"/>
 </span>
 
-</div>
+</form>

@@ -28,7 +28,7 @@
 
     <dl class="portlet" id="portlet-late-analysis">
 
-        <dt class="portletHeader" style="background-color: #ff0000; color:#fff !important;">
+        <dt class="portletHeader portletLateAnalyses">
         <img src="" tal:attributes="src string:++resource++bika.lims.images/late.png">
         <span i18n:translate="box_late_analyses">Late Analyses</span></dt>
 

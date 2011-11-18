@@ -11,7 +11,7 @@
     <h1>
 	<img tal:condition="view/icon | nothing"
          src="" tal:attributes="src view/icon"/>
-	<span class="documentFirstHeading" tal:content="view/title"/>
+	<span class="documentFirstHeading" tal:content="structure view/title"/>
 	<tal:add_actions repeat="add_item python:view.content_add_actions.keys()">
 		<a tal:attributes="
 			href python:view.content_add_actions[add_item];
@@ -41,21 +41,9 @@
 </metal:content-description>
 
 <metal:content-core fill-slot="content-core">
-
-	<form name="folderContentsForm"
-	      id="folderContentsForm"
-		  method="post"
-		  class="kssattr-serveraction-foldercontents_update_table">
-
-		<div id="folderlisting-main-table">
-			<!-- include the table itself  -->
-			<div tal:replace="structure view/contents_table"></div>
-		</div>
-
-		<input tal:replace="structure context/@@authenticator/authenticator" />
-
-	</form>
+	<div id="folderlisting-main-table"
+		tal:content="structure view/contents_table"/>
 </metal:content-core>
 
-	</body>
+</body>
 </html>

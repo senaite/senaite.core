@@ -13,7 +13,6 @@ from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.utils import isActive, TimeOrDate
 from bika.lims.config import POINTS_OF_CAPTURE
 from decimal import Decimal
-from operator import itemgetter
 from zope.component import getMultiAdapter
 from zope.interface import implements, 	alsoProvides, implementsOnly
 import json
@@ -31,8 +30,10 @@ class AnalysesView(BikaListingView):
         self.show_sort_column = False
         self.show_select_row = False
         self.show_select_column = True
-        request.set('disable_plone.rightcolumn',1);
         self.pagesize = 1000
+        self.form_id = 'analyses_form'
+
+        request.set('disable_plone.rightcolumn',1);
 
         # each editable item needs it's own allow_edit
         # which is a list of field names.
@@ -238,7 +239,7 @@ class AnalysesView(BikaListingView):
                 if (not calculation or (calculation and not calculation.getDependentServices())) and \
                    items[i]['review_state'] not in ['sample_due', 'published'] and \
                    items[i]['DueDate'] < DateTime():
-                    DueDate = TimeOrDate(self.context, item['DueDate'], long_format = 1)
+                    DueDate = TimeOrDate(self.context, item['DueDate'], long_format = 0)
                     if self.context.portal_type == 'AnalysisRequest':
                         items[i]['replace']['DueDate'] = '%s <img width="16" height="16" src="%s/++resource++bika.lims.images/late.png" title="%s"/>' % \
                             (DueDate, portal.absolute_url(), _("Due Date: ") + DueDate)
@@ -291,8 +292,12 @@ class AnalysesView(BikaListingView):
             # Allow selecting individual analyses
             self.show_select_column = True
 
-        items = sorted(items, key = itemgetter('Service'))
         self.json_specs = json.dumps(self.specs)
         self.json_interim_fields = json.dumps(self.interim_fields)
+
+        # re-do the pretty css odd/even classes
+        for i in range(len(items)):
+            items[i]['table_row_class'] = ((i + 1) % 2 == 0) and \
+                "draggable even" or "draggable odd"
 
         return items

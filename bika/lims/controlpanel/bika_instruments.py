@@ -32,11 +32,16 @@ class InstrumentsView(BikaListingView):
         self.pagesize = 20
 
         self.columns = {
-                   'Title': {'title': _('Instrument')},
-                   'Type': {'title': _('Type')},
-                   'Brand': {'title': _('Brand')},
-                   'Model': {'title': _('Model')},
-                   'ExpiryDate': {'title': _('Expiry Date')},
+            'Title': {'title': _('Instrument'),
+                      'index': 'sortable_title',},
+            'Type': {'title': _('Type'),
+                     'index': 'getType',},
+            'Brand': {'title': _('Brand'),
+                      'index': 'getBrand'},
+            'Model': {'title': _('Model'),
+                      'index': 'getModel'},
+            'ExpiryDate': {'title': _('Expiry Date'),
+                           'index':'getExpiryDate'},
         }
         self.review_states = [
             {'title': _('All'), 'id':'all',

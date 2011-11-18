@@ -1,14 +1,13 @@
 title:string=Plone's color, font, logo and border defaults
-
 plone_skin:string=Plone Default
 
 logoName:string=logo.png
 
-fontFamily:string="Lucida Grande", Verdana, Lucida, Helvetica, Arial, sans-serif
-fontBaseSize:string=69%
+fontFamily:string="Helvetica Neue",Arial,FreeSans,sans-serif
+fontBaseSize:string=100%
 fontColor:string=Black
 fontSmallSize:string=95%
-fontSmallerSize:string=80%
+fontSmallerSize:string=85%
 
 backgroundColor:string=White
 
@@ -25,23 +24,15 @@ globalBorderColor:string=#636321
 globalBackgroundColor:string=#d3d3ad
 globalFontColor:string=#636321
 
-outOfRangeBackgroundColor:string=#ffcc99
-inErrorRangeBackgroundColor:string=#ffff99
-
-blankBackgroundColor:string=#ffc1ff
-duplicateBackgroundColor:string=#b5d8a9
-standardBackgroundColor:string=#d2d2e8
-
 headingFontFamily:string="Lucida Grande", Verdana, Lucida, Helvetica, Arial, sans-serif
 headingFontBaseSize:string=100%
 
 contentViewBorderColor:string=#636321
 contentViewBackgroundColor:string=#e2e2c7
 contentViewFontColor:string=black
-
 inputFontColor:string=Black
 
-textTransform:string=lowercase
+textTransform:string=none
 
 evenRowBackgroundColor:string=#f7f9fa
 oddRowBackgroundColor:string=transparent
@@ -52,6 +43,30 @@ notifyBackgroundColor:string=#fffd9e
 discreetColor:string=#76797c
 helpBackgroundColor:string=#ffffe1
 
-portalMinWidth:string=70em
-columnOneWidth:string=16em
-columnTwoWidth:string=16em
+editbarBackgroundColor:string=#ccc
+editbarTextColor:string=#000
+editbarCurrentTabBackgroundColor:string=fff
+editbarCurrentTabTextColor:string=#000
+editbarHoverTabBackgroundColor:string=#fff
+editbarHoverTabTextColor:string=#000
+
+editbarStateInactiveForeground:string=#000
+editbarStateInactiveBackground:string=#fff
+editbarStateCancelledForeground:string=#000
+editbarStateCancelledBackground:string=#fff
+
+formTabsBackgroundColor:string=#ccc
+formTabsTextColor:string=#000
+formTabsCurrentTabBackgroundColor:string=#fff
+formTabsCurrentTabTextColor:string=#000
+formTabsHoverTabBackgroundColor:string=#fff
+formTabsHoverTabTextColor:string=#000
+
+portletHeaderBackgroundColor:string=#ccc
+portletHeaderTextColor:string=#000
+
+portletLateAnalysesBackgroundColor:string=red
+portletLateAnalysesTextColor:string=#fff
+
+footerBackgroundColor:string=#fff
+footerTextColor:string=#000

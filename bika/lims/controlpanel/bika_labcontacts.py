@@ -32,16 +32,22 @@ class LabContactsView(BikaListingView):
         self.pagesize = 20
 
         self.columns = {
-                   'Listingname': {'title': _('Name')},
-                   'Department': {'title': _('Department')},
-                   'BusinessPhone': {'title': _('Phone')},
-                   'Fax': {'title': _('Fax')},
-                   'MobilePhone': {'title': _('Mobile Phone')},
-                   'EmailAddress': {'title': _('Email Address')},
-                  }
+            'Fullname': {'title': _('Name'),
+                         'index': 'getFullname'},
+            'Department': {'title': _('Department'),
+                           'index': 'getDepartment'},
+            'BusinessPhone': {'title': _('Phone'),
+                              'index': 'getBusinessPhone'},
+            'Fax': {'title': _('Fax'),
+                    'index': 'getFax'},
+            'MobilePhone': {'title': _('Mobile Phone'),
+                            'index':'getMobilePhone'},
+            'EmailAddress': {'title': _('Email Address'),
+                             'index': 'getEmailAddress'},
+        }
         self.review_states = [
             {'title': _('All'), 'id':'all',
-             'columns': ['Listingname',
+             'columns': ['Fullname',
                          'Department',
                          'BusinessPhone',
                          'Fax',
@@ -50,7 +56,7 @@ class LabContactsView(BikaListingView):
             {'title': _('Active'), 'id':'active',
              'contentFilter': {'inactive_state': 'active'},
              'transitions': ['deactivate'],
-             'columns': ['Listingname',
+             'columns': ['Fullname',
                          'Department',
                          'BusinessPhone',
                          'Fax',
@@ -59,7 +65,7 @@ class LabContactsView(BikaListingView):
             {'title': _('Dormant'), 'id':'inactive',
              'contentFilter': {'inactive_state': 'inactive'},
              'transitions': ['activate',],
-             'columns': ['Listingname',
+             'columns': ['Fullname',
                          'Department',
                          'BusinessPhone',
                          'Fax',
@@ -72,14 +78,14 @@ class LabContactsView(BikaListingView):
         for x in range(len(items)):
             if not items[x].has_key('obj'): continue
             obj = items[x]['obj']
-            items[x]['Listingname'] = obj.getListingname()
+            items[x]['Fullname'] = obj.getFullname()
             items[x]['Department'] = obj.getDepartment() and obj.getDepartment().Title() or ''
             items[x]['BusinessPhone'] = obj.getBusinessPhone()
             items[x]['Fax'] = obj.getBusinessFax()
             items[x]['MobilePhone'] = obj.getMobilePhone()
             items[x]['EmailAddress'] = obj.getEmailAddress()
-            items[x]['replace']['Listingname'] = "<a href='%s'>%s</a>" % \
-                 (items[x]['url'], items[x]['Listingname'])
+            items[x]['replace']['Fullname'] = "<a href='%s'>%s</a>" % \
+                 (items[x]['url'], items[x]['Fullname'])
 
 
         return items

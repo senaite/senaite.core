@@ -2,12 +2,13 @@ jQuery( function($) {
 $(document).ready(function(){
 
 	$(".listing_string_entry,.listing_select_entry").live('change', function(){
+		form_id = $(this).parents("form").attr("id");
 		uid = $(this).attr('uid');
 		field = $(this).attr('field');
 		value = $(this).attr('value');
 		item_data = $(this).parents('table').prev('input[name="item_data"]').val();
 		// check the item's checkbox
-		$('#cb_'+uid).attr('checked', true);
+		$('#'+form_id+'_cb_'+uid).attr('checked', true);
 
 		if ($(this).parents('td').last().hasClass('interim')){
 			// add value to form's item_data
@@ -30,7 +31,6 @@ $(document).ready(function(){
 		options = {
 			type: 'POST',
 			url: 'listing_string_entry',
-			//async: false,
 			data: {
 				'_authenticator': $('input[name="_authenticator"]').val(),
 				'uid': uid,
@@ -39,7 +39,7 @@ $(document).ready(function(){
 				'results': $.toJSON(results),
 				'item_data': item_data,
 				'specification': $("input[name='specification']")
-					.filter(":checked").val()
+					.filter(".selected").attr("value")
 			},
 			dataType: "json",
 			success: function(data,textStatus,$XHR){
@@ -80,7 +80,7 @@ $(document).ready(function(){
 						.append(result.formatted_result);
 					// check box
 					if (results != ''){
-						$('#cb_'+result.uid).attr('checked', true);
+						$('#'+form_id+'_cb_'+result.uid).attr('checked', true);
 					}
 				}
 			}
@@ -90,7 +90,7 @@ $(document).ready(function(){
 
 	// range specification links
 	$("a[class~='specification']").click(function(event){
-		tables = $(".bika-listing-table table");
+		tables = $(".bika-listing-table");
 		event.preventDefault();
 		for(t=0; t<tables.length; t++){
 			table = tables[t];

@@ -66,6 +66,8 @@
    <bound-workflow workflow_id="bika_cancellation_workflow"/>
   </type>
 
+  <type type_id="AnalysisRequestsFolder"/>
+
   <type type_id="AnalysisService">
    <bound-workflow workflow_id="bika_one_state_workflow"/>
    <bound-workflow workflow_id="bika_inactive_workflow"/>
@@ -183,6 +185,8 @@
    <bound-workflow workflow_id="bika_inactive_workflow"/>
   </type>
 
+  <type type_id="ReferenceSamplesFolder"/>
+
   <type type_id="ReferenceSupplier">
    <bound-workflow workflow_id="bika_one_state_workflow"/>
    <bound-workflow workflow_id="bika_inactive_workflow"/>
@@ -207,6 +211,8 @@
    <bound-workflow workflow_id="bika_one_state_workflow"/>
    <bound-workflow workflow_id="bika_inactive_workflow"/>
   </type>
+
+  <type type_id="SamplesFolder"/>
 
   <type type_id="SupplierContact">
    <bound-workflow workflow_id="bika_one_state_workflow"/>

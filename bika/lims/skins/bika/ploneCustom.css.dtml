@@ -1,95 +1,209 @@
-<dtml-with base_properties>
+/* <dtml-with base_properties>
 <dtml-call "REQUEST.set('portal_url', portal_url())">
+*/
 
+/* columns.css */
 
-/*
- * Remove boring whitespace in sunburst
- */
+div.width-1\3a 4 {
+    width: 16.5%;
+}
+
+div.width-3\3a 4 {
+    width: 80.2%;
+}
+
+div.position-1\3a 4 {
+    margin-left:    -81.5%;
+}
+
+div.position-3\:4 {
+    margin-left: -16.855%;
+	width:81%
+}
+
+div.width-3\:4 {
+	width:81.2%
+}
+
+div.width-1\:2 {
+    width: 64.4% !important;
+}
+
+div.width-1\:4 {
+    width: 15.75% !important;
+}
+
+div.position-1\:4 {
+    margin-left: -82.25%;
+}
+
+/************************/
 
 html body{
-    font: 100% "Lucida Grande",Verdana,Lucida,Helvetica,Arial,sans-serif;
+    font: &dtml-fontBaseSize; "Lucida Grande",Verdana,Lucida,Helvetica,Arial,sans-serif;
 }
 
 table {
     font-size: 100%;
 }
+
 #portal-breadcrumbs{
     margin-bottom: .3em;
 }
+
 .searchSection{
 	display: none;
 }
+
 #portal-logo{
 	margin: 10px 0 10px 0;
 }
+
 #content {
     line-height: 1em;
     margin: 0 0.25em 1em;
 }
+
 #content h1 {
     margin-top: .1em;
 }
+
 /* overwrite sunburst special display of description fields */
 /*#content .field textarea[name$=".description"],  */
 #archetypes-fieldname-description textarea#description {
     font-style: normal;;
-    color: &dtml-inputFontColor;;
-    font-size: &dtml-fontSmallSize;;
+    color: &dtml-inputFontColor; !important;
+    font-size: &dtml-fontSmallSize; !important;
     font-weight: normal;
 }
-dl.portalMessage {
-    margin-top:0;
+
+#content a:link {
+    border-bottom: 0;
+    color: &dtml-linkColor; !important;
+    text-decoration:none;
 }
 
-dl.portlet ul.navTreeLevel0 > .navTreeItem {
-    border-bottom: 0.1em dotted #EEEEEE;
-    padding: 0.25em 0.25em;
+#content a:hover {
+    color: &dtml-linkActiveColor; !important;
 }
-dl.portlet ul.navTreeLevel1 .navTreeItem {
-    padding: 0.25em 0.25em;
-}
-dl.portlet ul.navTree .navTreeCurrentItem {
-    background-color: #ddd;
-    border-left: 1em solid #ddd;
-    margin-left: -0.25em;
-    margin-right: -0.25em;
-}
-table.invisible td, table.invisible th, table.plain td, table.plain th, table.listing td, table.listing th {
-    padding-bottom: 0.25em;
-    padding-left: 0.5em;
-    padding-right: 0.5em;
-    padding-top: 0.25em;
-    vertical-align: top;
-}
-.nomargin {margin:0;}
-.nopadding {padding:0;}
-#portal-globalnav li a {
-	padding: 0.2em 1em 0.2em 1em ! important;
-	min-width:2em;
-	font-size: 90%;
-}
-dl.portlet ul.navTreeLevel0 > .navTreeItem {
-	line-height: 1.5em;
-}
-#content a:hover, dl.portlet a {
-  color: &dtml-linkColor; !important;
-  text-decoration:none;
-}
+
 #content a:hover, dl.portlet a:hover {
   color: &dtml-linkColor; !important;
   text-decoration:none;
 }
+
 #content-core {
   margin-top:.5em !important;
 }
-.folderlisting-main-table {
-  margin-top:.5em;
+
+#portal-footer {
+    background-color: &dtml-footerBackgroundColor;;
+    color: &dtml-footerTextColor;;
 }
 
-/************ columns.css overrides */
 
+/* edit-bar */
 
-/* Pretty table classes
+#edit-bar {
+  background-color: &dtml-editbarBackgroundColor; !important;
+  color: &dtml-editbarTextColor; !important;
+    border-top: 0.3em solid &dtml-editbarBackgroundColor; !important;
+    border-left: 0.3em solid &dtml-editbarBackgroundColor; !important;
+    border-right: 0.3em solid &dtml-editbarBackgroundColor; !important;
+	border-bottom:none;
+}
+
+#edit-bar #content-views{
+  background-color: &dtml-editbarBackgroundColor; !important;
+  color: &dtml-editbarTextColor; !important;
+}
+
+#edit-bar #contentActionMenus {
+  background-color: &dtml-editbarBackgroundColor; !important;
+  color: &dtml-editbarTextColor; !important;
+}
+
+#content-views li.selected a,
+#content-views li a:hover {
+    background-color: &dtml-editbarCurrentTabBackgroundColor; !important;
+    color: &dtml-editbarCurrentTabTextColor; !important;
+}
+
+#contentActionMenus dl.actionMenu a,
+#contentActionMenus dl.actionMenu.activated dd {
+    background-color: &dtml-editbarBackgroundColor; !important;
+    color: &dtml-editbarTextColor; !important;
+}
+
+#contentActionMenus dl.actionMenu.activated dd a:hover,
+#contentActionMenus dl.actionMenu.activated dd .actionMenuSelected {
+    background-color: &dtml-editbarCurrentTabBackgroundColor; !important;
+    color: &dtml-editbarCurrentTabTextColor; !important;
+}
+
+#contentActionMenus dl.actionMenu.activated dd {
+    border-bottom: 0.5em solid &dtml-editbarBackgroundColor; !important;
+}
+
+#edit-bar .actionMenuHeader {
+}
+
+#edit-bar .actionMenuContent {
+    border-bottom: 0.5em solid &dtml-editbarBackgroundColor; !important;
+}
+
+/* Form tabs */
+
+#content ul.formTabs {
+    background-color: &dtml-formTabsBackgroundColor; !important;
+    border-top: 0.3em solid &dtml-formTabsBackgroundColor; !important;
+    border-left: 0.3em solid &dtml-formTabsBackgroundColor; !important;
+    border-right: 0.3em solid &dtml-formTabsBackgroundColor; !important;
+	border-bottom:none;
+	color: &dtml-formTabsTextColor; !important;
+}
+
+#content ul.formTabs .FormTab {
+    background-color: &dtml-formTabsBackgroundColor; !important;
+	color: &dtml-formTabsTextColor; !important;
+}
+
+#content li.formTab a.selected,
+#content li.formTab a:hover {
+    background-color: &dtml-formTabsCurrentTabBackgroundColor; !important;
+	color: &dtml-formTabsCurrentTabTextColor; !important;
+}
+
+/* Portlets */
+
+dl.portlet dt, div.portletAssignments div.portletHeader {
+    background-color: &dtml-portletHeaderBackgroundColor;;
+	color: &dtml-portletHeaderTextColor;;
+}
+
+dl.portlet dt a,
+div.portletAssignments div.portletHeader a {
+    background-color: &dtml-portletHeaderBackgroundColor; !important;
+	color: &dtml-portletHeaderTextColor; !important;
+}
+
+dl.portlet dt a:hover,
+div.portletAssignments div.portletHeader a:hover {
+    background-color: &dtml-portletHeaderBackgroundColor;;
+	color: &dtml-linkColor;;
+}
+
+dt.PortletLateAnalyses {
+    background-color: &dtml-portletLateAnalysesBackgroundColor; !important;
+	color: &dtml-portletLateAnalysesTextColor; !important;
+}
+
+dl.portlet dt.portletLateAnalyses {
+    background-color: &dtml-portletLateAnalysesBackgroundColor;;
+	color: &dtml-portletLateAnalysesTextColor;;
+}
+
+/* Pretty table classes for tinyMCE
 */
 .three_column_table td {
     width:33% !important;
@@ -98,25 +212,17 @@ dl.portlet ul.navTreeLevel0 > .navTreeItem {
     width:50% !important;
 }
 
-div.width-1\3a 4 { width: 16.5%; } /* .width-1:4 */
-div.width-3\3a 4 { width: 80.2%; } /* .width-1:4 */
-div.position-1\3a 4 {margin-left:    -81.5%;} /* .position-1:4 */
+a .navTreeCurrentNode .navTreeFolderish {
+  border-radius: .25em;
+  background: #eee;
+  border:1px solid #ddd !important;
+  padding:2px 5px 2px 5px !important;
+}
 
-div.position-3\:4 {
-    margin-left: -16.855%;
-	width:81%
-}
-div.width-3\:4 {
-	width:81.2%
-}
-div.width-1\:2 {
-    width: 64.4% !important;
-}
-div.width-1\:4 {
-    width: 15.75% !important;
-}
-div.position-1\:4 {
-    margin-left: -82.25%;
+a .navTreeCurrentItem {
+  border-radius: .25em;
+  background: #eee;
+  padding:2px 5px 2px 5px !important;
 }
 
 #plone-contentmenu-workflow .state-cancelled {
@@ -133,146 +239,12 @@ div.position-1\:4 {
     color: White !important;
     padding: 0 0.5em;
 }
-#listing-table .state-cancelled {
-	background-color: #FFC8C8  !important;
-	color: #222 !important;
-}
-#listing-table .state-inactive {
-	background-color: #FFC8C8  !important;
-	color: #222 !important;
-}
-#listing-table .state-due,
-#listing-table .state-sample_due {
-	color: #2bb800;
-}
-#listing-table .state-empty-worksheet {
-	color: #b1b1b1;
-}
-#listing-table .state-empty-worksheet .empty {
-	font-weight: bold;
-}
-.state-empty {
-	background-color: #FFC8C8  !important;
-	color: #222 !important;
-	vertical-align:middle !important;
-	padding:5px;
-	border-bottom:1px solid #ddd;
-}
-a.state-visible  {
-    color:#205C90 !important;
-}
-
-#listing-table td {
-	vertical-align:middle;
-}
-.bika-listing-table {
-    font-size: 100%;
-}
-table.listing {
-  border-left:0;
-}
-table.listing tr {
-  border-left: 1px solid #dddddd;
-}
-
-
-.template-analysisrequests .bika-listing-table {
-    font-size: 90% !important;
-}
-
-a .navTreeCurrentNode .navTreeFolderish {
-  border-radius: .25em;
-  background: #eee;
-  border:1px solid #ddd !important;
-  padding:2px 5px 2px 5px !important;
-}
-a .navTreeCurrentItem {
-  border-radius: .25em;
-  background: #eee;
-  padding:2px 5px 2px 5px !important;
-}
-
-td.Result,
-td.getRequestID,
-td.Title,
-td.ID {
-  white-space:nowrap !important;
-}
-
-.getRequestID {
-  white-space:nowrap !important;
-}
 
 .documentActions{
   float:right;
 }
 
-.content_add_link {
-    margin-right: .5em;
-    font-size: 50%;
-    border:0 !important;
-    vertical-align: middle !important;
-	font-weight:normal;
-	letter-spacing: 0;
-}
-
-.review_state_td {
-	background-color:#fff !important;
-	border-right:0 !important;
-	border-left:0 !important;
-	padding:0px 0px 0px 0px !important;
-}
-.review_state_selector {
-  margin:0 0 .5em 0 !important;
-  background: #fff;
-  padding:5px 2px 5px 2px !important;
-}
-
-.review_state_selector a{
-  border-radius: .25em;
-  background: #fff;
-  text-decoration:none;
-  font-weight:normal;
-  padding:2px 5px 2px 5px !important;
-}
-
-.review_state_selector a:hover{
-  border-radius: .25em;
-  background: #eee;
-  text-decoration:none;
-  font-weight:normal;
-  padding:2px 5px 2px 5px !important;
-}
-
-.review_state_selector .selected{
-  border-radius: .25em;
-  background: #eee;
-  border:1px solid #ddd !important;
-  font-weight:bold;
-  padding:2px 5px 2px 5px !important;
-}
-.review_state_selector .selected:hover{
-  border-radius: .25em;
-  background: #eee;
-  border:1px solid #ddd !important;
-  font-weight:bold;
-  padding:2px 5px 2px 5px !important;
-}
-
-.specification {
-  border-radius: .25em;
-  background: #fff;
-  font-weight:bold;
-  padding:2px 5px 2px 5px !important;
-}
-
-.specification.selected {
-  border-radius: .25em;
-  background: #eee;
-  border:1px solid #ddd !important;
-  font-weight:bold;
-  padding:2px 5px 2px 5px !important;
-}
+/* Attachments */
 
 dt.attachments {
     color: &dtml-linkColor;;
@@ -284,26 +256,27 @@ dt.attachments {
 	line-height:1em !important;
 }
 
-.workflow_action_buttons {
-  margin-left: 1.5em;
+dl.expandedInlineCollapsible dt.collapsibleHeader,
+dl.expandedBlockCollapsible dt.collapsibleHeader {
+    background: &dtml-backgroundColor; !important;
+    padding-left: .5em !important;
 }
-.workflow_action_button {
+
+dl.collapsedInlineCollapsible dt.collapsibleHeader,
+dl.collapsedBlockCollapsible dt.collapsibleHeader {
+    background: &dtml-backgroundColor; !important;
+    padding-left:.5em !important;
+    position: relative;
+}
+
+div.attachments {
+  padding-top:.4em;
 }
 
 .barcode {
   whitespace:nowrap;
 }
 
-
-dl.portlet dt, div.portletAssignments div.portletHeader {
-    background-color: #ddd;
-    border:d0d0d0;
-    line-height: normal;
-    padding: .25em .25em .25em .3em;
-    color: #666666 !important;
-    font: bold 1.1em "Helvetica Neue",Arial,FreeSans,sans-serif;
-    margin-left: 0;
-}
 
 th.collapsed {
     background: #DDDDDD url(treeCollapsed.png) no-repeat 6px 50% !important;
@@ -369,7 +342,7 @@ table.analysisrequest th.analysiscategory.collapsed{
     background: #DDDDDD url(treeCollapsed.png) no-repeat 6px 50%;
     cursor:pointer;
 	padding-left:20px;
-    text-color: &dtml-linkColor;;
+    text-color: &dtml-linkColor; !important;
     font-weight:bold;
 	border:1px solid #CCCCCC;
 }
@@ -378,7 +351,7 @@ table.analysisrequest th.analysiscategory.expanded{
     background: #DDDDDD url(treeExpanded.png) no-repeat 6px 50%;
     cursor:pointer;
 	padding-left:20px;
-    text-color: &dtml-linkColor;;
+    text-color: &dtml-linkColor; !important;
     font-weight:bold;
 	border:1px solid #CCCCCC;
 }
@@ -426,7 +399,7 @@ table.analysisrequest input {
 }
 
 .select_sample {
-    color: &dtml-linkColor;;
+    color: &dtml-linkColor; !important;
     font-weight:bold;
     cursor: pointer;
 }
@@ -447,7 +420,7 @@ table.analysisrequest input {
 }
 
 .link {
-    color: &dtml-linkColor;;
+    color: &dtml-linkColor; !important;
     cursor: pointer;
 }
 .center{
@@ -464,56 +437,59 @@ table.analysisrequest input {
   vertical-align:center;
 }
 
-.template-manage_results #listing-table td {
-  vertical-align:top;
-}
-.template-manage_results #listing-table td.even {
-    background-color: #eee; !important;
-	border-bottom:1px solid #ddd;
-}
-.template-manage_results #listing-table td.odd {
-    background-color: #fff; !important;
-	border-bottom:1px solid #eee;
+.template-manage_results .Pos tr {
+  border:none;
 }
 
-.template-manage_results #listing-table td table {
-  background-color:transparent !important;
-  padding:0;
-  margin:0;
+/* The rowspan for worksheet manage_results position column */
+
+.worksheet-position tr{
+  border-left:none !important;
 }
-.template-manage_results #listing-table td table td {
-  background-color:transparent !important;
-  padding:0;
-  margin:0;
-  border: 0;
+
+.template-manage_results .bika-listing-table td {
+  vertical-align:top;
 }
-.template-manage_results #listing-table td table tr.even,
-.template-manage_results #listing-table td table tr.odd{
+.template-manage_results .bika-listing-table td table {
+  background-color:transparent !important;
+  padding:0 !important;
+  margin:0 !important;
+  border:none !important;
+}
+.template-manage_results .bika-listing-table td table td {
+  background-color:transparent !important;
+  padding:2px !important;
+  margin:0 !important;
+  border: 0 !important;
+}
+.template-manage_results .bika-listing-table td table tr.even,
+.template-manage_results .bika-listing-table td table tr.odd{
   background-color:transparent !important;
 }
-.template-manage_results #listing-table td table td {
+.template-manage_results .bika-listing-table td table td {
+  border:none;
   padding:1px;
   vertical-align:middle;
 }
-.template-manage_results #listing-table td table td.pos {
+.template-manage_results .bika-listing-table td table td.pos {
   font-size:120%;
   width:1ex;
   padding:5px;
   vertical-align:top;
 }
-.template-manage_results #listing-table td table td.pos_top {
+.template-manage_results .bika-listing-table td table td.pos_top {
   font-size:110%;
 }
-.template-manage_results #listing-table td table td.pos_top_icons {
+.template-manage_results .bika-listing-table td table td.pos_top_icons {
   padding:5px;
   font-size:110%;
   width:1ex;
   vertical-align:top;
 }
-.template-manage_results #listing-table td table td.pos_top_icons img{
+.template-manage_results .bika-listing-table td table td.pos_top_icons img{
   margin-bottom:5px;
 }
-.template-manage_results #listing-table td table td.barcode{
+.template-manage_results .bika-listing-table td table td.barcode{
   padding-left:5px;
   padding-right:5px;
 }
@@ -535,16 +511,16 @@ fieldset.criteria p {
 	text-align:center !important;
 	vertical-align:top !important;
 }
-.worksheet_add_control_references {
+.worksheet_add_references {
 	padding-left:5px;
 	text-align:center !important;
 	vertical-align:top !important;
 }
 
-.worksheet_add_control_references tr:hover,
-.worksheet_add_control_references tr:hover td,
-#worksheet_ars tr:hover,
-#worksheet_ars tr:hover td {
+.worksheet_add_references tr:hover,
+.worksheet_add_references tr:hover td,
+#worksheet_add_duplicate_ars tr:hover,
+#worksheet_add_duplicate_ars tr:hover td {
     cursor:pointer;
 	background:&dtml-notifyBackgroundColor; !important;
 
@@ -557,6 +533,10 @@ a.control {
 a.blank {
  color:#00B027 !important;
 }
+a.duplicate {
+ color:#00B027 !important;
+}
+
 
 
 /*
@@ -565,6 +545,9 @@ a.blank {
 input.cb {
     border: none;
     background-color: transparent;
+    vertical-align: middle;
+    position: relative;
+    bottom: 1px;
 }
 fieldset {
 	padding:.5em;
@@ -574,6 +557,10 @@ select {
 }
 
 
+.noborder {border:none !important;}
+.nomargin {margin:0 !important;}
+.nopadding {padding:0 !important;}
+
 /* Print Only */
 @media print {
   .noprint {display:none !important;}
@@ -581,78 +568,3 @@ select {
 }
 
 </dtml-with>
-
-/* DOCUMENTATION ON PRE-DEFINED PROPERTIES FROM PLONE */
-
- /* You can insert colors and other variables from Plone's
-    base_properties by doing:
-
-    & dtml-variableName ; (without the spaces, excluded here to not make it render)
-
-    Example:
-
-    myLink {
-        color: & dtml-fontColor ;   (again, without the spaces)
-    }
-
-   This means you can generate your own elements that use Plone's defaults,
-   and respect any customizations people have done. See base_properties for
-   the default values.
-
-   These are the available properties:
-
-   logoName - the file name of the portal logo.
-
-   fontFamily - the font family used for all text that is not headers
-
-   fontBaseSize - the base font size that everything is calculated from
-
-   fontColor - the main font color
-
-   backgroundColor - the background color
-
-   linkColor - the color used on normal links
-
-   linkActiveColor - color used on active links
-
-   linkVisitedColor - color used on visited links
-
-   borderWidth - the width of most borders in Plone
-
-   borderStyle -centerthe style of the border lines, normally solid
-
-   borderStyleAnnotations - style of border lines on comments etc
-
-   globalBorderColor - the border color used on the main tabs, the portlets etc
-
-   globalBackgroundColor - background color for the selected tabs, portlet headings etc
-
-   globalFontColor - the color of the font in the tabs and in portlet headings
-
-   headingFontFamily - font family for h1/h2/h3/h4/h5/h6 headlines.
-
-   headingFontBaseSize - the base size used when calculating the different headline sizes
-
-   contentViewBorderColor - the content view tabs border color
-
-   contentViewBackgroundColor - the content view tabs background color
-
-   contentViewFontColor - the font color used in the content view tabs
-
-   textTransform - whether to lowercase text in portlets, tabs etc.
-
-   evenRowBackgroundColor - the background color of even rows in listings
-
-   oddRowBackgroundColor - the background color of even rows in listings
-
-   notifyBorderColor - border color of notification elements like the status message, the calendar focus
-
-   notifyBackgroundColor - background color of notification elements like the status message, the calendar focus
-
-   discreetColor:string=#999999
-   helpBackgroundColor:string=#ffffe1
-
- */
-
-
-

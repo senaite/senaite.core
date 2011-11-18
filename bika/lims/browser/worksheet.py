@@ -340,7 +340,7 @@ class WorksheetAnalysesView(AnalysesView):
                 client = obj.getReferenceDefinition()
             else:
                 client = parent.aq_parent
-            pos_text = "<table width='100%%' cellpadding='0' cellspacing='0' style='padding-bottom:5px;'><tr>" + \
+            pos_text = "<table class='worksheet-position' width='100%%' cellpadding='0' cellspacing='0' style='padding-bottom:5px;'><tr>" + \
                        "<td class='pos' rowspan='3'>%s</td>" % pos
             pos_text += "<td class='pos_top'><a href='%s'>%s</a></td>" % \
                 (client.absolute_url(), client.Title())

@@ -1,3 +1,4 @@
+
 <?xml version="1.0"?>
 <object name="portal_catalog" meta_type="Plone Catalog Tool">
  <property name="title">Indexes all content in the site</property>
@@ -63,6 +64,8 @@
  <index name="end" meta_type="DateIndex"> <property name="index_naive_time_as_local">True</property> </index>
  <index name="expires" meta_type="DateIndex"> <property name="index_naive_time_as_local">True</property> </index>
  <index name="getAnalyst" meta_type="FieldIndex"> <indexed_attr value="getAnalyst"/> </index>
+ <index name="getBrand" meta_type="FieldIndex"> <indexed_attr value="getBrand"/> </index>
+ <index name="getBusinessPhone" meta_type="FieldIndex"> <indexed_attr value="getBusinessPhone"/> </index>
  <index name="getCategoryName" meta_type="FieldIndex"> <indexed_attr value="getCategoryName"/> </index>
  <index name="getCategoryUID" meta_type="FieldIndex"> <indexed_attr value="getCategoryUID"/> </index>
  <index name="getClientReference" meta_type="FieldIndex"> <indexed_attr value="getClientReference"/> </index>
@@ -73,11 +76,16 @@
  <index name="getDateImported" meta_type="FieldIndex"> <indexed_attr value="getDateImported"/> </index>
  <index name="getDatePublished" meta_type="FieldIndex"> <indexed_attr value="getDatePublished"/> </index>
  <index name="getDateReceived" meta_type="FieldIndex"> <indexed_attr value="getDateReceived"/> </index>
+ <index name="getDepartment" meta_type="FieldIndex"> <indexed_attr value="getDepartment"/> </index>
  <index name="getDueDate" meta_type="DateIndex"> <property name="index_naive_time_as_local">True</property></index>
- <index name="getEmailAddress" meta_type="FieldIndex"> <indexed_attr value="getEmailAddress"/> </index>
+ <index name="getExpiryDate" meta_type="DateIndex"> <property name="index_naive_time_as_local">True</property></index>
  <index name="getFax" meta_type="FieldIndex"> <indexed_attr value="getFax"/> </index>
+ <index name="getFullname" meta_type="FieldIndex"> <indexed_attr value="getFullname"/> </index>
+ <index name="getMobilePhone" meta_type="FieldIndex"> <indexed_attr value="getMobilePhone"/> </index>
+ <index name="getPhone" meta_type="FieldIndex"> <indexed_attr value="getPhone"/> </index>
  <index name="getId" meta_type="FieldIndex"> <indexed_attr value="getId"/> </index>
  <index name="getKeyword" meta_type="FieldIndex"> <indexed_attr value="getKeyword"/> </index>
+ <index name="getName" meta_type="FieldIndex"> <indexed_attr value="getName"/> </index>
  <index name="getObjPositionInParent" meta_type="GopipIndex"> <indexed_attr value="getObjPositionInParent"/> </index>
  <index name="getPointOfCapture" meta_type="FieldIndex"> <indexed_attr value="getPointOfCapture"/> </index>
  <index name="getProfileKey" meta_type="FieldIndex"> <indexed_attr value="getProfileKey"/> </index>
@@ -87,7 +95,9 @@
  <index name="getSamplePointTitle" meta_type="FieldIndex"> <indexed_attr value="getSamplePointTitle"/> </index>
  <index name="getSampleTypeTitle" meta_type="FieldIndex"> <indexed_attr value="getSampleTypeTitle"/> </index>
  <index name="getServiceUID" meta_type="FieldIndex"> <indexed_attr value="getServiceUID"/> </index>
+ <index name="getServiceTitle" meta_type="FieldIndex"> <indexed_attr value="getServiceTitle"/> </index>
  <index name="getStatus" meta_type="FieldIndex"> <indexed_attr value="getStatus"/> </index>
+ <index name="getType" meta_type="FieldIndex"> <indexed_attr value="getType"/> </index>
  <index name="getUsername" meta_type="FieldIndex"> <indexed_attr value="getUsername"/> </index>
  <index name="id" meta_type="FieldIndex"> <indexed_attr value="id"/> </index>
  <index name="in_reply_to" meta_type="FieldIndex"> <indexed_attr value="in_reply_to"/> </index>
@@ -128,7 +138,6 @@
  <column value="getId"/>
  <column value="getKeyword"/>
  <column value="getObjSize"/>
- <column value="getPhone"/>
  <column value="getRemoteUrl"/>
  <column value="getRequestID"/>
  <column value="id"/>
