@@ -11,7 +11,7 @@ from bika.lims.interfaces import IAnalysisSpecs
 from zope.interface.declarations import implements
 from plone.app.layout.globals.interfaces import IViewView
 from operator import itemgetter
-
+  
 class AnalysisSpecsView(BikaListingView):
     implements(IFolderContentsView, IViewView)
 

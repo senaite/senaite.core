@@ -32,11 +32,14 @@ class Publish(BrowserView):
         workflow = getToolByName(self.context, 'portal_workflow')
         ARs_to_publish = []
         for ar in analysis_requests:
-            if workflow.getInfoFor(ar, 'review_state') == 'verified':
+            if workflow.getInfoFor(ar, 'review_state') in ['verified', 'published']:
                 ARs_to_publish.append(ar)
             else:
                 if ar.getAnalyses(review_state='verified'):
                     ARs_to_publish.append(ar)
+                else:
+                    if ar.getAnalyses(review_state='published'):
+                        ARs_to_publish.append(ar)
         self.analysis_requests = ARs_to_publish
 
     def __call__(self):
@@ -105,7 +108,8 @@ class Publish(BrowserView):
                     mime_msg.attach(msg_txt)
 
                     #XXX
-                    open(join(Globals.INSTANCE_HOME,'var','ar_results.html'),
+                    ar_debug_name = '%s_%s.html' %(self.analysis_requests[0].Title(), self.action) 
+                    open(join(Globals.INSTANCE_HOME,'var', ar_debug_name),
                                 "w").write(ar_results)
 
                     try:
