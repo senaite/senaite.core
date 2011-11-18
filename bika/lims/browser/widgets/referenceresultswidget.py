@@ -78,7 +78,7 @@ class ReferenceResultsWidget(RecordsWidget):
             CategoryTitle = service.getCategory().Title()
             key = "%s_%s"%(CategoryUID, CategoryTitle)
             ref['title'] = service.Title()
-            ref['service'] = ref['service'].UID()
+            ref['service'] = ref['uid']
             if not categories.has_key(key):
                 categories[key] = {}
             categories[key][service.UID()] = ref
