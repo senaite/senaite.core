@@ -351,6 +351,30 @@ class BikaGenerator:
                     pr.addPolicyForContentType(type_id, 'at_edit_autoversion')
         pr.setVersionableContentTypes(versionable_types)
 
+    def setupCatalogs(self, portal):
+        bsc = getToolByName(portal, 'bika_setup_catalog', None)
+        if bsc == None:
+            logger.warning('Could not find the setup catalog tool.')
+            return
+
+        at = getToolByName(context,'archetype_tool')
+        at.setCatalogsByType('Department', ['portal_catalog','bika_setup_catalog',])
+        at.setCatalogsByType('AnalysisCategory', ['portal_catalog','bika_setup_catalog',])
+        at.setCatalogsByType('AnalysisService', ['portal_catalog','bika_setup_catalog',])
+        at.setCatalogsByType('AnalysisSpec', ['portal_catalog','bika_setup_catalog',])
+        at.setCatalogsByType('SampleType', ['portal_catalog','bika_setup_catalog',])
+        at.setCatalogsByType('SamplePoint', ['portal_catalog','bika_setup_catalog',])
+        at.setCatalogsByType('Instrument', ['portal_catalog','bika_setup_catalog',])
+        at.setCatalogsByType('Method', ['portal_catalog','bika_setup_catalog',])
+        at.setCatalogsByType('AttachmentType', ['portal_catalog','bika_setup_catalog',])
+        at.setCatalogsByType('Calculation', ['portal_catalog','bika_setup_catalog',])
+        at.setCatalogsByType('ARProfile', ['portal_catalog','bika_setup_catalog',])
+        at.setCatalogsByType('LabProduct', ['portal_catalog','bika_setup_catalog',])
+        at.setCatalogsByType('ReferenceManufacturer', ['portal_catalog','bika_setup_catalog',])
+        at.setCatalogsByType('ReferenceSupplier', ['portal_catalog','bika_setup_catalog',])
+        at.setCatalogsByType('ReferenceDefinition', ['portal_catalog','bika_setup_catalog',])
+        at.setCatalogsByType('WorksheetTemplate', ['portal_catalog','bika_setup_catalog',])
+
 def setupVarious(context):
     """
     Final Bika import steps.

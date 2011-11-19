@@ -103,3 +103,6 @@ class IReferenceDefinitions(Interface):
     ""
 class IWorksheetTemplates(Interface):
     ""
+
+class IBikaSetupCatalog(Interface):
+   ""

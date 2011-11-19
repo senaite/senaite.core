@@ -13,27 +13,24 @@ from zope.component import getUtility
 from zope.interface import Interface, implements
 
 class BikaSetupCatalog(CatalogTool):
-   """ Catalog for types in bika_setup
-   """
-   implements(IBikaSetupCatalog)
+    """ Catalog for all bika_setup objects
+    """
+    implements(IBikaSetupCatalog)
 
-   title = 'Bika Setup Catalog'
-   id = 'bika_setup_catalog'
-   portal_type = meta_type = 'BikaSetupCatalog'
-   plone_tool = 1
+    security = ClassSecurityInfo()
+    _properties=({'id':'title', 'type': 'string', 'mode':'w'},)
 
-   security = ClassSecurityInfo()
-   _properties=(
-      {'id':'title', 'type': 'string', 'mode':'w'},)
+    title = 'Bika Setup Catalog'
+    id = 'bika_setup_catalog'
+    portal_type = meta_type = 'BikaSetupCatalog'
+    plone_tool = 1
 
-   def __init__(self):
-       ZCatalog.__init__(self, self.id)
+    def __init__(self):
+        ZCatalog.__init__(self, self.id)
 
     security.declareProtected(ManagePortal, 'clearFindAndRebuild')
     def clearFindAndRebuild(self):
-        """Empties catalog, then finds all contentish objects (i.e. objects
-           with an indexObject method), and reindexes them.
-           This may take a long time.
+        """
         """
 
         def indexObject(obj, path):
@@ -62,3 +59,4 @@ class BikaSetupCatalog(CatalogTool):
                                 apply_func=indexObject)
 
 InitializeClass(BikaSetupCatalog)
+
