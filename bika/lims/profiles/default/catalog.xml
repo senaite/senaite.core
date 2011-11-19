@@ -1,4 +1,5 @@
 <?xml version="1.0"?>
+
 <object name="portal_catalog" meta_type="Plone Catalog Tool">
  <property name="title">Indexes all content in the site</property>
  <property name="unwrapobjects" type="boolean">True</property>
@@ -42,6 +43,133 @@
 
  <index name="Subject" meta_type="KeywordIndex">
   <indexed_attr value="Subject"/>
+ </index>
+
+ <index name="Title" meta_type="ZCTextIndex">
+  <indexed_attr value="Title"/>
+  <extra name="index_type" value="Okapi BM25 Rank"/>
+  <extra name="lexicon_id" value="plone_lexicon"/>
+ </index>
+
+ <index name="Type" meta_type="FieldIndex">
+  <indexed_attr value="Type"/>
+ </index>
+
+ <index name="UID" meta_type="FieldIndex"> <indexed_attr value="UID"/> </index>
+ <index name="allowedRolesAndUsers" meta_type="KeywordIndex"> <indexed_attr value="allowedRolesAndUsers"/> </index>
+ <index name="cmf_uid" meta_type="FieldIndex"> <indexed_attr value="cmf_uid"/> </index>
+ <index name="created" meta_type="DateIndex"> <property name="index_naive_time_as_local">True</property> </index>
+ <index name="effective" meta_type="DateIndex"> <property name="index_naive_time_as_local">True</property> </index>
+ <index name="effectiveRange" meta_type="DateRangeIndex" since_field="effective" until_field="expires"/>
+ <index name="end" meta_type="DateIndex"> <property name="index_naive_time_as_local">True</property> </index>
+ <index name="expires" meta_type="DateIndex"> <property name="index_naive_time_as_local">True</property> </index>
+ <index name="getAnalyst" meta_type="FieldIndex"> <indexed_attr value="getAnalyst"/> </index>
+ <index name="getBrand" meta_type="FieldIndex"> <indexed_attr value="getBrand"/> </index>
+ <index name="getBusinessPhone" meta_type="FieldIndex"> <indexed_attr value="getBusinessPhone"/> </index>
+ <index name="getCategoryName" meta_type="FieldIndex"> <indexed_attr value="getCategoryName"/> </index>
+ <index name="getCategoryUID" meta_type="FieldIndex"> <indexed_attr value="getCategoryUID"/> </index>
+ <index name="getClientReference" meta_type="FieldIndex"> <indexed_attr value="getClientReference"/> </index>
+ <index name="getClientSampleID" meta_type="FieldIndex"> <indexed_attr value="getClientSampleID"/> </index>
+ <index name="getClientUID" meta_type="FieldIndex"> <indexed_attr value="getClientUID"/> </index>
+ <index name="getContactUID" meta_type="FieldIndex"> <indexed_attr value="getContactUID"/> </index>
+ <index name="getDateApplied" meta_type="FieldIndex"> <indexed_attr value="getDateApplied"/> </index>
+ <index name="getDateImported" meta_type="FieldIndex"> <indexed_attr value="getDateImported"/> </index>
+ <index name="getDatePublished" meta_type="FieldIndex"> <indexed_attr value="getDatePublished"/> </index>
+ <index name="getDateReceived" meta_type="FieldIndex"> <indexed_attr value="getDateReceived"/> </index>
+ <index name="getDepartment" meta_type="FieldIndex"> <indexed_attr value="getDepartment"/> </index>
+ <index name="getDueDate" meta_type="DateIndex"> <property name="index_naive_time_as_local">True</property></index>
+ <index name="getExpiryDate" meta_type="DateIndex"> <property name="index_naive_time_as_local">True</property></index>
+ <index name="getFax" meta_type="FieldIndex"> <indexed_attr value="getFax"/> </index>
+ <index name="getFullname" meta_type="FieldIndex"> <indexed_attr value="getFullname"/> </index>
+ <index name="getMobilePhone" meta_type="FieldIndex"> <indexed_attr value="getMobilePhone"/> </index>
+ <index name="getPhone" meta_type="FieldIndex"> <indexed_attr value="getPhone"/> </index>
+ <index name="getId" meta_type="FieldIndex"> <indexed_attr value="getId"/> </index>
+ <index name="getKeyword" meta_type="FieldIndex"> <indexed_attr value="getKeyword"/> </index>
+ <index name="getName" meta_type="FieldIndex"> <indexed_attr value="getName"/> </index>
+ <index name="getObjPositionInParent" meta_type="GopipIndex"> <indexed_attr value="getObjPositionInParent"/> </index>
+ <index name="getPointOfCapture" meta_type="FieldIndex"> <indexed_attr value="getPointOfCapture"/> </index>
+ <index name="getProfileKey" meta_type="FieldIndex"> <indexed_attr value="getProfileKey"/> </index>
+ <index name="getRawRelatedItems" meta_type="KeywordIndex"> <indexed_attr value="getRawRelatedItems"/> </index>
+ <index name="getRequestID" meta_type="FieldIndex"> <indexed_attr value="getRequestID"/> </index>
+ <index name="getSampleID" meta_type="FieldIndex"> <indexed_attr value="getSampleID"/> </index>
+ <index name="getSamplePointTitle" meta_type="FieldIndex"> <indexed_attr value="getSamplePointTitle"/> </index>
+ <index name="getSampleTypeTitle" meta_type="FieldIndex"> <indexed_attr value="getSampleTypeTitle"/> </index>
+ <index name="getServiceUID" meta_type="FieldIndex"> <indexed_attr value="getServiceUID"/> </index>
+ <index name="getServiceTitle" meta_type="FieldIndex"> <indexed_attr value="getServiceTitle"/> </index>
+ <index name="getStatus" meta_type="FieldIndex"> <indexed_attr value="getStatus"/> </index>
+ <index name="getType" meta_type="FieldIndex"> <indexed_attr value="getType"/> </index>
+ <index name="getUsername" meta_type="FieldIndex"> <indexed_attr value="getUsername"/> </index>
+ <index name="id" meta_type="FieldIndex"> <indexed_attr value="id"/> </index>
+ <index name="in_reply_to" meta_type="FieldIndex"> <indexed_attr value="in_reply_to"/> </index>
+ <index name="is_default_page" meta_type="FieldIndex"> <indexed_attr value="is_default_page"/> </index>
+ <index name="is_folderish" meta_type="FieldIndex"> <indexed_attr value="is_folderish"/> </index>
+ <index name="meta_type" meta_type="FieldIndex"> <indexed_attr value="meta_type"/> </index>
+ <index name="modified" meta_type="DateIndex"> <property name="index_naive_time_as_local">True</property> </index>
+ <index name="object_provides" meta_type="KeywordIndex"> <indexed_attr value="object_provides"/> </index>
+ <index name="path" meta_type="ExtendedPathIndex"/>
+ <index name="portal_type" meta_type="FieldIndex"> <indexed_attr value="portal_type"/> </index>
+ <index name="sortable_title" meta_type="FieldIndex"> <indexed_attr value="sortable_title"/> </index>
+ <index name="start" meta_type="DateIndex"> <property name="index_naive_time_as_local">True</property> </index>
+ <index name="review_state" meta_type="FieldIndex"> <indexed_attr value="review_state"/> </index>
+ <index name="inactive_state" meta_type="FieldIndex"> <indexed_attr value="inactive_state"/> </index>
+ <index name="worksheetanalysis_review_state" meta_type="FieldIndex"> <indexed_attr value="worksheetanalysis_review_state"/> </index>
+ <index name="cancellation_state" meta_type="FieldIndex"> <indexed_attr value="cancellation_state"/> </index>
+
+ <column value="CreationDate"/>
+ <column value="Creator"/>
+ <column value="Date"/>
+ <column value="Description"/>
+ <column value="EffectiveDate"/>
+ <column value="ExpirationDate"/>
+ <column value="ModificationDate"/>
+ <column value="Subject"/>
+ <column value="Title"/>
+ <column value="Type"/>
+ <column value="UID"/>
+ <column value="cmf_uid"/>
+ <column value="created"/>
+ <column value="effective"/>
+ <column value="end"/>
+ <column value="exclude_from_nav"/>
+ <column value="expires"/>
+ <column value="getCategoryName"/>
+ <column value="getCategoryUID"/>
+ <column value="getIcon"/>
+ <column value="getId"/>
+ <column value="getKeyword"/>
+ <column value="getObjSize"/>
+ <column value="getRemoteUrl"/>
+ <column value="getRequestID"/>
+ <column value="id"/>
+ <column value="is_folderish"/>
+ <column value="listCreators"/>
+ <column value="location"/>
+ <column value="meta_type"/>
+ <column value="modified"/>
+ <column value="portal_type"/>
+ <column value="review_state"/>
+ <column value="inactive_state"/>
+ <column value="worksheetanalysis_review_state"/>
+ <column value="cancellation_state"/>
+ <column value="start"/>
+</object>
+
+<object name="bika_setup_catalog" meta_type="Plone Catalog Tool">
+ <property name="title">Indexes all Bika setup objects in the site</property>
+ <property name="unwrapobjects" type="boolean">True</property>
+
+ <index name="Creator" meta_type="FieldIndex">
+  <indexed_attr value="Creator"/>
+ </index>
+
+ <index name="Date" meta_type="DateIndex">
+  <property name="index_naive_time_as_local">True</property>
+ </index>
+
+ <index name="Description" meta_type="ZCTextIndex">
+  <indexed_attr value="Description"/>
+  <extra name="index_type" value="Okapi BM25 Rank"/>
+  <extra name="lexicon_id" value="plone_lexicon"/>
  </index>
 
  <index name="Title" meta_type="ZCTextIndex">
