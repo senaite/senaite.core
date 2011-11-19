@@ -59,3 +59,4 @@ class BikaSetupCatalog(CatalogTool):
                                 apply_func=indexObject)
 
 InitializeClass(BikaSetupCatalog)
+
