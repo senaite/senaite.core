@@ -24,4 +24,11 @@
     rendering="import"
     insert-after="*"/>
 
+<stylesheet
+    id="bika_listing.css"
+    media="screen"
+    rel="stylesheet"
+    rendering="link"
+    insert-after="*"/>
+
 </object>
