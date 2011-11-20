@@ -30,7 +30,7 @@ class AnalysisSpecsView(BikaListingView):
 
         self.columns = {
             'SampleType': {'title': _('Sample Type'),
-                              'index': 'getSampleType'},
+                              'index': 'getSampleTypeTitle'},
         }
         self.review_states = [
             {'id':'all',

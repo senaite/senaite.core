@@ -38,7 +38,7 @@ class WorksheetTemplatesView(BikaListingView):
             'Title': {'title': _('Title'),
                       'index': 'sortable_title',},
             'Description': {'title': _('Description'),
-                            'index': 'sortable_description'},
+                            'index': 'getDescription'},
         }
         self.review_states = [
             {'id':'all',

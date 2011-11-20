@@ -27,8 +27,7 @@ schema = BikaSchema.copy() + Schema((
             label = _('Department'),
         ),
     ),
-    # indexed value for getDepartment
-    ComputedField('DepartmentName',
+    ComputedField('DepartmentTitle',
         expression = "context.getDepartment() and context.getDepartment().Title() or ''",
         widget = ComputedWidget(
             visible = False,

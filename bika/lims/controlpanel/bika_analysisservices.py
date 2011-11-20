@@ -34,11 +34,11 @@ class AnalysisServicesView(BikaListingView):
             'Keyword': {'title': _('Keyword'),
                       'index':'getKeyword'},
             'Category': {'title': _('Category'),
-                      'index':'getCategory'},
+                      'index':'getCategoryTitle'},
             'Department': {'title': _('Department'),
-                      'index':'getDepartment'},
+                      'index':'getDepartmentTitle'},
             'Instrument': {'title': _('Instrument'),
-                      'index':'getInstrument'},
+                      'index':'getInstrumentTitle'},
             'Unit': {'title': _('Unit'),
                       'index':'getUnit'},
             'Price': {'title': _('Price'),
@@ -48,7 +48,7 @@ class AnalysisServicesView(BikaListingView):
             'DuplicateVariation': {'title': _('Dup Var'),
                       'index':'getDuplicateVariation'},
             'Calculation': {'title': _('Calculation'),
-                      'index':'getCalculation'},
+                      'index':'getCalculationTitle'},
         }
 
         self.review_states = [

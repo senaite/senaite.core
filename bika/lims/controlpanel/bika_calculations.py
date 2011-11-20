@@ -34,7 +34,7 @@ class CalculationsView(BikaListingView):
                    'Title': {'title': _('Calculation'),
                              'index': 'sortable_title'},
                    'Description': {'title': _('Description'),
-                                   'index': 'sortable_description'},
+                                   'index': 'getDescriptionTitle'},
                    'Formula': {'title': _('Formula'),
                                'index': 'getFormula'},
                   }

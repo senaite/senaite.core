@@ -16,7 +16,7 @@ schema = BikaSchema.copy() + Schema((
             description = _("Technical description and instructions intended for analysts"),
         ),
     ),
-    FileField('MethodDocument',  # XXX Multiple documents please
+    FileField('MethodDocument',  # XXX Multiple Method documents please
         widget = FileWidget(
             label = _("Method document"),
             description = _("Load documents describing the method here"),

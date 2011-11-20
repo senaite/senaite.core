@@ -33,9 +33,14 @@ schema = BikaSchema.copy() + Schema((
             description = _("The analyses included in this profile, grouped per category"),
         )
     ),
-    # indexed value for getService
-    ComputedField('ServiceName',
+    ComputedField('ServiceTitle',
         expression = "context.getService() and context.getService().Title() or ''",
+        widget = ComputedWidget(
+            visible = False,
+        ),
+    ),
+    ComputedField('ServiceUID',
+        expression = "context.getService() and context.getService().UID() or ''",
         widget = ComputedWidget(
             visible = False,
         ),
@@ -48,8 +53,14 @@ schema = BikaSchema.copy() + Schema((
             label = _("Remarks"),
         ),
     ),
+    ComputedField('ClientTitle',
+        expression = 'context.aq_parent.Title()',
+        widget = ComputedWidget(
+            visible = False,
+        ),
+    ),
     ComputedField('ClientUID',
-        expression = 'here.aq_parent.UID()',
+        expression = 'context.aq_parent.UID()',
         widget = ComputedWidget(
             visible = False,
         ),

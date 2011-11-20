@@ -25,21 +25,18 @@ schema = BikaSchema.copy() + Schema((
                             "analysis results reports containing analyses by their department."),
         ),
     ),
-    # this is the value of the getManager index
     ComputedField('ManagerName',
         expression = "context.getManager() and context.getManager().getFullname() or ''",
         widget = ComputedWidget(
             visible = False,
         ),
     ),
-    # this is the value of the getManagerPhone index
     ComputedField('ManagerPhone',
         expression = "context.getManager() and context.getManager().getBusinessPhone() or ''",
         widget = ComputedWidget(
             visible = False,
         ),
     ),
-    # this is the value of the getManagerEmail index
     ComputedField('ManagerEmail',
         expression = "context.getManager() and context.getManager().getEmailAddress() or ''",
         widget = ComputedWidget(

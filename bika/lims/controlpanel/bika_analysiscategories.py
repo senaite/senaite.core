@@ -32,9 +32,9 @@ class AnalysisCategoriesView(BikaListingView):
             'Title': {'title': _('Category'),
                       'index': 'sortable_title'},
             'Description': {'title': _('Description'),
-                            'index': 'sortable_description'},
+                            'index': 'getDescription'},
             'Department': {'title': _('Department'),
-                           'index': 'getDepartment'},
+                           'index': 'getDepartmentTitle'},
         }
 
         self.review_states = [

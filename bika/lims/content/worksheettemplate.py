@@ -44,14 +44,18 @@ schema = BikaSchema.copy() + Schema((
             description = _("Select which Analyses should be included on the Worksheet"),
         )
     ),
-    # indexed value for getService
-    ComputedField('ServiceName',
+    ComputedField('ServiceTitle',
         expression = "context.getService() and context.getService().Title() or ''",
         widget = ComputedWidget(
             visible = False,
         ),
     ),
-
+    ComputedField('ServiceUID',
+        expression = "context.getService() and context.getService().UID() or ''",
+        widget = ComputedWidget(
+            visible = False,
+        ),
+    ),
 ))
 
 schema['title'].schemata = 'Description'

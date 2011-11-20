@@ -128,8 +128,7 @@ schema = BikaSchema.copy() + Schema((
             description = _("Select the preferred instrument for this analysis"),
         ),
     ),
-    # indexed value for getInstrument
-    ComputedField('InstrumentName',
+    ComputedField('InstrumentTitle',
         expression = "context.getInstrument() and context.getInstrument().Title() or ''",
         widget = ComputedWidget(
             visible = False,
@@ -150,8 +149,7 @@ schema = BikaSchema.copy() + Schema((
                             "in the LIMS set-up"),
         ),
     ),
-    # indexed value for getCalculation
-    ComputedField('CalculationName',
+    ComputedField('CalculationTitle',
         expression = "context.getCalculation() and context.getCalculation().Title() or ''",
         widget = ComputedWidget(
             visible = False,
@@ -211,9 +209,14 @@ schema = BikaSchema.copy() + Schema((
             description = _("The category the analysis service belongs to"),
         ),
     ),
-    # indexed value for getCategory
-    ComputedField('CategoryName',
+    ComputedField('CategoryTitle',
         expression = "context.getCategory() and context.getCategory().Title() or ''",
+        widget = ComputedWidget(
+            visible = False,
+        ),
+    ),
+    ComputedField('CategoryUID',
+        expression = "context.getCategory() and context.getCategory().UID() or ''",
         widget = ComputedWidget(
             visible = False,
         ),
@@ -231,19 +234,10 @@ schema = BikaSchema.copy() + Schema((
             description = _("The lab department responsible for the analysis service"),
         ),
     ),
-    # indexed value for getDepartment
-    ComputedField('DepartmentName',
+    ComputedField('DepartmentTitle',
         expression = "context.getDepartment() and context.getDepartment().Title() or ''",
         widget = ComputedWidget(
             visible = False,
-        ),
-    ),
-    ComputedField('CategoryUID',
-        schemata = _("Description"),
-        expression = "context.getCategory() and context.getCategory().UID() or ''",
-        widget = ComputedWidget(
-            label = _("Analysis category"),
-            visible = {'edit':'hidden', }
         ),
     ),
     RecordsField('Uncertainties',

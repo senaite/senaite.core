@@ -35,8 +35,7 @@ schema = Person.schema.copy() + Schema((
             i18n_domain = I18N_DOMAIN,
         ),
     ),
-    # indexed value for getDepartment
-    ComputedField('DepartmentName',
+    ComputedField('DepartmentTitle',
         expression = "context.getDepartment() and context.getDepartment().Title() or ''",
         widget = ComputedWidget(
             visible = False,
