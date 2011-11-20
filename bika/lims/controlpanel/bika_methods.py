@@ -3,6 +3,7 @@ from Products.ATContentTypes.content import schemata
 from Products.Archetypes import atapi
 from Products.Archetypes.ArchetypeTool import registerType
 from Products.CMFCore import permissions
+from Products.CMFCore.utils import getToolByName
 from Products.Five.browser import BrowserView
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.config import PROJECTNAME
@@ -19,6 +20,8 @@ class MethodsView(BikaListingView):
 
     def __init__(self, context, request):
         super(MethodsView, self).__init__(context, request)
+        bsc = getToolByName(context, 'bika_setup_catalog')
+        self.contentsMethod = bsc
         self.contentFilter = {'portal_type': 'Method',
                               'sort_on': 'sortable_title'}
         self.content_add_actions = {_('Add'):
@@ -29,7 +32,7 @@ class MethodsView(BikaListingView):
         self.show_sort_column = False
         self.show_select_row = False
         self.show_select_column = True
-        self.pagesize = 20
+        self.pagesize = 25
 
         self.columns = {
             'Title': {'title': _('Method'),
@@ -37,6 +40,7 @@ class MethodsView(BikaListingView):
             'Description': {'title': _('Description'),
                             'index': 'getDescription'},
         }
+
         self.review_states = [
             {'id':'all',
              'title': _('All'),

@@ -98,7 +98,7 @@ $(document).ready(function(){
 			}
 		);
 	}
-	$("#worksheet_services input[id*='cb_']").live('click', function(){
+	$("#worksheet_services input[id*='_cb_']").live('click', function(){
 		get_updated_controls();
 	});
 	// get references for selected services on first load

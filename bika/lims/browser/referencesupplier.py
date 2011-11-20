@@ -5,7 +5,7 @@ from bika.lims.utils import TimeOrDate
 class ReferenceSamplesView(BikaListingView):
     title = _("Reference Samples")
     icon = "++resource++bika.lims.images/referencesample_big.png"
-    description = _("")
+    description = _(" ")
     contentFilter = {'portal_type': 'ReferenceSample',
                      'sort_on': 'id',
                      'sort_order': 'reverse'}
@@ -104,7 +104,7 @@ class ContactsView(BikaListingView):
     show_sort_column = False
     show_select_row = False
     show_select_column = True
-    pagesize = 20
+    pagesize = 25
 
     columns = {
            'getFullname': {'title': _('Full Name')},

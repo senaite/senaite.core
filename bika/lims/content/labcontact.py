@@ -27,6 +27,7 @@ schema = Person.schema.copy() + Schema((
         vocabulary_display_path_bound = sys.maxint,
         allowed_types = ('Department',),
         relationship = 'LabContactDepartment',
+        vocabulary = 'getDepartments',
         referenceClass = HoldingReference,
         widget = ReferenceWidget(
             checkbox_bound = 1,
@@ -55,5 +56,15 @@ class LabContact(Person):
     def Title(self):
         """ Return the contact's Fullname as title """
         return self.getFullname()
+
+    def getDepartments(self):
+        bsc = getToolByName(self, 'bika_setup_catalog')
+        items = [('','')] + [(o.UID, o.Title) for o in \
+                               bsc(portal_type='Department',
+                                   inactive_state = 'active')]
+        o = self.getDepartment()
+        if o and (o.UID, o.Title) not in items:
+            items.append((o.UID, o.Title))
+        return DisplayList(list(items))
 
 registerType(LabContact, PROJECTNAME)

@@ -129,7 +129,7 @@ class Pricelist(BaseFolder):
                     itemDescription = obj.Description()
                 itemAccredited = obj.getAccredited()
             if self.getType() == 'AnalysisService':
-                cat = obj.getCategoryName()
+                cat = obj.getCategoryTitle()
                 if self.getClientType() == 'corporate':
                     if obj.getCorporatePrice():
                         price = obj.getCorporatePrice()

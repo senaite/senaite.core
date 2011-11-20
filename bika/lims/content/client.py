@@ -194,9 +194,10 @@ class Client(Organisation):
     security.declarePublic('getSampleTypeDisplayList')
     def getSampleTypeDisplayList(self):
         """ return all sample types """
+        bsc = getToolByName(self, 'bika_setup_catalog')
         sampletypes = []
-        for st in self.portal_catalog(portal_type = 'SampleType',
-                                      sort_on = 'sortable_title'):
+        for st in bsc(portal_type = 'SampleType',
+                      sort_on = 'sortable_title'):
             sampletypes.append((st.UID, st.Title))
         return DisplayList(sampletypes)
 

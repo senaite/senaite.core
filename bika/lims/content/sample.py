@@ -179,12 +179,9 @@ class Sample(BaseFolder, HistoryAwareMixin):
     def setSampleType(self, value, **kw):
         """ convert SampleType title to UID
         """
-        rs = self.portal_catalog(
-            portal_type = 'SampleType',
-            Title = value
-        )
-        value = rs[0].UID
-
+        bsc = getToolByName(self, 'bika_setup_catalog')
+        sampletype = bsc(portal_type = 'SampleType', Title = value)
+        value = sampletype[0].UID
         return self.Schema()['SampleType'].set(self, value)
 
     def setSamplePoint(self, value, **kw):
@@ -192,13 +189,10 @@ class Sample(BaseFolder, HistoryAwareMixin):
         """
         sp_uid = None
         if value:
-            sps = self.portal_catalog(
-                portal_type = 'SamplePoint',
-                Title = value
-            )
-            if sps:
-                sp_uid = sps[0].UID
-
+            bsc = getToolByName(self, 'bika_setup_catalog')
+            samplepoints = bsc(portal_type = 'SamplePoint', Title = value)
+            if samplepoints:
+                sp_uid = samplepoints[0].UID
         return self.Schema()['SamplePoint'].set(self, sp_uid)
 
     security.declarePublic('getAnalysisRequests')
@@ -214,7 +208,6 @@ class Sample(BaseFolder, HistoryAwareMixin):
             ars.append(ar)
         return ars
 
-    # XXX not used anywhere???
     security.declarePublic('getAnalyses')
     def getAnalyses(self):
         """ return list of titles of analyses linked to this sample """

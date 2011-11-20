@@ -12,6 +12,19 @@ from bika.lims.interfaces import IBikaSetupCatalog
 from zope.component import getUtility
 from zope.interface import Interface, implements
 
+def getCatalog(instance, field='UID'):
+    """ Return the catalog which indexes objects of instance's type.
+        If an object is indexed by more than one catalog, the first match
+        will be returned.
+    """
+    catalogs = [getToolByName(instance, 'portal_catalog'),
+                getToolByName(instance, 'bika_setup_catalog')]
+    field = instance.getField(field)
+    for catalog in catalogs:
+        for index in catalog.index_objects():
+            if field.accessor in index.getIndexSourceNames():
+                return catalog
+
 class BikaSetupCatalog(CatalogTool):
     """ Catalog for all bika_setup objects
     """
@@ -50,6 +63,7 @@ class BikaSetupCatalog(CatalogTool):
                                                'AttachmentType',
                                                'Calculation',
                                                'ARProfile',
+                                               'LabContact',
                                                'LabProduct',
                                                'ReferenceManufacturer',
                                                'ReferenceSupplier',
@@ -59,4 +73,3 @@ class BikaSetupCatalog(CatalogTool):
                                 apply_func=indexObject)
 
 InitializeClass(BikaSetupCatalog)
-

@@ -2,6 +2,7 @@ from AccessControl.SecurityInfo import ClassSecurityInfo
 from Products.ATContentTypes.content import schemata
 from Products.Archetypes import atapi
 from Products.Archetypes.ArchetypeTool import registerType
+from Products.CMFCore.utils import getToolByName
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.config import PROJECTNAME
 from bika.lims import bikaMessageFactory as _
@@ -17,6 +18,8 @@ class ARProfilesView(BikaListingView):
 
     def __init__(self, context, request):
         super(ARProfilesView, self).__init__(context, request)
+        bsc = getToolByName(context, 'bika_setup_catalog')
+        self.contentsMethod = bsc
         self.contentFilter = {'portal_type': 'ARProfile',
                               'sort_on': 'sortable_title'}
         self.content_add_actions = {_('Add'):
@@ -36,6 +39,7 @@ class ARProfilesView(BikaListingView):
             'ProfileKey': {'title': _('Profile Key'),
                            'index': 'getProfileKey'},
         }
+
         self.review_states = [
             {'id':'all',
              'title': _('All'),

@@ -44,7 +44,7 @@ emptyTextColor:string=#fff
 emptyBackgroundColor:string=#b1b1b1
 
 buttonBorderColor:string=#bbb
-buttonBorderRadius:string=.25em
+buttonBorderRadius:string=.5em
 buttonBackgroundColor:string=#eee
 buttonTextColor:string=#000
 

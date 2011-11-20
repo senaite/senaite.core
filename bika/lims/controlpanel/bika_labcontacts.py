@@ -3,6 +3,7 @@ from Products.ATContentTypes.content import schemata
 from Products.Archetypes import atapi
 from Products.Archetypes.ArchetypeTool import registerType
 from Products.CMFCore import permissions
+from Products.CMFCore.utils import getToolByName
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.config import PROJECTNAME
 from bika.lims import bikaMessageFactory as _
@@ -18,6 +19,8 @@ class LabContactsView(BikaListingView):
     implements(IFolderContentsView, IViewView)
     def __init__(self, context, request):
         super(LabContactsView, self).__init__(context, request)
+        bsc = getToolByName(context, 'bika_setup_catalog')
+        self.contentsMethod = bsc
         self.contentFilter = {'portal_type': 'LabContact',
                               'sort_on': 'sortable_title'}
         self.content_add_actions = {_('Add'):
@@ -28,7 +31,7 @@ class LabContactsView(BikaListingView):
         self.show_sort_column = False
         self.show_select_row = False
         self.show_select_column = True
-        self.pagesize = 20
+        self.pagesize = 25
 
         self.columns = {
             'Fullname': {'title': _('Name'),
@@ -44,6 +47,7 @@ class LabContactsView(BikaListingView):
             'EmailAddress': {'title': _('Email Address'),
                              'index': 'getEmailAddress'},
         }
+
         self.review_states = [
             {'id':'all',
              'title': _('All'),
@@ -81,7 +85,7 @@ class LabContactsView(BikaListingView):
             if not items[x].has_key('obj'): continue
             obj = items[x]['obj']
             items[x]['Fullname'] = obj.getFullname()
-            items[x]['Department'] = obj.getDepartmentName()
+            items[x]['Department'] = obj.getDepartmentTitle()
             items[x]['BusinessPhone'] = obj.getBusinessPhone()
             items[x]['Fax'] = obj.getBusinessFax()
             items[x]['MobilePhone'] = obj.getMobilePhone()

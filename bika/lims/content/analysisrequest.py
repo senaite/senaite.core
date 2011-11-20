@@ -540,10 +540,9 @@ class AnalysisRequest(BaseFolder):
         """
         user = self.REQUEST.AUTHENTICATED_USER
         user_id = user.getUserName()
-        r = self.portal_catalog(
-            portal_type = 'Contact',
-            getUsername = user_id
-        )
+        pc = getToolByName(self, 'portal_catalog')
+        r = pc(portal_type = 'Contact',
+               getUsername = user_id)
         if len(r) == 1:
             return r[0].UID
 

@@ -51,25 +51,25 @@ class SpecWidget(RecordsWidget):
         """Returns a dictionary of AnalysisCategory[service,service,...]
         """
         categories = {}
-        services = self.portal_catalog(portal_type = 'AnalysisService',
-                                       sort_on='sortable_title')
-        pc = getToolByName(self, 'portal_catalog')
+        bsc = getToolByName(self, 'bika_setup_catalog')
+        services = bsc(portal_type = 'AnalysisService',
+                       sort_on='sortable_title')
 
         if allservices:
             for service in services:
-                if categories.has_key(service.getCategoryName):
-                    categories[service.getCategoryName].append(service)
+                if categories.has_key(service.getCategoryTitle):
+                    categories[service.getCategoryTitle].append(service)
                 else:
-                    categories[service.getCategoryName] = [service, ]
+                    categories[service.getCategoryTitle] = [service, ]
         else:
             records = getattr(field, field.accessor)()
             for record in records:
-                service = pc(portal_type='AnalysisService',
-                             getKeyword=record['keyword'])[0].getObject()
-                if categories.has_key(service.getCategoryName()):
-                    categories[service.getCategoryName()].append(service)
+                service = bsc(portal_type='AnalysisService',
+                              getKeyword=record['keyword'])[0]
+                if categories.has_key(service.getCategoryTitle):
+                    categories[service.getCategoryTitle].append(service)
                 else:
-                    categories[service.getCategoryName()] = [service, ]
+                    categories[service.getCategoryTitle] = [service, ]
 
         return categories
 
@@ -77,35 +77,35 @@ class SpecWidget(RecordsWidget):
     def getSpecCategories(self, field):
         """list of Category UIDS for services specified in ResultsRange
         """
-        pc = getToolByName(self, 'portal_catalog')
+        bsc = getToolByName(self, 'bika_setup_catalog')
         categories = []
 
         for spec in field.getResultsRange():
-            service = pc(portal_type='AnalysisService',
-                         getKeyword=spec['keyword'])[0].getObject()
-            if service.getCategoryUID() not in categories:
-                categories.append({'UID': service.getCategoryUID(),
-                                   'Title': service.getCategoryName()})
+            service = bsc(portal_type='AnalysisService',
+                          getKeyword=spec['keyword'])[0]
+            if service.getCategoryUID not in categories:
+                categories.append({'UID': service.getCategoryUID,
+                                   'Title': service.getCategoryTitle})
         return categories
 
     security.declarePublic('getCategorySpecs')
     def getCategorySpecs(self, field, category_title):
         """Return a list of services with specs in a category
         """
-        pc = getToolByName(self, 'portal_catalog')
+        bsc = getToolByName(self, 'bika_setup_catalog')
         services = []
         for spec in field.getResultsRange():
-            service = pc(portal_type='AnalysisService',
-                         getKeyword=spec['keyword'])[0].getObject()
-            if service.getCategoryName() == category_title:
+            service = bsc(portal_type='AnalysisService',
+                          getKeyword=spec['keyword'])[0]
+            if service.getCategoryTitle == category_title:
                 services.append(spec)
         return services
 
     security.declarePublic('getCategoryUID')
     def getCategoryUID(self, category_title):
-        pc = getToolByName(self, 'portal_catalog')
-        cats = pc(portal_type = "AnalysisCategory")
-        cats = [cat.UID for cat in cats if cat.Title == category_title]
+        bsc = getToolByName(self, 'bika_setup_catalog')
+        cats = bsc(portal_type = "AnalysisCategory")
+        cats = [cat.UID for cat in cats if cat.title == category_title]
         if cats:
             return cats[0]
         else:

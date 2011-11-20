@@ -656,7 +656,7 @@ class ClientOrdersView(BikaListingView):
         self.show_sort_column = False
         self.show_select_row = False
         self.show_select_column = True
-        self.pagesize = 20
+        self.pagesize = 25
 
         self.icon = "++resource++bika.lims.images/order_big.png"
         self.title = "%s - %s" % (self.context.Title(), _("Orders"))

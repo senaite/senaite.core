@@ -8,7 +8,9 @@ $(document).ready(function(){
 		value = $(this).attr('value');
 		item_data = $(this).parents('table').prev('input[name="item_data"]').val();
 		// check the item's checkbox
-		$('#'+form_id+'_cb_'+uid).attr('checked', true);
+		if ($('#'+form_id+'_cb_'+uid).attr('checked') == false) {
+			$('#'+form_id+'_cb_'+uid).click();
+		}
 
 		if ($(this).parents('td').last().hasClass('interim')){
 			// add value to form's item_data
@@ -80,7 +82,9 @@ $(document).ready(function(){
 						.append(result.formatted_result);
 					// check box
 					if (results != ''){
-						$('#'+form_id+'_cb_'+result.uid).attr('checked', true);
+						if ($('#'+form_id+'_cb_'+result.uid).attr('checked') == false) {
+							$('#'+form_id+'_cb_'+result.uid).click();
+						}
 					}
 				}
 			}

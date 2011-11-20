@@ -83,7 +83,7 @@ class Publish(BrowserView):
                                                    review_state=states):
                         service = analysis.getService()
                         poc = POINTS_OF_CAPTURE.getValue(service.getPointOfCapture())
-                        cat = service.getCategoryName()
+                        cat = service.getCategoryTitle()
                         if poc not in self.services:
                             self.services[poc] = {}
                         if cat not in self.services[poc]:
@@ -108,7 +108,7 @@ class Publish(BrowserView):
                     mime_msg.attach(msg_txt)
 
                     #XXX
-                    ar_debug_name = '%s_%s.html' %(self.analysis_requests[0].Title(), self.action) 
+                    ar_debug_name = '%s_%s.html' %(self.analysis_requests[0].Title(), self.action)
                     open(join(Globals.INSTANCE_HOME,'var', ar_debug_name),
                                 "w").write(ar_results)
 

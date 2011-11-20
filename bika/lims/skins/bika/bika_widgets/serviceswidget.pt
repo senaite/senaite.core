@@ -7,62 +7,16 @@
 <body>
 
 <metal:view_macro define-macro="view">
-    <span id="serviceswidget"
-          tal:define="categories python:widget.getCategories(field, selected_only=True);">
-      <table class="listing analysisrequest nosort">
-        <tal:repeat repeat="category python:categories.keys()">
-          <tbody>
-            <tr>
-              <th tal:content="category"/>
-            </tr>
-            <tr tal:condition="python:categories[category]">
-              <td tal:content="python:', '.join([service.Title() for service in categories[category]])"/>
-            </tr>
-          </tbody>
-        </tal:repeat>
-      </table>
+   <span id="serviceswidget">
+        <span tal:content="structure python:widget.Services(field, show_select_column=False)"/>
     </span>
 </metal:view_macro>
 
 <metal:edit_macro define-macro="edit">
 <metal:use use-macro="field_macro | context/widgets/field/macros/edit">
-
-  <metal:body_macro fill-slot="widget_body" tal:define="
-      allservices python:widget.getServices(field);
-      selectedservices python:widget.getServices(field,selected_only=True)">
-    <table class="analysisrequest listing nosort">
-
-      <tal:i repeat="poc python:allservices.keys()">
-
-        <thead class="pointofcapture">
-          <tr><th colspan="2"><b tal:content="python:poc[1]">Analyses</b></th></tr>
-        </thead>
-
-        <tal:i tal:define="
-                    cats python:allservices[poc].keys();
-                    dummy python:cats.sort(lambda x, y: cmp(x[1], y[1]))"
-               tal:repeat="cat cats">
-
-          <thead>
-            <tr>
-            <th colspan="2" tal:content="python:cat[1]" tal:attributes="
-              id field/getName;
-              class python:selectedservices[poc].has_key(cat) and 'initial prefill' or 'initial';
-              allservices python:widget.dumpsJSON(allservices[poc].has_key(cat) and [(s[0],s[1]) for s in allservices[poc][cat]] or []);
-              selectedservices python:widget.dumpsJSON(selectedservices[poc].has_key(cat) and [s[0] for s in selectedservices[poc][cat]] or []);
-              poc python:poc[0];
-              cat python:cat[0];"/>
-          </tr></thead>
-
-          <tbody class="analysisservices"
-                 tal:attributes="id python:'%s_%s'%(poc[0], cat[0])" >
-             <tr></tr>
-          </tbody>
-
-        </tal:i>
-      </tal:i>
-    </table>
-  </metal:body_macro>
+    <metal:body_macro fill-slot="widget_body">
+        <span tal:content="structure python:widget.Services(field)"/>
+    </metal:body_macro>
 </metal:use>
 </metal:edit_macro>
 

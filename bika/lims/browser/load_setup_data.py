@@ -11,8 +11,11 @@ from xml.etree.ElementTree import XML
 from zipfile import ZipFile, ZIP_DEFLATED
 from zope.app.component.hooks import getSite
 import Globals
+import App
 import tempfile
 import transaction
+import time
+
 
 class LoadSetupData(BrowserView):
     template = ViewPageTemplateFile("templates/load_setup_data.pt")
@@ -21,7 +24,7 @@ class LoadSetupData(BrowserView):
         BrowserView.__init__(self, context, request)
         self.title = _("Load Setup Data")
         self.description = _("Please.")
-        self.text = _("")
+        self.text = _(" ")
         # dependencies to resolve
         self.deferred = {}
 
@@ -33,7 +36,11 @@ class LoadSetupData(BrowserView):
         if not 'submitted' in form:
             return self.template()
 
+        if App.config.getConfiguration().debug_mode:
+            start = time.time()
+
         self.portal_catalog = getToolByName(self.context, 'portal_catalog')
+        self.bsc = bsc = getToolByName(self.context, 'bika_setup_catalog')
         self.reference_catalog = getToolByName(self.context, REFERENCE_CATALOG)
         self.portal_registration = getToolByName(self.context, 'portal_registration')
         self.portal_groups = getToolByName(self.context, 'portal_groups')
@@ -107,6 +114,12 @@ class LoadSetupData(BrowserView):
         self.load_lab_products(sheets['Lab Products'])
         self.load_worksheet_templates(sheets['Worksheet Templates'])
         self.load_reference_manufacturers(sheets['Reference Manufacturers'])
+
+        bsc = getToolByName(self.context, 'bika_setup_catalog')
+        bsc.clearFindAndRebuild()
+
+        if App.config.getConfiguration().debug_mode:
+            message = "%s (%s seconds)" % (_("Success."), time.time() - start)
 
         self.plone_utils.addPortalMessage(_("Success."))
         self.request.RESPONSE.redirect(portal.absolute_url())
@@ -203,21 +216,25 @@ class LoadSetupData(BrowserView):
             labcontact_id = folder.generateUniqueId('LabContact')
             folder.invokeFactory('LabContact', id = labcontact_id)
             obj = folder[labcontact_id]
-            obj.edit(Firstname = unicode(row['Firstname']),
-                     Surname = unicode(row['Surname']),
-                     EmailAddress = unicode(row['EmailAddress']),
-                     BusinessPhone = unicode(row['BusinessPhone']),
-                     BusinessFax = unicode(row['BusinessFax']),
-                     MobilePhone = unicode(row['MobilePhone']),
-                     JobTitle = unicode(row['JobTitle']))
-                     # Department = row['Department'],
-                     # Signature = row['Signature'],
+            obj.processForm()
+            Fullname = unicode(row['Firstname']) + " " + unicode(row['Surname'])
+            obj.edit(
+                title = Fullname,
+                description = Fullname,
+                Firstname = unicode(row['Firstname']),
+                Surname = unicode(row['Surname']),
+                EmailAddress = unicode(row['EmailAddress']),
+                BusinessPhone = unicode(row['BusinessPhone']),
+                BusinessFax = unicode(row['BusinessFax']),
+                MobilePhone = unicode(row['MobilePhone']),
+                JobTitle = unicode(row['JobTitle']))
+                # Department = row['Department'],
+                # Signature = row['Signature'],
             row['obj'] = obj
             self.lab_contacts.append(row)
-            obj.processForm()
 
     def load_lab_departments(self, sheet):
-        lab_contacts = self.portal_catalog(portal_type="LabContact")
+        lab_contacts = self.bsc(portal_type="LabContact")
         nr_rows = sheet.get_highest_row()
         nr_cols = sheet.get_highest_column()
 ##        self.request.response.write("<input type='hidden' id='load_section' value='Lab Departments' max='%s'/>"%(nr_rows-3))
@@ -664,8 +681,8 @@ class LoadSetupData(BrowserView):
             folder.invokeFactory('ARProfile', id = m_id)
             obj = folder[m_id]
             services = [d.strip() for d in unicode(row['Service']).split(",")]
-            proxies = self.portal_catalog(portal_type="AnalysisService",
-                                          getKeyword = services)
+            proxies = self.bsc(portal_type="AnalysisService",
+                               getKeyword = services)
             if len(proxies) != len(services):
                 raise Exception("Analysis Profile services invalid.  Got %s, found %s" %\
                                 (services, [p.getKeyword for p in proxies]))
@@ -726,8 +743,8 @@ class LoadSetupData(BrowserView):
                     obj.setResultsRange(ResultsRange)
                     ResultsRange = []
                 _id = folder.generateUniqueId('AnalysisSpec')
-                folder.invokeFactory('AnalysisSpec', id = _id)
-                obj = folder[_id]
+                id = folder.invokeFactory('AnalysisSpec', id = _id)
+                obj = folder[id]
                 obj.edit(SampleType = self.sampletypes[row['SampleType']].UID())
                 obj.processForm()
             else:
@@ -765,7 +782,7 @@ class LoadSetupData(BrowserView):
         fields = rows[1]
         for row in rows[3:]:
             row = dict(zip(fields, row))
-            rs = self.portal_catalog(portal_type="ReferenceSupplier",
+            rs = self.bsc(portal_type="ReferenceSupplier",
                                     Title = row['_ReferenceSupplier_Name'])[0].getObject()
             _id = rs.generateUniqueId('ReferenceSupplier')
             rs.invokeFactory('SupplierContact', id = _id)
@@ -853,8 +870,8 @@ class LoadSetupData(BrowserView):
             services = row['Service'] and \
                 [d.strip() for d in unicode(row['Service']).split(",")] or \
                 []
-            proxies = services and self.portal_catalog(portal_type="AnalysisService",
-                                                       getKeyword = services) or []
+            proxies = services and self.bsc(portal_type="AnalysisService",
+                                            getKeyword = services) or []
             services = [p.UID for p in proxies]
             control_ref = self.definitions.get(unicode(row['control_ref']), '')
             blank_ref = self.definitions.get(unicode(row['blank_ref']), '')

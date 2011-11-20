@@ -4,6 +4,7 @@ $Id: Department.py 1000 2007-12-03 11:53:04Z anneline $
 """
 from Products.Archetypes.public import *
 from Products.Archetypes.references import HoldingReference
+from Products.CMFCore.utils import getToolByName
 from bika.lims.config import I18N_DOMAIN, PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from AccessControl import ClassSecurityInfo
@@ -53,8 +54,9 @@ class Department(BaseContent):
 
     security.declarePublic('getContactsDisplayList')
     def getContactsDisplayList(self):
+        bsc = getToolByName(self, 'bika_setup_catalog')
         pairs = []
-        for contact in self.portal_catalog(portal_type = 'LabContact'):
+        for contact in bsc(portal_type = 'LabContact'):
             pairs.append((contact.UID, contact.Title))
         # sort the list by the second item
         pairs.sort(lambda x, y:cmp(x[1], y[1]))

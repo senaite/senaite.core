@@ -45,15 +45,14 @@ The following analysis services have been included in the <tal:block replace="co
 <ul>
 <tal:categories
  tal:define="
-        categories python:[c for c in context.portal_catalog(portal_type='AnalysisCategory')];
-        sort_on python:(('Title', 'nocase', 'asc'),);
+        categories python:[c for c in context.bika_setup_catalog(portal_type='AnalysisCategory')];
+        sort_on python:(('sortable_title', 'nocase', 'asc'),);
         categories python:sequence.sort(categories, sort_on)"
     tal:repeat="category categories">
 <tal:category
     tal:define="
-        all_services python:[s.getObject() for s in context.portal_catalog(portal_type='AnalysisService', getCategoryUID=category.UID)];
-        services python:[s for s in all_services if s.getAccredited()];
-        sort_on python:(('Title', 'nocase', 'asc'),);
+        services python:context.bika_setup_catalog(portal_type='AnalysisService', getCategoryUID=category.UID, getAccredited=True)];
+        sort_on python:(('sortable_title', 'nocase', 'asc'),);
         services python:sequence.sort(services, sort_on)">
 <div tal:condition="services">
 <li tal:content="category/Title"></li>

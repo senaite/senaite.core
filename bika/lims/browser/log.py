@@ -50,6 +50,7 @@ class LogView(BikaListingView):
 
     def folderitems(self):
         pc = getToolByName(self.context, 'portal_catalog')
+        bsc = bsc = getToolByName(self.context, 'bika_setup_catalog')
         rc = getToolByName(self.context, REFERENCE_CATALOG)
         wf = getToolByName(self.context, 'portal_workflow')
         pr = getToolByName(self.context, 'portal_repository')

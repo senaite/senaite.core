@@ -33,18 +33,6 @@ schema = BikaSchema.copy() + Schema((
             description = _("The analyses included in this profile, grouped per category"),
         )
     ),
-    ComputedField('ServiceTitle',
-        expression = "context.getService() and context.getService().Title() or ''",
-        widget = ComputedWidget(
-            visible = False,
-        ),
-    ),
-    ComputedField('ServiceUID',
-        expression = "context.getService() and context.getService().UID() or ''",
-        widget = ComputedWidget(
-            visible = False,
-        ),
-    ),
     TextField('Notes',
         schemata = 'Description',
         default_content_type = 'text/plain',

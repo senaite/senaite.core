@@ -54,7 +54,10 @@ class LabProduct(BaseContent):
 
     def getTotalPrice(self):
         """ compute total price """
-        price = Decimal(self.getPrice())
+        price = self.getPrice()
+        if not price:
+            print "not price"
+        price = Decimal(price or '0.00')
         vat = Decimal(self.getVAT())
         price = price and price or 0
         vat = vat and vat / 100 or 0
@@ -75,9 +78,8 @@ class LabProduct(BaseContent):
         """
         try:
             vatamount = self.getTotalPrice() - Decimal(self.getPrice())
-            return vatamount.quantize(Decimal('0.00'))
         except:
-            vatamount = 0
-            return vatamount.quantize(Decimal('0.00'))
+            vatamount = Decimal('0.00')
+        return vatamount.quantize(Decimal('0.00'))
 
 registerType(LabProduct, PROJECTNAME)

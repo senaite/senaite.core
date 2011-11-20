@@ -33,7 +33,6 @@ class WorksheetWorkflowAction(WorkflowAction):
         form = self.request.form
         plone.protect.CheckAuthenticator(form)
         workflow = getToolByName(self.context, 'portal_workflow')
-        pc = getToolByName(self.context, 'portal_catalog')
         rc = getToolByName(self.context, REFERENCE_CATALOG)
         skiplist = self.request.get('workflow_skiplist', [])
         action, came_from = WorkflowAction._get_form_workflow_action(self)
@@ -472,7 +471,7 @@ class AddAnalysesView(AnalysesView):
         AnalysesView.__init__(self, context, request)
         self.icon = "++resource++bika.lims.images/worksheet_big.png"
         self.title = "%s: %s" % (context.Title(), _("Add Analyses"))
-        self.description = _("")
+        self.description = _(" ")
 
     def getAnalysts(self):
         return getAnalysts(self.context)
@@ -491,6 +490,7 @@ class AddAnalysesView(AnalysesView):
                          'review_state':'impossible_state',
                          'worksheetanalysis_review_state':'unassigned',
                          'cancellation_state':'active'}
+
         if 'submitted' in form:
             contentFilter['review_state'] = 'sample_received'
             if 'getWorksheetTemplate' in form and form['getWorksheetTemplate']:
@@ -520,18 +520,18 @@ class AddAnalysesView(AnalysesView):
                    sort_on = 'sortable_title')]
 
     def getCategories(self):
-        pc = getToolByName(self.context, 'portal_catalog')
+        bsc = getToolByName(self.context, 'bika_setup_catalog')
         return [(c.UID, c.Title) for c in \
-                pc(portal_type = 'AnalysisCategory',
+                bsc(portal_type = 'AnalysisCategory',
                    inactive_state = 'active',
                    sort_on = 'sortable_title')]
 
     def getWorksheetTemplates(self):
         """ Return WS Templates """
         profiles = []
-        pc = getToolByName(self.context, 'portal_catalog')
+        bsc = getToolByName(self.context, 'bika_setup_catalog')
         return [(c.UID, c.Title) for c in \
-                pc(portal_type = 'WorksheetTemplate',
+                bsc(portal_type = 'WorksheetTemplate',
                    inactive_state = 'active',
                    sort_on = 'sortable_title')]
 
@@ -568,6 +568,7 @@ class AddBlankView(BrowserView):
             return
 
         self.Services = WorksheetServicesView(self.context, self.request)
+        self.Services.view_url = self.Services.base_url + "/add_blank"
         return self.template()
 
     def getAvailablePositions(self):
@@ -615,6 +616,7 @@ class AddControlView(BrowserView):
             return
 
         self.Services = WorksheetServicesView(self.context, self.request)
+        self.Services.view_url = self.Services.base_url + "/add_control"
         return self.template()
 
     def getAvailablePositions(self):
@@ -685,7 +687,7 @@ class WorksheetARsView(BikaListingView):
         self.contentFilter = {'portal_type': 'Analysis',
                               'review_state':'impossible_state'}
         self.base_url = self.context.absolute_url()
-        self.view_url = self.base_url + "/add_blank"
+        self.view_url = self.context.absolute_url() + "/add_duplicate"
         self.show_sort_column = False
         self.show_select_row = False
         self.show_select_all_checkbox = False
@@ -718,7 +720,6 @@ class WorksheetARsView(BikaListingView):
         items = []
         for ar, pos in ars.items():
             ar = rc.lookupObject(ar)
-            path = "/".join(ar.getPhysicalPath())
             # this folderitems doesn't subclass from the bika_listing.py
             # so we create items from scratch
             item = {
@@ -730,7 +731,6 @@ class WorksheetARsView(BikaListingView):
                 'url': ar.absolute_url(),
                 'relative_url': ar.absolute_url(),
                 'view_url': ar.absolute_url(),
-                'path': path,
                 'Position': pos,
                 'RequestID': ar.id,
                 'Client': ar.aq_parent.Title(),
@@ -762,7 +762,7 @@ class WorksheetServicesView(BikaListingView):
         self.content_add_actions = {}
         self.contentFilter = {'review_state':'impossible_state'}
         self.base_url = self.context.absolute_url()
-        self.view_url = self.base_url + "/add_blank"
+        self.view_url = self.context.absolute_url()
         self.show_sort_column = False
         self.show_select_row = False
         self.show_select_all_checkbox = False
@@ -781,23 +781,23 @@ class WorksheetServicesView(BikaListingView):
         ]
 
     def folderitems(self):
-        pc = getToolByName(self.context, 'portal_catalog')
+        uc = getToolByName(self.context, 'uid_catalog')
+        bsc = getToolByName(self.context, 'bika_setup_catalog')
         ws_services = []
         for analysis in self.context.getAnalyses():
             service_uid = analysis.getService().UID()
             if service_uid not in ws_services:
                 ws_services.append(service_uid)
         self.categories = []
-        services = [s.getObject() for s in pc(portal_type="AnalysisService",
-                                              inactive_state="active")]
+        services = bsc(portal_type="AnalysisService",
+                       inactive_state="active")
         items = []
         for service in services:
-            path = "/".join(service.getPhysicalPath())
             # if the service has dependencies, it can't have reference analyses
-            calculation = service.getCalculation()
+            calculation = uc(UID=service.getCalculationUID)
             if calculation and calculation.getDependentServices():
                 continue
-            cat = service.getCategory().Title()
+            cat = service.getCategoryTitle
             if cat not in self.categories:
                 self.categories.append(cat)
             # this folderitems doesn't subclass from the bika_listing.py
@@ -805,16 +805,15 @@ class WorksheetServicesView(BikaListingView):
             item = {
                 'obj': service,
                 'id': service.id,
-                'uid': service.UID(),
-                'title': service.Title(),
+                'uid': service.UID,
+                'title': service.Title,
                 'category': cat,
-                'selected': service.UID() in ws_services,
+                'selected': service.UID in ws_services,
                 'type_class': 'contenttype-AnalysisService',
                 'url': service.absolute_url(),
                 'relative_url': service.absolute_url(),
                 'view_url': service.absolute_url(),
-                'path': path,
-                'Service': service.Title(),
+                'Service': service.Title,
                 'replace': {},
                 'before': {},
                 'after': {},

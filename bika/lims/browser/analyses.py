@@ -17,7 +17,7 @@ from zope.component import getMultiAdapter
 from zope.interface import implements, 	alsoProvides, implementsOnly
 import json
 import plone
- 
+
 class AnalysesView(BikaListingView):
     """ Displays a list of Analyses in a table.
         All InterimFields from all analyses are added to self.columns[].
@@ -30,7 +30,7 @@ class AnalysesView(BikaListingView):
         self.show_sort_column = False
         self.show_select_row = False
         self.show_select_column = True
-        self.pagesize = 1000
+        self.pagesize = 100
         self.form_id = 'analyses_form'
 
         request.set('disable_plone.rightcolumn',1);
@@ -65,7 +65,7 @@ class AnalysesView(BikaListingView):
 
     def folderitems(self):
         rc = getToolByName(self.context, REFERENCE_CATALOG)
-        pc = getToolByName(self.context, 'portal_catalog')
+        bsc = getToolByName(self.context, 'bika_setup_catalog')
         workflow = getToolByName(self.context, 'portal_workflow')
         portal = getToolByName(self.context, 'portal_url').getPortalObject()
 
@@ -116,8 +116,8 @@ class AnalysesView(BikaListingView):
                     st_uid = sample.getSampleType().UID()
                     items[i]['st_uid'] = st_uid
                     if st_uid not in self.specs:
-                        proxies = pc(portal_type = 'AnalysisSpec',
-                                     getSampleTypeUID = st_uid)
+                        proxies = bsc(portal_type = 'AnalysisSpec',
+                                      getSampleTypeUID = st_uid)
                 elif self.context.portal_type == "Worksheet":
                     if obj.portal_type == "DuplicateAnalysis":
                         sample = obj.getAnalysis().getSample()
@@ -126,8 +126,8 @@ class AnalysesView(BikaListingView):
                     st_uid = sample.getSampleType().UID()
                     items[i]['st_uid'] = st_uid
                     if st_uid not in self.specs:
-                        proxies = pc(portal_type = 'AnalysisSpec',
-                                     getSampleTypeUID = st_uid)
+                        proxies = bsc(portal_type = 'AnalysisSpec',
+                                      getSampleTypeUID = st_uid)
                 else:
                     proxies = []
                 if st_uid not in self.specs:

@@ -100,8 +100,8 @@ class ReferenceResultsView(BikaListingView):
     """
     def __init__(self, context, request):
         super(ReferenceResultsView, self).__init__(context, request)
-        self.title = _("")
-        self.description = _("")
+        self.title = _(" ")
+        self.description = _(" ")
         self.contentFilter = {}
         self.content_add_actions = {}
         self.show_sort_column = False

@@ -1,4 +1,5 @@
 from AccessControl.SecurityInfo import ClassSecurityInfo
+from Products.CMFCore.utils import getToolByName
 from Products.ATContentTypes.content import schemata
 from Products.Archetypes import atapi
 from Products.Archetypes.ArchetypeTool import registerType
@@ -17,6 +18,8 @@ class AnalysisServicesView(BikaListingView):
     implements(IFolderContentsView, IViewView)
     def __init__(self, context, request):
         super(AnalysisServicesView, self).__init__(context, request)
+        bsc = getToolByName(context, 'bika_setup_catalog')
+        self.contentsMethod = bsc
         self.contentFilter = {'portal_type': 'AnalysisService',
                               'sort_on': 'sortable_title'}
         self.content_add_actions = {_('Add'):
@@ -26,7 +29,7 @@ class AnalysisServicesView(BikaListingView):
         self.show_sort_column = False
         self.show_select_row = False
         self.show_select_column = True
-        self.pagesize = 20
+        self.pagesize = 25
 
         self.columns = {
             'Title': {'title': _('Service'),
@@ -106,7 +109,7 @@ class AnalysisServicesView(BikaListingView):
             if not items[x].has_key('obj'): continue
             obj = items[x]['obj']
             items[x]['Keyword'] = obj.getKeyword()
-            items[x]['Category'] = obj.getCategoryName()
+            items[x]['Category'] = obj.getCategoryTitle()
             items[x]['Instrument'] = obj.getInstrument() and obj.getInstrument().Title() or ' '
             items[x]['Department'] = obj.getDepartment() and obj.getDepartment().Title() or ' '
             calculation = obj.getCalculation()

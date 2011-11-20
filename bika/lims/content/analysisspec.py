@@ -49,6 +49,12 @@ schema = Schema((
             visible = False,
         ),
     ),
+    ComputedField('SampleTypeUID',
+        expression = "context.getSampleType() and context.getSampleType().UID() or ''",
+        widget = ComputedWidget(
+            visible = False,
+        ),
+    ),
 )) + \
 BikaSchema.copy() + \
 Schema((
@@ -79,12 +85,6 @@ Schema((
     ComputedField('ClientUID',
         expression = "here.aq_parent.portal_type == 'Client'"+\
                      "and here.aq_parent.UID() or None",
-        widget = ComputedWidget(
-            visible = False,
-        ),
-    ),
-    ComputedField('SampleTypeUID',
-        expression = 'here.getSampleType().UID()',
         widget = ComputedWidget(
             visible = False,
         ),
@@ -140,7 +140,7 @@ class AnalysisSpec(BaseFolder, HistoryAwareMixin):
         for spec in self.getResultsRange():
             service = tool.lookupObject(spec['service'])
             service_title = service.Title()
-            category_title = service.getCategoryName()
+            category_title = service.getCategoryTitle()
             if not cats.has_key(category_title):
                 cats[category_title] = {}
             cat = cats[category_title]
@@ -176,8 +176,9 @@ class AnalysisSpec(BaseFolder, HistoryAwareMixin):
                 unavailable_sampletypes.append(st.UID())
 
         available_sampletypes = []
-        for st in self.portal_catalog(portal_type = 'SampleType',
-                                      sort_on = 'sortable_title'):
+        bsc = getToolByName(self, 'bika_setup_catalog')
+        for st in bsc(portal_type = 'SampleType',
+                      sort_on = 'sortable_title'):
             if st.UID not in unavailable_sampletypes:
                 available_sampletypes.append((st.UID, st.Title))
 

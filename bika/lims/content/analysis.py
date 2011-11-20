@@ -197,10 +197,10 @@ class Analysis(BaseContent):
         keyword = service.getKeyword()
         sampletype = self.aq_parent.getSample().getSampleType()
         sampletype_uid = sampletype and sampletype.UID() or ''
-
-        proxies = self.portal_catalog(portal_type = 'AnalysisSpec',
-                                      getSampleTypeUID = sampletype_uid)
-        a = [p for p in proxies if p.getObject().getClientUID() == client_uid]
+        bsc = getToolByName(self, 'bika_setup_catalog')
+        proxies = bsc(portal_type = 'AnalysisSpec',
+                      getSampleTypeUID = sampletype_uid)
+        a = [p for p in proxies if p.getClientUID == client_uid]
         if a:
             spec_obj = a[0].getObject()
             spec = spec_obj.getResultsRangeDict()

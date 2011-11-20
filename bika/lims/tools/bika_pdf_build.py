@@ -623,8 +623,8 @@ class bika_pdf_build(UniqueObject, SimpleItem):
                                   fontSize = 9)
         category = None
         for service in services:
-            if service.getCategoryName() != category:
-                category = service.getCategoryName()
+            if service.getCategoryTitle() != category:
+                category = service.getCategoryTitle()
                 print_data = category
                 print_data = print_data.replace('&', '&amp;')
                 print_data = print_data.replace('<', '&lt;')
@@ -801,8 +801,8 @@ class bika_pdf_build(UniqueObject, SimpleItem):
 
             category = None
             for service in services:
-                if service.getCategoryName() != category:
-                    category = service.getCategoryName()
+                if service.getCategoryTitle() != category:
+                    category = service.getCategoryTitle()
                     cats.append(line_cnt)
                     line_cnt += 1
                 service_id = service.getId()

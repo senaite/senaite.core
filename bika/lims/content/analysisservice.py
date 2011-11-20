@@ -107,6 +107,7 @@ schema = BikaSchema.copy() + Schema((
         required = 0,
         vocabulary_display_path_bound = sys.maxint,
         allowed_types = ('Method',),
+        vocabulary = 'getMethods',
         relationship = 'AnalysisServiceMethod',
         referenceClass = HoldingReference,
         widget = ReferenceWidget(
@@ -119,6 +120,7 @@ schema = BikaSchema.copy() + Schema((
         schemata = _("Method"),
         required = 0,
         vocabulary_display_path_bound = sys.maxint,
+        vocabulary = 'getInstruments',
         allowed_types = ('Instrument',),
         relationship = 'AnalysisServiceInstrument',
         referenceClass = HoldingReference,
@@ -138,6 +140,7 @@ schema = BikaSchema.copy() + Schema((
         schemata = _("Method"),
         required = 0,
         vocabulary_display_path_bound = sys.maxint,
+        vocabulary = 'getCalculations',
         allowed_types = ('Calculation',),
         relationship = 'AnalysisServiceCalculation',
         referenceClass = HoldingReference,
@@ -151,6 +154,12 @@ schema = BikaSchema.copy() + Schema((
     ),
     ComputedField('CalculationTitle',
         expression = "context.getCalculation() and context.getCalculation().Title() or ''",
+        widget = ComputedWidget(
+            visible = False,
+        ),
+    ),
+    ComputedField('CalculationUID',
+        expression = "context.getCalculation() and context.getCalculation().UID() or ''",
         widget = ComputedWidget(
             visible = False,
         ),
@@ -202,7 +211,7 @@ schema = BikaSchema.copy() + Schema((
         allowed_types = ('AnalysisCategory',),
         relationship = 'AnalysisServiceAnalysisCategory',
         referenceClass = HoldingReference,
-        vocabulary = 'getActiveAnalysisCategories',
+        vocabulary = 'getAnalysisCategories',
         widget = ReferenceWidget(
             checkbox_bound = 1,
             label = _("Analysis category"),
@@ -226,6 +235,7 @@ schema = BikaSchema.copy() + Schema((
         required = 0,
         vocabulary_display_path_bound = sys.maxint,
         allowed_types = ('Department',),
+        vocabulary = 'getDepartments',
         relationship = 'AnalysisServiceDepartment',
         referenceClass = HoldingReference,
         widget = ReferenceWidget(
@@ -267,14 +277,14 @@ schema = BikaSchema.copy() + Schema((
         type = 'resultsoptions',
         subfields = ('ResultValue','ResultText'),
         required_subfields = ('ResultValue','ResultText'),
-        subfield_labels = {'ResultValue': _('Result'),
+        subfield_labels = {'ResultValue': _('Result Value'),
                            'ResultText': _('Display Value'),},
         subfield_validators = {'ResultValue': 'resultoptionsvalidator'},
         widget = RecordsWidget(
             label = _("Result Options"),
             description = _("Please list all options for the analysis result if you want to restrict "
                             "it to specific options only, e.g. 'Positive', 'Negative' and "
-                            "'Indeterminable'"),
+                            "'Indeterminable'.  The option's result value must be a number."),
         ),
     ),
 ))
@@ -290,14 +300,6 @@ class AnalysisService(BaseContent, HistoryAwareMixin):
     security = ClassSecurityInfo()
     schema = schema
     implements(IAnalysisService)
-
-    security.declarePublic('getActiveAnalysisCategories')
-    def getActiveAnalysisCategories(self):
-        pc = getToolByName(self, 'portal_catalog')
-        categories = pc(portal_type='AnalysisCategory',
-                        inactive_state='active',
-                        sort_on='sortable_title')
-        return DisplayList(tuple([(c.UID,c.Title) for c in categories]))
 
     security.declarePublic('getDiscountedPrice')
     def getDiscountedPrice(self):
@@ -368,9 +370,60 @@ class AnalysisService(BaseContent, HistoryAwareMixin):
         except:
             return "0.00"
 
+    def getAnalysisCategories(self):
+        bsc = getToolByName(self, 'bika_setup_catalog')
+        items = [('','')] + [(o.UID, o.Title) for o in \
+                               bsc(portal_type='AnalysisCategory',
+                                   inactive_state = 'active')]
+        o = self.getAnalysisCategory()
+        if o and (o.UID, o.Title) not in items:
+            items.append((o.UID, o.Title))
+        return DisplayList(list(items))
+
+    def getMethods(self):
+        bsc = getToolByName(self, 'bika_setup_catalog')
+        items = [('','')] + [(o.UID, o.Title) for o in \
+                               bsc(portal_type='Method',
+                                   inactive_state = 'active')]
+        o = self.getMethod()
+        if o and (o.UID, o.Title) not in items:
+            items.append((o.UID, o.Title))
+        return DisplayList(list(items))
+
+    def getInstruments(self):
+        bsc = getToolByName(self, 'bika_setup_catalog')
+        items = [('','')] + [(o.UID, o.Title) for o in \
+                               bsc(portal_type='Instrument',
+                                   inactive_state = 'active')]
+        o = self.getInstrument()
+        if o and (o.UID, o.Title) not in items:
+            items.append((o.UID, o.Title))
+        return DisplayList(list(items))
+
+    def getCalculations(self):
+        bsc = getToolByName(self, 'bika_setup_catalog')
+        items = [('','')] + [(o.UID, o.Title) for o in \
+                               bsc(portal_type='Calculation',
+                                   inactive_state = 'active')]
+        o = self.getCalculation()
+        if o and (o.UID, o.Title) not in items:
+            items.append((o.UID, o.Title))
+        return DisplayList(list(items))
+
+    def getDepartments(self):
+        bsc = getToolByName(self, 'bika_setup_catalog')
+        items = [('','')] + [(o.UID, o.Title) for o in \
+                               bsc(portal_type='Department',
+                                   inactive_state = 'active')]
+        o = self.getDepartment()
+        if o and (o.UID, o.Title) not in items:
+            items.append((o.UID, o.Title))
+        return DisplayList(list(items))
+
     def getUncertainty(self, result=None):
-        """ Return the uncertainty value, if the result falls within specified ranges for this
-            service. """
+        """ Return the uncertainty value, if the result falls within specified
+            ranges for this service. """
+
         if result is None:
             return None
 

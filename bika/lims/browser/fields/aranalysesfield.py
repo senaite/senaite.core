@@ -64,8 +64,8 @@ class ARAnalysesField(ObjectField):
         ar_state = workflow.getInfoFor(instance, 'review_state', '')
         assert ar_state in ('sample_due', 'sample_received', 'attachment_due', 'to_be_verified')
 
-        pc = getToolByName(instance, 'portal_catalog')
-        services = pc(UID = service_uids)
+        bsc = getToolByName(instance, 'bika_setup_catalog')
+        services = bsc(UID = service_uids)
 
         for service in services:
             service_uid = service.UID
@@ -124,10 +124,10 @@ class ARAnalysesField(ObjectField):
     def Services(self):
         """ Return analysis services
         """
+        bsc = getToolByName(self.context, 'bika_setup_catalog')
         if not shasattr(self, '_v_services'):
             self._v_services = [service.getObject() \
-                for service in self.portal_catalog(
-                portal_type = 'AnalysisService')]
+                for service in bsc(portal_type = 'AnalysisService')]
         return self._v_services
 
 registerField(ARAnalysesField,

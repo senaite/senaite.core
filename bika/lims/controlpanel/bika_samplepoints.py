@@ -3,6 +3,7 @@ from Products.ATContentTypes.content import schemata
 from Products.Archetypes import atapi
 from Products.Archetypes.ArchetypeTool import registerType
 from Products.CMFCore import permissions
+from Products.CMFCore.utils import getToolByName
 from Products.Five.browser import BrowserView
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.config import PROJECTNAME
@@ -21,6 +22,8 @@ class SamplePointsView(BikaListingView):
 
     def __init__(self, context, request):
         super(SamplePointsView, self).__init__(context, request)
+        bsc = getToolByName(context, 'bika_setup_catalog')
+        self.contentsMethod = bsc
         self.contentFilter = {'portal_type': 'SamplePoint',
                               'sort_on': 'sortable_title'}
         self.content_add_actions = {_('Add'):
@@ -31,7 +34,7 @@ class SamplePointsView(BikaListingView):
         self.show_sort_column = False
         self.show_select_row = False
         self.show_select_column = True
-        self.pagesize = 20
+        self.pagesize = 25
 
         self.columns = {
             'Title': {'title': _('Sample Point'),
@@ -39,6 +42,7 @@ class SamplePointsView(BikaListingView):
                    'Description': {'title': _('Description'),
                                    'index': 'getDescription'},
         }
+
         self.review_states = [
             {'id':'all',
              'title': _('All'),
@@ -79,10 +83,10 @@ class ajax_SamplePoints():
         return JSON data [string,string]
     """
     def __call__(self):
-        pc = getToolByName(self, 'portal_catalog')
+        bsc = getToolByName(self, 'bika_setup_catalog')
         term = self.request.get('term', '')
-        items = pc(portal_type = "SamplePoint", sort_on='sortable_title')
+        items = bsc(portal_type = "SamplePoint",
+                    sort_on='sortable_title')
         nr_items = len(items)
-        items = [s.Title for s in items if s.Title.lower().find(term.lower()) > -1]
+        items = [s.title for s in items if s.title.find(term.lower()) > -1]
         return json.dumps(items)
-

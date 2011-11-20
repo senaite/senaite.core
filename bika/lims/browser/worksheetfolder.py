@@ -263,12 +263,12 @@ class WorksheetFolderListingView(BikaListingView):
     def getWorksheetTemplates(self):
         """ Return Worksheet Template IDs for add worksheet dropdown in
             worksheetfolder listing """
-        pc = getToolByName(self.context, "portal_catalog")
+        bsc = getToolByName(self.context, 'bika_setup_catalog')
         templates = []
-        for t in pc(portal_type = "WorksheetTemplate",
-                    sort_on = 'sortable_title',
-                    inactive_state='active'):
-            templates.append({'uid': t.UID, 'title':t.Title})
+        for wst in bsc(portal_type = "WorksheetTemplate",
+                       sort_on = 'sortable_title',
+                       inactive_state='active'):
+            templates.append({'uid': wst.UID, 'title':wst.title})
         return templates
 
 class AddWorksheetView(BrowserView):
@@ -279,7 +279,6 @@ class AddWorksheetView(BrowserView):
     def __call__(self, wstemplate=None):
         form = self.request.form
         rc = getToolByName(self.context, REFERENCE_CATALOG)
-        pc = getToolByName(self.context, "portal_catalog")
         wf = getToolByName(self.context, "portal_workflow")
         pm = getToolByName(self.context, "portal_membership")
 

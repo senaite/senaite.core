@@ -1,7 +1,9 @@
 from AccessControl import ClassSecurityInfo
 from Products.ATContentTypes.content import schemata
+from Products.CMFCore.utils import getToolByName
 from Products.Archetypes import atapi
 from Products.Archetypes.ArchetypeTool import registerType
+from Products.CMFCore.utils import getToolByName
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.config import PROJECTNAME
 from bika.lims import bikaMessageFactory as _
@@ -16,6 +18,8 @@ class AttachmentTypesView(BikaListingView):
     implements(IFolderContentsView, IViewView)
     def __init__(self, context, request):
         super(AttachmentTypesView, self).__init__(context, request)
+        bsc = getToolByName(context, 'bika_setup_catalog')
+        self.contentsMethod = bsc
         self.contentFilter = {'portal_type': 'AttachmentType',
                               'sort_on': 'sortable_title'}
         self.content_add_actions = {_('Add'):
@@ -25,9 +29,7 @@ class AttachmentTypesView(BikaListingView):
         self.show_sort_column = False
         self.show_select_row = False
         self.show_select_column = True
-        self.pagesize = 20
-
-        request.set('disable_border', 1)
+        self.pagesize = 25
 
         self.columns = {
             'Title': {'title': _('Attachment Type'),

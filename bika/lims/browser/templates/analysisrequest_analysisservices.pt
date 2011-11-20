@@ -7,7 +7,7 @@
 		tal:attributes="id service/UID">
         <tal:service tal:define="service_obj python:service.getObject()">
 		<td style="text-align:left">
-			<span tal:content="service/Title"/>
+			<span tal:content="service/title"/>
 			<em
 				class="discreet"
 				style="white-space:nowrap;"
@@ -48,7 +48,7 @@
 					id string:${service/UID};
 					src string:++resource++bika.lims.images/copy.png"/>
 		</td>
-		<tal:i define="serviceUID service/UID;serviceTitle service/Title">
+		<tal:i define="serviceUID service/UID;serviceTitle service/title">
 			<tal:i repeat="column python:range(int(view.request['col_count']))">
 				<td class='service'
 					tal:define="

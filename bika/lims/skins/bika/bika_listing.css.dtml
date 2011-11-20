@@ -29,6 +29,7 @@ div.bika_listing {
 }
 
 .bika-listing-table tr {
+	line-height: 2.1em;
     border-left: &dtml-borderWidth; &dtml-borderStyle; &dtml-borderColor;;
 }
 
@@ -127,9 +128,18 @@ div.bika_listing {
 /* The review state selector links */
 
 .review_state_selector {
-  margin:0 0 .5em 0 !important;
   background: #fff;
   padding:5px 2px 5px 2px !important;
+}
+
+td.review_state_selector_row {
+   padding:0 0 .5em 0;
+   margin:0;
+   border:none !important;
+}
+
+td.review_state_selector{
+    white-space:nowrap !important;
 }
 
 .review_state_selector tr,
@@ -152,6 +162,7 @@ div.bika_listing {
   border:1px solid #ddd !important;
   text-decoration:none;
   font-weight:normal;
+  color: #000;
   padding:2px 5px 2px 5px !important;
 }
 
@@ -159,8 +170,9 @@ div.bika_listing {
   border-radius: .25em;
   background: #eee;
   border:1px solid #ddd !important;
-  font-weight:bold;
   padding:2px 5px 2px 5px !important;
+  font-weight:normal;
+  color: #000;
 }
 
 .review_state_td {
@@ -173,6 +185,7 @@ div.bika_listing {
 /* pagesize dropdown */
 td.pagesize_selector {
   text-align:right;
+  vertical-align:top !important;
 }
 
 /* Specification selector */
@@ -193,15 +206,26 @@ td.pagesize_selector {
 }
 
 .workflow_action_buttons {
-  margin-left: 1.5em;
 }
 
+/* batch selectors */
+div.listingBar {
+    font-size: 80%;
+    margin: 0;
+}
+
+div.listingBar a {
+	border-radius: &dtml-buttonBorderRadius; !important;
+    border: 0.1em solid #CCCCCC !important;
+    display: inline-block;
+    padding: 0.25em 0.5em;
+}
 .workflow_action_button {
   border-radius: &dtml-buttonBorderRadius; !important;
   background: &dtml-buttonBackgroundColor; !important;
   color: &dtml-buttonTextColor; !important;
   border:1px solid &dtml-buttonBorderColor; !important;
-  padding:2px 5px 2px 5px;
+  padding:1px 2px 1px 2px;
 }
 
 .workflow_action_button:hover {
@@ -217,3 +241,4 @@ td.pagesize_selector {
 }
 
 /* </dtml-with> */
+

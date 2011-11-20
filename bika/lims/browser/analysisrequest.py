@@ -183,6 +183,7 @@ class AnalysisRequestViewView(BrowserView):
                 t = AnalysesView(ar,
                                  self.request,
                                  getPointOfCapture = poc)
+                t.show_workflow_action_buttons = False
                 t.allow_edit = False
                 t.show_select_column = False
                 self.tables[POINTS_OF_CAPTURE.getValue(poc)] = t.contents_table()
@@ -201,17 +202,17 @@ class AnalysisRequestViewView(BrowserView):
         """ Return applicable client and Lab ARProfile records
         """
         profiles = []
-        pc = getToolByName(self.context, 'portal_catalog')
-        for proxy in pc(portal_type = 'ARProfile',
-                        getClientUID = self.context.UID(),
-                        inactive_state = 'active',
-                        sort_on = 'sortable_title'):
+        bsc = getToolByName(self.context, 'bika_setup_catalog')
+        for proxy in bsc(portal_type = 'ARProfile',
+                         getClientUID = self.context.UID(),
+                         inactive_state = 'active',
+                         sort_on = 'sortable_title'):
                 profiles.append((proxy.Title, proxy.getObject()))
-        for proxy in pc(portal_type = 'ARProfile',
+        for proxy in bsc(portal_type = 'ARProfile',
                         getClientUID = self.context.bika_setup.bika_arprofiles.UID(),
                         inactive_state = 'active',
                         sort_on = 'sortable_title'):
-                profiles.append((_('Lab:') + proxy.Title, proxy.getObject()))
+                profiles.append((_('Lab:') + proxy.title, proxy.getObject()))
         return profiles
 
     def SelectedServices(self):
@@ -235,15 +236,13 @@ class AnalysisRequestViewView(BrowserView):
         """ Dictionary keys: poc
             Dictionary values: (Category UID,category Title)
         """
-        pc = getToolByName(self.context, 'portal_catalog')
+        bsc = getToolByName(self.context, 'bika_setup_catalog')
         cats = {}
-        for service in pc(portal_type = "AnalysisService",
-                          inactive_state = 'active'):
-            service = service.getObject()
-            poc = service.getPointOfCapture()
+        for service in bsc(portal_type = "AnalysisService",
+                           inactive_state = 'active'):
+            poc = service.getPointOfCapture
             if not cats.has_key(poc): cats[poc] = []
-            category = service.getCategory()
-            cat = (category.UID(), category.Title())
+            cat = (service.getCategoryUID, service.getCategoryTitle)
             if cat not in cats[poc]:
                 cats[poc].append(cat)
         return cats
@@ -277,7 +276,7 @@ class AnalysisRequestViewView(BrowserView):
             if analysis.review_state == 'not_requested':
                 continue
             service = analysis.getService()
-            category_name = service.getCategoryName()
+            category_name = service.getCategoryTitle()
             if not category_name in cats:
                 cats[category_name] = {}
             cats[category_name][analysis.Title()] = analysis
@@ -735,12 +734,12 @@ class ajaxExpandCategory(BikaListingView):
 
     def Services(self, poc, CategoryUID):
         """ return a list of services brains """
-        pc = getToolByName(self.context, 'portal_catalog')
-        services = pc(portal_type = "AnalysisService",
-                      sort_on = 'sortable_title',
-                      inactive_state = 'active',
-                      getPointOfCapture = poc,
-                      getCategoryUID = CategoryUID)
+        bsc = getToolByName(self.context, 'bika_setup_catalog')
+        services = bsc(portal_type = "AnalysisService",
+                       sort_on = 'sortable_title',
+                       inactive_state = 'active',
+                       getPointOfCapture = poc,
+                       getCategoryUID = CategoryUID)
         return services
 
 class ajaxProfileServices(BrowserView):
@@ -750,20 +749,19 @@ class ajaxProfileServices(BrowserView):
     def __call__(self):
         plone.protect.CheckAuthenticator(self.request)
         rc = getToolByName(self, REFERENCE_CATALOG)
-        pc = getToolByName(self, 'portal_catalog')
+        bsc = getToolByName(self.context, 'bika_setup_catalog')
 
         profile = rc.lookupObject(self.request['profileUID'])
         if not profile: return
 
         services = {}
-        for service in pc(portal_type = "AnalysisService",
-                          inactive_state = "active",
-                          UID = [u.UID() for u in profile.getService()]):
-            service = service.getObject()
-            categoryUID = service.getCategoryUID()
-            poc = service.getPointOfCapture()
-            try: services["%s_%s" % (poc, categoryUID)].append(service.UID())
-            except: services["%s_%s" % (poc, categoryUID)] = [service.UID(), ]
+        for service in bsc(portal_type = "AnalysisService",
+                           inactive_state = "active",
+                           UID = [u.UID() for u in profile.getService()]):
+            categoryUID = service.getCategoryUID
+            poc = service.getPointOfCapture
+            try: services["%s_%s" % (poc, categoryUID)].append(service.UID)
+            except: services["%s_%s" % (poc, categoryUID)] = [service.UID, ]
 
         return json.dumps(services)
 
@@ -817,6 +815,7 @@ class ajaxAnalysisRequestSubmit():
         came_from = form.has_key('came_from') and form['came_from'] or 'add'
         wftool = getToolByName(self.context, 'portal_workflow')
         pc = getToolByName(self.context, 'portal_catalog')
+        bsc = getToolByName(self.context, 'bika_setup_catalog')
 
         errors = {}
         def error(field = None, column = None, message = None):
@@ -900,14 +899,14 @@ class ajaxAnalysisRequestSubmit():
                     if not values.has_key(field):
                         continue
                     if field == "SampleType":
-                        if not pc(portal_type = 'SampleType',
-                                  inactive_state = 'active',
-                                  Title = values[field]):
+                        if not bsc(portal_type = 'SampleType',
+                                   inactive_state = 'active',
+                                   Title = values[field]):
                             error(field, 0, '%s is not a valid sample type' % values[field])
                     elif field == "SamplePoint":
-                        if not pc(portal_type = 'SamplePoint',
-                                  inactive_state = 'active',
-                                  Title = values[field]):
+                        if not bsc(portal_type = 'SamplePoint',
+                                   inactive_state = 'active',
+                                   Title = values[field]):
                             error(field, 0, '%s is not a valid sample point' % values[field])
 
             # Check if there is any general AR info
@@ -1048,16 +1047,16 @@ class ajaxAnalysisRequestSubmit():
                                   '%s is not a valid sample ID' % ar[field])
 
                     elif field == "SampleType":
-                        if not pc(portal_type = 'SampleType',
-                                  inactive_state = 'active',
-                                  Title = ar[field]):
+                        if not bsc(portal_type = 'SampleType',
+                                   inactive_state = 'active',
+                                   Title = ar[field]):
                             error(field, column,
                                   '%s is not a valid sample type' % ar[field])
 
                     elif field == "SamplePoint":
-                        if not pc(portal_type = 'SamplePoint',
-                                  inactive_state = 'active',
-                                  Title = ar[field]):
+                        if not bsc(portal_type = 'SamplePoint',
+                                   inactive_state = 'active',
+                                   Title = ar[field]):
                             error(field, column,
                                   '%s is not a valid sample point' % ar[field])
 
@@ -1075,9 +1074,9 @@ class ajaxAnalysisRequestSubmit():
                 profile = None
                 if (values.has_key('ARProfile')):
                     profileUID = values['ARProfile']
-                    for proxy in pc(portal_type = 'ARProfile',
-                                    inactive_state = 'active',
-                                    UID = profileUID):
+                    for proxy in bsc(portal_type = 'ARProfile',
+                                     inactive_state = 'active',
+                                     UID = profileUID):
                         profile = proxy.getObject()
 
                 if values.has_key('SampleID'):

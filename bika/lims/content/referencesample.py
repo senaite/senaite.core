@@ -28,11 +28,11 @@ schema = BikaSchema.copy() + Schema((
         allowed_types = ('ReferenceDefinition',),
         relationship = 'ReferenceSampleReferenceDefinition',
         referenceClass = HoldingReference,
-##        vocabulary = "GetActiveReferenceDefinitions", # XXX vocabulary, really, for all the references that should only display active?
+        vocabulary = "getReferenceDefinitions",
         widget = ReferenceWidget(
             checkbox_bound = 1,
             label = _("Reference Definition"),
-            description = _(""),
+            description = _(" "),
         ),
     ),
     BooleanField('Blank',
@@ -55,32 +55,33 @@ schema = BikaSchema.copy() + Schema((
         schemata = 'Description',
         allowed_types = ('ReferenceManufacturer',),
         relationship = 'ReferenceSampleReferenceManufacturer',
+        vocabulary = "getReferenceManufacturers",
         referenceClass = HoldingReference,
         widget = ReferenceWidget(
             checkbox_bound = 1,
             label = _("Manufacturer"),
-            description = _(""),
+            description = _(" "),
         ),
     ),
     StringField('CatalogueNumber',
         schemata = 'Description',
         widget = StringWidget(
             label = _("Catalogue number"),
-            description = _(""),
+            description = _(" "),
         ),
     ),
     StringField('LotNumber',
         schemata = 'Description',
         widget = StringWidget(
             label = _("Lot number"),
-            description = _(""),
+            description = _(" "),
         ),
     ),
     DateTimeField('DateSampled',
         schemata = 'Dates',
         widget = bika_DateTimeWidget(
             label = _("Date sampled"),
-            description = _(""),
+            description = _(" "),
         ),
     ),
     DateTimeField('DateReceived',
@@ -88,14 +89,14 @@ schema = BikaSchema.copy() + Schema((
         default_method = 'current_date',
         widget = bika_DateTimeWidget(
             label = _("Date received"),
-            description = _(""),
+            description = _(" "),
         ),
     ),
     DateTimeField('DateOpened',
         schemata = 'Dates',
         widget = bika_DateTimeWidget(
             label = _("Date opened"),
-            description = _(""),
+            description = _(" "),
         ),
     ),
     DateTimeField('ExpiryDate',
@@ -103,14 +104,14 @@ schema = BikaSchema.copy() + Schema((
         required = 1,
         widget = bika_DateTimeWidget(
             label = _("Expiry date"),
-            description = _(""),
+            description = _(" "),
         ),
     ),
     DateTimeField('DateExpired',
         schemata = 'Dates',
         widget = bika_DateTimeWidget(
             label = _("Date expired"),
-            description = _(""),
+            description = _(" "),
             visible = {'edit':'hidden'},
         ),
     ),
@@ -118,7 +119,7 @@ schema = BikaSchema.copy() + Schema((
         schemata = 'Dates',
         widget = bika_DateTimeWidget(
             label = _("Date disposed"),
-            description = _(""),
+            description = _(" "),
             visible = {'edit':'hidden'},
         ),
     ),
@@ -127,7 +128,7 @@ schema = BikaSchema.copy() + Schema((
         required = 1,
         widget = ReferenceResultsWidget(
             label = _("Expected Results"),
-            description = _(""),
+            description = _(" "),
         ),
     ),
     TextField('Notes',
@@ -136,7 +137,7 @@ schema = BikaSchema.copy() + Schema((
         allowable_content_types = ('text/plain',),
         widget = TextAreaWidget(
             label = _("Notes"),
-            description = _(""),
+            description = _(" "),
         ),
     ),
     ComputedField('ReferenceSupplierUID',
@@ -163,6 +164,26 @@ class ReferenceSample(BaseFolder):
     security.declarePublic('current_date')
     def current_date(self):
         return DateTime()
+
+    def getReferenceDefinitions(self):
+        bsc = getToolByName(self, 'bika_setup_catalog')
+        items = [('','')] + [(o.UID, o.Title) for o in \
+                               bsc(portal_type='ReferenceDefinition',
+                                   inactive_state = 'active')]
+        o = self.getReferenceDefinition()
+        if o and (o.UID, o.Title) not in items:
+            items.append((o.UID, o.Title))
+        return DisplayList(list(items))
+
+    def getReferenceManufacturers(self):
+        bsc = getToolByName(self, 'bika_setup_catalog')
+        items = [('','')] + [(o.UID, o.Title) for o in \
+                               bsc(portal_type='ReferenceManufacturer',
+                                   inactive_state = 'active')]
+        o = self.getReferenceDefinition()
+        if o and (o.UID, o.Title) not in items:
+            items.append((o.UID, o.Title))
+        return DisplayList(list(items))
 
     security.declarePublic('getSpecCategories')
     def getSpecCategories(self):
@@ -194,7 +215,7 @@ class ReferenceSample(BaseFolder):
         for spec in self.getReferenceResults():
             service = tool.lookupObject(spec['uid'])
             service_title = service.Title()
-            category = service.getCategoryName()
+            category = service.getCategoryTitle()
             if not cats.has_key(category):
                 cats[category] = {}
 

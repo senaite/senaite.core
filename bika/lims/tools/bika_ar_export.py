@@ -73,7 +73,7 @@ class bika_ar_export(UniqueObject, SimpleItem):
                 analyses[service]['attach'] = analysis.getAttachment() or []
                 if not services.has_key(service):
                     service_obj = analysis.getService()
-                    category = service_obj.getCategoryName()
+                    category = service_obj.getCategoryTitle()
                     category_uid = service_obj.getCategoryUID()
 
                     if not categories.has_key(category):

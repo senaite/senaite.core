@@ -22,6 +22,8 @@ class WorksheetTemplatesView(BikaListingView):
 
     def __init__(self, context, request):
         super(WorksheetTemplatesView, self).__init__(context, request)
+        bsc = getToolByName(context, 'bika_setup_catalog')
+        self.contentsMethod = bsc
         self.contentFilter = {'portal_type': 'WorksheetTemplate',
                               'sort_on': 'sortable_title'}
         self.content_add_actions = {_('Add'):
@@ -32,7 +34,7 @@ class WorksheetTemplatesView(BikaListingView):
         self.show_sort_column = False
         self.show_select_row = False
         self.show_select_column = True
-        self.pagesize = 20
+        self.pagesize = 25
 
         self.columns = {
             'Title': {'title': _('Title'),
@@ -40,6 +42,7 @@ class WorksheetTemplatesView(BikaListingView):
             'Description': {'title': _('Description'),
                             'index': 'getDescription'},
         }
+
         self.review_states = [
             {'id':'all',
              'title': _('All'),

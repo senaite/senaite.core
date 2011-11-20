@@ -13,6 +13,7 @@ def AfterTransitionEventHandler(instance, event):
 
     wf = getToolByName(instance, 'portal_workflow')
     pc = getToolByName(instance, 'portal_catalog')
+    bsc = getToolByName(instance, 'bika_setup_catalog')
     rc = getToolByName(instance, REFERENCE_CATALOG)
     pu = getToolByName(instance, 'plone_utils')
     ts = getToolByName(instance, 'translation_service')
@@ -39,7 +40,8 @@ def AfterTransitionEventHandler(instance, event):
 
     if event.transition.id == "deactivate":
         # A calculation cannot be deactivated if active services are using it.
-        services = pc(portal_type="AnalysisService", inactive_state="active")
+        services = bsc(portal_type="AnalysisService",
+                       inactive_state="active")
         calc_services = []
         for service in services:
             service = service.getObject()

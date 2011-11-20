@@ -68,6 +68,10 @@ table {
     margin-top: .1em;
 }
 
+#content dl.portalMessage {
+	margin-top:.25em;
+}
+
 /* overwrite sunburst special display of description fields */
 /*#content .field textarea[name$=".description"],  */
 #archetypes-fieldname-description textarea#description {
@@ -93,7 +97,7 @@ table {
 }
 
 #content-core {
-  margin-top:.5em !important;
+  margin-top:.25em !important;
 }
 
 #portal-footer {
@@ -212,6 +216,15 @@ dl.portlet dt.portletLateAnalyses {
     width:50% !important;
 }
 
+ul#portal-globalnav {
+  line height:2em;
+}
+
+/* portal_tabs bar */
+#portal-globalnav li a {
+    padding:.25em;
+	text-align:center;
+}
 a .navTreeCurrentNode .navTreeFolderish {
   border-radius: .25em;
   background: #eee;

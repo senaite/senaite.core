@@ -49,7 +49,9 @@ def isActive(obj):
 
 def TimeOrDate(context, datetime, long_format=False):
     """ Return the Time date is today,
-        otherwise return the Date. """
+        otherwise return the Date.
+        XXX timeordate needs long/short/time/date formats in bika_setup
+"""
     localLongTimeFormat = context.portal_properties.site_properties.localLongTimeFormat
     localTimeFormat = context.portal_properties.site_properties.localTimeFormat
     localTimeOnlyFormat = context.portal_properties.site_properties.localTimeOnlyFormat

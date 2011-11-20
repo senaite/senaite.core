@@ -17,6 +17,7 @@ class LoadTestData(BrowserView):
 
     def __call__(self):
         self.portal_catalog = getToolByName(self.context, 'portal_catalog')
+        self.bsc = bsc = getToolByName(self.context, 'bika_setup_catalog')
         self.portal_workflow = getToolByName(self.context, 'portal_workflow')
         self.reference_catalog = getToolByName(self.context, REFERENCE_CATALOG)
         self.portal_registration = getToolByName(self.context, 'portal_registration')
@@ -36,13 +37,13 @@ class LoadTestData(BrowserView):
                   'Micro-Bio counts': 10,
                   'Trace Metals': 10}
 
-        sampletypes = [p.getObject() for p in self.portal_catalog(portal_type="SampleType")]
-        samplepoints = [p.getObject() for p in self.portal_catalog(portal_type="SamplePoint")]
+        sampletypes = [p.getObject() for p in self.bsc(portal_type="SampleType")]
+        samplepoints = [p.getObject() for p in self.bsc(portal_type="SamplePoint")]
         for client in self.context.clients.objectValues():
             contacts = [c for c in client.objectValues() if c.portal_type == 'Contact']
             for profile, count_ars in counts.items():
-                profile = self.portal_catalog(portal_type='ARProfile',
-                                              Title=profile)[0].getObject()
+                profile = self.bsc(portal_type='ARProfile',
+                                   Title=profile)[0].getObject()
                 profile_services = profile.getService()
 
                 _ars = []

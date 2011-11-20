@@ -3,6 +3,7 @@ from Products.ATContentTypes.content import schemata
 from Products.Archetypes import atapi
 from Products.Archetypes.ArchetypeTool import registerType
 from Products.CMFCore import permissions
+from Products.CMFCore.utils import getToolByName
 from Products.Five.browser import BrowserView
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.config import PROJECTNAME
@@ -18,6 +19,8 @@ class CalculationsView(BikaListingView):
     implements(IFolderContentsView, IViewView)
     def __init__(self, context, request):
         super(CalculationsView, self).__init__(context, request)
+        bsc = getToolByName(context, 'bika_setup_catalog')
+        self.contentsMethod = bsc
         self.contentFilter = {'portal_type': 'Calculation',
                               'sort_on': 'sortable_title'}
         self.content_add_actions = {_('Add'):
@@ -28,16 +31,17 @@ class CalculationsView(BikaListingView):
         self.show_sort_column = False
         self.show_select_row = False
         self.show_select_column = True
-        self.pagesize = 20
+        self.pagesize = 25
 
         self.columns = {
-                   'Title': {'title': _('Calculation'),
-                             'index': 'sortable_title'},
-                   'Description': {'title': _('Description'),
-                                   'index': 'getDescriptionTitle'},
-                   'Formula': {'title': _('Formula'),
-                               'index': 'getFormula'},
-                  }
+            'Title': {'title': _('Calculation'),
+                      'index': 'sortable_title'},
+            'Description': {'title': _('Description'),
+                            'index': 'getDescriptionTitle'},
+            'Formula': {'title': _('Formula'),
+                        'index': 'getFormula'},
+        }
+
         self.review_states = [
             {'id':'all',
              'title': _('All'),

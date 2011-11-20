@@ -2,6 +2,7 @@
 """
 from Acquisition import aq_parent, aq_inner
 from OFS.interfaces import IOrderedContainer
+from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone import PloneMessageFactory
@@ -68,23 +69,17 @@ class WorkflowAction:
             full_objects defaults to True
         """
         form = self.request.form
-        pc = getToolByName(self.context, 'portal_catalog')
+        uc = getToolByName(self.context, 'uid_catalog')
+
         selected_items = {}
-        if 'paths' in form:
-            for path in form['paths']:
-                item_id = path.split("/")[-1]
-                item_path = path.replace("/" + item_id, '')
-                try:
-                    item = pc(id = item_id,
-                              path = {'query':item_path,
-                                  'depth':1})[0].getObject()
-                except:
+        for uid in form.get('uids', []):
+            try:
+                item = uc(UID=uid)[0].getObject()
+            except:
                 # ignore selected item if object no longer exists
-                    continue
-                uid = item.UID()
-                selected_items[uid] = item
-            return selected_items
-        return {}
+                continue
+            selected_items[uid] = item
+        return selected_items
 
     def __call__(self):
         form = self.request.form
@@ -155,7 +150,7 @@ class BikaListingView(BrowserView):
     show_sort_column = False
     show_workflow_action_buttons = True
     categories = []
-    pagesize = 20
+    pagesize = 25
     pagenumber = 1
     # when rendering multiple bika_listing tables, form_id must be unique
     form_id = "list"
@@ -177,7 +172,7 @@ class BikaListingView(BrowserView):
        be a list of choice strings.
      - index
        the name of the catalog index for the column.  If specified,
-       it will be passed to portal_catalog for column sorting.  If not,
+       it will be passed to catalog for column sorting.  If not,
        the column will be sorted in-place by javascript.
     """
     columns = {
@@ -212,7 +207,6 @@ class BikaListingView(BrowserView):
 
         form_id = self.form_id
         form = self.request.form
-        pc = getToolByName(self.context, 'portal_catalog')
         workflow = getToolByName(self.context, 'portal_workflow')
 
         # column filters.  If no index is given, they are ignored till later
@@ -416,7 +410,7 @@ class BikaListingView(BrowserView):
                 results_dict[state_var] = state
             results_dict['state_title'] = state_title
 
-            # XXX debug - add history_id column
+# XXX add some kind of out-of-date indicator to bika listing
 ##            if App.config.getConfiguration().debug_mode:
 ##                from Products.CMFEditions.utilities import dereference
 ##                pr = getToolByName(self.context, 'portal_repository')

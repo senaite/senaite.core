@@ -80,18 +80,16 @@ class Calculation(BaseFolder, HistoryAwareMixin):
     def setFormula(self, Formula=None):
         """Set the Dependent Services from the text of the calculation Formula
         """
-        pc = getToolByName(self, 'portal_catalog')
+        bsc = getToolByName(self, 'bika_setup_catalog')
         if Formula is None:
             self.setDependentServices(None)
             self.getField('Formula').set(self, Formula)
         else:
-            pc = getToolByName(self, "portal_catalog")
             DependentServices = []
-            # this one was for %(xx)f
-            #keywords = re.compile(r"\%\(([^\)]+)\)").findall(Formula)
             keywords = re.compile(r"\[([^\]]+)\]").findall(Formula)
             for keyword in keywords:
-                service = pc(getKeyword = keyword)
+                service = bsc(portal_type = "AnalysisService",
+                              getKeyword = keyword)
                 if service:
                     DependentServices.append(service[0].getObject())
 
