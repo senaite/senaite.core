@@ -13,7 +13,6 @@ from bika.lims.interfaces import ICalculations
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.folder.folder import ATFolder, ATFolderSchema
 from zope.interface.declarations import implements
-from operator import itemgetter
 
 class CalculationsView(BikaListingView):
     implements(IFolderContentsView, IViewView)
@@ -32,21 +31,33 @@ class CalculationsView(BikaListingView):
         self.pagesize = 20
 
         self.columns = {
-                   'Title': {'title': _('Calculation')},
-                   'Description': {'title': _('Description')},
-                   'Formula': {'title': _('Formula')},
+                   'Title': {'title': _('Calculation'),
+                             'index': 'sortable_title'},
+                   'Description': {'title': _('Description'),
+                                   'index': 'sortable_description'},
+                   'Formula': {'title': _('Formula'),
+                               'index': 'getFormula'},
                   }
         self.review_states = [
-            {'title': _('All'), 'id':'all',
-                     'columns': ['Title', 'Description', 'Formula']},
-            {'title': _('Active'), 'id':'active',
+            {'id':'all',
+             'title': _('All'),
+                     'columns': ['Title',
+                                 'Description',
+                                 'Formula']},
+            {'id':'active',
+             'title': _('Active'),
              'contentFilter': {'inactive_state': 'active'},
              'transitions': ['deactivate'],
-                     'columns': ['Title', 'Description', 'Formula']},
-            {'title': _('Dormant'), 'id':'inactive',
+                     'columns': ['Title',
+                                 'Description',
+                                 'Formula']},
+            {'id':'inactive',
+             'title': _('Dormant'),
              'contentFilter': {'inactive_state': 'inactive'},
              'transitions': ['activate',],
-                     'columns': ['Title', 'Description', 'Formula']},
+                     'columns': ['Title',
+                                 'Description',
+                                 'Formula']},
         ]
 
     def folderitems(self):

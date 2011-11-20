@@ -13,7 +13,6 @@ from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.folder.folder import ATFolder, ATFolderSchema
 from zope.interface.declarations import implements
 from bika.lims.interfaces import ILabProducts
-from operator import itemgetter
 
 class LabProductsView(BikaListingView):
     implements(IFolderContentsView, IViewView)
@@ -35,11 +34,16 @@ class LabProductsView(BikaListingView):
         self.columns = {
             'Title': {'title': _('Title'),
                       'index': 'sortable_title'},
-            'Volume': {'title': _('Volume')},
-            'Unit': {'title': _('Unit')},
-            'Price': {'title': _('Price')},
-            'VATAmount': {'title': _('VAT Amount')},
-            'TotalPrice': {'title': _('Total Price')},
+            'Volume': {'title': _('Volume'),
+                       'index': 'getVolume'},
+            'Unit': {'title': _('Unit'),
+                       'index': 'getUnit'},
+            'Price': {'title': _('Price'),
+                       'index': 'getPrice'},
+            'VATAmount': {'title': _('VAT Amount'),
+                       'index': 'getVATAmount'},
+            'TotalPrice': {'title': _('Total Price'),
+                       'index': 'getTotalPrice'},
         }
         self.review_states = [
             {'id':'all',
@@ -84,7 +88,6 @@ class LabProductsView(BikaListingView):
             items[x]['TotalPrice'] = obj.getTotalPrice()
             items[x]['replace']['Title'] = "<a href='%s'>%s</a>" % \
                  (items[x]['url'], items[x]['Title'])
-
 
         return items
 

@@ -33,19 +33,25 @@ class DepartmentsView(BikaListingView):
         self.columns = {
             'Title': {'title': _('Department'),
                       'index':'sortable_title'},
-            'Description': {'title': _('Description')},
-            'Manager': {'title': _('Manager')},
-            'ManagerPhone': {'title': _('Manager Phone')},
-            'ManagerEmail': {'title': _('Manager Email')},
+            'Description': {'title': _('Description'),
+                            'index': 'sortable_description'},
+            'Manager': {'title': _('Manager'),
+                        'index': 'getManager'},
+            'ManagerPhone': {'title': _('Manager Phone'),
+                             'index': 'getManagerPhone'},
+            'ManagerEmail': {'title': _('Manager Email'),
+                             'index': 'getManagerEmail'},
         }
         self.review_states = [
-            {'title': _('All'), 'id':'all',
+            {'id':'all',
+             'title': _('All'),
              'columns': ['Title',
                          'Description',
                          'Manager',
                          'ManagerPhone',
                          'ManagerEmail']},
-            {'title': _('Active'), 'id':'active',
+            {'id':'active',
+             'title': _('Active'),
              'contentFilter': {'inactive_state': 'active'},
              'transitions': ['deactivate'],
              'columns': ['Title',
@@ -53,7 +59,8 @@ class DepartmentsView(BikaListingView):
                          'Manager',
                          'ManagerPhone',
                          'ManagerEmail']},
-            {'title': _('Dormant'), 'id':'inactive',
+            {'id':'inactive',
+             'title': _('Dormant'),
              'contentFilter': {'inactive_state': 'inactive'},
              'transitions': ['activate',],
              'columns': ['Title',
@@ -70,12 +77,8 @@ class DepartmentsView(BikaListingView):
             obj = items[x]['obj']
             items[x]['Description'] = obj.Description()
             items[x]['Manager'] = obj.getManagerName()
-            if items[x]['Manager']:
-                items[x]['ManagerPhone'] = obj.getManager().BusinessPhone
-                items[x]['ManagerEmail'] = obj.getManager().EmailAddress
-            else:
-                items[x]['ManagerPhone'] = ""
-                items[x]['ManagerEmail'] = ""
+            items[x]['ManagerPhone'] = obj.getManagerPhone()
+            items[x]['ManagerEmail'] = obj.getManagerEmail()
 
             items[x]['replace']['Title'] = "<a href='%s'>%s</a>" % \
                  (items[x]['url'], items[x]['Title'])

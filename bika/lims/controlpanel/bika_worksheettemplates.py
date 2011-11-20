@@ -37,22 +37,26 @@ class WorksheetTemplatesView(BikaListingView):
         self.columns = {
             'Title': {'title': _('Title'),
                       'index': 'sortable_title',},
-            'Description': {'title': _('Description')},
+            'Description': {'title': _('Description'),
+                            'index': 'sortable_description'},
         }
         self.review_states = [
             {'id':'all',
              'title': _('All'),
-             'columns': ['Title', 'Description']},
+             'columns': ['Title',
+                         'Description']},
             {'id':'active',
              'title': _('Active'),
              'contentFilter': {'inactive_state': 'active'},
              'transitions': ['deactivate'],
-             'columns': ['Title', 'Description']},
+             'columns': ['Title',
+                         'Description']},
             {'id':'inactive',
              'title': _('Dormant'),
              'contentFilter': {'inactive_state': 'inactive'},
              'transitions': ['activate',],
-             'columns': ['Title', 'Description']},
+             'columns': ['Title',
+                         'Description']},
         ]
 
     def folderitems(self):

@@ -29,18 +29,25 @@ class AnalysisCategoriesView(BikaListingView):
         self.pagesize = 20
 
         self.columns = {
-            'Title': {'title': _('Category')},
-            'Description': {'title': _('Description')},
-            'Department': {'title': _('Department')},
+            'Title': {'title': _('Category'),
+                      'index': 'sortable_title'},
+            'Description': {'title': _('Description'),
+                            'index': 'sortable_description'},
+            'Department': {'title': _('Department'),
+                           'index': 'getDepartment'},
         }
+
         self.review_states = [
-            {'title': _('All'), 'id':'all',
+            {'id':'all',
+             'title': _('All'),
              'columns': ['Title', 'Description', 'Department']},
-            {'title': _('Active'), 'id':'active',
+            {'id':'active',
+             'title': _('Active'),
              'contentFilter': {'inactive_state': 'active'},
              'transitions': ['deactivate'],
              'columns': ['Title', 'Description', 'Department']},
-            {'title': _('Dormant'), 'id':'inactive',
+            {'id':'inactive',
+             'title': _('Dormant'),
              'contentFilter': {'inactive_state': 'inactive'},
              'transitions': ['activate',],
              'columns': ['Title', 'Description', 'Department']},

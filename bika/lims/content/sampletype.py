@@ -10,13 +10,6 @@ from zope.i18nmessageid import MessageFactory
 _ = MessageFactory('bika')
 
 schema = BikaSchema.copy() + Schema((
-# for indexing unique values?
-#    ComputedField('SampleTypeTitle',
-#        expression = 'context.getTitle()',
-#        widget = ComputedWidget(
-#            visible=False,
-#        )
-#    ),
     IntegerField('RetentionPeriod',
         required = 1,
         default_method = 'getDefaultLifetime',

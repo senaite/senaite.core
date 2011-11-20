@@ -27,24 +27,35 @@ class ARProfilesView(BikaListingView):
         self.show_sort_column = False
         self.show_select_row = False
         self.show_select_column = True
-        self.pagesize = 20
 
         self.columns = {
-            'title': {'title': _('Profile')},
-            'Description': {'title': _('Description')},
-            'ProfileKey': {'title': _('Profile Key')},
+            'Title': {'title': _('Profile'),
+                      'index': 'sortable_title'},
+            'Description': {'title': _('Description'),
+                            'index': 'sortable_description'},
+            'ProfileKey': {'title': _('Profile Key'),
+                           'index': 'getProfileKey'},
         }
         self.review_states = [
-            {'title': _('All'), 'id':'all',
-             'columns': ['title', 'Description', 'ProfileKey']},
-            {'title': _('Active'), 'id':'active',
+            {'id':'all',
+             'title': _('All'),
+             'columns': ['Title',
+                         'Description',
+                         'ProfileKey']},
+            {'id':'active',
+             'title': _('Active'),
              'contentFilter': {'inactive_state': 'active'},
              'transitions': ['deactivate'],
-             'columns': ['title', 'Description', 'ProfileKey']},
-            {'title': _('Dormant'), 'id':'inactive',
+             'columns': ['Title',
+                         'Description',
+                         'ProfileKey']},
+            {'id':'inactive',
+             'title': _('Dormant'),
              'contentFilter': {'inactive_state': 'inactive'},
              'transitions': ['activate',],
-             'columns': ['title', 'Description', 'ProfileKey']},
+             'columns': ['Title',
+                         'Description',
+                         'ProfileKey']},
         ]
 
     def folderitems(self):
@@ -53,7 +64,8 @@ class ARProfilesView(BikaListingView):
             if not items[x].has_key('obj'): continue
             obj = items[x]['obj']
             items[x]['ProfileKey'] = obj.getProfileKey()
-            items[x]['replace']['title'] = "<a href='%s'>%s</a>" % \
+            items[x]['Title'] = ''
+            items[x]['replace']['Title'] = "<a href='%s'>%s</a>" % \
                  (items[x]['url'], items[x]['title'])
 
         return items

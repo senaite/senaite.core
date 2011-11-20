@@ -33,6 +33,13 @@ schema = BikaSchema.copy() + Schema((
             description = _("The analyses included in this profile, grouped per category"),
         )
     ),
+    # indexed value for getService
+    ComputedField('ServiceName',
+        expression = "context.getService() and context.getService().Title() or ''",
+        widget = ComputedWidget(
+            visible = False,
+        ),
+    ),
     TextField('Notes',
         schemata = 'Description',
         default_content_type = 'text/plain',

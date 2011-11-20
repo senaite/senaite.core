@@ -13,7 +13,6 @@ from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.folder.folder import ATFolder, ATFolderSchema
 from bika.lims.interfaces import IReferenceDefinitions
 from zope.interface.declarations import implements
-from operator import itemgetter
 
 class ReferenceDefinitionsView(BikaListingView):
     implements(IFolderContentsView, IViewView)
@@ -35,7 +34,8 @@ class ReferenceDefinitionsView(BikaListingView):
         self.columns = {
             'Title': {'title': _('Title'),
                       'index': 'sortable_title'},
-            'Description': {'title': _('Description')},
+            'Description': {'title': _('Description'),
+                            'index': 'sortable_description'},
         }
         self.review_states = [
             {'id':'all',

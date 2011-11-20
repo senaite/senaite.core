@@ -10,8 +10,7 @@ from plone.app.folder.folder import ATFolder, ATFolderSchema
 from bika.lims.interfaces import IAnalysisSpecs
 from zope.interface.declarations import implements
 from plone.app.layout.globals.interfaces import IViewView
-from operator import itemgetter
-  
+
 class AnalysisSpecsView(BikaListingView):
     implements(IFolderContentsView, IViewView)
 
@@ -30,19 +29,23 @@ class AnalysisSpecsView(BikaListingView):
         self.pagesize = 20
 
         self.columns = {
-            'getSampleType': {'title': _('Sample Type')},
+            'SampleType': {'title': _('Sample Type'),
+                              'index': 'getSampleType'},
         }
         self.review_states = [
-            {'title': _('All'), 'id':'all',
-             'columns': ['getSampleType']},
-            {'title': _('Active'), 'id':'active',
+            {'id':'all',
+             'title': _('All'),
+             'columns': ['SampleType']},
+            {'id':'active',
+             'title': _('Active'),
              'contentFilter': {'inactive_state': 'active'},
              'transitions': ['deactivate'],
-             'columns': ['getSampleType']},
-            {'title': _('Dormant'), 'id':'inactive',
+             'columns': ['SampleType']},
+            {'id':'inactive',
+             'title': _('Dormant'),
              'contentFilter': {'inactive_state': 'inactive'},
              'transitions': ['activate',],
-             'columns': ['getSampleType']},
+             'columns': ['SampleType']},
         ]
 
     def folderitems(self):
@@ -51,10 +54,9 @@ class AnalysisSpecsView(BikaListingView):
         for x in range(len(items)):
             if not items[x].has_key('obj'): continue
             obj = items[x]['obj']
-            items[x]['getSampleType'] = obj.getSampleType() and obj.getSampleType().Title()
-            items[x]['replace']['getSampleType'] = "<a href='%s'>%s</a>" % \
-                 (items[x]['url'], items[x]['getSampleType'])
-
+            items[x]['SampleType'] = obj.getSampleType() and obj.getSampleType().Title()
+            items[x]['replace']['SampleType'] = "<a href='%s'>%s</a>" % \
+                 (items[x]['url'], items[x]['SampleType'])
 
         return items
 

@@ -115,7 +115,7 @@ schema = BikaSchema.copy() + Schema((
             description = _("Select analysis method"),
         ),
     ),
-        ReferenceField('Instrument',
+    ReferenceField('Instrument',
         schemata = _("Method"),
         required = 0,
         vocabulary_display_path_bound = sys.maxint,
@@ -126,6 +126,13 @@ schema = BikaSchema.copy() + Schema((
             checkbox_bound = 1,
             label = _("Instrument"),
             description = _("Select the preferred instrument for this analysis"),
+        ),
+    ),
+    # indexed value for getInstrument
+    ComputedField('InstrumentName',
+        expression = "context.getInstrument() and context.getInstrument().Title() or ''",
+        widget = ComputedWidget(
+            visible = False,
         ),
     ),
     HistoryAwareReferenceField('Calculation',
@@ -141,6 +148,13 @@ schema = BikaSchema.copy() + Schema((
             description = _("If required, select a calculation for the analysis here. "
                             "Calculations can be configured under the calculations item "
                             "in the LIMS set-up"),
+        ),
+    ),
+    # indexed value for getCalculation
+    ComputedField('CalculationName',
+        expression = "context.getCalculation() and context.getCalculation().Title() or ''",
+        widget = ComputedWidget(
+            visible = False,
         ),
     ),
     DurationField('MaxTimeAllowed',
@@ -197,6 +211,13 @@ schema = BikaSchema.copy() + Schema((
             description = _("The category the analysis service belongs to"),
         ),
     ),
+    # indexed value for getCategory
+    ComputedField('CategoryName',
+        expression = "context.getCategory() and context.getCategory().Title() or ''",
+        widget = ComputedWidget(
+            visible = False,
+        ),
+    ),
     ReferenceField('Department',
         schemata = _("Description"),
         required = 0,
@@ -210,12 +231,11 @@ schema = BikaSchema.copy() + Schema((
             description = _("The lab department responsible for the analysis service"),
         ),
     ),
-    ComputedField('CategoryName',
-        schemata = _("Description"),
-        expression = "context.getCategory() and context.getCategory().Title() or ''",
+    # indexed value for getDepartment
+    ComputedField('DepartmentName',
+        expression = "context.getDepartment() and context.getDepartment().Title() or ''",
         widget = ComputedWidget(
-            label = _("Analysis category"),
-            visible = {'edit':'hidden', }
+            visible = False,
         ),
     ),
     ComputedField('CategoryUID',

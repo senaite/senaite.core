@@ -31,7 +31,8 @@ class ReferenceManufacturersView(BikaListingView):
         self.columns = {
             'Title': {'title': _('Title'),
                       'index': 'sortable_title'},
-            'Description': {'title': _('Description')},
+            'Description': {'title': _('Description'),
+                            'index': 'sortable_description'},
         }
         self.review_states = [
             {'id':'all',

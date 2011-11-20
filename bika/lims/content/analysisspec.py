@@ -43,6 +43,13 @@ schema = Schema((
                             "the sample type in the list"),
         ),
     ),
+    # indexed value for getSampleType
+    ComputedField('SampleTypeName',
+        expression = "context.getSampleType() and context.getSampleType().Title() or ''",
+        widget = ComputedWidget(
+            visible = False,
+        ),
+    ),
 )) + \
 BikaSchema.copy() + \
 Schema((

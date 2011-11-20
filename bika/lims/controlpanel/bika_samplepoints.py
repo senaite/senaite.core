@@ -36,7 +36,8 @@ class SamplePointsView(BikaListingView):
         self.columns = {
             'Title': {'title': _('Sample Point'),
                       'index':'sortable_title'},
-                   'Description': {'title': _('Description')},
+                   'Description': {'title': _('Description'),
+                                   'index': 'sortable_description'},
         }
         self.review_states = [
             {'id':'all',

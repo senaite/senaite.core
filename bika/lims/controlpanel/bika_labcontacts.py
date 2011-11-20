@@ -13,7 +13,6 @@ from plone.app.content.browser.interfaces import IFolderContentsView
 from bika.lims.interfaces import ILabContacts
 from plone.app.folder.folder import ATFolder, ATFolderSchema
 from zope.interface.declarations import implements
-from operator import itemgetter
 
 class LabContactsView(BikaListingView):
     implements(IFolderContentsView, IViewView)
@@ -46,14 +45,16 @@ class LabContactsView(BikaListingView):
                              'index': 'getEmailAddress'},
         }
         self.review_states = [
-            {'title': _('All'), 'id':'all',
+            {'id':'all',
+             'title': _('All'),
              'columns': ['Fullname',
                          'Department',
                          'BusinessPhone',
                          'Fax',
                          'MobilePhone',
                          'EmailAddress']},
-            {'title': _('Active'), 'id':'active',
+            {'id':'active',
+             'title': _('Active'),
              'contentFilter': {'inactive_state': 'active'},
              'transitions': ['deactivate'],
              'columns': ['Fullname',
@@ -62,7 +63,8 @@ class LabContactsView(BikaListingView):
                          'Fax',
                          'MobilePhone',
                          'EmailAddress']},
-            {'title': _('Dormant'), 'id':'inactive',
+            {'id':'inactive',
+             'title': _('Dormant'),
              'contentFilter': {'inactive_state': 'inactive'},
              'transitions': ['activate',],
              'columns': ['Fullname',
@@ -79,14 +81,13 @@ class LabContactsView(BikaListingView):
             if not items[x].has_key('obj'): continue
             obj = items[x]['obj']
             items[x]['Fullname'] = obj.getFullname()
-            items[x]['Department'] = obj.getDepartment() and obj.getDepartment().Title() or ''
+            items[x]['Department'] = obj.getDepartmentName()
             items[x]['BusinessPhone'] = obj.getBusinessPhone()
             items[x]['Fax'] = obj.getBusinessFax()
             items[x]['MobilePhone'] = obj.getMobilePhone()
             items[x]['EmailAddress'] = obj.getEmailAddress()
             items[x]['replace']['Fullname'] = "<a href='%s'>%s</a>" % \
                  (items[x]['url'], items[x]['Fullname'])
-
 
         return items
 

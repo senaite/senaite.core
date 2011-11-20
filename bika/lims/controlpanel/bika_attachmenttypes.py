@@ -11,7 +11,6 @@ from bika.lims.interfaces import IAttachmentTypes
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.folder.folder import ATFolder, ATFolderSchema
 from zope.interface.declarations import implements
-from operator import itemgetter
 
 class AttachmentTypesView(BikaListingView):
     implements(IFolderContentsView, IViewView)
@@ -31,12 +30,16 @@ class AttachmentTypesView(BikaListingView):
         request.set('disable_border', 1)
 
         self.columns = {
-            'Title': {'title': _('Attachment Type')},
-            'Description': {'title': _('Description')},
+            'Title': {'title': _('Attachment Type'),
+                      'index': 'sortable_title'},
+            'Description': {'title': _('Description'),
+                            'index': 'sortable_description'},
         }
         self.review_states = [
-            {'title': _('All'), 'id':'all',
-             'columns': ['Title', 'Description']},
+            {'id':'all',
+             'title': _('All'),
+             'columns': ['Title',
+                         'Description']},
         ]
 
     def folderitems(self):

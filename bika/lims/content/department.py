@@ -17,14 +17,32 @@ schema = BikaSchema.copy() + Schema((
         allowed_types = ('LabContact',),
         referenceClass = HoldingReference,
         relationship = 'DepartmentLabContact',
-    ),
-    ComputedField('ManagerName',
-        expression = 'here.getManagerName()',
-        widget = ComputedWidget(
+        widget = ReferenceWidget(
+            checkbox_bound = 1,
             label = _("Manager"),
             description = _("Select a manager from the available personnel configured under the "
                             "'lab contacts' setup item. Departmental managers are referenced on "
                             "analysis results reports containing analyses by their department."),
+        ),
+    ),
+    # this is the value of the getManager index
+    ComputedField('ManagerName',
+        expression = "context.getManager() and context.getManager().getFullname() or ''",
+        widget = ComputedWidget(
+            visible = False,
+        ),
+    ),
+    # this is the value of the getManagerPhone index
+    ComputedField('ManagerPhone',
+        expression = "context.getManager() and context.getManager().getBusinessPhone() or ''",
+        widget = ComputedWidget(
+            visible = False,
+        ),
+    ),
+    # this is the value of the getManagerEmail index
+    ComputedField('ManagerEmail',
+        expression = "context.getManager() and context.getManager().getEmailAddress() or ''",
+        widget = ComputedWidget(
             visible = False,
         ),
     ),
@@ -44,12 +62,5 @@ class Department(BaseContent):
         # sort the list by the second item
         pairs.sort(lambda x, y:cmp(x[1], y[1]))
         return DisplayList(pairs)
-
-    security.declarePublic('getManagerName')
-    def getManagerName(self):
-        if self.getManager():
-            return self.getManager().getFullname()
-        else:
-            return ''
 
 registerType(Department, PROJECTNAME)

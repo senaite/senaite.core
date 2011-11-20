@@ -13,7 +13,6 @@ from bika.lims.content.bikaschema import BikaFolderSchema
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.folder.folder import ATFolder, ATFolderSchema
 from zope.interface.declarations import implements
-from operator import itemgetter
 
 class MethodsView(BikaListingView):
     implements(IFolderContentsView, IViewView)
@@ -35,7 +34,8 @@ class MethodsView(BikaListingView):
         self.columns = {
             'Title': {'title': _('Method'),
                       'index': 'sortable_title'},
-            'Description': {'title': _('Description')},
+            'Description': {'title': _('Description'),
+                            'index': 'sortable_description'},
         }
         self.review_states = [
             {'id':'all',
@@ -59,7 +59,6 @@ class MethodsView(BikaListingView):
             if not items[x].has_key('obj'): continue
             items[x]['replace']['Title'] = "<a href='%s'>%s</a>" % \
                  (items[x]['url'], items[x]['Title'])
-
 
         return items
 

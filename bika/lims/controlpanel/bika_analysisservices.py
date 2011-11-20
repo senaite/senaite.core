@@ -29,23 +29,34 @@ class AnalysisServicesView(BikaListingView):
         self.pagesize = 20
 
         self.columns = {
-            'Title': {'title': _('Service')},
-            'Keyword': {'title': _('Keyword')},
-            'CategoryName': {'title': _('Category')},
-            'Department': {'title': _('Department')},
-            'Instrument': {'title': _('Instrument')},
-            'Unit': {'title': _('Unit')},
-            'Price': {'title': _('Price')},
-            'MaxTimeAllowed': {'title': _('Max Time')},
-            'DuplicateVariation': {'title': _('Dup Var')},
-            'Calculation': {'title': _('Calculation')},
+            'Title': {'title': _('Service'),
+                      'index':'sortable_title'},
+            'Keyword': {'title': _('Keyword'),
+                      'index':'getKeyword'},
+            'Category': {'title': _('Category'),
+                      'index':'getCategory'},
+            'Department': {'title': _('Department'),
+                      'index':'getDepartment'},
+            'Instrument': {'title': _('Instrument'),
+                      'index':'getInstrument'},
+            'Unit': {'title': _('Unit'),
+                      'index':'getUnit'},
+            'Price': {'title': _('Price'),
+                      'index':'getPrice'},
+            'MaxTimeAllowed': {'title': _('Max Time'),
+                      'index':'getMaxTimeAllowed'},
+            'DuplicateVariation': {'title': _('Dup Var'),
+                      'index':'getDuplicateVariation'},
+            'Calculation': {'title': _('Calculation'),
+                      'index':'getCalculation'},
         }
 
         self.review_states = [
-            {'title': _('All'), 'id':'all',
+            {'id':'all',
+             'title': _('All'),
              'columns': ['Title',
                          'Keyword',
-                         'CategoryName',
+                         'Category',
                          'Department',
                          'Instrument',
                          'Unit',
@@ -55,12 +66,13 @@ class AnalysisServicesView(BikaListingView):
                          'Calculation',
                          ],
              },
-            {'title': _('Active'), 'id':'active',
+            {'id':'active',
+             'title': _('Active'),
              'contentFilter': {'inactive_state': 'active'},
              'transitions': ['deactivate'],
              'columns': ['Title',
                          'Keyword',
-                         'CategoryName',
+                         'Category',
                          'Department',
                          'Instrument',
                          'Unit',
@@ -70,12 +82,13 @@ class AnalysisServicesView(BikaListingView):
                          'Calculation',
                          ],
              },
-            {'title': _('Dormant'), 'id':'inactive',
+            {'id':'inactive',
+             'title': _('Dormant'),
              'contentFilter': {'inactive_state': 'inactive'},
              'transitions': ['activate',],
              'columns': ['Title',
                          'Keyword',
-                         'CategoryName',
+                         'Category',
                          'Department',
                          'Instrument',
                          'Unit',
@@ -93,7 +106,7 @@ class AnalysisServicesView(BikaListingView):
             if not items[x].has_key('obj'): continue
             obj = items[x]['obj']
             items[x]['Keyword'] = obj.getKeyword()
-            items[x]['CategoryName'] = obj.getCategoryName()
+            items[x]['Category'] = obj.getCategoryName()
             items[x]['Instrument'] = obj.getInstrument() and obj.getInstrument().Title() or ' '
             items[x]['Department'] = obj.getDepartment() and obj.getDepartment().Title() or ' '
             calculation = obj.getCalculation()
