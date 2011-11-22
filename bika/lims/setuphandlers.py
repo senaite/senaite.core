@@ -386,7 +386,6 @@ class BikaGenerator:
         bsc.addIndex('review_state', 'FieldIndex')
         bsc.addIndex('inactive_state', 'FieldIndex')
         bsc.addIndex('cancellation_state', 'FieldIndex')
-        bsc.addIndex('sortable_title', 'FieldIndex')
         bsc.addIndex('getType', 'FieldIndex')
         bsc.addIndex('getBlank', 'FieldIndex')
         bsc.addIndex('getBrand', 'FieldIndex')
