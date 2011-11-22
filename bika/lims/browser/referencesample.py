@@ -100,12 +100,15 @@ class ReferenceResultsView(BikaListingView):
     """
     def __init__(self, context, request):
         super(ReferenceResultsView, self).__init__(context, request)
+        bsc = getToolByName(context, 'bika_setup_catalog')
+        self.contentsMethod = bsc
         self.title = _(" ")
         self.description = _(" ")
         self.contentFilter = {}
         self.content_add_actions = {}
         self.show_sort_column = False
         self.show_select_row = False
+        self.show_workflow_action_buttons = False
         self.show_select_column = False
         self.pagesize = 1000
 
@@ -126,10 +129,10 @@ class ReferenceResultsView(BikaListingView):
 
     def folderitems(self):
         items = []
-        rc = getToolByName(self.context, REFERENCE_CATALOG)
+        uc = getToolByName(self.context, 'uid_catalog')
+        # not using <self.contentsMethod=bsc>
         for x in self.context.getReferenceResults():
-            service = rc.lookupObject(x['uid'])
-            path = "/".join(self.context.getPhysicalPath())
+            service = uc(UID=x['uid'])[0]
             item = {
                 'obj': self.context,
                 'id': x['uid'],
@@ -137,13 +140,12 @@ class ReferenceResultsView(BikaListingView):
                 'result': x['result'],
                 'min': x['min'],
                 'max': x['max'],
-                'title': service.Title(),
-                'Service': service.Title(),
+                'title': service.Title,
+                'Service': service.Title,
                 'type_class': 'contenttype-ReferenceResult',
                 'url': service.absolute_url(),
                 'relative_url': service.absolute_url(),
                 'view_url': self.context.absolute_url() + "/results",
-                'path': path,
                 'replace': {},
                 'before': {},
                 'after': {},
@@ -153,7 +155,7 @@ class ReferenceResultsView(BikaListingView):
                 'allow_edit': [],
             }
             item['replace']['Service'] = "<a href='%s'>%s</a>" % \
-                (service.absolute_url(), service.Title())
+                (service.absolute_url(), service.Title)
             items.append(item)
 
         items = sorted(items, key = itemgetter('Service'))

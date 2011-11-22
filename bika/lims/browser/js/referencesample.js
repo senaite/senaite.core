@@ -76,7 +76,14 @@ $(document).ready(function(){
 			},
 		});
 	});
+// XXX just what is it that makes this get turned on and off all the time?
+// XXX fix it by making this widget use categorised bika listing.
+// I turned it on this time to force the referencesample.js to trigger on
+// reload.  Errors on the lage cause a validation error/page reload, and if
+// we don't trigger the change(), the referenceresults is never updated.
+//	$($('#ReferenceDefinition\\:list').val() != ''){
+		$('#ReferenceDefinition\\:list').change();
+//	}
 
-	//$('#ReferenceDefinition\\:list').change();
 });
 });

@@ -104,7 +104,7 @@ div.bika_listing {
 }
 
 .bika-listing-table th.sortable {
-    cursor: pointer;
+/*    cursor: pointer; */
 }
 
 .bika-listing-table th.ascending {

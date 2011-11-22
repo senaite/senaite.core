@@ -171,8 +171,8 @@ class ReferenceSample(BaseFolder):
                                bsc(portal_type='ReferenceDefinition',
                                    inactive_state = 'active')]
         o = self.getReferenceDefinition()
-        if o and (o.UID, o.Title) not in items:
-            items.append((o.UID, o.Title))
+        if o and (o.UID(), o.Title()) not in items:
+            items.append((o.UID(), o.Title()))
         return DisplayList(list(items))
 
     def getReferenceManufacturers(self):
@@ -181,8 +181,8 @@ class ReferenceSample(BaseFolder):
                                bsc(portal_type='ReferenceManufacturer',
                                    inactive_state = 'active')]
         o = self.getReferenceDefinition()
-        if o and (o.UID, o.Title) not in items:
-            items.append((o.UID, o.Title))
+        if o and (o.UID(), o.Title()) not in items:
+            items.append((o.UID(), o.Title()))
         return DisplayList(list(items))
 
     security.declarePublic('getSpecCategories')
