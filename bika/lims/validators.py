@@ -252,8 +252,7 @@ class CoordinateValidator:
     """ Validate latitude or longitude field values
     """
     implements(IValidator)
-    def __init__(self, name):
-        self.name = name
+    name = "coordinatevalidator"
 
     def __call__(self, value, *args, **kwargs):
         if not value:
@@ -261,6 +260,15 @@ class CoordinateValidator:
 
         instance = kwargs['instance']
         fieldname = kwargs['field'].getName()
+
+        if instance.REQUEST.has_key('validated'):
+            if instance.REQUEST['validated'] == fieldname:
+                return True
+            else:
+                instance.REQUEST['validated'] = fieldname
+        else:
+            instance.REQUEST['validated'] = fieldname
+
         request = kwargs.get('REQUEST', {})
         form = request.form
         form_value = form.get(fieldname)
@@ -268,58 +276,47 @@ class CoordinateValidator:
         ts = getToolByName(instance, 'translation_service')
         pc = getToolByName(instance, 'portal_catalog')
 
-        if self.name == 'degreevalidator':
-            validatee = form_value['degrees']
-            valid_min = 0
-            valid_max = 90
-            title = 'degrees'
-        if self.name == 'minutevalidator':
-            validatee = form_value['minutes']
-            valid_min = 0
-            valid_max = 59
-            title = 'minutes'
-        if self.name == 'secondvalidator':
-            validatee = form_value['seconds']
-            valid_min = 0
-            valid_max = 59
-            title = 'seconds'
+        valid_min = 0
+        degrees = form_value['degrees']
+        minutes = form_value['minutes']
+        seconds = form_value['seconds']
 
         try:
-            validatee = int(validatee)
+            degrees = int(degrees)
         except:
-            return _("Validation failed: %s must be numeric" %title)
+            return _("Validation failed: degrees must be numeric")
+        try:
+            minutes = int(minutes)
+        except:
+            return _("Validation failed: minutes must be numeric")
+        try:
+            seconds = int(seconds)
+        except:
+            return _("Validation failed: seconds must be numeric")
 
-        if valid_min <= validatee <= valid_max:
+        if 0 <= degrees <= 90:
             pass
         else:
-            return _("Validation failed: %s must be %s - %s" %(title, valid_min, valid_max))
+            return _("Validation failed: degrees must be 0 - 90")
 
+        if 0 <= minutes <= 59:
+            pass
+        else:
+            return _("Validation failed: minutes must be 0 - 59")
 
-        return True
+        if 0 <= seconds <= 59:
+            pass
+        else:
+            return _("Validation failed: seconds must be 0 - 59")
 
-
-validation.register(CoordinateValidator("degreevalidator"))
-validation.register(CoordinateValidator("minutevalidator"))
-validation.register(CoordinateValidator("secondvalidator"))
-
-class BearingValidator:
-    """Validating bearing as part of coordinate field
-    """
-
-    implements(IValidator)
-    name = "bearingvalidator"
-
-    def __call__(self, value, *args, **kwargs):
-        instance = kwargs['instance']
-        fieldname = kwargs['field'].getName()
-        request = kwargs.get('REQUEST', {})
-        form = request.form
-        form_value = form.get(fieldname)
-
-        ts = getToolByName(instance, 'translation_service')
-        pc = getToolByName(instance, 'portal_catalog')
+        if degrees == 90:
+            if minutes != 0:
+                return _("Validation failed: minutes must be zero")
+            if seconds != 0:
+                return _("Validation failed: seconds must be zero")
 
         bearing = form_value['bearing']
+
         if fieldname == 'Latitude':
             if (bearing.lower() != 'n') \
             and (bearing.lower() != 's'):
@@ -330,9 +327,11 @@ class BearingValidator:
             and (bearing.lower() != 'w'):
                 return _("Validation failed: Bearing must be E/W")
 
+        
+
         return True
 
-validation.register(BearingValidator())
+validation.register(CoordinateValidator())
 
 class ResultOptionsValidator:
     """Validating AnalysisService ResultOptions field.
