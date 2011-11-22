@@ -86,5 +86,27 @@ $(document).ready(function(){
 		return false;
 	});
 
+	// expand/collapse categorised rows
+	$(".bika-listing-table th.collapsed").live('click', function(){
+		table = $(this).parents('.bika-listing-table');
+		// show sub TR rows
+		$(table)
+			.children('tbody')
+			.children('tr[cat='+$(this).attr("cat")+']')
+			.toggle(true);
+		// change TH state
+		$(this).removeClass('collapsed').addClass('expanded');
+	});
+	$(".bika-listing-table th.expanded").live('click', function(){
+		table = $(this).parents('.bika-listing-table');
+		// show sub TR rows
+		$(table)
+			.children('tbody')
+			.children('tr[cat='+$(this).attr("cat")+']')
+			.toggle(false);
+		// change TH state
+		$(this).removeClass('expanded').addClass('collapsed');
+	});
+
 });
 });

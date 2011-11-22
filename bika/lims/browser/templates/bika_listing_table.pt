@@ -1,5 +1,6 @@
 <form name="bika_listing_form" method="post" action="workflow_action"
 	tal:attributes="id view/bika_listing/form_id"
+	tal:omit-tag="view/table_only"
 	tal:define="
 		global rowspan python:{};
 		global rowspan_max python:{};
@@ -18,18 +19,19 @@
 		user python:sm.getUser();
 		roles python:user.getRoles();">
 
-<input tal:replace="structure context/@@authenticator/authenticator" />
-
-<input type="hidden" name="submitted" value="1"/>
-
-<input type="hidden" name="form_id" tal:attributes="value view/bika_listing/form_id"/>
-
+<input tal:replace="structure context/@@authenticator/authenticator"/>
+<input type="hidden" name="submitted" value="1"
+	tal:omit-tag="view/table_only"/>
+<input type="hidden" name="form_id" tal:attributes="value view/bika_listing/form_id"
+	tal:omit-tag="view/table_only"/>
 <input type="hidden"
 	name="specs"
+	tal:omit-tag="view/table_only"
 	tal:attributes="value python:hasattr(view.bika_listing, 'json_specs') and
 	                             view.bika_listing.json_specs or []"/>
 <input type="hidden"
 	id="item_data"
+	tal:omit-tag="view/table_only"
 	name="item_data"
 	tal:attributes="value python:hasattr(view.bika_listing, 'json_interim_fields') and
 	                             view.bika_listing.json_interim_fields or []"/>
@@ -194,19 +196,19 @@ Item select checkboxes.
 		tal:condition="python: 'replace' not in item or 'select_column' not in item['replace']">
 		<input type="checkbox"
 			class="noborder"
-			name="uids:list"
 			tal:attributes="
+				name    string:${view/bika_listing/select_checkbox_name}:list;
 				value   item/uid;
 				id      string:${view/bika_listing/form_id}_cb_${item/uid};
 				alt     python:view.msg_select_item(item);
 				tabindex string:1000;
 				checked python:item.has_key('selected') and item['selected'] and 'yes' or '';"/>
 		<input type="hidden"
-			name="selected_obj_paths:list"
+			name="selected_obj_uids:list"
 			value="#"
 			tal:attributes="
-				value item/relative_url;
-				name string:${view/bika_listing/form_id}_selected_obj_paths:list" />
+				value item/uid;
+				name string:${view/bika_listing/form_id}_selected_obj_uids:list" />
 		<label
 			tal:content="item/title"
 			tal:attributes="for string:${view/bika_listing/form_id}_cb_${item/uid}"
@@ -314,7 +316,7 @@ Table cells for each column from in review_state's column list.
 					st_uid string:${item/st_uid|nothing};
 					objectId string:${item/id};
 					field python:column;
-					name string:${column}.${item/uid}:records;
+					name python:column == view.bika_listing.select_checkbox_name and '%s_column_value.%s:records'%(column, item['uid']) or '%s.%s:records'%(column, item['uid']);
 					value python:item[column] and
 									item[column] or '';"/>
 			<tal:comment replace="nothing"><!-- view --></tal:comment>
@@ -335,7 +337,7 @@ Table cells for each column from in review_state's column list.
 					st_uid string:${item/st_uid|nothing};
 					objectId string:${item/id};
 					field python:column;
-					name string:${column}.${item/uid}:records;
+					name python:column == view.bika_listing.select_checkbox_name and '%s_column_value.%s:records'%(column, item['uid']) or '%s.%s:records'%(column, item['uid']);
 					value python:item[column];"/>
 		</span>
 		<tal:comment replace="nothing"><!-- calculated result field. --></tal:comment>
@@ -503,21 +505,7 @@ Workflow Actions and Batching
 			<div tal:replace="structure view/batching"
 				tal:condition="python:not view.show_all"/>
 		</td>
-		<td class="pagesize_selector noborder"
-			style="vertical-align:top !important"
-			tal:condition="python:len(view.items) > 10"
-			style="text-align:right">
-			<select name="pagesize">
-				<option value="10" tal:attributes="selected python:int(view.bika_listing.pagesize) == 10 and 'selected' or ''">10</option>
-				<option value="25" tal:attributes="selected python:int(view.bika_listing.pagesize) == 25 and 'selected' or ''">25</option>
-				<option value="50" tal:attributes="selected python:int(view.bika_listing.pagesize) == 50 and 'selected' or ''">50</option>
-				<option value="100" tal:attributes="selected python:int(view.bika_listing.pagesize) == 100 and 'selected' or ''">100</option>
-			</select>
-			<span class="discreet"
-				i18n:translate="Items per page">Items per page</span>
-		</td>
 	</tr>
 </table>
-
 
 </form>

@@ -1,5 +1,6 @@
 from DateTime import DateTime
 from Products.Archetypes.config import REFERENCE_CATALOG
+from Products.Archetypes.public import DisplayList
 from DocumentTemplate import sequence
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser import BrowserView
@@ -261,15 +262,11 @@ class WorksheetFolderListingView(BikaListingView):
         return new_items
 
     def getWorksheetTemplates(self):
-        """ Return Worksheet Template IDs for add worksheet dropdown in
-            worksheetfolder listing """
-        bsc = getToolByName(self.context, 'bika_setup_catalog')
-        templates = []
-        for wst in bsc(portal_type = "WorksheetTemplate",
-                       sort_on = 'sortable_title',
-                       inactive_state='active'):
-            templates.append({'uid': wst.UID, 'title':wst.title})
-        return templates
+        bsc = getToolByName(self, 'bika_setup_catalog')
+        items = [(o.UID, o.Title) for o in \
+                 bsc(portal_type='WorksheetTemplate',
+                     inactive_state = 'active')]
+        return DisplayList(list(items))
 
 class AddWorksheetView(BrowserView):
     """ Handler for the "Add Worksheet" button in Worksheet Folder.

@@ -14,12 +14,11 @@ from zope.site.hooks import getSite
 
 class ServicesView(BikaListingView):
     """ bika listing to display a list of services.
-    selected parameter must be a list of services, which are
-    checked and have their categories expanded by default.
+    field must be a <reference field> containing <AnalysisService> objects.
     """
     def __init__(self, context, request, field):
         BikaListingView.__init__(self, context, request)
-        self.selected = getattr(field, field.accessor)()
+        self.selected = [o.UID() for o in getattr(field, field.accessor)()]
         self.content_add_actions = {}
         self.contentFilter = {'review_state': 'impossible_state'}
         self.base_url = self.context.absolute_url()
@@ -60,7 +59,7 @@ class ServicesView(BikaListingView):
                 'uid': service.UID,
                 'title': service.Title,
                 'category': cat,
-                'selected': service in self.selected,
+                'selected': service.UID in self.selected,
                 'type_class': 'contenttype-AnalysisService',
                 'url': service.absolute_url(),
                 'relative_url': service.absolute_url(),
@@ -99,7 +98,8 @@ class ServicesWidget(TypesWidget):
         """
         services = ServicesView(self, self.REQUEST, field)
         services.show_select_column = show_select_column
-        return services.contents_table()
+        services.select_checkbox_name = field.getName()
+        return services.contents_table(table_only=True)
 
 registerWidget(ServicesWidget,
                title = 'Analysis Services',

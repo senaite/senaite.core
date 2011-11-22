@@ -11,26 +11,32 @@
     <h1>
 	<img tal:condition="view/icon | nothing"
          src="" tal:attributes="src view/icon"/>
-	<span class="documentFirstHeading" tal:content="structure view/title"/>
-	<tal:add_actions repeat="add_item python:view.content_add_actions.keys()">
-		<a tal:attributes="
-			href python:view.content_add_actions[add_item];
-			class python:'content_add_link %s' % view.content_add_actions[add_item]">
-			<img src="++resource++bika.lims.images/add.png"/>
-			<span tal:replace="add_item"/>
-		</a>
+
+		<span class="documentFirstHeading" tal:content="structure view/title"/>
+
+		<tal:add_actions repeat="add_item python:view.content_add_actions.keys()">
+			<a tal:attributes="
+				href python:view.content_add_actions[add_item];
+				class python:'content_add_link %s' % view.content_add_actions[add_item]">
+				<img src="++resource++bika.lims.images/add.png"/>
+				<span tal:replace="add_item"/>
+			</a>
+		</tal:add_actions>
+
+		<!-- Worksheet Templates dropdown is hacked in over here -->
 		<span class="content_add_link"
 			tal:condition="python:context.portal_type == 'WorksheetFolder'">
-				<select class='wstemplate'>
-					<option value='' i18n:translate="">Select template</option>
-					<tal:options repeat="option view/getWorksheetTemplates">
+				<select class='wstemplate'
+					tal:define="wstlist view/getWorksheetTemplates">
+					<option value='' i18n:translate="select_template">Select template</option>
+					<tal:options repeat="option wstlist">
 						<option
-							tal:attributes="value python:option['uid']"
-							tal:content="python:option['title']"/>
+							tal:attributes="value python:option"
+							tal:content="python:wstlist.getValue(option)"/>
 					</tal:options>
 				</select>
 		</span>
-	</tal:add_actions>
+
     </h1>
 </metal:content-title>
 

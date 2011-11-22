@@ -97,7 +97,7 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     ComputedField('ServiceUID',
-        expression = 'context.getService().UID()',
+        expression = "context.getService() and context.getService().UID() or ''",
         widget = ComputedWidget(
             visible = False,
         ),

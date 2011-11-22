@@ -183,7 +183,7 @@ td.review_state_selector{
 }
 
 /* pagesize dropdown */
-td.pagesize_selector {
+.pagesize_selector {
   text-align:right;
   vertical-align:top !important;
 }

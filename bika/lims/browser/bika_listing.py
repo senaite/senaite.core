@@ -150,8 +150,13 @@ class BikaListingView(BrowserView):
     show_sort_column = False
     show_workflow_action_buttons = True
     categories = []
+    # setting pagesize to 1000 specifically disables the batch sizez dropdown
     pagesize = 25
     pagenumber = 1
+    # select checkbox is normally called uids:list
+    # if table_only is set then the context form tag might require
+    # these to have a different name=FieldName:list.
+    select_checkbox_name = "uids"
     # when rendering multiple bika_listing tables, form_id must be unique
     form_id = "list"
 
@@ -445,8 +450,12 @@ class BikaListingView(BrowserView):
 
         return results
 
-    def contents_table(self):
-        table = BikaListingTable(self)
+    def contents_table(self, table_only=False):
+        """ If you set table_only to true, then nothing outside of the
+            <table/> tag will be printed (form tags, authenticator, etc).
+            Then you can insert your own form tags around it.
+        """
+        table = BikaListingTable(bika_listing=self, table_only=table_only)
         return table.render(self)
 
 class BikaListingTable(tableview.Table):
@@ -454,8 +463,9 @@ class BikaListingTable(tableview.Table):
     render = ViewPageTemplateFile("templates/bika_listing_table.pt")
     batching = ViewPageTemplateFile("templates/bika_listing_batching.pt")
 
-    def __init__(self, bika_listing):
+    def __init__(self, bika_listing=None, table_only=False):
         self.table = self
+        self.table_only = table_only
         self.bika_listing = bika_listing
         folderitems = bika_listing.folderitems()
 

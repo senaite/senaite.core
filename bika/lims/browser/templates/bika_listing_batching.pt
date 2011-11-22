@@ -70,4 +70,18 @@
                            pagenumber string:${batch/lastpage}"
            tal:content="batch/lastpage">3457</a>
     </span>
+	<span class="pagesize_selector noborder"
+		style="vertical-align:top !important"
+		tal:condition="python:len(view.items) > 10 & view.items != 1000"
+		style="text-align:right">
+		<select name="pagesize">
+			<option value="10" tal:attributes="selected python:int(view.bika_listing.pagesize) == 10 and 'selected' or ''">10</option>
+			<option value="25" tal:attributes="selected python:int(view.bika_listing.pagesize) == 25 and 'selected' or ''">25</option>
+			<option value="50" tal:attributes="selected python:int(view.bika_listing.pagesize) == 50 and 'selected' or ''">50</option>
+			<option value="100" tal:attributes="selected python:int(view.bika_listing.pagesize) == 100 and 'selected' or ''">100</option>
+		</select>
+		<span class="discreet"
+			i18n:translate="Items per page">Items per page</span>
+	</span>
+
 </div>

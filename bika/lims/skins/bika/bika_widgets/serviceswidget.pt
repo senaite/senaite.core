@@ -15,7 +15,10 @@
 <metal:edit_macro define-macro="edit">
 <metal:use use-macro="field_macro | context/widgets/field/macros/edit">
     <metal:body_macro fill-slot="widget_body">
-        <span tal:content="structure python:widget.Services(field)"/>
+
+	<div id="folderlisting-main-table"
+		tal:content="structure python:widget.Services(field)"/>
+
     </metal:body_macro>
 </metal:use>
 </metal:edit_macro>
