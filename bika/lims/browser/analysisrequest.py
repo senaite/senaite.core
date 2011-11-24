@@ -505,6 +505,7 @@ class AnalysisRequestSelectCCView(BikaListingView):
     def __init__(self, context, request):
         super(AnalysisRequestSelectCCView, self).__init__(context, request)
         self.title = _("Contacts to CC")
+        self.icon = "++resource++bika.lims.images/contact_big.png"
         self.description = _("Select the contacts that will receive analysis results for this request.")
         self.contentFilter = {'portal_type': 'Contact',
                               'sort_on':'sortable_title',
@@ -567,6 +568,8 @@ class AnalysisRequestSelectSampleView(BikaListingView):
         self.show_sort_column = False
         self.show_select_row = False
         self.show_select_column = False
+        self.show_workflow_action_buttons = False
+
         self.pagesize = 25
 
         request.set('disable_border', 1)
