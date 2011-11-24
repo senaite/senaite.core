@@ -68,12 +68,12 @@
 
 <!-- The system configured 'Dry Matter Service' -->
 <tal:i define="dms python:context.bika_setup.getDryMatterService()">
-    <input type="hidden" id="dry_matter_service" name="dry_matter_service"
+    <input type="hidden" id="getDryMatterService" name="getDryMatterService"
         tal:condition="dms"
         tal:attributes="
             poc python: dms.getPointOfCapture();
-            category python: dms.getCategory().Title();
-            uid python: dms.UID();"/>
+            cat python: dms.getCategoryUID();
+            value python: dms.UID();"/>
 </tal:i>
 
 <table summary="Add analysis requests"
@@ -224,6 +224,7 @@
             <input size="10" type='text' tal:condition="can_edit_ar"
                 tal:attributes="
                     id input_id;name input_name;
+					column column;
                     tabindex python:column*100+tabindex.next();
                     value python: hasattr(context, 'getClientOrderNumber') and context.getClientOrderNumber() or ''"/>
             <span tal:condition="not: can_edit_ar"
@@ -244,6 +245,7 @@
             <input size="10" type='text' tal:condition="can_edit_sample"
                 tal:attributes="
                     id input_id;name input_name;
+					column column;
                     tabindex python:column*100+tabindex.next();
                     value python:hasattr(context, 'getSample') and context.getSample().getClientReference() or ''"/>
             <span tal:condition="not: can_edit_sample"
@@ -264,6 +266,7 @@
             <input size="10" type='text' tal:condition="can_edit_sample"
                 tal:attributes="
                     id input_id;name input_name;
+					column column;
                     tabindex python:column*100+tabindex.next();
                     value python:hasattr(context, 'getSample') and context.getSample().getClientSampleID() or ''"/>
             <span tal:condition="not: can_edit_sample"
@@ -288,6 +291,7 @@
             <input size="10" type='text' readonly="readonly" tal:condition="can_edit_sample"
                 tal:attributes="
                     id input_id;name input_name;
+					column column;
                     value python:edit and view.TimeOrDate(here, here.getSample().getDateSampled()) or '';
                     tabindex python:column*100+tabindex.next();"/>
             <span tal:condition="not: can_edit_sample"
@@ -358,6 +362,7 @@
             <input size="10" type='text' class="samplepoint" tal:condition="can_edit_sample"
                 tal:attributes="
                     id input_id;name input_name;
+					column column;
                     value python:edit and context.getSamplePointTitle() or '';
                     tabindex python:column*100+tabindex.next();"/>
             <span tal:condition="not: can_edit_sample"
@@ -381,6 +386,7 @@
                 value="checked"
                 tal:attributes="
                     checked python:edit and context.getSample().getComposite() and 'yes' or '';
+					column column;
                     name input_name;
                     id input_id;
                     tabindex python:column*100+tabindex.next();"/>
@@ -399,10 +405,11 @@
                 tal:define="input_name string:ar.${column}.${field_name}:ignore_empty:record;
                     input_id string:ar_${column}_${field_name}">
             <input type="checkbox"
-                class="cb"
+                class="cb ReportDryMatter"
                 value="checked"
                 tal:attributes="
                     checked python:edit and context.ReportDryMatter;
+					column column;
                     name input_name;
                     id input_id;
                     tabindex python:column*100+tabindex.next();"/>
@@ -426,6 +433,7 @@
                 tal:attributes="
                     checked python:edit and context.InvoiceExclude;
                     name input_name;
+					column column;
                     id input_id;
                     tabindex python:column*100+tabindex.next();"/>
             </td>

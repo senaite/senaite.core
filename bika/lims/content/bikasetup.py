@@ -4,6 +4,7 @@ from bika.lims.browser.widgets import RecordsWidget
 from Products.Archetypes.public import *
 from Products.Archetypes.references import HoldingReference
 from Products.CMFCore.permissions import View, ModifyPortalContent
+from Products.CMFCore.utils import getToolByName
 from bika.lims.config import I18N_DOMAIN, ATTACHMENT_OPTIONS, \
     ARIMPORT_OPTIONS, PROJECTNAME
 from bika.lims.content.bikaschema import BikaFolderSchema
@@ -130,6 +131,7 @@ schema = BikaFolderSchema.copy() + Schema((
         vocabulary_display_path_bound = sys.maxint,
         allowed_types = ('AnalysisService',),
         relationship = 'SetupDryAnalysisService',
+        vocabulary = 'getAnalysisServices',
         referenceClass = HoldingReference,
         widget = ReferenceWidget(
             label = _("Dry matter analysis"),
@@ -142,6 +144,7 @@ schema = BikaFolderSchema.copy() + Schema((
         vocabulary_display_path_bound = sys.maxint,
         allowed_types = ('AnalysisService',),
         relationship = 'SetupMoistAnalysisService',
+        vocabulary = 'getAnalysisServices',
         referenceClass = HoldingReference,
         widget = ReferenceWidget(
             label = _("Moisture analysis"),
@@ -238,11 +241,6 @@ class BikaSetup(folder.ATFolder):
     schema = schema
     implements(IBikaSetup)
 
-    # XXX: Temporary workaround to enable importing of exported bika
-    # instance. If '__replaceable__' is not set we get BadRequest, The
-    # id is invalid - it is already in use.
-    __replaceable__ = 1
-
     security.declarePublic('generateUniqueId')
     def generateUniqueId (self, type_name, batch_size = None):
         return generateUniqueId(self, type_name, batch_size)
@@ -268,5 +266,14 @@ class BikaSetup(folder.ATFolder):
             return False
         else:
             return True
+
+    def getAnalysisServices(self):
+        bsc = getToolByName(self, 'bika_setup_catalog')
+        items = [('','')] + [(o.UID, o.Title) for o in \
+                               bsc(portal_type='AnalysisService',
+                                   inactive_state = 'active')]
+        items.sort(lambda x,y: cmp(x[1], y[1]))
+        return DisplayList(list(items))
+
 
 registerType(BikaSetup, PROJECTNAME)

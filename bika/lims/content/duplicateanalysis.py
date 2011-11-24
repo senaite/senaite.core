@@ -18,6 +18,8 @@ schema = schema.copy() + Schema((
     ),
     StringField('Result',
     ),
+    StringField('ResultDM',
+    ),
     BooleanField('Retested',
     ),
     DateTimeField('DateAnalysisPublished',

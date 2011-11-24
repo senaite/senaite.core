@@ -58,6 +58,8 @@ schema = BikaSchema.copy() + Schema((
     ),
     StringField('Result',
     ),
+    StringField('ResultDM',
+    ),
     BooleanField('Retested',
         default = False,
     ),
@@ -88,7 +90,6 @@ schema = BikaSchema.copy() + Schema((
             label = _("Earliness"),
         )
     ),
-
     BooleanField('ReportDryMatter',
         default = False,
     ),

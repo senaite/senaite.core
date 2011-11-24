@@ -44,6 +44,7 @@ jQuery( function($) {
 			return;
 //			  (48 == event.which && $(this).attr("value")) || // No 0 first digit
 		  } else {
+			console.log(event.which);
 			event.preventDefault();
 		  }
 		});

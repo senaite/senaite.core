@@ -84,7 +84,7 @@ td {
 
 <tr>
 <th i18n:translate="label_samplepoint">Sample Point</th>
-<td colspan='3' tal:content="python:samplepoint and (samplepoint.Title() + ': ' + samplepoint.getSamplePointDescription()) or ''">Water</td>
+<td colspan='3' tal:content="python:samplepoint and (samplepoint.Title() + ': ' + samplepoint.description) or ''">Water</td>
 </tr>
 
 <tr>

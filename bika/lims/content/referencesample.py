@@ -173,6 +173,7 @@ class ReferenceSample(BaseFolder):
         o = self.getReferenceDefinition()
         if o and (o.UID(), o.Title()) not in items:
             items.append((o.UID(), o.Title()))
+        items.sort(lambda x,y: cmp(x[1], y[1]))
         return DisplayList(list(items))
 
     def getReferenceManufacturers(self):
@@ -183,6 +184,7 @@ class ReferenceSample(BaseFolder):
         o = self.getReferenceDefinition()
         if o and (o.UID(), o.Title()) not in items:
             items.append((o.UID(), o.Title()))
+        items.sort(lambda x,y: cmp(x[1], y[1]))
         return DisplayList(list(items))
 
     security.declarePublic('getSpecCategories')

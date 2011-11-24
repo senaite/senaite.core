@@ -188,8 +188,17 @@ jQuery( function($) {
 						},
 						'No':function(){
 							$(element).attr("checked", false);
+							if ($(element).attr("uid") == $("#getDryMatterService").attr("value")){
+								$("#ar_"+$(element).attr("column")+"_ReportDryMatter").attr("checked", false);
+							}
+							recalc_prices();
 							for(col in remaining_columns){
-								$('input[column="'+remaining_columns[col]+'"]').filter('#'+serviceUID).attr("checked", false);
+								e = $('input[column="'+remaining_columns[col]+'"]')
+										.filter('#'+serviceUID);
+								$(e).attr("checked", false);
+								if ($(e).attr("uid") == $("#getDryMatterService").attr("value")){
+									$("#ar_"+$(e).attr("column")+"_ReportDryMatter").attr("checked", false);
+								}
 							}
 							recalc_prices(column);
 							$(this).dialog("close");
@@ -253,6 +262,9 @@ jQuery( function($) {
 	function service_checkbox_change(){
 		column = $(this).attr("column");
 		element = $(this);
+		if ($(this).val() == $("#getDryMatterService").val()) {
+		    $("#ar_"+column+"_ReportDrymatter").attr("checked", false);
+		}
 		if($("#ar_"+column+"_ARProfile").val() != ""){
 			$("#ar_"+column+"_ARProfile").val("");
 		}
@@ -512,6 +524,22 @@ jQuery( function($) {
 			// uncheck and enable all visible service checkboxes
 			$("input[id*='_"+column+"_']").filter(".cb").removeAttr('disabled').attr('checked', false);
 			recalc_prices();
+		});
+
+
+		// ReportDryMatter always just forces Moisture service on.
+		$(".ReportDryMatter").change(function(){
+		    uid = $("#getDryMatterService").val();
+			cat = $("#getDryMatterService").attr("cat");
+			poc = $("#getDryMatterService").attr("poc");
+			toggleCat(poc, cat, $(this).attr("column"), selectedservices=[uid], force_expand=true);
+			if ( $(this).attr("checked") ){
+				console.log($(this).attr("column"));
+				checkbox = $("input[column=0]:checkbox").filter("#"+uid);
+				$(checkbox).attr("checked", true);
+				calcdependencies([$(checkbox)]);
+				recalc_prices();
+			}
 		});
 
 		function portalMessage(message){

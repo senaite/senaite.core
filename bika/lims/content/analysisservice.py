@@ -375,9 +375,10 @@ class AnalysisService(BaseContent, HistoryAwareMixin):
         items = [('','')] + [(o.UID, o.Title) for o in \
                                bsc(portal_type='AnalysisCategory',
                                    inactive_state = 'active')]
-        o = self.getAnalysisCategory()
-        if o and (o.UID, o.Title) not in items:
-            items.append((o.UID, o.Title))
+        o = self.getCategory()
+        if o and (o.UID(), o.Title()) not in items:
+            items.append((o.UID(), o.Title()))
+        items.sort(lambda x,y: cmp(x[1], y[1]))
         return DisplayList(list(items))
 
     def getMethods(self):
@@ -386,8 +387,9 @@ class AnalysisService(BaseContent, HistoryAwareMixin):
                                bsc(portal_type='Method',
                                    inactive_state = 'active')]
         o = self.getMethod()
-        if o and (o.UID, o.Title) not in items:
-            items.append((o.UID, o.Title))
+        if o and (o.UID(), o.Title()) not in items:
+            items.append((o.UID(), o.Title()))
+        items.sort(lambda x,y: cmp(x[1], y[1]))
         return DisplayList(list(items))
 
     def getInstruments(self):
@@ -396,8 +398,9 @@ class AnalysisService(BaseContent, HistoryAwareMixin):
                                bsc(portal_type='Instrument',
                                    inactive_state = 'active')]
         o = self.getInstrument()
-        if o and (o.UID, o.Title) not in items:
-            items.append((o.UID, o.Title))
+        if o and (o.UID(), o.Title()) not in items:
+            items.append((o.UID(), o.Title()))
+        items.sort(lambda x,y: cmp(x[1], y[1]))
         return DisplayList(list(items))
 
     def getCalculations(self):
@@ -406,8 +409,9 @@ class AnalysisService(BaseContent, HistoryAwareMixin):
                                bsc(portal_type='Calculation',
                                    inactive_state = 'active')]
         o = self.getCalculation()
-        if o and (o.UID, o.Title) not in items:
-            items.append((o.UID, o.Title))
+        if o and (o.UID(), o.Title()) not in items:
+            items.append((o.UID(), o.Title()))
+        items.sort(lambda x,y: cmp(x[1], y[1]))
         return DisplayList(list(items))
 
     def getDepartments(self):
@@ -416,8 +420,9 @@ class AnalysisService(BaseContent, HistoryAwareMixin):
                                bsc(portal_type='Department',
                                    inactive_state = 'active')]
         o = self.getDepartment()
-        if o and (o.UID, o.Title) not in items:
-            items.append((o.UID, o.Title))
+        if o and (o.UID(), o.Title()) not in items:
+            items.append((o.UID(), o.Title()))
+        items.sort(lambda x,y: cmp(x[1], y[1]))
         return DisplayList(list(items))
 
     def getUncertainty(self, result=None):

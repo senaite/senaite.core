@@ -196,8 +196,16 @@ class AnalysesView(BikaListingView):
                             [r['ResultText'] for r in items[i]['choices']['Result'] \
                                               if r['ResultValue'] == result][0]
                     else:
-                        items[i]['formatted_result'] = precision and \
-                            str("%%.%sf" % precision) % float(result) or result
+                        try:
+                            items[i]['formatted_result'] = precision and \
+                                str("%%.%sf" % precision) % float(result) or result
+                        except:
+                            # non-numeric entry (JS .numeric should have prevented this...)
+                            items[i]['formatted_result'] = result
+                            items[i]['after']['Result'] = \
+                                '<img width="16" height="16" title="'+_('Could not render to precision (non-numeric result?)')+'"' + \
+                                'src="%s/++resource++bika.lims.images/exclamation.png"/>' % \
+                                (portal.absolute_url())
                 items[i]['Uncertainty'] = obj.getUncertainty(result)
 
                 attachments = ""
