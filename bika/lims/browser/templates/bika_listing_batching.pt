@@ -72,7 +72,7 @@
     </span>
 	<span class="pagesize_selector noborder"
 		style="vertical-align:top !important"
-		tal:condition="python:len(view.items) > 10 & view.items != 1000"
+		tal:condition="python:len(view.items) > 10 & view.pagesize != 1000"
 		style="text-align:right">
 		<select name="pagesize">
 			<option value="10" tal:attributes="selected python:int(view.bika_listing.pagesize) == 10 and 'selected' or ''">10</option>

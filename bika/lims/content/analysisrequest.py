@@ -363,35 +363,6 @@ class AnalysisRequest(BaseFolder):
         return TotalPrice
     getTotal = getTotalPrice
 
-    def setDryMatterResults(self):
-        """ get results of analysis requiring DryMatter reporting """
-        analyses = []
-        DryMatter = None
-        settings = getToolByName(self, 'bika_setup')
-        dry_service = settings.getDryMatterService()
-        for analysis in self.getAnalyses(full_objects = True):
-            if analysis.getReportDryMatter():
-                analyses.append(analysis)
-            try:
-                if analysis.getServiceUID() == dry_service.UID():
-                    DryMatter = Decimal(analysis.getResult())
-            except:
-                DryMatter = None
-
-        for analysis in analyses:
-            if DryMatter:
-                try:
-                    wet_result = Decimal(analysis.getResult())
-                except:
-                    wet_result = None
-            if DryMatter and wet_result:
-                dry_result = '%.2f' % ((wet_result / DryMatter) * 100)
-            else:
-                dry_result = None
-            analysis.setResultDM(dry_result)
-
-        return
-
     security.declareProtected(ManageInvoices, 'issueInvoice')
     def issueInvoice(self, REQUEST = None, RESPONSE = None):
         """ issue invoice

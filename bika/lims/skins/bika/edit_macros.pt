@@ -12,6 +12,7 @@
       <metal:block define-slot="title">
         <h1 i18n:translate="heading_add_item" class="documentFirstHeading"
             tal:condition="python:context.checkCreationFlag()">
+			<img tal:attributes="src python:context.portal_url() + '/++resource++bika.lims.images/' + context.portal_type.lower() + '_big.png'"/>
           Add
           <span i18n:name="itemtype"
                 tal:define="fti python:context.portal_types.getTypeInfo(here)">
@@ -22,6 +23,7 @@
         </h1>
         <h1 i18n:translate="heading_edit_item" class="documentFirstHeading"
             tal:condition="python: not context.checkCreationFlag()">
+			<img tal:attributes="src python:context.portal_url() + '/++resource++bika.lims.images/' + context.portal_type.lower() + '_big.png'"/>
           Edit
 		  <span i18n:translate=""
 				tal:content="here/title_or_id"

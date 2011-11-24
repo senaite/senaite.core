@@ -4,6 +4,7 @@ from Products.CMFCore.utils import getToolByName
 import plone, json, sys, math, urllib
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
+import App
 
 class ajaxCalculateAnalysisEntry():
     """ This view is called by javascript when an analysis' result or interim
@@ -29,8 +30,14 @@ class ajaxCalculateAnalysisEntry():
             for dep in analysis.getDependencies():
                 deps[dep.UID()] = dep
 
-        result = None
         mapping = {}
+
+        # values to be returned to form for this UID
+        Result = {'uid': uid}
+        try:
+            Result['result'] = float(form_result)
+        except:
+            Result['result'] = 0.0
 
         if calculation:
             # add all our dependent analyses results to the mapping.
@@ -92,14 +99,11 @@ class ajaxCalculateAnalysisEntry():
                                {'mapping': mapping})
                 # calculate
                 result = eval(formula)
-                # format calculation result to service precision
-                formatted_result = precision and \
-                    str("%%.%sf" % precision) % result or result
 
-                self.results.append({'uid': uid,
-                                     'result': result,
-                                     'formatted_result': formatted_result})
+                Result['result'] = result
+
                 self.current_results[uid] = result
+
             except ZeroDivisionError, e:
                 return None
             except KeyError, e:
@@ -109,17 +113,47 @@ class ajaxCalculateAnalysisEntry():
                                     'msg': "Key Error: " + html_quote(str(e.args[0]))})
                 return None
 
+        # format calculation result to service precision
+        Result['formatted_result'] = precision and \
+            str("%%.%sf" % precision) % Result['result'] or Result['result']
+
+        # calculate Dry Matter result
+        dm = service.getReportDryMatter()
+        if dm:
+            dry_service = self.context.bika_setup.getDryMatterService()
+            # get the UID of the DryMatter Analysis from our parent AR
+            dry_analysis = [a for a in analysis.aq_parent.getAnalyses(full_objects=True) \
+                            if a.getService().UID() == dry_service.UID()]
+            assert dry_analysis
+            dry_analysis = dry_analysis[0]
+            dry_uid = dry_analysis.UID()
+            # get the current DryMatter analysis result from the form
+            if dry_uid in self.current_results:
+                dry_result = float(self.current_results[dry_uid])
+            else:
+                try:
+                    dry_result = float(dry_analysis.getResult())
+                except:
+                    dm = False
+
+        Result['dry_result'] = dm and \
+            '%.2f' % ((Result['result'] / dry_result) * 100) or ''
+
+        self.results.append(Result)
+        if App.config.getConfiguration().debug_mode:
+            logger.info("calc.py: %s->%s %s" % (analysis.aq_parent.id, analysis.id, Result))
+
         self.uncertainties.append({'uid': uid,
                                    'uncertainty':analysis.getUncertainty(
-                                       result and result or form_result)})
+                                       Result['result'])})
 
         # alert if the result is not in spec
         # for a normal analysis I check against results specificitions
         # for a reference analysis I check the analysis' ReferenceResults
         if analysis.portal_type == 'ReferenceAnalysis':
-            in_range = analysis.result_in_range(result and result or form_result)
+            in_range = analysis.result_in_range(Result['result'])
         else:
-            in_range = analysis.result_in_range(result and result or form_result, self.spec)
+            in_range = analysis.result_in_range(Result['result'], self.spec)
         if in_range[0] == False:
             range_str = _("min:") + str(in_range[1]['min']) + ", " + \
                         _("max:") + str(in_range[1]['max'])
@@ -142,7 +176,7 @@ class ajaxCalculateAnalysisEntry():
             dependents = []
         else:
             dependents = analysis.getDependents()
-        if dependents and not result == form_result:
+        if dependents and not Result['result'] == form_result:
             for dependent in dependents:
                 dependent_uid = dependent.UID()
                 # ignore analyses that no longer exist.

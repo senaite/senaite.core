@@ -41,6 +41,7 @@ class AnalysesView(BikaListingView):
             'Service': {'title': _('Analysis')},
             'state_title': {'title': _('Status')},
             'Result': {'title': _('Result')},
+            'ResultDM': {'title': _('Dry')},
             'Uncertainty': {'title': _('+-')},
             'retested': {'title': _('retested'),
                          'type':'boolean'},
@@ -105,6 +106,10 @@ class AnalysesView(BikaListingView):
             else:
                 items[i]['DueDate'] = obj.getDueDate()
             items[i]['Attachments'] = ''
+
+            items[i]['ResultDM'] = ''
+            items[i]['before']['ResultDM'] = "<span field='ResultDM' uid='%s'>%s</span>" % \
+                (obj.UID(), obj.getResultDM())
 
             self.interim_fields[obj.UID()] = obj.getInterimFields()
 
@@ -300,6 +305,19 @@ class AnalysesView(BikaListingView):
             self.review_states = new_states
             # Allow selecting individual analyses
             self.show_select_column = True
+
+        # ReportDryMatter - if it's enabled, then the ResultDM
+        # column is added after the Result column
+        # The column is always enabled for worksheets.
+        if (self.context.portal_type=='Worksheet' or self.context.getReportDryMatter()):
+            new_states = []
+            item['ResultDM'] = obj.getResultDM()
+            for state in self.review_states:
+                pos = 'Result' in state['columns'] and \
+                    state['columns'].index('Result') + 1 or len(state['columns'])
+                state['columns'].insert(pos, 'ResultDM')
+                new_states.append(state)
+            self.review_states = new_states
 
         self.json_specs = json.dumps(self.specs)
         self.json_interim_fields = json.dumps(self.interim_fields)
