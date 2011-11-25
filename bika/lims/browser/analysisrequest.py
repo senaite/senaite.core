@@ -86,6 +86,14 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
 
             # first save results for entire form
             for uid, result in self.request.form['Result'][0].items():
+                # if the AR has ReportDryMatter set, then
+                # ResultDM column will exist in manage_results form.
+                dry_result = ''
+                if self.context.getReportDryMatter():
+                    for k,v in self.request.form['ResultDM'][0].items():
+                        if uid == k:
+                            dry_result = v
+                            break
                 if uid in selected_analyses:
                     analysis = selected_analyses[uid]
                 else:
@@ -106,6 +114,7 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
                 unit = service.getUnit()
                 analysis.edit(
                     Result = result,
+                    ResultDM = dry_result,
                     InterimFields = interimFields,
                     Retested = form.has_key('retested') and \
                                form['retested'].has_key(uid),
@@ -139,9 +148,6 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
                         workflow.doActionFor(analysis, 'submit')
                     except WorkflowException:
                         pass
-
-            if self.context.getReportDryMatter():
-                self.context.setDryMatterResults()
 
             message = _("Changes saved.")
             self.context.plone_utils.addPortalMessage(message, 'info')

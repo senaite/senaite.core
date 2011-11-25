@@ -204,9 +204,10 @@ class WorksheetAnalysesView(AnalysesView):
         self.columns = {
             'Pos': {'title': _('Position')},
             'DueDate': {'title': _('Due date')},
-            'Category': {'title': _('Category')},
+##            'Category': {'title': _('Category')},
             'Service': {'title': _('Analysis')},
             'Result': {'title': _('Result')},
+            'ResultDM': {'title': _('Dry')},
             'Uncertainty': {'title': _('+-')},
             'retested': {'title': _('Retested'), 'type':'boolean'},
 ##            'Attachments': {'title': _('Attachments')},
@@ -216,7 +217,7 @@ class WorksheetAnalysesView(AnalysesView):
             {'title': _('All'), 'id':'all',
              'transitions': ['submit', 'verify', 'retract', 'unassign'],
              'columns':['Pos',
-                        'Category',
+##                        'Category',
                         'Service',
                         'Result',
                         'Uncertainty',
@@ -320,7 +321,7 @@ class WorksheetAnalysesView(AnalysesView):
                     else:
                         items[y]['class'][k] = cl
                     items[y]['class']['select_column'] = cl
-                items[y]['table_row_class'] = ""
+                items[y]['table_row_class'] = cl
 
             # fill the rowspan with a little table
             obj = items[x]['obj']

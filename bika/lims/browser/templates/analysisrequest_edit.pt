@@ -394,7 +394,8 @@
         </tal:block>
     </tr>
     <!-- Dry Matter -->
-    <tr tal:define="field_name string:ReportDryMatter">
+    <tr tal:define="field_name string:ReportDryMatter"
+		tal:condition="python:context.bika_setup.getDryMatterService()">
         <th colspan="2" i18n:translate="label_report_dm">Report as Dry Matter</th>
         <td>
             <img class="copyButton" tal:condition="not: edit"
