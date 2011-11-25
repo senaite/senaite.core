@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
-<dc-workflow workflow_id="bika_referenceanalysis_workflow"
-             title="Reference Analysis Workflow [bika]"
+<dc-workflow workflow_id="bika_duplicateanalysis_workflow"
+             title="Duplicate Analysis Workflow [bika]"
              state_variable="review_state"
              initial_state="unassigned">
 

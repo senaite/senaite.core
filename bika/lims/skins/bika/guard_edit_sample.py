@@ -10,6 +10,8 @@
 
 wf_tool = context.portal_workflow
 
+# Note: Used by profiles/default/types/Sample.xml not workflows.
+
 # Can't edit the sample if it's cancelled or any analysis has been verified
 if wf_tool.getInfoFor(context, 'cancellation_state') == "cancelled":
     return False

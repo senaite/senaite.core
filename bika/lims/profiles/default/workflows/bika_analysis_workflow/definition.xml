@@ -1,5 +1,9 @@
 <?xml version="1.0"?>
-<dc-workflow workflow_id="bika_analysis_workflow" title="Analysis Workflow [bika]" description="" state_variable="review_state" initial_state="sample_due" manager_bypass="False">
+<dc-workflow workflow_id="bika_analysis_workflow"
+			 title="Analysis Workflow [bika]"
+			 state_variable="review_state"
+			 initial_state="sample_due">
+
  <permission>BIKA: View Results</permission>
  <permission>BIKA: Edit Results</permission>
  <permission>BIKA: Cancel and reinstate</permission>

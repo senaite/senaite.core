@@ -12,8 +12,6 @@ from bika.lims.browser.analyses import AnalysesView
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.browser.bika_listing import WorkflowAction
 from bika.lims.browser.referencesample import ReferenceSamplesView
-from bika.lims.config import ManageResults
-from bika.lims.interfaces import IWorksheet
 from bika.lims.utils import isActive, TimeOrDate
 from operator import itemgetter
 from plone.app.content.browser.interfaces import IFolderContentsView
@@ -42,7 +40,7 @@ class WorksheetWorkflowAction(WorkflowAction):
         if 'item_data' in form:
             if type(form['item_data']) == list:
                 for i_d in form['item_data']:
-                    for i,d in json.loads(i_d).items():
+                    for i, d in json.loads(i_d).items():
                         item_data[i] = d
             else:
                 item_data = json.loads(form['item_data'])
@@ -142,8 +140,6 @@ class WorksheetWorkflowAction(WorkflowAction):
                     and workflow.getInfoFor(analysis, 'review_state') == 'sample_received'
                     and workflow.getInfoFor(analysis, 'cancellation_state') == 'active'):
                         self.context.addAnalysis(analysis)
-                        workflow.doActionFor(analysis, 'assign')
-                        # Note: subscriber might assign the AR and/or retract the worksheet
 
             self.destination_url = self.context.absolute_url() + "/manage_results"
             self.request.response.redirect(self.destination_url)
@@ -160,8 +156,6 @@ class WorksheetWorkflowAction(WorkflowAction):
                 for uid in selected_analysis_uids:
                     analysis = rc.lookupObject(uid)
                     self.context.removeAnalysis(analysis)
-                    if analysis.portal_type != 'DuplicateAnalysis':
-                        workflow.doActionFor(analysis, 'unassign')
 
             self.destination_url = self.context.absolute_url() + "/manage_results"
             self.request.response.redirect(self.destination_url)
@@ -174,7 +168,6 @@ def getAnalysts(context):
     """ Present the LabManagers and Analysts as options for analyst
     """
     mtool = getToolByName(context, 'portal_membership')
-    analysts = {}
     member = mtool.getAuthenticatedMember()
     pairs = []
     analysts = mtool.searchForMembers(roles = ['Manager', 'LabManager', 'Analyst'])
@@ -253,8 +246,11 @@ class WorksheetAnalysesView(AnalysesView):
             items[x]['colspan'] = {'Pos':1}
             service = obj.getService()
             items[x]['Category'] = service.getCategory().Title()
-            items[x]['DueDate'] = \
-                TimeOrDate(self.context, obj.getDueDate(), long_format = 0)
+            if obj.portal_type == "ReferenceAnalysis":
+                items[x]['DueDate'] = ''
+            else:
+                items[x]['DueDate'] = \
+                    TimeOrDate(self.context, obj.getDueDate(), long_format = 0)
             items[x]['Order'] = ''
 
         # insert placeholder row items in the gaps
@@ -553,16 +549,8 @@ class AddBlankView(BrowserView):
 
         form = self.request.form
         if 'submitted' in form:
-            rc = getToolByName(self.context, REFERENCE_CATALOG)
             # parse request
-            service_uids = form['selected_service_uids'].split(",")
-            position = form['position']
-            reference_uid = form['reference_uid']
-            reference = rc.lookupObject(reference_uid)
-            ref_type = reference.getBlank() and 'b' or 'c'
-            ref_analyses = self.context.addReferences(position,
-                                                      reference,
-                                                      service_uids)
+            self.request['context_uid'] = self.context.UID()
             self.request.response.redirect(
                 self.context.absolute_url() + "/manage_results")
             return
@@ -574,7 +562,6 @@ class AddBlankView(BrowserView):
     def getAvailablePositions(self):
         """ Return a list of empty slot numbers
         """
-        positions = []
         layout = self.context.getLayout()
         used_positions = [int(slot['position']) for slot in layout]
         if used_positions:
@@ -601,16 +588,8 @@ class AddControlView(BrowserView):
 
         form = self.request.form
         if 'submitted' in form:
-            rc = getToolByName(self.context, REFERENCE_CATALOG)
             # parse request
-            service_uids = form['selected_service_uids'].split(",")
-            position = form['position']
-            reference_uid = form['reference_uid']
-            reference = rc.lookupObject(reference_uid)
-            ref_type = reference.getBlank() and 'b' or 'c'
-            ref_analyses = self.context.addReferences(position,
-                                                      reference,
-                                                      service_uids)
+            self.request['context_uid'] = self.context.UID()
             self.request.response.redirect(
                 self.context.absolute_url() + "/manage_results")
             return
@@ -622,7 +601,6 @@ class AddControlView(BrowserView):
     def getAvailablePositions(self):
         """ Return a list of empty slot numbers
         """
-        positions = []
         layout = self.context.getLayout()
         used_positions = [int(slot['position']) for slot in layout]
         if used_positions:
@@ -650,7 +628,6 @@ class AddDuplicateView(BrowserView):
 
         form = self.request.form
         if 'submitted' in form:
-            rc = getToolByName(self.context, REFERENCE_CATALOG)
             ar_uid = self.request.get('ar_uid', '')
             src_slot = [slot['position'] for slot in self.context.getLayout() if \
                         slot['container_uid'] == ar_uid and slot['type'] == 'a'][0]
@@ -667,7 +644,6 @@ class AddDuplicateView(BrowserView):
     def getAvailablePositions(self):
         """ Return a list of empty slot numbers
         """
-        positions = []
         layout = self.context.getLayout()
         used_positions = [int(slot['position']) for slot in layout]
         if used_positions:
@@ -707,9 +683,7 @@ class WorksheetARsView(BikaListingView):
         ]
 
     def folderitems(self):
-        pc = getToolByName(self.context, 'portal_catalog')
         rc = getToolByName(self.context, REFERENCE_CATALOG)
-        services = {} # uid:item_dict
         ars = {}
         for slot in self.context.getLayout():
             if slot['type'] != 'a':
@@ -743,7 +717,6 @@ class WorksheetARsView(BikaListingView):
                 'state_class': 'state-active',
                 'allow_edit': [],
             }
-            ar_hrefs = []
             items.append(item)
         items = sorted(items, key = itemgetter('Position'))
         for i in range(len(items)):
@@ -781,7 +754,6 @@ class WorksheetServicesView(BikaListingView):
         ]
 
     def folderitems(self):
-        uc = getToolByName(self.context, 'uid_catalog')
         bsc = getToolByName(self.context, 'bika_setup_catalog')
         ws_services = []
         for analysis in self.context.getAnalyses():
@@ -789,12 +761,12 @@ class WorksheetServicesView(BikaListingView):
             if service_uid not in ws_services:
                 ws_services.append(service_uid)
         self.categories = []
-        services = bsc(portal_type="AnalysisService",
-                       inactive_state="active")
+        services = bsc(portal_type = "AnalysisService",
+                       inactive_state = "active")
         items = []
         for service in services:
             # if the service has dependencies, it can't have reference analyses
-            calculation = uc(UID=service.getCalculationUID)
+            calculation = service.getObject().getCalculation()
             if calculation and calculation.getDependentServices():
                 continue
             cat = service.getCategoryTitle

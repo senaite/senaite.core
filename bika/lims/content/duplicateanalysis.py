@@ -1,17 +1,20 @@
 """DuplicateAnalysis
 """
+from AccessControl import ClassSecurityInfo
 from Products.Archetypes.public import *
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.fields import InterimFieldsField
 from bika.lims.config import I18N_DOMAIN, PROJECTNAME
-from bika.lims.content.analysis import schema,Analysis
+from bika.lims.content.analysis import schema, Analysis
 from bika.lims.interfaces import IDuplicateAnalysis
 from zope.interface import implements
+from Products.Archetypes.references import HoldingReference
 
 schema = schema.copy() + Schema((
     ReferenceField('Analysis',
         required = 1,
         allowed_types = ('Analysis',),
+        referenceClass = HoldingReference,
         relationship = 'DuplicateAnalysisAnalysis',
     ),
     InterimFieldsField('InterimFields',
@@ -22,7 +25,11 @@ schema = schema.copy() + Schema((
     ),
     BooleanField('Retested',
     ),
-    DateTimeField('DateAnalysisPublished',
+    ReferenceField('Attachment',
+        multiValued = 1,
+        allowed_types = ('Attachment',),
+        referenceClass = HoldingReference,
+        relationship = 'DuplicateAnalysisAttachment',
     ),
 
     ComputedField('Service',
@@ -33,9 +40,6 @@ schema = schema.copy() + Schema((
     ),
     ComputedField('CategoryUID',
         expression = 'context.getAnalysis() and context.getAnalysis().getCategoryUID()',
-    ),
-    ComputedField('Attachment',
-        expression = 'context.getAnalysis() and context.getAnalysis().getAttachment()',
     ),
     ComputedField('Calculation',
         expression = 'context.getAnalysis() and context.getAnalysis().getCalculation()',
@@ -72,9 +76,10 @@ schema = schema.copy() + Schema((
 
 class DuplicateAnalysis(Analysis):
     implements(IDuplicateAnalysis)
+    security = ClassSecurityInfo()
     schema = schema
 
-    def result_in_range(self, result=None, specification="lab"):
+    def result_in_range(self, result = None, specification = "lab"):
         """ Check if a result is "in range".
             if result is None, self.getResult() is called for the result value.
             Return False,spec if out of range

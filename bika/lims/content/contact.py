@@ -50,7 +50,6 @@ schema['title'].widget.visible = False
 class Contact(Person):
     security = ClassSecurityInfo()
     schema = schema
-    displayContentsTab = False
 
     def Title(self):
         """ Return the contact's Fullname as title """

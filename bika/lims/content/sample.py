@@ -106,8 +106,8 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     StringField('SampledByUser',
-        index='FieldIndex',
-        searchable=True,
+        index = 'FieldIndex',
+        searchable = True,
     ),
     DateTimeField('DateReceived',
         widget = DateTimeWidget(
@@ -155,11 +155,11 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     BooleanField('Composite',
-        default=False,
-        widget=BooleanWidget(
-            label="Composite",
-            label_msgid="label_composite",
-            i18n_domain=I18N_DOMAIN,
+        default = False,
+        widget = BooleanWidget(
+            label = "Composite",
+            label_msgid = "label_composite",
+            i18n_domain = I18N_DOMAIN,
         ),
     ),
 ))
@@ -170,7 +170,6 @@ class Sample(BaseFolder, HistoryAwareMixin):
     implements(ISample)
     security = ClassSecurityInfo()
     schema = schema
-    displayContentsTab = False
 
     def Title(self):
         """ Return the Sample ID as title """
@@ -208,6 +207,7 @@ class Sample(BaseFolder, HistoryAwareMixin):
             ars.append(ar)
         return ars
 
+    # XXX not used anywhere???
     security.declarePublic('getAnalyses')
     def getAnalyses(self):
         """ return list of titles of analyses linked to this sample """

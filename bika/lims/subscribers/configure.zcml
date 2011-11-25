@@ -32,6 +32,13 @@
       handler="bika.lims.subscribers.referenceanalysis.AfterTransitionEventHandler"
     />
 
+    <!-- Workflow action event for Duplicate Analysis objects -->
+    <subscriber
+      for="bika.lims.interfaces.IDuplicateAnalysis
+           Products.DCWorkflow.interfaces.IAfterTransitionEvent"
+      handler="bika.lims.subscribers.duplicateanalysis.AfterTransitionEventHandler"
+    />
+
     <!-- Workflow action event for AnalysisRequest objects -->
     <subscriber
       for="bika.lims.interfaces.IAnalysisRequest

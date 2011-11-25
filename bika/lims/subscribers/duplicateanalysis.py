@@ -7,6 +7,7 @@ from Products.CMFCore.utils import getToolByName
 from bika.lims import logger
 import transaction
 
+
 def AfterTransitionEventHandler(analysis, event):
 
     # Note: Don't have dependencies or dependents, not on an AR
@@ -22,12 +23,12 @@ def AfterTransitionEventHandler(analysis, event):
             analysis.REQUEST['workflow_attach_skiplist'] = [analysis.UID(), ]
         else:
             if analysis.UID() in analysis.REQUEST['workflow_attach_skiplist']:
-                logger.info("ref Skip")
+                logger.info("dup Skip")
                 return
             else:
                 analysis.REQUEST["workflow_attach_skiplist"].append(analysis.UID())
 
-        logger.info("Starting: %s on ref %s" % (event.transition.id, analysis.getService().getKeyword()))
+        logger.info("Starting: %s on dup %s" % (event.transition.id, analysis.getService().getKeyword()))
 
         wf = getToolByName(analysis, 'portal_workflow')
         analysis.reindexObject(idxs = ["review_state", ])
@@ -58,12 +59,12 @@ def AfterTransitionEventHandler(analysis, event):
         analysis.REQUEST['workflow_skiplist'] = [analysis.UID(), ]
     else:
         if analysis.UID() in analysis.REQUEST['workflow_skiplist']:
-            logger.info("ref Skip")
+            logger.info("dup Skip")
             return
         else:
             analysis.REQUEST["workflow_skiplist"].append(analysis.UID())
 
-    logger.info("Starting: %s on ref %s" % (event.transition.id, analysis.getService().getKeyword()))
+    logger.info("Starting: %s on dup %s" % (event.transition.id, analysis.getService().getKeyword()))
 
     wf = getToolByName(analysis, 'portal_workflow')
 

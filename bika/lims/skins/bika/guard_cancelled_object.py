@@ -10,6 +10,8 @@
 
 wf_tool = context.portal_workflow
 
+# Note: Used by profiles/default/types/AnalysisRequest.xml as well as workflows.
+
 # Can't do anything to the object if it's cancelled
 if wf_tool.getInfoFor(context, 'cancellation_state') == "cancelled":
     return False

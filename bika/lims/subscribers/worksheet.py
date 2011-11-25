@@ -51,7 +51,7 @@ def AfterTransitionEventHandler(ws, event):
         for a in ws.getAnalyses():
             if wf.getInfoFor(a, 'review_state') in \
                ('sample_due', 'sample_received', 'attachment_due', 'assigned',):
-                # Note: referenceanalyses can still have review_state = "assigned" (as at 21 Sep 2011).
+                # Note: referenceanalyses and duplicateanalyses can still have review_state = "assigned".
                 can_attach = False
                 break
         if can_attach:
@@ -64,8 +64,7 @@ def AfterTransitionEventHandler(ws, event):
             # (NB: don't retract if it's verified)
             analyses = ws.getAnalyses()
             for analysis in analyses:
-                if wf.getInfoFor(analysis, 'review_state', '') not in ('attachment_due', 'to_be_verified',) or \
-                   wf.getInfoFor(analysis, 'cancellation_state', '') != 'active':
+                if wf.getInfoFor(analysis, 'review_state', '') not in ('attachment_due', 'to_be_verified',):
                     continue
                 if not analysis.UID in ws.REQUEST['workflow_skiplist']:
                     wf.doActionFor(analysis, 'retract')
@@ -76,8 +75,7 @@ def AfterTransitionEventHandler(ws, event):
             # verify all analyses in this WS.
             analyses = ws.getAnalyses()
             for analysis in analyses:
-                if wf.getInfoFor(analysis, 'review_state', '') != 'to_be_verified' or \
-                   wf.getInfoFor(analysis, 'cancellation_state', '') != 'active':
+                if wf.getInfoFor(analysis, 'review_state', '') != 'to_be_verified':
                     continue
                 if not analysis.UID in ws.REQUEST['workflow_skiplist']:
                     wf.doActionFor(analysis, "verify")

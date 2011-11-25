@@ -4,7 +4,6 @@ from Acquisition import aq_inner
 from DateTime import DateTime
 from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFCore.utils import getToolByName
-from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
 import transaction
 
@@ -110,6 +109,12 @@ def ObjectRemovedEventHandler(analysis, event):
 
 def AfterTransitionEventHandler(analysis, event):
 
+    # This handler fires for DuplicateAnalysis because
+    # DuplicateAnalysis also provides IAnalysis.
+    # DuplicateAnalysis doesn't have analysis_workflow.
+    if analysis.portal_type == "DuplicateAnalysis":
+        return
+
     # creation doesn't have a 'transition'
     if not event.transition:
         return
@@ -154,12 +159,15 @@ def AfterTransitionEventHandler(analysis, event):
                     for dependency in dependencies:
                         if wf.getInfoFor(dependency, 'review_state') in ('sample_due', 'sample_received', 'attachment_due',):
                             can_attach = False
+                            break
                 if can_attach:
                     wf.doActionFor(dependent, 'attach')
 
         # If all analyses in this AR have been attached
         # escalate the action to the parent AR
-        if not ar.UID() in analysis.REQUEST['workflow_attach_skiplist']:
+        ar_state = wf.getInfoFor(ar, 'review_state')
+        if (ar_state == 'attachment_due'
+        and ar.UID() not in analysis.REQUEST['workflow_attach_skiplist']):
             can_attach = True
             for a in ar.getAnalyses():
                 if a.review_state in \
@@ -181,7 +189,7 @@ def AfterTransitionEventHandler(analysis, event):
                 for a in ws.getAnalyses():
                     if wf.getInfoFor(a, 'review_state') in \
                        ('sample_due', 'sample_received', 'attachment_due', 'assigned',):
-                        # Note: referenceanalyses can still have review_state = "assigned" (as at 21 Sep 2011).
+                        # Note: referenceanalyses and duplicateanalyses can still have review_state = "assigned".
                         can_attach = False
                         break
                 if can_attach:
@@ -275,12 +283,12 @@ def AfterTransitionEventHandler(analysis, event):
         if ws:
             ws = ws[0]
             # if the worksheet analyst is not assigned, the worksheet can't  be transitioned.
-            if ws.getAnalyst() and not ws.UID() in analysis.REQUEST['workflow_skiplist']:
+            if ws.getAnalyst() and ws.UID() not in analysis.REQUEST['workflow_skiplist']:
                 all_submitted = True
                 for a in ws.getAnalyses():
                     if wf.getInfoFor(a, 'review_state') in \
                        ('sample_due', 'sample_received', 'assigned',):
-                        # Note: referenceanalyses can still have review_state = "assigned" (as at 21 Sep 2011).
+                        # Note: referenceanalyses and duplicateanalyses can still have review_state = "assigned".
                         all_submitted = False
                         break
                 if all_submitted:
@@ -338,19 +346,6 @@ def AfterTransitionEventHandler(analysis, event):
 
     elif event.transition.id == "verify":
         analysis.reindexObject(idxs = ["review_state", ])
-        # fail if we are the same user who submitted this analysis
-        mt = getToolByName(analysis, 'portal_membership')
-        member = mt.getAuthenticatedMember()
-        user = getSecurityManager().getUser()
-        if 'Manager' not in member.getRoles():
-            review_history = wf.getInfoFor(analysis, 'review_history')
-            review_history.reverse()
-            for e in review_history:
-                if e.get('action') == 'submit':
-                    if e.get('actor') == user.getId():
-                        transaction.abort()
-                        raise WorkflowException, _("Results cannot be verified by the submitting user.")
-                    break
 
         # Don't verify our dependencies, they're done (or will be done by AR).
         #---------------------------------------------------------------------
@@ -413,7 +408,7 @@ def AfterTransitionEventHandler(analysis, event):
                 for a in ws.getAnalyses():
                     if wf.getInfoFor(a, 'review_state') in \
                        ('sample_due', 'sample_received', 'attachment_due', 'to_be_verified', 'assigned'):
-                        # Note: referenceanalyses can still have review_state = "assigned" (as at 21 Sep 2011).
+                        # Note: referenceanalyses and duplicateanalyses can still have review_state = "assigned".
                         all_verified = False
                         break
                 if all_verified:
@@ -493,9 +488,15 @@ def AfterTransitionEventHandler(analysis, event):
             wf.doActionFor(ar, 'unassign')
             analysis.REQUEST["workflow_skiplist"].remove(ar_UID)
 
+        # If it has been duplicated on the worksheet, delete the duplicates.
+        dups = analysis.getBackReferences("DuplicateAnalysisAnalysis")
+        for dup in dups:
+            ws.removeAnalysis(dup)
+
         # May need to promote the Worksheet's review_state
         #  if all other analyses are at a higher state than this one was.
         # (or maybe retract it if there are no analyses left)
+        # Note: duplicates, controls and blanks have 'assigned' as a review_state.
         can_submit = True
         can_attach = True
         can_verify = True
@@ -503,21 +504,18 @@ def AfterTransitionEventHandler(analysis, event):
 
         for a in ws.getAnalyses():
             ws_empty = False
-            a_state = wf.getInfoFor(a, 'review_state', '')
-            # duplicateAnalysis doesn't have unassign
-            # this should cover dup/ref till their worflows get fixed up
-            if a_state == '': continue
+            a_state = wf.getInfoFor(a, 'review_state')
             if a_state in \
-               ('sample_due', 'sample_received',):
+               ('assigned', 'sample_due', 'sample_received',):
                 can_submit = False
             else:
                 if not ws.getAnalyst():
                     can_submit = False
             if a_state in \
-               ('sample_due', 'sample_received', 'attachment_due',):
+               ('assigned', 'sample_due', 'sample_received', 'attachment_due',):
                 can_attach = False
             if a_state in \
-               ('sample_due', 'sample_received', 'attachment_due', 'to_be_verified',):
+               ('assigned', 'sample_due', 'sample_received', 'attachment_due', 'to_be_verified',):
                 can_verify = False
 
         if not ws_empty:

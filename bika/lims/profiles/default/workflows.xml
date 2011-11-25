@@ -6,6 +6,7 @@
  <object name="bika_ar_workflow" meta_type="Workflow"/>
  <object name="bika_arimport_workflow" meta_type="Workflow"/>
  <object name="bika_order_workflow" meta_type="Workflow"/>
+ <object name="bika_duplicateanalysis_workflow" meta_type="Workflow"/>
  <object name="bika_referenceanalysis_workflow" meta_type="Workflow"/>
  <object name="bika_one_state_workflow" meta_type="Workflow"/>
  <object name="bika_referencesample_workflow" meta_type="Workflow"/>
@@ -113,7 +114,7 @@
   <type type_id="Discussion Item"/>
 
   <type type_id="DuplicateAnalysis">
-   <bound-workflow workflow_id="bika_worksheetanalysis_workflow"/>
+   <bound-workflow workflow_id="bika_duplicateanalysis_workflow"/>
   </type>
 
   <type type_id="Instruments"/>
@@ -163,7 +164,6 @@
 
   <type type_id="ReferenceAnalysis">
    <bound-workflow workflow_id="bika_referenceanalysis_workflow"/>
-   <bound-workflow workflow_id="bika_cancellation_workflow"/>
   </type>
 
   <type type_id="ReferenceDefinition">
