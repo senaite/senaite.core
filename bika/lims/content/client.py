@@ -83,7 +83,6 @@ class Client(Organisation):
     implements(IClient)
     security = ClassSecurityInfo()
     schema = schema
-    displayContentsTab = False
     setup_state = False
 
     def Title(self):

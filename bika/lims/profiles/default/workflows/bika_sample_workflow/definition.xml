@@ -49,7 +49,7 @@
   <action url="workflow_action?workflow_action=receive" category="workflow" icon="">Receive</action>
   <guard>
    <guard-permission>BIKA: Receive Sample</guard-permission>
-   <guard-expression>python:here.guard_cancelled_object() and here.guard_receive_sample()</guard-expression>
+   <guard-expression>python:here.guard_receive_sample()</guard-expression>
   </guard>
  </transition>
 

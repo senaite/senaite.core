@@ -13,14 +13,18 @@ from bika.lims import VerifyOwnResults
 wf_tool = context.portal_workflow
 
 # Can't do anything to the object if it's cancelled
-if wf_tool.getInfoFor(context, 'cancellation_state') == "cancelled":
-    return False
+# reference and duplicate analyses don't hapve cancellation_state
+if context.portal_type == "Analysis":
+    if wf_tool.getInfoFor(context, 'cancellation_state', '') == "cancelled":
+        return False
 
 # Check if all dependencies are at least 'verified'.
-for d in context.getDependencies():
-    review_state = wf_tool.getInfoFor(d, 'review_state')
-    if review_state in ('sample_due', 'sample_received', 'attachment_due', 'to_be_verified',):
-        return False
+# reference and duplicate analyses don't happen on services with dependencies
+if context.portal_type == "Analysis":
+    for d in context.getDependencies():
+        review_state = wf_tool.getInfoFor(d, 'review_state')
+        if review_state in ('sample_due', 'sample_received', 'attachment_due', 'to_be_verified',):
+            return False
 
 checkPermission = context.portal_membership.checkPermission
 if checkPermission(VerifyOwnResults, context):

@@ -23,7 +23,7 @@ elif context.portal_type == 'Sample':
         if not checkPermission(CancelAndReinstate, ar):
             return False
         for analysis in ar.getAnalyses(full_objects = True):
-            if not checkPermission(CancelAndReinstate, ar):
+            if not checkPermission(CancelAndReinstate, analysis):
                 return False
     return True
 

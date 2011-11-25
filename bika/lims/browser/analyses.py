@@ -11,8 +11,6 @@ from bika.lims import ManageResults, ViewResults, EditResults
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.utils import isActive, TimeOrDate
-from bika.lims.config import POINTS_OF_CAPTURE
-from decimal import Decimal
 from zope.component import getMultiAdapter
 from zope.interface import implements, 	alsoProvides, implementsOnly
 import json
@@ -102,7 +100,10 @@ class AnalysesView(BikaListingView):
             items[i]['retested'] = obj.getRetested()
             items[i]['class']['retested'] = 'center'
             items[i]['calculation'] = calculation and True or False
-            items[i]['DueDate'] = obj.getDueDate()
+            if obj.portal_type == "ReferenceAnalysis":
+                items[i]['DueDate'] = ''
+            else:
+                items[i]['DueDate'] = obj.getDueDate()
             items[i]['Attachments'] = ''
 
             self.interim_fields[obj.UID()] = obj.getInterimFields()

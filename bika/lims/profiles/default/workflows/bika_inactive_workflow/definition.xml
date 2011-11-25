@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <dc-workflow workflow_id="bika_inactive_workflow"
-             title="Bika Inactive workflow (subtractive)"
+             title="Bika Inactive workflow"
              description="This workflow allows users to Deactivate objects"
              state_variable="inactive_state"
              initial_state="active"

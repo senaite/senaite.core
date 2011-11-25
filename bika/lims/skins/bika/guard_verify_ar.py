@@ -1,4 +1,4 @@
-## Script (Python) "guard_submit_ar"
+## Script (Python) "guard_verify_ar"
 ##bind container=container
 ##bind context=context
 ##bind namespace=

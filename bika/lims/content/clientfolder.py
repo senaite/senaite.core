@@ -22,7 +22,6 @@ class ClientFolder(folder.ATFolder):
     implements(IClientFolder, IHaveNoBreadCrumbs)
     schema = schema
     security = ClassSecurityInfo()
-    displayContentsTab = False
 
     security.declarePublic('generateUniqueId')
     def generateUniqueId (self, type_name, batch_size = None):

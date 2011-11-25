@@ -14,4 +14,7 @@ if context.portal_type != 'AnalysisRequest':
 if context.getAnalyses(worksheetanalysis_review_state = 'unassigned'):
     return True
 
+if not context.getAnalyses(worksheetanalysis_review_state = 'assigned'):
+    return True
+
 return False

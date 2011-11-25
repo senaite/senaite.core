@@ -29,7 +29,7 @@ schema = BikaSchema.copy() + Schema((
     ReferenceField('Analyses',
         required = 1,
         multiValued = 1,
-        allowed_types = ('Analysis',),
+        allowed_types = ('Analysis', 'DuplicateAnalysis', 'ReferenceAnalysis',),
         relationship = 'WorksheetAnalysis',
     ),
     StringField('Analyst',
@@ -54,7 +54,6 @@ TitleField.widget.visible = {'edit': 'hidden', 'view': 'invisible'}
 class Worksheet(BaseFolder, HistoryAwareMixin):
     security = ClassSecurityInfo()
     implements(IWorksheet)
-    archetype_name = 'Worksheet'
     schema = schema
 
     def Title(self):
@@ -72,18 +71,11 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
            - if position is None, next available pos is used.
         """
         wf = getToolByName(self, 'portal_workflow')
-        rc = getToolByName(self, REFERENCE_CATALOG)
 
         analysis_uid = analysis.UID()
         parent_uid = analysis.aq_parent.UID()
         analyses = self.getAnalyses()
         layout = self.getLayout()
-        wst = self.getWorksheetTemplate()
-        wstlayout = wst and wst.getLayout() or []
-
-        # adding analyses to cancelled worksheet reinstates it
-        if wf.getInfoFor(self, 'cancellation_state', '') == 'cancelled':
-            wf.doActionFor(self, 'reinstate')
 
         # check if this analysis is already in the layout
         if analysis_uid in [l['analysis_uid'] for l in layout]:
@@ -105,11 +97,13 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
                                   'type': 'a',
                                   'container_uid': parent_uid,
                                   'analysis_uid': analysis.UID()}, ])
+        wf.doActionFor(analysis, 'assign')
 
     security.declareProtected(EditWorksheet, 'removeAnalysis')
     def removeAnalysis(self, analysis):
         """ delete an analyses from the worksheet and un-assign it
         """
+        wf = getToolByName(self, 'portal_workflow')
         Analyses = self.getAnalyses()
         if analysis in Analyses:
             Analyses.remove(analysis)
@@ -117,7 +111,11 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         layout = [slot for slot in self.getLayout() if slot['analysis_uid'] != analysis.UID()]
         self.setLayout(layout)
 
-        # DuplicateAnalysis objects - delete them.
+        # overwrite saved context UID for event subscriber
+        self.REQUEST['context_uid'] = self.UID()
+        wf.doActionFor(analysis, 'unassign')
+        # Note: subscriber might unassign the AR and/or promote the worksheet
+
         if analysis.portal_type == "DuplicateAnalysis":
             self._delObject(analysis.id)
 
@@ -126,16 +124,11 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         """
         wf = getToolByName(self, 'portal_workflow')
         rc = getToolByName(self, REFERENCE_CATALOG)
-        analyses = self.getAnalyses()
         layout = self.getLayout()
         wst = self.getWorksheetTemplate()
         wstlayout = wst and wst.getLayout() or []
         ref_type = reference.getBlank() and 'b' or 'c'
         ref_uid = reference.UID()
-
-        # adding analyses to cancelled worksheet reinstates it
-        if wf.getInfoFor(self, 'cancellation_state', '') == 'cancelled':
-            wf.doActionFor(self, 'reinstate')
 
         if position == 'new':
             highest_existing_position = len(wstlayout)
@@ -159,6 +152,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
                                      'analysis_uid': ref_analysis.UID()}])
             self.setAnalyses(
                 self.getAnalyses() + [ref_analysis, ])
+            wf.doActionFor(ref_analysis, 'assign')
 
 
     security.declareProtected(EditWorksheet, 'addDuplicateAnalyses')
@@ -168,7 +162,6 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         rc = getToolByName(self, REFERENCE_CATALOG)
         wf = getToolByName(self, 'portal_workflow')
 
-        analyses = self.getAnalyses()
         layout = self.getLayout()
         wst = self.getWorksheetTemplate()
         wstlayout = wst and wst.getLayout() or []
@@ -202,13 +195,12 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         for analysis in src_analyses:
             if analysis.UID() in dest_analyses:
                 continue
-            # services with dependents don't belong in references
+            # services with dependents don't belong in duplicates
             service = analysis.getService()
             calc = service.getCalculation()
             if calc and calc.getDependentServices():
                 continue
             service = analysis.getService()
-            keyword = service.getKeyword()
             duplicate_id = self.generateUniqueId('DuplicateAnalysis')
             self.invokeFactory('DuplicateAnalysis', id = duplicate_id)
             duplicate = self[duplicate_id]
@@ -216,7 +208,6 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             duplicate.unmarkCreationFlag()
             if calc:
                 duplicate.setInterimFields(calc.getInterimFields())
-            wf.doActionFor(duplicate, 'assign')
             self.setLayout(
                 self.getLayout() + [{'position':dest_slot,
                                      'type':'d',
@@ -224,6 +215,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
                                      'analysis_uid': duplicate.UID()}, ]
             )
             self.setAnalyses(self.getAnalyses() + [duplicate, ])
+            wf.doActionFor(duplicate, 'assign')
 
     def applyWorksheetTemplate(self, wst):
         """ Add analyses to worksheet according to wst's layout.
@@ -231,7 +223,6 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         """
         rc = getToolByName(self, REFERENCE_CATALOG)
         pc = getToolByName(self, "portal_catalog")
-        wf = getToolByName(self, "portal_workflow")
 
         layout = self.getLayout()
         wstlayout = wst.getLayout()
@@ -263,7 +254,6 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         for ar in ars:
             for analysis in ar_analyses[ar]:
                 self.addAnalysis(analysis, position = positions[ars.index(ar)])
-                wf.doActionFor(analysis, 'assign')
 
         # find best maching reference samples for Blanks and Controls
         for t in ('b', 'c'):
@@ -272,21 +262,11 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             for row in [r for r in wstlayout if \
                         r['type'] == t and r['pos'] not in ws_slots]:
                 reference_definition_uid = row[form_key]
-                reference_definition = rc.lookupObject(reference_definition_uid)
                 samples = pc(portal_type = 'ReferenceSample',
                              review_state = 'current',
                              inactive_state = 'active',
                              getReferenceDefinitionUID = reference_definition_uid)
                 if not samples:
-##                    msg = self.context.translate(
-##                        "message_no_references_found",
-##                        mapping = {'position':row['pos'],
-##                                   'definition':reference_definition.Title() and \
-##                                   reference_definition.Title() or ''},
-##                        default = "No reference samples found for " + \
-##                        "${definition} at position ${position}.",
-##                        domain = "bika.lims")
-##                    self.context.plone_utils.addPortalMessage(msg)
                     break
                 samples = [s.getObject() for s in samples]
                 if t == 'b':
@@ -314,7 +294,6 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
                                      wst_service_uids)
                 else:
                     # find the most complete reference sample instead
-                    these_services = wst_service_uids
                     reference_keys = references.keys()
                     no_of_services = 0
                     reference = None
@@ -392,10 +371,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             analysis.setAttachment(attachments)
 
         if service_uid:
-            wf_tool = self.portal_workflow
             for analysis in self.getAnalyses():
-##            getServiceUID = service_uid,
-##                                             review_state = ('assigned', 'to_be_verified')):
                 attachmentid = self.generateUniqueId('Attachment')
                 client = analysis.aq_parent.aq_parent
                 client.invokeFactory(id = attachmentid, type_name = "Attachment")

@@ -220,9 +220,6 @@ class AnalysisRequest(BaseFolder):
     implements(IAnalysisRequest)
     security = ClassSecurityInfo()
     schema = schema
-    displayContentsTab = False
-
-    _has_dependant_calcs = False
 
     def hasBeenInvoiced(self):
         if self.getInvoice():

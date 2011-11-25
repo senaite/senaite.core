@@ -1,8 +1,3 @@
-"""Analysis
-
-$Id: Analysis.py 1902 2009-10-10 12:17:42Z anneline $
-test update
-"""
 
 from AccessControl import ClassSecurityInfo
 from DateTime import DateTime
@@ -123,9 +118,6 @@ class Analysis(BaseContent):
     implements(IAnalysis)
     security = ClassSecurityInfo()
     schema = schema
-    displayContentsTab = False
-
-    _affects_other_analysis = False
 
     def Title(self):
         """ Return the service title as title """
@@ -138,7 +130,7 @@ class Analysis(BaseContent):
             return ""
         if s: return s.Title()
 
-    def getUncertainty(self, result=None):
+    def getUncertainty(self, result = None):
         """ Calls self.Service.getUncertainty with either the provided
             result value or self.Result
         """
@@ -152,7 +144,7 @@ class Analysis(BaseContent):
         dependents = []
         service = self.getService()
         ar = self.aq_parent
-        for sibling in ar.getAnalyses(full_objects=True):
+        for sibling in ar.getAnalyses(full_objects = True):
             if sibling == self:
                 continue
             service = rc.lookupObject(sibling.getServiceUID())
@@ -168,7 +160,7 @@ class Analysis(BaseContent):
         """ Return a list of analyses who we depend on
             to calculate our result.
         """
-        siblings = self.aq_parent.getAnalyses(full_objects=True)
+        siblings = self.aq_parent.getAnalyses(full_objects = True)
         calculation = self.getService().getCalculation()
         if not calculation:
             return []
@@ -176,7 +168,7 @@ class Analysis(BaseContent):
         dep_analyses = [a for a in siblings if a.getServiceUID() in dep_services]
         return dep_analyses
 
-    def result_in_range(self, result=None, specification="lab"):
+    def result_in_range(self, result = None, specification = "lab"):
         """ Check if a result is "in range".
             if result is None, self.getResult() is called for the result value.
             Return False,failed_spec if out of range
@@ -217,7 +209,7 @@ class Analysis(BaseContent):
                 return True, None
 
             """ check if in 'shoulder' error range - out of range, but in acceptable error """
-            error_amount = (result/100)*float(spec[keyword]['error'])
+            error_amount = (result / 100) * float(spec[keyword]['error'])
             error_min = result - error_amount
             error_max = result + error_amount
             if ((result < spec_min) and (error_max >= spec_min)) or \

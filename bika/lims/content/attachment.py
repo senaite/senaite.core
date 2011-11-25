@@ -65,7 +65,6 @@ schema['title'].required = False
 class Attachment(BaseFolder):
     security = ClassSecurityInfo()
     schema = schema
-    displayContentsTab = False
 
     def Title(self):
         """ Return the Id """

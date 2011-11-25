@@ -19,7 +19,6 @@ class AnalysisRequestsFolder(folder.ATFolder):
     implements(IAnalysisRequestsFolder, IHaveNoBreadCrumbs)
     schema = schema
     security = ClassSecurityInfo()
-    displayContentsTab = False
 
 schemata.finalizeATCTSchema(schema, folderish = True, moveDiscussion = False)
 

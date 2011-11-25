@@ -11,14 +11,21 @@
 wf_tool = context.portal_workflow
 
 # Can't do anything to the object if it's cancelled
-if wf_tool.getInfoFor(context, 'cancellation_state') == "cancelled":
-    return False
+# reference and duplicate analyses don't have cancellation_state
+if context.portal_type == "Analysis":
+    if wf_tool.getInfoFor(context, 'cancellation_state') == "cancelled":
+        return False
 
 # For now, more thorough than strictly needed.
 if not context.getAttachment():
     service = context.getService()
     if service.getAttachmentOption() == 'r':
         return False
+
+# reference and duplicate analyses don't happen on services with dependencies
+if context.portal_type != "Analysis":
+    return True
+
 dependencies = context.getDependencies()
 if dependencies:
     interim_fields = False

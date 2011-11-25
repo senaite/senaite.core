@@ -10,7 +10,7 @@ GLOBALS = globals()
 
 DEPENDENCIES = [] #['plone.app.iterate']
 
-# Old permissions:
+# Very Old permissions:
 ManageBika = 'BIKA: Manage Bika'
 ManageClients = 'BIKA: Manage Clients'
 ManageWorksheets = 'BIKA: Manage Worksheets'

@@ -59,6 +59,14 @@ schema = BikaSchema.copy() + Schema((
             label = _("Result"),
         )
     ),
+    StringField('ResultDM',
+    ),
+    ReferenceField('Attachment',
+        multiValued = 1,
+        allowed_types = ('Attachment',),
+        referenceClass = HoldingReference,
+        relationship = 'ReferenceAnalysisAttachment',
+    ),
     BooleanField('Retested',
         default = False,
         widget = BooleanWidget(
@@ -70,18 +78,6 @@ schema = BikaSchema.copy() + Schema((
         default_method = 'current_date',
         widget = DateTimeWidget(
             label = _("Date Requested"),
-        ),
-    ),
-    DateTimeField('DueDate',
-        widget = DateTimeWidget(
-            label = _("Due Date"),
-        ),
-    ),
-    DurationField('MaxTimeAllowed',
-    ),
-    DateTimeField('DateVerified',
-        widget = DateTimeWidget(
-            label = _("Date Verified"),
         ),
     ),
     ComputedField('ReferenceSampleUID',
@@ -115,13 +111,13 @@ class ReferenceAnalysis(BaseContent):
         s = self.getService()
         return s and s.Title() or ''
 
-    def getUncertainty(self, result=None):
+    def getUncertainty(self, result = None):
         """ Calls self.Service.getUncertainty with either the
             provided result value or self.Result
         """
         return self.getService().getUncertainty(result and result or self.getResult())
 
-    def result_in_range(self, result=None, specification='lab'):
+    def result_in_range(self, result = None, specification = 'lab'):
         """ Check if the result is in range for the Analysis' service.
             if result is None, self.getResult() is called for the result value.
             specification parameter is ignored.
@@ -136,28 +132,28 @@ class ReferenceAnalysis(BaseContent):
             result = float(str(result))
         except:
             # if it is not a number we assume it is in range
-            return True,None
+            return True, None
 
         service_uid = self.getService().UID()
         specs = self.aq_parent.getResultsRangeDict()
-        spec = {'min':-1,'max':-1,'error':-1}
+        spec = {'min':-1, 'max':-1, 'error':-1}
         if specs.has_key(service_uid):
             spec = specs[service_uid]
             spec_min = float(spec['min'])
             spec_max = float(spec['max'])
 
             if spec_min <= result <= spec_max:
-                return True,None
+                return True, None
 
             """ check if in 'shoulder' error range - out of range, but in acceptable error """
-            error_amount =  (result/100)*float(spec['error'])
+            error_amount = (result / 100) * float(spec['error'])
             error_min = result - error_amount
             error_max = result + error_amount
             if ((result < spec_min) and (error_max >= spec_min)) or \
                ((result > spec_max) and (error_min <= spec_max)):
-                return '1',spec
+                return '1', spec
         else:
-            return True,None
+            return True, None
         return False, spec
 
     security.declarePublic('current_date')

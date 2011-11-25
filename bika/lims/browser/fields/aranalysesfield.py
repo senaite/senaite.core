@@ -103,10 +103,6 @@ class ARAnalysesField(ObjectField):
                 elif workflow.getInfoFor(analysis, 'worksheetanalysis_review_state') == 'assigned':
                     ws = analysis.getBackReferences("WorksheetAnalysis")[0]
                     ws.removeAnalysis(analysis)
-                    # overwrite saved context UID for event subscriber
-                    instance.REQUEST['context_uid'] = ws.UID()
-                    workflow.doActionFor(analysis, 'unassign')
-                    # Note: subscriber might unassign the AR and/or promote the worksheet
                 delete_ids.append(analysis.getId())
         instance.manage_delObjects(ids = delete_ids)
         # Note: subscriber might promote the AR

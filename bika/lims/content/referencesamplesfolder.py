@@ -19,7 +19,6 @@ class ReferenceSamplesFolder(folder.ATFolder):
     implements(IReferenceSamplesFolder, IHaveNoBreadCrumbs)
     schema = schema
     security = ClassSecurityInfo()
-    displayContentsTab = False
 
 schemata.finalizeATCTSchema(schema, folderish = True, moveDiscussion = False)
 
