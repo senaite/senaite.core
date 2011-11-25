@@ -292,6 +292,8 @@ jQuery( function($) {
 		selected_elements = [];
 		$(".ARProfileCopyButton").attr('disabled',true);
 		function success(profile_data){
+			// ReportDryMatter gets turned off explicity here
+			$("#ar_"+column+"_ReportDryMatter").attr("checked", false);
 			$.each(profile_data, function(poc_categoryUID, selectedservices){
 				if( $("tbody[class*='expanded']").filter("#"+poc_categoryUID).length > 0 ){
 					$.each(selectedservices, function(i,uid){
@@ -540,7 +542,7 @@ jQuery( function($) {
 			cat = $(dm).attr("cat");
 			poc = $(dm).attr("poc");
 			if ($(this).attr("checked")){
-				// turned Dry Matter on
+				// only play with service checkboxes when enabling dry matter
 				jQuery.ajaxSetup({async:false});
 				toggleCat(poc, cat, $(this).attr("column"), selectedservices=[uid], force_expand=true);
 				jQuery.ajaxSetup({async:true});
