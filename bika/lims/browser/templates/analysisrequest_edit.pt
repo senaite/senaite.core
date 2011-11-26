@@ -105,11 +105,13 @@
         <!-- Contact CCs-->
         <input type="button"
             id="open_cc_browser"
+			class="button"
+			style="padding-top:0px;padding-bottom:0px;"
             value="cc"
             i18n:attributes="value"
             i18n:domain="bika"
             tal:attributes="tabindex tabindex/next;"/>
-        <input DISABLED style="width:60%" class="noborder" value="" id="cc_titles"
+        <input DISABLED value="" id="cc_titles"
             tal:attributes="value python:edit and ','.join([c.Title() for c in context.getCCContact()]) or ''"/>
         <input type="hidden" id="cc_uids" name="cc_uids"
             tal:attributes="value python:edit and ','.join([c.UID() for c in context.getCCContact()]) or ''"/>
@@ -578,7 +580,7 @@
 </tfoot>
 </table>
 
-    <input class="context allowMultiSubmit"
+    <input class="context button allowMultiSubmit"
         type="submit"
         name="save_button"
         value="Save"/>

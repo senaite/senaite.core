@@ -47,11 +47,9 @@ buttonBorderColor:string=#bbb
 buttonBorderRadius:string=.5em
 buttonBackgroundColor:string=#eee
 buttonTextColor:string=#000
-
 buttonHoverBorderColor:string=#bbb
 buttonHoverBackgroundColor:string=#eee
 buttonHoverTextColor:string=#333
-
 buttonClickBorderColor:string=#bbb
 buttonClickBackgroundColor:string=#fff
 buttonClickTextColor:string=#333

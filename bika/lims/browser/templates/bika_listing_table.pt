@@ -200,6 +200,7 @@ Item select checkboxes.
 				name    string:${view/bika_listing/select_checkbox_name}:list;
 				value   item/uid;
 				id      string:${view/bika_listing/form_id}_cb_${item/uid};
+				item_title item/title;
 				alt     python:view.msg_select_item(item);
 				tabindex string:1000;
 				checked python:item.has_key('selected') and item['selected'] and 'yes' or '';"/>
