@@ -33,7 +33,9 @@ class ReferenceSuppliersView(BikaListingView):
         self.description = _(" ")
         self.contentFilter = {'portal_type': 'ReferenceSupplier',
                               'sort_on': 'sortable_title'}
-        self.content_add_actions = {_('Add'): "createObject?type_name=ReferenceSupplier"}
+        self.context_actions = {_('Add'):
+                                {'url': 'createObject?type_name=ReferenceSupplier',
+                                 'icon': '++resource++bika.lims.images/add.png'}}
         self.show_sort_column = False
         self.show_select_row = False
         self.show_select_column = True
@@ -75,7 +77,8 @@ class ReferenceSuppliersView(BikaListingView):
 schema = ATFolderSchema.copy()
 class ReferenceSuppliers(ATFolder):
     implements(IReferenceSuppliers)
-    schema = schema
     displayContentsTab = False
+    schema = schema
+
 schemata.finalizeATCTSchema(schema, folderish = True, moveDiscussion = False)
 atapi.registerType(ReferenceSuppliers, PROJECTNAME)

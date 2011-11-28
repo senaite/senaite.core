@@ -9,7 +9,9 @@ class ReferenceSamplesView(BikaListingView):
     contentFilter = {'portal_type': 'ReferenceSample',
                      'sort_on': 'id',
                      'sort_order': 'reverse'}
-    content_add_actions = {_('Add'): "createObject?type_name=ReferenceSample"}
+    context_actions = {_('Add'):
+                       {'url': 'createObject?type_name=ReferenceSample',
+                        'icon': '++resource++bika.lims.images/add.png'}}
     show_sort_column = False
     show_select_row = False
     show_select_column = True
@@ -99,7 +101,9 @@ class ReferenceSamplesView(BikaListingView):
 
 class ContactsView(BikaListingView):
     contentFilter = {'portal_type': 'SupplierContact'}
-    content_add_actions = {_('Add'): "createObject?type_name=SupplierContact"}
+    context_actions = {_('Add'):
+                       {'url': 'createObject?type_name=SupplierContact',
+                        'icon': '++resource++bika.lims.images/add.png'}}
     show_table_only = False
     show_sort_column = False
     show_select_row = False

@@ -102,6 +102,7 @@ TitleField.widget.visible = {'edit': 'hidden', 'view': 'invisible'}
 
 class Organisation(ATFolder):
     security = ClassSecurityInfo()
+    displayContentsTab = False
     schema = schema
 
     security.declareProtected(CMFCorePermissions.View, 'getSchema')

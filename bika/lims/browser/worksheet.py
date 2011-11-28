@@ -209,9 +209,10 @@ class WorksheetAnalysesView(AnalysesView):
         self.columns = {
             'Pos': {'title': _('Position')},
             'DueDate': {'title': _('Due date')},
-            'Category': {'title': _('Category')},
+##            'Category': {'title': _('Category')},
             'Service': {'title': _('Analysis')},
             'Result': {'title': _('Result')},
+            'ResultDM': {'title': _('Dry')},
             'Uncertainty': {'title': _('+-')},
             'retested': {'title': _('Retested'), 'type':'boolean'},
 ##            'Attachments': {'title': _('Attachments')},
@@ -221,7 +222,7 @@ class WorksheetAnalysesView(AnalysesView):
             {'title': _('All'), 'id':'all',
              'transitions': ['submit', 'verify', 'retract', 'unassign'],
              'columns':['Pos',
-                        'Category',
+##                        'Category',
                         'Service',
                         'Result',
                         'Uncertainty',
@@ -325,7 +326,7 @@ class WorksheetAnalysesView(AnalysesView):
                     else:
                         items[y]['class'][k] = cl
                     items[y]['class']['select_column'] = cl
-                items[y]['table_row_class'] = ""
+                items[y]['table_row_class'] = cl
 
             # fill the rowspan with a little table
             obj = items[x]['obj']
@@ -414,7 +415,7 @@ class AnalysesSearchResultsView(BikaListingView):
     ## The table used to display Analysis search results for AddAnalysesView
     def __init__(self, context, request):
         BikaListingView.__init__(self, context, request)
-        self.content_add_actions = {}
+        self.context_actions = {}
         self.contentFilter = {'portal_type': 'Analysis',
                               'review_state':'impossible_state'}
         self.base_url = self.context.absolute_url()
@@ -680,7 +681,7 @@ class WorksheetARsView(BikaListingView):
     ## used in add_duplicate view.
     def __init__(self, context, request):
         BikaListingView.__init__(self, context, request)
-        self.content_add_actions = {}
+        self.context_actions = {}
         self.contentFilter = {'portal_type': 'Analysis',
                               'review_state':'impossible_state'}
         self.base_url = self.context.absolute_url()
@@ -753,7 +754,7 @@ class WorksheetServicesView(BikaListingView):
     """
     def __init__(self, context, request):
         BikaListingView.__init__(self, context, request)
-        self.content_add_actions = {}
+        self.context_actions = {}
         self.contentFilter = {'review_state':'impossible_state'}
         self.base_url = self.context.absolute_url()
         self.view_url = self.context.absolute_url()
@@ -836,7 +837,7 @@ class ajaxGetWorksheetReferences(ReferenceSamplesView):
         super(ajaxGetWorksheetReferences, self).__init__(context, request)
         self.contentFilter = {'portal_type': 'ReferenceSample'}
         self.contentsMethod = self.context.portal_catalog
-        self.content_add_actions = {}
+        self.context_actions = {}
         self.show_sort_column = False
         self.show_select_row = False
         self.show_select_all_checkbox = False

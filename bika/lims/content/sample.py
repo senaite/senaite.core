@@ -169,6 +169,7 @@ schema['title'].required = False
 class Sample(BaseFolder, HistoryAwareMixin):
     implements(ISample)
     security = ClassSecurityInfo()
+    displayContentsTab = False
     schema = schema
 
     def Title(self):

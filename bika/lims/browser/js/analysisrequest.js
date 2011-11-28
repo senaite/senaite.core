@@ -9,7 +9,7 @@ jQuery( function($) {
 			vat = 0.00;
 			total = 0.00;
 			discount = parseFloat($("#member_discount").val());
-			$.each($('input[column="'+column+'"]'), function(){
+			$.each($('input[name="ar.'+column+'.Analyses:list:ignore_empty:record"]'), function(){
 				disabled = $(this).attr('disabled');
 				// For some browsers, `attr` is undefined; for others, its false.  Check for both.
 				if (typeof disabled !== 'undefined' && disabled !== false) {
@@ -55,52 +55,52 @@ jQuery( function($) {
 		if(disable == undefined){ disable = -1 ; }
 		if(!column && column != 0) { column = ""; }
 
-	tbody = $("#"+poc+"_"+category_uid);
+		tbody = $("#"+poc+"_"+category_uid);
 
-	if($(tbody).hasClass("expanded")){
-		// displaying an already expanded category
-		if(selectedservices){
-			for(service in tbody.children){
-				service_uid = service.id;
-				if(selectedservices.indexOf(service_uid) > -1){
-					$(this).attr("checked", "checked");
-				}
+		if($(tbody).hasClass("expanded")){
+			// displaying an already expanded category
+			if(selectedservices){
+				for(service in tbody.children){
+					service_uid = service.id;
+					if(selectedservices.indexOf(service_uid) > -1){
+						$(this).attr("checked", "checked");
+					}
 			}
-			recalc_prices(column);
-		$(tbody).toggle(true);
+				recalc_prices(column);
+				$(tbody).toggle(true);
+			} else {
+				if (force_expand){ $(tbody).toggle(true); }
+				else { $(tbody).toggle(); }
+			}
 		} else {
-			if (force_expand){ $(tbody).toggle(true); }
-			else { $(tbody).toggle(); }
-		}
-	} else {
-		if(!selectedservices) selectedservices = [];
-		$(tbody).addClass("expanded");
-		var options = {
-			'selectedservices': selectedservices.join(","),
-			'categoryUID': category_uid,
-			'column': column,
-			'disable': disable > -1 ? column : -1,
-			'col_count': $("#col_count").attr('value'),
-			'poc': poc
-		};
-		$(tbody).load("analysisrequest_analysisservices", options,
-			function(){
-				// analysis service checkboxes
-				$('input[name*="Analyses"]').unbind();
-				$('input[name*="Analyses"]').bind('change', service_checkbox_change);
-				if(selectedservices!=[]){
-					recalc_prices(column);
+			if(!selectedservices) selectedservices = [];
+			$(tbody).addClass("expanded");
+			var options = {
+				'selectedservices': selectedservices.join(","),
+				'categoryUID': category_uid,
+				'column': column,
+				'disable': disable > -1 ? column : -1,
+				'col_count': $("#col_count").attr('value'),
+				'poc': poc
+			};
+			$(tbody).load("analysisrequest_analysisservices", options,
+				function(){
+					// analysis service checkboxes
+					$('input[name*="Analyses"]').unbind();
+					$('input[name*="Analyses"]').bind('change', service_checkbox_change);
+					if(selectedservices!=[]){
+						recalc_prices(column);
 				}
-			}
-		);
+			});
+		}
 	}
-}
 
-	function calcdependencies(elements) {
+	function calcdependencies(elements, auto_yes) {
 		// elements is a list of jquery checkbox objects
 		// it's got one element in it when a single checkbox was changed,
 		// and one from each column when a copy button was clicked.
 		var element = elements.shift();
+		if(auto_yes == undefined){ auto_yes = false ; }
 		var column = $(element).attr('column');
 		var remaining_columns = [];
 		for(var i = 0; i<elements.length; i++){
@@ -163,8 +163,7 @@ jQuery( function($) {
 						$("#confirm_add_deps").html()
 							.replace("_SERVICE_", $(element).attr('title'))
 							.replace("_DEPS_", affected_titles.join("<br/>"))+"</div>");
-					$("#messagebox").dialog({width:450, resizable:false, closeOnEscape: false, buttons:{
-						'Yes': function(){
+						function add_Yes(){
 							$.each(dep_args, function(i,args){
 								tbody = $("#"+args[0]+"_"+args[1]);
 								if ($(tbody).hasClass("expanded")) {
@@ -185,26 +184,27 @@ jQuery( function($) {
 							recalc_prices();
 							$(this).dialog("close");
 							$('#messagebox').remove()
-						},
-						'No':function(){
+						}
+						function add_No(){
 							$(element).attr("checked", false);
-							if ($(element).attr("uid") == $("#getDryMatterService").attr("value")){
-								$("#ar_"+$(element).attr("column")+"_ReportDryMatter").attr("checked", false);
-							}
 							recalc_prices();
 							for(col in remaining_columns){
 								e = $('input[column="'+remaining_columns[col]+'"]')
 										.filter('#'+serviceUID);
 								$(e).attr("checked", false);
-								if ($(e).attr("uid") == $("#getDryMatterService").attr("value")){
-									$("#ar_"+$(e).attr("column")+"_ReportDryMatter").attr("checked", false);
-								}
 							}
 							recalc_prices(column);
 							$(this).dialog("close");
 							$('#messagebox').remove()
 						}
-					}});
+					if (auto_yes) {
+						add_Yes();
+					} else {
+						$("#messagebox").dialog({width:450, resizable:false, closeOnEscape: false, buttons:{
+									'Yes': add_Yes,
+									'No': add_No
+									}});
+					}
 				}
 			},
 			$.ajax(options);
@@ -233,9 +233,15 @@ jQuery( function($) {
 							'Yes': function(){
 								$.each(affected_services, function(i,serviceUID){
 									cb = $('input[column="'+column+'"]').filter('#'+serviceUID).attr('checked', false);
+									if ($(cb).val() == $("#getDryMatterService").val()) {
+									    $("#ar_"+column+"_ReportDryMatter").attr("checked", false);
+									}
 									// if elements from more than one column were passed, set all columns to be the same.
 									for(col in remaining_columns){
-										$('input[column="'+remaining_columns[col]+'"]').filter('#'+serviceUID).attr("checked", false);
+										cb = $('input[column="'+remaining_columns[col]+'"]').filter('#'+serviceUID).attr("checked", false);
+										if ($(cb).val() == $("#getDryMatterService").val()) {
+											$("#ar_"+col+"_ReportDryMatter").attr("checked", false);
+										}
 									}
 								});
 								recalc_prices();
@@ -262,11 +268,11 @@ jQuery( function($) {
 	function service_checkbox_change(){
 		column = $(this).attr("column");
 		element = $(this);
-		if ($(this).val() == $("#getDryMatterService").val()) {
-		    $("#ar_"+column+"_ReportDrymatter").attr("checked", false);
-		}
 		if($("#ar_"+column+"_ARProfile").val() != ""){
 			$("#ar_"+column+"_ARProfile").val("");
+		}
+		if ($(this).val() == $("#getDryMatterService").val() && $(this).attr("checked") == false) {
+			$("#ar_"+column+"_ReportDryMatter").attr("checked", false);
 		}
 		calcdependencies([element]);
 		recalc_prices();
@@ -286,6 +292,8 @@ jQuery( function($) {
 		selected_elements = [];
 		$(".ARProfileCopyButton").attr('disabled',true);
 		function success(profile_data){
+			// ReportDryMatter gets turned off explicity here
+			$("#ar_"+column+"_ReportDryMatter").attr("checked", false);
 			$.each(profile_data, function(poc_categoryUID, selectedservices){
 				if( $("tbody[class*='expanded']").filter("#"+poc_categoryUID).length > 0 ){
 					$.each(selectedservices, function(i,uid){
@@ -527,19 +535,22 @@ jQuery( function($) {
 		});
 
 
-		// ReportDryMatter always just forces Moisture service on.
+		// ReportDryMatter
 		$(".ReportDryMatter").change(function(){
-		    uid = $("#getDryMatterService").val();
-			cat = $("#getDryMatterService").attr("cat");
-			poc = $("#getDryMatterService").attr("poc");
-			toggleCat(poc, cat, $(this).attr("column"), selectedservices=[uid], force_expand=true);
-			if ( $(this).attr("checked") ){
-				console.log($(this).attr("column"));
-				checkbox = $("input[column=0]:checkbox").filter("#"+uid);
-				$(checkbox).attr("checked", true);
-				calcdependencies([$(checkbox)]);
-				recalc_prices();
+			dm = $("#getDryMatterService")
+		    uid = $(dm).val();
+			cat = $(dm).attr("cat");
+			poc = $(dm).attr("poc");
+			if ($(this).attr("checked")){
+				// only play with service checkboxes when enabling dry matter
+				jQuery.ajaxSetup({async:false});
+				toggleCat(poc, cat, $(this).attr("column"), selectedservices=[uid], force_expand=true);
+				jQuery.ajaxSetup({async:true});
+				dryservice_cb = $("input[column="+$(this).attr("column")+"]:checkbox").filter("#"+uid);
+				$(dryservice_cb).attr("checked", true);
+				calcdependencies([$(dryservice_cb)], auto_yes = true);
 			}
+			recalc_prices();
 		});
 
 		function portalMessage(message){

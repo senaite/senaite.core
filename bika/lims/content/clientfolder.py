@@ -20,6 +20,7 @@ schema['title'].widget.visible = {'edit':'hidden', 'view': 'invisible'}
 
 class ClientFolder(folder.ATFolder):
     implements(IClientFolder, IHaveNoBreadCrumbs)
+    displayContentsTab = False
     schema = schema
     security = ClassSecurityInfo()
 

@@ -159,6 +159,7 @@ schema['title'].schemata = 'Description'
 class ReferenceSample(BaseFolder):
     implements(IReferenceSample)
     security = ClassSecurityInfo()
+    displayContentsTab = False
     schema = schema
 
     security.declarePublic('current_date')

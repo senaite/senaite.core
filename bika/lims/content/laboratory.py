@@ -89,6 +89,7 @@ schema['Name']._validationLayer()
 
 class Laboratory(UniqueObject, Organisation):
     security = ClassSecurityInfo()
+    displayContentsTab = False
     schema = schema
 
     # XXX: Temporary workaround to enable importing of exported bika

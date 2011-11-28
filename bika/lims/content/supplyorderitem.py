@@ -43,8 +43,8 @@ schema = BikaSchema.copy() + Schema((
 
 class SupplyOrderItem( BaseContent):
     security = ClassSecurityInfo()
-    schema = schema
     displayContentsTab = False
+    schema = schema
 
     def Title(self):
         """ Return the Product as title """

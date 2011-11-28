@@ -51,6 +51,7 @@ schema['description'].schemata = 'default'
 
 class Instrument(BaseContent):
     security = ClassSecurityInfo()
+    displayContentsTab = False
     schema = schema
 
 registerType(Instrument, PROJECTNAME)

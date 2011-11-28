@@ -19,7 +19,7 @@ class ServicesView(BikaListingView):
     def __init__(self, context, request, field):
         BikaListingView.__init__(self, context, request)
         self.selected = [o.UID() for o in getattr(field, field.accessor)()]
-        self.content_add_actions = {}
+        self.context_actions = {}
         self.contentFilter = {'review_state': 'impossible_state'}
         self.base_url = self.context.absolute_url()
         self.view_url = self.base_url

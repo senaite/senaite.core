@@ -23,8 +23,9 @@ class CalculationsView(BikaListingView):
         self.contentsMethod = bsc
         self.contentFilter = {'portal_type': 'Calculation',
                               'sort_on': 'sortable_title'}
-        self.content_add_actions = {_('Add'):
-                                    "createObject?type_name=Calculation"}
+        self.context_actions = {_('Add'):
+                                {'url':'createObject?type_name=Calculation',
+                                 'icon': '++resource++bika.lims.images/add.png'}}
         self.title = _("Calculations")
         self.icon = "++resource++bika.lims.images/calculation_big.png"
         self.description = ""
@@ -79,7 +80,8 @@ class CalculationsView(BikaListingView):
 schema = ATFolderSchema.copy()
 class Calculations(ATFolder):
     implements(ICalculations)
-    schema = schema
     displayContentsTab = False
+    schema = schema
+
 schemata.finalizeATCTSchema(schema, folderish = True, moveDiscussion = False)
 atapi.registerType(Calculations, PROJECTNAME)

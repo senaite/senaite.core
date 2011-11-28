@@ -1,17 +1,18 @@
 from AccessControl import getSecurityManager
 from DateTime import DateTime
-from Products.CMFCore.utils import getToolByName
-from bika.lims import bikaMessageFactory as _
-from bika.lims.browser.bika_listing import BikaListingView
-from bika.lims.browser.publish import Publish
-from bika.lims.browser.bika_listing import WorkflowAction
 from Products.Archetypes.config import REFERENCE_CATALOG
-from bika.lims.config import ManageResults
-from plone.app.layout.globals.interfaces import IViewView
+from Products.CMFCore.utils import getToolByName
+from Products.Five.browser import BrowserView
+from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
+from bika.lims.browser.bika_listing import BikaListingView
+from bika.lims.browser.bika_listing import WorkflowAction
+from bika.lims.browser.publish import Publish
+from bika.lims.config import ManageResults
 from bika.lims.utils import TimeOrDate
 from operator import itemgetter
 from plone.app.content.browser.interfaces import IFolderContentsView
+from plone.app.layout.globals.interfaces import IViewView
 from zope.interface import implements
 import plone
 
@@ -64,6 +65,7 @@ class ClientWorkflowAction(WorkflowAction):
                     if not(
                         'bika_inactive_workflow' in workflow.getChainFor(ar) and \
                         workflow.getInfoFor(ar, 'inactive_state', '') == 'inactive'):
+                        ar.setDatePublished(DateTime())
                         ARs_to_publish.append(ar)
 
                 transitioned = Publish(self.context,
@@ -101,18 +103,19 @@ class ClientAnalysisRequestsView(BikaListingView):
         wf = getToolByName(self.context, 'portal_workflow')
         self.review_state = 'all'
 
-        self.content_add_actions = {}
+        self.context_actions = {}
 
         # add actions enabled only for active clients
         if wf.getInfoFor(self.context, 'inactive_state', '') == 'active':
-            self.content_add_actions[_('Add')] = \
-                "analysisrequest_add"
+            self.context_actions[_('Add')] = {
+                'url':'analysisrequest_add',
+                'icon': '++resource++bika.lims.images/add.png'}
 
         # client contact required
         active_contacts = [c for c in context.objectValues('Contact') if \
                            wf.getInfoFor(c, 'inactive_state', '') == 'active']
         if context.portal_type == "Client" and not active_contacts:
-            self.content_add_actions = {}
+            self.context_actions = {}
             self.context.plone_utils.addPortalMessage(
                 _("Client contact required before request may be submitted"))
 
@@ -121,7 +124,7 @@ class ClientAnalysisRequestsView(BikaListingView):
         self.show_select_column = True
 
         self.icon = "++resource++bika.lims.images/analysisrequest_big.png"
-        self.title = "%s - %s" % (self.context.Title(), _("Analysis Requests"))
+        self.title = _("Analysis Requests")
         self.description = ""
 
         self.columns = {
@@ -327,13 +330,13 @@ class ClientSamplesView(BikaListingView):
         self.contentFilter = {'portal_type': 'Sample',
                               'sort_on':'id',
                               'sort_order': 'reverse'}
-        self.content_add_actions = {}
+        self.context_actions = {}
         self.show_sort_column = False
         self.show_select_row = False
         self.show_select_column = True
 
         self.icon = "++resource++bika.lims.images/sample_big.png"
-        self.title = "%s - %s" % (self.context.Title(), _("Samples"))
+        self.title =  _("Samples")
         self.description = ""
 
         self.columns = {
@@ -451,15 +454,16 @@ class ClientARImportsView(BikaListingView):
     def __init__(self, context, request):
         super(ClientARImportsView, self).__init__(context, request)
         self.contentFilter = {'portal_type': 'ARImport'}
-        self.content_add_actions = {_('AR Import'): "createObject?type_name=ARImport"}
+        self.context_actions = {_('AR Import'):
+                                {'url': 'createObject?type_name=ARImport',
+                                 'icon': '++resource++bika.lims.images/add.png'}}
         self.show_sort_column = False
         self.show_select_row = False
         self.show_select_column = True
         self.pagesize = 50
 
         self.icon = "++resource++bika.lims.images/arimport_big.png"
-        self.title = "%s - %s" % (self.context.Title(), \
-                                 _("Analysis Request Imports"))
+        self.title = _("Analysis Request Imports")
         self.description = ""
 
         self.columns = {
@@ -503,15 +507,15 @@ class ClientARProfilesView(BikaListingView):
     def __init__(self, context, request):
         super(ClientARProfilesView, self).__init__(context, request)
         self.contentFilter = {'portal_type': 'ARProfile'}
-        self.content_add_actions = {_('Add'):
-                                    "createObject?type_name=ARProfile"}
+        self.context_actions = {_('Add'):
+                                {'url': 'createObject?type_name=ARProfile',
+                                 'icon': '++resource++bika.lims.images/add.png'}}
         self.show_sort_column = False
         self.show_select_row = False
         self.show_select_column = True
         self.pagesize = 50
         self.icon = "++resource++bika.lims.images/arprofile_big.png"
-        self.title = "%s - %s" % (self.context.Title(),
-                                 _("Analysis Request Profiles"))
+        self.title = _("Analysis Request Profiles")
         self.description = ""
 
         self.columns = {
@@ -537,17 +541,23 @@ class ClientAnalysisSpecsView(BikaListingView):
 
     def __init__(self, context, request):
         super(ClientAnalysisSpecsView, self).__init__(context, request)
-        self.contentFilter = {'portal_type': 'AnalysisSpec'}
-        self.content_add_actions = {_('Add'): \
-                               "createObject?type_name=AnalysisSpec"}
+        bsc = getToolByName(context, 'bika_setup_catalog')
+        self.contentFilter = {'portal_type': 'AnalysisSpec',
+                              'getClientUID': context.UID()}
+        self.contentsMethod = bsc
+        self.context_actions = {_('Add'):
+                                {'url': 'createObject?type_name=AnalysisSpec',
+                                 'icon': '++resource++bika.lims.images/add.png'},
+                                _('Set to lab defaults'):
+                                {'url': 'set_to_lab_defaults',
+                                 'icon': '++resource++bika.lims.images/analysisspec.png'}}
         self.show_sort_column = False
         self.show_select_row = False
         self.show_select_column = True
         self.pagesize = 50
 
         self.icon = "++resource++bika.lims.images/analysisspec_big.png"
-        self.title = "%s - %s" % (self.context.Title(), \
-                                 _("Analysis Specifications"))
+        self.title = _("Analysis Specifications")
         self.description = ""
 
         self.columns = {
@@ -574,7 +584,35 @@ class ClientAnalysisSpecsView(BikaListingView):
 
         return items
 
+class SetSpecsToLabDefaults(BrowserView):
+    """ Remove all client specs, and add copies of all lab specs
+    """
+    def __call__(self):
+        form = self.request.form
+        bsc = getToolByName(self.context, 'bika_setup_catalog')
 
+        # find and remove existing specs
+        cs = bsc(portal_type='AnalysisSpec',
+                  getClientUID=self.context.UID())
+        if cs:
+            self.context.manage_delObjects([s.id for s in cs])
+
+        # find and duplicate lab specs
+        ls = bsc(portal_type='AnalysisSpec',
+                 getClientUID = self.context.bika_setup.bika_analysisspecs.UID())
+        ls = [s.getObject() for s in ls]
+        for labspec in ls:
+            cs_id = self.context.generateUniqueId('AnalysisSpec')
+            self.context.invokeFactory(id=cs_id, type_name='AnalysisSpec')
+            clientspec = self.context[cs_id]
+            clientspec.edit(
+                SampleType = labspec.getSampleType(),
+                ResultsRange = labspec.getResultsRange(),
+            )
+        message = _("Analysis specs reset to lab defaults.")
+        self.context.plone_utils.addPortalMessage(message, 'info')
+        self.request.RESPONSE.redirect(self.context.absolute_url() + "/analysisspecs")
+        return
 
 class ClientAttachmentsView(BikaListingView):
     implements(IViewView)
@@ -583,14 +621,14 @@ class ClientAttachmentsView(BikaListingView):
         super(ClientAttachmentsView, self).__init__(context, request)
         self.contentFilter = {'portal_type': 'Attachment',
                               'sort_order': 'reverse'}
-        self.content_add_actions = {_('Add'): "createObject?type_name=Attachment"}
+        self.context_actions = {}
         self.show_sort_column = False
         self.show_select_row = False
         self.show_select_column = True
         self.pagesize = 50
 
         self.icon = "++resource++bika.lims.images/attachment_big.png"
-        self.title = "%s - %s" % (self.context.Title(), _("Attachments"))
+        self.title = _("Attachments")
         self.description = ""
 
         self.columns = {
@@ -651,7 +689,9 @@ class ClientOrdersView(BikaListingView):
         self.contentFilter = {'portal_type': 'SupplyOrder',
                               'sort_on':'id',
                               'sort_order': 'reverse'}
-        self.content_add_actions = {_('Add'): "createObject?type_name=SupplyOrder"}
+        self.context_actions = {_('Add'):
+                                {'url': 'createObject?type_name=SupplyOrder',
+                                 'icon': '++resource++bika.lims.images/add.png'}}
         self.show_table_only = False
         self.show_sort_column = False
         self.show_select_row = False
@@ -659,7 +699,7 @@ class ClientOrdersView(BikaListingView):
         self.pagesize = 25
 
         self.icon = "++resource++bika.lims.images/order_big.png"
-        self.title = "%s - %s" % (self.context.Title(), _("Orders"))
+        self.title = _("Orders")
         self.description = ""
 
         self.columns = {
@@ -704,15 +744,16 @@ class ClientContactsView(BikaListingView):
         super(ClientContactsView, self).__init__(context, request)
         self.contentFilter = {'portal_type': 'Contact',
                               'sort_on':'sortable_title'}
-        self.content_add_actions = {_('Add'):
-                                    "createObject?type_name=Contact"}
+        self.context_actions = {_('Add'):
+                                {'url': 'createObject?type_name=Contact',
+                                 'icon': '++resource++bika.lims.images/add.png'}}
         self.show_sort_column = False
         self.show_select_row = False
         self.show_select_column = True
         self.pagesize = 50
 
         self.icon = "++resource++bika.lims.images/client_contact_big.png"
-        self.title = "%s - %s" % (self.context.Title(), _("Contacts"))
+        self.title = _("Contacts")
         self.description = ""
 
         self.columns = {

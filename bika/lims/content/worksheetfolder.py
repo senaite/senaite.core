@@ -20,6 +20,7 @@ schema['title'].widget.visible = {'edit':'hidden', 'view': 'invisible'}
 
 class WorksheetFolder(folder.ATFolder):
     implements(IWorksheetFolder, IHaveNoBreadCrumbs)
+    displayContentsTab = False
     schema = schema
     security = ClassSecurityInfo()
 

@@ -24,7 +24,7 @@ class AnalysesView(BikaListingView):
     def __init__(self, context, request, **kwargs):
         self.contentFilter = dict(kwargs)
         self.contentFilter['portal_type'] = 'Analysis'
-        self.content_add_actions = {}
+        self.context_actions = {}
         self.show_sort_column = False
         self.show_select_row = False
         self.show_select_column = True
@@ -41,6 +41,7 @@ class AnalysesView(BikaListingView):
             'Service': {'title': _('Analysis')},
             'state_title': {'title': _('Status')},
             'Result': {'title': _('Result')},
+            'ResultDM': {'title': _('Dry')},
             'Uncertainty': {'title': _('+-')},
             'retested': {'title': _('retested'),
                          'type':'boolean'},
@@ -106,6 +107,10 @@ class AnalysesView(BikaListingView):
                 items[i]['DueDate'] = obj.getDueDate()
             items[i]['Attachments'] = ''
 
+            items[i]['ResultDM'] = ''
+            items[i]['before']['ResultDM'] = "<span field='ResultDM' uid='%s'>%s</span>" % \
+                (obj.UID(), obj.getResultDM())
+
             self.interim_fields[obj.UID()] = obj.getInterimFields()
 
             # calculate specs
@@ -134,9 +139,9 @@ class AnalysesView(BikaListingView):
                 if st_uid not in self.specs:
                     for spec in (p.getObject() for p in proxies):
                         client_or_lab = ""
-                        if spec.getClientUID() == obj.aq_parent.UID():
+                        if spec.getClientUID() == obj.getClientUID():
                             client_or_lab = 'client'
-                        elif spec.getClientUID() == None:
+                        elif spec.getClientUID() == self.context.bika_setup.bika_analysisspecs.UID():
                             client_or_lab = 'lab'
                         else:
                             continue
@@ -144,9 +149,11 @@ class AnalysesView(BikaListingView):
                             spec.getResultsRangeDict().items():
                             # hidden form field 'specs' keyed by sampletype uid:
                             # {st_uid: {'lab/client':{keyword:{min,max,error}}}}
-                            if st_uid in self.specs and \
-                               client_or_lab in self.specs[st_uid]:
+                            if st_uid in self.specs:
+                                if client_or_lab in self.specs[st_uid]:
                                     self.specs[st_uid][client_or_lab][keyword] = results_range
+                                else:
+                                    self.specs[st_uid][client_or_lab] = {keyword: results_range}
                             else:
                                 self.specs[st_uid] = {client_or_lab: {keyword: results_range}}
 
@@ -300,6 +307,19 @@ class AnalysesView(BikaListingView):
             self.review_states = new_states
             # Allow selecting individual analyses
             self.show_select_column = True
+
+        # ReportDryMatter - if it's enabled, then the ResultDM
+        # column is added after the Result column
+        # The column is always enabled for worksheets.
+        if (self.context.portal_type=='Worksheet' or self.context.getReportDryMatter()):
+            new_states = []
+            item['ResultDM'] = obj.getResultDM()
+            for state in self.review_states:
+                pos = 'Result' in state['columns'] and \
+                    state['columns'].index('Result') + 1 or len(state['columns'])
+                state['columns'].insert(pos, 'ResultDM')
+                new_states.append(state)
+            self.review_states = new_states
 
         self.json_specs = json.dumps(self.specs)
         self.json_interim_fields = json.dumps(self.interim_fields)

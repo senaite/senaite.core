@@ -61,6 +61,7 @@ class InvoiceLineItem(BaseContent):
     security = ClassSecurityInfo()
     security.declareObjectProtected(ManageInvoices)
     archetype_name = 'InvoiceLineItem'
+    displayContentsTab = False
     schema = schema
     allowed_content_types = ()
     global_allow = 0

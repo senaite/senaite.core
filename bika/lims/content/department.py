@@ -50,6 +50,7 @@ schema['description'].schemata = 'default'
 
 class Department(BaseContent):
     security = ClassSecurityInfo()
+    displayContentsTab = False
     schema = schema
 
     security.declarePublic('getContactsDisplayList')

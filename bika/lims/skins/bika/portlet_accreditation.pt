@@ -11,8 +11,8 @@
     <div class="portlet" id="portlet-accreditation"
          tal:condition="python:context.bika_setup.laboratory.getLaboratoryAccredited()" >
         <a href="#"
-            tal:attributes="href string:${portal_url}/accreditation">
-            <img src="" tal:attributes="src string:${portal_url}/++resource++bika.lims.images/accreditation_logo.png">
+            tal:attributes="href string:${context/portal_url}/accreditation">
+            <img src="" tal:attributes="src string:${context/portal_url}/++resource++bika.lims.images/accreditation_logo.png">
         </a>
     </div>
 </div>

@@ -322,12 +322,21 @@ table.analysisrequest.add td {
     text-align: center;
 	border-bottom:1px solid #eee;
 }
+table.analysisrequest.add td.contact {
+    text-align: left;
+}
+
 table.analysisrequest.edit td {
     text-align: center;
 	border-bottom:1px solid #eee;
 }
 table.analysisrequest.add td.ar_column {
     width:8em;
+}
+#cc_titles {
+	width:60%;
+	background:transparent;
+	border:none;
 }
 
 table.analysisrequest .pointofcapture th {
@@ -569,6 +578,25 @@ select {
     vertical-align: middle !important;
 }
 
+.button {
+  border-radius: &dtml-buttonBorderRadius; !important;
+  background: &dtml-buttonBackgroundColor; !important;
+  color: &dtml-buttonTextColor; !important;
+  border:1px solid &dtml-buttonBorderColor; !important;
+  padding:1px 2px 1px 2px;
+}
+
+.button:hover {
+  background: &dtml-buttonHoverBackgroundColor; !important;
+  color: &dtml-buttonHoverTextColor; !important;
+  border:1px solid &dtml-buttonHoverBorderColor; !important;
+}
+
+.button:active {
+  background: &dtml-buttonClickBackgroundColor; !important;
+  color: &dtml-buttonClickTextColor; !important;
+  border:1px solid &dtml-buttonClickBorderColor; !important;
+}
 
 .noborder {border:none !important;}
 .nomargin {margin:0 !important;}

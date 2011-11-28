@@ -23,6 +23,7 @@ schema = BaseSchema.copy() + Schema((
 class MethodLogEntry(BaseContent):
     security = ClassSecurityInfo()
     archetype_name = 'MethodLogEntry'
+    displayContentsTab = False
     schema = schema
     allowed_content_types = ()
     global_allow = 0

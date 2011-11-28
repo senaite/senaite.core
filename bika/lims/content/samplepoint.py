@@ -59,6 +59,7 @@ schema['description'].schemata = 'default'
 
 class SamplePoint(BaseContent, HistoryAwareMixin):
     security = ClassSecurityInfo()
+    displayContentsTab = False
     schema = schema
 
 registerType(SamplePoint, PROJECTNAME)

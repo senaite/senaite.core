@@ -11,15 +11,19 @@ from bika.lims import bikaMessageFactory as _
 
 schema = BikaSchema.copy() + Schema((
     TextField('Instructions',
+        default_content_type = 'text/plain',
+        allowable_content_types = ('text/plain',),
         widget = TextAreaWidget(
             label = _("Instructions"),
             description = _("Technical description and instructions intended for analysts"),
+            i18n_domain = I18N_DOMAIN,
         ),
     ),
     FileField('MethodDocument',  # XXX Multiple Method documents please
         widget = FileWidget(
             label = _("Method document"),
             description = _("Load documents describing the method here"),
+            i18n_domain = I18N_DOMAIN,
         )
     ),
 ))
@@ -32,6 +36,7 @@ schema['description'].widget.description = _("Describes the method in layman ter
 
 class Method(BaseFolder):
     security = ClassSecurityInfo()
+    displayContentsTab = False
     schema = schema
 
 registerType(Method, PROJECTNAME)

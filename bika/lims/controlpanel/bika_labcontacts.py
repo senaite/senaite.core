@@ -23,8 +23,9 @@ class LabContactsView(BikaListingView):
         self.contentsMethod = bsc
         self.contentFilter = {'portal_type': 'LabContact',
                               'sort_on': 'sortable_title'}
-        self.content_add_actions = {_('Add'):
-                                    "createObject?type_name=LabContact"}
+        self.context_actions = {_('Add'):
+                                {'url': 'createObject?type_name=LabContact',
+                                 'icon': '++resource++bika.lims.images/add.png'}}
         self.title = _("Lab Contacts")
         self.icon = "++resource++bika.lims.images/lab_contact_big.png"
         self.description = ""
@@ -98,7 +99,8 @@ class LabContactsView(BikaListingView):
 schema = ATFolderSchema.copy()
 class LabContacts(ATFolder):
     implements(ILabContacts)
-    schema = schema
     displayContentsTab = False
+    schema = schema
+
 schemata.finalizeATCTSchema(schema, folderish = True, moveDiscussion = False)
 atapi.registerType(LabContacts, PROJECTNAME)

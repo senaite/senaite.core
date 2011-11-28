@@ -7,10 +7,14 @@ $(document).ready(function(){
 		field = $(this).attr('field');
 		value = $(this).attr('value');
 		item_data = $(this).parents('table').prev('input[name="item_data"]').val();
+
 		// check the item's checkbox
 		if ($('#'+form_id+'_cb_'+uid).attr('checked') == false) {
 			$('#'+form_id+'_cb_'+uid).click();
 		}
+
+		// clear out the alerts for this field
+		$(".alert").filter("span[uid='"+$(this).attr("uid")+"']").empty();
 
 		if ($(this).parents('td').last().hasClass('interim')){
 			// add value to form's item_data
@@ -24,6 +28,7 @@ $(document).ready(function(){
 				}
 			}
 		}
+
 		// collect all form results into a hash (by analysis UID)
 		var results = {};
 		$.each($("input[field='Result'], select[field='Result']"), function(i, e){
@@ -40,7 +45,7 @@ $(document).ready(function(){
 				'value': value,
 				'results': $.toJSON(results),
 				'item_data': item_data,
-				'specification': $("input[name='specification']")
+				'specification': $(".specification")
 					.filter(".selected").attr("value")
 			},
 			dataType: "json",
@@ -50,7 +55,7 @@ $(document).ready(function(){
 					result = $(data['results'])[i];
 					$(".alert").filter("span[uid='"+result.uid+"']").empty();
 				}
-				// clear out all row alerts for rows with fresh alerts
+				// put new alerts
 				for(i=0;i<$(data['alerts']).length;i++){
 					lert = $(data['alerts'])[i];
 					$("span[uid='"+lert.uid+"']")
@@ -70,16 +75,11 @@ $(document).ready(function(){
 				// put result values in their boxes
 				for(i=0;i<$(data['results']).length;i++){
 					result = $(data['results'])[i];
-					$("input[uid='"+result.uid+"']")
-						.filter("input[field='Result']")
-						.val(result.result);
-					$("input[uid='"+result.uid+"']")
-						.filter("input[field='formatted_result']")
-						.val(result.formatted_result);
-					$("span[uid='"+result.uid+"']")
-						.filter("span[field='formatted_result']")
-						.empty()
-						.append(result.formatted_result);
+					$("input[uid='"+result.uid+"']").filter("input[field='Result']").val(result.result);
+					$("input[uid='"+result.uid+"']").filter("input[field='ResultDM']").val(result.dry_result);
+					$("span[uid='"+result.uid+"']").filter("span[field='ResultDM']").not("span[class~='alert']").empty().append(result.dry_result);
+					$("input[uid='"+result.uid+"']").filter("input[field='formatted_result']").val(result.formatted_result);
+					$("span[uid='"+result.uid+"']").filter("span[field='formatted_result']").empty().append(result.formatted_result);
 					// check box
 					if (results != ''){
 						if ($('#'+form_id+'_cb_'+result.uid).attr('checked') == false) {
@@ -93,7 +93,7 @@ $(document).ready(function(){
 	});
 
 	// range specification links
-	$("a[class~='specification']").click(function(event){
+	$(".specification").click(function(event){
 		tables = $(".bika-listing-table");
 		event.preventDefault();
 		for(t=0; t<tables.length; t++){

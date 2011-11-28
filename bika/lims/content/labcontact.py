@@ -51,6 +51,7 @@ schema['title'].widget.visible = False
 
 class LabContact(Person):
     security = ClassSecurityInfo()
+    displayContentsTab = False
     schema = schema
 
     def Title(self):

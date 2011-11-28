@@ -55,6 +55,7 @@ TitleField.widget.visible = {'edit': 'hidden', 'view': 'invisible'}
 class Worksheet(BaseFolder, HistoryAwareMixin):
     security = ClassSecurityInfo()
     implements(IWorksheet)
+    displayContentsTab = False
     schema = schema
 
     def Title(self):

@@ -22,7 +22,9 @@ class ReferenceManufacturersView(BikaListingView):
         bsc = getToolByName(context, 'bika_setup_catalog')
         self.contentsMethod = bsc
         self.contentFilter = {'portal_type': 'ReferenceManufacturer', 'sort_on': 'sortable_title'}
-        self.content_add_actions = {_('Add'): "createObject?type_name=ReferenceManufacturer"}
+        self.context_actions = {_('Add'):
+                                {'url': 'createObject?type_name=ReferenceManufacturer',
+                                 'icon': '++resource++bika.lims.images/add.png'}}
         self.title = _("Reference Manufacturers")
         self.icon = "++resource++bika.lims.images/referencemanufacturer_big.png"
         self.description = ""
@@ -67,7 +69,8 @@ class ReferenceManufacturersView(BikaListingView):
 schema = ATFolderSchema.copy()
 class ReferenceManufacturers(ATFolder):
     implements(IReferenceManufacturers)
-    schema = schema
     displayContentsTab = False
+    schema = schema
+
 schemata.finalizeATCTSchema(schema, folderish = True, moveDiscussion = False)
 atapi.registerType(ReferenceManufacturers, PROJECTNAME)

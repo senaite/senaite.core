@@ -17,6 +17,7 @@ schema['description'].schemata = 'default'
 
 class AttachmentType(BaseContent):
     security = ClassSecurityInfo()
+    displayContentsTab = False
     schema = schema
 
 registerType(AttachmentType, PROJECTNAME)

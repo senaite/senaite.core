@@ -143,7 +143,7 @@ class BikaListingView(BrowserView):
     description = ""
     contentFilter = {}
     allow_edit = True
-    content_add_actions = {}
+    context_actions = {}
     show_select_column = False
     show_select_row = False
     show_select_all_checkbox = True

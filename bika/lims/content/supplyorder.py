@@ -76,8 +76,8 @@ schema['title'].required = False
 
 class SupplyOrder(BaseFolder):
     security = ClassSecurityInfo()
-    schema = schema
     displayContentsTab = False
+    schema = schema
 
     def hasBeenInvoiced(self):
         if self.getInvoice():

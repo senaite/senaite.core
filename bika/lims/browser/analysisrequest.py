@@ -55,6 +55,7 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
                 return
 
             # XXX publish entire AR.
+            self.context.setDatePublished(DateTime())
             transitioned = Publish(self.context,
                                    self.request,
                                    action,
@@ -86,6 +87,14 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
 
             # first save results for entire form
             for uid, result in self.request.form['Result'][0].items():
+                # if the AR has ReportDryMatter set, then
+                # ResultDM column will exist in manage_results form.
+                dry_result = ''
+                if self.context.getReportDryMatter():
+                    for k,v in self.request.form['ResultDM'][0].items():
+                        if uid == k:
+                            dry_result = v
+                            break
                 if uid in selected_analyses:
                     analysis = selected_analyses[uid]
                 else:
@@ -106,6 +115,7 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
                 unit = service.getUnit()
                 analysis.edit(
                     Result = result,
+                    ResultDM = dry_result,
                     InterimFields = interimFields,
                     Retested = form.has_key('retested') and \
                                form['retested'].has_key(uid),
@@ -139,9 +149,6 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
                         workflow.doActionFor(analysis, 'submit')
                     except WorkflowException:
                         pass
-
-            if self.context.getReportDryMatter():
-                self.context.setDryMatterResults()
 
             message = _("Changes saved.")
             self.context.plone_utils.addPortalMessage(message, 'info')
@@ -505,6 +512,7 @@ class AnalysisRequestSelectCCView(BikaListingView):
     def __init__(self, context, request):
         super(AnalysisRequestSelectCCView, self).__init__(context, request)
         self.title = _("Contacts to CC")
+        self.icon = "++resource++bika.lims.images/contact_big.png"
         self.description = _("Select the contacts that will receive analysis results for this request.")
         self.contentFilter = {'portal_type': 'Contact',
                               'sort_on':'sortable_title',
@@ -567,6 +575,8 @@ class AnalysisRequestSelectSampleView(BikaListingView):
         self.show_sort_column = False
         self.show_select_row = False
         self.show_select_column = False
+        self.show_workflow_action_buttons = False
+
         self.pagesize = 25
 
         request.set('disable_border', 1)
@@ -1180,7 +1190,7 @@ class AnalysisRequestsView(ClientAnalysisRequestsView):
         super(AnalysisRequestsView, self).__init__(context, request)
         self.title = "%s: %s" % (self.context.aq_parent.Title(), _("Analysis Requests"))
         self.description = ""
-        self.content_add_actions = {}
+        self.context_actions = {}
         self.contentFilter = {'portal_type':'AnalysisRequest',
                               'sort_on':'id',
                               'sort_order': 'reverse',
