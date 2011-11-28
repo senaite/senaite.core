@@ -14,6 +14,7 @@ from Products.ATExtensions.ateapi import RecordsField
 from zope.interface import implements
 from bika.lims.interfaces import IWorksheet
 from bika.lims import bikaMessageFactory as _
+from bika.lims import logger
 
 schema = BikaSchema.copy() + Schema((
     HistoryAwareReferenceField('WorksheetTemplate',

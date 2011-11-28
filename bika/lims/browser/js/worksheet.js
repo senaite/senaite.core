@@ -77,7 +77,7 @@ $(document).ready(function(){
 		$("#ajax_spinner").toggle(true);
 		selected_service_uids = [];
 		$.each($("input:checked"), function(i,e){
-			selected_service_uids.push($(e).attr('uid'));
+			selected_service_uids.push($(e).val());
 		});
 
 		if (window.location.href.search('add_control') > -1) {
@@ -115,7 +115,7 @@ $(document).ready(function(){
 		// tell the form handler which services were selected
 		selected_service_uids = [];
 		$.each($("input:checked"), function(i,e){
-			selected_service_uids.push($(e).attr('uid'));
+			selected_service_uids.push($(e).val());
 		});
 		ssuids = selected_service_uids.join(",");
 		$(this).parents('form').append("<input type='hidden' value='"+ssuids+"' name='selected_service_uids'/>");

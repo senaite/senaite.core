@@ -21,6 +21,8 @@ from zope.component import getMultiAdapter
 from zope.interface import implements
 from bika.lims import EditResults, EditWorksheet
 import plone, json
+from bika.lims import logger
+
 
 class WorksheetWorkflowAction(WorkflowAction):
     """ Workflow actions taken in Worksheets
@@ -154,6 +156,9 @@ class WorksheetWorkflowAction(WorkflowAction):
 
             if selected_analyses:
                 for uid in selected_analysis_uids:
+                    if self.context.REQUEST.has_key('workflow_skiplist'):
+                        if uid in self.context.REQUEST['workflow_skiplist']:
+                            continue
                     analysis = rc.lookupObject(uid)
                     self.context.removeAnalysis(analysis)
 
@@ -549,8 +554,16 @@ class AddBlankView(BrowserView):
 
         form = self.request.form
         if 'submitted' in form:
+            rc = getToolByName(self.context, REFERENCE_CATALOG)
             # parse request
+            service_uids = form['selected_service_uids'].split(",")
+            position = form['position']
+            reference_uid = form['reference_uid']
+            reference = rc.lookupObject(reference_uid)
             self.request['context_uid'] = self.context.UID()
+            ref_analyses = self.context.addReferences(position,
+                                                      reference,
+                                                      service_uids)
             self.request.response.redirect(
                 self.context.absolute_url() + "/manage_results")
             return
@@ -588,8 +601,16 @@ class AddControlView(BrowserView):
 
         form = self.request.form
         if 'submitted' in form:
+            rc = getToolByName(self.context, REFERENCE_CATALOG)
             # parse request
+            service_uids = form['selected_service_uids'].split(",")
+            position = form['position']
+            reference_uid = form['reference_uid']
+            reference = rc.lookupObject(reference_uid)
             self.request['context_uid'] = self.context.UID()
+            ref_analyses = self.context.addReferences(position,
+                                                      reference,
+                                                      service_uids)
             self.request.response.redirect(
                 self.context.absolute_url() + "/manage_results")
             return
@@ -741,6 +762,7 @@ class WorksheetServicesView(BikaListingView):
         self.show_select_all_checkbox = False
         self.show_select_column = True
         self.pagesize = 1000
+        self.show_workflow_action_buttons = False
 
         self.columns = {
             'Service': {'title': _('Service')},
@@ -819,6 +841,7 @@ class ajaxGetWorksheetReferences(ReferenceSamplesView):
         self.show_select_row = False
         self.show_select_all_checkbox = False
         self.show_select_column = False
+        self.show_workflow_action_buttons = False
         self.pagesize = 100
         # must set service_uids in __call__ before delegating to super
         self.service_uids = []
@@ -878,9 +901,9 @@ class ajaxGetServices(BrowserView):
     """
     def __call__(self):
         plone.protect.CheckAuthenticator(self.request)
-        pc = getToolByName(self.context, 'portal_catalog')
+        bsc = getToolByName(self.context, 'bika_setup_catalog')
         return json.dumps([(c.UID, c.Title) for c in \
-                pc(portal_type = 'AnalysisService',
+                bsc(portal_type = 'AnalysisService',
                    getCategoryUID = self.request.get('getCategoryUID', ''),
                    inactive_state = 'active',
                    sort_on = 'sortable_title')])

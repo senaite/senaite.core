@@ -446,12 +446,8 @@ def AfterTransitionEventHandler(analysis, event):
         # If it is assigned to a worksheet, unassign it.
         if wf.getInfoFor(analysis, 'worksheetanalysis_review_state') == 'assigned':
             ws = analysis.getBackReferences("WorksheetAnalysis")[0]
-            ws.removeAnalysis(analysis)
-            # overwrite saved context UID for event subscriber
-            analysis.REQUEST['context_uid'] = ws.UID()
             analysis.REQUEST["workflow_skiplist"].remove(analysis.UID())
-            wf.doActionFor(analysis, 'unassign')
-            # Note: subscriber might unassign the AR and/or promote the worksheet
+            ws.removeAnalysis(analysis)
 
     elif event.transition.id == "assign":
         analysis.reindexObject(idxs = ["worksheetanalysis_review_state", ])

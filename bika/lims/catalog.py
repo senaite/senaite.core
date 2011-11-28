@@ -1,7 +1,7 @@
 from AccessControl import ClassSecurityInfo
 from Acquisition import aq_inner
 from Acquisition import aq_parent
-from Globals import InitializeClass
+from App.class_init import InitializeClass
 from Products.CMFCore.permissions import ManagePortal
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.CatalogTool import CatalogTool
@@ -12,7 +12,7 @@ from bika.lims.interfaces import IBikaSetupCatalog
 from zope.component import getUtility
 from zope.interface import Interface, implements
 
-def getCatalog(instance, field='UID'):
+def getCatalog(instance, field = 'UID'):
     """ Return the catalog which indexes objects of instance's type.
         If an object is indexed by more than one catalog, the first match
         will be returned.
@@ -31,7 +31,7 @@ class BikaSetupCatalog(CatalogTool):
     implements(IBikaSetupCatalog)
 
     security = ClassSecurityInfo()
-    _properties=({'id':'title', 'type': 'string', 'mode':'w'},)
+    _properties = ({'id':'title', 'type': 'string', 'mode':'w'},)
 
     title = 'Bika Setup Catalog'
     id = 'bika_setup_catalog'
@@ -52,7 +52,7 @@ class BikaSetupCatalog(CatalogTool):
         self.manage_catalogClear()
         portal = getToolByName(self, 'portal_url').getPortalObject()
         portal.ZopeFindAndApply(portal,
-                                obj_metatypes=('Department',
+                                obj_metatypes = ('Department',
                                                'AnalysisCategory',
                                                'AnalysisService',
                                                'AnalysisSpec',
@@ -69,7 +69,7 @@ class BikaSetupCatalog(CatalogTool):
                                                'ReferenceSupplier',
                                                'ReferenceDefinition',
                                                'WorksheetTemplate'),
-                                search_sub=True,
-                                apply_func=indexObject)
+                                search_sub = True,
+                                apply_func = indexObject)
 
 InitializeClass(BikaSetupCatalog)
