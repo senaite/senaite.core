@@ -88,6 +88,17 @@
                 conditionalcomment=""
                 cookable="True"
                 enabled="on"
+                expression="python:here.portal_type == 'Client'"
+                id="++resource++bika.lims.js/client.js"
+                inline="False"
+                insert-after="*"/>
+
+    <javascript authenticated="False"
+                cacheable="True"
+                compression="safe"
+                conditionalcomment=""
+                cookable="True"
+                enabled="on"
                 expression="python:here.portal_type in ['Client', 'AnalysisRequest',]"
                 id="++resource++bika.lims.js/analysisrequest.js"
                 inline="False"

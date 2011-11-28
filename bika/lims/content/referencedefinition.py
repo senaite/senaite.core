@@ -48,6 +48,7 @@ schema['description'].widget.visible = True
 
 class ReferenceDefinition(BaseContent):
     security = ClassSecurityInfo()
+    displayContentsTab = False
     schema = schema
 
 registerType(ReferenceDefinition, PROJECTNAME)

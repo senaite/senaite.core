@@ -27,6 +27,7 @@ class InvoiceFolder(UniqueObject, ATBTreeFolder):
     implements(IInvoiceFolder, IHaveNoBreadCrumbs)
     security = ClassSecurityInfo()
     archetype_name = 'InvoiceFolder'
+    displayContentsTab = False
     schema = schema
     id = 'Invoices'
     use_folder_tabs = 0

@@ -83,7 +83,6 @@ def AfterTransitionEventHandler(ar, event):
                     wf.doActionFor(analysis.getObject(), "verify")
 
     elif event.transition.id == "publish":
-        ar.setDatePublished(DateTime())
         ar.reindexObject(idxs = ["review_state", "getDatePublished", ])
         if not "publish all analyses" in ar.REQUEST['workflow_skiplist']:
             # publish all analyses in this AR. (except not requested ones)

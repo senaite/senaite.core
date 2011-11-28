@@ -410,7 +410,7 @@ class AnalysesSearchResultsView(BikaListingView):
     ## The table used to display Analysis search results for AddAnalysesView
     def __init__(self, context, request):
         BikaListingView.__init__(self, context, request)
-        self.content_add_actions = {}
+        self.context_actions = {}
         self.contentFilter = {'portal_type': 'Analysis',
                               'review_state':'impossible_state'}
         self.base_url = self.context.absolute_url()
@@ -660,7 +660,7 @@ class WorksheetARsView(BikaListingView):
     ## used in add_duplicate view.
     def __init__(self, context, request):
         BikaListingView.__init__(self, context, request)
-        self.content_add_actions = {}
+        self.context_actions = {}
         self.contentFilter = {'portal_type': 'Analysis',
                               'review_state':'impossible_state'}
         self.base_url = self.context.absolute_url()
@@ -733,7 +733,7 @@ class WorksheetServicesView(BikaListingView):
     """
     def __init__(self, context, request):
         BikaListingView.__init__(self, context, request)
-        self.content_add_actions = {}
+        self.context_actions = {}
         self.contentFilter = {'review_state':'impossible_state'}
         self.base_url = self.context.absolute_url()
         self.view_url = self.context.absolute_url()
@@ -815,7 +815,7 @@ class ajaxGetWorksheetReferences(ReferenceSamplesView):
         super(ajaxGetWorksheetReferences, self).__init__(context, request)
         self.contentFilter = {'portal_type': 'ReferenceSample'}
         self.contentsMethod = self.context.portal_catalog
-        self.content_add_actions = {}
+        self.context_actions = {}
         self.show_sort_column = False
         self.show_select_row = False
         self.show_select_all_checkbox = False

@@ -6,5 +6,6 @@ from bika.lims import bikaMessageFactory as _
 
 class RejectAnalysis(Analysis):
     archetype_name = 'RejectAnalysis'
+    displayContentsTab = False
 
 registerType(RejectAnalysis, PROJECTNAME)

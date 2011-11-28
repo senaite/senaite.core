@@ -17,6 +17,7 @@ schema = folder.ATFolderSchema.copy()
 
 class ReferenceSamplesFolder(folder.ATFolder):
     implements(IReferenceSamplesFolder, IHaveNoBreadCrumbs)
+    displayContentsTab = False
     schema = schema
     security = ClassSecurityInfo()
 

@@ -45,7 +45,7 @@ $(document).ready(function(){
 				'value': value,
 				'results': $.toJSON(results),
 				'item_data': item_data,
-				'specification': $("input[name='specification']")
+				'specification': $(".specification")
 					.filter(".selected").attr("value")
 			},
 			dataType: "json",
@@ -93,7 +93,7 @@ $(document).ready(function(){
 	});
 
 	// range specification links
-	$("a[class~='specification']").click(function(event){
+	$(".specification").click(function(event){
 		tables = $(".bika-listing-table");
 		event.preventDefault();
 		for(t=0; t<tables.length; t++){

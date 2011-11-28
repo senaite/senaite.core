@@ -104,6 +104,7 @@ schema = BikaSchema.copy() + Schema((
 class ReferenceAnalysis(BaseContent):
     implements(IReferenceAnalysis)
     security = ClassSecurityInfo()
+    displayContentsTab = False
     schema = schema
 
     def Title(self):

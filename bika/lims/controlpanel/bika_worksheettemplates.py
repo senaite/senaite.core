@@ -26,8 +26,9 @@ class WorksheetTemplatesView(BikaListingView):
         self.contentsMethod = bsc
         self.contentFilter = {'portal_type': 'WorksheetTemplate',
                               'sort_on': 'sortable_title'}
-        self.content_add_actions = {_('Add'):
-                                    "createObject?type_name=WorksheetTemplate"}
+        self.context_actions = {_('Add'):
+                                {'url': 'createObject?type_name=WorksheetTemplate',
+                                 'icon': '++resource++bika.lims.images/add.png'}}
         self.title = _("Worksheet Templates")
         self.icon = "++resource++bika.lims.images/worksheettemplate_big.png"
         self.description = ""
@@ -75,8 +76,8 @@ class WorksheetTemplatesView(BikaListingView):
 schema = ATFolderSchema.copy()
 class WorksheetTemplates(ATFolder):
     implements(IWorksheetTemplates)
-    schema = schema
     displayContentsTab = False
+    schema = schema
 
 schemata.finalizeATCTSchema(schema, folderish = True, moveDiscussion = False)
 atapi.registerType(WorksheetTemplates, PROJECTNAME)

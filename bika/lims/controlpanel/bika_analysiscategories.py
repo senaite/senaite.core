@@ -21,8 +21,9 @@ class AnalysisCategoriesView(BikaListingView):
         self.contentsMethod = bsc
         self.contentFilter = {'portal_type': 'AnalysisCategory',
                               'sort_on': 'sortable_title'}
-        self.content_add_actions = {_('Add'):
-                                    "createObject?type_name=AnalysisCategory"}
+        self.context_actions = {_('Add'):
+                                {'url': 'createObject?type_name=AnalysisCategory',
+                                 'icon': '++resource++bika.lims.images/add.png'}}
         self.icon = "++resource++bika.lims.images/category_big.png"
         self.title = _("Analysis Categories")
         self.description = ""
@@ -72,8 +73,8 @@ class AnalysisCategoriesView(BikaListingView):
 schema = ATFolderSchema.copy()
 class AnalysisCategories(ATFolder):
     implements(IAnalysisCategories)
-    schema = schema
     displayContentsTab = False
+    schema = schema
 
 schemata.finalizeATCTSchema(schema, folderish = True, moveDiscussion = False)
 atapi.registerType(AnalysisCategories, PROJECTNAME)

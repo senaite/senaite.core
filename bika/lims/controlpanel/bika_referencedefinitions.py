@@ -23,8 +23,9 @@ class ReferenceDefinitionsView(BikaListingView):
         self.contentsMethod = bsc
         self.contentFilter = {'portal_type': 'ReferenceDefinition',
                               'sort_on': 'sortable_title'}
-        self.content_add_actions = {_('Add'):
-                                    "createObject?type_name=ReferenceDefinition"}
+        self.context_actions = {_('Add'):
+                                {'url': 'createObject?type_name=ReferenceDefinition',
+                                 'icon': '++resource++bika.lims.images/add.png'}}
         self.title = _("Reference Definitions")
         self.icon = "++resource++bika.lims.images/referencedefinition_big.png"
         self.description = _("ReferenceDefinition represents a Reference Definition "
@@ -79,8 +80,8 @@ class ReferenceDefinitionsView(BikaListingView):
 schema = ATFolderSchema.copy()
 class ReferenceDefinitions(ATFolder):
     implements(IReferenceDefinitions)
-    schema = schema
     displayContentsTab = False
+    schema = schema
 
 schemata.finalizeATCTSchema(schema, folderish = True, moveDiscussion = False)
 atapi.registerType(ReferenceDefinitions, PROJECTNAME)

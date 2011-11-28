@@ -102,6 +102,7 @@ schema = BikaSchema.copy() + Schema((
 
 class Person(BaseFolder):
     security = ClassSecurityInfo()
+    displayContentsTab = False
     schema = schema
 
     security.declareProtected(CMFCorePermissions.View, 'getSchema')

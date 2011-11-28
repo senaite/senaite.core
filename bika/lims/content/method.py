@@ -36,6 +36,7 @@ schema['description'].widget.description = _("Describes the method in layman ter
 
 class Method(BaseFolder):
     security = ClassSecurityInfo()
+    displayContentsTab = False
     schema = schema
 
 registerType(Method, PROJECTNAME)

@@ -4,13 +4,19 @@
 
 /* General Bika Listing Table */
 
-.content_add_link {
+.context_action_link {
     margin-right: .5em;
     font-size: 50%;
-    border:0 !important;
+    border:1px solid #eee !important;
     vertical-align: middle;
 	font-weight:normal;
 	letter-spacing: 0;
+	border-radius: .5em;
+	padding: 5px 2px 3px 22px;
+}
+
+.context_action_link:hover {
+	background-color:#eee !important;
 }
 
 div.bika_listing {

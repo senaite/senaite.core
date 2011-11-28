@@ -40,6 +40,7 @@ schema['description'].schemata = 'default'
 class AnalysisCategory(BaseContent):
     implements(IAnalysisCategory)
     security = ClassSecurityInfo()
+    displayContentsTab = False
     schema = schema
 
 registerType(AnalysisCategory, PROJECTNAME)

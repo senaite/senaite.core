@@ -74,6 +74,7 @@ schema['description'].schemata = 'Description'
 
 class Calculation(BaseFolder, HistoryAwareMixin):
     security = ClassSecurityInfo()
+    displayContentsTab = False
     schema = schema
     implements(ICalculation)
 

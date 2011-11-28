@@ -23,8 +23,9 @@ class DepartmentsView(BikaListingView):
         self.contentsMethod = bsc
         self.contentFilter = {'portal_type': 'Department',
                               'sort_on': 'sortable_title'}
-        self.content_add_actions = {_('Add'):
-                                    "createObject?type_name=Department"}
+        self.context_actions = {_('Add'):
+                                {'icon': 'createObject?type_name=Department',
+                                 'icon': '++resource++bika.lims.images/add.png'}}
         self.title = _("Lab Departments")
         self.icon = "++resource++bika.lims.images/department_big.png"
         self.description = ""
@@ -98,7 +99,8 @@ class DepartmentsView(BikaListingView):
 schema = ATFolderSchema.copy()
 class Departments(ATFolder):
     implements(IDepartments)
-    schema = schema
     displayContentsTab = False
+    schema = schema
+
 schemata.finalizeATCTSchema(schema, folderish = True, moveDiscussion = False)
 atapi.registerType(Departments, PROJECTNAME)

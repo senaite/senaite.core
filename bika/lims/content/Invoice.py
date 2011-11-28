@@ -80,6 +80,7 @@ TitleField.widget.visible = False
 class Invoice(BaseFolder):
     security = ClassSecurityInfo()
     archetype_name = 'Invoice'
+    displayContentsTab = False
     schema = schema
     content_icon = 'invoice.png'
     allowed_content_types = ('InvoiceLineItem',)

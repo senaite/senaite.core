@@ -94,6 +94,16 @@ class Publish(BrowserView):
 
                 # compose and send email
                 if 'email' in self.pub_pref:
+
+                    # render template to utf-8
+                    ar_results = self.ar_results().encode("utf-8")
+
+                    # XXX
+                    ar_debug_name = '%s_%s.html' % \
+                        (self.analysis_requests[0].Title(), self.action)
+                    open(join(Globals.INSTANCE_HOME,'var', ar_debug_name),
+                                "w").write(ar_results)
+
                     mime_msg = MIMEMultipart('related')
                     mime_msg['Subject'] = self.get_mail_subject()
                     mime_msg['From'] = formataddr(
@@ -103,14 +113,8 @@ class Publish(BrowserView):
                         (encode_header(self.contact.getFullname()),
                          self.contact.getEmailAddress()))
                     mime_msg.preamble = 'This is a multi-part MIME message.'
-                    ar_results = self.ar_results()
                     msg_txt = MIMEText(ar_results, _subtype='html')
                     mime_msg.attach(msg_txt)
-
-                    #XXX
-                    ar_debug_name = '%s_%s.html' %(self.analysis_requests[0].Title(), self.action)
-                    open(join(Globals.INSTANCE_HOME,'var', ar_debug_name),
-                                "w").write(ar_results)
 
                     try:
                         host = getToolByName(self.context, 'MailHost')

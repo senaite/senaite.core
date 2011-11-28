@@ -14,17 +14,17 @@
 
 		<span class="documentFirstHeading" tal:content="structure view/title"/>
 
-		<tal:add_actions repeat="add_item python:view.content_add_actions.keys()">
+		<tal:add_actions repeat="add_item python:view.context_actions.keys()">
 			<a tal:attributes="
-				href python:view.content_add_actions[add_item];
-				class python:'content_add_link %s' % view.content_add_actions[add_item]">
-				<img src="++resource++bika.lims.images/add.png"/>
-				<span tal:replace="add_item"/>
+			    style python:'background: url(%s) 2px 50%% no-repeat'%(view.context_actions[add_item]['icon']);
+				href python:view.context_actions[add_item]['url'];
+				class python:'context_action_link %s' % (view.context_actions[add_item].get('class',''))">
+				<span tal:replace="python:add_item"/>
 			</a>
 		</tal:add_actions>
 
 		<!-- Worksheet Templates dropdown is hacked in over here -->
-		<span class="content_add_link"
+		<span class="context_action_link"
 			tal:condition="python:context.portal_type == 'WorksheetFolder'">
 				<select class='wstemplate'
 					tal:define="wstlist view/getWorksheetTemplates">

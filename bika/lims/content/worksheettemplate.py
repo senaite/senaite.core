@@ -55,6 +55,7 @@ schema['description'].widget.visible = True
 
 class WorksheetTemplate(BaseContent):
     security = ClassSecurityInfo()
+    displayContentsTab = False
     schema = schema
 
     security.declarePublic('getAnalysisTypes')

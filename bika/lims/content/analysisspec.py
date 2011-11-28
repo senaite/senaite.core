@@ -83,8 +83,7 @@ Schema((
         ),
     ),
     ComputedField('ClientUID',
-        expression = "here.aq_parent.portal_type == 'Client'"+\
-                     "and here.aq_parent.UID() or None",
+        expression = "context.aq_parent.UID()",
         widget = ComputedWidget(
             visible = False,
         ),

@@ -22,8 +22,9 @@ class AttachmentTypesView(BikaListingView):
         self.contentsMethod = bsc
         self.contentFilter = {'portal_type': 'AttachmentType',
                               'sort_on': 'sortable_title'}
-        self.content_add_actions = {_('Add'):
-                                    "createObject?type_name=AttachmentType"}
+        self.context_actions = {_('Add'):
+                                {'url':'createObject?type_name=AttachmentType',
+                                 'icon': '++resource++bika.lims.images/add.png'}}
         self.icon = "++resource++bika.lims.images/attachment_big.png"
         self.title = _("Attachment Types")
         self.show_sort_column = False
@@ -58,7 +59,8 @@ class AttachmentTypesView(BikaListingView):
 schema = ATFolderSchema.copy()
 class AttachmentTypes(ATFolder):
     implements(IAttachmentTypes)
-    schema = schema
     displayContentsTab = False
+    schema = schema
+
 schemata.finalizeATCTSchema(schema, folderish = True, moveDiscussion = False)
 atapi.registerType(AttachmentTypes, PROJECTNAME)

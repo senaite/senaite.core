@@ -77,6 +77,7 @@ schema = schema.copy() + Schema((
 class DuplicateAnalysis(Analysis):
     implements(IDuplicateAnalysis)
     security = ClassSecurityInfo()
+    displayContentsTab = False
     schema = schema
 
     def result_in_range(self, result = None, specification = "lab"):

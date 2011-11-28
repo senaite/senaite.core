@@ -22,8 +22,9 @@ class ARProfilesView(BikaListingView):
         self.contentsMethod = bsc
         self.contentFilter = {'portal_type': 'ARProfile',
                               'sort_on': 'sortable_title'}
-        self.content_add_actions = {_('Add'):
-                                    "createObject?type_name=ARProfile"}
+        self.context_actions = {_('Add'):
+                                {'url': 'createObject?type_name=ARProfile',
+                                 'icon': '++resource++bika.lims.images/add.png'}}
         self.icon = "++resource++bika.lims.images/arprofile_big.png"
         self.title = _("Analysis Request Profiles")
         self.description = ""
@@ -77,7 +78,8 @@ class ARProfilesView(BikaListingView):
 schema = ATFolderSchema.copy()
 class ARProfiles(ATFolder):
     implements(IARProfiles)
-    schema = schema
     displayContentsTab = False
+    schema = schema
+
 schemata.finalizeATCTSchema(schema, folderish = True, moveDiscussion = False)
 atapi.registerType(ARProfiles, PROJECTNAME)

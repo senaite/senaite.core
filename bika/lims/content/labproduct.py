@@ -50,6 +50,7 @@ schema['description'].widget.visible = True
 
 class LabProduct(BaseContent):
     security = ClassSecurityInfo()
+    displayContentsTab = False
     schema = schema
 
     def getTotalPrice(self):

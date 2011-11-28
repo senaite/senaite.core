@@ -299,6 +299,7 @@ schema['title'].schemata = 'Description'
 class AnalysisService(BaseContent, HistoryAwareMixin):
     security = ClassSecurityInfo()
     schema = schema
+    displayContentsTab = False
     implements(IAnalysisService)
 
     security.declarePublic('getDiscountedPrice')

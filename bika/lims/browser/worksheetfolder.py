@@ -22,7 +22,9 @@ class WorksheetFolderListingView(BikaListingView):
             'review_state':['open', 'to_be_verified', 'verified', 'rejected'],
             'sort_on':'id',
             'sort_order': 'reverse'}
-        self.content_add_actions = {_('Add'): "worksheet_add"}
+        self.context_actions = {_('Add'):
+                                {'url': 'worksheet_add',
+                                 'icon': '++resource++bika.lims.images/add.png'}}
         self.show_table_only = False
         self.show_sort_column = False
         self.show_select_row = False

@@ -55,6 +55,7 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
                 return
 
             # XXX publish entire AR.
+            self.context.setDatePublished(DateTime())
             transitioned = Publish(self.context,
                                    self.request,
                                    action,
@@ -1189,7 +1190,7 @@ class AnalysisRequestsView(ClientAnalysisRequestsView):
         super(AnalysisRequestsView, self).__init__(context, request)
         self.title = "%s: %s" % (self.context.aq_parent.Title(), _("Analysis Requests"))
         self.description = ""
-        self.content_add_actions = {}
+        self.context_actions = {}
         self.contentFilter = {'portal_type':'AnalysisRequest',
                               'sort_on':'id',
                               'sort_order': 'reverse',

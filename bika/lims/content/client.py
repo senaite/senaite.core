@@ -82,8 +82,8 @@ schema['description'].widget.visible = False
 class Client(Organisation):
     implements(IClient)
     security = ClassSecurityInfo()
+    displayContentsTab = False
     schema = schema
-    setup_state = False
 
     def Title(self):
         # XXX use title like everyone else.
@@ -92,14 +92,6 @@ class Client(Organisation):
 
     def setTitle(self, value):
         return self.setName(value)
-
-    def getSetupState(self):
-        """ Flag to show subtabs for client setup pages """
-        if self.get_client_setup_state() == "setup":
-            self.setup_state = True
-        else:
-            self.setup_state = False
-        return False
 
     security.declarePublic('generateUniqueId')
     def generateUniqueId (self, type_name, batch_size = None):

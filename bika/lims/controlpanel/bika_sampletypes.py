@@ -26,8 +26,9 @@ class SampleTypesView(BikaListingView):
         self.contentsMethod = bsc
         self.contentFilter = {'portal_type': 'SampleType',
                               'sort_on': 'sortable_title'}
-        self.content_add_actions = {_('Add'):
-                                    "createObject?type_name=SampleType"}
+        self.context_actions = {_('Add'):
+                                {'url': 'createObject?type_name=SampleType',
+                                 'icon': '++resource++bika.lims.images/add.png'}}
         self.title = _("Sample Types")
         self.icon = "++resource++bika.lims.images/sampletype_big.png"
         self.description = ""
@@ -73,8 +74,9 @@ schema = ATFolderSchema.copy()
 
 class SampleTypes(ATFolder):
     implements(ISampleTypes)
-    schema = schema
     displayContentsTab = False
+    schema = schema
+
 schemata.finalizeATCTSchema(schema, folderish = True, moveDiscussion = False)
 atapi.registerType(SampleTypes, PROJECTNAME)
 

@@ -17,9 +17,9 @@ schema = folder.ATFolderSchema.copy()
 
 class SamplesFolder(folder.ATFolder):
     implements(ISamplesFolder, IHaveNoBreadCrumbs)
+    displayContentsTab = False
     schema = schema
     security = ClassSecurityInfo()
-    displayContentsTab = False
 
 schemata.finalizeATCTSchema(schema, folderish = True, moveDiscussion = False)
 

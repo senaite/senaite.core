@@ -24,8 +24,9 @@ class MethodsView(BikaListingView):
         self.contentsMethod = bsc
         self.contentFilter = {'portal_type': 'Method',
                               'sort_on': 'sortable_title'}
-        self.content_add_actions = {_('Add'):
-                                    "createObject?type_name=Method"}
+        self.context_actions = {_('Add'):
+                                {'url': 'createObject?type_name=Method',
+                                 'icon': '++resource++bika.lims.images/add.png'}}
         self.title = _("Methods")
         self.icon = "++resource++bika.lims.images/method_big.png"
         self.description = ""
@@ -69,8 +70,8 @@ class MethodsView(BikaListingView):
 schema = ATFolderSchema.copy()
 class Methods(ATFolder):
     implements(IMethods)
-    schema = schema
     displayContentsTab = False
+    schema = schema
 
 schemata.finalizeATCTSchema(schema, folderish = True, moveDiscussion = False)
 atapi.registerType(Methods, PROJECTNAME)

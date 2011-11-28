@@ -117,6 +117,7 @@ schema = BikaSchema.copy() + Schema((
 class Analysis(BaseContent):
     implements(IAnalysis)
     security = ClassSecurityInfo()
+    displayContentsTab = False
     schema = schema
 
     def Title(self):
@@ -176,7 +177,8 @@ class Analysis(BaseContent):
             return '1',None if in shoulder
         """
 
-        client_uid = specification == "client" and self.getClientUID() or None
+        client_uid = specification == "client" and self.getClientUID() or \
+            self.bika_setup.bika_analysisspecs.UID()
 
         result = result and result or self.getResult()
 

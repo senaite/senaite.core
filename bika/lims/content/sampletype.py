@@ -33,6 +33,7 @@ schema['description'].widget.visible = True
 
 class SampleType(BaseContent, HistoryAwareMixin):
     security = ClassSecurityInfo()
+    displayContentsTab = False
     schema = schema
 
     def getDefaultLifetime(self):
