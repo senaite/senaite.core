@@ -107,10 +107,12 @@ class ajaxCalculateAnalysisEntry():
             except ZeroDivisionError, e:
                 return None
             except KeyError, e:
-                self.alerts.append({'uid': uid,
-                                    'field': 'Result',
-                                    'icon': 'exclamation',
-                                    'msg': "Key Error: " + html_quote(str(e.args[0]))})
+                self.alerts.append(
+                    {'uid': uid,
+                     'field': 'Result',
+                     'icon': 'exclamation',
+                     'msg': "Key Error: " + html_quote(str(e.args[0]))
+                     })
                 return None
 
         # format calculation result to service precision
@@ -118,24 +120,26 @@ class ajaxCalculateAnalysisEntry():
             str("%%.%sf" % precision) % Result['result'] or Result['result']
 
         # calculate Dry Matter result
-        dm = service.getReportDryMatter()
+        dm = analysis.aq_parent.getReportDryMatter()
         if dm:
             dry_service = self.context.bika_setup.getDryMatterService()
             # get the UID of the DryMatter Analysis from our parent AR
-            dry_analysis = [a for a in analysis.aq_parent.getAnalyses(full_objects=True) \
+            dry_analysis = [a for a in \
+                            analysis.aq_parent.getAnalyses(full_objects=True) \
                             if a.getService().UID() == dry_service.UID()]
-            assert dry_analysis
-            dry_analysis = dry_analysis[0]
-            dry_uid = dry_analysis.UID()
-            # get the current DryMatter analysis result from the form
-            if dry_uid in self.current_results:
-                dry_result = float(self.current_results[dry_uid])
+            if dry_analysis:
+                dry_analysis = dry_analysis[0]
+                dry_uid = dry_analysis.UID()
+                # get the current DryMatter analysis result from the form
+                if dry_uid in self.current_results:
+                    dry_result = float(self.current_results[dry_uid])
+                else:
+                    try:
+                        dry_result = float(dry_analysis.getResult())
+                    except:
+                        dm = False
             else:
-                try:
-                    dry_result = float(dry_analysis.getResult())
-                except:
-                    dm = False
-
+                dm = False
         Result['dry_result'] = dm and \
             '%.2f' % ((Result['result'] / dry_result) * 100) or ''
 

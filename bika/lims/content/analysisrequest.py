@@ -219,6 +219,7 @@ schema['title'].required = False
 class AnalysisRequest(BaseFolder):
     implements(IAnalysisRequest)
     security = ClassSecurityInfo()
+    displayContentsTab = False
     schema = schema
 
     def hasBeenInvoiced(self):
