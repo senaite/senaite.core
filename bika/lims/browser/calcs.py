@@ -120,7 +120,10 @@ class ajaxCalculateAnalysisEntry():
             str("%%.%sf" % precision) % Result['result'] or Result['result']
 
         # calculate Dry Matter result
-        dm = analysis.aq_parent.getReportDryMatter()
+        # if parent is not an AR, it's never going to be calculable
+        dm = hasattr(analysis.aq_parent, 'getReportDryMatter') and \
+            analysis.aq_parent.getReportDryMatter() and \
+            analysis.getService().getReportDryMatter()
         if dm:
             dry_service = self.context.bika_setup.getDryMatterService()
             # get the UID of the DryMatter Analysis from our parent AR
@@ -132,7 +135,10 @@ class ajaxCalculateAnalysisEntry():
                 dry_uid = dry_analysis.UID()
                 # get the current DryMatter analysis result from the form
                 if dry_uid in self.current_results:
-                    dry_result = float(self.current_results[dry_uid])
+                    try:
+                        dry_result = float(self.current_results[dry_uid])
+                    except:
+                        dm = False
                 else:
                     try:
                         dry_result = float(dry_analysis.getResult())
@@ -140,7 +146,7 @@ class ajaxCalculateAnalysisEntry():
                         dm = False
             else:
                 dm = False
-        Result['dry_result'] = dm and \
+        Result['dry_result'] = dm and dry_result and \
             '%.2f' % ((Result['result'] / dry_result) * 100) or ''
 
         self.results.append(Result)
