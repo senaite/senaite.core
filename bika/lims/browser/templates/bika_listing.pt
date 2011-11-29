@@ -24,7 +24,7 @@
 		</tal:add_actions>
 
 		<!-- Worksheet Templates dropdown is hacked in over here -->
-		<span class="context_action_link"
+		<span class="context_action_dropdown"
 			tal:condition="python:context.portal_type == 'WorksheetFolder'">
 				<select class='wstemplate'
 					tal:define="wstlist view/getWorksheetTemplates">

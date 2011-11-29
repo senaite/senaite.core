@@ -14,10 +14,20 @@
 	border-radius: .5em;
 	padding: 5px 2px 3px 22px;
 }
-
 .context_action_link:hover {
 	background-color:#eee !important;
 }
+
+.context_action_dropdown {
+    margin:none;
+    font-size: 50%;
+    border:none !important;
+    vertical-align: middle;
+	font-weight:normal;
+	letter-spacing: 0;
+	padding: 5px 2px 5px 2px;
+}
+
 
 div.bika_listing {
 	font-family: &dtml-fontFamily;;
