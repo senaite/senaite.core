@@ -48,9 +48,9 @@ def AfterTransitionEventHandler(ar, event):
 
         # receive the AR's sample
         sample = ar.getSample()
-        if not sample.UID() in ar.REQUEST['workflow_skiplist']:
+        if sample.UID() not in ar.REQUEST['workflow_skiplist']:
             # unless this is a secondary AR
-            if wf.getInfoFor(sample, 'review_state') == 'sample_due':
+            if wf.getInfoFor(sample, 'review_state') == 'due':
                 wf.doActionFor(sample, 'receive')
 
         # receive all analyses in this AR.
