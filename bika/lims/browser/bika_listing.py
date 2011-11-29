@@ -51,7 +51,7 @@ class WorkflowAction:
             action = form.get(came_from, '')
             # XXX some browsers agree better than others about our JS ideas.
             # Two actions (eg ['submit','submit']) are present in the form.
-            if type(action) in(list,tuple): action = action[0]
+            if type(action) in(list, tuple): action = action[0]
             if not action:
                 if self.destination_url == "":
                     self.destination_url = self.request.get_header("referer",
@@ -61,7 +61,7 @@ class WorkflowAction:
         # convert button text to action id
         if came_from == "workflow_action_button":
             action = form[action]
-        if type(action) in(list,tuple): action = action[0]
+        if type(action) in(list, tuple): action = action[0]
         return (action, came_from)
 
     def _get_selected_items(self, full_objects = True):
@@ -74,7 +74,7 @@ class WorkflowAction:
         selected_items = {}
         for uid in form.get('uids', []):
             try:
-                item = uc(UID=uid)[0].getObject()
+                item = uc(UID = uid)[0].getObject()
             except:
                 # ignore selected item if object no longer exists
                 continue
@@ -103,7 +103,11 @@ class WorkflowAction:
                 return
             else:
                 if obj.UID() not in skiplist:
-                    workflow.doActionFor(obj, action)
+                    allowed_transitions = []
+                    for t in workflow.getTransitionsFor(obj):
+                        allowed_transitions.append(t['id'])
+                    if action in allowed_transitions:
+                        workflow.doActionFor(obj, action)
                 self.request.response.redirect(self.destination_url)
                 return
 
@@ -115,11 +119,12 @@ class WorkflowAction:
             if not isActive(item) and action not in ('reinstate', 'activate'):
                 continue
             if uid not in skiplist:
-                try:
+                allowed_transitions = []
+                for t in workflow.getTransitionsFor(item):
+                    allowed_transitions.append(t['id'])
+                if action in allowed_transitions:
                     workflow.doActionFor(item, action)
                     transitioned.append(item.Title())
-                except WorkflowException:
-                    pass
 
         if len(transitioned) > 0:
             message = _('Changes saved.')
@@ -127,10 +132,10 @@ class WorkflowAction:
 
         # automatic label printing
         if action == 'receive' and 'receive' in self.context.bika_setup.getAutoPrintLabels():
-            q = "/sticker?size=%s&items="%(self.context.bika_setup.getAutoLabelSize())
+            q = "/sticker?size=%s&items=" % (self.context.bika_setup.getAutoLabelSize())
             # selected_items is a list of UIDs (stickers for AR_add use IDs)
             q += ",".join([i.getId() for i in selected_items.values()])
-            self.request.response.redirect(self.context.absolute_url()+q)
+            self.request.response.redirect(self.context.absolute_url() + q)
         else:
             self.request.response.redirect(self.destination_url)
 
@@ -222,9 +227,9 @@ class BikaListingView(BrowserView):
                     self.contentFilter[c]
 
         # review_state_selector
-        if form.has_key(form_id+'_review_state'):
+        if form.has_key(form_id + '_review_state'):
             review_states = [r for r in self.review_states if \
-                             r['id'] == form[form_id+'_review_state']]
+                             r['id'] == form[form_id + '_review_state']]
             if review_states:
                 review_state = review_states[0]
             else:
@@ -233,17 +238,17 @@ class BikaListingView(BrowserView):
                 for k, v in review_state['contentFilter'].items():
                     self.contentFilter[k] = v
             else:
-                if form[form_id+'_review_state'] != 'all':
-                    self.contentFilter['review_state'] = form[form_id+'_review_state']
+                if form[form_id + '_review_state'] != 'all':
+                    self.contentFilter['review_state'] = form[form_id + '_review_state']
 
         # sort_order
-        sort_order = self.request.get(form_id+'_sort_order', 'ascending')
+        sort_order = self.request.get(form_id + '_sort_order', 'ascending')
         sort_order = urllib.unquote(sort_order)
         self.contentFilter['sort_order'] = sort_order
 
         # sort_on
         # prefer the request sort_on
-        sort_on = self.request.get(form_id+'_sort_on', '')
+        sort_on = self.request.get(form_id + '_sort_on', '')
         sort_on = urllib.unquote(sort_on)
         if sort_on:
             idx = self.columns[sort_on].get('index', '')
@@ -260,7 +265,7 @@ class BikaListingView(BrowserView):
 
         # pagesize
         try:
-            pagesize = self.request.get(form_id+'_pagesize', self.pagesize)
+            pagesize = self.request.get(form_id + '_pagesize', self.pagesize)
             self.pagesize = int(urllib.unquote(pagesize))
             self.request.set('pagesize', pagesize)
         except:
@@ -268,7 +273,7 @@ class BikaListingView(BrowserView):
 
         # pagenumber
         try:
-            pagenumber = self.request.get(form_id+'_pagenumber', self.pagenumber)
+            pagenumber = self.request.get(form_id + '_pagenumber', self.pagenumber)
             self.pagenumber = int(urllib.unquote(pagenumber))
             self.request.set('pagenumber', pagenumber)
         except:
@@ -450,12 +455,12 @@ class BikaListingView(BrowserView):
 
         return results
 
-    def contents_table(self, table_only=False):
+    def contents_table(self, table_only = False):
         """ If you set table_only to true, then nothing outside of the
             <table/> tag will be printed (form tags, authenticator, etc).
             Then you can insert your own form tags around it.
         """
-        table = BikaListingTable(bika_listing=self, table_only=table_only)
+        table = BikaListingTable(bika_listing = self, table_only = table_only)
         return table.render(self)
 
 class BikaListingTable(tableview.Table):
@@ -463,7 +468,7 @@ class BikaListingTable(tableview.Table):
     render = ViewPageTemplateFile("templates/bika_listing_table.pt")
     batching = ViewPageTemplateFile("templates/bika_listing_batching.pt")
 
-    def __init__(self, bika_listing=None, table_only=False):
+    def __init__(self, bika_listing = None, table_only = False):
         self.table = self
         self.table_only = table_only
         self.bika_listing = bika_listing
