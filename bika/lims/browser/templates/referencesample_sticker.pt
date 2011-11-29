@@ -13,6 +13,10 @@
                   portal_url portal_state/portal_url;
                   plone_view context/@@plone;">
 
+<head>
+<div tal:replace="structure provider:plone.resourceregistries.scripts" />
+</head>
+
 <body style="margin: 0; padding: 0" onload="this.print()">
 
 <metal:block tal:repeat="reference view/items">
@@ -40,50 +44,61 @@ td {
 <thead>
 
 <tr>
-<th i18n:translate="Reference">Reference</th>
-<td><strong tal:content="reference/Title">sugar 4g/l</strong></td>
+    <th i18n:translate="Reference">Reference</th>
+    <td><strong tal:content="reference/Title"/>
 </tr>
 
 <tr>
-<th i18n:translate="Manufacturer">Manufacturer</th>
-<td><strong tal:content="python:manufacturer and manufacturer.Title() or ''">Acme inc</strong></td>
+    <th i18n:translate="Manufacturer">Manufacturer</th>
+    <td><strong tal:content="python:manufacturer and manufacturer.Title() or ''"/>
 </tr>
 
 <tr>
 <th i18n:translate="LotNumber">LotNumber</th>
-<td><strong tal:content="reference/getLotNumber">42</strong></td>
+<td><strong tal:content="reference/getLotNumber"/>
 </tr>
 
 <tr>
-<th i18n:translate="DateReceived">Date received</th>
-<td class="left">
-<span
-    tal:define="date_received reference/getDateReceived"
-    tal:condition="date_received"
-    tal:content="python:plone_view.toLocalizedTime(date_received, long_format=0)"
-    >2005-01-01</span>
-</td>
+    <th i18n:translate="DateReceived">Date received</th>
+    <td class="left">
+        <span
+        tal:define="date_received reference/getDateReceived"
+        tal:condition="date_received"
+        tal:content="python:plone_view.toLocalizedTime(date_received, long_format=0)"/>
+    </td>
 </tr>
+
 <tr>
-<th i18n:translate="DateOpened">Date opened</th>
-<td class="left">
-<span
-    tal:define="date_opened reference/getDateOpened"
-    tal:condition="date_opened"
-    tal:content="python:plone_view.toLocalizedTime(date_opened, long_format=0)"
-    >2005-01-01</span>
-</td>
+    <th i18n:translate="DateOpened">Date opened</th>
+    <td class="left">
+        <span
+        tal:define="date_opened reference/getDateOpened"
+        tal:condition="date_opened"
+        tal:content="python:plone_view.toLocalizedTime(date_opened, long_format=0)"/>
+    </td>
 </tr>
+
 <tr>
-<th i18n:translate="ExpiryDate">Expiry date</th>
-<td class="left">
-<span
-    tal:define="expiry_date reference/getExpiryDate"
-    tal:condition="expiry_date"
-    tal:content="python:plone_view.toLocalizedTime(expiry_date, long_format=0)"
-    >2005-01-01</span>
-</td>
+    <th i18n:translate="ExpiryDate">Expiry date</th>
+    <td class="left">
+    <span
+        tal:define="expiry_date reference/getExpiryDate"
+        tal:condition="expiry_date"
+        tal:content="python:plone_view.toLocalizedTime(expiry_date, long_format=0)"/>
+    </td>
 </tr>
+
+<tr>
+    <td class='barcode' colspan="2">
+        <div tal:attributes="id string:barcode_${context/id}">
+        </div>
+    </td>
+</tr>
+
+<script
+    type='text/javascript'
+    tal:content="python:'$(\'#barcode_%s\').barcode(\'%s\', \'code39\', {\'barHeight\':15, addQuietZone:true, showHRI: false })'%(context.id,context.id)">
+</script>
 
 </thead>
 
@@ -94,6 +109,7 @@ td {
 <p class="noPrint">
     <a tal:attributes="href python:context.absolute_url()">Back to list</a>
 </p>
+
 
 </body>
 
