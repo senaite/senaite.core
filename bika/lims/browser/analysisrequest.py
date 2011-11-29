@@ -152,7 +152,8 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
 
             message = _("Changes saved.")
             self.context.plone_utils.addPortalMessage(message, 'info')
-            self.destination_url = self.context.absolute_url()
+            self.destination_url = self.request.get_header("referer",
+                                   self.context.absolute_url())
             self.request.response.redirect(self.destination_url)
 
         ## verify

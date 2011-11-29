@@ -21,7 +21,6 @@ from zope.component import getMultiAdapter
 from zope.interface import implements
 from bika.lims import EditResults, EditWorksheet
 import plone, json
-from bika.lims import logger
 
 
 class WorksheetWorkflowAction(WorkflowAction):
@@ -122,7 +121,8 @@ class WorksheetWorkflowAction(WorkflowAction):
 
             message = _("Changes saved.")
             self.context.plone_utils.addPortalMessage(message, 'info')
-            self.destination_url = self.context.absolute_url()
+            self.destination_url = self.request.get_header("referer",
+                                   self.context.absolute_url())
             self.request.response.redirect(self.destination_url)
         ## assign
         elif action == 'assign':
