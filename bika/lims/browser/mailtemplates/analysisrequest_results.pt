@@ -355,8 +355,7 @@ h1, h2, h3, h4, h5, h6 {
                 tal:define="
                   in_range python:analysis.result_in_range(None, 'client');
                   result_class python:in_range[0] and '' or 'out_of_range';
-                  global out_of_range python:in_range[0] and out_of_range or 1;
-                  out_of_range_str python:'valid range min: %(min)s, max: %(max)s'%(in_range[1]);">
+                  global out_of_range python:in_range[0] and out_of_range or 1;">
 
                 <td nowrap align="center"
                   tal:attributes="class result_class">
@@ -370,8 +369,9 @@ h1, h2, h3, h4, h5, h6 {
                     i18n:translate="retested">retested</div>
                   <span tal:condition="python:not in_range[0]">
                     <img tal:condition="python:not in_range[0]"
-                      tal:attributes="src string:${portal/absolute_url}/++resource++bika.lims.images/exclamation.png">
-                    <br/><span tal:replace="out_of_range_str"/>
+                      tal:attributes="src string:${portal/absolute_url}/++resource++bika.lims.images/exclamation.png"/>
+                    <br/>
+                    <span tal:replace="python:in_range[0] and '' or 'valid range min: %(min)s, max: %(max)s'%(in_range[1])"/>
                   </span>
                 </td>
                 <td tal:condition="ar/getReportDryMatter">
