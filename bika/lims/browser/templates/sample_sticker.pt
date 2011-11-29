@@ -102,7 +102,7 @@ td {
 </tal:block>
 
 <tr>
-    <td class='barcode' colspan="2">
+    <td class='barcode' colspan="4">
         <div tal:attributes="id string:barcode_${context/id}">
         </div>
     </td>
