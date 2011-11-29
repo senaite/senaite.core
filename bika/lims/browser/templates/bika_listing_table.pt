@@ -112,10 +112,7 @@ Colum Headers
 				class python:request.get(view.bika_listing.form_id+'_sort_on', '') == column
 				                    and 'sortable column sort_on ' + request.get(view.bika_listing.form_id+'_sort_order','ascending')
 									or 'sortable column';">
-		<span i18n:translate="python:'listingheader_' +
-									view.bika_listing.columns[ column ]['title']">
-			<span tal:content="python:view.bika_listing.columns[  column  ]['title']"/>
-		</span>
+			<span tal:replace="python:view.bika_listing.columns[  column  ]['title']"/>
 		</th>
 	</tr>
 
@@ -257,19 +254,19 @@ Table cells for each column from in review_state's column list.
 			colspan python:colspan;">
 
 	<tal:comment replace="nothing"><!-- before structure --></tal:comment>
-	<tal:before
-		tal:replace="structure before"/>
+	<span class="before"
+		tal:content="structure before"/>
 
 	<tal:comment replace="nothing"><!-- replace structure --></tal:comment>
 	<tal:before
 		tal:replace="structure replace"/>
 
-	<span tal:omit-tag
+	<span tal:omit-tag="python:True"
 		tal:condition="not:replace">
-	<span tal:omit-tag
+	<span tal:omit-tag="python:True"
 		tal:condition="python:field_type == 'string'">		<tal:comment replace="nothing"><!-- string --></tal:comment>
 		<tal:comment replace="nothing"><!-- interim field --></tal:comment>
-		<span tal:omit-tag
+		<span tal:omit-tag="python:True"
 			tal:condition="python:type(item[column]) == type({})">
 			<tal:comment replace="nothing"><!-- edit --></tal:comment>
 			<input
@@ -301,7 +298,7 @@ Table cells for each column from in review_state's column list.
 					value python:item[column]['value'];"/>
 		</span>
 		<tal:comment replace="nothing"><!-- regular field --></tal:comment>
-		<span tal:omit-tag
+		<span tal:omit-tag="python:True"
 			tal:condition="python:type(item[column]) != type({}) and
 							not (column == 'Result' and item['calculation'])">
 			<tal:comment replace="nothing"><!-- edit --></tal:comment>
@@ -342,7 +339,7 @@ Table cells for each column from in review_state's column list.
 					value python:item[column];"/>
 		</span>
 		<tal:comment replace="nothing"><!-- calculated result field. --></tal:comment>
-		<span tal:omit-tag
+		<span tal:omit-tag="python:True"
 			tal:condition="python:column == 'Result' and
 								item['calculation']">
 			<span
@@ -368,7 +365,7 @@ Table cells for each column from in review_state's column list.
 	</span>
 
 	<tal:comment replace="nothing"><!-- boolean --></tal:comment>
-	<span tal:omit-tag
+	<span tal:omit-tag="python:True"
 		tal:condition="python:field_type == 'boolean'">
 		<input
 			type="checkbox"
@@ -389,7 +386,7 @@ Table cells for each column from in review_state's column list.
 				checked python:item.get(column) and 'yes' or '';"/>
 	</span>
 
-	<span tal:omit-tag
+	<span tal:omit-tag="python:True"
 		tal:condition="python:field_type == 'choices'">		<tal:comment replace="nothing"><!-- choices --></tal:comment>
 		<span tal:condition="allow_edit">
 			<select class="listing_select_entry"
@@ -411,7 +408,7 @@ Table cells for each column from in review_state's column list.
 				</tal:options>
 			</select>
 		</span>
-		<span tal:omit-tag
+		<span tal:omit-tag="python:True"
 			tal:condition="not:allow_edit">
 			<span
 				tal:content="python:item['formatted_result'] and item['formatted_result'] or item[column]"
@@ -462,8 +459,8 @@ Table cells for each column from in review_state's column list.
 	</span> <tal:comment replace="nothing"><!-- </span tal:condition="not:replace"> --></tal:comment>
 
 	<tal:comment replace="nothing"><!-- after structure --></tal:comment>
-	<tal:after
-		tal:replace="structure after"/>
+	<span class="after"
+		tal:content="structure after"/>
 
 	</td>
 	</tal:rowcolspan>
@@ -485,7 +482,7 @@ Workflow Actions and Batching
 		<td style="vertical-align:top !important">
 			<span class="workflow_action_buttons"
 				tal:define="actions view/get_workflow_actions">
-				<span tal:omit-tag tal:repeat="action actions"
+				<span tal:omit-tag="python:True" tal:repeat="action actions"
 					tal:condition="view/bika_listing/show_workflow_action_buttons">
 					<input
 						type="hidden"

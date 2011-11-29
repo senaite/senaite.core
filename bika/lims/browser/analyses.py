@@ -107,10 +107,6 @@ class AnalysesView(BikaListingView):
                 items[i]['DueDate'] = obj.getDueDate()
             items[i]['Attachments'] = ''
 
-            items[i]['ResultDM'] = ''
-            items[i]['before']['ResultDM'] = "<span field='ResultDM' uid='%s'>%s</span>" % \
-                (obj.UID(), obj.getResultDM())
-
             self.interim_fields[obj.UID()] = obj.getInterimFields()
 
             # calculate specs
@@ -308,12 +304,25 @@ class AnalysesView(BikaListingView):
             # Allow selecting individual analyses
             self.show_select_column = True
 
-        # ReportDryMatter - if it's enabled, then the ResultDM
-        # column is added after the Result column
-        # The column is always enabled for worksheets.
-        if "somebody fixed this" == True and (self.context.portal_type == 'Worksheet' or self.context.getReportDryMatter()):
+        # Dry Matter.
+        # XXX The Dry Matter column is always enabled for worksheets.
+        #     It should be enabled only if any of the ARs present asked for DM.
+        if items and \
+           (self.context.portal_type == 'Worksheet' or \
+            self.context.getReportDryMatter()):
+
+            # look through all items
+            # if the item's Service supports ReportDryMatter, add getResultDM().
+            for item in items:
+                if item['obj'].getService().getReportDryMatter():
+                    item['ResultDM'] = item['obj'].getResultDM()
+                else:
+                    item['ResultDM'] = ''
+                if item['ResultDM']:
+                    item['after']['ResultDM'] = "<em class='discreet'>%</em>"
+
+            # modify the review_states list to include the ResultDM column
             new_states = []
-            item['ResultDM'] = item['obj'].getResultDM()
             for state in self.review_states:
                 pos = 'Result' in state['columns'] and \
                     state['columns'].index('Result') + 1 or len(state['columns'])

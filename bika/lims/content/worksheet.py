@@ -45,12 +45,10 @@ schema = BikaSchema.copy() + Schema((
 ),
 )
 
-IdField = schema['id']
-IdField.required = 0
-IdField.widget.visible = False
-TitleField = schema['title']
-TitleField.required = 0
-TitleField.widget.visible = {'edit': 'hidden', 'view': 'invisible'}
+schema['id'].required = 0
+schema['id'].widget.visible = False
+schema['title'].required = 0
+schema['title'].widget.visible = {'edit': 'hidden', 'view': 'invisible'}
 
 class Worksheet(BaseFolder, HistoryAwareMixin):
     security = ClassSecurityInfo()
@@ -100,6 +98,23 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
                                   'container_uid': parent_uid,
                                   'analysis_uid': analysis.UID()}, ])
         wf.doActionFor(analysis, 'assign')
+
+        # If a dependency of DryMatter service is added here, we need to
+        # make sure that the dry matter analysis itself is also
+        # present.  Otherwise WS calculations refer to the DB version
+        # of the DM analysis, which is out of sync with the form.
+        dms = self.bika_setup.getDryMatterService()
+        if dms:
+            dmk = dms.getKeyword()
+            deps = analysis.getDependents()
+            # if dry matter service in my dependents:
+            if dmk in [a.getService().getKeyword() for a in deps]:
+                # get dry matter analysis from AR
+                dma = analysis.aq_parent.getAnalyses(getKeyword=dmk,
+                                                     full_objects=True)[0]
+                # add it.
+                if dma not in self.getAnalyses():
+                    self.addAnalysis(dma)
 
     security.declareProtected(EditWorksheet, 'removeAnalysis')
     def removeAnalysis(self, analysis):
