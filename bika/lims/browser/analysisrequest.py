@@ -41,7 +41,7 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
         if 'item_data' in form:
             if type(form['item_data']) == list:
                 for i_d in form['item_data']:
-                    for i,d in json.loads(i_d).items():
+                    for i, d in json.loads(i_d).items():
                         item_data[i] = d
             else:
                 item_data = json.loads(form['item_data'])
@@ -61,7 +61,7 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
                                    action,
                                    [self.context, ])()
             if len(transitioned) == 1:
-                action_title = '%sed' %action
+                action_title = '%sed' % action
                 message = _('message_item_published',
                     default = '${items} was ${actioned}',
                     mapping = {'items': ', '.join(transitioned),
@@ -91,7 +91,7 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
                 # ResultDM column will exist in manage_results form.
                 dry_result = ''
                 if self.context.getReportDryMatter():
-                    for k,v in self.request.form['ResultDM'][0].items():
+                    for k, v in self.request.form['ResultDM'][0].items():
                         if uid == k:
                             dry_result = v
                             break
@@ -152,8 +152,7 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
 
             message = _("Changes saved.")
             self.context.plone_utils.addPortalMessage(message, 'info')
-            self.destination_url = self.request.get_header("referer",
-                                   self.context.absolute_url())
+            self.destination_url = self.context.absolute_url()
             self.request.response.redirect(self.destination_url)
 
         ## verify
@@ -186,7 +185,7 @@ class AnalysisRequestViewView(BrowserView):
         ar = self.context
         self.tables = {}
         for poc in POINTS_OF_CAPTURE:
-            if self.context.getAnalyses(getPointOfCapture=poc):
+            if self.context.getAnalyses(getPointOfCapture = poc):
                 t = AnalysesView(ar,
                                  self.request,
                                  getPointOfCapture = poc)
@@ -385,7 +384,7 @@ class AnalysisRequestAddView(AnalysisRequestViewView):
         self.can_edit_sample = True
         self.can_edit_ar = True
         self.DryMatterService = self.context.bika_setup.getDryMatterService()
-        request.set('disable_plone.rightcolumn',1);
+        request.set('disable_plone.rightcolumn', 1);
 
         self.col_count = 6
 
@@ -455,7 +454,7 @@ class AnalysisRequestManageResultsView(AnalysisRequestViewView):
         else:
             self.tables = {}
             for poc in POINTS_OF_CAPTURE:
-                if self.context.getAnalyses(getPointOfCapture=poc):
+                if self.context.getAnalyses(getPointOfCapture = poc):
                     t = AnalysesView(ar,
                                      self.request,
                                      getPointOfCapture = poc)
@@ -583,19 +582,19 @@ class AnalysisRequestSelectSampleView(BikaListingView):
 
         self.columns = {
             'SampleID': {'title': _('Sample ID'),
-                         'index': 'getSampleID',},
+                         'index': 'getSampleID', },
             'ClientSampleID': {'title': _('Client SID'),
-                               'index': 'getClientSampleID',},
+                               'index': 'getClientSampleID', },
             'ClientReference': {'title': _('Client Reference'),
-                                'index': 'getClientReference',},
+                                'index': 'getClientReference', },
             'SampleTypeTitle': {'title': _('Sample Type'),
-                                'index': 'getSampleTypeTitle',},
+                                'index': 'getSampleTypeTitle', },
             'SamplePointTitle': {'title': _('Sample Point'),
-                                 'index': 'getSamplePointTitle',},
+                                 'index': 'getSamplePointTitle', },
             'DateReceived': {'title': _('Date Received'),
-                             'index': 'getDateReceived',},
+                             'index': 'getDateReceived', },
             'state_title': {'title': _('State'),
-                            'index': 'review_state',},
+                            'index': 'review_state', },
         }
 
         self.review_states = [
