@@ -13,6 +13,10 @@
                   portal_url portal_state/portal_url;
                   plone_view context/@@plone;">
 
+<head>
+<div tal:replace="structure provider:plone.resourceregistries.scripts" />
+</head>
+
 <body style="margin: 0; padding: 0" onload="this.print()">
 
 <metal:block tal:repeat="sample view/items">
@@ -96,6 +100,18 @@ td {
       <td colspan=4 tal:content="python:analysis.getService().Title()">copper</td>
    </tr>
 </tal:block>
+
+<tr>
+    <td class='barcode' colspan="2">
+        <div tal:attributes="id string:barcode_${context/id}">
+        </div>
+    </td>
+</tr>
+
+<script
+    type='text/javascript'
+    tal:content="python:'$(\'#barcode_%s\').barcode(\'%s\', \'code39\', {\'barHeight\':15, addQuietZone:true, showHRI: false })'%(context.id,context.id)">
+</script>
 
 </thead>
 

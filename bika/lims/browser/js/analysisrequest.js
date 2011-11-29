@@ -290,7 +290,7 @@ jQuery( function($) {
 		unsetARProfile(column);
 		if(profileUID == "") return;
 		selected_elements = [];
-		$(".ARProfileCopyButton").attr('disabled',true);
+		$(".ARProfileCopyButton").toggle(false);
 		function success(profile_data){
 			// ReportDryMatter gets turned off explicity here
 			$("#ar_"+column+"_ReportDryMatter").attr("checked", false);
@@ -304,9 +304,12 @@ jQuery( function($) {
 					});
 				} else {
 					p_c = poc_categoryUID.split("_");
+					jQuery.ajaxSetup({async:false});
 					toggleCat(p_c[0], p_c[1], column, selectedservices);
+					jQuery.ajaxSetup({async:true});
 				}
 			});
+			$(".ARProfileCopyButton").toggle(true);
 		}
 		// cached value in #profileUID
 		if($("#"+profileUID).length > 0){
@@ -327,7 +330,6 @@ jQuery( function($) {
 			}
 			$.ajax(options);
 		}
-		$(".ARProfileCopyButton").removeAttr('disabled');
 	}
 
 	function autocomplete_sampletype(request,callback){
@@ -533,7 +535,6 @@ jQuery( function($) {
 			$("input[id*='_"+column+"_']").filter(".cb").removeAttr('disabled').attr('checked', false);
 			recalc_prices();
 		});
-
 
 		// ReportDryMatter
 		$(".ReportDryMatter").change(function(){
