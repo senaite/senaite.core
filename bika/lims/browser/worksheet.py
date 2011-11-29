@@ -122,8 +122,7 @@ class WorksheetWorkflowAction(WorkflowAction):
 
             message = _("Changes saved.")
             self.context.plone_utils.addPortalMessage(message, 'info')
-            self.destination_url = self.request.get_header("referer",
-                                   self.context.absolute_url())
+            self.destination_url = self.context.absolute_url()
             self.request.response.redirect(self.destination_url)
         ## assign
         elif action == 'assign':
@@ -143,7 +142,7 @@ class WorksheetWorkflowAction(WorkflowAction):
                     and workflow.getInfoFor(analysis, 'cancellation_state') == 'active'):
                         self.context.addAnalysis(analysis)
 
-            self.destination_url = self.context.absolute_url() + "/manage_results"
+            self.destination_url = self.context.absolute_url()
             self.request.response.redirect(self.destination_url)
         ## unassign
         elif action == 'unassign':
@@ -162,8 +161,13 @@ class WorksheetWorkflowAction(WorkflowAction):
                     analysis = rc.lookupObject(uid)
                     self.context.removeAnalysis(analysis)
 
-            self.destination_url = self.context.absolute_url() + "/manage_results"
+            self.destination_url = self.context.absolute_url()
             self.request.response.redirect(self.destination_url)
+        ## verify
+        elif action == 'verify':
+            # default bika_listing.py/WorkflowAction, but then go to view screen.
+            self.destination_url = self.context.absolute_url()
+            WorkflowAction.__call__(self)
         else:
             # default bika_listing.py/WorkflowAction for other transitions
             WorkflowAction.__call__(self)
