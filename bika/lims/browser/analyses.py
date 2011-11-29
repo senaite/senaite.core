@@ -31,7 +31,7 @@ class AnalysesView(BikaListingView):
         self.pagesize = 100
         self.form_id = 'analyses_form'
 
-        request.set('disable_plone.rightcolumn',1);
+        request.set('disable_plone.rightcolumn', 1);
 
         # each editable item needs it's own allow_edit
         # which is a list of field names.
@@ -211,7 +211,7 @@ class AnalysesView(BikaListingView):
                             # non-numeric entry (JS .numeric should have prevented this...)
                             items[i]['formatted_result'] = result
                             items[i]['after']['Result'] = \
-                                '<img width="16" height="16" title="'+_('Could not render to precision (non-numeric result?)')+'"' + \
+                                '<img width="16" height="16" title="' + _('Could not render to precision (non-numeric result?)') + '"' + \
                                 'src="%s/++resource++bika.lims.images/exclamation.png"/>' % \
                                 (portal.absolute_url())
                 items[i]['Uncertainty'] = obj.getUncertainty(result)
@@ -311,9 +311,9 @@ class AnalysesView(BikaListingView):
         # ReportDryMatter - if it's enabled, then the ResultDM
         # column is added after the Result column
         # The column is always enabled for worksheets.
-        if (self.context.portal_type=='Worksheet' or self.context.getReportDryMatter()):
+        if "somebody fixed this" == True and (self.context.portal_type == 'Worksheet' or self.context.getReportDryMatter()):
             new_states = []
-            item['ResultDM'] = obj.getResultDM()
+            item['ResultDM'] = item['obj'].getResultDM()
             for state in self.review_states:
                 pos = 'Result' in state['columns'] and \
                     state['columns'].index('Result') + 1 or len(state['columns'])
