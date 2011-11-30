@@ -30,7 +30,6 @@ def initialize(context):
     from content.Pricelist import Pricelist
     from content.PricelistFolder import PricelistFolder
     from content.PricelistLineItem import PricelistLineItem
-    from content.SupplierContact import SupplierContact
     from content.analysis  import Analysis
     from content.analysiscategory import AnalysisCategory
     from content.analysisrequest import AnalysisRequest
@@ -68,6 +67,7 @@ def initialize(context):
     from content.samplepoint import SamplePoint
     from content.samplesfolder import SamplesFolder
     from content.sampletype import SampleType
+    from content.suppliercontact import SupplierContact
     from content.supplyorder import SupplyOrder
     from content.supplyorderitem import SupplyOrderItem
     from content.worksheet import Worksheet

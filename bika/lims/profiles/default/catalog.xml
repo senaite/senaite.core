@@ -89,6 +89,7 @@
  <index name="getPhone" meta_type="FieldIndex"> <indexed_attr value="getPhone"/> </index>
  <index name="getId" meta_type="FieldIndex"> <indexed_attr value="getId"/> </index>
  <index name="getKeyword" meta_type="FieldIndex"> <indexed_attr value="getKeyword"/> </index>
+ <index name="getLastARNumber" meta_type="FieldIndex"> <indexed_attr value="getLastARNumber"/> </index>
  <index name="getName" meta_type="FieldIndex"> <indexed_attr value="getName"/> </index>
  <index name="getNrAnalyses" meta_type="FieldIndex"> <indexed_attr value="getNrAnalyses"/> </index>
  <index name="getObjPositionInParent" meta_type="GopipIndex"> <indexed_attr value="getObjPositionInParent"/> </index>
@@ -144,6 +145,7 @@
  <column value="getIcon"/>
  <column value="getId"/>
  <column value="getKeyword"/>
+ <column value="getLastARNumber"/>
  <column value="getObjSize"/>
  <column value="getRemoteUrl"/>
  <column value="getRequestID"/>

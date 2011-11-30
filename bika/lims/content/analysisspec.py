@@ -1,6 +1,4 @@
 """Analysis result range specifications for a client
-
-$Id: AnalysisSpec.py 443 2006-12-13 23:19:39Z anneline $
 """
 from AccessControl import ClassSecurityInfo
 from AccessControl.Permissions import delete_objects
@@ -16,14 +14,16 @@ from Products.CMFCore import permissions
 from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFCore.permissions import ListFolderContents, View
 from Products.CMFCore.utils import getToolByName
-from bika.lims.browser.widgets import SpecWidget
+from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.fields import HistoryAwareReferenceField
+from bika.lims.browser.widgets import SpecWidget
 from bika.lims.config import I18N_DOMAIN, PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
+from bika.lims.interfaces import IGenerateUniqueId
 from types import ListType, TupleType
+from zope.interface import implements
 import sys
 import time
-from bika.lims import bikaMessageFactory as _
 
 schema = Schema((
     HistoryAwareReferenceField('SampleType',
@@ -96,6 +96,7 @@ schema['title'].required = False
 schema['title'].widget.visible = False
 
 class AnalysisSpec(BaseFolder, HistoryAwareMixin):
+    implements(IGenerateUniqueId)
     security = ClassSecurityInfo()
     schema = schema
     displayContentsTab = False

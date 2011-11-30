@@ -5,9 +5,9 @@ from Products.CMFCore.permissions import View, ModifyPortalContent
 from Products.CMFCore.utils import getToolByName
 from bika.lims.config import I18N_DOMAIN, PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
-from zope.i18nmessageid import MessageFactory
-
-_ = MessageFactory('bika')
+from bika.lims.interfaces import IGenerateUniqueId
+from bika.lims import bikaMessageFactory as _
+from zope.interface import implements
 
 schema = BikaSchema.copy() + Schema((
     IntegerField('RetentionPeriod',
@@ -26,12 +26,21 @@ schema = BikaSchema.copy() + Schema((
             description = _("Check this box if samples of this type should be treated as hazardous"),
         ),
     ),
+    StringField('Prefix',
+        required=True,
+        widget=StringWidget(
+            label='Sample Type Prefix',
+            label_msgid='label_sampletypeprefix',
+            i18n_domain=I18N_DOMAIN,
+        ),
+    ),
 ))
 
 schema['description'].schemata = 'default'
 schema['description'].widget.visible = True
 
 class SampleType(BaseContent, HistoryAwareMixin):
+    implements(IGenerateUniqueId)
     security = ClassSecurityInfo()
     displayContentsTab = False
     schema = schema

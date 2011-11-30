@@ -13,6 +13,7 @@ from bika.lims.config import EditWorksheet, ManageResults
 from Products.ATExtensions.ateapi import RecordsField
 from zope.interface import implements
 from bika.lims.interfaces import IWorksheet
+from bika.lims.interfaces import IGenerateUniqueId
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
 
@@ -64,7 +65,7 @@ schema['title'].widget.visible = {'edit': 'hidden', 'view': 'invisible'}
 
 class Worksheet(BaseFolder, HistoryAwareMixin):
     security = ClassSecurityInfo()
-    implements(IWorksheet)
+    implements(IWorksheet, IGenerateUniqueId)
     displayContentsTab = False
     schema = schema
 

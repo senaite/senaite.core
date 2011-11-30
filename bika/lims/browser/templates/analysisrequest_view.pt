@@ -162,11 +162,12 @@
         <tr tal:condition="python:review_state in ('verified', 'published')">
             <th style="padding-left:3em"
 				i18n:translate="label_verified_by">Verified by </th>
-            <td>
+            <td colspan="3">
                 <span
                     tal:define="verifier python:view.get_analysisrequest_verifier(here)"
                     tal:content="verifier"/>
             </td>
+
         </tr>
 
         </thead>

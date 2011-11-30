@@ -79,11 +79,18 @@
       handler="bika.lims.subscribers.calculation.AfterTransitionEventHandler"
     />
 
-    <!-- Automatically save an initial revision of versionable types -->
+    <!-- Apply version control to IHistoryAware objects -->
     <subscriber
       for="Products.ATContentTypes.interfaces.IHistoryAware
            Products.Archetypes.interfaces.IObjectInitializedEvent"
-      handler="bika.lims.subscribers.version_on_create.ObjectInitializedEventHandler"
+      handler="bika.lims.subscribers.objectinitialized.applyVersionControl"
+    />
+
+    <!-- Apply ID Server object renaming to objects with IGenerateUniqueId -->
+    <subscriber
+      for="bika.lims.interfaces.IGenerateUniqueId
+           Products.Archetypes.interfaces.IObjectEditedEvent"
+      handler="bika.lims.subscribers.objectinitialized.generateUniqueId_rename"
     />
 
 </configure>

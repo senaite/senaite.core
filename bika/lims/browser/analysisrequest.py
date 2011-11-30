@@ -1,11 +1,13 @@
 from AccessControl import getSecurityManager
 from DateTime import DateTime
 from Products.Archetypes.config import REFERENCE_CATALOG
+from Products.Archetypes.event import ObjectEditedEvent
 from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import transaction_note
 from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from bika.lims import EditResults, EditAR, ManageResults, ResultsNotRequested
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.analyses import AnalysesView
 from bika.lims.browser.bika_listing import BikaListingView, WorkflowAction
@@ -17,11 +19,11 @@ from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.layout.globals.interfaces import IViewView
 from zope.component import getMultiAdapter
 from zope.interface import implements, alsoProvides
-from bika.lims import EditResults, EditAR, ManageResults, ResultsNotRequested
 import json
 import plone
 import transaction
 import urllib
+import zope
 
 class AnalysisRequestWorkflowAction(WorkflowAction):
     """ Workflow actions taken in AnalysisRequest context
@@ -974,10 +976,9 @@ class ajaxAnalysisRequestSubmit():
             if values.has_key('profileTitle'):
                 # User wants to save a new profile.
                 client = ar.aq_parent
-                profile_id = client.generateUniqueId('ARProfile')
-                client.invokeFactory(id = profile_id,
-                                           type_name = 'ARProfile')
-                profile = client[profile_id]
+                _id = client.generateUniqueId('ARProfile')
+                client.invokeFactory(type_name = 'ARProfile', id = _id)
+                profile = client[_id]
                 profile.edit(title = values['profileTitle'],
                              Service = Analyses)
                 profile.processForm()
@@ -1102,18 +1103,20 @@ class ajaxAnalysisRequestSubmit():
                     assert len(sample_proxy) == 1
                     sample = sample_proxy[0].getObject()
                     ar_number = sample.getLastARNumber() + 1
+                    composite = values.get('Composite', False)
                     sample.edit(LastARNumber = ar_number,
-                                Composite = 'Composite' in values and values['Composite'] or False)
+                                Composite = composite)
                     sample.reindexObject()
                 else:
                     # Primary AR
-                    sample_id = self.context.generateUniqueId('Sample')
-                    self.context.invokeFactory(id = sample_id,
-                                               type_name = 'Sample')
-                    sample = self.context[sample_id]
+                    client = self.context
+                    _id = client.generateUniqueId('Sample')
+                    client.invokeFactory('Sample', id = _id)
+                    sample = client[_id]
+                    sample.processForm()
+                    sample_id = sample.getId()
                     sample.edit(
                         SampleID = sample_id,
-                        LastARNumber = ar_number,
                         ClientReference = values.get('ClientReference', ''),
                         ClientSampleID = values.get('ClientSampleID', ''),
                         SamplePoint = values.get('SamplePoint', ''),
@@ -1123,9 +1126,15 @@ class ajaxAnalysisRequestSubmit():
                         DateSampled = values['DateSampled'],
                         Composite = values.get('Composite',False),
                     )
-                    sample.processForm()
+                    zope.event.notify(ObjectEditedEvent(sample))
+                    # ObjectEditedEvent renames object, so,
+                    # set SampleID to new ID.
+                    sample.edit(SampleID = sample.getId())
+
+                    # XXX move to subscriber
                     dis_date = sample.disposal_date()
                     sample.setDisposalDate(dis_date)
+
                 sample_uid = sample.UID()
 
                 # create the AR
@@ -1133,14 +1142,13 @@ class ajaxAnalysisRequestSubmit():
                 Analyses = values['Analyses']
                 del values['Analyses']
 
-                ar_id = self.context.generateARUniqueId('AnalysisRequest',
-                                                        sample_id,
-                                                        ar_number)
-                self.context.invokeFactory(id = ar_id,
-                                           type_name = 'AnalysisRequest')
-                ar = self.context[ar_id]
+                _id = client.generateUniqueId('AnalysisRequest')
+                self.context.invokeFactory('AnalysisRequest', id = _id)
+                ar = self.context[_id]
+                ar.processForm()
+                # ar.edit() for some fields before firing the event
+                ar.setSample(sample_uid)
                 ar.edit(
-                    RequestID = ar_id,
                     DateRequested = DateTime(),
                     Contact = form['Contact'],
                     CCContact = form['cc_uids'].split(","),
@@ -1149,7 +1157,11 @@ class ajaxAnalysisRequestSubmit():
                     Profile = profile,
                     **dict(values)
                 )
-                ar.processForm()
+                zope.event.notify(ObjectEditedEvent(ar))
+                # ObjectEditedEvent renames object, so,
+                # set RequestID to new ID.
+                ar_id = ar.getId()
+                ar.edit(RequestID = ar_id)
                 ARs.append(ar_id)
 
                 ar.setAnalyses(Analyses, prices = prices)

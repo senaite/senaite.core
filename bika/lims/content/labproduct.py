@@ -2,9 +2,11 @@ from AccessControl import ClassSecurityInfo
 from Products.Archetypes.public import *
 from Products.CMFCore.permissions import View, ModifyPortalContent
 from bika.lims.config import I18N_DOMAIN, PROJECTNAME
+from bika.lims.interfaces import IGenerateUniqueId
 from bika.lims.content.bikaschema import BikaSchema
 from decimal import Decimal
 from bika.lims import bikaMessageFactory as _
+from zope.interface import implements
 
 schema = BikaSchema.copy() + Schema((
     StringField('Volume',
@@ -49,6 +51,7 @@ schema['description'].schemata = 'default'
 schema['description'].widget.visible = True
 
 class LabProduct(BaseContent):
+    implements(IGenerateUniqueId)
     security = ClassSecurityInfo()
     displayContentsTab = False
     schema = schema

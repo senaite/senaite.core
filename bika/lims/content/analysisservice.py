@@ -8,6 +8,7 @@ from Products.CMFCore.utils import getToolByName
 from bika.lims.browser.fields import DurationField
 from bika.lims.browser.fields import HistoryAwareReferenceField
 from bika.lims.interfaces import IAnalysisService
+from bika.lims.interfaces import IGenerateUniqueId
 from bika.lims.browser.widgets import ServicesWidget, RecordsWidget, \
      DurationWidget
 from bika.lims.config import ATTACHMENT_OPTIONS, I18N_DOMAIN, PROJECTNAME, \
@@ -300,7 +301,7 @@ class AnalysisService(BaseContent, HistoryAwareMixin):
     security = ClassSecurityInfo()
     schema = schema
     displayContentsTab = False
-    implements(IAnalysisService)
+    implements(IAnalysisService, IGenerateUniqueId)
 
     security.declarePublic('getDiscountedPrice')
     def getDiscountedPrice(self):

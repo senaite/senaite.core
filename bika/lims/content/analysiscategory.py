@@ -11,6 +11,7 @@ from Products.Archetypes.public import *
 from Products.Archetypes.references import HoldingReference
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IAnalysisCategory
+from bika.lims.interfaces import IGenerateUniqueId
 from bika.lims.config import I18N_DOMAIN, PROJECTNAME
 from bika.lims import bikaMessageFactory as _
 from zope.interface import implements
@@ -38,7 +39,7 @@ schema['description'].widget.visible = True
 schema['description'].schemata = 'default'
 
 class AnalysisCategory(BaseContent):
-    implements(IAnalysisCategory)
+    implements(IAnalysisCategory, IGenerateUniqueId)
     security = ClassSecurityInfo()
     displayContentsTab = False
     schema = schema

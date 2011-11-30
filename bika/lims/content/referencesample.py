@@ -15,6 +15,7 @@ from bika.lims.browser.widgets import DateTimeWidget as bika_DateTimeWidget
 from bika.lims.config import I18N_DOMAIN, PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IReferenceSample
+from bika.lims.interfaces import IGenerateUniqueId
 from bika.lims.utils import sortable_title
 from zope.interface import implements
 import sys
@@ -157,7 +158,7 @@ schema = BikaSchema.copy() + Schema((
 schema['title'].schemata = 'Description'
 
 class ReferenceSample(BaseFolder):
-    implements(IReferenceSample)
+    implements(IReferenceSample, IGenerateUniqueId)
     security = ClassSecurityInfo()
     displayContentsTab = False
     schema = schema

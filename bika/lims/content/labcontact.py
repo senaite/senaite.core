@@ -8,11 +8,13 @@ from Products.CMFCore import permissions
 from Products.CMFCore.utils import getToolByName
 from Products.Archetypes.public import *
 from Products.Archetypes.references import HoldingReference
+from bika.lims.interfaces import IGenerateUniqueId
 from bika.lims.content.person import Person
 from bika.lims.config import ManageClients, PUBLICATION_PREFS, PROJECTNAME, \
     I18N_DOMAIN
 from bika.lims import bikaMessageFactory as _
 import sys
+from zope.interface import implements
 
 schema = Person.schema.copy() + Schema((
     ImageField('Signature',
@@ -50,6 +52,7 @@ schema['title'].required = 0
 schema['title'].widget.visible = False
 
 class LabContact(Person):
+    implements(IGenerateUniqueId)
     security = ClassSecurityInfo()
     displayContentsTab = False
     schema = schema
