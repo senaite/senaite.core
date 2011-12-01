@@ -60,7 +60,6 @@ class BikaGenerator:
                        'referencesamples',
                        'samples',
                        'worksheets',
-                       'reports',
                        ):
             obj = portal._getOb(obj_id)
             obj.unmarkCreationFlag()
