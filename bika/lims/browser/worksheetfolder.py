@@ -61,7 +61,7 @@ class WorksheetFolderListingView(BikaListingView):
                                'review_state':['open', 'to_be_verified', 'verified', 'rejected'],
                                'sort_on':'id',
                                'sort_order': 'reverse'},
-             'transitions':[],
+             'transitions':['retract', 'verify', 'reject'],
              'columns':['Title',
                         'Analyst',
                         'Template',
@@ -77,7 +77,7 @@ class WorksheetFolderListingView(BikaListingView):
                                'getAnalyst': analyst,
                                'sort_on':'id',
                                'sort_order': 'reverse'},
-             'transitions':[],
+             'transitions':['retract', 'verify', 'reject'],
              'columns':['Title',
                         'Analyst',
                         'Template',
@@ -107,7 +107,7 @@ class WorksheetFolderListingView(BikaListingView):
                                'review_state':'to_be_verified',
                                'sort_on':'id',
                                'sort_order': 'reverse'},
-             'transitions':[],
+             'transitions':['retract', 'verify', 'reject'],
              'columns':['Title',
                         'Analyst',
                         'Template',
@@ -132,29 +132,6 @@ class WorksheetFolderListingView(BikaListingView):
                         'QC',
                         'CreationDate',
                         'state_title']},
-##                {'title': _('Cancelled'), 'id':'cancelled',
-##                 'contentFilter': {'portal_type': 'Worksheet',
-##                                   'cancellation_state':'cancelled',
-##                                   'sort_on':'id',
-##                                   'sort_order': 'reverse'},
-##                 'transitions':[],
-##                 'columns':['Title',
-##                            'Analyst',
-##                            'Template',
-##                            'Analyses',
-##                            'CreationDate',
-##                            'state_title']},
-# XXX reject workflow - one transition, to set a flag
-# "has been rejected in the past" on this worksheet.
-##                {'title': _('Rejected'), 'id':'rejected',
-##                 'contentFilter': {'review_state':'open'},
-##                 'columns':['Title',
-##                            'Analyst',
-##                            'Template',
-##                            'Analyses',
-##                            'SampleTypes',
-##                            'CreationDate',
-##                            'state_title']}
         ]
 
     def folderitems(self):
@@ -214,7 +191,7 @@ class WorksheetFolderListingView(BikaListingView):
             ws_services = ws_services.values()
             ws_services.sort()
             if ws_services:
-                ws_services[-1] = ws_services[-1].replace(",","")
+                ws_services[-1] = ws_services[-1].replace(",", "")
             items[x]['Services'] = ""
             items[x]['replace']['Services'] = " ".join(ws_services)
 
@@ -249,12 +226,12 @@ class WorksheetFolderListingView(BikaListingView):
 
             # remove trailing commas
             if sampletypes:
-                sampletypes[-1] = sampletypes[-1].replace(",","")
+                sampletypes[-1] = sampletypes[-1].replace(",", "")
             if controls:
-                controls[-1] = controls[-1].replace(",","")
+                controls[-1] = controls[-1].replace(",", "")
             else:
                 if blanks:
-                    blanks[-1] = blanks[-1].replace(",","")
+                    blanks[-1] = blanks[-1].replace(",", "")
 
             items[x]['SampleTypes'] = ""
             items[x]['replace']['SampleTypes'] = " ".join(sampletypes)
@@ -267,7 +244,7 @@ class WorksheetFolderListingView(BikaListingView):
     def getWorksheetTemplates(self):
         bsc = getToolByName(self, 'bika_setup_catalog')
         items = [(o.UID, o.Title) for o in \
-                 bsc(portal_type='WorksheetTemplate',
+                 bsc(portal_type = 'WorksheetTemplate',
                      inactive_state = 'active')]
         return DisplayList(list(items))
 
@@ -276,7 +253,7 @@ class AddWorksheetView(BrowserView):
         If a template was selected, the worksheet is pre-populated here.
     """
 
-    def __call__(self, wstemplate=None):
+    def __call__(self, wstemplate = None):
         form = self.request.form
         rc = getToolByName(self.context, REFERENCE_CATALOG)
         wf = getToolByName(self.context, "portal_workflow")
