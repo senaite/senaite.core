@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+<object name="Reports"
+   meta_type="Factory-based Type Information with dynamic views"
+   xmlns:i18n="http://xml.zope.org/namespaces/i18n">
+ <property name="title">Reports</property>
+ <property name="description">
+ 	Basic information for the instruments in the lab
+ </property>
+ <property name="content_icon">++resource++bika.lims.images/instrument.png</property>
+ <property name="content_meta_type">Reports</property>
+ <property name="product">bika.lims</property>
+ <property name="factory">addReports</property>
+ <property name="add_view_expr"></property>
+ <property name="link_target"></property>
+ <property name="global_allow">False</property>
+ <property name="filter_content_types">False</property>
+ <property name="allowed_content_types"/>
+ <property name="allow_discussion">False</property>
+ <property name="default_view_fallback">False</property>
+
+ <alias from="(Default)" to="base_edit"/>
+ <alias from="view" to="base_edit"/>
+ <alias from="edit" to="base_edit"/>
+ <action title="Productivity"
+         action_id="productivity"
+         category="object"
+         condition_expr=""
+         url_expr="string:${object_url}/reports_productivity"
+         visible="True">
+  <permission value="View"/>
+ </action>
+ <action title="Quality Control"
+         action_id="qualitycontrol"
+         category="object"
+         condition_expr=""
+         url_expr="string:${object_url}/reports_qualitycontrol"
+         visible="True">
+  <permission value="Modify portal contentView"/>
+ </action>
+ <action title="Administration"
+         action_id="administration"
+         category="object"
+         condition_expr=""
+         url_expr="string:${object_url}/reports_administration"
+         visible="True">
+  <permission value="Modify portal content"/>
+
+</object>

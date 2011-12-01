@@ -60,7 +60,6 @@ class BikaGenerator:
                        'referencesamples',
                        'samples',
                        'worksheets',
-                       'reports',
                        ):
             obj = portal._getOb(obj_id)
             obj.unmarkCreationFlag()
@@ -391,23 +390,16 @@ class BikaGenerator:
         bsc.addIndex('getCanonicalPath', 'ExtendedPathIndex')
         bsc.addIndex('UID', 'FieldIndex')
         bsc.addIndex('id', 'FieldIndex')
-        bsc.addIndex('getId', 'FieldIndex')
         bsc.addIndex('portal_type', 'FieldIndex')
-        bsc.addIndex('created', 'DateIndex')
         bsc.addIndex('getObjPositionInParent', 'GopipIndex')
-
         bsc.addIndex('Title', 'FieldIndex', 'Title')
         bsc.addIndex('title', 'FieldIndex', 'Title')
         bsc.addIndex('sortable_title', 'FieldIndex')
-        bsc.addIndex('description', 'FieldIndex', 'Description')
-        bsc.addIndex('Description', 'FieldIndex', 'Description')
-
+        bsc.addIndex('Description', 'FieldIndex', ('description'))
         bsc.addIndex('review_state', 'FieldIndex')
         bsc.addIndex('inactive_state', 'FieldIndex')
         bsc.addIndex('cancellation_state', 'FieldIndex')
-
         bsc.addIndex('getAccredited', 'FieldIndex')
-        bsc.addIndex('getAnalyst', 'FieldIndex')
         bsc.addIndex('getType', 'FieldIndex')
         bsc.addIndex('getBlank', 'FieldIndex')
         bsc.addIndex('getBrand', 'FieldIndex')
@@ -427,7 +419,7 @@ class BikaGenerator:
         bsc.addIndex('getHazardous', 'FieldIndex')
         bsc.addIndex('getInstrumentTitle', 'FieldIndex')
         bsc.addIndex('getKeyword', 'FieldIndex')
-        bsc.addIndex('getManagerName', 'FieldIndex')
+        bsc.addIndex('getManager', 'FieldIndex')
         bsc.addIndex('getManagerPhone', 'FieldIndex')
         bsc.addIndex('getManagerEmail', 'FieldIndex')
         bsc.addIndex('getMaxTimeAllowed', 'FieldIndex')
@@ -454,19 +446,15 @@ class BikaGenerator:
         bsc.addColumn('getCanonicalPath')
         bsc.addColumn('UID')
         bsc.addColumn('id')
-        bsc.addColumn('getId')
         bsc.addColumn('portal_type')
         bsc.addColumn('getObjPositionInParent')
-
         bsc.addColumn('Title')
         bsc.addColumn('title')
         bsc.addColumn('sortable_title')
         bsc.addColumn('description')
-
         bsc.addColumn('review_state')
         bsc.addColumn('inactive_state')
         bsc.addColumn('cancellation_state')
-
         bsc.addColumn('getAccredited')
         bsc.addColumn('getType')
         bsc.addColumn('getBlank')
@@ -487,7 +475,7 @@ class BikaGenerator:
         bsc.addColumn('getHazardous')
         bsc.addColumn('getInstrumentTitle')
         bsc.addColumn('getKeyword')
-        bsc.addColumn('getManagerName')
+        bsc.addColumn('getManager')
         bsc.addColumn('getManagerPhone')
         bsc.addColumn('getManagerEmail')
         bsc.addColumn('getMaxTimeAllowed')
