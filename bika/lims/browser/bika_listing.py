@@ -184,6 +184,8 @@ class BikaListingView(BrowserView):
        the name of the catalog index for the column.  If specified,
        it will be passed to catalog for column sorting.  If not,
        the column will be sorted in-place by javascript.
+     - sortable: defaults True.  Prevents column sort classes from being
+       rendered on the column headers
     """
     columns = {
            'obj_type': {'title': _('Type')},
@@ -219,12 +221,13 @@ class BikaListingView(BrowserView):
         form = self.request.form
         workflow = getToolByName(self.context, 'portal_workflow')
 
-        # column filters.  If no index is given, they are ignored till later
-        for c in self.columns.keys():
-            if "%s_%s" % (form_id, c) in self.request:
-                idx = self.columns[c].get('index', '')
-                if idx:
-                    self.contentFilter[c]
+        # index filters.
+        for k,v in self.columns.items():
+            if not v.has_key('index'):
+                continue
+            request_key = "%s_%s" % (self.form_id, v['index'])
+            if request_key in self.request:
+                self.contentFilter[v['index']] = self.request[request_key]
 
         # review_state_selector
         if form.has_key(form_id + '_review_state'):

@@ -108,5 +108,9 @@ $(document).ready(function(){
 		$(this).removeClass('expanded').addClass('collapsed');
 	});
 
+	$(".listing-filter-button").click(function(event){
+		event.preventDefault
+	});
+
 });
 });

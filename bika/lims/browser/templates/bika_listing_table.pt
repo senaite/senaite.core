@@ -111,7 +111,7 @@ Colum Headers
 				id string:foldercontents-${column}-column;
 				class python:request.get(view.bika_listing.form_id+'_sort_on', '') == column
 				                    and 'sortable column sort_on ' + request.get(view.bika_listing.form_id+'_sort_order','ascending')
-									or 'sortable column';">
+									or (view.bika_listing.columns[column].get('sortable', True) and 'sortable column' or 'column');">
 			<span tal:replace="python:view.bika_listing.columns[  column  ]['title']"/>
 		</th>
 	</tr>
@@ -503,6 +503,7 @@ Workflow Actions and Batching
 			<div tal:replace="structure view/batching"
 				tal:condition="python:not view.show_all"/>
 		</td>
+		<td>&nbsp;</td>
 	</tr>
 </table>
 

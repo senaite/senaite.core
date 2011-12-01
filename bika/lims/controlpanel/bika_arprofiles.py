@@ -36,7 +36,7 @@ class ARProfilesView(BikaListingView):
             'Title': {'title': _('Profile'),
                       'index': 'sortable_title'},
             'Description': {'title': _('Description'),
-                            'index': 'getDescription'},
+                            'index': 'description'},
             'ProfileKey': {'title': _('Profile Key'),
                            'index': 'getProfileKey'},
         }

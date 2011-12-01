@@ -171,7 +171,7 @@ class Pricelist(BaseFolder):
                 Subtotal = price,
                 VAT = vat,
                 Total = totalprice,
-                CategoryName = cat,
+                CategoryTitle = cat,
             )
             item.processForm()
         self.REQUEST.RESPONSE.redirect('base_view')

@@ -128,17 +128,28 @@ class ClientAnalysisRequestsView(BikaListingView):
         self.description = ""
 
         self.columns = {
-            'getRequestID': {'title': _('Request ID')},
-            'getClientOrderNumber': {'title': _('Client Order')},
-            'getClientReference': {'title': _('Client Ref')},
-            'getClientSampleID': {'title': _('Client Sample')},
-            'getSampleTypeTitle': {'title': _('Sample Type')},
-            'getSamplePointTitle': {'title': _('Sample Point')},
-            'DateSampled': {'title': _('Date Sampled')},
-            'future_DateSampled': {'title': _('Sampling Date')},
-            'getDateReceived': {'title': _('Date Received')},
-            'getDatePublished': {'title': _('Date Published')},
-            'state_title': {'title': _('State'), },
+            'getRequestID': {'title': _('Request ID'),
+                             'index': 'getRequestID'},
+            'getClientOrderNumber': {'title': _('Client Order'),
+                                     'index': 'getClientOrderNumber'},
+            'getClientReference': {'title': _('Client Ref'),
+                                   'index': 'getClientReference'},
+            'getClientSampleID': {'title': _('Client Sample'),
+                                  'index': 'getClientSampleID'},
+            'getSampleTypeTitle': {'title': _('Sample Type'),
+                                   'index': 'getSampleTypeTitle'},
+            'getSamplePointTitle': {'title': _('Sample Point'),
+                                    'index': 'getSamplePointTitle'},
+            'DateSampled': {'title': _('Date Sampled'),
+                            'index': 'getDateSampled'},
+            'future_DateSampled': {'title': _('Sampling Date'),
+                                   'index': 'getDateSampled'},
+            'getDateReceived': {'title': _('Date Received'),
+                                'index': 'getDateReceived'},
+            'getDatePublished': {'title': _('Date Published'),
+                                 'index': 'getDatePublished'},
+            'state_title': {'title': _('State'),
+                            'index': 'review_state'},
         }
         self.review_states = [
             {'id':'all',
@@ -340,16 +351,26 @@ class ClientSamplesView(BikaListingView):
         self.description = ""
 
         self.columns = {
-            'SampleID': {'title': _('Sample ID')},
-            'Requests': {'title': _('Requests')},
-            'ClientReference': {'title': _('Client Ref')},
-            'ClientSampleID': {'title': _('Client SID')},
-            'SampleTypeTitle': {'title': _('Sample Type')},
-            'SamplePointTitle': {'title': _('Sample Point')},
-            'DateSampled': {'title': _('Date Sampled')},
-            'future_DateSampled': {'title': _('Sampling Date')},
-            'DateReceived': {'title': _('Date Received')},
-            'state_title': {'title': _('State')},
+            'SampleID': {'title': _('Sample ID'),
+                         'index':'getSampleID'},
+            'Requests': {'title': _('Requests'),
+                         'sortable': False},
+            'ClientReference': {'title': _('Client Ref'),
+                                'index': 'getClientReference'},
+            'ClientSampleID': {'title': _('Client SID'),
+                               'index': 'getClientSampleID'},
+            'SampleTypeTitle': {'title': _('Sample Type'),
+                                'index': 'getSampleTypeTitle'},
+            'SamplePointTitle': {'title': _('Sample Point'),
+                                'index': 'getSamplePointTitle'},
+            'DateSampled': {'title': _('Date Sampled'),
+                            'index':'getDateSampled'},
+            'future_DateSampled': {'title': _('Sampling Date'),
+                                   'index':'getDateSampled'},
+            'DateReceived': {'title': _('Date Received'),
+                             'index': 'getDateReceived'},
+            'state_title': {'title': _('State'),
+                            'index':'review_state'},
         }
         self.review_states = [
             {'id':'all',
@@ -506,7 +527,10 @@ class ClientARProfilesView(BikaListingView):
 
     def __init__(self, context, request):
         super(ClientARProfilesView, self).__init__(context, request)
-        self.contentFilter = {'portal_type': 'ARProfile'}
+        self.contentFilter = {'portal_type': 'ARProfile',
+                              'getClientUID': context.UID()}
+        bsc = getToolByName(context, 'bika_setup_catalog')
+        self.contentsMethod = bsc
         self.context_actions = {_('Add'):
                                 {'url': 'createObject?type_name=ARProfile',
                                  'icon': '++resource++bika.lims.images/add.png'}}
@@ -519,8 +543,10 @@ class ClientARProfilesView(BikaListingView):
         self.description = ""
 
         self.columns = {
-            'title': {'title': _('Title')},
-            'getProfileKey': {'title': _('Profile Key')},
+            'title': {'title': _('Title'),
+                      'index': 'sortable_title'},
+            'getProfileKey': {'title': _('Profile Key'),
+                              'index':'getProfileKey'},
         }
         self.review_states = [
             {'title': _('All'), 'id':'all',
@@ -561,11 +587,13 @@ class ClientAnalysisSpecsView(BikaListingView):
         self.description = ""
 
         self.columns = {
-            'getSampleType': {'title': _('Sample  Type')},
+            'SampleType': {'title': _('Sample Type'),
+                           'index': 'getSampleTypeTitle'},
         }
         self.review_states = [
-            {'title': _('All'), 'id':'all',
-             'columns': ['getSampleType'],
+            {'id':'all',
+             'title': _('All'),
+             'columns': ['SampleType'],
              },
         ]
 
@@ -576,11 +604,11 @@ class ClientAnalysisSpecsView(BikaListingView):
 
             obj = items[x]['obj']
 
-            items[x]['getSampleType'] = obj.getSampleType() and \
+            items[x]['SampleType'] = obj.getSampleType() and \
                  obj.getSampleType().Title()
 
-            items[x]['replace']['getSampleType'] = "<a href='%s'>%s</a>" % \
-                 (items[x]['url'], items[x]['getSampleType'])
+            items[x]['replace']['SampleType'] = "<a href='%s'>%s</a>" % \
+                 (items[x]['url'], items[x]['SampleType'])
 
         return items
 
@@ -757,11 +785,16 @@ class ClientContactsView(BikaListingView):
         self.description = ""
 
         self.columns = {
-            'getFullname': {'title': _('Full Name')},
-            'getEmailAddress': {'title': _('Email Address')},
-            'getBusinessPhone': {'title': _('Business Phone')},
-            'getMobilePhone': {'title': _('Mobile Phone')},
-            'getFax': {'title': _('Fax')},
+            'getFullname': {'title': _('Full Name'),
+                            'index': 'getFullname'},
+            'getEmailAddress': {'title': _('Email Address'),
+                                'index': 'getEmailAddress'},
+            'getBusinessPhone': {'title': _('Business Phone'),
+                                 'index': 'getBusinessPhone'},
+            'getMobilePhone': {'title': _('Mobile Phone'),
+                               'index': 'getMobilePhone'},
+            'getFax': {'title': _('Fax'),
+                       'index': 'getFax'},
         }
         self.review_states = [
             {'title': 'All', 'id':'all',
