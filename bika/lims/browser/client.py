@@ -143,7 +143,7 @@ class ClientAnalysisRequestsView(BikaListingView):
         self.review_states = [
             {'id':'all',
              'title': _('All'),
-             'transitions': ['receive', 'submit', 'retract', 'verify', 'prepublish', 'publish', 'republish', 'cancel', 'reinstate'],
+             'transitions': ['receive', 'retract', 'verify', 'prepublish', 'publish', 'republish', 'cancel', 'reinstate'],
              'columns':['getRequestID',
                         'getClientOrderNumber',
                         'getClientReference',
@@ -171,7 +171,7 @@ class ClientAnalysisRequestsView(BikaListingView):
              'contentFilter': {'review_state': 'sample_received',
                                'sort_on':'id',
                                'sort_order': 'reverse'},
-             'transitions': ['cancel', 'reinstate'],
+             'transitions': ['prepublish', 'cancel', 'reinstate'],
              'columns':['getRequestID',
                         'getClientOrderNumber',
                         'getClientReference',
@@ -188,7 +188,7 @@ class ClientAnalysisRequestsView(BikaListingView):
                                                 'published'),
                                'sort_on':'id',
                                'sort_order': 'reverse'},
-             'transitions': ['submit', 'retract', 'publish', 'prepublish', 'republish', 'cancel', 'reinstate'],
+             'transitions': ['retract', 'verify', 'prepublish', 'publish', 'republish', 'cancel', 'reinstate'],
              'columns':['getRequestID',
                         'getClientOrderNumber',
                         'getClientReference',
@@ -206,7 +206,7 @@ class ClientAnalysisRequestsView(BikaListingView):
                                                 'published'),
                                'sort_on':'id',
                                'sort_order': 'reverse'},
-             'transitions': ['submit', 'retract', 'publish', 'prepublish', 'republish', 'cancel', 'reinstate'],
+             'transitions': ['receive', 'retract', 'verify', 'prepublish', 'publish', 'republish', 'cancel', 'reinstate'],
              'columns':['getRequestID',
                         'getClientOrderNumber',
                         'getClientReference',
@@ -221,7 +221,7 @@ class ClientAnalysisRequestsView(BikaListingView):
              'contentFilter': {'review_state': 'to_be_verified',
                                'sort_on':'id',
                                'sort_order': 'reverse'},
-             'transitions': ['verify', 'prepublish', 'retract', 'cancel', 'reinstate'],
+             'transitions': ['retract', 'verify', 'prepublish', 'cancel', 'reinstate'],
              'columns':['getRequestID',
                         'getClientOrderNumber',
                         'getClientReference',
@@ -235,7 +235,7 @@ class ClientAnalysisRequestsView(BikaListingView):
              'contentFilter': {'review_state': 'verified',
                                'sort_on':'id',
                                'sort_order': 'reverse'},
-             'transitions': ['publish', 'republish', 'cancel', 'reinstate'],
+             'transitions': ['publish'],
              'columns':['getRequestID',
                         'getClientOrderNumber',
                         'getClientReference',
@@ -266,7 +266,7 @@ class ClientAnalysisRequestsView(BikaListingView):
                                                 'verified', 'published'),
                                'sort_on':'id',
                                'sort_order': 'reverse'},
-             'transitions': ['republish', 'reinstate'],
+             'transitions': ['reinstate'],
              'columns':['getRequestID',
                         'getClientOrderNumber',
                         'getClientReference',
@@ -336,7 +336,7 @@ class ClientSamplesView(BikaListingView):
         self.show_select_column = True
 
         self.icon = "++resource++bika.lims.images/sample_big.png"
-        self.title =  _("Samples")
+        self.title = _("Samples")
         self.description = ""
 
         self.columns = {
@@ -592,18 +592,18 @@ class SetSpecsToLabDefaults(BrowserView):
         bsc = getToolByName(self.context, 'bika_setup_catalog')
 
         # find and remove existing specs
-        cs = bsc(portal_type='AnalysisSpec',
-                  getClientUID=self.context.UID())
+        cs = bsc(portal_type = 'AnalysisSpec',
+                  getClientUID = self.context.UID())
         if cs:
             self.context.manage_delObjects([s.id for s in cs])
 
         # find and duplicate lab specs
-        ls = bsc(portal_type='AnalysisSpec',
+        ls = bsc(portal_type = 'AnalysisSpec',
                  getClientUID = self.context.bika_setup.bika_analysisspecs.UID())
         ls = [s.getObject() for s in ls]
         for labspec in ls:
             cs_id = self.context.generateUniqueId('AnalysisSpec')
-            self.context.invokeFactory(id=cs_id, type_name='AnalysisSpec')
+            self.context.invokeFactory(id = cs_id, type_name = 'AnalysisSpec')
             clientspec = self.context[cs_id]
             clientspec.edit(
                 SampleType = labspec.getSampleType(),
