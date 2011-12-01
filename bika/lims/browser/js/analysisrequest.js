@@ -352,10 +352,14 @@ jQuery( function($) {
 		e = $('input[id$="_DateSampled"]')
 		if(e.length > 0){
 			// XXX Datepicker format is not i18n aware (dd Oct 2011)
-			$(e)
-			.datepicker({'dateFormat': 'dd M yy', showAnim: ''})
-			.click(function(){$(this).attr('value', '');})
-		//	.attr('value', '');
+			if($($(e).parents('form').children('[name=came_from]')).val() == 'add'){ 
+				$(e)
+				.datepicker({'dateFormat': 'dd M yy', showAnim: ''})
+				.click(function(){$(this).attr('value', '');})				
+			} else {
+				$(e)
+				.datepicker({'dateFormat': 'dd M yy', showAnim: ''})
+			}
 		}
 		$(".sampletype").autocomplete({ minLength: 0, source: autocomplete_sampletype});
 		$(".samplepoint").autocomplete({ minLength: 0, source: autocomplete_samplepoint});
