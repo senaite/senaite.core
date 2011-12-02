@@ -6,14 +6,14 @@ from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.client import ClientSamplesView
 from bika.lims.utils import TimeOrDate
-from bika.lims import EditSample
+from bika.lims.interfaces import IReports
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.layout.globals.interfaces import IViewView
 from zope.interface import implements
 import json
 import plone
 
-class ProductivityReportsView(BrowserView):
+class ProductivityView(BrowserView):
     """ Sample View form
     """
     implements(IViewView)
@@ -27,11 +27,11 @@ class ProductivityReportsView(BrowserView):
     def __call__(self):
         return self.template()
 
-class ProductivityReportsView(BrowserView):
+class QualityControlView(BrowserView):
     """ Sample View form
     """
     implements(IViewView)
-    template = ViewPageTemplateFile("templates/reports_productivity.pt")
+    template = ViewPageTemplateFile("templates/reports_qualitycontrol.pt")
 
     def __init__(self, context, request):
         BrowserView.__init__(self, context, request)
@@ -41,11 +41,11 @@ class ProductivityReportsView(BrowserView):
     def __call__(self):
         return self.template()
 
-class ProductivityReportsView(BrowserView):
+class AdministrationView(BrowserView):
     """ Sample View form
     """
     implements(IViewView)
-    template = ViewPageTemplateFile("templates/reports_productivity.pt")
+    template = ViewPageTemplateFile("templates/reports_administration.pt")
 
     def __init__(self, context, request):
         BrowserView.__init__(self, context, request)

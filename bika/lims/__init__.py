@@ -63,6 +63,7 @@ def initialize(context):
     from content.referencesamplesfolder import ReferenceSamplesFolder
     from content.referencesupplier import ReferenceSupplier
     from content.rejectanalysis import RejectAnalysis
+    from content.reports import Reports
     from content.sample import Sample
     from content.samplepoint import SamplePoint
     from content.samplesfolder import SamplesFolder
