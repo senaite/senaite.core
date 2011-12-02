@@ -15,8 +15,13 @@ if wf_tool.getInfoFor(context, 'cancellation_state') == "cancelled":
     return False
 
 # Only transition to 'attachment_due' if all analyses are at least there.
+has_analyses = False
 for a in context.objectValues('Analysis'):
+    has_analyses = True
     review_state = wf_tool.getInfoFor(a, 'review_state')
     if review_state in ('sample_due', 'sample_received',):
         return False
-return True
+if has_analyses:
+    return True
+else:
+    return False
