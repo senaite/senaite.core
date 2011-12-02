@@ -31,24 +31,25 @@ jQuery( function($) {
 	$(document).ready(function(){
 
 		$(".numeric").live('keypress', function(event) {
-		  // Backspace, tab, enter, end, home, left, right
+
+		//console.log("got " + event.which);
+
+		  // Backspace, tab, enter, end, home, left, right, ., <, >, and -
 		  // We don't support the del key in Opera because del == . == 46.
-		  var controlKeys = [8, 9, 13, 35, 36, 37, 39, 46];
+		  var allowedKeys = [8, 9, 13, 35, 36, 37, 39, 46, 60, 62, 45];
 		  // IE doesn't support indexOf
-		  var isControlKey = controlKeys.join(",").match(new RegExp(event.which));
+		  var isAllowedKey = allowedKeys.join(",").match(new RegExp(event.which));
 		  // Some browsers just don't raise events for control keys. Easy.
 		  // e.g. Safari backspace.
 		  if (!event.which || // Control keys in most browsers. e.g. Firefox tab is 0
-			  (48 <= event.which && event.which <= 57) || // Always 1 through 9
-			  isControlKey) { // Opera assigns values for control keys.
+			  (48 <= event.which && event.which <= 57) || // Always 0 through 9
+			  isAllowedKey) { // Opera assigns values for control keys.
 			return;
 //			  (48 == event.which && $(this).attr("value")) || // No 0 first digit
 		  } else {
-			console.log(event.which);
 			event.preventDefault();
 		  }
 		});
-
 	});
 
 });

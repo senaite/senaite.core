@@ -37,7 +37,17 @@ class ajaxCalculateAnalysisEntry():
         try:
             Result['result'] = float(form_result)
         except:
-            Result['result'] = 0.0
+            if 0 in (form_result.find("<"), form_result.find(">")):
+                self.alerts.append({'uid': uid,
+                                    'field': 'Result',
+                                    'icon': 'exclamation',
+                                    'msg': _('Not a valid result')})
+                Result['result'] = form_result
+                # Don't try calculate this result
+                calculation = False
+
+            else:
+                Result['result'] = 0.0
 
         if calculation:
             # add all our dependent analyses results to the mapping.

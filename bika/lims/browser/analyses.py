@@ -204,10 +204,11 @@ class AnalysesView(BikaListingView):
                             items[i]['formatted_result'] = precision and \
                                 str("%%.%sf" % precision) % float(result) or result
                         except:
-                            # non-numeric entry (JS .numeric should have prevented this...)
+                            # utils.js .numeric lets through odd things sometimes.
+                            # also, < 5 is a valid-invalid result.
                             items[i]['formatted_result'] = result
                             items[i]['after']['Result'] = \
-                                '<img width="16" height="16" title="' + _('Could not render to precision (non-numeric result?)') + '"' + \
+                                '<img width="16" height="16" title="' + _('invalid_result', 'Not a valid result') + '"' + \
                                 'src="%s/++resource++bika.lims.images/exclamation.png"/>' % \
                                 (portal.absolute_url())
                 items[i]['Uncertainty'] = obj.getUncertainty(result)
