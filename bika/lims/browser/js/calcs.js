@@ -8,6 +8,10 @@ $(document).ready(function(){
 		value = $(this).attr('value');
 		item_data = $(this).parents('table').prev('input[name="item_data"]').val();
 
+		// workflow button presses will wait for all .busy elements to lose
+		// their busy classes before continuing
+		$(this).addClass("busy");
+
 		// clear out the alerts for this field
 		$(".alert").filter("span[uid='"+$(this).attr("uid")+"']").empty();
 
@@ -89,6 +93,7 @@ $(document).ready(function(){
 						}
 					}
 				}
+				$(this).removeClass("busy");
 			}
 		}
 		$.ajax(options);

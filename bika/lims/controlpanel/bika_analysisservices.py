@@ -30,7 +30,9 @@ class AnalysisServicesView(BikaListingView):
         self.show_sort_column = False
         self.show_select_row = False
         self.show_select_column = True
-        self.pagesize = 25
+        self.categories = self.getCategories()
+        self.show_select_all_checkbox = False
+        self.pagesize = 1000
 
         self.columns = {
             'Title': {'title': _('Service'),
@@ -104,6 +106,13 @@ class AnalysisServicesView(BikaListingView):
              },
         ]
 
+    def getCategories(self):
+        bsc = getToolByName(self.context, 'bika_setup_catalog')
+        return [c.Title for c in \
+                bsc(portal_type = 'AnalysisCategory',
+                   inactive_state = 'active',
+                   sort_on = 'sortable_title')]
+
     def folderitems(self):
         items = BikaListingView.folderitems(self)
         for x in range(len(items)):
@@ -111,6 +120,7 @@ class AnalysisServicesView(BikaListingView):
             obj = items[x]['obj']
             items[x]['Keyword'] = obj.getKeyword()
             items[x]['Category'] = obj.getCategoryTitle()
+            items[x]['category'] = items[x]['Category']
             items[x]['Instrument'] = obj.getInstrument() and obj.getInstrument().Title() or ' '
             items[x]['Department'] = obj.getDepartment() and obj.getDepartment().Title() or ' '
             calculation = obj.getCalculation()
