@@ -107,6 +107,8 @@ $(document).ready(function(){
 		// change TH state
 		$(this).removeClass('expanded').addClass('collapsed');
 	});
+
+	// always select checkbox when editable listing item is changed
 	$(".listing_string_entry,.listing_select_entry").live('change', function(){
 		form_id = $(this).parents("form").attr("id");
 		uid = $(this).attr('uid');
@@ -116,8 +118,25 @@ $(document).ready(function(){
 			$('#'+form_id+'_cb_'+uid).click();
 		}
 	});
+
+	// stop the filter links from actually following the href; js handles these.
 	$(".listing-filter-button").click(function(event){
 		event.preventDefault
+	});
+
+	// wait for all .busy (calculating) elements to lose their busy class
+	$(".workflow_action_button").click(function(event){
+		r = 0;
+		for(r=0;r<15;r++){
+			busy = $(".busy");
+			if(busy.length == 0){
+				break;
+			}
+		}
+		if(r == 14){
+			// XXX some kind of alert...
+			event.prevetnDefault();
+		}
 	});
 
 });
