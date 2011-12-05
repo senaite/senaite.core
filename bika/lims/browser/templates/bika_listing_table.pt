@@ -129,6 +129,7 @@ Table data rows start here
 	tal:repeat="cat python: view.bika_listing.categories + ['None',]">
 	<tr tal:condition="python: cat != 'None'">
 		<th
+			style="text-align: left;"
 			tal:attributes="
 				colspan nr_cols;
 				cat cat;
