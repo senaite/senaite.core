@@ -223,7 +223,7 @@ class BikaListingView(BrowserView):
 
         # index filters.
         for k,v in self.columns.items():
-            if not v.has_key('index'):
+            if not v.has_key('index') or v['index'] == 'review_state':
                 continue
             request_key = "%s_%s" % (self.form_id, v['index'])
             if request_key in self.request:
