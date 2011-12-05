@@ -177,7 +177,6 @@ def getAnalysts(context):
     """ Present the LabManagers and Analysts as options for analyst
     """
     mtool = getToolByName(context, 'portal_membership')
-    member = mtool.getAuthenticatedMember()
     pairs = []
     analysts = mtool.searchForMembers(roles = ['Manager', 'LabManager', 'Analyst'])
     for member in analysts:
@@ -498,7 +497,7 @@ class AddAnalysesView(BikaListingView):
                     self.context.plone_utils.addPortalMessage(_("No analyses were added to this worksheet."))
                     self.request.RESPONSE.redirect(self.context.absolute_url() + "/add_analyses")
         for field in ['getCategoryUID', 'getServiceUID', 'getClientUID', ]:
-            request_key = "%s_%s" % (self.form_id,field)
+            request_key = "%s_%s" % (self.form_id, field)
             if request_key in self.request and \
                self.request[request_key] != 'any':
                 self.contentFilter[field] = self.request[request_key]
@@ -520,7 +519,7 @@ class AddAnalysesView(BikaListingView):
             items[x]['getDueDate'] = \
                 TimeOrDate(self.context, DueDate)
             if DueDate < DateTime():
-                items[i]['after']['DueDate'] = '<img width="16" height="16" src="%s/++resource++bika.lims.images/late.png" title="%s"/>' % \
+                items[x]['after']['DueDate'] = '<img width="16" height="16" src="%s/++resource++bika.lims.images/late.png" title="%s"/>' % \
                     (self.context.absolute_url(), _("Late analysis"))
             items[x]['CategoryTitle'] = service.getCategory().Title()
             items[x]['ClientTitle'] = client.Title()
