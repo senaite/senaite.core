@@ -58,15 +58,29 @@
         <thead>
 
         <tr>
-            <th i18n:translate="label_contact_person">Contact person</th>
-            <td colspan="3">
+            <th>
+	            <img tal:attributes="
+	                 title string:Sample: ${sample/Title};
+	                 src string:++resource++bika.lims.images/sample.png">
+	            <span i18n:translate="label_sampleid">Sample</span>
+            </th>
+            <td>
+				<a tal:attributes="href sample/absolute_url"
+	               tal:content="sample/Title">S-00001</a>
+            </td>
+            <th>
+				<img tal:attributes="
+					 src string:++resource++bika.lims.images/contact.png">
+				<span i18n:translate="label_contact_person">Contact person</span>
+			</th>
+            <td>
                 <a tal:define="contact here/getContact"
                     tal:condition="nocall:contact"
                     tal:attributes="href contact/absolute_url"
                     tal:content="contact/Title">Pete Smith</a>
                 <tal:ccs define="ccs here/getCCContact" condition="nocall:ccs" repeat="cc ccs">
-                    <span tal:condition="python:repeat['cc'].index == 0">&nbsp;cc:</span>
-                    <span tal:condition="python:repeat['cc'].index > 0">;</span>
+                    <span tal:condition="python:repeat['cc'].index == 0">;&nbsp;</span>
+                    <span tal:condition="python:repeat['cc'].index > 0">;&nbsp;</span>
                     <a tal:content="cc/Title" tal:attributes="href cc/absolute_url"/>
                 </tal:ccs>
                 <tal:ccemails>
@@ -76,54 +90,35 @@
         </tr>
 
         <tr>
-            <td colspan="4">&nbsp;</td>
-        </tr>
+
 
         <tr>
-            <th>
-            <img title=""
-                tal:attributes="
-                    title string:Sample: ${sample/Title};
-                    src string:++resource++bika.lims.images/sample.png">
-            <span i18n:translate="label_sampleid">Sample</span>
+            <th style="padding-left:3em"
+			    i18n:translate="label_clientsampleid">Client SID
             </th>
-            <td>
-                <a tal:attributes="href sample/absolute_url"
-                    tal:content="sample/Title">S-00001</a>
-            </td>
-            <th i18n:translate="label_client_order_id">Client order ID</th>
+            <td tal:content="sample/getClientSampleID">S001</td>
+            <th style="padding-left:3em"
+			    i18n:translate="label_client_order_id">Client order ID</th>
             <td tal:content="here/getClientOrderNumber|nothing">123</td>
         </tr>
 
         <tr>
-        </tr>
-
-        <tr>
-            <th>
-            <span>&nbsp&nbsp&nbsp&nbsp</span>
-            <span i18n:translate="label_clientsampleid">Client SID</span>
+            <th style="padding-left:3em"
+	            i18n:translate="label_sampletype">Type
             </th>
-            <td tal:content="sample/getClientSampleID">S001</td>
-            <th i18n:translate="label_clientreference">Client reference</th>
+            <td tal:content="context/getSampleTypeTitle">sample type</td>
+            <th style="padding-left:3em"
+                i18n:translate="label_clientreference">Client reference</th>
             <td tal:content="sample/getClientReference">R001</td>
         </tr>
 
         <tr>
-            <th>
-            <span>&nbsp&nbsp&nbsp&nbsp</span>
-            <span class="right" i18n:translate="label_sampletype">Type</span>
-            </th>
-            <td tal:content="context/getSampleTypeTitle">sample type</td>
-            <td colspan="2"></td>
-        </tr>
-
-        <tr>
-            <th>
-            <span>&nbsp&nbsp&nbsp&nbsp</span>
-            <span class="right" i18n:translate="label_samplepoint">Point</span>
+            <th style="padding-left:3em"
+                i18n:translate="label_samplepoint">Point
             </th>
             <td tal:content="context/getSamplePointTitle">sample point</td>
-            <th i18n:translate="label_daterequested">Date requested</th>
+            <th style="padding-left:3em"
+			    i18n:translate="label_daterequested">Date requested</th>
             <td>
                 <span
                     tal:define="date_requested here/getDateRequested"
@@ -133,12 +128,12 @@
         </tr>
 
         <tr>
-            <th>
-            <span>&nbsp&nbsp&nbsp&nbsp</span>
-            <span class="right" i18n:translate="label_status">Status</span>
+            <th style="padding-left:3em"
+                i18n:translate="label_status">Status
             </th>
             <td tal:content="python:review_state.replace('_', ' ')">received</td>
-            <th i18n:translate="label_datesampled">Date sampled</th>
+            <th style="padding-left:3em"
+                i18n:translate="label_datesampled">Date sampled</th>
             <td>
                 <span
                     tal:define="date_sampled sample/getDateSampled"
@@ -148,28 +143,30 @@
         </tr>
 
         <tr tal:condition="python:review_state != 'sample_due'">
-            <td colspan="2"></td>
-            <th i18n:translate="label_datereceived">Date received</th>
-            <td tal:define="date_received here/getDateReceived"
-                tal:content="python:view.TimeOrDate(context, date_received, long_format=1)">
+            <th style="padding-left:3em"
+			    i18n:translate="label_datereceived">Date received</th>
+			<td><span
+				tal:condition="python:review_state == 'received'"
+				tal:define="date_received here/getDateReceived"
+				tal:content="python:view.TimeOrDate(context, date_received, long_format=1)"/>
             </td>
-        </tr>
+			<th style="padding-left:3em"
+				i18n:translate="label_datepublished">Date published</th>
+			<td><span
+				tal:condition="python:review_state == 'published'"
+				tal:define="date_published here/getDatePublished"
+				tal:content="python:view.TimeOrDate(context, date_published, long_format=1)"/>
+			</td>
+		</tr>
 
         <tr tal:condition="python:review_state in ('verified', 'published')">
-            <th i18n:translate="label_verified_by">Verified by </th>
+            <th style="padding-left:3em"
+				i18n:translate="label_verified_by">Verified by </th>
             <td>
                 <span
                     tal:define="verifier python:view.get_analysisrequest_verifier(here)"
                     tal:content="verifier"/>
             </td>
-
-
-            <tal:published tal:condition="python:review_state == 'published'">
-                <th i18n:translate="label_datepublished">Date published</th>
-                <td
-                    tal:define="date_published here/getDatePublished"
-                    tal:content="python:view.TimeOrDate(context, date_published, long_format=1)"/>
-            </tal:published>
         </tr>
 
         </thead>

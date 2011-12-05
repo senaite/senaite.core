@@ -26,7 +26,7 @@ schema = BikaSchema.copy() + Schema((
             label = _("File name"),
         ),
     ),
-    StringField('ClientName',
+    StringField('ClientTitle',
         searchable = True,
         widget = StringWidget(
             label = _("Client name"),

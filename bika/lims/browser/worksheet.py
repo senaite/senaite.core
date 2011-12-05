@@ -415,13 +415,24 @@ class ManageResultsView(BrowserView):
     def getAnalystName(self):
         return getAnalystName(self.context)
 
-class AnalysesSearchResultsView(BikaListingView):
-    ## The table used to display Analysis search results for AddAnalysesView
+class AddAnalysesView(BikaListingView):
+    implements(IViewView)
+    template = ViewPageTemplateFile("templates/worksheet_add_analyses.pt")
+
     def __init__(self, context, request):
         BikaListingView.__init__(self, context, request)
+        self.icon = "++resource++bika.lims.images/worksheet_big.png"
+        self.title = "%s: %s" % (context.Title(), _("Add Analyses"))
+        self.description = _(" ")
+
         self.context_actions = {}
+        # initial review state for first form display of the worksheet
+        # add_analyses search view
+        # @lemoene what should the default be here?
         self.contentFilter = {'portal_type': 'Analysis',
-                              'review_state':'impossible_state'}
+                              'review_state':'sample_received',
+                              'worksheetanalysis_review_state':'unassigned',
+                              'cancellation_state':'active'}
         self.base_url = self.context.absolute_url()
         self.view_url = self.base_url + "/add_analyses"
         self.show_sort_column = False
@@ -430,26 +441,68 @@ class AnalysesSearchResultsView(BikaListingView):
         self.pagesize = 100
 
         self.columns = {
-            'ClientName': {'title': _('Client')},
-            'getClientOrderNumber': {'title': _('Order')},
-            'getRequestID': {'title': _('Request ID')},
-            'CategoryName': {'title': _('Category')},
-            'Title': {'title': _('Analysis')},
-            'getDateReceived': {'title': _('Date Received')},
-            'getDueDate': {'title': _('Due Date')},
+            'ClientTitle': {'title': _('Client'),
+                            'sortable':False},
+#                            'index':'getClientTitle'},
+            'getClientOrderNumber': {'title': _('Order'),
+                            'sortable':False},
+#                            'index':'getClientOrderNumber'},
+            'getRequestID': {'title': _('Request ID'),
+                            'sortable':False},
+#                            'index':'getRequestID'},
+            'CategoryTitle': {'title': _('Category'),
+                            'sortable':False},
+#                            'index':'getCategoryTitle'},
+            'Title': {'title': _('Analysis'),
+                            'sortable':False},
+#                            'index':'sortable_title'},
+            'getDateReceived': {'title': _('Date Received'),
+                            'sortable':False},
+#                            'index':'getDateReceived'},
+            'getDueDate': {'title': _('Due Date'),
+                            'sortable':False},
+#                            'index':'getDueDate'},
         }
         self.review_states = [
-            {'title': _('All'), 'id':'all',
+            {'id':'all',
+             'title': _('All'),
              'transitions': ['assign'],
-             'columns':['ClientName',
+             'columns':['ClientTitle',
                         'getClientOrderNumber',
                         'getRequestID',
-                        'CategoryName',
+                        'CategoryTitle',
                         'Title',
                         'getDateReceived',
                         'getDueDate'],
             },
         ]
+
+    def __call__(self):
+        if not(getSecurityManager().checkPermission(EditWorksheet, self.context)):
+            self.request.response.redirect(self.context.absolute_url())
+            return
+
+        form = self.request.form
+        rc = getToolByName(self.context, REFERENCE_CATALOG)
+
+        if 'submitted' in form:
+            if 'getWorksheetTemplate' in form and form['getWorksheetTemplate']:
+                layout = self.context.getLayout()
+                wst = rc.lookupObject(form['getWorksheetTemplate'])
+                self.request['context_uid'] = self.context.UID()
+                self.context.applyWorksheetTemplate(wst)
+                if len(self.context.getLayout()) != len(layout):
+                    self.context.plone_utils.addPortalMessage(_("Worksheet updated."))
+                    self.request.RESPONSE.redirect(self.context.absolute_url() + "/manage_results")
+                else:
+                    self.context.plone_utils.addPortalMessage(_("No analyses were added to this worksheet."))
+                    self.request.RESPONSE.redirect(self.context.absolute_url() + "/add_analyses")
+        for field in ['getCategoryUID', 'getServiceUID', 'getClientUID', ]:
+            request_key = "%s_%s" % (self.form_id,field)
+            if request_key in self.request and \
+               self.request[request_key] != 'any':
+                self.contentFilter[field] = self.request[request_key]
+        return self.template()
 
     def folderitems(self):
         pc = getToolByName(self.context, 'portal_catalog')
@@ -463,21 +516,15 @@ class AnalysesSearchResultsView(BikaListingView):
             items[x]['getClientOrderNumber'] = obj.getClientOrderNumber()
             items[x]['getDateReceived'] = \
                 TimeOrDate(self.context, obj.getDateReceived())
+            DueDate = obj.getDueDate()
             items[x]['getDueDate'] = \
-                TimeOrDate(self.context, obj.getDueDate())
-            items[x]['CategoryName'] = service.getCategory().Title()
-            items[x]['ClientName'] = client.Title()
+                TimeOrDate(self.context, DueDate)
+            if DueDate < DateTime():
+                items[i]['after']['DueDate'] = '<img width="16" height="16" src="%s/++resource++bika.lims.images/late.png" title="%s"/>' % \
+                    (self.context.absolute_url(), _("Late analysis"))
+            items[x]['CategoryTitle'] = service.getCategory().Title()
+            items[x]['ClientTitle'] = client.Title()
         return items[:100]
-
-class AddAnalysesView(AnalysesView):
-    implements(IViewView)
-    template = ViewPageTemplateFile("templates/worksheet_add_analyses.pt")
-
-    def __init__(self, context, request):
-        AnalysesView.__init__(self, context, request)
-        self.icon = "++resource++bika.lims.images/worksheet_big.png"
-        self.title = "%s: %s" % (context.Title(), _("Add Analyses"))
-        self.description = _(" ")
 
     def getAnalysts(self):
         return getAnalysts(self.context)
@@ -485,38 +532,13 @@ class AddAnalysesView(AnalysesView):
     def getAnalystName(self):
         return getAnalystName(self.context)
 
-    def __call__(self):
-        if not(getSecurityManager().checkPermission(EditWorksheet, self.context)):
-            self.request.response.redirect(self.context.absolute_url())
-            return
-
-        form = self.request.form
-        rc = getToolByName(self.context, REFERENCE_CATALOG)
-        contentFilter = {'portal_type': 'Analysis',
-                         'review_state':'impossible_state',
-                         'worksheetanalysis_review_state':'unassigned',
-                         'cancellation_state':'active'}
-
-        if 'submitted' in form:
-            contentFilter['review_state'] = 'sample_received'
-            if 'getWorksheetTemplate' in form and form['getWorksheetTemplate']:
-                layout = self.context.getLayout()
-                wst = rc.lookupObject(form['getWorksheetTemplate'])
-                self.request['context_uid'] = self.context.UID()
-                self.context.applyWorksheetTemplate(wst)
-                if len(self.context.getLayout()) != len(layout):
-                    self.context.plone_utils.addPortalMessage(_("Worksheet updated."))
-                    self.request.RESPONSE.redirect(self.context.absolute_url() + "/manage_results")
-                else:
-                    self.context.plone_utils.addPortalMessage(_("No analyses were added to this worksheet."))
-                    self.request.RESPONSE.redirect(self.context.absolute_url() + "/add_analyses")
-            else:
-                for field in ['getCategoryUID', 'getServiceUID', 'getClientUID', ]:
-                    if field in form and 'any' not in form[field]:
-                        contentFilter[field] = form[field]
-        self.Analyses = AnalysesSearchResultsView(self.context, self.request)
-        self.Analyses.contentFilter = contentFilter
-        return self.template()
+    def getServices(self):
+        bsc = getToolByName(self.context, 'bika_setup_catalog')
+        return [(c.UID, c.Title) for c in \
+                bsc(portal_type = 'AnalysisService',
+                   getCategoryUID = self.request.get('list_getCategoryUID', ''),
+                   inactive_state = 'active',
+                   sort_on = 'sortable_title')]
 
     def getClients(self):
         pc = getToolByName(self.context, 'portal_catalog')
@@ -770,7 +792,8 @@ class WorksheetServicesView(BikaListingView):
         self.show_workflow_action_buttons = False
 
         self.columns = {
-            'Service': {'title': _('Service')},
+            'Service': {'title': _('Service'),
+                        'sortable': False},
         }
         self.review_states = [
             {'id':'all',

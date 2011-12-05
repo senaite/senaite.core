@@ -152,7 +152,7 @@
 			<property name="permissions">
 				<element value="List portal members"/>
 			</property>
-			<property name="visible">False</property>
+			<property name="visible">True</property>
 		</object>
 		<object name="extracts" meta_type="CMF Action">
 			<property name="title">Extracts</property>

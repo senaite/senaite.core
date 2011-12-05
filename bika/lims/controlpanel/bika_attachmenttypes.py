@@ -36,7 +36,7 @@ class AttachmentTypesView(BikaListingView):
             'Title': {'title': _('Attachment Type'),
                       'index': 'sortable_title'},
             'Description': {'title': _('Description'),
-                            'index': 'getDescription'},
+                            'index': 'description'},
         }
         self.review_states = [
             {'id':'all',

@@ -66,19 +66,23 @@
  <index name="getAnalyst" meta_type="FieldIndex"> <indexed_attr value="getAnalyst"/> </index>
  <index name="getBrand" meta_type="FieldIndex"> <indexed_attr value="getBrand"/> </index>
  <index name="getBusinessPhone" meta_type="FieldIndex"> <indexed_attr value="getBusinessPhone"/> </index>
- <index name="getCategoryName" meta_type="FieldIndex"> <indexed_attr value="getCategoryName"/> </index>
+ <index name="getCategoryTitle" meta_type="FieldIndex"> <indexed_attr value="getCategoryTitle"/> </index>
  <index name="getCategoryUID" meta_type="FieldIndex"> <indexed_attr value="getCategoryUID"/> </index>
  <index name="getClientReference" meta_type="FieldIndex"> <indexed_attr value="getClientReference"/> </index>
+ <index name="getClientOrderNumber" meta_type="FieldIndex"> <indexed_attr value="getClientOrderNumber"/> </index>
  <index name="getClientSampleID" meta_type="FieldIndex"> <indexed_attr value="getClientSampleID"/> </index>
  <index name="getClientUID" meta_type="FieldIndex"> <indexed_attr value="getClientUID"/> </index>
+ <index name="getClientTitle" meta_type="FieldIndex"> <indexed_attr value="getClientTitle"/> </index>
  <index name="getContactUID" meta_type="FieldIndex"> <indexed_attr value="getContactUID"/> </index>
  <index name="getDateApplied" meta_type="FieldIndex"> <indexed_attr value="getDateApplied"/> </index>
  <index name="getDateImported" meta_type="FieldIndex"> <indexed_attr value="getDateImported"/> </index>
  <index name="getDatePublished" meta_type="FieldIndex"> <indexed_attr value="getDatePublished"/> </index>
  <index name="getDateReceived" meta_type="FieldIndex"> <indexed_attr value="getDateReceived"/> </index>
+ <index name="getDateSampled" meta_type="FieldIndex"> <indexed_attr value="getDateSampled"/> </index>
  <index name="getDepartment" meta_type="FieldIndex"> <indexed_attr value="getDepartment"/> </index>
  <index name="getDueDate" meta_type="DateIndex"> <property name="index_naive_time_as_local">True</property></index>
  <index name="getExpiryDate" meta_type="DateIndex"> <property name="index_naive_time_as_local">True</property></index>
+ <index name="getEmailAddress" meta_type="FieldIndex"> <indexed_attr value="getEmailAddres"/> </index>
  <index name="getFax" meta_type="FieldIndex"> <indexed_attr value="getFax"/> </index>
  <index name="getFullname" meta_type="FieldIndex"> <indexed_attr value="getFullname"/> </index>
  <index name="getMobilePhone" meta_type="FieldIndex"> <indexed_attr value="getMobilePhone"/> </index>
@@ -86,6 +90,7 @@
  <index name="getId" meta_type="FieldIndex"> <indexed_attr value="getId"/> </index>
  <index name="getKeyword" meta_type="FieldIndex"> <indexed_attr value="getKeyword"/> </index>
  <index name="getName" meta_type="FieldIndex"> <indexed_attr value="getName"/> </index>
+ <index name="getNrAnalyses" meta_type="FieldIndex"> <indexed_attr value="getNrAnalyses"/> </index>
  <index name="getObjPositionInParent" meta_type="GopipIndex"> <indexed_attr value="getObjPositionInParent"/> </index>
  <index name="getPointOfCapture" meta_type="FieldIndex"> <indexed_attr value="getPointOfCapture"/> </index>
  <index name="getProfileKey" meta_type="FieldIndex"> <indexed_attr value="getProfileKey"/> </index>
@@ -99,6 +104,7 @@
  <index name="getStatus" meta_type="FieldIndex"> <indexed_attr value="getStatus"/> </index>
  <index name="getType" meta_type="FieldIndex"> <indexed_attr value="getType"/> </index>
  <index name="getUsername" meta_type="FieldIndex"> <indexed_attr value="getUsername"/> </index>
+ <index name="getWorksheetTemplateTitle" meta_type="FieldIndex"> <indexed_attr value="getWorksheetTemplateTitle"/> </index>
  <index name="id" meta_type="FieldIndex"> <indexed_attr value="id"/> </index>
  <index name="in_reply_to" meta_type="FieldIndex"> <indexed_attr value="in_reply_to"/> </index>
  <index name="is_default_page" meta_type="FieldIndex"> <indexed_attr value="is_default_page"/> </index>
@@ -133,7 +139,7 @@
  <column value="end"/>
  <column value="exclude_from_nav"/>
  <column value="expires"/>
- <column value="getCategoryName"/>
+ <column value="getCategoryTitle"/>
  <column value="getCategoryUID"/>
  <column value="getIcon"/>
  <column value="getId"/>

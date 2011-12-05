@@ -35,7 +35,7 @@ class WorksheetFolderListingView(BikaListingView):
         request.set('disable_border', 1)
 
         self.icon = "++resource++bika.lims.images/worksheet_big.png"
-        self.title = "%s: %s" % (self.context.Title(), _("Worksheets"))
+        self.title = _("Worksheets")
         self.description = ""
         self.TimeOrDate = TimeOrDate
 
@@ -44,16 +44,23 @@ class WorksheetFolderListingView(BikaListingView):
 
         self.columns = {
             'Title': {'title': _('Worksheet'),
-                      'index': 'id'},
+                      'index': 'sortable_title'},
             'Analyst': {'title': _('Analyst'),
                         'index':'getAnalyst'},
-            'Template': {'title': _('Template')},
-            'Analyses': {'title': _('Analyses')},
-            'Services': {'title': _('Services')},
-            'SampleTypes': {'title': _('Sample Types')},
-            'QC': {'title': _('QC')},
-            'CreationDate': {'title': _('Creation Date')},
-            'state_title': {'title': _('State')},
+            'Template': {'title': _('Template'),
+                         'index': 'getWorksheetTemplateTitle'},
+            'Analyses': {'title': _('Analyses'),
+                         'index': 'getNrAnalyses'},
+            'Services': {'title': _('Services'),
+                         'sortable':False},
+            'SampleTypes': {'title': _('Sample Types'),
+                            'sortable':False},
+            'QC': {'title': _('QC'),
+                   'sortable':False},
+            'CreationDate': {'title': _('Creation Date'),
+                             'index': 'created'},
+            'state_title': {'title': _('State'),
+                            'index': 'review_state'},
         }
         self.review_states = [
             {'title': _('All'), 'id':'all',

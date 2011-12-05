@@ -12,7 +12,7 @@ $(document).ready(function(){
 
 	// selecting a template changes the Add Worksheet href
 	$(".wstemplate").change(function(){
-		$(".worksheet_add").attr("href", $(".worksheet_add").attr("href").split("?")[0] + $.query.set("wstemplate",$(this).val()));
+		$(".worksheet_add").attr("href", $(".worksheet_add").attr("href").split("?")[0] + "?wstemplate=" + $(this).val());
 	});
 
 	// search form - selecting a category fills up the service selector
@@ -24,7 +24,7 @@ $(document).ready(function(){
 			return;
 		}
 		$.ajax({
-			url: window.location.href.replace("/add_analyses","") + "/getServices",
+			url: window.location.href.split("?")[0].replace("/add_analyses","") + "/getServices",
 			type: 'POST',
 			data: {'_authenticator': $('input[name="_authenticator"]').val(),
 			       'getCategoryUID': val},
@@ -33,26 +33,18 @@ $(document).ready(function(){
 				$("#ServiceSelector").empty();
 				$("#ServiceSelector").append("<option value='any'>Any</option>");
 				for(i=0; i< data.length; i++){
-					$("#ServiceSelector").append("<option value='"+data[i][0]+"'>"+data[i][1]+"</option>");
+					// but make sure that ?list_getServiceUID still sets selected item
+					if (data[i][0] == $.query.get('list_getServiceUID')){
+						selected = 'selected="selected" ';
+					} else {
+						selected = '';
+					}
+					$("#ServiceSelector").append("<option "+selected+"value='"+data[i][0]+"'>"+data[i][1]+"</option>");
 				}
 			}
 		});
 	});
 	$("#CategorySelector").trigger("change");
-
-	// search form - selecting a category, service, or client, sets the profile
-	// dropdown to empty value
-	$("#CategorySelector, #ServiceSelector, #ClientSelector").live("change", function(){
-		$("#ProfileSelector").val('');
-	});
-
-	// search form - selecting a profile sets the category, service, and client
-	// dropdowns to empty values
-	$("#ProfileSelector").live("change", function(){
-		$("#CategorySelector").val('');
-		$("#ServiceSelector").val('').empty().append("<option value='any'>Any</option>");
-		$("#ClientSelector").val('');
-	});
 
 	// instant update of analyst when selection is made in dropdown
 	$("#analyst").change(function(){
@@ -136,6 +128,23 @@ $(document).ready(function(){
 			.append("<input type='hidden' value='"+$('#position').val()+"' name='position'/>");
 		$(this).parents('form').submit();
 	})
+
+	// add_analyses analysis search is handled by bika_listing default __call__
+	$(".ws-listing-filter-button").click(function(event){
+		event.preventDefault();
+		// default form_id in add_analyses
+		form_id = "list";
+		// Grab values for all class=listing-filter fields
+		qstr = $.query.toString();
+		$.each($(".listing-filter"), function(i,v){
+			qstr = $.query
+					.load(qstr)
+					.set(form_id + "_" + $(v).attr('name'), $(v).val())
+					.toString();
+		});
+		// redirect to search
+		window.location.href = window.location.href.split("?")[0] + qstr;
+	});
 
 });
 });

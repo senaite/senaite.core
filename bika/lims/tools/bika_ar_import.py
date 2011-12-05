@@ -134,7 +134,7 @@ class bika_ar_import(UniqueObject, SimpleItem):
         arimport.edit(
             ImportOption = 'c',
             FileName = batch_headers[2],
-            ClientName = batch_headers[3],
+            ClientTitle = batch_headers[3],
             ClientID = batch_headers[4],
             ContactID = batch_headers[5],
             CCContactID = batch_headers[6],
@@ -271,7 +271,7 @@ class bika_ar_import(UniqueObject, SimpleItem):
 
         arimport.edit(
             ImportOption = 's',
-            ClientName = clientname,
+            ClientTitle = clientname,
             ClientID = client_id,
             ClientPhone = clientphone,
             ClientFax = clientfax,

@@ -41,7 +41,7 @@ class SamplePointsView(BikaListingView):
             'Title': {'title': _('Sample Point'),
                       'index':'sortable_title'},
                    'Description': {'title': _('Description'),
-                                   'index': 'getDescription'},
+                                   'index': 'description'},
         }
 
         self.review_states = [

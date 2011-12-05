@@ -16,7 +16,7 @@ schema = BaseSchema.copy() + Schema((
             label = _("Description")
         )
     ),
-    TextField('CategoryName',
+    TextField('CategoryTitle',
         widget = TextAreaWidget(
             label = _("Description")
         )

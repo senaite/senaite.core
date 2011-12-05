@@ -120,8 +120,9 @@ class LoadSetupData(BrowserView):
 
         if App.config.getConfiguration().debug_mode:
             message = "%s (%s seconds)" % (_("Success."), time.time() - start)
-
-        self.plone_utils.addPortalMessage(_("Success."))
+        else:
+            message = _('Success.')
+        self.plone_utils.addPortalMessage(message)
         self.request.RESPONSE.redirect(portal.absolute_url())
 
     def load_images(self, filename):

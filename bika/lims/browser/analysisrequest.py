@@ -526,10 +526,14 @@ class AnalysisRequestSelectCCView(BikaListingView):
         request.set('disable_border', 1)
 
         self.columns = {
-            'Fullname': {'title': _('Full Name')},
-            'EmailAddress': {'title': _('Email Address')},
-            'BusinessPhone': {'title': _('Business Phone')},
-            'MobilePhone': {'title': _('Mobile Phone')},
+            'Fullname': {'title': _('Full Name'),
+                         'index': 'getFullname'},
+            'EmailAddress': {'title': _('Email Address'),
+                             'index': 'getEmailAddress'},
+            'BusinessPhone': {'title': _('Business Phone'),
+                              'index': 'getBusinessPhone'},
+            'MobilePhone': {'title': _('Mobile Phone'),
+                            'index': 'getBusinessPhone'},
         }
         self.review_states = [
             {'title': _('All'), 'id':'all',
@@ -1110,9 +1114,14 @@ class ajaxAnalysisRequestSubmit():
                     sample.edit(
                         SampleID = sample_id,
                         LastARNumber = ar_number,
-                        DateSubmitted = DateTime(),
+                        ClientReference = values.get('ClientReference', ''),
+                        ClientSampleID = values.get('ClientSampleID', ''),
+                        SamplePoint = values.get('SamplePoint', ''),
+                        SampleType = values['SampleType'],
                         SubmittedByUser = sample.current_user(),
-                        **dict(values)
+                        DateSubmitted = DateTime(),
+                        DateSampled = values['DateSampled'],
+                        Composite = values.get('Composite',False),
                     )
                     sample.processForm()
                     dis_date = sample.disposal_date()
@@ -1188,7 +1197,7 @@ class AnalysisRequestsView(ClientAnalysisRequestsView):
     """
     def __init__(self, context, request):
         super(AnalysisRequestsView, self).__init__(context, request)
-        self.title = "%s: %s" % (self.context.aq_parent.Title(), _("Analysis Requests"))
+        self.title = _("Analysis Requests")
         self.description = ""
         self.context_actions = {}
         self.contentFilter = {'portal_type':'AnalysisRequest',

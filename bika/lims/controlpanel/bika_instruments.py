@@ -45,7 +45,7 @@ class InstrumentsView(BikaListingView):
             'Model': {'title': _('Model'),
                       'index': 'getModel'},
             'ExpiryDate': {'title': _('Expiry Date'),
-                           'index':'getExpiryDate'},
+                           'index':'getCalibrationExpiryDate'},
         }
         self.review_states = [
             {'id':'all',

@@ -116,5 +116,9 @@ $(document).ready(function(){
 			$('#'+form_id+'_cb_'+uid).click();
 		}
 	});
+	$(".listing-filter-button").click(function(event){
+		event.preventDefault
+	});
+
 });
 });

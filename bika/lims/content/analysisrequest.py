@@ -175,6 +175,12 @@ schema = BikaSchema.copy() + Schema((
             visible = False,
         ),
     ),
+    ComputedField('DateSampled',
+        expression = 'here.getSample() and here.getSample().getDateSampled() or ""',
+        widget = ComputedWidget(
+            visible = False,
+        ),
+    ),
     ComputedField('ClientSampleID',
         expression = 'here.getSample() and here.getSample().getClientSampleID()',
         widget = ComputedWidget(

@@ -24,7 +24,7 @@ class DepartmentsView(BikaListingView):
         self.contentFilter = {'portal_type': 'Department',
                               'sort_on': 'sortable_title'}
         self.context_actions = {_('Add'):
-                                {'icon': 'createObject?type_name=Department',
+                                {'url': 'createObject?type_name=Department',
                                  'icon': '++resource++bika.lims.images/add.png'}}
         self.title = _("Lab Departments")
         self.icon = "++resource++bika.lims.images/department_big.png"
@@ -38,7 +38,7 @@ class DepartmentsView(BikaListingView):
             'Title': {'title': _('Department'),
                       'index':'sortable_title'},
             'Description': {'title': _('Description'),
-                            'index': 'getDescription'},
+                            'index': 'description'},
             'Manager': {'title': _('Manager'),
                         'index': 'getManagerName'},
             'ManagerPhone': {'title': _('Manager Phone'),
