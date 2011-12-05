@@ -107,6 +107,14 @@ $(document).ready(function(){
 		// change TH state
 		$(this).removeClass('expanded').addClass('collapsed');
 	});
+	$(".listing_string_entry,.listing_select_entry").live('change', function(){
+		form_id = $(this).parents("form").attr("id");
+		uid = $(this).attr('uid');
 
+		// check the item's checkbox
+		if ($('#'+form_id+'_cb_'+uid).attr('checked') == false) {
+			$('#'+form_id+'_cb_'+uid).click();
+		}
+	});
 });
 });

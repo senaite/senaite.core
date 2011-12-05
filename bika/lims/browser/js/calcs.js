@@ -8,11 +8,6 @@ $(document).ready(function(){
 		value = $(this).attr('value');
 		item_data = $(this).parents('table').prev('input[name="item_data"]').val();
 
-		// check the item's checkbox
-		if ($('#'+form_id+'_cb_'+uid).attr('checked') == false) {
-			$('#'+form_id+'_cb_'+uid).click();
-		}
-
 		// clear out the alerts for this field
 		$(".alert").filter("span[uid='"+$(this).attr("uid")+"']").empty();
 
