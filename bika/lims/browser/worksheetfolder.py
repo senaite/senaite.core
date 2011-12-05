@@ -35,7 +35,7 @@ class WorksheetFolderListingView(BikaListingView):
         request.set('disable_border', 1)
 
         self.icon = "++resource++bika.lims.images/worksheet_big.png"
-        self.title = "%s: %s" % (self.context.Title(), _("Worksheets"))
+        self.title = _("Worksheets")
         self.description = ""
         self.TimeOrDate = TimeOrDate
 

@@ -144,7 +144,7 @@ class SamplesView(ClientSamplesView):
 
     def __init__(self, context, request):
         super(SamplesView, self).__init__(context, request)
-        self.title = "%s: %s" % (self.context.Title(), _("Samples"))
+        self.title = _("Samples")
         self.description = ""
         self.contentFilter = {'portal_type':'Sample',
                               'sort_on':'id',

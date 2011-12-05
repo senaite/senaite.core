@@ -1197,7 +1197,7 @@ class AnalysisRequestsView(ClientAnalysisRequestsView):
     """
     def __init__(self, context, request):
         super(AnalysisRequestsView, self).__init__(context, request)
-        self.title = "%s: %s" % (self.context.aq_parent.Title(), _("Analysis Requests"))
+        self.title = _("Analysis Requests")
         self.description = ""
         self.context_actions = {}
         self.contentFilter = {'portal_type':'AnalysisRequest',
