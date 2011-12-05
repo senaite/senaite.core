@@ -36,8 +36,11 @@ class ajaxCalculateAnalysisEntry():
         Result = {'uid': uid}
         try:
             Result['result'] = float(form_result)
+            print "result is valid for for %s" % uid
         except:
             if 0 in (form_result.find("<"), form_result.find(">")):
+                print "<> for %s" % uid
+                # results with <5 or >10 formats
                 self.alerts.append({'uid': uid,
                                     'field': 'Result',
                                     'icon': 'exclamation',
@@ -45,8 +48,14 @@ class ajaxCalculateAnalysisEntry():
                 Result['result'] = form_result
                 # Don't try calculate this result
                 calculation = False
-
+            elif form_result == "":
+                print "empty for %s" % uid
+                # empty result returns "" value to set form result empty
+                Result['result'] = form_result
+                # Don't try calculate this result
             else:
+                print "set to 0 for %s" % uid
+                # other un-floatable results get forced to 0.
                 Result['result'] = 0.0
 
         if calculation:
@@ -126,7 +135,7 @@ class ajaxCalculateAnalysisEntry():
                 return None
 
         # format calculation result to service precision
-        Result['formatted_result'] = precision and \
+        Result['formatted_result'] = precision and Result['result'] and \
             str("%%.%sf" % precision) % Result['result'] or Result['result']
 
         # calculate Dry Matter result
