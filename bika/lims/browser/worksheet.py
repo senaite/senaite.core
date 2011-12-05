@@ -521,7 +521,7 @@ class AddAnalysesView(BikaListingView):
                 TimeOrDate(self.context, DueDate)
             if DueDate < DateTime():
                 items[i]['after']['DueDate'] = '<img width="16" height="16" src="%s/++resource++bika.lims.images/late.png" title="%s"/>' % \
-                    (portal.absolute_url(), _("Late analysis"))
+                    (self.context.absolute_url(), _("Late analysis"))
             items[x]['CategoryTitle'] = service.getCategory().Title()
             items[x]['ClientTitle'] = client.Title()
         return items[:100]
