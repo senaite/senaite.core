@@ -34,25 +34,9 @@
 <!--		<metal:block use-macro="here/attachments/macros/ws_attachments"/>-->
 <!--	</div>-->
 
-	<tal:analyst
-		tal:define="ws_state python: context.portal_workflow.getInfoFor(context, 'review_state')">
-		<span class="formQuestion">Analyst: </span>
-		<select
-			tal:condition="python: ws_state == 'open'"
-			id = "analyst"
-			name="Analyst">
-			<option value="" i18n:translate="None"
-				tal:attributes="selected python:context.getAnalyst() and '' or 'selected'">None</option>
-			<tal:repeat repeat="analyst view/getAnalysts">
-				<option
-					tal:attributes="
-						value python:analyst[0];
-						selected python:analyst[0] == (context.getAnalyst() and context.getAnalyst() or '') and 'selected' or ''"
-					tal:content="python:analyst[1]"></option>
-			</tal:repeat>
-		</select>
-		<span tal:condition="python: ws_state != 'open'" tal:content="view/getAnalystName"></span>
-		<span id="analyst_changed" style="display:none" i18n:translate="">Analyst changed.</span>
+	<tal:analyst>
+		<label for="analyst" i18n:translate="Assigned analyst: ">Assigned analyst: </label>
+		<span tal:content="view/getAnalystName"></span>
 		<br/>
 	</tal:analyst>
 

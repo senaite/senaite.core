@@ -20,4 +20,13 @@
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
+    <!-- Workflow action button clicked -->
+    <browser:page
+      for="bika.lims.interfaces.IWorksheetFolder"
+      name="workflow_action"
+      class="bika.lims.browser.worksheetfolder.WorksheetFolderWorkflowAction"
+      permission="zope.Public"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
 </configure>

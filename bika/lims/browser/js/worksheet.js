@@ -10,9 +10,24 @@ $(document).ready(function(){
 		$(str).appendTo('#viewlet-above-content');
 	}
 
-	// selecting a template changes the Add Worksheet href
+	// selecting an analyst changes the Add Worksheet href (on worksheet list screen)
+	$(".wsanalyst").change(function(){
+		old_url = $(".worksheet_add").attr("href").split("?");
+		url_pt1 = old_url[0];
+		rest_of_it = old_url[1].split("&");
+		url_pt2 = rest_of_it[0];
+		url_pt3 = rest_of_it[1];
+		$(".worksheet_add").attr("href", url_pt1 + "?wsanalyst=" + $(this).val()) + "&" + url_pt3;
+	});
+
+	// selecting a template changes the Add Worksheet href (on worksheet list screen)
 	$(".wstemplate").change(function(){
-		$(".worksheet_add").attr("href", $(".worksheet_add").attr("href").split("?")[0] + "?wstemplate=" + $(this).val());
+		old_url = $(".worksheet_add").attr("href").split("?");
+		url_pt1 = old_url[0];
+		rest_of_it = old_url[1].split("&");
+		url_pt2 = rest_of_it[0];
+		url_pt3 = rest_of_it[1];
+		$(".worksheet_add").attr("href", url_pt1 + "?" + url_pt2 + "&wstemplate=" + $(this).val());
 	});
 
 	// search form - selecting a category fills up the service selector
@@ -46,22 +61,6 @@ $(document).ready(function(){
 	});
 	$("#CategorySelector").trigger("change");
 
-	// instant update of analyst when selection is made in dropdown
-	$("#analyst").change(function(){
-		url = window.location.href
-				.replace("/manage_results", "")
-				.replace("/add_analyses", "") + "/setAnalyst";
-		$.ajax({
-			type:'POST',
-			url: url,
-			data: {'value': $("#analyst").val(),
-				'_authenticator': $('input[name="_authenticator"]').val()},
-			success: function(responseText, statusText, xhr, $form) {
-				$('#analyst_changed').toggle(true);
-				setTimeout(function(){$('#analyst_changed').toggle(false);}, 1000)
-			}
-		});
-	});
 
 	// adding Controls and Blanks - selecting services re-renders the list
 	// of applicable reference samples

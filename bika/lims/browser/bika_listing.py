@@ -400,6 +400,10 @@ class BikaListingView(BrowserView):
 
                 # a list of names of fields that may be edited on this item
                 allow_edit = [],
+
+                # a list of names of fields that are compulsory (if editable)
+                required = [],
+
                 # "before", "after" and replace: dictionary (key is column ID)
                 # A snippet of HTML which will be rendered
                 # before/after/instead of the table cell content.
@@ -510,6 +514,7 @@ class BikaListingTable(tableview.Table):
 
         # get all transitions for all items.
         transitions = {}
+        actions = []
         for obj in [i.get('obj', '') for i in self.items]:
             obj = hasattr(obj, 'getObject') and \
                 obj.getObject() or \
@@ -521,12 +526,16 @@ class BikaListingTable(tableview.Table):
         # on the BikaListingView, the list is restricted to and ordered by
         # these transitions
         if 'transitions' in review_state:
-            ordered = []
             for tid in review_state['transitions']:
                 if tid in transitions:
-                    ordered.append(transitions[tid])
-            transitions = ordered
+                    actions.append(transitions[tid])
         else:
-            transitions = transitions.values()
+            actions = transitions.values()
 
-        return transitions
+        # if there is a review_state['some_state']['custom_actions'] attribute
+        # on the BikaListingView, append these actions to the list.
+        if 'custom_actions' in review_state:
+            for action in review_state['custom_actions']:
+                actions.append(action)
+
+        return actions

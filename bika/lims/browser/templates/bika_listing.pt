@@ -14,14 +14,20 @@
 
 		<span class="documentFirstHeading" tal:content="structure view/title"/>
 
-		<tal:add_actions repeat="add_item python:view.context_actions.keys()">
-			<a tal:attributes="
-			    style python:'background: url(%s) 2px 50%% no-repeat'%(view.context_actions[add_item]['icon']);
-				href python:view.context_actions[add_item]['url'];
-				class python:'context_action_link %s' % (view.context_actions[add_item].get('class',''))">
-				<span tal:replace="python:add_item"/>
-			</a>
-		</tal:add_actions>
+		<!-- Worksheet Analysts dropdown is hacked in over here -->
+		<span class="context_action_dropdown"
+			tal:condition="python:context.portal_type == 'WorksheetFolder'">
+				<span class="fieldRequired" style="margin-left: 3em"/>
+				<select class='wsanalyst'
+					tal:define="alist view/getAnalysts">
+					<option value='' i18n:translate="select_template">Select analyst</option>
+					<tal:options repeat="option alist">
+						<option
+							tal:attributes="value python:option"
+							tal:content="python:alist.getValue(option)"/>
+					</tal:options>
+				</select>
+		</span>
 
 		<!-- Worksheet Templates dropdown is hacked in over here -->
 		<span class="context_action_dropdown"
@@ -36,6 +42,15 @@
 					</tal:options>
 				</select>
 		</span>
+
+		<tal:add_actions repeat="add_item python:view.context_actions.keys()">
+			<a tal:attributes="
+			    style python:'background: url(%s) 2px 50%% no-repeat'%(view.context_actions[add_item]['icon']);
+				href python:view.context_actions[add_item]['url'];
+				class python:'context_action_link %s' % (view.context_actions[add_item].get('class',''))">
+				<span tal:replace="python:add_item"/>
+			</a>
+		</tal:add_actions>
 
     </h1>
 </metal:content-title>

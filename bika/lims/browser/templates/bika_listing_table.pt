@@ -235,6 +235,7 @@ Table cells for each column from in review_state's column list.
 		tal:define="
 			input_width python:5;
 			allow_edit python:column in item['allow_edit'];
+			required python:'required' in item and column in item['required'] or False;
 			before python:column in item['before'] and
 				item['before'][column] or '';
 			after python:column in item['after'] and
@@ -397,7 +398,7 @@ Table cells for each column from in review_state's column list.
 					field column;
 					name string:${column}.${item/uid}:records;
 					uid item/uid;">
-				<option value=""></option>
+				<option value="" tal:condition="not:required"></option>
 				<tal:options tal:repeat="option python:item['choices'][column]">
 					<option
 						tal:attributes="

@@ -6,13 +6,52 @@ from Products.CMFCore.utils import getToolByName
 from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import bikaMessageFactory as _
-from bika.lims import logger
 from bika.lims.browser.bika_listing import BikaListingView
+from bika.lims.browser.bika_listing import WorkflowAction
 from bika.lims.utils import TimeOrDate
 from bika.lims.browser.worksheet import getAnalysts
 from plone.app.content.browser.interfaces import IFolderContentsView
 from zope.interface import implements
 import plone
+import json
+
+
+class WorksheetFolderWorkflowAction(WorkflowAction):
+    """ Workflow actions taken in the WorksheetFolder
+        This function is called to do the workflow actions
+        that apply to worksheets in the WorksheetFolder
+    """
+    def __call__(self):
+        form = self.request.form
+        plone.protect.CheckAuthenticator(form)
+        workflow = getToolByName(self.context, 'portal_workflow')
+        rc = getToolByName(self.context, REFERENCE_CATALOG)
+        action, came_from = WorkflowAction._get_form_workflow_action(self)
+
+        if action == 'reassign':
+            selected_worksheets = WorkflowAction._get_selected_items(self)
+            selected_worksheet_uids = selected_worksheets.keys()
+
+            if selected_worksheets:
+                changes = False
+                for uid in selected_worksheet_uids:
+                    worksheet = selected_worksheets[uid]
+                    # Double-check the state first
+                    if workflow.getInfoFor(worksheet, 'review_state') == 'open':
+                        worksheet.setAnalyst(form['Analyst'][0][uid])
+                        changes = True
+
+                if changes:
+                    message = _('Changes saved.')
+                    self.context.plone_utils.addPortalMessage(message, 'info')
+
+            self.destination_url = self.request.get_header("referer",
+                                   self.context.absolute_url())
+            self.request.response.redirect(self.destination_url)
+        else:
+            # default bika_listing.py/WorkflowAction for other transitions
+            WorkflowAction.__call__(self)
+
 
 class WorksheetFolderListingView(BikaListingView):
     def __init__(self, context, request):
@@ -23,7 +62,7 @@ class WorksheetFolderListingView(BikaListingView):
             'sort_on':'id',
             'sort_order': 'reverse'}
         self.context_actions = {_('Add'):
-                                {'url': 'worksheet_add',
+                                {'url': 'worksheet_add?wsanalyst=&wstemplate=',
                                  'icon': '++resource++bika.lims.images/add.png',
                                  'class': 'worksheet_add'}}
         self.show_table_only = False
@@ -148,6 +187,7 @@ class WorksheetFolderListingView(BikaListingView):
         rc = getToolByName(self, REFERENCE_CATALOG)
         member = mtool.getAuthenticatedMember()
         new_items = []
+        can_reassign = False
         for x in range(len(items)):
             if not items[x].has_key('obj'):
                 new_items.append(items[x])
@@ -155,15 +195,10 @@ class WorksheetFolderListingView(BikaListingView):
             obj = items[x]['obj']
             items[x]['Title'] = obj.Title()
             analyst = obj.getAnalyst().strip()
-            analyst_member = mtool.getMemberById(analyst)
             # XXX This should not be needed - why is contentFilter/analyst not working?
             if 'getAnalyst' in self.contentFilter:
                 if analyst != member.getId():
                     continue
-            if analyst_member != None:
-                items[x]['Analyst'] = analyst_member.getProperty('fullname')
-            else:
-                items[x]['Analyst'] = ''
             wst = obj.getWorksheetTemplate()
             items[x]['Template'] = wst and wst.Title() or ''
             if wst:
@@ -245,7 +280,34 @@ class WorksheetFolderListingView(BikaListingView):
             items[x]['QC'] = ""
             items[x]['replace']['QC'] = " ".join(blanks + controls)
 
+            if items[x]['review_state'] == 'open':
+                items[x]['Analyst'] = analyst
+                items[x]['allow_edit'] = ['Analyst', ]
+                items[x]['required'] = ['Analyst', ]
+                can_reassign = True
+                pairs = []
+                analysts = mtool.searchForMembers(roles = ['Manager', 'LabManager', 'Analyst'])
+                for a in analysts:
+                    uid = a.getId()
+                    fullname = a.getProperty('fullname')
+                    if fullname is None:
+                        continue
+                    pairs.append({'ResultValue': uid, 'ResultText': fullname})
+                items[x]['choices'] = {'Analyst': pairs}
+            else:
+                analyst_member = mtool.getMemberById(analyst)
+                if analyst_member != None:
+                    items[x]['Analyst'] = analyst_member.getProperty('fullname')
+                else:
+                    items[x]['Analyst'] = ''
+
             new_items.append(items[x])
+
+        if can_reassign:
+            for x in range(len(self.review_states)):
+                if self.review_states[x]['id'] in ['all', 'mine', 'open']:
+                    self.review_states[x]['custom_actions'] = [{'id': 'reassign', 'title': 'Reassign'}, ]
+
         return new_items
 
     def getWorksheetTemplates(self):
@@ -255,12 +317,27 @@ class WorksheetFolderListingView(BikaListingView):
                      inactive_state = 'active')]
         return DisplayList(list(items))
 
+    def getAnalysts(self):
+        """ Present the LabManagers and Analysts as options for analyst
+        """
+        mtool = getToolByName(self, 'portal_membership')
+        pairs = []
+        analysts = mtool.searchForMembers(roles = ['Manager', 'LabManager', 'Analyst'])
+        for member in analysts:
+            uid = member.getId()
+            fullname = member.getProperty('fullname')
+            if fullname is None:
+                continue
+            pairs.append((uid, fullname))
+        return DisplayList(list(pairs))
+
+
 class AddWorksheetView(BrowserView):
     """ Handler for the "Add Worksheet" button in Worksheet Folder.
         If a template was selected, the worksheet is pre-populated here.
     """
 
-    def __call__(self, wstemplate = None):
+    def __call__(self, wsanalyst = None, wstemplate = None):
         form = self.request.form
         rc = getToolByName(self.context, REFERENCE_CATALOG)
         wf = getToolByName(self.context, "portal_workflow")
@@ -271,10 +348,15 @@ class AddWorksheetView(BrowserView):
         ws = self.context[ws_id]
         ws.processForm()
 
-        # Current member as analyst
-        member_id = pm.getAuthenticatedMember().getId()
-        if member_id in [m[0] for m in getAnalysts(self.context)]:
-            ws.setAnalyst(member_id)
+        # Validation
+        if not wsanalyst:
+            message = _("Analyst must be specified.")
+            self.context.plone_utils.addPortalMessage(message, 'info')
+            self.request.RESPONSE.redirect(self.context.absolute_url())
+            return
+
+        # Set analyst
+        ws.setAnalyst(wsanalyst)
 
         # overwrite saved context UID for event subscribers
         self.request['context_uid'] = ws.UID()
