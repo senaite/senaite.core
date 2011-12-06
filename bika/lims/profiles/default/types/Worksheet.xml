@@ -15,7 +15,7 @@
  <property name="filter_content_types">False</property>
  <property name="allowed_content_types">
   <element value="DuplicateAnalysis"/>
-  <element value="RejectAnalysis"/>
+  <element value="Attachment"/>
  </property>
  <property name="allow_discussion">False</property>
 

@@ -366,63 +366,6 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         func(self, REQUEST, RESPONSE)
         return
 
-    def addWSAttachment(self, REQUEST = None, RESPONSE = None):
-        """ Add the file as an attachment
-        """
-        this_file = self.REQUEST.form['AttachmentFile_file']
-        if self.REQUEST.form.has_key('Analysis'):
-            analysis_uid = self.REQUEST.form['Analysis']
-        else:
-            analysis_uid = None
-        if self.REQUEST.form.has_key('Service'):
-            service_uid = self.REQUEST.form['Service']
-        else:
-            service_uid = None
-
-        tool = getToolByName(self, REFERENCE_CATALOG)
-        if analysis_uid:
-            analysis = tool.lookupObject(analysis_uid)
-            attachmentid = self.generateUniqueId('Attachment')
-            client = analysis.aq_parent.aq_parent
-            client.invokeFactory(id = attachmentid, type_name = "Attachment")
-            attachment = client._getOb(attachmentid)
-            attachment.edit(
-                AttachmentFile = this_file,
-                AttachmentType = self.REQUEST.form['AttachmentType'],
-                AttachmentKeys = self.REQUEST.form['AttachmentKeys'])
-            attachment.processForm()
-            attachment.reindexObject()
-
-            others = analysis.getAttachment()
-            attachments = []
-            for other in others:
-                attachments.append(other.UID())
-            attachments.append(attachment.UID())
-            analysis.setAttachment(attachments)
-
-        if service_uid:
-            for analysis in self.getAnalyses():
-                attachmentid = self.generateUniqueId('Attachment')
-                client = analysis.aq_parent.aq_parent
-                client.invokeFactory(id = attachmentid, type_name = "Attachment")
-                attachment = client._getOb(attachmentid)
-                attachment.edit(
-                    AttachmentFile = this_file,
-                    AttachmentType = self.REQUEST.form['AttachmentType'],
-                    AttachmentKeys = self.REQUEST.form['AttachmentKeys'])
-                attachment.processForm()
-                attachment.reindexObject()
-
-                others = analysis.getAttachment()
-                attachments = []
-                for other in others:
-                    attachments.append(other.UID())
-                attachments.append(attachment.UID())
-                analysis.setAttachment(attachments)
-
-        if RESPONSE:
-            RESPONSE.redirect('%s/manage_results' % self.absolute_url())
-
     security.declarePublic('getWorksheetServices')
     def getWorksheetServices(self):
         """ get list of analysis services present on this worksheet

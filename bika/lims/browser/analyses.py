@@ -218,10 +218,10 @@ class AnalysesView(BikaListingView):
                     for attachment in obj.getAttachment():
                         af = attachment.getAttachmentFile()
                         icon = af.getBestIcon()
-                        attachments += "<span class='attachment' id='%s'>" % (attachment.id)
+                        attachments += "<span class='attachment' attachment_uid='%s'>" % (attachment.UID())
                         if icon: attachments += "<img src='%s/%s'/>" % (portal.absolute_url(), icon)
                         attachments += '<a href="%s/at_download/AttachmentFile"/>%s</a>' % (attachment.absolute_url(), af.filename)
-                        attachments += "<img class='deleteAttachmentButton' attachment_id='%s' src='%s'/>" % (attachment.id, "++resource++bika.lims.images/delete.png")
+                        attachments += "<img class='deleteAttachmentButton' attachment_uid='%s' src='%s'/>" % (attachment.UID(), "++resource++bika.lims.images/delete.png")
                         attachments += "</br></span>"
                 items[i]['replace']['Attachments'] = attachments[:-12] + "</span>"
 

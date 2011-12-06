@@ -67,6 +67,9 @@ table {
 #content h1 {
     margin-top: .1em;
 }
+#content p, #content table, #content dl, dl.portlet p, dl.portlet {
+    margin-bottom: 1em;
+}
 
 #content dl.portalMessage {
 	margin-top:.25em;
@@ -286,6 +289,10 @@ div.attachments {
   padding-top:.4em;
 }
 
+.attachments td {
+  padding:2px;
+}
+
 .barcode {
   whitespace:nowrap;
 }
@@ -406,17 +413,18 @@ table.analysisrequest input {
 
 .delAttachmentButton {
     background: &dtml-globalBackgroundColor; url(&dtml-portal_url;/++resource++bika.lims.images/delete.png) center center no-repeat;
-    border: &dtml-borderWidth; &dtml-borderStyle; &dtml-globalBorderColor; ! important;
+	background-color: transparent;
+    border: medium none ! important;
     cursor: pointer;
-    height: 15px;
-    width: 15px;
+    height: 16px;
+    width: 16px;
 }
 .removeButton {
     background: &dtml-globalBackgroundColor; url(&dtml-portal_url;/++resource++bika.lims.images/delete.png) center center no-repeat;
     border: &dtml-borderWidth; &dtml-borderStyle; &dtml-globalBorderColor; ! important;
     cursor: pointer;
-    height: 15px;
-    width: 15px;
+    height: 16px;
+    width: 16px;
     visibility: hidden;
 }
 

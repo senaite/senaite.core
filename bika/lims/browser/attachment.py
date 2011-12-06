@@ -1,5 +1,4 @@
 from Products.Five.browser import BrowserView
-from Products.Archetypes.config import REFERENCE_CATALOG
 from bika.lims import bikaMessageFactory as _
 from Products.CMFCore.utils import getToolByName
 import json, plone
@@ -15,16 +14,19 @@ class ajaxDeleteAnalysisAttachment():
     def __call__(self):
         form = self.request.form
         plone.protect.CheckAuthenticator(self.request.form)
-        attachment_id = form.get('attachment_id', None)
-        if not attachment_id:
+        attachment_uid = form.get('attachment_uid', None)
+        if not attachment_uid:
             return "error"
-        rc = getToolByName(self.context, REFERENCE_CATALOG)
-        client = self.context.aq_parent
-        if attachment_id not in client.objectIds():
-            return "error"
-        attachment = client[attachment_id]
+        uc = getToolByName(self.context, 'uid_catalog')
+        attachment = uc(UID=attachment_uid)
+        if not attachment:
+            return "%s does not exist" % attachment_uid
+        attachment = attachment[0].getObject()
         for analysis in attachment.getBackReferences("AnalysisAttachment"):
             analysis.setAttachment([r for r in analysis.getAttachment() \
-                                    if r.id != attachment.id])
-        client.manage_delObjects(ids=[attachment_id,])
+                                    if r.UID() != attachment.UID()])
+        for analysis in attachment.getBackReferences("DuplicateAnalysisAttachment"):
+            analysis.setAttachment([r for r in analysis.getAttachment() \
+                                    if r.UID() != attachment.UID()])
+        attachment.aq_parent.manage_delObjects(ids=[attachment.getId(),])
         return "success"
