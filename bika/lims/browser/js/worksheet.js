@@ -17,7 +17,7 @@ $(document).ready(function(){
 		rest_of_it = old_url[1].split("&");
 		url_pt2 = rest_of_it[0];
 		url_pt3 = rest_of_it[1];
-		$(".worksheet_add").attr("href", url_pt1 + "?wsanalyst=" + $(this).val()) + "&" + url_pt3;
+		$(".worksheet_add").attr("href", url_pt1 + "?wsanalyst=" + $(this).val() + "&" + url_pt3);
 	});
 
 	// selecting a template changes the Add Worksheet href (on worksheet list screen)

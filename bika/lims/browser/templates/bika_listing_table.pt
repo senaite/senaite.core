@@ -24,6 +24,21 @@
 	tal:omit-tag="view/table_only"/>
 <input type="hidden" name="form_id" tal:attributes="value view/bika_listing/form_id"
 	tal:omit-tag="view/table_only"/>
+
+<tal:worksheet-cheat-1 condition="python:hasattr(view.bika_listing, 'analyst')">
+	<input type="hidden"
+		name="analyst"
+		tal:omit-tag="view/table_only"
+		tal:attributes="value python:view.bika_listing.analyst"/>
+</tal:worksheet-cheat-1>
+
+<tal:worksheet-cheat-2 condition="python:hasattr(view.bika_listing, 'instrument')">
+	<input type="hidden"
+		name="instrument"
+		tal:omit-tag="view/table_only"
+		tal:attributes="value python:view.bika_listing.instrument"/>
+</tal:worksheet-cheat-2>
+
 <input type="hidden"
 	name="specs"
 	tal:omit-tag="view/table_only"
@@ -394,7 +409,7 @@ Table cells for each column from in review_state's column list.
 	<span tal:omit-tag="python:True"
 		tal:condition="python:field_type == 'choices'">
 		<span tal:condition="allow_edit">
-			<select class="listing_select_entry"
+			<select class="listing_select_entry" style="font-size: 100%"
 				tal:condition="python:column in item['choices']"
 				tal:attributes="
 					tabindex tabindex/next;

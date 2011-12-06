@@ -173,20 +173,6 @@ class WorksheetWorkflowAction(WorkflowAction):
             WorkflowAction.__call__(self)
 
 
-def getAnalysts(context):
-    """ Present the LabManagers and Analysts as options for analyst
-    """
-    mtool = getToolByName(context, 'portal_membership')
-    pairs = []
-    analysts = mtool.searchForMembers(roles = ['Manager', 'LabManager', 'Analyst'])
-    for member in analysts:
-        uid = member.getId()
-        fullname = member.getProperty('fullname')
-        if fullname is None:
-            continue
-        pairs.append((uid, fullname))
-    return pairs
-
 def getAnalystName(context):
     """ Returns the name of the currently assigned analyst
     """
@@ -235,13 +221,8 @@ class WorksheetAnalysesView(AnalysesView):
              },
         ]
 
-    def getAnalysts(self):
-        return getAnalysts(self.context)
-
-    def getAnalystName(self):
-        return getAnalystName(self.context)
-
     def folderitems(self):
+        self.analyst = self.context.getAnalyst().strip()
         self.contentsMethod = self.context.getFolderContents
         items = AnalysesView.folderitems(self)
         layout = self.context.getLayout()
@@ -406,13 +387,8 @@ class ManageResultsView(BrowserView):
     def __call__(self):
         self.icon = "++resource++bika.lims.images/worksheet_big.png"
         self.Analyses = WorksheetAnalysesView(self.context, self.request)
+        self.analystname = getAnalystName(self.context)
         return self.template()
-
-    def getAnalysts(self):
-        return getAnalysts(self.context)
-
-    def getAnalystName(self):
-        return getAnalystName(self.context)
 
 class AddAnalysesView(BikaListingView):
     implements(IViewView)
@@ -524,12 +500,6 @@ class AddAnalysesView(BikaListingView):
             items[x]['CategoryTitle'] = service.getCategory().Title()
             items[x]['ClientTitle'] = client.Title()
         return items[:100]
-
-    def getAnalysts(self):
-        return getAnalysts(self.context)
-
-    def getAnalystName(self):
-        return getAnalystName(self.context)
 
     def getServices(self):
         bsc = getToolByName(self.context, 'bika_setup_catalog')
