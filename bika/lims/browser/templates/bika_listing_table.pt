@@ -265,8 +265,10 @@ Table cells for each column from in review_state's column list.
 
 	<span tal:omit-tag="python:True"
 		tal:condition="not:replace">
+
 	<span tal:omit-tag="python:True"
-		tal:condition="python:field_type == 'string'">		<tal:comment replace="nothing"><!-- string --></tal:comment>
+		tal:condition="python:field_type == 'string'">
+		<tal:comment replace="nothing"><!-- string --></tal:comment>
 		<tal:comment replace="nothing"><!-- interim field --></tal:comment>
 		<span tal:omit-tag="python:True"
 			tal:condition="python:type(item[column]) == type({})">
@@ -388,8 +390,9 @@ Table cells for each column from in review_state's column list.
 				checked python:item.get(column) and 'yes' or '';"/>
 	</span>
 
+	<tal:comment replace="nothing"><!-- choices --></tal:comment>
 	<span tal:omit-tag="python:True"
-		tal:condition="python:field_type == 'choices'">		<tal:comment replace="nothing"><!-- choices --></tal:comment>
+		tal:condition="python:field_type == 'choices'">
 		<span tal:condition="allow_edit">
 			<select class="listing_select_entry"
 				tal:condition="python:column in item['choices']"

@@ -17,7 +17,7 @@
 		<!-- Worksheet Analysts dropdown is hacked in over here -->
 		<span class="context_action_dropdown"
 			tal:condition="python:context.portal_type == 'WorksheetFolder'">
-				<span class="fieldRequired" style="margin-left: 3em"/>
+				<span class="fieldRequired" style="margin-left: 3em"></span>
 				<select class='wsanalyst'
 					tal:define="alist view/getAnalysts">
 					<option value='' i18n:translate="select_template">Select analyst</option>
