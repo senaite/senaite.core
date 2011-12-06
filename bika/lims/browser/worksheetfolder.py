@@ -10,7 +10,7 @@ from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.browser.bika_listing import WorkflowAction
 from bika.lims.utils import TimeOrDate
-from bika.lims.browser.worksheet import getAnalysts
+from bika.lims.utils import getAnalysts
 from plone.app.content.browser.interfaces import IFolderContentsView
 from zope.interface import implements
 import plone
@@ -188,6 +188,10 @@ class WorksheetFolderListingView(BikaListingView):
         rc = getToolByName(self, REFERENCE_CATALOG)
         member = mtool.getAuthenticatedMember()
         new_items = []
+        analysts = getAnalysts(self)
+        analyst_choices = []
+        for a in analysts:
+            analyst_choices.append({'ResultValue': a[0], 'ResultText': a[1]})
         can_reassign = False
         for x in range(len(items)):
             if not items[x].has_key('obj'):
@@ -286,15 +290,7 @@ class WorksheetFolderListingView(BikaListingView):
                 items[x]['allow_edit'] = ['Analyst', ]
                 items[x]['required'] = ['Analyst', ]
                 can_reassign = True
-                pairs = []
-                analysts = mtool.searchForMembers(roles = ['Manager', 'LabManager', 'Analyst'])
-                for a in analysts:
-                    uid = a.getId()
-                    fullname = a.getProperty('fullname')
-                    if fullname is None:
-                        continue
-                    pairs.append({'ResultValue': uid, 'ResultText': fullname})
-                items[x]['choices'] = {'Analyst': pairs}
+                items[x]['choices'] = {'Analyst': analyst_choices}
             else:
                 analyst_member = mtool.getMemberById(analyst)
                 if analyst_member != None:
@@ -320,17 +316,9 @@ class WorksheetFolderListingView(BikaListingView):
 
     def getAnalysts(self):
         """ Present the LabManagers and Analysts as options for analyst
+            Used in bika_listing.pt
         """
-        mtool = getToolByName(self, 'portal_membership')
-        pairs = []
-        analysts = mtool.searchForMembers(roles = ['Manager', 'LabManager', 'Analyst'])
-        for member in analysts:
-            uid = member.getId()
-            fullname = member.getProperty('fullname')
-            if fullname is None:
-                continue
-            pairs.append((uid, fullname))
-        return DisplayList(list(pairs))
+        return DisplayList(getAnalysts(self.context))
 
 
 class AddWorksheetView(BrowserView):
@@ -339,6 +327,13 @@ class AddWorksheetView(BrowserView):
     """
 
     def __call__(self, wsanalyst = None, wstemplate = None):
+        # Validation
+        if not wsanalyst:
+            message = _("Analyst must be specified.")
+            self.context.plone_utils.addPortalMessage(message, 'info')
+            self.request.RESPONSE.redirect(self.context.absolute_url())
+            return
+
         form = self.request.form
         rc = getToolByName(self.context, REFERENCE_CATALOG)
         wf = getToolByName(self.context, "portal_workflow")
@@ -350,13 +345,6 @@ class AddWorksheetView(BrowserView):
         ws.processForm()
         zope.event.notify(ObjectEditedEvent(ws))
 
-
-        # Validation
-        if not wsanalyst:
-            message = _("Analyst must be specified.")
-            self.context.plone_utils.addPortalMessage(message, 'info')
-            self.request.RESPONSE.redirect(self.context.absolute_url())
-            return
 
         # Set analyst
         ws.setAnalyst(wsanalyst)

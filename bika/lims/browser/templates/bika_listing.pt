@@ -18,7 +18,7 @@
 		<span class="context_action_dropdown"
 			tal:condition="python:context.portal_type == 'WorksheetFolder'">
 				<span class="fieldRequired" style="margin-left: 3em"></span>
-				<select class='wsanalyst'
+				<select class='wsanalyst' style="font-size: 100%"
 					tal:define="alist view/getAnalysts">
 					<option value='' i18n:translate="select_template">Select analyst</option>
 					<tal:options repeat="option alist">
@@ -32,7 +32,7 @@
 		<!-- Worksheet Templates dropdown is hacked in over here -->
 		<span class="context_action_dropdown"
 			tal:condition="python:context.portal_type == 'WorksheetFolder'">
-				<select class='wstemplate'
+				<select class='wstemplate' style="font-size: 100%"
 					tal:define="wstlist view/getWorksheetTemplates">
 					<option value='' i18n:translate="select_template">Select template</option>
 					<tal:options repeat="option wstlist">

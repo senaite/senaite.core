@@ -36,7 +36,7 @@
 
 	<tal:analyst>
 		<label for="analyst" i18n:translate="Assigned analyst: ">Assigned analyst: </label>
-		<span tal:content="view/getAnalystName"></span>
+		<span tal:content="view/analystname"></span>
 		<br/>
 	</tal:analyst>
 

@@ -88,6 +88,8 @@ schema = BikaSchema.copy() + Schema((
     BooleanField('ReportDryMatter',
         default = False,
     ),
+    StringField('Analyst',
+    ),
     ###
 
     ComputedField('ClientUID',
