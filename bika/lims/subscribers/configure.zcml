@@ -89,7 +89,7 @@
     <!-- Apply ID Server object renaming to objects with IGenerateUniqueId -->
     <subscriber
       for="bika.lims.interfaces.IGenerateUniqueId
-           Products.Archetypes.interfaces.IObjectEditedEvent"
+           Products.Archetypes.interfaces.IObjectInitializedEvent"
       handler="bika.lims.subscribers.objectinitialized.generateUniqueId_rename"
     />
 

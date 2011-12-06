@@ -32,6 +32,9 @@ schema = schema.copy() + Schema((
         relationship = 'DuplicateAnalysisAttachment',
     ),
 
+    ComputedField('ClientOrderNumber',
+        expression = 'context.getAnalysis() and context.getAnalysis().getClientOrderNumber()',
+    ),
     ComputedField('Service',
         expression = 'context.getAnalysis() and context.getAnalysis().getService()',
     ),
