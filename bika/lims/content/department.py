@@ -7,9 +7,11 @@ from Products.Archetypes.references import HoldingReference
 from Products.CMFCore.utils import getToolByName
 from bika.lims.config import I18N_DOMAIN, PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
+from bika.lims.interfaces import IGenerateUniqueId
 from AccessControl import ClassSecurityInfo
 import sys
 from bika.lims import bikaMessageFactory as _
+from zope.interface import implements
 
 schema = BikaSchema.copy() + Schema((
     ReferenceField('Manager',
@@ -49,6 +51,7 @@ schema['description'].widget.visible = True
 schema['description'].schemata = 'default'
 
 class Department(BaseContent):
+    implements(IGenerateUniqueId)
     security = ClassSecurityInfo()
     displayContentsTab = False
     schema = schema

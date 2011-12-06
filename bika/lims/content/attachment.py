@@ -10,6 +10,8 @@ from Products.CMFCore.utils import getToolByName
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.config import I18N_DOMAIN, PROJECTNAME
 from bika.lims import bikaMessageFactory as _
+from bika.lims.interfaces import IGenerateUniqueId
+from zope.interface import implements
 
 schema = BikaSchema.copy() + Schema((
     ComputedField('RequestID',
@@ -63,6 +65,7 @@ schema['id'].required = False
 schema['title'].required = False
 
 class Attachment(BaseFolder):
+    implements(IGenerateUniqueId)
     security = ClassSecurityInfo()
     displayContentsTab = False
     schema = schema

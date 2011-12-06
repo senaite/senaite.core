@@ -9,11 +9,12 @@ from bika.lims.config import I18N_DOMAIN, ATTACHMENT_OPTIONS, \
     ARIMPORT_OPTIONS, PROJECTNAME
 from bika.lims.content.bikaschema import BikaFolderSchema
 from bika.lims.interfaces import IBikaSetup
-from bika.lims.utils import generateUniqueId
 from plone.app.folder import folder
 from zope.interface import implements
 import sys
 from bika.lims import bikaMessageFactory as _
+
+# no comments!
 
 class PrefixesField(RecordsField):
     """a list of prefixes per portal_type"""
@@ -182,7 +183,7 @@ schema = BikaFolderSchema.copy() + Schema((
         )
     ),
     LinesField('AutoPrintLabels',
-        schemata = _("Label Printing"),
+        schemata = _("Labels"),
         vocabulary = LABEL_AUTO_OPTIONS,
         widget = SelectionWidget(
             format = 'select',
@@ -194,7 +195,7 @@ schema = BikaFolderSchema.copy() + Schema((
         )
     ),
     LinesField('AutoLabelSize',
-        schemata = _("Label Printing"),
+        schemata = _("Labels"),
         vocabulary = LABEL_AUTO_SIZES,
         widget = SelectionWidget(
             format = 'select',
@@ -203,17 +204,53 @@ schema = BikaFolderSchema.copy() + Schema((
         )
     ),
     PrefixesField('Prefixes',
-         schemata = _("Prefixes"),
-         fixedSize=8,
-         widget=RecordsWidget(
+        schemata = _("ID Server"),
+        fixedSize=8,
+        widget=RecordsWidget(
             label = _("Prefixes"),
             description = _("Define the prefixes for the unique sequential IDs the system issues "
                             "for objects such as samples and analysis requests. In the 'Padding' "
                             "field, indicate with how many leading zeros the numbers must be padded. "
                             "E.g. a prefix of AR with padding of 4 for analysis requests, will see "
-                            "them numbered from AR0001 to AR9999"),
+                            "them numbered from AR0001 to AR9999."),
             allowDelete=False,
         )
+    ),
+    IntegerField('SampleIDPadding',
+        schemata = _("ID Server"),
+        required = 1,
+        default = 4,
+        widget = IntegerWidget(
+            label = _("Sample ID Padding"),
+            description = _("The length of the zero-padding for Sample IDs"),
+        )
+    ),
+    IntegerField('ARIDPadding',
+        schemata = _("ID Server"),
+        required = 1,
+        default = 2,
+        widget = IntegerWidget(
+            label = _("AR ID Padding"),
+            description = _("The length of the zero-padding for the AR number in AR IDs"),
+        )
+    ),
+    BooleanField('ExternalIDServer',
+        schemata = _("ID Server"),
+        default = False,
+        widget = BooleanWidget(
+            label_msgid = 'use_external_id_server',
+            label = "Use external ID server",
+            description_msgid = 'use_external_id_server_description',
+            description = str("Check this if you want to use a seperate ID server. "
+                              "Prefixes are configurable seperately in each Bika site.")
+        ),
+    ),
+    StringField('IDServerURL',
+        schemata = _("ID Server"),
+        widget = StringWidget(
+            label_msgid = 'id_server_url',
+            label = "ID Server URL",
+        ),
     ),
 ))
 
@@ -227,10 +264,6 @@ class BikaSetup(folder.ATFolder):
     security = ClassSecurityInfo()
     schema = schema
     implements(IBikaSetup)
-
-    security.declarePublic('generateUniqueId')
-    def generateUniqueId (self, type_name, batch_size = None):
-        return generateUniqueId(self, type_name, batch_size)
 
     def getAttachmentsPermitted(self):
         """ are any attachments permitted """

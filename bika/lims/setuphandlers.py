@@ -390,7 +390,9 @@ class BikaGenerator:
         bsc.addIndex('getCanonicalPath', 'ExtendedPathIndex')
         bsc.addIndex('UID', 'FieldIndex')
         bsc.addIndex('id', 'FieldIndex')
+        bsc.addIndex('getId', 'FieldIndex')
         bsc.addIndex('portal_type', 'FieldIndex')
+        bsc.addIndex('created', 'DateIndex')
         bsc.addIndex('getObjPositionInParent', 'GopipIndex')
 
         bsc.addIndex('Title', 'FieldIndex', 'Title')
@@ -451,6 +453,7 @@ class BikaGenerator:
         bsc.addColumn('getCanonicalPath')
         bsc.addColumn('UID')
         bsc.addColumn('id')
+        bsc.addColumn('getId')
         bsc.addColumn('portal_type')
         bsc.addColumn('getObjPositionInParent')
 

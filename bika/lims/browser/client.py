@@ -1,6 +1,7 @@
 from AccessControl import getSecurityManager
 from DateTime import DateTime
 from Products.Archetypes.config import REFERENCE_CATALOG
+from Products.Archetypes.event import ObjectEditedEvent
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser import BrowserView
 from bika.lims import bikaMessageFactory as _
@@ -630,9 +631,11 @@ class SetSpecsToLabDefaults(BrowserView):
                  getClientUID = self.context.bika_setup.bika_analysisspecs.UID())
         ls = [s.getObject() for s in ls]
         for labspec in ls:
-            cs_id = self.context.generateUniqueId('AnalysisSpec')
-            self.context.invokeFactory(id = cs_id, type_name = 'AnalysisSpec')
-            clientspec = self.context[cs_id]
+            _id = self.context.generateUniqueId('AnalysisSpec')
+            self.context.invokeFactory(id = _id, type_name = 'AnalysisSpec')
+            clientspec = self.context[_id]
+            clientspec.processForm()
+            zope.event.notify(ObjectEditedEvent(clientspec))
             clientspec.edit(
                 SampleType = labspec.getSampleType(),
                 ResultsRange = labspec.getResultsRange(),

@@ -5,9 +5,11 @@ from Products.Archetypes.references import HoldingReference
 from Products.ATExtensions.ateapi import RecordsField as RecordsField
 from bika.lims.browser.widgets import RecordsWidget
 from bika.lims.content.bikaschema import BikaSchema
+from bika.lims.interfaces import IGenerateUniqueId
 from bika.lims.config import I18N_DOMAIN, PROJECTNAME
 import sys
 from bika.lims import bikaMessageFactory as _
+from zope.interface import implements
 
 schema = BikaSchema.copy() + Schema((
     TextField('Instructions',
@@ -33,8 +35,8 @@ schema['description'].widget.visible = True
 schema['description'].widget.label = _("Description")
 schema['description'].widget.description = _("Describes the method in layman terms. This information is made available to lab clients")
 
-
 class Method(BaseFolder):
+    implements(IGenerateUniqueId)
     security = ClassSecurityInfo()
     displayContentsTab = False
     schema = schema

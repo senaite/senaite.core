@@ -1,5 +1,6 @@
 from App.Common import package_home
 from Products.Archetypes.config import REFERENCE_CATALOG
+from Products.Archetypes.event import ObjectEditedEvent
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
@@ -14,8 +15,8 @@ import Globals
 import App
 import tempfile
 import transaction
+import zope
 import time
-
 
 class LoadSetupData(BrowserView):
     template = ViewPageTemplateFile("templates/load_setup_data.pt")
@@ -23,7 +24,8 @@ class LoadSetupData(BrowserView):
     def __init__(self, context, request):
         BrowserView.__init__(self, context, request)
         self.title = _("Load Setup Data")
-        self.description = _("Please.")
+        self.description = _("load_setup_data_descr",
+                             "Submit a valid Open XML (.XLSX) file containing Bika setup records to continue.")
         self.text = _(" ")
         # dependencies to resolve
         self.deferred = {}
@@ -159,6 +161,8 @@ class LoadSetupData(BrowserView):
             obj.edit(title = unicode(row['title']),
                      description = unicode(row['description']))
             obj.processForm()
+            zope.event.notify(ObjectEditedEvent(obj))
+
 
     def load_lab_users(self, sheet):
         portal_registration = getToolByName(self.context, 'portal_registration')
@@ -214,10 +218,11 @@ class LoadSetupData(BrowserView):
         folder = self.context.bika_setup.bika_labcontacts
         for row in rows[3:]:
             row = dict(zip(fields, row))
-            labcontact_id = folder.generateUniqueId('LabContact')
-            folder.invokeFactory('LabContact', id = labcontact_id)
-            obj = folder[labcontact_id]
+            _id = folder.generateUniqueId('LabContact')
+            folder.invokeFactory('LabContact', id = _id)
+            obj = folder[_id]
             obj.processForm()
+#            zope.event.notify(ObjectEditedEvent(obj))
             Fullname = unicode(row['Firstname']) + " " + unicode(row['Surname'])
             obj.edit(
                 title = Fullname,
@@ -245,9 +250,9 @@ class LoadSetupData(BrowserView):
         folder = self.context.bika_setup.bika_departments
         for row in rows[3:]:
             row = dict(zip(fields, row))
-            dep_id = folder.generateUniqueId('Department')
-            folder.invokeFactory('Department', id = dep_id)
-            obj = folder[dep_id]
+            _id = folder.generateUniqueId('Department')
+            folder.invokeFactory('Department', id = _id)
+            obj = folder[_id]
             manager = None
             for contact in lab_contacts:
                 contact = contact.getObject()
@@ -263,6 +268,7 @@ class LoadSetupData(BrowserView):
                      Manager = manager.UID())
             self.departments[unicode(row['title'])] = obj
             obj.processForm()
+            zope.event.notify(ObjectEditedEvent(obj))
 
             # set importedlab contact's department references
             if hasattr(self, 'lab_contacts'):
@@ -282,9 +288,9 @@ class LoadSetupData(BrowserView):
         folder = self.context.clients
         for row in rows[3:]:
             row = dict(zip(fields, row))
-            client_id = folder.generateUniqueId('Client')
-            folder.invokeFactory('Client', id = client_id)
-            obj = folder[client_id]
+            _id = folder.generateUniqueId('Client')
+            folder.invokeFactory('Client', id = _id)
+            obj = folder[_id]
             obj.edit(AccountNumber = unicode(row['AccountNumber']),
                         Name = unicode(row['Name']),
                         MemberDiscountApplies = row['MemberDiscountApplies'] and True or False,
@@ -292,6 +298,7 @@ class LoadSetupData(BrowserView):
                         Phone = unicode(row['Telephone']),
                         Fax = unicode(row['Fax']))
             obj.processForm()
+            zope.event.notify(ObjectEditedEvent(obj))
 
     def load_client_contacts(self, sheet):
         nr_rows = sheet.get_highest_row()
@@ -308,9 +315,9 @@ class LoadSetupData(BrowserView):
             if len(client) == 0:
                 raise IndexError(_("Client invalid: '%s'" % unicode(row['_Client_Name'])))
             client = client[0].getObject()
-            contact_id = client.generateUniqueId('Contact')
-            client.invokeFactory('Contact', id = contact_id)
-            contact = client[contact_id]
+            _id = client.generateUniqueId('Contact')
+            client.invokeFactory('Contact', id = _id)
+            contact = client[_id]
             cc = self.portal_catalog(portal_type="Contact",
                                      getUsername = [c.strip() for c in unicode(row['CC']).split(',')])
             if row['CC'] and not cc:
@@ -359,6 +366,7 @@ class LoadSetupData(BrowserView):
                 group.addMember(row['Username'])
 
             contact.processForm()
+            zope.event.notify(ObjectEditedEvent(contact))
 
     def fix_client_contact_ccs(self):
         for row in self.client_contacts:
@@ -381,9 +389,9 @@ class LoadSetupData(BrowserView):
         folder = self.context.bika_setup.bika_instruments
         for row in rows[3:]:
             row = dict(zip(fields, row))
-            instrument_id = folder.generateUniqueId('Instrument')
-            folder.invokeFactory('Instrument', id = instrument_id)
-            obj = folder[instrument_id]
+            _id = folder.generateUniqueId('Instrument')
+            folder.invokeFactory('Instrument', id = _id)
+            obj = folder[_id]
             obj.edit(title = unicode(row['title']),
                      description = unicode(row['description']),
                      Type = unicode(row['Type']),
@@ -394,6 +402,7 @@ class LoadSetupData(BrowserView):
                      CalibrationExpiryDate = unicode(row['CalibrationExpiryDate']))
             self.instruments[unicode(row['title'])] = obj
             obj.processForm()
+            zope.event.notify(ObjectEditedEvent(obj))
 
     def load_sample_points(self, sheet):
         nr_rows = sheet.get_highest_row()
@@ -405,9 +414,9 @@ class LoadSetupData(BrowserView):
         folder = self.context.bika_setup.bika_samplepoints
         for row in rows[3:]:
             row = dict(zip(fields, row))
-            sp_id = folder.generateUniqueId('SamplePoint')
-            folder.invokeFactory('SamplePoint', id = sp_id)
-            obj = folder[sp_id]
+            _id = folder.generateUniqueId('SamplePoint')
+            folder.invokeFactory('SamplePoint', id = _id)
+            obj = folder[_id]
             latitude = {'degrees': row['lat deg'],
                         'minutes': row['lat min'],
                         'seconds': row['lat sec'],
@@ -423,6 +432,7 @@ class LoadSetupData(BrowserView):
                      Longitude = longitude,
                      Elevation = unicode(row['Elevation']))
             obj.processForm()
+            zope.event.notify(ObjectEditedEvent(obj))
 
     def load_sample_types(self, sheet):
         nr_rows = sheet.get_highest_row()
@@ -435,15 +445,17 @@ class LoadSetupData(BrowserView):
         self.sampletypes = {}
         for row in rows[3:]:
             row = dict(zip(fields, row))
-            st_id = folder.generateUniqueId('SampleType')
-            folder.invokeFactory('SampleType', id = st_id)
-            obj = folder[st_id]
+            _id = folder.generateUniqueId('SampleType')
+            folder.invokeFactory('SampleType', id = _id)
+            obj = folder[_id]
             self.sampletypes[row['title']] = obj
             obj.edit(title = unicode(row['title']),
                      description = unicode(row['description']),
                      RetentionPeriod = int(row['RetentionPeriod']),
+                     Prefix = unicode(row['Prefix']),
                      Hazardouus = row['Hazardous'] and True or False)
             obj.processForm()
+            zope.event.notify(ObjectEditedEvent(obj))
 
     def load_analysis_categories(self, sheet):
         nr_rows = sheet.get_highest_row()
@@ -455,14 +467,15 @@ class LoadSetupData(BrowserView):
         folder = self.context.bika_setup.bika_analysiscategories
         for row in rows[3:]:
             row = dict(zip(fields, row))
-            ac_id = folder.generateUniqueId('AnalysisCategory')
-            folder.invokeFactory('AnalysisCategory', id = ac_id)
-            obj = folder[ac_id]
+            _id = folder.generateUniqueId('AnalysisCategory')
+            folder.invokeFactory('AnalysisCategory', id = _id)
+            obj = folder[_id]
             obj.edit(title = unicode(row['title']),
                      description = unicode(row['description']),
                      Department = self.departments[unicode(row['Department'])].UID())
             self.cats[unicode(row['title'])] = obj
             obj.processForm()
+            zope.event.notify(ObjectEditedEvent(obj))
 
     def load_methods(self, sheet):
         nr_rows = sheet.get_highest_row()
@@ -474,14 +487,15 @@ class LoadSetupData(BrowserView):
         folder = self.context.bika_setup.bika_methods
         for row in rows[3:]:
             row = dict(zip(fields, row))
-            m_id = folder.generateUniqueId('Method')
-            folder.invokeFactory('Method', id = m_id)
-            obj = folder[m_id]
+            _id = folder.generateUniqueId('Method')
+            folder.invokeFactory('Method', id = _id)
+            obj = folder[_id]
             obj.edit(title = unicode(row['title']),
                      description = unicode(row['description']),
                      Instructions = unicode(row['Instructions']))
 #                     MethodDocument = row['MethodDocument'])
             obj.processForm()
+            zope.event.notify(ObjectEditedEvent(obj))
 
     def CreateServiceObjects(self, services):
         deferred = 0
@@ -533,9 +547,9 @@ class LoadSetupData(BrowserView):
                 deferred = 1
                 continue
             deferred = 0
-            as_id = folder.generateUniqueId('AnalysisService')
-            folder.invokeFactory('AnalysisService', id = as_id)
-            obj = folder[as_id]
+            _id = folder.generateUniqueId('AnalysisService')
+            folder.invokeFactory('AnalysisService', id = _id)
+            obj = folder[_id]
             if row['errorvalue']:
                 u = [{'intercept_min': unicode(row['intercept_min']),
                      'intercept_max': unicode(row['intercept_max']),
@@ -576,6 +590,7 @@ class LoadSetupData(BrowserView):
             service_obj = obj
             self.services[row['Keyword']] = obj
             obj.processForm()
+            zope.event.notify(ObjectEditedEvent(obj))
 
     def load_analysis_services(self, sheet):
         nr_rows = sheet.get_highest_row()
@@ -632,9 +647,9 @@ class LoadSetupData(BrowserView):
                 deferred = 1
                 continue
             deferred = 0
-            c_id = folder.generateUniqueId('Calculation')
-            folder.invokeFactory('Calculation', id = c_id)
-            obj = folder[c_id]
+            _id = folder.generateUniqueId('Calculation')
+            folder.invokeFactory('Calculation', id = _id)
+            obj = folder[_id]
             if row['interim_keyword']:
                 i = [{'keyword': unicode(row['interim_keyword']),
                       'title': unicode(row['interim_title']),
@@ -653,6 +668,7 @@ class LoadSetupData(BrowserView):
             calc_obj = obj
             self.calcs[row['title']] = obj
             obj.processForm()
+            zope.event.notify(ObjectEditedEvent(obj))
 
     def load_calculations(self, sheet):
         nr_rows = sheet.get_highest_row()
@@ -678,9 +694,9 @@ class LoadSetupData(BrowserView):
         folder = self.context.bika_setup.bika_arprofiles
         for row in rows[3:]:
             row = dict(zip(fields, row))
-            m_id = folder.generateUniqueId('ARProfile')
-            folder.invokeFactory('ARProfile', id = m_id)
-            obj = folder[m_id]
+            _id = folder.generateUniqueId('ARProfile')
+            folder.invokeFactory('ARProfile', id=_id)
+            obj = folder[_id]
             services = [d.strip() for d in unicode(row['Service']).split(",")]
             proxies = self.bsc(portal_type="AnalysisService",
                                getKeyword = services)
@@ -693,6 +709,7 @@ class LoadSetupData(BrowserView):
                      Service = [s.UID for s in proxies],
                      ProfileKey = unicode(row['ProfileKey']))
             obj.processForm()
+            zope.event.notify(ObjectEditedEvent(obj))
 
     def load_reference_definitions(self, sheet):
         nr_rows = sheet.get_highest_row()
@@ -706,14 +723,15 @@ class LoadSetupData(BrowserView):
         for row in rows[3:]:
             row = dict(zip(fields, row))
             if row['title']:
-                m_id = folder.generateUniqueId('ReferenceDefinition')
-                folder.invokeFactory('ReferenceDefinition', id = m_id)
-                obj = folder[m_id]
+                _id = folder.generateUniqueId('ReferenceDefinition')
+                folder.invokeFactory('ReferenceDefinition', id = _id)
+                obj = folder[_id]
                 obj.edit(title = unicode(row['title']),
                          description = unicode(row['description']),
                          Blank = row['Blank'] and True or False,
                          Hazardous = row['Hazardous'] and True or False)
                 obj.processForm()
+                zope.event.notify(ObjectEditedEvent(obj))
                 self.definitions[unicode(row['title'])] = obj.UID()
             service = self.services[row['keyword']]
             try: result = int(row['result'])
@@ -743,11 +761,12 @@ class LoadSetupData(BrowserView):
                 if ResultsRange:
                     obj.setResultsRange(ResultsRange)
                     ResultsRange = []
-                _id = folder.generateUniqueId('AnalysisSpec')
+                _id = folder.generateUniqueId('SampleType')
                 id = folder.invokeFactory('AnalysisSpec', id = _id)
-                obj = folder[id]
+                obj = folder[_id]
                 obj.edit(SampleType = self.sampletypes[row['SampleType']].UID())
                 obj.processForm()
+                zope.event.notify(ObjectEditedEvent(obj))
             else:
                 ResultsRange.append({'keyword': row['keyword'],
                                      'min': str(row['min']),
@@ -773,6 +792,7 @@ class LoadSetupData(BrowserView):
                      Phone = unicode(row['Phone']),
                      Fax = unicode(row['Fax']))
             obj.processForm()
+            zope.event.notify(ObjectEditedEvent(obj))
 
     def load_reference_supplier_contacts(self, sheet):
         nr_rows = sheet.get_highest_row()
@@ -785,13 +805,14 @@ class LoadSetupData(BrowserView):
             row = dict(zip(fields, row))
             rs = self.bsc(portal_type="ReferenceSupplier",
                                     Title = row['_ReferenceSupplier_Name'])[0].getObject()
-            _id = rs.generateUniqueId('ReferenceSupplier')
+            _id = rs.generateUniqueId('SupplierContact')
             rs.invokeFactory('SupplierContact', id = _id)
             obj = rs[_id]
             obj.edit(Firstname = unicode(row['Firstname']),
                      Surname = unicode(row['Surname']),
                      EmailAddress = unicode(row['EmailAddress']))
             obj.processForm()
+            zope.event.notify(ObjectEditedEvent(obj))
             if 'Username' in row and \
                'Password' in row:
                 self.context.REQUEST.set('username', unicode(row['Username']))
@@ -823,6 +844,7 @@ class LoadSetupData(BrowserView):
             obj.edit(title = unicode(row['title']),
                      description = unicode(row['description']))
             obj.processForm()
+            zope.event.notify(ObjectEditedEvent(obj))
 
     def load_lab_products(self, sheet):
         nr_rows = sheet.get_highest_row()
@@ -837,6 +859,7 @@ class LoadSetupData(BrowserView):
             _id = folder.generateUniqueId('LabProduct')
             folder.invokeFactory('LabProduct', id = _id)
             obj = folder[_id]
+            zope.event.notify(ObjectEditedEvent(obj))
             obj.edit(title = unicode(row['title']),
                      description = unicode(row['description']),
                      Volume = unicode(row['Volume']),
@@ -865,7 +888,7 @@ class LoadSetupData(BrowserView):
                           'dup':unicode(row['dup'])}]
                     wst_obj.setLayout(wst_obj.getLayout() + l)
                 continue
-            _id = folder.generateUniqueId('WorksheetTemplate')
+            _id = folder.generateUniqueId("WorksheetTemplate")
             folder.invokeFactory('WorksheetTemplate', id = _id)
             obj = folder[_id]
             services = row['Service'] and \
@@ -886,6 +909,7 @@ class LoadSetupData(BrowserView):
                                 'dup':unicode(row['dup'])}])
             wst_obj = obj
             obj.processForm()
+            zope.event.notify(ObjectEditedEvent(obj))
 
     def load_reference_manufacturers(self, sheet):
         nr_rows = sheet.get_highest_row()
@@ -903,3 +927,4 @@ class LoadSetupData(BrowserView):
             obj.edit(title = unicode(row['title']),
                      description = unicode(row['description']))
             obj.processForm()
+            zope.event.notify(ObjectEditedEvent(obj))

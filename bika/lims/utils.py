@@ -1,16 +1,20 @@
-
 from AccessControl import ModuleSecurityInfo, allow_module
 from DateTime import DateTime
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.TranslationServiceTool import TranslationServiceTool
-from reportlab.graphics.barcode import getCodes,getCodeNames,createBarcodeDrawing
 from Products.Five.browser import BrowserView
+from bika.lims.interfaces import IGenerateUniqueId
 from bika.lims import interfaces
 from bika.lims.config import Publish
+from bika.lims import logger
+from bika.lims import bikaMessageFactory as _
 from email.Utils import formataddr
-from zope.component._api import getUtility
-import plone.protect
+from plone.i18n.normalizer.interfaces import IIDNormalizer
+from reportlab.graphics.barcode import getCodes,getCodeNames,createBarcodeDrawing
+from zope.component import getUtility
+from zope.interface import providedBy
 import copy
+import plone.protect
 import re
 
 ModuleSecurityInfo('email.Utils').declarePublic('formataddr')
@@ -155,30 +159,133 @@ def sortable_title(portal, title):
             break
     return sortabletitle
 
-ModuleSecurityInfo('Products.bika.utils').declarePublic('generateUniqueId')
-def generateUniqueId (self, type_name, batch_size = None):
-    """Generate a unique ID for sub objects of the client
+class IDServerUnavailable(Exception):
+    pass
+
+def idserver_generate_id(context, prefix, batch_size = None):
+    """ Generate a new id using external ID server.
     """
+    plone = context.portal_url.getPortalObject()
+    portal_id = plone.getId()
+
+    url = context.bika_setup.getIDServerURL()
     IdServer = getUtility(interfaces.IIdServer)()
 
-    # get prefix
-    prefixes = self.bika_setup.getPrefixes()
-    type_name.replace(' ', '')
-    for d in prefixes:
-        if type_name != d['portal_type']: continue
-        prefix, padding = d['prefix'], d['padding']
+    try:
         if batch_size:
-            next_id = str(IdServer.generate_id(prefix, batch_size = batch_size))
+            # GET
+            f = urllib.urlopen('%s/%s%s?%s' % (
+                    url,
+                    portal_id,
+                    prefix,
+                    urllib.urlencode({'batch_size': batch_size}))
+                    )
         else:
-            next_id = str(IdServer.generate_id(prefix))
-        if padding:
-            next_id = next_id.zfill(int(padding))
-        return '%s%s' % (prefix, next_id)
+            f = urllib.urlopen('%s/%s%s' % (
+                url, portal_id, prefix
+                )
+            )
+        new_id = f.read()
+        f.close()
+    except:
+        from sys import exc_info
+        info = exc_info()
+        import zLOG; zLOG.LOG('INFO', 0, '', 'generate_id raised exception: %s, %s \n idserver_url: %s' % (info[0], info[1], idserver_url))
+        raise IDServerUnavailable(_('ID Server unavailable'))
 
-    if batch_size:
-        next_id = str(IdServer.generate_id(type_name, batch_size = batch_size))
+    return new_id
+
+def generateUniqueId(context):
+    """ Generate pretty content IDs.
+        - context is used to find portal_type; in case there is no
+          prefix specified for the type, the normalized portal_type is
+          used as a prefix instead.
+    """
+    from bika.lims import logger
+    plone_tool = getToolByName(context, 'plone_utils')
+
+    norm = getUtility(IIDNormalizer).normalize
+    prefixes = context.bika_setup.getPrefixes()
+
+    # Special case for Analysis Request IDs to be based on sample
+    if context.portal_type == "AnalysisRequest":
+        s_prefix = context.getSample().getSampleType().getPrefix()
+        s_padding = context.bika_setup.getSampleIDPadding()
+        ar_padding = context.bika_setup.getARIDPadding()
+        sample = context.getSample()
+        sample_id = sample.getId()
+        s_number = sample_id.split(s_prefix)[1]
+        ar_number = sample.getLastARNumber()
+        ar_number = ar_number and ar_number + 1 or 1
+        sample.setLastARNumber(ar_number)
+        return "%s%s-%s"%(s_prefix,
+                           str(s_number).zfill(s_padding),
+                           str(ar_number).zfill(ar_padding))
+
+    # if using external server
+    if context.bika_setup.getExternalIDServer():
+        for d in prefixes:
+            if context.portal_type == "Sample":
+                # Special case for Sample IDs
+                prefix = context.getSampleType().getPrefix()
+                padding = context.bika_setup.getSampleIDPadding()
+                new_id = str(idserver_generate_id(context, prefix))
+                if padding:
+                    new_id = new_id.zfill(int(padding))
+                return '%s%s' % (prefix, new_id)
+            elif d['portal_type'] == context.portal_type:
+                prefix, padding = d['prefix'], d['padding']
+                new_id = str(idserver_generate_id(context, prefix))
+                if padding:
+                    new_id = new_id.zfill(int(padding))
+                return '%s%s' % (prefix, new_id)
+        # no prefix; use portal_type
+        new_id = str(idserver_generate_id(context,
+                                      norm(context.portal_type)))
+        return '%s-%s' % (norm(context.portal_type), new_id)
+
     else:
-        next_id = str(IdServer.generate_id(type_name))
-    return '%s_%s' % (type_name.lower(), next_id)
 
+        def next_id(prefix):
+            # Try grab latest ID of our portal_type
+            # (if external id server is disabled or prefix is not found).
+            # the sort_limit is 2, because the very last object is our
+            # `context`, and we want the one before us to base our ID on
+            at = getToolByName(context, 'archetype_tool')
+            # grab the first catalog we are indexed in.
+            plone = context.portal_url.getPortalObject()
+            catalog_name = context.portal_type in at.catalog_map \
+                and at.catalog_map[context.portal_type][0] or 'portal_catalog'
+            catalog = getToolByName(plone, catalog_name)
 
+            # kind of flimsy; the catalog() call below should return the
+            # 'last' couple items.
+            latest = [l for l in catalog(portal_type = context.portal_type,
+                                         getSampleTypeTitle = context.getSampleTypeTitle())]
+
+            latest = [l for l in latest[-3:] \
+                      if not plone_tool.isIDAutoGenerated(l.id)]
+            existing_id = int(latest and latest[-1].id.split(prefix)[1] or '0')
+            new_id = existing_id + 1
+            return str(new_id)
+
+        for d in prefixes:
+            if context.portal_type == "Sample":
+                # Special case for Sample IDs
+                prefix = context.getSampleType().getPrefix()
+                padding = context.bika_setup.getSampleIDPadding()
+                new_id = next_id(prefix)
+                if padding:
+                    new_id = new_id.zfill(int(padding))
+                return '%s%s' % (prefix, new_id)
+            elif d['portal_type'] == context.portal_type:
+                prefix, padding = d['prefix'], d['padding']
+                new_id = next_id(prefix)
+                if padding:
+                    new_id = new_id.zfill(int(padding))
+                return '%s%s' % (prefix, new_id)
+
+        # no prefix; use portal_type
+        prefix = norm(context.portal_type);
+        new_id = next_id(prefix + '-')
+        return '%s-%s' % (prefix, new_id)

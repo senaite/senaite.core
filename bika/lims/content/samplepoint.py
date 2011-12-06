@@ -4,12 +4,14 @@ from Products.ATContentTypes.lib.historyaware import HistoryAwareMixin
 from Products.CMFCore.permissions import View, ModifyPortalContent
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.config import I18N_DOMAIN, PROJECTNAME
+from bika.lims.interfaces import IGenerateUniqueId
 from bika.lims.browser.fields import CoordinateField
 from bika.lims.browser.widgets import CoordinateWidget
 from bika.lims.browser.fields import DurationField
 from bika.lims.browser.widgets import DurationWidget
 import sys
 from bika.lims import bikaMessageFactory as _
+from zope.interface import implements
 
 schema = BikaSchema.copy() + Schema((
     CoordinateField('Latitude',
@@ -58,6 +60,7 @@ schema['description'].widget.visible = True
 schema['description'].schemata = 'default'
 
 class SamplePoint(BaseContent, HistoryAwareMixin):
+    implements(IGenerateUniqueId)
     security = ClassSecurityInfo()
     displayContentsTab = False
     schema = schema

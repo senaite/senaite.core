@@ -15,6 +15,7 @@ from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFCore.utils import getToolByName, getToolByName
 from bika.lims.config import I18N_DOMAIN, ManageBika, PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
+from bika.lims.interfaces import IGenerateUniqueId
 from bika.lims.utils import sortable_title
 import sys
 import time
@@ -167,14 +168,14 @@ schema = BikaSchema.copy() + Schema((
 schema['title'].required = False
 
 class Sample(BaseFolder, HistoryAwareMixin):
-    implements(ISample)
+    implements(ISample, IGenerateUniqueId)
     security = ClassSecurityInfo()
     displayContentsTab = False
     schema = schema
 
     def Title(self):
         """ Return the Sample ID as title """
-        return self.getSampleID()
+        return self.getId()
 
     def setSampleType(self, value, **kw):
         """ convert SampleType title to UID

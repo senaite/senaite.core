@@ -13,6 +13,7 @@ from Products.CMFCore.utils import getToolByName
 from bika.lims.content.organisation import Organisation
 from bika.lims.config import *
 from bika.lims.interfaces import IClient
+from bika.lims.interfaces import IGenerateUniqueId
 from bika.lims.utils import generateUniqueId
 from zope.interface import implements
 from zope.interface.declarations import alsoProvides
@@ -80,7 +81,7 @@ schema['title'].widget.visible = False
 schema['description'].widget.visible = False
 
 class Client(Organisation):
-    implements(IClient)
+    implements(IClient, IGenerateUniqueId)
     security = ClassSecurityInfo()
     displayContentsTab = False
     schema = schema
@@ -92,29 +93,6 @@ class Client(Organisation):
 
     def setTitle(self, value):
         return self.setName(value)
-
-    security.declarePublic('generateUniqueId')
-    def generateUniqueId (self, type_name, batch_size = None):
-        return generateUniqueId(self, type_name, batch_size)
-
-    security.declarePublic('generateARUniqueId')
-    def generateARUniqueId (self, type_name, sample_id, ar_number):
-        """Generate a unique ID for new ARs
-            Analysisrequests are numbered as subnumbers of the associated sample,
-        """
-        # get prefix
-        prefixes = self.bika_setup.getPrefixes()
-        type_name = type_name.replace(' ', '')
-        for d in prefixes:
-            if type_name == d['portal_type']:
-                padding = int(d['padding'])
-                prefix = d['prefix']
-                break
-
-        sample_number = sample_id.split('-')[1]
-        ar_id = prefix + sample_number + '-' + str(ar_number).zfill(padding)
-
-        return ar_id
 
     security.declarePublic('getContactsDisplayList')
     def getContactsDisplayList(self):

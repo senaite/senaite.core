@@ -1381,7 +1381,7 @@ msgid "Please list all options for the analysis result if you want to restrict i
 msgstr ""
 
 #: ./browser/load_setup_data.py:23
-msgid "Please."
+msgid "load_setup_data_descr"
 msgstr ""
 
 #: ./content/analysisservice.py:191

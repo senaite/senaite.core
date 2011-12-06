@@ -7,11 +7,13 @@ from AccessControl import ClassSecurityInfo
 from Products.Archetypes.public import *
 from Products.Archetypes.references import HoldingReference
 from Products.CMFCore.permissions import View, ModifyPortalContent
+from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.widgets import ServicesWidget
 from bika.lims.config import I18N_DOMAIN, PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
+from bika.lims.interfaces import IGenerateUniqueId
+from zope.interface import Interface, implements
 import sys
-from bika.lims import bikaMessageFactory as _
 
 schema = BikaSchema.copy() + Schema((
     StringField('ProfileKey',
@@ -62,9 +64,9 @@ schema['description'].schemata = 'Description'
 IdField = schema['id']
 
 class ARProfile(BaseContent):
+    implements(IGenerateUniqueId)
     security = ClassSecurityInfo()
     schema = schema
     displayContentsTab = False
-
 
 registerType(ARProfile, PROJECTNAME)

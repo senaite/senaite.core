@@ -23,7 +23,9 @@ from bika.lims.config import I18N_DOMAIN, PROJECTNAME, \
     ManageInvoices
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IAnalysisRequest
-from bika.lims.utils import sortable_title, generateUniqueId
+from bika.lims.interfaces import IGenerateUniqueId
+from bika.lims.utils import sortable_title
+
 from decimal import Decimal
 from email.Utils import formataddr
 from types import ListType, TupleType
@@ -223,7 +225,7 @@ schema = BikaSchema.copy() + Schema((
 schema['title'].required = False
 
 class AnalysisRequest(BaseFolder):
-    implements(IAnalysisRequest)
+    implements(IAnalysisRequest, IGenerateUniqueId)
     security = ClassSecurityInfo()
     displayContentsTab = False
     schema = schema
@@ -237,10 +239,6 @@ class AnalysisRequest(BaseFolder):
     def Title(self):
         """ Return the Request ID as title """
         return self.getRequestID()
-
-    security.declarePublic('generateUniqueId')
-    def generateUniqueId (self, type_name, batch_size = None):
-        return generateUniqueId(self, type_name, batch_size)
 
     def getDefaultMemberDiscount(self):
         """ compute default member discount if it applies """

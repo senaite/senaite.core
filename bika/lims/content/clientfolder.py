@@ -24,10 +24,6 @@ class ClientFolder(folder.ATFolder):
     schema = schema
     security = ClassSecurityInfo()
 
-    security.declarePublic('generateUniqueId')
-    def generateUniqueId (self, type_name, batch_size = None):
-        return generateUniqueId(self, type_name, batch_size)
-
 schemata.finalizeATCTSchema(schema, folderish = True, moveDiscussion = False)
 
 atapi.registerType(ClientFolder, PROJECTNAME)
