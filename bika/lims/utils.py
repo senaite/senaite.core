@@ -10,7 +10,7 @@ from bika.lims import logger
 from bika.lims import bikaMessageFactory as _
 from email.Utils import formataddr
 from plone.i18n.normalizer.interfaces import IIDNormalizer
-from reportlab.graphics.barcode import getCodes,getCodeNames,createBarcodeDrawing
+from reportlab.graphics.barcode import getCodes, getCodeNames, createBarcodeDrawing
 from zope.component import getUtility
 from zope.interface import providedBy
 import copy
@@ -39,6 +39,22 @@ def printfile(portal, from_addr, to_addrs, msg):
     """
     pass
 
+def getAnalysts(context):
+    """ Present the LabManagers and Analysts as options for analyst
+    """
+    mtool = getToolByName(context, 'portal_membership')
+    analysts = {}
+    member = mtool.getAuthenticatedMember()
+    pairs = []
+    analysts = mtool.searchForMembers(roles = ['Manager', 'LabManager', 'Analyst'])
+    for member in analysts:
+        uid = member.getId()
+        fullname = member.getProperty('fullname')
+        if fullname is None:
+            continue
+        pairs.append((uid, fullname))
+    return pairs
+
 def isActive(obj):
     """ Check if obj is inactive or cancelled.
     """
@@ -51,7 +67,7 @@ def isActive(obj):
         return False
     return True
 
-def TimeOrDate(context, datetime, long_format=False):
+def TimeOrDate(context, datetime, long_format = False):
     """ Return the Time date is today,
         otherwise return the Date.
         XXX timeordate needs long/short/time/date formats in bika_setup
@@ -69,9 +85,9 @@ def TimeOrDate(context, datetime, long_format=False):
             dt = datetime.asdatetime().strftime(localTimeOnlyFormat)
         else:
             dt = datetime.asdatetime().strftime(localTimeFormat)
-        dt = dt.replace("PM","pm").replace("AM","am")
+        dt = dt.replace("PM", "pm").replace("AM", "am")
         if len(dt) > 10:
-            dt = dt.replace("12:00 am","")
+            dt = dt.replace("12:00 am", "")
         if dt == "12:00 am":
             dt = datetime.asdatetime().strftime(localTimeFormat)
     else:
@@ -90,7 +106,7 @@ class ajaxGetObject(BrowserView):
         except:
             return ""
         pc = getToolByName(self.context, 'portal_catalog')
-        id = self.request.get("id", '').replace("*","")
+        id = self.request.get("id", '').replace("*", "")
         items = pc(self.request)
         if items:
             return items[0].getObject().absolute_url()
@@ -218,7 +234,7 @@ def generateUniqueId(context):
         ar_number = sample.getLastARNumber()
         ar_number = ar_number and ar_number + 1 or 1
         sample.setLastARNumber(ar_number)
-        return "%s%s-%s"%(s_prefix,
+        return "%s%s-%s" % (s_prefix,
                            str(s_number).zfill(s_padding),
                            str(ar_number).zfill(ar_padding))
 
