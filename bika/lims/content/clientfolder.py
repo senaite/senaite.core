@@ -10,7 +10,6 @@ from bika.lims.config import PROJECTNAME
 from AccessControl import ClassSecurityInfo
 from bika.lims.interfaces import IClientFolder, IHaveNoBreadCrumbs
 from plone.app.folder import folder
-from bika.lims.utils import generateUniqueId
 from zope.interface import implements
 from bika.lims import bikaMessageFactory as _
 

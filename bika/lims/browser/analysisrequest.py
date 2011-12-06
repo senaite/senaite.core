@@ -1113,10 +1113,7 @@ class ajaxAnalysisRequestSubmit():
                     _id = client.generateUniqueId('Sample')
                     client.invokeFactory('Sample', id = _id)
                     sample = client[_id]
-                    sample.processForm()
-                    sample_id = sample.getId()
                     sample.edit(
-                        SampleID = sample_id,
                         ClientReference = values.get('ClientReference', ''),
                         ClientSampleID = values.get('ClientSampleID', ''),
                         SamplePoint = values.get('SamplePoint', ''),
@@ -1126,10 +1123,11 @@ class ajaxAnalysisRequestSubmit():
                         DateSampled = values['DateSampled'],
                         Composite = values.get('Composite',False),
                     )
-                    zope.event.notify(ObjectEditedEvent(sample))
-                    # ObjectEditedEvent renames object, so,
-                    # set SampleID to new ID.
-                    sample.edit(SampleID = sample.getId())
+                    sample.processForm()
+
+                    # Object has been renamed
+                    sample_id = sample.getId()
+                    sample.edit(SampleID = sample_id)
 
                     # XXX move to subscriber
                     dis_date = sample.disposal_date()
@@ -1145,9 +1143,7 @@ class ajaxAnalysisRequestSubmit():
                 _id = client.generateUniqueId('AnalysisRequest')
                 self.context.invokeFactory('AnalysisRequest', id = _id)
                 ar = self.context[_id]
-                ar.processForm()
                 # ar.edit() for some fields before firing the event
-                ar.setSample(sample_uid)
                 ar.edit(
                     DateRequested = DateTime(),
                     Contact = form['Contact'],
@@ -1157,11 +1153,11 @@ class ajaxAnalysisRequestSubmit():
                     Profile = profile,
                     **dict(values)
                 )
-                zope.event.notify(ObjectEditedEvent(ar))
-                # ObjectEditedEvent renames object, so,
-                # set RequestID to new ID.
+                ar.processForm()
+                # Object has been renamed
                 ar_id = ar.getId()
                 ar.edit(RequestID = ar_id)
+
                 ARs.append(ar_id)
 
                 ar.setAnalyses(Analyses, prices = prices)

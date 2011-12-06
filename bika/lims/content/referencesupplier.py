@@ -14,6 +14,7 @@ from bika.lims.config import I18N_DOMAIN, PROJECTNAME, ManageReferenceSuppliers
 from bika.lims.content.organisation import Organisation
 from bika.lims.interfaces import IGenerateUniqueId
 from bika.lims.interfaces import IReferenceSupplier
+from bika.lims.utils import generateUniqueId
 from zope.interface import implements
 from bika.lims import bikaMessageFactory as _
 

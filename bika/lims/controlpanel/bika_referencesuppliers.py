@@ -15,7 +15,6 @@ from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaFolderSchema
 from bika.lims.interfaces import IReferenceSuppliers
 from bika.lims.interfaces import IHaveNoBreadCrumbs
-from bika.lims.utils import generateUniqueId
 from operator import itemgetter
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.folder.folder import ATFolder, ATFolderSchema

@@ -1,5 +1,6 @@
 from DateTime import DateTime
 from Products.Archetypes.config import REFERENCE_CATALOG
+from Products.Archetypes.event import ObjectEditedEvent
 from Products.Archetypes.public import DisplayList
 from DocumentTemplate import sequence
 from Products.CMFCore.utils import getToolByName
@@ -14,7 +15,7 @@ from plone.app.content.browser.interfaces import IFolderContentsView
 from zope.interface import implements
 import plone
 import json
-
+import zope
 
 class WorksheetFolderWorkflowAction(WorkflowAction):
     """ Workflow actions taken in the WorksheetFolder
@@ -343,10 +344,12 @@ class AddWorksheetView(BrowserView):
         wf = getToolByName(self.context, "portal_workflow")
         pm = getToolByName(self.context, "portal_membership")
 
-        ws_id = self.context.generateUniqueId('Worksheet')
-        self.context.invokeFactory(id = ws_id, type_name = 'Worksheet')
-        ws = self.context[ws_id]
+        _id = self.context.generateUniqueId('Worksheet')
+        self.context.invokeFactory(id = _id, type_name = 'Worksheet')
+        ws = self.context[_id]
         ws.processForm()
+        zope.event.notify(ObjectEditedEvent(ws))
+
 
         # Validation
         if not wsanalyst:

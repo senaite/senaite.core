@@ -14,7 +14,6 @@ from bika.lims.content.organisation import Organisation
 from bika.lims.config import *
 from bika.lims.interfaces import IClient
 from bika.lims.interfaces import IGenerateUniqueId
-from bika.lims.utils import generateUniqueId
 from zope.interface import implements
 from zope.interface.declarations import alsoProvides
 import sys

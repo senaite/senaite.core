@@ -8,7 +8,6 @@ from Products.CMFCore import permissions
 from Products.CMFCore.utils import getToolByName
 from bika.lims.config import PROJECTNAME
 from bika.lims.interfaces import IWorksheetFolder, IHaveNoBreadCrumbs
-from bika.lims.utils import generateUniqueId
 from plone.app.folder import folder
 from AccessControl import ClassSecurityInfo
 from zope.interface import implements
@@ -23,10 +22,6 @@ class WorksheetFolder(folder.ATFolder):
     displayContentsTab = False
     schema = schema
     security = ClassSecurityInfo()
-
-    security.declarePublic('generateUniqueId')
-    def generateUniqueId (self, type_name, batch_size = None):
-        return generateUniqueId(self, type_name, batch_size)
 
 schemata.finalizeATCTSchema(schema, folderish = True, moveDiscussion = False)
 
