@@ -17,7 +17,8 @@ $(document).ready(function(){
 		rest_of_it = old_url[1].split("&");
 		url_pt2 = rest_of_it[0];
 		url_pt3 = rest_of_it[1];
-		$(".worksheet_add").attr("href", url_pt1 + "?wsanalyst=" + $(this).val() + "&" + url_pt3);
+		url_pt4 = rest_of_it[2];
+		$(".worksheet_add").attr("href", url_pt1 + "?wsanalyst=" + $(this).val() + "&" + url_pt3 + "&" + url_pt4);
 	});
 
 	// selecting a template changes the Add Worksheet href (on worksheet list screen)
@@ -27,7 +28,30 @@ $(document).ready(function(){
 		rest_of_it = old_url[1].split("&");
 		url_pt2 = rest_of_it[0];
 		url_pt3 = rest_of_it[1];
-		$(".worksheet_add").attr("href", url_pt1 + "?" + url_pt2 + "&wstemplate=" + $(this).val());
+		url_pt4 = rest_of_it[2];
+		$(".worksheet_add").attr("href", url_pt1 + "?" + url_pt2 + "&wstemplate=" + $(this).val() + "&" + url_pt4);
+	// ...and pre-selects the instrument
+		templateinstruments = $.parseJSON($(".templateinstruments").val());
+		instrUID = templateinstruments[$(this).val()];
+		instrList = $(".wsinstrument")[0];
+		if (instrUID != ""){
+			for (i=0;i<=instrList.length;i++){
+				if (instrList.options[i].value == instrUID){
+					instrList.selectedIndex = i;
+					$(instrList).change()
+				}
+			}
+		}
+	});
+
+	// selecting an instrument changes the Add Worksheet href (on worksheet list screen)
+	$(".wsinstrument").change(function(){
+		old_url = $(".worksheet_add").attr("href").split("?");
+		url_pt1 = old_url[0];
+		rest_of_it = old_url[1].split("&");
+		url_pt2 = rest_of_it[0];
+		url_pt3 = rest_of_it[1];
+		$(".worksheet_add").attr("href", url_pt1 + "?" + url_pt2 + "&" + url_pt3 + "&wsinstrument=" + $(this).val());
 	});
 
 	// search form - selecting a category fills up the service selector

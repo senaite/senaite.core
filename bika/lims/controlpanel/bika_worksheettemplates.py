@@ -39,28 +39,33 @@ class WorksheetTemplatesView(BikaListingView):
 
         self.columns = {
             'Title': {'title': _('Title'),
-                      'index': 'sortable_title',},
+                      'index': 'sortable_title', },
             'Description': {'title': _('Description'),
                             'index': 'description'},
+            'Instrument': {'title': _('Instrument'),
+                      'index':'getInstrumentTitle'},
         }
 
         self.review_states = [
             {'id':'all',
              'title': _('All'),
              'columns': ['Title',
-                         'Description']},
+                         'Description',
+                         'Instrument']},
             {'id':'active',
              'title': _('Active'),
              'contentFilter': {'inactive_state': 'active'},
              'transitions': ['deactivate'],
              'columns': ['Title',
-                         'Description']},
+                         'Description',
+                         'Instrument']},
             {'id':'inactive',
              'title': _('Dormant'),
              'contentFilter': {'inactive_state': 'inactive'},
-             'transitions': ['activate',],
+             'transitions': ['activate', ],
              'columns': ['Title',
-                         'Description']},
+                         'Description',
+                         'Instrument']},
         ]
 
     def folderitems(self):
@@ -69,6 +74,7 @@ class WorksheetTemplatesView(BikaListingView):
             if not items[x].has_key('obj'): continue
             obj = items[x]['obj']
             items[x]['Description'] = obj.Description()
+            items[x]['Instrument'] = obj.getInstrument() and obj.getInstrument().Title() or ' '
             items[x]['replace']['Title'] = "<a href='%s'>%s</a>" % \
                  (items[x]['url'], items[x]['Title'])
         return items

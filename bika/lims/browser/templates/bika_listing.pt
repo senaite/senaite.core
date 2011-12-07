@@ -12,15 +12,16 @@
 	<img tal:condition="view/icon | nothing"
          src="" tal:attributes="src view/icon"/>
 
-		<span class="documentFirstHeading" tal:content="structure view/title"/>
+		<span class="documentFirstHeading" tal:content="structure view/title"/><br>
 
-		<!-- Worksheet Analysts dropdown is hacked in over here -->
+
+		<!-- WorksheetFolder: Dropdowns etc hacked in over here -->
 		<span class="context_action_dropdown"
 			tal:condition="python:context.portal_type == 'WorksheetFolder'">
 				<span class="fieldRequired" style="margin-left: 3em"></span>
 				<select class='wsanalyst' style="font-size: 100%"
 					tal:define="alist view/getAnalysts">
-					<option value='' i18n:translate="select_template">Select analyst</option>
+					<option value='' i18n:translate="select_analyst">Select analyst</option>
 					<tal:options repeat="option alist">
 						<option
 							tal:attributes="value python:option"
@@ -29,7 +30,6 @@
 				</select>
 		</span>
 
-		<!-- Worksheet Templates dropdown is hacked in over here -->
 		<span class="context_action_dropdown"
 			tal:condition="python:context.portal_type == 'WorksheetFolder'">
 				<select class='wstemplate' style="font-size: 100%"
@@ -42,6 +42,25 @@
 					</tal:options>
 				</select>
 		</span>
+
+		<span class="context_action_dropdown"
+			tal:condition="python:context.portal_type == 'WorksheetFolder'">
+				<select class='wsinstrument' style="font-size: 100%"
+					tal:define="instrlist view/getInstruments">
+					<option value='' i18n:translate="select_instrument">Select instrument</option>
+					<tal:options repeat="option instrlist">
+						<option
+							tal:attributes="value python:option"
+							tal:content="python:instrlist.getValue(option)"/>
+					</tal:options>
+				</select>
+		</span>
+
+		<span tal:condition="python:context.portal_type == 'WorksheetFolder'">
+			<input type='hidden' class='templateinstruments' tal:attributes="value view/getTemplateInstruments"/>
+		</span>
+		<!-- End of WorksheetFolder hacks -->
+
 
 		<tal:add_actions repeat="add_item python:view.context_actions.keys()">
 			<a tal:attributes="

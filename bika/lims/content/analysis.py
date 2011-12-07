@@ -88,9 +88,15 @@ schema = BikaSchema.copy() + Schema((
     BooleanField('ReportDryMatter',
         default = False,
     ),
+
     StringField('Analyst',
     ),
-    ###
+    ReferenceField('Instrument',
+        required = 0,
+        allowed_types = ('Instrument',),
+        relationship = 'WorksheetInstrument',
+        referenceClass = HoldingReference,
+    ),
 
     ComputedField('ClientUID',
         expression = 'context.aq_parent.aq_parent.UID()',

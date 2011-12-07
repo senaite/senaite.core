@@ -12,6 +12,7 @@ from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IGenerateUniqueId
 from bika.lims import bikaMessageFactory as _
 from zope.interface import implements
+import sys
 
 schema = BikaSchema.copy() + Schema((
     RecordsField('Layout',
@@ -46,6 +47,26 @@ schema = BikaSchema.copy() + Schema((
             description = _("Select which Analyses should be included on the Worksheet"),
         )
     ),
+    ReferenceField('Instrument',
+        schemata = _("Description"),
+        required = 0,
+        vocabulary_display_path_bound = sys.maxint,
+        vocabulary = 'getInstruments',
+        allowed_types = ('Instrument',),
+        relationship = 'WorksheetTemplateInstrument',
+        referenceClass = HoldingReference,
+        widget = ReferenceWidget(
+            checkbox_bound = 1,
+            label = _("Instrument"),
+            description = _("Select the preferred instrument for this template"),
+        ),
+    ),
+    ComputedField('InstrumentTitle',
+        expression = "context.getInstrument() and context.getInstrument().Title() or ''",
+        widget = ComputedWidget(
+            visible = False,
+        ),
+    ),
 ))
 
 schema['title'].schemata = 'Description'
@@ -65,5 +86,16 @@ class WorksheetTemplate(BaseContent):
     def getAnalysisTypes(self):
         """ return Analysis type displaylist """
         return ANALYSIS_TYPES
+
+    def getInstruments(self):
+        bsc = getToolByName(self, 'bika_setup_catalog')
+        items = [('', '')] + [(o.UID, o.Title) for o in \
+                               bsc(portal_type = 'Instrument',
+                                   inactive_state = 'active')]
+        o = self.getInstrument()
+        if o and (o.UID(), o.Title()) not in items:
+            items.append((o.UID(), o.Title()))
+        items.sort(lambda x, y: cmp(x[1], y[1]))
+        return DisplayList(list(items))
 
 registerType(WorksheetTemplate, PROJECTNAME)

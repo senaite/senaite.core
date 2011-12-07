@@ -35,10 +35,16 @@
 <!--	</div>-->
 
 	<tal:analyst>
-		<label for="analyst" i18n:translate="Assigned analyst: ">Assigned analyst: </label>
+		<label for="analyst" i18n:translate="Analyst: ">Analyst: </label>
 		<span tal:content="view/analystname"></span>
 		<br/>
 	</tal:analyst>
+
+	<tal:instrument>
+		<label for="instrument" i18n:translate="Instrument: ">Instrument: </label>
+		<span tal:content="view/instrumenttitle"></span>
+		<br/>
+	</tal:instrument>
 
 	<br/>
 

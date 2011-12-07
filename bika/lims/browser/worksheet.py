@@ -223,6 +223,7 @@ class WorksheetAnalysesView(AnalysesView):
 
     def folderitems(self):
         self.analyst = self.context.getAnalyst().strip()
+        self.instrument = self.context.getInstrument()
         self.contentsMethod = self.context.getFolderContents
         items = AnalysesView.folderitems(self)
         layout = self.context.getLayout()
@@ -388,6 +389,8 @@ class ManageResultsView(BrowserView):
         self.icon = "++resource++bika.lims.images/worksheet_big.png"
         self.Analyses = WorksheetAnalysesView(self.context, self.request)
         self.analystname = getAnalystName(self.context)
+        self.instrumenttitle = self.context.getInstrument() and self.context.getInstrument().Title() or ''
+
         return self.template()
 
 class AddAnalysesView(BikaListingView):

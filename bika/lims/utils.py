@@ -43,16 +43,15 @@ def getAnalysts(context):
     """ Present the LabManagers and Analysts as options for analyst
     """
     mtool = getToolByName(context, 'portal_membership')
-    analysts = {}
-    member = mtool.getAuthenticatedMember()
     pairs = []
     analysts = mtool.searchForMembers(roles = ['Manager', 'LabManager', 'Analyst'])
     for member in analysts:
         uid = member.getId()
         fullname = member.getProperty('fullname')
         if fullname is None:
-            continue
+            fullname = uid
         pairs.append((uid, fullname))
+    pairs.sort(lambda x, y: cmp(x[1], y[1]))
     return pairs
 
 def isActive(obj):

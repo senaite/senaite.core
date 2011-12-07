@@ -32,6 +32,15 @@ schema = schema.copy() + Schema((
         relationship = 'DuplicateAnalysisAttachment',
     ),
 
+    StringField('Analyst',
+    ),
+    ReferenceField('Instrument',
+        required = 0,
+        allowed_types = ('Instrument',),
+        relationship = 'WorksheetInstrument',
+        referenceClass = HoldingReference,
+    ),
+
     ComputedField('ClientOrderNumber',
         expression = 'context.getAnalysis() and context.getAnalysis().getClientOrderNumber()',
     ),

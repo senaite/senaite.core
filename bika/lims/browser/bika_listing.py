@@ -156,7 +156,7 @@ class BikaListingView(BrowserView):
     show_workflow_action_buttons = True
     categories = []
     # setting pagesize to 1000 specifically disables the batch sizez dropdown
-    pagesize = 25
+    pagesize = 30
     pagenumber = 1
     # select checkbox is normally called uids:list
     # if table_only is set then the context form tag might require
@@ -222,7 +222,7 @@ class BikaListingView(BrowserView):
         workflow = getToolByName(self.context, 'portal_workflow')
 
         # index filters.
-        for k,v in self.columns.items():
+        for k, v in self.columns.items():
             if not v.has_key('index') or v['index'] == 'review_state':
                 continue
             request_key = "%s_%s" % (self.form_id, v['index'])
@@ -327,7 +327,11 @@ class BikaListingView(BrowserView):
             # avoid creating unnecessary info for items outside the current
             # batch;  only the path is needed for the "select all" case...
             if not show_all and not start <= i < end:
-                results.append(dict(path = path))
+                if hasattr(obj, 'getObject'):
+                    uid = obj.UID
+                else:
+                    uid = obj.UID()
+                results.append(dict(path = path, uid = uid))
                 continue
 
             if hasattr(obj, 'getObject'):

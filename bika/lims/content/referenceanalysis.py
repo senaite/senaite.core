@@ -67,6 +67,16 @@ schema = BikaSchema.copy() + Schema((
         referenceClass = HoldingReference,
         relationship = 'ReferenceAnalysisAttachment',
     ),
+
+    StringField('Analyst',
+    ),
+    ReferenceField('Instrument',
+        required = 0,
+        allowed_types = ('Instrument',),
+        relationship = 'WorksheetInstrument',
+        referenceClass = HoldingReference,
+    ),
+
     BooleanField('Retested',
         default = False,
         widget = BooleanWidget(

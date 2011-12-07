@@ -15,6 +15,7 @@ from zope.interface import implements
 from bika.lims.interfaces import IWorksheet
 from bika.lims.interfaces import IGenerateUniqueId
 from bika.lims import bikaMessageFactory as _
+from Products.Archetypes.references import HoldingReference
 from bika.lims import logger
 
 schema = BikaSchema.copy() + Schema((
@@ -46,8 +47,16 @@ schema = BikaSchema.copy() + Schema((
             visible = False,
         ),
     ),
+
     StringField('Analyst',
     ),
+    ReferenceField('Instrument',
+        required = 0,
+        allowed_types = ('Instrument',),
+        relationship = 'WorksheetInstrument',
+        referenceClass = HoldingReference,
+    ),
+
     TextField('Notes',
         default_content_type = 'text/plain',
         allowable_content_types = ('text/plain',),
@@ -123,8 +132,8 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             # if dry matter service in my dependents:
             if dmk in [a.getService().getKeyword() for a in deps]:
                 # get dry matter analysis from AR
-                dma = analysis.aq_parent.getAnalyses(getKeyword=dmk,
-                                                     full_objects=True)[0]
+                dma = analysis.aq_parent.getAnalyses(getKeyword = dmk,
+                                                     full_objects = True)[0]
                 # add it.
                 if dma not in self.getAnalyses():
                     self.addAnalysis(dma)

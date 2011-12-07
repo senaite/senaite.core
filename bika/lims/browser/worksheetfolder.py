@@ -63,7 +63,7 @@ class WorksheetFolderListingView(BikaListingView):
             'sort_on':'id',
             'sort_order': 'reverse'}
         self.context_actions = {_('Add'):
-                                {'url': 'worksheet_add?wsanalyst=&wstemplate=',
+                                {'url': 'worksheet_add?wsanalyst=&wstemplate=&wsinstrument=',
                                  'icon': '++resource++bika.lims.images/add.png',
                                  'class': 'worksheet_add'}}
         self.show_table_only = False
@@ -79,8 +79,33 @@ class WorksheetFolderListingView(BikaListingView):
         self.description = ""
         self.TimeOrDate = TimeOrDate
 
+
         pm = getToolByName(context, "portal_membership")
+        bsc = getToolByName(context, 'bika_setup_catalog')
+
         analyst = pm.getAuthenticatedMember().getId()
+
+        self.analysts = getAnalysts(self)
+
+        templates = [t for t in bsc(portal_type = 'WorksheetTemplate',
+                                    inactive_state = 'active')]
+
+        self.templates = [(t.UID, t.Title) for t in templates]
+        self.templates.sort(lambda x, y: cmp(x[1], y[1]))
+
+        self.instruments = [(i.UID, i.Title) for i in \
+                            bsc(portal_type = 'Instrument',
+                                inactive_state = 'active')]
+        self.instruments.sort(lambda x, y: cmp(x[1], y[1]))
+
+        self.templateinstruments = {}
+        for t in templates:
+            i = t.getObject().getInstrument()
+            if i:
+                self.templateinstruments[t.UID] = i.UID()
+            else:
+                self.templateinstruments[t.UID] = ''
+
 
         self.columns = {
             'Title': {'title': _('Worksheet'),
@@ -188,9 +213,8 @@ class WorksheetFolderListingView(BikaListingView):
         rc = getToolByName(self, REFERENCE_CATALOG)
         member = mtool.getAuthenticatedMember()
         new_items = []
-        analysts = getAnalysts(self)
         analyst_choices = []
-        for a in analysts:
+        for a in self.analysts:
             analyst_choices.append({'ResultValue': a[0], 'ResultText': a[1]})
         can_reassign = False
         for x in range(len(items)):
@@ -307,18 +331,29 @@ class WorksheetFolderListingView(BikaListingView):
 
         return new_items
 
-    def getWorksheetTemplates(self):
-        bsc = getToolByName(self, 'bika_setup_catalog')
-        items = [(o.UID, o.Title) for o in \
-                 bsc(portal_type = 'WorksheetTemplate',
-                     inactive_state = 'active')]
-        return DisplayList(list(items))
-
     def getAnalysts(self):
         """ Present the LabManagers and Analysts as options for analyst
             Used in bika_listing.pt
         """
-        return DisplayList(getAnalysts(self.context))
+        return DisplayList(self.analysts)
+
+    def getWorksheetTemplates(self):
+        """ List of templates
+            Used in bika_listing.pt
+        """
+        return DisplayList(self.templates)
+
+    def getInstruments(self):
+        """ List of instruments
+            Used in bika_listing.pt
+        """
+        return DisplayList(self.instruments)
+
+    def getTemplateInstruments(self):
+        """ Distionary of instruments per template
+            Used in bika_listing.pt
+        """
+        return json.dumps(self.templateinstruments)
 
 
 class AddWorksheetView(BrowserView):
@@ -326,7 +361,7 @@ class AddWorksheetView(BrowserView):
         If a template was selected, the worksheet is pre-populated here.
     """
 
-    def __call__(self, wsanalyst = None, wstemplate = None):
+    def __call__(self, wsanalyst = None, wstemplate = None, wsinstrument = None):
         # Validation
         if not wsanalyst:
             message = _("Analyst must be specified.")
@@ -346,8 +381,10 @@ class AddWorksheetView(BrowserView):
         zope.event.notify(ObjectEditedEvent(ws))
 
 
-        # Set analyst
+        # Set analyst and instrument
         ws.setAnalyst(wsanalyst)
+        if wsinstrument:
+            ws.setInstrument(wsinstrument)
 
         # overwrite saved context UID for event subscribers
         self.request['context_uid'] = ws.UID()
