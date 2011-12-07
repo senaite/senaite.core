@@ -352,10 +352,10 @@ jQuery( function($) {
 		e = $('input[id$="_DateSampled"]')
 		if(e.length > 0){
 			// XXX Datepicker format is not i18n aware (dd Oct 2011)
-			if($($(e).parents('form').children('[name=came_from]')).val() == 'add'){ 
+			if($($(e).parents('form').children('[name=came_from]')).val() == 'add'){
 				$(e)
 				.datepicker({'dateFormat': 'dd M yy', showAnim: ''})
-				.click(function(){$(this).attr('value', '');})				
+				.click(function(){$(this).attr('value', '');})
 			} else {
 				$(e)
 				.datepicker({'dateFormat': 'dd M yy', showAnim: ''})
@@ -418,24 +418,6 @@ jQuery( function($) {
 					}
 				}
 			}
-		});
-
-		$('.deleteAttachmentButton').live("click", function(){
-			attachment_id = $(this).attr("attachment_id");
-			options = {
-				url: 'delete_analysis_attachment',
-				type: 'POST',
-				success: function(responseText, statusText, xhr, $form) {
-					if(responseText == "success"){
-						$("#"+attachment_id).remove();
-					}
-				},
-				data: {
-					'attachment_id': attachment_id,
-					'_authenticator': $('input[name="_authenticator"]').val()
-				},
-			}
-			$.ajax(options);
 		});
 
 		// Clicking the category name will expand the services list for that category

@@ -5,16 +5,14 @@ from Products.Archetypes.public import *
 from Products.Archetypes.references import HoldingReference
 from Products.CMFCore.permissions import View, ModifyPortalContent
 from Products.CMFCore.utils import getToolByName
-from bika.lims.config import I18N_DOMAIN, ATTACHMENT_OPTIONS, \
-    ARIMPORT_OPTIONS, PROJECTNAME
+from bika.lims import bikaMessageFactory as _
+from bika.lims.config import *
 from bika.lims.content.bikaschema import BikaFolderSchema
 from bika.lims.interfaces import IBikaSetup
+from bika.lims.interfaces import IHaveNoBreadCrumbs
 from plone.app.folder import folder
 from zope.interface import implements
 import sys
-from bika.lims import bikaMessageFactory as _
-
-# no comments!
 
 class PrefixesField(RecordsField):
     """a list of prefixes per portal_type"""
@@ -30,7 +28,10 @@ class PrefixesField(RecordsField):
                              'prefix': False,
                              'padding': False,
                             },
-        })
+        'subfield_sizes':{'portal_type':32,
+                          'prefix': 12,
+                          'padding':12},
+    })
     security = ClassSecurityInfo()
 
 LABEL_AUTO_OPTIONS = DisplayList((
@@ -263,7 +264,7 @@ schema['title']._validationLayer()
 class BikaSetup(folder.ATFolder):
     security = ClassSecurityInfo()
     schema = schema
-    implements(IBikaSetup)
+    implements(IBikaSetup, IHaveNoBreadCrumbs)
 
     def getAttachmentsPermitted(self):
         """ are any attachments permitted """
@@ -288,12 +289,13 @@ class BikaSetup(folder.ATFolder):
             return True
 
     def getAnalysisServices(self):
+        """
+        """
         bsc = getToolByName(self, 'bika_setup_catalog')
         items = [('','')] + [(o.UID, o.Title) for o in \
                                bsc(portal_type='AnalysisService',
                                    inactive_state = 'active')]
         items.sort(lambda x,y: cmp(x[1], y[1]))
         return DisplayList(list(items))
-
 
 registerType(BikaSetup, PROJECTNAME)

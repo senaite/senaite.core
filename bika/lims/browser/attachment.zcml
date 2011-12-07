@@ -11,5 +11,12 @@
       permission="zope.Public"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
+    <browser:page
+      for="bika.lims.interfaces.IWorksheet"
+      name="delete_analysis_attachment"
+      class="bika.lims.browser.attachment.ajaxDeleteAnalysisAttachment"
+      permission="zope.Public"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
 
 </configure>

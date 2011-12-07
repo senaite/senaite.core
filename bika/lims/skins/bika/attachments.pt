@@ -4,21 +4,25 @@
 
 <body>
 
-<div class="attachments" metal:define-macro="attachments">
+<!-- Used on AR views to render the collapsing fieldset with Attachments inside -->
+<div class="attachments"
+     metal:define-macro="attachments">
+<script type="text/javascript"
+        src="++resource++bika.lims.js/attachments.js"></script>
   <dl class="collapsible collapsedOnLoad">
     <dt class="attachments collapsibleHeader">
         <img src='++resource++bika.lims.images/attachment.png' title='Attachment'>
         <span i18n:translate="legend_attachments">Attachments</span>
     </dt>
-    <dd class="collapsibleContent">
-      <table class="attachments">
+    <dd class="collapsibleContent" style="margin-bottom:0;">
+      <table class="attachments" style="margin-bottom:0;">
         <tr>
-          <td>
-            <metal:block use-macro="here/attachments/macros/ar_attachments_list"/>
-          </td>
           <td tal:define="updateable python:ar_review_state in ('sample_received', 'to_be_verified')"
               tal:condition="python:updateable and update_attachments">
             <metal:block use-macro="here/attachments/macros/attachments_update"/>
+          </td>
+          <td style="padding-left:2em;">
+            <metal:block use-macro="here/attachments/macros/ar_attachments_list"/>
           </td>
         </tr>
       </table>
@@ -26,14 +30,18 @@
   </dl>
 </div>
 
-<div metal:define-macro="ws_attachments">
+<!-- Used on WS views to render the collapsing fieldset with Attachments inside -->
+<div class="attachments"
+     metal:define-macro="ws_attachments">
+<script type="text/javascript"
+        src="++resource++bika.lims.js/attachments.js"></script>
   <dl class="collapsible collapsedOnLoad">
-    <dt class="attachments">
-    <img src='++resource++bika.lims.images/attachment.png' title='Attachment'>
-    <span i18n:translate="legend_attachments">Attachments</span>
+    <dt class="attachments collapsibleHeader">
+        <img src='++resource++bika.lims.images/attachment.png' title='Attachment'>
+        <span i18n:translate="legend_attachments">Attachments</span>
     </dt>
-    <dd class="collapsibleContent">
-      <table class="attachments">
+    <dd class="collapsibleContent" style="margin-bottom:0;">
+      <table class="attachments" style="margin-bottom:0;">
         <tr>
           <td tal:condition="update_attachments">
             <metal:block use-macro="here/attachments/macros/ws_attachments_update"/>
@@ -95,7 +103,6 @@
     tal:define="
         deleteable python:delete_attachments and ar_review_state in  ['sample_received', 'to_be_verified'];
         dummy python:request.RESPONSE.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate, post-check=0, pre-check=0')" >
-
 <tal:repeat tal:repeat="attachment attachments">
 <div>
 <input
@@ -151,6 +158,7 @@
 <table
     tal:define="
         analyses python:here.getAnalyses(full_objects=True);
+        analyses python:[a for a in analyses if a.portal_type in ('Analysis','DuplicateAnalysis')];
         analyses python:[a for a in analyses if a.getService().getAttachmentOption() in ['p', 'r']];
         sort_on python:(('Title', 'nocase', 'asc'),);
         analyses python:sequence.sort(analyses, sort_on);">
@@ -214,113 +222,110 @@
 </div>
 
 <div metal:define-macro="ws_attachments_update">
-<form action="." method="post" name="add_attachment"
-    enctype="multipart/form-data">
-<fieldset class="attachments">
-<legend i18n:translate="legend_attachments">Attachments</legend>
-<table class="attachments" style="display:none">
-<tr>
-<td colspan="3">
-<input type="file" name="AttachmentFile_file" id="AttachFile" size="30"
-            onchange="enableAddAttachment('AttachFile')">
-</td>
-</tr>
-<tr>
-<td>
-<span tal:condition="attach_services"
-    i18n:translate="label_all_analyses">All analyses of type</span>
-<br/>
-<tal:services tal:condition="attach_services"
-        tal:define="global last_uid python:None">
-    <select name="Service" id="Service"
-            onchange="enableAddAttachment('Service')">
-    <option value='' selected></option>
-    <tal:item
-        tal:repeat="item attach_services">
-    <tal:nodups
-        tal:condition="python:not item.UID() == last_uid">
-    <option
-        tal:define="global last_uid item/UID"
-        tal:attributes="value item/UID;"
-        tal:content="item/Title"></option>
-    </tal:nodups>
-    </tal:item>
-
-    </select>
-</tal:services>
-</td>
-<td>
-<span i18n:translate="label_or">or</span>
-</td>
-<td>
-<span tal:condition="attach_analyses"
-    i18n:translate="label_analysis">Analysis</span>
-<br/>
-<tal:analyses tal:condition="attach_analyses">
-    <select name="Analysis" id="Analysis"
-        onchange="enableAddAttachment('Analysis')">
-    <option value='' selected></option>
-    <tal:item
-        tal:repeat="item attach_analyses"
-        tal:define="wtool python:context.portal_workflow">
-    <tal:options
-        tal:condition="python:item.portal_type=='Analysis'">
-        <option
-            tal:condition="python:wtool.getInfoFor(item, 'review_state', '') in ['to_be_verified']"
-            tal:attributes="value item/UID;"
-            tal:define="this_title string:${item/getRequestID} - ${item/Title}"
-            tal:content="this_title"></option>
-    </tal:options>
-    </tal:item>
-    </select>
-</tal:analyses>
-</td>
-</tr>
-
-<tr>
-<td colspan="2">
-<span i18n:translate="label_attachment_type">Attachment Type</span>
-<br/>
-    <select name="AttachmentType">
-    <tal:item
-        tal:define="
-            vocab python:here.portal_catalog(portal_type='AttachmentType');
-            sort_on python:(('Title', 'nocase', 'asc'),);
-            vocab python:sequence.sort(vocab, sort_on)"
-        tal:repeat="item vocab">
-    <option
-        tal:attributes="value item/UID;"
-        tal:content="item/Title"></option>
-    </tal:item>
-
-    </select>
-</td>
-<td>
-<span i18n:translate="label_attachment_keys">Keywords</span>
-<br/>
-<input size="40" name="AttachmentKeys"/>
-</td>
-</tr>
-<tr>
-<td></td>
-<td></td>
-<td>
-<input DISABLED
-    class="context"
-    type="submit"
-    id="addButton"
-    name="addWSAttachment:method"
-    value="Add"
-    i18n:attributes="value"/>
-</td>
-</tr>
+<form method="post" name="add_attachment" enctype="multipart/form-data">
+<table class="attachments">
+    <tr>
+        <td colspan="3">
+            <input type="file"
+                   name="AttachmentFile_file"
+                   id="AttachFile"
+                   size="30">
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <span tal:condition="attach_services"
+                  i18n:translate="label_all_analyses">All analyses of type
+            </span>
+            <br/>
+            <tal:services
+                tal:condition="attach_services"
+                tal:define="global last_uid python:None">
+                <select name="Service" id="Service">
+                    <option value='' selected></option>
+                        <tal:item tal:repeat="item attach_services">
+                        <tal:nodups
+                            tal:condition="python:not item.UID() == last_uid">
+                            <option
+                            tal:define="global last_uid item/UID"
+                            tal:attributes="value item/UID;"
+                            tal:content="item/Title"></option>
+                        </tal:nodups>
+                        </tal:item>
+                </select>
+            </tal:services>
+        </td>
+        <td>
+            <span i18n:translate="label_or">or</span>
+        </td>
+        <td>
+            <span tal:condition="attach_analyses"
+                i18n:translate="label_analysis">Analysis
+            </span>
+            <br/>
+            <tal:analyses tal:condition="attach_analyses">
+                <select name="Analysis" id="Analysis">
+                    <option value='' selected></option>
+                    <tal:item
+                        tal:repeat="item attach_analyses"
+                        tal:define="wtool python:context.portal_workflow">
+                    <tal:options
+                        tal:condition="python:item.portal_type=='Analysis'">
+                    <option
+                        tal:condition="python:wtool.getInfoFor(item, 'review_state', '') in ['sample_received','to_be_verified']"
+                        tal:attributes="value item/UID;"
+                        tal:define="this_title string:${item/getRequestID} - ${item/Title}"
+                        tal:content="this_title"></option>
+                    </tal:options>
+                    </tal:item>
+                </select>
+            </tal:analyses>
+        </td>
+    </tr>
+    <tr>
+        <td colspan="2">
+            <span i18n:translate="label_attachment_type">Attachment Type</span>
+            <br/>
+            <select name="AttachmentType">
+                <tal:item
+                    tal:define="
+                        vocab python:here.bika_setup_catalog(portal_type='AttachmentType');
+                        sort_on python:(('Title', 'nocase', 'asc'),);
+                        vocab python:sequence.sort(vocab, sort_on)"
+                    tal:repeat="item vocab">
+                <option
+                    tal:attributes="value item/UID;"
+                    tal:content="item/Title"></option>
+                </tal:item>
+            </select>
+        </td>
+        <td>
+            <span i18n:translate="label_attachment_keys">Keywords</span>
+            <br/>
+            <input size="40" name="AttachmentKeys"/>
+        </td>
+    </tr>
+    <tr>
+        <td></td>
+        <td></td>
+        <td>
+            <input DISABLED
+                class="context"
+                type="submit"
+                id="addButton"
+                name="addWSAttachment"
+                value="Add"
+                i18n:attributes="value"/>
+        </td>
+    </tr>
 </table>
-</fieldset>
 </form>
 </div>
 
-<div metal:define-macro="ws_analysis_attachments_list">
 
+
+
+<div metal:define-macro="ws_analysis_attachments_list">
 <tal:repeat tal:repeat="attachment attachments">
 <div>
 <tal:attachment

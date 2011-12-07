@@ -204,7 +204,7 @@ class WorksheetAnalysesView(AnalysesView):
             'ResultDM': {'title': _('Dry')},
             'Uncertainty': {'title': _('+-')},
             'retested': {'title': _('Retested'), 'type':'boolean'},
-##            'Attachments': {'title': _('Attachments')},
+            'Attachments': {'title': _('Attachments')},
             'state_title': {'title': _('State')},
         }
         self.review_states = [
@@ -215,9 +215,9 @@ class WorksheetAnalysesView(AnalysesView):
                         'Service',
                         'Result',
                         'Uncertainty',
-##                        'Attachments',
                         'DueDate',
-                        'state_title'],
+                        'state_title',
+                        'Attachments']
              },
         ]
 
@@ -252,7 +252,6 @@ class WorksheetAnalysesView(AnalysesView):
                 empties.append(pos)
                 item = {}
                 item.update({
-                    'allow_edit': False,
                     'obj': self.context,
                     'id': self.context.id,
                     'uid': self.context.UID(),
@@ -272,6 +271,7 @@ class WorksheetAnalysesView(AnalysesView):
                     'rowspan': {'Pos':1},
                     'Pos': pos,
                     'Service': '',
+                    'Attachments': '',
                     'state_title': 's'})
                 item['replace'] = {
                     'Pos': "<table width='100%' cellpadding='0' cellspacing='0'>" + \
@@ -386,6 +386,70 @@ class ManageResultsView(BrowserView):
         BrowserView.__init__(self, context, request)
 
     def __call__(self):
+        if "AttachmentFile_file" in self.request:
+            this_file =  self.request['AttachmentFile_file']
+            if 'Analysis' in self.request:
+                analysis_uid = self.request['Analysis']
+            else:
+                analysis_uid = None
+            if 'Service' in self.request:
+                service_uid = self.request['Service']
+            else:
+                service_uid = None
+
+            tool = getToolByName(self.context, REFERENCE_CATALOG)
+            if analysis_uid:
+                analysis = tool.lookupObject(analysis_uid)
+                attachmentid = self.context.generateUniqueId('Attachment')
+                client = analysis.aq_parent.aq_parent
+                client.invokeFactory("Attachment",
+                                     id = attachmentid)
+                attachment = client._getOb(attachmentid)
+                attachment.edit(
+                    AttachmentFile = this_file,
+                    AttachmentType = self.request['AttachmentType'],
+                    AttachmentKeys = self.request['AttachmentKeys'])
+                attachment.reindexObject()
+
+                others = analysis.getAttachment()
+                attachments = []
+                for other in others:
+                    attachments.append(other.UID())
+                attachments.append(attachment.UID())
+                analysis.setAttachment(attachments)
+
+            if service_uid:
+                wf_tool = getToolByName(self.context, 'portal_workflow')
+                for analysis in self.context.getAnalyses():
+                    if analysis.portal_type not in ('Analysis', 'DuplicateAnalysis'):
+                        continue
+                    if not analysis.getServiceUID() == service_uid:
+                        continue
+                    review_state = wf_tool.getInfoFor(analysis, 'review_state', '')
+                    if not review_state in ['assigned', 'sample_received', 'to_be_verified']:
+                        continue
+                    attachmentid = self.context.generateUniqueId('Attachment')
+                    # client refers to Client in case of Analysis, and to
+                    #     parent Worksheet in case of DuplicateAnalysis
+                    if analysis.aq_parent.portal_type == 'AnalysisRequest':
+                        client = analysis.aq_parent.aq_parent
+                    else:
+                        client = analysis.aq_parent
+                    client.invokeFactory("Attachment", id = attachmentid)
+                    attachment = client._getOb(attachmentid)
+                    attachment.edit(
+                        AttachmentFile = this_file,
+                        AttachmentType = self.request['AttachmentType'],
+                        AttachmentKeys = self.request['AttachmentKeys'])
+                    attachment.reindexObject()
+
+                    others = analysis.getAttachment()
+                    attachments = []
+                    for other in others:
+                        attachments.append(other.UID())
+                    attachments.append(attachment.UID())
+                    analysis.setAttachment(attachments)
+
         self.icon = "++resource++bika.lims.images/worksheet_big.png"
         self.Analyses = WorksheetAnalysesView(self.context, self.request)
         self.analystname = getAnalystName(self.context)
@@ -405,8 +469,7 @@ class AddAnalysesView(BikaListingView):
 
         self.context_actions = {}
         # initial review state for first form display of the worksheet
-        # add_analyses search view
-        # @lemoene what should the default be here?
+        # add_analyses search view - first batch of analyses, latest first.
         self.contentFilter = {'portal_type': 'Analysis',
                               'review_state':'sample_received',
                               'worksheetanalysis_review_state':'unassigned',
