@@ -106,13 +106,14 @@ class ajaxSampleSubmit():
             sample = self.context
             sampleType = form['SampleType']
             samplePoint = form['SamplePoint']
-            composite = form['Composite']
+            composite = form.get('Composite', False)
             errors = {}
             bsc = getToolByName(self.context, 'bika_setup_catalog')
             if sampleType == '':
                 errors['SampleType'] = 'Sample Type is required'
-            if not bsc(portal_type = 'SampleType', Title = sampleType):
-                errors['SampleType'] = sampleType + ' is not a valid sample type'
+            else:
+                if not bsc(portal_type = 'SampleType', Title = sampleType):
+                    errors['SampleType'] = sampleType + ' is not a valid sample type'
             if samplePoint != "":
                 if not bsc(portal_type = 'SamplePoint', Title = samplePoint):
                     errors['SamplePoint'] = samplePoint + ' is not a valid sample point'

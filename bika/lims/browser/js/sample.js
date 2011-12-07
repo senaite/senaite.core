@@ -43,7 +43,11 @@ jQuery( function($) {
 					window.location.replace(window.location.href.replace("/base_edit", "/base_view"));
 				}
 				else {
-					portalMessage(responseText['errors'].join("<br/>"));
+					msg = ""
+					for(error in responseText['errors']){
+						msg = msg + responseText['errors'][error] + "<br/>";
+					};
+					portalMessage(msg);
 					window.scroll(0, 0);
 					$("input[class~='context']").removeAttr('disabled');
 					$("#spinner").toggle(false);
