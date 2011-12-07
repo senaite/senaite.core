@@ -21,7 +21,7 @@ class ProductivityView(BrowserView):
 
     def __init__(self, context, request):
         BrowserView.__init__(self, context, request)
-        self.icon = "++resource++bika.lims.images/sample_big.png"
+        self.icon = "++resource++bika.lims.images/report_big.png"
         self.TimeOrDate = TimeOrDate
 
     def __call__(self):
@@ -35,7 +35,7 @@ class QualityControlView(BrowserView):
 
     def __init__(self, context, request):
         BrowserView.__init__(self, context, request)
-        self.icon = "++resource++bika.lims.images/sample_big.png"
+        self.icon = "++resource++bika.lims.images/report_big.png"
         self.TimeOrDate = TimeOrDate
 
     def __call__(self):
@@ -49,7 +49,7 @@ class AdministrationView(BrowserView):
 
     def __init__(self, context, request):
         BrowserView.__init__(self, context, request)
-        self.icon = "++resource++bika.lims.images/sample_big.png"
+        self.icon = "++resource++bika.lims.images/report_big.png"
         self.TimeOrDate = TimeOrDate
 
     def __call__(self):

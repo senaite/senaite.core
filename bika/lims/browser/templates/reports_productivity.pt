@@ -8,22 +8,482 @@
 <body>
 
 <metal:content-title fill-slot="content-title">
+<!--
 	<h1>
         <img tal:condition="view/icon | nothing"
             src="" tal:attributes="src view/icon"/>
-        <span class="documentFirstHeading" tal:content="view/title"/>
+        <span class="documentFirstHeading" tal:content="view/title | nothing"/>
     </h1>
+-->
 </metal:content-title>
 
+
 <metal:content-description fill-slot="content-description">
-	<div class="documentDescription"
-		tal:content="view/description"
-		tal:condition="view/description"/>
 </metal:content-description>
 
-<metal:content-core fill-slot="content-core">
+<metal:content-core fill-slot="content-core"
+    tal:define="DateTime python:modules['DateTime'].DateTime;
+                now python: DateTime();
+                clients python:here.portal_catalog(portal_type='Client',
+                                sort_on='sortable_title');">
+<br/>
+<br/>
+<form action="reports" method="post" name="search">
+<table>
+<tr>
+<td VALIGN="top">
+<fieldset>
 
-<b> reports - productivity </b>
+<legend i18n:translate="legend_report">Report</legend>
+<p>
+<a href="#"
+    id="analysestotals_selector" 
+    i18n:translate="heading_analyses_per_service"
+>Analyses per service</a>
+<br/>
+<span i18n:translate="description_analysestotals">The number of analyses requested per analysis service
+</span>
+</p>
+
+<p>
+<a  href="#"
+    id="analysespersampletype_selector" 
+    i18n:translate="heading_analyses_per_sampletype"
+>Analyses per sample type</a>
+<br/>
+<span i18n:translate="description_analysespersampletype">The number of analyses requested per sample type
+</span>
+</p>
+
+<p>
+<tal:client tal:condition="here/member_is_client">
+<a href="#" 
+    id="memberanalysesperclient_selector" 
+    i18n:translate="heading_requestsandanalyses"
+>Analysis requests and analyses</a>
+<br/>
+<span i18n:translate="description_requestsandanalyses_per_client">The number of requests and analyses
+</span>
+</tal:client>
+</p>
+
+<p>
+<tal:not_client tal:condition="not:here/member_is_client">
+<a href="#" 
+    id="analysesperclient_selector" 
+    i18n:translate="heading_requestsandanalyses_per_client"
+>Analysis requests and analyses per client</a>
+<br/>
+<span i18n:translate="description_requestsandanalyses_per_client">The number of requests and analyses per client
+</span>
+</tal:not_client>
+</p>
+
+<p>
+<a href="#" 
+    id="tats_selector" 
+    i18n:translate="heading_analyses_turnaround"
+>Analysis turnaround time</a>
+<br/>
+<span i18n:translate="description_analysis_turnaround">The turnaround times of analyses
+</span>
+</p>
+
+<p>
+<a href="#" 
+    id="attachments_selector"
+    i18n:translate="heading_attachments"
+>Attachments</a>
+<br/>
+<span i18n:translate="description_attachments">The attachments linked to analysis requests and analyses
+</span>
+</p>
+
+</fieldset>
+
+</td>
+<td VALIGN="top">
+
+<div id="analysestotals" style="display:none" class="criteria">
+<fieldset>
+
+<legend i18n:translate="legend_selection_criteria">Selection criteria</legend>
+
+<div class="field" tal:condition="not:here/member_is_client">
+    <label i18n:translate="label_client"
+        >Client</label><br/>
+    <select name="getClientUID:ignore_empty" 
+            style=""
+            id="getClientUID"
+            tal:attributes="style string:font-family:${here/base_properties/fontFamily};;font-size:100%;">
+        <option value=""/>
+
+        <tal:clients
+            tal:repeat="client clients">
+        <option value=""
+            tal:define="client_uid python:client.getObject().UID()"
+            tal:attributes="value client_uid;
+                selected python:request.get('getClientUID', '') == client_uid and 'selected' or ''"
+            tal:content="client/Title"
+            >Acme Systems</option>
+
+        </tal:clients>
+    </select>
+</div>
+
+<div class="field">
+    <label i18n:translate="label_daterequested"
+        >Date requested</label><br/>
+    <table>
+    <tr><td>
+    <span i18n:translate="label_from">From</span>
+    </td><td>
+    <tal:date tal:define="
+         input_id string:DateRequested_fromdate;
+         input_name input_id">
+        <input size="10" type='text' readonly="readonly"
+                tal:attributes="
+                    value python:'';
+                    id input_id;
+                    name input_name;"/>
+    </tal:date>
+    </td></tr>
+
+    <tr><td>
+    <span i18n:translate="label_to">to</span>
+    </td><td>
+    <tal:date tal:define="
+         input_id string:DateRequested_todate;
+         input_name input_id">
+        <input size="10" type='text' readonly="readonly"
+                tal:attributes="
+                    value python:'';
+                    id input_id;
+                    name input_name;"/>
+    </tal:date>
+
+    </td></tr>
+    </table>
+</div>
+
+<div class="field">
+    <label i18n:translate="label_datepublished"
+        >Date published</label><br/>
+    <table>
+    <tr><td>
+    <span i18n:translate="label_from">From</span>
+    </td><td>
+    <tal:date tal:define="
+         input_id string:DatePublished_fromdate;
+         input_name input_id">
+        <input size="10" type='text' readonly="readonly"
+                tal:attributes="
+                    value python:'';
+                    id input_id;
+                    name input_name;"/>
+    </tal:date>
+    </td></tr>
+
+    <tr><td>
+    <span i18n:translate="label_to">to</span>
+    </td><td>
+    <tal:date tal:define="
+         input_id string:DatePublished_todate;
+         input_name input_id">
+        <input size="10" type='text' readonly="readonly"
+                tal:attributes="
+                    value python:'';
+                    id input_id;
+                    name input_name;"/>
+    </tal:date>
+
+    </td></tr>
+    </table>
+</div>
+
+
+<div class="field">
+    <label i18n:translate="label_status"
+        >Status</label><br/>
+    <select name="review_state:ignore_empty" 
+            style=""
+            id="review_state">
+        <option value=""/>
+        <tal:states
+            define="states here/analysis_workflow_states"
+            tal:repeat="state states">
+        <option value=""
+            tal:attributes="value state/id;
+                selected python:request.get('review_state', '') == state['id'] and 'selected' or ''"
+            tal:content="state/title"
+            >Sample received </option>
+        </tal:states>
+    </select>
+</div>
+
+
+</fieldset>
+</div>
+
+<div id="analysespersampletype" style="display:none" class="criteria">
+<fieldset>
+
+<legend i18n:translate="legend_selection_criteria">Selection criteria</legend>
+
+<div class="field" tal:condition="not:here/member_is_client">
+    <label i18n:translate="label_client"
+        >Client</label><br/>
+    <select name="getClientUID:ignore_empty" 
+            style=""
+            id="getClientUID"
+            tal:attributes="style string:font-family:${here/base_properties/fontFamily};;font-size:100%;">
+        <option value=""/>
+
+        <tal:clients
+            tal:repeat="client clients">
+        <option value=""
+            tal:define="client_uid python:client.getObject().UID()"
+            tal:attributes="value client_uid;
+                selected python:request.get('getClientUID', '') == client_uid and 'selected' or ''"
+            tal:content="client/Title"
+            >Acme Systems</option>
+
+        </tal:clients>
+    </select>
+</div>
+
+<div class="field">
+    <label i18n:translate="label_daterequested"
+        >Date requested</label><br/>
+    <table>
+    <tr><td>
+    <span i18n:translate="label_from">From</span>
+    </td><td>
+    <tal:date tal:define="
+         input_id string:DateRequested_fromdate;
+         input_name input_id">
+        <input size="10" type='text' readonly="readonly"
+                tal:attributes="
+                    value python:'';
+                    id input_id;
+                    name input_name;"/>
+    </tal:date>
+    </td></tr>
+
+    <tr><td>
+    <span i18n:translate="label_to">to</span>
+    </td><td>
+    <tal:date tal:define="
+         input_id string:DateRequested_todate;
+         input_name input_id">
+        <input size="10" type='text' readonly="readonly"
+                tal:attributes="
+                    value python:'';
+                    id input_id;
+                    name input_name;"/>
+    </tal:date>
+
+    </td></tr>
+    </table>
+</div>
+
+</fieldset>
+</div>
+
+<div id="analysesperclient" style="display:none" class="criteria">
+<fieldset>
+
+<legend i18n:translate="legend_selection_criteria">Selection criteria</legend>
+
+<div class="field">
+    <label i18n:translate="label_daterequested"
+        >Date requested</label><br/>
+    <table>
+    <tr><td>
+    <span i18n:translate="label_from">From</span>
+    </td><td>
+    <tal:date tal:define="
+         input_id string:DateRequested_fromdate;
+         input_name input_id">
+        <input size="10" type='text' readonly="readonly"
+                tal:attributes="
+                    value python:'';
+                    id input_id;
+                    name input_name;"/>
+    </tal:date>
+    </td></tr>
+
+    <tr><td>
+    <span i18n:translate="label_to">to</span>
+    </td><td>
+    <tal:date tal:define="
+         input_id string:DateRequested_todate;
+         input_name input_id">
+        <input size="10" type='text' readonly="readonly"
+                tal:attributes="
+                    value python:'';
+                    id input_id;
+                    name input_name;"/>
+    </tal:date>
+
+    </td></tr>
+    </table>
+</div>
+
+</fieldset>
+</div>
+
+<div id="tats" style="display:none" class="criteria">
+<fieldset>
+
+<legend i18n:translate="legend_selection_criteria">Selection criteria</legend>
+
+<div class="field" tal:condition="not:here/member_is_client">
+    <label i18n:translate="label_client"
+        >Client</label><br/>
+    <select name="getClientUID:ignore_empty" 
+            style=""
+            id="getClientUID"
+            tal:attributes="style string:font-family:${here/base_properties/fontFamily};;font-size:100%;">
+        <option value=""/>
+
+        <tal:clients
+            tal:repeat="client clients">
+        <option value=""
+            tal:define="client_uid python:client.getObject().UID()"
+            tal:attributes="value client_uid;
+                selected python:request.get('getClientUID', '') == client_uid and 'selected' or ''"
+            tal:content="client/Title"
+            >Acme Systems</option>
+
+        </tal:clients>
+    </select>
+</div>
+
+<div class="field">
+    <label i18n:translate="label_datereceived"
+        >Date received</label><br/>
+    <table>
+    <tr><td>
+    <span i18n:translate="label_from">From</span>
+    </td><td>
+    <tal:date tal:define="
+         input_id string:DateReceived_fromdate;
+         input_name input_id">
+        <input size="10" type='text' readonly="readonly"
+                tal:attributes="
+                    value python:'';
+                    id input_id;
+                    name input_name;"/>
+    </tal:date>
+    </td></tr>
+
+    <tr><td>
+    <span i18n:translate="label_to">to</span>
+    </td><td>
+    <tal:date tal:define="
+         input_id string:DateReceived_todate;
+         input_name input_id">
+        <input size="10" type='text' readonly="readonly"
+                tal:attributes="
+                    value python:'';
+                    id input_id;
+                    name input_name;"/>
+    </tal:date>
+
+    </td></tr>
+    </table>
+</div>
+
+</fieldset>
+</div>
+
+
+<div id="attachments" style="display:none" class="criteria">
+<fieldset>
+
+<legend i18n:translate="legend_selection_criteria">Selection criteria</legend>
+
+<div class="field" tal:condition="not:here/member_is_client">
+    <label i18n:translate="label_client"
+        >Client</label><br/>
+    <select name="getClientUID:ignore_empty" 
+            style=""
+            id="getClientUID"
+            tal:attributes="style string:font-family:${here/base_properties/fontFamily};;font-size:100%;">
+        <option value=""/>
+
+        <tal:clients
+            tal:repeat="client clients">
+        <option value=""
+            tal:define="client_uid python:client.getObject().UID()"
+            tal:attributes="value client_uid;
+                selected python:request.get('getClientUID', '') == client_uid and 'selected' or ''"
+            tal:content="client/Title"
+            >Acme Systems</option>
+
+        </tal:clients>
+    </select>
+</div>
+
+<div class="field">
+    <label i18n:translate="label_dateloaded"
+        >Date loaded</label><br/>
+    <table>
+    <tr><td>
+    <span i18n:translate="label_from">From</span>
+    </td><td>
+    <tal:date tal:define="
+         input_id string:DateLoaded_fromdate;
+         input_name input_id">
+        <input size="10" type='text' readonly="readonly"
+                tal:attributes="
+                    value python:'';
+                    id input_id;
+                    name input_name;"/>
+    </tal:date>
+    </td></tr>
+
+    <tr><td>
+    <span i18n:translate="label_to">to</span>
+    </td><td>
+    <tal:date tal:define="
+         input_id string:DateLoaded_todate;
+         input_name input_id">
+        <input size="10" type='text' readonly="readonly"
+                tal:attributes="
+                    value python:'';
+                    id input_id;
+                    name input_name;"/>
+    </tal:date>
+
+    </td></tr>
+    </table>
+</div>
+
+
+</fieldset>
+</div>
+</td>
+</tr>
+<tr><td></td>
+<td>
+
+<div id="submitter" style="display:none !important">
+    <input tabindex=""
+        class="searchButton"
+        type="submit"
+        name="submit"
+        value="Search"
+        i18n:attributes="value"
+        />                       
+</div>
+</td>
+</tr>
+</table>
+
+
+</form>
 </metal:content-core>
 
 	</body>

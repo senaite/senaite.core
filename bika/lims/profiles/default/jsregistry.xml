@@ -159,6 +159,17 @@
                 inline="False"
                 insert-after="*"/>
 
+    <javascript authenticated="False"
+                cacheable="True"
+                compression="safe"
+                conditionalcomment=""
+                cookable="True"
+                enabled="on"
+                expression="python:here.portal_type in ['Reports',]"
+                id="++resource++bika.lims.js/reports.js"
+                inline="False"
+                insert-after="*"/>
+
     <javascript authenticated="True"
                 cacheable="True"
                 compression="safe"
