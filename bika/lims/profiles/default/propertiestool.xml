@@ -54,6 +54,7 @@
     <element value="ReferenceSample"/>
     <element value="ReferenceSupplier"/>
     <element value="RejectAnalysis"/>
+    <element value="Reports"/>
     <element value="Sample"/>
     <element value="SamplePoint"/>
     <element value="SampleType"/>
