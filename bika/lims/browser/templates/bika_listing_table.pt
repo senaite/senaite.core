@@ -127,7 +127,7 @@ Colum Headers
 				class python:request.get(view.bika_listing.form_id+'_sort_on', '') == column
 				                    and 'sortable column sort_on ' + request.get(view.bika_listing.form_id+'_sort_order','ascending')
 									or (view.bika_listing.columns[column].get('sortable', True) and 'sortable column' or 'column');">
-			<span tal:replace="python:view.bika_listing.columns[  column  ]['title']"/>
+			<span tal:replace="structure python:view.bika_listing.columns[  column  ]['title']"/>
 		</th>
 	</tr>
 

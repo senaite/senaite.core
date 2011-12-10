@@ -203,7 +203,8 @@ class WorksheetAnalysesView(AnalysesView):
             'Result': {'title': _('Result')},
             'ResultDM': {'title': _('Dry')},
             'Uncertainty': {'title': _('+-')},
-            'retested': {'title': _('Retested'), 'type':'boolean'},
+            'retested': {'title': "<img src='++resource++bika.lims.images/retested.png' title='%s'/>" % _('Retested'),
+                         'type':'boolean'},
             'Attachments': {'title': _('Attachments')},
             'state_title': {'title': _('State')},
         }

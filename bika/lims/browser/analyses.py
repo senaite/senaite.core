@@ -43,7 +43,7 @@ class AnalysesView(BikaListingView):
             'Result': {'title': _('Result')},
             'ResultDM': {'title': _('Dry')},
             'Uncertainty': {'title': _('+-')},
-            'retested': {'title': _('retested'),
+            'retested': {'title': "<img src='++resource++bika.lims.images/retested.png' title='%s'/>" % _('Retested'),
                          'type':'boolean'},
             'Attachments': {'title': _('Attachments')},
             'DueDate': {'title': _('Due Date')},
