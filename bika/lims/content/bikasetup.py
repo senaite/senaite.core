@@ -217,6 +217,16 @@ schema = BikaFolderSchema.copy() + Schema((
             allowDelete=False,
         )
     ),
+    BooleanField('YearInPrefix',
+        schemata = _("ID Server"),
+        default = False,
+        widget = BooleanWidget(
+            label_msgid = 'year_in_prefix',
+            label = "Include year in ID prefix",
+            description_msgid = 'year_in_prefix_description',
+            description = str("Add two-digit year after the ID prefix.")
+        ),
+    ),
     IntegerField('SampleIDPadding',
         schemata = _("ID Server"),
         required = 1,
