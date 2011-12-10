@@ -13,6 +13,7 @@ from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.browser.bika_listing import WorkflowAction
 from bika.lims.browser.referencesample import ReferenceSamplesView
 from bika.lims.utils import isActive, TimeOrDate
+from bika.lims.exportimport import instruments
 from operator import itemgetter
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.layout.globals.interfaces import IViewView
@@ -958,6 +959,40 @@ class ajaxGetWorksheetReferences(ReferenceSamplesView):
         if not self.control_type:
             return _("No control type specified")
         return super(ajaxGetWorksheetReferences, self).contents_table()
+
+class ExportView(BrowserView):
+    """
+    """
+    def __call__(self):
+
+        instrument = self.context.getInstrument()
+        if not instrument:
+            message = _("You must select an instrument before you can export this worksheet.")
+            self.context.plone_utils.addPortalMessage(message, 'info')
+            self.request.RESPONSE.redirect(self.context.absolute_url())
+            return
+
+        exim = instrument.getDataInterface()
+        if not exim:
+            message = _("This instrument has no Data Interface selected.")
+            self.context.plone_utils.addPortalMessage(message, 'info')
+            self.request.RESPONSE.redirect(self.context.absolute_url())
+            return
+
+        # exim refers to filename in instruments/
+        exim = exim.lower()
+
+        # search instruments module for 'exim' module
+        if not hasattr(instruments, exim):
+            message = _("Instrument exporter not found.")
+            self.context.plone_utils.addPortalMessage(message, 'error')
+            self.request.RESPONSE.redirect(self.context.absolute_url())
+            return
+
+        exim = getattr(instruments, exim)
+        exporter = exim.Export(self.context, self.request)
+        data = exporter(self.context.getAnalyses())
+        pass
 
 class ajaxGetServices(BrowserView):
     """ When a Category is selected in the add_analyses search screen, this

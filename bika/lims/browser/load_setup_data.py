@@ -399,7 +399,8 @@ class LoadSetupData(BrowserView):
                      Model = unicode(row['Model']),
                      SerialNo = unicode(row['SerialNo']),
                      CalibrationCertificate = unicode(row['CalibrationCertificate']),
-                     CalibrationExpiryDate = unicode(row['CalibrationExpiryDate']))
+                     CalibrationExpiryDate = unicode(row['CalibrationExpiryDate']),
+                     DataInterface = row['DataInterface'])
             self.instruments[unicode(row['title'])] = obj
             obj.processForm()
             zope.event.notify(ObjectEditedEvent(obj))

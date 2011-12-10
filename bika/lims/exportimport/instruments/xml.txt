@@ -1,0 +1,26 @@
+fia star v1
+===========
+
+0 List name;
+1 Date;
+2 Time;
+3 Tray;
+4 Cup;
+5 Sample name;
+6 Sample type;
+7 Dilution;
+8 Remark;
+9 Parameter;
+10 Sample;
+11 Injection;
+12 Peak Height/Area;
+13 Concentration;
+14 Deviation;
+15 Error/Warning
+
+W09-00176;Z009/01/27;11:03:10 AM;1;1;V09-538;Sample;1.000;;F SO2;1;1;123.438; 13.496;;
+W09-00176;2009/01/27;11:03:10 AM;1;2;V09-578;Sample;1.000;;F SO2;2;1; 62.721;  6.277;;
+
+fia star v2
+===========
+
