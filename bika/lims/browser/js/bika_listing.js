@@ -1,6 +1,15 @@
 jQuery( function($) {
 $(document).ready(function(){
 
+	function portalMessage(message){
+		str = "<dl class='portalMessage error'>"+
+			"<dt i18n:translate='error'>Error</dt>"+
+			"<dd><ul>" + message +
+			"</ul></dd></dl>";
+		$('.portalMessage').remove();
+		$(str).appendTo('#viewlet-above-content');
+	}
+
 	// review_state
 	$(".review_state_selector a").click(function(){
 		form_id = $(this).parents("form").attr("id");
@@ -134,8 +143,9 @@ $(document).ready(function(){
 			}
 		}
 		if(r == 14){
-			// XXX some kind of alert...
-			event.prevetnDefault();
+			portalMessage("Some results failed to calculate, and the form was not submitted.");
+			$(".busy").removeClass("busy");
+			event.preventDefault();
 		}
 	});
 

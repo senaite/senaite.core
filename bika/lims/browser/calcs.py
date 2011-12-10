@@ -42,14 +42,13 @@ class ajaxCalculateAnalysisEntry():
                 self.alerts.append({'uid': uid,
                                     'field': 'Result',
                                     'icon': 'exclamation',
-                                    'msg': _('Not a valid result')})
+                                    'msg': _('Not a Number')})
                 Result['result'] = form_result
                 # Don't try calculate this result
                 calculation = False
             elif form_result == "":
                 # empty result returns "" value to set form result empty
                 Result['result'] = form_result
-                # Don't try calculate this result
             else:
                 # other un-floatable results get forced to 0.
                 Result['result'] = 0.0
@@ -89,18 +88,23 @@ class ajaxCalculateAnalysisEntry():
                                              'result': '',
                                              'formatted_result': ''})
                         return None
+                    # All interims must be float, or error alert is returned
+                    try:
+                        i['value'] = float(i['value'])
+                    except:
+                        self.alerts.append({'uid': uid,
+                                            'field': i['keyword'],
+                                            'icon': 'exclamation',
+                                            'msg': _('Not a Number')})
                     # all interims are ServiceKeyword.InterimKeyword
                     if i_uid in deps:
-                        key = "%s.%s"%(deps[i_uid].getService().getKeyword(), i['keyword'])
+                        key = "%s.%s"%(deps[i_uid].getService().getKeyword(),
+                                       i['keyword'])
                         mapping[key] = i['value']
                     # this analysis' interims get extra reference
                     # without service keyword prefix
                     if uid == i_uid:
                         mapping[i['keyword']] = i['value']
-
-            # coerce everything to float
-            for key, value in mapping.items():
-                mapping[key] = float(value)
 
             # convert formula to a valid python string, ready for interpolation
             formula = calculation.getFormula()
@@ -119,6 +123,10 @@ class ajaxCalculateAnalysisEntry():
 
                 self.current_results[uid] = result
 
+            except TypeError:
+                # non-numeric arguments in mapping?
+                # whatever it is should be alerted by now.
+                pass
             except ZeroDivisionError, e:
                 return None
             except KeyError, e:
@@ -130,9 +138,13 @@ class ajaxCalculateAnalysisEntry():
                      })
                 return None
 
-        # format calculation result to service precision
-        Result['formatted_result'] = precision and Result['result'] and \
-            str("%%.%sf" % precision) % Result['result'] or Result['result']
+        try:
+            # format calculation result to service precision
+            Result['formatted_result'] = precision and Result['result'] and \
+                str("%%.%sf" % precision) % Result['result'] or Result['result']
+        except:
+            # non-float
+            Result['formatted_result'] = Result['result']
 
         # calculate Dry Matter result
         # if parent is not an AR, it's never going to be calculable
@@ -166,7 +178,9 @@ class ajaxCalculateAnalysisEntry():
 
         self.results.append(Result)
         if App.config.getConfiguration().debug_mode:
-            logger.info("calc.py: %s->%s %s" % (analysis.aq_parent.id, analysis.id, Result))
+            logger.info("calc.py: %s->%s %s" % (analysis.aq_parent.id,
+                                                analysis.id,
+                                                Result))
 
         self.uncertainties.append({'uid': uid,
                                    'uncertainty':analysis.getUncertainty(
@@ -185,7 +199,8 @@ class ajaxCalculateAnalysisEntry():
             self.alerts.append({'uid': uid,
                                 'field': 'Result',
                                 'icon': 'exclamation',
-                                'msg': _("Result out of range" + " (%s)"%range_str)})
+                                'msg': _("Result out of range") + \
+                                       " (%s)"%range_str})
         # shoulder
         if in_range[0] == '1':
             range_str = _("min:") + str(in_range[1]['min']) + ", " + \
@@ -194,7 +209,8 @@ class ajaxCalculateAnalysisEntry():
             self.alerts.append({'uid': uid,
                                 'field': 'Result',
                                 'icon': 'warning',
-                                'msg': _("Result out of range") + " (%s)"%range_str})
+                                'msg': _("Result out of range") + \
+                                       " (%s)"%range_str})
 
         # maybe a service who depends on us must be recalculated.
         if analysis.portal_type == 'ReferenceAnalysis':

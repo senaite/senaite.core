@@ -1140,7 +1140,7 @@ class ajaxAnalysisRequestSubmit():
                 Analyses = values['Analyses']
                 del values['Analyses']
 
-                _id = client.generateUniqueId('AnalysisRequest')
+                _id = self.context.generateUniqueId('AnalysisRequest')
                 self.context.invokeFactory('AnalysisRequest', id = _id)
                 ar = self.context[_id]
                 # ar.edit() for some fields before firing the event
