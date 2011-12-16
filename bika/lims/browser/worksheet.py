@@ -367,13 +367,13 @@ class WorksheetAnalysesView(AnalysesView):
                 pos_text += obj.getAnalysis().aq_parent.getSample().getSampleType().Title()
             pos_text += "</td></tr>"
 
-            # barcode
-            barcode = parent.id.replace("-", "")
-            if obj.portal_type == 'DuplicateAnalysis':
-                barcode += "D"
-            pos_text += "<tr><td class='barcode' colspan='3'><div id='barcode_%s'></div>" % barcode + \
-                "<script type='text/javascript'>$('#barcode_%s').barcode('%s', 'code39', {'barHeight':15, addQuietZone:false, showHRI: false })</script>" % (barcode, barcode) + \
-                "</td></tr>"
+##            # barcode
+##            barcode = parent.id.replace("-", "")
+##            if obj.portal_type == 'DuplicateAnalysis':
+##                barcode += "D"
+##            pos_text += "<tr><td class='barcode' colspan='3'><div id='barcode_%s'></div>" % barcode + \
+##                "<script type='text/javascript'>$('#barcode_%s').barcode('%s', 'code39', {'barHeight':15, addQuietZone:false, showHRI: false })</script>" % (barcode, barcode) + \
+##                "</td></tr>"
 
             pos_text += "</table>"
 
