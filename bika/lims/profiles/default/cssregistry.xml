@@ -31,4 +31,11 @@
     rendering="link"
     insert-after="*"/>
 
+<stylesheet
+    id="++resource++bika.lims.css/jquery.ui.combogrid.css"
+    media="screen"
+    rel="stylesheet"
+    rendering="link"
+    insert-after="*"/>
+
 </object>

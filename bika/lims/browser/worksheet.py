@@ -388,10 +388,12 @@ class ManageResultsView(BrowserView):
         BrowserView.__init__(self, context, request)
 
     def __call__(self):
+        # Worksheet Attachmemts
+        # the expandable form is handled here.
         if "AttachmentFile_file" in self.request:
             this_file =  self.request['AttachmentFile_file']
-            if 'Analysis' in self.request:
-                analysis_uid = self.request['Analysis']
+            if 'analysis_uid' in self.request:
+                analysis_uid = self.request['analysis_uid']
             else:
                 analysis_uid = None
             if 'Service' in self.request:
@@ -1006,3 +1008,68 @@ class ajaxGetServices(BrowserView):
                    getCategoryUID = self.request.get('getCategoryUID', ''),
                    inactive_state = 'active',
                    sort_on = 'sortable_title')])
+
+class ajaxAttachAnalyses(BrowserView):
+    """ In attachment add form,
+        the analyses dropdown combo uses this as source.
+        Form is handled by the worksheet ManageResults code
+    """
+    def __call__(self):
+        plone.protect.CheckAuthenticator(self.request)
+        searchTerm = self.request['searchTerm'].lower()
+        page = self.request['page']
+        nr_rows = self.request['rows']
+        sord = self.request['sord']
+        sidx = self.request['sidx']
+        attachable_states = ('assigned', 'sample_received', 'to_be_verified')
+        wf = getToolByName(self.context, 'portal_workflow')
+        analysis_to_slot = {}
+        for s in self.context.getLayout():
+            analysis_to_slot[s['analysis_uid']] = s['position']
+        analyses = list(self.context.getAnalyses(full_objects = True))
+        # Duplicates belong to the worksheet, so we must add them individually
+        for i in self.context.objectValues():
+            if i.portal_type == 'DuplicateAnalysis':
+                analyses.append(i)
+        rows = []
+        for analysis in analyses:
+            review_state = wf.getInfoFor(analysis, 'review_state', '')
+            if analysis.portal_type in ('Analysis', 'DuplicateAnalysis'):
+                if review_state not in attachable_states:
+                    continue
+                parent = analysis.getRequestID()
+                service = analysis.getService()
+            elif analysis.portal_type == 'ReferenceAnalysis':
+                if review_state not in attachable_states:
+                    continue
+                parent = analysis.aq_parent.Title()
+                service = analysis.getService()
+            rows.append({'analysis_uid': analysis.UID(),
+                         'slot': analysis_to_slot[analysis.UID()],
+                         'service': service and service.Title() or '',
+                         'parent': parent,
+                         'type': analysis.portal_type})
+
+        # if there's a searchTerm supplied, restrict rows to those
+        # who contain at least one field that starts with the chars from
+        # searchTerm.
+        if searchTerm:
+            orig_rows = rows
+            rows = []
+            for row in orig_rows:
+                matches = [v for v in row.values() \
+                           if str(v).lower().startswith(searchTerm)]
+                if matches:
+                    rows.append(row)
+
+        rows = sorted(rows, key = itemgetter(sidx and sidx or 'slot'))
+        if sord == 'desc':
+            rows.reverse()
+        pages = len(rows) / int(nr_rows)
+        pages += divmod(len(rows), int(nr_rows))[1] and 1 or 0
+        ret = {'page':page,
+               'total':pages,
+               'records':len(rows),
+               'rows':rows[ (int(page)-1)*int(nr_rows) : int(page)*int(nr_rows) ]}
+
+        return json.dumps(ret)

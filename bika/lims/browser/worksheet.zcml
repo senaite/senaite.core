@@ -77,4 +77,12 @@
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
+    <browser:page
+      for="bika.lims.interfaces.IWorksheet"
+      name="attachAnalyses"
+      class="bika.lims.browser.worksheet.ajaxAttachAnalyses"
+      permission="zope.Public"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
 </configure>

@@ -158,10 +158,14 @@
 <table
     tal:define="
         analyses python:here.getAnalyses(full_objects=True);
-        analyses python:[a for a in analyses if a.portal_type in ('Analysis','DuplicateAnalysis')];
         analyses python:[a for a in analyses if a.getService().getAttachmentOption() in ['p', 'r']];
-        sort_on python:(('Title', 'nocase', 'asc'),);
-        analyses python:sequence.sort(analyses, sort_on);">
+        sort_on python:(('id', 'nocase', 'asc'),);
+        analyses python:sequence.sort(analyses, sort_on);
+        a python:[a for a in analyses if a.portal_type == 'Analysis'];
+        bc python:[a for a in analyses if a.portal_type == 'ReferenceAnalysis'];
+        b python:[a for a in bc if a.aq_parent.getBlank()];
+        c python:[a for a in bc if not a.aq_parent.getBlank()];
+        d python:[a for a in analyses if a.portal_type == 'DuplicateAnalysis'];">
 <tr><td>
 <span i18n:translate="label_attachment_type">Attachment Type</span>
 &nbsp&nbsp&nbsp&nbsp
@@ -188,15 +192,34 @@
 <tal:permitted tal:condition="analysis_attach_allowed">
 <tal:analyses tal:condition="analyses">
     <select name="Analysis">
-    <option selected="selected"
-        tal:condition="ar_attach_allowed"
-        tal:attributes="value python:None"></option>
-    <tal:item
-        tal:repeat="item analyses">
-    <option
-        tal:attributes="value item/UID;"
-        tal:content="item/Title"></option>
-    </tal:item>
+        <option selected="selected"
+            tal:condition="ar_attach_allowed"
+            tal:attributes="value python:None"></option>
+        <tal:a tal:repeat="item a">
+            <option tal:attributes="value item/UID;"
+                    tal:content="item/Title"></option>
+        </tal:a>
+        <tal:b tal:repeat="item b">
+            <option tal:attributes="value item/UID;">
+                <span tal:content="item/Title"/>
+                &nbsp;
+                <span i18n:translate="(Blank)">(Blank)</span>
+            </option>
+        </tal:b>
+        <tal:c tal:repeat="item c">
+            <option tal:attributes="value item/UID;">
+                <span tal:content="item/Title"/>
+                &nbsp;
+                <span i18n:translate="(Control)">(Control)</span>
+            </option>
+        </tal:c>
+        <tal:d tal:repeat="item d">
+            <option tal:attributes="value item/UID;">
+                <span tal:content="item/Title"/>
+                &nbsp;
+                <span i18n:translate="(Duplicate)">(Duplicate)</span>
+            </option>
+        </tal:d>
 
     </select>
 </tal:analyses>
@@ -263,23 +286,8 @@
                 i18n:translate="label_analysis">Analysis
             </span>
             <br/>
-            <tal:analyses tal:condition="attach_analyses">
-                <select name="Analysis" id="Analysis">
-                    <option value='' selected></option>
-                    <tal:item
-                        tal:repeat="item attach_analyses"
-                        tal:define="wtool python:context.portal_workflow">
-                    <tal:options
-                        tal:condition="python:item.portal_type=='Analysis'">
-                    <option
-                        tal:condition="python:wtool.getInfoFor(item, 'review_state', '') in ['sample_received','to_be_verified']"
-                        tal:attributes="value item/UID;"
-                        tal:define="this_title string:${item/getRequestID} - ${item/Title}"
-                        tal:content="this_title"></option>
-                    </tal:options>
-                    </tal:item>
-                </select>
-            </tal:analyses>
+            <input id="Analysis" size="30" autocomplete="off"/>
+            <input type="hidden" id="analysis_uid" name="analysis_uid"/>
         </td>
     </tr>
     <tr>

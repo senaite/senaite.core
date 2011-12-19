@@ -202,4 +202,16 @@
                 id="++resource++bika.lims.js/jquery-query-2.1.7.js"
                 inline="False"
                 insert-after="*"/>
+
+    <javascript authenticated="True"
+                cacheable="True"
+                compression="safe"
+                conditionalcomment=""
+                cookable="True"
+                enabled="on"
+                expression=""
+                id="++resource++bika.lims.js/jquery-combogrid-1.6.2.js"
+                inline="False"
+                insert-after="*"/>
+
 </object>
