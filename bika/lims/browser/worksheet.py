@@ -994,6 +994,8 @@ class ExportView(BrowserView):
             return
 
         # exim refers to filename in instruments/
+        if type(exim) == list:
+            exim = exim[0]
         exim = exim.lower()
 
         # search instruments module for 'exim' module
