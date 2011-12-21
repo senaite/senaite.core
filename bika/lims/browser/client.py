@@ -635,7 +635,6 @@ class SetSpecsToLabDefaults(BrowserView):
             self.context.invokeFactory(id = _id, type_name = 'AnalysisSpec')
             clientspec = self.context[_id]
             clientspec.processForm()
-            zope.event.notify(ObjectEditedEvent(clientspec))
             clientspec.edit(
                 SampleType = labspec.getSampleType(),
                 ResultsRange = labspec.getResultsRange(),
