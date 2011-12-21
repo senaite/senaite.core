@@ -19,6 +19,7 @@ from zope.interface import implements
 schema = BikaSchema.copy() + Schema((
     ReferenceField('Department',
         required = 1,
+        vocabulary = 'getDepartments',
         vocabulary_display_path_bound = sys.maxint,
         allowed_types = ('Department',),
         relationship = 'AnalysisCategoryDepartment',
@@ -43,5 +44,13 @@ class AnalysisCategory(BaseContent):
     security = ClassSecurityInfo()
     displayContentsTab = False
     schema = schema
+
+    def getDepartments(self):
+        bsc = getToolByName(self, 'bika_setup_catalog')
+        deps = []
+        for d in bsc(portal_type='Department',
+                     inactive_review_state='active'):
+            deps.append((d.UID, d.Title))
+        return DisplayList(deps)
 
 registerType(AnalysisCategory, PROJECTNAME)
