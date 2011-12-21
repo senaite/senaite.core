@@ -1,53 +1,23 @@
 <?xml version="1.0"?>
-<!-- This file holds the setup configuration for the portal_javascripts tool.
-     -->
 
 <object name="portal_javascripts">
-
- <!-- Javascript files that will be registered with the
-      portal_javascripts tool are defined here. You can also specify values
-      for existing resources if you need to modify some of their properties.
-      Javascript elements accept these parameters:
-      - 'id' (required): same rules as for stylesheets (see
-        'cssregistry.xml').
-      - 'expression' (optional - default: ''): a tal condition.
-      - 'inline' (optional - default: False)
-      - 'enabled' (optional - default: True): boolean
-      - 'cookable' (optional - default: True): boolean (aka 'merging allowed')
-      See registerScript() arguments in ResourceRegistries/tools/JSRegistry.py
-      for the latest list of all available keys and default values.
-      -->
-<!-- EXAMPLE (UNCOMMENT TO MAKE AVAILABLE):
- <javascript
-    id="++resource++bika.lims.javascripts/something.js"
-    cacheable="False" compression="safe" cookable="False"
-    enabled="True" expression=""  inline="False"/>
--->
 
   <javascript cacheable="True" compression="safe"
               cookable="True" enabled="False" expression=""
               id="popupforms.js" inline="False"
               insert-after="form_tabbing.js" />
 
+ <!-- jquery -->
+
   <javascript authenticated="False" cacheable="True" compression="safe"
               conditionalcomment="" cookable="True" enabled="True"
               expression="" id="++resource++plone.app.jquerytools.js"
               insert-after="jquery-integration.js" inline="False"/>
+
   <javascript authenticated="False" cacheable="True" compression="safe"
               conditionalcomment="" cookable="True" enabled="True"
               expression="" id="++resource++plone.app.jquerytools.form.js"
               insert-after="++resource++plone.app.jquerytools.js" inline="False"/>
-
-   <javascript authenticated="False"
-                cacheable="True"
-                compression="safe"
-                conditionalcomment=""
-                cookable="True"
-                enabled="on"
-                expression=""
-                id="++resource++bika.lims.js/utils.js"
-                inline="False"
-                insert-after="*"/>
 
     <javascript authenticated="False"
                 cacheable="True"
@@ -68,6 +38,52 @@
                 enabled="on"
                 expression=""
                 id="++resource++bika.lims.js/jquery.json.js"
+                inline="False"
+                insert-after="*"/>
+
+    <javascript authenticated="True"
+                cacheable="True"
+                compression="safe"
+                conditionalcomment=""
+                cookable="True"
+                enabled="on"
+                expression=""
+                id="++resource++bika.lims.js/jquery-barcode-2.0.2.js"
+                inline="False"
+                insert-after="*"/>
+
+    <javascript authenticated="True"
+                cacheable="True"
+                compression="safe"
+                conditionalcomment=""
+                cookable="True"
+                enabled="on"
+                expression=""
+                id="++resource++bika.lims.js/jquery-query-2.1.7.js"
+                inline="False"
+                insert-after="*"/>
+
+    <javascript authenticated="True"
+                cacheable="True"
+                compression="safe"
+                conditionalcomment=""
+                cookable="True"
+                enabled="on"
+                expression=""
+                id="++resource++bika.lims.js/jquery.ui.combogrid-1.6.2.js"
+                inline="False"
+                insert-after="*"/>
+
+ <!-- bika -->
+
+   <javascript authenticated="False"
+                cacheable="True"
+                compression="safe"
+                conditionalcomment=""
+                cookable="True"
+                enabled="on"
+                expression=""
+                id="++resource++bika.lims.js/utils.js"
                 inline="False"
                 insert-after="*"/>
 
@@ -178,39 +194,6 @@
                 enabled="on"
                 expression=""
                 id="++resource++bika.lims.js/barcode.js"
-                inline="False"
-                insert-after="*"/>
-
-    <javascript authenticated="True"
-                cacheable="True"
-                compression="safe"
-                conditionalcomment=""
-                cookable="True"
-                enabled="on"
-                expression=""
-                id="++resource++bika.lims.js/jquery-barcode-2.0.2.js"
-                inline="False"
-                insert-after="*"/>
-
-    <javascript authenticated="True"
-                cacheable="True"
-                compression="safe"
-                conditionalcomment=""
-                cookable="True"
-                enabled="on"
-                expression=""
-                id="++resource++bika.lims.js/jquery-query-2.1.7.js"
-                inline="False"
-                insert-after="*"/>
-
-    <javascript authenticated="True"
-                cacheable="True"
-                compression="safe"
-                conditionalcomment=""
-                cookable="True"
-                enabled="on"
-                expression=""
-                id="++resource++bika.lims.js/jquery.ui.combogrid-1.6.2.js"
                 inline="False"
                 insert-after="*"/>
 
