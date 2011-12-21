@@ -1039,7 +1039,7 @@ class ajaxAttachAnalyses(BrowserView):
         wf = getToolByName(self.context, 'portal_workflow')
         analysis_to_slot = {}
         for s in self.context.getLayout():
-            analysis_to_slot[s['analysis_uid']] = s['position']
+            analysis_to_slot[s['analysis_uid']] = int(s['position'])
         analyses = list(self.context.getAnalyses(full_objects = True))
         # Duplicates belong to the worksheet, so we must add them individually
         for i in self.context.objectValues():

@@ -1,9 +1,6 @@
 Instrument data interface options
 =================================
 
-- 'delimiter'
-    CSV field delimiter
-    default = ';'
 - 'parameter'
     default = 'F SO2 & T SO2'
 - 'dilute_factor'
