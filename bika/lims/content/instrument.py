@@ -50,7 +50,6 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     StringField('DataInterface',
-        schemata = _("Export & import"),
         vocabulary = "getDataInterfaces",
         widget = ReferenceWidget(
             checkbox_bound = 1,
@@ -59,7 +58,6 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     RecordsField('DataInterfaceOptions',
-        schemata = _("Export & import"),
         type = 'interfaceoptions',
         subfields = ('Key','Value'),
         required_subfields = ('Key','Value'),
