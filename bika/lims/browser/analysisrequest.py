@@ -460,7 +460,8 @@ class AnalysisRequestManageResultsView(AnalysisRequestViewView):
                 if self.context.getAnalyses(getPointOfCapture = poc):
                     t = AnalysesView(ar,
                                      self.request,
-                                     getPointOfCapture = poc)
+                                     getPointOfCapture = poc,
+                                     sort_on = 'getServiceTitle')
                     t.form_id = poc
                     t.allow_edit = True
                     t.review_states[0]['transitions'] = ['submit', 'retract', 'verify']

@@ -569,6 +569,8 @@ class AddAnalysesView(BikaListingView):
                     (self.context.absolute_url(), _("Late analysis"))
             items[x]['CategoryTitle'] = service.getCategory().Title()
             items[x]['ClientTitle'] = client.Title()
+        items = sorted(items, key = itemgetter('Title'))
+        items = sorted(items, key = itemgetter('getRequestID'))
         return items[:100]
 
     def getServices(self):
@@ -808,7 +810,7 @@ class WorksheetARsView(BikaListingView):
         items = sorted(items, key = itemgetter('Position'))
         for i in range(len(items)):
             items[i]['table_row_class'] = ((i + 1) % 2 == 0) and \
-                 "draggable even" or "draggable odd"
+                 "even" or "odd"
 
         return items
 
@@ -887,10 +889,9 @@ class WorksheetServicesView(BikaListingView):
 
         items = sorted(items, key = itemgetter('Service'))
         self.categories.sort()
-
         for i in range(len(items)):
             items[i]['table_row_class'] = ((i + 1) % 2 == 0) and \
-                 "draggable even" or "draggable odd"
+                 "even" or "odd"
 
         return items
 
@@ -952,7 +953,8 @@ class ajaxGetWorksheetReferences(ReferenceSamplesView):
         # re-do the pretty css odd/even classes
         for i in range(len(new_items)):
             new_items[i]['table_row_class'] = ((i + 1) % 2 == 0) and \
-                "draggable even" or "draggable odd"
+                "even" or "odd"
+
         return new_items
 
     def __call__(self):

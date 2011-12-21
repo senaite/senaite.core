@@ -337,6 +337,6 @@ class AnalysesView(BikaListingView):
         # re-do the pretty css odd/even classes
         for i in range(len(items)):
             items[i]['table_row_class'] = ((i + 1) % 2 == 0) and \
-                "draggable even" or "draggable odd"
+                "even" or "odd"
 
         return items
