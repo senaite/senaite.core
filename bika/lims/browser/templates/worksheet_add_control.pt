@@ -27,7 +27,7 @@
 
 		<table class="worksheet_add_control">
 			<tr>
-				<td colspan="2" style="vertical-align:center;text-align:left;">
+				<td colspan="2" style="vertical-align:center;text-align:left;padding-bottom:1em;">
 					<span
 						i18n:translate=""
 						style="line-height:20px;"

@@ -241,6 +241,22 @@ div.listingBar {
     margin: 0;
 }
 
+
+/*** Manage results header *****/
+
+.manage_results_header table {
+    border:medium none;
+}
+.manage_results_header tr{
+}
+.manage_results_header th{
+	padding: 0 1em 0 0;
+}
+.manage_results_header td{
+	padding: 0 3em 0 0;
+}
+
+
 div.listingBar a {
 	border-radius: &dtml-buttonBorderRadius; !important;
     border: 0.1em solid #CCCCCC !important;

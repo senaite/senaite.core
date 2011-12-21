@@ -28,14 +28,15 @@
 		The position dropdown's value is not part of the bika_listing form.
 		The value is inserted into form values by worksheet.js
 		</tal:comment>
-		<span tal:content="string:Insert into worksheet at position: " i18n:translate="" style="line-height:20px;"/>
-		<select id="position">
-			<tal:options repeat="position view/getAvailablePositions">
-				<option tal:attributes="value position" tal:content="position"/>
-			</tal:options>
-			<option value="new" tal:content="string:New" i18n:translate=""/>
-		</select>
-
+		<div style="margin-bottom:1em">
+			<span tal:content="string:Insert into worksheet at position: " i18n:translate="" style="line-height:20px;"/>
+			<select id="position">
+				<tal:options repeat="position view/getAvailablePositions">
+					<option tal:attributes="value position" tal:content="position"/>
+				</tal:options>
+				<option value="new" tal:content="string:New" i18n:translate=""/>
+			</select>
+		</div>
 		<span id="worksheet_add_duplicate_ars" tal:content="structure view/ARs/contents_table"/>
 
 	</fieldset>

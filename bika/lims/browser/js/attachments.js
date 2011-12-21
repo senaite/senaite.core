@@ -45,14 +45,12 @@ $(document).ready(function(){
 
 	// Dropdown grid of Analyses in attachment forms
 	$( "#Analysis" ).combogrid({
-		//leaves the dropdown markup lying around in the html
-		//debug:true,
 		colModel: [{'columnName':'analysis_uid','hidden':true},
 		           {'columnName':'slot','width':'10','label':'Slot'},
-		           {'columnName':'service','width':'20','label':'Service'},
+		           {'columnName':'service','width':'35','label':'Service'},
 		           {'columnName':'parent','width':'35','label':'Parent'},
-		           {'columnName':'type','width':'35','label':'Type'}],
-		url: window.location.href + "/attachAnalyses?_authenticator=" + $('input[name="_authenticator"]').val(),
+		           {'columnName':'type','width':'20','label':'Type'}],
+		url: window.location.href.replace("/manage_results","") + "/attachAnalyses?_authenticator=" + $('input[name="_authenticator"]').val(),
 		select: function( event, ui ) {
 			$( "#Analysis" ).val(ui.item.service + " (slot "+ui.item.slot+")");
 			$( "#analysis_uid" ).val(ui.item.analysis_uid);

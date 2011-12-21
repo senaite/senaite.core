@@ -210,7 +210,18 @@
                 cookable="True"
                 enabled="on"
                 expression=""
-                id="++resource++bika.lims.js/jquery-combogrid-1.6.2.js"
+                id="++resource++bika.lims.js/jquery.ui.combogrid-1.6.2.js"
+                inline="False"
+                insert-after="*"/>
+
+    <javascript authenticated="True"
+                cacheable="True"
+                compression="safe"
+                conditionalcomment=""
+                cookable="True"
+                enabled="on"
+                expression=""
+                id="++resource++bika.lims.js/attachments.js"
                 inline="False"
                 insert-after="*"/>
 

@@ -7,8 +7,6 @@
 <!-- Used on AR views to render the collapsing fieldset with Attachments inside -->
 <div class="attachments"
      metal:define-macro="attachments">
-<script type="text/javascript"
-        src="++resource++bika.lims.js/attachments.js"></script>
   <dl class="collapsible collapsedOnLoad">
     <dt class="attachments collapsibleHeader">
         <img src='++resource++bika.lims.images/attachment.png' title='Attachment'>
@@ -33,8 +31,6 @@
 <!-- Used on WS views to render the collapsing fieldset with Attachments inside -->
 <div class="attachments"
      metal:define-macro="ws_attachments">
-<script type="text/javascript"
-        src="++resource++bika.lims.js/attachments.js"></script>
   <dl class="collapsible collapsedOnLoad">
     <dt class="attachments collapsibleHeader">
         <img src='++resource++bika.lims.images/attachment.png' title='Attachment'>
@@ -257,10 +253,23 @@
     </tr>
     <tr>
         <td>
+            <span i19n:translate="label_attach_to">Attach to: </span>
+        </td>
+        <td>
+            <span tal:condition="attach_analyses" i18n:translate="label_analysis">Analysis</span>
+        </td>
+        <td>
+            <input id="Analysis" size="30" autocomplete="off"/>
+            <input type="hidden" id="analysis_uid" name="analysis_uid"/>
+        </td>
+    </tr>
+    <tr>
+        <td>&nbsp;</td>
+        <td>
             <span tal:condition="attach_services"
-                  i18n:translate="label_all_analyses">All analyses of type
-            </span>
-            <br/>
+                  i18n:translate="label_all_analyses">All analyses of type</span>
+        </td>
+        <td>
             <tal:services
                 tal:condition="attach_services"
                 tal:define="global last_uid python:None">
@@ -278,22 +287,12 @@
                 </select>
             </tal:services>
         </td>
-        <td>
-            <span i18n:translate="label_or">or</span>
-        </td>
-        <td>
-            <span tal:condition="attach_analyses"
-                i18n:translate="label_analysis">Analysis
-            </span>
-            <br/>
-            <input id="Analysis" size="30" autocomplete="off"/>
-            <input type="hidden" id="analysis_uid" name="analysis_uid"/>
-        </td>
     </tr>
     <tr>
+        <td>
+            <span i18n:translate="label_attachment_type">Attachment Type: </span>
+        </td>
         <td colspan="2">
-            <span i18n:translate="label_attachment_type">Attachment Type</span>
-            <br/>
             <select name="AttachmentType">
                 <tal:item
                     tal:define="
@@ -307,9 +306,12 @@
                 </tal:item>
             </select>
         </td>
+    </tr>
+    <tr>
         <td>
             <span i18n:translate="label_attachment_keys">Keywords</span>
-            <br/>
+        </td>
+        <td colspan="2">
             <input size="40" name="AttachmentKeys"/>
         </td>
     </tr>
