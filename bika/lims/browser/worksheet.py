@@ -405,7 +405,12 @@ class ManageResultsView(BrowserView):
             if analysis_uid:
                 analysis = tool.lookupObject(analysis_uid)
                 attachmentid = self.context.generateUniqueId('Attachment')
-                client = analysis.aq_parent.aq_parent
+                # client refers to Client in case of Analysis, and to
+                #     parent Worksheet in case of DuplicateAnalysis
+                if analysis.aq_parent.portal_type == 'AnalysisRequest':
+                    client = analysis.aq_parent.aq_parent
+                else:
+                    client = analysis.aq_parent
                 client.invokeFactory("Attachment",
                                      id = attachmentid)
                 attachment = client._getOb(attachmentid)
