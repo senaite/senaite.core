@@ -38,7 +38,7 @@ class DepartmentsView(BikaListingView):
             'Title': {'title': _('Department'),
                       'index':'sortable_title'},
             'Description': {'title': _('Description'),
-                            'index': 'description'},
+                            'index': 'Description'},
             'Manager': {'title': _('Manager'),
                         'index': 'getManagerName'},
             'ManagerPhone': {'title': _('Manager Phone'),

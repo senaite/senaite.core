@@ -1,12 +1,23 @@
 jQuery( function($) {
+
 $(document).ready(function(){
 
 	$(".listing_string_entry,.listing_select_entry").live('change', function(){
 		form_id = $(this).parents("form").attr("id");
+		td = $(this).parents('td');
 		uid = $(this).attr('uid');
 		field = $(this).attr('field');
 		value = $(this).attr('value');
 		item_data = $(this).parents('table').prev('input[name="item_data"]').val();
+
+		// stick this new value into the tabledata-X sort class
+		if (value == ''){
+			text = "AAA_sortable";
+		} else {
+			text = value.toLowerCase().replace(/[^a-zA-Z0-9_]*/mg, "");
+		}
+		classname = $(td).attr('class').replace(/\bsortabledata-\S*\b/g, "") + " sortabledata-"+text;
+		$(td).attr('class', classname);
 
 		// workflow button presses will wait for all .busy elements to lose
 		// their busy classes before continuing
@@ -135,6 +146,9 @@ $(document).ready(function(){
 					continue;
 				}
 				re_spec = spec[$(re).attr("objectid")];
+				if (re_spec == undefined || re_spec == null) {
+					continue;
+				}
 				result = parseFloat(result);
 				spec_min = parseFloat(re_spec.min);
 				spec_max = parseFloat(re_spec.max);

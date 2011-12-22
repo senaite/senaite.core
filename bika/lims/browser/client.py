@@ -789,14 +789,10 @@ class ClientContactsView(BikaListingView):
         self.columns = {
             'getFullname': {'title': _('Full Name'),
                             'index': 'getFullname'},
-            'getEmailAddress': {'title': _('Email Address'),
-                                'index': 'getEmailAddress'},
-            'getBusinessPhone': {'title': _('Business Phone'),
-                                 'index': 'getBusinessPhone'},
-            'getMobilePhone': {'title': _('Mobile Phone'),
-                               'index': 'getMobilePhone'},
-            'getFax': {'title': _('Fax'),
-                       'index': 'getFax'},
+            'getEmailAddress': {'title': _('Email Address')},
+            'getBusinessPhone': {'title': _('Business Phone')},
+            'getMobilePhone': {'title': _('Mobile Phone')},
+            'getFax': {'title': _('Fax')},
         }
         self.review_states = [
             {'title': 'All', 'id':'all',

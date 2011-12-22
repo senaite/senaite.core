@@ -195,23 +195,22 @@ class WorksheetAnalysesView(AnalysesView):
         self.allow_edit = True
 
         self.columns = {
-            'Pos': {'title': _('Position')},
-            'DueDate': {'title': _('Due date')},
-##            'Category': {'title': _('Category')},
-            'Service': {'title': _('Analysis')},
-            'Result': {'title': _('Result')},
-            'ResultDM': {'title': _('Dry')},
-            'Uncertainty': {'title': _('+-')},
+            'Pos': {'title': _('Position'), 'sortable': False},
+            'DueDate': {'title': _('Due date'), 'sortable': False},
+            'Service': {'title': _('Analysis'), 'sortable': False},
+            'Result': {'title': _('Result'), 'sortable': False},
+            'ResultDM': {'title': _('Dry'), 'sortable': False},
+            'Uncertainty': {'title': _('+-'), 'sortable': False},
             'retested': {'title': "<img src='++resource++bika.lims.images/retested.png' title='%s'/>" % _('Retested'),
-                         'type':'boolean'},
-            'Attachments': {'title': _('Attachments')},
-            'state_title': {'title': _('State')},
+                         'type':'boolean',
+                         'sortable': False},
+            'Attachments': {'title': _('Attachments'), 'sortable': False},
+            'state_title': {'title': _('State'), 'sortable': False},
         }
         self.review_states = [
             {'title': _('All'), 'id':'all',
              'transitions': ['submit', 'verify', 'retract', 'unassign'],
              'columns':['Pos',
-##                        'Category',
                         'Service',
                         'Result',
                         'Uncertainty',
@@ -491,26 +490,15 @@ class AddAnalysesView(BikaListingView):
 
         self.columns = {
             'ClientTitle': {'title': _('Client'),
-                            'sortable':False},
-#                            'index':'getClientTitle'},
-            'getClientOrderNumber': {'title': _('Order'),
-                            'sortable':False},
-#                            'index':'getClientOrderNumber'},
-            'getRequestID': {'title': _('Request ID'),
-                            'sortable':False},
-#                            'index':'getRequestID'},
+                            'index':'getClientTitle'},
+            'getClientOrderNumber': {'title': _('Order')},
+            'getRequestID': {'title': _('Request ID')},
             'CategoryTitle': {'title': _('Category'),
-                            'sortable':False},
-#                            'index':'getCategoryTitle'},
+                              'index':'getCategoryTitle'},
             'Title': {'title': _('Analysis'),
-                            'sortable':False},
-#                            'index':'sortable_title'},
-            'getDateReceived': {'title': _('Date Received'),
-                            'sortable':False},
-#                            'index':'getDateReceived'},
-            'getDueDate': {'title': _('Due Date'),
-                            'sortable':False},
-#                            'index':'getDueDate'},
+                      'index':'sortable_title'},
+            'getDateReceived': {'title': _('Date Received')},
+            'getDueDate': {'title': _('Due Date')},
         }
         self.review_states = [
             {'id':'all',
@@ -531,9 +519,9 @@ class AddAnalysesView(BikaListingView):
             self.request.response.redirect(self.context.absolute_url())
             return
 
+        form_id = self.form_id
         form = self.request.form
         rc = getToolByName(self.context, REFERENCE_CATALOG)
-
         if 'submitted' in form:
             if 'getWorksheetTemplate' in form and form['getWorksheetTemplate']:
                 layout = self.context.getLayout()
@@ -546,12 +534,13 @@ class AddAnalysesView(BikaListingView):
                 else:
                     self.context.plone_utils.addPortalMessage(_("No analyses were added to this worksheet."))
                     self.request.RESPONSE.redirect(self.context.absolute_url() + "/add_analyses")
-        for field in ['getCategoryUID', 'getServiceUID', 'getClientUID', ]:
-            request_key = "%s_%s" % (self.form_id, field)
-            if request_key in self.request and \
-               self.request[request_key] != 'any':
-                self.contentFilter[field] = self.request[request_key]
-        return self.template()
+
+        self._process_request()
+
+        if self.request.get('table_only', '') == self.form_id:
+            return self.contents_table()
+        else:
+            return self.template()
 
     def folderitems(self):
         pc = getToolByName(self.context, 'portal_catalog')
@@ -583,7 +572,7 @@ class AddAnalysesView(BikaListingView):
 
     def getServices(self):
         bsc = getToolByName(self.context, 'bika_setup_catalog')
-        return [(c.UID, c.Title) for c in \
+        return [c.Title for c in \
                 bsc(portal_type = 'AnalysisService',
                    getCategoryUID = self.request.get('list_getCategoryUID', ''),
                    inactive_state = 'active',
@@ -591,14 +580,14 @@ class AddAnalysesView(BikaListingView):
 
     def getClients(self):
         pc = getToolByName(self.context, 'portal_catalog')
-        return [(c.UID, c.Title) for c in \
+        return [c.Title for c in \
                 pc(portal_type = 'Client',
                    inactive_state = 'active',
                    sort_on = 'sortable_title')]
 
     def getCategories(self):
         bsc = getToolByName(self.context, 'bika_setup_catalog')
-        return [(c.UID, c.Title) for c in \
+        return [c.Title for c in \
                 bsc(portal_type = 'AnalysisCategory',
                    inactive_state = 'active',
                    sort_on = 'sortable_title')]

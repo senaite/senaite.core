@@ -107,8 +107,8 @@ class TableRenderShim(BrowserView):
     """
 
     def __init__(self, context, request, fieldvalue = {}, allow_edit = True):
-        """ If fieldvalue is in the request, we use that one.
-            Otherwise we default to the parameter specified here (field content).
+        """ If uid is in request, we use that reference definition's reference
+            results value.  Otherwise the parameter specified here.
         """
         super(TableRenderShim, self).__init__(context, request)
         self.allow_edit = allow_edit
@@ -146,17 +146,18 @@ class ReferenceResultsWidget(TypesWidget):
             result,min and max field will be included.
         """
         value = []
-        for uid, service in form['service'][0].items():
-            try:
-                result = float(form['result'][0][uid])
-                Min = float(form['min'][0][uid])
-                Max = float(form['max'][0][uid])
-            except:
-                continue
-            value.append({'uid':uid,
-                          'result':result,
-                          'min':Min,
-                          'max':Max})
+        if 'uid' in form:
+            for uid, service in form['uid'][0].items():
+                try:
+                    result = float(form['result'][0][uid])
+                    Min = float(form['min'][0][uid])
+                    Max = float(form['max'][0][uid])
+                except:
+                    continue
+                value.append({'uid':uid,
+                              'result':result,
+                              'min':Min,
+                              'max':Max})
         return value, {}
 
     security.declarePublic('ReferenceResults')

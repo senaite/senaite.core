@@ -547,10 +547,10 @@ fieldset.criteria p {
 	vertical-align:top !important;
 }
 
-.worksheet_add_references tr:hover,
-.worksheet_add_references tr:hover td,
-#worksheet_add_duplicate_ars tr:hover,
-#worksheet_add_duplicate_ars tr:hover td {
+.worksheet_add_references .bika-listing-table tbody tr:hover,
+.worksheet_add_references .bika-listing-table tbody tr:hover td,
+#worksheet_add_duplicate_ars .bika-listing-table tbody tr:hover,
+#worksheet_add_duplicate_ars .bika-listing-table tbody tr:hover td {
     cursor:pointer;
 	background:&dtml-notifyBackgroundColor; !important;
 

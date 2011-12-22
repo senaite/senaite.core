@@ -16,8 +16,10 @@ from plone.app.content.batching import Batch
 from plone.app.content.browser import tableview
 from plone.app.content.browser.foldercontents import FolderContentsView, FolderContentsTable
 from plone.app.content.browser.interfaces import IFolderContentsView
+from plone.i18n.normalizer.interfaces import IIDNormalizer
 from zope.app.component.hooks import getSite
 from zope.component._api import getMultiAdapter
+from zope.component import getUtility
 from zope.i18n import translate
 from zope.i18nmessageid import MessageFactory
 from zope.interface import implements
@@ -181,11 +183,10 @@ class BikaListingView(BrowserView):
        if "choices" is selected, item['choices'][column_id] must
        be a list of choice strings.
      - index
-       the name of the catalog index for the column.  If specified,
-       it will be passed to catalog for column sorting.  If not,
-       the column will be sorted in-place by javascript.
-     - sortable: defaults True.  Prevents column sort classes from being
-       rendered on the column headers
+       the name of the catalog index for the column. adds 'indexed' class,
+       to allow ajax table sorting for indexed columns
+     - sortable: defaults True.  if False, adds nosort class
+       (see bika_listing.js) to prevent inline table sorts.
     """
     columns = {
            'obj_type': {'title': _('Type')},
@@ -194,6 +195,10 @@ class BikaListingView(BrowserView):
            'modified': {'title': _('Last modified')},
            'state_title': {'title': _('State')},
     }
+
+    # a list of indexes which will be queried to generate
+    # results for the filter dropdown combogrid.
+    #self.filter_indexes = []
 
     """
     ### review_state filter
@@ -213,15 +218,23 @@ class BikaListingView(BrowserView):
         # contentsMethod may return a list of brains or a list of objects.
         self.contentsMethod = self.context.getFolderContents
 
-    def __call__(self):
-        """ Handle GET url parameters and render the form.
-        """
-
+    def _process_request(self):
+        # Use this function from a template that is using bika_listing_table
+        # in such a way that the table_only request var will be used to
+        # in-place-update the table.
         form_id = self.form_id
         form = self.request.form
         workflow = getToolByName(self.context, 'portal_workflow')
 
+        # If table_only specifies another form_id, then we abort.
+        # this way, a single table among many can request a redraw,
+        # and only it's content will be rendered.
+        if self.request.get('table_only', form_id) != form_id:
+            return ''
+
         # index filters.
+        # any request variable named ${form_id}_{index_name}
+        # will pass the value to that index
         for k, v in self.columns.items():
             if not v.has_key('index') or v['index'] == 'review_state':
                 continue
@@ -230,60 +243,50 @@ class BikaListingView(BrowserView):
                 self.contentFilter[v['index']] = self.request[request_key]
 
         # review_state_selector
-        if form.has_key(form_id + '_review_state'):
-            review_states = [r for r in self.review_states if \
-                             r['id'] == form[form_id + '_review_state']]
-            if review_states:
-                review_state = review_states[0]
-            else:
-                review_state = self.review_states[0]
-            if review_state.has_key('contentFilter'):
-                for k, v in review_state['contentFilter'].items():
-                    self.contentFilter[k] = v
-            else:
-                if form[form_id + '_review_state'] != 'all':
-                    self.contentFilter['review_state'] = form[form_id + '_review_state']
+        review_state_name = self.request.get(form_id + '_review_state', 'all')
+        states = [r for r in self.review_states if r['id'] == review_state_name]
+        review_state = states and states[0] or self.review_states[0]
+        if review_state.has_key('contentFilter'):
+            for k, v in review_state['contentFilter'].items():
+                self.contentFilter[k] = v
+        else:
+            if review_state_name != 'all':
+                self.contentFilter['review_state'] = review_state_name
 
-        # sort_order
-        sort_order = self.request.get(form_id + '_sort_order', 'ascending')
-        sort_order = urllib.unquote(sort_order)
-        self.contentFilter['sort_order'] = sort_order
-
-        # sort_on
-        # prefer the request sort_on
+        # sort on
         sort_on = self.request.get(form_id + '_sort_on', '')
-        sort_on = urllib.unquote(sort_on)
-        if sort_on:
-            idx = self.columns[sort_on].get('index', '')
-            if idx:
-                self.contentFilter['sort_on'] = idx
-            else:
-                return
-        # default self.contentFilter/sort_on
-        elif 'sort_on' in self.contentFilter:
-            pass
-        # fallback to ID
+        if sort_on \
+           and sort_on in self.columns.keys() \
+           and self.columns[sort_on].get('index', None):
+            idx = self.columns[sort_on].get('index', sort_on)
+            self.contentFilter['sort_on'] = idx
         else:
             self.contentFilter['sort_on'] = 'id'
+            self.request.set(form_id+'_sort_on', 'id')
+
+        # sort order
+        sort_order = self.request.get(form_id + '_sort_order', '')
+        if sort_order:
+            self.contentFilter['sort_order'] = sort_order
+        else:
+            self.contentFilter['sort_order'] = 'ascending'
+            self.request.set(form_id+'_sort_order', 'ascending')
 
         # pagesize
-        try:
-            pagesize = self.request.get(form_id + '_pagesize', self.pagesize)
-            self.pagesize = int(urllib.unquote(pagesize))
-            self.request.set('pagesize', pagesize)
-        except:
-            pass
+        self.pagesize = int(self.request.get(form_id + '_pagesize', self.pagesize))
+        self.request.set('pagesize', self.pagesize)
 
         # pagenumber
-        try:
-            pagenumber = self.request.get(form_id + '_pagenumber', self.pagenumber)
-            self.pagenumber = int(urllib.unquote(pagenumber))
-            self.request.set('pagenumber', pagenumber)
-        except:
-            pass
+        self.pagenumber = int(self.request.get(form_id + '_pagenumber', self.pagenumber))
+        self.request.set('pagenumber', self.pagenumber)
 
-        self.modified_contentFilter = self.contentFilter
-        return self.template()
+    def __call__(self):
+        """ Handle request parameters and render the form."""
+        self._process_request()
+        if self.request.get('table_only', '') == self.form_id:
+            return self.contents_table()
+        else:
+            return self.template()
 
     def selected_cats(self, items):
         """return a list of categories containing 'selected'=True items
@@ -308,18 +311,15 @@ class BikaListingView(BrowserView):
         portal_types = getToolByName(context, 'portal_types')
         workflow = getToolByName(context, 'portal_workflow')
         site_properties = portal_properties.site_properties
-
+        norm = getUtility(IIDNormalizer).normalize
         show_all = self.request.get('show_all', '').lower() == 'true'
         pagenumber = int(self.request.get('pagenumber', 1) or 1)
         pagesize = self.pagesize
         start = (pagenumber - 1) * pagesize
         end = start + pagesize
 
-        if not hasattr(self, 'modified_contentFilter'):
-            self.modified_contentFilter = self.contentFilter
-
         results = []
-        for i, obj in enumerate(self.contentsMethod(self.modified_contentFilter)):
+        for i, obj in enumerate(self.contentsMethod(self.contentFilter)):
             # we don't know yet if it's a brain or an object
             path = hasattr(obj, 'getPath') and obj.getPath() or \
                  "/".join(obj.getPhysicalPath())
@@ -358,19 +358,15 @@ class BikaListingView(BrowserView):
             modified = TimeOrDate(self.context,
                                   obj.ModificationDate, long_format = 1)
 
-            # Check for InterimFields attribute on our object,
-            # XXX move interim/itemdata to analyses.py
-            interim_fields = hasattr(obj, 'getInterimFields') \
-                           and obj.getInterimFields() or []
 
             # element css classes
             type_class = 'contenttype-' + \
                 plone_utils.normalizeString(obj.portal_type)
 
             if (i + 1) % 2 == 0:
-                table_row_class = "draggable even"
+                table_row_class = "even"
             else:
-                table_row_class = "draggable odd"
+                table_row_class = "odd"
 
             state_class = ''
             states = {}
@@ -387,8 +383,7 @@ class BikaListingView(BrowserView):
                 path = path,
                 url = url,
                 fti = fti,
-                interim_fields = interim_fields,
-                item_data = json.dumps(interim_fields),
+                item_data = json.dumps([]),
                 url_href_title = url_href_title,
                 obj_type = obj.Type,
                 size = obj.getObjSize,
@@ -462,6 +457,14 @@ class BikaListingView(BrowserView):
                     if callable(value):
                         value = value()
                     results_dict[key] = value
+                # bika_listing.js uses sortable-xx for sorting rows in-place,
+                # so we only have to include it for columns with no index
+                ## un-editable cells seem to work fine without sortabledata-X
+                ## classes, just need sortabledata-X for sorting editable cells
+                if key in results_dict['allow_edit']:
+                    if not self.columns[key].has_key('index'):
+                        results_dict['class'][key] = \
+                            'sortabledata-%s'%norm(results_dict[key])
             results.append(results_dict)
 
         return results

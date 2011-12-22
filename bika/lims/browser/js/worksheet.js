@@ -85,7 +85,6 @@ $(document).ready(function(){
 	});
 	$("#CategorySelector").trigger("change");
 
-
 	// adding Controls and Blanks - selecting services re-renders the list
 	// of applicable reference samples
 	function get_updated_controls(){
@@ -120,7 +119,7 @@ $(document).ready(function(){
 	get_updated_controls();
 
 	// click a Reference Sample in add_control or add_blank
-	$("#worksheet_add_references tr").live('click', function(){
+	$("#worksheet_add_references .bika-listing-table tbody tr").live('click', function(){
 		// we want to submit to the worksheet.py/add_control or add_blank views.
 		if(window.location.href.search('add_control') > -1){
 			$(this).parents('form').attr("action", "add_control");
@@ -142,7 +141,7 @@ $(document).ready(function(){
 	})
 
 	// click an AR in add_duplicate
-	$("#worksheet_add_duplicate_ars tr").live('click', function(){
+	$("#worksheet_add_duplicate_ars .bika-listing-table tbody tr").live('click', function(){
 		// we want to submit to the worksheet.py/add_duplicate view.
 		$(this).parents('form').attr("action", "add_duplicate");
 		// add the position dropdown's value to the form before submitting.
@@ -155,18 +154,25 @@ $(document).ready(function(){
 	// add_analyses analysis search is handled by bika_listing default __call__
 	$(".ws-listing-filter-button").click(function(event){
 		event.preventDefault();
-		// default form_id in add_analyses
+		// in this context we already know there is only one bika-listing-form
 		form_id = "list";
-		// Grab values for all class=listing-filter fields
-		qstr = $.query.toString();
-		$.each($(".listing-filter"), function(i,v){
-			qstr = $.query
-					.load(qstr)
-					.set(form_id + "_" + $(v).attr('name'), $(v).val())
-					.toString();
-		});
-		// redirect to search
-		window.location.href = window.location.href.split("?")[0] + qstr;
+		form = $("#list");
+		// request new table content
+		stored_form_action = $(form).attr("action");
+		$(form).attr("action", $($("[name=view_url]")[0]).val());
+		$(form).append("<input type='hidden' name='table_only' value='"+form_id+"'>");
+		options = {
+			target: $('.bika-listing-table'),
+			replaceTarget: true,
+			data: form.formToArray(),
+			success: function(){
+				//$("#spinner").toggle(false);
+			}
+		}
+		//$("#spinner").toggle(true);
+		form.ajaxSubmit(options);
+		$("[name=table_only]").remove();
+		$(form).attr("action", stored_form_action);
 	});
 
 });

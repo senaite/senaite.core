@@ -93,10 +93,16 @@ class AnalysesView(BikaListingView):
             keyword = service.getKeyword()
             precision = service.getPrecision()
 
+            # Check for InterimFields attribute on our object,
+            interim_fields = hasattr(obj, 'getInterimFields') \
+                and obj.getInterimFields() or []
+            self.interim_fields[obj.UID()] = interim_fields
+
             items[i]['Keyword'] = keyword
             items[i]['Unit'] = unit and unit or ''
             items[i]['Result'] = ''
             items[i]['formatted_result'] = ''
+            items[i]['interim_fields'] = interim_fields
             items[i]['Uncertainty'] = ''
             items[i]['retested'] = obj.getRetested()
             items[i]['class']['retested'] = 'center'
@@ -106,8 +112,6 @@ class AnalysesView(BikaListingView):
             else:
                 items[i]['DueDate'] = obj.getDueDate()
             items[i]['Attachments'] = ''
-
-            self.interim_fields[obj.UID()] = obj.getInterimFields()
 
             # calculate specs
             if obj.portal_type == 'ReferenceAnalysis':
@@ -320,11 +324,14 @@ class AnalysesView(BikaListingView):
             self.show_select_column = True
 
         # Dry Matter.
-        # XXX The Dry Matter column is always enabled for worksheets.
+        # XXX The Dry Matter column is always enabled for worksheets,
+        #     never enabled for reference sample contexts, and refers to
+        #     getReportDryMatter in ARs.
         #     It should be enabled only if any of the ARs present asked for DM.
         if items and \
            (self.context.portal_type == 'Worksheet' or \
-            self.context.getReportDryMatter()):
+            (hasattr(self.context, 'getReportDryMatter') and \
+             self.context.getReportDryMatter())):
 
             # look through all items
             # if the item's Service supports ReportDryMatter, add getResultDM().

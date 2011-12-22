@@ -529,12 +529,9 @@ class AnalysisRequestSelectCCView(BikaListingView):
         self.columns = {
             'Fullname': {'title': _('Full Name'),
                          'index': 'getFullname'},
-            'EmailAddress': {'title': _('Email Address'),
-                             'index': 'getEmailAddress'},
-            'BusinessPhone': {'title': _('Business Phone'),
-                              'index': 'getBusinessPhone'},
-            'MobilePhone': {'title': _('Mobile Phone'),
-                            'index': 'getBusinessPhone'},
+            'EmailAddress': {'title': _('Email Address')},
+            'BusinessPhone': {'title': _('Business Phone')},
+            'MobilePhone': {'title': _('Mobile Phone')},
         }
         self.review_states = [
             {'title': _('All'), 'id':'all',
@@ -1226,6 +1223,7 @@ class AnalysisRequestsView(ClientAnalysisRequestsView):
             if not items[x].has_key('obj'):
                 continue
             obj = items[x]['obj']
+            items[x]['Client'] = obj.aq_parent.Title()
             items[x]['replace']['Client'] = "<a href='%s'>%s</a>" % \
                  (obj.aq_parent.absolute_url(), obj.aq_parent.Title())
 

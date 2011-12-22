@@ -65,7 +65,6 @@
  <index name="expires" meta_type="DateIndex"> <property name="index_naive_time_as_local">True</property> </index>
  <index name="getAnalyst" meta_type="FieldIndex"> <indexed_attr value="getAnalyst"/> </index>
  <index name="getBrand" meta_type="FieldIndex"> <indexed_attr value="getBrand"/> </index>
- <index name="getBusinessPhone" meta_type="FieldIndex"> <indexed_attr value="getBusinessPhone"/> </index>
  <index name="getCategoryTitle" meta_type="FieldIndex"> <indexed_attr value="getCategoryTitle"/> </index>
  <index name="getCategoryUID" meta_type="FieldIndex"> <indexed_attr value="getCategoryUID"/> </index>
  <index name="getClientReference" meta_type="FieldIndex"> <indexed_attr value="getClientReference"/> </index>
@@ -82,11 +81,8 @@
  <index name="getDepartment" meta_type="FieldIndex"> <indexed_attr value="getDepartment"/> </index>
  <index name="getDueDate" meta_type="DateIndex"> <property name="index_naive_time_as_local">True</property></index>
  <index name="getExpiryDate" meta_type="DateIndex"> <property name="index_naive_time_as_local">True</property></index>
- <index name="getEmailAddress" meta_type="FieldIndex"> <indexed_attr value="getEmailAddres"/> </index>
- <index name="getFax" meta_type="FieldIndex"> <indexed_attr value="getFax"/> </index>
  <index name="getFullname" meta_type="FieldIndex"> <indexed_attr value="getFullname"/> </index>
  <index name="getMobilePhone" meta_type="FieldIndex"> <indexed_attr value="getMobilePhone"/> </index>
- <index name="getPhone" meta_type="FieldIndex"> <indexed_attr value="getPhone"/> </index>
  <index name="getId" meta_type="FieldIndex"> <indexed_attr value="getId"/> </index>
  <index name="getKeyword" meta_type="FieldIndex"> <indexed_attr value="getKeyword"/> </index>
  <index name="getLastARNumber" meta_type="FieldIndex"> <indexed_attr value="getLastARNumber"/> </index>

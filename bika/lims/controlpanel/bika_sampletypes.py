@@ -41,7 +41,7 @@ class SampleTypesView(BikaListingView):
             'Title': {'title': _('Sample Type'),
                       'index': 'sortable_title',},
             'Description': {'title': _('Description'),
-                            'index': 'description'},
+                            'index': 'Description'},
         }
 
         self.review_states = [

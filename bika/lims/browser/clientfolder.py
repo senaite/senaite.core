@@ -29,13 +29,10 @@ class ClientFolderContentsView(BikaListingView):
 
         self.columns = {
             'title': {'title': _('Name'),
-                      'index': 'sortable_title', },
-            'EmailAddress': {'title': _('Email Address'),
-                             'index': 'getEmailAddress',},
-            'Phone': {'title': _('Phone'),
-                      'index': 'getPhone'},
-            'Fax': {'title': _('Fax'),
-                    'index': 'getFax'},
+                      'index': 'sortable_title'},
+            'EmailAddress': {'title': _('Email Address')},
+            'Phone': {'title': _('Phone')},
+            'Fax': {'title': _('Fax')},
         }
 
         self.review_states = [

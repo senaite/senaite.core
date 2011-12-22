@@ -121,7 +121,7 @@ div.bika_listing {
 	color: &dtml-emptyTextColor; !important;
 }
 
-/* empty rows in ws manage resuslts */
+/* empty rows in ws manage results */
 .bika-listing-table .state-empty {
 	background-color: &dtml-wsEmptyPositionBackgroundColor; !important;
 	color: &dtml-wsEmptyPositionTextColor; !important;
@@ -130,17 +130,28 @@ div.bika_listing {
 }
 
 .bika-listing-table th.sortable {
-    cursor: default;
+    cursor: pointer;
 }
 
-.bika-listing-table th.ascending {
-	background: &dtml-tableHeaderBackgroundColor; url(arrowUpAlternative.png) 95% 50% no-repeat;
+.bika-listing-table th.sortable.ascending{
+	background: &dtml-tableHeaderBackgroundColor; url(arrowUp.png) 95% 50% no-repeat;
 	padding-right:1.5em;
 	color: tableHeaderTextColor;
 }
-.bika-listing-table th.descending {
-	background: &dtml-tableHeaderBackgroundColor; url(arrowDownAlternative.png) 95% 50% no-repeat;
-	padding-right:.5em;
+.bika-listing-table th.sortable.descending{
+	background: &dtml-tableHeaderBackgroundColor; url(arrowDown.png) 95% 50% no-repeat;
+	padding-right:1.5em;
+	color: tableHeaderTextColor;
+}
+
+.bika-listing-table th.ascending.indexed{
+	background: &dtml-tableHeaderBackgroundColor; url(arrowUpAlternative.png) 95% 50% no-repeat !important;
+	padding-right:1.5em;
+	color: tableHeaderTextColor;
+}
+.bika-listing-table th.descending.indexed{
+	background: &dtml-tableHeaderBackgroundColor; url(arrowDownAlternative.png) 95% 50% no-repeat !important;
+	padding-right:1.5em;
 	color: tableHeaderTextColor;
 }
 

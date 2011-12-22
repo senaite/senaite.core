@@ -35,26 +35,16 @@ class AnalysisServicesView(BikaListingView):
         self.pagesize = 1000
 
         self.columns = {
-            'Title': {'title': _('Service'),
-                      'index':'sortable_title'},
-            'Keyword': {'title': _('Keyword'),
-                      'index':'getKeyword'},
-            'Category': {'title': _('Category'),
-                      'index':'getCategoryTitle'},
-            'Department': {'title': _('Department'),
-                      'index':'getDepartmentTitle'},
-            'Instrument': {'title': _('Instrument'),
-                      'index':'getInstrumentTitle'},
-            'Unit': {'title': _('Unit'),
-                      'index':'getUnit'},
-            'Price': {'title': _('Price'),
-                      'index':'getPrice'},
-            'MaxTimeAllowed': {'title': _('Max Time'),
-                      'index':'getMaxTimeAllowed'},
-            'DuplicateVariation': {'title': _('Dup Var'),
-                      'index':'getDuplicateVariation'},
-            'Calculation': {'title': _('Calculation'),
-                      'index':'getCalculationTitle'},
+            'Title': {'title': _('Service'), 'sortable':False},
+            'Keyword': {'title': _('Keyword'), 'sortable':False},
+            'Category': {'title': _('Category'), 'sortable':False},
+            'Department': {'title': _('Department'), 'sortable':False},
+            'Instrument': {'title': _('Instrument'), 'sortable':False},
+            'Unit': {'title': _('Unit'), 'sortable':False},
+            'Price': {'title': _('Price'), 'sortable':False},
+            'MaxTimeAllowed': {'title': _('Max Time'), 'sortable':False},
+            'DuplicateVariation': {'title': _('Dup Var'), 'sortable':False},
+            'Calculation': {'title': _('Calculation'), 'sortable':False},
         }
 
         self.review_states = [
