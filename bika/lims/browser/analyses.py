@@ -204,13 +204,27 @@ class AnalysesView(BikaListingView):
                             items[i]['formatted_result'] = precision and \
                                 str("%%.%sf" % precision) % float(result) or result
                         except:
-                            # utils.js .numeric lets through odd things sometimes.
-                            # also, < 5 is a valid-invalid result.
                             items[i]['formatted_result'] = result
-                            items[i]['after']['Result'] = \
-                                '<img width="16" height="16" title="' + _('invalid_result', 'Not a valid result') + '"' + \
-                                'src="%s/++resource++bika.lims.images/exclamation.png"/>' % \
-                                (portal.absolute_url())
+                            indet = _('indeterminate_abbrev',
+                                      default='Indet')
+                            indet = self.context.translate(indet)
+                            if result == indet:
+                                # 'Indeterminate' results flag a specific error
+                                Indet = _('indeterminate_result',
+                                          default="Indeterminate result")
+                                Indet = self.context.translate(Indet)
+                                items[i]['after']['Result'] = \
+                                    '<img width="16" height="16" title="%s"' % Indet + \
+                                    'src="%s/++resource++bika.lims.images/exclamation.png"/>' % \
+                                    (portal.absolute_url())
+                            else:
+                                # result being un-floatable, is an error.
+                                msg = _('invalid_result', 'Not a valid result')
+                                msg = self.context.translate(msg)
+                                items[i]['after']['Result'] = \
+                                    '<img width="16" height="16" title="%s"' % msg + \
+                                    'src="%s/++resource++bika.lims.images/exclamation.png"/>' % \
+                                    (portal.absolute_url())
                 items[i]['Uncertainty'] = obj.getUncertainty(result)
 
                 attachments = ""

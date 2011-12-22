@@ -100,7 +100,7 @@ class DuplicateAnalysis(Analysis):
         """
 
         orig_result = self.getAnalysis().getResult()
-        # if our Analysis' result is not a number, then we assume in range
+        # if analysis result is not a number, then we assume in range
         try:
             orig_result = float(str(orig_result))
             result = float(str(result))

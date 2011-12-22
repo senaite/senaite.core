@@ -202,7 +202,7 @@ class Analysis(BaseContent):
 
         result = result and result or self.getResult()
 
-        # if it is not a number we assume it is in range
+        # if analysis result is not a number, then we assume in range
         try:
             result = float(str(result))
         except ValueError:

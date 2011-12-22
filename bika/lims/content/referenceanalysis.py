@@ -142,7 +142,7 @@ class ReferenceAnalysis(BaseContent):
         try:
             result = float(str(result))
         except:
-            # if it is not a number we assume it is in range
+            # if analysis result is not a number, then we assume in range
             return True, None
 
         service_uid = self.getService().UID()

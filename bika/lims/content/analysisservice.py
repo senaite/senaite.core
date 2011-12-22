@@ -439,7 +439,7 @@ class AnalysisService(BaseContent, HistoryAwareMixin):
             try:
                 result = float(result)
             except:
-                # if it's not a number, we assume no measure of uncertainty
+                # if analysis result is not a number, then we assume in range
                 return None
 
             for d in uncertainties:

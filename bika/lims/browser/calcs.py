@@ -37,12 +37,15 @@ class ajaxCalculateAnalysisEntry():
         try:
             Result['result'] = float(form_result)
         except:
-            if 0 in (form_result.find("<"), form_result.find(">")):
-                # results with <5 or >10 formats
+            if form_result.startswith("<") or \
+               form_result.startswith(">"):
+                # Indeterminate results
+                Indet = _('indeterminate_result', default="Indeterminate result")
+                Indet = self.context.translate(Indet)
                 self.alerts.append({'uid': uid,
                                     'field': 'Result',
                                     'icon': 'exclamation',
-                                    'msg': _('Not a Number')})
+                                    'msg': Indet})
                 Result['result'] = form_result
                 # Don't try calculate this result
                 calculation = False
@@ -52,6 +55,10 @@ class ajaxCalculateAnalysisEntry():
             else:
                 # other un-floatable results get forced to 0.
                 Result['result'] = 0.0
+
+        # This gets set if <> is detected in interim values, so that
+        # TypeErrors during calculation can set the correct alert message
+        indeterminate = False
 
         if calculation:
             # add all our dependent analyses results to the mapping.
@@ -92,14 +99,10 @@ class ajaxCalculateAnalysisEntry():
                     try:
                         i['value'] = float(i['value'])
                     except:
-                        # interim results with <5 or >10 formats
-                        # we only alert if this is the 'current' form field,
-                        # so the alert disappears again.
-                        if uid == i_uid and self.field == i['keyword']:
-                            self.alerts.append({'uid': i_uid,
-                                                'field': i['keyword'],
-                                                'icon': 'exclamation',
-                                                'msg': _('Not a Number')})
+                        # indeterminate interim values (<x, >x)
+                        # set 'indeterminate' flag on this analyses' result
+                        indeterminate = True
+
                     # all interims are ServiceKeyword.InterimKeyword
                     if i_uid in deps:
                         key = "%s.%s"%(deps[i_uid].getService().getKeyword(),
@@ -129,7 +132,24 @@ class ajaxCalculateAnalysisEntry():
 
             except TypeError:
                 # non-numeric arguments in interim mapping?
-                Result['result'] = ''
+                if indeterminate:
+                    indet = _('indeterminate_abbrev', default='Indet')
+                    indet = self.context.translate(indet)
+                    Indet = _('indeterminate_result', default="Indeterminate result")
+                    Indet = self.context.translate(Indet)
+                    Result['result'] = indet
+                    self.alerts.append({'uid': uid,
+                                        'field': 'Result',
+                                        'icon': 'exclamation',
+                                        'msg': Indet})
+                else:
+                    inval = _('invalid_result', default="Invalid result")
+                    Indet = self.context.translate(inval)
+                    self.alerts.append({'uid': uid,
+                                        'field': 'Result',
+                                        'icon': 'exclamation',
+                                        'msg': inval})
+
             except ZeroDivisionError, e:
                 return None
             except KeyError, e:
