@@ -90,8 +90,6 @@ class WorksheetWorkflowAction(WorkflowAction):
             for uid, analysis in selected_analyses.items():
                 if uid not in results:
                     continue
-                if not results[uid]:
-                    continue
                 can_submit = True
                 if hasattr(analysis, 'getDependencies'):
                     dependencies = analysis.getDependencies()

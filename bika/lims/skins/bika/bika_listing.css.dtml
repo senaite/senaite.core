@@ -145,6 +145,7 @@ div.bika_listing {
 }
 
 .bika-listing-table th.column,
+.bika-listing-table td.interim,
 .bika-listing-table td.Result,
 .bika-listing-table td.getRequestID,
 .bika-listing-table td.Title,

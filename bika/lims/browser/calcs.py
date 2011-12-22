@@ -92,10 +92,14 @@ class ajaxCalculateAnalysisEntry():
                     try:
                         i['value'] = float(i['value'])
                     except:
-                        self.alerts.append({'uid': uid,
-                                            'field': i['keyword'],
-                                            'icon': 'exclamation',
-                                            'msg': _('Not a Number')})
+                        # interim results with <5 or >10 formats
+                        # we only alert if this is the 'current' form field,
+                        # so the alert disappears again.
+                        if uid == i_uid and self.field == i['keyword']:
+                            self.alerts.append({'uid': i_uid,
+                                                'field': i['keyword'],
+                                                'icon': 'exclamation',
+                                                'msg': _('Not a Number')})
                     # all interims are ServiceKeyword.InterimKeyword
                     if i_uid in deps:
                         key = "%s.%s"%(deps[i_uid].getService().getKeyword(),
@@ -124,9 +128,8 @@ class ajaxCalculateAnalysisEntry():
                 self.current_results[uid] = result
 
             except TypeError:
-                # non-numeric arguments in mapping?
-                # whatever it is should be alerted by now.
-                pass
+                # non-numeric arguments in interim mapping?
+                Result['result'] = ''
             except ZeroDivisionError, e:
                 return None
             except KeyError, e:
