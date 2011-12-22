@@ -128,8 +128,6 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
             for uid, analysis in selected_analyses.items():
                 if uid not in results:
                     continue
-                if not results[uid]:
-                    continue
                 can_submit = True
                 for dependency in analysis.getDependencies():
                     dep_state = workflow.getInfoFor(dependency, 'review_state')
