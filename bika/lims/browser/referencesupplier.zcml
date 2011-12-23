@@ -6,7 +6,7 @@
 
     <browser:page
       for="bika.lims.interfaces.IReferenceSupplier"
-      name="referencesamples"
+      name="base_view"
       class="bika.lims.browser.referencesupplier.ReferenceSamplesView"
       permission="zope.Public"
       layer="bika.lims.interfaces.IBikaLIMS"
