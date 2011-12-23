@@ -161,43 +161,6 @@ class ReferenceResultsView(BikaListingView):
         items = sorted(items, key = itemgetter('Service'))
         return items
 
-class ajaxGetReferenceDefinitionInfo():
-    """ Returns a JSON encoded copy of the ReferenceResults field for a ReferenceDefinition,
-        and a list of category UIDS that contain services with results.
-        Also returns the 'blank' boolean, to select the checkbox on the edit form if required.
-    """
-
-    def __init__(self, context, request):
-        self.context = context
-        self.request = request
-
-    def __call__(self):
-        uid = self.request.get('uid', None)
-        if not uid:
-            return json.dumps({'errors':["No UID specified in request.",]})
-        rc = getToolByName(self.context, REFERENCE_CATALOG)
-
-        # first grab the reference results themselves
-        ref_def = rc.lookupObject(uid)
-        if not ref_def:
-            return json.dumps({'errors':["Reference Definition %s does not exist."%uid,]})
-        results = ref_def.getReferenceResults()
-        if not results:
-            return json.dumps({'errors':["The reference definition does not define any values.",]})
-
-        # we return a list of category uids so the javascript knows which ones to expand
-        categories = []
-        for result in results:
-            service = rc.lookupObject(result['uid'])
-            cat_uid = service.getCategory().UID()
-            if cat_uid not in categories: categories.append(cat_uid)
-
-        return json.dumps({'results':results,
-                           'categories':categories,
-                           'blank':ref_def.getBlank(),
-                           'hazardous':ref_def.getHazardous()})
-
-
 class ReferenceSamplesView(BikaListingView):
     """Main reference samples folder view
     """
@@ -275,9 +238,6 @@ class ReferenceSamplesView(BikaListingView):
             items[x]['ID'] = obj.id
             items[x]['replace']['Supplier'] = "<a href='%s'>%s</a>" % \
                 (obj.aq_parent.absolute_url(), obj.aq_parent.Title())
-##            items[x]['Manufacturer'] = obj.getReferenceManufacturer() and \
-##                 obj.getReferenceManufacturer().Title() or ''
-##            items[x]['LotNumber'] = obj.getLotNumber()
             if obj.getReferenceDefinition():
                 items[x]['replace']['Definition'] = "<a href='%s'>%s</a>" % \
                  (obj.getReferenceDefinition().absolute_url(), obj.getReferenceDefinition().Title())

@@ -168,13 +168,26 @@ class ReferenceSample(BaseFolder):
         return DateTime()
 
     def getReferenceDefinitions(self):
+        def make_title(o):
+            # the javascript uses these strings to decide if it should
+            # check the blank or hazardous checkboxes when a reference
+            # definition is selected
+            if not o:
+                return ''
+            blankstr = self.translate(_('indicator_blank', default='Blank: '))
+            hazstr = self.translate(_('indicator_hazardous', default=' (!)'))
+            return '%s%s%s'%(o.getBlank() and blankstr or '',
+                             o.Title(),
+                             o.getHazardous() and hazstr or '')
         bsc = getToolByName(self, 'bika_setup_catalog')
-        items = [('','')] + [(o.UID, o.Title) for o in \
-                               bsc(portal_type='ReferenceDefinition',
-                                   inactive_state = 'active')]
+        defs = [o.getObject() for o in \
+                bsc(portal_type = 'ReferenceDefinition',
+                    inactive_state = 'active')]
+        items = [('','')] + [(o.UID(), make_title(o)) for o in defs]
         o = self.getReferenceDefinition()
-        if o and (o.UID(), o.Title()) not in items:
-            items.append((o.UID(), o.Title()))
+        t = make_title(o)
+        if o and (o.UID(), t) not in items:
+            items.append((o.UID(), t))
         items.sort(lambda x,y: cmp(x[1], y[1]))
         return DisplayList(list(items))
 

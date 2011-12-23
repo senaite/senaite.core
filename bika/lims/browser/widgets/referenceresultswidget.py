@@ -1,13 +1,135 @@
-from AccessControl import ClassSecurityInfo, ClassSecurityInfo
-from Acquisition import aq_base, aq_inner
-from Products.ATExtensions.widget.records import RecordsWidget
+from AccessControl import ClassSecurityInfo
 from Products.Archetypes.Registry import registerWidget, registerPropertyType
 from Products.Archetypes.Widget import TypesWidget
-from Products.Archetypes.utils import shasattr, DisplayList
 from Products.CMFCore.utils import getToolByName
-from archetypes.referencebrowserwidget import utils
+from Products.Five.browser import BrowserView
+from bika.lims import bikaMessageFactory as _
+from bika.lims.browser.bika_listing import BikaListingView
+import json
 
-class ReferenceResultsWidget(RecordsWidget):
+class ReferenceResultsView(BikaListingView):
+    """ bika listing to display reference results for a
+        Reference Sample referenceresults parameter must
+        be list of dict(ReferenceResultsField value)
+    """
+
+    def __init__(self, context, request, fieldvalue, allow_edit):
+        BikaListingView.__init__(self, context, request)
+        self.context_actions = {}
+        self.contentFilter = {'review_state': 'impossible_state'}
+        self.base_url = self.context.absolute_url()
+        self.view_url = self.base_url
+        self.show_sort_column = False
+        self.show_select_row = False
+        self.show_select_all_checkbox = False
+        self.show_select_column = False
+        self.pagesize = 1000
+        self.allow_edit = allow_edit
+
+        self.referenceresults = {}
+        # we want current field value as a dict
+        # key:service, value:{dictionary from field list of dict}
+        for refres in fieldvalue:
+            self.referenceresults[refres['uid']] = refres
+
+        self.columns = {
+            'service': {'title': context.translate(_('Service'))},
+            'result': {'title': context.translate(_('Expected Result'))},
+            'error': {'title': context.translate(_('Permitted Error %'))},
+            'min': {'title': context.translate(_('Min'))},
+            'max': {'title': context.translate(_('Max'))}
+        }
+        self.review_states = [
+            {'id':'all',
+             'title': context.translate(_('All')),
+             'transitions': [],
+             'columns':['service', 'result', 'error', 'min', 'max'],
+            },
+        ]
+
+    def folderitems(self):
+        bsc = getToolByName(self.context, 'bika_setup_catalog')
+        self.categories = []
+        services = bsc(portal_type = 'AnalysisService',
+                       inactive_state = 'active',
+                       sort_on = 'sortable_title')
+        items = []
+        for service in services:
+            cat = service.getCategoryTitle
+            if cat not in self.categories:
+                self.categories.append(cat)
+            if service.UID in self.referenceresults:
+                refres = self.referenceresults[service.UID]
+            else:
+                refres = {'uid': service.UID,
+                          'result':'',
+                          'min':'',
+                          'max':''}
+
+            # this folderitems doesn't subclass from the bika_listing.py
+            # so we create items from scratch
+            item = {
+                'obj': service,
+                'id': service.id,
+                'uid': service.UID,
+                'title': service.Title,
+                'category': cat,
+                'selected': service.UID in self.referenceresults.keys(),
+                'type_class': 'contenttype-ReferenceResult',
+                'url': service.absolute_url(),
+                'relative_url': service.absolute_url(),
+                'view_url': service.absolute_url(),
+                'service': service.Title,
+                'result': refres['result'],
+                'error': '',
+                'min': refres['min'],
+                'max': refres['max'],
+                'replace': {},
+                'before': {},
+                'after': {},
+                'choices':{},
+                'class': {},
+                'state_class': 'state-active',
+                'allow_edit': ['result', 'error','min', 'max'],
+            }
+            items.append(item)
+
+        self.categories.sort()
+        for i in range(len(items)):
+            items[i]['table_row_class'] = "even"
+
+        return items
+
+class TableRenderShim(BrowserView):
+    """ This view renders the actual table.
+        It's in it's own view so that we can tie it to a URL
+        for javascript to re-render the table during ReferenceSample edit.
+    """
+
+    def __init__(self, context, request, fieldvalue = {}, allow_edit = True):
+        """ If fieldvalue is in the request, we use that one.
+            Otherwise we default to the parameter specified here (field content).
+        """
+        super(TableRenderShim, self).__init__(context, request)
+        self.allow_edit = allow_edit
+        if 'uid' in request:
+            uc = getToolByName(context, 'uid_catalog')
+            refres = uc(UID=request['uid'])[0].getObject().getReferenceResults()
+            self.fieldvalue = refres
+        else:
+            self.fieldvalue = fieldvalue
+
+    def __call__(self):
+        """ Prints a bika listing with categorized services.
+            field contains the archetypes field with a list of services in it
+        """
+        view = ReferenceResultsView(self.context,
+                                    self.request,
+                                    fieldvalue = self.fieldvalue,
+                                    allow_edit = self.allow_edit)
+        return view.contents_table(table_only = True)
+
+class ReferenceResultsWidget(TypesWidget):
     _properties = TypesWidget._properties.copy()
     _properties.update({
         'macro': "bika_widgets/referenceresultswidget",
@@ -18,87 +140,36 @@ class ReferenceResultsWidget(RecordsWidget):
     security = ClassSecurityInfo()
 
     security.declarePublic('process_form')
-    def process_form(self, instance, field, form, empty_marker = None,
-                     emptyReturnsMarker = False):
-        """ All records have have UID specified in the TAL, so they will show up as valid
-            RecordsWidget entries. We remove rows with no other values entered, here.
+    def process_form(self, instance, field, form, empty_marker = None, emptyReturnsMarker = False):
+        """ Return a list of dictionaries fit for ReferenceResultsField
+            consumption.  Only services which have float()able entries in
+            result,min and max field will be included.
         """
-        value = form.get(field.getName(), empty_marker)
-        if value is empty_marker:
-            return empty_marker
-        if emptyReturnsMarker and value == '':
-            return empty_marker
-
-        for idx in range(len(value) - 1, -1, -1):
-            if len(value[idx].keys()) == 1: del value[idx]
+        value = []
+        for uid, service in form['service'][0].items():
+            try:
+                result = float(form['result'][0][uid])
+                Min = float(form['min'][0][uid])
+                Max = float(form['max'][0][uid])
+            except:
+                continue
+            value.append({'uid':uid,
+                          'result':result,
+                          'min':Min,
+                          'max':Max})
         return value, {}
 
-    security.declarePublic('getServicesByCategory')
-    def getServicesByCategory(self):
-        """Returns a dictionary of all services that do not have dependents.
-        If a service has dependents, the reference samples should cater for
-        those instead.
-        AnalysisCategory[service,service,...]
+    security.declarePublic('ReferenceResults')
+    def ReferenceResults(self, field, allow_edit = False):
+        """ Prints a bika listing with categorized services.
+            field contains the archetypes field with a list of services in it
         """
-        categories = {}
-        bsc = getToolByName(self, 'bika_setup_catalog')
-        services = bsc(portal_type = 'AnalysisService',
-                       sort_on='sortable_title')
-        for service in services:
-            service = service.getObject()
-            calc = service.getCalculation()
-            if calc and calc.getDependentServices():
-                continue
-            CategoryUID = service.getCategory().UID()
-            CategoryTitle = service.getCategory().Title()
-            key = "%s_%s"%(CategoryUID, CategoryTitle)
-            if categories.has_key(key):
-                categories[key].append({'title': service.Title(),
-                                        'uid' : service.UID()})
-            else:
-                categories[key] = [{'title': service.Title(),
-                                    'uid': service.UID()},]
-        return categories
-
-    security.declarePublic('getServicesWithResultsByCategory')
-    def getServicesWithResultsByCategory(self, field):
-        """ list of services which have results specified in field
-        """
-        categories = {}
-        bsc = getToolByName(self, 'bika_setup_catalog')
-        for ref in getattr(field, field.accessor)():
-            service = bsc(portal_type='AnalysisService',
-                          sort_on='sortable_title',
-                          UID=ref['uid'])[0]
-            service = service.getObject()
-            calc = service.getCalculation()
-            if calc and calc.getDependentServices():
-                continue
-            CategoryUID = service.getCategory().UID()
-            CategoryTitle = service.getCategory().Title()
-            key = "%s_%s"%(CategoryUID, CategoryTitle)
-            ref['title'] = service.Title()
-            ref['service'] = ref['uid']
-            if not categories.has_key(key):
-                categories[key] = {}
-            categories[key][service.UID()] = ref
-        return categories
-
-    security.declarePublic('getCategoryUID')
-    def getCategoryUID(self, category_title):
-        bsc = getToolByName(self, 'bika_setup_catalog')
-        cats = bsc(portal_type = "AnalysisCategory",
-                   sort_on = 'sortable_title')
-        cats = [cat.UID for cat in cats if cat.Title == category_title]
-        if cats:
-            return cats[0]
-        else:
-            return ""
-
-    security.declarePublic('dumps')
-    def dumps(self, data):
-        import json
-        return json.dumps(data)
+        fieldvalue = getattr(field, field.accessor)()
+        view = TableRenderShim(self,
+                               self.REQUEST,
+                               fieldvalue = fieldvalue,
+                               allow_edit = allow_edit)
+        return view()
 
 registerWidget(ReferenceResultsWidget,
                title = 'Reference definition results',

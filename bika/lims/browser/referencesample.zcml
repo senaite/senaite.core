@@ -13,11 +13,12 @@
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
-    <!-- return ReferenceResultsField contents for a selected reference definition -->
+    <!-- Retrieve the ReferenceResultsWidget table, with a ReferenceDefinition
+    -->
     <browser:page
       for="bika.lims.interfaces.IReferenceSample"
-      name="get_reference_definition_info"
-      class="bika.lims.browser.referencesample.ajaxGetReferenceDefinitionInfo"
+      name="referenceresults"
+      class="bika.lims.browser.widgets.referenceresultswidget.TableRenderShim"
       permission="zope.Public"
       layer="bika.lims.interfaces.IBikaLIMS"
     />

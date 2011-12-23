@@ -1,57 +1,35 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
-	xmlns:tal="http://xml.zope.org/namespaces/tal"
-	xmlns:metal="http://xml.zope.org/namespaces/metal"
-	xmlns:i18n="http://xml.zope.org/namespaces/i18n"
-	i18n:domain="plone">
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      i18n:domain="plone">
 <head><title></title></head>
 <body>
 
 <metal:view_macro define-macro="view">
+   <span id="referenceresultswidget">
+        <span tal:content="structure python:widget.ReferenceResults(field)"/>
+    </span>
 </metal:view_macro>
 
 <metal:edit_macro define-macro="edit">
 <metal:use use-macro="field_macro | context/widgets/field/macros/edit">
-<metal:body_macro fill-slot="widget_body">
+    <metal:body_macro fill-slot="widget_body">
 
-<span id="referenceresultswidget" tal:define="
-	all_services python:widget.getServicesByCategory();
-	selected_services python:widget.getServicesWithResultsByCategory(field);">
-	<input type="hidden" id="all_services" tal:attributes="
-		value python:widget.dumps(all_services);"/> <!-- XXX this all_services joll is dumb and barely used. -->
-	<input type="hidden" id="selected_services" tal:attributes="
-		value python:widget.dumps(selected_services);"/>
-	<table class="listing nosort">
-		<tal:repeat
-            tal:define="
-                cat_keys python:all_services.keys();
-                dummy python:cat_keys.sort(lambda x, y: cmp(x.split('_')[1], y.split('_')[1]))"
-            tal:repeat="cat_key cat_keys">
-			<tal:define define="
-				cat_uid python:cat_key.split('_')[0];
-				cat_title python:cat_key.split('_')[1];
-				selected_cat_uids python:[c.split('_')[0] for c in selected_services.keys()]">
-				<thead>
-					<tr tal:attributes="
-						class python:cat_uid in selected_cat_uids and 'initial prefill' or 'initial';
-						name cat_uid;
-						key cat_key;">
-						<th class="title" tal:content="python:cat_title"/>
-						<th><span i18n:translate='Result'>Result</span></th>
-						<th><span i18n:translate='ErrorPercentage'>Error %</span></th>
-						<th><span i18n:translate='Min'>Min</span></th>
-						<th><span i18n:translate='Max'>Max</span></th>
-					</tr>
-				</thead>
-			<tbody
-				tal:attributes="id python:cat_uid"
-				class="analysisservices"/>
-			</tal:define>
-		</tal:repeat>
-	</table>
-</span>
+	<input type="hidden"
+		id="i18n_strings"
+		indicator_blank="Blank: "
+		indicator_hazardous=" (!)"
+		i18n:attributes="
+			indicator_blank indicator_blank;
+			indicator_hazardous indicator_hazardous;"/>
 
-</metal:body_macro>
+	<div id="folderlisting-main-table"
+		tal:content="structure python:widget.ReferenceResults(field, allow_edit=True)"/>
+
+    </metal:body_macro>
 </metal:use>
 </metal:edit_macro>
+
 </body>
 </html>
