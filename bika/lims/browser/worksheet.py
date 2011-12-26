@@ -472,7 +472,7 @@ class AddAnalysesView(BikaListingView):
         self.icon = "++resource++bika.lims.images/worksheet_big.png"
         self.title = "%s: %s" % (context.Title(), _("Add Analyses"))
         self.description = _(" ")
-
+        self.contentsMethod = self.context.getFolderContents
         self.context_actions = {}
         # initial review state for first form display of the worksheet
         # add_analyses search view - first batch of analyses, latest first.
@@ -500,6 +500,7 @@ class AddAnalysesView(BikaListingView):
             'getDateReceived': {'title': _('Date Received')},
             'getDueDate': {'title': _('Due Date')},
         }
+        self.filter_indexes = ['Title',]
         self.review_states = [
             {'id':'all',
              'title': _('All'),
@@ -566,8 +567,8 @@ class AddAnalysesView(BikaListingView):
             items[x]['CategoryTitle'] = service.getCategory().Title()
             items[x]['ClientTitle'] = client.Title()
             new_items.append(items[x])
-        new_items = sorted(new_items, key = itemgetter('Title'))
-        new_items = sorted(new_items, key = itemgetter('getRequestID'))
+##        new_items = sorted(new_items, key = itemgetter('Title'))
+##        new_items = sorted(new_items, key = itemgetter('getRequestID'))
         return new_items[:100]
 
     def getServices(self):
@@ -1004,9 +1005,9 @@ class ajaxGetServices(BrowserView):
     def __call__(self):
         plone.protect.CheckAuthenticator(self.request)
         bsc = getToolByName(self.context, 'bika_setup_catalog')
-        return json.dumps([(c.UID, c.Title) for c in \
+        return json.dumps([c.Title for c in \
                 bsc(portal_type = 'AnalysisService',
-                   getCategoryUID = self.request.get('getCategoryUID', ''),
+                   getCategoryTitle = self.request.get('getCategoryTitle', ''),
                    inactive_state = 'active',
                    sort_on = 'sortable_title')])
 

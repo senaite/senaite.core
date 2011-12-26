@@ -149,6 +149,7 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     TextField('Notes',
+        searchable = True,
         default_content_type = 'text/plain',
         allowable_content_types = ('text/plain',),
         widget = TextAreaWidget(
@@ -166,12 +167,14 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     ComputedField('ClientUID',
+        searchable = True,
         expression = 'here.aq_parent.UID()',
         widget = ComputedWidget(
             visible = False,
         ),
     ),
     ComputedField('ClientReference',
+        searchable = True,
         expression = 'here.getSample() and here.getSample().getClientReference()' ,
         widget = ComputedWidget(
             visible = False,
@@ -184,18 +187,21 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     ComputedField('ClientSampleID',
+        searchable = True,
         expression = 'here.getSample() and here.getSample().getClientSampleID()',
         widget = ComputedWidget(
             visible = False,
         ),
     ),
     ComputedField('SampleTypeTitle',
+        searchable = True,
         expression = "here.getSample() and here.getSample().getSampleType() and here.getSample().getSampleType().Title() or ''",
         widget = ComputedWidget(
             visible = False,
         ),
     ),
     ComputedField('SamplePointTitle',
+        searchable = True,
         expression = "here.getSample() and here.getSample().getSamplePoint() and here.getSample().getSamplePoint().Title() or ''",
         widget = ComputedWidget(
             visible = False,

@@ -55,35 +55,35 @@ $(document).ready(function(){
 	});
 
 	// search form - selecting a category fills up the service selector
-	$("#CategorySelector").live("change", function(){
-		val = $("#CategorySelector").val();
+	$('[name=list_getCategoryTitle]').live("change", function(){
+		val = $('[name=list_getCategoryTitle]').val();
 		if(val == 'any'){
-			$("#ServiceSelector").empty();
-			$("#ServiceSelector").append("<option value='any'>Any</option>");
+			$('[name=list_Title]').empty();
+			$('[name=list_Title]').append("<option value='any'>Any</option>");
 			return;
 		}
 		$.ajax({
 			url: window.location.href.split("?")[0].replace("/add_analyses","") + "/getServices",
 			type: 'POST',
 			data: {'_authenticator': $('input[name="_authenticator"]').val(),
-			       'getCategoryUID': val},
+			       'getCategoryTitle': val},
 			dataType: "json",
-			success: function(data,textStatus,$XHR){
-				$("#ServiceSelector").empty();
-				$("#ServiceSelector").append("<option value='any'>Any</option>");
-				for(i=0; i< data.length; i++){
-					// but make sure that ?list_getServiceUID still sets selected item
-					if (data[i][0] == $.query.get('list_getServiceUID')){
+			success: function(data, textStatus, $XHR){
+				current_service_selection = $('[name=list_Title]').val();
+				$('[name=list_Title]').empty();
+				$('[name=list_Title]').append("<option value='any'>Any</option>");
+				for(i=0; i<data.length; i++){
+					if (data[i] == current_service_selection){
 						selected = 'selected="selected" ';
 					} else {
 						selected = '';
 					}
-					$("#ServiceSelector").append("<option "+selected+"value='"+data[i][0]+"'>"+data[i][1]+"</option>");
+					$('[name=list_Title]').append("<option "+selected+"value='"+data[i]+"'>"+data[i]+"</option>");
 				}
 			}
 		});
 	});
-	$("#CategorySelector").trigger("change");
+	$('[name=list_getCategoryTitle]').trigger("change");
 
 	// adding Controls and Blanks - selecting services re-renders the list
 	// of applicable reference samples
@@ -152,15 +152,23 @@ $(document).ready(function(){
 	})
 
 	// add_analyses analysis search is handled by bika_listing default __call__
-	$(".ws-listing-filter-button").click(function(event){
-		event.preventDefault();
+	$(".filter-search-button").click(function(event){
 		// in this context we already know there is only one bika-listing-form
 		form_id = "list";
 		form = $("#list");
 		// request new table content
 		stored_form_action = $(form).attr("action");
-		$(form).attr("action", $($("[name=view_url]")[0]).val());
+		$(form).attr("action", window.location.href);
 		$(form).append("<input type='hidden' name='table_only' value='"+form_id+"'>");
+		getCategoryTitle = $("[name=list_getCategoryTitle]").val();
+		if (getCategoryTitle != 'any')
+			$(form).append("<input type='hidden' name='list_getCategoryTitle' value='"+getCategoryTitle+"'>");
+		Title = $("[name=list_Title]").val();
+		if (Title != 'any')
+			$(form).append("<input type='hidden' name='list_Title' value='"+Title+"'>");
+		getClientTitle = $("[name=list_getClientTitle]").val();
+		if (getClientTitle != 'any')
+			$(form).append("<input type='hidden' name='list_getClientTitle' value='"+getClientTitle+"'>");
 		options = {
 			target: $('.bika-listing-table'),
 			replaceTarget: true,
@@ -172,7 +180,11 @@ $(document).ready(function(){
 		//$("#spinner").toggle(true);
 		form.ajaxSubmit(options);
 		$("[name=table_only]").remove();
+		$("#list > [name=list_getCategoryTitle]").remove();
+		$("#list > [name=list_Title]").remove();
+		$("#list > [name=list_getClientTitle]").remove();
 		$(form).attr("action", stored_form_action);
+		return false;
 	});
 
 });

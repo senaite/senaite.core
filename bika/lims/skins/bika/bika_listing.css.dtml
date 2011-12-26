@@ -171,7 +171,7 @@ div.bika_listing {
   padding:5px 2px 5px 2px !important;
 }
 
-td.review_state_selector_row {
+td.listing-filter-row {
    padding:0 0 .5em 0;
    margin:0;
    border:none !important;
@@ -187,18 +187,18 @@ td.review_state_selector{
 }
 
 .review_state_selector a{
-  border-radius: .25em;
-  background: #fff;
-  border:1px solid #eee !important;
+  border-radius: &dtml-buttonBorderRadius;;
+  background: &dtml-buttonBackgroundColor;;
+  border:1px solid &dtml-buttonBorderColor; !important;
   text-decoration:none;
   font-weight:normal;
   padding:2px 5px 2px 5px !important;
 }
 
 .review_state_selector a:hover{
-  border-radius: .25em;
-  background: #eee;
-  border:1px solid #ddd !important;
+  border-radius: &dtml-buttonBorderRadius;;
+  background: &dtml-buttonHoverBackgroundColor;;
+  border:1px solid &dtml-buttonHoverBorderColor; !important;
   text-decoration:none;
   font-weight:normal;
   color: #000;
@@ -206,9 +206,9 @@ td.review_state_selector{
 }
 
 .review_state_selector .selected{
-  border-radius: .25em;
-  background: #eee;
-  border:1px solid #ddd !important;
+  border-radius: &dtml-buttonBorderRadius;;
+  background: &dtml-buttonSelectedBackgroundColor;;
+  border:1px solid &dtml-buttonSelectedBorderColor; !important;
   padding:2px 5px 2px 5px !important;
   font-weight:normal;
   color: #000;
@@ -221,6 +221,36 @@ td.review_state_selector{
 	padding:0px 0px 0px 0px !important;
 }
 
+/***  filter text entry and buttons   ***/
+
+.filter-search-input {
+	background: transparent;
+    border: 1px solid #DDD !important;
+    border-radius: 0.25em 0.25em 0.25em 0.25em;
+    font-weight: normal;
+    padding: 2px 5px !important;
+}
+
+.filter-search-clear {
+  border-radius: &dtml-buttonBorderRadius;;
+  background: &dtml-buttonBackgroundColor;;
+  border:1px solid &dtml-buttonBorderColor; !important;
+  color: &dtml-buttonTextColor; !important;
+  font-weight:normal;
+  padding:2px 2px 2px 2px !important;
+}
+
+.filter-search-button {
+  border-radius: &dtml-buttonBorderRadius;;
+  background: &dtml-buttonBackgroundColor;;
+  border:1px solid &dtml-buttonBorderColor; !important;
+  color: &dtml-buttonTextColor; !important;
+  font-weight:normal;
+  padding:2px 5px 2px 5px !important;
+}
+
+
+
 /* pagesize dropdown */
 .pagesize_selector {
   text-align:right;
@@ -230,16 +260,19 @@ td.review_state_selector{
 /* Specification selector */
 
 .specification {
-  border-radius: .25em;
-  background: #fff;
+  border-radius: &dtml-buttonBorderRadius;;
+  background: &dtml-buttonBackgroundColor;;
+  border:1px solid &dtml-buttonBorderColor; !important;
+  color: &dtml-buttonTextColor; !important;
   font-weight:bold;
   padding:2px 5px 2px 5px !important;
 }
 
 .specification.selected {
-  border-radius: .25em;
-  background: #eee;
-  border:1px solid #ddd !important;
+  border-radius: &dtml-buttonBorderRadius;;
+  background: &dtml-buttonSelectedBackgroundColor;;
+  border:1px solid &dtml-buttonSelectedBorderColor; !important;
+  color: &dtml-buttonSelectedTextColor; !important;
   font-weight:bold;
   padding:2px 5px 2px 5px !important;
 }
@@ -277,9 +310,9 @@ div.listingBar a {
 }
 .workflow_action_button {
   border-radius: &dtml-buttonBorderRadius; !important;
-  background: &dtml-buttonBackgroundColor; !important;
-  color: &dtml-buttonTextColor; !important;
-  border:1px solid &dtml-buttonBorderColor; !important;
+  background: &dtml-buttonSelectedBackgroundColor; !important;
+  color: &dtml-buttonSelectedTextColor; !important;
+  border:1px solid &dtml-buttonSelectedBorderColor; !important;
   padding:1px 2px 1px 2px;
 }
 

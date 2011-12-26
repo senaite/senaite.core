@@ -24,6 +24,7 @@ schema = BikaSchema.copy() + Schema((
         relationship = 'WorksheetAnalysisTemplate',
     ),
     ComputedField('WorksheetTemplateTitle',
+        searchable = True,
         expression = "context.getWorksheetTemplate() and context.getWorksheetTemplate().Title() or ''",
         widget = ComputedWidget(
             visible = False,
@@ -49,6 +50,7 @@ schema = BikaSchema.copy() + Schema((
     ),
 
     StringField('Analyst',
+        searchable = True,
     ),
     ReferenceField('Instrument',
         required = 0,
@@ -58,6 +60,7 @@ schema = BikaSchema.copy() + Schema((
     ),
 
     TextField('Notes',
+        searchable = True,
         default_content_type = 'text/plain',
         allowable_content_types = ('text/plain',),
         widget = TextAreaWidget(

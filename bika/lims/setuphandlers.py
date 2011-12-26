@@ -14,6 +14,8 @@ from Products.CMFEditions.Permissions import ApplyVersionControl
 from Products.CMFEditions.Permissions import SaveNewVersion
 from Products.CMFEditions.Permissions import AccessPreviousVersions
 
+class Empty: pass
+
 class BikaGenerator:
 
     def setupPropertiesTool(self, portal):
@@ -387,20 +389,40 @@ class BikaGenerator:
         at.setCatalogsByType('ReferenceDefinition', ['bika_setup_catalog', ])
         at.setCatalogsByType('WorksheetTemplate', ['bika_setup_catalog', ])
 
+        # create lexicon
+        wordSplitter = Empty()
+        wordSplitter.group = 'Word Splitter'
+        wordSplitter.name = 'Unicode Whitespace splitter'
+        caseNormalizer = Empty()
+        caseNormalizer.group = 'Case Normalizer'
+        caseNormalizer.name = 'Unicode Case Normalizer'
+        stopWords = Empty()
+        stopWords.group = 'Stop Words'
+        stopWords.name = 'Remove listed and single char words'
+        elem = [wordSplitter, caseNormalizer, stopWords]
+        bsc.manage_addProduct['ZCTextIndex'].manage_addLexicon('Lexicon',
+                                                               'Lexicon',
+                                                               elem)
+        zc_extras = Empty()
+        zc_extras.index_type = 'Okapi BM25 Rank'
+        zc_extras.lexicon_id = 'Lexicon'
+
         bsc.addIndex('path', 'ExtendedPathIndex', ('getPhysicalPath'))
-        bsc.addIndex('getCanonicalPath', 'ExtendedPathIndex')
+        bsc.addIndex('allowedRolesAndUsers', 'KeywordIndex')
         bsc.addIndex('UID', 'FieldIndex')
+        bsc.addIndex('SearchableText', 'ZCTextIndex', zc_extras)
+        bsc.addIndex('Title', 'ZCTextIndex', zc_extras)
+        bsc.addIndex('Description', 'ZCTextIndex', zc_extras)
         bsc.addIndex('id', 'FieldIndex')
         bsc.addIndex('getId', 'FieldIndex')
+        bsc.addIndex('Type', 'FieldIndex')
         bsc.addIndex('portal_type', 'FieldIndex')
         bsc.addIndex('created', 'DateIndex')
         bsc.addIndex('getObjPositionInParent', 'GopipIndex')
 
-        bsc.addIndex('Title', 'FieldIndex', 'Title')
         bsc.addIndex('title', 'FieldIndex', 'Title')
         bsc.addIndex('sortable_title', 'FieldIndex')
         bsc.addIndex('description', 'FieldIndex')
-        bsc.addIndex('Description', 'FieldIndex', 'Description')
 
         bsc.addIndex('review_state', 'FieldIndex')
         bsc.addIndex('inactive_state', 'FieldIndex')
@@ -445,15 +467,16 @@ class BikaGenerator:
         bsc.addIndex('getVATAmount', 'FieldIndex')
         bsc.addIndex('getVolume', 'FieldIndex')
 
-        bsc.addColumn('path', 'ExtendedPathIndex')
-        bsc.addColumn('getCanonicalPath')
+        bsc.addColumn('path')
         bsc.addColumn('UID')
         bsc.addColumn('id')
         bsc.addColumn('getId')
+        bsc.addColumn('Type')
         bsc.addColumn('portal_type')
         bsc.addColumn('getObjPositionInParent')
 
         bsc.addColumn('Title')
+        bsc.addColumn('Description')
         bsc.addColumn('title')
         bsc.addColumn('sortable_title')
         bsc.addColumn('description')

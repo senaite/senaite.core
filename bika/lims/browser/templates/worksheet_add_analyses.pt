@@ -37,8 +37,8 @@
 		form_id view/form_id;
 		table_only python:hasattr(view, 'table_only') and view.table_only or view.request.get('table_only','') == form_id;"
 	tal:omit-tag="python:table_only">
-	<form name="SearchForm" method="POST"
-		tal:condition="python:not table_only">
+
+	<tal:searchform condition="python:not table_only">
 		<input type="hidden" name="submitted" value="1"/>
 		<input tal:replace="structure context/@@authenticator/authenticator"/>
 
@@ -69,45 +69,45 @@
 					<option
 						tal:attributes="
 							value python:category;
-							selected python: view.request.get(form_id+'_getCategoryName', '') == category and 'selected' or ''"
+							selected python: view.request.get(form_id+'_getCategoryTitle', '') == category and 'selected' or ''"
 						tal:content="python:category"/>
 				</tal:options>
 			</select>
 
-			<label tal:attributes="for string:${form_id}_sortable_title"
+			<label tal:attributes="for string:${form_id}_Title"
 				i18n:translate="Service">Service</label>
 			<select id="ServiceSelector"
-					tal:attributes="name string:${form_id}_sortable_title"
+					tal:attributes="name string:${form_id}_Title"
 					class="listing-filter">
 				<option value="any" i18n:translate="Any">Any</option>
 				<tal:options repeat="service view/getServices">
 					<option
 						tal:attributes="
 							value python:service;
-							selected python: view.request.get(form_id+'_sortable_title', '') == service and 'selected' or ''"
+							selected python: view.request.get(form_id+'_Title', '') == service and 'selected' or ''"
 						tal:content="python:service"/>
 				</tal:options>
 			</select>
 
-			<label tal:attributes="for string:${form_id}_ClientTitle"
+			<label tal:attributes="for string:${form_id}_getClientTitle"
 				i18n:translate="Client">Client</label>
 			<select id="ClientSelector"
-					tal:attributes="name string:${form_id}_ClientTitle"
+					tal:attributes="name string:${form_id}_getClientTitle"
 					class="listing-filter">
 				<option value="any" i18n:translate="Any">Any</option>
 				<tal:options repeat="client view/getClients">
 					<option
 						tal:attributes="
 							value python:client;
-							selected python: view.request.get(form_id+'_ClientTitle', '') == client and 'selected' or ''"
+							selected python: view.request.get(form_id+'_getClientTitle', '') == client and 'selected' or ''"
 						tal:content="python:client"/>
 				</tal:options>
 			</select>&nbsp;
-			<input type="submit" value="Search" i18n:attributes="value"
-				class="ws-listing-filter-button"/>
+			<a href="view/view_url" i18n:translate="Search"
+				class="filter-search-button">Search</a>
 		</fieldset>
 
-	</form>
+	</tal:searchform>
 
 	<div id="folderlisting-main-table"
 		tal:content="structure view/contents_table"/>

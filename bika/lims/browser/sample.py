@@ -151,7 +151,6 @@ class SamplesView(ClientSamplesView):
                               'sort_on':'id',
                               'sort_order': 'reverse',
                               'path':{"query": ["/"], "level" : 0 }}
-        self.view_url = self.view_url + "/samples"
         self.columns['Client'] = {'title': _('Client')}
         review_states = []
         for review_state in self.review_states:

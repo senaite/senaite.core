@@ -2,6 +2,7 @@
 """
 from Acquisition import aq_parent, aq_inner
 from OFS.interfaces import IOrderedContainer
+from Products.AdvancedQuery import And, Or, MatchGlob, MatchRegexp
 from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFCore.utils import getToolByName
@@ -10,6 +11,7 @@ from Products.CMFPlone.utils import pretty_title_or_id, isExpired, safe_unicode
 from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import bikaMessageFactory as _
+from bika.lims import logger
 from bika.lims.utils import isActive, TimeOrDate
 from operator import itemgetter
 from plone.app.content.batching import Batch
@@ -23,11 +25,7 @@ from zope.component import getUtility
 from zope.i18n import translate
 from zope.i18nmessageid import MessageFactory
 from zope.interface import implements
-import App
-import json
-import plone
-import transaction
-import urllib
+import App, json, plone, re, transaction, urllib
 
 class WorkflowAction:
     """ Workflow actions taken in any Bika contextAnalysisRequest context
@@ -168,7 +166,7 @@ class BikaListingView(BrowserView):
     form_id = "list"
 
     """
-     ### colum definitions
+     ### column definitions
      The keys of the columns dictionary must all exist in all
      items returned by subclassing view's .folderitems.  Blank
      entries are inserted in the default folderitems for all entries
@@ -196,9 +194,10 @@ class BikaListingView(BrowserView):
            'state_title': {'title': _('State')},
     }
 
-    # a list of indexes which will be queried to generate
-    # results for the filter dropdown combogrid.
-    #self.filter_indexes = []
+    # Additional indexes to be searched
+    # any index name not specified in self.columns[]
+    # can be added here.
+    filter_indexes = ['Title', 'Description', 'SearchableText']
 
     """
     ### review_state filter
@@ -213,10 +212,20 @@ class BikaListingView(BrowserView):
 
     def __init__(self, context, request):
         super(BikaListingView, self).__init__(context, request)
-        self.base_url = self.context.absolute_url()
+        path = hasattr(context, 'getPath') and context.getPath() \
+            or "/".join(context.getPhysicalPath())
+        if hasattr(self, 'contentFilter'):
+            if not 'path' in self.contentFilter:
+                self.contentFilter['path'] = {"query": [path,], "level" : 0 }
+        else:
+            self.contentFilter = {'path': {"query": [path,], "level" : 0 }}
+
+        self.base_url = context.absolute_url()
         self.view_url = self.base_url
         # contentsMethod may return a list of brains or a list of objects.
-        self.contentsMethod = self.context.getFolderContents
+        # force it to "portal_catalog", subclass can/should override it
+        #self.contentsMethod = self.context.getFolderContents
+        self.contentsMethod = getToolByName(context, 'portal_catalog')
 
     def _process_request(self):
         # Use this function from a template that is using bika_listing_table
@@ -229,21 +238,14 @@ class BikaListingView(BrowserView):
         # If table_only specifies another form_id, then we abort.
         # this way, a single table among many can request a redraw,
         # and only it's content will be rendered.
-        if self.request.get('table_only', form_id) != form_id:
+        if form_id not in self.request.get('table_only', form_id):
             return ''
 
-        # index filters.
-        # any request variable named ${form_id}_{index_name}
-        # will pass the value to that index
-        for k, v in self.columns.items():
-            if not v.has_key('index') or v['index'] == 'review_state':
-                continue
-            request_key = "%s_%s" % (self.form_id, v['index'])
-            if request_key in self.request:
-                self.contentFilter[v['index']] = self.request[request_key]
-
         # review_state_selector
-        review_state_name = self.request.get(form_id + '_review_state', 'all')
+        review_state_name = self.request.get(form_id + '_review_state', None)
+        if not review_state_name:
+            review_state_name = 'all'
+        self.request[form_id+'_review_state'] = review_state_name
         states = [r for r in self.review_states if r['id'] == review_state_name]
         review_state = states and states[0] or self.review_states[0]
         if review_state.has_key('contentFilter'):
@@ -280,11 +282,41 @@ class BikaListingView(BrowserView):
         self.pagenumber = int(self.request.get(form_id + '_pagenumber', self.pagenumber))
         self.request.set('pagenumber', self.pagenumber)
 
+        # index filters.
+        self.And = []
+        self.Or = []
+        ##logger.info("contentFilter: %s"%self.contentFilter)
+        for k, v in self.columns.items():
+            if not v.has_key('index') \
+               or v['index'] == 'review_state' \
+               or v['index'] in self.filter_indexes:
+                continue
+            self.filter_indexes.append(v['index'])
+        ##logger.info("Filter indexes: %s"%self.filter_indexes)
+        # any request variable named ${form_id}_{index_name}
+        # will pass it's value to that index in self.contentFilter.
+        # all conditions using ${form_id}_{index_name} are searched with AND
+        for index in self.filter_indexes:
+            request_key = "%s_%s" % (form_id, index)
+            if request_key in self.request:
+                ##logger.info("And: %s=%s"%(index, self.request[request_key]))
+                ##self.And.append(MatchGlob(index, self.request[request_key]))
+                self.And.append(MatchRegexp(index, self.request[request_key]))
+        # if there's a ${form_id}_filter in request, then all indexes
+        # are are searched for it's value.
+        # ${form_id}_filter is searched with OR agains all indexes
+        request_key = "%s_filter" % form_id
+        if request_key in self.request and self.request[request_key] != '':
+            for index in self.filter_indexes:
+                ##logger.info("Or: %s=%s"%(index, self.request[request_key]))
+                ##self.Or.append(MatchGlob(index, self.request[request_key]))
+                self.Or.append(MatchRegexp(index, self.request[request_key]))
+
     def __call__(self):
         """ Handle request parameters and render the form."""
         self._process_request()
         if self.request.get('table_only', '') == self.form_id:
-            return self.contents_table()
+            return self.contents_table(table_only=self.request.get('table_only'))
         else:
             return self.template()
 
@@ -318,8 +350,29 @@ class BikaListingView(BrowserView):
         start = (pagenumber - 1) * pagesize
         end = start + pagesize
 
+        if self.And or self.Or:
+            # if contentsMethod is capable, we do an AdvancedQuery.
+            if hasattr(self.contentsMethod, 'makeAdvancedQuery'):
+                aq = self.contentsMethod.makeAdvancedQuery(self.contentFilter)
+                if self.And:
+                    tmpAnd = And()
+                    for q in self.And:
+                        tmpAnd.addSubquery(q)
+                    aq &= tmpAnd
+                if self.Or:
+                    tmpOr = Or()
+                    for q in self.Or:
+                        tmpOr.addSubquery(q)
+                    aq &= tmpOr
+                brains = self.contentsMethod.evalAdvancedQuery(aq)
+            else:
+                # otherwise, self.contentsMethod must handle contentFilter
+                brains = self.contentsMethod(self.contentFilter)
+        else:
+            brains = self.contentsMethod(self.contentFilter)
+
         results = []
-        for i, obj in enumerate(self.contentsMethod(self.contentFilter)):
+        for i, obj in enumerate(brains):
             # we don't know yet if it's a brain or an object
             path = hasattr(obj, 'getPath') and obj.getPath() or \
                  "/".join(obj.getPhysicalPath())
@@ -357,7 +410,6 @@ class BikaListingView(BrowserView):
 
             modified = TimeOrDate(self.context,
                                   obj.ModificationDate, long_format = 1)
-
 
             # element css classes
             type_class = 'contenttype-' + \

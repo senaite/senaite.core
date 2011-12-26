@@ -70,6 +70,7 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     ComputedField('SampleTypeTitle',
+        searchable = True,
         expression = "here.getSampleType() and here.getSampleType().Title() or ''",
         widget = ComputedWidget(
             visible = False,
@@ -86,6 +87,7 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     ComputedField('SamplePointTitle',
+        searchable = True,
         expression = "here.getSamplePoint() and here.getSamplePoint().Title() or ''",
         widget = ComputedWidget(
             visible = False,
@@ -131,6 +133,7 @@ schema = BikaSchema.copy() + Schema((
     IntegerField('LastARNumber',
     ),
     TextField('Notes',
+        searchable = True,
         default_content_type = 'text/plain',
         allowable_content_types = ('text/plain',),
         widget = TextAreaWidget(

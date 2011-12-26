@@ -1,5 +1,4 @@
 jQuery( function($) {
-
 $(document).ready(function(){
 
 	function portalMessage(message){
@@ -49,6 +48,22 @@ $(document).ready(function(){
 		stored_form_action = $(form).attr("action");
 		$(form).attr("action", $($("[name=view_url]")[0]).val());
 		$(form).append("<input type='hidden' name='table_only' value='"+form_id+"'>");
+// XXX formToArray() includes entire form - must slim the request down to what is required
+//		formArray = form.formToArray();
+//		formData = {};
+//		$.each(formArray, function(i, v){
+//			// only pass the things we need in the request
+//			if (v['name'].search(form_id+"_")==0){
+//				formData[v['name']] = v['value'];
+//			}
+//			if(v['name'] == '_authenticator' ||
+//			   v['name'] == 'view_url' ||
+//			   v['name'] == 'form_id' ||
+//			   v['name'] == 'submitted' ||
+//			   v['name'] == 'table_only') {
+//				formData[v['name']] = v['value'];
+//			}
+//		})
 		options = {
 			target: $(this).parents("table"),
 			replaceTarget: true,
@@ -123,10 +138,7 @@ $(document).ready(function(){
 				if (isNaN(sortableitem)) {
 					usenumbers = false;
 				}
-				data.push([
-					sortableitem,
-					// crude way to sort by surname and name after first choice
-					this]);
+				data.push([sortableitem, this]);
 			});
 			if (data.length) {
 				if (usenumbers) {
@@ -181,11 +193,11 @@ $(document).ready(function(){
 	// Prevent automatic submissions of manage_results
 	// forms when enter is pressed
 	$(".listing_string_entry,.listing_select_entry").live('keypress', function(event) {
-	  var tab = 9;
-	  var enter = 13;
-	  if (event.which == enter) {
-		event.preventDefault();
-	  }
+		var tab = 9;
+		var enter = 13;
+		if (event.which == enter) {
+			event.preventDefault();
+		}
 	});
 
 	// pagesize
@@ -238,24 +250,54 @@ $(document).ready(function(){
 		}
 	});
 
-	// stop the filter links from actually following the href; js handles these.
-	$(".listing-filter-button").live('click', function(event){
-		event.preventDefault();
+	// pressing enter on filter search will trigger
+	// a click on the search link.
+	$('.filter-search-input').live('keypress', function(event) {
+		var enter = 13;
+		if (event.which == enter) {
+			$('.filter-search-button').click();
+			return false;
+		}
+	});
+
+	// trap the Clear search / Search buttons
+	$('.filter-search-button,.filter-search-clear').live('click', function(event){
+		if ($(this).hasClass('filter-search-clear')){
+			$('.filter-search-input').val('');
+		}
+		form = $(this).parents('form');
+		form_id = $(form).attr('id');
+		stored_form_action = $(form).attr("action");
+		$(form).attr("action", $($("[name=view_url]")[0]).val());
+		$(form).append("<input type='hidden' name='table_only' value='"+form_id+"'>");
+		options = {
+			target: $(this).parents('table'),
+			replaceTarget: true,
+			data: form.formToArray(),
+			success: function(){
+				//$("#spinner").toggle(false);
+			}
+		}
+		//$("#spinner").toggle(true);
+		form.ajaxSubmit(options);
+		$('[name=table_only]').remove();
+		$(form).attr('action', stored_form_action)
+		return false;
 	});
 
 	// wait for all .busy (calculating) elements to lose their busy class
-	$(".workflow_action_button").live('click', function(event){
+	$('.workflow_action_button').live('click', function(event){
 		r = 0;
 		for(r=0;r<15;r++){
-			busy = $(".busy");
+			busy = $('.busy');
 			if(busy.length == 0){
 				break;
 			}
 		}
 		if(r == 14){
 			portalMessage("Some results failed to calculate, and the form was not submitted.");
-			$(".busy").removeClass("busy");
-			event.preventDefault();
+			$('.busy').removeClass('busy');
+			return false;
 		}
 	});
 
