@@ -400,9 +400,7 @@ class BikaGenerator:
         stopWords.group = 'Stop Words'
         stopWords.name = 'Remove listed and single char words'
         elem = [wordSplitter, caseNormalizer, stopWords]
-        bsc.manage_addProduct['ZCTextIndex'].manage_addLexicon('Lexicon',
-                                                               'Lexicon',
-                                                               elem)
+        bsc.manage_addProduct['ZCTextIndex'].manage_addLexicon('Lexicon', 'Lexicon', elem)
         zc_extras = Empty()
         zc_extras.index_type = 'Okapi BM25 Rank'
         zc_extras.lexicon_id = 'Lexicon'

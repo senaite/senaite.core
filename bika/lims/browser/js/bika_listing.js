@@ -46,7 +46,7 @@ $(document).ready(function(){
 		review_state = $(this).attr("value");
 		$("[name="+form_id+"_review_state]").val(review_state);
 		stored_form_action = $(form).attr("action");
-		$(form).attr("action", $($("[name=view_url]")[0]).val());
+		$(form).attr("action", window.location.href);
 		$(form).append("<input type='hidden' name='table_only' value='"+form_id+"'>");
 // XXX formToArray() includes entire form - must slim the request down to what is required
 //		formArray = form.formToArray();
@@ -109,7 +109,7 @@ $(document).ready(function(){
 		if ($(this).hasClass('indexed')) {
 			// request new table content
 			stored_form_action = $(form).attr("action");
-			$(form).attr("action", $($("[name=view_url]")[0]).val());
+			$(form).attr("action", window.location.href);
 			$(form).append("<input type='hidden' name='table_only' value='"+form_id+"'>");
 			options = {
 				target: $(this).parents("table"),
@@ -202,18 +202,49 @@ $(document).ready(function(){
 
 	// pagesize
 	$("select[name='pagesize']").live('change', function(){
-		form_id = $(this).parents("form").attr("id");
+		form = $(this).parents('form');
+		form_id = $(form).attr('id');
 		pagesize = $(this).val();
-		window.location.href = window.location.href.split("?")[0] +
-		                       $.query.set(form_id + "_pagesize", pagesize);
+		$("[name="+form_id+"_pagesize]").val(pagesize);
+		stored_form_action = $(form).attr("action");
+		$(form).attr("action", window.location.href);
+		$(form).append("<input type='hidden' name='table_only' value='"+form_id+"'>");
+		options = {
+			target: $(form).children(".bika-listing-table"),
+			replaceTarget: true,
+			data: form.formToArray(),
+			success: function(){
+				//$("#spinner").toggle(false);
+			}
+		}
+		//$("#spinner").toggle(true);
+		form.ajaxSubmit(options);
+		$('[name=table_only]').remove();
+		$(form).attr('action', stored_form_action)
+		return false;
 	});
 
 	// batching pagenumber links
 	$("a[pagenumber]").live('click', function(){
-		form_id = $(this).parents("form").attr("id");
-		pagenumber = $(this).attr("pagenumber");
-		window.location.href = window.location.href.split("?")[0] +
-		                       $.query.set(form_id + "_pagenumber", pagenumber);
+		form = $(this).parents('form');
+		form_id = $(form).attr('id');
+		pagenumber = $(this).attr('pagenumber');
+		$("[name="+form_id+"_pagenumber]").val(pagenumber);
+		stored_form_action = $(form).attr("action");
+		$(form).attr("action", window.location.href);
+		$(form).append("<input type='hidden' name='table_only' value='"+form_id+"'>");
+		options = {
+			target: $(form).children(".bika-listing-table"),
+			replaceTarget: true,
+			data: form.formToArray(),
+			success: function(){
+				//$("#spinner").toggle(false);
+			}
+		}
+		//$("#spinner").toggle(true);
+		form.ajaxSubmit(options);
+		$('[name=table_only]').remove();
+		$(form).attr('action', stored_form_action)
 		return false;
 	});
 
@@ -243,7 +274,6 @@ $(document).ready(function(){
 	$(".listing_string_entry,.listing_select_entry").live('change', function(){
 		form_id = $(this).parents("form").attr("id");
 		uid = $(this).attr('uid');
-
 		// check the item's checkbox
 		if ($('#'+form_id+'_cb_'+uid).attr('checked') == false) {
 			$('#'+form_id+'_cb_'+uid).click();
@@ -268,7 +298,7 @@ $(document).ready(function(){
 		form = $(this).parents('form');
 		form_id = $(form).attr('id');
 		stored_form_action = $(form).attr("action");
-		$(form).attr("action", $($("[name=view_url]")[0]).val());
+		$(form).attr("action", window.location.href);
 		$(form).append("<input type='hidden' name='table_only' value='"+form_id+"'>");
 		options = {
 			target: $(this).parents('table'),

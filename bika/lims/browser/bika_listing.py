@@ -350,16 +350,17 @@ class BikaListingView(BrowserView):
         start = (pagenumber - 1) * pagesize
         end = start + pagesize
 
-        if self.And or self.Or:
+        if (hasattr(self, 'And') and self.And) \
+           or (hasattr(self, 'Or') and self.Or):
             # if contentsMethod is capable, we do an AdvancedQuery.
             if hasattr(self.contentsMethod, 'makeAdvancedQuery'):
                 aq = self.contentsMethod.makeAdvancedQuery(self.contentFilter)
-                if self.And:
+                if hasattr(self, 'And') and self.And:
                     tmpAnd = And()
                     for q in self.And:
                         tmpAnd.addSubquery(q)
                     aq &= tmpAnd
-                if self.Or:
+                if hasattr(self, 'Or') and self.Or:
                     tmpOr = Or()
                     for q in self.Or:
                         tmpOr.addSubquery(q)

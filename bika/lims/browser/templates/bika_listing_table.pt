@@ -479,7 +479,7 @@ Table cells for each column from in review_state's column list.
 	<tal:comment replace="nothing"><!-- unit for interim and result--></tal:comment>
 	<em tal:condition="python:'Unit' in item and
 							(column == 'Result' or
-								column in item['interim_fields'])"
+								'interim_fields' in item and column in item['interim_fields'])"
 		class="discreet"
 		style="white-space:nowrap;"
 		tal:content="python:item['Unit']"/>
@@ -524,14 +524,16 @@ Table cells for each column from in review_state's column list.
 </tal:cats>
 </tbody>
 
-</table>
-
+<tfoot>
+<tr>
+<td class="noborder"
+	tal:attributes="colspan nr_cols">
+<table width="100%">
+	<tr class="noborder">
 <tal:comment replace="nothing">***************
-Workflow Actions and Batching
+Workflow Actions
 ********************************</tal:comment>
-<table width="100%" tal:condition="python:not table_only">
-	<tr>
-		<td style="vertical-align:top !important">
+		<td class="workfow_actions">
 			<span class="workflow_action_buttons"
 				tal:define="actions view/get_workflow_actions">
 				<span tal:omit-tag="python:True" tal:repeat="action actions"
@@ -551,12 +553,102 @@ Workflow Actions and Batching
 				<p tal:condition="actions"/>
 			</span>
 		</td>
-		<td style="vertical-align:top !important">
-			<div tal:replace="structure view/batching"
-				tal:condition="python:not view.show_all"/>
+<tal:comment replace="nothing">***************
+Batching
+********************************</tal:comment>
+		<td class="batching"
+			style="text-align:center">
+			<tal:batching
+				tal:define="batch view/batch"
+				condition="python:batch.multiple_pages and not view.show_all">
+				<span class="previous"
+				  tal:condition="batch/has_previous">
+					<a href=""
+					   tal:attributes="href string:${view/url};pagenumber string:${batch/previouspage}">
+					   &laquo;
+					   <span i18n:translate="batch_previous_x_items" tal:omit-tag="">
+						   Previous
+						   <span i18n:name="number" tal:omit-tag="" tal:content="batch/pagesize">n</span>
+						   items
+					   </span>
+					</a>
+				</span>
+				<!-- Link to first -->
+				<span tal:condition="batch/show_link_to_first">
+					<a href=""
+					   pagenumber="1"
+					   tal:attributes="href string:${view/url}">1</a>
+					<span tal:condition="batch/second_page_not_in_navlist"
+						  tal:omit-tag="">
+					   ...
+					</span>
+				</span>
+				<!-- Pagelist with links to previous pages for quick navigation -->
+				<span tal:repeat="pagenumber batch/previous_pages" tal:omit-tag="" >
+				  <a href="" tal:content="pagenumber"
+					 tal:attributes="href string:${view/url};
+									 pagenumber string:$pagenumber"/>
+				</span>
+				<!-- Current page -->
+				<span tal:condition="batch/navlist" tal:omit-tag="">
+					[<span tal:content="batch/pagenumber">Current page number</span>]
+				</span>
+				<!-- Pagelist with links to next pages for quick navigation -->
+				<span tal:repeat="pagenumber batch/next_pages" tal:omit-tag="" >
+				  <a href="" tal:content="pagenumber"
+					 tal:attributes="href string:${view/url};
+									 pagenumber string:$pagenumber"/>
+				</span>
+				<!-- Link to last -->
+				<span tal:condition="batch/show_link_to_last">
+					<span tal:condition="batch/before_last_page_not_in_navlist"
+						  tal:omit-tag="">
+					   ...
+					</span>
+					<a href=""
+					   tal:attributes="href string:${view/url};
+									   pagenumber string:${batch/lastpage}"
+					   tal:content="batch/lastpage">3457</a>
+				</span>
+				<span class="next"
+					  tal:condition="batch/has_next">
+					<a href=""
+					   tal:attributes="href string:${view/url};pagenumber string:${batch/nextpage}">
+					   <span i18n:translate="batch_next_x_items" tal:omit-tag="">
+						   Next
+						   <span i18n:name="number" tal:omit-tag="" tal:content="batch/next_item_count">n</span>
+						   items
+					   </span>
+					   &raquo;
+					</a>
+				</span>
+			</tal:batching>
 		</td>
-		<td>&nbsp;</td>
+		<td class="baching" style="text-align:right">
+			<tal:batching
+				tal:define="batch view/batch"
+				condition="python:batch.multiple_pages and not view.show_all">
+				<span class="pagesize_selector noborder"
+					style="vertical-align:top !important"
+					tal:condition="python:len(view.items) > 10 & view.pagesize != 1000"
+					style="text-align:right">
+					<select name="pagesize">
+						<option value="10" tal:attributes="selected python:int(view.bika_listing.pagesize) == 10 and 'selected' or ''">10</option>
+						<option value="25" tal:attributes="selected python:int(view.bika_listing.pagesize) == 25 and 'selected' or ''">25</option>
+						<option value="50" tal:attributes="selected python:int(view.bika_listing.pagesize) == 50 and 'selected' or ''">50</option>
+						<option value="100" tal:attributes="selected python:int(view.bika_listing.pagesize) == 100 and 'selected' or ''">100</option>
+					</select>
+<!--					<span class="discreet"-->
+<!--						i18n:translate="Items per page">Items per page</span>-->
+				</span>
+			</tal:batching>
+		</td>
 	</tr>
+</table>
+</td>
+</tr>
+</tfoot>
+
 </table>
 
 </form>

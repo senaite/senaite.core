@@ -47,7 +47,7 @@ div.bika_listing {
 
 .bika-listing-table {
     font-size: &dtml-fontSmallSize;;
-    border-bottom: &dtml-borderWidth; &dtml-borderStyle; &dtml-borderColor;;
+    border-bottom: medium none;
 }
 
 .bika-listing-table a {
@@ -280,13 +280,6 @@ td.review_state_selector{
 .workflow_action_buttons {
 }
 
-/* batch selectors */
-div.listingBar {
-    font-size: 80%;
-    margin: 0;
-}
-
-
 /*** Manage results header *****/
 
 .manage_results_header table {
@@ -301,13 +294,33 @@ div.listingBar {
 	padding: 0 3em 0 0;
 }
 
+/* batch selectors */
+tfoot tr {
+  border-top: &dtml-borderWidth; &dtml-borderStyle; &dtml-borderColor;;
+  border-left: 0 !important;
+  border-right: 0 !important;
+  border-bottom:0 !important;
+  padding:0;
 
-div.listingBar a {
-	border-radius: &dtml-buttonBorderRadius; !important;
-    border: 0.1em solid #CCCCCC !important;
-    display: inline-block;
-    padding: 0.25em 0.5em;
 }
+tfoot td {
+    margin: 0;
+    padding:0;
+	border: medium none !important;
+	vertical-align:top !important;
+}
+tfoot td.workflow_actions {
+}
+tfoot td.batching {
+}
+tfoot td.batching a {
+  border-radius: &dtml-buttonBorderRadius; !important;
+  background: &dtml-buttonSelectedBackgroundColor; !important;
+  color: &dtml-buttonSelectedTextColor; !important;
+  border:1px solid &dtml-buttonSelectedBorderColor; !important;
+  padding:1px 2px 1px 2px;
+}
+
 .workflow_action_button {
   border-radius: &dtml-buttonBorderRadius; !important;
   background: &dtml-buttonSelectedBackgroundColor; !important;
@@ -327,6 +340,7 @@ div.listingBar a {
   color: &dtml-buttonClickTextColor; !important;
   border:1px solid &dtml-buttonClickBorderColor; !important;
 }
+
 
 /* </dtml-with> */
 
