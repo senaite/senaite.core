@@ -38,48 +38,48 @@
     <tbody>
 
         <tr>
-            <th i18n:translate="ID">ID</th>
+            <th i18n:translate="">ID</th>
             <td class="left" tal:content="context/id">R001</td>
         </tr>
         <tr>
-            <th i18n:translate="Title">Title</th>
+            <th i18n:translate="">Title</th>
             <td class="left" tal:content="context/Title">Reference Title</td>
         </tr>
 
         <tr>
-            <th i18n:translate="Hazardous">Hazardous</th>
+            <th i18n:translate="">Hazardous</th>
             <td class="left"
                 tal:content="context/getHazardous">False</td>
         </tr>
 
         <tr>
-            <th i18n:translate="Blank">Blank</th>
+            <th i18n:translate="">Blank</th>
             <td class="left"
                 tal:content="context/getBlank">False</td>
         </tr>
 
         <tr>
-            <th i18n:translate="Manufacturer">Manufacturer</th>
+            <th i18n:translate="">Manufacturer</th>
             <td class="left" tal:content="python:context.getReferenceManufacturer() and context.getReferenceManufacturer().Title() or ''">S001</td>
         </tr>
 
         <tr>
-            <th i18n:translate="CatalogueNumber">Catalogue Number</th>
+            <th i18n:translate="">Catalogue Number</th>
             <td class="left" tal:content="context/getCatalogueNumber">Catalogue Number</td>
         </tr>
 
         <tr>
-            <th i18n:translate="LotNumber">Lot Number</th>
+            <th i18n:translate="">Lot Number</th>
             <td class="left" tal:content="context/getLotNumber">Lot Number</td>
         </tr>
 
         <tr>
-            <th i18n:translate="ReferenceDefinition">Reference Definition</th>
+            <th i18n:translate="">Reference Definition</th>
             <td class="left" tal:content="python:context.getReferenceDefinition() and context.getReferenceDefinition().Title() or ''">Reference Definition</td>
         </tr>
 
         <tr>
-            <th i18n:translate="DateSampled">Date sampled</th>
+            <th i18n:translate="">Date Sampled</th>
             <td class="left">
                 <span
                     tal:define="date_sampled context/getDateSampled"
@@ -89,7 +89,7 @@
         </tr>
 
         <tr>
-            <th i18n:translate="DateReceived">Date received</th>
+            <th i18n:translate="">Date Received</th>
             <td class="left">
                 <span
                     tal:define="date_received context/getDateReceived"
@@ -99,7 +99,7 @@
         </tr>
 
         <tr>
-            <th i18n:translate="DateOpened">Date opened</th>
+            <th i18n:translate="">Date Opened</th>
             <td class="left">
                 <span
                     tal:define="date_opened context/getDateOpened"
@@ -109,7 +109,7 @@
         </tr>
 
         <tr>
-            <th i18n:translate="ExpiryDate">Expiry date</th>
+            <th i18n:translate="">Expiry Date</th>
             <td class="left">
                 <span
                     tal:define="expiry_date context/getExpiryDate"

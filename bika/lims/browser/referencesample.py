@@ -61,7 +61,7 @@ class ReferenceAnalysesView(AnalysesView):
             'Worksheet': {'title': _('Worksheet')},
             'Result': {'title': _('Result')},
             'Uncertainty': {'title': _('+-')},
-            'DueDate': {'title': _('Due date')},
+            'DueDate': {'title': _('Due Date')},
             'retested': {'title': _('Retested'), 'type':'boolean'},
             'state_title': {'title': _('State')},
         }
@@ -102,8 +102,8 @@ class ReferenceResultsView(BikaListingView):
         super(ReferenceResultsView, self).__init__(context, request)
         bsc = getToolByName(context, 'bika_setup_catalog')
         self.contentsMethod = bsc
-        self.title = _(" ")
-        self.description = _(" ")
+        self.title = _("Reference Results")
+        self.description = _("Reference Results description", "")
         self.contentFilter = {}
         self.context_actions = {}
         self.show_sort_column = False
@@ -167,11 +167,10 @@ class ReferenceSamplesView(BikaListingView):
     def __init__(self, context, request):
         super(ReferenceSamplesView, self).__init__(context, request)
         portal = getToolByName(context, 'portal_url').getPortalObject()
-        self.title = _("Reference Samples")
         self.icon = "++resource++bika.lims.images/referencesample_big.png"
-        self.description = _("All reference samples in the system are displayed here. <br/>"
-                             "Reference samples can be added in <a href='%s/bika_setup/bika_referencesuppliers'>%s</a>"%\
-                             (portal.absolute_url(), _("Reference Suppliers")))
+        self.title = _("Reference Samples")
+        self.description = _("Reference Samples description",
+                             "All reference samples in the system are displayed here.")
         self.contentFilter = {'portal_type': 'ReferenceSample',
                               'sort_on':'id',
                               'sort_order': 'reverse',
@@ -195,7 +194,8 @@ class ReferenceSamplesView(BikaListingView):
             'state_title': {'title': _('State')},
         }
         self.review_states = [
-            {'title': _('All'), 'id':'all',
+            {'id':'all',
+             'title': _('All'),
              'columns': ['ID',
                          'Title',
                          'Supplier',
@@ -204,7 +204,8 @@ class ReferenceSamplesView(BikaListingView):
                          'DateReceived',
                          'ExpiryDate',
                          'state_title']},
-            {'title': _('Current'), 'id':'current',
+            {'id':'current',
+             'title': _('Current'),
              'columns': ['ID',
                          'Title',
                          'Supplier',
@@ -212,7 +213,8 @@ class ReferenceSamplesView(BikaListingView):
                          'DateSampled',
                          'DateReceived',
                          'ExpiryDate']},
-            {'title': _('Expired'), 'id':'expired',
+            {'id':'expired',
+             'title': _('Expired'),
              'columns': ['ID',
                          'Title',
                          'Supplier',
@@ -220,7 +222,8 @@ class ReferenceSamplesView(BikaListingView):
                          'DateSampled',
                          'DateReceived',
                          'ExpiryDate']},
-            {'title': _('Disposed'), 'id':'disposed',
+            {'id':'disposed',
+             'title': _('Disposed'),
              'columns': ['ID',
                          'Title',
                          'Supplier',

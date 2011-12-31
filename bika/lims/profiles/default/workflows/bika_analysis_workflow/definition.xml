@@ -8,7 +8,7 @@
  <permission>BIKA: Edit Results</permission>
  <permission>BIKA: Cancel and reinstate</permission>
 
- <state state_id="sample_due" title="Sample due">
+ <state state_id="sample_due" title="Sample Due">
   <exit-transition transition_id="import"/>
   <exit-transition transition_id="receive"/>
   <permission-map name="BIKA: View Results" acquired="False">

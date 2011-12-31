@@ -118,7 +118,7 @@ class WorksheetWorkflowAction(WorkflowAction):
                     except WorkflowException:
                         pass
 
-            message = _("Changes saved.")
+            message = _("Changes saved")
             self.context.plone_utils.addPortalMessage(message, 'info')
             self.destination_url = self.request.get_header("referer",
                                    self.context.absolute_url())
@@ -196,7 +196,7 @@ class WorksheetAnalysesView(AnalysesView):
 
         self.columns = {
             'Pos': {'title': _('Position'), 'sortable': False},
-            'DueDate': {'title': _('Due date'), 'sortable': False},
+            'DueDate': {'title': _('Due Date'), 'sortable': False},
             'Service': {'title': _('Analysis'), 'sortable': False},
             'Result': {'title': _('Result'), 'sortable': False},
             'ResultDM': {'title': _('Dry'), 'sortable': False},
@@ -470,8 +470,8 @@ class AddAnalysesView(BikaListingView):
     def __init__(self, context, request):
         BikaListingView.__init__(self, context, request)
         self.icon = "++resource++bika.lims.images/worksheet_big.png"
-        self.title = "%s: %s" % (context.Title(), _("Add Analyses"))
-        self.description = _(" ")
+        self.title = _("Add Analyses")
+        self.description = _("Add Analyses description", "")
         self.contentsMethod = self.context.getFolderContents
         self.context_actions = {}
         # initial review state for first form display of the worksheet
@@ -530,10 +530,13 @@ class AddAnalysesView(BikaListingView):
                 self.request['context_uid'] = self.context.UID()
                 self.context.applyWorksheetTemplate(wst)
                 if len(self.context.getLayout()) != len(layout):
-                    self.context.plone_utils.addPortalMessage(_("Worksheet updated."))
+                    self.context.plone_utils.addPortalMessage(
+                        self.context.translate(_("Worksheet updated.")))
                     self.request.RESPONSE.redirect(self.context.absolute_url() + "/manage_results")
                 else:
-                    self.context.plone_utils.addPortalMessage(_("No analyses were added to this worksheet."))
+                    self.context.plone_utils.addPortalMessage(
+                        self.context.translate(_("no_analyses_added",
+                                                 "No analyses were added to this worksheet.")))
                     self.request.RESPONSE.redirect(self.context.absolute_url() + "/add_analyses")
 
         self._process_request()
@@ -563,7 +566,8 @@ class AddAnalysesView(BikaListingView):
                 TimeOrDate(self.context, DueDate)
             if DueDate < DateTime():
                 items[x]['after']['DueDate'] = '<img width="16" height="16" src="%s/++resource++bika.lims.images/late.png" title="%s"/>' % \
-                    (self.context.absolute_url(), _("Late analysis"))
+                    (self.context.absolute_url(),
+                     self.context.translate(_("Late Analysis")))
             items[x]['CategoryTitle'] = service.getCategory().Title()
             items[x]['ClientTitle'] = client.Title()
             new_items.append(items[x])
@@ -609,8 +613,9 @@ class AddBlankView(BrowserView):
     def __init__(self, context, request):
         BrowserView.__init__(self, context, request)
         self.icon = "++resource++bika.lims.images/worksheet_big.png"
-        self.title = "%s: %s" % (context.Title(), _("Add Blank Reference"))
-        self.description = _("Select services in the left column to locate " \
+        self.title = _("Add Blank Reference")
+        self.description = _("Add Blank Reference description",
+                             "Select services in the left column to locate "
                              "reference samples. Select a reference by clicking it. ")
 
     def __call__(self):
@@ -657,8 +662,9 @@ class AddControlView(BrowserView):
     def __init__(self, context, request):
         BrowserView.__init__(self, context, request)
         self.icon = "++resource++bika.lims.images/worksheet_big.png"
-        self.title = "%s: %s" % (context.Title(), _("Add Control Reference"))
-        self.description = _("Select services in the left column to locate " \
+        self.title = _("Add Control Reference")
+        self.description = _("Add Control Reference description",
+                             "Select services in the left column to locate "
                              "reference samples. Select a reference by clicking it. ")
     def __call__(self):
         if not(getSecurityManager().checkPermission(EditWorksheet, self.context)):
@@ -705,8 +711,9 @@ class AddDuplicateView(BrowserView):
     def __init__(self, context, request):
         BrowserView.__init__(self, context, request)
         self.icon = "++resource++bika.lims.images/worksheet_big.png"
-        self.title = "%s: %s" % (context.Title(), _("Add Duplicates"))
-        self.description = _("Select a destinaton position and the AR to duplicate.")
+        self.title = _("Add Duplicate")
+        self.description = _("Add Duplicate description",
+                             "Select a destinaton position and the AR to duplicate.")
 
     def __call__(self):
         if not(getSecurityManager().checkPermission(EditWorksheet, self.context)):
@@ -916,7 +923,8 @@ class ajaxGetWorksheetReferences(ReferenceSamplesView):
         self.columns['Services'] = {'title': _('Services')}
         self.columns['Definition'] = {'title': _('Reference Definition')}
         self.review_states = [
-            {'title': _('All'), 'id':'all',
+            {'id':'all',
+             'title': _('All'),
              'columns': ['ID',
                          'Title',
                          'Definition',
@@ -959,7 +967,7 @@ class ajaxGetWorksheetReferences(ReferenceSamplesView):
         self.service_uids = self.request.get('service_uids', '').split(",")
         self.control_type = self.request.get('control_type', '')
         if not self.control_type:
-            return _("No control type specified")
+            return self.context.translate(_("No control type specified"))
         return super(ajaxGetWorksheetReferences, self).contents_table()
 
 class ExportView(BrowserView):
@@ -969,15 +977,17 @@ class ExportView(BrowserView):
 
         instrument = self.context.getInstrument()
         if not instrument:
-            message = _("You must select an instrument before you can export this worksheet.")
-            self.context.plone_utils.addPortalMessage(message, 'info')
+            message = _("You must select an instrument")
+            self.context.plone_utils.addPortalMessage(
+                self.context.translate(message), 'info')
             self.request.RESPONSE.redirect(self.context.absolute_url())
             return
 
         exim = instrument.getDataInterface()
         if not exim:
-            message = _("This instrument has no Data Interface selected.")
-            self.context.plone_utils.addPortalMessage(message, 'info')
+            message = _("Instrument has no Data Interface selected")
+            self.context.plone_utils.addPortalMessage(
+                self.context.translate(message), 'info')
             self.request.RESPONSE.redirect(self.context.absolute_url())
             return
 
@@ -988,8 +998,9 @@ class ExportView(BrowserView):
 
         # search instruments module for 'exim' module
         if not hasattr(instruments, exim):
-            message = _("Instrument exporter not found.")
-            self.context.plone_utils.addPortalMessage(message, 'error')
+            message = _("Instrument exporter not found")
+            self.context.plone_utils.addPortalMessage(
+                self.context.translate(message), 'error')
             self.request.RESPONSE.redirect(self.context.absolute_url())
             return
 

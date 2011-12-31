@@ -6,6 +6,7 @@ from Products.CMFCore import permissions
 from Products.CMFCore.utils import UniqueObject, getToolByName, expandpath
 from Products.PythonScripts.standard import newline_to_br
 from bika.lims.tools import ToolFolder
+from bika.lims import bikaMessageFactory as _
 from cStringIO import StringIO
 from reportlab import platypus
 from reportlab.lib import styles, colors
@@ -600,9 +601,9 @@ class bika_pdf_build(UniqueObject, SimpleItem):
         first_heads.append(['Sample ID', ])
         first_heads.append(['Sample type', ])
         first_heads.append(['Sample point', ])
-        first_heads.append(['Date sampled', ])
-        first_heads.append(['Date received', ])
-        first_heads.append(['Date published', ])
+        first_heads.append(['Date Sampled', ])
+        first_heads.append(['Date Received', ])
+        first_heads.append(['Date Published', ])
         first_heads.append(['Verified by', ])
         first_heads.append(['Analysis results', ])
         other_heads.append(['Analysis results', ])
@@ -820,7 +821,7 @@ class bika_pdf_build(UniqueObject, SimpleItem):
                     if mou:
                         print_result = '%s (+/- %s)' % (print_result, mou)
                     if analysis.getRetested():
-                        print_result = '%s  %s' % (print_result, 'retested')
+                        print_result = '%s  %s' % (print_result, _('Retested'))
                     results[line_cnt].append(print_result)
                     if ar.getReportDryMatter():
                         if analysis.getResultDM():

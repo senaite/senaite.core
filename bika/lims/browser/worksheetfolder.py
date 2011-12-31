@@ -43,7 +43,7 @@ class WorksheetFolderWorkflowAction(WorkflowAction):
                         changes = True
 
                 if changes:
-                    message = _('Changes saved.')
+                    message = self.context.translate(_('Changes saved'))
                     self.context.plone_utils.addPortalMessage(message, 'info')
 
             self.destination_url = self.request.get_header("referer",
@@ -76,7 +76,7 @@ class WorksheetFolderListingView(BikaListingView):
 
         self.icon = "++resource++bika.lims.images/worksheet_big.png"
         self.title = _("Worksheets")
-        self.description = ""
+        self.description = _("Worksheets description", "")
         self.TimeOrDate = TimeOrDate
 
 
@@ -128,7 +128,8 @@ class WorksheetFolderListingView(BikaListingView):
                             'index': 'review_state'},
         }
         self.review_states = [
-            {'title': _('All'), 'id':'all',
+            {'id':'all',
+             'title': _('All'),
              'contentFilter': {'portal_type': 'Worksheet',
                                'review_state':['open', 'to_be_verified', 'verified', 'rejected'],
                                'sort_on':'id',
@@ -143,7 +144,8 @@ class WorksheetFolderListingView(BikaListingView):
                         'QC',
                         'CreationDate',
                         'state_title']},
-            {'title': _('Mine'), 'id':'mine',
+            {'id':'mine',
+             'title': _('Mine'),
              'contentFilter': {'portal_type': 'Worksheet',
                                'review_state':['open', 'to_be_verified', 'verified', 'rejected'],
                                'getAnalyst': analyst,
@@ -159,7 +161,8 @@ class WorksheetFolderListingView(BikaListingView):
                         'QC',
                         'CreationDate',
                         'state_title']},
-            {'title': _('Open'), 'id':'open',
+            {'id':'open',
+             'title': _('Open'),
              'contentFilter': {'portal_type': 'Worksheet',
                                'review_state':'open',
                                'sort_on':'id',
@@ -174,7 +177,8 @@ class WorksheetFolderListingView(BikaListingView):
                         'QC',
                         'CreationDate',
                         'state_title']},
-            {'title': _('To Be Verified'), 'id':'to_be_verified',
+            {'id':'to_be_verified',
+             'title': _('To be verified'),
              'contentFilter': {'portal_type': 'Worksheet',
                                'review_state':'to_be_verified',
                                'sort_on':'id',
@@ -189,7 +193,8 @@ class WorksheetFolderListingView(BikaListingView):
                         'QC',
                         'CreationDate',
                         'state_title']},
-            {'title': _('Verified'), 'id':'verified',
+            {'id':'verified',
+             'title': _('Verified'),
              'contentFilter': {'portal_type': 'Worksheet',
                                'review_state':'verified',
                                'sort_on':'id',
@@ -364,7 +369,7 @@ class AddWorksheetView(BrowserView):
     def __call__(self, wsanalyst = None, wstemplate = None, wsinstrument = None):
         # Validation
         if not wsanalyst:
-            message = _("Analyst must be specified.")
+            message = self.context.translate("Analyst must be specified.")
             self.context.plone_utils.addPortalMessage(message, 'info')
             self.request.RESPONSE.redirect(self.context.absolute_url())
             return
@@ -379,7 +384,6 @@ class AddWorksheetView(BrowserView):
         ws = self.context[_id]
         ws.processForm()
         zope.event.notify(ObjectEditedEvent(ws))
-
 
         # Set analyst and instrument
         ws.setAnalyst(wsanalyst)
@@ -402,6 +406,6 @@ class AddWorksheetView(BrowserView):
         if ws.getLayout():
             self.request.RESPONSE.redirect(ws.absolute_url() + "/manage_results")
         else:
-            self.context.plone_utils.addPortalMessage(_("No analyses were added to this worksheet."))
+            msg = self.context.translate("No analyses were added")
+            self.context.plone_utils.addPortalMessage(msg)
             self.request.RESPONSE.redirect(ws.absolute_url() + "/add_analyses")
-

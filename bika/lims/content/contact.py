@@ -1,6 +1,4 @@
 """The contact person at an organisation.
-
-$Id: Contact.py 2242 2010-04-08 22:17:03Z campbellbasset $
 """
 from AccessControl import ClassSecurityInfo
 from AccessControl.Permissions import manage_users
@@ -38,7 +36,7 @@ schema = Person.schema.copy() + Schema((
         relationship = 'ContactContact',
         widget = ReferenceWidget(
             checkbox_bound = 0,
-            label = _("Contacts to cc"),
+            label = _("Contacts to CC"),
         ),
     ),
 ))

@@ -3,10 +3,12 @@ from DateTime import DateTime
 from Products.ATExtensions.ateapi import DateTimeField, DateTimeWidget
 from Products.Archetypes.public import *
 from Products.CMFCore import permissions
-from bika.lims.content.bikaschema import BikaSchema
-from bika.lims.config import I18N_DOMAIN, I18N_DOMAIN, ManagePricelists, ManageBika, PRICELIST_TYPES, CLIENT_TYPES, PROJECTNAME
-import sys
 from bika.lims import bikaMessageFactory as _
+from bika.lims.config import ManagePricelists, ManageBika, PRICELIST_TYPES, CLIENT_TYPES, PROJECTNAME
+from bika.lims.content.bikaschema import BikaSchema
+from bika.lims.interfaces import IGenerateUniqueId
+from zope.interface import implements
+import sys
 
 schema = BikaSchema.copy() + Schema((
     StringField('Type',
@@ -26,14 +28,16 @@ schema = BikaSchema.copy() + Schema((
     FixedPointField('Discount',
         widget = DecimalWidget(
             label = _("Discount %"),
-            description = _("Enter discount percentage value"),
+            description = _("Discount % description",
+                            "Enter discount percentage value"),
         ),
     ),
     BooleanField('Descriptions',
         default = False,
         widget = BooleanWidget(
             label = _("Include descriptions"),
-            description = _("Select if the descriptions should be included"),
+            description = _("Include descriptions description",
+                            "Select if the descriptions should be included"),
         ),
     ),
     DateTimeField('StartDate',
@@ -65,29 +69,10 @@ schema = BikaSchema.copy() + Schema((
 )
 
 class Pricelist(BaseFolder):
+    implements(IGenerateUniqueId)
     security = ClassSecurityInfo()
-    archetype_name = 'Pricelist'
+    displayContentsTab = False
     schema = schema
-    content_icon = 'pricelist.png'
-    allowed_content_types = ('PricelistLineItem',)
-    immediate_view = 'base_view'
-    use_folder_tabs = 0
-    global_allow = 0
-    filter_content_types = 1
-
-    actions = (
-
-        {'id': 'printpricelist',
-         'name': 'Print pricelist',
-         'action': 'string:${object_url}/pricelist_print',
-         'permissions': (permissions.View,),
-        },
-        {'id': 'emailpricelist',
-         'name': 'Email pricelist',
-         'action': 'string:${object_url}/pricelist_email',
-         'permissions': (permissions.View,),
-        },
-    )
 
     security.declarePublic('current_date')
     def current_date(self):
@@ -186,12 +171,4 @@ class Pricelist(BaseFolder):
             REQUEST = REQUEST, values = values)
         self.create_price_list()
 
-
 registerType(Pricelist, PROJECTNAME)
-
-def modify_fti(fti):
-    for a in fti['actions']:
-        if a['id'] in ('edit', 'syndication', 'references',
-                       'metadata', 'localroles'):
-            a['visible'] = 0
-    return fti

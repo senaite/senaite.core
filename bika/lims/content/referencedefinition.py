@@ -1,4 +1,5 @@
-"""Reference Definitions represent standard specifications for reference samples used in quality control
+""" Reference Definitions represent standard specifications for
+    reference samples used in quality control
 """
 from AccessControl import ClassSecurityInfo
 from DateTime import DateTime
@@ -7,7 +8,7 @@ from Products.CMFCore.permissions import View, ModifyPortalContent
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.browser.fields import ReferenceResultsField
 from bika.lims.browser.widgets import ReferenceResultsWidget
-from bika.lims.config import I18N_DOMAIN, PROJECTNAME
+from bika.lims.config import PROJECTNAME
 from bika.lims.interfaces import IGenerateUniqueId
 import sys
 import time
@@ -20,9 +21,16 @@ schema = BikaSchema.copy() + Schema((
         required = 1,
         widget = ReferenceResultsWidget(
             label = _("Reference Results"),
-            description = _("Enter the expected results and the min and max allowed values, "
-                            "or enter the expected result and an error % for the system to "
-                            "calculate min and max values"),
+            description = _("Reference Results description",
+                            "Click on Analysis Categories (against shaded background) "
+                            "to see Analysis Services in each category. Enter minimum "
+                            "and maximum values to indicate a valid results range. "
+                            "Any result outside this range will raise an alert. "
+                            "The % Error field allows for an % uncertainty to be "
+                            "considered when evaluating results against minimum and "
+                            "maximum values. A result out of range but still in range "
+                            "if the % error is taken into consideration, will raise a "
+                            "less severe alert."),
         ),
     ),
     BooleanField('Blank',
@@ -30,7 +38,8 @@ schema = BikaSchema.copy() + Schema((
         default = False,
         widget = BooleanWidget(
             label = _("Blank"),
-            description = _("Check this if the reference sample values are zero or 'blank'"),
+            description = _("Blank description",
+                            "Reference sample values are zero or 'blank'"),
         ),
     ),
     BooleanField('Hazardous',
@@ -38,7 +47,8 @@ schema = BikaSchema.copy() + Schema((
         default = False,
         widget = BooleanWidget(
             label = _("Hazardous"),
-            description = _("Check this box if these reference samples should be treated as hazardous"),
+            description = _("Hazardous description",
+                            "Samples of this type should be treated as hazardous"),
         ),
     ),
 ))

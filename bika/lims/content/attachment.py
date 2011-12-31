@@ -8,7 +8,7 @@ from Products.Archetypes.public import *
 from Products.CMFCore.permissions import ListFolderContents, View
 from Products.CMFCore.utils import getToolByName
 from bika.lims.content.bikaschema import BikaSchema
-from bika.lims.config import I18N_DOMAIN, PROJECTNAME
+from bika.lims.config import PROJECTNAME
 from bika.lims import bikaMessageFactory as _
 from bika.lims.interfaces import IGenerateUniqueId
 from zope.interface import implements
@@ -43,7 +43,7 @@ schema = BikaSchema.copy() + Schema((
         required = 1,
         default_method = 'current_date',
         widget = DateTimeWidget(
-            label = _("Date loaded"),
+            label = _("Date Loaded"),
         ),
     ),
     ComputedField('AttachmentTypeUID',

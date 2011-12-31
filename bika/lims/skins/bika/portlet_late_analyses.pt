@@ -30,7 +30,7 @@
 
         <dt class="portletHeader portletLateAnalyses">
         <img src="" tal:attributes="src string:++resource++bika.lims.images/late.png">
-        <span i18n:translate="box_late_analyses">Late Analyses</span></dt>
+        <span i18n:translate="">Late Analyses</span></dt>
 
         <tal:block repeat="o results">
         <dd tal:define="oddrow repeat/o/odd"
@@ -60,7 +60,7 @@
                 tal:attributes="href string:${context/portal_url}/late_analyses"
                 >
                 <span tal:content="python:str(len(rs)-5)"/>
-                <span i18n:translate="box_morelink">More...</span>
+                <span i18n:translate="">More...</span>
             </a>
 
         </dd>

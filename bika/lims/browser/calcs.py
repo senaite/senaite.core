@@ -40,7 +40,8 @@ class ajaxCalculateAnalysisEntry():
             if form_result.startswith("<") or \
                form_result.startswith(">"):
                 # Indeterminate results
-                Indet = _('indeterminate_result', default="Indeterminate result")
+                Indet = _('indeterminate_result',
+                          default="Indeterminate result")
                 Indet = self.context.translate(Indet)
                 self.alerts.append({'uid': uid,
                                     'field': 'Result',
@@ -133,9 +134,11 @@ class ajaxCalculateAnalysisEntry():
             except TypeError:
                 # non-numeric arguments in interim mapping?
                 if indeterminate:
-                    indet = _('indeterminate_abbrev', default='Indet')
+                    indet = _('indeterminate_abbrev',
+                              default='Indet')
                     indet = self.context.translate(indet)
-                    Indet = _('indeterminate_result', default="Indeterminate result")
+                    Indet = _('indeterminate_result',
+                              default="Indeterminate result")
                     Indet = self.context.translate(Indet)
                     Result['result'] = indet
                     self.alerts.append({'uid': uid,
@@ -143,7 +146,7 @@ class ajaxCalculateAnalysisEntry():
                                         'icon': 'exclamation',
                                         'msg': Indet})
                 else:
-                    inval = _('invalid_result', default="Invalid result")
+                    inval = _("Invalid result")
                     Indet = self.context.translate(inval)
                     self.alerts.append({'uid': uid,
                                         'field': 'Result',
@@ -226,9 +229,9 @@ class ajaxCalculateAnalysisEntry():
                                        " (%s)"%range_str})
         # shoulder
         if in_range[0] == '1':
-            range_str = _("min:") + str(in_range[1]['min']) + ", " + \
-                        _("max:") + str(in_range[1]['max']) + ", " + \
-                        _("error:") + str(in_range[1]['error'])+"%"
+            range_str = _("min") + " " + str(in_range[1]['min']) + ", " + \
+                        _("max") + " " + str(in_range[1]['max']) + ", " + \
+                        _("error:") + " " + str(in_range[1]['error'])+"%"
             self.alerts.append({'uid': uid,
                                 'field': 'Result',
                                 'icon': 'warning',

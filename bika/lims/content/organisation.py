@@ -34,7 +34,7 @@ schema = BikaFolderSchema.copy() + BikaSchema.copy() + ManagedSchema((
     StringField('EmailAddress',
         schemata = 'Address',
         widget = StringWidget(
-            label = _("Email address"),
+            label = _("Email Address"),
         ),
         validators = ('isEmail',)
     ),
@@ -62,19 +62,19 @@ schema = BikaFolderSchema.copy() + BikaSchema.copy() + ManagedSchema((
     StringField('AccountType',
         schemata = 'Bank details',
         widget = StringWidget(
-            label = _("Account type"),
+            label = _("Account Type"),
         ),
     ),
     StringField('AccountName',
         schemata = 'Bank details',
         widget = StringWidget(
-            label = _("Account name"),
+            label = _("Account Name"),
         ),
     ),
     StringField('AccountNumber',
         schemata = 'Bank details',
         widget = StringWidget(
-            label = _("Account number"),
+            label = _("Account Number"),
         ),
     ),
     StringField('BankName',

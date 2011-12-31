@@ -4,7 +4,6 @@ from bika.lims import bikaMessageFactory as _
 
 ADD_CONTENT_PERMISSION = AddPortalContent
 PROJECTNAME = "bika.lims"
-SKINS_DIR = 'skins'
 
 GLOBALS = globals()
 
@@ -42,8 +41,6 @@ ManageInvoices = 'BIKA: Manage Invoices'
 ViewResults = 'BIKA: View Results'
 EditResults = 'BIKA: Edit Results'
 CancelAndReinstate = 'BIKA: Cancel and reinstate'
-
-I18N_DOMAIN = 'bika.lims'
 
 TYPES_TO_VERSION = ('AnalysisService',
                     'Calculation',
@@ -122,8 +119,8 @@ SERVICE_POINT_OF_CAPTURE = DisplayList((
 ))
 
 PRICELIST_TYPES = DisplayList((
-    ('AnalysisService', _('Analysis services')),
-    ('LabProduct', _('Lab products')),
+    ('AnalysisService', _('Analysis Services')),
+    ('LabProduct', _('Lab Products')),
 ))
 
 CLIENT_TYPES = DisplayList((
@@ -156,17 +153,6 @@ EMAIL_SUBJECT_OPTIONS = DisplayList((
     ('co', _('Order ID')),
     ('cr', _('Client Reference')),
     ('cs', _('Client Sample ID')),
-))
-INSTRUMENT_EXPORTS = DisplayList((
-    ('instrument1', _('Instrument 1')),
-    ('instrument2', _('Instrument 2')),
-    ('instrument3', _('Instrument 3')),
-))
-
-INSTRUMENT_IMPORTS = DisplayList((
-    ('instrument1', _('Instrument 1')),
-    ('instrument2', _('Instrument 2')),
-    ('instrument3', _('Instrument 3')),
 ))
 
 GENDERS = DisplayList((

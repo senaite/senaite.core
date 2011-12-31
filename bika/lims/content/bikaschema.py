@@ -19,7 +19,6 @@ BikaSchema['title'].validators = ('uniquefieldvalidator',)
 # Update the validation layer after change the validator in runtime
 BikaSchema['title']._validationLayer()
 
-
 BikaFolderSchema = ATFolderSchema.copy()
 BikaFolderSchema['excludeFromNav'].widget.visible = False
 BikaFolderSchema['nextPreviousEnabled'].widget.visible = False

@@ -20,7 +20,7 @@
     <dl class="portlet" id="portlet-workflow-pending-orders">
 
         <dt class="portletHeader"
-            i18n:translate="box_pending_orders">Pending orders
+            i18n:translate="">Pending orders
         </dt>
 
         <tal:block repeat="o results">
@@ -53,7 +53,7 @@
                 tal:attributes="href string:${context/portal_url}/orders"
                 >
                 <span tal:content="python:str(len(rs)-5)"/>
-                <span i18n:translate="box_morelink">More...</span>
+                <span i18n:translate="">More...</span>
             </a>
 
         </dd>

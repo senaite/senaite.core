@@ -44,22 +44,22 @@ td {
 <thead>
 
 <tr>
-    <th i18n:translate="Reference">Reference</th>
+    <th i18n:translate="">Reference</th>
     <td><strong tal:content="reference/Title"/>
 </tr>
 
 <tr>
-    <th i18n:translate="Manufacturer">Manufacturer</th>
+    <th i18n:translate="">Manufacturer</th>
     <td><strong tal:content="python:manufacturer and manufacturer.Title() or ''"/>
 </tr>
 
 <tr>
-<th i18n:translate="LotNumber">LotNumber</th>
+<th i18n:translate="">Lot Number</th>
 <td><strong tal:content="reference/getLotNumber"/>
 </tr>
 
 <tr>
-    <th i18n:translate="DateReceived">Date received</th>
+    <th i18n:translate="">Date Received</th>
     <td class="left">
         <span
         tal:define="date_received reference/getDateReceived"
@@ -69,7 +69,7 @@ td {
 </tr>
 
 <tr>
-    <th i18n:translate="DateOpened">Date opened</th>
+    <th i18n:translate="">Date Opened</th>
     <td class="left">
         <span
         tal:define="date_opened reference/getDateOpened"
@@ -79,7 +79,7 @@ td {
 </tr>
 
 <tr>
-    <th i18n:translate="ExpiryDate">Expiry date</th>
+    <th i18n:translate="">Expiry Date</th>
     <td class="left">
     <span
         tal:define="expiry_date reference/getExpiryDate"

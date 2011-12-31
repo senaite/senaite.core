@@ -15,33 +15,29 @@
 <script type="text/javascript" src="utils.js"></script>
 <h1>
 <img src="++resource++bika.lims.images/accredited_big.png"/>
-<span i18n:translate="heading_accreditation">Accreditation</span>
+<span i18n:translate="">Accreditation</span>
 </h1>
 
 
-<div i18n:translate="accreditation_text">
+<div i18n:translate="">
 <tal:block replace="context/bika_setup/laboratory/Title" i18n:name="name_lab"/>
 has been accredited as
 <tal:block replace="context/bika_setup/laboratory/Accreditation" i18n:name="accreditation"/>
 conformant by
-<tal:block replace="context/bika_setup/laboratory/AccreditationBody" i18n:name="accreditation_body"/>,
-the <tal:block replace="context/bika_setup/laboratory/AccreditationBodyLong" i18n:name="accreditation_body_long"/>
+<tal:block replace="context/bika_setup/laboratory/AccreditationBody" i18n:name="accreditation_body"/>
+(<tal:block replace="context/bika_setup/laboratory/AccreditationBodyLong" i18n:name="accreditation_body_long"/>)
 </div>
 <br>
 <div>
 <a href=""
     tal:attributes="href context/bika_setup/laboratory/AccreditationBodyURL"
-    i18n:translate="accreditation_body">
+    i18n:translate="">
 <tal:block replace="context/bika_setup/laboratory/AccreditationBody" i18n:name="accreditation_body"/>
 </a>
-<span i18n:translate="accreditation_body_text">
-is recognised by government as the single national South African accreditation body. It is an independent organisation assessing testing and calibration laboratories for compliance to the <tal:block replace="context/bika_setup/laboratory/Accreditation" i18n:name="accreditation"/> standard, verifying competence through impartial expert assessment
-</span>
+<span i18n:translate="accreditation_body_description"/>
 </div>
 <br>
-<div i18n:translate="accredited_services_text">
-The following analysis services have been included in the <tal:block replace="context/bika_setup/laboratory/AccreditationBody" i18n:name="accreditation_body"/> schedule of Accreditation for this Laboratory:
-</div>
+<div i18n:translate="accreditation_analyses_accredited"/>
 <ul>
 <tal:categories
  tal:define="

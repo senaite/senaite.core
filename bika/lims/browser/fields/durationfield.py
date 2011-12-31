@@ -17,9 +17,9 @@ class DurationField(RecordField):
     _properties.update({
         'type' : 'duration',
         'subfields' : ('days', 'hours', 'minutes'),
-        'subfield_labels':{'days':_('Days: '),
-                           'hours':_('Hours: '),
-                           'minutes':_('Minutes: ')},
+        'subfield_labels':{'days':_('Days'),
+                           'hours':_('Hours'),
+                           'minutes':_('Minutes')},
         'subfield_sizes': {'days':2,
                            'hours':2,
                            'minutes':2},

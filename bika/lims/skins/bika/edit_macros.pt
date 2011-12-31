@@ -10,7 +10,7 @@
 
     <div metal:define-macro="header">
       <metal:block define-slot="title">
-        <h1 i18n:translate="heading_add_item" class="documentFirstHeading"
+        <h1 i18n:translate=""
             tal:condition="python:context.checkCreationFlag()">
 			<img tal:attributes="src python:context.portal_url() + '/++resource++bika.lims.images/' + context.portal_type.lower() + '_big.png'"/>
           Add
@@ -21,7 +21,7 @@
                   tal:omit-tag="">Item type</span>
           </span>
         </h1>
-        <h1 i18n:translate="heading_edit_item" class="documentFirstHeading"
+        <h1 i18n:translate=""
             tal:condition="python: not context.checkCreationFlag()">
 			<img tal:attributes="src python:context.portal_url() + '/++resource++bika.lims.images/' + context.portal_type.lower() + '_big.png'"/>
           Edit
@@ -35,11 +35,11 @@
     <dt i18n:translate="">
         Info
     </dt>
-    <dd i18n:translate="label_edit_default_view_container">
+    <dd i18n:translate="">
         You are editing the default view of a container. If you wanted to edit the container itself,
        <a href=""
           i18n:name="go_here"
-          i18n:translate="label_edit_default_view_container_go_here"
+          i18n:translate=""
           tal:attributes="href string:${context/aq_inner/aq_parent/absolute_url}/edit">go here</a>.
     </dd>
 </dl>
@@ -50,7 +50,7 @@
         Info
     </dt>
     <dd>
-        <span tal:omit-tag="python:True" i18n:translate="no_setup_data">
+        <span tal:omit-tag="python:True" i18n:translate="">
     		You have no LIMS setup data loaded.  To import setup data
 		</span>
        <a href="load_setup_data" i18n:translate="">click here.</a>
@@ -79,7 +79,7 @@
         <tal:description tal:define="fti python:context.portal_types.getTypeInfo(here);
                                      desc fti/Description;"
                          tal:condition="desc">
-            <p class="discreet" i18n:translate="" tal:content="desc">
+            <p class="discreet" i18n:translate="">
                 type description
             </p>
         </tal:description>

@@ -37,8 +37,8 @@
  <object name="LabProduct" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="LabProducts" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="Laboratory" meta_type="Factory-based Type Information with dynamic views"/>
+ <object name="LogEntry" meta_type="Factory-based Type Information"/>
  <object name="Method" meta_type="Factory-based Type Information with dynamic views"/>
- <object name="MethodLogEntry" meta_type="Factory-based Type Information"/>
  <object name="Methods" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="Pricelist" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="PricelistFolder" meta_type="Factory-based Type Information with dynamic views"/>

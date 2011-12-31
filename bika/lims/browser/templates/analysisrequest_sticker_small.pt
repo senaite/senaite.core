@@ -45,27 +45,24 @@ td {
 <thead>
 
 <tr>
-<th i18n:translate="label_sticker_sample_id">Sample ID</th>
-<td>
-<strong tal:content="sample/getSampleID">S-0001</strong></td>
+<th i18n:translate="">Sample ID</th>
+<td><strong tal:content="sample/getSampleID"/></td>
 </tr>
 
 <tr>
-<th i18n:translate="label_sticker_order_id">Client Order ID</th>
-<td>
-<strong tal:content="here/getClientOrderNumber|nothing">Order-0001</strong>
+<th i18n:translate="">Client Order ID</th>
+<td><strong tal:content="here/getClientOrderNumber|nothing"/>
 </tr>
 
 <tr>
-<th i18n:translate="label_sticker_disposal_date">Disposal date
+<th i18n:translate="">Disposal date
 </th>
 <td class="left">
 <span
     tal:define="disp_date sample/getDisposalDate"
     tal:condition="disp_date"
-    tal:content="python:plone_view.toLocalizedTime(disp_date, long_format=1)"
-    >2005-01-01 10:00
-</span></td>
+    tal:content="python:plone_view.toLocalizedTime(disp_date, long_format=1)"/>
+</td>
 </tr>
 
 <tr>

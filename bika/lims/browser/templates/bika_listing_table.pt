@@ -19,7 +19,11 @@
 		ViewResults python:sm.checkPermission('BIKA: View Results', context);
 		tabindex view/tabindex;
 		user python:sm.getUser();
-		roles python:user.getRoles();">
+		roles python:user.getRoles();
+		nr_cols python:len(review_state['columns']);
+		nr_cols python:view.bika_listing.show_select_column and nr_cols + 1 or nr_cols;
+		nr_cols python:view.bika_listing.show_sort_column and nr_cols + 1 or nr_cols;
+		nr_cols python:str(nr_cols);">
 <input tal:condition="python:not table_only"
 	   tal:replace="structure context/@@authenticator/authenticator"/>
 <input type="hidden" tal:omit-tag="python:table_only" name="submitted"
@@ -78,10 +82,6 @@
 	summary="Content listing"
 	i18n:attributes="summary summary_content_listing;"
 	tal:define="
-		nr_cols python:len(review_state['columns']);
-		nr_cols python:view.bika_listing.show_select_column and nr_cols + 1 or nr_cols;
-		nr_cols python:view.bika_listing.show_sort_column and nr_cols + 1 or nr_cols;
-		nr_cols python:str(nr_cols);
 		columns view/bika_listing/columns;
 		column_list python:review_state['columns']">
 
@@ -125,7 +125,7 @@ filter search
 						tal:content="string:X"/>
 					<a class="filter-search-button"
 						tal:attributes="href view/view_url;"
-						i18n:translate="Search">Search</a>
+						i18n:translate="">Search</a>
 				</tal:filters_enabled>
 			</td>
 		</tr>
@@ -230,7 +230,8 @@ Draggable column for manually ordering items
 <tal:comment replace="nothing">***************
 Item select checkboxes.
 ********************************</tal:comment>
-	<td tal:condition="view/bika_listing/show_select_column"
+	<td style="text-align:center"
+		tal:condition="view/bika_listing/show_select_column"
 		tal:define="cl python:'select_column' in item['class'] and
 					item['class']['select_column'] or '';"
 		tal:attributes="class string:notDraggable ${item/state_class} $cl">
@@ -504,7 +505,7 @@ Table cells for each column from in review_state's column list.
 									item['result_in_range'][0] == '1'"
 			tal:attributes="
 				uid item/uid;
-				title python:'Result out of range (min: %(min)s, max: %(max)s, error: %(error)s%%)'%(item['result_in_range'][1]);"
+				title python:'Result out of range (min %(min)s, max %(max)s, error %(error)s%%)'%(item['result_in_range'][1]);"
 			src='++resource++bika.lims.images/warning.png'
 		icon="warning"/> <tal:comment replace="nothing"><!-- shoulder --></tal:comment>
 	</span>
@@ -557,7 +558,7 @@ Workflow Actions
 Batching
 ********************************</tal:comment>
 		<td class="batching"
-			style="text-align:center">
+			style="text-align:right">
 			<tal:batching
 				tal:define="batch view/batch"
 				condition="python:batch.multiple_pages and not view.show_all">
@@ -566,9 +567,9 @@ Batching
 					<a href=""
 					   tal:attributes="href string:${view/url};pagenumber string:${batch/previouspage}">
 					   &laquo;
-					   <span i18n:translate="batch_previous_x_items" tal:omit-tag="">
+					   <span i18n:domain="plone" i18n:translate="">
 						   Previous
-						   <span i18n:name="number" tal:omit-tag="" tal:content="batch/pagesize">n</span>
+						   <span i18n:domain="plone" i18n:name="number" tal:omit-tag="" tal:content="batch/pagesize">n</span>
 						   items
 					   </span>
 					</a>
@@ -614,9 +615,9 @@ Batching
 					  tal:condition="batch/has_next">
 					<a href=""
 					   tal:attributes="href string:${view/url};pagenumber string:${batch/nextpage}">
-					   <span i18n:translate="batch_next_x_items" tal:omit-tag="">
+					   <span i18n:domain="plone" i18n:translate="">
 						   Next
-						   <span i18n:name="number" tal:omit-tag="" tal:content="batch/next_item_count">n</span>
+						   <span i18n:domain="plone" i18n:name="number" tal:omit-tag="" tal:content="batch/next_item_count">n</span>
 						   items
 					   </span>
 					   &raquo;
@@ -624,7 +625,9 @@ Batching
 				</span>
 			</tal:batching>
 		</td>
-		<td class="baching" style="text-align:right">
+	</tr>
+	<tr class="noborder">
+		<td class="batching" colspan="2" style="text-align:right">
 			<tal:batching
 				tal:define="batch view/batch"
 				condition="python:batch.multiple_pages and not view.show_all">
@@ -638,8 +641,8 @@ Batching
 						<option value="50" tal:attributes="selected python:int(view.bika_listing.pagesize) == 50 and 'selected' or ''">50</option>
 						<option value="100" tal:attributes="selected python:int(view.bika_listing.pagesize) == 100 and 'selected' or ''">100</option>
 					</select>
-<!--					<span class="discreet"-->
-<!--						i18n:translate="Items per page">Items per page</span>-->
+					<span class="discreet"
+						i18n:domain="bika" i18n:translate="">Items per page</span>
 				</span>
 			</tal:batching>
 		</td>

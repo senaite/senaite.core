@@ -20,7 +20,7 @@
     <dl class="portlet" id="portlet-workflow-verified">
 
         <dt class="portletHeader"
-            i18n:translate="box_verified">Verified</dt>
+            i18n:translate="">Verified</dt>
 
         <tal:block repeat="o results">
         <dd tal:define="oddrow repeat/o/odd"
@@ -52,7 +52,7 @@
                 tal:attributes="href string:${context/portal_url}/analysisrequests?review_state=verified"
                 >
                 <span tal:content="python:str(len(rs)-5)"/>
-                <span i18n:translate="box_morelink">More...</span>
+                <span i18n:translate="">More...</span>
             </a>
 
         </dd>

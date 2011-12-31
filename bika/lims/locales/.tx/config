@@ -1,0 +1,8 @@
+[main]
+host = https://www.transifex.net
+
+[bika-lims.bikapot]
+file_filter = locales/bika-<lang>.po
+host = http://www.transifex.net
+source_lang = en
+

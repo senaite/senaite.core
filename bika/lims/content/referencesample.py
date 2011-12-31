@@ -1,5 +1,6 @@
 """ReferenceSample represents a reference sample used for quality control testing
 """
+
 from AccessControl import ClassSecurityInfo
 from DateTime import DateTime
 from Products.Archetypes.config import REFERENCE_CATALOG
@@ -9,19 +10,17 @@ from Products.CMFCore import permissions
 from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFCore.permissions import View
 from Products.CMFCore.utils import getToolByName
+from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.fields import ReferenceResultsField
-from bika.lims.browser.widgets import ReferenceResultsWidget
 from bika.lims.browser.widgets import DateTimeWidget as bika_DateTimeWidget
-from bika.lims.config import I18N_DOMAIN, PROJECTNAME
+from bika.lims.browser.widgets import ReferenceResultsWidget
+from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
-from bika.lims.interfaces import IReferenceSample
 from bika.lims.interfaces import IGenerateUniqueId
+from bika.lims.interfaces import IReferenceSample
 from bika.lims.utils import sortable_title
 from zope.interface import implements
-import sys
-import time
-from bika.lims import bikaMessageFactory as _
-from bika.lims.config import I18N_DOMAIN
+import sys, time
 
 schema = BikaSchema.copy() + Schema((
     ReferenceField('ReferenceDefinition',
@@ -33,7 +32,6 @@ schema = BikaSchema.copy() + Schema((
         widget = ReferenceWidget(
             checkbox_bound = 1,
             label = _("Reference Definition"),
-            description = _(" "),
         ),
     ),
     BooleanField('Blank',
@@ -41,7 +39,8 @@ schema = BikaSchema.copy() + Schema((
         default = False,
         widget = BooleanWidget(
             label = _("Blank"),
-            description = _("Check this if the reference sample values are zero or 'blank'"),
+            description = _("Blank description",
+                            "Reference sample values are zero or 'blank'"),
         ),
     ),
     BooleanField('Hazardous',
@@ -49,7 +48,8 @@ schema = BikaSchema.copy() + Schema((
         default = False,
         widget = BooleanWidget(
             label = _("Hazardous"),
-            description = _("Check this box if these reference samples should be treated as hazardous"),
+            description = _("Hazardous description",
+                            "Samples of this type should be treated as hazardous"),
         ),
     ),
     ReferenceField('ReferenceManufacturer',
@@ -61,66 +61,57 @@ schema = BikaSchema.copy() + Schema((
         widget = ReferenceWidget(
             checkbox_bound = 1,
             label = _("Manufacturer"),
-            description = _(" "),
         ),
     ),
     StringField('CatalogueNumber',
         schemata = 'Description',
         widget = StringWidget(
-            label = _("Catalogue number"),
-            description = _(" "),
+            label = _("Catalogue Number"),
         ),
     ),
     StringField('LotNumber',
         schemata = 'Description',
         widget = StringWidget(
-            label = _("Lot number"),
-            description = _(" "),
+            label = _("Lot Number"),
         ),
     ),
     DateTimeField('DateSampled',
         schemata = 'Dates',
         widget = bika_DateTimeWidget(
-            label = _("Date sampled"),
-            description = _(" "),
+            label = _("Date Sampled"),
         ),
     ),
     DateTimeField('DateReceived',
         schemata = 'Dates',
         default_method = 'current_date',
         widget = bika_DateTimeWidget(
-            label = _("Date received"),
-            description = _(" "),
+            label = _("Date Received"),
         ),
     ),
     DateTimeField('DateOpened',
         schemata = 'Dates',
         widget = bika_DateTimeWidget(
-            label = _("Date opened"),
-            description = _(" "),
+            label = _("Date Opened"),
         ),
     ),
     DateTimeField('ExpiryDate',
         schemata = 'Dates',
         required = 1,
         widget = bika_DateTimeWidget(
-            label = _("Expiry date"),
-            description = _(" "),
+            label = _("Expiry Date"),
         ),
     ),
     DateTimeField('DateExpired',
         schemata = 'Dates',
         widget = bika_DateTimeWidget(
-            label = _("Date expired"),
-            description = _(" "),
+            label = _("Date Expired"),
             visible = {'edit':'hidden'},
         ),
     ),
     DateTimeField('DateDisposed',
         schemata = 'Dates',
         widget = bika_DateTimeWidget(
-            label = _("Date disposed"),
-            description = _(" "),
+            label = _("Date Disposed"),
             visible = {'edit':'hidden'},
         ),
     ),
@@ -129,7 +120,6 @@ schema = BikaSchema.copy() + Schema((
         required = 1,
         widget = ReferenceResultsWidget(
             label = _("Expected Results"),
-            description = _(" "),
         ),
     ),
     TextField('Notes',
@@ -138,7 +128,6 @@ schema = BikaSchema.copy() + Schema((
         allowable_content_types = ('text/plain',),
         widget = TextAreaWidget(
             label = _("Notes"),
-            description = _(" "),
         ),
     ),
     ComputedField('ReferenceSupplierUID',
@@ -174,8 +163,8 @@ class ReferenceSample(BaseFolder):
             # definition is selected
             if not o:
                 return ''
-            blankstr = self.translate(_('indicator_blank', default='Blank: '))
-            hazstr = self.translate(_('indicator_hazardous', default=' (!)'))
+            blankstr = self.translate(_('indicator_blank', 'Blank: '))
+            hazstr = self.translate(_('indicator_hazardous', ' (!)'))
             return '%s%s%s'%(o.getBlank() and blankstr or '',
                              o.Title(),
                              o.getHazardous() and hazstr or '')
@@ -332,9 +321,7 @@ class ReferenceSample(BaseFolder):
             services.append(service)
         return services
 
-    # workflow methods
-    #
-
+    # XXX workflow methods
     def workflow_script_expire(self, state_info):
         """ expire sample """
         self.setDateExpired(DateTime())

@@ -33,15 +33,15 @@ class ReferenceResultsView(BikaListingView):
             self.referenceresults[refres['uid']] = refres
 
         self.columns = {
-            'service': {'title': context.translate(_('Service'))},
-            'result': {'title': context.translate(_('Expected Result'))},
-            'error': {'title': context.translate(_('Permitted Error %'))},
-            'min': {'title': context.translate(_('Min'))},
-            'max': {'title': context.translate(_('Max'))}
+            'service': {'title': _('Service')},
+            'result': {'title': _('Expected Result')},
+            'error': {'title': _('Permitted Error %')},
+            'min': {'title': _('Min')},
+            'max': {'title': _('Max')}
         }
         self.review_states = [
             {'id':'all',
-             'title': context.translate(_('All')),
+             'title': _('All'),
              'transitions': [],
              'columns':['service', 'result', 'error', 'min', 'max'],
             },

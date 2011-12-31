@@ -13,7 +13,7 @@ from Products.Archetypes.references import HoldingReference
 from Products.CMFCore import permissions
 from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFCore.utils import getToolByName, getToolByName
-from bika.lims.config import I18N_DOMAIN, ManageBika, PROJECTNAME
+from bika.lims.config import ManageBika, PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IGenerateUniqueId
 from bika.lims.utils import sortable_title
@@ -29,7 +29,8 @@ schema = BikaSchema.copy() + Schema((
         searchable = True,
         widget = StringWidget(
             label = _("Sample ID"),
-            description = _("The ID assigned to the client''s sample by the lab"),
+            description = _("Sample ID description",
+                            "The ID assigned to the client\'s sample by the lab"),
             visible = {'edit':'hidden'},
         ),
     ),
@@ -97,14 +98,14 @@ schema = BikaSchema.copy() + Schema((
         required = 1,
         default_method = 'current_date',
         widget = DateTimeWidget(
-            label = _("Date submitted"),
+            label = _("Date Submitted"),
             visible = {'edit':'hidden'},
         ),
     ),
     DateTimeField('DateSampled',
         with_time = False,
         widget = DateTimeWidget(
-            label = _("Date sampled"),
+            label = _("Date Sampled"),
             visible = {'edit':'hidden'},
         ),
     ),
@@ -114,7 +115,7 @@ schema = BikaSchema.copy() + Schema((
     ),
     DateTimeField('DateReceived',
         widget = DateTimeWidget(
-            label = _("Date received"),
+            label = _("Date Received"),
             visible = {'edit':'hidden'},
         ),
     ),
@@ -126,7 +127,7 @@ schema = BikaSchema.copy() + Schema((
     ),
     DateTimeField('DateExpired',
         widget = DateTimeWidget(
-            label = _("Date expired"),
+            label = _("Date Expired"),
             visible = {'edit':'hidden'},
         ),
     ),
@@ -161,9 +162,7 @@ schema = BikaSchema.copy() + Schema((
     BooleanField('Composite',
         default = False,
         widget = BooleanWidget(
-            label = "Composite",
-            label_msgid = "label_composite",
-            i18n_domain = I18N_DOMAIN,
+            label = _("Composite"),
         ),
     ),
 ))
@@ -212,7 +211,6 @@ class Sample(BaseFolder, HistoryAwareMixin):
             ars.append(ar)
         return ars
 
-    # XXX not used anywhere???
     security.declarePublic('getAnalyses')
     def getAnalyses(self):
         """ return list of titles of analyses linked to this sample """
@@ -231,43 +229,11 @@ class Sample(BaseFolder, HistoryAwareMixin):
 
         return analyses
 
-##     workflow methods
-##
-##    def workflow_script_receive(self, state_info):
-##        """ receive sample """
-##        self.setDateReceived(DateTime())
-##        self.reindexObject()
-##        self._delegateWorkflowAction('receive')
-
+    # XXX workflow_script
     def workflow_script_expire(self, state_info):
         """ expire sample """
         self.setDateExpired(DateTime())
         self.reindexObject()
-
-##    def _delegateWorkflowAction(self, action_id):
-##        """ Notify the analysisrequests that the sample has been received """
-##        if action_id not in ('receive'):
-##            return
-##        tool = getToolByName(self, REFERENCE_CATALOG)
-##        wf_tool = self.portal_workflow
-##        uids = [uid for uid in
-##                tool.getBackReferences(self, 'AnalysisRequestSample')]
-##        for uid in uids:
-##            reference = uid
-##            ar = tool.lookupObject(reference.sourceUID)
-##            review_state = wf_tool.getInfoFor(ar, 'review_state', '')
-##            if review_state != 'sample_due':
-##                #from zLOG import LOG, WARNING; LOG('bika', WARNING,
-##                #'Escalate workflow action sample receive. ',
-##                #'Analysis request %s in state: %s' % (self.getId(), review_state))
-##                continue
-##            try:
-##                wf_tool.doActionFor(ar, action_id)
-##                ar.reindexObject()
-##            except WorkflowException, msg:
-##                from zLOG import LOG; LOG('INFO', 0, '', msg)
-##                pass
-##            # ar._delegateWorkflowAction('receive_sample')
 
     security.declarePublic('current_date')
     def current_date(self):

@@ -2,7 +2,7 @@
 <object name="AnalysisService"
    meta_type="Factory-based Type Information with dynamic views"
    xmlns:i18n="http://xml.zope.org/namespaces/i18n">
- <property name="title">Analysis service</property>
+ <property name="title">Analysis Service</property>
  <property name="description">The analysis services (or tests) offered by the lab</property>
  <property name="content_icon">++resource++bika.lims.images/service.png</property>
  <property name="content_meta_type">AnalysisService</property>

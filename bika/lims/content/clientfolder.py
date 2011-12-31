@@ -1,6 +1,4 @@
 """ClientFolder is a container for Client instances.
-
-$Id: ClientFolder.py 621 2007-03-16 22:12:30Z anneline $
 """
 from Products.ATContentTypes.content import schemata
 from Products.Archetypes import atapi

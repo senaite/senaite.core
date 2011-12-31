@@ -44,7 +44,7 @@
     tal:content="address"></textarea>
 </td>
 <td class="field" style="padding-left:2em;">
-    <label i18n:translate="copy_from">Copy from</label>
+    <label i18n:translate="">Copy from</label>
 <select size="1" id=""
      tal:attributes='id string:${fieldName}.selection; 
      onChange string:javascript:copyAddress("${fieldName}")'>

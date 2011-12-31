@@ -23,10 +23,11 @@ class LoadSetupData(BrowserView):
 
     def __init__(self, context, request):
         BrowserView.__init__(self, context, request)
-        self.title = _("Load Setup Data")
+        self.title = _("load_setup_data_title", default="Load Setup Data")
         self.description = _("load_setup_data_descr",
-                             "Submit a valid Open XML (.XLSX) file containing Bika setup records to continue.")
-        self.text = _(" ")
+                             default="Submit a valid Open XML (.XLSX) file containing Bika setup records to continue.")
+        self.helptext = _("load_setup_data_helptext",
+                          default="")
         # dependencies to resolve
         self.deferred = {}
 
@@ -54,8 +55,10 @@ class LoadSetupData(BrowserView):
         tmp = tempfile.mktemp(prefix=Globals.INSTANCE_HOME)
         file_content = 'xlsx' in form and form['xlsx'].read()
         if not file_content:
-            self.plone_utils.addPortalMessage(_("No file data submitted.  Please submit "
-                                                " a valid Open XML Spreadsheet (.xlsx) file."))
+            msg = self.context.translate(_("load_setup_data_no_input_file",
+                                           default="No file data submitted.  Please submit "
+                                           " a valid Open XML Spreadsheet (.xlsx) file."))
+            self.plone_utils.addPortalMessage(msg)
             return self.template()
 
         open(tmp, "wb").write(file_content)
@@ -121,9 +124,10 @@ class LoadSetupData(BrowserView):
         bsc.clearFindAndRebuild()
 
         if App.config.getConfiguration().debug_mode:
-            message = "%s (%s seconds)" % (_("Success."), time.time() - start)
+            message = "Ok (%s seconds)" % int(time.time() - start)
         else:
-            message = _('Success.')
+            message = _("load_setup_data_success",
+                        default="Setup data loaded successfully")
         self.plone_utils.addPortalMessage(message)
         self.request.RESPONSE.redirect(portal.absolute_url())
 
@@ -260,7 +264,7 @@ class LoadSetupData(BrowserView):
                     manager = contact
                     break
             if not manager:
-                message = _("Error: '%s' not in Lab Contacts")
+                message = "Error: missing Lab Contact (Manager)"
                 self.plone_utils.addPortalMessage(message)
                 raise Exception(message)
             obj.edit(title = unicode(row['title']),
@@ -313,7 +317,7 @@ class LoadSetupData(BrowserView):
             client = self.portal_catalog(portal_type = "Client",
                                          Title = unicode(row['_Client_Name']))
             if len(client) == 0:
-                raise IndexError(_("Client invalid: '%s'" % unicode(row['_Client_Name'])))
+                raise IndexError("Client invalid: '%s'" % unicode(row['_Client_Name']))
             client = client[0].getObject()
             _id = client.generateUniqueId('Contact')
             client.invokeFactory('Contact', id = _id)

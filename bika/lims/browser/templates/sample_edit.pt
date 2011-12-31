@@ -35,7 +35,7 @@
 	<thead>
 
 		<tr>
-			<th id="" i18n:translate="label_clientreference">Client Reference</th>
+			<th id="" i18n:translate="">Client Reference</th>
 			<td class="left">
 				<input type="text" size="10" name="ClientReference" id="ClientReference"
 					tal:attributes="
@@ -44,7 +44,7 @@
 		</tr>
 
 		<tr>
-			<th id="" i18n:translate="label_clientsampleid">Client SID</th>
+			<th id="" i18n:translate="">Client SID</th>
 			<td class="left">
 				<input type="text" size="10" name="ClientSampleID"
 					tal:attributes="
@@ -53,7 +53,7 @@
 		</tr>
 
 		<tr>
-			<th i18n:translate="label_requests">Requests</th>
+			<th i18n:translate="">Requests</th>
 			<td class="left">
 				<tal:requests
 					tal:define="ars python:here.getAnalysisRequests()"
@@ -67,7 +67,7 @@
 
 		<tr>
 			<th>
-				<span i18n:translate="label_sampletype">Sample Type</span> &nbsp;
+				<span i18n:translate="">Sample Type</span> &nbsp;
 				<span class="fieldRequired"/>
 			</th>
 			<td class="left">
@@ -81,7 +81,7 @@
 		</tr>
 
 		<tr>
-			<th id="" i18n:translate="label_samplepoint">Sample point</th>
+			<th id="" i18n:translate="">Sample Point</th>
 			<td class="left">
 				<input size="25" type='text' name="SamplePoint" id="SamplePoint"
 					tal:define="
@@ -93,7 +93,7 @@
 		</tr>
 
 		<tr>
-			<th i18n:translate="Composite">Composite</th>
+			<th i18n:translate="">Composite</th>
 			<td class="left">
 				<input type="checkbox" name="Composite" class="noborder" id="Composite"
 					tal:attributes="checked python:here.getComposite() and 'checked' or'';"/>
@@ -102,7 +102,7 @@
 
    		<tr>
 			<th>
-				<span i18n:translate="label_datesampled">Date sampled</span> &nbsp;
+				<span i18n:translate="">Date Sampled</span> &nbsp;
 				<span class="fieldRequired"/>
 			</th>
 			<td class="left">
@@ -115,7 +115,7 @@
 		</tr>
 
 		<tr>
-			<th i18n:translate="label_datesubmitted">Date submitted</th>
+			<th i18n:translate="">Date Submitted</th>
 			<td class="left">
 				<span
 					tal:define="date_submitted here/getDateSubmitted"
@@ -124,7 +124,7 @@
 		</tr>
 
 		<tr tal:condition="python:review_state != 'due'">
-			<th i18n:translate="label_datereceived">Date received</th>
+			<th i18n:translate="">Date Received</th>
 			<td class="left">
 				<span
 					tal:define="date_received here/getDateReceived"
@@ -134,7 +134,7 @@
 		</tr>
 
 		<tr>
-			<th i18n:translate="label_disposal_date">Disposal date</th>
+			<th i18n:translate="">Disposal date</th>
 			<td class="left">
 				<span
 					tal:define="disposal_date here/getDisposalDate"
@@ -144,7 +144,7 @@
 		</tr>
 
 		<tr tal:condition="python:review_state in ['expired', 'disposed']">
-			<th i18n:translate="label_dateexpired">Date expired</th>
+			<th i18n:translate="">Date Expired</th>
 			<td class="left">
 				<span
 					tal:define="date_expired here/getDateExpired"

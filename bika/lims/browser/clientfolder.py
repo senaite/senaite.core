@@ -18,7 +18,7 @@ class ClientFolderContentsView(BikaListingView):
                                  'icon': '++resource++bika.lims.images/add.png'}}
         self.icon = "++resource++bika.lims.images/client_big.png"
         self.title = _("Clients")
-        self.description = ""
+        self.description = _("Clients description", "")
         self.show_sort_column = False
         self.show_select_row = False
         self.show_select_all_checkbox = False
@@ -36,13 +36,15 @@ class ClientFolderContentsView(BikaListingView):
         }
 
         self.review_states = [
-            {'title': _('All'), 'id':'all',
+            {'id':'all',
+             'title': _('All'),
              'columns':['title',
                         'EmailAddress',
                         'Phone',
                         'Fax', ]
              },
-            {'title': _('Active'), 'id':'active',
+            {'id':'active',
+             'title': _('Active'),
              'contentFilter': {'inactive_state': 'active'},
              'transitions': ['deactivate'],
              'columns':['title',
@@ -50,7 +52,8 @@ class ClientFolderContentsView(BikaListingView):
                         'Phone',
                         'Fax', ]
              },
-            {'title': _('Dormant'), 'id':'inactive',
+            {'id':'inactive',
+             'title': _('Dormant'),
              'contentFilter': {'inactive_state': 'inactive'},
              'transitions': ['activate'],
              'columns':['title',

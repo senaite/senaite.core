@@ -55,6 +55,12 @@ class IReferenceSupplier(Interface):
 class IReferenceSuppliers(Interface):
     """Reference Suppliers """
 
+class IInvoice(Interface):
+    """Invoice"""
+
+class IInvoiceBatch(Interface):
+    """Invoice Batch"""
+
 class IInvoiceFolder(Interface):
     """Invoices Folder"""
 

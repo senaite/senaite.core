@@ -24,7 +24,7 @@ class LateAnalysesView(BikaListingView):
                               'cancellation_state': 'active',
                               'sort_on':'getDateReceived'}
         self.title = _("Late Analyses")
-        self.description = ""
+        self.description = _("Late Analyses description", "")
         self.context_actions = {}
         self.show_sort_column = False
         self.show_select_row = False

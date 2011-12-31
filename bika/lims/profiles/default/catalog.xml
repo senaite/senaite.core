@@ -112,7 +112,7 @@
  <index name="path" meta_type="ExtendedPathIndex"/>
  <index name="portal_type" meta_type="FieldIndex"> <indexed_attr value="portal_type"/> </index>
  <index name="sortable_title" meta_type="FieldIndex"> <indexed_attr value="sortable_title"/> </index>
- <index name="sortable_description" meta_type="FieldIndex"> <indexed_attr value="Description"/> </index>
+ <index name="description" meta_type="FieldIndex"> <indexed_attr value="Description"/> </index>
  <index name="start" meta_type="DateIndex"> <property name="index_naive_time_as_local">True</property> </index>
  <index name="review_state" meta_type="FieldIndex"> <indexed_attr value="review_state"/> </index>
  <index name="inactive_state" meta_type="FieldIndex"> <indexed_attr value="inactive_state"/> </index>

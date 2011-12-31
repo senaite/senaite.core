@@ -420,7 +420,7 @@ class BikaGenerator:
 
         bsc.addIndex('title', 'FieldIndex', 'Title')
         bsc.addIndex('sortable_title', 'FieldIndex')
-        bsc.addIndex('description', 'FieldIndex')
+        bsc.addIndex('description', 'FieldIndex', 'Description')
 
         bsc.addIndex('review_state', 'FieldIndex')
         bsc.addIndex('inactive_state', 'FieldIndex')

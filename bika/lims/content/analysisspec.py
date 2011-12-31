@@ -17,7 +17,7 @@ from Products.CMFCore.utils import getToolByName
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.fields import HistoryAwareReferenceField
 from bika.lims.browser.widgets import SpecWidget
-from bika.lims.config import I18N_DOMAIN, PROJECTNAME
+from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IGenerateUniqueId
 from types import ListType, TupleType
@@ -37,7 +37,8 @@ schema = Schema((
         widget = ReferenceWidget(
             checkbox_bound = 1,
             label = _("Sample Type"),
-            description = _("If the sample type you are looking for is not listed here, "
+            description = _("Sample Type description",
+                            "If the sample type you are looking for is not listed here, "
                             "a specification for it has been created already. To edit those, "
                             "navigate 1 level up and select the specification by clicking on "
                             "the sample type in the list"),
@@ -71,7 +72,8 @@ Schema((
         widget = SpecWidget(
             checkbox_bound = 1,
             label = _("Reference Results"),
-            description = _("Click on Analysis Categories (against shaded background) "
+            description = _("Reference Results description",
+                            "Click on Analysis Categories (against shaded background) "
                             "to see Analysis Services in each category. Enter minimum "
                             "and maximum values to indicate a valid results range. "
                             "Any result outside this range will raise an alert. "

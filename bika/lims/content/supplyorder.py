@@ -11,7 +11,7 @@ from Products.Archetypes.public import *
 from Products.Archetypes.references import HoldingReference
 from Products.ATExtensions.ateapi import DateTimeField, DateTimeWidget
 from bika.lims.content.bikaschema import BikaSchema
-from bika.lims.config import I18N_DOMAIN, ManageBika, PROJECTNAME
+from bika.lims.config import ManageBika, PROJECTNAME
 from bika.lims import bikaMessageFactory as _
 
 schema = BikaSchema.copy() + Schema((
@@ -29,7 +29,7 @@ schema = BikaSchema.copy() + Schema((
                 default_method = 'getId',
                 searchable = True,
                 widget = StringWidget(
-                    label = _("Order number"),
+                    label = _("Order Number"),
                     ),
                 ),
     ReferenceField('Invoice',
@@ -47,7 +47,7 @@ schema = BikaSchema.copy() + Schema((
                   ),
     DateTimeField('DateDispatched',
                   widget = DateTimeWidget(
-                      label = _("Date dispatched"),
+                      label = _("Date Dispatched"),
                       ),
                   ),
     TextField('Notes',

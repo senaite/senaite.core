@@ -41,7 +41,7 @@ class WorksheetTemplatesView(BikaListingView):
             'Title': {'title': _('Title'),
                       'index': 'sortable_title', },
             'Description': {'title': _('Description'),
-                            'index': 'Description'},
+                            'index': 'description'},
             'Instrument': {'title': _('Instrument'),
                       'index':'getInstrumentTitle'},
         }

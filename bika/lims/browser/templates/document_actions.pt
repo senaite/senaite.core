@@ -8,7 +8,7 @@
 
         <tal:docactions tal:condition="view/actions|nothing">
 
-            <h5 class="hiddenStructure" i18n:translate="heading_document_actions">
+            <h5 class="hiddenStructure" i18n:translate="">
               Document Actions
             </h5>
 

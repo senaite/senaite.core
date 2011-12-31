@@ -1,6 +1,4 @@
 """The request for analysis by a client. It contains analysis instances.
-
-$Id: AnalysisRequest.py 2567 2010-09-27 14:51:15Z anneline $
 """
 from AccessControl import ClassSecurityInfo
 from AccessControl.Permissions import delete_objects
@@ -19,7 +17,7 @@ from Products.CMFCore.permissions import View, ModifyPortalContent
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import transaction_note
 from bika.lims.browser.fields import ARAnalysesField
-from bika.lims.config import I18N_DOMAIN, PROJECTNAME, \
+from bika.lims.config import PROJECTNAME, \
     ManageInvoices
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IAnalysisRequest
@@ -40,11 +38,9 @@ schema = BikaSchema.copy() + Schema((
         required = 1,
         searchable = True,
         widget = StringWidget(
-            label = 'Request ID',
-            label_msgid = 'label_requestid',
-            description = 'The ID assigned to the client''s request by the lab',
-            description_msgid = 'help_requestid',
-            i18n_domain = I18N_DOMAIN,
+            label = _('Request ID'),
+            description = _('Request ID description',
+                            'The ID assigned to the client\'s request by the lab'),
             visible = {'edit':'hidden'},
         ),
     ),
@@ -56,27 +52,6 @@ schema = BikaSchema.copy() + Schema((
         allowed_types = ('Contact',),
         referenceClass = HoldingReference,
         relationship = 'AnalysisRequestContact',
-    ),
-    ReferenceField('CCContact',
-        multiValued = 1,
-        vocabulary = 'getContactsDisplayList',
-        vocabulary_display_path_bound = sys.maxint,
-        allowed_types = ('Contact',),
-        referenceClass = HoldingReference,
-        relationship = 'AnalysisRequestCCContact',
-    ),
-    ReferenceField('Attachment',
-        multiValued = 1,
-        allowed_types = ('Attachment',),
-        referenceClass = HoldingReference,
-        relationship = 'AnalysisRequestAttachment',
-    ),
-    StringField('CCEmails',
-        widget = StringWidget(
-            label = 'CC Emails',
-            label_msgid = 'label_ccemails',
-            i18n_domain = I18N_DOMAIN,
-        ),
     ),
     ReferenceField('Sample',
         required = 1,
@@ -91,9 +66,26 @@ schema = BikaSchema.copy() + Schema((
     StringField('ClientOrderNumber',
         searchable = True,
         widget = StringWidget(
-            label = 'Client Order ID',
-            label_msgid = 'label_client_order_id',
-            i18n_domain = I18N_DOMAIN,
+            label = _('Client Order ID'),
+        ),
+    ),
+    ReferenceField('Attachment',
+        multiValued = 1,
+        allowed_types = ('Attachment',),
+        referenceClass = HoldingReference,
+        relationship = 'AnalysisRequestAttachment',
+    ),
+    ReferenceField('CCContact',
+        multiValued = 1,
+        vocabulary = 'getContactsDisplayList',
+        vocabulary_display_path_bound = sys.maxint,
+        allowed_types = ('Contact',),
+        referenceClass = HoldingReference,
+        relationship = 'AnalysisRequestCCContact',
+    ),
+    StringField('CCEmails',
+        widget = StringWidget(
+            label = _('CC Emails')
         ),
     ),
     ReferenceField('Invoice',
@@ -110,41 +102,36 @@ schema = BikaSchema.copy() + Schema((
     BooleanField('InvoiceExclude',
         default = False,
         widget = BooleanWidget(
-            label = "Invoice Exclude",
-            label_msgid = "label_invoice_exclude",
-            description = "Select if analyses to be excluded from invoice",
-            description_msgid = 'help_invoiceexclude',
+            label = _('Invoice Exclude'),
+            description = _('Invoice Exclude description',
+                            'Select if analyses to be excluded from invoice'),
         ),
     ),
     BooleanField('ReportDryMatter',
         default = False,
         widget = BooleanWidget(
-            label = "Report as dry matter",
-            label_msgid = "label_report_dry_matter",
-            description = "Select if result is to be reported as dry matter",
-            description_msgid = 'help_report_dry_matter',
+            label = _('Report as Dry Matter'),
+            description = _('Report as Dry Matter description',
+                            'This result can be reported as dry matter'),
         ),
     ),
     DateTimeField('DateRequested',
         required = 1,
         default_method = 'current_date',
         widget = DateTimeWidget(
-            label = 'Date requested',
-            label_msgid = 'label_daterequested',
+            label = _('Date Requested'),
             visible = {'edit':'hidden'},
         ),
     ),
     DateTimeField('DateReceived',
         widget = DateTimeWidget(
-            label = 'Date received',
-            label_msgid = 'label_datereceived',
+            label = _('Date Received'),
             visible = {'edit':'hidden'},
         ),
     ),
     DateTimeField('DatePublished',
         widget = DateTimeWidget(
-            label = 'Date published',
-            label_msgid = 'label_datepublished',
+            label = _('Date Published'),
             visible = {'edit':'hidden'},
         ),
     ),
@@ -153,17 +140,15 @@ schema = BikaSchema.copy() + Schema((
         default_content_type = 'text/plain',
         allowable_content_types = ('text/plain',),
         widget = TextAreaWidget(
-            label = 'Notes'
+            label = _('Notes'),
         ),
     ),
     FixedPointField('MemberDiscount',
         default_method = 'getDefaultMemberDiscount',
         widget = DecimalWidget(
-            label = 'Member discount %',
-            label_msgid = 'label_memberdiscount_percentage',
-            description = 'Enter percentage value eg. 33.0',
-            description_msgid = 'help_memberdiscount_percentage',
-            i18n_domain = I18N_DOMAIN,
+            label = _('Member discount %'),
+            description = _('Member discount % description',
+                            'Enter percentage value eg. 33.0'),
         ),
     ),
     ComputedField('ClientUID',
@@ -225,7 +210,7 @@ schema = BikaSchema.copy() + Schema((
             visible = False,
         ),
     ),
-),
+)
 )
 
 schema['title'].required = False
@@ -347,7 +332,6 @@ class AnalysisRequest(BaseFolder):
     security.declareProtected(View, 'getSubtotal')
     def getSubtotal(self):
         """ Compute Subtotal
-            XXX invoked MANY times during a single AR's creation
         """
         return sum(
             [Decimal(obj.getService() and obj.getService().getPrice() or 0) \
@@ -366,7 +350,6 @@ class AnalysisRequest(BaseFolder):
         for item in billable:
             service = item.getService()
             if not service:
-                # XXX invokeFactory can cause us to be catalogued before we're ready.
                 return Decimal(0, 2)
             itemPrice = Decimal(service.getPrice() or 0)
             VAT = Decimal(service.getVAT() or 0)
@@ -539,12 +522,6 @@ class AnalysisRequest(BaseFolder):
                 cc_uids = cc.UID()
                 cc_titles = cc.Title()
         return [cc_uids, cc_titles]
-
-    security.declareProtected(delete_objects, 'manage_delObjects')
-    def manage_delObjects(self, ids = [], REQUEST = None):
-        """ recalculate state from remaining analyses """
-        BaseFolder.manage_delObjects(self, ids, REQUEST)
-        #self._escalateWorkflowAction()
 
     security.declarePublic('current_date')
     def current_date(self):

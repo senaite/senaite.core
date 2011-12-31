@@ -48,7 +48,7 @@
 							method="post">
 						<img title="range"
 							tal:attributes="src string:++resource++bika.lims.images/analysisspec.png">
-						<span i18n:translate="label_range_specification">Range Specification</span>
+						<span i18n:translate="">Range Specification</span>
 						<a class="specification" id="lab" value="lab"
 							href=""
 							tal:attributes="
@@ -74,7 +74,7 @@
 			</tr>
 		</table>
 
-		<p tal:condition="not: batch" i18n:translate="analysisrequest_no_analyses_not_requested">
+		<p tal:condition="not: batch" i18n:translate="">
 			There are no results.
 		</p>
 
@@ -94,10 +94,10 @@
 						onClick="toggleSelect(this);"
 						i18n:attributes="title"/>
 				</th>
-				<th i18n:translate="label_analysis">Analysis</th>
-				<th i18n:translate="label_unit">Unit</th>
-				<th i18n:translate="label_result">Result</th>
-				<th i18n:translate="label_status">Status</th>
+				<th i18n:translate="">Analysis</th>
+				<th i18n:translate="">Unit</th>
+				<th i18n:translate="">Result</th>
+				<th i18n:translate="">Status</th>
 			</tr>
 
 		</thead>

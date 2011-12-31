@@ -374,7 +374,7 @@ jQuery( function($) {
 					$("#ar_"+col+"_ARProfile").change();
 				}
 			}
-			else if ($(this).parent().attr('class') == 'service'){ // Analysis service checkbox
+			else if ($(this).parent().attr('class') == 'service'){ // Analysis Service checkbox
 				first_val = $('input[column="0"]').filter('#'+this.id).attr("checked");
 				affected_elements = [];
 				// 0 is the first column; we only want to change cols 1 onward.
@@ -542,7 +542,7 @@ jQuery( function($) {
 
 		function portalMessage(message){
 			str = "<dl class='portalMessage error'>"+
-				"<dt i18n:translate='error'>Error</dt>"+
+				"<dt>Error</dt>"+
 				"<dd><ul>" + message +
 				"</ul></dd></dl>";
 			$('.portalMessage').remove();

@@ -23,7 +23,7 @@
 			style="white-space:nowrap;"
 		    tal:define="analysis python: hasattr(here, service.id) and here[service.id] or None;
                 vat python:service_obj.getVAT()">
-			<span i18n:translate="label_currency_abbreviation">R</span>
+			<span i18n:translate="">R</span>
 			<input
 				class="price numeric noborder"
 				type="text"

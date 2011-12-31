@@ -29,7 +29,7 @@
 		The value is inserted into form values by worksheet.js
 		</tal:comment>
 		<div style="margin-bottom:1em">
-			<span tal:content="string:Insert into worksheet at position: " i18n:translate="" style="line-height:20px;"/>
+			<span tal:content="string:Insert into worksheet at position: " i18n:translate=""/>
 			<select id="position">
 				<tal:options repeat="position view/getAvailablePositions">
 					<option tal:attributes="value position" tal:content="position"/>

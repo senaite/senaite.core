@@ -40,17 +40,17 @@
     <thead>
 
         <tr>
-            <th i18n:translate="label_clientreference">Client Reference</th>
+            <th i18n:translate="">Client Reference</th>
             <td class="left" tal:content="here/getClientReference">R001</td>
         </tr>
 
         <tr>
-            <th i18n:translate="label_clientsampleid">Client SID</th>
+            <th i18n:translate="">Client SID</th>
             <td class="left" tal:content="here/getClientSampleID">S001</td>
         </tr>
 
         <tr>
-            <th i18n:translate="label_requests">Requests</th>
+            <th i18n:translate="">Requests</th>
             <td class="left">
                 <tal:requests
                     tal:define="ars python:here.getAnalysisRequests()"
@@ -61,31 +61,31 @@
         </tr>
 
         <tr>
-            <th i18n:translate="label_sampletype">Sample type</th>
+            <th i18n:translate="">Sample Type</th>
             <td class="left" tal:content="sampletype/Title|nothing">sample type</td>
         </tr>
 
         <tr>
-            <th i18n:translate="label_samplepoint">Sample point</th>
+            <th i18n:translate="">Sample Point</th>
             <td class="left"
                 tal:define="samplepoint here/getSamplePoint"
                 tal:content="samplepoint/Title|nothing">sample point</td>
         </tr>
 
         <tr>
-            <th i18n:translate="Composite">Composite</th>
+            <th i18n:translate="">Composite</th>
             <td class="left"
                 tal:content="here/getComposite">False</td>
         </tr>
 
         <tr>
-            <th i18n:translate="label_hazardous">Hazardous</th>
+            <th i18n:translate="">Hazardous</th>
             <td class="left"
                 tal:content="sampletype/getHazardous">False</td>
         </tr>
 
         <tr>
-            <th i18n:translate="label_datesampled">Date sampled</th>
+            <th i18n:translate="">Date Sampled</th>
             <td class="left">
                 <span
                     tal:define="date_sampled here/getDateSampled"
@@ -95,7 +95,7 @@
         </tr>
 
         <tr>
-            <th i18n:translate="label_datesubmitted">Date submitted</th>
+            <th i18n:translate="">Date Submitted</th>
             <td class="left">
                 <span
                     tal:define="date_submitted here/getDateSubmitted"
@@ -105,7 +105,7 @@
         </tr>
 
         <tr tal:condition="python:review_state != 'due'">
-            <th i18n:translate="label_datereceived">Date received</th>
+            <th i18n:translate="">Date Received</th>
             <td class="left">
                 <span
                     tal:define="date_received here/getDateReceived"
@@ -115,7 +115,7 @@
         </tr>
 
         <tr>
-            <th i18n:translate="label_disposal_date">Disposal date</th>
+            <th i18n:translate="">Disposal date</th>
             <td class="left">
                 <span
                     tal:define="disposal_date here/getDisposalDate"
@@ -125,7 +125,7 @@
         </tr>
 
         <tr tal:condition="python:review_state in ['expired', 'disposed']">
-            <th i18n:translate="label_dateexpired">Date expired</th>
+            <th i18n:translate="">Date Expired</th>
             <td class="left">
                 <span
                     tal:define="date_expired here/getDateExpired"

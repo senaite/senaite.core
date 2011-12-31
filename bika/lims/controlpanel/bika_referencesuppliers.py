@@ -27,9 +27,10 @@ class ReferenceSuppliersView(BikaListingView):
         super(ReferenceSuppliersView, self).__init__(context, request)
         bsc = getToolByName(context, 'bika_setup_catalog')
         self.contentsMethod = bsc
-        self.title = _("Reference Suppliers")
         self.icon = "++resource++bika.lims.images/referencesupplier_big.png"
-        self.description = _(" ")
+        self.title = _("Reference Suppliers")
+        self.description = _("Reference Suppliers description"
+                             "")
         self.contentFilter = {'portal_type': 'ReferenceSupplier',
                               'sort_on': 'sortable_title'}
         self.context_actions = {_('Add'):

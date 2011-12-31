@@ -132,9 +132,9 @@ class ajaxSampleSubmit():
             ars = sample.getAnalysisRequests()
             for ar in ars:
                 ar.reindexObject()
-            message = _("Changes Saved.")
+            message = _("Changes saved")
         else:
-            message = _("Changes not allowed.")
+            message = _("Changes not allowed")
 
         self.context.plone_utils.addPortalMessage(message, 'info')
         return json.dumps({'success':message})
@@ -146,7 +146,7 @@ class SamplesView(ClientSamplesView):
     def __init__(self, context, request):
         super(SamplesView, self).__init__(context, request)
         self.title = _("Samples")
-        self.description = ""
+        self.description = _("Samples description", "")
         self.contentFilter = {'portal_type':'Sample',
                               'sort_on':'id',
                               'sort_order': 'reverse',

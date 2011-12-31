@@ -36,10 +36,10 @@
 
 	<table class="manage_results_header" cellpadding="0" cellspacing="0" >
 		<tr>
-			<th i18n:translate="Analyst: ">Analyst: </th>
+			<th i18n:translate="">Analyst</th>
 			<td tal:content="view/analystname"/>
 
-			<th i18n:translate="Instrument: ">Instrument: </th>
+			<th i18n:translate="">Instrument</th>
 			<td tal:content="view/instrumenttitle"/>
 		</tr>
 	</table>

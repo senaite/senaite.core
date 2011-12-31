@@ -1,14 +1,14 @@
 """InvoiceBatch is a container for Invoice instances.
-
-$Id: InvoiceBatch.py 226 2006-09-15 11:53:33Z anneline $
 """
 from DateTime import DateTime
 from AccessControl import ClassSecurityInfo
-from Products.CMFCore  import permissions
 from Products.Archetypes.public import *
+from Products.CMFCore  import permissions
+from bika.lims import bikaMessageFactory as _
 from bika.lims.config import PostInvoiceBatch, ManageInvoices, PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
-from bika.lims import bikaMessageFactory as _
+from bika.lims.interfaces import IInvoiceBatch
+from zope.interface import implements
 
 schema = BikaSchema.copy() + Schema((
     DateTimeField('BatchStartDate',
@@ -30,48 +30,12 @@ schema = BikaSchema.copy() + Schema((
 
 schema['title'].default = DateTime().strftime('%b %Y')
 
-class InvoiceBatch( BaseFolder):
+class InvoiceBatch(BaseFolder):
     """ Container for Invoice instances """
+    implements(IInvoiceBatch)
     security = ClassSecurityInfo()
+    displayContentsTab = False
     schema = schema
-    content_icon = 'invoice.png'
-    archetype_name = 'InvoiceBatch'
-    allowed_content_types = ('Invoice',)
-    default_view = 'invoicebatch_invoices'
-    global_allow = 0
-    filter_content_types = 1
-    use_folder_tabs = 0
-    factory_type_information = {
-        'title': 'Invoice batch',
-    }
-
-
-    actions = (
-        {'id': 'view',
-         'name': 'View',
-         'action': 'string:${object_url}/invoicebatch_invoices',
-         'permissions': (permissions.ListFolderContents,),
-        },
-        {'id': 'invoices',
-         'name': 'Invoices',
-         'action': 'string:${object_url}/invoicebatch_invoices',
-         'permissions': (permissions.ListFolderContents,),
-        },
-
-        {'id': 'printbatch',
-         'name': 'Print batch',
-         'action': 'string:${object_url}/invoicebatch_print',
-         'permissions': (ManageInvoices,),
-        },
-        {'id': 'exportbatch',
-         'name': 'Export to pastel',
-         'action': 'string:invoicebatch_export:method',
-         'permissions': (ManageInvoices,),
-         'category': 'folder_buttons',
-        },
-
-    )
-
 
     security.declareProtected(ManageInvoices, 'invoicebatch_export')
     def invoicebatch_export(self, REQUEST, RESPONSE):
@@ -211,7 +175,6 @@ class InvoiceBatch( BaseFolder):
         orders = self.portal_catalog(query)
         #orders = ()
 
-
         # make list of clients from found ARs and Orders
         clients = {}
         for rs in (ars, orders):
@@ -234,8 +197,6 @@ class InvoiceBatch( BaseFolder):
     security.declareProtected(ManageInvoices, 'createInvoice')
     def createInvoice(self, client_uid, items):
         """ Create an item in an invoice batch
-            separated into function for creation of ad hoc invoices
-            separated into function for creation of ad hoc invoices
         """
         # create an invoice for each client
         invoice_id = self.generateUniqueId('Invoice')
@@ -287,15 +248,4 @@ class InvoiceBatch( BaseFolder):
         """ return current date """
         return DateTime()
 
-
 registerType(InvoiceBatch, PROJECTNAME)
-
-def modify_fti(fti):
-    actions = list(fti['actions'])
-    actions.insert(0, InvoiceBatch.actions[0])
-    fti['actions'] = tuple(actions)
-    for a in fti['actions']:
-        if a['id'] in ('edit', 'view', 'syndication', 'references',
-                       'metadata', 'localroles'):
-            a['visible'] = 0
-    return fti

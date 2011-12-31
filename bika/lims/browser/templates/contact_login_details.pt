@@ -9,21 +9,21 @@
 <body>
 
 <metal:title fill-slot="content-title">
-	<h1 i18n:translate="heading_lims_access">Login details</h1>
+	<h1 i18n:translate="">Login details</h1>
 </metal:title>
 
 <metal:description fill-slot="content-description">
-	<p i18n:translate="help_contact_has_user" tal:condition="here/hasUser">
-		<span tal:content="here/getFullname" i18n:name="label_help_contact_fullname">Pete Smith</span>
+	<p i18n:translate="contact_login_help">
+		<span tal:content="here/getFullname" i18n:name="contact_fullname">Pete Smith</span>
 		can log into the LIMS by using
-		<strong tal:content="here/getUsername" i18n:name="label_help_contact_username">username</strong>
+		<strong tal:content="here/getUsername" i18n:name="contact_username">username</strong>
 		as username. Contacts must change their own
 		passwords. If a password is forgotten a contact
 		can request a new password from the login form.
 	</p>
-	<div class="portalMessage" i18n:translate="help_contact_needs_user" tal:condition="not:here/hasUser">
+	<div class="portalMessage" i18n:translate="">
 		No user exists for
-		<span tal:content="here/getFullname" i18n:name="label_help_contact_fullname">Pete Smith</span>
+		<span tal:content="here/getFullname" i18n:name="contact_fullname">Pete Smith</span>
 		and he/she will not be able to log in.
 		Fill in the form below to create one for him/her.
 	</div>
@@ -47,11 +47,11 @@
 		<fieldset>
 
 			<div class="field">
-				<label i18n:translate="label_user_name">User Name</label>
+				<label i18n:translate="">User Name</label>
 				<span class="fieldRequired" title="Required"
 					i18n:attributes="title"
-					i18n:translate="label_required">(Required)</span>
-				<div i18n:translate="help_user_name_creation_casesensitive" class="formHelp">
+					i18n:translate="">(Required)</span>
+				<div i18n:translate="contact_login_username">
 					Enter a user name, usually something like
 					'jsmith'. No spaces or special characters.
 					Usernames and passwords are case sensitive,
@@ -64,11 +64,11 @@
 
 		<div class="field"
 			tal:condition="python:context.portal_membership.checkPermission('Add portal member', context)">
-				<label i18n:translate="label_password">Password</label>
+				<label i18n:translate="">Password</label>
 				<span class="fieldRequired" title="Required"
 					i18n:attributes="title"
-					i18n:translate="label_required">(Required)</span>
-				<div class="formHelp" i18n:translate="help_password_creation">
+					i18n:translate="">(Required)</span>
+				<div class="formHelp" i18n:translate="">
 					Minimum 5 characters.
 				</div>
 				<input type="password" name="password" size="10"/>
@@ -76,11 +76,11 @@
 
 		<div class="field"
 			tal:condition="python:context.portal_membership.checkPermission('Add portal member', context)">
-				<label i18n:translate="label_confirm_password">Confirm password</label>
+				<label i18n:translate="">Confirm password</label>
 				<span class="fieldRequired" title="Required"
 					i18n:attributes="title"
-					i18n:translate="label_required">(Required)</span>
-				<div class="formHelp" i18n:translate="help_confirm_password">
+					i18n:translate="">(Required)</span>
+				<div class="formHelp" i18n:translate="contact_login_password">
 					Re-enter the password.
 					Make sure the passwords are identical.
 				</div>
@@ -88,11 +88,11 @@
 			</div>
 
 			<div class="field">
-				<label i18n:translate="label_email">E-mail</label>
+				<label i18n:translate="">Email</label>
 				<span class="fieldRequired" title="Required"
 					i18n:attributes="title"
-					i18n:translate="label_required">(Required)</span>
-				<div class="formHelp" i18n:translate="help_email_creation">
+					i18n:translate="">(Required)</span>
+				<div class="formHelp" i18n:translate="contact_login_email">
 					Enter an email address. This is necessary in case the password
 					is lost. We respect your privacy, and will not give the address
 					away to any third parties or expose it anywhere.

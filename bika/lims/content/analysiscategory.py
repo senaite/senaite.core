@@ -1,6 +1,4 @@
 """Analysis Category - the category of the analysis service
-
-$Id: AnalysisCategory.py $
 """
 import sys
 from AccessControl import ClassSecurityInfo
@@ -12,7 +10,7 @@ from Products.Archetypes.references import HoldingReference
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IAnalysisCategory
 from bika.lims.interfaces import IGenerateUniqueId
-from bika.lims.config import I18N_DOMAIN, PROJECTNAME
+from bika.lims.config import PROJECTNAME
 from bika.lims import bikaMessageFactory as _
 from zope.interface import implements
 
@@ -27,6 +25,8 @@ schema = BikaSchema.copy() + Schema((
         widget = ReferenceWidget(
             checkbox_bound = 1,
             label = _('Department'),
+            description = _("Department description",
+                            "The laboratory department"),
         ),
     ),
     ComputedField('DepartmentTitle',

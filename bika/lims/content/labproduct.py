@@ -1,7 +1,7 @@
 from AccessControl import ClassSecurityInfo
 from Products.Archetypes.public import *
 from Products.CMFCore.permissions import View, ModifyPortalContent
-from bika.lims.config import I18N_DOMAIN, PROJECTNAME
+from bika.lims.config import PROJECTNAME
 from bika.lims.interfaces import IGenerateUniqueId
 from bika.lims.content.bikaschema import BikaSchema
 from decimal import Decimal
@@ -23,7 +23,8 @@ schema = BikaSchema.copy() + Schema((
         default_method = 'getDefaultVAT',
         widget = DecimalWidget(
             label = _("VAT %"),
-            description = _("Enter percentage value eg. 14"),
+            description = _("VAT % description",
+                            "Enter percentage value eg. 14.0"),
         ),
     ),
     FixedPointField('Price',

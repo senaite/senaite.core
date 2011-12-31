@@ -29,7 +29,7 @@
 				<span class="fieldRequired" style="margin-left: 3em"></span>
 				<select class='wsanalyst' style="font-size: 100%"
 					tal:define="alist view/getAnalysts">
-					<option value='' i18n:translate="select_analyst">Select analyst</option>
+					<option value='' i18n:translate="">Select analyst</option>
 					<tal:options repeat="option alist">
 						<option
 							tal:attributes="value python:option"
@@ -42,7 +42,7 @@
 			tal:condition="python:context.portal_type == 'WorksheetFolder'">
 				<select class='wstemplate' style="font-size: 100%"
 					tal:define="wstlist view/getWorksheetTemplates">
-					<option value='' i18n:translate="select_template">Select template</option>
+					<option value='' i18n:translate="">Select template</option>
 					<tal:options repeat="option wstlist">
 						<option
 							tal:attributes="value python:option"
@@ -55,7 +55,7 @@
 			tal:condition="python:context.portal_type == 'WorksheetFolder'">
 				<select class='wsinstrument' style="font-size: 100%"
 					tal:define="instrlist view/getInstruments">
-					<option value='' i18n:translate="select_instrument">Select instrument</option>
+					<option value='' i18n:translate="">Select instrument</option>
 					<tal:options repeat="option instrlist">
 						<option
 							tal:attributes="value python:option"

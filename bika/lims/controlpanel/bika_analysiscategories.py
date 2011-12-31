@@ -36,7 +36,7 @@ class AnalysisCategoriesView(BikaListingView):
             'Title': {'title': _('Category'),
                       'index': 'sortable_title'},
             'Description': {'title': _('Description'),
-                            'index': 'Description'},
+                            'index': 'description'},
             'Department': {'title': _('Department'),
                            'index': 'getDepartmentTitle'},
         }

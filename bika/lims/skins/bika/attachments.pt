@@ -10,7 +10,7 @@
   <dl class="collapsible collapsedOnLoad">
     <dt class="attachments collapsibleHeader">
         <img src='++resource++bika.lims.images/attachment.png' title='Attachment'>
-        <span i18n:translate="legend_attachments">Attachments</span>
+        <span i18n:translate="">Attachments</span>
     </dt>
     <dd class="collapsibleContent" style="margin-bottom:0;">
       <table class="attachments" style="margin-bottom:0;">
@@ -34,7 +34,7 @@
   <dl class="collapsible collapsedOnLoad">
     <dt class="attachments collapsibleHeader">
         <img src='++resource++bika.lims.images/attachment.png' title='Attachment'>
-        <span i18n:translate="legend_attachments">Attachments</span>
+        <span i18n:translate="">Attachments</span>
     </dt>
     <dd class="collapsibleContent" style="margin-bottom:0;">
       <table class="attachments" style="margin-bottom:0;">
@@ -163,11 +163,11 @@
         c python:[a for a in bc if not a.aq_parent.getBlank()];
         d python:[a for a in analyses if a.portal_type == 'DuplicateAnalysis'];">
 <tr><td>
-<span i18n:translate="label_attachment_type">Attachment Type</span>
+<span i18n:translate="">Attachment Type</span>
 &nbsp&nbsp&nbsp&nbsp
 </td><td>
 <span tal:condition="analyses"
-    i18n:translate="label_analysis">Analysis</span>
+    i18n:translate="">Analysis</span>
 </td></tr>
 <tr><td>
     <select name="AttachmentType">
@@ -199,21 +199,21 @@
             <option tal:attributes="value item/UID;">
                 <span tal:content="item/Title"/>
                 &nbsp;
-                <span i18n:translate="(Blank)">(Blank)</span>
+                <span i18n:translate="">(Blank)</span>
             </option>
         </tal:b>
         <tal:c tal:repeat="item c">
             <option tal:attributes="value item/UID;">
                 <span tal:content="item/Title"/>
                 &nbsp;
-                <span i18n:translate="(Control)">(Control)</span>
+                <span i18n:translate="">(Control)</span>
             </option>
         </tal:c>
         <tal:d tal:repeat="item d">
             <option tal:attributes="value item/UID;">
                 <span tal:content="item/Title"/>
                 &nbsp;
-                <span i18n:translate="(Duplicate)">(Duplicate)</span>
+                <span i18n:translate="">(Duplicate)</span>
             </option>
         </tal:d>
 
@@ -223,7 +223,7 @@
 </td></tr></table>
 </div>
 <div>
-<span i18n:translate="label_attachment_keys">Keywords</span>
+<span i18n:translate="">Keywords</span>
 </div>
 <div>
 <input size="40" name="AttachmentKeys"/>
@@ -253,10 +253,10 @@
     </tr>
     <tr>
         <td>
-            <span i19n:translate="label_attach_to">Attach to: </span>
+            <span i18n:translate="">Attach to</span>
         </td>
         <td>
-            <span tal:condition="attach_analyses" i18n:translate="label_analysis">Analysis</span>
+            <span tal:condition="attach_analyses" i18n:translate="">Analysis</span>
         </td>
         <td>
             <input id="Analysis" size="30" autocomplete="off"/>
@@ -267,7 +267,7 @@
         <td>&nbsp;</td>
         <td>
             <span tal:condition="attach_services"
-                  i18n:translate="label_all_analyses">All analyses of type</span>
+                  i18n:translate="">All analyses of type</span>
         </td>
         <td>
             <tal:services
@@ -290,7 +290,7 @@
     </tr>
     <tr>
         <td>
-            <span i18n:translate="label_attachment_type">Attachment Type: </span>
+            <span i18n:translate="">Attachment Type</span>
         </td>
         <td colspan="2">
             <select name="AttachmentType">
@@ -309,7 +309,7 @@
     </tr>
     <tr>
         <td>
-            <span i18n:translate="label_attachment_keys">Keywords</span>
+            <span i18n:translate="">Keywords</span>
         </td>
         <td colspan="2">
             <input size="40" name="AttachmentKeys"/>

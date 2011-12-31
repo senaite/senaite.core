@@ -1,11 +1,9 @@
 """Department - the department in the laboratory.
-
-$Id: Department.py 1000 2007-12-03 11:53:04Z anneline $
 """
 from Products.Archetypes.public import *
 from Products.Archetypes.references import HoldingReference
 from Products.CMFCore.utils import getToolByName
-from bika.lims.config import I18N_DOMAIN, PROJECTNAME
+from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IGenerateUniqueId
 from AccessControl import ClassSecurityInfo
@@ -23,7 +21,8 @@ schema = BikaSchema.copy() + Schema((
         widget = ReferenceWidget(
             checkbox_bound = 1,
             label = _("Manager"),
-            description = _("Select a manager from the available personnel configured under the "
+            description = _("Manager description",
+                            "Select a manager from the available personnel configured under the "
                             "'lab contacts' setup item. Departmental managers are referenced on "
                             "analysis results reports containing analyses by their department."),
         ),

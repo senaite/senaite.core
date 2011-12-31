@@ -49,7 +49,7 @@ XXX validation: if field ID is same as existing field ID, rest of field values m
 	</th>
 	</tal:block>
 	<th tal:condition="widget/allowDelete">
-            <span i18n:translate="delete_this_entry"
+            <span i18n:translate=""
                   id="delete_this_entry">
              delete</span>
 	</th>

@@ -13,7 +13,7 @@
 <h1>
 	<img tal:condition="view/icon | nothing"
 		src="" tal:attributes="src view/icon"/>
-	<tal:new i18n:translate="heading_request_new_analyses"
+	<tal:new i18n:translate=""
 		tal:condition="python:not edit">Request new analyses</tal:new>
 	<span class="documentFirstHeading"
 		tal:condition="edit"
@@ -84,7 +84,7 @@
     <tr tal:condition="can_edit_sample"
         tal:define="cc_contact python:hasattr(context, 'getCCContact') and context.getCCContact() or ''">
         <th colspan="2" class="rowheader">
-            <span i18n:translate="label_contact_person">Contact person</span>
+            <span i18n:translate="">Contact Person</span>
             &nbsp;<span class="fieldRequired"/>
         </th>
         <td class="contact"
@@ -107,7 +107,7 @@
             id="open_cc_browser"
 			class="button"
 			style="padding-top:0px;padding-bottom:0px;"
-            value="cc"
+            value="CC"
             i18n:attributes="value"
             i18n:domain="bika"
             tal:attributes="tabindex tabindex/next;"/>
@@ -120,7 +120,7 @@
     <tr tal:condition="not: can_edit_sample"
         tal:define="cc_contact python:hasattr(context, 'getCCContact') and context.getCCContact() or ''">
         <th colspan="2" class="rowheader">
-            <span i18n:translate="label_contact_person">Contact person</span>
+            <span i18n:translate="">Contact Person</span>
         </th>
         <td class="contact" tal:attributes="colspan python: view.col_count+2">
         <span tal:define="contact here/getContact"
@@ -131,7 +131,7 @@
     </tr>
     <!-- CC Emails -->
     <tr>
-        <th colspan="2" i18n:translate="label_cc_email">cc emails</th>
+        <th colspan="2" i18n:translate="">CC Emails</th>
         <td class="contact" tal:attributes="colspan python: view.col_count+2">
             <input style="width:98%" type="text" id="cc_emails" name="CCEmails"
                 tal:condition="can_edit_sample"
@@ -143,7 +143,7 @@
     </tr>
     <!-- AR Profile (only visible and useable for AR-Add-->
     <tr tal:define="field_name string:ARProfile" tal:condition="not: edit">
-        <th colspan="2" i18n:translate="label_arprofiles">Profile</th>
+        <th colspan="2" i18n:translate="">Profile</th>
         <td>
             <img class="copyButton ARProfileCopyButton"
                 tal:attributes="name field_name;src string:${portal/absolute_url}/++resource++bika.lims.images/copy.png"/>
@@ -215,7 +215,7 @@
     </tr>
     <!-- Client Order ID -->
     <tr tal:define="field_name string:ClientOrderNumber">
-        <th colspan="2" i18n:translate="label_client_order_id">Client Order ID</th>
+        <th colspan="2" i18n:translate="">Client Order ID</th>
         <td>
             <img class="copyButton" tal:condition="not: edit"
                 tal:attributes="name field_name;src string:${portal/absolute_url}/++resource++bika.lims.images/copy.png"/>
@@ -236,7 +236,7 @@
     </tr>
     <!-- Client Reference -->
     <tr tal:define="field_name string:ClientReference">
-        <th colspan="2" i18n:translate="label_clientreference">Client Reference</th>
+        <th colspan="2" i18n:translate="">Client Reference</th>
         <td>
             <img class="copyButton" tal:condition="not: edit"
                 tal:attributes="name field_name;src string:${portal/absolute_url}/++resource++bika.lims.images/copy.png"/>
@@ -257,7 +257,7 @@
     </tr>
     <!-- Client SID -->
     <tr tal:define="field_name string:ClientSampleID">
-        <th colspan="2" i18n:translate="label_clientsampleid">Client SID</th>
+        <th colspan="2" i18n:translate="">Client SID</th>
         <td>
             <img class="copyButton" tal:condition="not: edit"
                 tal:attributes="name field_name;src string:${portal/absolute_url}/++resource++bika.lims.images/copy.png"/>
@@ -279,7 +279,7 @@
     <!-- Date Sampled -->
     <tr tal:define="field_name string:DateSampled">
         <th colspan="2">
-            <span i18n:translate="label_datesampled">Date sampled</span>&nbsp;
+            <span i18n:translate="">Date Sampled</span>&nbsp;
             <span class="fieldRequired"
                 tal:condition="can_edit_sample"/>
         </th>
@@ -303,7 +303,7 @@
     </tr>
     <!-- Date Requested -->
     <tr tal:define="field_name string:DateRequested" tal:condition="python:edit">
-        <th colspan="2" i18n:translate="label_daterequested">Date requested</th>
+        <th colspan="2" i18n:translate="">Date Requested</th>
         <td>&nbsp;</td>
         <tal:block repeat="column python:range(view.col_count)">
             <td tal:define="input_name string:ar.${column}.${field_name}:ignore_empty:record;
@@ -317,7 +317,7 @@
     <tr tal:condition="python:edit"
         tal:define="field_name string:SampleID;
             sample here/getSample|nothing;">
-    <th colspan="2"><span id="" i18n:translate="label_sampleid">Sample ID</span></th>
+    <th colspan="2"><span id="" i18n:translate="">Sample ID</span></th>
     <td>&nbsp;</td>
     <tal:block repeat="column python:range(view.col_count)">
         <td tal:define="input_name string:ar.${column}.${field_name}:ignore_empty:record;
@@ -331,7 +331,7 @@
     <!-- Sample Type -->
     <tr tal:define="field_name string:SampleType">
         <th colspan="2">
-            <span id="" i18n:translate="label_sampletype">Sample type</span>
+            <span id="" i18n:translate="">Sample Type</span>
             &nbsp;<span class="fieldRequired" tal:condition="can_edit_sample"/>
         </th>
         <td>
@@ -353,7 +353,7 @@
     </tr>
     <!-- Sample Point -->
     <tr tal:define="field_name string:SamplePoint">
-        <th colspan="2"><span id="" i18n:translate="label_samplepoint">Sample Point</span></th>
+        <th colspan="2"><span id="" i18n:translate="">Sample Point</span></th>
         <td>
             <img class="copyButton" tal:condition="not: edit"
                 tal:attributes="name field_name;src string:${portal/absolute_url}/++resource++bika.lims.images/copy.png"/>
@@ -374,7 +374,7 @@
     </tr>
     <!-- Composite Sample -->
     <tr tal:define="field_name string:Composite">
-        <th colspan="2" i18n:translate="CompositeSample">Composite Sample</th>
+        <th colspan="2" i18n:translate="">Composite Sample</th>
         <td>
             <img class="copyButton" tal:condition="not: edit"
                 tal:attributes="name field_name;src string:${portal/absolute_url}/++resource++bika.lims.images/copy.png"/>
@@ -398,7 +398,7 @@
     <!-- Dry Matter -->
     <tr tal:define="field_name string:ReportDryMatter"
 		tal:condition="python:context.bika_setup.getDryMatterService()">
-        <th colspan="2" i18n:translate="label_report_dm">Report as Dry Matter</th>
+        <th colspan="2" i18n:translate="">Report as Dry Matter</th>
         <td>
             <img class="copyButton" tal:condition="not: edit"
                 tal:attributes="name field_name;src string:${portal/absolute_url}/++resource++bika.lims.images/copy.png"/>
@@ -421,7 +421,7 @@
     </tr>
     <!-- Exclude from Invoice -->
     <tr tal:define="field_name string:InvoiceExclude">
-        <th colspan="2" i18n:translate="label_invoice_exclude">Exclude from invoice</th>
+        <th colspan="2" i18n:translate="">Exclude from invoice</th>
         <td>
             <img class="copyButton" tal:condition="not: edit"
                 tal:attributes="name field_name;src string:${portal/absolute_url}/++resource++bika.lims.images/copy.png"/>
@@ -495,12 +495,12 @@
 
 <tr tal:condition="here/getMemberDiscountApplies">
     <th class="topborder" colspan="2">
-        <b i18n:translate="label_discount">Discount</b>
+        <b i18n:translate="">Discount</b>
         <span class="discreet">(<tal:i content="here/bika_setup/getMemberDiscount"/>%)</span>
     </th>
     <th class="topborder noleftborder"
         style="text-align:center"
-        i18n:translate="label_currency_abbreviation">R</th>
+        i18n:translate="">R</th>
     <tal:block repeat="column python:range(view.col_count)">
         <td class="topborder" tal:define="input_id string:ar_${column}_discount;">
             <input class="price noborder" size="10" disabled="disabled" value="0.00"
@@ -510,10 +510,10 @@
 </tr>
 
 <tr>
-    <th class="topborder" colspan="2"><b i18n:translate="label_subtotal">Subtotal</b></th>
+    <th class="topborder" colspan="2"><b i18n:translate="">Subtotal</b></th>
     <th class="topborder noleftborder"
         style="text-align:center"
-        i18n:translate="label_currency_abbreviation">R</th>
+        i18n:translate="">R</th>
     <tal:block repeat="column python:range(view.col_count)">
         <td class="topborder" tal:define="input_id string:ar_${column}_subtotal;
             input_name string:ar.${column}.subtotal">
@@ -528,10 +528,10 @@
 </tr>
 
 <tr>
-    <th colspan="2" class="topborder"><b i18n:translate="label_vat">VAT</b></th>
+    <th colspan="2" class="topborder"><b i18n:translate="">VAT</b></th>
     <th class="topborder noleftborder"
         style="text-align:center"
-        i18n:translate="label_currency_abbreviation">R</th>
+        i18n:translate="">R</th>
     <tal:block repeat="column python:range(view.col_count)">
         <td class="topborder" tal:define="input_id string:ar_${column}_vat;
             input_name string:ar.${column}.vat">
@@ -546,10 +546,10 @@
 </tr>
 
 <tr>
-    <th class="topborder" colspan="2"><b i18n:translate="label_total">Total</b></th>
+    <th class="topborder" colspan="2"><b i18n:translate="">Total</b></th>
     <th class="topborder noleftborder"
         style="text-align:center"
-        i18n:translate="label_currency_abbreviation">R</th>
+        i18n:translate="">R</th>
     <tal:block repeat="column python:range(view.col_count)">
         <td class="topborder" tal:define="
             input_id string:ar_${column}_total;
@@ -565,7 +565,7 @@
 </tr>
 
 <tr>
-    <th class="topborder" colspan="3" i18n:translate="label_saveprofile">Save profile</th>
+    <th class="topborder" colspan="3" i18n:translate="">Save</th>
     <tal:save repeat="column python:range(view.col_count)">
         <td class="topborder">
             <input type="text" size="10"
@@ -594,19 +594,20 @@
 
     <p>  <!-- AVS this should be conditional if any dryables present -->
         <img src="" tal:attributes="src string:${portal/absolute_url}/++resource++bika.lims.images/dry.png">
-        <span i18n:translate="disclaimer_can_be_dry">
+        <span i18n:translate="">
             Can be reported as dry matter</span>
     </p>
 
 	<!-- XXX this also -->
     <p tal:condition="python:context.bika_setup.laboratory.getLaboratoryAccredited()">
         <img tal:attributes="src string:${portal/absolute_url}/++resource++bika.lims.images/accredited.png">
-        <span i18n:translate="disclaimer_accred">
+        <span i18n:translate="">
             Methods included in the
                 <tal:block
                     replace="here/bika_setup/laboratory/AccreditationBody"
                     i18n:name="accreditation_body"/>
-            schedule of Accreditation for this Laboratory. Analysis remarks are not accredited
+            schedule of Accreditation for this Laboratory.
+			Analysis remarks are not accredited
         </span>
     </p>
     </div>

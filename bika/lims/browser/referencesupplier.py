@@ -3,9 +3,10 @@ from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import TimeOrDate
 
 class ReferenceSamplesView(BikaListingView):
-    title = _("Reference Samples")
     icon = "++resource++bika.lims.images/referencesample_big.png"
-    description = _(" ")
+    title = _("Reference Samples")
+    description = _("Supplier Reference Samples description",
+                    "")
     contentFilter = {'portal_type': 'ReferenceSample',
                      'sort_on': 'id',
                      'sort_order': 'reverse'}
@@ -130,8 +131,8 @@ class ContactsView(BikaListingView):
     def __init__(self, context, request):
         super(ContactsView, self).__init__(context, request)
         self.icon = "++resource++bika.lims.images/referencesupplier_contact_big.png"
-        self.title = "%s: %s" % (self.context.Title(), _("Contacts"))
-        self.description = ""
+        self.title = _("contacts_title", default="Contacts")
+        self.descriotion = _("contacts_descr", default="")
 
     def folderitems(self):
         items = BikaListingView.folderitems(self)

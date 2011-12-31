@@ -50,13 +50,13 @@
             <dt i18n:translate="">
                 Warning
             </dt>
-            <dd i18n:translate="text_no_mailhost_configured">
+            <dd i18n:translate="">
             You have not configured a mail host or a site 'From'
             address, various features including contact forms, email
             notification and password reset will not work. Go to the
             <tal:link i18n:name="label_mail_control_panel_link">
                 <a href=""
-                   i18n:translate="text_no_mailhost_configured_control_panel_link"
+                   i18n:translate=""
                    tal:attributes="href string:${context/portal_url}/@@mail-controlpanel"
                 >Mail control panel</a>
             </tal:link>
@@ -81,7 +81,7 @@
             <dt i18n:translate="">
                 Warning
             </dt>
-            <dd i18n:translate="text_no_pil_installed">
+            <dd i18n:translate="">
             Warning: PIL is not installed properly, image scaling will not work.
             </dd>
         </dl>
@@ -95,7 +95,7 @@
             <h1 class="documentFirstHeading"
                 i18n:translate="">Site Setup</h1>
 
-            <div class="documentDescription" i18n:translate="description_site_setup">
+            <div class="documentDescription" i18n:translate="">
               Configuration area for Plone and add-ons.
             </div>
 
@@ -139,7 +139,7 @@
 
                         <div class="discreet"
                              tal:condition="not:allconfiglets"
-                             i18n:translate="label_no_prefs_panels_available">
+                             i18n:translate="">
                             No preference panels available.
                         </div>
 
@@ -153,7 +153,7 @@
 
                 <tal:versions define="mt here/portal_migration;
                                       sys mt/coreVersions">
-                    <h2 i18n:translate="heading_version_overview">
+                    <h2 i18n:translate="">
                         Version Overview
                     </h2>
 
@@ -167,7 +167,7 @@
                 <tal:debugmode define="QI context/portal_quickinstaller">
                     <p tal:condition="not:QI/isDevelopmentMode"
                        class="discreet"
-                       i18n:translate="description_production_mode">
+                       i18n:translate="">
                       You are running in "production mode". This is the preferred mode of
                       operation for a live Plone site, but means that some
                       configuration changes will not take effect until your server is
@@ -179,7 +179,7 @@
 
                     <p tal:condition="QI/isDevelopmentMode"
                        class="discreet"
-                       i18n:translate="description_debug_mode">
+                       i18n:translate="">
                       You are running in "debug mode". This mode is intended for sites that
                       are under development. This allows many configuration changes to be
                       immediately visible, but will make your site run more slowly. To turn

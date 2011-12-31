@@ -50,7 +50,8 @@ class AnalysesView(BikaListingView):
         }
 
         self.review_states = [
-            {'title': _('All'), 'id':'all',
+            {'id':'all',
+             'title': _('All'),
              'columns':['Service',
                         'Result',
                         'Uncertainty',
@@ -223,7 +224,7 @@ class AnalysesView(BikaListingView):
                                     (portal.absolute_url())
                             else:
                                 # result being un-floatable, is an error.
-                                msg = _('invalid_result', 'Not a valid result')
+                                msg = _("Invalid result")
                                 msg = self.context.translate(msg)
                                 items[i]['after']['Result'] = \
                                     '<img width="16" height="16" title="%s"' % msg + \
@@ -273,10 +274,12 @@ class AnalysesView(BikaListingView):
                     DueDate = TimeOrDate(self.context, item['DueDate'], long_format = 0)
                     if self.context.portal_type == 'AnalysisRequest':
                         items[i]['replace']['DueDate'] = '%s <img width="16" height="16" src="%s/++resource++bika.lims.images/late.png" title="%s"/>' % \
-                            (DueDate, portal.absolute_url(), _("Due Date: ") + DueDate)
+                            (DueDate, portal.absolute_url(),
+                             self.context.translate(_("Due Date")) + ": " + DueDate)
                     else:
                         items[i]['replace']['DueDate'] = '%s <img width="16" height="16" src="%s/++resource++bika.lims.images/late.png" title="%s"/>' % \
-                            (DueDate, portal.absolute_url(), _("Late analysis"))
+                            (DueDate, portal.absolute_url(),
+                             self.context.translate(_("Late Analysis")))
                 else:
                     items[i]['replace']['DueDate'] = TimeOrDate(self.context, item['DueDate'])
 

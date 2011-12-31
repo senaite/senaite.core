@@ -26,9 +26,10 @@ class ReferenceDefinitionsView(BikaListingView):
         self.context_actions = {_('Add'):
                                 {'url': 'createObject?type_name=ReferenceDefinition',
                                  'icon': '++resource++bika.lims.images/add.png'}}
-        self.title = _("Reference Definitions")
         self.icon = "++resource++bika.lims.images/referencedefinition_big.png"
-        self.description = _("ReferenceDefinition represents a Reference Definition "
+        self.title = _("Reference Definitions")
+        self.description = _("Reference Definitions description",
+                             "ReferenceDefinition represents a Reference Definition "
                              "or sample type used for quality control testing")
         self.show_sort_column = False
         self.show_select_row = False
@@ -39,7 +40,7 @@ class ReferenceDefinitionsView(BikaListingView):
             'Title': {'title': _('Title'),
                       'index': 'sortable_title'},
             'Description': {'title': _('Description'),
-                            'index': 'Description'},
+                            'index': 'description'},
         }
 
         self.review_states = [

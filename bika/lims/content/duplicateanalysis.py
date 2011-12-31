@@ -4,7 +4,7 @@ from AccessControl import ClassSecurityInfo
 from Products.Archetypes.public import *
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.fields import InterimFieldsField
-from bika.lims.config import I18N_DOMAIN, PROJECTNAME
+from bika.lims.config import PROJECTNAME
 from bika.lims.content.analysis import schema, Analysis
 from bika.lims.interfaces import IDuplicateAnalysis, IGenerateUniqueId
 from zope.interface import implements

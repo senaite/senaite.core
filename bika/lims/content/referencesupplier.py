@@ -1,6 +1,4 @@
 """ReferenceSupplier.
-
-$Id: ReferenceSupplier.py 639 2007-03-20 09:35:32Z anneline $
 """
 
 from AccessControl import ClassSecurityInfo
@@ -10,7 +8,7 @@ from Products.Archetypes.utils import DisplayList
 from Products.CMFCore import permissions
 from Products.CMFCore.permissions import ListFolderContents, ModifyPortalContent
 from Products.CMFCore.utils import getToolByName
-from bika.lims.config import I18N_DOMAIN, PROJECTNAME, ManageReferenceSuppliers
+from bika.lims.config import PROJECTNAME, ManageReferenceSuppliers
 from bika.lims.content.organisation import Organisation
 from bika.lims.interfaces import IGenerateUniqueId
 from bika.lims.interfaces import IReferenceSupplier

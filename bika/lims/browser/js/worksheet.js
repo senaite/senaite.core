@@ -3,7 +3,7 @@ $(document).ready(function(){
 
 	function portalMessage(message){
 		str = "<dl class='portalMessage error'>"+
-			"<dt i18n:translate='error'>Error</dt>"+
+			"<dt>Error</dt>"+
 			"<dd><ul>" + message +
 			"</ul></dd></dl>";
 		$('.portalMessage').remove();

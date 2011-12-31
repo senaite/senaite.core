@@ -8,7 +8,7 @@ from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.Archetypes.Registry import registerField
 from bika.lims.browser.fields import HistoryAwareReferenceField
 from bika.lims.content.bikaschema import BikaSchema
-from bika.lims.config import I18N_DOMAIN, INSTRUMENT_EXPORTS, PROJECTNAME
+from bika.lims.config import PROJECTNAME
 from bika.lims.config import EditWorksheet, ManageResults
 from Products.ATExtensions.ateapi import RecordsField
 from zope.interface import implements
@@ -358,14 +358,6 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             if src_pos in [int(slot['position']) for slot in layout]:
                 self.addDuplicateAnalyses(src_pos, dest_pos)
 
-
-    def getInstrumentExports(self):
-        """ return the possible instrument export formats """
-        return INSTRUMENT_EXPORTS
-
-    def instrument_export_form(self, REQUEST, RESPONSE):
-        """ Redirect to the instrument export form template """
-        RESPONSE.redirect('%s/instrument_export' % self.absolute_url())
 
     def exportAnalyses(self, REQUEST = None, RESPONSE = None):
         """ Export analyses from this worksheet """

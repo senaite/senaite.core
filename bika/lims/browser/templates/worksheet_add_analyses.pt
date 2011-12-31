@@ -43,7 +43,7 @@
 		<input tal:replace="structure context/@@authenticator/authenticator"/>
 
 		<table style="margin-bottom:0;"><tr><td>
-			<label for="getWorksheetTemplate" i18n:translate="Select a template">Select a template</label>
+			<label for="getWorksheetTemplate" i18n:translate="">Select template</label>
 			<select id="ProfileSelector" name="getWorksheetTemplate">
 				<option value=""></option>
 				<tal:profile repeat="profile view/getWorksheetTemplates">
@@ -60,11 +60,11 @@
 
 		<fieldset class="criteria" name="criteria">
 			<label tal:attributes="for string:${form_id}_getCategoryTitle"
-				i18n:translate="Category">Category</label>
+				i18n:translate="">Category</label>
 			<select id="CategorySelector"
 					tal:attributes="name string:${form_id}_getCategoryTitle"
 					class="listing-filter">
-				<option value="any" i18n:translate="Any">Any</option>
+				<option value="any" i18n:translate="">Any</option>
 				<tal:options repeat="category view/getCategories">
 					<option
 						tal:attributes="
@@ -75,11 +75,11 @@
 			</select>
 
 			<label tal:attributes="for string:${form_id}_Title"
-				i18n:translate="Service">Service</label>
+				i18n:translate="">Service</label>
 			<select id="ServiceSelector"
 					tal:attributes="name string:${form_id}_Title"
 					class="listing-filter">
-				<option value="any" i18n:translate="Any">Any</option>
+				<option value="any" i18n:translate="">Any</option>
 				<tal:options repeat="service view/getServices">
 					<option
 						tal:attributes="
@@ -90,11 +90,11 @@
 			</select>
 
 			<label tal:attributes="for string:${form_id}_getClientTitle"
-				i18n:translate="Client">Client</label>
+				i18n:translate="">Client</label>
 			<select id="ClientSelector"
 					tal:attributes="name string:${form_id}_getClientTitle"
 					class="listing-filter">
-				<option value="any" i18n:translate="Any">Any</option>
+				<option value="any" i18n:translate="">Any</option>
 				<tal:options repeat="client view/getClients">
 					<option
 						tal:attributes="
@@ -103,7 +103,7 @@
 						tal:content="python:client"/>
 				</tal:options>
 			</select>&nbsp;
-			<a href="view/view_url" i18n:translate="Search"
+			<a href="view/view_url" i18n:translate=""
 				class="filter-search-button">Search</a>
 		</fieldset>
 

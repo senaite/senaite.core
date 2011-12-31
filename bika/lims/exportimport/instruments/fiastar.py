@@ -69,8 +69,7 @@ class Export(BrowserView):
             batches[param].append(analysis)
 
         if not batches:
-            message = _("fiastar_no_analyses_found",
-                        default="No analyses were found for FIAStar export.")
+            message = _("No analyses were found.")
             message = self.context.translate(message)
             self.context.plone_utils.addPortalMessage(message, 'info')
             self.request.RESPONSE.redirect(self.context.absolute_url())

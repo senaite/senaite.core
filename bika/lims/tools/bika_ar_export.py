@@ -109,7 +109,7 @@ class bika_ar_export(UniqueObject, SimpleItem):
         rows = []
 
         # header labels
-        header = ['Header', 'Import/Export', 'File name', 'Client', \
+        header = ['Header', 'Import/Export', 'Filename', 'Client', \
                   'Client ID', 'Contact', 'Contact ID', 'CC Recipients', 'CCEmails']
         rows.append(header)
 

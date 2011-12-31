@@ -6,7 +6,7 @@ from Products.CMFCore.permissions import ListFolderContents, \
 from plone.app import folder
 from Products.Archetypes.public import *
 from bika.lims.content.organisation import Organisation
-from bika.lims.config import ManageBika, I18N_DOMAIN, PROJECTNAME
+from bika.lims.config import ManageBika, PROJECTNAME
 from bika.lims import bikaMessageFactory as _
 
 schema = Organisation.schema.copy() + Schema((
@@ -14,7 +14,8 @@ schema = Organisation.schema.copy() + Schema((
         schemata = 'Accreditation',
         widget = IntegerWidget(
             label = _("Confidence Level %"),
-            description = _("This value is reported at the bottom of all published results"),
+            description = _("Confidence Level % description",
+                            "This value is reported at the bottom of all published results"),
         ),
     ),
     StringField('LabURL',
@@ -23,7 +24,8 @@ schema = Organisation.schema.copy() + Schema((
         widget = StringWidget(
             size = 60,
             label = _("Lab URL"),
-            description = _("The Laboratory's web address"),
+            description = _("Lab URL description",
+                            "The Laboratory's web address"),
         ),
     ),
     BooleanField('LaboratoryAccredited',
@@ -32,15 +34,8 @@ schema = Organisation.schema.copy() + Schema((
         write_permission = ManageBika,
         widget = BooleanWidget(
             label = _("Laboratory Accredited"),
-            description = _("Check this box if your laboratory is accredited"),
-        ),
-    ),
-    StringField('AccreditationBody',
-        schemata = 'Accreditation',
-        write_permission = ManageBika,
-        widget = StringWidget(
-            label = _("Accreditation Body Abbreviation"),
-            description = _("E.g. SANAS, APLAC, etc."),
+            description = _("Laboratory Accredited description",
+                            "Check this box if your laboratory is accredited"),
         ),
     ),
     StringField('AccreditationBodyLong',
@@ -49,8 +44,18 @@ schema = Organisation.schema.copy() + Schema((
         widget = StringWidget(
             size = 60,
             label = _("Accreditation Body"),
-            description = _("The name of the accreditation body corresponding to the abbreviation above, "
+            description = _("Accreditation Body description",
+                            "The name of the accreditation body corresponding to the abbreviation above, "
                             " e.g. South African National Accreditation Service for SANAS"),
+        ),
+    ),
+    StringField('AccreditationBody',
+        schemata = 'Accreditation',
+        write_permission = ManageBika,
+        widget = StringWidget(
+            label = _("Accreditation Body Abbreviation"),
+            description = _("Accreditation Body Abbreviation description",
+                            "E.g. SANAS, APLAC, etc."),
         ),
     ),
     StringField('AccreditationBodyURL',
@@ -58,7 +63,8 @@ schema = Organisation.schema.copy() + Schema((
         write_permission = ManageBika,
         widget = StringWidget(
             label = _("Accreditation Body URL"),
-            description = _("Web address for the accreditation body"),
+            description = _("Accreditation Body URL description",
+                            "Web address for the accreditation body"),
         ),
     ),
     StringField('Accreditation',
@@ -66,7 +72,8 @@ schema = Organisation.schema.copy() + Schema((
         write_permission = ManageBika,
         widget = StringWidget(
             label = _("Accreditation"),
-            description = _("The accreditation standard that applies, e.g. ISO 17025"),
+            description = _("Accreditation Description",
+                            "The accreditation standard that applies, e.g. ISO 17025"),
         ),
     ),
     StringField('AccreditationReference',
@@ -74,11 +81,11 @@ schema = Organisation.schema.copy() + Schema((
         write_permission = ManageBika,
         widget = StringWidget(
             label = _("Accreditation Reference"),
-            description = _("The reference code issued to the lab by the accreditation body"),
+            description = _("Accreditation Reference description",
+                            "The reference code issued to the lab by the accreditation body"),
         ),
     ),
 ))
-
 
 IdField = schema['id']
 IdField.widget.visible = {'edit':'hidden', 'view': 'invisible'}
@@ -92,14 +99,8 @@ class Laboratory(UniqueObject, Organisation):
     displayContentsTab = False
     schema = schema
 
-    # XXX: Temporary workaround to enable importing of exported bika
-    # instance. If '__replaceable__' is not set we get BadRequest, The
-    # id is invalid - it is already in use.
-    __replaceable__ = 1
-
     security.declareProtected(View, 'getSchema')
     def getSchema(self):
         return self.schema
 
 registerType(Laboratory, PROJECTNAME)
-

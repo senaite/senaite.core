@@ -1,12 +1,14 @@
-import sys
-from DateTime import DateTime
 from AccessControl import ClassSecurityInfo
-from Products.CMFCore.permissions import View
-from Products.Archetypes.public import *
+from DateTime import DateTime
 from Products.ATExtensions.ateapi import DateTimeField, DateTimeWidget
-from bika.lims.content.bikaschema import BikaSchema
-from bika.lims.config import I18N_DOMAIN, ManageInvoices, ManageBika, PROJECTNAME
+from Products.Archetypes.public import *
+from Products.CMFCore.permissions import View
 from bika.lims import bikaMessageFactory as _
+from bika.lims.config import ManageInvoices, ManageBika, PROJECTNAME
+from bika.lims.content.bikaschema import BikaSchema
+from bika.lims.interfaces import IInvoice, IGenerateUniqueId
+from zope.interface import implements
+import sys
 
 schema = BikaSchema.copy() + Schema((
     StringField('InvoiceNumber',
@@ -47,7 +49,7 @@ schema = BikaSchema.copy() + Schema((
     ComputedField('VAT',
         expression = 'context.getVAT()',
         widget = ComputedWidget(
-            label = _("VAT"),
+            label = _("VAT %"),
             visible = False,
         ),
     ),
@@ -78,23 +80,10 @@ TitleField.required = 0
 TitleField.widget.visible = False
 
 class Invoice(BaseFolder):
+    implements(IInvoice, IGenerateUniqueId)
     security = ClassSecurityInfo()
-    archetype_name = 'Invoice'
     displayContentsTab = False
     schema = schema
-    content_icon = 'invoice.png'
-    allowed_content_types = ('InvoiceLineItem',)
-    immediate_view = 'base_view'
-    use_folder_tabs = 0
-    global_allow = 0
-
-    actions = (
-        {'id': 'printinvoice',
-         'name': 'Print invoice',
-         'action': 'string:${object_url}/invoice_print',
-         'permissions': (View,),
-        },
-    )
 
     def Title(self):
         """ Return the InvoiceNumber as title """
@@ -127,6 +116,7 @@ class Invoice(BaseFolder):
             s = s + item.getItemDescription()
         return s
 
+    # XXX workflow script
     def workflow_script_dispatch(self, state_info):
         """ dispatch order """
         self.setDateDispatched(DateTime())
@@ -137,10 +127,3 @@ class Invoice(BaseFolder):
         return DateTime()
 
 registerType(Invoice, PROJECTNAME)
-
-def modify_fti(fti):
-    for a in fti['actions']:
-        if a['id'] in ('edit', 'syndication', 'references',
-                       'metadata', 'localroles'):
-            a['visible'] = 0
-    return fti

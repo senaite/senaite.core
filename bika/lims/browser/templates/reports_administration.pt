@@ -25,9 +25,9 @@
 <br/>
 <br/>
 <dl>
-<dt><a href="report_notinvoiced_view" i18n:translate="heading_ar_notinvoiced"
+<dt><a href="report_notinvoiced_view" i18n:translate=""
 >Analysis requests not invoiced</a></dt>
-<dd i18n:translate="description_ar_notinvoiced">Report the published analysis requests which have not been invoiced
+<dd i18n:translate="">Report the published analysis requests which have not been invoiced
 </dd>
 
 </dl>

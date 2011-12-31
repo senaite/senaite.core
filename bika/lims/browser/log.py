@@ -28,7 +28,8 @@ class LogView(BikaListingView):
 
         self.icon = "++resource++bika.lims.images/%s_big.png" % \
             context.portal_type.lower()
-        self.title = "%s - %s" % (self.context.Title(), _("Log"))
+        self.title = "%s %s" % (self.context.Title(),
+                                self.context.translate(_("Log")))
         self.description = ""
 
         self.columns = {

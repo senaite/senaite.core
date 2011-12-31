@@ -60,18 +60,18 @@
         <tr>
             <th>
 	            <img tal:attributes="
-	                 title string:Sample: ${sample/Title};
+	                 title string:${sample/Title};
 	                 src string:++resource++bika.lims.images/sample.png">
-	            <span i18n:translate="label_sampleid">Sample</span>
+	            <span i18n:translate="">Sample ID</span>
             </th>
             <td>
 				<a tal:attributes="href sample/absolute_url"
-	               tal:content="sample/Title">S-00001</a>
+	               tal:content="sample/Title"/>
             </td>
             <th>
 				<img tal:attributes="
 					 src string:++resource++bika.lims.images/contact.png">
-				<span i18n:translate="label_contact_person">Contact person</span>
+				<span i18n:translate="">Contact Person</span>
 			</th>
             <td>
                 <a tal:define="contact here/getContact"
@@ -93,32 +93,23 @@
 
 
         <tr>
-            <th style="padding-left:3em"
-			    i18n:translate="label_clientsampleid">Client SID
-            </th>
-            <td tal:content="sample/getClientSampleID">S001</td>
-            <th style="padding-left:3em"
-			    i18n:translate="label_client_order_id">Client order ID</th>
-            <td tal:content="here/getClientOrderNumber|nothing">123</td>
+            <th style="padding-left:3em" i18n:translate="">Client SID</th>
+            <td tal:content="sample/getClientSampleID"/>
+            <th style="padding-left:3em" i18n:translate="">Client Order ID</th>
+            <td tal:content="here/getClientOrderNumber|nothing"/>
         </tr>
 
         <tr>
-            <th style="padding-left:3em"
-	            i18n:translate="label_sampletype">Type
-            </th>
-            <td tal:content="context/getSampleTypeTitle">sample type</td>
-            <th style="padding-left:3em"
-                i18n:translate="label_clientreference">Client reference</th>
-            <td tal:content="sample/getClientReference">R001</td>
+            <th style="padding-left:3em" i18n:translate="">Sample Type</th>
+            <td tal:content="context/getSampleTypeTitle"/>
+            <th style="padding-left:3em" i18n:translate="">Client Reference</th>
+            <td tal:content="sample/getClientReference"/>
         </tr>
 
         <tr>
-            <th style="padding-left:3em"
-                i18n:translate="label_samplepoint">Point
-            </th>
+            <th style="padding-left:3em" i18n:translate="">Sample Point</th>
             <td tal:content="context/getSamplePointTitle">sample point</td>
-            <th style="padding-left:3em"
-			    i18n:translate="label_daterequested">Date requested</th>
+            <th style="padding-left:3em" i18n:translate="">Date Requested</th>
             <td>
                 <span
                     tal:define="date_requested here/getDateRequested"
@@ -128,12 +119,9 @@
         </tr>
 
         <tr>
-            <th style="padding-left:3em"
-                i18n:translate="label_status">Status
-            </th>
+            <th style="padding-left:3em" i18n:translate="">Status</th>
             <td tal:content="python:review_state.replace('_', ' ')">received</td>
-            <th style="padding-left:3em"
-                i18n:translate="label_datesampled">Date sampled</th>
+            <th style="padding-left:3em" i18n:translate="">Date Sampled</th>
             <td>
                 <span
                     tal:define="date_sampled sample/getDateSampled"
@@ -143,15 +131,13 @@
         </tr>
 
         <tr tal:condition="python:review_state != 'sample_due'">
-            <th style="padding-left:3em"
-			    i18n:translate="label_datereceived">Date received</th>
+            <th style="padding-left:3em" i18n:translate="">Date Received</th>
 			<td><span
 				tal:condition="python:review_state == 'received'"
 				tal:define="date_received here/getDateReceived"
 				tal:content="python:view.TimeOrDate(context, date_received, long_format=1)"/>
             </td>
-			<th style="padding-left:3em"
-				i18n:translate="label_datepublished">Date published</th>
+			<th style="padding-left:3em" i18n:translate="">Date Published</th>
 			<td><span
 				tal:condition="python:review_state == 'published'"
 				tal:define="date_published here/getDatePublished"
@@ -160,8 +146,7 @@
 		</tr>
 
         <tr tal:condition="python:review_state in ('verified', 'published')">
-            <th style="padding-left:3em"
-				i18n:translate="label_verified_by">Verified by </th>
+            <th style="padding-left:3em" i18n:translate="">Verified by</th>
             <td colspan="3">
                 <span
                     tal:define="verifier python:view.get_analysisrequest_verifier(here)"
@@ -177,8 +162,8 @@
         <tal:profile tal:condition="view/getARProfileTitle">
             <img title="profile"
                 tal:attributes="src string:++resource++bika.lims.images/arprofile.png">
-            <span i18n:translate="label_arprofiles">Profile</span>:
-            <span tal:content="view/getARProfileTitle">pr01</span>
+            <span i18n:translate="">Profile</span>:
+            <span tal:content="view/getARProfileTitle"/>
 	        &nbsp&nbsp&nbsp&nbsp
         </tal:profile>
 
@@ -188,19 +173,19 @@
         <tal:range>
             <img title="range"
                 tal:attributes="src string:++resource++bika.lims.images/analysisspec.png">
-            <span i18n:translate="label_range_specification">Range Specification</span>
+            <span i18n:translate="">Range Specification</span>
             <a class="review_state_selector" id="lab" value="lab"
                 href=""
+				i18n:translate=""
                 tal:attributes="
                     href python:context.absolute_url();
-                  class python:specification == 'lab' and 'specification selected' or 'specification'"
-                 >lab</a>
+                  class python:specification == 'lab' and 'specification selected' or 'specification'">Lab</a>
             <a class="review_state_selector" id="client" value="client"
                 href=""
+				i18n:translate=""
                 tal:attributes="
                     href python:context.absolute_url();
-                  class python:specification == 'client' and 'specification selected' or 'specification'"
-             >client</a>
+                  class python:specification == 'client' and 'specification selected' or 'specification'">Client</a>
 
 
         </tal:range>

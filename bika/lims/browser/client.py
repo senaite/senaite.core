@@ -80,10 +80,11 @@ class ClientWorkflowAction(WorkflowAction):
                     mapping = {'items': ', '.join(transitioned)})
             elif len(transitioned) == 1:
                 message = _('message_item_published',
-                    default = '${items} was published.',
+                    default = '${items} published.',
                     mapping = {'items': ', '.join(transitioned)})
             else:
-                message = _('No ARs were published.')
+                message = _('No items were published')
+            message = self.context.translate(message)
             self.context.plone_utils.addPortalMessage(message, 'info')
             self.destination_url = self.request.get_header("referer",
                                    self.context.absolute_url())
@@ -117,8 +118,8 @@ class ClientAnalysisRequestsView(BikaListingView):
                            wf.getInfoFor(c, 'inactive_state', '') == 'active']
         if context.portal_type == "Client" and not active_contacts:
             self.context_actions = {}
-            self.context.plone_utils.addPortalMessage(
-                _("Client contact required before request may be submitted"))
+            msg = _("Client contact required before request may be submitted")
+            self.context.plone_utils.addPortalMessage(self.context.translate(msg))
 
         self.show_sort_column = False
         self.show_select_row = False
@@ -126,7 +127,7 @@ class ClientAnalysisRequestsView(BikaListingView):
 
         self.icon = "++resource++bika.lims.images/analysisrequest_big.png"
         self.title = _("Analysis Requests")
-        self.description = ""
+        self.description = _("Analysis Requests description", "")
 
         self.columns = {
             'getRequestID': {'title': _('Request ID'),
@@ -166,7 +167,7 @@ class ClientAnalysisRequestsView(BikaListingView):
                         'getDateReceived',
                         'state_title']},
             {'id':'sample_due',
-             'title': _('Sample due'),
+             'title': _('Sample Due'),
              'contentFilter': {'review_state': 'sample_due',
                                'sort_on':'id',
                                'sort_order': 'reverse'},
@@ -320,15 +321,19 @@ class ClientAnalysisRequestsView(BikaListingView):
 
             if workflow.getInfoFor(obj, 'worksheetanalysis_review_state') == 'assigned':
                 items[x]['after']['state_title'] = \
-                     "<img src='++resource++bika.lims.images/worksheet.png' title='%s'/>" % _("All analyses assigned")
+                     "<img src='++resource++bika.lims.images/worksheet.png' title='%s'/>" % \
+                     self.context.translate(_("All analyses assigned"))
 
             sample = obj.getSample()
             after_icons = "<a href='%s'><img src='++resource++bika.lims.images/sample.png' title='%s: %s'></a>" % \
-                        (sample.absolute_url(), _("Sample: "), sample.Title())
+                        (sample.absolute_url(), \
+                         self.context.translate(_("Sample")), sample.Title())
             if obj.getLate():
-                after_icons += "<img src='++resource++bika.lims.images/late.png' title='%s'>" % _("Late Analyses")
+                after_icons += "<img src='++resource++bika.lims.images/late.png' title='%s'>" % \
+                    self.context.translate(_("Late Analyses"))
             if sample.getSampleType().getHazardous():
-                after_icons += "<img src='++resource++bika.lims.images/hazardous.png' title='%s'>" % _("Hazardous")
+                after_icons += "<img src='++resource++bika.lims.images/hazardous.png' title='%s'>" % \
+                    self.context.translate(_("Hazardous"))
             if after_icons:
                 items[x]['after']['getRequestID'] = after_icons
 
@@ -349,7 +354,7 @@ class ClientSamplesView(BikaListingView):
 
         self.icon = "++resource++bika.lims.images/sample_big.png"
         self.title = _("Samples")
-        self.description = ""
+        self.description = _("Samples description", "")
 
         self.columns = {
             'SampleID': {'title': _('Sample ID'),
@@ -486,7 +491,7 @@ class ClientARImportsView(BikaListingView):
 
         self.icon = "++resource++bika.lims.images/arimport_big.png"
         self.title = _("Analysis Request Imports")
-        self.description = ""
+        self.description = _("Analysis Request Imports description", default="")
 
         self.columns = {
             'title': {'title': _('Import')},
@@ -541,7 +546,7 @@ class ClientARProfilesView(BikaListingView):
         self.pagesize = 50
         self.icon = "++resource++bika.lims.images/arprofile_big.png"
         self.title = _("Analysis Request Profiles")
-        self.description = ""
+        self.description = _("Analysis Request Profiles description", "")
 
         self.columns = {
             'title': {'title': _('Title'),
@@ -550,7 +555,8 @@ class ClientARProfilesView(BikaListingView):
                               'index':'getProfileKey'},
         }
         self.review_states = [
-            {'title': _('All'), 'id':'all',
+            {'id':'all',
+             'title': _('All'),
              'columns': ['title', 'getProfileKey']},
         ]
 
@@ -585,7 +591,7 @@ class ClientAnalysisSpecsView(BikaListingView):
 
         self.icon = "++resource++bika.lims.images/analysisspec_big.png"
         self.title = _("Analysis Specifications")
-        self.description = ""
+        self.description = _("Analysis Specifications description")
 
         self.columns = {
             'SampleType': {'title': _('Sample Type'),
@@ -639,7 +645,8 @@ class SetSpecsToLabDefaults(BrowserView):
                 SampleType = labspec.getSampleType(),
                 ResultsRange = labspec.getResultsRange(),
             )
-        message = _("Analysis specs reset to lab defaults.")
+        message = self.context.translate(
+            _("Analysis specs reset to lab defaults."))
         self.context.plone_utils.addPortalMessage(message, 'info')
         self.request.RESPONSE.redirect(self.context.absolute_url() + "/analysisspecs")
         return
@@ -659,7 +666,7 @@ class ClientAttachmentsView(BikaListingView):
 
         self.icon = "++resource++bika.lims.images/attachment_big.png"
         self.title = _("Attachments")
-        self.description = ""
+        self.description = _("Attachments description", default="")
 
         self.columns = {
             'getTextTitle': {'title': _('Request ID')},
@@ -730,12 +737,12 @@ class ClientOrdersView(BikaListingView):
 
         self.icon = "++resource++bika.lims.images/order_big.png"
         self.title = _("Orders")
-        self.description = ""
+        self.description = _("Orders description")
 
         self.columns = {
             'OrderNumber': {'title': _('Order Number')},
             'OrderDate': {'title': _('Order Date')},
-            'DateDispatched': {'title': _('Date dispatched')},
+            'DateDispatched': {'title': _('Date Dispatched')},
             'state_title': {'title': _('State')},
         }
         self.review_states = [
@@ -784,7 +791,7 @@ class ClientContactsView(BikaListingView):
 
         self.icon = "++resource++bika.lims.images/client_contact_big.png"
         self.title = _("Contacts")
-        self.description = ""
+        self.description = _("Contacts description", "")
 
         self.columns = {
             'getFullname': {'title': _('Full Name'),

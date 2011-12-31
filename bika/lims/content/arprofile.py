@@ -9,7 +9,7 @@ from Products.Archetypes.references import HoldingReference
 from Products.CMFCore.permissions import View, ModifyPortalContent
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.widgets import ServicesWidget
-from bika.lims.config import I18N_DOMAIN, PROJECTNAME
+from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IGenerateUniqueId
 from zope.interface import Interface, implements
@@ -20,8 +20,10 @@ schema = BikaSchema.copy() + Schema((
         schemata = 'Description',
         widget = StringWidget(
             label = _("Profile Keyword"),
-            description = _("The profile's keyword is used to uniquely identify "
-                            "it in import files. It has to be unique"),
+            description = _("Profile Keyword description",
+                            "The profile's keyword is used to uniquely identify "
+                            "it in import files. It has to be unique, and it may "
+                            "not be the same as any Calculation Interim field ID."),
         ),
     ),
     ReferenceField('Service',
@@ -31,8 +33,9 @@ schema = BikaSchema.copy() + Schema((
         allowed_types = ('AnalysisService',),
         relationship = 'ARProfileAnalysisService',
         widget = ServicesWidget(
-            label = _("Analyses"),
-            description = _("The analyses included in this profile, grouped per category"),
+            label = _("Profile Analyses"),
+            description = _("Profile Analyses description",
+                            "The analyses included in this profile, grouped per category"),
         )
     ),
     TextField('Notes',

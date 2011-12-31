@@ -1,6 +1,4 @@
 """WorksheetFolder is a container for Worksheet instances.
-
-$Id: WorksheetFolder.py 70 2006-07-16 12:46:10Z rochecompaan $
 """
 from Products.ATContentTypes.content import schemata
 from Products.Archetypes import atapi

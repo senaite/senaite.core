@@ -7,7 +7,7 @@ from Products.CMFCore.permissions import View, ModifyPortalContent
 from bika.lims import bikaMessageFactory as _
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IGenerateUniqueId
-from bika.lims.config import I18N_DOMAIN, PROJECTNAME
+from bika.lims.config import PROJECTNAME
 from bika.lims.browser.widgets import RecordsWidget
 from zope.interface import implements
 
@@ -20,25 +20,29 @@ schema = BikaSchema.copy() + Schema((
     StringField('Brand',
         widget = StringWidget(
             label = _("Brand"),
-            description = _("The commercial 'make' of the instrument"),
+            description = _("Brand description",
+                            "The commercial 'make' of the instrument"),
         )
     ),
     StringField('Model',
         widget = StringWidget(
             label = _("Model"),
-            description = _("The instrument's model number"),
+            description = _("Model description",
+                            "The instrument's model number"),
         )
     ),
     StringField('SerialNo',
         widget = StringWidget(
             label = _("Serial No"),
-            description = _("The serial number that uniquely identifies the instrument"),
+            description = _("Serial No description",
+                            "The serial number that uniquely identifies the instrument"),
         )
     ),
     StringField('CalibrationCertificate',
         widget = StringWidget(
             label = _("Calibration Certificate"),
-            description = _("The instrument's calibration certificate and number"),
+            description = _("Calibration Certificate description",
+                            "The instrument's calibration certificate and number"),
         )
     ),
     DateTimeField('CalibrationExpiryDate',
@@ -46,7 +50,8 @@ schema = BikaSchema.copy() + Schema((
         with_date = 1,
         widget = DateTimeWidget(
             label = _("Calibration Expiry Date"),
-            description = _("Due date for next calibration"),
+            description = _("Calibration Expiry Date description",
+                            "Due Date for next calibration"),
         ),
     ),
     StringField('DataInterface',
@@ -54,7 +59,8 @@ schema = BikaSchema.copy() + Schema((
         widget = ReferenceWidget(
             checkbox_bound = 1,
             label = _("Data Interface"),
-            description = _("Select an Import/Export interface for this instrument."),
+            description = _("Data Interface description",
+                            "Select an Import/Export interface for this instrument."),
         ),
     ),
     RecordsField('DataInterfaceOptions',
@@ -65,7 +71,9 @@ schema = BikaSchema.copy() + Schema((
                            'OptionText': _('Value'),},
         widget = RecordsWidget(
             label = _("Data Interface Options"),
-            description = _(" "),
+            description = _("Data Interface Options description",
+                            "Use this field to pass arbitrary parameters to the export/import "
+                            "modules."),
         ),
     ),
 ))
@@ -82,7 +90,7 @@ class Instrument(BaseContent):
         """ Return the current list of data interfaces
         """
         from bika.lims.exportimport import instruments
-        exims = [('',_('None'))]
+        exims = [('',self.translate(_('None')))]
         for exim_id in instruments.__all__:
             exim = getattr(instruments, exim_id)
             exims.append((exim_id, exim.title))

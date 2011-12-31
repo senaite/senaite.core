@@ -34,68 +34,68 @@
 <td VALIGN="top">
 <fieldset>
 
-<legend i18n:translate="legend_report">Report</legend>
+<legend i18n:translate="">Report</legend>
 <p>
 <a href="#"
-    id="analysestotals_selector" 
-    i18n:translate="heading_analyses_per_service"
+    id="analysestotals_selector"
+    i18n:translate=""
 >Analyses per service</a>
 <br/>
-<span i18n:translate="description_analysestotals">The number of analyses requested per analysis service
+<span i18n:translate="">The number of analyses requested per analysis service
 </span>
 </p>
 
 <p>
 <a  href="#"
-    id="analysespersampletype_selector" 
-    i18n:translate="heading_analyses_per_sampletype"
+    id="analysespersampletype_selector"
+    i18n:translate=""
 >Analyses per sample type</a>
 <br/>
-<span i18n:translate="description_analysespersampletype">The number of analyses requested per sample type
+<span i18n:translate="">The number of analyses requested per sample type
 </span>
 </p>
 
 <p>
 <tal:client tal:condition="here/member_is_client">
-<a href="#" 
-    id="memberanalysesperclient_selector" 
-    i18n:translate="heading_requestsandanalyses"
+<a href="#"
+    id="memberanalysesperclient_selector"
+    i18n:translate=""
 >Analysis requests and analyses</a>
 <br/>
-<span i18n:translate="description_requestsandanalyses_per_client">The number of requests and analyses
+<span i18n:translate="">The number of requests and analyses
 </span>
 </tal:client>
 </p>
 
 <p>
 <tal:not_client tal:condition="not:here/member_is_client">
-<a href="#" 
-    id="analysesperclient_selector" 
-    i18n:translate="heading_requestsandanalyses_per_client"
+<a href="#"
+    id="analysesperclient_selector"
+    i18n:translate=""
 >Analysis requests and analyses per client</a>
 <br/>
-<span i18n:translate="description_requestsandanalyses_per_client">The number of requests and analyses per client
+<span i18n:translate="">The number of requests and analyses per client
 </span>
 </tal:not_client>
 </p>
 
 <p>
-<a href="#" 
-    id="tats_selector" 
-    i18n:translate="heading_analyses_turnaround"
+<a href="#"
+    id="tats_selector"
+    i18n:translate=""
 >Analysis turnaround time</a>
 <br/>
-<span i18n:translate="description_analysis_turnaround">The turnaround times of analyses
+<span i18n:translate="">The turnaround times of analyses
 </span>
 </p>
 
 <p>
-<a href="#" 
+<a href="#"
     id="attachments_selector"
-    i18n:translate="heading_attachments"
+    i18n:translate=""
 >Attachments</a>
 <br/>
-<span i18n:translate="description_attachments">The attachments linked to analysis requests and analyses
+<span i18n:translate="">The attachments linked to analysis requests and analyses
 </span>
 </p>
 
@@ -107,12 +107,12 @@
 <div id="analysestotals" style="display:none" class="criteria">
 <fieldset>
 
-<legend i18n:translate="legend_selection_criteria">Selection criteria</legend>
+<legend i18n:translate="">Selection criteria</legend>
 
 <div class="field" tal:condition="not:here/member_is_client">
-    <label i18n:translate="label_client"
+    <label i18n:translate=""
         >Client</label><br/>
-    <select name="getClientUID:ignore_empty" 
+    <select name="getClientUID:ignore_empty"
             style=""
             id="getClientUID"
             tal:attributes="style string:font-family:${here/base_properties/fontFamily};;font-size:100%;">
@@ -132,11 +132,11 @@
 </div>
 
 <div class="field">
-    <label i18n:translate="label_daterequested"
-        >Date requested</label><br/>
+    <label i18n:translate=""
+        >Date Requested</label><br/>
     <table>
     <tr><td>
-    <span i18n:translate="label_from">From</span>
+    <span i18n:translate="">From</span>
     </td><td>
     <tal:date tal:define="
          input_id string:DateRequested_fromdate;
@@ -150,7 +150,7 @@
     </td></tr>
 
     <tr><td>
-    <span i18n:translate="label_to">to</span>
+    <span i18n:translate="">to</span>
     </td><td>
     <tal:date tal:define="
          input_id string:DateRequested_todate;
@@ -167,11 +167,11 @@
 </div>
 
 <div class="field">
-    <label i18n:translate="label_datepublished"
-        >Date published</label><br/>
+    <label i18n:translate=""
+        >Date Published</label><br/>
     <table>
     <tr><td>
-    <span i18n:translate="label_from">From</span>
+    <span i18n:translate="">From</span>
     </td><td>
     <tal:date tal:define="
          input_id string:DatePublished_fromdate;
@@ -185,7 +185,7 @@
     </td></tr>
 
     <tr><td>
-    <span i18n:translate="label_to">to</span>
+    <span i18n:translate="">to</span>
     </td><td>
     <tal:date tal:define="
          input_id string:DatePublished_todate;
@@ -203,9 +203,9 @@
 
 
 <div class="field">
-    <label i18n:translate="label_status"
+    <label i18n:translate=""
         >Status</label><br/>
-    <select name="review_state:ignore_empty" 
+    <select name="review_state:ignore_empty"
             style=""
             id="review_state">
         <option value=""/>
@@ -228,12 +228,12 @@
 <div id="analysespersampletype" style="display:none" class="criteria">
 <fieldset>
 
-<legend i18n:translate="legend_selection_criteria">Selection criteria</legend>
+<legend i18n:translate="">Selection criteria</legend>
 
 <div class="field" tal:condition="not:here/member_is_client">
-    <label i18n:translate="label_client"
+    <label i18n:translate=""
         >Client</label><br/>
-    <select name="getClientUID:ignore_empty" 
+    <select name="getClientUID:ignore_empty"
             style=""
             id="getClientUID"
             tal:attributes="style string:font-family:${here/base_properties/fontFamily};;font-size:100%;">
@@ -253,11 +253,11 @@
 </div>
 
 <div class="field">
-    <label i18n:translate="label_daterequested"
-        >Date requested</label><br/>
+    <label i18n:translate=""
+        >Date Requested</label><br/>
     <table>
     <tr><td>
-    <span i18n:translate="label_from">From</span>
+    <span i18n:translate="">From</span>
     </td><td>
     <tal:date tal:define="
          input_id string:DateRequested_fromdate;
@@ -271,7 +271,7 @@
     </td></tr>
 
     <tr><td>
-    <span i18n:translate="label_to">to</span>
+    <span i18n:translate="">to</span>
     </td><td>
     <tal:date tal:define="
          input_id string:DateRequested_todate;
@@ -293,14 +293,14 @@
 <div id="analysesperclient" style="display:none" class="criteria">
 <fieldset>
 
-<legend i18n:translate="legend_selection_criteria">Selection criteria</legend>
+<legend i18n:translate="">Selection criteria</legend>
 
 <div class="field">
-    <label i18n:translate="label_daterequested"
-        >Date requested</label><br/>
+    <label i18n:translate=""
+        >Date Requested</label><br/>
     <table>
     <tr><td>
-    <span i18n:translate="label_from">From</span>
+    <span i18n:translate="">From</span>
     </td><td>
     <tal:date tal:define="
          input_id string:DateRequested_fromdate;
@@ -314,7 +314,7 @@
     </td></tr>
 
     <tr><td>
-    <span i18n:translate="label_to">to</span>
+    <span i18n:translate="">to</span>
     </td><td>
     <tal:date tal:define="
          input_id string:DateRequested_todate;
@@ -336,12 +336,12 @@
 <div id="tats" style="display:none" class="criteria">
 <fieldset>
 
-<legend i18n:translate="legend_selection_criteria">Selection criteria</legend>
+<legend i18n:translate="">Selection criteria</legend>
 
 <div class="field" tal:condition="not:here/member_is_client">
-    <label i18n:translate="label_client"
+    <label i18n:translate=""
         >Client</label><br/>
-    <select name="getClientUID:ignore_empty" 
+    <select name="getClientUID:ignore_empty"
             style=""
             id="getClientUID"
             tal:attributes="style string:font-family:${here/base_properties/fontFamily};;font-size:100%;">
@@ -361,11 +361,11 @@
 </div>
 
 <div class="field">
-    <label i18n:translate="label_datereceived"
-        >Date received</label><br/>
+    <label i18n:translate=""
+        >Date Received</label><br/>
     <table>
     <tr><td>
-    <span i18n:translate="label_from">From</span>
+    <span i18n:translate="">From</span>
     </td><td>
     <tal:date tal:define="
          input_id string:DateReceived_fromdate;
@@ -379,7 +379,7 @@
     </td></tr>
 
     <tr><td>
-    <span i18n:translate="label_to">to</span>
+    <span i18n:translate="">to</span>
     </td><td>
     <tal:date tal:define="
          input_id string:DateReceived_todate;
@@ -402,12 +402,12 @@
 <div id="attachments" style="display:none" class="criteria">
 <fieldset>
 
-<legend i18n:translate="legend_selection_criteria">Selection criteria</legend>
+<legend i18n:translate="">Selection criteria</legend>
 
 <div class="field" tal:condition="not:here/member_is_client">
-    <label i18n:translate="label_client"
+    <label i18n:translate=""
         >Client</label><br/>
-    <select name="getClientUID:ignore_empty" 
+    <select name="getClientUID:ignore_empty"
             style=""
             id="getClientUID"
             tal:attributes="style string:font-family:${here/base_properties/fontFamily};;font-size:100%;">
@@ -427,11 +427,11 @@
 </div>
 
 <div class="field">
-    <label i18n:translate="label_dateloaded"
-        >Date loaded</label><br/>
+    <label i18n:translate=""
+        >Date Loaded</label><br/>
     <table>
     <tr><td>
-    <span i18n:translate="label_from">From</span>
+    <span i18n:translate="">From</span>
     </td><td>
     <tal:date tal:define="
          input_id string:DateLoaded_fromdate;
@@ -445,7 +445,7 @@
     </td></tr>
 
     <tr><td>
-    <span i18n:translate="label_to">to</span>
+    <span i18n:translate="">to</span>
     </td><td>
     <tal:date tal:define="
          input_id string:DateLoaded_todate;
@@ -476,7 +476,7 @@
         name="submit"
         value="Search"
         i18n:attributes="value"
-        />                       
+        />
 </div>
 </td>
 </tr>

@@ -158,9 +158,9 @@ $(document).ready(function(){
 				error_max = result + error_amount
 				if (((result < spec_min) && (error_max >= spec_min)) ||
 					((result > spec_max) && (error_min <= spec_max)) ){
-					range_str = "min: " + spec_min +
-					            ", max: " + spec_max +
-								", error:" + re_spec['error'] + "%";
+					range_str = "min " + spec_min +
+					            ", max " + spec_max +
+								", error" + re_spec['error'] + "%";
 					$("span[uid='"+uid+"']")
 					  .filter("span[field='Result']")
 					  .append("<img src='++resource++bika.lims.images/warning.png' uid='"+

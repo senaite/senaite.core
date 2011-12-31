@@ -13,8 +13,10 @@ from bika.lims import bikaMessageFactory as _
 schema = BikaSchema.copy() + Schema((
     StringField('Salutation',
         widget = StringWidget(
-            label = _("Title"),
-            description = _("Greeting title eg. Mr, Mrs, Dr"),
+            label = _("Salutation",
+                      "Title"),
+            description = _("Salutation description",
+                            "Greeting title eg. Mr, Mrs, Dr"),
         ),
     ),
     StringField('Firstname',
@@ -33,7 +35,7 @@ schema = BikaSchema.copy() + Schema((
         expression = 'context.getFullname()',
         searchable = 1,
         widget = ComputedWidget(
-            label = _("Full name"),
+            label = _("Full Name"),
             visible = {'edit': 'invisible', 'view': 'invisible'},
         ),
     ),
@@ -46,7 +48,7 @@ schema = BikaSchema.copy() + Schema((
         schemata = 'Email Telephone Fax',
         searchable = 1,
         widget = StringWidget(
-            label = _("Email address"),
+            label = _("Email Address"),
         ),
     ),
     StringField('BusinessPhone',

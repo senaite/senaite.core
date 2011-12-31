@@ -11,7 +11,7 @@ from Products.Archetypes.public import *
 from Products.Archetypes.references import HoldingReference
 from Products.ATExtensions.ateapi import DateTimeField, DateTimeWidget
 from bika.lims.content.bikaschema import BikaSchema
-from bika.lims.config import I18N_DOMAIN, ManageBika, PROJECTNAME
+from bika.lims.config import ManageBika, PROJECTNAME
 from bika.lims import bikaMessageFactory as _
 
 schema = BikaSchema.copy() + Schema((
@@ -23,33 +23,33 @@ schema = BikaSchema.copy() + Schema((
     StringField('FileName',
         searchable = True,
         widget = StringWidget(
-            label = _("File name"),
+            label = _("Filename"),
         ),
     ),
     StringField('ClientTitle',
         searchable = True,
         widget = StringWidget(
-            label = _("Client name"),
+            label = _("Client Name"),
         ),
     ),
     StringField('ClientPhone',
         widget = StringWidget(
-            label = _("Client phone"),
+            label = _("Client Phone"),
         ),
     ),
     StringField('ClientFax',
         widget = StringWidget(
-            label = _("Client fax"),
+            label = _("Client Fax"),
         ),
     ),
     StringField('ClientAddress',
         widget = StringWidget(
-            label = _("Client address"),
+            label = _("Client Address"),
         ),
     ),
     StringField('ClientCity',
         widget = StringWidget(
-            label = _("Client city"),
+            label = _("Client City"),
         ),
     ),
     StringField('ClientID',

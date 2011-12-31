@@ -1,4 +1,3 @@
-
 from AccessControl import ClassSecurityInfo
 from DateTime import DateTime
 from Products.ATContentTypes.content import schemata
@@ -10,19 +9,19 @@ from Products.Archetypes.references import HoldingReference
 from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFCore.permissions import View, ModifyPortalContent
 from Products.CMFCore.utils import getToolByName
+from Products.CMFEditions.ArchivistTool import ArchivistRetrieveError
 from bika.lims import bikaMessageFactory as _
-from bika.lims.browser.fields import InterimFieldsField
+from bika.lims import logger
 from bika.lims.browser.fields import DurationField
 from bika.lims.browser.fields import HistoryAwareReferenceField
-from bika.lims.browser.widgets import RecordsWidget as BikaRecordsWidget
+from bika.lims.browser.fields import InterimFieldsField
 from bika.lims.browser.widgets import DurationWidget
-from bika.lims.config import I18N_DOMAIN, PROJECTNAME
+from bika.lims.browser.widgets import RecordsWidget as BikaRecordsWidget
+from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IAnalysis
-from bika.lims import logger
 from decimal import Decimal
 from zope.interface import implements
-from Products.CMFEditions.ArchivistTool import ArchivistRetrieveError
 import datetime
 
 schema = BikaSchema.copy() + Schema((
@@ -32,7 +31,7 @@ schema = BikaSchema.copy() + Schema((
         relationship = 'AnalysisAnalysisService',
         referenceClass = HoldingReference,
         widget = ReferenceWidget(
-            label = _("Analysis service"),
+            label = _("Analysis Service"),
         )
     ),
     HistoryAwareReferenceField('Calculation',
@@ -60,14 +59,15 @@ schema = BikaSchema.copy() + Schema((
     ),
     DurationField('MaxTimeAllowed',
         widget = DurationWidget(
-            label = _("Maximum time allowed"),
-            description = _("Maximum time allowed for "
-                            "publication of results"),
+            label = _("Maximum turn-around time"),
+            description = _("Maximum turn-around time description",
+                            "Maximum time allowed for completion of the analysis. "
+                            "A late analysis alert is raised when this period elapses"),
         ),
     ),
     DateTimeField('DateAnalysisPublished',
         widget = DateTimeWidget(
-            label = _("Date published"),
+            label = _("Date Published"),
         ),
     ),
     DateTimeField('DueDate',
@@ -142,12 +142,9 @@ class Analysis(BaseContent):
 
     def Title(self):
         """ Return the service title as title """
-        # We construct the analyses manually in ar_add_submit,
-        # and they are without Service attribute for a moment.
         try:
             s = self.getService()
         except ArchivistRetrieveError:
-            # XXX premature indexing
             return ""
         if s: return s.Title()
 

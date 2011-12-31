@@ -6,7 +6,7 @@
  <permission>BIKA: Manage Invoices</permission>
  <permission>BIKA: Cancel and reinstate</permission>
 
- <state state_id="sample_due" title="Sample due">
+ <state state_id="sample_due" title="Sample Due">
   <exit-transition transition_id="receive"/>
   <permission-map name="BIKA: Edit AR" acquired="False">
    <permission-role>Manager</permission-role>

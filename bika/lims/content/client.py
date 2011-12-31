@@ -1,6 +1,4 @@
 """Client - the main organisational entity in bika.
-
-$Id: Client.py 2298 2010-05-19 09:18:43Z anneline $
 """
 from bika.lims import interfaces
 from zope.component import getUtility
@@ -40,7 +38,7 @@ schema = Organisation.schema.copy() + atapi.Schema((
         write_permission = ManageClients,
         vocabulary = CLIENT_TYPES,
         widget = atapi.SelectionWidget(
-            label = _("Client type"),
+            label = _("Client Type"),
         ),
     ),
     atapi.LinesField('EmailSubject',

@@ -31,7 +31,7 @@
 					display_rows python:widget.get_template_rows(num_positions, current_field_value);
 					analyses python:[s.UID() for s in context.getService()]">
 
-	<label i18n:translate="label_numpositions">Number of Positions</label>
+	<label i18n:translate="">Number of Positions</label>
 	<input name="NoOfPositions"
 		size="3"
 		value=""
@@ -47,10 +47,10 @@
 		cellpadding="0" cellspacing="0">
 
 	<tr>
-		<th i18n:translate="label_position">Pos</th>
-		<th i18n:translate="label_type">Analysis Type</th>
-		<th i18n:translate="label_referencedefinition">Reference Definition</th>
-		<th i18n:translate="label_duplicate_of">Dup of</th>
+		<th i18n:translate="">Pos</th>
+		<th i18n:translate="">Analysis Type</th>
+		<th i18n:translate="">Reference Definition</th>
+		<th i18n:translate="">Dup of</th>
 	</tr>
 
 	<tr tal:repeat="row display_rows">

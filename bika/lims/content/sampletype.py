@@ -3,7 +3,7 @@ from Products.ATContentTypes.lib.historyaware import HistoryAwareMixin
 from Products.Archetypes.public import *
 from Products.CMFCore.permissions import View, ModifyPortalContent
 from Products.CMFCore.utils import getToolByName
-from bika.lims.config import I18N_DOMAIN, PROJECTNAME
+from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IGenerateUniqueId
 from bika.lims import bikaMessageFactory as _
@@ -15,7 +15,8 @@ schema = BikaSchema.copy() + Schema((
         default_method = 'getDefaultLifetime',
         widget = IntegerWidget(
             label = _("Retention period"),
-            description = _("The period for which Samples of this type can be kept before "
+            description = _("Retention period description",
+                            "The period for which Samples of this type can be kept before "
                             "they expire and cannot be analysed any further"),
         )
     ),
@@ -23,15 +24,14 @@ schema = BikaSchema.copy() + Schema((
         default = False,
         widget = BooleanWidget(
             label = _("Hazardous"),
-            description = _("Check this box if samples of this type should be treated as hazardous"),
+            description = _("Hazardous description",
+                            "Samples of this type should be treated as hazardous"),
         ),
     ),
     StringField('Prefix',
-        required=True,
-        widget=StringWidget(
-            label='Sample Type Prefix',
-            label_msgid='label_sampletypeprefix',
-            i18n_domain=I18N_DOMAIN,
+        required = True,
+        widget = StringWidget(
+            label = _('Sample Type Prefix'),
         ),
     ),
 ))

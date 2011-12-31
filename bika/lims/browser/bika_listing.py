@@ -97,7 +97,7 @@ class WorkflowAction:
             # the only actions allowed on inactive/cancelled
             # items are "reinstate" and "activate"
             if not isActive(obj) and action not in ('reinstate', 'activate'):
-                message = _('Item is inactive.')
+                message = self.context.translate(_('Item is inactive.'))
                 self.context.plone_utils.addPortalMessage(message, 'info')
                 self.request.response.redirect(self.destination_url)
                 return
@@ -127,7 +127,7 @@ class WorkflowAction:
                     transitioned.append(item.Title())
 
         if len(transitioned) > 0:
-            message = _('Changes saved.')
+            message = self.context.translate(_('Changes saved'))
             self.context.plone_utils.addPortalMessage(message, 'info')
 
         # automatic label printing

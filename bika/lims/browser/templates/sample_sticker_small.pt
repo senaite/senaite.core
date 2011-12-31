@@ -61,38 +61,38 @@ td {
 <thead>
 
 <tr>
-<th i18n:translate="label_sticker_sample_id">Sample ID</th>
+<th i18n:translate="">Sample ID</th>
 <td><strong tal:content="sample/getSampleID">S-0001</strong></td>
-<th i18n:translate="label_sticker_hazardous">Hazardous</th>
+<th i18n:translate="">Hazardous</th>
 <td tal:content="sampletype/getHazardous|nothing">yes</td>
 </tr>
 
 <tr>
-<th i18n:translate="label_sticker_deviation">Deviation</th>
+<th i18n:translate="">Deviation</th>
 <td tal:content="deviation/Title|nothing">R-0001</td>
-<th i18n:translate="label_sticker_composite">Composite</th>
+<th i18n:translate="">Composite</th>
 <td class="left" tal:content="composite">true</td>
 </tr>
 
 <tr>
-<th i18n:translate="label_sticker_container">Container</th>
+<th i18n:translate="">Container</th>
 <td tal:content="container/Title">Glass</td>
-<th i18n:translate="label_preservation">Preservation</th>
+<th i18n:translate="">Preservation</th>
 <td tal:content="python: preservation and '%s: %s' % (prescats.getValue(preservation.getCategory()), preservation.Title()) or 'None'">Acid</td>
 </tr>
 
 <tr>
-<th i18n:translate="label_sticker_sample_type">Sample Type</th>
+<th i18n:translate="">Sample Type</th>
 <td colspan='3' tal:content="sampletype/Title|nothing">Effluent</td>
 </tr>
 
 <tr>
-<th i18n:translate="label_samplepoint">Sample Point</th>
+<th i18n:translate="">Sample Point</th>
 <td colspan='3' tal:content="python:samplepoint and (samplepoint.Title() + ': ' + samplepoint.description) or ''">Water</td>
 </tr>
 
 <tr>
-<th colspan=4 i18n:translate="label_sticker_field_analyses">Field Analyses:</th>
+<th colspan=4 i18n:translate="">Field Analyses</th>
 </tr>
 
 <tal:block repeat="analysis python:[analysis for analysis in analyses if analysis.getService().getCategory()=='f']">

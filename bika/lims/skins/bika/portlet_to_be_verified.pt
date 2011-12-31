@@ -31,7 +31,7 @@
     <dl class="portlet" id="portlet-workflow-review">
 
         <dt class="portletHeader"
-            i18n:translate="box_to_be_verified">To be verified</dt>
+            i18n:translate="">To be verified</dt>
 
         <tal:block repeat="o results">
         <dd tal:define="oddrow repeat/o/odd"
@@ -62,14 +62,14 @@
                 class="portletMore"
                 tal:attributes="href string:${context/portal_url}/worksheets?review_state=to_be_verified">
                 <span tal:content="python:str(len(ws))"/>
-                <span i18n:translate="Worksheets">Worksheets...</span>
+                <span i18n:translate="">Worksheets</span>
             </a>
             <br tal:condition="ws"/>
             <a  tal:condition="ar"
                 class="portletMore"
                 tal:attributes="href string:${context/portal_url}/analysisrequests?review_state=to_be_verified">
                 <span tal:content="python:str(len(ar))"/>
-                <span i18n:translate="Worksheets">ARs...</span>
+                <span i18n:translate="">ARs</span>
             </a>
         </dd>
 

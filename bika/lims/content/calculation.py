@@ -11,7 +11,7 @@ from bika.lims.browser.fields import InterimFieldsField
 from bika.lims.browser.widgets import RecordsWidget as BikaRecordsWidget
 from bika.lims.interfaces import ICalculation
 from bika.lims.browser.fields import HistoryAwareReferenceField
-from bika.lims.config import I18N_DOMAIN, PROJECTNAME
+from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IGenerateUniqueId
 from zope.interface import implements
@@ -27,7 +27,8 @@ schema = BikaSchema.copy() + Schema((
         schemata = 'Calculation',
         widget = BikaRecordsWidget(
             label = _("Calculation Interim Fields"),
-            description =_("Define interim fields such as vessel mass, dilution factors, "
+            description =_("Calculation Interim Fields description",
+                           "Define interim fields such as vessel mass, dilution factors, "
                            "should your calculation require them. The field title specified "
                            "here will be used as column headers and field descriptors where "
                            "the interim fields are displayed"),
@@ -54,8 +55,8 @@ schema = BikaSchema.copy() + Schema((
         allowable_content_types = ('text/plain',),
         widget = TextAreaWidget(
             label = _("Calculation Formula"),
-            description_msgid = "msg_calculation_formula_help",
-            description = "<p>The formula you type here will be dynamically calculated when "
+            description = "Calculation Formula description"
+            "<p>The formula you type here will be dynamically calculated when "
             "an analysis using this calculation is displayed.</p>"
             "<p>To enter a Calculation, use standard maths operators,  + - * / ( ), "
             "and all keywords available, both from other Analysis Services and the "
@@ -64,7 +65,6 @@ schema = BikaSchema.copy() + Schema((
             "<p>E.g, the calculation for Total Hardness, the total of  Calcium (ppm) "
             "and Magnesium (ppm) ions in water, is entered as [Ca] + [Mg], where Ca and MG "
             "are the keywords for those two Analysis Services.</p>",
-            i18n_domain = I18N_DOMAIN,
         )
     ),
 ))

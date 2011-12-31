@@ -1,6 +1,4 @@
 """ReferenceAnalysis
-
-$Id: ReferenceAnalysis.py 914 2007-10-16 19:49:15Z anneline $
 """
 from AccessControl import ClassSecurityInfo
 from DateTime import DateTime
@@ -13,7 +11,7 @@ from bika.lims.browser.fields import InterimFieldsField
 from bika.lims.browser.fields import DurationField
 from bika.lims.browser.fields import HistoryAwareReferenceField
 from bika.lims.browser.widgets import RecordsWidget as BikaRecordsWidget
-from bika.lims.config import I18N_DOMAIN, STD_TYPES, PROJECTNAME
+from bika.lims.config import STD_TYPES, PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IReferenceAnalysis
 from bika.lims import bikaMessageFactory as _
@@ -30,7 +28,8 @@ schema = BikaSchema.copy() + Schema((
         searchable = True,
         widget = StringWidget(
             label = _("ReferenceAnalysis ID"),
-            description = _("The ID assigned to the reference analysis"),
+            description = _("ReferenceAnalysis ID description",
+                            "The ID assigned to the reference analysis"),
             visible = {'edit':'hidden'},
         ),
     ),
@@ -46,7 +45,7 @@ schema = BikaSchema.copy() + Schema((
         relationship = 'ReferenceAnalysisAnalysisService',
         referenceClass = HoldingReference,
         widget = ReferenceWidget(
-            label = _("Analysis service"),
+            label = _("Analysis Service"),
         )
     ),
     InterimFieldsField('InterimFields',
@@ -67,7 +66,6 @@ schema = BikaSchema.copy() + Schema((
         referenceClass = HoldingReference,
         relationship = 'ReferenceAnalysisAttachment',
     ),
-
     StringField('Analyst',
     ),
     ReferenceField('Instrument',
@@ -173,10 +171,3 @@ class ReferenceAnalysis(BaseContent):
         return DateTime()
 
 registerType(ReferenceAnalysis, PROJECTNAME)
-
-def modify_fti(fti):
-    for a in fti['actions']:
-        if a['id'] in ('syndication', 'references', 'metadata',
-                       'localroles'):
-            a['visible'] = 0
-    return fti

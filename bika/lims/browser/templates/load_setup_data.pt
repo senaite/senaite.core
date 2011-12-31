@@ -28,7 +28,7 @@
 	tal:define="
 	portal context/@@plone_portal_state/portal;">
 
-<p tal:content="view/text"/>
+<p tal:content="view/helptext"/>
 
 <form
 	name="load_setup_data"

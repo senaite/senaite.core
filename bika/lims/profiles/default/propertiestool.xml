@@ -44,6 +44,7 @@
     <element value="InvoiceLineItem"/>
     <element value="LabContact"/>
     <element value="LabProduct"/>
+    <element value="LogEntry"/>
     <element value="Method"/>
     <element value="SupplyOrder"/>
     <element value="SupplyOrderItem"/>
@@ -72,7 +73,6 @@
     <element value="ATSortCriterion"/>
     <element value="ChangeSet"/>
     <element value="Discussion Item"/>
-    <element value="MethodLogEntry"/>
     <element value="Plone Site"/>
     <element value="TempFolder"/>
     <element value="Image"/>

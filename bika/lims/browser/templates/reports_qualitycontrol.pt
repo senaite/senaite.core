@@ -25,25 +25,25 @@
 <br/>
 <br/>
 <dl>
-<dt><a href="report_outofrange_view" i18n:translate="heading_outofrange_analyses">Analyses out of range</a></dt>
+<dt><a href="report_outofrange_view" i18n:translate="">Analyses out of range</a></dt>
 <dd>
-<span i18n:translate="description_outofrange_analyses">Analysis results out of lab or client specified range</span>
-<div i18n:translate="description_long_running">Note that this may take several minutes</div>
+<span i18n:translate="">Analysis results out of lab or client specified range</span>
+<div i18n:translate="">Note that this may take several minutes</div>
 </dd>
 
-<dt><a href="report_repeated_view" i18n:translate="heading_repeated_analyses">Analyses repeated</a></dt>
+<dt><a href="report_repeated_view" i18n:translate="">Analyses repeated</a></dt>
 <dd>
-<span i18n:translate="description_repeated_analyses">Analyses repeated</span>
+<span i18n:translate="">Analyses repeated</span>
 </dd>
 
-<dt><a href="report_standardqc_view" i18n:translate="heading_standardanalysis_qc"
+<dt><a href="report_standardqc_view" i18n:translate=""
     >Standard analysis QC</a></dt>
-<dd i18n:translate="description_standardanalysis_qc">Standard analysis quality control graphs
+<dd i18n:translate="">Standard analysis quality control graphs
 </dd>
 
-<dt><a href="duplicate_qc_form" i18n:translate="heading_duplicateanalysis_qc"
+<dt><a href="duplicate_qc_form" i18n:translate=""
     >Duplicate analysis QC</a></dt>
-<dd i18n:translate="description_duplicateanalysis_qc">Duplicate analysis quality control graphs
+<dd i18n:translate="">Duplicate analysis quality control graphs
 </dd>
 </dl>
 

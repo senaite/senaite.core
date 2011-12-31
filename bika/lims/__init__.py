@@ -22,14 +22,6 @@ allow_module('AccessControl')
 
 def initialize(context):
 
-    from content.Invoice import Invoice
-    from content.InvoiceBatch import InvoiceBatch
-    from content.InvoiceFolder import InvoiceFolder
-    from content.InvoiceLineItem import InvoiceLineItem
-    from content.MethodLogEntry import MethodLogEntry
-    from content.Pricelist import Pricelist
-    from content.PricelistFolder import PricelistFolder
-    from content.PricelistLineItem import PricelistLineItem
     from content.analysis  import Analysis
     from content.analysiscategory import AnalysisCategory
     from content.analysisrequest import AnalysisRequest
@@ -50,12 +42,20 @@ def initialize(context):
     from content.department import Department
     from content.duplicateanalysis import DuplicateAnalysis
     from content.instrument import Instrument
+    from content.invoice import Invoice
+    from content.invoicebatch import InvoiceBatch
+    from content.invoicefolder import InvoiceFolder
+    from content.invoicelineitem import InvoiceLineItem
     from content.labcontact import LabContact
     from content.laboratory import Laboratory
     from content.labproduct import LabProduct
+    from content.logentry import LogEntry
     from content.method import Method
     from content.organisation import Organisation
     from content.person import Person
+    from content.pricelist import Pricelist
+    from content.pricelistfolder import PricelistFolder
+    from content.pricelistlineitem import PricelistLineItem
     from content.referenceanalysis import ReferenceAnalysis
     from content.referencedefinition import ReferenceDefinition
     from content.referencemanufacturer import ReferenceManufacturer
