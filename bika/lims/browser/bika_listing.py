@@ -533,7 +533,6 @@ class BikaListingView(BrowserView):
 class BikaListingTable(tableview.Table):
 
     render = ViewPageTemplateFile("templates/bika_listing_table.pt")
-    batching = ViewPageTemplateFile("templates/bika_listing_batching.pt")
 
     def __init__(self, bika_listing = None, table_only = False):
         self.table = self
