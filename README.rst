@@ -4,7 +4,11 @@ Bika LIMS
 Installation
 ------------
 
-Documenting the bika3 installation as done on Debian server 13/11/11.
+Documenting the bika3 installation as done on Debian server 13/11/11. Updated
+for changes affecting ID-Server, which is now by default automatically build
+and started togethere with the instance. This document describes the manual
+steps to install the LIMS and set up Apache as proxy on port 80. See 
+https://github.com/bikalabs for other install options. 
 
 #. Get the latest Unified Installer: http://plone.org/products/plone/releases
 
@@ -20,8 +24,8 @@ Documenting the bika3 installation as done on Debian server 13/11/11.
 
     sudo ./install.sh --target=/home/example  standalone
 
-#. Make new DYN name for site and add apache mapping on server, noting new
-   port for instance - Add ``A`` or ``CNAME`` record, if needed.
+#. (Optional) Set up a domain name for the LIMS site and add the Apache mapping on 
+   the http-server, noting the port for instance (default 8080) - Add ``A`` or ``CNAME`` record, if needed.
 
    Edit the apache configuration, adding a new virtual host::
 
@@ -37,8 +41,8 @@ Documenting the bika3 installation as done on Debian server 13/11/11.
           CustomLog /var/log/apache2/example.bikalabs.com.access.log combined
           RewriteEngine On
           RewriteRule ^/robots.txt -  [L]
-          RewriteRule ^/manage(.*) http://localhost:8030/VirtualHostBase/http/example.bikalabs.com:80/VirtualHostRoot/manage$1 [L,P]
-          RewriteRule ^/(.\*) http://localhost:8030/VirtualHostBase/http/example.bikalabs.com:80/VirtualHostRoot/$1 [L,P]
+          RewriteRule ^/manage(.*) http://localhost:8080/VirtualHostBase/http/example.bikalabs.com:80/VirtualHostRoot/manage$1 [L,P]
+          RewriteRule ^/(.\*) http://localhost:8080/VirtualHostBase/http/example.bikalabs.com:80/VirtualHostRoot/$1 [L,P]
      </VirtualHost>
 
 #. Note the output of the installer script::
@@ -63,7 +67,6 @@ Documenting the bika3 installation as done on Debian server 13/11/11.
        eggs =
            Plone
            Pillow
-           lxml
            bika.lims
 
    b. Find the ``develop`` section. Add ``src/bika3``::
@@ -71,79 +74,33 @@ Documenting the bika3 installation as done on Debian server 13/11/11.
        develop =
          src/bika3
 
-   c. Change the port to the one used in Apache above (8030)::
+   c. (Optional) Change the port to the one used in Apache above (8080)::
 
-       http-address = 8030
+       http-address = 8080
 
-   d. Change the effective user if not id plone. (Optional.)
+   d. (Optional) Change the effective user if not id plone. 
 
-      Add the ``Environ`` variable for ID-server, noting port number for shell
+   e. (Optional) Add the ``Environ`` variable for ID-server, noting port number for shell
       script later::
 
        [instance]
        environment-vars =
-           IDServerURL http://localhost:8031
+           IDServerURL http://localhost:8081
 
 #. Check out the bika3 code::
 
     cd /home/example/zinstance
-
-   a. With SVN::
-
-       sudo svn co https://bika.svn.sourceforge.net/svnroot/bika/bika3 src/bika3
-
-   b. From Git::
-
-       git clone https://github.com/bikalabs/Bika-LIMS src/bika3
+    git clone https://github.com/bikalabs/Bika-LIMS src/bika3
 
 #. Do the buildout of the instance::
 
     sudo bin/buildout -v
-
-#. Create an ``idserver`` start script, similar to below: Use the
-   python from the ``bin/plonectl`` script::
-
-    #!/bin/sh
-    PYTHON=/home/exmple/Python-2.6/bin/python
-    BIKA_BASE=/home/example/zinstance
-    COUNTER_FILE=$BIKA_BASE/var/id.counter
-    LOG_FILE=$BIKA_BASE/var/log/idserver.log
-    PID_FILE=$BIKA_BASE/var/idserver.pid
-    PORT=8031
-
-    SRC_DIR=src/bika3
-
-    exec $PYTHON $BIKA_BASE/$SRC_DIR/bika/lims/scripts/id-server.py \
-            -f $COUNTER_FILE \
-            -p $PORT \
-            -l $LOG_FILE \
-            -d $PID_FILE
-
-#. Make it exectuable and test::
-
-    sudo chmod +x start-idserver.sh
-    sudo su plone -c "./start-idserver.sh"
-    lynx http://localhost:8031/
-
-   A "1" should appear, incrementing on reloads. A different browser can also
-   be used from another server, if needed. Note port.
-
-#. Make a ``stop-idserver`` script::
-
-    #!/bin/sh
-    kill ``cat var/idserver.pid``
 
 #. Test and reload apache config, if new server name DNS is ready::
 
     sudo apache2ctl configtest
     dig example.bikalabs.com
     sudo apachectl graceful
-
-#. Remove ``id.counter`` file to reset, and restart: (optional)::
-
-    sudo ./stop-idserver.sh
-    sudo rm var/id.counter
-    sudo su plone -c ./start-idserver.sh
 
 #. Test run in foreground, noting error messages::
 
@@ -160,15 +117,15 @@ Documenting the bika3 installation as done on Debian server 13/11/11.
 
    or::
 
-    http://admin:password@localhost:8030/manage
+    http://admin:password@localhost:8080/manage
 
 #. Add Plone site, noting Instance name (default Plone), and ensure to tick Bika LIMS option
 
-#. Modify apache config to point to instance "Plone" root instead of Zope root if required::
+#. (Optional) Modify apache config to point to instance "Plone" root instead of Zope root if required::
 
-    #RewriteRule ^/(.*) http://localhost:8030/VirtualHostBase/http/example.bikalabs.com:80/VirtualHostRoot/$1 [L,P]
+    #RewriteRule ^/(.*) http://localhost:8080/VirtualHostBase/http/example.bikalabs.com:80/VirtualHostRoot/$1 [L,P]
 
-    RewriteRule ^/(.*) http://localhost:8030/VirtualHostBase/http/example.bikalabs.com:80/Plone/VirtualHostRoot/$1 [L,P]
+    RewriteRule ^/(.*) http://localhost:8080/VirtualHostBase/http/example.bikalabs.com:80/Plone/VirtualHostRoot/$1 [L,P]
 
    Reload config::
 
@@ -180,7 +137,6 @@ Documenting the bika3 installation as done on Debian server 13/11/11.
 
    Add similar as below to ``/etc/rc.local`` or equivalent::
 
-    su plone -c  /home/example/zinstance/start-idserver.sh
     /home/example/zinstance/bin/plonectl start
 
 #. Test on subdomain name URL as above.
