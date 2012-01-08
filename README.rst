@@ -5,10 +5,12 @@ Installation
 ------------
 
 Documenting the bika3 installation as done on Debian server 13/11/11. Updated
-for changes affecting ID-Server, which is now by default automatically build
-and started togethere with the instance. This document describes the manual
+for changes affecting ID-Server, which is now by default automatically built
+and started in the instance. This document describes the manual
 steps to install the LIMS and set up Apache as proxy on port 80. See 
-https://github.com/bikalabs for other install options. 
+https://github.com/bikalabs for other install options, especially 
+https://github.com/bikalabs/Bika-3-Buildout which automates most
+of the steps below and also installs the Plone instance.
 
 #. Get the latest Unified Installer: http://plone.org/products/plone/releases
 
