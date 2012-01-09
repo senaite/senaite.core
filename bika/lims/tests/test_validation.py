@@ -1,6 +1,6 @@
 from Products.validation import validation
 from bika.lims.testing import BIKA_INTEGRATION_TESTING
-from plone.app.testing import SITE_OWNER_NAME, TEST_USER_NAME, login, setRoles
+from plone.app.testing import *
 from plone.testing import z2
 
 import unittest
@@ -14,17 +14,17 @@ class Tests(unittest.TestCase):
         self.app = self.layer['app']
 
     def test_UniqueFieldValidator(self):
-        z2.login(self.app['acl_users'], SITE_OWNER_NAME)
+        login(self.portal, TEST_USER_NAME)
 
         clients = self.portal.clients
-        clients.invokeFactory('Client', 'client_2')
+        clients.invokeFactory('Client', 'happy-hills-feeds')
         clients.client_2.processForm()
         self.assertEqual(clients.client_2.schema.get('title').validate('Client', clients.client_2),
-                         "Validation failed: 'Client' is in use.")
+                         "Validation failed: 'happy-hills-feeds' is in use.")
         self.assertEqual(None, clients.client_2.schema.get('title').validate('Another Client', clients.client_2))
 
     def test_ServiceKeywordValidator(self):
-        z2.login(self.app['acl_users'], SITE_OWNER_NAME)
+        login(self.portal, TEST_USER_NAME)
 
         services = self.portal.bika_setup.bika_analysisservices
         services.invokeFactory('AnalysisService', 'service_2')
@@ -37,7 +37,7 @@ class Tests(unittest.TestCase):
         self.assertEqual(None, services.service_2.schema.get('Keyword').validate('ValidKeyword', services.service_2))
 
     def test_InterimFieldsValidator(self):
-        z2.login(self.app['acl_users'], SITE_OWNER_NAME)
+        login(self.portal, TEST_USER_NAME)
 
         calcs = self.portal.bika_setup.bika_calculations
 
@@ -71,7 +71,7 @@ class Tests(unittest.TestCase):
         self.assertEqual(None, calcs.titration.schema.get('InterimFields').validate(interim_fields, calcs.titration, REQUEST=self.portal.REQUEST))
 
     def test_FormulaValidator(self):
-        z2.login(self.app['acl_users'], SITE_OWNER_NAME)
+        login(self.portal, TEST_USER_NAME)
 
         interim_fields = [{'keyword': 'TV', 'title':'Titration Volume', 'unit':'','default':''},
                           {'keyword': 'TF', 'title':'Titration Factor', 'unit':'','default':''}]
@@ -97,27 +97,24 @@ class Tests(unittest.TestCase):
         self.assertEqual(None, calcs.titration.schema.get('Formula').validate(formula, calcs.titration, REQUEST=self.portal.REQUEST))
 
     def test_CoordinateValidator(self):
-        # AVS 
-        z2.login(self.app['acl_users'], SITE_OWNER_NAME)
+        login(self.portal, TEST_USER_NAME)
 
-        folder = self.portal.bika_setup.bika_samplepoints
-        folder.invokeFactory('SamplePoint', 'sp_1')
-        folder.sp_1.edit(Latitude = '52 12 17.0 N',
-                         Longitude = '000 08 26.0 E')
-        folder.sp_1.processForm()
-        sp_1 = folder.sp_1
+        sp = self.portal.bika_setup.bika_samplepoints['samplepoint-1']
+        field = sp.schema.get('Latitude')
 
-##        import pdb;pdb.set_trace()
-        self.assertEqual(sp_1.schema.get('Latitude').validate('asdf', sp_1),
+        import pdb;pdb.set_trace()
+
+        field.validate({'degrees':'1','minutes':'2','seconds':'3', 'bearing':'n'},
+                       sp, {}, {'REQUEST':self.portal.REQUEST})
+
+        self.assertEqual(sp.schema.get('Latitude').validate('59x25x25xE', sp),
                          "Invalid Latitude. Use DEG MIN SEC N/S")
-        self.assertEqual(sp_1.schema.get('Latitude').validate('59x25x25xE', sp_1),
-                         "Invalid Latitude. Use DEG MIN SEC N/S")
-        self.assertEqual(True, sp_1.schema.get('Latitude').validate('59degrees 25mins 25N', sp_1))
-        self.assertEqual(sp_1.schema.get('Longitude').validate('asdf', sp_1),
+        self.assertEqual(True, sp.schema.get('Latitude').validate('59degrees 25mins 25N', sp))
+        self.assertEqual(sp.schema.get('Longitude').validate('asdf', sp),
                          "Invalid Latitude. Use DEG MIN SEC E/W")
-        self.assertEqual(sp_1.schema.get('Longitude').validate('59 25 25 N', sp_1),
+        self.assertEqual(sp.schema.get('Longitude').validate('59 25 25 N', sp),
                          "Invalid Latitude. Use DEG MIN SEC E/W")
-        self.assertEqual(True, sp_1.schema.get('Longitude').validate('59degrees 25mins 25E', sp_1))
+        self.assertEqual(True, sp.schema.get('Longitude').validate('59degrees 25mins 25E', sp))
 
 def test_suite():
     suite = unittest.TestSuite()

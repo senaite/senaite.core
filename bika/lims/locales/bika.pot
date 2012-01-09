@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2012-01-02 18:31+0000\n"
+"POT-Creation-Date: 2012-01-04 12:43+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -13,14 +13,6 @@ msgstr ""
 "Language-Name: English\n"
 "Preferred-Encodings: utf-8 latin1\n"
 "Domain: DOMAIN\n"
-
-#: ../skins/bika/accreditation.pt:35
-msgid "${accreditation_body}"
-msgstr ""
-
-#: ../skins/bika/accreditation.pt:28
-msgid "${name_lab} has been accredited as ${accreditation} conformant by ${accreditation_body} (${accreditation_body_long})"
-msgstr ""
 
 #: ../content/analysisspec.py:71
 msgid "% Error"
@@ -157,6 +149,9 @@ msgstr ""
 
 #: ../browser/log.py:39
 msgid "Action"
+msgstr ""
+
+msgid "Activate"
 msgstr ""
 
 #: ../browser/clientfolder.py:47
@@ -610,6 +605,9 @@ msgstr ""
 msgid "Can be reported as dry matter"
 msgstr ""
 
+msgid "Cancel"
+msgstr ""
+
 #: ../browser/client.py:275
 #: ../browser/menu.py:63
 msgid "Cancelled"
@@ -633,12 +631,6 @@ msgstr ""
 #: ../browser/analysisrequest.py:865
 #: ../browser/sample.py:137
 msgid "Changes not allowed"
-msgstr ""
-
-#: ../browser/analysisrequest.py:152
-#: ../browser/bika_listing.py:130
-#: ../browser/sample.py:135
-msgid "Changes saved"
 msgstr ""
 
 #: ../config.py:147
@@ -911,6 +903,9 @@ msgstr ""
 
 #: ../browser/fields/durationfield.py:20
 msgid "Days"
+msgstr ""
+
+msgid "Deactivate"
 msgstr ""
 
 #: ../content/client.py:62
@@ -2022,6 +2017,9 @@ msgstr ""
 msgid "Register"
 msgstr ""
 
+msgid "Reinstate"
+msgstr ""
+
 #: ../browser/mailtemplates/analysisrequest_results.pt:396
 #: ../content/arimport.py:148
 #: ../content/arimportitem.py:70
@@ -2369,6 +2367,10 @@ msgstr ""
 
 #: ../browser/referencesample.py:189
 msgid "Supplier"
+msgstr ""
+
+#: ../browser/referencesupplier.py:8
+msgid "Supplier Reference Samples description"
 msgstr ""
 
 #: ../content/person.py:31
@@ -2735,11 +2737,6 @@ msgstr ""
 msgid "invalid_sample_type"
 msgstr ""
 
-#. Default: "Advanced..."
-#: ../browser/menu.py:211
-msgid "label_advanced"
-msgstr ""
-
 #. Default: "Submit a valid Open XML (.XLSX) file containing Bika setup records to continue."
 #: ../browser/load_setup_data.py:27
 msgid "load_setup_data_descr"
@@ -2802,10 +2799,5 @@ msgstr ""
 
 #: ../browser/templates/reports_productivity.pt:153
 msgid "to"
-msgstr ""
-
-#. Default: "Policy..."
-#: ../browser/menu.py:222
-msgid "workflow_policy"
 msgstr ""
 

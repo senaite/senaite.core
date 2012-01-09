@@ -1,6 +1,7 @@
 from AccessControl import getSecurityManager
 from DateTime import DateTime
 from DocumentTemplate import sequence
+from Products.Archetypes import PloneMessageFactory as PMF
 from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFCore.utils import getToolByName
 from Products.Archetypes.public import DisplayList
@@ -118,7 +119,7 @@ class WorksheetWorkflowAction(WorkflowAction):
                     except WorkflowException:
                         pass
 
-            message = _("Changes saved")
+            message = PMF("Changes saved.")
             self.context.plone_utils.addPortalMessage(message, 'info')
             self.destination_url = self.request.get_header("referer",
                                    self.context.absolute_url())
@@ -401,15 +402,13 @@ class ManageResultsView(BrowserView):
             tool = getToolByName(self.context, REFERENCE_CATALOG)
             if analysis_uid:
                 analysis = tool.lookupObject(analysis_uid)
-                attachmentid = self.context.generateUniqueId('Attachment')
                 # client refers to Client in case of Analysis, and to
                 #     parent Worksheet in case of DuplicateAnalysis
                 if analysis.aq_parent.portal_type == 'AnalysisRequest':
                     client = analysis.aq_parent.aq_parent
                 else:
                     client = analysis.aq_parent
-                client.invokeFactory("Attachment",
-                                     id = attachmentid)
+                attachmentid = client.invokeFactory("Attachment", id = 'tmp')
                 attachment = client._getOb(attachmentid)
                 attachment.edit(
                     AttachmentFile = this_file,
@@ -434,14 +433,13 @@ class ManageResultsView(BrowserView):
                     review_state = wf_tool.getInfoFor(analysis, 'review_state', '')
                     if not review_state in ['assigned', 'sample_received', 'to_be_verified']:
                         continue
-                    attachmentid = self.context.generateUniqueId('Attachment')
                     # client refers to Client in case of Analysis, and to
                     #     parent Worksheet in case of DuplicateAnalysis
                     if analysis.aq_parent.portal_type == 'AnalysisRequest':
                         client = analysis.aq_parent.aq_parent
                     else:
                         client = analysis.aq_parent
-                    client.invokeFactory("Attachment", id = attachmentid)
+                    attachmentid = client.invokeFactory("Attachment", id = 'tmp')
                     attachment = client._getOb(attachmentid)
                     attachment.edit(
                         AttachmentFile = this_file,

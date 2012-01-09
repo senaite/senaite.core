@@ -21,7 +21,6 @@ from bika.lims.config import PROJECTNAME, \
     ManageInvoices
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IAnalysisRequest
-from bika.lims.interfaces import IGenerateUniqueId
 from bika.lims.utils import sortable_title
 
 from decimal import Decimal
@@ -216,10 +215,15 @@ schema = BikaSchema.copy() + Schema((
 schema['title'].required = False
 
 class AnalysisRequest(BaseFolder):
-    implements(IAnalysisRequest, IGenerateUniqueId)
+    implements(IAnalysisRequest)
     security = ClassSecurityInfo()
     displayContentsTab = False
     schema = schema
+
+    _at_rename_after_creation = True
+    def _renameAfterCreation(self, check_auto_id=False):
+        from bika.lims.utils import renameAfterCreation
+        renameAfterCreation(self)
 
     def hasBeenInvoiced(self):
         if self.getInvoice():

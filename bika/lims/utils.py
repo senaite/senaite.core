@@ -7,7 +7,6 @@ from bika.lims import bikaMessageFactory as _
 from bika.lims import interfaces
 from bika.lims import logger
 from bika.lims.config import Publish
-from bika.lims.interfaces import IGenerateUniqueId
 from email.Utils import formataddr
 from plone.i18n.normalizer.interfaces import IIDNormalizer
 from reportlab.graphics.barcode import getCodes, getCodeNames, createBarcodeDrawing
@@ -15,6 +14,7 @@ from zope.component import getUtility
 from zope.interface import providedBy
 import copy,re,urllib
 import plone.protect
+import transaction
 
 ModuleSecurityInfo('email.Utils').declarePublic('formataddr')
 allow_module('csv')
@@ -312,3 +312,9 @@ def generateUniqueId(context):
         prefix = norm(context.portal_type);
         new_id = next_id(prefix)
         return '%s-%s' % (prefix, new_id)
+
+def renameAfterCreation(obj):
+    # Can't rename without a subtransaction commit when using portal_factory
+    transaction.savepoint(optimistic=True)
+    new_id = generateUniqueId(obj)
+    obj.aq_inner.aq_parent.manage_renameObject(obj.id, new_id)

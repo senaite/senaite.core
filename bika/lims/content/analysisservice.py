@@ -8,7 +8,6 @@ from Products.CMFCore.utils import getToolByName
 from bika.lims.browser.fields import DurationField
 from bika.lims.browser.fields import HistoryAwareReferenceField
 from bika.lims.interfaces import IAnalysisService
-from bika.lims.interfaces import IGenerateUniqueId
 from bika.lims.browser.widgets import ServicesWidget, RecordsWidget, \
      DurationWidget
 from bika.lims.config import ATTACHMENT_OPTIONS, PROJECTNAME, \
@@ -320,7 +319,12 @@ class AnalysisService(BaseContent, HistoryAwareMixin):
     security = ClassSecurityInfo()
     schema = schema
     displayContentsTab = False
-    implements(IAnalysisService, IGenerateUniqueId)
+    implements(IAnalysisService)
+
+    _at_rename_after_creation = True
+    def _renameAfterCreation(self, check_auto_id=False):
+        from bika.lims.utils import renameAfterCreation
+        renameAfterCreation(self)
 
     security.declarePublic('getDiscountedPrice')
     def getDiscountedPrice(self):
@@ -470,9 +474,8 @@ class AnalysisService(BaseContent, HistoryAwareMixin):
 
     def duplicateService(self, context):
         """ Create a copy of the service and return the copy's id """
-        dup_id = context.generateUniqueId(type_name = 'AnalysisService')
-        context.invokeFactory(id = dup_id, type_name = 'AnalysisService')
-        dup = context[dup_id]
+        _id = context.invokeFactory(type_name = 'AnalysisService', id = 'tmp')
+        dup = context[_id]
         dup.setTitle('! Copy of %s' % self.Title())
         dup.edit(
             description = self.Description(),
@@ -496,6 +499,6 @@ class AnalysisService(BaseContent, HistoryAwareMixin):
             )
         dup.processForm()
         dup.reindexObject()
-        return dup_id
+        return _id
 
 registerType(AnalysisService, PROJECTNAME)

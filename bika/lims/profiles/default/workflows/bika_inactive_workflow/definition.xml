@@ -18,7 +18,7 @@
   </permission-map>
  </state>
 
- <state state_id="inactive" title="">
+ <state state_id="inactive" title="Inactive">
   <exit-transition transition_id="activate"/>
   <permission-map name="Delete objects" acquired="False">
    <permission-role>Manager</permission-role>

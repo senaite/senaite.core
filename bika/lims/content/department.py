@@ -5,7 +5,6 @@ from Products.Archetypes.references import HoldingReference
 from Products.CMFCore.utils import getToolByName
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
-from bika.lims.interfaces import IGenerateUniqueId
 from AccessControl import ClassSecurityInfo
 import sys
 from bika.lims import bikaMessageFactory as _
@@ -50,10 +49,14 @@ schema['description'].widget.visible = True
 schema['description'].schemata = 'default'
 
 class Department(BaseContent):
-    implements(IGenerateUniqueId)
     security = ClassSecurityInfo()
     displayContentsTab = False
     schema = schema
+
+    _at_rename_after_creation = True
+    def _renameAfterCreation(self, check_auto_id=False):
+        from bika.lims.utils import renameAfterCreation
+        renameAfterCreation(self)
 
     security.declarePublic('getContactsDisplayList')
     def getContactsDisplayList(self):

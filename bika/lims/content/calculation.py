@@ -13,7 +13,6 @@ from bika.lims.interfaces import ICalculation
 from bika.lims.browser.fields import HistoryAwareReferenceField
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
-from bika.lims.interfaces import IGenerateUniqueId
 from zope.interface import implements
 from zope.site.hooks import getSite
 from zExceptions import Redirect
@@ -77,7 +76,12 @@ class Calculation(BaseFolder, HistoryAwareMixin):
     security = ClassSecurityInfo()
     displayContentsTab = False
     schema = schema
-    implements(ICalculation,IGenerateUniqueId)
+    implements(ICalculation)
+
+    _at_rename_after_creation = True
+    def _renameAfterCreation(self, check_auto_id=False):
+        from bika.lims.utils import renameAfterCreation
+        renameAfterCreation(self)
 
     def setFormula(self, Formula=None):
         """Set the Dependent Services from the text of the calculation Formula

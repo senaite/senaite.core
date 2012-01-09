@@ -13,7 +13,6 @@ from bika.lims.config import EditWorksheet, ManageResults
 from Products.ATExtensions.ateapi import RecordsField
 from zope.interface import implements
 from bika.lims.interfaces import IWorksheet
-from bika.lims.interfaces import IGenerateUniqueId
 from bika.lims import bikaMessageFactory as _
 from Products.Archetypes.references import HoldingReference
 from bika.lims import logger
@@ -77,9 +76,14 @@ schema['title'].widget.visible = {'edit': 'hidden', 'view': 'invisible'}
 
 class Worksheet(BaseFolder, HistoryAwareMixin):
     security = ClassSecurityInfo()
-    implements(IWorksheet, IGenerateUniqueId)
+    implements(IWorksheet)
     displayContentsTab = False
     schema = schema
+
+    _at_rename_after_creation = True
+    def _renameAfterCreation(self, check_auto_id=False):
+        from bika.lims.utils import renameAfterCreation
+        renameAfterCreation(self)
 
     def Title(self):
         return self.id
@@ -243,9 +247,8 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             if calc and calc.getDependentServices():
                 continue
             service = analysis.getService()
-            duplicate_id = self.generateUniqueId('DuplicateAnalysis')
-            self.invokeFactory('DuplicateAnalysis', id = duplicate_id)
-            duplicate = self[duplicate_id]
+            _id = self.invokeFactory('DuplicateAnalysis', id = 'tmp')
+            duplicate = self[_id]
             duplicate.setAnalysis(analysis)
             duplicate.unmarkCreationFlag()
             if calc:

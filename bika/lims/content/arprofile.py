@@ -11,7 +11,6 @@ from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.widgets import ServicesWidget
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
-from bika.lims.interfaces import IGenerateUniqueId
 from zope.interface import Interface, implements
 import sys
 
@@ -67,9 +66,13 @@ schema['description'].schemata = 'Description'
 IdField = schema['id']
 
 class ARProfile(BaseContent):
-    implements(IGenerateUniqueId)
     security = ClassSecurityInfo()
     schema = schema
     displayContentsTab = False
+
+    _at_rename_after_creation = True
+    def _renameAfterCreation(self, check_auto_id=False):
+        from bika.lims.utils import renameAfterCreation
+        renameAfterCreation(self)
 
 registerType(ARProfile, PROJECTNAME)

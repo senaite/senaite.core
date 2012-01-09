@@ -158,16 +158,6 @@ class LoadSetupData(BrowserView):
                              'padding':row['padding']})
         bs.setPrefixes(prefixes)
 
-    def load_reference_manufacturers(self, sheet):
-            _id = folder.generateUniqueId('ReferenceManufacturer')
-            folder.invokeFactory('ReferenceManufacturer', id = _id)
-            obj = folder[_id]
-            obj.edit(title = unicode(row['title']),
-                     description = unicode(row['description']))
-            obj.processForm()
-            zope.event.notify(ObjectEditedEvent(obj))
-
-
     def load_lab_users(self, sheet):
         portal_registration = getToolByName(self.context, 'portal_registration')
         portal_groups = getToolByName(self.context, 'portal_groups')
@@ -222,8 +212,7 @@ class LoadSetupData(BrowserView):
         folder = self.context.bika_setup.bika_labcontacts
         for row in rows[3:]:
             row = dict(zip(fields, row))
-            _id = folder.generateUniqueId('LabContact')
-            folder.invokeFactory('LabContact', id = _id)
+            _id = folder.invokeFactory('LabContact', id='tmp')
             obj = folder[_id]
             obj.processForm()
 #            zope.event.notify(ObjectEditedEvent(obj))
@@ -254,8 +243,7 @@ class LoadSetupData(BrowserView):
         folder = self.context.bika_setup.bika_departments
         for row in rows[3:]:
             row = dict(zip(fields, row))
-            _id = folder.generateUniqueId('Department')
-            folder.invokeFactory('Department', id = _id)
+            _id = folder.invokeFactory('Department', id = 'tmp')
             obj = folder[_id]
             manager = None
             for contact in lab_contacts:
@@ -292,8 +280,7 @@ class LoadSetupData(BrowserView):
         folder = self.context.clients
         for row in rows[3:]:
             row = dict(zip(fields, row))
-            _id = folder.generateUniqueId('Client')
-            folder.invokeFactory('Client', id = _id)
+            _id = folder.invokeFactory('Client', id = 'tmp')
             obj = folder[_id]
             obj.edit(AccountNumber = unicode(row['AccountNumber']),
                         Name = unicode(row['Name']),
@@ -319,8 +306,7 @@ class LoadSetupData(BrowserView):
             if len(client) == 0:
                 raise IndexError("Client invalid: '%s'" % unicode(row['_Client_Name']))
             client = client[0].getObject()
-            _id = client.generateUniqueId('Contact')
-            client.invokeFactory('Contact', id = _id)
+            _id = client.invokeFactory('Contact', id = 'tmp')
             contact = client[_id]
             cc = self.portal_catalog(portal_type="Contact",
                                      getUsername = [c.strip() for c in unicode(row['CC']).split(',')])
@@ -393,8 +379,7 @@ class LoadSetupData(BrowserView):
         folder = self.context.bika_setup.bika_instruments
         for row in rows[3:]:
             row = dict(zip(fields, row))
-            _id = folder.generateUniqueId('Instrument')
-            folder.invokeFactory('Instrument', id = _id)
+            _id = folder.invokeFactory('Instrument', id = 'tmp')
             obj = folder[_id]
             obj.edit(title = unicode(row['title']),
                      description = unicode(row['description']),
@@ -419,8 +404,7 @@ class LoadSetupData(BrowserView):
         folder = self.context.bika_setup.bika_samplepoints
         for row in rows[3:]:
             row = dict(zip(fields, row))
-            _id = folder.generateUniqueId('SamplePoint')
-            folder.invokeFactory('SamplePoint', id = _id)
+            _id = folder.invokeFactory('SamplePoint', id = 'tmp')
             obj = folder[_id]
             latitude = {'degrees': row['lat deg'],
                         'minutes': row['lat min'],
@@ -450,8 +434,7 @@ class LoadSetupData(BrowserView):
         self.sampletypes = {}
         for row in rows[3:]:
             row = dict(zip(fields, row))
-            _id = folder.generateUniqueId('SampleType')
-            folder.invokeFactory('SampleType', id = _id)
+            _id = folder.invokeFactory('SampleType', id = 'tmp')
             obj = folder[_id]
             self.sampletypes[row['title']] = obj
             obj.edit(title = unicode(row['title']),
@@ -472,8 +455,7 @@ class LoadSetupData(BrowserView):
         folder = self.context.bika_setup.bika_analysiscategories
         for row in rows[3:]:
             row = dict(zip(fields, row))
-            _id = folder.generateUniqueId('AnalysisCategory')
-            folder.invokeFactory('AnalysisCategory', id = _id)
+            _id = folder.invokeFactory('AnalysisCategory', id = 'tmp')
             obj = folder[_id]
             obj.edit(title = unicode(row['title']),
                      description = unicode(row['description']),
@@ -492,8 +474,7 @@ class LoadSetupData(BrowserView):
         folder = self.context.bika_setup.bika_methods
         for row in rows[3:]:
             row = dict(zip(fields, row))
-            _id = folder.generateUniqueId('Method')
-            folder.invokeFactory('Method', id = _id)
+            _id = folder.invokeFactory('Method', id = 'tmp')
             obj = folder[_id]
             obj.edit(title = unicode(row['title']),
                      description = unicode(row['description']),
@@ -552,8 +533,7 @@ class LoadSetupData(BrowserView):
                 deferred = 1
                 continue
             deferred = 0
-            _id = folder.generateUniqueId('AnalysisService')
-            folder.invokeFactory('AnalysisService', id = _id)
+            _id = folder.invokeFactory('AnalysisService', id = 'tmp')
             obj = folder[_id]
             if row['errorvalue']:
                 u = [{'intercept_min': unicode(row['intercept_min']),
@@ -652,8 +632,7 @@ class LoadSetupData(BrowserView):
                 deferred = 1
                 continue
             deferred = 0
-            _id = folder.generateUniqueId('Calculation')
-            folder.invokeFactory('Calculation', id = _id)
+            _id = folder.invokeFactory('Calculation', id = 'tmp')
             obj = folder[_id]
             if row['interim_keyword']:
                 i = [{'keyword': unicode(row['interim_keyword']),
@@ -699,8 +678,7 @@ class LoadSetupData(BrowserView):
         folder = self.context.bika_setup.bika_arprofiles
         for row in rows[3:]:
             row = dict(zip(fields, row))
-            _id = folder.generateUniqueId('ARProfile')
-            folder.invokeFactory('ARProfile', id=_id)
+            _id = folder.invokeFactory('ARProfile', id = 'tmp')
             obj = folder[_id]
             services = [d.strip() for d in unicode(row['Service']).split(",")]
             proxies = self.bsc(portal_type="AnalysisService",
@@ -728,8 +706,7 @@ class LoadSetupData(BrowserView):
         for row in rows[3:]:
             row = dict(zip(fields, row))
             if row['title']:
-                _id = folder.generateUniqueId('ReferenceDefinition')
-                folder.invokeFactory('ReferenceDefinition', id = _id)
+                _id = folder.invokeFactory('ReferenceDefinition', id = 'tmp')
                 obj = folder[_id]
                 obj.edit(title = unicode(row['title']),
                          description = unicode(row['description']),
@@ -766,8 +743,7 @@ class LoadSetupData(BrowserView):
                 if ResultsRange:
                     obj.setResultsRange(ResultsRange)
                     ResultsRange = []
-                _id = folder.generateUniqueId('SampleType')
-                id = folder.invokeFactory('AnalysisSpec', id = _id)
+                _id = folder.invokeFactory('AnalysisSpec', id = 'tmp')
                 obj = folder[_id]
                 obj.edit(SampleType = self.sampletypes[row['SampleType']].UID())
                 obj.processForm()
@@ -788,8 +764,7 @@ class LoadSetupData(BrowserView):
         folder = self.context.bika_setup.bika_referencesuppliers
         for row in rows[3:]:
             row = dict(zip(fields, row))
-            _id = folder.generateUniqueId('ReferenceSupplier')
-            folder.invokeFactory('ReferenceSupplier', id = _id)
+            _id = folder.invokeFactory('ReferenceSupplier', id = 'tmp')
             obj = folder[_id]
             obj.edit(AccountNumber = unicode(row['AccountNumber']),
                      Name = unicode(row['Name']),
@@ -808,11 +783,10 @@ class LoadSetupData(BrowserView):
         fields = rows[1]
         for row in rows[3:]:
             row = dict(zip(fields, row))
-            rs = self.bsc(portal_type="ReferenceSupplier",
+            folder = self.bsc(portal_type="ReferenceSupplier",
                                     Title = row['_ReferenceSupplier_Name'])[0].getObject()
-            _id = rs.generateUniqueId('SupplierContact')
-            rs.invokeFactory('SupplierContact', id = _id)
-            obj = rs[_id]
+            _id = folder.invokeFactory('SupplierContact', id = 'tmp')
+            obj = folder[_id]
             obj.edit(Firstname = unicode(row['Firstname']),
                      Surname = unicode(row['Surname']),
                      EmailAddress = unicode(row['EmailAddress']))
@@ -843,8 +817,7 @@ class LoadSetupData(BrowserView):
         folder = self.context.bika_setup.bika_attachmenttypes
         for row in rows[3:]:
             row = dict(zip(fields, row))
-            _id = folder.generateUniqueId('AttachmentType')
-            folder.invokeFactory('AttachmentType', id = _id)
+            _id = folder.invokeFactory('AttachmentType', id = 'tmp')
             obj = folder[_id]
             obj.edit(title = unicode(row['title']),
                      description = unicode(row['description']))
@@ -861,8 +834,7 @@ class LoadSetupData(BrowserView):
         folder = self.context.bika_setup.bika_labproducts
         for row in rows[3:]:
             row = dict(zip(fields, row))
-            _id = folder.generateUniqueId('LabProduct')
-            folder.invokeFactory('LabProduct', id = _id)
+            _id = folder.invokeFactory('LabProduct', id = 'tmp')
             obj = folder[_id]
             zope.event.notify(ObjectEditedEvent(obj))
             obj.edit(title = unicode(row['title']),
@@ -893,8 +865,7 @@ class LoadSetupData(BrowserView):
                           'dup':unicode(row['dup'])}]
                     wst_obj.setLayout(wst_obj.getLayout() + l)
                 continue
-            _id = folder.generateUniqueId("WorksheetTemplate")
-            folder.invokeFactory('WorksheetTemplate', id = _id)
+            _id = folder.invokeFactory('WorksheetTemplate', id = 'tmp')
             obj = folder[_id]
             services = row['Service'] and \
                 [d.strip() for d in unicode(row['Service']).split(",")] or \
@@ -926,8 +897,7 @@ class LoadSetupData(BrowserView):
         folder = self.context.bika_setup.bika_referencemanufacturers
         for row in rows[3:]:
             row = dict(zip(fields, row))
-            _id = folder.generateUniqueId('ReferenceManufacturer')
-            folder.invokeFactory('ReferenceManufacturer', id = _id)
+            _id = folder.invokeFactory('ReferenceManufacturer', id = 'tmp')
             obj = folder[_id]
             obj.edit(title = unicode(row['title']),
                      description = unicode(row['description']))

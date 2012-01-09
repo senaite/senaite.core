@@ -5,7 +5,6 @@ from Products.Archetypes.references import HoldingReference
 from Products.ATExtensions.ateapi import RecordsField as RecordsField
 from bika.lims.browser.widgets import RecordsWidget
 from bika.lims.content.bikaschema import BikaSchema
-from bika.lims.interfaces import IGenerateUniqueId
 from bika.lims.config import PROJECTNAME
 import sys
 from bika.lims import bikaMessageFactory as _
@@ -39,9 +38,13 @@ schema['description'].widget.description = _("Method Description description",
                                              "Describes the method in layman terms. This information is made available to lab clients")
 
 class Method(BaseFolder):
-    implements(IGenerateUniqueId)
     security = ClassSecurityInfo()
     displayContentsTab = False
     schema = schema
+
+    _at_rename_after_creation = True
+    def _renameAfterCreation(self, check_auto_id=False):
+        from bika.lims.utils import renameAfterCreation
+        renameAfterCreation(self)
 
 registerType(Method, PROJECTNAME)

@@ -5,7 +5,6 @@ from Products.CMFCore.permissions import View, ModifyPortalContent
 from Products.CMFCore.utils import getToolByName
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
-from bika.lims.interfaces import IGenerateUniqueId
 from bika.lims import bikaMessageFactory as _
 from zope.interface import implements
 
@@ -40,10 +39,14 @@ schema['description'].schemata = 'default'
 schema['description'].widget.visible = True
 
 class SampleType(BaseContent, HistoryAwareMixin):
-    implements(IGenerateUniqueId)
     security = ClassSecurityInfo()
     displayContentsTab = False
     schema = schema
+
+    _at_rename_after_creation = True
+    def _renameAfterCreation(self, check_auto_id=False):
+        from bika.lims.utils import renameAfterCreation
+        renameAfterCreation(self)
 
     def getDefaultLifetime(self):
         """ get the default retention period """

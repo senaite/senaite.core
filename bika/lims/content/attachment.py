@@ -10,7 +10,6 @@ from Products.CMFCore.utils import getToolByName
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.config import PROJECTNAME
 from bika.lims import bikaMessageFactory as _
-from bika.lims.interfaces import IGenerateUniqueId
 from zope.interface import implements
 
 schema = BikaSchema.copy() + Schema((
@@ -65,10 +64,14 @@ schema['id'].required = False
 schema['title'].required = False
 
 class Attachment(BaseFolder):
-    implements(IGenerateUniqueId)
     security = ClassSecurityInfo()
     displayContentsTab = False
     schema = schema
+
+    _at_rename_after_creation = True
+    def _renameAfterCreation(self, check_auto_id=False):
+        from bika.lims.utils import renameAfterCreation
+        renameAfterCreation(self)
 
     def Title(self):
         """ Return the Id """

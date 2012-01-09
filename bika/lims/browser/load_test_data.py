@@ -49,9 +49,8 @@ class LoadTestData(BrowserView):
                 _ars = []
                 t = timer()
                 for i in range(1, count_ars+1):
-                    sample_id = client.generateUniqueId('Sample')
-                    client.invokeFactory(id = sample_id, type_name = 'Sample')
-                    sample = client[sample_id]
+                    _id = client.invokeFactory(type_name = 'Sample', id = 'tmp')
+                    sample = client[_id]
                     sample.edit(
                         SampleID = sample_id,
                         SampleType = random.choice(sampletypes).Title(),

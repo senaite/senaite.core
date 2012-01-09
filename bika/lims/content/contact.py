@@ -9,7 +9,6 @@ from Products.CMFCore import permissions
 from Products.CMFCore.utils import getToolByName
 from bika.lims.config import ManageClients, PUBLICATION_PREFS, PROJECTNAME
 from bika.lims.content.person import Person
-from bika.lims.interfaces import IGenerateUniqueId
 from bika.lims import bikaMessageFactory as _
 from zope.interface import implements
 
@@ -48,10 +47,14 @@ schema['title'].required = 0
 schema['title'].widget.visible = False
 
 class Contact(Person):
-    implements(IGenerateUniqueId)
     security = ClassSecurityInfo()
     displayContentsTab = False
     schema = schema
+
+    _at_rename_after_creation = True
+    def _renameAfterCreation(self, check_auto_id=False):
+        from bika.lims.utils import renameAfterCreation
+        renameAfterCreation(self)
 
     def Title(self):
         """ Return the contact's Fullname as title """

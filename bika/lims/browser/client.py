@@ -637,8 +637,7 @@ class SetSpecsToLabDefaults(BrowserView):
                  getClientUID = self.context.bika_setup.bika_analysisspecs.UID())
         ls = [s.getObject() for s in ls]
         for labspec in ls:
-            _id = self.context.generateUniqueId('AnalysisSpec')
-            self.context.invokeFactory(id = _id, type_name = 'AnalysisSpec')
+            _id = self.context.invokeFactory(type_name = 'AnalysisSpec', id = 'tmp')
             clientspec = self.context[_id]
             clientspec.processForm()
             clientspec.edit(

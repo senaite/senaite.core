@@ -2,7 +2,6 @@ from AccessControl import ClassSecurityInfo
 from Products.Archetypes.public import *
 from Products.CMFCore.permissions import View, ModifyPortalContent
 from bika.lims.config import PROJECTNAME
-from bika.lims.interfaces import IGenerateUniqueId
 from bika.lims.content.bikaschema import BikaSchema
 from decimal import Decimal
 from bika.lims import bikaMessageFactory as _
@@ -52,16 +51,18 @@ schema['description'].schemata = 'default'
 schema['description'].widget.visible = True
 
 class LabProduct(BaseContent):
-    implements(IGenerateUniqueId)
     security = ClassSecurityInfo()
     displayContentsTab = False
     schema = schema
 
+    _at_rename_after_creation = True
+    def _renameAfterCreation(self, check_auto_id=False):
+        from bika.lims.utils import renameAfterCreation
+        renameAfterCreation(self)
+
     def getTotalPrice(self):
         """ compute total price """
         price = self.getPrice()
-        if not price:
-            print "not price"
         price = Decimal(price or '0.00')
         vat = Decimal(self.getVAT())
         price = price and price or 0

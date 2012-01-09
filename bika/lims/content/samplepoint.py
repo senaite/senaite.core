@@ -4,7 +4,6 @@ from Products.ATContentTypes.lib.historyaware import HistoryAwareMixin
 from Products.CMFCore.permissions import View, ModifyPortalContent
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.config import PROJECTNAME
-from bika.lims.interfaces import IGenerateUniqueId
 from bika.lims.browser.fields import CoordinateField
 from bika.lims.browser.widgets import CoordinateWidget
 from bika.lims.browser.fields import DurationField
@@ -65,9 +64,13 @@ schema['description'].widget.visible = True
 schema['description'].schemata = 'default'
 
 class SamplePoint(BaseContent, HistoryAwareMixin):
-    implements(IGenerateUniqueId)
     security = ClassSecurityInfo()
     displayContentsTab = False
     schema = schema
+
+    _at_rename_after_creation = True
+    def _renameAfterCreation(self, check_auto_id=False):
+        from bika.lims.utils import renameAfterCreation
+        renameAfterCreation(self)
 
 registerType(SamplePoint, PROJECTNAME)

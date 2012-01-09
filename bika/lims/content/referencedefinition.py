@@ -9,7 +9,6 @@ from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.browser.fields import ReferenceResultsField
 from bika.lims.browser.widgets import ReferenceResultsWidget
 from bika.lims.config import PROJECTNAME
-from bika.lims.interfaces import IGenerateUniqueId
 import sys
 import time
 from bika.lims import bikaMessageFactory as _
@@ -59,9 +58,13 @@ schema['description'].schemata = 'Description'
 schema['description'].widget.visible = True
 
 class ReferenceDefinition(BaseContent):
-    implements(IGenerateUniqueId)
     security = ClassSecurityInfo()
     displayContentsTab = False
     schema = schema
+
+    _at_rename_after_creation = True
+    def _renameAfterCreation(self, check_auto_id=False):
+        from bika.lims.utils import renameAfterCreation
+        renameAfterCreation(self)
 
 registerType(ReferenceDefinition, PROJECTNAME)

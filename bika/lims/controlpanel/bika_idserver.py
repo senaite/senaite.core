@@ -25,10 +25,6 @@ class bika_idserver(object):
         plone = getSite()
         portal_id = plone.getId()
 
-        if hasattr(plone, 'TEST_MODE'):
-            # bika.lims/testing.py sets this to avoid the ID server in tests
-            return "test_%s"%(random.randint(1, 1000000000))
-
         if portal_type == 'News Item':
             portal_type = 'NewsItem'
 

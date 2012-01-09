@@ -1,5 +1,6 @@
 from AccessControl import getSecurityManager
 from DateTime import DateTime
+from Products.Archetypes import PloneMessageFactory as PMF
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
@@ -132,7 +133,7 @@ class ajaxSampleSubmit():
             ars = sample.getAnalysisRequests()
             for ar in ars:
                 ar.reindexObject()
-            message = _("Changes saved")
+            message = PMF("Changes saved.")
         else:
             message = _("Changes not allowed")
 

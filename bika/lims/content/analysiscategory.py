@@ -9,7 +9,6 @@ from Products.Archetypes.public import *
 from Products.Archetypes.references import HoldingReference
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IAnalysisCategory
-from bika.lims.interfaces import IGenerateUniqueId
 from bika.lims.config import PROJECTNAME
 from bika.lims import bikaMessageFactory as _
 from zope.interface import implements
@@ -40,10 +39,15 @@ schema['description'].widget.visible = True
 schema['description'].schemata = 'default'
 
 class AnalysisCategory(BaseContent):
-    implements(IAnalysisCategory, IGenerateUniqueId)
+    implements(IAnalysisCategory)
     security = ClassSecurityInfo()
     displayContentsTab = False
     schema = schema
+
+    _at_rename_after_creation = True
+    def _renameAfterCreation(self, check_auto_id=False):
+        from bika.lims.utils import renameAfterCreation
+        renameAfterCreation(self)
 
     def getDepartments(self):
         bsc = getToolByName(self, 'bika_setup_catalog')

@@ -6,7 +6,6 @@ from Products.CMFCore import permissions
 from bika.lims import bikaMessageFactory as _
 from bika.lims.config import ManagePricelists, ManageBika, PRICELIST_TYPES, CLIENT_TYPES, PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
-from bika.lims.interfaces import IGenerateUniqueId
 from zope.interface import implements
 import sys
 
@@ -69,10 +68,14 @@ schema = BikaSchema.copy() + Schema((
 )
 
 class Pricelist(BaseFolder):
-    implements(IGenerateUniqueId)
     security = ClassSecurityInfo()
     displayContentsTab = False
     schema = schema
+
+    _at_rename_after_creation = True
+    def _renameAfterCreation(self, check_auto_id=False):
+        from bika.lims.utils import renameAfterCreation
+        renameAfterCreation(self)
 
     security.declarePublic('current_date')
     def current_date(self):

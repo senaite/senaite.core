@@ -6,7 +6,6 @@ from Products.CMFCore import permissions
 from Products.CMFCore.utils import getToolByName
 from Products.Archetypes.public import *
 from Products.Archetypes.references import HoldingReference
-from bika.lims.interfaces import IGenerateUniqueId
 from bika.lims.content.person import Person
 from bika.lims.config import ManageClients, PUBLICATION_PREFS, PROJECTNAME
 from bika.lims import bikaMessageFactory as _
@@ -50,10 +49,14 @@ schema['title'].required = 0
 schema['title'].widget.visible = False
 
 class LabContact(Person):
-    implements(IGenerateUniqueId)
     security = ClassSecurityInfo()
     displayContentsTab = False
     schema = schema
+
+    _at_rename_after_creation = True
+    def _renameAfterCreation(self, check_auto_id=False):
+        from bika.lims.utils import renameAfterCreation
+        renameAfterCreation(self)
 
     def Title(self):
         """ Return the contact's Fullname as title """

@@ -11,7 +11,6 @@ from Products.CMFCore.utils import getToolByName
 from bika.lims.content.organisation import Organisation
 from bika.lims.config import *
 from bika.lims.interfaces import IClient
-from bika.lims.interfaces import IGenerateUniqueId
 from zope.interface import implements
 from zope.interface.declarations import alsoProvides
 import sys
@@ -78,10 +77,15 @@ schema['title'].widget.visible = False
 schema['description'].widget.visible = False
 
 class Client(Organisation):
-    implements(IClient, IGenerateUniqueId)
+    implements(IClient)
     security = ClassSecurityInfo()
     displayContentsTab = False
     schema = schema
+
+    _at_rename_after_creation = True
+    def _renameAfterCreation(self, check_auto_id=False):
+        from bika.lims.utils import renameAfterCreation
+        renameAfterCreation(self)
 
     def Title(self):
         # XXX use title like everyone else.
