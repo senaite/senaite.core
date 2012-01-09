@@ -68,27 +68,27 @@ similar for MacOSX and other Unix-type operating systems.
     Password: admin
     ...
 
-#. Edit the buildout configuration, eg /home/example/zinstance/buildout.cfg::
+#. Edit the buildout configuration, eg ``/home/example/zinstance/buildout.cfg``::
 
-   - Find the ``eggs`` section.  Add ``bika.lims``::
+   a.) Find the ``eggs`` section.  Add ``bika.lims``::
 
        eggs =
            Plone
            Pillow
            bika.lims
 
-   - Find the ``develop`` section. Add ``src/bika3``::
+   b.) Find the ``develop`` section. Add ``src/bika3``::
 
        develop =
          src/bika3
 
-   - (Optional) Change the port to the one used in Apache above (8080)::
+   c.) (Optional) Change the port to the one used in Apache above (8080)::
 
        http-address = 8080
 
-   - (Optional) Change the effective user if not id plone. 
+   d.) (Optional) Change the effective user if not id plone. 
 
-   - (Optional) Add the environment-vars stanza for the ID-server, noting port number::
+   e.) (Optional) Add the environment-vars stanza for the ID-server, noting port number::
 
        [instance]
        environment-vars =
