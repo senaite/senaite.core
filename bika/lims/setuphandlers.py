@@ -293,6 +293,7 @@ class BikaGenerator:
         at.setCatalogsByType('ARProfile', ['bika_setup_catalog', ])
         at.setCatalogsByType('LabProduct', ['bika_setup_catalog', ])
         at.setCatalogsByType('LabContact', ['bika_setup_catalog', ])
+        at.setCatalogsByType('Preservation', ['bika_setup_catalog', ])
         at.setCatalogsByType('ReferenceManufacturer', ['bika_setup_catalog', ])
         at.setCatalogsByType('ReferenceSupplier', ['bika_setup_catalog', ])
         at.setCatalogsByType('ReferenceDefinition', ['bika_setup_catalog', ])

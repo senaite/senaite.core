@@ -108,6 +108,8 @@ class ISamplePoints(Interface):
     ""
 class ISampleTypes(Interface):
     ""
+class IPreservations(Interface):
+    ""
 class IReferenceManufacturers(Interface):
     ""
 class IReferenceDefinitions(Interface):

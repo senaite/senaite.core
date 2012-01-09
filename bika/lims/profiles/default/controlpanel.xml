@@ -102,6 +102,15 @@
   <permission>BIKA: Manage Bika</permission>
  </configlet>
 
+ <configlet title="Preservations" action_id="bika_preservations"
+    appId="bika.lims" category="Products" condition_expr=""
+    icon_expr="string:++resource++bika.lims.images/preservation.png"
+    url_expr="string:$portal_url/bika_setup/bika_preservations"
+    visible="True"
+	i18n:attributes="title">
+  <permission>BIKA: Manage Bika</permission>
+ </configlet>
+
  <configlet title="Attachment Types" action_id="bika_attachmenttypes"
     appId="bika.lims" category="Products" condition_expr=""
     icon_expr="string:++resource++bika.lims.images/attachment.png"

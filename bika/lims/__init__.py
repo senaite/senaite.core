@@ -22,7 +22,7 @@ allow_module('AccessControl')
 
 def initialize(context):
 
-    from content.analysis  import Analysis
+    from content.analysis import Analysis
     from content.analysiscategory import AnalysisCategory
     from content.analysisrequest import AnalysisRequest
     from content.analysisrequestsfolder import AnalysisRequestsFolder
@@ -54,6 +54,7 @@ def initialize(context):
     from content.method import Method
     from content.organisation import Organisation
     from content.person import Person
+    from content.preservation import Preservation
     from content.pricelist import Pricelist
     from content.pricelistfolder import PricelistFolder
     from content.pricelistlineitem import PricelistLineItem
@@ -88,6 +89,7 @@ def initialize(context):
     from controlpanel.bika_labcontacts import LabContacts
     from controlpanel.bika_labproducts import LabProducts
     from controlpanel.bika_methods import Methods
+    from controlpanel.bika_preservations import Preservations
     from controlpanel.bika_referencedefinitions import ReferenceDefinitions
     from controlpanel.bika_referencemanufacturers import ReferenceManufacturers
     from controlpanel.bika_referencesuppliers import ReferenceSuppliers

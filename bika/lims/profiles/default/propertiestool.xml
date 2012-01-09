@@ -49,6 +49,7 @@
     <element value="Method"/>
     <element value="SupplyOrder"/>
     <element value="SupplyOrderItem"/>
+    <element value="Preservation"/>
     <element value="PricelistLineItem"/>
     <element value="ReferenceAnalysis"/>
     <element value="ReferenceDefinition"/>

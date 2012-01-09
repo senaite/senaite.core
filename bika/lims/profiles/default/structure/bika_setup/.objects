@@ -11,6 +11,7 @@ bika_departments,Departments
 laboratory,Laboratory
 bika_methods,Methods
 bika_labproducts,LabProducts
+bika_preservations,Preservations
 bika_referencedefinitions,ReferenceDefinitions
 bika_referencemanufacturers,ReferenceManufacturers
 bika_referencesuppliers,ReferenceSuppliers

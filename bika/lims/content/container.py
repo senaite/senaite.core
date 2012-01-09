@@ -5,12 +5,9 @@ from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.config import PROJECTNAME
 
 schema = BikaSchema.copy() + Schema((
-    TextField('ContainerDescription',
-        widget=TextAreaWidget(
-            label=_('Description'),
-        ),
-    ),
 ))
+schema['description'].widget.visible = True
+schema['description'].schemata = 'default'
 
 class Container(BaseContent):
     security = ClassSecurityInfo()

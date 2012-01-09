@@ -118,6 +118,11 @@ SERVICE_POINT_OF_CAPTURE = DisplayList((
     ('lab', _('Lab')),
 ))
 
+PRESERVATION_CATEGORIES = DisplayList((
+    ('field', _('Field Preservation')),
+    ('lab', _('Lab Preservation')),
+))
+
 PRICELIST_TYPES = DisplayList((
     ('AnalysisService', _('Analysis Services')),
     ('LabProduct', _('Lab Products')),

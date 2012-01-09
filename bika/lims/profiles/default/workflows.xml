@@ -105,7 +105,10 @@
    <bound-workflow workflow_id="bika_inactive_workflow"/>
   </type>
 
-  <type type_id="Container"/>
+  <type type_id="Container">
+   <bound-workflow workflow_id="bika_one_state_workflow"/>
+   <bound-workflow workflow_id="bika_inactive_workflow"/>
+  </type>
   <type type_id="Containers"/>
 
   <type type_id="Department">
@@ -158,6 +161,13 @@
 
   <type type_id="SupplyOrderItem"/>
   <type type_id="Plone Site"/>
+
+  <type type_id="Preservation">
+   <bound-workflow workflow_id="bika_one_state_workflow"/>
+   <bound-workflow workflow_id="bika_inactive_workflow"/>
+  </type>
+
+  <type type_id="Preservations"/>
 
   <type type_id="PricelistFolder"/>
   <type type_id="Pricelist">

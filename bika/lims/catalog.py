@@ -53,6 +53,7 @@ class BikaSetupCatalog(CatalogTool):
         portal = getToolByName(self, 'portal_url').getPortalObject()
         portal.ZopeFindAndApply(portal,
                                 obj_metatypes = ('Container',
+                                                 'Preservation',
                                                  'Department',
                                                  'AnalysisCategory',
                                                  'AnalysisService',
