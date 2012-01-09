@@ -120,18 +120,18 @@ similar for MacOSX and other Unix-type operating systems.
 
 #. Access the Zope instance via a web browser
 
-  http://admin:admin@example.bikalabs.com/manage
+    http://admin:admin@example.bikalabs.com/manage
 
    alternatively if on localhost, 
 
-  http://admin:admin@localhost:8080/manage
+    http://admin:admin@localhost:8080/manage
 
 #. Add a new Plone instance::
 
    If not automatically created by the buildout process yet, add a Plone instance while
    noting the instance name (default Plone, or Bika) and ensure that the Bika LIMS option is ticked.
 
-#. (Optional) Modify Apache web server configuration to point to instance "Plone" or "Bika" root instead of Zope root if required::
+a). (Optional) Modify Apache web server configuration to point to instance "Plone" or "Bika" root instead of Zope root if required::
 
     #RewriteRule ^/(.*) http://localhost:8080/VirtualHostBase/http/example.bikalabs.com:80/VirtualHostRoot/$1 [L,P]
 
@@ -141,7 +141,7 @@ similar for MacOSX and other Unix-type operating systems.
 
     sudo apache2ctl graceful
 
-#. (Optional) Stop the foreground instance (Control C), and restart it as a background process. 
+b). (Optional) Stop the foreground instance (Control C), and restart it as a background process. 
     Add it to server startup scripts to start Plone on reboot::
 
     sudo bin/plonectl start
