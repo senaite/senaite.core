@@ -1,9 +1,9 @@
-#
+# 
 # Translators:
 msgid ""
 msgstr ""
 "Project-Id-Version: Bika-LIMS\n"
-"POT-Creation-Date: 2012-01-04 12:43+0000\n"
+"POT-Creation-Date: 2012-01-09 17:32+0000\n"
 "PO-Revision-Date: 2012-01-02 20:15+0000\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Bika Lab Systems <support@bikalabs.com>\n"
@@ -414,6 +414,9 @@ msgstr ""
 msgid "Assigned"
 msgstr ""
 
+msgid "Attach"
+msgstr ""
+
 #: ../skins/bika/attachments.pt:256
 msgid "Attach to"
 msgstr ""
@@ -435,6 +438,9 @@ msgstr ""
 #. Default: "Indicates whether file attachments, e.g. microscope images, are required for this analysis and whether file upload function will be available for it on data capturing screens"
 #: ../content/analysisservice.py:54
 msgid "Attachment Option description"
+msgstr ""
+
+msgid "Attachment Outstanding"
 msgstr ""
 
 #: ../browser/client.py:674
@@ -1023,6 +1029,9 @@ msgstr ""
 msgid "Disposal date"
 msgstr ""
 
+msgid "Dispose"
+msgstr ""
+
 #: ../browser/client.py:423
 #: ../browser/referencesample.py:226
 #: ../browser/referencesupplier.py:61
@@ -1141,6 +1150,9 @@ msgstr ""
 msgid "Expected Results"
 msgstr ""
 
+msgid "Expire"
+msgstr ""
+
 #: ../browser/client.py:413
 #: ../browser/referencesample.py:217
 #: ../browser/referencesupplier.py:52
@@ -1151,6 +1163,14 @@ msgstr ""
 #: ../browser/referencesupplier.py:29
 #: ../browser/templates/referencesample_sticker.pt:82
 msgid "Expiry Date"
+msgstr ""
+
+#: Profile description in configure.zcml
+msgid "Extension profile for the Bika LIMS"
+msgstr ""
+
+#: ../profiles/default/actions.xml
+msgid "Extracts"
 msgstr ""
 
 #: ../browser/client.py:802
@@ -1175,6 +1195,10 @@ msgstr ""
 #: ../browser/templates/sample_sticker_small.pt:95
 #: ../config.py:112
 msgid "Field Analyses"
+msgstr ""
+
+#: ../config.py:122
+msgid "Field Preservation"
 msgstr ""
 
 #: ../browser/fields/interimfieldsfield.py:15
@@ -1219,6 +1243,10 @@ msgstr ""
 #: ../content/referencesample.py:51
 #: ../content/sampletype.py:27
 msgid "Hazardous description"
+msgstr ""
+
+### actions.xml ###
+msgid "Home"
 msgstr ""
 
 #: ../browser/fields/durationfield.py:21
@@ -1357,6 +1385,10 @@ msgstr ""
 msgid "Keywords"
 msgstr ""
 
+#: ../profiles/default/actions.xml
+msgid "LIMS"
+msgstr ""
+
 #: ../browser/analysisrequest.py:221
 #: ../browser/templates/analysisrequest_manage_results.pt:64
 #: ../browser/templates/analysisrequest_view.pt:177
@@ -1373,6 +1405,10 @@ msgstr ""
 
 #: ../controlpanel/bika_departments.py:29
 msgid "Lab Departments"
+msgstr ""
+
+#: ../config.py:123
+msgid "Lab Preservation"
 msgstr ""
 
 #: ../config.py:123
@@ -1404,6 +1440,10 @@ msgstr ""
 #. Default: "Check this box if your laboratory is accredited"
 #: ../content/laboratory.py:37
 msgid "Laboratory Accredited description"
+msgstr ""
+
+### controlpanel.xml ###
+msgid "Laboratory Information"
 msgstr ""
 
 #: ../browser/bika_listing.py:193
@@ -1441,6 +1481,11 @@ msgstr ""
 
 #: ../content/sample.py:59
 msgid "Linked Sample"
+msgstr ""
+
+#. Default: "Load Setup Data"
+#: ../browser/load_setup_data.py:26
+msgid "Load Setup Data"
 msgstr ""
 
 #: ../content/samplepoint.py:18
@@ -1544,6 +1589,15 @@ msgstr ""
 #. Default: "Too many AR columns per fax will see the font size minimised and could render faxes illegible. 4 ARs maximum per page is recommended"
 #: ../content/bikasetup.py:124
 msgid "Maximum cols per fax description"
+msgstr ""
+
+#: ../content/preservation.py:20
+msgid "Maximum holding time"
+msgstr ""
+
+#. Default: "Once preserved, the sample must be disposed of within this time period"
+#: ../content/preservation.py:21
+msgid "Maximum holding time description"
 msgstr ""
 
 #: ../content/analysis.py:62
@@ -1680,6 +1734,10 @@ msgstr ""
 msgid "No analyses have been selected."
 msgstr ""
 
+#: ../browser/worksheet.py:538
+msgid "No analyses were added to this worksheet."
+msgstr ""
+
 #: ../exportimport/instruments/fiastar.py:72
 msgid "No analyses were found."
 msgstr ""
@@ -1690,6 +1748,12 @@ msgstr ""
 
 #: ../browser/analysisrequest.py:1039
 msgid "No data was entered"
+msgstr ""
+
+#. Spreadsheet (.xlsx) file."
+#. Default: "No file data submitted.  Please submit  a valid Open XML Spreadsheet (.xlsx) file."
+#: ../browser/load_setup_data.py:58
+msgid "No file data submitted.  Please submit a valid Open XML Spreadsheet (.xlsx) file."
 msgstr ""
 
 #: ../browser/analysisrequest.py:71
@@ -1720,6 +1784,9 @@ msgstr ""
 
 #: ../config.py:144
 msgid "Not Permitted"
+msgstr ""
+
+msgid "Not Requested"
 msgstr ""
 
 #: ../browser/mailtemplates/analysisrequest_results.pt:509
@@ -1878,9 +1945,16 @@ msgstr ""
 msgid "Prefixes description"
 msgstr ""
 
+msgid "Prepublish"
+msgstr ""
+
 #: ../browser/templates/sample_sticker.pt:80
 #: ../browser/templates/sample_sticker_small.pt:80
 msgid "Preservation"
+msgstr ""
+
+#: ../content/preservation.py:15
+msgid "Preservation Category"
 msgstr ""
 
 #: ../content/analysisservice.py:61
@@ -1899,6 +1973,10 @@ msgstr ""
 
 #: ../content/pricelist.py:18
 msgid "Pricelist for"
+msgstr ""
+
+#: ../profiles/default/actions.xml
+msgid "Prices"
 msgstr ""
 
 #: ../content/pricelist.py:25
@@ -1952,6 +2030,9 @@ msgstr ""
 msgid "Publication preference"
 msgstr ""
 
+msgid "Publish"
+msgstr ""
+
 #: ../browser/client.py:261
 msgid "Published"
 msgstr ""
@@ -1976,6 +2057,10 @@ msgstr ""
 msgid "Quantity"
 msgstr ""
 
+#: ../profiles/default/actions.xml
+msgid "Queries"
+msgstr ""
+
 #: ../content/arimport.py:109
 msgid "QuoteID"
 msgstr ""
@@ -1996,6 +2081,12 @@ msgstr ""
 
 #: ../content/analysisservice.py:280
 msgid "Range min"
+msgstr ""
+
+msgid "Receive"
+msgstr ""
+
+msgid "Receive Sample"
 msgstr ""
 
 #: ../browser/analysisrequest.py:623
@@ -2082,10 +2173,16 @@ msgstr ""
 msgid "Reinstate"
 msgstr ""
 
+msgid "Reject worksheet"
+msgstr ""
+
 #: ../browser/mailtemplates/analysisrequest_results.pt:396
 #: ../content/arimport.py:148
 #: ../content/arimportitem.py:70
 msgid "Remarks"
+msgstr ""
+
+msgid "Remove"
 msgstr ""
 
 #: ../browser/templates/reports_productivity.pt:37
@@ -2110,6 +2207,13 @@ msgstr ""
 
 #: ../browser/mailtemplates/analysisrequest_results.pt:504
 msgid "Reported as dry matter"
+msgstr ""
+
+#: ../profiles/default/actions.xml
+msgid "Reports"
+msgstr ""
+
+msgid "Republish"
 msgstr ""
 
 #: ../browser/client.py:133
@@ -2191,6 +2295,9 @@ msgstr ""
 msgid "Retested"
 msgstr ""
 
+msgid "Retract"
+msgstr ""
+
 #: ../config.py:108
 msgid "SMS"
 msgstr ""
@@ -2219,6 +2326,10 @@ msgstr ""
 #: ../browser/client.py:330
 #: ../content/arimportitem.py:15
 msgid "Sample"
+msgstr ""
+
+#: ../controlpanel/bika_containers.py:29
+msgid "Sample Containers"
 msgstr ""
 
 #: ../content/arimportitem.py:40
@@ -2259,6 +2370,10 @@ msgstr ""
 
 #: ../controlpanel/bika_samplepoints.py:32
 msgid "Sample Points"
+msgstr ""
+
+#: ../controlpanel/bika_preservations.py:29
+msgid "Sample Preservations"
 msgstr ""
 
 #: ../browser/analysisrequest.py:595
@@ -2431,6 +2546,24 @@ msgstr ""
 msgid "Submit"
 msgstr ""
 
+msgid "Submit ARImport"
+msgstr ""
+
+#. records to continue."
+#. Default: "Submit a valid Open XML (.XLSX) file containing Bika setup records to continue."
+#: ../browser/load_setup_data.py:27
+msgid "Submit a valid Open XML (.XLSX) file containing Bika setup records to continue."
+msgstr ""
+
+msgid "Submit for verification"
+msgstr ""
+
+msgid "Submit worksheet"
+msgstr ""
+
+msgid "Submitted"
+msgstr ""
+
 #: ../browser/templates/analysisrequest_edit.pt:513
 #: ../content/invoice.py:45
 #: ../content/invoicelineitem.py:37
@@ -2443,6 +2576,10 @@ msgstr ""
 
 #: ../browser/referencesupplier.py:8
 msgid "Supplier Reference Samples description"
+msgstr ""
+
+#: ../profiles/default/actions.xml
+msgid "Suppliers"
 msgstr ""
 
 #: ../content/person.py:31
@@ -2531,6 +2668,9 @@ msgstr ""
 #: ../browser/bika_listing.py:190
 #: ../controlpanel/bika_instruments.py:41
 msgid "Type"
+msgstr ""
+
+msgid "Unassigned"
 msgstr ""
 
 #: ../content/analysisservice.py:272
@@ -2689,6 +2829,9 @@ msgstr ""
 msgid "Verified by"
 msgstr ""
 
+msgid "Verify"
+msgstr ""
+
 #: ../browser/log.py:36
 msgid "Version"
 msgstr ""
@@ -2785,6 +2928,10 @@ msgstr ""
 msgid "contacts_title"
 msgstr ""
 
+#: ../browser/calcs.py:240
+msgid "error"
+msgstr ""
+
 #: ../browser/calcs.py:234
 msgid "error:"
 msgstr ""
@@ -2826,38 +2973,12 @@ msgstr ""
 msgid "invalid_sample_type"
 msgstr ""
 
-#. records to continue."
-#. Default: "Submit a valid Open XML (.XLSX) file containing Bika setup records to continue."
-#: ../browser/load_setup_data.py:27
-msgid "load_setup_data_descr"
-msgstr ""
-
 #: ../browser/load_setup_data.py:29
 msgid "load_setup_data_helptext"
 msgstr ""
 
-#. Spreadsheet (.xlsx) file."
-#. Default: "No file data submitted.  Please submit  a valid Open XML Spreadsheet (.xlsx) file."
-#: ../browser/load_setup_data.py:58
-msgid "load_setup_data_no_input_file"
-msgstr ""
-
-#. Default: "Setup data loaded successfully"
-#: ../browser/load_setup_data.py:129
-msgid "load_setup_data_success"
-msgstr ""
-
-#. Default: "Load Setup Data"
-#: ../browser/load_setup_data.py:26
-msgid "load_setup_data_title"
-msgstr ""
-
 #: ../browser/calcs.py:233
 msgid "max"
-msgstr ""
-
-#: ../browser/calcs.py:224
-msgid "max:"
 msgstr ""
 
 #. Default: "${items} published."
@@ -2873,15 +2994,6 @@ msgstr ""
 
 #: ../browser/calcs.py:232
 msgid "min"
-msgstr ""
-
-#: ../browser/calcs.py:223
-msgid "min:"
-msgstr ""
-
-#. Default: "No analyses were added to this worksheet."
-#: ../browser/worksheet.py:538
-msgid "no_analyses_added"
 msgstr ""
 
 #: ../browser/templates/analysisrequest_manage_results.pt:59
