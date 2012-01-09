@@ -11,8 +11,9 @@ of the steps below and also installs the Plone instance.
 Installation
 ------------
 This document details the installation steps for Bika LIMS version 3 
-on Linux  and the set up for Apache as proxy to make it available on
-the standard http port 80. The process should be
+from the Unified Installer package as basis, as installed
+on Linux, as well as the setup for Apache as web proxy to make 
+the LIMS available on the standard http port 80. The process should be
 similar for MacOSX and other Unix-type operating systems.
 
 
@@ -67,28 +68,27 @@ similar for MacOSX and other Unix-type operating systems.
     Password: admin
     ...
 
-#. Edit ``/home/example/zinstance/buildout.cfg``.::
+#. Edit the buildout configuration, eg /home/example/zinstance/buildout.cfg::
 
-   a. Find the ``eggs`` section.  Add ``bika.lims``::
+   - Find the ``eggs`` section.  Add ``bika.lims``::
 
        eggs =
            Plone
            Pillow
            bika.lims
 
-   b. Find the ``develop`` section. Add ``src/bika3``::
+   - Find the ``develop`` section. Add ``src/bika3``::
 
        develop =
          src/bika3
 
-   c. (Optional) Change the port to the one used in Apache above (8080)::
+   - (Optional) Change the port to the one used in Apache above (8080)::
 
        http-address = 8080
 
-   d. (Optional) Change the effective user if not id plone. 
+   - (Optional) Change the effective user if not id plone. 
 
-   e. (Optional) Add the ``Environ`` variable for ID-server, noting port number for shell
-      script later::
+   - (Optional) Add the environment-vars stanza for the ID-server, noting port number::
 
        [instance]
        environment-vars =
@@ -118,13 +118,13 @@ similar for MacOSX and other Unix-type operating systems.
     2011-11-13 12:06:07 INFO Zope Ready to handle requests
 
 
-#. Access the LIMS via a web browser::
+#. Access the Zope instance via a web browser::
 
-..  _http://admin:admin@example.bikalabs.com/manage:    http://admin:admin@example.bikalabs.com/manage/
+..  __: http://admin:admin@example.bikalabs.com/manage
 
    alternatively, 
 
-..  _http://admin:admin@localhost:8080/manage: http://admin:admin@localhost:8080/manage/
+..  __: http://admin:admin@localhost:8080/manage
 
 #. Add a new Plone instance::
 
