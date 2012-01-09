@@ -1,8 +1,15 @@
 [main]
 host = https://www.transifex.net
 
-[bika-lims.bikapot]
-file_filter = locales/bika-<lang>.po
+[bika-lims.bika]
+file_filter = <lang>/LC_MESSAGES/bika.po
 host = http://www.transifex.net
 source_lang = en
+#trans.af = locales/af/LC_MESSAGES/bika.po
+#trans.de = locales/de/LC_MESSAGES/bika.po
+#trans.en = locales/en/LC_MESSAGES/bika.po
+#trans.es = locales/es/LC_MESSAGES/bika.po
+#trans.nl = locales/nl/LC_MESSAGES/bika.po
+#trans.pt = locales/pt/LC_MESSAGES/bika.po
+#trans.zh = locales/zh/LC_MESSAGES/bika.po
 

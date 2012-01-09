@@ -90,6 +90,8 @@ class ICalculations(Interface):
     ""
 class IDepartments(Interface):
     ""
+class IContainers(Interface):
+    ""
 class IInstruments(Interface):
     ""
 class IAnalysisSpecs(Interface):
@@ -105,6 +107,8 @@ class ILabProducts(Interface):
 class ISamplePoints(Interface):
     ""
 class ISampleTypes(Interface):
+    ""
+class IPreservations(Interface):
     ""
 class IReferenceManufacturers(Interface):
     ""

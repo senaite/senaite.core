@@ -38,6 +38,7 @@
     <element value="BikaSetup"/>
     <element value="Calculation"/>
     <element value="Client"/>
+    <element value="Container"/>
     <element value="Department"/>
     <element value="DuplicateAnalysis"/>
     <element value="Instrument"/>
@@ -48,6 +49,7 @@
     <element value="Method"/>
     <element value="SupplyOrder"/>
     <element value="SupplyOrderItem"/>
+    <element value="Preservation"/>
     <element value="PricelistLineItem"/>
     <element value="ReferenceAnalysis"/>
     <element value="ReferenceDefinition"/>

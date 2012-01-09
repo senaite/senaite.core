@@ -226,8 +226,8 @@ class ajaxCalculateAnalysisEntry():
         else:
             in_range = analysis.result_in_range(Result['result'], self.spec)
         if in_range[0] == False:
-            range_str = _("min:") + str(in_range[1]['min']) + ", " + \
-                        _("max:") + str(in_range[1]['max'])
+            range_str = _("min") + " " + str(in_range[1]['min']) + ", " + \
+                        _("max") + " " + str(in_range[1]['max'])
             self.alerts.append({'uid': uid,
                                 'field': 'Result',
                                 'icon': 'exclamation',
@@ -237,7 +237,7 @@ class ajaxCalculateAnalysisEntry():
         if in_range[0] == '1':
             range_str = _("min") + " " + str(in_range[1]['min']) + ", " + \
                         _("max") + " " + str(in_range[1]['max']) + ", " + \
-                        _("error:") + " " + str(in_range[1]['error'])+"%"
+                        _("error") + " " + str(in_range[1]['error'])+"%"
             self.alerts.append({'uid': uid,
                                 'field': 'Result',
                                 'icon': 'warning',

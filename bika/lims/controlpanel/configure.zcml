@@ -5,6 +5,22 @@
     i18n_domain="bika">
 
     <browser:page
+      for="bika.lims.interfaces.IContainers"
+      name="folder_view"
+      class=".bika_containers.ContainersView"
+      permission="bika.lims.ManageBika"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
+      for="bika.lims.interfaces.IPreservations"
+      name="folder_view"
+      class=".bika_preservations.PreservationsView"
+      permission="bika.lims.ManageBika"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
       for="bika.lims.interfaces.IDepartments"
       name="folder_view"
       class=".bika_departments.DepartmentsView"

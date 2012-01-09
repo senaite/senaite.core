@@ -529,12 +529,11 @@ class AddAnalysesView(BikaListingView):
                 self.context.applyWorksheetTemplate(wst)
                 if len(self.context.getLayout()) != len(layout):
                     self.context.plone_utils.addPortalMessage(
-                        self.context.translate(_("Worksheet updated.")))
+                        self.context.translate(PMF("Changes saved.")))
                     self.request.RESPONSE.redirect(self.context.absolute_url() + "/manage_results")
                 else:
                     self.context.plone_utils.addPortalMessage(
-                        self.context.translate(_("no_analyses_added",
-                                                 "No analyses were added to this worksheet.")))
+                        self.context.translate(_("No analyses were added to this worksheet.")))
                     self.request.RESPONSE.redirect(self.context.absolute_url() + "/add_analyses")
 
         self._process_request()

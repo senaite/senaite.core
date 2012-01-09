@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 
-<object name="portal_controlpanel" meta_type="Plone Control Panel Tool" 
- xmlns:i18n="http://xml.zope.org/namespaces/i18n" 
+<object name="portal_controlpanel" meta_type="Plone Control Panel Tool"
+ xmlns:i18n="http://xml.zope.org/namespaces/i18n"
  i18n:domain="bika.lims">
 
  <configlet title="Bika Setup" action_id="bika_setup"
@@ -102,6 +102,15 @@
   <permission>BIKA: Manage Bika</permission>
  </configlet>
 
+ <configlet title="Preservations" action_id="bika_preservations"
+    appId="bika.lims" category="Products" condition_expr=""
+    icon_expr="string:++resource++bika.lims.images/preservation.png"
+    url_expr="string:$portal_url/bika_setup/bika_preservations"
+    visible="True"
+	i18n:attributes="title">
+  <permission>BIKA: Manage Bika</permission>
+ </configlet>
+
  <configlet title="Attachment Types" action_id="bika_attachmenttypes"
     appId="bika.lims" category="Products" condition_expr=""
     icon_expr="string:++resource++bika.lims.images/attachment.png"
@@ -115,6 +124,15 @@
     appId="bika.lims" category="Products" condition_expr=""
     icon_expr="string:++resource++bika.lims.images/calculation.png"
     url_expr="string:$portal_url/bika_setup/bika_calculations"
+    visible="True"
+	i18n:attributes="title">
+  <permission>BIKA: Manage Bika</permission>
+ </configlet>
+
+ <configlet title="Containers" action_id="bika_containers"
+    appId="bika.lims" category="Products" condition_expr=""
+    icon_expr="string:++resource++bika.lims.images/container.png"
+    url_expr="string:$portal_url/bika_setup/bika_containers"
     visible="True"
 	i18n:attributes="title">
   <permission>BIKA: Manage Bika</permission>

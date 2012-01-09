@@ -4,6 +4,7 @@ from Products.Archetypes.event import ObjectEditedEvent
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from Products.Archetypes import PloneMessageFactory as PMF
 from bika.lims import logger, bikaMessageFactory as _
 from cStringIO import StringIO
 from openpyxl.reader.excel import load_workbook
@@ -23,9 +24,8 @@ class LoadSetupData(BrowserView):
 
     def __init__(self, context, request):
         BrowserView.__init__(self, context, request)
-        self.title = _("load_setup_data_title", default="Load Setup Data")
-        self.description = _("load_setup_data_descr",
-                             default="Submit a valid Open XML (.XLSX) file containing Bika setup records to continue.")
+        self.title = _("Load Setup Data")
+        self.description = _("Submit a valid Open XML (.XLSX) file containing Bika setup records to continue.")
         self.helptext = _("load_setup_data_helptext",
                           default="")
         # dependencies to resolve
@@ -55,9 +55,7 @@ class LoadSetupData(BrowserView):
         tmp = tempfile.mktemp(prefix=Globals.INSTANCE_HOME)
         file_content = 'xlsx' in form and form['xlsx'].read()
         if not file_content:
-            msg = self.context.translate(_("load_setup_data_no_input_file",
-                                           default="No file data submitted.  Please submit "
-                                           " a valid Open XML Spreadsheet (.xlsx) file."))
+            msg = self.context.translate(_("No file data submitted.  Please submit a valid Open XML Spreadsheet (.xlsx) file."))
             self.plone_utils.addPortalMessage(msg)
             return self.template()
 
@@ -124,10 +122,10 @@ class LoadSetupData(BrowserView):
         bsc.clearFindAndRebuild()
 
         if App.config.getConfiguration().debug_mode:
-            message = "Ok (%s seconds)" % int(time.time() - start)
+            message = self.context.translate(PMF("Changes saved.")) + \
+                " %s"%int(time.time() - start)
         else:
-            message = _("load_setup_data_success",
-                        default="Setup data loaded successfully")
+            message = self.context.translate(PMF("Changes saved."))
         self.plone_utils.addPortalMessage(message)
         self.request.RESPONSE.redirect(portal.absolute_url())
 
