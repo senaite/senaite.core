@@ -10,14 +10,15 @@ of the steps below and also installs the Plone instance.
 
 Installation
 ------------
-This document details the installation of Bika LIMS version 3 
-on Linux  and set up Apache as proxy on port 80. It should be
+This document details the installation steps for Bika LIMS version 3 
+on Linux  and the set up for Apache as proxy to make it available on
+the standard http port 80. The process should be
 similar for MacOSX and other Unix-type operating systems.
 
 
 #. Get the latest Unified Installer: http://plone.org/products/plone/releases
 
-#. Copy the link, and download it (eg. using wget)::
+#. Copy the link for the required version, and download it (eg. using wget)::
 
     wget http://launchpad.net/plone/4.1/4.1.2/+download/Plone-4.1.2-UnifiedInstaller.tgz
 
@@ -29,8 +30,9 @@ similar for MacOSX and other Unix-type operating systems.
 
     sudo ./install.sh --target=/home/example  standalone
 
-#. (Optional) Set up a domain name for the LIMS site and add the Apache mapping on 
-   the http-server, noting the port for instance (default 8080) - Add ``A`` or ``CNAME`` record, if needed.
+#. (Optional) Set up a domain name::
+   Set up the chosen domain name for the LIMS site, and add the Apache mapping on 
+   the http-server, noting the Zope server port for instance (default 8080) 
 
    Edit the apache configuration, adding a new virtual host::
 
@@ -65,7 +67,7 @@ similar for MacOSX and other Unix-type operating systems.
     Password: admin
     ...
 
-#. Edit ``/home/example/zinstance/buildout.cfg``.
+#. Edit ``/home/example/zinstance/buildout.cfg``.::
 
    a. Find the ``eggs`` section.  Add ``bika.lims``::
 
@@ -120,12 +122,14 @@ similar for MacOSX and other Unix-type operating systems.
 
 ..  _http://admin:admin@example.bikalabs.com/manage:    http://admin:admin@example.bikalabs.com/manage/
 
-   or::
+   alternatively, 
 
 ..  _http://admin:admin@localhost:8080/manage: http://admin:admin@localhost:8080/manage/
 
-#. Add a Plone instance (if not automatically created by the buildout process yet), 
-noting the instance name (default Plone, or Bika), and ensure that the Bika LIMS option is ticked.
+#. Add a new Plone instance::
+
+   If not automatically created by the buildout process yet, add a Plone instance while
+   noting the instance name (default Plone, or Bika) and ensure that the Bika LIMS option is ticked.
 
 #. (Optional) Modify Apache web server configuration to point to instance "Plone" or "Bika" root instead of Zope root if required::
 
@@ -133,7 +137,7 @@ noting the instance name (default Plone, or Bika), and ensure that the Bika LIMS
 
     RewriteRule ^/(.*) http://localhost:8080/VirtualHostBase/http/example.bikalabs.com:80/Plone/VirtualHostRoot/$1 [L,P]
 
-   Reload webserver with new configiuration::
+   Reload the Apache webserver with new configuration::
 
     sudo apache2ctl graceful
 
