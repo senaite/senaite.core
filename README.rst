@@ -118,13 +118,13 @@ similar for MacOSX and other Unix-type operating systems.
     2011-11-13 12:06:07 INFO Zope Ready to handle requests
 
 
-#. Access the Zope instance via a web browser::
+#. Access the Zope instance via a web browser
 
-..  __: http://admin:admin@example.bikalabs.com/manage
+  http://admin:admin@example.bikalabs.com/manage
 
-   alternatively, 
+   alternatively if on localhost, 
 
-..  __: http://admin:admin@localhost:8080/manage
+  http://admin:admin@localhost:8080/manage
 
 #. Add a new Plone instance::
 
