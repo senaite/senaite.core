@@ -23,6 +23,8 @@
  <object name="Client" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="ClientFolder" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="Contact" meta_type="Factory-based Type Information with dynamic views"/>
+ <object name="Container" meta_type="Factory-based Type Information with dynamic views"/>
+ <object name="Containers" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="Department" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="Departments" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="DuplicateAnalysis" meta_type="Factory-based Type Information with dynamic views"/>

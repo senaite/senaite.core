@@ -6,6 +6,7 @@ bika_attachmenttypes,AttachmentTypes
 bika_calculations,Calculations
 bika_instruments,Instruments
 bika_labcontacts,LabContacts
+bika_containers,Containers
 bika_departments,Departments
 laboratory,Laboratory
 bika_methods,Methods

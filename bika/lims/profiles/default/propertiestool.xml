@@ -38,6 +38,7 @@
     <element value="BikaSetup"/>
     <element value="Calculation"/>
     <element value="Client"/>
+    <element value="Container"/>
     <element value="Department"/>
     <element value="DuplicateAnalysis"/>
     <element value="Instrument"/>

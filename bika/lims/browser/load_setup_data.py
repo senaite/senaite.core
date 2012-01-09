@@ -4,6 +4,7 @@ from Products.Archetypes.event import ObjectEditedEvent
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from Products.Archetypes import PloneMessageFactory as PMF
 from bika.lims import logger, bikaMessageFactory as _
 from cStringIO import StringIO
 from openpyxl.reader.excel import load_workbook
@@ -124,10 +125,10 @@ class LoadSetupData(BrowserView):
         bsc.clearFindAndRebuild()
 
         if App.config.getConfiguration().debug_mode:
-            message = "Ok (%s seconds)" % int(time.time() - start)
+            message = self.context.translate(PMF("Changes saved.")) + \
+                " %s"%int(time.time() - start)
         else:
-            message = _("load_setup_data_success",
-                        default="Setup data loaded successfully")
+            message = self.context.translate(PMF("Changes saved."))
         self.plone_utils.addPortalMessage(message)
         self.request.RESPONSE.redirect(portal.absolute_url())
 

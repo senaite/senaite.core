@@ -280,6 +280,7 @@ class BikaGenerator:
 
         at = getToolByName(portal, 'archetype_tool')
         at.setCatalogsByType('Department', ['bika_setup_catalog', ])
+        at.setCatalogsByType('Container', ['bika_setup_catalog', ])
         at.setCatalogsByType('AnalysisCategory', ['bika_setup_catalog', ])
         at.setCatalogsByType('AnalysisService', ['bika_setup_catalog', ])
         at.setCatalogsByType('AnalysisSpec', ['bika_setup_catalog', ])

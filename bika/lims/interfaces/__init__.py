@@ -90,6 +90,8 @@ class ICalculations(Interface):
     ""
 class IDepartments(Interface):
     ""
+class IContainers(Interface):
+    ""
 class IInstruments(Interface):
     ""
 class IAnalysisSpecs(Interface):
