@@ -250,7 +250,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             _id = self.invokeFactory('DuplicateAnalysis', id = 'tmp')
             duplicate = self[_id]
             duplicate.setAnalysis(analysis)
-            duplicate.unmarkCreationFlag()
+            duplicate.processForm()
             if calc:
                 duplicate.setInterimFields(calc.getInterimFields())
             self.setLayout(

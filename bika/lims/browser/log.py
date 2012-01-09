@@ -24,6 +24,7 @@ class LogView(BikaListingView):
         self.show_sort_column = False
         self.show_select_row = False
         self.show_select_column = False
+        self.show_workflow_action_buttons = False
         self.pagesize = 1000
 
         self.icon = "++resource++bika.lims.images/%s_big.png" % \

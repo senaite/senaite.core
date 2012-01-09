@@ -445,6 +445,7 @@ class ManageResultsView(BrowserView):
                         AttachmentFile = this_file,
                         AttachmentType = self.request['AttachmentType'],
                         AttachmentKeys = self.request['AttachmentKeys'])
+                    attachment.processForm()
                     attachment.reindexObject()
 
                     others = analysis.getAttachment()

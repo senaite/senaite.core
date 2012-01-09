@@ -44,19 +44,6 @@
     </dd>
 </dl>
 
-<dl class="portalMessage info"
-    tal:condition="python: not context.bika_setup_catalog.uniqueValuesFor('portal_type')">
-    <dt i18n:translate="">
-        Info
-    </dt>
-    <dd>
-        <span tal:omit-tag="python:True" i18n:translate="">
-    		You have no LIMS setup data loaded.  To import setup data
-		</span>
-       <a href="load_setup_data" i18n:translate="">click here.</a>
-    </dd>
-</dl>
-
        </metal:block>
 
       <div id="archetypes-schemata-links"
