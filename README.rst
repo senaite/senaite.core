@@ -101,7 +101,7 @@ similar for MacOSX and other Unix-type operating systems.
 
     sudo bin/buildout -v
 
-#. Test and reload apache config, if new server name DNS is ready::
+#. (Optional) Test and reload apache config::
 
     sudo apache2ctl configtest
     dig example.bikalabs.com
@@ -118,11 +118,11 @@ similar for MacOSX and other Unix-type operating systems.
 
 #. Access the LIMS via a web browser::
 
-.. http://admin:admin@example.bikalabs.com/manage_:    http://admin:admin@example.bikalabs.com/manage
+..  _http://admin:admin@example.bikalabs.com/manage:    http://admin:admin@example.bikalabs.com/manage/
 
    or::
 
-.. http://admin:admin@localhost:8080/manage_: http://admin:admin@localhost:8080/manage
+..  _http://admin:admin@localhost:8080/manage: http://admin:admin@localhost:8080/manage/
 
 #. Add a Plone instance (if not automatically created by the buildout process yet), 
 noting the instance name (default Plone, or Bika), and ensure that the Bika LIMS option is ticked.
@@ -146,4 +146,3 @@ noting the instance name (default Plone, or Bika), and ensure that the Bika LIMS
 
     /home/example/zinstance/bin/plonectl start
 
-#. Test on subdomain name URL as above.
