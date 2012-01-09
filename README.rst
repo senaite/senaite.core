@@ -1,24 +1,27 @@
 Bika LIMS
 ============
+This document describes the installation of Bika LIMS.
+The ID-Server is now by default automatically built
+and started as part of the Zope/Plone instance. 
 
-Installation
-------------
-
-Documenting the bika3 installation as done on Debian server 13/11/11. Updated
-for changes affecting ID-Server, which is now by default automatically built
-and started in the instance. This document describes the manual
-steps to install the LIMS and set up Apache as proxy on port 80. See 
-https://github.com/bikalabs for other install options, especially 
+See https://github.com/bikalabs for other install options, especially 
 https://github.com/bikalabs/Bika-3-Buildout which automates most
 of the steps below and also installs the Plone instance.
 
+Installation
+------------
+This document details the installation of Bika LIMS version 3 
+on Linux  and set up Apache as proxy on port 80. It should be
+similar for MacOSX and other Unix-type operating systems.
+
+
 #. Get the latest Unified Installer: http://plone.org/products/plone/releases
 
-#. Copy link, and wget it on your server::
+#. Copy the link, and download it (eg. using wget)::
 
     wget http://launchpad.net/plone/4.1/4.1.2/+download/Plone-4.1.2-UnifiedInstaller.tgz
 
-#. Untar::
+#. Untar the archive::
 
     tar xzf Plone-4.1.2-UnifiedInstaller.tgz
 
@@ -33,7 +36,7 @@ of the steps below and also installs the Plone instance.
 
     sudo vim /etc/apache2/sites-enabled/000-default
 
-   Add the following, ensure an existing port is not conflicted::
+   Add directives, ensuring an existing port is not conflicted::
 
      <VirtualHost *:80>
           ServerName  example.bikalabs.com
@@ -59,7 +62,7 @@ of the steps below and also installs the Plone instance.
     The account has full 'Manager' privileges.
 
     Username: admin
-    Password: password
+    Password: admin
     ...
 
 #. Edit ``/home/example/zinstance/buildout.cfg``.
@@ -94,7 +97,7 @@ of the steps below and also installs the Plone instance.
     cd /home/example/zinstance
     git clone https://github.com/bikalabs/Bika-LIMS src/bika3
 
-#. Do the buildout of the instance::
+#. Do the (verbose) buildout of the instance::
 
     sudo bin/buildout -v
 
@@ -104,7 +107,7 @@ of the steps below and also installs the Plone instance.
     dig example.bikalabs.com
     sudo apachectl graceful
 
-#. Test run in foreground, noting error messages::
+#. Test run in foreground, noting error messages if any and making corrections::
 
     sudo bin/plonectl fg
 
@@ -113,27 +116,29 @@ of the steps below and also installs the Plone instance.
     2011-11-13 12:06:07 INFO Zope Ready to handle requests
 
 
-#. Access via Web::
+#. Access the LIMS via a web browser::
 
-    http://admin:password@example.bikalabs.com/manage
+.. http://admin:admin@example.bikalabs.com/manage_:    http://admin:admin@example.bikalabs.com/manage
 
    or::
 
-    http://admin:password@localhost:8080/manage
+.. http://admin:admin@localhost:8080/manage_: http://admin:admin@localhost:8080/manage
 
-#. Add Plone site, noting Instance name (default Plone), and ensure to tick Bika LIMS option
+#. Add a Plone instance (if not automatically created by the buildout process yet), 
+noting the instance name (default Plone, or Bika), and ensure that the Bika LIMS option is ticked.
 
-#. (Optional) Modify apache config to point to instance "Plone" root instead of Zope root if required::
+#. (Optional) Modify Apache web server configuration to point to instance "Plone" or "Bika" root instead of Zope root if required::
 
     #RewriteRule ^/(.*) http://localhost:8080/VirtualHostBase/http/example.bikalabs.com:80/VirtualHostRoot/$1 [L,P]
 
     RewriteRule ^/(.*) http://localhost:8080/VirtualHostBase/http/example.bikalabs.com:80/Plone/VirtualHostRoot/$1 [L,P]
 
-   Reload config::
+   Reload webserver with new configiuration::
 
     sudo apache2ctl graceful
 
-#. Stop foreground instance (Control C), restart as process and optionally add to server startup scripts::
+#. (Optional) Stop the foreground instance (Control C), and restart it as a background process. 
+    Add it to server startup scripts to start Plone on reboot::
 
     sudo bin/plonectl start
 
