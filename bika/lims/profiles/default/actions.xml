@@ -1,7 +1,8 @@
 <?xml version="1.0"?>
 <object xmlns:i18n="http://xml.zope.org/namespaces/i18n"
 	name="portal_actions"
-	meta_type="Plone Actions Tool">
+	meta_type="Plone Actions Tool"
+	i18n:domain="bika">
 
 	<action-provider name="portal_actions"/>
 
@@ -37,8 +38,8 @@
 			<property name="visible">False</property>
 		</object>
 		<object name="lims" meta_type="CMF Action">
-			<property name="title">LIMS</property>
-			<property name="description"/>
+			<property name="title" i18n:translate="">LIMS</property>
+			<property name="description" i18n:translate=""/>
 			<property name="url_expr">string:$portal_url/redirect_to_client_home</property>
 			<property name="link_target"/>
 			<property name="icon_expr"/>
@@ -47,8 +48,8 @@
 			<property name="visible">True</property>
 		</object>
 		<object name="clients" meta_type="CMF Action">
-			<property name="title">Clients</property>
-			<property name="description"/>
+			<property name="title" i18n:translate="">Clients</property>
+			<property name="description" i18n:translate=""/>
 			<property name="url_expr">string:$portal_url/clients</property>
 			<property name="link_target"/>
 			<property name="icon_expr"/>
@@ -59,8 +60,8 @@
 			<property name="visible">False</property>
 		</object>
 		<object name="samples" meta_type="CMF Action">
-			<property name="title">Samples</property>
-			<property name="description"/>
+			<property name="title" i18n:translate="">Samples</property>
+			<property name="description" i18n:translate=""/>
 			<property name="url_expr">string:$portal_url/samples</property>
 			<property name="link_target"/>
 			<property name="icon_expr"/>
@@ -71,8 +72,8 @@
 			<property name="visible">False</property>
 		</object>
 		<object name="analysisrequests" meta_type="CMF Action">
-			<property name="title">Analysis Requests</property>
-			<property name="description"/>
+			<property name="title" i18n:translate="">Analysis Requests</property>
+			<property name="description" i18n:translate=""/>
 			<property name="url_expr">string:$portal_url/analysisrequests</property>
 			<property name="link_target"/>
 			<property name="icon_expr"/>
@@ -83,8 +84,8 @@
 			<property name="visible">False</property>
 		</object>
 		<object name="worksheets" meta_type="CMF Action">
-			<property name="title">Worksheets</property>
-			<property name="description"/>
+			<property name="title" i18n:translate="">Worksheets</property>
+			<property name="description" i18n:translate=""/>
 			<property name="url_expr">string:$portal_url/worksheets</property>
 			<property name="link_target"/>
 			<property name="icon_expr"/>
@@ -95,8 +96,8 @@
 			<property name="visible">False</property>
 		</object>
 		<object name="orders" meta_type="CMF Action">
-			<property name="title">Orders</property>
-			<property name="description"/>
+			<property name="title" i18n:translate="">Orders</property>
+			<property name="description" i18n:translate=""/>
 			<property name="url_expr">string:$portal_url/orders</property>
 			<property name="link_target"/>
 			<property name="icon_expr"/>
@@ -107,8 +108,8 @@
 			<property name="visible">False</property>
 		</object>
 		<object name="referencesuppliers" meta_type="CMF Action">
-			<property name="title">Suppliers</property>
-			<property name="description"/>
+			<property name="title" i18n:translate="">Suppliers</property>
+			<property name="description" i18n:translate=""/>
 			<property name="url_expr">string:$portal_url/referencesuppliers</property>
 			<property name="link_target"/>
 			<property name="icon_expr"/>
@@ -119,8 +120,8 @@
 			<property name="visible">False</property>
 		</object>
 		<object name="referencesamples" meta_type="CMF Action">
-			<property name="title">Reference Samples</property>
-			<property name="description"/>
+			<property name="title" i18n:translate="">Reference Samples</property>
+			<property name="description" i18n:translate=""/>
 			<property name="url_expr">string:$portal_url/referencesamples</property>
 			<property name="link_target"/>
 			<property name="icon_expr"/>
@@ -131,8 +132,8 @@
 			<property name="visible">False</property>
 		</object>
 		<object name="queries" meta_type="CMF Action">
-			<property name="title">Queries</property>
-			<property name="description"/>
+			<property name="title" i18n:translate="">Queries</property>
+			<property name="description" i18n:translate=""/>
 			<property name="url_expr">string:$portal_url/query_form</property>
 			<property name="link_target"/>
 			<property name="icon_expr"/>
@@ -143,8 +144,8 @@
 			<property name="visible">False</property>
 		</object>
 		<object name="reports" meta_type="CMF Action">
-			<property name="title">Reports</property>
-			<property name="description"/>
+			<property name="title" i18n:translate="">Reports</property>
+			<property name="description" i18n:translate=""/>
 			<property name="url_expr">string:$portal_url/reports</property>
 			<property name="link_target"/>
 			<property name="icon_expr"/>
@@ -155,8 +156,8 @@
 			<property name="visible">True</property>
 		</object>
 		<object name="extracts" meta_type="CMF Action">
-			<property name="title">Extracts</property>
-			<property name="description"/>
+			<property name="title" i18n:translate="">Extracts</property>
+			<property name="description" i18n:translate=""/>
 			<property name="url_expr">string:$portal_url/extracts</property>
 			<property name="link_target"/>
 			<property name="icon_expr"/>
@@ -167,8 +168,8 @@
 			<property name="visible">False</property>
 		</object>
 		<object name="reset_services" meta_type="CMF Action">
-			<property name="title">Prices</property>
-			<property name="description"/>
+			<property name="title" i18n:translate="">Prices</property>
+			<property name="description" i18n:translate=""/>
 			<property name="url_expr">string:$portal_url/setanalyses</property>
 			<property name="link_target"/>
 			<property name="icon_expr"/>
@@ -179,8 +180,8 @@
 			<property name="visible">False</property>
 		</object>
 		<object name="import" meta_type="CMF Action">
-			<property name="title">Import instrument</property>
-			<property name="description"/>
+			<property name="title" i18n:translate="">Import</property>
+			<property name="description" i18n:translate=""/>
 			<property name="url_expr">string:$portal_url/import</property>
 			<property name="link_target"/>
 			<property name="icon_expr"/>

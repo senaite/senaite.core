@@ -103,7 +103,16 @@ class ReferenceResultsView(BikaListingView):
         bsc = getToolByName(context, 'bika_setup_catalog')
         self.contentsMethod = bsc
         self.title = _("Reference Results")
-        self.description = _("Reference Results description", "")
+        self.description = _("Reference Results description",
+                             "Click on Analysis Categories (against shaded background) "
+                             "to see Analysis Services in each category. Enter minimum "
+                             "and maximum values to indicate a valid results range. "
+                             "Any result outside this range will raise an alert. "
+                             "The % Error field allows for an % uncertainty to be "
+                             "considered when evaluating results against minimum and "
+                             "maximum values. A result out of range but still in range "
+                             "if the % error is taken into consideration, will raise a "
+                             "less severe alert.")
         self.contentFilter = {}
         self.context_actions = {}
         self.show_sort_column = False

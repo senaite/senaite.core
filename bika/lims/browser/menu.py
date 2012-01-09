@@ -8,7 +8,6 @@ from bika.lims import bikaMessageFactory as _
 
 
 
-
 from cgi import escape
 
 from plone.memoize.instance import memoize
@@ -20,6 +19,7 @@ from zope.component import getMultiAdapter, queryMultiAdapter
 from Acquisition import aq_base
 from Products.CMFCore.utils import getToolByName, _checkPermission
 from Products.CMFDynamicViewFTI.interface import ISelectableBrowserDefault
+from Products.CMFPlone import PloneMessageFactory as PMF
 from Products.CMFPlone import utils
 from Products.CMFPlone.interfaces.structure import INonStructuralFolder
 from Products.CMFPlone.interfaces.constrains import IConstrainTypes
@@ -208,7 +208,7 @@ class WorkflowMenu(BrowserMenu):
         url = context.absolute_url()
 
         if len(results) > 0:
-            results.append({ 'title'        : _(u'label_advanced', default=u'Advanced...'),
+            results.append({ 'title'        : PMF(u'label_advanced', default=u'Advanced...'),
                              'description'  : '',
                              'action'       : url + '/content_status_history',
                              'selected'     : False,
@@ -219,7 +219,7 @@ class WorkflowMenu(BrowserMenu):
 
         if getToolByName(context, 'portal_placeful_workflow', None) is not None:
             if _checkPermission(ManageWorkflowPolicies, context):
-                results.append({'title': _(u'workflow_policy',
+                results.append({'title': PMF(u'workflow_policy',
                                            default=u'Policy...'),
                                 'description': '',
                                 'action': url + '/placeful_workflow_configuration',

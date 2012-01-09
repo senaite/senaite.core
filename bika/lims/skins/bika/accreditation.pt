@@ -19,20 +19,12 @@
 </h1>
 
 
-<div i18n:translate="">
-<tal:block replace="context/bika_setup/laboratory/Title" i18n:name="name_lab"/>
-has been accredited as
-<tal:block replace="context/bika_setup/laboratory/Accreditation" i18n:name="accreditation"/>
-conformant by
-<tal:block replace="context/bika_setup/laboratory/AccreditationBody" i18n:name="accreditation_body"/>
-(<tal:block replace="context/bika_setup/laboratory/AccreditationBodyLong" i18n:name="accreditation_body_long"/>)
-</div>
 <br>
 <div>
 <a href=""
     tal:attributes="href context/bika_setup/laboratory/AccreditationBodyURL"
     i18n:translate="">
-<tal:block replace="context/bika_setup/laboratory/AccreditationBody" i18n:name="accreditation_body"/>
+<tal:block replace="context/bika_setup/laboratory/AccreditationBody"/>
 </a>
 <span i18n:translate="accreditation_body_description"/>
 </div>

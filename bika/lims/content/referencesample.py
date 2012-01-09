@@ -16,7 +16,6 @@ from bika.lims.browser.widgets import DateTimeWidget as bika_DateTimeWidget
 from bika.lims.browser.widgets import ReferenceResultsWidget
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
-from bika.lims.interfaces import IGenerateUniqueId
 from bika.lims.interfaces import IReferenceSample
 from bika.lims.utils import sortable_title
 from zope.interface import implements
@@ -147,10 +146,15 @@ schema = BikaSchema.copy() + Schema((
 schema['title'].schemata = 'Description'
 
 class ReferenceSample(BaseFolder):
-    implements(IReferenceSample, IGenerateUniqueId)
+    implements(IReferenceSample)
     security = ClassSecurityInfo()
     displayContentsTab = False
     schema = schema
+
+    _at_rename_after_creation = True
+    def _renameAfterCreation(self, check_auto_id=False):
+        from bika.lims.utils import renameAfterCreation
+        renameAfterCreation(self)
 
     security.declarePublic('current_date')
     def current_date(self):
@@ -279,9 +283,8 @@ class ReferenceSample(BaseFolder):
         rc = getToolByName(self, REFERENCE_CATALOG)
         service = rc.lookupObject(service_uid)
 
-        analysis_id = self.generateUniqueId('ReferenceAnalysis')
-        self.invokeFactory(id = analysis_id, type_name = 'ReferenceAnalysis')
-        analysis = self._getOb(analysis_id)
+        _id = self.invokeFactory(type_name = 'ReferenceAnalysis', id = 'tmp')
+        analysis = self._getOb(_id)
         calculation = service.getCalculation()
         interim_fields = calculation and calculation.getInterimFields() or []
         maxtime = service.getMaxTimeAllowed() and service.getMaxTimeAllowed() \
@@ -296,7 +299,7 @@ class ReferenceSample(BaseFolder):
         duetime = starttime + max_days
 
         analysis.edit(
-            ReferenceAnalysisID = analysis_id,
+            ReferenceAnalysisID = _id,
             ReferenceType = reference_type,
             Service = service,
             Unit = service.getUnit(),

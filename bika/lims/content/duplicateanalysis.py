@@ -6,7 +6,7 @@ from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.fields import InterimFieldsField
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.analysis import schema, Analysis
-from bika.lims.interfaces import IDuplicateAnalysis, IGenerateUniqueId
+from bika.lims.interfaces import IDuplicateAnalysis
 from zope.interface import implements
 from Products.Archetypes.references import HoldingReference
 
@@ -87,10 +87,15 @@ schema = schema.copy() + Schema((
 )
 
 class DuplicateAnalysis(Analysis):
-    implements(IDuplicateAnalysis, IGenerateUniqueId)
+    implements(IDuplicateAnalysis)
     security = ClassSecurityInfo()
     displayContentsTab = False
     schema = schema
+
+    _at_rename_after_creation = True
+    def _renameAfterCreation(self, check_auto_id=False):
+        from bika.lims.utils import renameAfterCreation
+        renameAfterCreation(self)
 
     def result_in_range(self, result = None, specification = "lab"):
         """ Check if a result is "in range".

@@ -1,5 +1,6 @@
 from AccessControl import getSecurityManager
 from DateTime import DateTime
+from Products.Archetypes import PloneMessageFactory as PMF
 from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.Archetypes.event import ObjectEditedEvent
 from Products.CMFCore.WorkflowCore import WorkflowException
@@ -149,7 +150,7 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
                     except WorkflowException:
                         pass
 
-            message = self.context.translate(_("Changes saved"))
+            message = self.context.translate(PMF("Changes saved."))
             self.context.plone_utils.addPortalMessage(message, 'info')
             self.destination_url = self.request.get_header("referer",
                                    self.context.absolute_url())
@@ -982,8 +983,7 @@ class ajaxAnalysisRequestSubmit():
             if values.has_key('profileTitle'):
                 # User wants to save a new profile.
                 client = ar.aq_parent
-                _id = client.generateUniqueId('ARProfile')
-                client.invokeFactory(type_name = 'ARProfile', id = _id)
+                _id = client.invokeFactory(type_name = 'ARProfile', id = 'tmp')
                 profile = client[_id]
                 profile.edit(title = values['profileTitle'],
                              Service = Analyses)
@@ -1015,7 +1015,7 @@ class ajaxAnalysisRequestSubmit():
             prices = form['Prices']
             ar.setAnalyses(Analyses, prices = prices)
 
-            message = self.context.translate(_("Changes saved"))
+            message = self.context.translate(PMF("Changes saved."))
 
 
         else:
@@ -1123,8 +1123,7 @@ class ajaxAnalysisRequestSubmit():
                 else:
                     # Primary AR
                     client = self.context
-                    _id = client.generateUniqueId('Sample')
-                    client.invokeFactory('Sample', id = _id)
+                    _id = client.invokeFactory('Sample', id = 'tmp')
                     sample = client[_id]
                     sample.edit(
                         ClientReference = values.get('ClientReference', ''),
@@ -1176,9 +1175,7 @@ class ajaxAnalysisRequestSubmit():
                 ar.setAnalyses(Analyses, prices = prices)
 
                 if (values.has_key('profileTitle')):
-                    profile_id = self.context.generateUniqueId('ARProfile')
-                    self.context.invokeFactory(id = profile_id,
-                                               type_name = 'ARProfile')
+                    _id = self.context.invokeFactory(type_name = 'ARProfile', id = 'tmp')
                     profile = self.context[profile_id]
                     profile.edit(title = values['profileTitle'],
                                  Service = Analyses)

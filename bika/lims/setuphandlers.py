@@ -106,6 +106,8 @@ class BikaGenerator:
                      'LabClerk',
                      'Analyst',
                      'Verifier',
+                     'Sampler',
+                     'Preserver',
                      'Publisher',
                      'Member',
                      'Reviewer'):
@@ -137,6 +139,10 @@ class BikaGenerator:
             portal_groups.addGroup('Verifiers', title = "Verifiers",
                 roles = ['Verifier'])
 
+        if 'Samplers' not in portal_groups.listGroupIds():
+            portal_groups.addGroup('Samplers', title = "Samplers",
+                roles = ['Sampler'])
+
         if 'Publishers' not in portal_groups.listGroupIds():
             portal_groups.addGroup('Publishers', title = "Publishers",
                 roles = ['Publisher'])
@@ -152,199 +158,103 @@ class BikaGenerator:
     def setupPermissions(self, portal):
         """ Set up some suggested role to permission mappings.
         """
-        # XXX: All these permission can be set in
-        # profiles/default/structure
 
         mp = portal.manage_permission
 
-        mp(permissions.ListFolderContents,
-           ['Manager', ], 1)
-        mp(permissions.AddPortalContent,
-           ['Manager', 'Owner', 'LabManager'], 0)
-        mp(permissions.FTPAccess,
-           ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 1)
-        mp(permissions.DeleteObjects,
-           ['Manager', 'LabManager', 'LabClerk', 'Owner'], 1)
-        mp(permissions.ModifyPortalContent,
-           ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Owner'], 1)
-        mp(permissions.ManageUsers,
-           ['Manager', 'LabManager', ], 1)
+        mp(permissions.ListFolderContents, ['Manager', ], 1)
+        mp(permissions.AddPortalContent, ['Manager', 'Owner', 'LabManager'], 0)
+        mp(permissions.FTPAccess, ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 1)
+        mp(permissions.DeleteObjects, ['Manager', 'LabManager', 'LabClerk', 'Owner'], 1)
+        mp(permissions.ModifyPortalContent, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Owner'], 1)
+        mp(permissions.ManageUsers, ['Manager', 'LabManager', ], 1)
 
-        mp(ApplyVersionControl,
-           ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Owner'], 0)
-        mp(SaveNewVersion,
-           ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Owner'], 0)
-        mp(AccessPreviousVersions,
-           ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Owner'], 0)
-           #['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Owner', 'Anonymous'], 0)
+        mp(ApplyVersionControl, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Owner'], 0)
+        mp(SaveNewVersion, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Owner'], 0)
+        mp(AccessPreviousVersions, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Owner'], 0)
 
-        # Start of old stuff
-        mp(ManageBika,
-            ['Manager', 'LabManager'], 1)
-        mp(ManageClients,
-            ['Manager', 'LabManager', 'LabClerk'], 1)
-        mp(ManageWorksheets,
-            ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 1)
-        mp(ManageOrders,
-            ['Manager', 'LabManager', 'LabClerk'], 1)
-        mp(ManageAnalysisRequests,
-            ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 1)
-        mp(ManageSample,
-            ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 1)
-        mp(ManageReferenceSuppliers,
-            ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 1)
-        mp(ManageReference,
-            ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 1)
-        mp(ManagePricelists,
-            ['Manager', 'LabManager', 'Owner'], 1)
-        mp(ManageARImport,
-            ['Manager', 'LabManager', 'LabClerk'], 1)
-        mp(DispatchOrder,
-            ['Manager', 'LabManager', 'LabClerk'], 1)
-        mp(PostInvoiceBatch,
-            ['Manager', 'LabManager', 'Owner'], 1)
+        mp(ManageBika, ['Manager', 'LabManager'], 1)
+        mp(ManageClients, ['Manager', 'LabManager', 'LabClerk', 'Sampler', 'Preserver'], 1)
+        mp(ManageWorksheets, ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 1)
+        mp(ManageOrders, ['Manager', 'LabManager', 'LabClerk'], 1)
+        mp(ManageAnalysisRequests, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler', 'Preserver'], 1)
+        mp(ManageSample, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler', 'Preserver'], 1)
+        mp(ManageReferenceSuppliers, ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 1)
+        mp(ManageReference, ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 1)
+        mp(ManagePricelists, ['Manager', 'LabManager', 'Owner'], 1)
+        mp(ManageARImport, ['Manager', 'LabManager', 'LabClerk'], 1)
+        mp(DispatchOrder, ['Manager', 'LabManager', 'LabClerk'], 1)
+        mp(PostInvoiceBatch, ['Manager', 'LabManager', 'Owner'], 1)
 
-        # Start of interesting stuff
-        mp(ReceiveSample,
-            ['Manager', 'LabManager', 'LabClerk'], 1)
-        mp(ExpireSample,
-            ['Manager', 'LabManager', 'LabClerk'], 1)
-        mp(DisposeSample,
-            ['Manager', 'LabManager', 'LabClerk'], 1)
-        mp(ImportAnalysis,
-            ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 1)
-        mp(RejectWorksheet,
-            ['Manager', 'LabManager', 'Verifier'], 1)
-        mp(Retract,
-            ['Manager', 'LabManager', 'Verifier'], 1)
-        mp(Verify,
-            ['Manager', 'LabManager', 'Verifier'], 1)
-        mp(VerifyOwnResults,
-            ['Manager', ], 1)
-        mp(Publish,
-            ['Manager', 'LabManager', 'Publisher'], 1)
-        mp(EditSample,
-            ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 1)
-        mp(EditAR,
-            ['Manager', 'LabManager', 'LabClerk'], 1)
-        mp(EditWorksheet,
-            ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 1)
-        mp(ManageResults,
-            ['Manager', 'LabManager', 'Analyst'], 1)
-        mp(ResultsNotRequested,
-            ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 1)
-        mp(ManageInvoices,
-            ['Manager', 'LabManager', 'Owner'], 1)
-        mp(ViewResults,
-            ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 1)
-        mp(EditResults,
-            ['Manager', 'LabManager', 'Analyst'], 1)
-        mp(CancelAndReinstate,
-            ['Manager', 'LabManager', 'Owner'], 1)
-
-        # End of interesting stuff
+        mp(ReceiveSample, ['Manager', 'LabManager', 'LabClerk'], 1)
+        mp(ExpireSample, ['Manager', 'LabManager', 'LabClerk'], 1)
+        mp(DisposeSample, ['Manager', 'LabManager', 'LabClerk'], 1)
+        mp(ImportAnalysis, ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 1)
+        mp(RejectWorksheet, ['Manager', 'LabManager', 'Verifier'], 1)
+        mp(Retract, ['Manager', 'LabManager', 'Verifier'], 1)
+        mp(Verify, ['Manager', 'LabManager', 'Verifier'], 1)
+        mp(VerifyOwnResults, ['Manager', ], 1)
+        mp(Publish, ['Manager', 'LabManager', 'Publisher'], 1)
+        mp(EditSample, ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 1)
+        mp(EditAR, ['Manager', 'LabManager', 'LabClerk'], 1)
+        mp(EditWorksheet, ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 1)
+        mp(ManageResults, ['Manager', 'LabManager', 'Analyst'], 1)
+        mp(ResultsNotRequested, ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 1)
+        mp(ManageInvoices, ['Manager', 'LabManager', 'Owner'], 1)
+        mp(ViewResults, ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 1)
+        mp(EditResults, ['Manager', 'LabManager', 'Analyst'], 1)
+        mp(CancelAndReinstate, ['Manager', 'LabManager', 'Owner'], 1)
 
         mp = portal.clients.manage_permission
-        mp(permissions.ListFolderContents,
-            ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Member'], 0)
-            #['Manager', 'LabManager','LabClerk','Analyst','Member', 'Anonymous'], 0)
-        mp(permissions.View,
-           ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Owner'], 0)
-           #['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Owner', 'Anonymous'], 0)
-        mp('Access contents information',
-            ['Manager', 'LabManager', 'LabClerk', 'Member', 'Analyst'], 0)
-            #['Manager', 'LabManager','LabClerk','Member','Analyst', 'Anonymous'], 0)
-        mp(permissions.AddPortalContent,
-           ['Manager', 'LabManager', 'LabClerk', 'Owner', ], 0)
+        mp(permissions.ListFolderContents, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Member', 'Sampler', 'Preserver'], 0)
+        mp(permissions.View, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Owner', 'Sampler', 'Preserver'], 0)
+        mp('Access contents information', ['Manager', 'LabManager', 'LabClerk', 'Member', 'Analyst', 'Sampler', 'Preserver'], 0)
+        mp(permissions.AddPortalContent, ['Manager', 'LabManager', 'LabClerk', 'Owner'], 0)
         portal.clients.reindexObject()
 
         mp = portal.worksheets.manage_permission
-        mp(permissions.ListFolderContents,
-            ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 0)
-            #['Manager', 'LabManager','LabClerk','Analyst', 'Anonymous'], 0)
-        mp(permissions.AddPortalContent,
-            ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 0)
-            #['Manager', 'LabManager','LabClerk','Analyst', 'Anonymous'], 0)
-        mp(permissions.View,
-            ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 0)
-            #['Manager', 'LabManager','LabClerk','Analyst', 'Anonymous'], 0)
-        mp('Access contents information',
-            ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 0)
-            #['Manager', 'LabManager','LabClerk','Analyst', 'Anonymous'], 0)
-        mp(permissions.DeleteObjects,
-            ['Manager', 'LabManager', 'Owner'], 0)
+        mp(permissions.ListFolderContents, ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 0)
+        mp(permissions.AddPortalContent, ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 0)
+        mp(permissions.View, ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 0)
+        mp('Access contents information', ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 0)
+        mp(permissions.DeleteObjects, ['Manager', 'LabManager', 'Owner'], 0)
         portal.worksheets.reindexObject()
 
         mp = portal.analysisrequests.manage_permission
-        mp(permissions.ListFolderContents,
-            ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 0)
-            #['Manager', 'LabManager','LabClerk','Analyst', 'Anonymous'], 0)
-        mp(permissions.AddPortalContent,
-            ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 0)
-            #['Manager', 'LabManager','LabClerk','Analyst', 'Anonymous'], 0)
-        mp(permissions.View,
-            ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 0)
-            #['Manager', 'LabManager','LabClerk','Analyst', 'Anonymous'], 0)
-        mp('Access contents information',
-            ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 0)
-            #['Manager', 'LabManager','LabClerk','Analyst', 'Anonymous'], 0)
-        mp(permissions.DeleteObjects,
-            ['Manager', 'LabManager', 'Owner'], 0)
+        mp(permissions.ListFolderContents, ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 0)
+        mp(permissions.AddPortalContent, ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 0)
+        mp(permissions.View, ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 0)
+        mp('Access contents information', ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 0)
+        mp(permissions.DeleteObjects, ['Manager', 'LabManager', 'Owner'], 0)
         portal.analysisrequests.reindexObject()
 
         mp = portal.referencesamples.manage_permission
-        mp(permissions.ListFolderContents,
-            ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 0)
-            #['Manager', 'LabManager','LabClerk','Analyst', 'Anonymous'], 0)
-        mp(permissions.AddPortalContent,
-            ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 0)
-            #['Manager', 'LabManager','LabClerk','Analyst', 'Anonymous'], 0)
-        mp(permissions.View,
-            ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 0)
-            #['Manager', 'LabManager','LabClerk','Analyst', 'Anonymous'], 0)
-        mp('Access contents information',
-            ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 0)
-            #['Manager', 'LabManager','LabClerk','Analyst', 'Anonymous'], 0)
-        mp(permissions.DeleteObjects,
-            ['Manager', 'LabManager', 'Owner'], 0)
+        mp(permissions.ListFolderContents, ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 0)
+        mp(permissions.AddPortalContent, ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 0)
+        mp(permissions.View, ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 0)
+        mp('Access contents information', ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 0)
+        mp(permissions.DeleteObjects, ['Manager', 'LabManager', 'Owner'], 0)
         portal.referencesamples.reindexObject()
 
         mp = portal.samples.manage_permission
-        mp(permissions.ListFolderContents,
-            ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 0)
-            #['Manager', 'LabManager','LabClerk','Analyst', 'Anonymous'], 0)
-        mp(permissions.AddPortalContent,
-            ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 0)
-            #['Manager', 'LabManager','LabClerk','Analyst', 'Anonymous'], 0)
-        mp(permissions.View,
-            ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 0)
-            #['Manager', 'LabManager','LabClerk','Analyst', 'Anonymous'], 0)
-        mp('Access contents information',
-            ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 0)
-            #['Manager', 'LabManager','LabClerk','Analyst', 'Anonymous'], 0)
-        mp(permissions.DeleteObjects,
-            ['Manager', 'LabManager', 'Owner'], 0)
+        mp(permissions.ListFolderContents, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler', 'Preserver'], 0)
+        mp(permissions.AddPortalContent, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler'], 0)
+        mp(permissions.View, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler', 'Preserver'], 0)
+        mp('Access contents information', ['Manager', 'LabManager', 'LabClerk', 'Analyst','Sampler', 'Preserver'], 0)
+        mp(permissions.DeleteObjects, ['Manager', 'LabManager', 'Owner'], 0)
         portal.samples.reindexObject()
 
         mp = portal.invoices.manage_permission
-        mp(permissions.ListFolderContents,
-            ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 1)
-        mp(permissions.AddPortalContent,
-            ['Manager', 'LabManager', 'Owner'], 0)
-        mp(permissions.DeleteObjects,
-            ['Manager', 'LabManager', 'Owner'], 0)
-        mp(permissions.View,
-            ['Manager', 'LabManager'], 0)
+        mp(permissions.ListFolderContents, ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 1)
+        mp(permissions.AddPortalContent, ['Manager', 'LabManager', 'Owner'], 0)
+        mp(permissions.DeleteObjects, ['Manager', 'LabManager', 'Owner'], 0)
+        mp(permissions.View, ['Manager', 'LabManager'], 0)
         portal.invoices.reindexObject()
 
         mp = portal.pricelists.manage_permission
         mp(permissions.ListFolderContents, ['Member'], 1)
-        mp(permissions.AddPortalContent,
-            ['Manager', 'LabManager', 'Owner'], 0)
-        mp(permissions.DeleteObjects,
-            ['Manager', 'LabManager', 'Owner'], 0)
-        mp(permissions.View,
-            ['Manager', 'LabManager'], 0)
+        mp(permissions.AddPortalContent, ['Manager', 'LabManager', 'Owner'], 0)
+        mp(permissions.DeleteObjects, ['Manager', 'LabManager', 'Owner'], 0)
+        mp(permissions.View, ['Manager', 'LabManager'], 0)
         portal.pricelists.reindexObject()
 
     def setupVersioning(self, portal):
@@ -364,11 +274,9 @@ class BikaGenerator:
             logger.warning('Could not find the setup catalog tool.')
             return
 
-        ### XXX an item should belong to only one catalog.
+        # an item should belong to only one catalog.
         # that way looking it up means first looking up *the* catalog
         # in which it is indexed, as well as making it cheaper to index.
-
-        # XXX Added title and Title to indexes and metadata.  we need to clean that up
 
         at = getToolByName(portal, 'archetype_tool')
         at.setCatalogsByType('Department', ['bika_setup_catalog', ])

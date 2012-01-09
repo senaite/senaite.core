@@ -9,7 +9,6 @@ from bika.lims.browser.widgets import ServicesWidget
 from bika.lims.browser.widgets import WorksheetTemplateLayoutWidget
 from bika.lims.config import ANALYSIS_TYPES, PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
-from bika.lims.interfaces import IGenerateUniqueId
 from bika.lims import bikaMessageFactory as _
 from zope.interface import implements
 import sys
@@ -80,10 +79,14 @@ schema['description'].widget.visible = True
 
 
 class WorksheetTemplate(BaseContent):
-    implements(IGenerateUniqueId)
     security = ClassSecurityInfo()
     displayContentsTab = False
     schema = schema
+
+    _at_rename_after_creation = True
+    def _renameAfterCreation(self, check_auto_id=False):
+        from bika.lims.utils import renameAfterCreation
+        renameAfterCreation(self)
 
     security.declarePublic('getAnalysisTypes')
     def getAnalysisTypes(self):

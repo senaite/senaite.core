@@ -1,4 +1,5 @@
 from DateTime import DateTime
+from Products.Archetypes import PloneMessageFactory as PMF
 from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.Archetypes.event import ObjectEditedEvent
 from Products.Archetypes.public import DisplayList
@@ -43,7 +44,7 @@ class WorksheetFolderWorkflowAction(WorkflowAction):
                         changes = True
 
                 if changes:
-                    message = self.context.translate(_('Changes saved'))
+                    message = self.context.translate(PMF('Changes saved.'))
                     self.context.plone_utils.addPortalMessage(message, 'info')
 
             self.destination_url = self.request.get_header("referer",
@@ -379,8 +380,7 @@ class AddWorksheetView(BrowserView):
         wf = getToolByName(self.context, "portal_workflow")
         pm = getToolByName(self.context, "portal_membership")
 
-        _id = self.context.generateUniqueId('Worksheet')
-        self.context.invokeFactory(id = _id, type_name = 'Worksheet')
+        _id = self.context.invokeFactory(type_name = 'Worksheet', id = 'tmp')
         ws = self.context[_id]
         ws.processForm()
         zope.event.notify(ObjectEditedEvent(ws))

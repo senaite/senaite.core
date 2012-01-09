@@ -10,7 +10,6 @@ from Products.CMFCore.permissions import ListFolderContents, ModifyPortalContent
 from Products.CMFCore.utils import getToolByName
 from bika.lims.config import PROJECTNAME, ManageReferenceSuppliers
 from bika.lims.content.organisation import Organisation
-from bika.lims.interfaces import IGenerateUniqueId
 from bika.lims.interfaces import IReferenceSupplier
 from bika.lims.utils import generateUniqueId
 from zope.interface import implements
@@ -21,9 +20,14 @@ schema = Organisation.schema.copy()
 schema['AccountNumber'].write_permission = ManageReferenceSuppliers
 
 class ReferenceSupplier(Organisation):
-    implements(IReferenceSupplier, IGenerateUniqueId)
+    implements(IReferenceSupplier)
     security = ClassSecurityInfo()
     displayContentsTab = False
     schema = schema
+
+    _at_rename_after_creation = True
+    def _renameAfterCreation(self, check_auto_id=False):
+        from bika.lims.utils import renameAfterCreation
+        renameAfterCreation(self)
 
 registerType(ReferenceSupplier, PROJECTNAME)

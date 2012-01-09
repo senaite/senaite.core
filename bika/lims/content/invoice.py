@@ -6,7 +6,7 @@ from Products.CMFCore.permissions import View
 from bika.lims import bikaMessageFactory as _
 from bika.lims.config import ManageInvoices, ManageBika, PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
-from bika.lims.interfaces import IInvoice, IGenerateUniqueId
+from bika.lims.interfaces import IInvoice
 from zope.interface import implements
 import sys
 
@@ -80,10 +80,15 @@ TitleField.required = 0
 TitleField.widget.visible = False
 
 class Invoice(BaseFolder):
-    implements(IInvoice, IGenerateUniqueId)
+    implements(IInvoice)
     security = ClassSecurityInfo()
     displayContentsTab = False
     schema = schema
+
+    _at_rename_after_creation = True
+    def _renameAfterCreation(self, check_auto_id=False):
+        from bika.lims.utils import renameAfterCreation
+        renameAfterCreation(self)
 
     def Title(self):
         """ Return the InvoiceNumber as title """

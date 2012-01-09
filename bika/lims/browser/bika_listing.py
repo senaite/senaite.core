@@ -3,6 +3,7 @@
 from Acquisition import aq_parent, aq_inner
 from OFS.interfaces import IOrderedContainer
 from Products.AdvancedQuery import And, Or, MatchGlob, MatchRegexp
+from Products.Archetypes import PloneMessageFactory as PMF
 from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFCore.utils import getToolByName
@@ -127,7 +128,7 @@ class WorkflowAction:
                     transitioned.append(item.Title())
 
         if len(transitioned) > 0:
-            message = self.context.translate(_('Changes saved'))
+            message = self.context.translate(PMF('Changes saved.'))
             self.context.plone_utils.addPortalMessage(message, 'info')
 
         # automatic label printing

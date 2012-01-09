@@ -77,7 +77,13 @@ class ajaxCalculateAnalysisEntry():
                     unsatisfied = True
                     break
                 key = dependency.getService().getKeyword()
-                mapping[key] = self.current_results[dependency_uid]
+                # All mappings must be float, or error alert is returned
+                try:
+                    mapping[key] = float(self.current_results[dependency_uid])
+                except:
+                    # indeterminate interim values (<x, >x, invalid)
+                    # set 'indeterminate' flag on this analyses' result
+                    indeterminate = True
             if unsatisfied:
                 # unsatisfied means that one or more result on which we depend
                 # is blank or unavailable, so we set blank result and abort.
@@ -100,7 +106,7 @@ class ajaxCalculateAnalysisEntry():
                     try:
                         i['value'] = float(i['value'])
                     except:
-                        # indeterminate interim values (<x, >x)
+                        # indeterminate interim values (<x, >x, invald)
                         # set 'indeterminate' flag on this analyses' result
                         indeterminate = True
 

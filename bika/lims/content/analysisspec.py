@@ -19,7 +19,6 @@ from bika.lims.browser.fields import HistoryAwareReferenceField
 from bika.lims.browser.widgets import SpecWidget
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
-from bika.lims.interfaces import IGenerateUniqueId
 from types import ListType, TupleType
 from zope.interface import implements
 import sys
@@ -98,10 +97,14 @@ schema['title'].required = False
 schema['title'].widget.visible = False
 
 class AnalysisSpec(BaseFolder, HistoryAwareMixin):
-    implements(IGenerateUniqueId)
     security = ClassSecurityInfo()
     schema = schema
     displayContentsTab = False
+
+    _at_rename_after_creation = True
+    def _renameAfterCreation(self, check_auto_id=False):
+        from bika.lims.utils import renameAfterCreation
+        renameAfterCreation(self)
 
     def Title(self):
         """ Return the SampleType as title """
