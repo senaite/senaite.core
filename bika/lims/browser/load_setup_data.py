@@ -94,7 +94,14 @@ class LoadSetupData(BrowserView):
             if (self.deferred['Calculations'] or \
                 self.deferred['Analysis Services']) and \
                nr_deferred == current_deferred:
-                raise Exception("unsolved calc/service references (deferred:%s)"%(self.deferred))
+                msg = "The following dependencies are unsatisfied:<br>\n"
+                for service in self.deferred['Analysis Services']:
+                    msg += "Service: %s -> Calculation: %s<br>\n" % \
+                        (service['title'], service['Calculation'])
+                for calculation in self.deferred['Calculations']:
+                    msg += "Calculation: %s -> Services: %s<br>\n" % \
+                        (calculation['title'], calculation['DependentServices'])
+                raise Exception,msg
             nr_deferred = current_deferred
             if self.deferred['Analysis Services']:
                 defs = self.deferred['Analysis Services']
