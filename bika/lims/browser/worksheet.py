@@ -196,17 +196,16 @@ class WorksheetAnalysesView(AnalysesView):
         self.allow_edit = True
 
         self.columns = {
-            'Pos': {'title': _('Position'), 'sortable': False},
-            'DueDate': {'title': _('Due Date'), 'sortable': False},
-            'Service': {'title': _('Analysis'), 'sortable': False},
-            'Result': {'title': _('Result'), 'sortable': False},
-            'ResultDM': {'title': _('Dry'), 'sortable': False},
-            'Uncertainty': {'title': _('+-'), 'sortable': False},
+            'Pos': {'title': _('Position')},
+            'DueDate': {'title': _('Due Date')},
+            'Service': {'title': _('Analysis')},
+            'Result': {'title': _('Result')},
+            'ResultDM': {'title': _('Dry')},
+            'Uncertainty': {'title': _('+-')},
             'retested': {'title': "<img src='++resource++bika.lims.images/retested.png' title='%s'/>" % _('Retested'),
-                         'type':'boolean',
-                         'sortable': False},
-            'Attachments': {'title': _('Attachments'), 'sortable': False},
-            'state_title': {'title': _('State'), 'sortable': False},
+                         'type':'boolean'},
+            'Attachments': {'title': _('Attachments')},
+            'state_title': {'title': _('State')},
         }
         self.review_states = [
             {'title': _('All'), 'id':'all',
@@ -376,6 +375,9 @@ class WorksheetAnalysesView(AnalysesView):
             pos_text += "</table>"
 
             items[x]['replace']['Pos'] = pos_text
+
+        for k,v in self.columns.items():
+            self.columns[k]['sortable'] = False
 
         return items
 
