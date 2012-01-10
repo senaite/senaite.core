@@ -580,6 +580,7 @@ class AnalysisRequestSelectSampleView(BikaListingView):
         self.contentFilter = {'portal_type': 'Sample',
                               'sort_on':'id',
                               'sort_order': 'reverse',
+                              'review_state': ['due', 'received'],
                               'cancellation_state': 'active'}
         self.show_sort_column = False
         self.show_select_row = False
