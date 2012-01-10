@@ -88,12 +88,17 @@ class LoadSetupData(BrowserView):
 
         # process deferred services and calculations which depend on each other
         nr_deferred = 0
+        retries = 0
         while self.deferred['Analysis Services'] or \
               self.deferred['Calculations']:
-            current_deferred = len(self.deferred['Calculations']) + len(self.deferred['Analysis Services'])
+            current_deferred = len(self.deferred['Calculations']) + \
+                               len(self.deferred['Analysis Services'])
             if (self.deferred['Calculations'] or \
                 self.deferred['Analysis Services']) and \
                nr_deferred == current_deferred:
+                if retries == 0:
+                    retries = 1
+                    break
                 msg = "The following dependencies are unsatisfied:<br>\n"
                 for service in self.deferred['Analysis Services']:
                     msg += "Service: %s -> Calculation: %s<br>\n" % \
