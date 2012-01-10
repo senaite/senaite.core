@@ -35,26 +35,27 @@
 <metal:content-core fill-slot="content-core"
 	tal:define="
 		form_id view/form_id;
-		table_only python:hasattr(view, 'table_only') and view.table_only or view.request.get('table_only','') == form_id;"
-	tal:omit-tag="python:table_only">
+		table_only python:hasattr(view, 'table_only') and view.table_only or view.request.get('table_only','') == form_id;">
 
 	<tal:searchform condition="python:not table_only">
-		<input type="hidden" name="submitted" value="1"/>
-		<input tal:replace="structure context/@@authenticator/authenticator"/>
 
 		<table style="margin-bottom:0;"><tr><td>
-			<label for="getWorksheetTemplate" i18n:translate="">Select template</label>
-			<select id="ProfileSelector" name="getWorksheetTemplate">
-				<option value=""></option>
-				<tal:profile repeat="profile view/getWorksheetTemplates">
-					<option
-						tal:attributes="
-							value python:profile[0];
-							selected python: view.request.get('WorksheetTemplate', '') == profile[0] and 'selected' or ''"
-						tal:content="python:profile[1]"/>
-				</tal:profile>
-			</select>&nbsp;
-			<input type="submit" value="Apply template" i18n:attributes="value"/>
+			<form metthod="POST">
+				<input type="hidden" name="submitted" value="1"/>
+				<input tal:replace="structure context/@@authenticator/authenticator"/>
+				<label for="getWorksheetTemplate" i18n:translate="">Select template</label>
+				<select id="ProfileSelector" name="getWorksheetTemplate">
+					<option value=""></option>
+					<tal:profile repeat="profile view/getWorksheetTemplates">
+						<option
+							tal:attributes="
+								value python:profile[0];
+								selected python: view.request.get('WorksheetTemplate', '') == profile[0] and 'selected' or ''"
+							tal:content="python:profile[1]"/>
+					</tal:profile>
+				</select>&nbsp;
+				<input type="submit" value="Apply template" i18n:attributes="value"/>
+			</form>
 
 		</td></tr></table>
 

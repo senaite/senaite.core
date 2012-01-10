@@ -569,8 +569,6 @@ class AddAnalysesView(BikaListingView):
             items[x]['CategoryTitle'] = service.getCategory().Title()
             items[x]['ClientTitle'] = client.Title()
             new_items.append(items[x])
-##        new_items = sorted(new_items, key = itemgetter('Title'))
-##        new_items = sorted(new_items, key = itemgetter('getRequestID'))
         return new_items[:100]
 
     def getServices(self):
