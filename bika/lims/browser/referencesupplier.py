@@ -3,71 +3,75 @@ from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import TimeOrDate
 
 class ReferenceSamplesView(BikaListingView):
-    icon = "++resource++bika.lims.images/referencesample_big.png"
-    title = _("Reference Samples")
-    description = _("Supplier Reference Samples description",
-                    "")
-    contentFilter = {'portal_type': 'ReferenceSample',
-                     'sort_on': 'id',
-                     'sort_order': 'reverse'}
-    context_actions = {_('Add'):
-                       {'url': 'createObject?type_name=ReferenceSample',
-                        'icon': '++resource++bika.lims.images/add.png'}}
-    show_sort_column = False
-    show_select_row = False
-    show_select_column = True
-    pagesize = 50
 
-    columns = {
-           'ID': {'title': _('ID')},
-           'Title': {'title': _('Title')},
-           'Manufacturer': {'title': _('Manufacturer')},
-           'Definition': {'title': _('Reference Definition')},
-           'DateSampled': {'title': _('Date Sampled')},
-           'DateReceived': {'title': _('Date Received')},
-           'DateOpened': {'title': _('Date Opened')},
-           'ExpiryDate': {'title': _('Expiry Date')},
-           'state_title': {'title': _('State')},
-          }
-    review_states = [
-                {'title': _('All'), 'id':'all',
-                 'columns': ['ID',
-                             'Title',
-                             'Manufacturer',
-                             'Definition',
-                             'DateSampled',
-                             'DateReceived',
-                             'DateOpened',
-                             'ExpiryDate',
-                             'state_title']},
-                {'title': _('Current'), 'id':'current',
-                 'columns': ['ID',
-                             'Title',
-                             'Manufacturer',
-                             'Definition',
-                             'DateSampled',
-                             'DateReceived',
-                             'DateOpened',
-                             'ExpiryDate']},
-                {'title': _('Expired'), 'id':'expired',
-                 'columns': ['ID',
-                             'Title',
-                             'Manufacturer',
-                             'Definition',
-                             'DateSampled',
-                             'DateReceived',
-                             'DateOpened',
-                             'ExpiryDate']},
-                {'title': _('Disposed'), 'id':'disposed',
-                 'columns': ['ID',
-                             'Title',
-                             'Manufacturer',
-                             'Definition',
-                             'DateSampled',
-                             'DateReceived',
-                             'DateOpened',
-                             'ExpiryDate']},
-                ]
+    def __init__(self, context, request):
+        super(ReferenceSamplesView, self).__init__(context, request)
+        self.icon = "++resource++bika.lims.images/referencesample_big.png"
+        self.title = _("Reference Samples")
+        rs_path = context.getPhysicalPath()
+        self.contentFilter = {'portal_type': 'ReferenceSample',
+                              'sort_on': 'id',
+                              'sort_order': 'reverse',
+                              'path': {"query": ["/".join(rs_path),],
+                                       "level" : 0 }}
+        self.context_actions = {_('Add'):
+                                {'url': 'createObject?type_name=ReferenceSample',
+                                 'icon': '++resource++bika.lims.images/add.png'}}
+        self.show_sort_column = False
+        self.show_select_row = False
+        self.show_select_column = True
+        self.pagesize = 50
+
+        self.columns = {
+            'ID': {'title': _('ID')},
+            'Title': {'title': _('Title')},
+            'Manufacturer': {'title': _('Manufacturer')},
+            'Definition': {'title': _('Reference Definition')},
+            'DateSampled': {'title': _('Date Sampled')},
+            'DateReceived': {'title': _('Date Received')},
+            'DateOpened': {'title': _('Date Opened')},
+            'ExpiryDate': {'title': _('Expiry Date')},
+            'state_title': {'title': _('State')},
+        }
+        self.review_states = [
+            {'title': _('All'), 'id':'all',
+             'columns': ['ID',
+                         'Title',
+                         'Manufacturer',
+                         'Definition',
+                         'DateSampled',
+                         'DateReceived',
+                         'DateOpened',
+                         'ExpiryDate',
+                         'state_title']},
+            {'title': _('Current'), 'id':'current',
+             'columns': ['ID',
+                         'Title',
+                         'Manufacturer',
+                         'Definition',
+                         'DateSampled',
+                         'DateReceived',
+                         'DateOpened',
+                         'ExpiryDate']},
+            {'title': _('Expired'), 'id':'expired',
+             'columns': ['ID',
+                         'Title',
+                         'Manufacturer',
+                         'Definition',
+                         'DateSampled',
+                         'DateReceived',
+                         'DateOpened',
+                         'ExpiryDate']},
+            {'title': _('Disposed'), 'id':'disposed',
+             'columns': ['ID',
+                         'Title',
+                         'Manufacturer',
+                         'Definition',
+                         'DateSampled',
+                         'DateReceived',
+                         'DateOpened',
+                         'ExpiryDate']},
+        ]
 
 
     def folderitems(self):

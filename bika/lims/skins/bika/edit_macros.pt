@@ -66,9 +66,6 @@
         <tal:description tal:define="fti python:context.portal_types.getTypeInfo(here);
                                      desc fti/Description;"
                          tal:condition="desc">
-            <p class="discreet" i18n:translate="">
-                type description
-            </p>
         </tal:description>
     </div>
 
