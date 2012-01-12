@@ -41,7 +41,7 @@ class ARAnalysesField(ObjectField):
         contentFilter = kwargs
         contentFilter['portal_type'] = "Analysis"
         contentFilter['path'] = {'query':"/".join(instance.getPhysicalPath()),
-                                 'depth':1}
+                                 'level':0}
         pc = getToolByName(instance, 'portal_catalog')
         analyses = pc(contentFilter)
         if full_objects:

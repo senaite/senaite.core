@@ -48,7 +48,7 @@ class ReferenceAnalysesView(AnalysesView):
         AnalysesView.__init__(self, context, request)
         self.contentFilter = {'portal_type':'ReferenceAnalysis',
                               'path': {'query':"/".join(self.context.getPhysicalPath()),
-                                       'depth':1}}
+                                       'level':0}}
         self.show_select_row = False
         self.show_sort_column = False
         self.show_select_column = False

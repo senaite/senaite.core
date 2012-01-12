@@ -8,12 +8,12 @@ class ReferenceSamplesView(BikaListingView):
         super(ReferenceSamplesView, self).__init__(context, request)
         self.icon = "++resource++bika.lims.images/referencesample_big.png"
         self.title = _("Reference Samples")
-        rs_path = context.getPhysicalPath()
         self.contentFilter = {'portal_type': 'ReferenceSample',
                               'sort_on': 'id',
                               'sort_order': 'reverse',
-                              'path': {"query": ["/".join(rs_path),],
-                                       "level" : 0 }}
+                              'path': {"query": "/".join(context.getPhysicalPath()),
+                                       "level" : 0 }
+                              }
         self.context_actions = {_('Add'):
                                 {'url': 'createObject?type_name=ReferenceSample',
                                  'icon': '++resource++bika.lims.images/add.png'}}

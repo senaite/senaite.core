@@ -101,7 +101,10 @@ class ClientAnalysisRequestsView(BikaListingView):
         super(ClientAnalysisRequestsView, self).__init__(context, request)
         self.contentFilter = {'portal_type':'AnalysisRequest',
                               'sort_on':'id',
-                              'sort_order': 'reverse'}
+                              'sort_order': 'reverse',
+                              'path': {"query": "/".join(context.getPhysicalPath()),
+                                       "level" : 0 }
+                              }
         wf = getToolByName(self.context, 'portal_workflow')
         self.review_state = 'all'
 
@@ -346,7 +349,10 @@ class ClientSamplesView(BikaListingView):
         super(ClientSamplesView, self).__init__(context, request)
         self.contentFilter = {'portal_type': 'Sample',
                               'sort_on':'id',
-                              'sort_order': 'reverse'}
+                              'sort_order': 'reverse',
+                              'path': {'query': "/".join(context.getPhysicalPath()),
+                                       'level': 0 }
+                              }
         self.context_actions = {}
         self.show_sort_column = False
         self.show_select_row = False
@@ -534,7 +540,10 @@ class ClientARProfilesView(BikaListingView):
     def __init__(self, context, request):
         super(ClientARProfilesView, self).__init__(context, request)
         self.contentFilter = {'portal_type': 'ARProfile',
-                              'getClientUID': context.UID()}
+                              'getClientUID': context.UID(),
+                              'path': {"query": "/".join(context.getPhysicalPath()),
+                                       "level" : 0 }
+                              }
         bsc = getToolByName(context, 'bika_setup_catalog')
         self.contentsMethod = bsc
         self.context_actions = {_('Add'):
@@ -576,7 +585,10 @@ class ClientAnalysisSpecsView(BikaListingView):
         super(ClientAnalysisSpecsView, self).__init__(context, request)
         bsc = getToolByName(context, 'bika_setup_catalog')
         self.contentFilter = {'portal_type': 'AnalysisSpec',
-                              'getClientUID': context.UID()}
+                              'getClientUID': context.UID(),
+                              'path': {"query": "/".join(context.getPhysicalPath()),
+                                       "level" : 0 }
+                              }
         self.contentsMethod = bsc
         self.context_actions = {_('Add'):
                                 {'url': 'createObject?type_name=AnalysisSpec',
@@ -779,7 +791,10 @@ class ClientContactsView(BikaListingView):
     def __init__(self, context, request):
         super(ClientContactsView, self).__init__(context, request)
         self.contentFilter = {'portal_type': 'Contact',
-                              'sort_on':'sortable_title'}
+                              'sort_on':'sortable_title',
+                              'path': {"query": "/".join(context.getPhysicalPath()),
+                                       "level" : 0 }
+                              }
         self.context_actions = {_('Add'):
                                 {'url': 'createObject?type_name=Contact',
                                  'icon': '++resource++bika.lims.images/add.png'}}

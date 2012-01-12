@@ -151,7 +151,7 @@ class SamplesView(ClientSamplesView):
         self.contentFilter = {'portal_type':'Sample',
                               'sort_on':'id',
                               'sort_order': 'reverse',
-                              'path':{"query": ["/"], "level" : 0 }}
+                              'path':{"query": "/", "level" : 0 }}
         self.columns['Client'] = {'title': _('Client')}
         review_states = []
         for review_state in self.review_states:

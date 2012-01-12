@@ -20,7 +20,9 @@ class AnalysisSpecsView(BikaListingView):
         bsc = getToolByName(context, 'bika_setup_catalog')
         self.contentsMethod = bsc
         self.contentFilter = {'portal_type': 'AnalysisSpec',
-                              'sort_on': 'sortable_title'}
+                              'sort_on': 'sortable_title',
+                              'path': {'query':"/".join(self.context.getPhysicalPath()),
+                                       'level':0}}
         self.context_actions = {_('Add'):
                                 {'url': 'createObject?type_name=AnalysisSpec',
                                  'icon': '++resource++bika.lims.images/add.png'}}

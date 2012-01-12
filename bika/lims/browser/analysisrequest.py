@@ -373,7 +373,6 @@ class AnalysisRequestViewView(BrowserView):
 
         return actions.values()
 
-
 class AnalysisRequestAddView(AnalysisRequestViewView):
     """ The main AR Add form
     """
@@ -517,12 +516,12 @@ class AnalysisRequestSelectCCView(BikaListingView):
         self.title = _("Contacts to CC")
         self.description = _("Contacts to CC description",
                              "Select the contacts that will receive analysis results for this request.")
-        ar_path = context.aq_parent.getPhysicalPath()
         self.contentFilter = {'portal_type': 'Contact',
                               'sort_on':'sortable_title',
                               'inactive_state': 'active',
-                              'path': {"query": ["/".join(ar_path),],
-                                       "level" : 0 }}
+                              'path': {"query": "/".join(context.getPhysicalPath()),
+                                       "level" : 0 }
+                              }
 
         self.show_sort_column = False
         self.show_select_row = False
@@ -581,7 +580,10 @@ class AnalysisRequestSelectSampleView(BikaListingView):
                               'sort_on':'id',
                               'sort_order': 'reverse',
                               'review_state': ['due', 'received'],
-                              'cancellation_state': 'active'}
+                              'cancellation_state': 'active',
+                              'path': {"query": "/".join(context.getPhysicalPath()),
+                                       "level" : 0 }
+                              }
         self.show_sort_column = False
         self.show_select_row = False
         self.show_select_column = False
