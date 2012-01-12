@@ -83,7 +83,11 @@
   <type type_id="AnalysisSpecs"/>
   <type type_id="ARImportItem"/>
   <type type_id="Attachment"/>
-  <type type_id="AttachmentType"/>
+  <type type_id="AttachmentType">
+   <bound-workflow workflow_id="bika_one_state_workflow"/>
+   <bound-workflow workflow_id="bika_inactive_workflow"/>
+  </type>
+
   <type type_id="AttachmentTypes"/>
   <type type_id="BikaSetup"/>
 
