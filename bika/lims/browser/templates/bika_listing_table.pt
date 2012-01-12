@@ -78,9 +78,11 @@
 	                             view.bika_listing.json_interim_fields or []"/>
 
 <table
-	class="bika-listing-table"
 	summary="Content listing"
-	i18n:attributes="summary summary_content_listing;"
+	tal:attributes="
+		class python:'bika-listing-table%s'% (view.bika_listing.setoddeven and ' setoddeven' or '');"
+	i18n:attributes="
+		summary summary_content_listing;"
 	tal:define="
 		columns view/bika_listing/columns;
 		column_list python:review_state['columns']">
@@ -165,7 +167,7 @@ Colum Headers
 
 	</thead>
 
-	<tbody
+	<tbody class="item-listing-tbody"
 		tal:condition="view/items"
 		tal:define="selected_cats python: view.bika_listing.selected_cats(view.batch)">
 

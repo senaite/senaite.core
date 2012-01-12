@@ -23,9 +23,7 @@
             i18n:translate="">Verified</dt>
 
         <tal:block repeat="o results">
-        <dd tal:define="oddrow repeat/o/odd"
-            style="padding-top:4px;padding-bottom:0px;"
-            tal:attributes="class python:test(oddrow, 'portletItem odd','portletItem even')">
+        <dd style="padding-top:4px;padding-bottom:0px;">
 
             <a href="#"
                 class="marker"

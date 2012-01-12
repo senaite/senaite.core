@@ -191,6 +191,7 @@ class WorksheetAnalysesView(AnalysesView):
         AnalysesView.__init__(self, context, request)
         self.icon = "++resource++bika.lims.images/worksheet_big.png"
         self.contentFilter = {}
+        self.setoddeven = False
         self.show_select_row = False
         self.show_sort_column = False
         self.allow_edit = True
@@ -953,11 +954,6 @@ class ajaxGetWorksheetReferences(ReferenceSamplesView):
 
         new_items = sorted(new_items, key = itemgetter('nr_services'))
         new_items.reverse()
-
-        # re-do the pretty css odd/even classes
-        for i in range(len(new_items)):
-            new_items[i]['table_row_class'] = ((i + 1) % 2 == 0) and \
-                "even" or "odd"
 
         return new_items
 

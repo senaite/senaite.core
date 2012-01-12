@@ -64,18 +64,6 @@
             </dd>
         </dl>
 
-<!-- We want to alert the user if some [required] controlpanel data are missing.  XXX This is pretty, but utterly vaporous
-        <dl class="portalMessage warning"               
-          tal:condition="python:True">
-            <dt i18n:translate="">
-                Warning
-            </dt>
-            <dd i18n:translate="">
-            Bika LIMS configuration is incomplete; *click* for more information.
-            </dd>
-        </dl>
--->
-
         <dl class="portalMessage warning"
             tal:condition="not:sys/PIL">
             <dt i18n:translate="">

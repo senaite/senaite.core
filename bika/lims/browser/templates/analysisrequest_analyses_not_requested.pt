@@ -105,12 +105,9 @@
 		<tbody tal:condition="batch|nothing">
 			<tal:item tal:repeat="item batch">
 			<tr tal:define="
-					oddrow repeat/item/odd;
 					item_title_or_id item/title_or_id;
 					wtool python:context.portal_workflow;
-					review_state python:wtool.getInfoFor(item, 'review_state', '')"
-				tal:attributes="
-					class python:oddrow and 'even' or 'odd'" >
+					review_state python:wtool.getInfoFor(item, 'review_state', '')">
 
 				<td>
 					<input type="checkbox" class="noborder" name="ids:list" id="#" value="#"

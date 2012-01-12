@@ -175,10 +175,12 @@ td.listing-filter-row {
    padding:0 0 .5em 0;
    margin:0;
    border:none !important;
+   background: none !important;
 }
 
 td.review_state_selector{
     white-space:nowrap !important;
+    background: none !important;
 }
 
 .review_state_selector tr,
@@ -188,7 +190,7 @@ td.review_state_selector{
 
 .review_state_selector a{
   border-radius: &dtml-buttonBorderRadius;;
-  background: &dtml-buttonBackgroundColor;;
+  background: &	dtml-buttonBackgroundColor;;
   border:1px solid &dtml-buttonBorderColor; !important;
   text-decoration:none;
   font-weight:normal;

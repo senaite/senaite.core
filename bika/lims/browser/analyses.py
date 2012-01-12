@@ -25,6 +25,7 @@ class AnalysesView(BikaListingView):
         self.contentFilter = dict(kwargs)
         self.contentFilter['portal_type'] = 'Analysis'
         self.context_actions = {}
+        self.setoddeven = False
         self.show_sort_column = False
         self.show_select_row = False
         self.show_select_column = True
@@ -357,10 +358,5 @@ class AnalysesView(BikaListingView):
 
         self.json_specs = json.dumps(self.specs)
         self.json_interim_fields = json.dumps(self.interim_fields)
-
-        # re-do the pretty css odd/even classes
-        for i in range(len(items)):
-            items[i]['table_row_class'] = ((i + 1) % 2 == 0) and \
-                "even" or "odd"
 
         return items

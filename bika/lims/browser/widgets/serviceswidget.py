@@ -77,10 +77,6 @@ class ServicesView(BikaListingView):
 
         self.categories.sort()
 
-        for i in range(len(items)):
-            items[i]['table_row_class'] = ((i + 1) % 2 == 0) and \
-                 "even" or "odd"
-
         return items
 
 class ServicesWidget(TypesWidget):

@@ -97,12 +97,6 @@ h1, h2, h3, h4, h5, h6 {
     padding: 0em .25em 0em .25em;
     text-align: center;
 }
-.analysisrequest .odd {
-    background-color: transparent;
-}
-.analysisrequest .even {
-    background-color: #EEEEEE;
-}
 .remarks {
     border-collapse: collapse;
     border-left: 1px solid #636321;

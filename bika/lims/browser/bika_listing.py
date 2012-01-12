@@ -150,6 +150,7 @@ class BikaListingView(BrowserView):
     contentFilter = {}
     allow_edit = True
     context_actions = {}
+    setoddeven = True
     show_select_column = False
     show_select_row = False
     show_select_all_checkbox = True
@@ -420,11 +421,6 @@ class BikaListingView(BrowserView):
             type_class = 'contenttype-' + \
                 plone_utils.normalizeString(obj.portal_type)
 
-            if (i + 1) % 2 == 0:
-                table_row_class = "even"
-            else:
-                table_row_class = "odd"
-
             state_class = ''
             states = {}
             for w in workflow.getWorkflowsFor(obj):
@@ -452,7 +448,7 @@ class BikaListingView(BrowserView):
                 state_class = state_class,
                 relative_url = relative_url,
                 view_url = url,
-                table_row_class = table_row_class,
+                table_row_class = "",
 
                 # a list of names of fields that may be edited on this item
                 allow_edit = [],

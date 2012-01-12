@@ -513,10 +513,6 @@ table.analysisrequest input {
   margin:0 !important;
   border: 0 !important;
 }
-.template-manage_results .bika-listing-table td table tr.even,
-.template-manage_results .bika-listing-table td table tr.odd{
-  background-color:transparent !important;
-}
 .template-manage_results .bika-listing-table td table td {
   border:none;
   padding:1px;

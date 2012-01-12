@@ -10,14 +10,6 @@ $(document).ready(function(){
 		$(str).appendTo('#viewlet-above-content');
 	}
 
-	function setoddeven() {
-		var tbody = $(this);
-		// jquery :odd and :even are 0 based
-		tbody.find('tr').removeClass('odd').removeClass('even')
-			.filter(':odd').addClass('even').end()
-			.filter(':even').addClass('odd');
-	}
-
 	function sortabledataclass(cell){
 		var re = new RegExp("sortabledata-([^ ]*)","g");
 		var matches = re.exec(cell.attr('class'));
@@ -320,6 +312,17 @@ $(document).ready(function(){
 			return false;
 		}
 	});
+
+	// set alternating odd and even classes if table has setoddeven class
+	$.each($("table.setoddeven tbody.item-listing-tbody tr"), function(i,tr){
+		if (i%2 == 0) {
+			$(tr).addClass('odd');
+		} else {
+			$(tr).addClass('even');
+		}
+	});
+
+
 
 });
 });
