@@ -69,10 +69,8 @@ $(document).ready(function(){
 			replaceTarget: true,
 			data: form.formToArray(),
 			success: function(){
-				//$("#spinner").toggle(false);
 			}
 		}
-		//$("#spinner").toggle(true);
 		form.ajaxSubmit(options);
 		$("[name=table_only]").remove();
 		$(form).attr("action", stored_form_action)
@@ -116,10 +114,8 @@ $(document).ready(function(){
 				replaceTarget: true,
 				data: form.formToArray(),
 				success: function(){
-					//$("#spinner").toggle(false);
 				}
 			}
-			//$("#spinner").toggle(true);
 			form.ajaxSubmit(options);
 			$("[name=table_only]").remove();
 			$(form).attr("action", stored_form_action);
@@ -214,10 +210,8 @@ $(document).ready(function(){
 			replaceTarget: true,
 			data: form.formToArray(),
 			success: function(){
-				//$("#spinner").toggle(false);
 			}
 		}
-		//$("#spinner").toggle(true);
 		form.ajaxSubmit(options);
 		$('[name=table_only]').remove();
 		$(form).attr('action', stored_form_action)
@@ -238,10 +232,8 @@ $(document).ready(function(){
 			replaceTarget: true,
 			data: form.formToArray(),
 			success: function(){
-				//$("#spinner").toggle(false);
 			}
 		}
-		//$("#spinner").toggle(true);
 		form.ajaxSubmit(options);
 		$('[name=table_only]').remove();
 		$(form).attr('action', stored_form_action)
@@ -305,10 +297,8 @@ $(document).ready(function(){
 			replaceTarget: true,
 			data: form.formToArray(),
 			success: function(){
-				//$("#spinner").toggle(false);
 			}
 		}
-		//$("#spinner").toggle(true);
 		form.ajaxSubmit(options);
 		$('[name=table_only]').remove();
 		$(form).attr('action', stored_form_action)

@@ -44,9 +44,6 @@
 						<option
 							value="new" tal:content="string:New" i18n:translate=""/>
 					</select>
-					<span class="worksheet_add_control_spinner">
-						<img id="ajax_spinner" style="display:none" tal:attributes="src python:portal.absolute_url()+ '/images/spinner.gif';"/>
-					</span>
 				</td>
 			</tr>
 			<tr>

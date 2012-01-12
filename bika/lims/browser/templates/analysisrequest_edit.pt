@@ -584,9 +584,6 @@
         type="submit"
         name="save_button"
         value="Save"/>
-    <span id="spinner" style="display:none">
-        <img tal:attributes="src python:portal.absolute_url()+ '/images/spinner.gif';"/>
-    </span>
 
     <br/>&nbsp;
 

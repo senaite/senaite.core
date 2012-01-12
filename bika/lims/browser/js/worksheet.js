@@ -88,7 +88,6 @@ $(document).ready(function(){
 	// adding Controls and Blanks - selecting services re-renders the list
 	// of applicable reference samples
 	function get_updated_controls(){
-		$("#ajax_spinner").toggle(true);
 		selected_service_uids = [];
 		$.each($("input:checked"), function(i,e){
 			selected_service_uids.push($(e).val());
@@ -108,7 +107,6 @@ $(document).ready(function(){
 			 'control_type': control_type,
 			 '_authenticator': $('input[name="_authenticator"]').val()},
 			function(responseText, statusText, xhr, $form) {
-				$("#ajax_spinner").toggle(false);
 			}
 		);
 	}
@@ -174,10 +172,8 @@ $(document).ready(function(){
 			replaceTarget: true,
 			data: form.formToArray(),
 			success: function(){
-				//$("#spinner").toggle(false);
 			}
 		}
-		//$("#spinner").toggle(true);
 		form.ajaxSubmit(options);
 		$("[name=table_only]").remove();
 		$("#list > [name=list_getCategoryTitle]").remove();

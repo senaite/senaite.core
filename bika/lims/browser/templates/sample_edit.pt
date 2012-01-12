@@ -161,9 +161,6 @@
 		value="Save"
 		i18n:attributes="value"/>
 
-	<img id="spinner" style="display:none"
-		tal:attributes="src python:portal.absolute_url()+ '/images/spinner.gif'"/>
-
 	</form>
 
 </metal:content>

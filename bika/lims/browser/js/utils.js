@@ -5,6 +5,7 @@ jQuery( function($) {
 	}
 
 	function enableAddAttachment(this_field) {
+		// XX move this to worksheet or AR or wherever it actually belongs
 	    attachfile = document.getElementById('AttachFile').value
 	    service = document.getElementById('Service').value
 	    analysis = document.getElementById('Analysis').value
@@ -29,6 +30,11 @@ jQuery( function($) {
 	}
 
 	$(document).ready(function(){
+
+		$('body').append('<div id="spinner" class="spinner" style="display:none;"><img id="img-spinner" src="spinner.gif" alt="Loading"/></div>');
+		$('#spinner')
+			.ajaxStart(function() { $(this).show(); })
+			.ajaxStop(function() { $(this).hide(); });
 
 		$(".numeric").live('keypress', function(event) {
 

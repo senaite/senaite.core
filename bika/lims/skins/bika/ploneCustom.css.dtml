@@ -109,6 +109,27 @@ table {
 }
 
 
+.spinner {
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	margin-left: -50px; /* half width of the spinner gif */
+	margin-top: -50px; /* half height of the spinner gif */
+	padding:10px;
+	background-color:#fff;
+	border:1px solid #bbb;
+	border-radius: .5em;
+	text-align:center;
+	z-index:1234;
+	overflow: auto;
+}
+
+.spinner img {
+	height:20px;
+	width:20px;
+}
+
+
 /* edit-bar */
 
 #edit-bar {

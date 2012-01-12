@@ -558,11 +558,9 @@ jQuery( function($) {
 				dataType: 'json',
 				beforeSubmit: function(formData, jqForm, options) {
 					$("input[class~='context']").attr('disabled',true);
-					$("#spinner").toggle(true);
 				},
 				success: function(responseText, statusText, xhr, $form)  {
 					if(responseText['success'] != undefined){
-						$("#spinner").toggle(false);
 						if(responseText['labels'] != undefined){
 							destination = window.location.href.replace("/analysisrequest_add","");
 							destination = destination.replace("/base_edit", "");
@@ -594,14 +592,12 @@ jQuery( function($) {
 						portalMessage(msg);
 						window.scroll(0,0);
 						$("input[class~='context']").removeAttr('disabled');
-						$("#spinner").toggle(false);
 					}
 				},
 				error: function(XMLHttpRequest, statusText, errorThrown) {
 					portalMessage(statusText);
 					window.scroll(0,0);
 					$("input[class~='context']").removeAttr('disabled');
-					$("#spinner").toggle(false);
 				},
 			};
 			$('#analysisrequest_edit_form').ajaxForm(options);
