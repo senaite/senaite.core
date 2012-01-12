@@ -34,13 +34,13 @@ schema = Schema((
         relationship = 'AnalysisSpecSampleType',
         referenceClass = HoldingReference,
         widget = ReferenceWidget(
-            checkbox_bound = 1,
+            checkbox_bound = 0,
             label = _("Sample Type"),
             description = _("Sample Type description",
                             "If the sample type you are looking for is not listed here, "
-                            "a specification for it has been created already. To edit those, "
-                            "navigate 1 level up and select the specification by clicking on "
-                            "the sample type in the list"),
+                            "a specification for it has been created already. To edit existing, "
+                            "specifications, navigate 1 level up and select the specification by "
+                            "clicking on the sample type in the list"),
         ),
     ),
     ComputedField('SampleTypeTitle',
