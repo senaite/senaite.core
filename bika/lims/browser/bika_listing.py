@@ -217,9 +217,10 @@ class BikaListingView(BrowserView):
             or "/".join(context.getPhysicalPath())
         if hasattr(self, 'contentFilter'):
             if not 'path' in self.contentFilter:
-                self.contentFilter['path'] = {"query": [path,], "level" : 0 }
+                self.contentFilter['path'] = {"query": path, "level" : 0 }
         else:
-            self.contentFilter = {'path': {"query": [path,], "level" : 0 }}
+            if not 'path' in self.contentFilter:
+                self.contentFilter = {'path': {"query": path, "level" : 0 }}
 
         self.base_url = context.absolute_url()
         self.view_url = self.base_url
@@ -264,16 +265,18 @@ class BikaListingView(BrowserView):
             idx = self.columns[sort_on].get('index', sort_on)
             self.contentFilter['sort_on'] = idx
         else:
-            self.contentFilter['sort_on'] = 'id'
-            self.request.set(form_id+'_sort_on', 'id')
+            if 'sort_on' not in self.contentFilter:
+                self.contentFilter['sort_on'] = 'id'
+                self.request.set(form_id+'_sort_on', 'id')
 
         # sort order
         sort_order = self.request.get(form_id + '_sort_order', '')
         if sort_order:
             self.contentFilter['sort_order'] = sort_order
         else:
-            self.contentFilter['sort_order'] = 'ascending'
-            self.request.set(form_id+'_sort_order', 'ascending')
+            if 'sort_order' not in self.contentFilter:
+                self.contentFilter['sort_order'] = 'ascending'
+                self.request.set(form_id+'_sort_order', 'ascending')
 
         # pagesize
         self.pagesize = int(self.request.get(form_id + '_pagesize', self.pagesize))

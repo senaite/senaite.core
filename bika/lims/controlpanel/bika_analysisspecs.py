@@ -36,7 +36,7 @@ class AnalysisSpecsView(BikaListingView):
 
         self.columns = {
             'SampleType': {'title': _('Sample Type'),
-                           'index': 'getSampleTypeTitle'},
+                           'index': 'sortable_title'},
         }
 
         self.review_states = [
@@ -61,9 +61,9 @@ class AnalysisSpecsView(BikaListingView):
         for x in range(len(items)):
             if not items[x].has_key('obj'): continue
             obj = items[x]['obj']
-            items[x]['SampleType'] = obj.getSampleType() and obj.getSampleType().Title()
+            items[x]['SampleType'] = items[x]['title']
             items[x]['replace']['SampleType'] = "<a href='%s'>%s</a>" % \
-                 (items[x]['url'], items[x]['SampleType'])
+                 (items[x]['url'], items[x]['title'])
 
         return items
 

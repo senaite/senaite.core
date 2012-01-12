@@ -751,7 +751,9 @@ class LoadSetupData(BrowserView):
                     ResultsRange = []
                 _id = folder.invokeFactory('AnalysisSpec', id = 'tmp')
                 obj = folder[_id]
-                obj.edit(SampleType = self.sampletypes[row['SampleType']].UID())
+                SampleType = self.sampletypes[row['SampleType']]
+                obj.edit(SampleType = SampleType.UID(),
+                         title = row['SampleType'])
                 obj.processForm()
                 zope.event.notify(ObjectEditedEvent(obj))
             else:
