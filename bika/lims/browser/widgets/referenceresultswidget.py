@@ -146,8 +146,8 @@ class ReferenceResultsWidget(TypesWidget):
             result,min and max field will be included.
         """
         value = []
-        if 'uid' in form:
-            for uid, service in form['uid'][0].items():
+        if 'service' in form:
+            for uid, service in form['service'][0].items():
                 try:
                     result = float(form['result'][0][uid])
                     Min = float(form['min'][0][uid])
