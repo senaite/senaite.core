@@ -1,6 +1,6 @@
 id: index_html
 title: Welcome to Bika LIMS 3
-description: Bika LIMS 3 is Bika Lab System's long awaited upgrade to Plone 4 and SQL. In the interest of future maintenance and performance, and facilitating new functionality, the opportunity was used to undertake significant code restructuring. This is version 3.0a1.dev3315 on Plone 4.1
+description: Bika LIMS 3 is Bika Lab System's long awaited upgrade to Plone 4.  This server was updated on January 12, 2012.
 subject:
 relatedItems:
 location:
@@ -24,79 +24,49 @@ Content-Type: text/html
 <tbody>
 <tr>
 <td>
-<h3>Note to Testers</h3>
-<p>With this release, please concentrate (and try to break) the LIMS' setup and basic workflow for Samples, Analyses, Analysis Requests and Worksheets. Please do test Analysis profiles, Specifications and Worksheet templates</p>
-<h2 class="Subheading">Feedback</h2>
-<p>Don't hesitate to post questions, comments and suggestions to the Bika mailing lists: Bika <a class="external-link" href="https://groups.google.com/forum/?hl=en#%21forum/bika-design">LIMS design</a>, <a class="external-link" href="http://lists.sourceforge.net/lists/listinfo/bika-users">Users</a> or <a class="external-link" href="http://lists.sourceforge.net/lists/listinfo/bika-developers">Developers</a>. Please log issues in the <a class="external-link" href="http://sourceforge.net/tracker/?func=browse&amp;group_id=145464&amp;atid=762012">public Bika bug tracker</a> at SourceForge.net. <strong>NB</strong> - assign issues to 'lemoene'</p>
-</td>
-<td>
-<h2 class="Subheading">Set-up data request<br /></h2>
-<p>We standardised open XLSX<strong> </strong>spreadsheets that can be used   to configure the LIMS with setup data of the user's choice. Please contribute setup information to guide us    in pre-populating each of the Bika branches,  e.g. Water, Health, Interlab, etc.</p>
-<h3><a class="internal-link" href="setup-data-in-this-installation">Test data</a></h3>
-<p>For the purpose of testing, we populated this   instance with data of uniform   nature for most setup items, e.g. Analysis specifications,   QC, uncertainties, turn-around time, precision, price   etc. Please see <a class="internal-link" href="setup-data-in-this-installation">Setup data used to configure this installation</a></p>
-</td>
-</tr>
-<tr>
-<td colspan="2">
-<p style="text-align: center;"><img class="image-inline" src="++resource++bika.lims.images/LIMSFlowDiagram201103_600x.png" alt="LIMS flow &amp; Analysis status progression" /></p>
-</td>
-</tr>
-<tr>
-<td>
-<h3>Specific to version 3.0 pre-αlpha</h3>
-<p>In this version the LIMS set-up area and fundamental workflow is ready for beta testing</p>
+<h2>Access</h2>
+<p> <span class="link-mailto"><a href="mailto:demorequest@bikalabs.com?subject=Access%20to%20Gaob%20Bika%20LIMS%203%20on-line%20installation"><u>Bika LIMS 3 demo request</u></a></span><strong><br /></strong></p>
+<h2>Feedback</h2>
+<p>Don't hesitate to post questions and comment to the Bika mailing lists: <a class="external-link" href="https://groups.google.com/forum/?hl=en#%21forum/bika-design">LIMS design</a>, <a class="external-link" href="http://lists.sourceforge.net/lists/listinfo/bika-users">Users</a> or <a class="external-link" href="http://lists.sourceforge.net/lists/listinfo/bika-developers">Developers</a>.</p>
+<p>Please log issues, feature requests, or bug reports in the <a class="external-link" href="https://github.com/bikalabs/Bika-LIMS/issues">public issue tracker</a> at Github</p>
 <div align="center"><a class="external-link" href="http://www.richemp.org.za/"><img src="http://www.bikalabs.com/images/umhlathuze" alt="" /></a></div>
 <p>New items sponsored by the water quality lab at the City of uMhlathuze (COU), Richards Bay:</p>
 <blockquote>
 <a class="external-link" href="bika_setup/bika_calculations">Configurable results calculations</a>,    including interim fields and dependent results, are completely user    configurable now and new calculations can be added by authorised users    without requiring programming skills<br /><br />Dormant setup items can be de-activated, which will remove them from general view while maintaining database integrity<br /><br />Other COU sponsored enhancements include various worksheet and QC handling improvements and cancellation workflows for samples and analysis requests<br /><br /></blockquote>
 <p align="center">***</p>
-<p class="discreet">Plone    4's versioning is used to  maintain references to historical
-data in the    correct context, e.g.  historical Analysis Requests will
-reflect the    correct historical  methods, prices, units etc., after
-the Analysis    Service records they  reference might have been modified</p>
-<p class="discreet">Change note functionality is used in the Bika setup, as well as    object locking to prevent  more than 1 user editing the same item</p>
-<p class="discreet">The user interface won't show it, but further workflow separation    takes care of assigning Analyses to Worksheets, and to differentiate ARs    and Worksheets awaiting results file attachments and delaying    verification</p>
-<p class="discreet">Using Ajax, Plone 4's further improved user interface and   a host of     smaller enhancements, many clicks were saved and  general    performance   improved</p>
-<p class="discreet">The main Plone index, designed to index  every bit  of of the system     in CMS style, is being dismantled in favour of  more LIMS  specific   indexes   to further improve performance</p>
-<h3>Under construction</h3>
-<ul><li>Data filters on tables &amp; lists (50%)</li><li>Barcoding (60%)</li><li>Instrument Interface (70%)</li><li>QC graphs (45%)<br /></li><li>User manual (20%)</li></ul>
-<br />
-<div align="center"><img src="++resource++bika.lims.images/instrument_big.png" alt="Laboratory instruments in the LIMS/LIS" />&nbsp;
-<img src="++resource++bika.lims.images/referencesample_big.png" alt="Reference samples" />&nbsp; <img src="++resource++bika.lims.images/calculation_big.png" alt="LIMS/LIS analysis results calculations" />&nbsp; <img src="++resource++bika.lims.images/dependencies_big.png" alt="LIMS/LIS analysis results dependencies" />&nbsp; <img src="++resource++bika.lims.images/late_big.png" alt="LIMS/LIS late analyses" />&nbsp; <img src="++resource++bika.lims.images/sampletype_big.png" alt="Sample types in the LIMS/LIS" />&nbsp; <img src="++resource++bika.lims.images/samplepoint_big.png" alt="Sample points in the LIMS/LIS" />&nbsp; <img src="++resource++bika.lims.images/accredited_big.png" alt="Accredited lab analyses" /> <img src="++resource++bika.lims.images/dry_big.png" alt="Analysis results expressed as dry matter" /><br /><br /><a class="external-link" href="knowledge-centre/manual/bika-3-user-manual/introduction-and-overview/icons">New Bika 3 icon set</a></div>
-<p>&nbsp;</p>
-<p style="text-align: center;" class="callout"><strong>Micro-sponsorship appeal</strong><br /><br />
-<a href="http://sourceforge.net/donate/index.php?group_id=145464"><img src="http://images.sourceforge.net/images/project-support.jpg" alt="Support the Bika FLOSS project at SourceForge.net (PayPal)" height="32" width="88" /> </a><br /><br />At <a class="external-link" href="https://sourceforge.net/">SourceForge.net</a>. Paypal. $10 - $250</p>
+<p class="discreet">Plone 4's versioning is used to  maintain references to historical
+data, and working copy support combined with a built-in content locking mechanism allow multiple users to access data without conflicts.&nbsp; Further workflow separation now   takes care of assigning analyses to worksheets, and to differentiate ARs    and worksheets awaiting file attachments. Using AJAX, Plone 4's further improved user interface and   a host of     smaller enhancements, many clicks were saved and  general    performance   improved</p>
+<p class="discreet">The Plone catalog and indexes are being re-organised into  more LIMS  specific   indexes,   to further improve performance</p>
+<p align="center"><a class="external-link" href="https://www.ohloh.net/p/bika"><img class="image-inline" src="bika-code-analysis-by-ohloh" alt="Bika code analysis by OHLOH" /></a></p>
+<p align="center"><a class="external-link" href="https://www.ohloh.net/p/bika">Bika code analysis at Ohloh.net</a></p>
 <h3>Code repository</h3>
-<p>Fresh code is in SVN at <a class="external-link" href="https://github.com/bikalabs/Bika-LIMS">https://github.com/bikalabs/Bika-LIMS</a></p>
+<p>Fresh code is always available at <a href="https://github.com/bikalabs/Bika-LIMS">https://github.com/bikalabs/Bika-LIMS</a>&nbsp;</p>
 <p><strong><a class="external-link" href="http://www.bikalabs.com/softwarecenter/bika/releases/3.0">Bika 3 Project page</a></strong></p>
 <p>&nbsp;</p>
 <p><a class="external-link" href="https://bika.svn.sourceforge.net/svnroot/bika/bika3"><br /></a></p>
 </td>
 <td>
-<p align="left" style="text-align: center;"><strong>Bika code analysis at <a class="external-link" href="https://www.ohloh.net/p/bika">Ohloh.net</a></strong></p>
-<p align="left" style="text-align: center;"><strong><a class="external-link" href="https://www.ohloh.net/p/bika"><img class="image-inline" src="bika-code-analysis-by-ohloh" alt="Bika code analysis by OHLOH" /><br /></a></strong></p>
-<h3><a class="external-link" href="knowledge-centre/manual/bika-3-user-manual"><img src="maintenance_icon.png" alt="" /><em> User Manual </em></a></h3>
-<p><em>Under construction and describing new topics </em><em>at first:</em></p>
-<p><em>LIMS 2 principles still apply, if you are new to Bika, also consult the <a class="external-link" href="http://www.bikalabs.com/helpcentre/manual/bikalims20">Inkosi Bika LIMS 2 manual</a></em></p>
-<p><span class="Apple-style-span">
-</span></p>
-<ol style="list-style-type: decimal;"><li><a href="knowledge-centre/manual/bika-3-user-manual/introduction-and-overview"><span class="state-published">Introduction and Overview ...</span></a><br /></li><li><a href="knowledge-centre/manual/bika-3-user-manual/setup-and-configuration"><span class="state-published">Setup and Configuration</span></a>
-<ol style="list-style-type: decimal;"><li><a href="knowledge-centre/manual/bika-3-user-manual/setup-and-configuration/setup-overview"><span class="state-published">Setup Overview</span></a>
-<ol style="list-style-type: decimal;"><li><a href="knowledge-centre/manual/bika-3-user-manual/setup-and-configuration/setup-overview/navigating-the-lims-setup"><span class="state-published">Navigating the LIMS setup</span></a></li><li><a href="knowledge-centre/manual/bika-3-user-manual/setup-and-configuration/setup-overview/de-activating-setup-items"><span class="state-published">De-activating setup items</span></a></li><li><a href="knowledge-centre/manual/bika-3-user-manual/setup-and-configuration/setup-overview/versioning"><span class="state-published">Versioning</span></a></li></ol>
-</li><li><a href="knowledge-centre/manual/bika-3-user-manual/setup-and-configuration/analysis-services"><span class="state-published">Analysis Services</span></a></li><li><a href="knowledge-centre/manual/bika-3-user-manual/setup-and-configuration/analysis-categories"><span class="state-published">Analysis Categories</span></a></li><li><a href="knowledge-centre/manual/bika-3-user-manual/setup-and-configuration/analysis-profiles"><span class="state-published">Analysis Profiles</span></a></li><li><a href="knowledge-centre/manual/bika-3-user-manual/setup-and-configuration/calculations"><span class="state-published">Calculations</span></a></li><li><a href="knowledge-centre/manual/bika-3-user-manual/setup-and-configuration/analysis-specifications"><span class="state-published">Analysis Specifications</span></a></li><li><a href="knowledge-centre/manual/bika-3-user-manual/setup-and-configuration/reference-definitions"><span class="state-published">Reference Definitions</span></a></li><li><a href="knowledge-centre/manual/bika-3-user-manual/setup-and-configuration/worksheet-templates"><span class="state-published">Worksheet Templates</span></a></li></ol>
-</li><li><a href="knowledge-centre/manual/bika-3-user-manual/samples.-analyses.-analysis-requests"><span class="state-published">Samples. Analyses. Analysis Requests</span></a>
-<ol style="list-style-type: decimal;"><li><a href="knowledge-centre/manual/bika-3-user-manual/samples.-analyses.-analysis-requests/introduction-samples-analysis-requests.-mostly"><span class="state-published">Samples = Analysis Requests. Mostly</span></a></li><li><a href="knowledge-centre/manual/bika-3-user-manual/samples.-analyses.-analysis-requests/creating-a-simple-analysis-request-ar"><span class="state-published">Creating a simple Analysis Request (AR)</span></a></li><li><a href="knowledge-centre/manual/bika-3-user-manual/samples.-analyses.-analysis-requests/advanced-ar-creation"><span class="state-published">Advanced AR creation</span></a></li><li><span class="Apple-style-span"><span class="Apple-style-span"><img src="++resource++bika.lims.images/to_follow.png" alt="" />...</span></span></li></ol>
-</li><li><a href="knowledge-centre/manual/bika-3-user-manual/worksheets"><span class="state-published">Worksheets</span></a>
-<ol style="list-style-type: decimal;"><li><a href="knowledge-centre/manual/bika-3-user-manual/worksheets/worksheet-overview"><span class="state-published">Worksheet Overview</span></a></li><li><span class="Apple-style-span"><span class="Apple-style-span"><img src="++resource++bika.lims.images/to_follow.png" alt="" /> ...<br /></span></span></li></ol>
-</li></ol>
-<p>&nbsp;</p>
+<h2 class="Subheading">Test data<br /></h2>
+<p>We've created a standardised open-XLSX<strong> </strong>spreadsheet to configure the LIMS with setup data of the user's choice. We populated this   instance with data of
+ uniform   nature for most setup items, e.g. analysis specifications,
+QC, uncertainties, turn-around time, precision, price   etc. See <a class="internal-link" href="setup-data-in-this-installation">Setup data used to configure this installation</a></p>
+<p><a class="internal-link" href="setup-data-in-this-installation"><br /></a></p>
+<p align="left" style="text-align: center;"><strong><img class="image-inline" src="flow-diagram-350-x" alt="Flow diagram 350 x" /><br /></strong></p>
+<h3><a class="external-link" href="knowledge-centre/manual/bika-3-user-manual">User Manual </a></h3>
+<p>Under construction and describing new topics at first. LIMS 2 principles still apply, if you are new to Bika, also consult the <a class="external-link" href="http://www.bikalabs.com/helpcentre/manual/bikalims20">Inkosi Bika LIMS 2 manual</a></p>
+<h3>Under construction</h3>
+<ul><li>Barcoding (70%)<br /></li><li>Reports (60%)</li><li>SQL (ContentMirror) (40%)<br /></li><li>User manual (20%)</li></ul>
 <h3 class="Subheading">To do</h3>
-<ul><li>Column sorting<br /></li><li>Working hours calendar</li><li>PDF, SMS and Fax results publication options</li><li>Reports and Queries</li></ul>
-<ul><li>Relstorage &amp; Content Mirror</li><li>Invoices</li></ul>
-<p>&nbsp;</p>
+<ul><li>Working hours calendar</li><li>QC graphs<br /></li><li>PDF,, SMS, and Fax results publication options</li><li>Queries</li></ul>
+<ul><li>Invoices</li></ul>
+<p align="left" style="text-align: center;">&nbsp;</p>
+<div align="center"><img src="++resource++bika.lims.images/instrument_big.png" alt="Laboratory instruments in the LIMS/LIS" />&nbsp;
+<img src="++resource++bika.lims.images/referencesample_big.png" alt="Reference samples" />&nbsp; <img src="++resource++bika.lims.images/calculation_big.png" alt="LIMS/LIS analysis results calculations" />&nbsp; <img src="++resource++bika.lims.images/dependencies_big.png" alt="LIMS/LIS analysis results dependencies" />&nbsp; <img src="++resource++bika.lims.images/late_big.png" alt="LIMS/LIS late analyses" />&nbsp; <img src="++resource++bika.lims.images/sampletype_big.png" alt="Sample types in the LIMS/LIS" />&nbsp; <img src="++resource++bika.lims.images/samplepoint_big.png" alt="Sample points in the LIMS/LIS" />&nbsp; <img src="++resource++bika.lims.images/accredited_big.png" alt="Accredited lab analyses" /> <img src="++resource++bika.lims.images/dry_big.png" alt="Analysis results expressed as dry matter" /><br /><br /><a class="external-link" href="knowledge-centre/manual/bika-3-user-manual/introduction-and-overview/icons">New Bika 3 icon set</a></div>
+<br />
 <p>Thank you for your support</p>
 <p>The Bika team</p>
 <p><a href="mailto:info@bikalabs.com" target="_self">info@bikalabs.com</a></p>
+<p><a href="mailto:info@bikalabs.com" target="_self"><br /></a></p>
 <p><a class="external-link" href="http://www.bikalabs.com/"><img class="image-inline" src="bika-lab-systems-world-leading-open-source-lims" alt="Bika Lab Systems - World leading Open Source LIMS" /></a></p>
 <br />
 <p>&nbsp;</p>
