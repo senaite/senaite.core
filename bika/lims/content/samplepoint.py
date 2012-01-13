@@ -28,7 +28,7 @@ schema = BikaSchema.copy() + Schema((
             label= _("Longitude"),
             description = _("Longitude description",
                             "Enter the Sample Point's longitude in "
-                            "degrees 0-90, minutes 0-59, seconds 0-59 and E/W indicator"),
+                            "degrees 0-180, minutes 0-59, seconds 0-59 and E/W indicator"),
         ),
     ),
     StringField('Elevation',

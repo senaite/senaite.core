@@ -294,40 +294,37 @@ class CoordinateValidator:
         except:
             return _("Validation failed: seconds must be numeric")
 
-        if 0 <= degrees <= 90:
-            pass
-        else:
-            return _("Validation failed: degrees must be 0 - 90")
-
-        if 0 <= minutes <= 59:
-            pass
-        else:
+        if not 0 <= minutes <= 59:
             return _("Validation failed: minutes must be 0 - 59")
 
-        if 0 <= seconds <= 59:
-            pass
-        else:
+        if not 0 <= seconds <= 59:
             return _("Validation failed: seconds must be 0 - 59")
-
-        if degrees == 90:
-            if minutes != 0:
-                return _("Validation failed: minutes must be zero")
-            if seconds != 0:
-                return _("Validation failed: seconds must be zero")
 
         bearing = form_value['bearing']
 
         if fieldname == 'Latitude':
+            if not 0 <= degrees <= 90:
+                return _("Validation failed: degrees must be 0 - 90")
+            if degrees == 90:
+                if minutes != 0:
+                    return _("Validation failed: minutes must be zero")
+                if seconds != 0:
+                    return _("Validation failed: seconds must be zero")
             if (bearing.lower() != 'n') \
             and (bearing.lower() != 's'):
                 return _("Validation failed: Bearing must be N/S")
 
         if fieldname == 'Longitude':
+            if not 0 <= degrees <= 180:
+                return _("Validation failed: degrees must be 0 - 180")
+            if degrees == 180:
+                if minutes != 0:
+                    return _("Validation failed: minutes must be zero")
+                if seconds != 0:
+                    return _("Validation failed: seconds must be zero")
             if (bearing.lower() != 'e') \
             and (bearing.lower() != 'w'):
                 return _("Validation failed: Bearing must be E/W")
-
-
 
         return True
 

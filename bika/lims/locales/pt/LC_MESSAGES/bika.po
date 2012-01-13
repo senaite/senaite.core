@@ -3,7 +3,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Bika-LIMS\n"
-"POT-Creation-Date: 2012-01-09 17:32+0000\n"
+"POT-Creation-Date: 2012-01-13 12:11+0000\n"
 "PO-Revision-Date: 2012-01-02 20:15+0000\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Bika Lab Systems <support@bikalabs.com>\n"
@@ -2772,6 +2772,10 @@ msgstr ""
 
 #: ../validators.py:359
 msgid "Validation failed: Result Values must be numbers"
+msgstr ""
+
+#: ../validators.py:319
+msgid "Validation failed: degrees must be 0 - 180"
 msgstr ""
 
 #: ../validators.py:300

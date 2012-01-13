@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2012-01-09 17:32+0000\n"
+"POT-Creation-Date: 2012-01-13 12:11+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2692,6 +2692,10 @@ msgstr ""
 
 #: ../validators.py:359
 msgid "Validation failed: Result Values must be numbers"
+msgstr ""
+
+#: ../validators.py:319
+msgid "Validation failed: degrees must be 0 - 180"
 msgstr ""
 
 #: ../validators.py:300
