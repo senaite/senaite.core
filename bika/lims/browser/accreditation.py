@@ -1,6 +1,5 @@
 from bika.lims.controlpanel.bika_analysisservices import AnalysisServicesView
 from bika.lims import bikaMessageFactory as _
-from bika.lims.interfaces import IAccreditation
 from plone.app.content.browser.interfaces import IFolderContentsView
 from zope.interface import implements
 

@@ -1,6 +1,8 @@
 # import this to create messages in the bika domain.
 from zope.i18nmessageid import MessageFactory
 bikaMessageFactory = MessageFactory('bika')
+from Products.Archetypes import PloneMessageFactory as PMF
+
 # import this to log messages
 import logging
 logger = logging.getLogger('Bika')

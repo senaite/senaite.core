@@ -1,7 +1,6 @@
 from AccessControl import getSecurityManager
 from DateTime import DateTime
 from DocumentTemplate import sequence
-from Products.Archetypes import PloneMessageFactory as PMF
 from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFCore.utils import getToolByName
 from Products.Archetypes.public import DisplayList
@@ -9,6 +8,7 @@ from Products.Five.browser import BrowserView
 from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import bikaMessageFactory as _
+from bika.lims import PMF, logger
 from bika.lims.browser.analyses import AnalysesView
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.browser.bika_listing import WorkflowAction

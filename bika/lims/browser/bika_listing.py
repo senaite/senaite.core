@@ -3,7 +3,6 @@
 from Acquisition import aq_parent, aq_inner
 from OFS.interfaces import IOrderedContainer
 from Products.AdvancedQuery import And, Or, MatchGlob, MatchRegexp
-from Products.Archetypes import PloneMessageFactory as PMF
 from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFCore.utils import getToolByName
@@ -12,6 +11,7 @@ from Products.CMFPlone.utils import pretty_title_or_id, isExpired, safe_unicode
 from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import bikaMessageFactory as _
+from bika.lims import PMF
 from bika.lims import logger
 from bika.lims.utils import isActive, TimeOrDate
 from operator import itemgetter

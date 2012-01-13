@@ -4,8 +4,8 @@ from Products.Archetypes.event import ObjectEditedEvent
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from Products.Archetypes import PloneMessageFactory as PMF
-from bika.lims import logger, bikaMessageFactory as _
+from bika.lims import bikaMessageFactory as _
+from bika.lims import PMF, logger
 from cStringIO import StringIO
 from openpyxl.reader.excel import load_workbook
 from os.path import join
