@@ -1,14 +1,29 @@
 jQuery( function($) {
+
+function setoddeven(){
+	// set alternating odd and even classes if table has setoddeven class
+	$.each($("table.setoddeven tbody.item-listing-tbody tr"), function(i,tr){
+		if (i%2 == 0) {
+			$(tr).addClass('odd');
+		} else {
+			$(tr).addClass('even');
+		}
+	});
+}
+
+function portalMessage(message){
+	str = "<dl class='portalMessage error'>"+
+		"<dt>Error</dt>"+
+		"<dd><ul>" + message +
+		"</ul></dd></dl>";
+	$('.portalMessage').remove();
+	$(str).appendTo('#viewlet-above-content');
+}
+
+
 $(document).ready(function(){
 
-	function portalMessage(message){
-		str = "<dl class='portalMessage error'>"+
-			"<dt>Error</dt>"+
-			"<dd><ul>" + message +
-			"</ul></dd></dl>";
-		$('.portalMessage').remove();
-		$(str).appendTo('#viewlet-above-content');
-	}
+	setoddeven();
 
 	function sortabledataclass(cell){
 		var re = new RegExp("sortabledata-([^ ]*)","g");
@@ -18,7 +33,7 @@ $(document).ready(function(){
 	}
 
 	function sortable(cell) {
-		// convert a cell a to something sortable
+		// convert a cell to something sortable
 		// use sortabledata-xxx cell class if it is defined
 		var text = sortabledataclass(cell);
 		if(text == null) {
@@ -45,6 +60,7 @@ $(document).ready(function(){
 			replaceTarget: true,
 			data: form.formToArray(),
 			success: function(){
+				setoddeven();
 			}
 		}
 		form.ajaxSubmit(options);
@@ -90,6 +106,7 @@ $(document).ready(function(){
 				replaceTarget: true,
 				data: form.formToArray(),
 				success: function(){
+					setoddeven();
 				}
 			}
 			form.ajaxSubmit(options);
@@ -131,9 +148,8 @@ $(document).ready(function(){
 				tbody.find('tr').remove();
 				// appending the tr nodes in sorted order will remove them from their old ordering
 				tbody.append($.map(data, function(a) { return a[1]; }));
-				// jquery :odd and :even are 0 based
-				setoddeven(tbody);
 			}
+			setoddeven();
 		}
 	});
 
@@ -184,7 +200,10 @@ $(document).ready(function(){
 		options = {
 			target: $(form).children(".bika-listing-table"),
 			replaceTarget: true,
-			data: form.formToArray()
+			data: form.formToArray(),
+			success: function(){
+				setoddeven();
+			}
 		}
 		form.ajaxSubmit(options);
 		$('[name=table_only]').remove();
@@ -204,7 +223,10 @@ $(document).ready(function(){
 		options = {
 			target: $(form).children(".bika-listing-table"),
 			replaceTarget: true,
-			data: form.formToArray()
+			data: form.formToArray(),
+			success: function(){
+				setoddeven();
+			}
 		}
 		form.ajaxSubmit(options);
 		$('[name=table_only]').remove();
@@ -222,6 +244,7 @@ $(document).ready(function(){
 			.toggle(true);
 		// change TH state
 		$(this).removeClass('collapsed').addClass('expanded');
+		setoddeven();
 	});
 	$(".bika-listing-table th.expanded").live('click', function(){
 		table = $(this).parents('.bika-listing-table');
@@ -232,6 +255,7 @@ $(document).ready(function(){
 			.toggle(false);
 		// change TH state
 		$(this).removeClass('expanded').addClass('collapsed');
+		setoddeven();
 	});
 
 	// always select checkbox when editable listing item is changed
@@ -269,6 +293,7 @@ $(document).ready(function(){
 			replaceTarget: true,
 			data: form.formToArray(),
 			success: function(){
+				setoddeven();
 			}
 		}
 		form.ajaxSubmit(options);
@@ -284,15 +309,6 @@ $(document).ready(function(){
 			$(this).ajaxStop(function(){
 				$(this).click();
 			});
-		}
-	});
-
-	// set alternating odd and even classes if table has setoddeven class
-	$.each($("table.setoddeven tbody.item-listing-tbody tr"), function(i,tr){
-		if (i%2 == 0) {
-			$(tr).addClass('odd');
-		} else {
-			$(tr).addClass('even');
 		}
 	});
 
