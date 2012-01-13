@@ -124,8 +124,11 @@ class WorkflowAction:
                 for t in workflow.getTransitionsFor(item):
                     allowed_transitions.append(t['id'])
                 if action in allowed_transitions:
-                    workflow.doActionFor(item, action)
-                    transitioned.append(item.Title())
+                    try:
+                        workflow.doActionFor(item, action)
+                        transitioned.append(item.Title())
+                    except WorkflowException:
+                        pass
 
         if len(transitioned) > 0:
             message = self.context.translate(PMF('Changes saved.'))

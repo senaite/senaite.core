@@ -18,10 +18,10 @@ def AfterTransitionEventHandler(category, event):
 
     if event.transition.id == "deactivate":
         # A category cannot be deactivated if it contains services
-        ars = pc(portal_type='AnalysisService', getCategoryUID = category.UID())
+        bsc = getToolByName(category, 'bika_setup_catalog')
+        ars = bsc(portal_type='AnalysisService', getCategoryUID = category.UID())
         if ars:
             message = _("Category cannot be deactivated because it contains Analysis Services")
             pu.addPortalMessage(message, 'error')
             transaction.get().abort()
             raise WorkflowException
-
