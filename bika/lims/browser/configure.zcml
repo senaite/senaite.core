@@ -49,6 +49,14 @@
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
+  <browser:page
+      for="Products.CMFPlone.interfaces.IPloneSiteRoot"
+      name="accreditation"
+      class="bika.lims.browser.accreditation.AccreditationView"
+      permission="zope2.View"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
   <!-- Zope 3 browser resources -->
 
   <browser:resourceDirectory

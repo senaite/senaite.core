@@ -141,7 +141,7 @@ class ajaxSampleSubmit():
         return json.dumps({'success':message})
 
 class SamplesView(ClientSamplesView):
-    """ The main portal Analysis Requests action tab
+    """ The main portal Samples action tab
     """
 
     def __init__(self, context, request):

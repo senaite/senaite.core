@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2012-01-13 12:11+0000\n"
+"POT-Creation-Date: 2012-01-13 21:28+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2812,6 +2812,11 @@ msgstr ""
 msgid "accreditation_body_description"
 msgstr ""
 
+#. Default: "${labname} has been accredited as ${accr} conformant by ${abbr}, (${body}). ${abbr} is recognised by government as a national accreditation body in ${labcountry}"
+#: ../browser/accreditation.py:28
+msgid "accreditation_description"
+msgstr ""
+
 #. Default: "Enter an email address. This is necessary in case the password is lost. We respect your privacy, and will not give the address away to any third parties or expose it anywhere."
 #: ../browser/templates/contact_login_details.pt:95
 msgid "contact_login_email"
@@ -2884,6 +2889,11 @@ msgstr ""
 #. Default: "${st} is not a valid sample type"
 #: ../browser/analysisrequest.py:920
 msgid "invalid_sample_type"
+msgstr ""
+
+#. Default: "The following analysis services are accredited:"
+#: ../browser/templates/accreditation.pt:26
+msgid "label_services_accredited"
 msgstr ""
 
 #: ../browser/load_setup_data.py:29
