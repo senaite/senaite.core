@@ -18,25 +18,6 @@ class Empty: pass
 
 class BikaGenerator:
 
-    def setupPropertiesTool(self, portal):
-        ptool = getToolByName(portal, 'portal_properties')
-        if not getattr(ptool, 'bika_properties', None):
-            ptool.addPropertySheet('bika_properties', 'Bika Properties')
-            ps = getattr(ptool, 'bika_properties')
-            ps._properties = ps._properties + ({'id':'country_names', 'type':'lines', 'mode':'w'},)
-            ps._updateProperty('country_names', COUNTRY_NAMES)
-
-    def setupDependencies(self, portal):
-        """Install required products"""
-
-        pq = getToolByName(portal, 'portal_quickinstaller')
-        for product in DEPENDENCIES:
-            if not pq.isProductInstalled(product):
-                if pq.isProductInstallable(product):
-                    pq.installProduct(product)
-                else:
-                    raise "Product %s not installable" % product
-
     def setupPortalContent(self, portal):
         """ Setup Bika site structure """
 
@@ -440,8 +421,6 @@ def setupVarious(context):
 
     site = context.getSite()
     gen = BikaGenerator()
-    gen.setupPropertiesTool(site)
-    gen.setupDependencies(site)
     gen.setupGroupsAndRoles(site)
     gen.setupPortalContent(site)
     gen.setupPermissions(site)

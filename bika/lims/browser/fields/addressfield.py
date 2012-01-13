@@ -4,7 +4,7 @@ from Products.ATExtensions.ateapi import RecordField, RecordsField
 from Products.Archetypes.Registry import registerField
 from Products.Archetypes.public import *
 from Products.CMFCore.utils import getToolByName
-from bika.lims.config import COUNTRY_NAMES
+from plone.i18n.locales.countries import countries
 from Products.validation import validation
 from Products.validation.validators.RegexValidator import RegexValidator
 import sys
@@ -26,7 +26,7 @@ class AddressField(RecordField):
     def CountryNames(self, instance = None):
         if not instance:
             instance = self
-        return COUNTRY_NAMES
+        return DisplayList(( [(c[1],c[1]) for c in countries.getCountryListing()] ))
 
 registerField(AddressField,
               title = "Address",
