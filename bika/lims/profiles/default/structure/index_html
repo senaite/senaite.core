@@ -1,6 +1,6 @@
 id: index_html
 title: Welcome to Bika LIMS 3
-description: Bika LIMS 3 is Bika Lab System's long awaited upgrade to Plone 4.  This server was updated on January 12, 2012.
+description: Bika LIMS 3 is Bika Lab System's long awaited upgrade to Plone 4.  This file was updated on January 13, 2012.
 subject:
 relatedItems:
 location:
@@ -8,7 +8,7 @@ language:
 effectiveDate: 2011/01/01 23:00:00 GMT+2
 expirationDate: None
 creation_date: 2011/01/01 23:00:00 GMT+2
-modification_date: 2011/02/01 10:59:31.194263 GMT+2
+modification_date: 2012/01/13 10:59:31.194263 GMT+2
 creators: admin
 contributors:
 rights:
@@ -51,13 +51,13 @@ data, and working copy support combined with a built-in content locking mechanis
  uniform   nature for most setup items, e.g. analysis specifications,
 QC, uncertainties, turn-around time, precision, price   etc. See <a class="internal-link" href="setup-data-in-this-installation">Setup data used to configure this installation</a></p>
 <p><a class="internal-link" href="setup-data-in-this-installation"><br /></a></p>
-<p align="left" style="text-align: center;"><strong><img class="image-inline" src="flow-diagram-350-x" alt="Flow diagram 350 x" /><br /></strong></p>
+<p align="left" style="text-align: center;"><strong><img class="image-inline" src="++resource++bika.lims.images/FlowDiagram.png" alt="Flow diagram" /><br /></strong></p>
 <h3><a class="external-link" href="knowledge-centre/manual/bika-3-user-manual">User Manual </a></h3>
 <p>Under construction and describing new topics at first. LIMS 2 principles still apply, if you are new to Bika, also consult the <a class="external-link" href="http://www.bikalabs.com/helpcentre/manual/bikalims20">Inkosi Bika LIMS 2 manual</a></p>
 <h3>Under construction</h3>
 <ul><li>Barcoding (70%)<br /></li><li>Reports (60%)</li><li>SQL (ContentMirror) (40%)<br /></li><li>User manual (20%)</li></ul>
 <h3 class="Subheading">To do</h3>
-<ul><li>Working hours calendar</li><li>QC graphs<br /></li><li>PDF,, SMS, and Fax results publication options</li><li>Queries</li></ul>
+<ul><li>Working hours calendar</li><li>QC graphs<br /></li><li>PDF, SMS, and Fax results publication options</li><li>Queries</li></ul>
 <ul><li>Invoices</li></ul>
 <p align="left" style="text-align: center;">&nbsp;</p>
 <div align="center"><img src="++resource++bika.lims.images/instrument_big.png" alt="Laboratory instruments in the LIMS/LIS" />&nbsp;
