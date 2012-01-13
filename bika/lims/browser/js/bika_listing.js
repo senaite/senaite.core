@@ -40,22 +40,6 @@ $(document).ready(function(){
 		stored_form_action = $(form).attr("action");
 		$(form).attr("action", window.location.href);
 		$(form).append("<input type='hidden' name='table_only' value='"+form_id+"'>");
-// XXX formToArray() includes entire form - must slim the request down to what is required
-//		formArray = form.formToArray();
-//		formData = {};
-//		$.each(formArray, function(i, v){
-//			// only pass the things we need in the request
-//			if (v['name'].search(form_id+"_")==0){
-//				formData[v['name']] = v['value'];
-//			}
-//			if(v['name'] == '_authenticator' ||
-//			   v['name'] == 'view_url' ||
-//			   v['name'] == 'form_id' ||
-//			   v['name'] == 'submitted' ||
-//			   v['name'] == 'table_only') {
-//				formData[v['name']] = v['value'];
-//			}
-//		})
 		options = {
 			target: $(this).parents("table"),
 			replaceTarget: true,
@@ -293,19 +277,13 @@ $(document).ready(function(){
 		return false;
 	});
 
-	// wait for all .busy (calculating) elements to lose their busy class
+	// wait for all asynchronous requests to complete before allowing clicks
 	$('.workflow_action_button').live('click', function(event){
-		r = 0;
-		for(r=0;r<15;r++){
-			busy = $('.busy');
-			if(busy.length == 0){
-				break;
-			}
-		}
-		if(r == 14){
-			portalMessage("Some results failed to calculate, and the form was not submitted.");
-			$('.busy').removeClass('busy');
-			return false;
+		if($.active > 0){
+			event.preventDefault();
+			$(this).ajaxStop(function(){
+				$(this).click();
+			});
 		}
 	});
 
@@ -317,8 +295,6 @@ $(document).ready(function(){
 			$(tr).addClass('even');
 		}
 	});
-
-
 
 });
 });

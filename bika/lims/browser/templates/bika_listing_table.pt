@@ -546,7 +546,7 @@ Workflow Actions
 						tal:attributes="name action/title;
 										value action/id;"/>
 					<input
-						class="context workflow_action_button"
+						class="context workflow_action_button allowMultiSubmit"
 						type="submit"
 						name="workflow_action_button"
 						tal:attributes="
