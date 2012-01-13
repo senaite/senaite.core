@@ -29,7 +29,7 @@ schema = Organisation.schema.copy() + Schema((
         ),
     ),
     BooleanField('LaboratoryAccredited',
-        default = True,
+        default = False,
         schemata = 'Accreditation',
         write_permission = ManageBika,
         widget = BooleanWidget(
@@ -83,6 +83,15 @@ schema = Organisation.schema.copy() + Schema((
             label = _("Accreditation Reference"),
             description = _("Accreditation Reference description",
                             "The reference code issued to the lab by the accreditation body"),
+        ),
+    ),
+    ImageField('AccreditationBodyLogo',
+        widget = ImageWidget(
+            label = _("Accreditation Logo"),
+            description = _("Accreditation Logo descr",
+                            "Please upload the logo you are authorised to use on your "
+                            "website and results reports by your accreditation body. "
+                            "Maximum size is 175 x 175 pixels.")
         ),
     ),
 ))

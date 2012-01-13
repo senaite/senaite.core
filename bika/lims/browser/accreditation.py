@@ -1,21 +1,25 @@
-from Products.CMFCore.utils import getToolByName
-from Products.Five.browser import BrowserView
-from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from bika.lims.controlpanel.bika_analysisservices import AnalysisServicesView
 from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import TimeOrDate
+from bika.lims.interfaces import IAccreditation
+from plone.app.content.browser.interfaces import IFolderContentsView
+from zope.interface import implements
 
-class AccreditationView(BrowserView):
-    """
-    """
-    template = ViewPageTemplateFile("templates/accreditation.pt")
-
+class AccreditationView(AnalysisServicesView):
+    implements(IFolderContentsView)
     def __init__(self, context, request):
         super(AccreditationView, self).__init__(context, request)
+        self.contentFilter = {'portal_type': 'AnalysisService',
+                              'sort_on': 'sortable_title',
+                              'getAccredited':True,
+                              'inactive_state':'active'}
+        self.context_actions = {}
+        self.icon = "++resource++bika.lims.images/accreditation_big.png"
+        self.title = _("Accreditation")
 
-        lab = self.context.bika_setup.laboratory
-        self.accredited = lab.getLaboratoryAccredited()
-
-        self.mapping = {'labname': lab.getName(),
+        lab = context.bika_setup.laboratory
+        accredited = lab.getLaboratoryAccredited()
+        self.mapping = {'accredited':accredited,
+                        'labname': lab.getName(),
                         'labcountry': lab.getPhysicalAddress().get('country', ''),
                         'confidence': lab.getConfidence(),
                         'abbr': lab.getAccreditationBody(),
@@ -24,15 +28,56 @@ class AccreditationView(BrowserView):
                         'accr': lab.getAccreditation(),
                         'ref': lab.getAccreditationReference()
                         }
+        if accredited:
+            msg = _("accreditation_description",
+                    default = "${labname} has been accredited as ${accr} " + \
+                    "conformant by ${abbr}, (${body}). ${abbr} is " + \
+                    "recognised by government as a national " + \
+                    "accreditation body in ${labcountry}. ",
+                    mapping = self.mapping)
+        else:
+            msg = _("accreditation_not_accredited",
+                    "The lab is not accredited, or accreditation has not been configured. ")
+        self.description = context.translate(msg)
+        msg = _("accredited_services_description",
+                "All Accredited analysis services are listed here.")
+        self.description = "%s<p><br/>%s</p>"%(self.description,
+                                               self.context.translate(msg))
 
-        msg =  _("accreditation_description",
-                 default = "${labname} has been accredited as ${accr} " + \
-                           "conformant by ${abbr}, (${body}). ${abbr} is " + \
-                           "recognised by government as a national " + \
-                           "accreditation body in ${labcountry}",
-                 mapping = self.mapping)
+        self.show_select_column = False
+        request.set('disable_border', 1)
 
-        self.accreditation_description = self.context.translate(msg)
+        self.columns = {
+            'Title': {'title': _('Service'), 'sortable':False},
+            'Keyword': {'title': _('Keyword'), 'sortable':False},
+            'Category': {'title': _('Category'), 'sortable':False},
+            'Department': {'title': _('Department'), 'sortable':False},
+            'Instrument': {'title': _('Instrument'), 'sortable':False},
+            'Unit': {'title': _('Unit'), 'sortable':False},
+            'Price': {'title': _('Price'), 'sortable':False},
+            'MaxTimeAllowed': {'title': _('Max Time'), 'sortable':False},
+            'DuplicateVariation': {'title': _('Dup Var'), 'sortable':False},
+            'Calculation': {'title': _('Calculation'), 'sortable':False},
+        }
 
-    def __call__(self):
-        return self.template()
+        self.review_states = [
+            {'id':'all',
+             'title': _('All'),
+             'columns': ['Title',
+                         'Keyword',
+                         'Category',
+                         'Price',
+                         'MaxTimeAllowed',
+                         'DuplicateVariation',
+                         ],
+             },
+        ]
+
+    def selected_cats(self, items):
+        """return a list of all categories with accredited services
+        """
+        cats = []
+        for item in items:
+            if item['category'] not in cats:
+                cats.append(item['category'])
+        return cats

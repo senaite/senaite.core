@@ -1,14 +1,14 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2012-01-13 21:28+0000\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"Project-Id-Version: Bika-LIMS\n"
+"POT-Creation-Date: 2012-01-14 02:03+0000\n"
+"PO-Revision-Date: 2012-01-01 23:11+0000\n"
+"Last-Translator: Bika <bikasupport@bikalabs.com>\n"
+"Language-Team: Bika <bikasupport@bikalabs.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=1; plural=0\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
 "Language-Code: en\n"
 "Language-Name: English\n"
 "Preferred-Encodings: utf-8 latin1\n"
@@ -126,6 +126,15 @@ msgstr ""
 #. Default: "The accreditation standard that applies, e.g. ISO 17025"
 #: ../content/laboratory.py:75
 msgid "Accreditation Description"
+msgstr ""
+
+#: ../content/laboratory.py:90
+msgid "Accreditation Logo"
+msgstr ""
+
+#. Default: "Please upload the logo you are authorised to use on your website and results reports by your accreditation body. Maximum size is 175 x 175 pixels."
+#: ../content/laboratory.py:91
+msgid "Accreditation Logo descr"
 msgstr ""
 
 #: ../content/laboratory.py:83
@@ -433,6 +442,14 @@ msgstr ""
 
 #: ../controlpanel/bika_attachmenttypes.py:29
 msgid "Attachment Types"
+msgstr ""
+
+#: ../controlpanel/bika_analysisservices.py:142
+msgid "Attachment not permitted"
+msgstr ""
+
+#: ../controlpanel/bika_analysisservices.py:140
+msgid "Attachment required"
 msgstr ""
 
 #: ../browser/analyses.py:48
@@ -2528,6 +2545,10 @@ msgstr ""
 msgid "The attachments linked to analysis requests and analyses"
 msgstr ""
 
+#: ../browser/accreditation.py:75
+msgid "The following analysis services are Accredited: "
+msgstr ""
+
 #: ../browser/templates/reports_productivity.pt:44
 msgid "The number of analyses requested per analysis service"
 msgstr ""
@@ -2817,6 +2838,16 @@ msgstr ""
 msgid "accreditation_description"
 msgstr ""
 
+#. Default: "The lab is not accredited, or accreditation has not been configured"
+#: ../browser/accreditation.py:37
+msgid "accreditation_not_accredited"
+msgstr ""
+
+#. Default: "All Accredited analysis services are listed here."
+#: ../browser/accreditation.py:41
+msgid "accredited_services_description"
+msgstr ""
+
 #. Default: "Enter an email address. This is necessary in case the password is lost. We respect your privacy, and will not give the address away to any third parties or expose it anywhere."
 #: ../browser/templates/contact_login_details.pt:95
 msgid "contact_login_email"
@@ -2844,6 +2875,31 @@ msgstr ""
 #. Default: "Contacts"
 #: ../browser/referencesupplier.py:134
 msgid "contacts_title"
+msgstr ""
+
+#. The variables used here are the same as used in the strftime formating.
+#. Supported are ${A}, ${a}, ${B}, ${b}, ${H}, ${I}, ${m}, ${d}, ${M}, ${p},
+#. ${S}, ${Y}, ${y}, ${Z}, each used as variable in the msgstr.
+#. For example: "${A} ${d}. ${B} ${Y}, ${H}:${M} ${Z}"
+#. In english speaking countries default is:
+#. ${b} ${d}, ${Y} ${I}:${M} ${p}
+msgid "date_format_long"
+msgstr ""
+
+msgid "date_format_short"
+msgstr ""
+
+# display day/hour/minute abbreviations for displaying Durations
+#. Default: "d"
+msgid "duration_d"
+msgstr ""
+
+#. Default: "h"
+msgid "duration_h"
+msgstr ""
+
+#. Default: "m"
+msgid "duration_m"
 msgstr ""
 
 #: ../browser/calcs.py:240
@@ -2891,11 +2947,6 @@ msgstr ""
 msgid "invalid_sample_type"
 msgstr ""
 
-#. Default: "The following analysis services are accredited:"
-#: ../browser/templates/accreditation.pt:26
-msgid "label_services_accredited"
-msgstr ""
-
 #: ../browser/load_setup_data.py:29
 msgid "load_setup_data_helptext"
 msgstr ""
@@ -2921,6 +2972,9 @@ msgstr ""
 
 #: ../browser/templates/analysisrequest_manage_results.pt:59
 msgid "range"
+msgstr ""
+
+msgid "time_format"
 msgstr ""
 
 #: ../browser/templates/reports_productivity.pt:153

@@ -30,7 +30,6 @@ class AnalysisServicesView(BikaListingView):
         self.show_sort_column = False
         self.show_select_row = False
         self.show_select_column = True
-        self.categories = self.getCategories()
         self.show_select_all_checkbox = False
         self.pagesize = 1000
 
@@ -96,21 +95,18 @@ class AnalysisServicesView(BikaListingView):
              },
         ]
 
-    def getCategories(self):
-        bsc = getToolByName(self.context, 'bika_setup_catalog')
-        return [c.Title for c in \
-                bsc(portal_type = 'AnalysisCategory',
-                   inactive_state = 'active',
-                   sort_on = 'sortable_title')]
-
     def folderitems(self):
         items = BikaListingView.folderitems(self)
+        self.categories = []
+
         for x in range(len(items)):
             if not items[x].has_key('obj'): continue
             obj = items[x]['obj']
             items[x]['Keyword'] = obj.getKeyword()
             items[x]['Category'] = obj.getCategoryTitle()
             items[x]['category'] = items[x]['Category']
+            if items[x]['Category'] not in self.categories:
+                self.categories.append(items[x]['Category'])
             items[x]['Instrument'] = obj.getInstrument() and obj.getInstrument().Title() or ' '
             items[x]['Department'] = obj.getDepartment() and obj.getDepartment().Title() or ' '
             calculation = obj.getCalculation()
@@ -137,13 +133,13 @@ class AnalysisServicesView(BikaListingView):
                  (items[x]['url'], items[x]['Title'])
             after_icons = ''
             if obj.getAccredited():
-                after_icons += "<img src='++resource++bika.lims.images/accredited.png' title='Accredited'>"
+                after_icons += "<img src='++resource++bika.lims.images/accredited.png' title='%s'>"%(_("Accredited"))
             if obj.getReportDryMatter():
-                after_icons += "<img src='++resource++bika.lims.images/dry.png' title='Can be reported as dry matter'>"
+                after_icons += "<img src='++resource++bika.lims.images/dry.png' title='%s'>"%(_("Can be reported as dry matter"))
             if obj.getAttachmentOption() == 'r':
-                after_icons += "<img src='++resource++bika.lims.images/attach_reqd.png' title='Attachment required'>"
+                after_icons += "<img src='++resource++bika.lims.images/attach_reqd.png' title='%s'>"%(_("Attachment required"))
             if obj.getAttachmentOption() == 'n':
-                after_icons += "<img src='++resource++bika.lims.images/attach_no.png' title='Attachment not permitted'>"
+                after_icons += "<img src='++resource++bika.lims.images/attach_no.png' title='%s'>"%(_('Attachment not permitted'))
             if after_icons:
                 items[x]['after']['Title'] = after_icons
             items[x]['replace']['Calculation'] = calculation and "<a href='%s'>%s</a>" % \

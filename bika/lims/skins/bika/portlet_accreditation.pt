@@ -8,13 +8,16 @@
      tal:define="portal_state context/@@plone_portal_state;
                  portal_url portal_state/portal_url;
                  plone_view context/@@plone;">
+
     <div class="portlet" id="portlet-accreditation"
-         tal:condition="python:context.bika_setup.laboratory.getLaboratoryAccredited()" >
+        tal:condition="python:context.bika_setup.laboratory.LaboratoryAccredited">
         <a href="#"
             tal:attributes="href string:${context/portal_url}/accreditation">
-            <img src="" tal:attributes="src string:${context/portal_url}/++resource++bika.lims.images/accreditation_logo.png">
+        <img
+          tal:attributes="src string:${context/portal_url}/bika_setup/laboratory/AccreditationBodyLogo"/>
         </a>
     </div>
+
 </div>
 
 </body>
