@@ -29,7 +29,7 @@ class ReferenceResultsView(BikaListingView):
 
         self.referenceresults = {}
         # we want current field value as a dict
-        # key:service, value:{dictionary from field list of dict}
+        # key:uid, value:{dictionary from field list of dict}
         for refres in fieldvalue:
             self.referenceresults[refres['uid']] = refres
 
@@ -150,15 +150,15 @@ class ReferenceResultsWidget(TypesWidget):
         if 'service' in form:
             for uid, service in form['service'][0].items():
                 try:
-                    result = float(form['result'][0][uid])
-                    Min = float(form['min'][0][uid])
-                    Max = float(form['max'][0][uid])
+                    float(form['result'][0][uid])
+                    float(form['min'][0][uid])
+                    float(form['max'][0][uid])
                 except:
                     continue
                 value.append({'uid':uid,
-                              'result':result,
-                              'min':Min,
-                              'max':Max})
+                              'result':form['result'][0][uid],
+                              'min':form['min'][0][uid],
+                              'max':form['max'][0][uid]})
         return value, {}
 
     security.declarePublic('ReferenceResults')

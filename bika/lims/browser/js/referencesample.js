@@ -39,5 +39,10 @@ $(document).ready(function(){
 				 'uid':uid});
 	});
 
+	// If validation failed, and user is returned to page - requires reload.
+	if ($('#ReferenceDefinition\\:list').val() != ''){
+		$('#ReferenceDefinition\\:list').change();
+	}
+
 });
 });
