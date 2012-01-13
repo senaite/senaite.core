@@ -45,7 +45,7 @@
 	value python:request.get(form_id+'_review_state', 'all')"/>
 <input type="hidden" tal:omit-tag="python:table_only" tal:attributes="
 	name python:form_id+'_pagesize';
-	value python:request.get(form_id+'_pagesize', '20')"/>
+	value python:request.get(form_id+'_pagesize', view.bika_listing.pagesize)"/>
 <input type="hidden" tal:omit-tag="python:table_only" tal:attributes="
 	name python:form_id+'_pagenumber';
 	value python:request.get(form_id+'_pagenumber', '1')"/>
@@ -609,14 +609,14 @@ Batching
 					   ...
 					</span>
 					<a href=""
-					   tal:attributes="href string:${view/url};
-									   pagenumber string:${batch/lastpage}"
+					   tal:attributes="href view/url;
+									   pagenumber batch/lastpage"
 					   tal:content="batch/lastpage">3457</a>
 				</span>
 				<span class="next"
 					  tal:condition="batch/has_next">
 					<a href=""
-					   tal:attributes="href string:${view/url};pagenumber string:${batch/nextpage}">
+					   tal:attributes="href string:${view/url};pagenumber batch/nextpage;pagesize view/bika_listing/pagesize">
 					   <span i18n:domain="plone" i18n:translate="">
 						   Next
 						   <span i18n:domain="plone" i18n:name="number" tal:omit-tag="" tal:content="batch/next_item_count">n</span>
@@ -632,10 +632,9 @@ Batching
 		<td class="batching" colspan="2" style="text-align:right">
 			<tal:batching
 				tal:define="batch view/batch"
-				condition="python:batch.multiple_pages and not view.show_all">
+				condition="python:batch.multiple_pages and not view.show_all and view.bika_listing.pagesize != 1000">
 				<span class="pagesize_selector noborder"
 					style="vertical-align:top !important"
-					tal:condition="python:len(view.items) > 10 & view.pagesize != 1000"
 					style="text-align:right">
 					<select name="pagesize">
 						<option value="10" tal:attributes="selected python:int(view.bika_listing.pagesize) == 10 and 'selected' or ''">10</option>

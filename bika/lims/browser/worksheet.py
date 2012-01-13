@@ -487,8 +487,7 @@ class AddAnalysesView(BikaListingView):
         self.show_sort_column = False
         self.show_select_row = False
         self.show_select_column = True
-        # the tal disables batching controls if pagesize=1000
-        self.pagesize = 1000
+        self.pagesize = 50
 
         self.columns = {
             'ClientTitle': {'title': _('Client'),
@@ -551,8 +550,6 @@ class AddAnalysesView(BikaListingView):
         pc = getToolByName(self.context, 'portal_catalog')
         self.contentsMethod = pc
         items = BikaListingView.folderitems(self)
-        # we really only care about the first hundred items and nothing else.
-        new_items = []
         for x in range(len(items)):
             if not items[x].has_key('obj'):
                 continue
@@ -571,8 +568,7 @@ class AddAnalysesView(BikaListingView):
                      self.context.translate(_("Late Analysis")))
             items[x]['CategoryTitle'] = service.getCategory().Title()
             items[x]['ClientTitle'] = client.Title()
-            new_items.append(items[x])
-        return new_items[:100]
+        return items
 
     def getServices(self):
         bsc = getToolByName(self.context, 'bika_setup_catalog')

@@ -541,6 +541,7 @@ class BikaListingTable(tableview.Table):
         self.table = self
         self.table_only = table_only
         self.bika_listing = bika_listing
+        self.pagesize = bika_listing.pagesize
         folderitems = bika_listing.folderitems()
 
         tableview.Table.__init__(self,

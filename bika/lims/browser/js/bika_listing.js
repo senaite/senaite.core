@@ -200,9 +200,7 @@ $(document).ready(function(){
 		options = {
 			target: $(form).children(".bika-listing-table"),
 			replaceTarget: true,
-			data: form.formToArray(),
-			success: function(){
-			}
+			data: form.formToArray()
 		}
 		form.ajaxSubmit(options);
 		$('[name=table_only]').remove();
@@ -222,9 +220,7 @@ $(document).ready(function(){
 		options = {
 			target: $(form).children(".bika-listing-table"),
 			replaceTarget: true,
-			data: form.formToArray(),
-			success: function(){
-			}
+			data: form.formToArray()
 		}
 		form.ajaxSubmit(options);
 		$('[name=table_only]').remove();
