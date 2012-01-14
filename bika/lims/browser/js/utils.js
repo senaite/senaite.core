@@ -35,6 +35,7 @@ jQuery( function($) {
 		$('#spinner')
 			.ajaxStart(function() { $(this).show(); })
 			.ajaxStop(function() { $(this).hide(); });
+		$("#kss-spinner").empty();
 
 		$(".numeric").live('keypress', function(event) {
 
