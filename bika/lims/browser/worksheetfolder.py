@@ -56,6 +56,7 @@ class WorksheetFolderWorkflowAction(WorkflowAction):
 
 
 class WorksheetFolderListingView(BikaListingView):
+    template = ViewPageTemplateFile("templates/worksheetfolder.pt")
     def __init__(self, context, request):
         BikaListingView.__init__(self, context, request)
         self.contentFilter = {
@@ -79,7 +80,6 @@ class WorksheetFolderListingView(BikaListingView):
         self.title = _("Worksheets")
         self.description = _("Worksheets description", "")
         self.TimeOrDate = TimeOrDate
-
 
         pm = getToolByName(context, "portal_membership")
         bsc = getToolByName(context, 'bika_setup_catalog')
@@ -106,7 +106,6 @@ class WorksheetFolderListingView(BikaListingView):
                 self.templateinstruments[t.UID] = i.UID()
             else:
                 self.templateinstruments[t.UID] = ''
-
 
         self.columns = {
             'Title': {'title': _('Worksheet'),

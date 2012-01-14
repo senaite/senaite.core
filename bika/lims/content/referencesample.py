@@ -310,8 +310,7 @@ class ReferenceSample(BaseFolder):
             DueDate = duetime,
         )
 
-        analysis.unmarkCreationFlag()
-        analysis.reindexObject()
+        analysis.processForm()
         return analysis.UID()
 
     security.declarePublic('getServices')
