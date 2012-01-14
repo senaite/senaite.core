@@ -327,6 +327,11 @@ class ClientAnalysisRequestsView(BikaListingView):
                      "<img src='++resource++bika.lims.images/worksheet.png' title='%s'/>" % \
                      self.context.translate(_("All analyses assigned"))
 
+            if datesampled > DateTime():
+                after_icons = "<img src='++resource++bika.lims.images/calendar.png' title='%s'>" % \
+                    self.context.translate(_("Future dated sample"))
+                items[x]['after']['state_title'] = after_icons
+
             sample = obj.getSample()
             after_icons = "<a href='%s'><img src='++resource++bika.lims.images/sample.png' title='%s: %s'></a>" % \
                         (sample.absolute_url(), \
@@ -472,6 +477,11 @@ class ClientSamplesView(BikaListingView):
                 TimeOrDate(self.context, datesampled) or ''
 
             items[x]['DateReceived'] = TimeOrDate(self.context, obj.getDateReceived())
+
+            if datesampled > DateTime():
+                after_icons = "<img src='++resource++bika.lims.images/calendar.png' title='%s'>" % \
+                    self.context.translate(_("Future dated sample"))
+                items[x]['after']['state_title'] = after_icons
 
             after_icons = ''
             if obj.getSampleType().getHazardous():
