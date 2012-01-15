@@ -115,6 +115,11 @@ class ReferenceAnalysis(BaseContent):
     displayContentsTab = False
     schema = schema
 
+    _at_rename_after_creation = True
+    def _renameAfterCreation(self, check_auto_id=False):
+        from bika.lims.utils import renameAfterCreation
+        renameAfterCreation(self)
+
     def Title(self):
         """ Return the Service ID as title """
         s = self.getService()

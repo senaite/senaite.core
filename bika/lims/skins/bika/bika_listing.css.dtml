@@ -20,12 +20,11 @@
 
 .context_action_dropdown {
     margin:none;
-    font-size: 50%;
     border:none !important;
     vertical-align: middle;
 	font-weight:normal;
 	letter-spacing: 0;
-	padding: 5px 2px 5px 2px;
+	padding: 2px 2px 2px 2px;
 }
 
 /* for inline select dropdowns */
@@ -290,10 +289,10 @@ td.review_state_selector{
 .manage_results_header tr{
 }
 .manage_results_header th{
-	padding: 0 1em 0 0;
+	padding: 0 .25em 0 0;
 }
 .manage_results_header td{
-	padding: 0 3em 0 0;
+	padding: 0 2em 0 0;
 }
 
 /* batch selectors */

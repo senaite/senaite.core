@@ -1,6 +1,5 @@
 from App.Common import package_home
 from Products.Archetypes.config import REFERENCE_CATALOG
-from Products.Archetypes.event import ObjectEditedEvent
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
@@ -221,7 +220,6 @@ class LoadSetupData(BrowserView):
             _id = folder.invokeFactory('LabContact', id='tmp')
             obj = folder[_id]
             obj.processForm()
-#            zope.event.notify(ObjectEditedEvent(obj))
             Fullname = unicode(row['Firstname']) + " " + unicode(row['Surname'])
             obj.edit(
                 title = Fullname,
@@ -266,7 +264,6 @@ class LoadSetupData(BrowserView):
                      Manager = manager.UID())
             self.departments[unicode(row['title'])] = obj
             obj.processForm()
-            zope.event.notify(ObjectEditedEvent(obj))
 
             # set importedlab contact's department references
             if hasattr(self, 'lab_contacts'):
@@ -295,7 +292,7 @@ class LoadSetupData(BrowserView):
                         Phone = unicode(row['Telephone']),
                         Fax = unicode(row['Fax']))
             obj.processForm()
-            zope.event.notify(ObjectEditedEvent(obj))
+
 
     def load_client_contacts(self, sheet):
         nr_rows = sheet.get_highest_row()
@@ -362,7 +359,6 @@ class LoadSetupData(BrowserView):
                 group.addMember(row['Username'])
 
             contact.processForm()
-            zope.event.notify(ObjectEditedEvent(contact))
 
     def fix_client_contact_ccs(self):
         for row in self.client_contacts:
@@ -398,7 +394,7 @@ class LoadSetupData(BrowserView):
                      DataInterface = row['DataInterface'])
             self.instruments[unicode(row['title'])] = obj
             obj.processForm()
-            zope.event.notify(ObjectEditedEvent(obj))
+
 
     def load_sample_points(self, sheet):
         nr_rows = sheet.get_highest_row()
@@ -427,7 +423,7 @@ class LoadSetupData(BrowserView):
                      Longitude = longitude,
                      Elevation = unicode(row['Elevation']))
             obj.processForm()
-            zope.event.notify(ObjectEditedEvent(obj))
+
 
     def load_sample_types(self, sheet):
         nr_rows = sheet.get_highest_row()
@@ -449,7 +445,6 @@ class LoadSetupData(BrowserView):
                      Prefix = unicode(row['Prefix']),
                      Hazardouus = row['Hazardous'] and True or False)
             obj.processForm()
-            zope.event.notify(ObjectEditedEvent(obj))
 
     def load_analysis_categories(self, sheet):
         nr_rows = sheet.get_highest_row()
@@ -468,7 +463,7 @@ class LoadSetupData(BrowserView):
                      Department = self.departments[unicode(row['Department'])].UID())
             self.cats[unicode(row['title'])] = obj
             obj.processForm()
-            zope.event.notify(ObjectEditedEvent(obj))
+
 
     def load_methods(self, sheet):
         nr_rows = sheet.get_highest_row()
@@ -487,7 +482,7 @@ class LoadSetupData(BrowserView):
                      Instructions = unicode(row['Instructions']))
 #                     MethodDocument = row['MethodDocument'])
             obj.processForm()
-            zope.event.notify(ObjectEditedEvent(obj))
+
 
     def CreateServiceObjects(self, services):
         deferred = 0
@@ -569,9 +564,9 @@ class LoadSetupData(BrowserView):
                      DuplicateVariation = "%02f" % float(row['DuplicateVariation']),
                      Uncertanties = u,
                      ResultOptions = resultoptions,
-                     ReportDryMatter = row['ReportDryMatter'] and True or False)
-            if row['Instrument']:
-                obj.setInstrument(self.instruments[row['Instrument']].UID())
+                     ReportDryMatter = row['ReportDryMatter'] and True or False,
+                     Instrument = row['Instrument'] in self.instruments and self.instruments[row['Instrument']].UID() or '',
+                     )
             if row['Calculation']:
                 obj.setCalculation(self.calcs[row['Calculation']])
             if '_uncert' in row:
@@ -581,7 +576,7 @@ class LoadSetupData(BrowserView):
             service_obj = obj
             self.services[row['Keyword']] = obj
             obj.processForm()
-            zope.event.notify(ObjectEditedEvent(obj))
+
 
     def load_analysis_services(self, sheet):
         nr_rows = sheet.get_highest_row()
@@ -658,7 +653,7 @@ class LoadSetupData(BrowserView):
             calc_obj = obj
             self.calcs[row['title']] = obj
             obj.processForm()
-            zope.event.notify(ObjectEditedEvent(obj))
+
 
     def load_calculations(self, sheet):
         nr_rows = sheet.get_highest_row()
@@ -698,7 +693,7 @@ class LoadSetupData(BrowserView):
                      Service = [s.UID for s in proxies],
                      ProfileKey = unicode(row['ProfileKey']))
             obj.processForm()
-            zope.event.notify(ObjectEditedEvent(obj))
+
 
     def load_reference_definitions(self, sheet):
         nr_rows = sheet.get_highest_row()
@@ -719,7 +714,6 @@ class LoadSetupData(BrowserView):
                          Blank = row['Blank'] and True or False,
                          Hazardous = row['Hazardous'] and True or False)
                 obj.processForm()
-                zope.event.notify(ObjectEditedEvent(obj))
                 self.definitions[unicode(row['title'])] = obj.UID()
             service = self.services[row['keyword']]
             try: result = int(row['result'])
@@ -755,7 +749,7 @@ class LoadSetupData(BrowserView):
                 obj.edit(SampleType = SampleType.UID(),
                          title = row['SampleType'])
                 obj.processForm()
-                zope.event.notify(ObjectEditedEvent(obj))
+
             else:
                 ResultsRange.append({'keyword': row['keyword'],
                                      'min': str(row['min']),
@@ -780,7 +774,7 @@ class LoadSetupData(BrowserView):
                      Phone = unicode(row['Phone']),
                      Fax = unicode(row['Fax']))
             obj.processForm()
-            zope.event.notify(ObjectEditedEvent(obj))
+
 
     def load_reference_supplier_contacts(self, sheet):
         nr_rows = sheet.get_highest_row()
@@ -799,7 +793,7 @@ class LoadSetupData(BrowserView):
                      Surname = unicode(row['Surname']),
                      EmailAddress = unicode(row['EmailAddress']))
             obj.processForm()
-            zope.event.notify(ObjectEditedEvent(obj))
+
             if 'Username' in row and \
                'Password' in row:
                 self.context.REQUEST.set('username', unicode(row['Username']))
@@ -830,7 +824,7 @@ class LoadSetupData(BrowserView):
             obj.edit(title = unicode(row['title']),
                      description = unicode(row['description']))
             obj.processForm()
-            zope.event.notify(ObjectEditedEvent(obj))
+
 
     def load_lab_products(self, sheet):
         nr_rows = sheet.get_highest_row()
@@ -844,7 +838,7 @@ class LoadSetupData(BrowserView):
             row = dict(zip(fields, row))
             _id = folder.invokeFactory('LabProduct', id = 'tmp')
             obj = folder[_id]
-            zope.event.notify(ObjectEditedEvent(obj))
+
             obj.edit(title = unicode(row['title']),
                      description = unicode(row['description']),
                      Volume = unicode(row['Volume']),
@@ -893,7 +887,6 @@ class LoadSetupData(BrowserView):
                                 'dup':unicode(row['dup'])}])
             wst_obj = obj
             obj.processForm()
-            zope.event.notify(ObjectEditedEvent(obj))
 
     def load_reference_manufacturers(self, sheet):
         nr_rows = sheet.get_highest_row()
@@ -910,4 +903,4 @@ class LoadSetupData(BrowserView):
             obj.edit(title = unicode(row['title']),
                      description = unicode(row['description']))
             obj.processForm()
-            zope.event.notify(ObjectEditedEvent(obj))
+

@@ -1,5 +1,6 @@
 from AccessControl import ModuleSecurityInfo, allow_module
 from DateTime import DateTime
+from Products.Archetypes.public import DisplayList
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.TranslationServiceTool import TranslationServiceTool
 from Products.Five.browser import BrowserView
@@ -51,7 +52,7 @@ def getAnalysts(context):
             fullname = uid
         pairs.append((uid, fullname))
     pairs.sort(lambda x, y: cmp(x[1], y[1]))
-    return pairs
+    return DisplayList(pairs)
 
 def isActive(obj):
     """ Check if obj is inactive or cancelled.

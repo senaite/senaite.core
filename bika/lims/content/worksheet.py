@@ -217,19 +217,12 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         if src_ar:
             src_ar = src_ar[0]
 
-        # check/overwrite/set dest_slot
-        if src_ar in [slot['container_uid'] for slot in layout if \
-                      slot['type'] == 'd']:
-            dest_slot = [slot['position'] for slot in layout if \
-                         slot['container_uid'] == src_ar and \
-                         slot['type'] == 'd'][0]
-        else:
-            if not dest_slot or dest_slot == 'new':
-                highest_existing_position = len(wstlayout)
-                for pos in [int(slot['position']) for slot in layout]:
-                    if pos > highest_existing_position:
-                        highest_existing_position = pos
-                dest_slot = highest_existing_position + 1
+        if not dest_slot or dest_slot == 'new':
+            highest_existing_position = len(wstlayout)
+            for pos in [int(slot['position']) for slot in layout]:
+                if pos > highest_existing_position:
+                    highest_existing_position = pos
+            dest_slot = highest_existing_position + 1
 
         src_analyses = [rc.lookupObject(slot['analysis_uid']) \
                         for slot in layout if \

@@ -1,29 +1,29 @@
 from AccessControl import getSecurityManager
 from DateTime import DateTime
 from DocumentTemplate import sequence
+from Products.Archetypes.config import REFERENCE_CATALOG
+from Products.Archetypes.public import DisplayList
 from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFCore.utils import getToolByName
-from Products.Archetypes.public import DisplayList
 from Products.Five.browser import BrowserView
-from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from bika.lims import bikaMessageFactory as _
+from bika.lims import EditResults, EditWorksheet
 from bika.lims import PMF, logger
+from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.analyses import AnalysesView
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.browser.bika_listing import WorkflowAction
 from bika.lims.browser.referencesample import ReferenceSamplesView
-from bika.lims.utils import isActive, TimeOrDate
 from bika.lims.exportimport import instruments
+from bika.lims.utils import getAnalysts
+from bika.lims.utils import isActive, TimeOrDate
 from operator import itemgetter
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.layout.globals.interfaces import IViewView
 from zope.app.component.hooks import getSite
 from zope.component import getMultiAdapter
 from zope.interface import implements
-from bika.lims import EditResults, EditWorksheet
 import plone, json
-
 
 class WorksheetWorkflowAction(WorkflowAction):
     """ Workflow actions taken in Worksheets
@@ -189,6 +189,9 @@ class WorksheetAnalysesView(AnalysesView):
     """
     def __init__(self, context, request):
         AnalysesView.__init__(self, context, request)
+        self.contentFilter = {'portal_type':'Analysis',
+                              'review_state':'sample_received',
+                              'worksheetanalysis_review_state':'unassigned'}
         self.icon = "++resource++bika.lims.images/worksheet_big.png"
         self.contentFilter = {}
         self.setoddeven = False
@@ -387,6 +390,7 @@ class ManageResultsView(BrowserView):
     template = ViewPageTemplateFile("templates/worksheet_manage_results.pt")
     def __init__(self, context, request):
         BrowserView.__init__(self, context, request)
+        self.getAnalysts = getAnalysts(context)
 
     def __call__(self):
         # Worksheet Attachmemts
@@ -464,6 +468,18 @@ class ManageResultsView(BrowserView):
         self.instrumenttitle = self.context.getInstrument() and self.context.getInstrument().Title() or ''
 
         return self.template()
+
+    def getInstruments(self):
+        bsc = getToolByName(self, 'bika_setup_catalog')
+        items = [('', '')] + [(o.UID, o.Title) for o in \
+                               bsc(portal_type = 'Instrument',
+                                   inactive_state = 'active')]
+        o = self.context.getInstrument()
+        if o and (o.UID(), o.Title()) not in items:
+            items.append((o.UID(), o.Title()))
+        items.sort(lambda x, y: cmp(x[1], y[1]))
+        return DisplayList(list(items))
+
 
 class AddAnalysesView(BikaListingView):
     implements(IViewView)

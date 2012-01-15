@@ -1,7 +1,6 @@
 from AccessControl import getSecurityManager
 from DateTime import DateTime
 from Products.Archetypes.config import REFERENCE_CATALOG
-from Products.Archetypes.event import ObjectEditedEvent
 from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import transaction_note

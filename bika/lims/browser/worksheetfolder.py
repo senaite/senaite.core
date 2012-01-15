@@ -1,6 +1,5 @@
 from DateTime import DateTime
 from Products.Archetypes.config import REFERENCE_CATALOG
-from Products.Archetypes.event import ObjectEditedEvent
 from Products.Archetypes.public import DisplayList
 from DocumentTemplate import sequence
 from Products.CMFCore.utils import getToolByName
@@ -65,7 +64,7 @@ class WorksheetFolderListingView(BikaListingView):
             'sort_on':'id',
             'sort_order': 'reverse'}
         self.context_actions = {_('Add'):
-                                {'url': 'worksheet_add?wsanalyst=&wstemplate=&wsinstrument=',
+                                {'url': 'worksheet_add',
                                  'icon': '++resource++bika.lims.images/add.png',
                                  'class': 'worksheet_add'}}
         self.show_table_only = False
@@ -340,7 +339,7 @@ class WorksheetFolderListingView(BikaListingView):
         """ Present the LabManagers and Analysts as options for analyst
             Used in bika_listing.pt
         """
-        return DisplayList(self.analysts)
+        return self.analysts
 
     def getWorksheetTemplates(self):
         """ List of templates
@@ -366,15 +365,20 @@ class AddWorksheetView(BrowserView):
         If a template was selected, the worksheet is pre-populated here.
     """
 
-    def __call__(self, wsanalyst = None, wstemplate = None, wsinstrument = None):
+    def __call__(self):
+
         # Validation
-        if not wsanalyst:
+        form = self.request.form
+        analyst = self.request.get('analyst', '')
+        template = self.request.get('template', '')
+        instrument = self.request.get('instrument', '')
+
+        if not analyst:
             message = self.context.translate("Analyst must be specified.")
             self.context.plone_utils.addPortalMessage(message, 'info')
             self.request.RESPONSE.redirect(self.context.absolute_url())
             return
 
-        form = self.request.form
         rc = getToolByName(self.context, REFERENCE_CATALOG)
         wf = getToolByName(self.context, "portal_workflow")
         pm = getToolByName(self.context, "portal_membership")
@@ -382,29 +386,28 @@ class AddWorksheetView(BrowserView):
         _id = self.context.invokeFactory(type_name = 'Worksheet', id = 'tmp')
         ws = self.context[_id]
         ws.processForm()
-        zope.event.notify(ObjectEditedEvent(ws))
 
         # Set analyst and instrument
-        ws.setAnalyst(wsanalyst)
-        if wsinstrument:
-            ws.setInstrument(wsinstrument)
+        ws.setAnalyst(analyst)
+        if instrument:
+            ws.setInstrument(instrument)
 
         # overwrite saved context UID for event subscribers
         self.request['context_uid'] = ws.UID()
 
         # if no template was specified, redirect to blank worksheet
-        if not wstemplate:
+        if not template:
             ws.processForm()
             self.request.RESPONSE.redirect(ws.absolute_url() + "/add_analyses")
             return
 
-        wst = rc.lookupObject(wstemplate)
+        wst = rc.lookupObject(template)
         ws.setWorksheetTemplate(wst)
         ws.applyWorksheetTemplate(wst)
 
         if ws.getLayout():
             self.request.RESPONSE.redirect(ws.absolute_url() + "/manage_results")
         else:
-            msg = self.context.translate("No analyses were added")
+            msg = self.context.translate(_("No analyses were added"))
             self.context.plone_utils.addPortalMessage(msg)
             self.request.RESPONSE.redirect(ws.absolute_url() + "/add_analyses")

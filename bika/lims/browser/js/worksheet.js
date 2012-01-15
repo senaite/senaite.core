@@ -10,30 +10,11 @@ $(document).ready(function(){
 		$(str).appendTo('#viewlet-above-content');
 	}
 
-	// selecting an analyst changes the Add Worksheet href (on worksheet list screen)
-	$(".wsanalyst").change(function(){
-		old_url = $(".worksheet_add").attr("href").split("?");
-		url_pt1 = old_url[0];
-		rest_of_it = old_url[1].split("&");
-		url_pt2 = rest_of_it[0];
-		url_pt3 = rest_of_it[1];
-		url_pt4 = rest_of_it[2];
-		$(".worksheet_add").attr("href", url_pt1 + "?wsanalyst=" + $(this).val() + "&" + url_pt3 + "&" + url_pt4);
-	});
-
-	// selecting a template changes the Add Worksheet href (on worksheet list screen)
-	$(".wstemplate").change(function(){
-		old_url = $(".worksheet_add").attr("href").split("?");
-		url_pt1 = old_url[0];
-		rest_of_it = old_url[1].split("&");
-		url_pt2 = rest_of_it[0];
-		url_pt3 = rest_of_it[1];
-		url_pt4 = rest_of_it[2];
-		$(".worksheet_add").attr("href", url_pt1 + "?" + url_pt2 + "&wstemplate=" + $(this).val() + "&" + url_pt4);
-	// ...and pre-selects the instrument
+	// selecting a template might pre-select the instrument
+	$(".template").change(function(){
 		templateinstruments = $.parseJSON($(".templateinstruments").val());
 		instrUID = templateinstruments[$(this).val()];
-		instrList = $(".wsinstrument")[0];
+		instrList = $(".instrument")[0];
 		if (instrUID != ""){
 			for (i=0;i<=instrList.length;i++){
 				if (instrList.options[i].value == instrUID){
@@ -42,16 +23,6 @@ $(document).ready(function(){
 				}
 			}
 		}
-	});
-
-	// selecting an instrument changes the Add Worksheet href (on worksheet list screen)
-	$(".wsinstrument").change(function(){
-		old_url = $(".worksheet_add").attr("href").split("?");
-		url_pt1 = old_url[0];
-		rest_of_it = old_url[1].split("&");
-		url_pt2 = rest_of_it[0];
-		url_pt3 = rest_of_it[1];
-		$(".worksheet_add").attr("href", url_pt1 + "?" + url_pt2 + "&" + url_pt3 + "&wsinstrument=" + $(this).val());
 	});
 
 	// search form - selecting a category fills up the service selector
@@ -131,7 +102,7 @@ $(document).ready(function(){
 		});
 		ssuids = selected_service_uids.join(",");
 		$(this).parents('form').append("<input type='hidden' value='"+ssuids+"' name='selected_service_uids'/>");
-		// tell the form handler which refernece UID was clicked
+		// tell the form handler which reference UID was clicked
 		$(this).parents('form').append("<input type='hidden' value='"+$(this).attr("uid")+"' name='reference_uid'/>");
 		// add the position dropdown's value to the form before submitting.
 		$(this).parents('form').append("<input type='hidden' value='"+$('#position').val()+"' name='position'/>");
