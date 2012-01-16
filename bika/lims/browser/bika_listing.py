@@ -161,7 +161,7 @@ class BikaListingView(BrowserView):
     show_workflow_action_buttons = True
     categories = []
     # setting pagesize to 1000 specifically disables the batch sizez dropdown
-    pagesize = 30
+    pagesize = 25
     pagenumber = 1
     # select checkbox is normally called uids:list
     # if table_only is set then the context form tag might require
