@@ -84,5 +84,10 @@
 	<fieldset/> <!-- just for styling -->
 </metal:content-title>
 
+<metal:content-core fill-slot="content-core">
+	<div id="folderlisting-main-table"
+		tal:content="structure view/contents_table"/>
+</metal:content-core>
+
 </body>
 </html>

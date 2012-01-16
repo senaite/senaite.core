@@ -219,7 +219,8 @@ class WorksheetFolderListingView(BikaListingView):
         new_items = []
         analyst_choices = []
         for a in self.analysts:
-            analyst_choices.append({'ResultValue': a[0], 'ResultText': a[1]})
+            analyst_choices.append({'ResultValue': a,
+                                    'ResultText': self.analysts.getValue(a)})
         can_reassign = False
         for x in range(len(items)):
             if not items[x].has_key('obj'):
