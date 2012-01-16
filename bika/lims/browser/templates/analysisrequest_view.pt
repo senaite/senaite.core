@@ -127,6 +127,10 @@
                     tal:define="date_sampled sample/getDateSampled"
                     tal:condition="date_sampled"
                     tal:content="python:view.TimeOrDate(context, date_sampled, long_format=1)"/>
+                <img src='++resource++bika.lims.images/calendar.png'
+                     tal:condition="python:context.getDateSampled() > view.now()"
+                     title="Future dated sample"
+                     i18n:attributes="title"/>
             </td>
         </tr>
 

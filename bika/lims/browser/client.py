@@ -326,11 +326,6 @@ class ClientAnalysisRequestsView(BikaListingView):
                      "<img src='++resource++bika.lims.images/worksheet.png' title='%s'/>" % \
                      self.context.translate(_("All analyses assigned"))
 
-            if datesampled > DateTime():
-                after_icons = "<img src='++resource++bika.lims.images/calendar.png' title='%s'>" % \
-                    self.context.translate(_("Future dated sample"))
-                items[x]['after']['state_title'] = after_icons
-
             sample = obj.getSample()
             after_icons = "<a href='%s'><img src='++resource++bika.lims.images/sample.png' title='%s: %s'></a>" % \
                         (sample.absolute_url(), \
@@ -341,6 +336,9 @@ class ClientAnalysisRequestsView(BikaListingView):
             if sample.getSampleType().getHazardous():
                 after_icons += "<img src='++resource++bika.lims.images/hazardous.png' title='%s'>" % \
                     self.context.translate(_("Hazardous"))
+            if datesampled > DateTime():
+                after_icons += "<img src='++resource++bika.lims.images/calendar.png' title='%s'>" % \
+                    self.context.translate(_("Future dated sample"))
             if after_icons:
                 items[x]['after']['getRequestID'] = after_icons
 
@@ -477,14 +475,12 @@ class ClientSamplesView(BikaListingView):
 
             items[x]['DateReceived'] = TimeOrDate(self.context, obj.getDateReceived())
 
-            if datesampled > DateTime():
-                after_icons = "<img src='++resource++bika.lims.images/calendar.png' title='%s'>" % \
-                    self.context.translate(_("Future dated sample"))
-                items[x]['after']['state_title'] = after_icons
-
             after_icons = ''
             if obj.getSampleType().getHazardous():
                 after_icons += "<img title='Hazardous' src='++resource++bika.lims.images/hazardous.png'>"
+            if datesampled > DateTime():
+                after_icons += "<img src='++resource++bika.lims.images/calendar.png' title='%s'>" % \
+                    self.context.translate(_("Future dated sample"))
             if after_icons:
                 items[x]['after']['SampleID'] = after_icons
 

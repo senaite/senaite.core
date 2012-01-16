@@ -25,6 +25,9 @@ class SampleViewView(BrowserView):
         self.icon = "++resource++bika.lims.images/sample_big.png"
         self.TimeOrDate = TimeOrDate
 
+    def now(self):
+        return DateTime()
+
     def __call__(self):
         return self.template()
 
@@ -40,6 +43,9 @@ class SampleEditView(SampleViewView):
         BrowserView.__init__(self, context, request)
         self.icon = "++resource++bika.lims.images/sample_big.png"
         self.TimeOrDate = TimeOrDate
+
+    def now(self):
+        return DateTime()
 
     def __call__(self):
         workflow = getToolByName(self.context, 'portal_workflow')
