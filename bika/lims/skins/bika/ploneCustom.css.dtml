@@ -109,7 +109,7 @@ table {
 }
 
 
-.spinner {
+.global-spinner {
 	position: fixed;
 	top: 50%;
 	left: 50%;
@@ -124,11 +124,10 @@ table {
 	overflow: auto;
 }
 
-.spinner img {
+.global-spinner img {
 	height:20px;
 	width:20px;
 }
-
 
 /* edit-bar */
 

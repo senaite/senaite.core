@@ -1092,3 +1092,41 @@ class ajaxAttachAnalyses(BrowserView):
                'rows':rows[ (int(page)-1)*int(nr_rows) : int(page)*int(nr_rows) ]}
 
         return json.dumps(ret)
+
+
+class ajaxSetAnalyst():
+    """The Analysis dropdown sets worksheet.Analyst immediately
+    """
+
+    def __init__(self, context, request):
+        self.context = context
+        self.request = request
+
+    def __call__(self):
+        rc = getToolByName(self.context, 'reference_catalog')
+        mtool = getToolByName(self, 'portal_membership')
+        plone.protect.CheckAuthenticator(self.request)
+        plone.protect.PostOnly(self.request)
+        value = request.get('value', '')
+        if not value:
+            return
+        if not mtool.getMemberById(analyst):
+            return
+        self.context.setAnalyst(value)
+
+class ajaxSetInstrument():
+    """The Instrument dropdown sets worksheet.Instrument immediately
+    """
+
+    def __init__(self, context, request):
+        self.context = context
+        self.request = request
+
+    def __call__(self):
+        uc = getToolByName(self.context, 'uid_catalog')
+        plone.protect.CheckAuthenticator(self.request)
+        plone.protect.PostOnly(self.request)
+        value = request.get('value', '')
+##        if not value:
+##            return
+        self.context.setInstrument(value)

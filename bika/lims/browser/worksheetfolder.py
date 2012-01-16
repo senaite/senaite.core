@@ -121,8 +121,8 @@ class WorksheetFolderListingView(BikaListingView):
                             'sortable':False},
             'QC': {'title': _('QC'),
                    'sortable':False},
-            'CreationDate': {'title': _('Creation Date'),
-                             'index': 'created'},
+            'CreationDate': {'title': _('Creation Date')},
+                             #'index': 'created'},
             'state_title': {'title': _('State'),
                             'index': 'review_state'},
         }

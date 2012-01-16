@@ -154,5 +154,29 @@ $(document).ready(function(){
 		return false;
 	});
 
+	$(".manage_results_header .analyst").change(function(){
+		if ($(this).val() == '') {
+			return false;
+		}
+		$.ajax({
+		  type: 'POST',
+		  url: window.location.href.replace("manage_results", "setAnalyst"),
+		  data: {'value': $(this).val(),
+				  '_authenticator': $('input[name="_authenticator"]').val()}
+		});
+	});
+
+	$(".manage_results_header .instrument").change(function(){
+		if ($(this).val() == '') {
+			return false;
+		}
+		$.ajax({
+		  type: 'POST',
+		  url: window.location.href.replace("manage_results", "setInstrument"),
+		  data: {'value': $(this).val(),
+				  '_authenticator': $('input[name="_authenticator"]').val()}
+		});
+	});
+
 });
 });

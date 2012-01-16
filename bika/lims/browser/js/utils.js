@@ -31,8 +31,8 @@ jQuery( function($) {
 
 	$(document).ready(function(){
 
-		$('body').append('<div id="spinner" class="spinner" style="display:none;"><img id="img-spinner" src="spinner.gif" alt="Loading"/></div>');
-		$('#spinner')
+		$('body').append('<div id="global-spinner" class="global-spinner" style="display:none"><img id="img-global-spinner" src="spinner.gif" alt="Loading"/></div>');
+		$('#global-spinner')
 			.ajaxStart(function() { $(this).show(); })
 			.ajaxStop(function() { $(this).hide(); });
 		$("#kss-spinner").empty();

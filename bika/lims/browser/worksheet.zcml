@@ -85,4 +85,20 @@
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
+    <browser:page
+      for="bika.lims.interfaces.IWorksheet"
+      name="setAnalyst"
+      class="bika.lims.browser.worksheet.ajaxSetAnalyst"
+      permission="zope.Public"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
+      for="bika.lims.interfaces.IWorksheet"
+      name="setInstrument"
+      class="bika.lims.browser.worksheet.ajaxSetInstrument"
+      permission="zope.Public"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
 </configure>

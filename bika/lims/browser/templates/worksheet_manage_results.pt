@@ -41,10 +41,9 @@
 			</th>
 			<td>
 				<span class="context_action_dropdown">
-					<select class='wsanalyst' style="font-size: 100%"
+					<select class='analyst' style="font-size: 100%"
 						style="margin-left: 1em"
 						tal:define="alist view/getAnalysts">
-						<option value='' i18n:translate="">Select analyst</option>
 						<tal:options repeat="option alist">
 							<option
 								tal:attributes="
@@ -61,7 +60,6 @@
 					tal:define="instrument python:context.getInstrument()">
 					<select class='instrument' style="font-size: 100%"
 						tal:define="instrlist view/getInstruments">
-						<option value='' i18n:translate="">Select instrument</option>
 						<tal:options repeat="option instrlist">
 							<option
 								tal:attributes="
