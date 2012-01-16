@@ -3,7 +3,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Bika-LIMS\n"
-"POT-Creation-Date: 2012-01-14 02:03+0000\n"
+"POT-Creation-Date: 2012-01-16 10:53+0000\n"
 "PO-Revision-Date: 2012-01-02 20:15+0000\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Bika Lab Systems <support@bikalabs.com>\n"
@@ -1249,6 +1249,12 @@ msgstr ""
 msgid "Full Name"
 msgstr ""
 
+#: ../browser/client.py:341
+#: ../browser/templates/analysisrequest_view.pt:130
+#: ../browser/templates/sample_view.pt:94
+msgid "Future dated sample"
+msgstr ""
+
 #: ../browser/analysisrequest.py:649
 #: ../browser/client.py:336
 #: ../browser/templates/analysisrequest_manage_results.pt:49
@@ -1749,6 +1755,10 @@ msgstr ""
 
 #: ../browser/analysisrequest.py:942
 msgid "No analyses have been selected."
+msgstr ""
+
+#: ../browser/worksheetfolder.py:412
+msgid "No analyses were added"
 msgstr ""
 
 #: ../browser/worksheet.py:538
@@ -3059,6 +3069,11 @@ msgstr ""
 
 #: ../browser/calcs.py:232
 msgid "min"
+msgstr ""
+
+#. Default: " More "
+#: records widget
+msgid "more_entries"
 msgstr ""
 
 #: ../browser/templates/analysisrequest_manage_results.pt:59

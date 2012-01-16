@@ -37,6 +37,13 @@ msgstr "m"
 msgid "Extension profile for the Bika LIMS"
 msgstr ""
 
+### the More Items button in our custom RecordsWidget
+#: records widget
+#. Default: " More "
+msgid "more_entries"
+msgstr " More "
+
+
 ### Workflows ###
 
 msgid "Sample Due"
@@ -171,4 +178,3 @@ msgstr ""
 
 msgid "Laboratory Information"
 msgstr ""
-
