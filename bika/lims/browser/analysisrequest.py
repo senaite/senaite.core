@@ -1182,7 +1182,7 @@ class ajaxAnalysisRequestSubmit():
 
                 if (values.has_key('profileTitle')):
                     _id = self.context.invokeFactory(type_name = 'ARProfile', id = 'tmp')
-                    profile = self.context[profile_id]
+                    profile = self.context[_id]
                     profile.edit(title = values['profileTitle'],
                                  Service = Analyses)
                     profile.processForm()
