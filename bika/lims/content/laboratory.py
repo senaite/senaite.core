@@ -86,6 +86,7 @@ schema = Organisation.schema.copy() + Schema((
         ),
     ),
     ImageField('AccreditationBodyLogo',
+        schemata = 'Accreditation',
         widget = ImageWidget(
             label = _("Accreditation Logo"),
             description = _("Accreditation Logo descr",
