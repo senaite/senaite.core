@@ -63,7 +63,7 @@ $(document).ready(function(){
 		positionTooltip(event);
 	};
 
-	$('.getSampleID').mouseover(function(event) {
+	$('.SampleID').mouseover(function(event) {
 		row_data = $.parseJSON($('#'+$(this.parentNode).attr("uid")+"_row_data").val());
 		createTooltip(event, row_data);
 	}).mouseout(function(){
