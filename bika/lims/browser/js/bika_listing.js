@@ -25,27 +25,6 @@ $(document).ready(function(){
 
 	setoddeven();
 
-	function sortabledataclass(cell){
-		var re = new RegExp("sortabledata-([^ ]*)","g");
-		var matches = re.exec(cell.attr('class'));
-		if(matches) return matches[1]
-		else return null
-	}
-
-	function sortable(cell) {
-		// convert a cell to something sortable
-		// use sortabledata-xxx cell class if it is defined
-		var text = sortabledataclass(cell);
-		if(text == null) {
-			text = cell.text();
-		}
-		text = text.toLowerCase().replace(/[^a-zA-Z0-9_]*/mg, "");
-		// A number, but not a date?
-		if (!isNaN(parseFloat(text)))
-			return parseFloat(text);
-		return text;
-	}
-
 	// review_state
 	$(".review_state_selector a").live('click', function(){
 		form = $(this).parents("form");
@@ -91,66 +70,25 @@ $(document).ready(function(){
 			sort_on = column_id;
 			sort_order = 'ascending';
 		}
-		// reset these values in the form (ajax and in-place sort use them)
+		// reset these values in the form (ajax sort uses them)
 		$(sort_on_selector).val(sort_on);
 		$(sort_order_selector).val(sort_order);
 
-		// request ajax re-sort for indexed columns
-		if ($(this).hasClass('indexed')) {
-			// request new table content
-			stored_form_action = $(form).attr("action");
-			$(form).attr("action", window.location.href);
-			$(form).append("<input type='hidden' name='table_only' value='"+form_id+"'>");
-			options = {
-				target: $(this).parents("table"),
-				replaceTarget: true,
-				data: form.formToArray(),
-				success: function(){
-					setoddeven();
-				}
-			}
-			form.ajaxSubmit(options);
-			$("[name=table_only]").remove();
-			$(form).attr("action", stored_form_action);
-		} else {
-			// inline sort cribbed from plone/table_sorter.js
-			th = $(this).closest('th');
-			colnum = $('th', $(this).closest('thead')).index(th);
-			table = $(this).parents('table:first');
-			tbody = table.children('tbody');
-		    index = $(this).parent().children('th').index(this);
-			data = [];
-			usenumbers = true;
-			tbody.children('tr').each(function() {
-				cell = $(this).children('td')[index];
-				sortableitem = sortable($(cell));
-				if (isNaN(sortableitem)) {
-					usenumbers = false;
-				}
-				data.push([sortableitem, this]);
-			});
-			if (data.length) {
-				if (usenumbers) {
-					data.sort(function(a,b) {return a[0]-b[0];});
-				} else {
-					data.sort();
-				}
-				if (sort_order=='descending') data.reverse();
-				// remove sort_on from all TH siblings
-				table.find('th').each(function(){
-					$(this).removeClass('sort_on');
-					$(this).removeClass('ascending');
-					$(this).removeClass('descending');
-				});
-				// add sort_on and sort order classes to ourself
-				th.addClass('sort_on');
-				th.addClass(sort_order);
-				tbody.find('tr').remove();
-				// appending the tr nodes in sorted order will remove them from their old ordering
-				tbody.append($.map(data, function(a) { return a[1]; }));
+		// request new table content
+		stored_form_action = $(form).attr("action");
+		$(form).attr("action", window.location.href);
+		$(form).append("<input type='hidden' name='table_only' value='"+form_id+"'>");
+		options = {
+			target: $(this).parents("table"),
+			replaceTarget: true,
+			data: form.formToArray(),
+			success: function(){
 				setoddeven();
 			}
 		}
+		form.ajaxSubmit(options);
+		$("[name=table_only]").remove();
+		$(form).attr("action", stored_form_action);
 	});
 
 	// select all (on this screen at least)

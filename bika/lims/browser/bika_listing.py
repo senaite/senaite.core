@@ -189,7 +189,6 @@ class BikaListingView(BrowserView):
        the name of the catalog index for the column. adds 'indexed' class,
        to allow ajax table sorting for indexed columns
      - sortable: defaults True.  if False, adds nosort class
-       (see bika_listing.js) to prevent inline table sorts.
      - toggle: enable/disable column toggle ability
     """
     columns = {
@@ -534,14 +533,6 @@ class BikaListingView(BrowserView):
                     if callable(value):
                         value = value()
                     results_dict[key] = value
-                # bika_listing.js uses sortable-xx for sorting rows in-place,
-                # so we only have to include it for columns with no index
-                ## un-editable cells seem to work fine without sortabledata-X
-                ## classes, just need sortabledata-X for sorting editable cells
-                if key in results_dict['allow_edit']:
-                    if not self.columns[key].has_key('index'):
-                        results_dict['class'][key] = \
-                            'sortabledata-%s'%norm(results_dict[key])
             results.append(results_dict)
 
         return results

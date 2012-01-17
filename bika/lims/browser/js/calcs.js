@@ -10,13 +10,6 @@ $(document).ready(function(){
 		value = $(this).attr('value');
 		item_data = $(this).parents('table').prev('input[name="item_data"]').val();
 
-		// stick this new value into the tabledata-X sort class
-		if (value == ''){
-			text = "AAA_sortable";
-		} else {
-			text = value.toLowerCase().replace(/[^a-zA-Z0-9_]*/mg, "");
-		}
-		classname = $(td).attr('class').replace(/\bsortabledata-\S*\b/g, "") + " sortabledata-"+text;
 		$(td).attr('class', classname);
 
 		// clear out the alerts for this field
