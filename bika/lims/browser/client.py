@@ -174,7 +174,7 @@ class ClientAnalysisRequestsView(BikaListingView):
                         'getDateReceived',
                         'state_title']},
             {'id':'sample_due',
-             'title': _('Sample Due'),
+             'title': _('Due'),
              'contentFilter': {'review_state': 'sample_due',
                                'sort_on':'id',
                                'sort_order': 'reverse'},
