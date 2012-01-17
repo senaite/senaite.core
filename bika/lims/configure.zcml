@@ -31,4 +31,12 @@
     layer="bika.lims.interfaces.IBikaLIMS"
   />
 
+  <browser:page
+    for="Products.CMFPlone.interfaces.IPloneSiteRoot"
+    name="import"
+    class="bika.lims.exportimport.import.ImportView"
+    permission="zope.Public"
+    layer="bika.lims.interfaces.IBikaLIMS"
+  />
+
 </configure>

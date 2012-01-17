@@ -4,27 +4,36 @@ from DateTime import DateTime
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from Products.Archetypes.event import ObjectInitializedEvent
 from bika.lims import bikaMessageFactory as _
+from bika.lims.utils import changeWorkflowState
 from bika.lims import logger
 from cStringIO import StringIO
+from operator import itemgetter
 from plone.i18n.normalizer.interfaces import IIDNormalizer
 from zope.component import getUtility
 import csv
 import plone
 import zope
+import zope.event
 
 title = 'FIAStar'
 
 class Export(BrowserView):
     """ Writes workseet analyses to a CSV file that FIAStar can read.
         Sends the CSV file to the response.
-        # only works for analyses who's parent is AR, Worksheet or Ref Sample.
+        Requests "TSO2 & F SO2" for all requests.
+        uses analysis' PARENT UID as 'Sample name' col.
+        uses analysis' CONTAINER UID as 'Sample type' col.
+        (this is not always the same thing as the 'container_uid'
+         specified in ws.getLayout())
     """
 
     def __call__(self, analyses):
         tray = 1
         now = DateTime().strftime('%Y%m%d-%H%M')
         bsc = getToolByName(self.context, 'bika_setup_catalog')
+        uc = getToolByName(self.context, 'uid_catalog')
         instrument = self.context.getInstrument()
         norm = getUtility(IIDNormalizer).normalize
         filename  = '%s-%s.csv'%(self.context.getId(),
@@ -32,64 +41,42 @@ class Export(BrowserView):
         listname  = '%s_%s_%s' %(self.context.getId(),
                                  norm(instrument.Title()), now)
         options = {'dilute_factor' : 1,
-                   'F SO2' : 'FSO2',
-                   'T SO2' : 'TSO2'}
+                   'method': 'F SO2 & T SO2'}
         for k,v in instrument.getDataInterfaceOptions():
             options[k] = v
 
-        # kw_map to lookup Fiastar parameter -> service keyword and vice versa
-        kw_map = {}
-        for param in ['F SO2', 'T SO2']:
-            service = bsc(getKeyword = options[param])
-            if not service:
-                log.append('ERROR: Could not find service for %s' % param)
-                continue
-            service = service[0].getObject()
-            kw_map[param] = service
-            kw_map[service.getKeyword()] = param
+        # for looking up "cup" number (= slot) of ARs
+        parent_to_slot = {}
+        layout = self.context.getLayout()
+        for x in range(len(layout)):
+            a_uid = layout[x]['analysis_uid']
+            p_uid = uc(UID=a_uid)[0].getObject().aq_parent.UID()
+            layout[x]['parent_uid'] = p_uid
+            if not p_uid in parent_to_slot.keys():
+                parent_to_slot[p_uid] = int(layout[x]['position'])
 
-        # for looking up "cup" number (= slot) of analyses
-        analysis_to_slot = {}
-        for s in self.context.getLayout():
-            analysis_to_slot[s['analysis_uid']] = int(s['position'])
-
-        # split into FSO2 and TSO2 batches
-        batches = {}
-        for analysis in analyses:
-            kw = analysis.getService().getKeyword()
-            if kw not in kw_map:
-                logger.info("%s (slot %s): keyword %s not present in options" % \
-                            (analysis.getService().Title(),
-                             analysis_to_slot[analysis.UID()],
-                             kw))
-                continue
-            param = kw_map[kw]
-            if not param in batches:
-                batches[param] = []
-            batches[param].append(analysis)
-
-        if not batches:
-            message = _("No analyses were found.")
-            message = self.context.translate(message)
-            self.context.plone_utils.addPortalMessage(message, 'info')
-            self.request.RESPONSE.redirect(self.context.absolute_url())
-            return
-
-        # write rows
+        # write rows, one per PARENT
+        header = [listname, options['method']]
         rows = []
-        for param, analyses in batches.items():
+        rows.append(header)
+        tmprows = []
+        ARs_exported = []
+        for x in range(len(layout)):
             # create batch header row
-            header = [listname, param]
-            rows.append(header)
-            for analysis in analyses:
-                cup = analysis_to_slot[analysis.UID()]
-                detail = [tray,
-                          cup,
-                          analysis.UID(),
-                          analysis.getId(),
-                          options['dilute_factor'],
-                          ""]
-                rows.append(detail)
+            c_uid = layout[x]['container_uid']
+            p_uid = layout[x]['parent_uid']
+            if p_uid in ARs_exported:
+                continue
+            cup = parent_to_slot[p_uid]
+            tmprows.append([tray,
+                            cup,
+                            p_uid,
+                            c_uid,
+                            options['dilute_factor'],
+                            ""])
+            ARs_exported.append(p_uid)
+        tmprows.sort(lambda a,b:cmp(a[1], b[1]))
+        rows += tmprows
 
         ramdisk = StringIO()
         writer = csv.writer(ramdisk, delimiter=';')
@@ -101,7 +88,6 @@ class Export(BrowserView):
         #stream file to browser
         setheader = self.request.RESPONSE.setHeader
         setheader('Content-Length',len(result))
-        #setHeader('Content-Type', 'application/x-download')
         setheader('Content-Type', 'text/comma-separated-values')
         setheader('Content-Disposition', 'inline; filename=%s' % filename)
         self.request.RESPONSE.write(result)
@@ -110,14 +96,22 @@ class Import(BrowserView):
     """ Read FIAStar analysis results
     """
 
-    def __call__(self, csvfile):
+    template = "fiastar_import.pt"
+
+    def __call__(self):
+
+        if 'submitted' not in self.request:
+            return self.template()
+
+        csvfile = self.request.form['csvfile']
 
         pc = getToolByName(self.context, 'portal_catalog')
         uc = getToolByName(self.context, 'uid_catalog')
         bsc = getToolByName(self.context, 'bika_setup_catalog')
+        uc = getToolByName(self.context, 'uid_catalog')
         wf_tool = getToolByName(self.context, 'portal_workflow')
 
-        updateable_states = ['sample_received', 'assigned']
+        updateable_states = ['sample_received', 'assigned', 'not_requested']
         now = DateTime().strftime('%Y%m%d-%H%M')
         instrument = self.context.getInstrument()
 
@@ -138,11 +132,11 @@ class Import(BrowserView):
             kw_map[param] = service
             kw_map[service.getKeyword()] = param
 
-        analyses = []
+        rows = []
         batch_headers = None
         fia1 = False
         fia2 = False
-        # place all valid rows into 'analyses' list of dict
+        # place all valid rows into list of dict by CSV row title
         for row in open(csvfile).readlines():
             if not row: continue
             row = row.split(';')
@@ -163,20 +157,63 @@ class Import(BrowserView):
             row = dict(zip(fields, row))
             if row['Parameter'] == 'sample' or not row['Concentration']:
                 continue
-            analyses.append(row)
+            rows.append(row)
 
         log = []
-        for row in samples:
+        for row in rows:
             param = row['Parameter']
             service = kw_map[param]
             keyword = service.getKeyword()
+            calc = service.getCalculation()
+            interim_fields = calc and calc.getInterimFields() or []
 
-            analysis = uc(UID = row['Sample name'])
-
-            if len(analysis) == 0:
-                log.append('ERROR: no analysis %s' % row['Sample name'])
+            p_uid = row['Sample name']
+            parent = uc(UID = p_uid)
+            if len(parent) == 0:
+                log.append('ERROR: no analysis parent %s' % row['Sample name'])
                 continue
-            analysis = analysis[0].getObject()
+            parent = parent[0].getObject()
+
+            c_uid = row['Sample type']
+            container = uc(UID = c_uid)
+            if len(container) == 0:
+                log.append('ERROR: no analysis container %s' % row['Sample name'])
+                continue
+            container = container[0].getObject()
+
+            # Duplicates.
+            if c_uid == self.context.UID():
+                # The analyses should exist already
+                # or no results will be imported.
+                analysis = None
+                for dup in self.context.objectValues():
+                    if dup.aq_parent == p_uid and \
+                       dup.getKeyword() in (options['F SO2'], options['T SO2']):
+                        analysis = dup
+                if not analysis:
+                    log.append('ERROR: no duplicate analysis found for slot %s' % row['Cup'])
+                    continue
+                row['analysis'] = analysis
+            else:
+                analyses = parent.objectIds()
+                if keyword in analyses:
+                    # analysis exists for this parameter.
+                    row['analysis'] = parent.get(keyword)
+                else:
+                    # analysis does not exist;
+                    # create new analysis and set 'results_not_requested' state
+                    parent.invokeFactory(type_name="Analysis", id = keyword)
+                    analysis = parent[keyword]
+                    analysis.edit(Service = service,
+                                  InterimFields = interim_fields,
+                                  MaxTimeAllowed = service.getMaxTimeAllowed())
+                    msg = parent.translate("FOSS FIAStar")
+                    changeWorkflowState(analysis, 'not_requested', comments=msg)
+
+                    analysis.unmarkCreationFlag()
+                    zope.event.notify(ObjectInitializedEvent(analysis))
+                    row['analysis'] = analysis
+
             as_state = wf_tool.getInfoFor(analysis, 'review_state', '')
             if (as_state not in updateable_states):
                 log.append('ERROR: Analysis %s in %s status '

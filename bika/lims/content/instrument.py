@@ -79,6 +79,16 @@ schema = BikaSchema.copy() + Schema((
 schema['description'].widget.visible = True
 schema['description'].schemata = 'default'
 
+def getDataInterfaces(context):
+    """ Return the current list of data interfaces
+    """
+    from bika.lims.exportimport import instruments
+    exims = [('',context.translate(_('None')))]
+    for exim_id in instruments.__all__:
+        exim = getattr(instruments, exim_id)
+        exims.append((exim_id, exim.title))
+    return DisplayList(exims)
+
 class Instrument(BaseContent):
     security = ClassSecurityInfo()
     displayContentsTab = False
@@ -89,14 +99,5 @@ class Instrument(BaseContent):
         from bika.lims.utils import renameAfterCreation
         renameAfterCreation(self)
 
-    def getDataInterfaces(self):
-        """ Return the current list of data interfaces
-        """
-        from bika.lims.exportimport import instruments
-        exims = [('',self.translate(_('None')))]
-        for exim_id in instruments.__all__:
-            exim = getattr(instruments, exim_id)
-            exims.append((exim_id, exim.title))
-        return DisplayList(exims)
 
 registerType(Instrument, PROJECTNAME)

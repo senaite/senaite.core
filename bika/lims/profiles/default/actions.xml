@@ -143,18 +143,6 @@
 			</property>
 			<property name="visible">False</property>
 		</object>
-		<object name="reports" meta_type="CMF Action">
-			<property name="title" i18n:translate="">Reports</property>
-			<property name="description" i18n:translate=""/>
-			<property name="url_expr">string:$portal_url/reports</property>
-			<property name="link_target"/>
-			<property name="icon_expr"/>
-			<property name="available_expr"/>
-			<property name="permissions">
-				<element value="List portal members"/>
-			</property>
-			<property name="visible">True</property>
-		</object>
 		<object name="extracts" meta_type="CMF Action">
 			<property name="title" i18n:translate="">Extracts</property>
 			<property name="description" i18n:translate=""/>
@@ -189,7 +177,19 @@
 			<property name="permissions">
 				<element value="BIKA: Manage Analysis Requests"/>
 			</property>
-			<property name="visible">False</property>
+			<property name="visible">True</property>
+		</object>
+		<object name="reports" meta_type="CMF Action">
+			<property name="title" i18n:translate="">Reports</property>
+			<property name="description" i18n:translate=""/>
+			<property name="url_expr">string:$portal_url/reports</property>
+			<property name="link_target"/>
+			<property name="icon_expr"/>
+			<property name="available_expr"/>
+			<property name="permissions">
+				<element value="List portal members"/>
+			</property>
+			<property name="visible">True</property>
 		</object>
 	</object>
 </object>
