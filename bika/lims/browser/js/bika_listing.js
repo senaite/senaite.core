@@ -148,8 +148,8 @@ $(document).ready(function(){
 				tbody.find('tr').remove();
 				// appending the tr nodes in sorted order will remove them from their old ordering
 				tbody.append($.map(data, function(a) { return a[1]; }));
+				setoddeven();
 			}
-			setoddeven();
 		}
 	});
 
