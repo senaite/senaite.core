@@ -237,10 +237,10 @@ class AnalysisRequest(BaseFolder):
 
     def Description(self):
         """ Return searchable data as Description """
-        return " ".join(
+        return " ".join((
             self.getRequestID(),
             self.aq_parent.Title()
-        )
+        ))
 
 
     def getDefaultMemberDiscount(self):
