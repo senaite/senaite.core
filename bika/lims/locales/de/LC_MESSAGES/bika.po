@@ -3,7 +3,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Bika-LIMS\n"
-"POT-Creation-Date: 2012-01-16 10:53+0000\n"
+"POT-Creation-Date: 2012-01-17 14:29+0000\n"
 "PO-Revision-Date: 2012-01-02 20:15+0000\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Bika Lab Systems <support@bikalabs.com>\n"
@@ -43,6 +43,14 @@ msgstr ""
 #: ../browser/worksheet.py:203
 msgid "+-"
 msgstr "±"
+
+#: ../browser/client.py:265
+msgid "<img title='%s' src='++resource++bika.lims.images/assigned.png'/>Assigned"
+msgstr ""
+
+#: ../browser/client.py:284
+msgid "<img title='%s' src='++resource++bika.lims.images/unassigned.png'/>Unassigned"
+msgstr ""
 
 #: ../content/bikasetup.py:171
 msgid "AR Attachment Option"
@@ -2472,6 +2480,10 @@ msgstr ""
 #: ../browser/analysisrequest.py:573
 #: ../browser/templates/analysisrequest_edit.pt:195
 msgid "Select Sample"
+msgstr ""
+
+#: ../exportimport/import.py:23
+msgid "Select a data interface"
 msgstr ""
 
 #: ../browser/templates/analysisrequest_analyses_not_requested.pt:90

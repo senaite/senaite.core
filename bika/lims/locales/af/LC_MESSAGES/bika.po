@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Bika-LIMS\n"
-"POT-Creation-Date: 2012-01-09 17:32+0000\n"
+"POT-Creation-Date: 2012-01-17 14:29+0000\n"
 "PO-Revision-Date: 2012-01-02 20:15+0000\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Bika Lab Systems <support@bikalabs.com>\n"
@@ -15,6 +15,7 @@ msgstr ""
 "Domain: bika\n"
 "Language: af\n"
 "Report-Msgid-Bugs-To: http://github.com/bikalabs/Bika-LIMS/issues\n"
+
 #: ../content/analysisspec.py:71
 msgid "% Error"
 msgstr "% Fout"
@@ -40,6 +41,14 @@ msgstr "(Vereis)"
 #: ../browser/worksheet.py:203
 msgid "+-"
 msgstr "+-"
+
+#: ../browser/client.py:265
+msgid "<img title='%s' src='++resource++bika.lims.images/assigned.png'/>Assigned"
+msgstr ""
+
+#: ../browser/client.py:284
+msgid "<img title='%s' src='++resource++bika.lims.images/unassigned.png'/>Unassigned"
+msgstr ""
 
 #: ../content/bikasetup.py:171
 msgid "AR Attachment Option"
@@ -134,6 +143,15 @@ msgstr "Akkreditasie Liggaam Beskrywing"
 msgid "Accreditation Description"
 msgstr "Akkreditasie Beskrywing"
 
+#: ../content/laboratory.py:90
+msgid "Accreditation Logo"
+msgstr ""
+
+#. Default: "Please upload the logo you are authorised to use on your website and results reports by your accreditation body. Maximum size is 175 x 175 pixels."
+#: ../content/laboratory.py:91
+msgid "Accreditation Logo descr"
+msgstr ""
+
 #: ../content/laboratory.py:83
 msgid "Accreditation Reference"
 msgstr "Akkreditasie Verwysing"
@@ -158,7 +176,6 @@ msgstr "Geakkrediteerde Beskrywing"
 msgid "Action"
 msgstr "Aksie"
 
-#: ../browser/log.py:39
 msgid "Activate"
 msgstr "Aktiveer"
 
@@ -412,7 +429,6 @@ msgstr "Pas Templaat Toe"
 msgid "Assigned"
 msgstr "Toegeken"
 
-#:
 msgid "Attach"
 msgstr "Heg Aan"
 
@@ -439,7 +455,6 @@ msgstr "Aanhangsel Keuse"
 msgid "Attachment Option description"
 msgstr "Aanhangsel Keuse Beskrywing"
 
-#:
 msgid "Attachment Outstanding"
 msgstr "Aanhangsel Uitstaande"
 
@@ -452,6 +467,14 @@ msgstr "Aanhangsel Tipe"
 #: ../controlpanel/bika_attachmenttypes.py:29
 msgid "Attachment Types"
 msgstr "Aanhangsel Tipes"
+
+#: ../controlpanel/bika_analysisservices.py:142
+msgid "Attachment not permitted"
+msgstr ""
+
+#: ../controlpanel/bika_analysisservices.py:140
+msgid "Attachment required"
+msgstr ""
 
 #: ../browser/analyses.py:48
 #: ../browser/client.py:668
@@ -643,7 +666,6 @@ msgstr "Kalibrasie Vervaldatum Beskrywing"
 msgid "Can be reported as dry matter"
 msgstr "Kan as droe materiaal rapporteer word"
 
-#:
 msgid "Cancel"
 msgstr "Kanselleer"
 
@@ -949,7 +971,6 @@ msgstr "Datum Ingehandig"
 msgid "Days"
 msgstr "Dae"
 
-#:
 msgid "Deactivate"
 msgstr "Deaktiveer"
 
@@ -1031,7 +1052,6 @@ msgstr "Vertoonwaarde"
 msgid "Disposal date"
 msgstr "Verwyderingsdatum"
 
-#:
 msgid "Dispose"
 msgstr "Verwyder"
 
@@ -1153,7 +1173,6 @@ msgstr "Verwagte Resultaat"
 msgid "Expected Results"
 msgstr "Verwagte Resultaats"
 
-#:
 msgid "Expire"
 msgstr "Verval"
 
@@ -1236,6 +1255,12 @@ msgstr "Vanaf"
 msgid "Full Name"
 msgstr "Volle Naam"
 
+#: ../browser/client.py:341
+#: ../browser/templates/analysisrequest_view.pt:130
+#: ../browser/templates/sample_view.pt:94
+msgid "Future dated sample"
+msgstr ""
+
 #: ../browser/analysisrequest.py:649
 #: ../browser/client.py:336
 #: ../browser/templates/analysisrequest_manage_results.pt:49
@@ -1249,7 +1274,6 @@ msgstr "Skadelik"
 msgid "Hazardous description"
 msgstr "Skadelik Beskrywing"
 
-#: ### actions.xml ###
 msgid "Home"
 msgstr "Tuis"
 
@@ -1446,7 +1470,6 @@ msgstr "Laboratorium Geakkrediteer"
 msgid "Laboratory Accredited description"
 msgstr "Laboratorium Geakkrediteer Beskrywing"
 
-#: ### controlpanel.xml ###
 msgid "Laboratory Information"
 msgstr "Laboratorium Information"
 
@@ -1738,6 +1761,10 @@ msgstr "Geen Ontledings Gekies"
 msgid "No analyses have been selected."
 msgstr "Geen Ontledings Gekies."
 
+#: ../browser/worksheetfolder.py:412
+msgid "No analyses were added"
+msgstr ""
+
 #: ../browser/worksheet.py:538
 msgid "No analyses were added to this worksheet."
 msgstr "Geen Ontledings Bygevoeg"
@@ -1790,7 +1817,6 @@ msgstr "Nie Toegeken"
 msgid "Not Permitted"
 msgstr "Nie Toegelaat"
 
-#:
 msgid "Not Requested"
 msgstr "Nie Versoek"
 
@@ -1950,7 +1976,6 @@ msgstr "Voorvoegsels"
 msgid "Prefixes description"
 msgstr "Voorvoegsels Beskrywing"
 
-#:
 msgid "Prepublish"
 msgstr "Voorafpublikasie"
 
@@ -2036,7 +2061,6 @@ msgstr "Profiele"
 msgid "Publication preference"
 msgstr "Publikasievoorkeur"
 
-#:
 msgid "Publish"
 msgstr "Publiseer"
 
@@ -2090,11 +2114,9 @@ msgstr "Bereik maks"
 msgid "Range min"
 msgstr "Bereik min"
 
-#:
 msgid "Receive"
 msgstr "Ontvang"
 
-#:
 msgid "Receive Sample"
 msgstr "Ontvang Monster"
 
@@ -2179,11 +2201,9 @@ msgstr "VerwysingOntleding ID Beskrywing"
 msgid "Register"
 msgstr "Registreer"
 
-#:
 msgid "Reinstate"
 msgstr "Herstel"
 
-#:
 msgid "Reject worksheet"
 msgstr "Verwerp Werksblad"
 
@@ -2193,7 +2213,6 @@ msgstr "Verwerp Werksblad"
 msgid "Remarks"
 msgstr "Opmerkings"
 
-#:
 msgid "Remove"
 msgstr "Verwyder"
 
@@ -2225,7 +2244,6 @@ msgstr "Rapporteer as droe materiaal"
 msgid "Reports"
 msgstr "Rapporte"
 
-#:
 msgid "Republish"
 msgstr "Herpubliseer"
 
@@ -2308,7 +2326,6 @@ msgstr "Retensieperiode Beskrywing"
 msgid "Retested"
 msgstr "Herontleed"
 
-#:
 msgid "Retract"
 msgstr "Onttrek"
 
@@ -2461,6 +2478,10 @@ msgstr "Sekuriteit"
 msgid "Select Sample"
 msgstr "Kies Monster"
 
+#: ../exportimport/import.py:23
+msgid "Select a data interface"
+msgstr ""
+
 #: ../browser/templates/analysisrequest_analyses_not_requested.pt:90
 msgid "Select all items"
 msgstr "Kies Alle items"
@@ -2560,7 +2581,6 @@ msgstr "Status"
 msgid "Submit"
 msgstr "Handig In"
 
-#:
 msgid "Submit ARImport"
 msgstr "Handig In OVImport"
 
@@ -2570,15 +2590,12 @@ msgstr "Handig In OVImport"
 msgid "Submit a valid Open XML (.XLSX) file containing Bika setup records to continue."
 msgstr "Handig 'n geldige Open XML (.XLSX) dok in"
 
-#:
 msgid "Submit for verification"
 msgstr "Handig In Vir Verifikasie"
 
-#:
 msgid "Submit worksheet"
 msgstr "Handig Werksblad In"
 
-#:
 msgid "Submitted"
 msgstr "Ingehandig"
 
@@ -2619,6 +2636,10 @@ msgstr "Toets resultate teen 'n ${lab_confidence}"
 #: ../browser/templates/reports_productivity.pt:98
 msgid "The attachments linked to analysis requests and analyses"
 msgstr "Die aanhegsels verwant aan ontledingsversoek"
+
+#: ../browser/accreditation.py:75
+msgid "The following analysis services are Accredited: "
+msgstr ""
 
 #: ../browser/templates/reports_productivity.pt:44
 msgid "The number of analyses requested per analysis service"
@@ -2688,7 +2709,6 @@ msgstr "Totale Prys"
 msgid "Type"
 msgstr "Tipe"
 
-#:
 msgid "Unassigned"
 msgstr "Nie toegewys"
 
@@ -2793,6 +2813,10 @@ msgstr "Validasie Misluk: Rigting moet N/S wees"
 msgid "Validation failed: Result Values must be numbers"
 msgstr "Validasie Misluk: Resultaatwaardes moet tuseen -180 en 180 wees"
 
+#: ../validators.py:319
+msgid "Validation failed: degrees must be 0 - 180"
+msgstr ""
+
 #: ../validators.py:300
 msgid "Validation failed: degrees must be 0 - 90"
 msgstr "Validasie Misluk: grade moet -180 to 180 wees"
@@ -2848,7 +2872,6 @@ msgstr "Bevestig"
 msgid "Verified by"
 msgstr "Bevestig deur"
 
-#:
 msgid "Verify"
 msgstr "Bevestig"
 
@@ -2912,6 +2935,21 @@ msgstr "Akkreditasie_Ontledings_Geakkrediteer"
 msgid "accreditation_body_description"
 msgstr "Akkreditasie_Liggaam_Beskrywing"
 
+#. Default: "${labname} has been accredited as ${accr} conformant by ${abbr}, (${body}). ${abbr} is recognised by government as a national accreditation body in ${labcountry}"
+#: ../browser/accreditation.py:28
+msgid "accreditation_description"
+msgstr ""
+
+#. Default: "The lab is not accredited, or accreditation has not been configured"
+#: ../browser/accreditation.py:37
+msgid "accreditation_not_accredited"
+msgstr ""
+
+#. Default: "All Accredited analysis services are listed here."
+#: ../browser/accreditation.py:41
+msgid "accredited_services_description"
+msgstr ""
+
 #. lost. We respect your privacy, and will not give the address away to any
 #. third parties or expose it anywhere."
 #. Default: "Enter an email address. This is necessary in case the password is lost. We respect your privacy, and will not give the address away to any third parties or expose it anywhere."
@@ -2947,6 +2985,31 @@ msgstr "kontakte_beskrywing"
 #: ../browser/referencesupplier.py:134
 msgid "contacts_title"
 msgstr "kontakte_titel"
+
+#. The variables used here are the same as used in the strftime formating.
+#. Supported are ${A}, ${a}, ${B}, ${b}, ${H}, ${I}, ${m}, ${d}, ${M}, ${p},
+#. ${S}, ${Y}, ${y}, ${Z}, each used as variable in the msgstr.
+#. For example: "${A} ${d}. ${B} ${Y}, ${H}:${M} ${Z}"
+#. In english speaking countries default is:
+#. ${b} ${d}, ${Y} ${I}:${M} ${p}
+msgid "date_format_long"
+msgstr ""
+
+msgid "date_format_short"
+msgstr ""
+
+# display day/hour/minute abbreviations for displaying Durations
+#. Default: "d"
+msgid "duration_d"
+msgstr ""
+
+#. Default: "h"
+msgid "duration_h"
+msgstr ""
+
+#. Default: "m"
+msgid "duration_m"
+msgstr ""
 
 #: ../browser/calcs.py:240
 msgid "error"
@@ -3016,10 +3079,19 @@ msgstr "Items gepubliseer"
 msgid "min"
 msgstr "min"
 
+#. Default: " More "
+#: records widget
+msgid "more_entries"
+msgstr ""
+
 #: ../browser/templates/analysisrequest_manage_results.pt:59
 msgid "range"
 msgstr "bereik"
 
+msgid "time_format"
+msgstr ""
+
 #: ../browser/templates/reports_productivity.pt:153
 msgid "to"
 msgstr "tot"
+
