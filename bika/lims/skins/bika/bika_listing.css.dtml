@@ -167,7 +167,7 @@ div.bika_listing {
 
 .review_state_selector {
   background: #fff;
-  padding:5px 2px 5px 2px !important;
+  padding:5px 3px 5px 3px !important;
 }
 
 td.listing-filter-row {
@@ -189,11 +189,11 @@ td.review_state_selector{
 
 .review_state_selector a{
   border-radius: &dtml-buttonBorderRadius;;
-  background: &	dtml-buttonBackgroundColor;;
+  background: &dtml-buttonBackgroundColor;;
   border:1px solid &dtml-buttonBorderColor; !important;
   text-decoration:none;
   font-weight:normal;
-  padding:2px 5px 2px 5px !important;
+  padding:3px 5px 3px 5px !important;
 }
 
 .review_state_selector a:hover{
@@ -203,18 +203,22 @@ td.review_state_selector{
   text-decoration:none;
   font-weight:normal;
   color: #000;
-  padding:2px 5px 2px 5px !important;
+  padding:3px 5px 3px 5px !important;
 }
 
 .review_state_selector .selected{
   border-radius: &dtml-buttonBorderRadius;;
   background: &dtml-buttonSelectedBackgroundColor;;
   border:1px solid &dtml-buttonSelectedBorderColor; !important;
-  padding:2px 5px 2px 5px !important;
+  padding:3px 5px 3px 3px !important;
   font-weight:normal;
   color: #000;
 }
 
+.review_state_selector img{
+  vertical-align:middle;
+  margin-bottom:2px;
+}
 .review_state_td {
 	background-color:#fff !important;
 	border-right:0 !important;

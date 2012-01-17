@@ -235,6 +235,14 @@ class AnalysisRequest(BaseFolder):
         """ Return the Request ID as title """
         return self.getRequestID()
 
+    def Description(self):
+        """ Return searchable data as Description """
+        return " ".join(
+            self.getRequestID(),
+            self.aq_parent.Title()
+        )
+
+
     def getDefaultMemberDiscount(self):
         """ compute default member discount if it applies """
         if hasattr(self, 'getMemberDiscountApplies'):
