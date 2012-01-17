@@ -319,3 +319,54 @@ def renameAfterCreation(obj):
     transaction.savepoint(optimistic=True)
     new_id = generateUniqueId(obj)
     obj.aq_inner.aq_parent.manage_renameObject(obj.id, new_id)
+
+def changeWorkflowState(content, state_id, acquire_permissions=False,
+                        portal_workflow=None, **kw):
+    """Change the workflow state of an object
+    @param content: Content obj which state will be changed
+    @param state_id: name of the state to put on content
+    @param acquire_permissions: True->All permissions unchecked and on riles and
+                                acquired
+                                False->Applies new state security map
+    @param portal_workflow: Provide workflow tool (optimisation) if known
+    @param kw: change the values of same name of the state mapping
+    @return: None
+    """
+
+    if portal_workflow is None:
+        portal_workflow = getToolByName(content, 'portal_workflow')
+
+    # Might raise IndexError if no workflow is associated to this type
+    wf_def = portal_workflow.getWorkflowsFor(content)[0]
+    wf_id= wf_def.getId()
+
+    wf_state = {
+        'action': None,
+        'actor': None,
+        'comments': "Setting state to %s" % state_id,
+        'review_state': state_id,
+        'time': DateTime(),
+        }
+
+    # Updating wf_state from keyword args
+    for k in kw.keys():
+        # Remove unknown items
+        if not wf_state.has_key(k):
+            del kw[k]
+    if kw.has_key('review_state'):
+        del kw['review_state']
+    wf_state.update(kw)
+
+    portal_workflow.setStatusOf(wf_id, content, wf_state)
+
+    if acquire_permissions:
+        # Acquire all permissions
+        for permission in content.possible_permissions():
+            content.manage_permission(permission, acquire=1)
+    else:
+        # Setting new state permissions
+        wf_def.updateRoleMappingsFor(content)
+
+    # Map changes to the catalogs
+    content.reindexObject(idxs=['allowedRolesAndUsers', 'review_state'])
+    return
