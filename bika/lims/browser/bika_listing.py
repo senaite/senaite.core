@@ -190,6 +190,7 @@ class BikaListingView(BrowserView):
        to allow ajax table sorting for indexed columns
      - sortable: defaults True.  if False, adds nosort class
        (see bika_listing.js) to prevent inline table sorts.
+     - toggle: enable/disable column toggle ability
     """
     columns = {
            'obj_type': {'title': _('Type')},
@@ -319,6 +320,26 @@ class BikaListingView(BrowserView):
                 ##logger.info("Or: %s=%s"%(index, self.request[request_key]))
                 ##self.Or.append(MatchGlob(index, self.request[request_key]))
                 self.Or.append(MatchRegexp(index, self.request[request_key]))
+
+        if 'toggle_col' in self.request.form:
+            toggle_col = self.request.form['toggle_col']
+            toggle_cols = [col for col in self.columns.keys() \
+                           if 'toggle' in self.columns[col] \
+                           and (self.columns[col]['toggle'] \
+                           or col in self.request.get('toggle_cols', '').split(","))]
+            if toggle_col in toggle_cols:
+                toggle_cols.remove(toggle_col)
+                self.columns[toggle_col]['toggle'] = False
+            else:
+                toggle_cols.append(toggle_col)
+                self.columns[toggle_col]['toggle'] = True
+            toggle_cols = ",".join(toggle_cols)
+            self.request.RESPONSE.setCookie(
+                'toggle_cols',
+                toggle_cols,
+                expires='Thu, 20 Feb 2020 10:00:00 GMT',
+                path=self.view_url)
+            self.request['toggle_cols'] = toggle_cols
 
     def __call__(self):
         """ Handle request parameters and render the form."""

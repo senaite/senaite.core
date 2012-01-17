@@ -50,6 +50,12 @@
 	name python:form_id+'_pagenumber';
 	value python:request.get(form_id+'_pagenumber', '1')"/>
 
+<!-- columns that can be enabled/disabled -->
+<tal:cookie define="toggle_cols python:request.get('toggle_cols', '').split(',')">
+<input type="hidden" tal:attributes="
+	id python:form_id+'_toggle_cols';
+	value python:','.join([col for col in view.bika_listing.columns.keys() if 'toggle' in view.bika_listing.columns[col]])"/>
+
 <tal:worksheet-cheat-1 condition="python:hasattr(view.bika_listing, 'analyst')">
 	<input type="hidden"
 		name="analyst"
@@ -152,6 +158,7 @@ Colum Headers
 		</th>
 		<tal:col repeat="column column_list">
 			<th
+				tal:condition="python: 'toggle' not in view.bika_listing.columns[column] or (view.bika_listing.columns[column].get('toggle', True) or column in toggle_cols)"
 				tal:define="
 					klass python:view.bika_listing.columns[column].get('sortable', True) and 'sortable column' or 'column';
 					klass python:'%s%s'%(klass, request.get(form_id+'_sort_on', '') == column and ' sort_on' or '');
@@ -272,6 +279,7 @@ Table cells for each column from in review_state's column list.
 	<tal:cell
 		tal:repeat="column review_state/columns">
 	<tal:rowcolspan
+		tal:condition="python: 'toggle' not in view.bika_listing.columns[column] or (view.bika_listing.columns[column].get('toggle', True) or column in toggle_cols)"
 		tal:define="
 			dummy python: 'rowspan' in item and column in item['rowspan'] and rowspan_max.update({column: item['rowspan'][column]});
 			dummy python: column in rowspan_max or rowspan_max.update({column: 1});
@@ -654,5 +662,7 @@ Batching
 </tfoot>
 
 </table>
+
+</tal:cookie>
 
 </form>

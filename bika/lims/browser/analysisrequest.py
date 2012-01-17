@@ -459,7 +459,7 @@ class AnalysisRequestManageResultsView(AnalysisRequestViewView):
                                      self.request,
                                      getPointOfCapture = poc,
                                      sort_on = 'getServiceTitle')
-                    t.form_id = poc
+                    t.form_id = "ar_manage_results_%s" % poc
                     t.allow_edit = True
                     t.review_states[0]['transitions'] = ['submit', 'retract', 'verify']
                     t.show_select_column = True

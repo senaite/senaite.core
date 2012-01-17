@@ -28,8 +28,7 @@ class ClientFolderContentsView(BikaListingView):
         request.set('disable_border', 1)
 
         self.columns = {
-            'title': {'title': _('Name'),
-                      'index': 'sortable_title'},
+            'title': {'title': _('Name'), 'index': 'sortable_title'},
             'EmailAddress': {'title': _('Email Address')},
             'Phone': {'title': _('Phone')},
             'Fax': {'title': _('Fax')},

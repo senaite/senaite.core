@@ -312,5 +312,71 @@ $(document).ready(function(){
 		}
 	});
 
+	function positionTooltip(event){
+		var tPosX = event.pageX-5;
+		var tPosY = event.pageY-5;
+		$('div.tooltip').css({'border': '1px solid #ccc',
+							  'border-radius':'.25em',
+							  'background-color':'#fff',
+							  'position': 'absolute',
+							  'padding':'5px',
+							  'top': tPosY,
+							  'left': tPosX});
+	};
+
+	// show / hide columns - the right-click pop-up
+	$('th[id^="foldercontents-"]').live('contextmenu', function(event){
+		event.preventDefault();
+		form_id = $(this).parents("form").attr("id");
+		toggle_cols = $("#" + form_id + "_toggle_cols").val();
+		if (toggle_cols == ""){
+			return false;
+		}
+		toggle_cols = toggle_cols.split(",");
+		txt = '<div class="tooltip"><table cellpadding="0" cellspacing="0">';
+		for(i=0;i<toggle_cols.length;i++){
+			col = toggle_cols[i];
+			txt = txt + "<tr><td>";
+			enabled = $("#foldercontents-"+col+"-column");
+			if(enabled.length > 0){
+				txt = txt + "<input type='checkbox' form_id='"+form_id+"' name='"+col+"' class='toggle_col' checked='checked'>";
+			} else {
+				txt = txt + "<input type='checkbox' form_id='"+form_id+"' name='"+col+"' class='toggle_col'>";
+			}
+			txt = txt + "</td><td>"+col+"</td></tr>";
+		}
+		txt = txt + '</table></div>';
+		$(txt).appendTo('body');
+		positionTooltip(event);
+		return false;
+	});
+	$('*').click(function(){
+		$(".tooltip").remove();
+	});
+
+	$('.toggle_col').live('click', function(event){
+		$(".tooltip").remove();
+		form_id = $(this).attr('form_id');
+		form = $("form#"+form_id);
+		col = $(this).attr('name');
+		stored_form_action = $(form).attr("action");
+		$(form).attr("action", window.location.href);
+		$(form).append("<input type='hidden' name='table_only' value='"+form_id+"'>");
+		$(form).append("<input type='hidden' name='toggle_col' value='"+col+"'>");
+		options = {
+			target: $(form).children(".bika-listing-table"),
+			replaceTarget: true,
+			data: form.formToArray(),
+			success: function(){
+				setoddeven();
+			}
+		}
+		form.ajaxSubmit(options);
+		$('[name=table_only]').remove();
+		$('[name=toggle_col]').remove();
+		$(form).attr('action', stored_form_action)
+		return false;
+	});
+
 });
 });
