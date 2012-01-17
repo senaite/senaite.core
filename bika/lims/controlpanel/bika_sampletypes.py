@@ -86,10 +86,10 @@ class ajax_SampleTypes():
     """
     def __call__(self):
         bsc = getToolByName(self.context, 'bika_setup_catalog')
-        term = self.request.get('term', '')
+        term = self.request.get('term', '').lower()
         items = bsc(portal_type = "SampleType", sort_on='sortable_title')
         nr_items = len(items)
-        items = [s.title for s in items if s.title.lower().find(term.lower()) > -1]
+        items = [s.title for s in items if s.title.lower().find(term) > -1]
 
         ##XXX why does it return not all values in index?  only those that are 'referenced' by samples?
         #values = pc.Indexes['getSampleTypeTitle'].uniqueValues()

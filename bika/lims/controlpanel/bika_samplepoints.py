@@ -86,9 +86,7 @@ class ajax_SamplePoints():
     """
     def __call__(self):
         bsc = getToolByName(self, 'bika_setup_catalog')
-        term = self.request.get('term', '')
-        items = bsc(portal_type = "SamplePoint",
-                    sort_on='sortable_title')
-        nr_items = len(items)
-        items = [s.title for s in items if s.title.find(term.lower()) > -1]
+        term = self.request.get('term', '').lower()
+        items = bsc(portal_type = "SamplePoint", sort_on='sortable_title')
+        items = [s.Title for s in items if s.Title.lower().find(term) > -1]
         return json.dumps(items)
