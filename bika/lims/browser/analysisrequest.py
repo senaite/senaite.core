@@ -1231,7 +1231,10 @@ class AnalysisRequestsView(BikaListingView):
 
         self.context_actions = {}
 
-        request.set('disable_border', 1)
+        if self.view_url.find("/analysisrequests") > -1:
+            self.request.set('disable_border', 1)
+        else:
+            self.view_url = self.view_url + "/analysisrequests"
 
         self.show_sort_column = False
         self.show_select_row = False

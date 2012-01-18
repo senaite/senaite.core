@@ -4,7 +4,7 @@ from Products.CMFCore.utils import getToolByName
 from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import bikaMessageFactory as _
-from bika.lims.browser.client import ClientSamplesView
+from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.utils import TimeOrDate
 from bika.lims import EditSample
 from bika.lims import PMF, logger
@@ -146,33 +146,166 @@ class ajaxSampleSubmit():
         self.context.plone_utils.addPortalMessage(message, 'info')
         return json.dumps({'success':message})
 
-class SamplesView(ClientSamplesView):
-    """ The main portal Samples action tab
-    """
+class SamplesView(BikaListingView):
+    implements(IViewView)
 
     def __init__(self, context, request):
         super(SamplesView, self).__init__(context, request)
-        self.title = _("Samples")
-        self.description = _("Samples description", "")
-        self.contentFilter = {'portal_type':'Sample',
+        self.contentFilter = {'portal_type': 'Sample',
                               'sort_on':'id',
                               'sort_order': 'reverse',
-                              'path':{"query": "/", "level" : 0 }}
-        self.columns['Client'] = {'title': _('Client')}
-        review_states = []
-        for review_state in self.review_states:
-            review_state['columns'].insert(review_state['columns'].index('SampleID') + 1, 'Client')
+                              'path': {'query': "/",
+                                       'level': 0 }
+                              }
+        self.context_actions = {}
+        self.show_sort_column = False
+        self.show_select_row = False
+        self.show_select_column = True
 
-        request.set('disable_border', 1)
+        if self.view_url.find("/samples") > -1:
+            self.request.set('disable_border', 1)
+        else:
+            self.view_url = self.view_url + "/samples"
+
+        self.icon = "++resource++bika.lims.images/sample_big.png"
+        self.title = _("Samples")
+        self.description = _("Samples description", "")
+
+        self.columns = {
+            'SampleID': {'title': _('Sample ID'),
+                         'index':'getSampleID'},
+            'Client': {'title': _("Client"),
+                       'toggle': True,},
+            'Requests': {'title': _('Requests'),
+                         'sortable': False,
+                         'toggle': False},
+            'ClientReference': {'title': _('Client Ref'),
+                                'index': 'getClientReference',
+                                'toggle': False},
+            'ClientSampleID': {'title': _('Client SID'),
+                               'index': 'getClientSampleID',
+                               'toggle': False},
+            'SampleTypeTitle': {'title': _('Sample Type'),
+                                'index': 'getSampleTypeTitle'},
+            'SamplePointTitle': {'title': _('Sample Point'),
+                                'index': 'getSamplePointTitle',
+                                'toggle': False},
+            'DateSampled': {'title': _('Date Sampled'),
+                            'index':'getDateSampled'},
+            'future_DateSampled': {'title': _('Sampling Date'),
+                                   'index':'getDateSampled'},
+            'DateReceived': {'title': _('Date Received'),
+                             'index': 'getDateReceived',
+                             'toggle': False},
+            'state_title': {'title': _('State'),
+                            'index':'review_state'},
+        }
+        self.review_states = [
+            {'id':'all',
+             'title': _('All'),
+             'columns': ['SampleID',
+                         'Client',
+                         'Requests',
+                         'ClientReference',
+                         'ClientSampleID',
+                         'SampleTypeTitle',
+                         'SamplePointTitle',
+                         'DateSampled',
+                         'DateReceived',
+                         'state_title']},
+            {'id':'due',
+             'title': _('Due'),
+             'columns': ['SampleID',
+                         'Client',
+                         'Requests',
+                         'ClientReference',
+                         'ClientSampleID',
+                         'future_DateSampled',
+                         'SampleTypeTitle',
+                         'SamplePointTitle']},
+            {'id':'received',
+             'title': _('Received'),
+             'columns': ['SampleID',
+                         'Client',
+                         'Requests',
+                         'ClientReference',
+                         'ClientSampleID',
+                         'SampleTypeTitle',
+                         'SamplePointTitle',
+                         'DateSampled',
+                         'DateReceived']},
+            {'id':'expired',
+             'title': _('Expired'),
+             'columns': ['SampleID',
+                         'Client',
+                         'Requests',
+                         'ClientReference',
+                         'ClientSampleID',
+                         'SampleTypeTitle',
+                         'SamplePointTitle',
+                         'DateSampled',
+                         'DateReceived']},
+            {'id':'disposed',
+             'title': _('Disposed'),
+             'columns': ['SampleID',
+                         'Client',
+                         'Requests',
+                         'ClientReference',
+                         'ClientSampleID',
+                         'SampleTypeTitle',
+                         'SamplePointTitle',
+                         'DateSampled',
+                         'DateReceived']},
+            {'id':'cancelled',
+             'title': _('Cancelled'),
+             'contentFilter': {'cancellation_state': 'cancelled'},
+             'transitions': ['reinstate'],
+             'columns': ['SampleID',
+                         'Client',
+                         'Requests',
+                         'ClientReference',
+                         'ClientSampleID',
+                         'SampleTypeTitle',
+                         'SamplePointTitle',
+                         'DateSampled',
+                         'DateReceived',
+                         'state_title']},
+            ]
 
     def folderitems(self):
-        workflow = getToolByName(self.context, "portal_workflow")
-        items = ClientSamplesView.folderitems(self)
+        items = BikaListingView.folderitems(self)
+
         for x in range(len(items)):
-            if not items[x].has_key('obj'):
-                continue
+            if not items[x].has_key('obj'): continue
             obj = items[x]['obj']
+            items[x]['SampleID'] = obj.getSampleID()
+            items[x]['replace']['SampleID'] = "<a href='%s'>%s</a>" % \
+                 (items[x]['url'], items[x]['SampleID'])
+            items[x]['replace']['Requests'] = ",".join(
+                ["<a href='%s'>%s</a>" % (o.absolute_url(), o.Title())
+                 for o in obj.getAnalysisRequests()])
+            items[x]['ClientReference'] = obj.getClientReference()
+            items[x]['ClientSampleID'] = obj.getClientSampleID()
+            items[x]['SampleTypeTitle'] = obj.getSampleTypeTitle()
+            items[x]['SamplePointTitle'] = obj.getSamplePointTitle()
+            items[x]['Client'] = obj.aq_parent.Title()
             items[x]['replace']['Client'] = "<a href='%s'>%s</a>" % \
-                 (obj.aq_parent.absolute_url(), obj.aq_parent.Title())
+                     (obj.aq_parent.absolute_url(), obj.aq_parent.Title())
+
+            datesampled = obj.getDateSampled()
+            items[x]['DateSampled'] = TimeOrDate(self.context, datesampled, long_format = 0)
+            items[x]['future_DateSampled'] = datesampled.Date() > DateTime() and \
+                TimeOrDate(self.context, datesampled) or ''
+
+            items[x]['DateReceived'] = TimeOrDate(self.context, obj.getDateReceived())
+
+            after_icons = ''
+            if obj.getSampleType().getHazardous():
+                after_icons += "<img title='Hazardous' src='++resource++bika.lims.images/hazardous.png'>"
+            if datesampled > DateTime():
+                after_icons += "<img src='++resource++bika.lims.images/calendar.png' title='%s'>" % \
+                    self.context.translate(_("Future dated sample"))
+            if after_icons:
+                items[x]['after']['SampleID'] = after_icons
 
         return items

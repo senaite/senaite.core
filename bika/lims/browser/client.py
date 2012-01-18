@@ -9,6 +9,7 @@ from bika.lims.browser.analysisrequest import AnalysisRequestsView
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.browser.bika_listing import WorkflowAction
 from bika.lims.browser.publish import Publish
+from bika.lims.browser.sample import SamplesView
 from bika.lims.config import ManageResults
 from bika.lims.utils import TimeOrDate
 from operator import itemgetter
@@ -98,12 +99,9 @@ class ClientAnalysisRequestsView(AnalysisRequestsView):
     def __init__(self, context, request):
         super(ClientAnalysisRequestsView, self).__init__(context, request)
         self.view_url = self.view_url + "/analysisrequests"
-        logger.info("client ars view_url " + self.view_url)
 
         self.contentFilter['path'] = {"query": "/".join(context.getPhysicalPath()),
                                       "level" : 0 }
-
-        request.set('disable_border', 0)
 
         self.context_actions = {}
         wf = getToolByName(self.context, 'portal_workflow')
@@ -128,152 +126,18 @@ class ClientAnalysisRequestsView(AnalysisRequestsView):
             review_states.append(review_state)
         self.review_states = review_states
 
-class ClientSamplesView(BikaListingView):
-    implements(IViewView)
-
+class ClientSamplesView(SamplesView):
     def __init__(self, context, request):
         super(ClientSamplesView, self).__init__(context, request)
-        self.contentFilter = {'portal_type': 'Sample',
-                              'sort_on':'id',
-                              'sort_order': 'reverse',
-                              'path': {'query': "/".join(context.getPhysicalPath()),
-                                       'level': 0 }
-                              }
-        self.context_actions = {}
-        self.show_sort_column = False
-        self.show_select_row = False
-        self.show_select_column = True
 
-        self.icon = "++resource++bika.lims.images/sample_big.png"
-        self.title = _("Samples")
-        self.description = _("Samples description", "")
+        self.contentFilter['path'] = {"query": "/".join(context.getPhysicalPath()),
+                                      "level" : 0 }
 
-        self.columns = {
-            'SampleID': {'title': _('Sample ID'),
-                         'index':'getSampleID'},
-            'Requests': {'title': _('Requests'),
-                         'sortable': False,
-                         'toggle': False},
-            'ClientReference': {'title': _('Client Ref'),
-                                'index': 'getClientReference',
-                                'toggle': False},
-            'ClientSampleID': {'title': _('Client SID'),
-                               'index': 'getClientSampleID',
-                               'toggle': False},
-            'SampleTypeTitle': {'title': _('Sample Type'),
-                                'index': 'getSampleTypeTitle'},
-            'SamplePointTitle': {'title': _('Sample Point'),
-                                'index': 'getSamplePointTitle',
-                                'toggle': False},
-            'DateSampled': {'title': _('Date Sampled'),
-                            'index':'getDateSampled'},
-            'future_DateSampled': {'title': _('Sampling Date'),
-                                   'index':'getDateSampled'},
-            'DateReceived': {'title': _('Date Received'),
-                             'index': 'getDateReceived',
-                             'toggle': False},
-            'state_title': {'title': _('State'),
-                            'index':'review_state'},
-        }
-        self.review_states = [
-            {'id':'all',
-             'title': _('All'),
-             'columns': ['SampleID',
-                         'Requests',
-                         'ClientReference',
-                         'ClientSampleID',
-                         'SampleTypeTitle',
-                         'SamplePointTitle',
-                         'DateSampled',
-                         'DateReceived',
-                         'state_title']},
-            {'id':'due',
-             'title': _('Due'),
-             'columns': ['SampleID',
-                         'Requests',
-                         'ClientReference',
-                         'ClientSampleID',
-                         'future_DateSampled',
-                         'SampleTypeTitle',
-                         'SamplePointTitle']},
-            {'id':'received',
-             'title': _('Received'),
-             'columns': ['SampleID',
-                         'Requests',
-                         'ClientReference',
-                         'ClientSampleID',
-                         'SampleTypeTitle',
-                         'SamplePointTitle',
-                         'DateSampled',
-                         'DateReceived']},
-            {'id':'expired',
-             'title': _('Expired'),
-             'columns': ['SampleID',
-                         'Requests',
-                         'ClientReference',
-                         'ClientSampleID',
-                         'SampleTypeTitle',
-                         'SamplePointTitle',
-                         'DateSampled',
-                         'DateReceived']},
-            {'id':'disposed',
-             'title': _('Disposed'),
-             'columns': ['SampleID',
-                         'Requests',
-                         'ClientReference',
-                         'ClientSampleID',
-                         'SampleTypeTitle',
-                         'SamplePointTitle',
-                         'DateSampled',
-                         'DateReceived']},
-            {'id':'cancelled',
-             'title': _('Cancelled'),
-             'contentFilter': {'cancellation_state': 'cancelled'},
-             'transitions': ['reinstate'],
-             'columns': ['SampleID',
-                         'Requests',
-                         'ClientReference',
-                         'ClientSampleID',
-                         'SampleTypeTitle',
-                         'SamplePointTitle',
-                         'DateSampled',
-                         'DateReceived',
-                         'state_title']},
-            ]
-
-    def folderitems(self):
-        items = BikaListingView.folderitems(self)
-        for x in range(len(items)):
-            if not items[x].has_key('obj'): continue
-            obj = items[x]['obj']
-            items[x]['SampleID'] = obj.getSampleID()
-            items[x]['replace']['SampleID'] = "<a href='%s'>%s</a>" % \
-                 (items[x]['url'], items[x]['SampleID'])
-            items[x]['replace']['Requests'] = ",".join(
-                ["<a href='%s'>%s</a>" % (o.absolute_url(), o.Title())
-                 for o in obj.getAnalysisRequests()])
-            items[x]['ClientReference'] = obj.getClientReference()
-            items[x]['ClientSampleID'] = obj.getClientSampleID()
-            items[x]['SampleTypeTitle'] = obj.getSampleTypeTitle()
-            items[x]['SamplePointTitle'] = obj.getSamplePointTitle()
-
-            datesampled = obj.getDateSampled()
-            items[x]['DateSampled'] = TimeOrDate(self.context, datesampled, long_format = 0)
-            items[x]['future_DateSampled'] = datesampled.Date() > DateTime() and \
-                TimeOrDate(self.context, datesampled) or ''
-
-            items[x]['DateReceived'] = TimeOrDate(self.context, obj.getDateReceived())
-
-            after_icons = ''
-            if obj.getSampleType().getHazardous():
-                after_icons += "<img title='Hazardous' src='++resource++bika.lims.images/hazardous.png'>"
-            if datesampled > DateTime():
-                after_icons += "<img src='++resource++bika.lims.images/calendar.png' title='%s'>" % \
-                    self.context.translate(_("Future dated sample"))
-            if after_icons:
-                items[x]['after']['SampleID'] = after_icons
-
-        return items
+        review_states = []
+        for review_state in self.review_states:
+            review_state['columns'].remove('Client')
+            review_states.append(review_state)
+        self.review_states = review_states
 
 class ClientARImportsView(BikaListingView):
     implements(IViewView)
