@@ -13,6 +13,7 @@ from operator import itemgetter
 from plone.i18n.normalizer.interfaces import IIDNormalizer
 from zope.component import getUtility
 import csv
+import json
 import plone
 import zope
 import zope.event
@@ -25,8 +26,8 @@ class Export(BrowserView):
         Requests "TSO2 & F SO2" for all requests.
         uses analysis' PARENT UID as 'Sample name' col.
         uses analysis' CONTAINER UID as 'Sample type' col.
-        (this is not always the same thing as the 'container_uid'
-         specified in ws.getLayout())
+        (they are not always the same; think of multiple duplicates of the same
+        analysis.)
     """
 
     def __call__(self, analyses):
@@ -92,177 +93,216 @@ class Export(BrowserView):
         setheader('Content-Disposition', 'inline; filename=%s' % filename)
         self.request.RESPONSE.write(result)
 
-class Import(BrowserView):
+def Import(context,request):
     """ Read FIAStar analysis results
     """
 
     template = "fiastar_import.pt"
 
-    def __call__(self):
+    csvfile = request.form['file']
 
-        if 'submitted' not in self.request:
-            return self.template()
+    pc = getToolByName(context, 'portal_catalog')
+    uc = getToolByName(context, 'uid_catalog')
+    bsc = getToolByName(context, 'bika_setup_catalog')
+    wf_tool = getToolByName(context, 'portal_workflow')
 
-        csvfile = self.request.form['csvfile']
+    updateable_states = ['sample_received', 'assigned', 'not_requested']
+    now = DateTime().strftime('%Y%m%d-%H%M')
 
-        pc = getToolByName(self.context, 'portal_catalog')
-        uc = getToolByName(self.context, 'uid_catalog')
-        bsc = getToolByName(self.context, 'bika_setup_catalog')
-        uc = getToolByName(self.context, 'uid_catalog')
-        wf_tool = getToolByName(self.context, 'portal_workflow')
+    res = {'errors': [],
+           'log': [],}
 
-        updateable_states = ['sample_received', 'assigned', 'not_requested']
-        now = DateTime().strftime('%Y%m%d-%H%M')
-        instrument = self.context.getInstrument()
-
-        options = {'dilute_factor' : 1,
-                   'F SO2' : 'FSO2',
-                   'T SO2' : 'TSO2'}
-        for k,v in instrument.getDataInterfaceOptions():
+    options = {'dilute_factor' : 1,
+               'F SO2' : 'FSO2',
+               'T SO2' : 'TSO2'}
+    for k,v in options.items():
+        if k in request:
+            options[k] = request.get(k)
+        else:
             options[k] = v
 
-        # kw_map to lookup Fiastar parameter -> service keyword and vice versa
-        kw_map = {}
-        for param in ['F SO2', 'T SO2']:
-            service = bsc(getKeyword = options[param])
-            if not service:
-                log.append('ERROR: Could not find service for %s' % param)
-                continue
-            service = service[0].getObject()
-            kw_map[param] = service
-            kw_map[service.getKeyword()] = param
+    # kw_map to lookup Fiastar parameter -> service keyword and vice versa
+    kw_map = {}
+    for param in ['F SO2', 'T SO2']:
+        service = bsc(getKeyword = options[param])
+        if not service:
+            msg = _('import_service_keyword_not_found',
+                    default = 'Service keyword ${keyword} not found',
+                    mapping = {'keyword': options[param], })
+            res['errors'].append(context.translate(msg))
+            continue
+        service = service[0].getObject()
+        kw_map[param] = service
+        kw_map[service.getKeyword()] = param
 
-        rows = []
-        batch_headers = None
-        fia1 = False
-        fia2 = False
-        # place all valid rows into list of dict by CSV row title
-        for row in open(csvfile).readlines():
-            if not row: continue
-            row = row.split(';')
-            # a new batch starts
-            if row[0] == 'List name':
-                fia1 = False
-                fia2 = False
-                if row[13] == 'Concentration':
-                    fia1 = True
-                elif row[15] == 'Concentration':
-                    row[13] = 'Peak Mean'
-                    row[14] = 'Peak St dev'
-                    row[16] = 'Concentration Mean'
-                    row[17] = 'Concentration St dev'
-                    fia2 = True
-                fields = row
-                continue
-            row = dict(zip(fields, row))
-            if row['Parameter'] == 'sample' or not row['Concentration']:
-                continue
-            rows.append(row)
+    # all errors at this point are fatal ones
+    if res['errors']:
+        return json.dumps(res)
 
-        log = []
-        for row in rows:
-            param = row['Parameter']
-            service = kw_map[param]
-            keyword = service.getKeyword()
-            calc = service.getCalculation()
-            interim_fields = calc and calc.getInterimFields() or []
+    rows = []
+    batch_headers = None
+    fia1 = False
+    fia2 = False
+    # place all valid rows into list of dict by CSV row title
+    for row in csvfile.readlines():
+        if not row: continue
+        row = row.split(';')
+        # a new batch starts
+        if row[0] == 'List name':
+            fia1 = False
+            fia2 = False
+            if row[13] == 'Concentration':
+                fia1 = True
+            elif row[15] == 'Concentration':
+                row[13] = 'Peak Mean'
+                row[14] = 'Peak St dev'
+                row[16] = 'Concentration Mean'
+                row[17] = 'Concentration St dev'
+                fia2 = True
+            fields = row
+            continue
+        row = dict(zip(fields, row))
+        if row['Parameter'] == 'sample' or not row['Concentration']:
+            continue
+        if fia1:
+            row['Peak Mean'] = 0
+            row['Peak St dev'] = 0
+            row['Concentration Mean'] = 0
+            row['Concentration St dev'] = 0
+        rows.append(row)
 
-            p_uid = row['Sample name']
-            parent = uc(UID = p_uid)
-            if len(parent) == 0:
-                log.append('ERROR: no analysis parent %s' % row['Sample name'])
+    log = []
+    for row in rows:
+        param = row['Parameter']
+        service = kw_map[param]
+        keyword = service.getKeyword()
+        calc = service.getCalculation()
+        interim_fields = calc and calc.getInterimFields() or []
+
+        p_uid = row['Sample name']
+        parent = uc(UID = p_uid)
+        if len(parent) == 0:
+            msg = _('import_analysis_parent_not_found',
+                    default = 'Analysis parent UID ${parent_uid} not found',
+                    mapping = {'parent_uid': row['Sample name'], })
+            res['errors'].append(context.translate(msg))
+            continue
+        parent = parent[0].getObject()
+
+        c_uid = row['Sample type']
+        container = uc(UID = c_uid)
+        if len(container) == 0:
+            msg = _('import_analysis_container_not_found',
+                    default = 'Analysis container UID ${parent_uid} not found',
+                    mapping = {'container_uid': row['Sample type'], })
+            res['errors'].append(context.translate(msg))
+            continue
+        container = container[0].getObject()
+
+        # Duplicates.
+        if p_uid != c_uid:
+            dups = [d.getObject() for d in
+                    pc(portal_type='DuplicateAnalysis',
+                       path={'query': "/".join(container.getPhysicalPath()),
+                             'level': 0,})]
+            # The analyses should exist already
+            # or no results will be imported.
+            analysis = None
+            for dup in dups:
+                if dup.getAnalysis().aq_parent == p_uid and \
+                   dup.getKeyword() in (options['F SO2'], options['T SO2']):
+                    analysis = dup
+            if not analysis:
+                msg = _('import_duplicate_not_found',
+                        default = 'Duplicate analysis for slot ${slot} not found',
+                        mapping = {'slot': row['Cup'], })
+                res['errors'].append(context.translate(msg))
                 continue
-            parent = parent[0].getObject()
-
-            c_uid = row['Sample type']
-            container = uc(UID = c_uid)
-            if len(container) == 0:
-                log.append('ERROR: no analysis container %s' % row['Sample name'])
-                continue
-            container = container[0].getObject()
-
-            # Duplicates.
-            if c_uid == self.context.UID():
-                # The analyses should exist already
-                # or no results will be imported.
-                analysis = None
-                for dup in self.context.objectValues():
-                    if dup.aq_parent == p_uid and \
-                       dup.getKeyword() in (options['F SO2'], options['T SO2']):
-                        analysis = dup
-                if not analysis:
-                    log.append('ERROR: no duplicate analysis found for slot %s' % row['Cup'])
-                    continue
+            row['analysis'] = analysis
+        else:
+            analyses = parent.objectIds()
+            if keyword in analyses:
+                # analysis exists for this parameter.
+                analysis = parent.get(keyword)
                 row['analysis'] = analysis
             else:
-                analyses = parent.objectIds()
-                if keyword in analyses:
-                    # analysis exists for this parameter.
-                    row['analysis'] = parent.get(keyword)
-                else:
-                    # analysis does not exist;
-                    # create new analysis and set 'results_not_requested' state
-                    parent.invokeFactory(type_name="Analysis", id = keyword)
-                    analysis = parent[keyword]
-                    analysis.edit(Service = service,
-                                  InterimFields = interim_fields,
-                                  MaxTimeAllowed = service.getMaxTimeAllowed())
-                    msg = parent.translate("FOSS FIAStar")
-                    changeWorkflowState(analysis, 'not_requested', comments=msg)
+                # analysis does not exist;
+                # create new analysis and set 'results_not_requested' state
+                parent.invokeFactory(type_name="Analysis", id = keyword)
+                analysis = parent[keyword]
+                analysis.edit(Service = service,
+                              InterimFields = interim_fields,
+                              MaxTimeAllowed = service.getMaxTimeAllowed())
+                changeWorkflowState(analysis,
+                                    'not_requested',
+                                    comments="FOSS FIAStar")
 
-                    analysis.unmarkCreationFlag()
-                    zope.event.notify(ObjectInitializedEvent(analysis))
-                    row['analysis'] = analysis
+                analysis.unmarkCreationFlag()
+                zope.event.notify(ObjectInitializedEvent(analysis))
+                row['analysis'] = analysis
 
-            as_state = wf_tool.getInfoFor(analysis, 'review_state', '')
-            if (as_state not in updateable_states):
-                log.append('ERROR: Analysis %s in %s status '
-                           '- not updated' % (service.Title(), as_state))
-                continue
-            if analysis.getResult():
-                log.append('ERROR: Analysis %s has a result '
-                           '- not updated' % service.Title())
-                continue
+        as_state = wf_tool.getInfoFor(analysis, 'review_state', '')
+        if (as_state not in updateable_states):
+            msg = _('import_service_not_updateable',
+                    default = 'Analysis ${service} at slot ${slot} in state ${state} - not updated',
+                    mapping = {'service': service.Title(),
+                               'slot': row['Cup'],
+                               'state': as_state,})
+            res['errors'].append(context.translate(msg))
+            continue
+        if analysis.getResult():
+            msg = _('import_service_has_result',
+                    default = 'Analysis ${service} at slot ${slot} has a result - not updated',
+                    mapping = {'service': service.Title(),
+                               'slot': row['Cup'], })
+            res['errors'].append(context.translate(msg))
+            continue
 
-            analysis.setInterimFields(
-                [
-                {'keyword':'dilution_factor',
-                 'title': 'Dilution Factor',
-                 'value': row['Dilution'],
-                 'unit':''},
-                {'keyword':'injection',
-                 'title': 'Injection',
-                 'value': row['Injection'],
-                 'unit':''},
-                {'keyword':'peak',
-                 'title': 'Peak Height/Area',
-                 'value': row['Peak Height/Area'],
-                 'unit':''},
-                {'keyword':'peak_mean',
-                 'title': 'Peak Mean',
-                 'value': row.get('Peak Mean', '0'),
-                 'unit':''},
-                {'keyword':'peak_st_dev',
-                 'title': 'Peak St dev',
-                 'value': row.get('Peak St dev', '0'),
-                 'unit':''},
-                {'keyword':'concentration',
-                 'title': 'Concentration',
-                 'value': row['concentration'],
-                 'unit':''},
-                {'keyword':'concentration_mean',
-                 'title': 'Concentration Mean',
-                 'value': row['Concentration Mean'],
-                 'unit':''},
-                {'keyword':'concentration_st_dev',
-                 'title': 'Concentration St dev',
-                 'value': row['Concentration St dev'],
-                 'unit':''},
-                {'keyword':'deviation',
-                 'title': 'Deviation',
-                 'value': row['deviation'],
-                 'unit':''},
-                ]
-            )
+        analysis.setInterimFields(
+            [
+            {'keyword':'dilution_factor',
+             'title': 'Dilution Factor',
+             'value': row['Dilution'],
+             'unit':''},
+            {'keyword':'injection',
+             'title': 'Injection',
+             'value': row['Injection'],
+             'unit':''},
+            {'keyword':'peak',
+             'title': 'Peak Height/Area',
+             'value': row['Peak Height/Area'],
+             'unit':''},
+            {'keyword':'peak_mean',
+             'title': 'Peak Mean',
+             'value': row.get('Peak Mean', '0'),
+             'unit':''},
+            {'keyword':'peak_st_dev',
+             'title': 'Peak St dev',
+             'value': row.get('Peak St dev', '0'),
+             'unit':''},
+            {'keyword':'concentration',
+             'title': 'Concentration',
+             'value': row['Concentration'],
+             'unit':''},
+            {'keyword':'concentration_mean',
+             'title': 'Concentration Mean',
+             'value': row['Concentration Mean'],
+             'unit':''},
+            {'keyword':'concentration_st_dev',
+             'title': 'Concentration St dev',
+             'value': row['Concentration St dev'],
+             'unit':''},
+            {'keyword':'deviation',
+             'title': 'Deviation',
+             'value': row['Deviation'],
+             'unit':''},
+            ]
+        )
 
-        return '\n'.join(log)
+        msg = _('import_analysis_ok',
+                default = 'Analysis ${service} at slot ${slot}: OK',
+                mapping = {'service': service.Title(),
+                           'slot': row['Cup'], })
+        res['log'].append(context.translate(msg))
+
+    return json.dumps(res)

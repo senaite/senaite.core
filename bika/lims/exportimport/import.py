@@ -8,6 +8,7 @@ from operator import itemgetter
 from plone.app.layout.globals.interfaces import IViewView
 from zope.interface import implements
 from bika.lims.exportimport import instruments
+import plone
 
 class ImportView(BrowserView):
     """
@@ -24,18 +25,18 @@ class ImportView(BrowserView):
 
         request.set('disable_border', 1)
 
-        # templates for each importer
-        self.exims = {}
-        for exim_id in instruments.__all__:
-            exim = getattr(instruments, exim_id)
-            self.exims[exim_id] = {
-                'template': ViewPageTemplateFile("instruments/%s_import.pt" % exim_id)}
-
     def __call__(self):
-        return self.template()
+        if 'submitted' in self.request:
+            exim = getattr(instruments, self.request['exim'])
+            return exim.Import(self.context, self.request)
+        else:
+            return self.template()
 
     def getDataInterfaces(self):
         return getDataInterfaces(self.context)
 
-    def getImportTemplate(self):
-        return self.exims[self.context.request['importer']]
+class ajaxGetImportTemplate(BrowserView):
+    def __call__(self):
+        plone.protect.CheckAuthenticator(self.request)
+        exim = self.request.get('exim')
+        return ViewPageTemplateFile("instruments/%s_import.pt" % exim)(self)

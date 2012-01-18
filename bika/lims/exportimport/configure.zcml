@@ -1,0 +1,25 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:five="http://namespaces.zope.org/five"
+    xmlns:cmf="http://namespaces.zope.org/cmf"
+    xmlns:i18n="http://namespaces.zope.org/i18n"
+    i18n_domain="bika">
+
+  <browser:page
+    for="Products.CMFPlone.interfaces.IPloneSiteRoot"
+    name="import"
+    class="bika.lims.exportimport.import.ImportView"
+    permission="bika.lims.ManageAnalysisRequests"
+    layer="bika.lims.interfaces.IBikaLIMS"
+  />
+
+  <browser:page
+    for="*"
+    name="getImportTemplate"
+    class="bika.lims.exportimport.import.ajaxGetImportTemplate"
+    permission="zope.Public"
+    layer="bika.lims.interfaces.IBikaLIMS"
+  />
+
+</configure>

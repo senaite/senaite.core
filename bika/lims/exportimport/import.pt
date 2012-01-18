@@ -7,22 +7,28 @@
 	i18n:domain="bika">
 <body>
 
-	<metal:content-title fill-slot="content-title">
-		<h1>
-			<img tal:condition="view/icon | nothing"
-				 src="" tal:attributes="src view/icon"/>
-			<span class="documentFirstHeading" tal:content="view/title"/>
-		</h1>
-	</metal:content-title>
+<metal:content-title fill-slot="content-title">
+	<h1>
+		<img tal:condition="view/icon | nothing"
+			 src="" tal:attributes="src view/icon"/>
+		<span class="documentFirstHeading" tal:content="view/title"/>
+	</h1>
+</metal:content-title>
 
-	<metal:content-description fill-slot="content-description">
-		<div class="documentDescription"
-			tal:content="view/description"
-			tal:condition="view/description"/>
-	</metal:content-description>
+<metal:content-description fill-slot="content-description">
+	<div class="documentDescription"
+		tal:content="view/description"
+		tal:condition="view/description"/>
+</metal:content-description>
 
-	<metal:content-core fill-slot="content-core">
-		<select class='importers'
+<metal:content-core fill-slot="content-core">
+
+	<script type="text/javascript" src="++resource++bika.lims.js/import.js"></script>
+
+	<form name="import" method="POST" enctype="multipart/form-data">
+		<input tal:replace="structure context/@@authenticator/authenticator"/>
+		<input type="hidden" name="submitted" value="1"/>
+		<select name="exim" id="exim"
 			tal:define="importers view/getDataInterfaces">
 			<tal:options repeat="option importers">
 				<option
@@ -30,9 +36,11 @@
 					tal:content="python:importers.getValue(option)"/>
 			</tal:options>
 		</select>
-	</metal:content-core>
+		<fieldset id="import_form"/>
+		<fieldset id="intermediate" style="display:none"/>
+	</form>
 
-	<fieldset/>
+</metal:content-core>
 
-	</body>
+</body>
 </html>
