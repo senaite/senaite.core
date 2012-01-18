@@ -44,7 +44,7 @@ class BikaLimsLayer(PloneSandboxLayer):
         self.applyProfile(portal, 'bika.lims:default')
 
         xlsx = open(os.path.join(os.path.split(__file__)[0],
-                                 "setupdata","test.xlsx"))
+                                 "tests","_test.xlsx"))
 
         request.form['submitted'] = 1
         request.form['xlsx'] = xlsx
