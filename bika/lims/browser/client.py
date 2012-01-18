@@ -3,8 +3,9 @@ from DateTime import DateTime
 from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser import BrowserView
+from bika.lims import PMF, logger
 from bika.lims import bikaMessageFactory as _
-from bika.lims import logger
+from bika.lims.browser.analysisrequest import AnalysisRequestsView
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.browser.bika_listing import WorkflowAction
 from bika.lims.browser.publish import Publish
@@ -93,263 +94,39 @@ class ClientWorkflowAction(WorkflowAction):
             # default bika_listing.py/WorkflowAction for other transitions
             WorkflowAction.__call__(self)
 
-class ClientAnalysisRequestsView(BikaListingView):
-    implements(IViewView)
-
+class ClientAnalysisRequestsView(AnalysisRequestsView):
     def __init__(self, context, request):
         super(ClientAnalysisRequestsView, self).__init__(context, request)
-        self.contentFilter = {'portal_type':'AnalysisRequest',
-                              'sort_on':'id',
-                              'sort_order': 'reverse',
-                              'path': {"query": "/".join(context.getPhysicalPath()),
-                                       "level" : 0 }
-                              }
-        wf = getToolByName(self.context, 'portal_workflow')
-        self.review_state = 'all'
+        self.view_url = self.view_url + "/analysisrequests"
+        logger.info("client ars view_url " + self.view_url)
+
+        self.contentFilter['path'] = {"query": "/".join(context.getPhysicalPath()),
+                                      "level" : 0 }
+
+        request.set('disable_border', 0)
 
         self.context_actions = {}
-
-        # add actions enabled only for active clients
-        if wf.getInfoFor(self.context, 'inactive_state', '') == 'active':
-            self.context_actions[_('Add')] = {
-                'url':'analysisrequest_add',
-                'icon': '++resource++bika.lims.images/add.png'}
-
+        wf = getToolByName(self.context, 'portal_workflow')
         # client contact required
         active_contacts = [c for c in context.objectValues('Contact') if \
                            wf.getInfoFor(c, 'inactive_state', '') == 'active']
         if context.portal_type == "Client" and not active_contacts:
-            self.context_actions = {}
             msg = _("Client contact required before request may be submitted")
             self.context.plone_utils.addPortalMessage(self.context.translate(msg))
+        else:
+            # add actions enabled only for active clients
+            # XXX subtractive workflow for these kinds of perms.
+            self.context_actions = {}
+            if wf.getInfoFor(self.context, 'inactive_state', '') == 'active':
+                self.context_actions[_('Add')] = {
+                    'url':'analysisrequest_add',
+                    'icon': '++resource++bika.lims.images/add.png'}
 
-        self.show_sort_column = False
-        self.show_select_row = False
-        self.show_select_column = True
-
-        self.icon = "++resource++bika.lims.images/analysisrequest_big.png"
-        self.title = _("Analysis Requests")
-        self.description = _("Analysis Requests description", "")
-
-        self.columns = {
-            'getRequestID': {'title': _('Request ID'),
-                             'index': 'getRequestID'},
-            'getClientOrderNumber': {'title': _('Client Order'),
-                                     'index': 'getClientOrderNumber',
-                                     'toggle': False},
-            'getClientReference': {'title': _('Client Ref'),
-                                   'index': 'getClientReference',
-                                   'toggle': False},
-            'getClientSampleID': {'title': _('Client Sample'),
-                                  'index': 'getClientSampleID',
-                                  'toggle': False},
-            'getSampleTypeTitle': {'title': _('Sample Type'),
-                                   'index': 'getSampleTypeTitle'},
-            'getSamplePointTitle': {'title': _('Sample Point'),
-                                    'index': 'getSamplePointTitle',
-                                    'toggle': False},
-            'DateSampled': {'title': _('Date Sampled'),
-                            'index': 'getDateSampled'},
-            'future_DateSampled': {'title': _('Sampling Date'),
-                                   'index': 'getDateSampled'},
-            'getDateReceived': {'title': _('Date Received'),
-                                'index': 'getDateReceived',
-                                'toggle': False},
-            'getDatePublished': {'title': _('Date Published'),
-                                 'index': 'getDatePublished'},
-            'state_title': {'title': _('State'),
-                            'index': 'review_state'},
-        }
-        self.review_states = [
-            {'id':'all',
-             'title': _('All'),
-             'transitions': ['receive', 'retract', 'verify', 'prepublish', 'publish', 'republish', 'cancel', 'reinstate'],
-             'columns':['getRequestID',
-                        'getClientOrderNumber',
-                        'getClientReference',
-                        'getClientSampleID',
-                        'getSampleTypeTitle',
-                        'getSamplePointTitle',
-                        'DateSampled',
-                        'getDateReceived',
-                        'state_title']},
-            {'id':'sample_due',
-             'title': _('Due'),
-             'contentFilter': {'review_state': 'sample_due',
-                               'sort_on':'id',
-                               'sort_order': 'reverse'},
-             'transitions': ['receive', 'cancel', 'reinstate'],
-             'columns':['getRequestID',
-                        'getClientOrderNumber',
-                        'getClientReference',
-                        'getClientSampleID',
-                        'future_DateSampled',
-                        'getSampleTypeTitle',
-                        'getSamplePointTitle']},
-            {'id':'sample_received',
-             'title': _('Received'),
-             'contentFilter': {'review_state': 'sample_received',
-                               'sort_on':'id',
-                               'sort_order': 'reverse'},
-             'transitions': ['prepublish', 'cancel', 'reinstate'],
-             'columns':['getRequestID',
-                        'getClientOrderNumber',
-                        'getClientReference',
-                        'getClientSampleID',
-                        'getSampleTypeTitle',
-                        'getSamplePointTitle',
-                        'DateSampled',
-                        'getDateReceived']},
-            {'id':'to_be_verified',
-             'title': _('To be verified'),
-             'contentFilter': {'review_state': 'to_be_verified',
-                               'sort_on':'id',
-                               'sort_order': 'reverse'},
-             'transitions': ['retract', 'verify', 'prepublish', 'cancel', 'reinstate'],
-             'columns':['getRequestID',
-                        'getClientOrderNumber',
-                        'getClientReference',
-                        'getClientSampleID',
-                        'getSampleTypeTitle',
-                        'getSamplePointTitle',
-                        'DateSampled',
-                        'getDateReceived']},
-            {'id':'verified',
-             'title': _('Verified'),
-             'contentFilter': {'review_state': 'verified',
-                               'sort_on':'id',
-                               'sort_order': 'reverse'},
-             'transitions': ['publish'],
-             'columns':['getRequestID',
-                        'getClientOrderNumber',
-                        'getClientReference',
-                        'getClientSampleID',
-                        'getSampleTypeTitle',
-                        'getSamplePointTitle',
-                        'DateSampled',
-                        'getDateReceived']},
-            {'id':'published',
-             'title': _('Published'),
-             'contentFilter': {'review_state': 'published',
-                               'sort_on':'id',
-                               'sort_order': 'reverse'},
-             'columns':['getRequestID',
-                        'getClientOrderNumber',
-                        'getClientReference',
-                        'getClientSampleID',
-                        'getSampleTypeTitle',
-                        'getSamplePointTitle',
-                        'DateSampled',
-                        'getDateReceived',
-                        'getDatePublished']},
-            {'id':'cancelled',
-             'title': _('Cancelled'),
-             'contentFilter': {'cancellation_state': 'cancelled',
-                               'review_state': ('sample_due', 'sample_received',
-                                                'to_be_verified', 'attachment_due',
-                                                'verified', 'published'),
-                               'sort_on':'id',
-                               'sort_order': 'reverse'},
-             'transitions': ['reinstate'],
-             'columns':['getRequestID',
-                        'getClientOrderNumber',
-                        'getClientReference',
-                        'getClientSampleID',
-                        'getSampleTypeTitle',
-                        'getSamplePointTitle',
-                        'DateSampled',
-                        'getDateReceived',
-                        'getDatePublished',
-                        'state_title']},
-            {'id':'assigned',
-             'title': _("<img title='%s' src='++resource++bika.lims.images/assigned.png'/>" %
-                        self.context.translate(_("Assigned"))),
-             'contentFilter': {'worksheetanalysis_review_state': 'assigned',
-                               'review_state': ('sample_received', 'to_be_verified',
-                                                'attachment_due', 'verified',
-                                                'published'),
-                               'sort_on':'id',
-                               'sort_order': 'reverse'},
-             'transitions': ['retract', 'verify', 'prepublish', 'publish', 'republish', 'cancel', 'reinstate'],
-             'columns':['getRequestID',
-                        'getClientOrderNumber',
-                        'getClientReference',
-                        'getClientSampleID',
-                        'getSampleTypeTitle',
-                        'getSamplePointTitle',
-                        'DateSampled',
-                        'getDateReceived',
-                        'state_title']},
-            {'id':'unassigned',
-             'title': _("<img title='%s' src='++resource++bika.lims.images/unassigned.png'/>" %
-                        self.context.translate(_("Unassigned"))),
-             'contentFilter': {'worksheetanalysis_review_state': 'unassigned',
-                               'review_state': ('sample_received', 'to_be_verified',
-                                                'attachment_due', 'verified',
-                                                'published'),
-                               'sort_on':'id',
-                               'sort_order': 'reverse'},
-             'transitions': ['receive', 'retract', 'verify', 'prepublish', 'publish', 'republish', 'cancel', 'reinstate'],
-             'columns':['getRequestID',
-                        'getClientOrderNumber',
-                        'getClientReference',
-                        'getClientSampleID',
-                        'getSampleTypeTitle',
-                        'getSamplePointTitle',
-                        'DateSampled',
-                        'getDateReceived',
-                        'state_title']},
-            ]
-
-    def folderitems(self):
-        workflow = getToolByName(self.context, "portal_workflow")
-        items = BikaListingView.folderitems(self)
-
-        for x in range(len(items)):
-            if not items[x].has_key('obj'): continue
-            obj = items[x]['obj']
-
-            if getSecurityManager().checkPermission(ManageResults, obj):
-                url = obj.absolute_url() + "/manage_results"
-            else:
-                url = obj.absolute_url()
-            items[x]['getRequestID'] = obj.getRequestID()
-            items[x]['replace']['getRequestID'] = "<a href='%s'>%s</a>" % \
-                 (url, items[x]['getRequestID'])
-
-            datesampled = obj.getSample().getDateSampled()
-            items[x]['DateSampled'] = TimeOrDate(self.context, datesampled, long_format = 0)
-            items[x]['future_DateSampled'] = datesampled.Date() > DateTime() and \
-                TimeOrDate(self.context, datesampled) or ''
-
-            items[x]['getDateReceived'] = \
-                TimeOrDate(self.context, obj.getDateReceived())
-
-            items[x]['getDatePublished'] = \
-                TimeOrDate(self.context, obj.getDatePublished())
-
-            if workflow.getInfoFor(obj, 'worksheetanalysis_review_state') == 'assigned':
-                items[x]['after']['state_title'] = \
-                     "<img src='++resource++bika.lims.images/worksheet.png' title='%s'/>" % \
-                     self.context.translate(_("All analyses assigned"))
-
-            sample = obj.getSample()
-            after_icons = "<a href='%s'><img src='++resource++bika.lims.images/sample.png' title='%s: %s'></a>" % \
-                        (sample.absolute_url(), \
-                         self.context.translate(_("Sample")), sample.Title())
-            if obj.getLate():
-                after_icons += "<img src='++resource++bika.lims.images/late.png' title='%s'>" % \
-                    self.context.translate(_("Late Analyses"))
-            if sample.getSampleType().getHazardous():
-                after_icons += "<img src='++resource++bika.lims.images/hazardous.png' title='%s'>" % \
-                    self.context.translate(_("Hazardous"))
-            if datesampled > DateTime():
-                after_icons += "<img src='++resource++bika.lims.images/calendar.png' title='%s'>" % \
-                    self.context.translate(_("Future dated sample"))
-            if after_icons:
-                items[x]['after']['getRequestID'] = after_icons
-
-        return items
+        review_states = []
+        for review_state in self.review_states:
+            review_state['columns'].remove('Client')
+            review_states.append(review_state)
+        self.review_states = review_states
 
 class ClientSamplesView(BikaListingView):
     implements(IViewView)
