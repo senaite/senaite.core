@@ -9,7 +9,7 @@
      metal:define-macro="attachments">
   <dl class="collapsible collapsedOnLoad">
     <dt class="attachments collapsibleHeader">
-        <img src='++resource++bika.lims.images/attachment.png' title='Attachment'>
+        <img src='++resource++bika.lims.images/attachment.png' title='Attachment'/>
         <span i18n:translate="">Attachments</span>
     </dt>
     <dd class="collapsibleContent" style="margin-bottom:0;">

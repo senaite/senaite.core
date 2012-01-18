@@ -41,8 +41,7 @@
 			</th>
 			<td>
 				<span class="context_action_dropdown">
-					<select class='analyst' style="font-size: 100%"
-						style="margin-left: 1em"
+					<select class='analyst' style="font-size: 100%;margin-left: 1em"
 						tal:define="alist view/getAnalysts">
 						<tal:options repeat="option alist">
 							<option

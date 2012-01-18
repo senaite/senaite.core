@@ -51,12 +51,11 @@ td {
 
 <tr>
 <th i18n:translate="">Client Order ID</th>
-<td><strong tal:content="here/getClientOrderNumber|nothing"/>
+<td><strong tal:content="here/getClientOrderNumber|nothing"/></td>
 </tr>
 
 <tr>
-<th i18n:translate="">Disposal date
-</th>
+<th i18n:translate="">Disposal date</th>
 <td class="left">
 <span
     tal:define="disp_date sample/getDisposalDate"
@@ -84,7 +83,8 @@ td {
 </metal:block>
 
 <p class="noPrint">
-    <a tal:attributes="href python:context.absolute_url()">Back to list</a>
+    <a tal:attributes="href python:context.absolute_url()"
+       i18n:translate="">Back to list</a>
 </p>
 
 </body>

@@ -119,7 +119,7 @@
 					class string:duplicate_analysis_dropdown_${row/pos};">
 			<tal:item tal:repeat="i python:range(1,(num_rows+1))">
 				<option
-					tal:condition="python:i <> repeat['row'].number()"
+					tal:condition="python:i != repeat['row'].number()"
 					tal:define="this_selected python:str(row.get('dup', '')) == str(i) and 'selected' or ''"
 					tal:attributes="value i; selected this_selected"
 					tal:content="i"></option>

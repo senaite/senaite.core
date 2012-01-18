@@ -111,7 +111,7 @@
             i18n:attributes="value"
             i18n:domain="bika"
             tal:attributes="tabindex tabindex/next;"/>
-        <input DISABLED value="" id="cc_titles"
+        <input DISABLED="1" value="" id="cc_titles"
             tal:attributes="value python:edit and ','.join([c.Title() for c in context.getCCContact()]) or ''"/>
         <input type="hidden" id="cc_uids" name="cc_uids"
             tal:attributes="value python:edit and ','.join([c.UID() for c in context.getCCContact()]) or ''"/>
@@ -156,12 +156,12 @@
                     column column;
                     id input_id;
                     name input_name;">
-                    <option value="">None</option>
+                    <option value="" i18n:translate="">None</option>
                     <tal:profile repeat="profile view/arprofiles">
                         <option
                             tal:content="python:profile[0]"
                             tal:attributes="
-                                value python:profile[1].UID();">Title</option>
+                                value python:profile[1].UID();"></option>
                     </tal:profile>
                 </select>
             </td>
@@ -324,7 +324,7 @@
             input_id string:ar_${column}_${field_name}">
         <a href=""
             tal:attributes="href sample/getSampleID"
-            tal:content="sample/getSampleID">S-00001</a>
+            tal:content="sample/getSampleID"/>
         </td>
     </tal:block>
     </tr>
@@ -444,11 +444,6 @@
     </tr>
 </thead>
 
-<tal:comment replace="nothing">
-    cats: {poc: (category_uid, category_title)
-    selectedservices: [[poc, category_uid, service_uid]. [...], ]
-</tal:comment>
-
 <!-- -- -- Analyses -- -- -->
 <tal:i define="
     cats view/Categories;
@@ -460,7 +455,7 @@
             <tr>
                 <th tal:attributes="colspan python:view.col_count + 3">
                     <img title="analyses"
-                        tal:attributes="src string:++resource++bika.lims.images/service.png">
+                        tal:attributes="src string:++resource++bika.lims.images/service.png"/>
                 <span tal:content="python:POINTS_OF_CAPTURE.getValue(poc)"/>
                 </th>
             </tr>

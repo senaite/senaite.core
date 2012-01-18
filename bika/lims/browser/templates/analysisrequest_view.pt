@@ -49,7 +49,8 @@
 
     <img tal:condition="view/getHazardous"
         title="Hazardous"
-        tal:attributes="src string:++resource++bika.lims.images/hazardous_big.png">
+        tal:attributes="src string:++resource++bika.lims.images/hazardous_big.png"/>
+
         <table
             summary="Analysisrequest view"
             class="listing analysisrequest nosort"
@@ -61,7 +62,7 @@
             <th>
 	            <img tal:attributes="
 	                 title string:${sample/Title};
-	                 src string:++resource++bika.lims.images/sample.png">
+	                 src string:++resource++bika.lims.images/sample.png"/>
 	            <span i18n:translate="">Sample ID</span>
             </th>
             <td>
@@ -70,21 +71,21 @@
             </td>
             <th>
 				<img tal:attributes="
-					 src string:++resource++bika.lims.images/contact.png">
+					 src string:++resource++bika.lims.images/contact.png"/>
 				<span i18n:translate="">Contact Person</span>
 			</th>
             <td>
                 <a tal:define="contact here/getContact"
                     tal:condition="nocall:contact"
                     tal:attributes="href contact/absolute_url"
-                    tal:content="contact/Title">Pete Smith</a>
+                    tal:content="contact/Title"/>
                 <tal:ccs define="ccs here/getCCContact" condition="nocall:ccs" repeat="cc ccs">
                     <span tal:condition="python:repeat['cc'].index == 0">;&nbsp;</span>
                     <span tal:condition="python:repeat['cc'].index > 0">;&nbsp;</span>
                     <a tal:content="cc/Title" tal:attributes="href cc/absolute_url"/>
                 </tal:ccs>
                 <tal:ccemails>
-                    <span tal:content="here/getCCEmails">a@b.com</span>
+                    <span tal:content="here/getCCEmails"/>
                 </tal:ccemails>
             </td>
         </tr>
@@ -108,7 +109,7 @@
 
         <tr>
             <th style="padding-left:3em" i18n:translate="">Sample Point</th>
-            <td tal:content="context/getSamplePointTitle">sample point</td>
+            <td tal:content="context/getSamplePointTitle"/>
             <th style="padding-left:3em" i18n:translate="">Date Requested</th>
             <td>
                 <span
@@ -120,7 +121,7 @@
 
         <tr>
             <th style="padding-left:3em" i18n:translate="">Status</th>
-            <td tal:content="python:review_state.replace('_', ' ')">received</td>
+            <td tal:content="python:review_state.replace('_', ' ')"/>
             <th style="padding-left:3em" i18n:translate="">Date Sampled</th>
             <td>
                 <span
@@ -156,7 +157,6 @@
                     tal:define="verifier python:view.get_analysisrequest_verifier(here)"
                     tal:content="verifier"/>
             </td>
-
         </tr>
 
         </thead>

@@ -62,33 +62,33 @@ td {
 
 <tr>
 <th i18n:translate="">Sample ID</th>
-<td><strong tal:content="sample/getSampleID">S-0001</strong></td>
+<td><strong tal:content="sample/getSampleID"/>
 <th i18n:translate="">Hazardous</th>
-<td tal:content="sampletype/getHazardous|nothing">yes</td>
+<td tal:content="sampletype/getHazardous|nothing"/>
 </tr>
 
 <tr>
 <th i18n:translate="">Deviation</th>
-<td tal:content="deviation/Title|nothing">R-0001</td>
+<td tal:content="deviation/Title|nothing"/>
 <th i18n:translate="">Composite</th>
-<td class="left" tal:content="composite">true</td>
+<td class="left" tal:content="composite"/>
 </tr>
 
 <tr>
 <th i18n:translate="">Container</th>
-<td tal:content="container/Title">Glass</td>
+<td tal:content="container/Title"/>
 <th i18n:translate="">Preservation</th>
-<td tal:content="python: preservation and '%s: %s' % (prescats.getValue(preservation.getCategory()), preservation.Title()) or 'None'">Acid</td>
+<td tal:content="python: preservation and '%s: %s' % (prescats.getValue(preservation.getCategory()), preservation.Title()) or 'None'"/>
 </tr>
 
 <tr>
 <th i18n:translate="">Sample Type</th>
-<td colspan='3' tal:content="sampletype/Title|nothing">Effluent</td>
+<td colspan='3' tal:content="sampletype/Title|nothing"/>
 </tr>
 
 <tr>
 <th i18n:translate="">Sample Point</th>
-<td colspan='3' tal:content="python:samplepoint and (samplepoint.Title() + ': ' + samplepoint.description) or ''">Water</td>
+<td colspan='3' tal:content="python:samplepoint and (samplepoint.Title() + ': ' + samplepoint.description) or ''"/>
 </tr>
 
 <tr>
@@ -97,7 +97,7 @@ td {
 
 <tal:block repeat="analysis python:[analysis for analysis in analyses if analysis.getService().getCategory()=='f']">
    <tr>
-      <td colspan=4 tal:content="python:analysis.getService().Title()">copper</td>
+      <td colspan=4 tal:content="python:analysis.getService().Title()"/>
    </tr>
 </tal:block>
 
@@ -120,7 +120,8 @@ td {
 </metal:block>
 
 <p class="noPrint">
-    <a tal:attributes="href python:context.absolute_url()">Back to list</a>
+    <a tal:attributes="href python:context.absolute_url()"
+        i18n:translate="">Back to list</a>
 </p>
 
 </body>

@@ -32,8 +32,6 @@
 		class="analysisrequest listing nosort"
 		cellpadding="0" cellspacing="0">
 
-	<thead>
-
 		<tr>
 			<th id="" i18n:translate="">Client Reference</th>
 			<td class="left">
@@ -60,7 +58,7 @@
 					tal:repeat="ar ars">
 					<a href=""
 						tal:content="ar/Title"
-						tal:attributes="href ar/absolute_url">AR-00001</a>
+						tal:attributes="href ar/absolute_url"/>
 				</tal:requests>
 			</td>
 		</tr>
@@ -96,7 +94,7 @@
 			<th i18n:translate="">Composite</th>
 			<td class="left">
 				<input type="checkbox" name="Composite" class="noborder" id="Composite"
-					tal:attributes="checked python:here.getComposite() and 'checked' or'';"/>
+					tal:attributes="checked python:here.getComposite() and 'checked' or '';"/>
 			</td>
 		</tr>
 

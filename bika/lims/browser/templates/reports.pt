@@ -23,7 +23,6 @@
 
 <metal:content-core fill-slot="content-core">
 
-<b> reports - this should not appear </b>
 </metal:content-core>
 
 	</body>

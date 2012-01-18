@@ -58,8 +58,7 @@ td {
 
 <tr>
 <th i18n:translate="">Client Order ID</th>
-<td>
-<strong tal:content="ar/getClientOrderNumber|nothing"/>
+<td><strong tal:content="ar/getClientOrderNumber|nothing"/></td>
 </tr>
 
 <tr>
@@ -108,7 +107,8 @@ td {
 </metal:block>
 
 <p class="noPrint">
-    <a tal:attributes="href python:context.absolute_url()">Back to list</a>
+    <a tal:attributes="href python:context.absolute_url()"
+       i18n:translate="">Back to list</a>
 </p>
 
 </body>

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Bika-LIMS\n"
-"POT-Creation-Date: 2012-01-17 14:29+0000\n"
+"POT-Creation-Date: 2012-01-18 23:31+0000\n"
 "PO-Revision-Date: 2012-01-01 23:11+0000\n"
 "Last-Translator: Bika <bikasupport@bikalabs.com>\n"
 "Language-Team: Bika <bikasupport@bikalabs.com>\n"
@@ -499,6 +499,10 @@ msgstr ""
 #. Default: "The number of minutes before a user is automatically logged off. 0 disables automatic log-off"
 #: ../content/bikasetup.py:65
 msgid "Automatic log-off description"
+msgstr ""
+
+#: ../browser/templates/sample_sticker.pt:123
+msgid "Back to list"
 msgstr ""
 
 #: ../content/organisation.py:89
@@ -2870,6 +2874,10 @@ msgstr ""
 msgid "accredited_services_description"
 msgstr ""
 
+#: ../browser/templates/analysisrequest_analyses_not_requested.pt:59
+msgid "client"
+msgstr ""
+
 #. Default: "Enter an email address. This is necessary in case the password is lost. We respect your privacy, and will not give the address away to any third parties or expose it anywhere."
 #: ../browser/templates/contact_login_details.pt:95
 msgid "contact_login_email"
@@ -2932,6 +2940,41 @@ msgstr ""
 msgid "error:"
 msgstr ""
 
+#. Default: "Analysis container UID ${parent_uid} not found"
+#: ../exportimport/instruments/fiastar.py:195
+msgid "import_analysis_container_not_found"
+msgstr ""
+
+#. Default: "Analysis ${service} at slot ${slot}: OK"
+#: ../exportimport/instruments/fiastar.py:298
+msgid "import_analysis_ok"
+msgstr ""
+
+#. Default: "Analysis parent UID ${parent_uid} not found"
+#: ../exportimport/instruments/fiastar.py:185
+msgid "import_analysis_parent_not_found"
+msgstr ""
+
+#. Default: "Duplicate analysis for slot ${slot} not found"
+#: ../exportimport/instruments/fiastar.py:212
+msgid "import_duplicate_not_found"
+msgstr ""
+
+#. Default: "Analysis ${service} at slot ${slot} has a result - not updated"
+#: ../exportimport/instruments/fiastar.py:250
+msgid "import_service_has_result"
+msgstr ""
+
+#. Default: "Service keyword ${keyword} not found"
+#: ../exportimport/instruments/fiastar.py:129
+msgid "import_service_keyword_not_found"
+msgstr ""
+
+#. Default: "Analysis ${service} at slot ${slot} in state ${state} - not updated"
+#: ../exportimport/instruments/fiastar.py:242
+msgid "import_service_not_updateable"
+msgstr ""
+
 #. Default: "Indet"
 #: ../browser/analyses.py:213
 #: ../browser/calcs.py:137
@@ -2967,6 +3010,10 @@ msgstr ""
 #. Default: "${st} is not a valid sample type"
 #: ../browser/analysisrequest.py:920
 msgid "invalid_sample_type"
+msgstr ""
+
+#: ../browser/templates/analysisrequest_analyses_not_requested.pt:53
+msgid "lab"
 msgstr ""
 
 #: ../browser/load_setup_data.py:29

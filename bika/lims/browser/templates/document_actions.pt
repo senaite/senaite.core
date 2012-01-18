@@ -21,7 +21,7 @@
                           src python:daction.get('icon');
                           alt python:daction.get('title');
                           title python:daction.get('title')"/>
-                   <span img tal:condition="not:daction/icon"
+                   <span tal:condition="not:daction/icon"
                         tal:content="python:daction.get('id')"/>
                 </a>
             </span>

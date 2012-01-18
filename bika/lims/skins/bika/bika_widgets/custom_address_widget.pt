@@ -33,20 +33,20 @@
 <tr>
 <td class="field" valign="top">
     <label for="PhysicalAddress_address"
-        tal:attributes="for string:${fieldName}_address">Address</label>
+        tal:attributes="for string:${fieldName}_address"/>
 </td>
 <td>
-<textarea 
+<textarea
     cols="20" rows="3"
     tal:attributes="
         name string:${fieldName}.address:record;
-        id string:${fieldName}.address" 
+        id string:${fieldName}.address"
     tal:content="address"></textarea>
 </td>
 <td class="field" style="padding-left:2em;">
     <label i18n:translate="">Copy from</label>
 <select size="1" id=""
-     tal:attributes='id string:${fieldName}.selection; 
+     tal:attributes='id string:${fieldName}.selection;
      onChange string:javascript:copyAddress("${fieldName}")'>
     <option></option>
 <tal:possibles
@@ -63,6 +63,7 @@
 <tr>
 <td class="field">
     <label for="PhysicalAddress_city"
+        i18n:translate=""
         tal:attributes="for string:${fieldName}_city">City</label>
 </td>
 <td>
@@ -77,6 +78,7 @@
 <tr>
 <td class="field">
     <label for="PhysicalAddress_state"
+        i18n:translate=""
         tal:attributes="for string:${fieldName}_state">State</label>
 </td>
 <td>
@@ -90,6 +92,7 @@
 <tr>
 <td class="field">
     <label for="PhysicalAddress_zip"
+        i18n:translate=""
         tal:attributes="for string:${fieldName}_zip">Postal code</label>
 </td>
 <td>
@@ -103,24 +106,26 @@
 <tr>
 <td class="field">
     <label for="PhysicalAddress_country"
+        i18n:translate=""
         tal:attributes="for string:${fieldName}_country">Country</label>
 </td>
 <td>
 <select size="1"
     tal:attributes="
-        name string:${fieldName}.country:record; 
-        id string:${fieldName}.country" 
+        name string:${fieldName}.country:record;
+        id string:${fieldName}.country"
     tal:define="values python:field.getVocabularyFor('country', here)">
     <option tal:repeat="value values"
             tal:content="value"
             tal:attributes="
                 value value;
-                selected python:test(value==country, 'selected', '');"> #
+                selected python:test(value==country, 'selected', '');">
     </option>
 </select>
 </td>
 </tr>
 </table>
+</fieldset>
 </metal:define>
 
 <div metal:define-macro="search">

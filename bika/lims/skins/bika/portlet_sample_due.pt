@@ -40,8 +40,7 @@
             <div class="portletDetails"
                  style="text-align:right"
                  tal:define="moddate o/ModificationDate;"
-                 tal:content="python:plone_view.toLocalizedTime(moddate)">July 7, 08:11
-            </div>
+                 tal:content="python:plone_view.toLocalizedTime(moddate)"/>
         </dd>
         </tal:block>
 

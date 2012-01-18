@@ -27,7 +27,7 @@
                 <tal:value
 				  tal:define="value python:values_dict.get(key)"
                      tal:condition="value">
-                      <td valign=top>
+                      <td valign="top">
                         <span class="label"
                             tal:replace="python:field.getSubfieldLabel(key)+':'">Label</span></td>
                        <td>

@@ -149,10 +149,10 @@ h1, h2, h3, h4, h5, h6 {
   <table class="logos">
     <tr>
       <td>
-        <img tal:attributes="src string:${portal/absolute_url}/++resource++bika.lims.images/logo_email.png">
+        <img tal:attributes="src string:${portal/absolute_url}/++resource++bika.lims.images/logo_email.png"/>
       </td>
       <td tal:condition="accredited">
-        <img tal:attributes="src string:${portal/absolute_url}/++resource++bika.lims.images/accreditation_email.png">
+        <img tal:attributes="src string:${portal/absolute_url}/++resource++bika.lims.images/accreditation_email.png"/>
       </td>
     </tr>
   </table>

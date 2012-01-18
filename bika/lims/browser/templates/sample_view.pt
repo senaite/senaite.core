@@ -28,7 +28,8 @@
             <td align="right">
                 <img tal:condition="sampletype/getHazardous"
                     title="Hazardous"
-                    tal:attributes="src string:++resource++bika.lims.images/hazardous_big.png">
+                    i18n:attributes="title"
+                    tal:attributes="src string:++resource++bika.lims.images/hazardous_big.png"/>
             </td>
         </tr>
     </table>
@@ -41,12 +42,12 @@
 
         <tr>
             <th i18n:translate="">Client Reference</th>
-            <td class="left" tal:content="here/getClientReference">R001</td>
+            <td class="left" tal:content="here/getClientReference"/>
         </tr>
 
         <tr>
             <th i18n:translate="">Client SID</th>
-            <td class="left" tal:content="here/getClientSampleID">S001</td>
+            <td class="left" tal:content="here/getClientSampleID"/>
         </tr>
 
         <tr>
@@ -55,33 +56,33 @@
                 <tal:requests
                     tal:define="ars python:here.getAnalysisRequests()"
                     tal:repeat="ar ars">
-                    <a tal:content="ar/Title" tal:attributes="href ar/absolute_url">AR-00001</a>
+                    <a tal:content="ar/Title" tal:attributes="href ar/absolute_url"/>
                 </tal:requests>
             </td>
         </tr>
 
         <tr>
             <th i18n:translate="">Sample Type</th>
-            <td class="left" tal:content="sampletype/Title|nothing">sample type</td>
+            <td class="left" tal:content="sampletype/Title|nothing"/>
         </tr>
 
         <tr>
             <th i18n:translate="">Sample Point</th>
             <td class="left"
                 tal:define="samplepoint here/getSamplePoint"
-                tal:content="samplepoint/Title|nothing">sample point</td>
+                tal:content="samplepoint/Title|nothing"/>
         </tr>
 
         <tr>
             <th i18n:translate="">Composite</th>
             <td class="left"
-                tal:content="here/getComposite">False</td>
+                tal:content="here/getComposite"/>
         </tr>
 
         <tr>
             <th i18n:translate="">Hazardous</th>
             <td class="left"
-                tal:content="sampletype/getHazardous">False</td>
+                tal:content="sampletype/getHazardous"/>
         </tr>
 
         <tr>
@@ -147,13 +148,13 @@
             class="context workflow_action_button"
             type="submit"
             value="deactivate"
-            name="workflow_action">
+            name="workflow_action"/>
         <input
             tal:condition="python:inactive_state == 'inactive'"
             class="context workflow_action_button"
             type="submit"
             value="activate"
-            name="workflow_action">
+            name="workflow_action"/>
     <form>
 
 </metal:content>

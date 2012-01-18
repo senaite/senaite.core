@@ -1,7 +1,3 @@
-<tal:comment tal:condition="nothing">
-  Modified from CMFPlone/skins/plone_templates/main_template.pt
-</tal:comment>
-
 <metal:page define-macro="master">
 <metal:block define-slot="top_slot" />
 
@@ -38,11 +34,6 @@
 
     <meta name="generator" content="Plone - http://plone.org" />
 
-    <tal:comment tal:condition="nothing">
-      Internet Explorer fix, forces IE8 into newest possible rendering
-      engine even if it's on an intranet. This has to be defined before any
-      script/style tags.
-    </tal:comment>
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 
     <metal:baseslot define-slot="base">

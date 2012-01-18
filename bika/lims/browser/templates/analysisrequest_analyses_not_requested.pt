@@ -15,7 +15,7 @@
 		<span tal:content="here/title_or_id"/>
 		<img
 			tal:condition="here/getInvoiceExclude"
-			tal:attributes="src string:++resource++bika.lims.images/no_invoice.png">
+			tal:attributes="src string:++resource++bika.lims.images/no_invoice.png"/>
 	</h1>
 </metal:title>
 
@@ -47,21 +47,21 @@
 							enctype="multipart/form-data"
 							method="post">
 						<img title="range"
-							tal:attributes="src string:++resource++bika.lims.images/analysisspec.png">
+						    i18n:attributes="title"
+							tal:attributes="src string:++resource++bika.lims.images/analysisspec.png"/>
 						<span i18n:translate="">Range Specification</span>
 						<a class="specification" id="lab" value="lab"
 							href=""
+							i18n:translate=""
 							tal:attributes="
 								href python:context.absolute_url();
-								class python:specification == 'lab' and 'specification selected' or 'specification'"
-						>lab</a>
+								class python:specification == 'lab' and 'specification selected' or 'specification'">lab</a>
 						<a class="specification" id="client" value="client"
 							href=""
+							i18n:translate=""
 							tal:attributes="
 								href python:context.absolute_url();
-								class python:specification == 'client' and 'specification selected' or 'specification'"
-						>client</a>
-
+								class python:specification == 'client' and 'specification selected' or 'specification'">client</a>
 						</form>
 					</tal:range>
 				</td>
@@ -69,7 +69,7 @@
 					<img tal:condition="view/getHazardous"
 						src=""
                         title="Hazardous"
-                        tal:attributes="src string:++resource.bika.lims.images/hazardous_big.png">
+                        tal:attributes="src string:++resource.bika.lims.images/hazardous_big.png"/>
 				</td>
 			</tr>
 		</table>

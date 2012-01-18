@@ -271,7 +271,7 @@ Item select checkboxes.
 		<label
 			tal:content="item/title"
 			tal:attributes="for string:${view/bika_listing/form_id}_cb_${item/uid}"
-			class="hiddenStructure">Item Title</label>
+			class="hiddenStructure"/>
 	</tal:noreplace>
 	</td>
 

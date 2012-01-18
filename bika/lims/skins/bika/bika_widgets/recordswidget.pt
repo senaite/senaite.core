@@ -6,11 +6,6 @@
   <head><title></title></head>
   <body>
 
-<tal:comment tal:replace="nothing">
-<!--- Records Widgets -->
-XXX jquery dropdown to select existing fields
-XXX validation: if field ID is same as existing field ID, rest of field values must match the original
-</tal:comment>
     <metal:view_macro define-macro="view"
             tal:define="kssClassesView context/@@kss_field_decorator_view;
                         getKssClasses nocall:kssClassesView/getKssClassesInlineEditable;">

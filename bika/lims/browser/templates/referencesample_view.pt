@@ -26,7 +26,8 @@
             <td align="right">
                 <img tal:condition="context/getHazardous"
                     title="Hazardous"
-                    tal:attributes="src string:++resource++bika.lims.images/hazardous_big.png">
+                    i18n:attributes="title"
+                    tal:attributes="src string:++resource++bika.lims.images/hazardous_big.png"/>
             </td>
         </tr>
     </table>
@@ -39,43 +40,41 @@
 
         <tr>
             <th i18n:translate="">ID</th>
-            <td class="left" tal:content="context/id">R001</td>
+            <td class="left" tal:content="context/id"/>
         </tr>
         <tr>
             <th i18n:translate="">Title</th>
-            <td class="left" tal:content="context/Title">Reference Title</td>
+            <td class="left" tal:content="context/Title"/>
         </tr>
 
         <tr>
             <th i18n:translate="">Hazardous</th>
-            <td class="left"
-                tal:content="context/getHazardous">False</td>
+            <td class="left" tal:content="context/getHazardous"/>
         </tr>
 
         <tr>
             <th i18n:translate="">Blank</th>
-            <td class="left"
-                tal:content="context/getBlank">False</td>
+            <td class="left" tal:content="context/getBlank"/>
         </tr>
 
         <tr>
             <th i18n:translate="">Manufacturer</th>
-            <td class="left" tal:content="python:context.getReferenceManufacturer() and context.getReferenceManufacturer().Title() or ''">S001</td>
+            <td class="left" tal:content="python:context.getReferenceManufacturer() and context.getReferenceManufacturer().Title() or ''"/>
         </tr>
 
         <tr>
             <th i18n:translate="">Catalogue Number</th>
-            <td class="left" tal:content="context/getCatalogueNumber">Catalogue Number</td>
+            <td class="left" tal:content="context/getCatalogueNumber"/>
         </tr>
 
         <tr>
             <th i18n:translate="">Lot Number</th>
-            <td class="left" tal:content="context/getLotNumber">Lot Number</td>
+            <td class="left" tal:content="context/getLotNumber"/>
         </tr>
 
         <tr>
             <th i18n:translate="">Reference Definition</th>
-            <td class="left" tal:content="python:context.getReferenceDefinition() and context.getReferenceDefinition().Title() or ''">Reference Definition</td>
+            <td class="left" tal:content="python:context.getReferenceDefinition() and context.getReferenceDefinition().Title() or ''"/>
         </tr>
 
         <tr>
@@ -127,13 +126,13 @@
             class="context workflow_action_button"
             type="submit"
             value="deactivate"
-            name="workflow_action">
+            name="workflow_action"/>
         <input
             tal:condition="python:inactive_state == 'inactive'"
             class="context workflow_action_button"
             type="submit"
             value="activate"
-            name="workflow_action">
+            name="workflow_action"/>
     <form>
 
 </metal:content>

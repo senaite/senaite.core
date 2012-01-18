@@ -50,7 +50,7 @@
         title="Hazardous"
 		i18n:attributes="title"
         src=""
-        tal:attributes="src string:++resource++bika.lims.images/hazardous_big.png">
+        tal:attributes="src string:++resource++bika.lims.images/hazardous_big.png"/>
     <h3>
         <tal:range>
             <form name="specificationForm"
@@ -59,7 +59,7 @@
             <img
 				title="range"
 				i18n:attributes="title"
-                tal:attributes="src string:++resource++bika.lims.images/analysisspec.png">
+                tal:attributes="src string:++resource++bika.lims.images/analysisspec.png"/>
             <span i18n:translate="">Range Specification</span>
             <a class="specification" id="lab" value="lab"
                 href=""
@@ -73,7 +73,6 @@
                 tal:attributes="
                     href python:context.absolute_url();
                     class python:specification == 'client' and 'specification selected' or 'specification'">Client</a>
-
             </form>
         </tal:range>
     </h3>
@@ -85,7 +84,7 @@
             <img
 				i18n:attributes="title"
 				title="Analyses"
-				src="++resource++bika.lims.images/service.png">
+				src="++resource++bika.lims.images/service.png"/>
             <span tal:content="python: table[0]"/>
         </h3>
         <span tal:replace="structure python: table[1]"/>
