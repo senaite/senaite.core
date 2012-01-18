@@ -128,11 +128,7 @@ class LoadSetupData(BrowserView):
         bsc = getToolByName(self.context, 'bika_setup_catalog')
         bsc.clearFindAndRebuild()
 
-        if App.config.getConfiguration().debug_mode:
-            message = self.context.translate(PMF("Changes saved.")) + \
-                " %s"%int(time.time() - start)
-        else:
-            message = self.context.translate(PMF("Changes saved."))
+        message = PMF("Changes saved.")
         self.plone_utils.addPortalMessage(message)
         self.request.RESPONSE.redirect(portal.absolute_url())
 
@@ -256,7 +252,7 @@ class LoadSetupData(BrowserView):
                     manager = contact
                     break
             if not manager:
-                message = "Error: missing Lab Contact (Manager)"
+                message = "Error: lookup of '%s' in LabContacts/Fullname failed."%unicode(row['_LabContact_Fullname'])
                 self.plone_utils.addPortalMessage(message)
                 raise Exception(message)
             obj.edit(title = unicode(row['title']),
