@@ -54,7 +54,7 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     StringField('DataInterface',
-        vocabulary = "getDataInterfaces",
+        vocabulary = "getDataInterfacesList",
         widget = ReferenceWidget(
             checkbox_bound = 1,
             label = _("Data Interface"),
@@ -99,5 +99,7 @@ class Instrument(BaseContent):
         from bika.lims.utils import renameAfterCreation
         renameAfterCreation(self)
 
+    def getDataInterfacesList(self):
+        return getDataInterfaces(self)
 
 registerType(Instrument, PROJECTNAME)
