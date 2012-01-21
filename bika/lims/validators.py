@@ -64,8 +64,8 @@ class ServiceKeywordValidator:
         # check the value against all AnalysisService keywords
         # this has to be done from portal_catalog so we don't
         # clash with ourself
-        pc = getToolByName(instance, 'portal_catalog')
-        services = pc(portal_type='AnalysisService', getKeyword = value)
+        bsc = getToolByName(instance, 'bika_setup_catalog')
+        services = bsc(portal_type='AnalysisService', getKeyword = value)
         for service in services:
             if service.UID != instance.UID():
                 return ts.translate(
@@ -81,7 +81,7 @@ class ServiceKeywordValidator:
         our_calc_uid = calc and calc.UID() or ''
 
         # check the value against all Calculation Interim Field ids
-        calcs = [c for c in pc(portal_type='Calculation')]
+        calcs = [c for c in bsc(portal_type='Calculation')]
         for calc in calcs:
             calc = calc.getObject()
             interim_fields = calc.getInterimFields()
@@ -120,7 +120,12 @@ class InterimFieldsValidator:
         interim_fields = form.get(fieldname)
 
         ts = getToolByName(instance, 'translation_service')
-        pc = getToolByName(instance, 'portal_catalog')
+        bsc = getToolByName(instance, 'bika_setup_catalog')
+
+        if instance.REQUEST.get('validated', '') == fieldname:
+            return True
+        else:
+            instance.REQUEST['validated'] = fieldname
 
         if not re.match(r"^[A-Za-z][\w\d\-\_]+$", value):
             return _("Validation failed: keyword contains invalid characters")
@@ -155,20 +160,19 @@ class InterimFieldsValidator:
                 default = "Validation failed: '${title}': duplicate title")
 
         # check all keywords against all AnalysisService keywords for dups
-        services = pc(portal_type='AnalysisService', getKeyword = value)
-        for service in services:
-            if value == service.getKeyword:
-                return ts.translate(
-                    "message_keyword_used_by_service",
-                    "bika",
-                    {'title': value, 'used_by': service.Title},
-                    instance,
-                    default = "Validation failed: '${title}': "\
-                              "This keyword is used by service '${used_by}'")
+        services = bsc(portal_type='AnalysisService', getKeyword = value)
+        if services:
+            return ts.translate(
+                "message_keyword_used_by_service",
+                "bika",
+                {'title': value, 'used_by': services[0].Title},
+                instance,
+                default = "Validation failed: '${title}': "\
+                          "This keyword is used by service '${used_by}'")
 
         # any duplicated interimfield titles must share the same keyword
         # any duplicated interimfield keywords must share the same title
-        calcs = pc(portal_type='Calculation')
+        calcs = bsc(portal_type='Calculation')
         keyword_titles = {}
         title_keywords = {}
         for calc in calcs:
@@ -225,17 +229,14 @@ class FormulaValidator:
         interim_fields = form.get('InterimFields')
 
         ts = getToolByName(instance, 'translation_service')
-        pc = getToolByName(instance, 'portal_catalog')
-
+        bsc = getToolByName(instance, 'bika_setup_catalog')
         interim_keywords = interim_fields and \
                                [f['keyword'] for f in interim_fields] or []
-        # this one was for %(xx)f
-        #keywords = re.compile(r"\%\(([^\)]+)\)").findall(value)
         keywords = re.compile(r"\[([^\]]+)\]").findall(value)
 
         for keyword in keywords:
             # Check if the service keyword exists and is active.
-            dep_service = pc(getKeyword=keyword, inactive_state="active")
+            dep_service = bsc(getKeyword=keyword, inactive_state="active")
             if not dep_service and \
                not keyword in interim_keywords:
                 return ts.translate(
@@ -260,37 +261,31 @@ class CoordinateValidator:
 
         instance = kwargs['instance']
         fieldname = kwargs['field'].getName()
+        request = instance.REQUEST
 
-        if instance.REQUEST.has_key('validated'):
-            if instance.REQUEST['validated'] == fieldname:
-                return True
-            else:
-                instance.REQUEST['validated'] = fieldname
+        if request.get('validated', '') == fieldname:
+            return True
         else:
-            instance.REQUEST['validated'] = fieldname
+            request['validated'] = fieldname
 
-        request = kwargs.get('REQUEST', {})
         form = request.form
         form_value = form.get(fieldname)
 
         ts = getToolByName(instance, 'translation_service')
-        pc = getToolByName(instance, 'portal_catalog')
-
-        valid_min = 0
-        degrees = form_value['degrees']
-        minutes = form_value['minutes']
-        seconds = form_value['seconds']
+        bsc = getToolByName(instance, 'bika_setup_catalog')
 
         try:
-            degrees = int(degrees)
+            degrees = int(form_value['degrees'])
         except:
             return _("Validation failed: degrees must be numeric")
+
         try:
-            minutes = int(minutes)
+            minutes = int(form_value['minutes'])
         except:
             return _("Validation failed: minutes must be numeric")
+
         try:
-            seconds = int(seconds)
+            seconds = int(form_value['seconds'])
         except:
             return _("Validation failed: seconds must be numeric")
 
@@ -307,11 +302,10 @@ class CoordinateValidator:
                 return _("Validation failed: degrees must be 0 - 90")
             if degrees == 90:
                 if minutes != 0:
-                    return _("Validation failed: minutes must be zero")
+                    return _("Validation failed: degrees is 90; minutes must be zero")
                 if seconds != 0:
-                    return _("Validation failed: seconds must be zero")
-            if (bearing.lower() != 'n') \
-            and (bearing.lower() != 's'):
+                    return _("Validation failed: degrees is 90; seconds must be zero")
+            if bearing.lower() not in 'sn':
                 return _("Validation failed: Bearing must be N/S")
 
         if fieldname == 'Longitude':
@@ -319,11 +313,10 @@ class CoordinateValidator:
                 return _("Validation failed: degrees must be 0 - 180")
             if degrees == 180:
                 if minutes != 0:
-                    return _("Validation failed: minutes must be zero")
+                    return _("Validation failed: degrees is 180; minutes must be zero")
                 if seconds != 0:
-                    return _("Validation failed: seconds must be zero")
-            if (bearing.lower() != 'e') \
-            and (bearing.lower() != 'w'):
+                    return _("Validation failed: degrees is 180; seconds must be zero")
+            if bearing.lower() not in 'ew':
                 return _("Validation failed: Bearing must be E/W")
 
         return True
@@ -346,7 +339,7 @@ class ResultOptionsValidator:
         form_value = form.get(fieldname)
 
         ts = getToolByName(instance, 'translation_service')
-        pc = getToolByName(instance, 'portal_catalog')
+        bsc = getToolByName(instance, 'bika_setup_catalog')
 
         # ResultValue must always be a number
         for field in form_value:

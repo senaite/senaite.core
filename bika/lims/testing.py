@@ -1,6 +1,7 @@
 from Acquisition import aq_inner
 from Testing.makerequest import makerequest
 from bika.lims.browser.load_setup_data import LoadSetupData
+from bika.lims.setuphandlers import setupVarious
 from plone.app.testing import *
 from plone.testing import z2
 import DateTime
@@ -51,6 +52,7 @@ class BikaLimsLayer(PloneSandboxLayer):
 
         lsd = LoadSetupData(portal, request)
         lsd()
+
 
 
 BIKA_FIXTURE = BikaLimsLayer()

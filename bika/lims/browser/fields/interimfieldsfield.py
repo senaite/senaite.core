@@ -10,7 +10,7 @@ class InterimFieldsField(RecordsField):
     _properties.update({
         'type' : 'InterimFields',
         'subfields' : ('keyword', 'title', 'value', 'unit'),
-        'required_subfields' : ('keyword','title',),
+        'required_subfields' : ('keyword', 'title'),
         'subfield_labels' : {'keyword': _('Keyword'),
                              'title': _('Field Title'),
                              'value': _('Default value'),

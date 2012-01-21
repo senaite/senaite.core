@@ -5,8 +5,6 @@ from Products.Archetypes.references import HoldingReference
 from Products.CMFCore.permissions import ModifyPortalContent, View
 from Products.CMFCore.utils import getToolByName
 from Products.ATContentTypes.lib.historyaware import HistoryAwareMixin
-from Products.validation.ZService import ZService as Service
-from Products.validation.interfaces.IValidator import IValidator
 from bika.lims.browser.fields import InterimFieldsField
 from bika.lims.browser.widgets import RecordsWidget as BikaRecordsWidget
 from bika.lims.interfaces import ICalculation
@@ -18,8 +16,6 @@ from zope.site.hooks import getSite
 from zExceptions import Redirect
 import sys,re
 from bika.lims import bikaMessageFactory as _
-
-validation = Service()
 
 schema = BikaSchema.copy() + Schema((
     InterimFieldsField('InterimFields',

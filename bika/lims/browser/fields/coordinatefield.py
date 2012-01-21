@@ -14,12 +14,9 @@ class CoordinateField(RecordField):
     security = ClassSecurityInfo()
     _properties = RecordField._properties.copy()
     _properties.update({
-        'subfield_validators' : {'degrees':'coordinatevalidator',
-                                 'minutes':'coordinatevalidator',
-                                 'seconds':'coordinatevalidator',
-                                 'bearing':'coordinatevalidator'},
         'type' : 'angle',
         'subfields' : ('degrees', 'minutes', 'seconds', 'bearing'),
+        'required_subfields' : ('degrees', 'minutes', 'seconds', 'bearing'),
         'subfield_labels':{'degrees':_('Degrees'),
                            'minutes':_('Minutes'),
                            'seconds':_('Seconds'),
@@ -28,6 +25,10 @@ class CoordinateField(RecordField):
                            'minutes':2,
                            'seconds':2,
                            'bearing':1},
+        'subfield_validators' : {'degrees':'coordinatevalidator',
+                                 'minutes':'coordinatevalidator',
+                                 'seconds':'coordinatevalidator',
+                                 'bearing':'coordinatevalidator',},
         })
 
 registerField(CoordinateField,

@@ -2,6 +2,7 @@ from Products.validation import validation
 from bika.lims.testing import BIKA_INTEGRATION_TESTING
 from plone.app.testing import *
 from plone.testing import z2
+from Products.validation import validation as validationService
 
 import unittest
 
@@ -17,104 +18,203 @@ class Tests(unittest.TestCase):
         login(self.portal, TEST_USER_NAME)
 
         clients = self.portal.clients
-        clients.invokeFactory('Client', 'happy-hills-feeds')
-        clients.client_2.processForm()
-        self.assertEqual(clients.client_2.schema.get('title').validate('Client', clients.client_2),
-                         "Validation failed: 'happy-hills-feeds' is in use.")
-        self.assertEqual(None, clients.client_2.schema.get('title').validate('Another Client', clients.client_2))
+        client1 = self.portal.clients['client-1']
+        self.assertEqual(
+            client1.schema.get('Name').validate('Norton Feeds', client1),
+            u"Validation failed: 'Norton Feeds' is in use")
+        self.assertEqual(
+            client1.schema.get('title').validate('Another Client', client1),
+            None)
 
     def test_ServiceKeywordValidator(self):
         login(self.portal, TEST_USER_NAME)
 
         services = self.portal.bika_setup.bika_analysisservices
-        services.invokeFactory('AnalysisService', 'service_2')
-        services.service_2.processForm()
+        service1 = services['analysisservice-1']
 
-        self.assertEqual(services.service_2.schema.get('Keyword').validate('Ash', services.service_2),
-                         "Validation failed: 'Ash': This keyword is used by service 'Ash'.")
-        self.assertEqual(services.service_2.schema.get('Keyword').validate('TV', services.service_2),
-                         "Validation failed: 'TV': This keyword is used by calculation 'Titration'.")
-        self.assertEqual(None, services.service_2.schema.get('Keyword').validate('ValidKeyword', services.service_2))
+        self.assertEqual(
+            service1.schema.get('Keyword').validate('', service1),
+            u'Analysis Keyword is required, please correct.')
+        self.assertEqual(
+            service1.schema.get('Keyword').validate('&', service1),
+            u'Validation failed: keyword contains invalid characters')
+        self.assertEqual(
+            service1.schema.get('Keyword').validate('Ash', service1),
+            u"Validation failed: 'Ash': This keyword is used by service 'Ash'")
+        self.assertEqual(
+            service1.schema.get('Keyword').validate('VALID_KW', service1),
+            None)
 
     def test_InterimFieldsValidator(self):
         login(self.portal, TEST_USER_NAME)
 
         calcs = self.portal.bika_setup.bika_calculations
+        calc1 = calcs['calculation-1']
 
-        interim_fields = [{'keyword': 'T V', 'title':'Titration Volume', 'unit':'','default':''},]
+        interim_fields = [{'keyword': '&', 'title':'Titration Volume', 'unit':'','default':''},]
         self.portal.REQUEST.form['InterimFields'] = interim_fields
-        self.assertEqual(calcs.titration.schema.get('InterimFields').validate(interim_fields, calcs.titration, REQUEST=self.portal.REQUEST),
-                         "Validation failed: keyword contains invalid characters.")
+        self.portal.REQUEST['validated'] = None
+        self.assertEqual(
+            calc1.schema.get('InterimFields').validate(interim_fields, calc1, REQUEST=self.portal.REQUEST),
+            u"Validation failed: keyword contains invalid characters"*2)
 
         interim_fields = [{'keyword': 'TV', 'title':'Titration Volume', 'unit':'','default':''},
-                          {'keyword': 'TV', 'title':'Titration Volume 2', 'unit':'','default':''}]
+                          {'keyword': 'TV', 'title':'Titration Volume', 'unit':'','default':''}]
         self.portal.REQUEST.form['InterimFields'] = interim_fields
-        self.assertEqual(calcs.titration.schema.get('InterimFields').validate(interim_fields, calcs.titration, REQUEST=self.portal.REQUEST),
-                         "Validation failed: 'TV': duplicate keyword.")
+        self.portal.REQUEST['validated'] = None
+        self.assertEqual(
+            calc1.schema.get('InterimFields').validate(interim_fields, calc1, REQUEST=self.portal.REQUEST),
+            u"Validation failed: 'TV': duplicate keyword"*2)
 
         interim_fields = [{'keyword': 'TV', 'title':'Titration Volume', 'unit':'','default':''},
                           {'keyword': 'TF', 'title':'Titration Volume', 'unit':'','default':''}]
         self.portal.REQUEST.form['InterimFields'] = interim_fields
-        self.assertEqual(calcs.titration.schema.get('InterimFields').validate(interim_fields, calcs.titration, REQUEST=self.portal.REQUEST),
-                         "Validation failed: 'Titration Volume': duplicate title.")
+        self.portal.REQUEST['validated'] = None
+        self.assertEqual(
+            calc1.schema.get('InterimFields').validate(interim_fields, calc1, REQUEST=self.portal.REQUEST),
+            u"Validation failed: 'Titration Volume': duplicate title"*2)
 
-        interim_fields = [{'keyword': 'TV', 'title':'Titration Volume', 'unit':'','default':''},
-                          {'keyword': 'TF', 'title':'Titration Factor', 'unit':'','default':''},
-                          {'keyword': 'Ash', 'title':'Temp', 'unit':'','default':''}]
+        interim_fields = [{'keyword': 'Ash', 'title':'Titration Volume', 'unit':'','default':''},
+                          {'keyword': 'TF', 'title':'Titration Factor', 'unit':'','default':''}]
         self.portal.REQUEST.form['InterimFields'] = interim_fields
-        self.assertEqual(calcs.titration.schema.get('InterimFields').validate(interim_fields, calcs.titration, REQUEST=self.portal.REQUEST),
-                         "Validation failed: 'Ash': This keyword is used by service 'Ash'.")
+        self.portal.REQUEST['validated'] = None
+        self.assertEqual(
+            calc1.schema.get('InterimFields').validate(interim_fields, calc1, REQUEST=self.portal.REQUEST),
+            u"Validation failed: 'Ash': This keyword is used by service 'Ash'"*2)
 
         interim_fields = [{'keyword': 'TV', 'title':'Titration Volume', 'unit':'','default':''},
                           {'keyword': 'TF', 'title':'Titration Factor', 'unit':'','default':''}]
         self.portal.REQUEST.form['InterimFields'] = interim_fields
-        self.assertEqual(None, calcs.titration.schema.get('InterimFields').validate(interim_fields, calcs.titration, REQUEST=self.portal.REQUEST))
+        self.portal.REQUEST['validated'] = None
+        self.assertEqual(
+            calc1.schema.get('InterimFields').validate(interim_fields, calc1, REQUEST=self.portal.REQUEST),
+            None)
 
     def test_FormulaValidator(self):
         login(self.portal, TEST_USER_NAME)
 
+        v = validationService.validatorFor('formulavalidator')
+        calcs = self.portal.bika_setup.bika_calculations
+        calc1 = calcs['calculation-1']
+
         interim_fields = [{'keyword': 'TV', 'title':'Titration Volume', 'unit':'','default':''},
                           {'keyword': 'TF', 'title':'Titration Factor', 'unit':'','default':''}]
-
-        calcs = self.portal.bika_setup.bika_calculations
-        calcs.invokeFactory('Calculation', 'calc_1', title='Titration', InterimFields=interim_fields)
-        calcs.calc_1.processForm()
-
-        formula = "%(TV)f * %(TF)f * %(Ash)f * %(Wrong)f"
         self.portal.REQUEST.form['InterimFields'] = interim_fields
-        self.portal.REQUEST.form['Formula'] = formula
-        self.assertEqual(calcs.titration.schema.get('Formula').validate(formula, calcs.titration, REQUEST=self.portal.REQUEST),
-                         "Validation failed: Keyword 'Wrong' is invalid.")
 
-        formula = "%(TV)f * %(TF)f * %(Ash)f"
-        self.portal.REQUEST.form['InterimFields'] = interim_fields
-        self.portal.REQUEST.form['Formula'] = formula
-        self.assertEqual(None, calcs.titration.schema.get('Formula').validate(formula, calcs.titration, REQUEST=self.portal.REQUEST))
+        formula = "[TV] * [TF] * [Ash] * [Wrong]"
+        self.failUnlessEqual(
+            v(formula, instance=calc1, field=calc1.schema.get('Formula'), REQUEST=self.portal.REQUEST),
+            "Validation failed: Keyword 'Wrong' is invalid")
 
         formula = "[TV] * [TF] * [Ash]"
-        self.portal.REQUEST.form['InterimFields'] = interim_fields
-        self.portal.REQUEST.form['Formula'] = formula
-        self.assertEqual(None, calcs.titration.schema.get('Formula').validate(formula, calcs.titration, REQUEST=self.portal.REQUEST))
+        self.failUnlessEqual(
+            v(formula, instance=calc1, field=calc1.schema.get('Formula'), REQUEST=self.portal.REQUEST),
+            True)
 
     def test_CoordinateValidator(self):
         login(self.portal, TEST_USER_NAME)
 
         sp = self.portal.bika_setup.bika_samplepoints['samplepoint-1']
-        field = sp.schema.get('Latitude')
 
-        import pdb;pdb.set_trace()
+        latitude = {'degrees':'!','minutes':'2','seconds':'3', 'bearing':'N'}
+        self.portal.REQUEST.form['Latitude'] = latitude
+        self.assertEqual(sp.schema.get('Latitude').validate(latitude, sp),
+            u"Validation failed: degrees must be numeric")
 
-        field.validate({'degrees':'1','minutes':'2','seconds':'3', 'bearing':'n'},
-                       sp, {}, {'REQUEST':self.portal.REQUEST})
+        latitude = {'degrees':'0','minutes':'!','seconds':'3', 'bearing':'N'}
+        self.portal.REQUEST.form['Latitude'] = latitude
+        self.portal.REQUEST['validated'] = None
+        self.assertEqual(
+            sp.schema.get('Latitude').validate(latitude, sp),
+            u"Validation failed: minutes must be numeric")
 
-        self.assertEqual(sp.schema.get('Latitude').validate('59x25x25xE', sp),
-                         "Invalid Latitude. Use DEG MIN SEC N/S")
-        self.assertEqual(True, sp.schema.get('Latitude').validate('59degrees 25mins 25N', sp))
-        self.assertEqual(sp.schema.get('Longitude').validate('asdf', sp),
-                         "Invalid Latitude. Use DEG MIN SEC E/W")
-        self.assertEqual(sp.schema.get('Longitude').validate('59 25 25 N', sp),
-                         "Invalid Latitude. Use DEG MIN SEC E/W")
-        self.assertEqual(True, sp.schema.get('Longitude').validate('59degrees 25mins 25E', sp))
+        latitude = {'degrees':'0','minutes':'0','seconds':'!', 'bearing':'N'}
+        self.portal.REQUEST.form['Latitude'] = latitude
+        self.portal.REQUEST['validated'] = None
+        self.assertEqual(
+            sp.schema.get('Latitude').validate(latitude, sp),
+            u"Validation failed: seconds must be numeric")
+
+        latitude = {'degrees':'0','minutes':'60','seconds':'0', 'bearing':'N'}
+        self.portal.REQUEST.form['Latitude'] = latitude
+        self.portal.REQUEST['validated'] = None
+        self.assertEqual(
+            sp.schema.get('Latitude').validate(latitude, sp),
+            u"Validation failed: minutes must be 0 - 59")
+
+        latitude = {'degrees':'0','minutes':'0','seconds':'60', 'bearing':'N'}
+        self.portal.REQUEST.form['Latitude'] = latitude
+        self.portal.REQUEST['validated'] = None
+        self.assertEqual(
+            sp.schema.get('Latitude').validate(latitude, sp),
+            u"Validation failed: seconds must be 0 - 59")
+
+        # latitude specific
+
+        latitude = {'degrees':'91','minutes':'0','seconds':'0', 'bearing':'N'}
+        self.portal.REQUEST.form['Latitude'] = latitude
+        self.portal.REQUEST['validated'] = None
+        self.assertEqual(
+            sp.schema.get('Latitude').validate(latitude, sp),
+            u"Validation failed: degrees must be 0 - 90")
+
+        latitude = {'degrees':'90','minutes':'1','seconds':'0', 'bearing':'N'}
+        self.portal.REQUEST.form['Latitude'] = latitude
+        self.portal.REQUEST['validated'] = None
+        self.assertEqual(
+            sp.schema.get('Latitude').validate(latitude, sp),
+            u"Validation failed: degrees is 90; minutes must be zero")
+
+        latitude = {'degrees':'90','minutes':'0','seconds':'1', 'bearing':'N'}
+        self.portal.REQUEST.form['Latitude'] = latitude
+        self.portal.REQUEST['validated'] = None
+        self.assertEqual(
+            sp.schema.get('Latitude').validate(latitude, sp),
+            u"Validation failed: degrees is 90; seconds must be zero")
+
+        latitude = {'degrees':'90','minutes':'0','seconds':'0', 'bearing':'E'}
+        self.portal.REQUEST.form['Latitude'] = latitude
+        self.portal.REQUEST['validated'] = None
+        self.assertEqual(
+            sp.schema.get('Latitude').validate(latitude, sp),
+            u"Validation failed: Bearing must be N/S")
+
+        # longitude specific
+
+        longitude = {'degrees':'181','minutes':'0','seconds':'0', 'bearing':'E'}
+        self.portal.REQUEST.form['Longitude'] = longitude
+        self.portal.REQUEST['validated'] = None
+        self.assertEqual(
+            sp.schema.get('Longitude').validate(longitude, sp),
+            u"Validation failed: degrees must be 0 - 180")
+
+        longitude = {'degrees':'180','minutes':'1','seconds':'0', 'bearing':'E'}
+        self.portal.REQUEST.form['Longitude'] = longitude
+        self.portal.REQUEST['validated'] = None
+        self.assertEqual(
+            sp.schema.get('Longitude').validate(longitude, sp),
+            u"Validation failed: degrees is 180; minutes must be zero")
+
+        longitude = {'degrees':'180','minutes':'0','seconds':'1', 'bearing':'E'}
+        self.portal.REQUEST.form['Longitude'] = longitude
+        self.portal.REQUEST['validated'] = None
+        self.assertEqual(
+            sp.schema.get('Longitude').validate(longitude, sp),
+            u"Validation failed: degrees is 180; seconds must be zero")
+
+        longitude = {'degrees':'0','minutes':'0','seconds':'0', 'bearing':'N'}
+        self.portal.REQUEST.form['Longitude'] = longitude
+        self.portal.REQUEST['validated'] = None
+        self.assertEqual(
+            sp.schema.get('Longitude').validate(longitude, sp),
+            u"Validation failed: Bearing must be E/W")
+
+        longitude = {'degrees':'1','minutes':'1','seconds':'1', 'bearing':'E'}
+        self.portal.REQUEST.form['Longitude'] = longitude
+        self.portal.REQUEST['validated'] = None
+        self.assertEqual(
+            sp.schema.get('Longitude').validate(longitude, sp),
+            None)
 
 def test_suite():
     suite = unittest.TestSuite()
