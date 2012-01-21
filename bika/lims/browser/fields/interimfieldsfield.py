@@ -19,7 +19,10 @@ class InterimFieldsField(RecordsField):
                             'title': 20,
                             'value': 10,
                             'unit': 10},
-        'subfield_validators' : {'keyword': 'interimfieldsvalidator'},
+        'subfield_validators' : {'keyword': 'interimfieldsvalidator',
+                                 'title': 'interimfieldsvalidator',
+                                 'value': 'interimfieldsvalidator',
+                                 'unit': 'interimfieldsvalidator'},
         })
     security = ClassSecurityInfo()
 

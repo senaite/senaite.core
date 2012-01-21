@@ -56,7 +56,7 @@ class Tests(unittest.TestCase):
         self.portal.REQUEST['validated'] = None
         self.assertEqual(
             calc1.schema.get('InterimFields').validate(interim_fields, calc1, REQUEST=self.portal.REQUEST),
-            u"Validation failed: keyword contains invalid characters"*2)
+            u"Validation failed: keyword contains invalid characters")
 
         interim_fields = [{'keyword': 'TV', 'title':'Titration Volume', 'unit':'','default':''},
                           {'keyword': 'TV', 'title':'Titration Volume', 'unit':'','default':''}]
@@ -64,7 +64,7 @@ class Tests(unittest.TestCase):
         self.portal.REQUEST['validated'] = None
         self.assertEqual(
             calc1.schema.get('InterimFields').validate(interim_fields, calc1, REQUEST=self.portal.REQUEST),
-            u"Validation failed: 'TV': duplicate keyword"*2)
+            u"Validation failed: 'TV': duplicate keyword")
 
         interim_fields = [{'keyword': 'TV', 'title':'Titration Volume', 'unit':'','default':''},
                           {'keyword': 'TF', 'title':'Titration Volume', 'unit':'','default':''}]
@@ -72,7 +72,7 @@ class Tests(unittest.TestCase):
         self.portal.REQUEST['validated'] = None
         self.assertEqual(
             calc1.schema.get('InterimFields').validate(interim_fields, calc1, REQUEST=self.portal.REQUEST),
-            u"Validation failed: 'Titration Volume': duplicate title"*2)
+            u"Validation failed: 'Titration Volume': duplicate title")
 
         interim_fields = [{'keyword': 'Ash', 'title':'Titration Volume', 'unit':'','default':''},
                           {'keyword': 'TF', 'title':'Titration Factor', 'unit':'','default':''}]
@@ -80,7 +80,7 @@ class Tests(unittest.TestCase):
         self.portal.REQUEST['validated'] = None
         self.assertEqual(
             calc1.schema.get('InterimFields').validate(interim_fields, calc1, REQUEST=self.portal.REQUEST),
-            u"Validation failed: 'Ash': This keyword is used by service 'Ash'"*2)
+            u"Validation failed: 'Ash': This keyword is used by service 'Ash'")
 
         interim_fields = [{'keyword': 'TV', 'title':'Titration Volume', 'unit':'','default':''},
                           {'keyword': 'TF', 'title':'Titration Factor', 'unit':'','default':''}]
