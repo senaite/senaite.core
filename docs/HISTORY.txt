@@ -1,8 +1,0 @@
-Changelog
-=========
-
-3dev (unreleased)
------------------
-
-- Initial release
-

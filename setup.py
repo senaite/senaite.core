@@ -1,12 +1,15 @@
 from setuptools import setup, find_packages
 import os
 
-version = '3.0pre-alpha'
+version = '3.0a1'
 
 setup(name='bika.lims',
       version=version,
       description="Bika LIMS",
-      long_description=open("README.rst").read(),
+      long_description=open("README.rst").read() +
+                       open("INSTALL.rst").read() +
+                       open("DEVELOP.rst").read() +
+                       open("CHANGELOG.rst").read(),
       # Get more strings from
       # http://pypi.python.org/pypi?:action=list_classifiers
       classifiers=[
@@ -27,13 +30,12 @@ setup(name='bika.lims',
           'Products.ATExtensions',
           'Products.CMFEditions',
           'Products.AdvancedQuery',
-          #'Products.PloneHelpCenter',
           'collective.subtractiveworkflow',
           'openpyxl',
           'plone.app.iterate',
           'reportlab',
+          'ore.contentmirror',
       ],
-#          'ore.contentmirror',
       extras_require = {
           'test': [
                   'plone.app.testing',
@@ -44,3 +46,4 @@ setup(name='bika.lims',
       target = plone
       """,
       )
+

@@ -22,9 +22,7 @@ class Tests(unittest.TestCase):
         self.assertEqual(
             client1.schema.get('Name').validate('Norton Feeds', client1),
             u"Validation failed: 'Norton Feeds' is in use")
-        self.assertEqual(
-            client1.schema.get('title').validate('Another Client', client1),
-            None)
+        self.assertEqual(None,client1.schema.get('title').validate('Another Client', client1))
 
     def test_ServiceKeywordValidator(self):
         login(self.portal, TEST_USER_NAME)
@@ -42,14 +40,21 @@ class Tests(unittest.TestCase):
             service1.schema.get('Keyword').validate('Ash', service1),
             u"Validation failed: 'Ash': This keyword is used by service 'Ash'")
         self.assertEqual(
-            service1.schema.get('Keyword').validate('VALID_KW', service1),
-            None)
+            service1.schema.get('Keyword').validate('TV', service1),
+            u"Validation failed: 'TV': This keyword is used by calculation 'Titration'")
+        self.assertEqual(None,service1.schema.get('Keyword').validate('VALID_KW', service1))
 
     def test_InterimFieldsValidator(self):
         login(self.portal, TEST_USER_NAME)
 
         calcs = self.portal.bika_setup.bika_calculations
+        # Titration
         calc1 = calcs['calculation-1']
+
+        interim_fields = []
+        self.portal.REQUEST.form['InterimFields'] = interim_fields
+        self.portal.REQUEST['validated'] = None
+        self.assertEqual(None,calc1.schema.get('InterimFields').validate(interim_fields, calc1, REQUEST=self.portal.REQUEST))
 
         interim_fields = [{'keyword': '&', 'title':'Titration Volume', 'unit':'','default':''},]
         self.portal.REQUEST.form['InterimFields'] = interim_fields
@@ -57,6 +62,22 @@ class Tests(unittest.TestCase):
         self.assertEqual(
             calc1.schema.get('InterimFields').validate(interim_fields, calc1, REQUEST=self.portal.REQUEST),
             u"Validation failed: keyword contains invalid characters")
+
+        interim_fields = [{'keyword': 'XXX', 'title':'Gross Mass', 'unit':'','default':''},
+                          {'keyword': 'TV', 'title':'Titration Volume', 'unit':'','default':''}]
+        self.portal.REQUEST.form['InterimFields'] = interim_fields
+        self.portal.REQUEST['validated'] = None
+        self.assertEqual(
+            calc1.schema.get('InterimFields').validate(interim_fields, calc1, REQUEST=self.portal.REQUEST),
+            u"Validation failed: column 'Gross Mass' must have keyword 'GM'")
+
+        interim_fields = [{'keyword': 'GM', 'title':'XXX', 'unit':'','default':''},
+                          {'keyword': 'TV', 'title':'Titration Volume', 'unit':'','default':''}]
+        self.portal.REQUEST.form['InterimFields'] = interim_fields
+        self.portal.REQUEST['validated'] = None
+        self.assertEqual(
+            calc1.schema.get('InterimFields').validate(interim_fields, calc1, REQUEST=self.portal.REQUEST),
+            u"Validation failed: keyword 'GM' must have column title 'Gross Mass'")
 
         interim_fields = [{'keyword': 'TV', 'title':'Titration Volume', 'unit':'','default':''},
                           {'keyword': 'TV', 'title':'Titration Volume', 'unit':'','default':''}]
@@ -86,9 +107,7 @@ class Tests(unittest.TestCase):
                           {'keyword': 'TF', 'title':'Titration Factor', 'unit':'','default':''}]
         self.portal.REQUEST.form['InterimFields'] = interim_fields
         self.portal.REQUEST['validated'] = None
-        self.assertEqual(
-            calc1.schema.get('InterimFields').validate(interim_fields, calc1, REQUEST=self.portal.REQUEST),
-            None)
+        self.assertEqual(None,calc1.schema.get('InterimFields').validate(interim_fields, calc1, REQUEST=self.portal.REQUEST))
 
     def test_FormulaValidator(self):
         login(self.portal, TEST_USER_NAME)
@@ -107,9 +126,7 @@ class Tests(unittest.TestCase):
             "Validation failed: Keyword 'Wrong' is invalid")
 
         formula = "[TV] * [TF] * [Ash]"
-        self.failUnlessEqual(
-            v(formula, instance=calc1, field=calc1.schema.get('Formula'), REQUEST=self.portal.REQUEST),
-            True)
+        self.assertEqual(True,v(formula, instance=calc1, field=calc1.schema.get('Formula'), REQUEST=self.portal.REQUEST))
 
     def test_CoordinateValidator(self):
         login(self.portal, TEST_USER_NAME)
@@ -212,9 +229,7 @@ class Tests(unittest.TestCase):
         longitude = {'degrees':'1','minutes':'1','seconds':'1', 'bearing':'E'}
         self.portal.REQUEST.form['Longitude'] = longitude
         self.portal.REQUEST['validated'] = None
-        self.assertEqual(
-            sp.schema.get('Longitude').validate(longitude, sp),
-            None)
+        self.assertEqual(None,sp.schema.get('Longitude').validate(longitude, sp))
 
 def test_suite():
     suite = unittest.TestSuite()
