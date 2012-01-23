@@ -47,12 +47,12 @@ TYPES_TO_VERSION = ('AnalysisService',
                     'AnalysisSpec',
                     'WorksheetTemplate',
 
-                    'Worksheet',
-                    'AnalysisRequest',
-                    'Sample',
-                    'Analysis',
-                    'DuplicateAnalysis',
-                    'ReferenceAnalysis',
+#                    'Worksheet',
+#                    'AnalysisRequest',
+#                    'Sample',
+#                    'Analysis',
+#                    'DuplicateAnalysis',
+#                    'ReferenceAnalysis',
                     )
 
 AUTO_VERSION = ('AnalysisService',
