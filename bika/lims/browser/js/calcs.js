@@ -10,7 +10,7 @@ $(document).ready(function(){
 		value = $(this).attr('value');
 		item_data = $(this).parents('table').prev('input[name="item_data"]').val();
 
-		$(td).attr('class', classname);
+//		$(td).attr('class', classname);
 
 		// clear out the alerts for this field
 		$(".alert").filter("span[uid='"+$(this).attr("uid")+"']").empty();

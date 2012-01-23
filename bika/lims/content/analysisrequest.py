@@ -225,6 +225,10 @@ class AnalysisRequest(BaseFolder):
         from bika.lims.utils import renameAfterCreation
         renameAfterCreation(self)
 
+    def _getCatalogTool(self):
+        from bika.lims.catalog import getCatalog
+        return getCatalog(self)
+
     def hasBeenInvoiced(self):
         if self.getInvoice():
             return True

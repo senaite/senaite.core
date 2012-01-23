@@ -17,13 +17,18 @@ def getCatalog(instance, field = 'UID'):
         If an object is indexed by more than one catalog, the first match
         will be returned.
     """
-    catalogs = [getToolByName(instance, 'portal_catalog'),
-                getToolByName(instance, 'bika_setup_catalog')]
-    field = instance.getField(field)
-    for catalog in catalogs:
-        for index in catalog.index_objects():
-            if field.accessor in index.getIndexSourceNames():
-                return catalog
+    if (hasattr(self, 'AutoIndex', False) and self.AutoIndex == False) or  \
+       ('workflow_skiplist' in self.REQUEST and self.UID() in self.REQUEST['workflow_skiplist']):
+        return None
+    else:
+        catalogs = [getToolByName(instance, 'portal_catalog'),
+                    getToolByName(instance, 'bika_setup_catalog')]
+        field = instance.getField(field)
+        for catalog in catalogs:
+            for index in catalog.index_objects():
+                if field.accessor in index.getIndexSourceNames():
+                    return catalog
+
 
 class BikaSetupCatalog(CatalogTool):
     """ Catalog for all bika_setup objects

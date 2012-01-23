@@ -179,6 +179,10 @@ class Sample(BaseFolder, HistoryAwareMixin):
         from bika.lims.utils import renameAfterCreation
         renameAfterCreation(self)
 
+    def _getCatalogTool(self):
+        from bika.lims.catalog import getCatalog
+        return getCatalog(self)
+
     def Title(self):
         """ Return the Sample ID as title """
         return self.getId()
