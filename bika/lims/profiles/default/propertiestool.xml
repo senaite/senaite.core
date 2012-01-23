@@ -39,6 +39,7 @@
     <element value="Calculation"/>
     <element value="Client"/>
     <element value="Container"/>
+    <element value="ContainerType"/>
     <element value="Department"/>
     <element value="DuplicateAnalysis"/>
     <element value="Instrument"/>

@@ -13,6 +13,14 @@
     />
 
     <browser:page
+      for="bika.lims.interfaces.IContainerTypes"
+      name="folder_view"
+      class=".bika_containertypes.ContainerTypesView"
+      permission="bika.lims.ManageBika"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
       for="bika.lims.interfaces.IPreservations"
       name="folder_view"
       class=".bika_preservations.PreservationsView"

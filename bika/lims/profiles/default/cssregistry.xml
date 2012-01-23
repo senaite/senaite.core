@@ -11,7 +11,7 @@
 
 <stylesheet
     id="++resource++bika.lims.css/hide_editable_border.css"
-    expression="python:here.portal_type in ['ClientFolder', 'BikaSetup', 'AttachmentType', 'AttachmentTypes', 'AnalysisCategories', 'Containers', 'Preservations', 'ARProfiles', 'AnalysisServices', 'AnalysisSpecs', 'Calculations', 'Instruments', 'LabContacts', 'Departments', 'Methods', 'LabProducts', 'ReferenceDefinitions', 'ReferenceManufacturers', 'ReferenceSuppliers', 'SamplePoints', 'SampleTypes', 'WorksheetTemplates', 'Laboratory']"
+    expression="python:here.portal_type in ['ClientFolder', 'BikaSetup', 'AttachmentType', 'AttachmentTypes', 'AnalysisCategories', 'Containers', 'ContainerTypes', 'Preservations', 'ARProfiles', 'AnalysisServices', 'AnalysisSpecs', 'Calculations', 'Instruments', 'LabContacts', 'Departments', 'Methods', 'LabProducts', 'ReferenceDefinitions', 'ReferenceManufacturers', 'ReferenceSuppliers', 'SamplePoints', 'SampleTypes', 'WorksheetTemplates', 'Laboratory']"
     media="screen"
     rel="stylesheet"
     rendering="link"

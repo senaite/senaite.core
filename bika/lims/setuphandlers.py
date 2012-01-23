@@ -55,6 +55,9 @@ class BikaGenerator:
                        'bika_attachmenttypes',
                        'bika_calculations',
                        'bika_departments',
+                       'bika_containers',
+                       'bika_containertypes',
+                       'bika_preservations',
                        'bika_instruments',
                        'bika_analysisspecs',
                        'bika_arprofiles',
@@ -262,6 +265,7 @@ class BikaGenerator:
         at = getToolByName(portal, 'archetype_tool')
         at.setCatalogsByType('Department', ['bika_setup_catalog', ])
         at.setCatalogsByType('Container', ['bika_setup_catalog', ])
+        at.setCatalogsByType('ContainerType', ['bika_setup_catalog', ])
         at.setCatalogsByType('AnalysisCategory', ['bika_setup_catalog', ])
         at.setCatalogsByType('AnalysisService', ['bika_setup_catalog', ])
         at.setCatalogsByType('AnalysisSpec', ['bika_setup_catalog', ])

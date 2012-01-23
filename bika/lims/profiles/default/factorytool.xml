@@ -16,6 +16,7 @@
   <type portal_type="Client"/>
   <type portal_type="Contact"/>
   <type portal_type="Container"/>
+  <type portal_type="ContainerType"/>
   <type portal_type="Department"/>
   <type portal_type="Instrument"/>
   <type portal_type="LabContact"/>

@@ -42,6 +42,7 @@ def initialize(context):
     from content.clientfolder import ClientFolder
     from content.contact import Contact
     from content.container import Container
+    from content.containertype import ContainerType
     from content.department import Department
     from content.duplicateanalysis import DuplicateAnalysis
     from content.instrument import Instrument
@@ -86,6 +87,7 @@ def initialize(context):
     from controlpanel.bika_attachmenttypes import AttachmentTypes
     from controlpanel.bika_calculations import Calculations
     from controlpanel.bika_containers import Containers
+    from controlpanel.bika_containertypes import ContainerTypes
     from controlpanel.bika_departments import Departments
     from controlpanel.bika_instruments import Instruments
     from controlpanel.bika_labcontacts import LabContacts

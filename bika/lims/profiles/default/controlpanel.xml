@@ -138,6 +138,15 @@
   <permission>BIKA: Manage Bika</permission>
  </configlet>
 
+ <configlet title="Container Types" action_id="bika_containertypes"
+    appId="bika.lims" category="Products" condition_expr=""
+    icon_expr="string:++resource++bika.lims.images/container.png"
+    url_expr="string:$portal_url/bika_setup/bika_containertypes"
+    visible="True"
+	i18n:attributes="title">
+  <permission>BIKA: Manage Bika</permission>
+ </configlet>
+
  <configlet title="Analysis Request Profiles" action_id="bika_arprofiles"
     appId="bika.lims" category="Products" condition_expr=""
     icon_expr="string:++resource++bika.lims.images/arprofile.png"

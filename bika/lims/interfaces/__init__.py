@@ -92,6 +92,8 @@ class IDepartments(Interface):
     ""
 class IContainers(Interface):
     ""
+class IContainerTypes(Interface):
+    ""
 class IInstruments(Interface):
     ""
 class IAnalysisSpecs(Interface):
