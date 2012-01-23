@@ -276,7 +276,7 @@ $(document).ready(function(){
 		for(i=0;i<toggle_cols.length;i++){
 			col = toggle_cols[i];
 			coltitle = $('[name=coltitle_'+col+']').val();
-			txt = txt + "<tr><td>";
+			txt = txt + "<tr><td style='padding:2px 5px 2px 0px;'>";
 			enabled = $("#foldercontents-"+col+"-column");
 			if(enabled.length > 0){
 				txt = txt + "<input type='checkbox' form_id='"+form_id+"' name='"+col+"' class='toggle_col' checked='checked'>";
@@ -294,6 +294,7 @@ $(document).ready(function(){
 		$(".tooltip").remove();
 	});
 
+	// show / hide columns - the action when a checkbox is clicked in the menu
 	$('.toggle_col').live('click', function(event){
 		$(".tooltip").remove();
 		form_id = $(this).attr('form_id');
