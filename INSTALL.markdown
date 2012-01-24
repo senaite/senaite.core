@@ -55,6 +55,7 @@ Edit Plone/zinstance/buildout.conf
     eggs =
         Plone
         Pillow
+        lxml
         bika.lims
 
 Run buildout
