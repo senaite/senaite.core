@@ -17,23 +17,7 @@
 Plone 4 development setup
 =========================
 
-http://collective-docs.readthedocs.org/en/latest/ is your friend.
-
-3. Edit instance/buildout.cfg:
-   - Add "src/bika.lims" in the "develop=" section
-   - (Optional) Add the following configuration to the [instance] section:
-
-    environment-vars =
-        IDServerURL http://localhost:8081
-
-5. Run bin/buildout -n -c develop.cfg
-6. Run bin/plonectl fg or bin\instance console
-7. Load sample data with url/load_setup_data
-8. Make sure the idserver is running
-9. Load sample data with url/load_setup_data
-
-If filestorage files have been deleted,
-run bin\plonectl adduser admin admin to create the admin user
+http://collective-docs.readthedocs.org/en/latest/
 
 Plone 4 development setup
 =========================
@@ -66,7 +50,7 @@ resource registries.  This is tragically slow; Turn off registry
 debugging in ZMI at /portal_css  and at /portal_javascripts (must
 be done after every server start).
 
-You could also do the following to boost Windows performance radically:
+You could also do the following to boost Windows performance:
 
     In file: Products/CMFCore.DirectoryView:
     In function: DirectoryInformation._changed():
