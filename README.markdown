@@ -3,6 +3,7 @@ Bika LIMS
 
 Bika Laboratory Information Management System.
 
+<<<<<<< HEAD
 Installation
 ============
 
@@ -602,4 +603,11 @@ Newly added files:
  - Added CHANGES.txt and README.txt
  - Added windows batch script for ID server
    (scripts/start-id-server.bat)
+=======
+* <a href="https://github.com/bikalabs/Bika-LIMS/blob/master/INSTALL.markdown">Installation</a>
+* <a href="https://github.com/bikalabs/Bika-LIMS/blob/master/HOWTO.markdown">Howtos</a>
+* <a href="https://github.com/bikalabs/Bika-LIMS/blob/master/DEVELOP.markdown">Development</a>
+* <a href="https://github.com/bikalabs/Bika-LIMS/blob/master/CHANGELOG.markdown">Changelog</a>
+
+>>>>>>> 4d249a8... asdf
 
