@@ -6,8 +6,7 @@ version = '3.0a1'
 setup(name='bika.lims',
       version=version,
       description="Bika LIMS",
-      long_description=open("README.metadata").read() +
-                       open("INSTALL.metadata").read() +
+      long_description=open("INSTALL.metadata").read() +
                        open("HOWTO.metadata").read() +
                        open("DEVELOP.metadata").read() +
                        open("CHANGELOG.metadata").read(),
