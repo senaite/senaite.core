@@ -1,5 +1,8 @@
-1.  Title and Description
-    Use the built-in title and description fields as much as possible.
+Development
+===========
+
+Title and Description - Use the built-in indexes and metadatas where possible.
+
     Modify using lowercase. e.g service.edit(title='Ash', description='blah')
     Access directly as attribute: service.title     service.description
     OR as method:                 service.Title()   service.Description()
@@ -12,21 +15,22 @@
         t = self.Description()
         return t and t or ''
 
-2.  Indent tal files!
+Indent TAL files!
 
 Plone 4 development setup
 =========================
 
 http://collective-docs.readthedocs.org/en/latest/
 
-Plone 4 development setup
-=========================
+First follow the normal Installation instructions
 
-1. First follow normal Installation instructions.
-2. Run ```cd /usr/local/Plone/zinstance```
-3. Run ```cp ../buildout-cache/eggs/bika.lims-3.0a1/bika/lims/buildout/develop.cfg .```
-4. Run ```bin/buildout -n -c develop.cfg```
-5. Run ```bin/plonectl fg``` or ```bin\instance console``` (windows)
+    Run `cd /usr/local/Plone/zinstance`
+
+    Run `cp ../buildout-cache/eggs/bika.lims-3.0a1/bika/lims/buildout/develop.cfg .`
+
+    Run `bin/buildout -n -c develop.cfg`
+
+    Run `bin/plonectl fg` or `bin\instance console` (windows)
 
 If filestorage files have been deleted, you may need to run:
 
@@ -35,15 +39,15 @@ If filestorage files have been deleted, you may need to run:
 Windows
 =======
 
-If the Zope/Plone instance fails to start (you get a message
-saying "Please stop the service first"):
+If the Zope/Plone instance fails to start (you get a message saying "Please stop the service first"):
 
-    1. Find the running process id by opening the .pid file within
-    your instance's var/ directory.
-    2. Open the Windows Task Manager and stop the running process with
-    the above identifier.
-    3. Delete all .pid and .lock files in your instance's var/ directory.
-    4, Start your instance.
+    Find the running process id by opening the .pid file within your instance's var/ directory.
+
+    Open the Windows Task Manager and stop the running process with the above identifier.
+
+    Delete all .pid and .lock files in your instance's var/ directory.
+
+    Start your instance.
 
 Running in foreground will by default set debug mode to be on for
 resource registries.  This is tragically slow; Turn off registry
@@ -53,16 +57,19 @@ be done after every server start).
 You could also do the following to boost Windows performance:
 
     In file: Products/CMFCore.DirectoryView:
+
     In function: DirectoryInformation._changed():
+    
     comment out the whole whole block that begins with:
+
         if platform == 'win32':
 
-    (this workaround will no longer be needed in Plone 4.2, i.e. CMF 2.3)
+    (this workaround will no longer be needed in Plone 4.2)
 
 Miscellaneous testing issues
 ============================
 
-python -m smtpd -n -c DebuggingServer localhost:1025
+    python -m smtpd -n -c DebuggingServer localhost:1025
 
 Add a new AT Content Type
 =========================
@@ -95,5 +102,3 @@ Newly added files:
     * bika/lims/controlpanel/bika_containers.py
     * bika/lims/profiles/default/types/Container.xml
     * bika/lims/profiles/default/types/Containers.xml
-
-                
