@@ -102,3 +102,24 @@ Newly added files:
     * bika/lims/controlpanel/bika_containers.py
     * bika/lims/profiles/default/types/Container.xml
     * bika/lims/profiles/default/types/Containers.xml
+
+Update CHANGELOG
+================
+
+set --since parameter to reflect the date of the last update to the CHANGELOG.
+
+    $ cd src/bika.lims
+
+    $ git log master --since=01/01/2010 --pretty=format:"%ad%n==========%n%s%+N" --date=short --no-merges >> CHANGELOG.rst
+
+Test Coverage reports
+=====================
+
+    $ cd zinstance
+    $ bin/test --coverage=~/bika-test-coverage
+
+Create a directory within your previously created coverage directory.  We call it reports.  Run the coveragereport.py module with the source being you coverage output and the destination, your newly created reports directory.  See the following:
+
+    $ svn co  svn://svn.zope.org/repos/main/z3c.coverage/trunk z3c.coverage
+    $ mkdir ~/bika-test-coverage/reports
+    $ python ~/z3c.coverage/src/z3c/coverage/coveragereport.py ~/bika-test-coverage ~/bika-test-coverage/reports
