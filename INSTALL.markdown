@@ -15,12 +15,13 @@ operating systems.
 
 Prerequisites
 -------------
-Plone >= 4.1
+
+* Plone >= 4.1
 
 Quick Installation
 ------------------
 
-* 1. Download and install the Unified Installer from http://plone.org/products ::
+Download and install the Unified Installer from http://plone.org/products
 
     $ tar xzf Plone-4.1.3-UnifiedInstaller.tgz
     $ cd Plone-4.1.3-UnifiedInstaller
@@ -47,20 +48,20 @@ You should see text like this:
     Password: admin
     ...
 
-* 2. Edit Plone/zinstance/buildout.conf
+Edit Plone/zinstance/buildout.conf
 
-  Find the ``eggs`` section.  Add ``bika.lims``::
+    Find the `eggs` section.  Add `bika.lims`
 
     eggs =
         Plone
         Pillow
         bika.lims
 
-* 3. Run buildout::
+Run buildout
 
     sudo bin/buildout
 
-* 4 Start Plone
+Start Plone
 
     # start in foreground (debug) mode:
     $ bin/plonectl fg
@@ -68,24 +69,26 @@ You should see text like this:
     # start normally:
     $ bin/plonectl start
 
-* 5 Add Bika instance
+Add Bika instance
 
     Add a new plone site.  Assign an ID of your choice, and select
     the checkbox to activate the Bika-LIMS extension profile.
 
-    That's it.  You should be able to test the site now by visiting
+    That's it!
+    
+    You should be able to test the site now by visiting
     http://localhost:8080/SITE_ID
 
-* 6. (Optional) Set up a domain name::
+(Optional) Set up a domain name
 
     Set up a domain name for the LIMS site URL and add the Apache mapping
     noting the Zope server port used by the instance (default 8080)
 
     Edit the apache configuration, adding a new virtual host
 
-   ``sudo vim /etc/apache2/sites-enabled/000-default``
+   `sudo vim /etc/apache2/sites-enabled/000-default`
 
-   Add directives, ensuring an existing port is not conflicted::
+(Optional) Add directives, ensuring an existing port is not conflicted::
 
     <VirtualHost*:80>
       ServerName  example.bikalabs.com
@@ -99,63 +102,64 @@ You should see text like this:
       RewriteRule ^/(.\*) http://localhost:8080/VirtualHostBase/http/example.bikalabs.com:80/VirtualHostRoot/$1 [L,P]
     </VirtualHost>
 
-* 7. (Optional) Change the port in buildout.cfg if port 8080 is already used::
+(Optional) Change the port in buildout.cfg if port 8080 is already used
 
     http-address = 8080
 
-* 8. (Optional) Change the ``effective-user`` if ``plone`` is not the one used.
+(Optional) Change the `effective-user` if `plone` is not the one used.
 
-* 9. (Optional) Add the environment-vars entry for the ID-server, noting port number::
+    effective-user = cb
+
+(Optional) Add the environment-vars entry for the ID-server, noting port number
 
     [instance]
     environment-vars =
            IDServerURL http://localhost:8081
 
-The ID-Server is now by default automatically built
-and started as part of the Zope/Plone instance but can
-optionally still be deployed in a clustering setup.
+    The ID-Server is now by default automatically built
+    and started as part of the Zope/Plone instance but can
+    optionally still be deployed in a clustering setup.
 
-See https://github.com/bikalabs for other install options, especially
-https://github.com/bikalabs/Bika-3-Buildout which automates most
-of the steps below and also installs the /Bika Plone instance.
+    See https://github.com/bikalabs for other install options, especially
+    https://github.com/bikalabs/Bika-3-Buildout which automates most
+    of the steps below and also installs the /Bika Plone instance.
 
-* 10. (Optional) Test and reload apache config::
+(Optional) Test and reload apache config
 
     sudo apache2ctl configtest
     dig example.bikalabs.com
     sudo apachectl graceful
 
-* 11. Test run in foreground, noting error messages if any and taking
-   corrective action if so ::
+Test run in foreground, noting error messages if any and taking corrective action 
 
     sudo bin/plonectl fg
-    ...
-    2012-01-11 12:06:07 INFO Zope Ready to handle requests
 
-* 12. Access the Zope instance via Apache::
+Access the Zope instance via Apache
 
-    Via a web browser on public URL http://admin:admin@example.bikalabs.com/manage/ ::
+    Via a web browser on public URL http://admin:admin@example.bikalabs.com/manage/
 
-    Or localhost address at http://admin:admin@localhost:8080/manage/ ::
+Or via Zope:
 
-* 13. Add the Plone instance with Bika LIMS extensions::
+    Or localhost address at http://admin:admin@localhost:8080/manage/
 
-If not automatically created by the buildout process yet, add a Plone instance,
+And add a Plone instance with Bika LIMS extensions pre-activated
+
+If it hasn't been automatically created by the buildout process yet, add a Plone instance,
 noting the instance name (default Plone, or Bika) and ensure that the Bika LIMS option is ticked.
 
-* 14. (Optional) Modify Apache web server configuration to point to instance root::
+(Optional) Modify Apache web server configuration to point to instance root
 
-Point to the instance "Plone" or "Bika" root instead of Zope root if required
-by changing the Apache rewrite rule::
+    Point to the instance "Plone" or "Bika" root instead of Zope root if required
+    by changing the Apache rewrite rule::
 
     #RewriteRule ^/(.*) http://localhost:8080/VirtualHostBase/http/example.bikalabs.com:80/VirtualHostRoot/$1 [L,P]
     RewriteRule ^/(.*) http://localhost:8080/VirtualHostBase/http/example.bikalabs.com:80/Bika/VirtualHostRoot/$1 [L,P]
 
-* 15. Reload the Apache webserver's configuration::
+Reload the Apache webserver's configuration::
 
     sudo apache2ctl graceful
 
-* 16. (Optional) Stop the foreground instance (Control C), and restart it as a background process.
+(Optional) Stop the foreground instance (Control C), and restart it as a background process.
 
     Add it to server startup scripts to start Plone on reboot::
 
@@ -165,25 +169,45 @@ by changing the Apache rewrite rule::
 
     /home/example/zinstance/bin/plonectl start
 
-* 17. To start with a completely fresh instance::
+To start with a completely fresh instance::
 
     Rename/move the Data.fs.* files in var/filestorage (after stopping instance).
-
 
 Windows
 =======
 
-1. Install Bika LIMS
---------------------
+If the Zope/Plone instance fails to start (you get a message
+saying "Please stop the service first"):
 
-Open the buildout.cfg file for your new Plone instance.
+    1. Find the running process id by opening the .pid file within
+    your instance's var/ directory.
+    2. Open the Windows Task Manager and stop the running process with
+    the above identifier.
+    3. Delete all .pid and .lock files in your instance's var/ directory.
+    4. Start your instance.
+
+Running in foreground will by default set debug mode to be on for
+resource registries.  This is tragically slow; Turn off registry
+debugging in ZMI at /portal_css  and at /portal_javascripts (must
+be done after every server start).
+
+You could also do the following to boost Windows performance:
+
+    In file: Products/CMFCore.DirectoryView:
+    In function: DirectoryInformation._changed():
+    comment out the whole whole block that begins with:
+        if platform == 'win32':
+
+    (this workaround will no longer be needed in Plone 4.2, i.e. CMF 2.3)
 
 Update CHANGELOG
 ================
-    $ cd src/bika.lims
-    $ git log master --since=01/01/2010 --pretty=format:"%ad%n==========%n%s%+N" --date=short --no-merges >> CHANGELOG.rst
 
 set --since parameter to reflect the date of the last update to the CHANGELOG.
+
+    $ cd src/bika.lims
+
+    $ git log master --since=01/01/2010 --pretty=format:"%ad%n==========%n%s%+N" --date=short --no-merges >> CHANGELOG.rst
 
 Test Coverage reports
 =====================
@@ -196,4 +220,3 @@ Create a directory within your previously created coverage directory.  We call i
 $ svn co  svn://svn.zope.org/repos/main/z3c.coverage/trunk z3c.coverage
 $ mkdir ~/bika-test-coverage/reports
 $ python ~/z3c.coverage/src/z3c/coverage/coveragereport.py ~/bika-test-coverage ~/bika-test-coverage/reports
-
