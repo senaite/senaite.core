@@ -16,7 +16,7 @@ operating systems.
 Prerequisites
 -------------
 
-* Plone >= 4.1
+    Plone >= 4.1
 
 Quick Installation
 ------------------
@@ -200,24 +200,3 @@ You could also do the following to boost Windows performance:
         if platform == 'win32':
 
     (this workaround will no longer be needed in Plone 4.2, i.e. CMF 2.3)
-
-Update CHANGELOG
-================
-
-set --since parameter to reflect the date of the last update to the CHANGELOG.
-
-    $ cd src/bika.lims
-
-    $ git log master --since=01/01/2010 --pretty=format:"%ad%n==========%n%s%+N" --date=short --no-merges >> CHANGELOG.rst
-
-Test Coverage reports
-=====================
-
-    $ cd zinstance
-    $ bin/test --coverage=~/bika-test-coverage
-
-Create a directory within your previously created coverage directory.  We call it reports.  Run the coveragereport.py module with the source being you coverage output and the destination, your newly created reports directory.  See the following:
-
-$ svn co  svn://svn.zope.org/repos/main/z3c.coverage/trunk z3c.coverage
-$ mkdir ~/bika-test-coverage/reports
-$ python ~/z3c.coverage/src/z3c/coverage/coveragereport.py ~/bika-test-coverage ~/bika-test-coverage/reports
