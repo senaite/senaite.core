@@ -2,7 +2,7 @@
 
 reldir=`dirname $0`
 PYTHON=/usr/bin/python
-BIKA_BASE=/home/godfrey/Plone/zinstance
+BIKA_BASE=./zinstance
 COUNTER_FILE=$BIKA_BASE/var/id.counter
 LOG_FILE=$BIKA_BASE/var/log/idserver.log
 PID_FILE=$BIKA_BASE/var/idserver.pid
