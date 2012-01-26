@@ -4,15 +4,17 @@ Installation
 This document describes the installation of Bika LIMS from the Plone Unified
 Installer package
 
-Download and install the Unified Installer from http://plone.org/products
+### Download and install Plone
+
+The latest Unified Installer can be found at http://plone.org/products
 
     $ tar xzf Plone-4.1.3-UnifiedInstaller.tgz
     $ cd Plone-4.1.3-UnifiedInstaller
     $ sudo ./install.sh --target=Plone --libz=yes --password=admin standalone
 
-Edit Plone/zinstance/buildout.conf
+### Edit Plone/zinstance/buildout.conf.
 
-    Find the `eggs` section and add `bika.lims`
+Find the "eggs" section and add "bika.lims"
 
     eggs =
         Plone
@@ -20,11 +22,11 @@ Edit Plone/zinstance/buildout.conf
         lxml
         bika.lims
 
-Run buildout
+### Run buildout
 
     sudo bin/buildout
 
-Start Plone
+### Start Plone
 
     # Start in foreground (debug) mode, noting error
     # messages if any and taking corrective action
@@ -33,15 +35,13 @@ Start Plone
     # start normally:
     $ bin/plonectl start
 
-Add Bika instance
+### Add a new plone site.
 
-    Add a new plone site.  Assign an ID of your choice, and select
-    the checkbox to activate the Bika-LIMS extension profile.
+Assign an ID of your choice, and select the checkbox to activate the
+Bika-LIMS extension profile.  To add Bika LIMS to an existing Plone site,
+visit the Addons page of Site Setup.
 
-    To add Bika LIMS to an existing Plone site, visit the Addons page
-    of Site Setup.
+That's it!
 
-    That's it!
-
-    You should be able to test the site now by visiting
-    http://localhost:8080/SITE_ID
+You should be able to test the site now by visiting
+http://localhost:8080/SITE_ID

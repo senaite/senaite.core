@@ -6,7 +6,7 @@ version = '3.0a1'
 setup(name='bika.lims',
       version=version,
       description="Bika LIMS",
-      long_description=open("doc/INSTALL.markdown").read(),
+      long_description=open("doc/INSTALL.md").read(),
       # Get more strings from
       # http://pypi.python.org/pypi?:action=list_classifiers
       classifiers=[

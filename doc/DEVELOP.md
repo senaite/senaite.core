@@ -3,49 +3,45 @@ Plone 4 development setup
 
 Edit Plone/zinstance/develop.cfg
 
-- In [sources], add one of the following:
+In the [sources] section, add one of the following:
 
-    # readonly access
+For readonly access
+
     bika.lims = git git://github.com/bikalabs/Bika-LIMS.git branch=master
 
-    # normal access
+For normal access
+
     bika.lims = git git@github.com:bikalabs/Bika-LIMS.git branch=master
 
 You can replace "master" with "dev" if you'd like to test the latest
 (unstable) code.
 
-- In [buildout], add or edit the develop= section:
+In [buildout], add or edit the develop= section:
 
     develop =
         src/bika.lims
 
-- Run buildout
+Run buildout
 
-    bin/buildout -c develop.cfg
+    $ bin/buildout -c develop.cfg
 
 Start Plone as normal.
 
-Miscallanious issues
---------------------
-- If filestorage files have been deleted, you may need to run:
+If filestorage files have been deleted, you may need to run:
 
-    bin/plonectl adduser admin admin
+    $ bin/plonectl adduser admin admin
 
-- If you don't have a mail server configured, you can use this command
+If you don't have a mail server configured, you can use this command
 to start a simple debug SMTP server:
 
-    python -m smtpd -n -c DebuggingServer localhost:1025
+    $ python -m smtpd -n -c DebuggingServer localhost:1025
 
-- To update the CHANGELOG use `git log`.  Set the --since parameter to
-reflect the date of the previous most recent update to the CHANGELOG.
+Miscellaneous issues
+====================
 
-    $ cd Plone/zinstance/src/bika.lims
-    $ git log master --since=01/01/2010 --pretty=format:"%ad%n==========%n%s%+N" --date=short --no-merges > CHANGELOG.tmp
+Use the built-in indexes and metadatas where possible!
 
-Then merge the new information from CHANGELOG.tmp into the existing CHANGELOG.markdown,
-and remove the temporary file.
-
-- Title and Description - Use the built-in indexes and metadatas where possible.
+Title and Description
 
     Modify using lowercase. e.g service.edit(title='Ash', description='blah')
     Access directly as attribute: service.title     service.description
@@ -59,7 +55,7 @@ and remove the temporary file.
         t = self.Description()
         return t and t or ''
 
-- Indent TAL files!
+Indent TAL files!
 
 Add a new AT Content Type
 =========================
