@@ -1,5 +1,6 @@
 from Acquisition import aq_parent, aq_inner, aq_base
 from bika.lims import bikaMessageFactory as _
+from bika.lims import PMF
 from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from Products.CMFCore.utils import getToolByName
@@ -30,21 +31,15 @@ class ContactLoginDetailsView(BrowserView):
 def contact_logindetails_submit(context, request):
 
     def missing(field):
-        message = context.translate('message_input_required',
-            default = 'Input is required but no input given',
-            domain='bika')
+        message = PMF("Input is required but not given.")
         errors.append(field + ': ' + message)
 
     def nomatch(field):
-        message = context.translate('passwords_no_match',
-            default = 'Passwords do not match',
-            domain='bika')
+        message = PMF("Passwords do not match.")
         errors.append(field + ': ' + message)
 
     def minlimit(field):
-        message = context.translate('password_length',
-            default = 'Passwords must contain at least 5 characters',
-            domain='bika')
+        message = PMF("Passwords must contain at least 5 letters.")
         errors.append(field + ': ' + message)
 
     form = request.form
@@ -114,4 +109,3 @@ def contact_logindetails_submit(context, request):
     message = "Registered"
     context.plone_utils.addPortalMessage(message, 'info')
     return json.dumps({'success':message})
-

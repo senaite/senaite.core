@@ -13,7 +13,8 @@
 </metal:title>
 
 <metal:description fill-slot="content-description">
-	<p i18n:translate="contact_login_help">
+	<p i18n:translate="contact_login_help"
+		tal:condition="context/hasUser">
 		<span tal:content="here/getFullname" i18n:name="contact_fullname">Pete Smith</span>
 		can log into the LIMS by using
 		<strong tal:content="here/getUsername" i18n:name="contact_username">username</strong>
@@ -21,7 +22,8 @@
 		passwords. If a password is forgotten a contact
 		can request a new password from the login form.
 	</p>
-	<div class="portalMessage" i18n:translate="">
+	<div class="portalMessage" i18n:translate=""
+		tal:condition="not:context/hasUser">
 		No user exists for
 		<span tal:content="here/getFullname" i18n:name="contact_fullname">Pete Smith</span>
 		and he/she will not be able to log in.
