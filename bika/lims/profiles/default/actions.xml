@@ -189,7 +189,7 @@
 			<property name="permissions">
 				<element value="List portal members"/>
 			</property>
-			<property name="visible">True</property>
+			<property name="visible">False</property>
 		</object>
 	</object>
 </object>

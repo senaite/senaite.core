@@ -3,6 +3,7 @@ from bika.lims.testing import BIKA_INTEGRATION_TESTING
 from plone.app.testing import *
 from plone.testing import z2
 from Products.validation import validation as validationService
+from Products.CMFCore.utils import getToolByName
 
 import unittest
 
@@ -17,7 +18,6 @@ class Tests(unittest.TestCase):
         self.portal_catalog = getToolByName(self.portal, 'portal_catalog')
         self.bsc = bsc = getToolByName(self.portal, 'bika_setup_catalog')
         self.portal_workflow = getToolByName(self.portal, 'portal_workflow')
-        self.reference_catalog = getToolByName(self.portal, REFERENCE_CATALOG)
         self.portal_registration = getToolByName(self.portal, 'portal_registration')
         self.portal_groups = getToolByName(self.portal, 'portal_groups')
         self.portal_membership = getToolByName(self.portal, 'portal_membership')

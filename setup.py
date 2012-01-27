@@ -6,7 +6,7 @@ version = '3.0a1'
 setup(name='bika.lims',
       version=version,
       description="Bika LIMS",
-      long_description=open("doc/INSTALL.md").read(),
+      long_description=open("README.md").read(),
       # Get more strings from
       # http://pypi.python.org/pypi?:action=list_classifiers
       classifiers=[
@@ -24,7 +24,7 @@ setup(name='bika.lims',
       zip_safe=False,
       install_requires=[
           'setuptools',
-          'Products.ATExtensions',
+          'Products.ATExtensions>=1.1a3',
           'Products.CMFEditions',
           'Products.AdvancedQuery',
           'collective.subtractiveworkflow',
@@ -43,4 +43,3 @@ setup(name='bika.lims',
       target = plone
       """,
       )
-
