@@ -1,7 +1,7 @@
 Installation
-============
+------------
 
-This document describes the installation of Bika LIMS from the Plone Unified
+This document describes the installation of Bika LIMS using the Plone Unified
 Installer package
 
 ### Download and install Plone
@@ -19,7 +19,6 @@ Find the "eggs" section and add "bika.lims"
     eggs =
         Plone
         Pillow
-        lxml
         bika.lims
 
 ### Run buildout
