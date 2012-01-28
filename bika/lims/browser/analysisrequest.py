@@ -1438,6 +1438,7 @@ class AnalysisRequestsView(BikaListingView):
                 url = obj.absolute_url() + "/manage_results"
             else:
                 url = obj.absolute_url()
+
             items[x]['getRequestID'] = obj.getRequestID()
             items[x]['replace']['getRequestID'] = "<a href='%s'>%s</a>" % \
                  (url, items[x]['getRequestID'])

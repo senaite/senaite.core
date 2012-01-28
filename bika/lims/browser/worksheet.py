@@ -7,6 +7,7 @@ from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from bika.lims import ManageResults
 from bika.lims import EditResults, EditWorksheet
 from bika.lims import PMF, logger
 from bika.lims import bikaMessageFactory as _
@@ -507,8 +508,8 @@ class AddAnalysesView(BikaListingView):
         self.pagesize = 50
 
         self.columns = {
-            'ClientTitle': {'title': _('Client'),
-                            'index':'getClientTitle'},
+            'Client': {'title': _('Client'),
+                            'index':'getClient'},
             'getClientOrderNumber': {'title': _('Order')},
             'getRequestID': {'title': _('Request ID')},
             'CategoryTitle': {'title': _('Category'),
@@ -523,7 +524,7 @@ class AddAnalysesView(BikaListingView):
             {'id':'all',
              'title': _('All'),
              'transitions': ['assign'],
-             'columns':['ClientTitle',
+             'columns':['Client',
                         'getClientOrderNumber',
                         'getRequestID',
                         'CategoryTitle',
@@ -584,7 +585,18 @@ class AddAnalysesView(BikaListingView):
                     (self.context.absolute_url(),
                      self.context.translate(_("Late Analysis")))
             items[x]['CategoryTitle'] = service.getCategory().Title()
-            items[x]['ClientTitle'] = client.Title()
+
+            if getSecurityManager().checkPermission(ManageResults, obj.aq_parent):
+                url = obj.aq_parent.absolute_url() + "/manage_results"
+            else:
+                url = obj.aq_parent.absolute_url()
+            items[x]['getRequestID'] = obj.aq_parent.getRequestID()
+            items[x]['replace']['getRequestID'] = "<a href='%s'>%s</a>" % \
+                 (url, items[x]['getRequestID'])
+
+            items[x]['Client'] = client.Title()
+            items[x]['replace']['Client'] = "<a href='%s'>%s</a>" % \
+                 (client.absolute_url(), client.Title())
         return items
 
     def getServices(self):
@@ -649,11 +661,10 @@ class AddBlankView(BrowserView):
                                                       service_uids)
             self.request.response.redirect(
                 self.context.absolute_url() + "/manage_results")
-            return
-
-        self.Services = WorksheetServicesView(self.context, self.request)
-        self.Services.view_url = self.Services.base_url + "/add_blank"
-        return self.template()
+        else:
+            self.Services = WorksheetServicesView(self.context, self.request)
+            self.Services.view_url = self.Services.base_url + "/add_blank"
+            return self.template()
 
     def getAvailablePositions(self):
         """ Return a list of empty slot numbers
@@ -714,7 +725,6 @@ class AddControlView(BrowserView):
         else:
             available_positions = []
         return available_positions
-
 
 class AddDuplicateView(BrowserView):
     implements(IViewView)
