@@ -914,6 +914,8 @@ class WorksheetServicesView(BikaListingView):
 
 class ajaxGetWorksheetReferences(ReferenceSamplesView):
     """ Display reference samples matching services in this worksheet
+        add_blank and add_control use this to refresh the list of reference
+        samples when service checkboxes are selected
     """
     implements(IViewView)
 
@@ -960,6 +962,7 @@ class ajaxGetWorksheetReferences(ReferenceSamplesView):
                 services = [rs.Title() for rs in ws_ref_services]
                 items[x]['nr_services'] = len(services)
                 items[x]['Definition'] = obj.getReferenceDefinition().Title()
+                services.sort()
                 items[x]['Services'] = \
                     ", ".join(services)
                 items[x]['replace'] = {}
