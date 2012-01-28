@@ -320,7 +320,7 @@ class AnalysesView(BikaListingView):
                         state['columns'].insert(pos, col_id)
                 # retested column is added after Result.
                 pos = 'Result' in state['columns'] and \
-                    state['columns'].index('Result') + 1 or len(state['columns'])
+                    state['columns'].index('Uncertainty') + 1 or len(state['columns'])
                 state['columns'].insert(pos, 'retested')
                 new_states.append(state)
             self.review_states = new_states
@@ -351,7 +351,7 @@ class AnalysesView(BikaListingView):
             new_states = []
             for state in self.review_states:
                 pos = 'Result' in state['columns'] and \
-                    state['columns'].index('Result') + 1 or len(state['columns'])
+                    state['columns'].index('Uncertainty') + 1 or len(state['columns'])
                 state['columns'].insert(pos, 'ResultDM')
                 new_states.append(state)
             self.review_states = new_states

@@ -204,8 +204,8 @@ class WorksheetAnalysesView(AnalysesView):
             'DueDate': {'title': _('Due Date')},
             'Service': {'title': _('Analysis')},
             'Result': {'title': _('Result')},
-            'ResultDM': {'title': _('Dry')},
             'Uncertainty': {'title': _('+-')},
+            'ResultDM': {'title': _('Dry')},
             'retested': {'title': "<img src='++resource++bika.lims.images/retested.png' title='%s'/>" % _('Retested'),
                          'type':'boolean'},
             'Attachments': {'title': _('Attachments')},
@@ -393,6 +393,8 @@ class ManageResultsView(BrowserView):
         self.getAnalysts = getAnalysts(context)
 
     def __call__(self):
+        self.icon = "++resource++bika.lims.images/worksheet_big.png"
+
         # Worksheet Attachmemts
         # the expandable form is handled here.
         if "AttachmentFile_file" in self.request:
@@ -461,8 +463,7 @@ class ManageResultsView(BrowserView):
                         attachments.append(other.UID())
                     attachments.append(attachment.UID())
                     analysis.setAttachment(attachments)
-
-        self.icon = "++resource++bika.lims.images/worksheet_big.png"
+        # Here we create an instance of WorksheetAnalysesView
         self.Analyses = WorksheetAnalysesView(self.context, self.request)
         self.analystname = getAnalystName(self.context)
         self.instrumenttitle = self.context.getInstrument() and self.context.getInstrument().Title() or ''
