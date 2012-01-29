@@ -9,58 +9,24 @@ from Products.validation.validators.RegexValidator import RegexValidator
 import sys
 from Products.CMFEditions.Permissions import SaveNewVersion
 from Products.Archetypes.config import REFERENCE_CATALOG
-# I want all default behaviour including i18n.
 from bika.lims import bikaMessageFactory as _
 
 class HistoryAwareReferenceField(ReferenceField):
     """ Version aware references.
 
-    Uses txhe object's version_id to retrieve target object
-    data.  This means update_version_on_edit must be called
-    when a versioned object is edited.
+    Uses instance.reference_versions[uid] to record uid.version_id,
+    to pin this reference to a specific version.
 
-    If the current user has SaveNewVersion on the source.
-    all existing reference versions will be updated to the
-    current version_id of the target objects.
+    The 'auto_update_backrefs' is a list of reference relationship names
+    which will automatically be updated when this object's version is
+    incremented:  https://github.com/bikalabs/Bika-LIMS/issues/84
 
     """
     security = ClassSecurityInfo()
 
     security.declarePrivate('set')
     def set(self, instance, value, **kwargs):
-        """Mutator.
-
-        >>> from Products.Archetypes.BaseContent import BaseContent
-        >>> from Products.ATContentTypes.lib.historyaware import HistoryAwareMixin
-        >>> from Products.Archetypes.references import HoldingReference
-        >>> from Products.Archetypes import atapi
-
-        >>> class Thing(BaseContent, HistoryAwareMixin)
-        ...     schema = Schema((
-        ...         OtherThing = HistoryAwareReferenceField(
-        ...             allowed_types = ('Thing',),
-        ...             relationship = "ThingThing",
-        ...             referenceClass = HoldingReference,
-        ...         )
-        ...     ))
-
-        >>> add Thing to versionable types
-
-        >>> t1 = Thing()
-        >>> t2 = Thing()
-
-
-        take SaveNewVersion permission
-        bump versions,
-        save source:
-        source's target should be latest version
-
-        remove SaveNewVersion permission
-        bump versions,
-        save source:
-        source's target should not be updated to latest
-
-        """
+        """ Mutator. """
         rc = getToolByName(instance, REFERENCE_CATALOG)
         targetUIDs = [ref.targetUID for ref in
                       rc.getReferences(instance, self.relationship)]

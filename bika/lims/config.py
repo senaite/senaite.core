@@ -40,28 +40,13 @@ ViewResults = 'BIKA: View Results'
 EditResults = 'BIKA: Edit Results'
 CancelAndReinstate = 'BIKA: Cancel and reinstate'
 
-TYPES_TO_VERSION = ('AnalysisService',
-                    'Calculation',
-                    'SamplePoint',
-                    'SampleType',
-                    'AnalysisSpec',
-                    'WorksheetTemplate',
-
-#                    'Worksheet',
-#                    'AnalysisRequest',
-#                    'Sample',
-#                    'Analysis',
-#                    'DuplicateAnalysis',
-#                    'ReferenceAnalysis',
-                    )
-
-AUTO_VERSION = ('AnalysisService',
-                'Calculation',
-                'SamplePoint',
-                'SampleType',
-                'AnalysisSpec',
-                'WorksheetTemplate',
-                )
+VERSIONABLE_TYPES = ('AnalysisService',
+                     'Calculation',
+                     'SamplePoint',
+                     'SampleType',
+                     'AnalysisSpec',
+                     'WorksheetTemplate',
+                     )
 
 BIKA_PERMISSIONS = (
     (ManageBika, ()),

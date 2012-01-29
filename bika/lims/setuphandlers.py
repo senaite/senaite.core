@@ -242,15 +242,16 @@ class BikaGenerator:
         portal.pricelists.reindexObject()
 
     def setupVersioning(self, portal):
-        pr = getToolByName(portal, 'portal_repository')
-        versionable_types = list(pr.getVersionableContentTypes())
-        for type_id in TYPES_TO_VERSION:
+        portal_repository = getToolByName(portal, 'portal_repository')
+        versionable_types = list(portal_repository.getVersionableContentTypes())
+
+        for type_id in VERSIONABLE_TYPES:
             if type_id not in versionable_types:
                 versionable_types.append(type_id)
-                pr.addPolicyForContentType(type_id, 'version_on_revert')
-                if type_id in AUTO_VERSION:
-                    pr.addPolicyForContentType(type_id, 'at_edit_autoversion')
-        pr.setVersionableContentTypes(versionable_types)
+                # Add default versioning policies to the versioned type
+                for policy_id in DEFAULT_POLICIES:
+                    portal_repository.addPolicyForContentType(type_id, policy_id)
+        portal_repository.setVersionableContentTypes(versionable_types)
 
     def setupCatalogs(self, portal):
         bsc = getToolByName(portal, 'bika_setup_catalog', None)
@@ -428,5 +429,13 @@ def setupVarious(context):
     gen.setupGroupsAndRoles(site)
     gen.setupPortalContent(site)
     gen.setupPermissions(site)
-    gen.setupVersioning(site)
+    try:
+        from Products.CMFEditions.setuphandlers import DEFAULT_POLICIES
+        # we're on plone < 4.1, configure versionable types manually
+        gen.setupVersioning(site)
+    except ImportError:
+        # repositorytool.xml will be used
+        pass
     gen.setupCatalogs(site)
+
+
