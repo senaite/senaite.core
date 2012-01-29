@@ -64,7 +64,7 @@ class LoadSetupData(BrowserView):
         sheets = {}
         for sheetname in wb.get_sheet_names():
             sheets[sheetname] = wb.get_sheet_by_name(sheetname)
-        self.load_prefixes(sheets['Prefixes'])
+        #self.load_prefixes(sheets['Prefixes'])
         self.load_lab_users(sheets['Lab Users'])
         self.load_lab_contacts(sheets['Lab Contacts'])
         self.departments = {}
@@ -282,11 +282,11 @@ class LoadSetupData(BrowserView):
             _id = folder.invokeFactory('Client', id = 'tmp')
             obj = folder[_id]
             obj.edit(AccountNumber = unicode(row['AccountNumber']),
-                        Name = unicode(row['Name']),
-                        MemberDiscountApplies = row['MemberDiscountApplies'] and True or False,
-                        EmailAddress = unicode(row['EmailAddress']),
-                        Phone = unicode(row['Telephone']),
-                        Fax = unicode(row['Fax']))
+                     Name = unicode(row['Name']),
+                     MemberDiscountApplies = row['MemberDiscountApplies'] and True or False,
+                     EmailAddress = unicode(row['EmailAddress']),
+                     Phone = unicode(row['Telephone']),
+                     Fax = unicode(row['Fax']))
             obj.processForm()
 
 
@@ -456,7 +456,7 @@ class LoadSetupData(BrowserView):
             obj = folder[_id]
             obj.edit(title = unicode(row['title']),
                      description = unicode(row['description']),
-                     Department = self.departments[unicode(row['Department'])].UID())
+                     Department = row['Department'] and self.departments[unicode(row['Department'])].UID() or None)
             self.cats[unicode(row['title'])] = obj
             obj.processForm()
 
@@ -540,29 +540,31 @@ class LoadSetupData(BrowserView):
                 u = []
             resultoptions = []
             if (row['ResultValue'] not in ['', None]):
-                resultoptions.append({'ResultValue':str(row['ResultValue']),
+                resultoptions.append({'ResultValue': str(row['ResultValue']),
                                       'ResultText': str(row['ResultText'])})
+            cat = row['Category'] and unicode(row['Category']) or unicode('Uncategorised')
             obj.edit(title = unicode(row['title']),
-                     description = unicode(row['description']),
-                     PointOfCapture = unicode(row['PointOfCapture']),
-                     Unit = unicode(row['Unit'] and row['Unit'] or ''),
-                     Category = self.cats[unicode(row['Category'])].UID(),
-                     Price = "%02f" % float(row['Price']),
+                 description = unicode(row['description']),
+                 PointOfCapture = unicode(row['PointOfCapture']),
+                 Unit = unicode(row['Unit'] and row['Unit'] or ''),
+                 Category = self.cats[unicode(row['Category'])].UID(),
+                 Price = "%02f" % float(row['Price']),
 
-                     CorporatePrice = "%02f" % float(row['BulkPrice']),
-                     VAT = "%02f" % float(row['VAT']),
-                     Precision = unicode(row['Precision']),
-                     Accredited = row['Accredited'] and True or False,
-                     Keyword = unicode(row['Keyword']),
-                     MaxTimeAllowed = {'days':unicode(row['Days']),
-                                       'hours':unicode(row['Hours']),
-                                       'minutes':unicode(row['Minutes'])},
-                     DuplicateVariation = "%02f" % float(row['DuplicateVariation']),
-                     Uncertanties = u,
-                     ResultOptions = resultoptions,
-                     ReportDryMatter = row['ReportDryMatter'] and True or False,
-                     Instrument = row['Instrument'] in self.instruments and self.instruments[row['Instrument']].UID() or '',
-                     )
+                 CorporatePrice = "%02f" % float(row['BulkPrice']),
+                 VAT = "%02f" % float(row['VAT']),
+                 Precision = unicode(row['Precision']),
+                 Accredited = row['Accredited'] and True or False,
+                 Keyword = unicode(row['Keyword']),
+                 MaxTimeAllowed = {'days':unicode(row['Days']),
+                                   'hours':unicode(row['Hours']),
+                                   'minutes':unicode(row['Minutes'])},
+                 DuplicateVariation = "%02f" % float(row['DuplicateVariation']),
+                 Uncertanties = u,
+                 ResultOptions = resultoptions,
+                 ReportDryMatter = row['ReportDryMatter'] and True or False
+                 )
+            if row['Instrument']:
+                obj.setInstrument(row['Instrument'] in self.instruments and self.instruments[row['Instrument']].UID()),
             if row['Calculation']:
                 obj.setCalculation(self.calcs[row['Calculation']])
             if '_uncert' in row:
@@ -781,8 +783,10 @@ class LoadSetupData(BrowserView):
         fields = rows[1]
         for row in rows[3:]:
             row = dict(zip(fields, row))
+            if not row['_ReferenceSupplier_Name']:
+                continue
             folder = self.bsc(portal_type="ReferenceSupplier",
-                                    Title = row['_ReferenceSupplier_Name'])[0].getObject()
+                              Title = row['_ReferenceSupplier_Name'])[0].getObject()
             _id = folder.invokeFactory('SupplierContact', id = 'tmp')
             obj = folder[_id]
             obj.edit(Firstname = unicode(row['Firstname']),

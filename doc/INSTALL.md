@@ -2,11 +2,13 @@ Installation
 ------------
 
 This document describes the installation of Bika LIMS using the Plone Unified
-Installer package
+Installer package.
 
 ### Download and install Plone
 
 The latest Unified Installer can be found at http://plone.org/products
+
+Plone 4 or newer is required.
 
     $ tar xzf Plone-4.1.3-UnifiedInstaller.tgz
     $ cd Plone-4.1.3-UnifiedInstaller
