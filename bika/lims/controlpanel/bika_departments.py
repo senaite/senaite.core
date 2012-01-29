@@ -38,13 +38,17 @@ class DepartmentsView(BikaListingView):
             'Title': {'title': _('Department'),
                       'index':'sortable_title'},
             'Description': {'title': _('Description'),
-                            'index': 'description'},
+                            'index': 'description',
+                            'toggle': True},
             'Manager': {'title': _('Manager'),
-                        'index': 'getManagerName'},
+                        'index': 'getManagerName',
+                        'toggle': True},
             'ManagerPhone': {'title': _('Manager Phone'),
-                             'index': 'getManagerPhone'},
+                             'index': 'getManagerPhone',
+                             'toggle': True},
             'ManagerEmail': {'title': _('Manager Email'),
-                             'index': 'getManagerEmail'},
+                             'index': 'getManagerEmail',
+                             'toggle': True},
         }
 
         self.review_states = [

@@ -37,7 +37,8 @@ class ReferenceManufacturersView(BikaListingView):
             'Title': {'title': _('Title'),
                       'index': 'sortable_title'},
             'Description': {'title': _('Description'),
-                            'index': 'description'},
+                            'index': 'description',
+                            'toggle': True},
         }
 
         self.review_states = [

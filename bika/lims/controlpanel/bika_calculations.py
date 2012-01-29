@@ -38,9 +38,11 @@ class CalculationsView(BikaListingView):
             'Title': {'title': _('Calculation'),
                       'index': 'sortable_title'},
             'Description': {'title': _('Description'),
-                            'index': 'description'},
+                            'index': 'description',
+                            'toggle': True},
             'Formula': {'title': _('Formula'),
-                        'index': 'getFormula'},
+                        'index': 'getFormula',
+                        'toggle': True},
         }
 
         self.review_states = [

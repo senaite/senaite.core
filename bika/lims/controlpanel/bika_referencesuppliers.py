@@ -44,9 +44,12 @@ class ReferenceSuppliersView(BikaListingView):
         self.columns = {
             'Name': {'title': _('Name'),
                      'index': 'getName'},
-            'Email': {'title': _('Email')},
-            'Phone': {'title': _('Phone')},
-            'Fax': {'title': _('Fax')},
+            'Email': {'title': _('Email'),
+                      'toggle': True},
+            'Phone': {'title': _('Phone'),
+                      'toggle': True},
+            'Fax': {'title': _('Fax'),
+                    'toggle': True},
         }
         self.review_states = [
             {'id':'all',

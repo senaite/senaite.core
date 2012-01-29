@@ -38,7 +38,8 @@ class ContainersView(BikaListingView):
             'Title': {'title': _('Container'),
                       'index':'sortable_title'},
             'Description': {'title': _('Description'),
-                            'index': 'description'},
+                            'index': 'description',
+                            'toggle': True},
         }
 
         self.review_states = [

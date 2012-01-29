@@ -25,14 +25,14 @@ def getCatalog(instance, field = 'UID'):
        ('workflow_skiplist' in self.REQUEST and self.UID() in self.REQUEST['workflow_skiplist']):
         return None
     else:
-        catalogs = [getToolByName(instance, 'portal_catalog'),
-                    getToolByName(instance, 'bika_setup_catalog')]
-        field = instance.getField(field)
-        for catalog in catalogs:
-            for index in catalog.index_objects():
-                if field.accessor in index.getIndexSourceNames():
-                    return catalog
-
+        # grab the first catalog we are indexed in.
+        # we're only indexed in one.
+        at = getToolByName(instance, 'archetype_tool')
+        plone = instance.portal_url.getPortalObject()
+        catalog_name = instance.portal_type in at.catalog_map \
+            and at.catalog_map[instance.portal_type][0] or 'portal_catalog'
+        catalog = getToolByName(plone, catalog_name)
+        return catalog
 
 class BikaSetupCatalog(CatalogTool):
     """ Catalog for all bika_setup objects

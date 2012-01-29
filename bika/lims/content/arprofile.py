@@ -72,7 +72,7 @@ class ARProfile(BaseContent):
 
     _at_rename_after_creation = True
     def _renameAfterCreation(self, check_auto_id=False):
-        from bika.lims.utils import renameAfterCreation
+        from bika.lims.idserver import renameAfterCreation
         renameAfterCreation(self)
 
 registerType(ARProfile, PROJECTNAME)

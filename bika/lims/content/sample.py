@@ -45,9 +45,6 @@ schema = BikaSchema.copy() + Schema((
             label = _("Client SID"),
         ),
     ),
-    StringField('SubmittedByUser',
-        searchable = True,
-    ),
     ReferenceField('LinkedSample',
         vocabulary_display_path_bound = sys.maxint,
         multiValue = 1,
@@ -108,8 +105,10 @@ schema = BikaSchema.copy() + Schema((
             visible = {'edit':'hidden'},
         ),
     ),
+    StringField('SubmittedByUser',
+        searchable = True,
+    ),
     StringField('SampledByUser',
-        index = 'FieldIndex',
         searchable = True,
     ),
     DateTimeField('DateReceived',
@@ -176,7 +175,7 @@ class Sample(BaseFolder, HistoryAwareMixin):
 
     _at_rename_after_creation = True
     def _renameAfterCreation(self, check_auto_id=False):
-        from bika.lims.utils import renameAfterCreation
+        from bika.lims.idserver import renameAfterCreation
         renameAfterCreation(self)
 
     def _getCatalogTool(self):
@@ -266,10 +265,7 @@ class Sample(BaseFolder, HistoryAwareMixin):
         if uid == '':
             return ' '
 
-        r = self.portal_catalog(
-            portal_type = 'Contact',
-            getUsername = uid
-        )
+        r = self.portal_catalog(portal_type = 'Contact', getUsername = uid)
         if len(r) == 1:
             return r[0].Title
 

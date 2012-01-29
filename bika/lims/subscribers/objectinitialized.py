@@ -5,7 +5,6 @@ from Products.CMFCore.utils import getToolByName
 from bika.lims import bikaMessageFactory as _
 from Products.Archetypes.utils import shasattr
 from bika.lims import logger
-from bika.lims.utils import generateUniqueId
 import transaction
 
 ModuleSecurityInfo('bika.lims.subscribers.objectinitialized').declarePublic('applyVersionControl')

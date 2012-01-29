@@ -38,11 +38,16 @@ class LabContactsView(BikaListingView):
             'Fullname': {'title': _('Name'),
                          'index': 'getFullname'},
             'Department': {'title': _('Department'),
-                           'index': 'getDepartmentTitle'},
-            'BusinessPhone': {'title': _('Phone')},
-            'Fax': {'title': _('Fax')},
-            'MobilePhone': {'title': _('Mobile Phone')},
-            'EmailAddress': {'title': _('Email Address')},
+                           'index': 'getDepartmentTitle',
+                           'toggle': True},
+            'BusinessPhone': {'title': _('Phone'),
+                              'toggle': True},
+            'Fax': {'title': _('Fax'),
+                    'toggle': True},
+            'MobilePhone': {'title': _('Mobile Phone'),
+                            'toggle': True},
+            'EmailAddress': {'title': _('Email Address'),
+                             'toggle': True},
         }
 
         self.review_states = [

@@ -39,7 +39,8 @@ class MethodsView(BikaListingView):
             'Title': {'title': _('Method'),
                       'index': 'sortable_title'},
             'Description': {'title': _('Description'),
-                            'index': 'description'},
+                            'index': 'description',
+                            'toggle': True},
         }
 
         self.review_states = [

@@ -38,9 +38,11 @@ class ARProfilesView(BikaListingView):
             'Title': {'title': _('Profile'),
                       'index': 'sortable_title'},
             'Description': {'title': _('Description'),
-                            'index': 'description'},
+                            'index': 'description',
+                            'toggle': True},
             'ProfileKey': {'title': _('Profile Key'),
-                           'index': 'getProfileKey'},
+                           'index': 'getProfileKey',
+                           'toggle': True},
         }
 
         self.review_states = [

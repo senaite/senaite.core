@@ -35,15 +35,14 @@ class AnalysisServicesView(BikaListingView):
 
         self.columns = {
             'Title': {'title': _('Service'), 'sortable':False},
-            'Keyword': {'title': _('Keyword'), 'sortable':False},
-            'Category': {'title': _('Category'), 'sortable':False},
-            'Department': {'title': _('Department'), 'sortable':False},
-            'Instrument': {'title': _('Instrument'), 'sortable':False},
-            'Unit': {'title': _('Unit'), 'sortable':False},
-            'Price': {'title': _('Price'), 'sortable':False},
-            'MaxTimeAllowed': {'title': _('Max Time'), 'sortable':False},
-            'DuplicateVariation': {'title': _('Dup Var'), 'sortable':False},
-            'Calculation': {'title': _('Calculation'), 'sortable':False},
+            'Keyword': {'title': _('Keyword'), 'sortable':False, 'toggle': True},
+            'Department': {'title': _('Department'), 'sortable':False, 'toggle': False},
+            'Instrument': {'title': _('Instrument'), 'sortable':False, 'toggle': True},
+            'Unit': {'title': _('Unit'), 'sortable':False, 'toggle': True},
+            'Price': {'title': _('Price'), 'sortable':False, 'toggle': True},
+            'MaxTimeAllowed': {'title': _('Max Time'), 'sortable':False, 'toggle': False},
+            'DuplicateVariation': {'title': _('Dup Var'), 'sortable':False, 'toggle': False},
+            'Calculation': {'title': _('Calculation'), 'sortable':False, 'toggle': True},
         }
 
         self.review_states = [
@@ -51,7 +50,6 @@ class AnalysisServicesView(BikaListingView):
              'title': _('All'),
              'columns': ['Title',
                          'Keyword',
-                         'Category',
                          'Department',
                          'Instrument',
                          'Unit',
@@ -67,7 +65,6 @@ class AnalysisServicesView(BikaListingView):
              'transitions': ['deactivate'],
              'columns': ['Title',
                          'Keyword',
-                         'Category',
                          'Department',
                          'Instrument',
                          'Unit',
@@ -83,7 +80,6 @@ class AnalysisServicesView(BikaListingView):
              'transitions': ['activate',],
              'columns': ['Title',
                          'Keyword',
-                         'Category',
                          'Department',
                          'Instrument',
                          'Unit',

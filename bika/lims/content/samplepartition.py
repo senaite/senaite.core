@@ -45,7 +45,7 @@ class SamplePartition(BaseContent, HistoryAwareMixin):
 
     _at_rename_after_creation = True
     def _renameAfterCreation(self, check_auto_id=False):
-        from bika.lims.utils import renameAfterCreation
+        from bika.lims.idserver import renameAfterCreation
         renameAfterCreation(self)
 
     def _getCatalogTool(self):
@@ -82,17 +82,14 @@ class SamplePartition(BaseContent, HistoryAwareMixin):
         user_id = user.getUserName()
         return user_id
 
-    security.declarePublic('getSubmittedByName')
-    def getSubmittedByName(self):
+    security.declarePublic('getPreservedByName')
+    def getPreservedByName(self):
         """ get the name of the user who preserved this partition """
         uid = self.getPreservedByUser()
         if uid in (None, ''):
             return ' '
 
-        r = self.portal_catalog(
-            portal_type = 'Contact',
-            getUsername = uid
-        )
+        r = self.portal_catalog(portal_type = 'Contact', getUsername = uid)
         if len(r) == 1:
             return r[0].Title
 

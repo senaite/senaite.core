@@ -37,15 +37,19 @@ class InstrumentsView(BikaListingView):
 
         self.columns = {
             'Title': {'title': _('Instrument'),
-                      'index': 'sortable_title',},
+                      'index': 'sortable_title'},
             'Type': {'title': _('Type'),
-                     'index': 'getType',},
+                     'index': 'getType',
+                     'toggle': True},
             'Brand': {'title': _('Brand'),
-                      'index': 'getBrand'},
+                      'index': 'getBrand',
+                      'toggle': True},
             'Model': {'title': _('Model'),
-                      'index': 'getModel'},
+                      'index': 'getModel',
+                      'toggle': True},
             'ExpiryDate': {'title': _('Expiry Date'),
-                           'index':'getCalibrationExpiryDate'},
+                           'index':'getCalibrationExpiryDate',
+                           'toggle': True},
         }
         self.review_states = [
             {'id':'all',

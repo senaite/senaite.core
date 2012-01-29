@@ -39,11 +39,13 @@ class WorksheetTemplatesView(BikaListingView):
 
         self.columns = {
             'Title': {'title': _('Title'),
-                      'index': 'sortable_title', },
+                      'index': 'sortable_title'},
             'Description': {'title': _('Description'),
-                            'index': 'description'},
+                            'index': 'description',
+                            'toggle': True},
             'Instrument': {'title': _('Instrument'),
-                      'index':'getInstrumentTitle'},
+                      'index':'getInstrumentTitle',
+                      'toggle': True},
         }
 
         self.review_states = [

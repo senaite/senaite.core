@@ -11,7 +11,6 @@ from Products.CMFCore.utils import getToolByName
 from bika.lims.config import PROJECTNAME, ManageReferenceSuppliers
 from bika.lims.content.organisation import Organisation
 from bika.lims.interfaces import IReferenceSupplier
-from bika.lims.utils import generateUniqueId
 from zope.interface import implements
 from bika.lims import bikaMessageFactory as _
 
@@ -27,7 +26,7 @@ class ReferenceSupplier(Organisation):
 
     _at_rename_after_creation = True
     def _renameAfterCreation(self, check_auto_id=False):
-        from bika.lims.utils import renameAfterCreation
+        from bika.lims.idserver import renameAfterCreation
         renameAfterCreation(self)
 
 registerType(ReferenceSupplier, PROJECTNAME)

@@ -38,7 +38,8 @@ class PreservationsView(BikaListingView):
             'Title': {'title': _('Preservation'),
                       'index':'sortable_title'},
             'Description': {'title': _('Description'),
-                            'index': 'description'},
+                            'index': 'description',
+                            'toggle': True},
         }
 
         self.review_states = [
