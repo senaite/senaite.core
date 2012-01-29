@@ -271,12 +271,15 @@ class WorksheetFolderListingView(BikaListingView):
                 if title not in ws_services:
                     ws_services[title] = "<a href='%s'>%s,</a>" % \
                         (service.absolute_url(), title)
-            ws_services = ws_services.values()
-            ws_services.sort()
-            if ws_services:
-                ws_services[-1] = ws_services[-1].replace(",", "")
+            keys = list(ws_services.keys())
+            keys.sort()
+            services = []
+            for key in keys:
+                services.append(ws_services[key])
+            if services:
+                services[-1] = services[-1].replace(",", "")
             items[x]['Services'] = ""
-            items[x]['replace']['Services'] = " ".join(ws_services)
+            items[x]['replace']['Services'] = " ".join(services)
 
             # set Sample Types
             pos_parent = {}
