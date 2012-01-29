@@ -24,7 +24,7 @@ class PrefixesField(RecordsField):
                            'prefix': 'Prefix',
                            'padding': 'Padding',
                            },
-        'subfield_readonly':{'portal_type': True,
+        'subfield_readonly':{'portal_type': False,
                              'prefix': False,
                              'padding': False,
                             },
@@ -224,7 +224,7 @@ schema = BikaFolderSchema.copy() + Schema((
     ),
     PrefixesField('Prefixes',
         schemata = _("ID Server"),
-        fixedSize=8,
+#        fixedSize=8,
         widget=RecordsWidget(
             label = _("Prefixes"),
             description = _("Prefixes description",
@@ -290,7 +290,6 @@ schema['title'].validators = ()
 schema['title'].widget.visible = False
 # Update the validation layer after change the validator in runtime
 schema['title']._validationLayer()
-
 
 class BikaSetup(folder.ATFolder):
     security = ClassSecurityInfo()
