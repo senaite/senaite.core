@@ -222,21 +222,41 @@ def generateUniqueId(context):
     year = context.bika_setup.getYearInPrefix() and \
         DateTime().strftime("%Y")[2:] or ''
 
-
-    # Special case for Analysis Request IDs to be based on sample
+    # Special case for Analysis Request IDs
     if context.portal_type == "AnalysisRequest":
-        s_prefix = context.getSample().getSampleType().getPrefix()
-        s_padding = context.bika_setup.getSampleIDPadding()
-        ar_padding = context.bika_setup.getARIDPadding()
         sample = context.getSample()
+        s_prefix = sample.getSampleType().getPrefix()
+        sample_padding = context.bika_setup.getSampleIDPadding()
+        ar_padding = context.bika_setup.getARIDPadding()
         sample_id = sample.getId()
-        s_number = sample_id.split(s_prefix)[1]
+        sample_number = sample_id.split(s_prefix)[1]
         ar_number = sample.getLastARNumber()
         ar_number = ar_number and ar_number + 1 or 1
         sample.setLastARNumber(ar_number)
         return "%s%s-%s" % (s_prefix,
-                           str(s_number).zfill(s_padding),
+                           str(sample_number).zfill(sample_padding),
                            str(ar_number).zfill(ar_padding))
+
+    # Special case for Sample Partition IDs
+    if context.portal_type == "SamplePartition":
+        pc = getToolByName(context, 'portal_catalog')
+        sample = context.aq_parent
+        s_prefix = sample.getSampleType().getPrefix()
+        sample_padding = context.bika_setup.getSampleIDPadding()
+        spart_padding = 2
+        sample_id = sample.getId()
+        sample_number = sample_id.split(s_prefix)[1]
+        sparts = sample.listFolderContents(
+            contentFilter={"portal_type": "SamplePartition",
+                           "sort_on": "id"})
+        if sparts:
+            spart_nr = int(sparts[-1].getId().split(s_prefix)[-1])
+        else:
+            spart_nr = 0
+        spart_nr +=1
+        return "%s%s-%s" % (s_prefix,
+                           str(sample_number).zfill(sample_padding),
+                           str(spart_nr).zfill(spart_padding))
 
     if context.bika_setup.getExternalIDServer():
 

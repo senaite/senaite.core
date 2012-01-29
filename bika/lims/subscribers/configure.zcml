@@ -60,6 +60,13 @@
       handler="bika.lims.subscribers.sample.AfterTransitionEventHandler"
     />
 
+    <!-- Workflow action event for Sample Partitions -->
+    <subscriber
+      for="bika.lims.interfaces.ISamplePartition
+           Products.DCWorkflow.interfaces.IAfterTransitionEvent"
+      handler="bika.lims.subscribers.samplepartition.AfterTransitionEventHandler"
+    />
+
     <!-- Workflow action to prevent deactivation of AnalysisCategory objects -->
     <subscriber
       for="bika.lims.interfaces.IAnalysisCategory

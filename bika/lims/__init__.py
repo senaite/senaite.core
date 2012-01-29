@@ -70,6 +70,7 @@ def initialize(context):
     from content.rejectanalysis import RejectAnalysis
     from content.reports import Reports
     from content.sample import Sample
+    from content.samplepartition import SamplePartition
     from content.samplepoint import SamplePoint
     from content.samplesfolder import SamplesFolder
     from content.sampletype import SampleType

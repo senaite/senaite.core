@@ -97,7 +97,12 @@ schema = BikaSchema.copy() + Schema((
         relationship = 'WorksheetInstrument',
         referenceClass = HoldingReference,
     ),
-
+    ReferenceField('SamplePartition',
+        required = 0,
+        allowed_types = ('SamplePartition',),
+        relationship = 'AnalysisSamplePartition',
+        referenceClass = HoldingReference,
+    ),
     ComputedField('ClientUID',
         expression = 'context.aq_parent.aq_parent.UID()',
     ),

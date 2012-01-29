@@ -34,6 +34,9 @@ class IReports(Interface):
 class ISample(Interface):
     """Sample"""
 
+class ISamplePartition(Interface):
+    """Sample"""
+
 class ISamplesFolder(Interface):
     """Samples Folder"""
 

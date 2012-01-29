@@ -41,6 +41,9 @@ schema = schema.copy() + Schema((
         referenceClass = HoldingReference,
     ),
 
+    ComputedField('SamplePartition',
+        expression = 'context.getAnalysis() and context.getAnalysis().getSamplePartition()',
+    ),
     ComputedField('ClientOrderNumber',
         expression = 'context.getAnalysis() and context.getAnalysis().getClientOrderNumber()',
     ),

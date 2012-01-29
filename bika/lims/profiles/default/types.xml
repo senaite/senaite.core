@@ -61,6 +61,7 @@
  <object name="RejectAnalysis" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="Reports" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="Sample" meta_type="Factory-based Type Information with dynamic views"/>
+ <object name="SamplePartition" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="SamplePoint" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="SamplePoints" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="SamplesFolder" meta_type="Factory-based Type Information with dynamic views"/>

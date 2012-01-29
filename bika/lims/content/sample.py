@@ -12,7 +12,7 @@ from Products.Archetypes.public import *
 from Products.Archetypes.references import HoldingReference
 from Products.CMFCore import permissions
 from Products.CMFCore.WorkflowCore import WorkflowException
-from Products.CMFCore.utils import getToolByName, getToolByName
+from Products.CMFCore.utils import getToolByName
 from bika.lims.config import ManageBika, PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.utils import sortable_title
@@ -118,18 +118,6 @@ schema = BikaSchema.copy() + Schema((
             visible = {'edit':'hidden'},
         ),
     ),
-    DateTimeField('DisposalDate',
-        widget = DateTimeWidget(
-            label = _("Disposal date"),
-            visible = {'edit':'hidden'},
-        ),
-    ),
-    DateTimeField('DateExpired',
-        widget = DateTimeWidget(
-            label = _("Date Expired"),
-            visible = {'edit':'hidden'},
-        ),
-    ),
     IntegerField('LastARNumber',
     ),
     TextField('Notes',
@@ -162,6 +150,18 @@ schema = BikaSchema.copy() + Schema((
         default = False,
         widget = BooleanWidget(
             label = _("Composite"),
+        ),
+    ),
+    DateTimeField('DisposalDate',
+        widget = DateTimeWidget(
+            label = _("Disposal date"),
+            visible = {'edit':'hidden'},
+        ),
+    ),
+    DateTimeField('DateExpired',
+        widget = DateTimeWidget(
+            label = _("Date Expired"),
+            visible = {'edit':'hidden'},
         ),
     ),
 ))
@@ -229,19 +229,13 @@ class Sample(BaseFolder, HistoryAwareMixin):
                 analyses.append(analysis.Title())
         """ sort, and remove duplicates """
         if analyses:
-           analyses.sort()
-           last = analyses[-1]
-           for i in range(len(analyses) - 2, -1, -1):
-               if last == analyses[i]: del analyses[i]
-               else: last = analyses[i]
+            analyses.sort()
+            last = analyses[-1]
+            for i in range(len(analyses) - 2, -1, -1):
+                if last == analyses[i]: del analyses[i]
+                else: last = analyses[i]
 
         return analyses
-
-    # XXX workflow_script
-    def workflow_script_expire(self, state_info):
-        """ expire sample """
-        self.setDateExpired(DateTime())
-        self.reindexObject()
 
     security.declarePublic('current_date')
     def current_date(self):
@@ -290,6 +284,7 @@ class Sample(BaseFolder, HistoryAwareMixin):
         if fullname == '':
             return uid
         return fullname
+
 
 
 atapi.registerType(Sample, PROJECTNAME)

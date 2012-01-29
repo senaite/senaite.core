@@ -84,35 +84,3 @@ Use the built-in Title and Description indexes and metadatas where possible!
     def Title(self):
         t = self.Description()
         return t and t or ''
-
-Adding a new Content Type
--------------------------
-
-Adding a "Container" type, and a site-setup configlet:
-
-The following files are modified (search them for "Container"):
-
-    * modified:   bika/lims/__init__.py
-    * modified:   bika/lims/catalog.py
-    * modified:   bika/lims/controlpanel/configure.zcml
-    * modified:   bika/lims/interfaces/__init__.py
-    * modified:   bika/lims/profiles/default/controlpanel.xml
-    * modified:   bika/lims/profiles/default/cssregistry.xml
-    * modified:   bika/lims/profiles/default/factorytool.xml
-    * modified:   bika/lims/profiles/default/propertiestool.xml
-    * modified:   bika/lims/profiles/default/structure/bika_setup/.objects
-    * modified:   bika/lims/profiles/default/types.xml
-    * modified:   bika/lims/profiles/default/workflows.xml
-    * modified:   bika/lims/setuphandlers.py
-
-The following files were created:
-
-    * bika/lims/browser/images/container.png
-    * bika/lims/browser/images/container_big.png
-    * bika/lims/profiles/default/structure/bika_setup/bika_containers
-    * bika/lims/profiles/default/structure/bika_setup/bika_containers/.properties
-    * bika/lims/profiles/default/structure/bika_setup/bika_containers/.objects
-    * bika/lims/content/container.py
-    * bika/lims/controlpanel/bika_containers.py
-    * bika/lims/profiles/default/types/Container.xml
-    * bika/lims/profiles/default/types/Containers.xml

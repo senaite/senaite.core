@@ -16,6 +16,10 @@ def getCatalog(instance, field = 'UID'):
     """ Return the catalog which indexes objects of instance's type.
         If an object is indexed by more than one catalog, the first match
         will be returned.
+
+        Set AutoIndex=True on the object to prevent spurious catalog reindexing
+        Remember to set it False again after your edit is complete.
+
     """
     if (hasattr(self, 'AutoIndex', False) and self.AutoIndex == False) or  \
        ('workflow_skiplist' in self.REQUEST and self.UID() in self.REQUEST['workflow_skiplist']):
