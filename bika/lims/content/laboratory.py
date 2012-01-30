@@ -113,4 +113,7 @@ class Laboratory(UniqueObject, Organisation):
     def getSchema(self):
         return self.schema
 
+    def Title(self):
+        return self.title and self.title or _("Laboratory")
+
 registerType(Laboratory, PROJECTNAME)

@@ -477,7 +477,7 @@ class ManageResultsView(BrowserView):
                                bsc(portal_type = 'Instrument',
                                    inactive_state = 'active')]
         o = self.context.getInstrument()
-        if o and (o.UID(), o.Title()) not in items:
+        if o and o.UID() not in [i[0] for i in items]:
             items.append((o.UID(), o.Title()))
         items.sort(lambda x, y: cmp(x[1], y[1]))
         return DisplayList(list(items))

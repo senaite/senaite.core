@@ -100,6 +100,7 @@ schema = BikaSchema.copy() + Schema((
     StringField('Keyword',
         schemata = _("Description"),
         required = 1,
+        searchable = True,
         validators = ('servicekeywordvalidator'),
         widget = StringWidget(
             label = _("Analysis Keyword"),
@@ -113,6 +114,7 @@ schema = BikaSchema.copy() + Schema((
     ReferenceField('Method',
         schemata = _("Method"),
         required = 0,
+        searchable = True,
         vocabulary_display_path_bound = sys.maxint,
         allowed_types = ('Method',),
         vocabulary = 'getMethods',
@@ -127,6 +129,7 @@ schema = BikaSchema.copy() + Schema((
     ),
     ReferenceField('Instrument',
         schemata = _("Method"),
+        searchable = True,
         required = 0,
         vocabulary_display_path_bound = sys.maxint,
         vocabulary = 'getInstruments',
@@ -165,6 +168,7 @@ schema = BikaSchema.copy() + Schema((
     ),
     ComputedField('CalculationTitle',
         expression = "context.getCalculation() and context.getCalculation().Title() or ''",
+        searchable = True,
         widget = ComputedWidget(
             visible = False,
         ),
@@ -263,6 +267,7 @@ schema = BikaSchema.copy() + Schema((
     ),
     ComputedField('DepartmentTitle',
         expression = "context.getDepartment() and context.getDepartment().Title() or ''",
+        searchable = True,
         widget = ComputedWidget(
             visible = False,
         ),
@@ -401,7 +406,7 @@ class AnalysisService(BaseContent, HistoryAwareMixin):
                                bsc(portal_type='AnalysisCategory',
                                    inactive_state = 'active')]
         o = self.getCategory()
-        if o and (o.UID(), o.Title()) not in items:
+        if o and o.UID() not in [i[0] for i in items]:
             items.append((o.UID(), o.Title()))
         items.sort(lambda x,y: cmp(x[1], y[1]))
         return DisplayList(list(items))
@@ -412,7 +417,7 @@ class AnalysisService(BaseContent, HistoryAwareMixin):
                                bsc(portal_type='Method',
                                    inactive_state = 'active')]
         o = self.getMethod()
-        if o and (o.UID(), o.Title()) not in items:
+        if o and o.UID() not in [i[0] for i in items]:
             items.append((o.UID(), o.Title()))
         items.sort(lambda x,y: cmp(x[1], y[1]))
         return DisplayList(list(items))
@@ -423,7 +428,7 @@ class AnalysisService(BaseContent, HistoryAwareMixin):
                                bsc(portal_type='Instrument',
                                    inactive_state = 'active')]
         o = self.getInstrument()
-        if o and (o.UID(), o.Title()) not in items:
+        if o and o.UID() not in [i[0] for i in items]:
             items.append((o.UID(), o.Title()))
         items.sort(lambda x,y: cmp(x[1], y[1]))
         return DisplayList(list(items))
@@ -434,7 +439,7 @@ class AnalysisService(BaseContent, HistoryAwareMixin):
                                bsc(portal_type='Calculation',
                                    inactive_state = 'active')]
         o = self.getCalculation()
-        if o and (o.UID(), o.Title()) not in items:
+        if o and o.UID() not in [i[0] for i in items]:
             items.append((o.UID(), o.Title()))
         items.sort(lambda x,y: cmp(x[1], y[1]))
         return DisplayList(list(items))
@@ -445,7 +450,7 @@ class AnalysisService(BaseContent, HistoryAwareMixin):
                                bsc(portal_type='Department',
                                    inactive_state = 'active')]
         o = self.getDepartment()
-        if o and (o.UID(), o.Title()) not in items:
+        if o and o.UID() not in [i[0] for i in items]:
             items.append((o.UID(), o.Title()))
         items.sort(lambda x,y: cmp(x[1], y[1]))
         return DisplayList(list(items))
