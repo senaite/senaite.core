@@ -35,14 +35,6 @@
 
   <browser:page
       for="*"
-      name="load_test_data"
-      class="bika.lims.browser.load_test_data.LoadTestData"
-      permission="bika.lims.ManageBika"
-      layer="bika.lims.interfaces.IBikaLIMS"
-    />
-
-  <browser:page
-      for="*"
       name="log"
       class="bika.lims.browser.log.LogView"
       permission="zope2.View"

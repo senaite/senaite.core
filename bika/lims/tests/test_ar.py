@@ -1,11 +1,11 @@
 from Products.validation import validation
 from bika.lims.testing import BIKA_INTEGRATION_TESTING
+from DateTime import DateTime
 from plone.app.testing import *
 from plone.testing import z2
 from Products.validation import validation as validationService
 from Products.CMFCore.utils import getToolByName
-
-import unittest
+import unittest,random
 
 class Tests(unittest.TestCase):
 
@@ -29,13 +29,12 @@ class Tests(unittest.TestCase):
 
         profiles = {'Digestible Energy': 2,
                     'Micro-Bio check': 2,
-                    'Micro-Bio counts': 2,
-                    'Trace Metals': 2}
+                    'Micro-Bio counts': 2}
 
         sampletypes = [p.getObject() for p in self.bsc(portal_type="SampleType")]
         samplepoints = [p.getObject() for p in self.bsc(portal_type="SamplePoint")]
 
-        for client in self.context.clients.objectValues():
+        for client in self.portal.clients.objectValues():
             contacts = [c for c in client.objectValues() if c.portal_type == 'Contact']
             for profile, count_ars in profiles.items():
                 profile = self.bsc(portal_type='ARProfile',
@@ -43,25 +42,23 @@ class Tests(unittest.TestCase):
                 profile_services = profile.getService()
 
                 _ars = []
-                t = timer()
                 for i in range(1, count_ars+1):
-                    _id = client.invokeFactory(type_name = 'Sample', id = 'tmp')
-                    sample = client[_id]
+                    sample_id = client.invokeFactory(type_name = 'Sample', id = 'tmp')
+                    sample = client[sample_id]
                     sample.edit(
                         SampleID = sample_id,
                         SampleType = random.choice(sampletypes).Title(),
                         SamplePoint = random.choice(samplepoints).Title(),
-                        ClientReference = "".join([chr(random.randint(70,90)) for r in range(5)]),
-                        ClientSampleID = "".join([chr(random.randint(70,90)) for r in range(5)]),
+                        ClientReference = chr(random.randint(70,90))*5,
+                        ClientSampleID = chr(random.randint(70,90))*5,
                         LastARNumber = 1,
                         DateSubmitted = DateTime(),
                         DateSampled = (i == count_ars and DateTime()+86400 or DateTime()),
-                        SubmittedByUser = sample.current_user()
+                        SubmittedByUser = 'testing'
                     )
-                    sample.unmarkCreationFlag()
+                    sample.processForm()
                     self.assertEqual(len(sample.getId().split("-")), 2)
-                    ar_id = client.generateARUniqueId("AnalysisRequest", sample_id, 1)
-                    client.invokeFactory("AnalysisRequest", ar_id)
+                    ar_id = client.invokeFactory("AnalysisRequest", id = 'tmp')
                     ar = client[ar_id]
                     _ars.append(ar)
                     ar.edit(
@@ -72,21 +69,21 @@ class Tests(unittest.TestCase):
                         CCEmails = "",
                         Sample = sample,
                         Profile = profile,
-                        ClientOrderNumber = "".join([chr(random.randint(70,90)) for r in range(10)]),
+                        ClientOrderNumber = chr(random.randint(70,90))*10
                     )
-                    ar.unmarkCreationFlag()
-                    self.assertEqual(len(ar.getId().split("-")), 2)
+                    ar.processForm()
+                    self.assertEqual(len(ar.getId().split("-")), 3)
                     prices = {}
                     service_uids = []
                     for service in profile_services:
                         service_uids.append(service.UID())
                         prices[service.UID()] = service.getPrice()
                     ar.setAnalyses(service_uids, prices = prices)
-                for i in range(2):
-                    self.portal_workflow.doActionFor(_ars[i], 'receive')
-                    self.assertEqual(portal_workflow.getInfoFor(_ars[i], 'review_state', ''),
-                                     'sample_received')
-                transaction.get().commit()
+##                for ar in _ars:
+##                    self.portal_workflow.doActionFor(ar, 'receive')
+##                    self.assertEqual(portal_workflow.getInfoFor(ar, 'review_state', ''),
+##                                     'sample_received')
+##                transaction.get().commit()
 
 def test_suite():
     suite = unittest.TestSuite()
