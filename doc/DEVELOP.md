@@ -22,20 +22,27 @@ Github account.  The package will be updated each time you run buildout.
 ### i18ndude
 
 The i18ndude tool is required only if you intend to add strings that need to
-be translated.  Run locales/updatelocales.sh to update the POT/PO files.
+be translated.
 
-update parts= to include i18ndude:
+To Automatically recompile .mo files during development, edit your
+buildout.cfg to include the zope_i18n_compile_mo_files variable.
 
-    parts +=
-        test
-        omelette
+    [instance]
+    environment-vars =
+        zope_i18n_compile_mo_files true
+
+Update your develop.cfg:
+
+    parts =
+        ...
         i18ndude
 
-And add the [i18ndude] section below it:
-
     [i18ndude]
+    unzip = true
     recipe = zc.recipe.egg
     eggs = i18ndude
+
+After this you can use locales/updatelocales.sh to update the POT/PO files.
 
 ### testing
 

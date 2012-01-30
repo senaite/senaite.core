@@ -6,6 +6,7 @@
 
 #### Changes
 
+ - Made Bika compatible with Plone 4.1
  - Sampler and Preserver roles, users and permissions
  - Sampling and Preservation workflows
  - Inactive and Cancellation Workflows

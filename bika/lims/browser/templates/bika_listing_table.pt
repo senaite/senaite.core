@@ -60,7 +60,7 @@
 		tal:attributes="
 			name python:'coltitle_%s'%col;
 			value python:view.bika_listing.columns[col]['title']"/>
-<input type="hidden" name="toggle_columns" value="Toggle columns"
+<input type="hidden" name="toggle_columns" value="Display columns"
        i18n:attributes="value"/>
 
 <tal:worksheet-cheat-1 condition="python:hasattr(view.bika_listing, 'analyst')">

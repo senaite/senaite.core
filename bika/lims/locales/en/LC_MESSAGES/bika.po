@@ -3,7 +3,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Bika-LIMS\n"
-"POT-Creation-Date: 2012-01-18 23:31+0000\n"
+"POT-Creation-Date: 2012-01-30 09:25+0000\n"
 "PO-Revision-Date: 2012-01-02 20:15+0000\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Bika Lab Systems <support@bikalabs.com>\n"
@@ -680,6 +680,10 @@ msgstr ""
 msgid "Cancelled"
 msgstr ""
 
+#: ../content/container.py:38
+msgid "Capacity"
+msgstr ""
+
 #: ../browser/templates/referencesample_view.pt:67
 #: ../content/referencesample.py:69
 msgid "Catalogue Number"
@@ -868,6 +872,15 @@ msgstr ""
 #: ../browser/templates/sample_sticker.pt:78
 #: ../browser/templates/sample_sticker_small.pt:78
 msgid "Container"
+msgstr ""
+
+#: ../content/container.py:51
+#: ../controlpanel/bika_containertypes.py:38
+msgid "Container Type"
+msgstr ""
+
+#: ../controlpanel/bika_containertypes.py:29
+msgid "Container Types"
 msgstr ""
 
 #: ../browser/client.py:675
@@ -1635,6 +1648,10 @@ msgstr ""
 msgid "Maximum holding time description"
 msgstr ""
 
+#: ../content/container.py:39
+msgid "Maximum possible size or volume of samples."
+msgstr ""
+
 #: ../content/analysis.py:62
 #: ../content/analysisservice.py:182
 msgid "Maximum turn-around time"
@@ -1959,6 +1976,20 @@ msgstr ""
 #: ../content/organisation.py:52
 #: ../content/person.py:99
 msgid "Postal address"
+msgstr ""
+
+#: ../content/container.py:14
+msgid "Pre-Preserved"
+msgstr ""
+
+#. Default: "If this container is pre-preserved, then the preservation method could be selected here."
+#: ../content/container.py:30
+msgid "Pre-Preserved Preservation description"
+msgstr ""
+
+#. Default: "Check this box if this container is already preserved.Setting this will short-circuit the preservation workflow for sample partitions stored in this container."
+#: ../content/container.py:15
+msgid "Pre-Preserved description"
 msgstr ""
 
 #. Default: "Precision as number of decimals"
@@ -2819,6 +2850,22 @@ msgstr ""
 
 #: ../validators.py:359
 msgid "Validation failed: Result Values must be numbers"
+msgstr ""
+
+#: ../validators.py:316
+msgid "Validation failed: degrees is 180; minutes must be zero"
+msgstr ""
+
+#: ../validators.py:318
+msgid "Validation failed: degrees is 180; seconds must be zero"
+msgstr ""
+
+#: ../validators.py:305
+msgid "Validation failed: degrees is 90; minutes must be zero"
+msgstr ""
+
+#: ../validators.py:307
+msgid "Validation failed: degrees is 90; seconds must be zero"
 msgstr ""
 
 #: ../validators.py:319

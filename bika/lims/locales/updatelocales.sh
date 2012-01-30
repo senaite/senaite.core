@@ -1,7 +1,7 @@
 #!/bin/sh
 
-PLONEPRODUCTS="/home/cb/Plone/buildout-cache/eggs"
-I18NDUDE="/home/cb/Plone/zinstance/bin/i18ndude"
+PLONEPRODUCTS="/home/cb/Plone413/buildout-cache/eggs"
+I18NDUDE="/home/cb/Plone413/zinstance/bin/i18ndude"
 
 ##
 ## Domain: 'plone'
@@ -46,5 +46,8 @@ echo "##"
 echo "## untranslated messages summary report"
 echo
 $I18NDUDE find-untranslated ..
+
+tx pull -a
+tx push -t
 
 exit 0
