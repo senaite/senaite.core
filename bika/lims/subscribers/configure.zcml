@@ -6,6 +6,13 @@
 
     <!-- Newly created analyses -->
     <subscriber
+      for="*
+           zope.lifecycleevent.interfaces.IObjectModifiedEvent"
+      handler="bika.lims.subscribers.objectmodified.ObjectModifiedEventHandler"
+    />
+
+    <!-- Newly created analyses -->
+    <subscriber
       for="bika.lims.interfaces.IAnalysis
            Products.Archetypes.interfaces.IObjectInitializedEvent"
       handler="bika.lims.subscribers.analysis.ObjectInitializedEventHandler"
