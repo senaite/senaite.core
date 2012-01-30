@@ -12,15 +12,16 @@ Plone 4 or newer is required.
 
     $ tar xzf Plone-4.1.3-UnifiedInstaller.tgz
     $ cd Plone-4.1.3-UnifiedInstaller
-    $ sudo ./install.sh --target=Plone --libz=yes --password=admin standalone
+    $ ./install.sh --target=Plone --libz=yes --password=admin standalone
+
+Visit http://plone.org/documentation/topic/Installation for more information about setting up Plone.
 
 ### Edit Plone/zinstance/buildout.conf.
 
 Find the "eggs" section and add "bika.lims"
 
     eggs =
-        Plone
-        Pillow
+        ...
         bika.lims
 
 ### Run buildout
@@ -45,4 +46,4 @@ visit the Addons page of Site Setup.
 That's it!
 
 You should be able to test the site now by visiting
-http://localhost:8080/SITE_ID
+http://localhost:8080
