@@ -5,14 +5,16 @@ Edit zinstance/develop.cfg
 
 ###### For readonly access
 
-    bika.lims = git git://github.com/bikalabs/Bika-LIMS.git
+    bika.lims = git git://github.com/bikalabs/Bika-LIMS.git branch=dev
 
 Use this if you'd like to have the latest code installed, but don't have a
 Github account.  The package will be updated each time you run buildout.
 
 ###### Read & write access
 
-    bika.lims = git git@github.com:bikalabs/Bika-LIMS.git
+    bika.lims = git git@github.com:bikalabs/Bika-LIMS.git branch=dev
+
+Use this if you have a github account configured.
 
 ### In the [buildout] section:
 

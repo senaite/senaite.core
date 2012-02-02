@@ -26,7 +26,9 @@ class AddressField(RecordField):
     def CountryNames(self, instance = None):
         if not instance:
             instance = self
-        return DisplayList(( [(c[1],c[1]) for c in countries.getCountryListing()] ))
+        c_list = countries.getCountryListing()
+        c_list.sort(lambda x,y:cmp(x[1],y[1]))
+        return DisplayList(( [(c[1],c[1]) for c in c_list] ))
 
 registerField(AddressField,
               title = "Address",
