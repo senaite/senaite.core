@@ -109,6 +109,7 @@
 		</fieldset>
 
 	</tal:searchform>
+	<fieldset/>
 
 	<div id="folderlisting-main-table"
 		tal:content="structure view/contents_table"/>

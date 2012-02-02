@@ -31,7 +31,6 @@ setup(name='bika.lims',
           'openpyxl',
           'plone.app.iterate',
           'reportlab',
-          'ore.contentmirror',
       ],
       extras_require = {
           'test': [

@@ -509,7 +509,7 @@ class AddAnalysesView(BikaListingView):
 
         self.columns = {
             'Client': {'title': _('Client'),
-                            'index':'getClient'},
+                            'index':'getClientTitle'},
             'getClientOrderNumber': {'title': _('Order')},
             'getRequestID': {'title': _('Request ID')},
             'CategoryTitle': {'title': _('Category'),

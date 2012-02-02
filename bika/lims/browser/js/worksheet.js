@@ -125,19 +125,25 @@ $(document).ready(function(){
 		// in this context we already know there is only one bika-listing-form
 		form_id = "list";
 		form = $("#list");
-		// request new table content
+
+		// request new table content by re-routing bika_listing_table form submit
 		stored_form_action = $(form).attr("action");
 		$(form).attr("action", window.location.href);
 		$(form).append("<input type='hidden' name='table_only' value='"+form_id+"'>");
+
+		// dropdowns are printed in ../templates/worksheet_add_analyses.pt
+		// We add list_<portal_catalog args>, which go
+		// into contentFilter in bika_listing.py
 		getCategoryTitle = $("[name=list_getCategoryTitle]").val();
+		Title = $("[name=list_Title]").val();
+		getClientTitle = $("[name=list_getClientTitle]").val();
 		if (getCategoryTitle != 'any')
 			$(form).append("<input type='hidden' name='list_getCategoryTitle' value='"+getCategoryTitle+"'>");
-		Title = $("[name=list_Title]").val();
 		if (Title != 'any')
 			$(form).append("<input type='hidden' name='list_Title' value='"+Title+"'>");
-		getClientTitle = $("[name=list_getClientTitle]").val();
 		if (getClientTitle != 'any')
 			$(form).append("<input type='hidden' name='list_getClientTitle' value='"+getClientTitle+"'>");
+
 		options = {
 			target: $('.bika-listing-table'),
 			replaceTarget: true,
@@ -146,6 +152,7 @@ $(document).ready(function(){
 			}
 		}
 		form.ajaxSubmit(options);
+
 		$("[name=table_only]").remove();
 		$("#list > [name=list_getCategoryTitle]").remove();
 		$("#list > [name=list_Title]").remove();
