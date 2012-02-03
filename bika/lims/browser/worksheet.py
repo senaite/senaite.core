@@ -213,7 +213,10 @@ class WorksheetAnalysesView(AnalysesView):
         }
         self.review_states = [
             {'title': _('All'), 'id':'all',
-             'transitions': ['submit', 'verify', 'retract', 'unassign'],
+             'transitions': [{'id':'submit'},
+                             {'id':'verify'},
+                             {'id':'retract'},
+                             {'id':'unassign'}],
              'columns':['Pos',
                         'Service',
                         'Result',
@@ -521,7 +524,7 @@ class AddAnalysesView(BikaListingView):
         self.review_states = [
             {'id':'all',
              'title': _('All'),
-             'transitions': ['assign'],
+             'transitions': [{'id':'assign'}, ],
              'columns':['Client',
                         'getClientOrderNumber',
                         'getRequestID',

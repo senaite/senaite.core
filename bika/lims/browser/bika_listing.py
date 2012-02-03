@@ -92,7 +92,7 @@ class WorkflowAction:
         skiplist = self.request.get('workflow_skiplist', [])
         action, came_from = self._get_form_workflow_action()
 
-        # transition the context object.
+        # transition the context object (plone edit bar dropdown)
         if came_from == "workflow_action":
             obj = self.context
             # the only actions allowed on inactive/cancelled
@@ -102,21 +102,21 @@ class WorkflowAction:
                 self.context.plone_utils.addPortalMessage(message, 'info')
                 self.request.response.redirect(self.destination_url)
                 return
-            else:
-                if obj.UID() not in skiplist:
-                    allowed_transitions = []
-                    for t in workflow.getTransitionsFor(obj):
-                        allowed_transitions.append(t['id'])
-                    if action in allowed_transitions:
-                        workflow.doActionFor(obj, action)
-                self.request.response.redirect(self.destination_url)
-                return
+            if obj.UID() not in skiplist:
+                allowed_transitions = []
+                for t in workflow.getTransitionsFor(obj):
+                    allowed_transitions.append(t['id'])
+                if action in allowed_transitions:
+                    workflow.doActionFor(obj, action)
+            self.request.response.redirect(self.destination_url)
+            return
 
         # transition selected items from the bika_listing/Table.
         transitioned = []
         selected_items = self._get_selected_items()
         for uid, item in selected_items.items():
-            # the only action allowed on inactive items is "activate"
+            # the only actions allowed on inactive/cancelled
+            # items are "reinstate" and "activate"
             if not isActive(item) and action not in ('reinstate', 'activate'):
                 continue
             if uid not in skiplist:
@@ -200,13 +200,22 @@ class BikaListingView(BrowserView):
     }
 
     # Additional indexes to be searched
-    # any index name not specified in self.columns[]
-    # can be added here.
+    # any index name not specified in self.columns[] can be added here.
     filter_indexes = ['Title', 'Description', 'SearchableText']
 
     """
     ### review_state filter
     with just one review_state, the selector won't show.
+
+    if review_state[x]['transitions'] is defined, it is a list of dictionaries:
+        [{'id':'x'}]
+    Transitions will be ordered by and restricted to, these items.
+
+    if review_state[x]['custom_actions'] is defined. it's a list of dict:
+        [{'id':'x'}]
+    These transitions will be forced into the list of workflow actions.
+    They will need to be handled manually in the appropriate WorkflowAction
+    subclass.
     """
     review_states = [
         {'id':'all',
@@ -233,6 +242,7 @@ class BikaListingView(BrowserView):
         #self.contentsMethod = self.context.getFolderContents
         self.contentsMethod = getToolByName(context, 'portal_catalog')
 
+
     def _process_request(self):
         # Use this function from a template that is using bika_listing_table
         # in such a way that the table_only request var will be used to
@@ -247,19 +257,20 @@ class BikaListingView(BrowserView):
         if form_id not in self.request.get('table_only', form_id):
             return ''
 
-        # review_state_selector
-        review_state_name = self.request.get(form_id + '_review_state', None)
-        if not review_state_name:
-            review_state_name = 'all'
-        self.request[form_id+'_review_state'] = review_state_name
+        # review_state_selector (POST value OR cookie value OR 'all')
+        request_key = form_id + '_review_state'
+        review_state_name = self.request.get(request_key, None) \
+            or 'all'
         states = [r for r in self.review_states if r['id'] == review_state_name]
         review_state = states and states[0] or self.review_states[0]
+        self.request[request_key] = review_state['id']
+        self.request.response.setCookie(request_key, review_state['id'], path=self.view_url)
         if review_state.has_key('contentFilter'):
             for k, v in review_state['contentFilter'].items():
                 self.contentFilter[k] = v
         else:
-            if review_state_name != 'all':
-                self.contentFilter['review_state'] = review_state_name
+            if review_state['id'] != 'all':
+                self.contentFilter['review_state'] = review_state['id']
 
         # sort on
         sort_on = self.request.get(form_id + '_sort_on', '')
@@ -301,6 +312,7 @@ class BikaListingView(BrowserView):
                 continue
             self.filter_indexes.append(v['index'])
         ##logger.info("Filter indexes: %s"%self.filter_indexes)
+
         # any request variable named ${form_id}_{index_name}
         # will pass it's value to that index in self.contentFilter.
         # all conditions using ${form_id}_{index_name} are searched with AND
@@ -310,6 +322,7 @@ class BikaListingView(BrowserView):
                 ##logger.info("And: %s=%s"%(index, self.request[request_key]))
                 ##self.And.append(MatchGlob(index, self.request[request_key]))
                 self.And.append(MatchRegexp(index, self.request[request_key]))
+
         # if there's a ${form_id}_filter in request, then all indexes
         # are are searched for it's value.
         # ${form_id}_filter is searched with OR agains all indexes
@@ -585,25 +598,24 @@ class BikaListingTable(tableview.Table):
         workflow = getToolByName(self.context, 'portal_workflow')
 
         state = self.request.get('review_state', 'all')
-        review_state = [i for i in self.bika_listing.review_states if i['id'] == state][0]
+        review_state = [i for i in self.bika_listing.review_states \
+                        if i['id'] == state][0]
 
         # get all transitions for all items.
         transitions = {}
         actions = []
         for obj in [i.get('obj', '') for i in self.items]:
-            obj = hasattr(obj, 'getObject') and \
-                obj.getObject() or \
-                obj
+            obj = hasattr(obj, 'getObject') and obj.getObject() or obj
             for t in workflow.getTransitionsFor(obj):
                 transitions[t['id']] = t
 
         # if there is a review_state['some_state']['transitions'] attribute
         # on the BikaListingView, the list is restricted to and ordered by
-        # these transitions
+        # these transitions.
         if 'transitions' in review_state:
-            for tid in review_state['transitions']:
-                if tid in transitions:
-                    actions.append(transitions[tid])
+            for transition_dict in review_state['transitions']:
+                if transition_dict['id'] in transitions:
+                    actions.append(transitions[transition_dict['id']])
         else:
             actions = transitions.values()
 

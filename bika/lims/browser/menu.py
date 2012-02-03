@@ -122,8 +122,8 @@ class WorkflowSubMenuItem(WorkflowSubMenuItem):
         # these transitions
         if 'transitions' in review_state:
             ordered = []
-            for tid in review_state['transitions']:
-                if tid in transitions:
+            for transition_dict in review_state['transitions']:
+                if transition_dict['id'] in transitions:
                     ordered.append(transitions[tid])
             transitions = ordered
         else:

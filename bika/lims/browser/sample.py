@@ -259,7 +259,7 @@ class SamplesView(BikaListingView):
             {'id':'cancelled',
              'title': _('Cancelled'),
              'contentFilter': {'cancellation_state': 'cancelled'},
-             'transitions': ['reinstate'],
+             'transitions': [{'id':'reinstate'}, ],
              'columns': ['SampleID',
                          'Client',
                          'Requests',

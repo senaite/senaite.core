@@ -57,7 +57,7 @@ class WorksheetTemplatesView(BikaListingView):
             {'id':'active',
              'title': _('Active'),
              'contentFilter': {'inactive_state': 'active'},
-             'transitions': ['deactivate'],
+             'transitions': [{'id':'deactivate'}, ],
              'columns': ['Title',
                          'Description',
                          'Instrument']},

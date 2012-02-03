@@ -50,12 +50,12 @@ class MethodsView(BikaListingView):
             {'id':'active',
              'title': _('Active'),
              'contentFilter': {'inactive_state': 'active'},
-             'transitions': ['deactivate'],
+             'transitions': [{'id':'deactivate'}, ],
              'columns': ['Title', 'Description']},
             {'id':'inactive',
              'title': _('Dormant'),
              'contentFilter': {'inactive_state': 'inactive'},
-             'transitions': ['activate',],
+             'transitions': [{'id':'activate'}, ],
              'columns': ['Title', 'Description']},
         ]
 

@@ -88,7 +88,7 @@ div.bika_listing {
 }
 
 .bika-listing-table a.state-visible  {
-	background-color: &dtml-visibleBackgroundColor; !important;
+	background-color: &dtml-visibleBackgroundColor;
 	color: &dtml-visibleTextColor; !important;
 }
 
@@ -104,13 +104,13 @@ div.bika_listing {
 
 .bika-listing-table .state-due,
 .bika-listing-table .state-sample_due {
-	background-color: &dtml-sampleDueBackgroundColor; !important;
+	background-color: &dtml-sampleDueBackgroundColor;
 	color: &dtml-sampleDueTextColor; !important;
 }
 
 .bika-listing-table .state-recieved,
 .bika-listing-table .state-sample_received {
-	background-color: &dtml-sampleReceivedBackgroundColor; !important;
+	background-color: &dtml-sampleReceivedBackgroundColor;
 	color: &dtml-sampleReceivedTextColor; !important;
 }
 
