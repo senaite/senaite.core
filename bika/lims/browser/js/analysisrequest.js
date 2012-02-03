@@ -607,5 +607,24 @@ jQuery( function($) {
 		window.recalc_prices = recalc_prices;
 		window.toggleCat = toggleCat;
 
+		// Append-only notes field
+		$('.saveNotes').live('click', function(event){
+			event.preventDefault();
+			if ($("#Notes").val() == '' ||
+				$("#Notes").val() == undefined) {
+				return false;
+			}
+			$("#NotesHistory").load(
+				window.location.href.replace("/manage_results", "") + "/setARNotes",
+				{'value': $("#Notes").val(),
+				 '_authenticator': $('input[name="_authenticator"]').val()}
+			);
+			$("#Notes").val("");
+			$("#NotesHistory").attr("rows", $("#NotesHistory").val().split("\n").length+3);
+			return false;
+		});
+		$("#Notes").empty();
+		$("#NotesContainer").show();
+
 	});
 });

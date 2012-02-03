@@ -1481,3 +1481,16 @@ class AnalysisRequestsView(BikaListingView):
 
         return items
 
+class ajaxSetNotes(BrowserView):
+    """ Modify Notes field and return new rendered value
+    """
+    def __call__(self):
+        plone.protect.CheckAuthenticator(self.request)
+        value = self.request['value']
+        date = TimeOrDate(self.context, DateTime(), long_format=True)
+        user = getSecurityManager().getUser()
+        notes = "%s\n\n=== %s (%s)\n%s"%\
+            (self.context.getNotes().strip(), date, user, value)
+        notes = notes.strip()
+        self.context.setNotes(notes)
+        return notes

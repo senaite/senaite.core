@@ -63,7 +63,7 @@ schema = BikaSchema.copy() + Schema((
         default_content_type = 'text/plain',
         allowable_content_types = ('text/plain',),
         widget = TextAreaWidget(
-            label = _('Notes')
+            label = _('Notes'),
         ),
     ),
 ),

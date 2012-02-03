@@ -101,4 +101,12 @@
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
+    <browser:page
+      for="bika.lims.interfaces.IWorksheet"
+      name="setWSNotes"
+      class="bika.lims.browser.worksheet.ajaxSetNotes"
+      permission="zope.Public"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
 </configure>

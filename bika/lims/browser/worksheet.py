@@ -16,8 +16,7 @@ from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.browser.bika_listing import WorkflowAction
 from bika.lims.browser.referencesample import ReferenceSamplesView
 from bika.lims.exportimport import instruments
-from bika.lims.utils import getAnalysts
-from bika.lims.utils import isActive, TimeOrDate
+from bika.lims.utils import getAnalysts, isActive, TimeOrDate
 from operator import itemgetter
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.layout.globals.interfaces import IViewView
@@ -481,7 +480,6 @@ class ManageResultsView(BrowserView):
             items.append((o.UID(), o.Title()))
         items.sort(lambda x, y: cmp(x[1], y[1]))
         return DisplayList(list(items))
-
 
 class AddAnalysesView(BikaListingView):
     implements(IViewView)
@@ -1144,3 +1142,17 @@ class ajaxSetInstrument():
 ##        if not value:
 ##            return
         self.context.setInstrument(value)
+
+class ajaxSetNotes(BrowserView):
+    """ Modify Notes field and return new rendered field
+    """
+    def __call__(self):
+        plone.protect.CheckAuthenticator(self.request)
+        value = self.request['value']
+        date = TimeOrDate(self.context, DateTime(), long_format=True)
+        user = getSecurityManager().getUser()
+        notes = "%s\n\n=== %s (%s)\n%s"%\
+            (self.context.getNotes().strip(), date, user, value)
+        notes = notes.strip()
+        self.context.setNotes(notes)
+        return notes
