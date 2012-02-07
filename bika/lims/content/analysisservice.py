@@ -1,21 +1,91 @@
 from AccessControl import ClassSecurityInfo
-from Products.ATExtensions.ateapi import RecordsField
+from Products.ATContentTypes.lib.historyaware import HistoryAwareMixin
+from Products.ATExtensions.Extensions.utils import makeDisplayList
+from Products.ATExtensions.ateapi import RecordField, RecordsField
+from Products.Archetypes.Registry import registerField
 from Products.Archetypes.public import *
 from Products.Archetypes.references import HoldingReference
-from Products.ATContentTypes.lib.historyaware import HistoryAwareMixin
 from Products.CMFCore.permissions import View, ModifyPortalContent
 from Products.CMFCore.utils import getToolByName
+from Products.validation import validation
+from Products.validation.validators.RegexValidator import RegexValidator
+from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.fields import DurationField
 from bika.lims.browser.fields import HistoryAwareReferenceField
-from bika.lims.interfaces import IAnalysisService
-from bika.lims.browser.widgets import ServicesWidget, RecordsWidget, \
-     DurationWidget
-from bika.lims.config import ATTACHMENT_OPTIONS, PROJECTNAME, \
-    SERVICE_POINT_OF_CAPTURE
+from bika.lims.browser.widgets import ServicesWidget, RecordsWidget, DurationWidget
+from bika.lims.config import ATTACHMENT_OPTIONS, PROJECTNAME, SERVICE_POINT_OF_CAPTURE
 from bika.lims.content.bikaschema import BikaSchema
+from bika.lims.interfaces import IAnalysisService
 from zope.interface import implements
 import sys
+from AccessControl import ClassSecurityInfo
+from Products.ATExtensions.Extensions.utils import makeDisplayList
+from Products.ATExtensions.ateapi import RecordField, RecordsField
+from Products.Archetypes.Registry import registerField
+from Products.Archetypes.public import *
+from Products.CMFCore.utils import getToolByName
+from Products.validation import validation
+from Products.validation.validators.RegexValidator import RegexValidator
+import sys
 from bika.lims import bikaMessageFactory as _
+
+class PartitionSetupField(RecordsField):
+    _properties = RecordsField._properties.copy()
+    _properties.update({
+        'macro': 'bika_widgets/recordswidget',
+
+        'subfields': ('sampletype',
+                      'preservation',
+                      'container',
+                      'containertype',
+                      'seperate',
+                      'vol'),
+        'subfield_labels': {'sampletype':_('Sample Type'),
+                            'preservation':_('Preservation'),
+                            'container':_('Container'),
+                            'containertype':_('Container Type'),
+                            'seperate':_('Seperate Partition'),
+                            'vol':_('Required Volume')},
+        'subfield_types': {'seperate':'boolean',
+                           'vol':'int'},
+        'subfield_vocabularies': {'sampletype':'SampleTypes',
+                                  'preservation':'Preservations',
+                                  'container':'Containers',
+                                  'containertype':'ContainerTypes'},
+        'subfield_sizes': {'vol':5}
+    })
+    security = ClassSecurityInfo()
+
+
+    security.declarePublic('SampleTypes')
+    def SampleTypes(self, instance=None):
+        instance = instance or self
+        bsc = getToolByName(instance, 'bika_setup_catalog')
+        items = bsc(portal_type='SampleType', sort_on = 'sortable_title')
+        return DisplayList(( [(c.UID,c.title) for c in items]))
+
+    security.declarePublic('Preservations')
+    def Preservations(self, instance=None):
+        instance = instance or self
+        bsc = getToolByName(instance, 'bika_setup_catalog')
+        items = bsc(portal_type='Preservation', sort_on = 'sortable_title')
+        return DisplayList(( [(c.UID,c.title) for c in items]))
+
+    security.declarePublic('Containers')
+    def Containers(self, instance=None):
+        instance = instance or self
+        bsc = getToolByName(instance, 'bika_setup_catalog')
+        items = bsc(portal_type='Container', sort_on = 'sortable_title')
+        return DisplayList(( [(c.UID,c.title) for c in items]))
+
+    security.declarePublic('ContainerTypes')
+    def ContainerTypes(self, instance=None):
+        instance = instance or self
+        bsc = getToolByName(instance, 'bika_setup_catalog')
+        items = bsc(portal_type='ContainerType', sort_on = 'sortable_title')
+        return DisplayList(( [(c.UID,c.title) for c in items]))
+
+registerField(PartitionSetupField, title = "", description = "")
 
 schema = BikaSchema.copy() + Schema((
     StringField('Unit',
@@ -54,47 +124,6 @@ schema = BikaSchema.copy() + Schema((
                             "Indicates whether file attachments, e.g. microscope images, "
                             "are required for this analysis and whether file upload function "
                             "will be available for it on data capturing screens"),
-        ),
-    ),
-    FixedPointField('Price',
-        schemata = _("Price"),
-        default = '0.00',
-        widget = DecimalWidget(
-            label = _("Price (excluding VAT)"),
-        ),
-    ),
-    FixedPointField('CorporatePrice',
-        schemata = _("Price"),
-        default = '0.00',
-        widget = DecimalWidget(
-            label = _("Bulk price", "Bulk price (excluding VAT)"),
-            description = _("Bulk price description",
-                            "The price charged per analysis for clients who qualify for bulk discounts"),
-        ),
-    ),
-    ComputedField('VATAmount',
-        schemata = _("Price"),
-        expression = 'context.getVATAmount()',
-        widget = ComputedWidget(
-            label = _("VAT"),
-            visible = {'edit':'hidden', }
-        ),
-    ),
-    ComputedField('TotalPrice',
-        schemata = _("Price"),
-        expression = 'context.getTotalPrice()',
-        widget = ComputedWidget(
-            label = _("Total price"),
-            visible = {'edit':'hidden', }
-        ),
-    ),
-    FixedPointField('VAT',
-        schemata = _("Price"),
-        default_method = 'getDefaultVAT',
-        widget = DecimalWidget(
-            label = _("VAT %"),
-            description = _("VAT % description",
-                            "Enter percentage value eg. 14.0"),
         ),
     ),
     StringField('Keyword',
@@ -238,6 +267,47 @@ schema = BikaSchema.copy() + Schema((
                             "The category the analysis service belongs to"),
         ),
     ),
+    FixedPointField('Price',
+        schemata = _("Description"),
+        default = '0.00',
+        widget = DecimalWidget(
+            label = _("Price (excluding VAT)"),
+            ),
+        ),
+    FixedPointField('CorporatePrice',
+        schemata = _("Description"),
+        default = '0.00',
+        widget = DecimalWidget(
+            label = _("Bulk price", "Bulk price (excluding VAT)"),
+            description = _("Bulk price description",
+                            "The price charged per analysis for clients who qualify for bulk discounts"),
+                        ),
+        ),
+    ComputedField('VATAmount',
+        schemata = _("Description"),
+        expression = 'context.getVATAmount()',
+        widget = ComputedWidget(
+            label = _("VAT"),
+            visible = {'edit':'hidden', }
+        ),
+    ),
+    ComputedField('TotalPrice',
+        schemata = _("Description"),
+        expression = 'context.getTotalPrice()',
+        widget = ComputedWidget(
+            label = _("Total price"),
+            visible = {'edit':'hidden', }
+        ),
+    ),
+    FixedPointField('VAT',
+        schemata = _("Description"),
+        default_method = 'getDefaultVAT',
+        widget = DecimalWidget(
+            label = _("VAT %"),
+            description = _("VAT % description",
+                            "Enter percentage value eg. 14.0"),
+        ),
+    ),
     ComputedField('CategoryTitle',
         expression = "context.getCategory() and context.getCategory().Title() or ''",
         widget = ComputedWidget(
@@ -309,6 +379,19 @@ schema = BikaSchema.copy() + Schema((
                             "Please list all options for the analysis result if you want to restrict "
                             "it to specific options only, e.g. 'Positive', 'Negative' and "
                             "'Indeterminable'.  The option's result value must be a number."),
+        ),
+    ),
+    PartitionSetupField('PartitionSetup',
+        schemata = _('Partition Setup'),
+##        accessor = 'getPartitionSetup',
+##        edit_accessor = 'getPartitionSetup',
+##        mutator = 'setPartitionSetup',
+        widget = RecordsWidget(
+            label = "",
+            description = _("Select any combination of these fields to configure how "
+                            "the LIMS will create sample partitions for new ARs. "
+                            "Adding only a few very general rules will cause the empty "
+                            "fields to be set to computed, empty or default values."),
         ),
     ),
 ))
@@ -505,5 +588,33 @@ class AnalysisService(BaseContent, HistoryAwareMixin):
         dup.processForm()
         dup.reindexObject()
         return _id
+
+##    security.declarePublic('getSampleTypes')
+##    def getSampleTypes(self, instance=None):
+##        instance = instance or self
+##        bsc = getToolByName(instance, 'bika_setup_catalog')
+##        items = bsc(portal_type='SampleType', sort_on = 'sortable_title')
+##        return DisplayList([(c.UID,c.title) for c in items])
+##
+##    security.declarePublic('getPreservations')
+##    def getPreservations(self, instance=None):
+##        instance = instance or self
+##        bsc = getToolByName(instance, 'bika_setup_catalog')
+##        items = bsc(portal_type='Preservation', sort_on = 'sortable_title')
+##        return DisplayList([(c.UID,c.title) for c in items])
+##
+##    security.declarePublic('getContainers')
+##    def getContainers(self, instance=None):
+##        instance = instance or self
+##        bsc = getToolByName(instance, 'bika_setup_catalog')
+##        items = bsc(portal_type='Container', sort_on = 'sortable_title')
+##        return DisplayList([(c.UID,c.title) for c in items])
+##
+##    security.declarePublic('getContainerTypes')
+##    def getContainerTypes(self, instance=None):
+##        instance = instance or self
+##        bsc = getToolByName(instance, 'bika_setup_catalog')
+##        items = bsc(portal_type='ContainerType', sort_on = 'sortable_title')
+##        return DisplayList([(c.UID,c.title) for c in items])
 
 registerType(AnalysisService, PROJECTNAME)
