@@ -24,7 +24,7 @@ Content-Type: text/html
 <tr>
 <td>
 <h1>This is a test set up</h1>
-<h3><a href="bika_setup/bika_analysisservices"><img src="++resource++bika.lims.images/service_big.png" alt="" /> Analysis Services </a></h3>
+<h3><a href="bika_setup/bika_analysisservices"><img src="++resource++bika.lims.images/analysisservice_big.png" alt="" /> Analysis Services </a></h3>
 <p>Expected turnaround time (TAT) of 2 hours<br /><br />Price of R10<br /><br />Maximum duplicate variation 10%<br /><br />Uncertainties (Range minimum, maximum,</p>
 <p>Between 0 and 2, uncertainty value of ± 0.1<br /><br /> "          2.01 -  4.00,  ± 0.2<br /><br /> "          4.01 -  6.00,  ± 0.3<br /><br /> "          6.01 -  8.00,  ± 0.4<br /><br /> "          8.01 - 999,   ± 0.5</p>
 <p>&nbsp;</p>

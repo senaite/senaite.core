@@ -36,11 +36,15 @@
 	enctype="multipart/form-data"
 	id="load_setup_data">
 
-	<input
-		type="file"
+	<select
 		name="xlsx"
-		id="xlsx"
-		size="30">
+		id="xlsx">
+		<tal:options tal:repeat="option view/getSetupDatas">
+			<option tal:attributes="value option">
+				<span tal:content="option"/>
+			</option>
+		</tal:options>
+	</select>
 
 	<input
 		type="hidden"

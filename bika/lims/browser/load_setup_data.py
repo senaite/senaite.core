@@ -17,6 +17,7 @@ import tempfile
 import transaction
 import zope
 import time
+from pkg_resources import resource_listdir, resource_filename
 
 class LoadSetupData(BrowserView):
     template = ViewPageTemplateFile("templates/load_setup_data.pt")
@@ -31,6 +32,14 @@ class LoadSetupData(BrowserView):
         self.deferred = {}
 
         self.request.set('disable_border', 1)
+
+    def getSetupDatas(self):
+        files = []
+        for f in resource_listdir('bika.lims', 'setupdata'):
+            f = f.lower()
+            if f.find(".xlsx") > -1 and f.find("_testing") == -1:
+                files.append(f.replace(".xlsx",""))
+        return files
 
     def __call__(self):
         form = self.request.form
@@ -51,15 +60,13 @@ class LoadSetupData(BrowserView):
         self.plone_utils = getToolByName(self.context, 'plone_utils')
         portal = getSite()
 
-        tmp = tempfile.mktemp(prefix=Globals.INSTANCE_HOME)
-        file_content = 'xlsx' in form and form['xlsx'].read()
-        if not file_content:
+        file_name = 'xlsx' in form and form['xlsx'] or None
+        if not file_name:
             msg = self.context.translate(_("No file data submitted.  Please submit a valid Open XML Spreadsheet (.xlsx) file."))
             self.plone_utils.addPortalMessage(msg)
             return self.template()
 
-        open(tmp, "wb").write(file_content)
-        wb = load_workbook(filename = tmp)
+        wb = load_workbook(filename = resource_filename("bika.lims", "setupdata/%s.xlsx"%file_name))
 
         sheets = {}
         for sheetname in wb.get_sheet_names():
@@ -69,6 +76,9 @@ class LoadSetupData(BrowserView):
         self.load_lab_contacts(sheets['Lab Contacts'])
         self.departments = {}
         self.load_lab_departments(sheets['Lab Departments'])
+        self.load_containertypes(sheets["Container Types"])
+        self.load_preservations(sheets["Preservations"])
+        self.load_containers(sheets["Containers"])
         self.load_clients(sheets['Clients'])
         self.client_contacts = []
         self.load_client_contacts(sheets['Client Contacts'])
@@ -158,6 +168,74 @@ class LoadSetupData(BrowserView):
                              'prefix':row['prefix'],
                              'padding':row['padding']})
         bs.setPrefixes(prefixes)
+
+
+    def load_containertypes(self, sheet):
+        nr_rows = sheet.get_highest_row()
+        nr_cols = sheet.get_highest_column()
+##        self.request.response.write("<input type='hidden' id='load_section' value='ContainerTypes' max='%s'/>"%(nr_rows-3))
+##        self.request.response.flush()
+        rows = [[sheet.cell(row=row_nr, column=col_nr).value for col_nr in range(nr_cols)] for row_nr in range(nr_rows)]
+        fields = rows[1]
+        folder = self.context.bika_setup.bika_containertypes
+        self.containertypes = {}
+        for row in rows[3:]:
+            row = dict(zip(fields, row))
+            _id = folder.invokeFactory('ContainerType', id = 'tmp')
+            obj = folder[_id]
+            obj.edit(title = unicode(row['title']),
+                     description = unicode(row['description']))
+            obj.processForm()
+            self.containertypes[unicode(row['title'])] = obj
+
+
+    def load_preservations(self, sheet):
+        nr_rows = sheet.get_highest_row()
+        nr_cols = sheet.get_highest_column()
+##        self.request.response.write("<input type='hidden' id='load_section' value='Preservations' max='%s'/>"%(nr_rows-3))
+##        self.request.response.flush()
+        rows = [[sheet.cell(row=row_nr, column=col_nr).value for col_nr in range(nr_cols)] for row_nr in range(nr_rows)]
+        fields = rows[1]
+        folder = self.context.bika_setup.bika_preservations
+        self.preservations = {}
+        for row in rows[3:]:
+            row = dict(zip(fields, row))
+            _id = folder.invokeFactory('Preservation', id = 'tmp')
+            obj = folder[_id]
+            containertypes = []
+            for ct in row['ContainerType'].split(","):
+                containertypes.append(self.containertypes[ct.strip()])
+            obj.edit(title = unicode(row['title']),
+                     description = unicode(row['description']),
+                     ContainerType = containertypes
+                     )
+            obj.processForm()
+            self.preservations[unicode(row['title'])] = obj
+
+
+    def load_containers(self, sheet):
+        nr_rows = sheet.get_highest_row()
+        nr_cols = sheet.get_highest_column()
+##        self.request.response.write("<input type='hidden' id='load_section' value='Containers' max='%s'/>"%(nr_rows-3))
+##        self.request.response.flush()
+        rows = [[sheet.cell(row=row_nr, column=col_nr).value for col_nr in range(nr_cols)] for row_nr in range(nr_rows)]
+        fields = rows[1]
+        folder = self.context.bika_setup.bika_containers
+        for row in rows[3:]:
+            row = dict(zip(fields, row))
+            _id = folder.invokeFactory('Container', id = 'tmp')
+            obj = folder[_id]
+            P = row['Preservation']
+            obj.edit(title = unicode(row['title']),
+                     description = unicode(row['description']),
+                     Capacity = row['Capacity'],
+                     Unit = unicode(row['Unit']),
+                     ContainerType = row['ContainerType'] \
+                         and self.containertypes[row['ContainerType']] or None,
+                     PrePreserved = row['PrePreserved'] and row['PrePreserved'] or False,
+                     Preservation = P and self.preservations[P] or None)
+            obj.processForm()
+
 
     def load_lab_users(self, sheet):
         portal_registration = getToolByName(self.context, 'portal_registration')
@@ -439,6 +517,7 @@ class LoadSetupData(BrowserView):
                      description = unicode(row['description']),
                      RetentionPeriod = int(row['RetentionPeriod']),
                      Prefix = unicode(row['Prefix']),
+                     Unit = unicode(row['Unit']),
                      Hazardouus = row['Hazardous'] and True or False)
             obj.processForm()
 
@@ -546,7 +625,7 @@ class LoadSetupData(BrowserView):
             obj.edit(title = unicode(row['title']),
                  description = unicode(row['description']),
                  PointOfCapture = unicode(row['PointOfCapture']),
-                 Unit = unicode(row['Unit'] and row['Unit'] or ''),
+                 Unit = row['Unit'] and unicode(row['Unit']) or None,
                  Category = self.cats[unicode(row['Category'])].UID(),
                  Price = "%02f" % float(row['Price']),
 

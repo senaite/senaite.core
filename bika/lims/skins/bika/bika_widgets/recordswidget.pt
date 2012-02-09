@@ -29,6 +29,7 @@
     <metal:define define-macro="edit">
       <metal:use use-macro="here/widgets/field/macros/edit">
        <tal:block metal:fill-slot="widget_body">
+		<span tal:replace="structure context/@@authenticator/authenticator"/>
        <fieldset style="border:0;"
                  tal:define="values python:field.getEditAccessor(here)();
                              session_values python:here.session_restore_value(fieldName, values);

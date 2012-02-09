@@ -50,7 +50,7 @@
 
  <configlet title="Analysis Services" action_id="bika_analysisservices"
     appId="bika.lims" category="Products" condition_expr=""
-    icon_expr="string:++resource++bika.lims.images/service.png"
+    icon_expr="string:++resource++bika.lims.images/analysisservice.png"
     url_expr="string:$portal_url/bika_setup/bika_analysisservices"
     visible="True"
 	i18n:attributes="title">
@@ -202,4 +202,5 @@
 	i18n:attributes="title">
   <permission>BIKA: Manage Bika</permission>
  </configlet>
+
 </object>

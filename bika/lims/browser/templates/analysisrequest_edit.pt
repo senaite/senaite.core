@@ -455,7 +455,7 @@
             <tr>
                 <th tal:attributes="colspan python:view.col_count + 3">
                     <img title="analyses"
-                        tal:attributes="src string:++resource++bika.lims.images/service.png"/>
+                        tal:attributes="src string:++resource++bika.lims.images/analysisservice.png"/>
                 <span tal:content="python:POINTS_OF_CAPTURE.getValue(poc)"/>
                 </th>
             </tr>

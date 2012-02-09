@@ -16,84 +16,134 @@ from bika.lims.browser.widgets import ServicesWidget, RecordsWidget, DurationWid
 from bika.lims.config import ATTACHMENT_OPTIONS, PROJECTNAME, SERVICE_POINT_OF_CAPTURE
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IAnalysisService
+from magnitude import mg, MagnitudeError
 from zope.interface import implements
 import sys
-from AccessControl import ClassSecurityInfo
-from Products.ATExtensions.Extensions.utils import makeDisplayList
-from Products.ATExtensions.ateapi import RecordField, RecordsField
-from Products.Archetypes.Registry import registerField
-from Products.Archetypes.public import *
-from Products.CMFCore.utils import getToolByName
-from Products.validation import validation
-from Products.validation.validators.RegexValidator import RegexValidator
-import sys
-from bika.lims import bikaMessageFactory as _
+
+def getContainers(instance, preservation=None, minvol="0 ml"):
+    # This is a seperate class so that it can be called from
+    # browser/analysisservice.py via ajax with a some parameters which
+    # limit the PartitionSetup widget's container list.
+    bsc = getToolByName(instance, 'bika_setup_catalog')
+    items = [['','']]
+    pres_c_types = preservation and preservation.getContainerType() or None
+
+    try:
+        minvol = minvol.split(" ")
+        minvol = mg(float(minvol[0]), " ".join(minvol[1:]).strip())
+    except MagnitudeError:
+        minvol = mg(0, "ml")
+
+    containers = {}
+    containers_notype = []
+    ctype_to_uid = {}
+    all_ctypes = [ct.title for ct in bsc(portal_type='ContainerType',
+                                         sort_on='sortable_title')]
+    for container in bsc(portal_type='Container', sort_on='sortable_title'):
+        container = container.getObject()
+        try:
+            cvol = container.getCapacity()
+            cvol = cvol.split(" ")
+            cvol = mg(float(minvol[0]), " ".join(minvol[1:]).strip())
+            if cvol.out_unit == minvol.out_unit and cvol.val < minvol.val:
+                continue
+        except MagnitudeError:
+            pass
+
+        ctype = container.getContainerType()
+        if ctype:
+            if ctype.Title() in all_ctypes:
+                all_ctypes.remove(ctype.Title())
+            if pres_c_types and ctype not in pres_c_types:
+                continue
+            if ctype.Title() in containers:
+                containers[ctype.Title()].append((container.UID(), container.Title()))
+            else:
+                containers[ctype.Title()] = [(container.UID(), container.Title()),]
+                ctype_to_uid[ctype.Title()] = ctype.UID()
+        else:
+            if not pres_c_types:
+                containers_notype.append((container.UID(), container.Title()))
+
+    cat_str = instance.translate(_('Container Type'))
+    for ctype in containers.keys():
+        items.append([ctype_to_uid[ctype], "%s: %s"%(cat_str, ctype) ])
+        for container in containers[ctype]:
+            items.append(container)
+    # all remaining containers
+    for container in containers_notype:
+        items.append(list(container))
+
+    items = tuple(items)
+    return items
 
 class PartitionSetupField(RecordsField):
     _properties = RecordsField._properties.copy()
     _properties.update({
-        'macro': 'bika_widgets/recordswidget',
-
         'subfields': ('sampletype',
                       'preservation',
                       'container',
-                      'containertype',
                       'seperate',
-                      'vol'),
+                      'vol',
+                      'retentionperiod'),
         'subfield_labels': {'sampletype':_('Sample Type'),
                             'preservation':_('Preservation'),
                             'container':_('Container'),
-                            'containertype':_('Container Type'),
                             'seperate':_('Seperate Partition'),
-                            'vol':_('Required Volume')},
+                            'vol':_('Required Volume'),
+                            'retentionperiod': _('Retention period')},
         'subfield_types': {'seperate':'boolean',
                            'vol':'int'},
         'subfield_vocabularies': {'sampletype':'SampleTypes',
                                   'preservation':'Preservations',
-                                  'container':'Containers',
-                                  'containertype':'ContainerTypes'},
-        'subfield_sizes': {'vol':5}
+                                  'container':'Containers'},
+        'subfield_sizes': {'vol':5,
+                           'retentionperiod':10}
     })
     security = ClassSecurityInfo()
-
 
     security.declarePublic('SampleTypes')
     def SampleTypes(self, instance=None):
         instance = instance or self
         bsc = getToolByName(instance, 'bika_setup_catalog')
-        items = bsc(portal_type='SampleType', sort_on = 'sortable_title')
-        return DisplayList(( [(c.UID,c.title) for c in items]))
+        items = []
+        for st in bsc(portal_type='SampleType',
+                      inactive_state='active',
+                      sort_on = 'sortable_title'):
+            st = st.getObject()
+            title = st.Title()
+            if st.getUnit():
+                title += " %s"%(st.getUnit())
+            items.append((st.UID(), title))
+        items = [['','']] + list(items)
+        return DisplayList(items)
 
     security.declarePublic('Preservations')
     def Preservations(self, instance=None):
         instance = instance or self
         bsc = getToolByName(instance, 'bika_setup_catalog')
-        items = bsc(portal_type='Preservation', sort_on = 'sortable_title')
-        return DisplayList(( [(c.UID,c.title) for c in items]))
-
-    security.declarePublic('Containers')
-    def Containers(self, instance=None):
-        instance = instance or self
-        bsc = getToolByName(instance, 'bika_setup_catalog')
-        items = bsc(portal_type='Container', sort_on = 'sortable_title')
-        return DisplayList(( [(c.UID,c.title) for c in items]))
+        items = [(c.UID,c.title) for c in \
+                 bsc(portal_type='Preservation',
+                     inactive_state='active',
+                     sort_on = 'sortable_title')]
+        items = [['','']] + list(items)
+        return DisplayList(items)
 
     security.declarePublic('ContainerTypes')
-    def ContainerTypes(self, instance=None):
+    def Containers(self, instance=None):
         instance = instance or self
-        bsc = getToolByName(instance, 'bika_setup_catalog')
-        items = bsc(portal_type='ContainerType', sort_on = 'sortable_title')
-        return DisplayList(( [(c.UID,c.title) for c in items]))
+        return DisplayList(getContainers(instance))
 
 registerField(PartitionSetupField, title = "", description = "")
 
 schema = BikaSchema.copy() + Schema((
     StringField('Unit',
-        schemata = _("Analysis"),
+        schemata = _("Description"),
+        required = 1,
         widget = StringWidget(
             label = _("Unit"),
             description = _("Unit description",
-                            "The measurement units for this analysis service, "
+                            "The measurement units for this analysis service' results, "
                             "e.g. mg/l, ppm, dB, mV, etc."),
         ),
     ),
@@ -391,7 +441,8 @@ schema = BikaSchema.copy() + Schema((
             description = _("Select any combination of these fields to configure how "
                             "the LIMS will create sample partitions for new ARs. "
                             "Adding only a few very general rules will cause the empty "
-                            "fields to be set to computed, empty or default values."),
+                            "fields to be set to computed, empty or default values. "
+                            "This field is ignored if a service calculation is specified."),
         ),
     ),
 ))
@@ -564,7 +615,7 @@ class AnalysisService(BaseContent, HistoryAwareMixin):
         """ Create a copy of the service and return the copy's id """
         _id = context.invokeFactory(type_name = 'AnalysisService', id = 'tmp')
         dup = context[_id]
-        dup.setTitle('! Copy of %s' % self.Title())
+        dup.setTitle('%s (copy)' % self.Title())
         dup.edit(
             description = self.Description(),
             Instructions = self.getInstructions(),
@@ -588,33 +639,5 @@ class AnalysisService(BaseContent, HistoryAwareMixin):
         dup.processForm()
         dup.reindexObject()
         return _id
-
-##    security.declarePublic('getSampleTypes')
-##    def getSampleTypes(self, instance=None):
-##        instance = instance or self
-##        bsc = getToolByName(instance, 'bika_setup_catalog')
-##        items = bsc(portal_type='SampleType', sort_on = 'sortable_title')
-##        return DisplayList([(c.UID,c.title) for c in items])
-##
-##    security.declarePublic('getPreservations')
-##    def getPreservations(self, instance=None):
-##        instance = instance or self
-##        bsc = getToolByName(instance, 'bika_setup_catalog')
-##        items = bsc(portal_type='Preservation', sort_on = 'sortable_title')
-##        return DisplayList([(c.UID,c.title) for c in items])
-##
-##    security.declarePublic('getContainers')
-##    def getContainers(self, instance=None):
-##        instance = instance or self
-##        bsc = getToolByName(instance, 'bika_setup_catalog')
-##        items = bsc(portal_type='Container', sort_on = 'sortable_title')
-##        return DisplayList([(c.UID,c.title) for c in items])
-##
-##    security.declarePublic('getContainerTypes')
-##    def getContainerTypes(self, instance=None):
-##        instance = instance or self
-##        bsc = getToolByName(instance, 'bika_setup_catalog')
-##        items = bsc(portal_type='ContainerType', sort_on = 'sortable_title')
-##        return DisplayList([(c.UID,c.title) for c in items])
 
 registerType(AnalysisService, PROJECTNAME)

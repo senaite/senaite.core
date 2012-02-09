@@ -84,7 +84,7 @@
             <img
 				i18n:attributes="title"
 				title="Analyses"
-				src="++resource++bika.lims.images/service.png"/>
+				src="++resource++bika.lims.images/analysisservice.png"/>
             <span tal:content="python: table[0]"/>
         </h3>
         <span tal:replace="structure python: table[1]"/>

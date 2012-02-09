@@ -4,7 +4,7 @@
    xmlns:i18n="http://xml.zope.org/namespaces/i18n">
  <property name="title">Analysis Service</property>
  <property name="description">The analysis services (or tests) offered by the lab</property>
- <property name="content_icon">++resource++bika.lims.images/service.png</property>
+ <property name="content_icon">++resource++bika.lims.images/analysisservice.png</property>
  <property name="content_meta_type">AnalysisService</property>
  <property name="product">bika.lims</property>
  <property name="factory">addAnalysisService</property>

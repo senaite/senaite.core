@@ -25,7 +25,7 @@ class AnalysisServicesView(BikaListingView):
         self.context_actions = {_('Add'):
                                 {'url':'createObject?type_name=AnalysisService',
                                  'icon': '++resource++bika.lims.images/add.png'}}
-        self.icon = "++resource++bika.lims.images/service_big.png"
+        self.icon = "++resource++bika.lims.images/analysisservice_big.png"
         self.title = _("Analysis Services")
         self.show_sort_column = False
         self.show_select_row = False
@@ -107,7 +107,7 @@ class AnalysisServicesView(BikaListingView):
             items[x]['Department'] = obj.getDepartment() and obj.getDepartment().Title() or ' '
             calculation = obj.getCalculation()
             items[x]['Calculation'] = calculation and calculation.Title()
-            items[x]['Unit'] = obj.Unit
+            items[x]['Unit'] = obj.getUnit() and obj.getUnit() or ''
             items[x]['Price'] = "%s.%02d" % (obj.Price)
             maxtime = obj.MaxTimeAllowed
 

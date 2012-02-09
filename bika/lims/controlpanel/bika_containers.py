@@ -40,25 +40,22 @@ class ContainersView(BikaListingView):
             'Description': {'title': _('Description'),
                             'index': 'description',
                             'toggle': True},
+            'ContainerType': {'title': _('Container Type'),
+                              'toggle': True},
+            'Capacity': {'title': _('Capacity'),
+                         'toggle': True},
+            'Pre-preserved': {'title': _('Pre-preserved'),
+                             'toggle': True},
         }
 
         self.review_states = [
             {'id':'all',
              'title': _('All'),
              'columns': ['Title',
-                         'Description']},
-            {'id':'active',
-             'title': _('Active'),
-             'contentFilter': {'inactive_state': 'active'},
-             'transitions': [{'id':'deactivate'}, ],
-             'columns': ['Title',
-                         'Description']},
-            {'id':'inactive',
-             'title': _('Dormant'),
-             'contentFilter': {'inactive_state': 'inactive'},
-             'transitions': [{'id':'activate'}, ],
-             'columns': ['Title',
-                         'Description']},
+                         'Description',
+                         'ContainerType',
+                         'Capacity',
+                         'Pre-preserved']},
         ]
 
     def folderitems(self):
@@ -67,6 +64,15 @@ class ContainersView(BikaListingView):
             if not items[x].has_key('obj'): continue
             obj = items[x]['obj']
             items[x]['Description'] = obj.Description()
+            items[x]['ContainerType'] = obj.getContainerType().Title()
+            items[x]['Capacity'] = obj.getCapacity() and "%s %s" % \
+                (obj.getCapacity(), obj.getUnit()) or ''
+            pre = obj.getPrePreserved()
+            pres = obj.getPreservation()
+            items[x]['Pre-preserved'] = ''
+            items[x]['after']['Pre-preserved'] = pre \
+                and "<a href='%s'>%s</a>" % (pres.absolute_url(), pres.Title()) \
+                or ''
 
             items[x]['replace']['Title'] = "<a href='%s'>%s</a>" % \
                  (items[x]['url'], items[x]['Title'])

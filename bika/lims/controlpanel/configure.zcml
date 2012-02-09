@@ -116,13 +116,6 @@
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
-    <browser:page
-      for="bika.lims.interfaces.IARProfiles"
-      name="folder_view"
-      class=".bika_arprofiles.ARProfilesView"
-      permission="bika.lims.ManageBika"
-      layer="bika.lims.interfaces.IBikaLIMS"
-    />
 
     <browser:page
       for="bika.lims.interfaces.ILabProducts"
@@ -164,6 +157,7 @@
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
+    <!-- For autocomplete dropdown -->
     <browser:page
       for="*"
       name="ajax_samplepoints"
@@ -172,6 +166,7 @@
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
+    <!-- For autocomplete dropdown -->
     <browser:page
       for="*"
       name="ajax_sampletypes"

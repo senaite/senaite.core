@@ -31,6 +31,7 @@ setup(name='bika.lims',
           'openpyxl',
           'plone.app.iterate',
           'reportlab',
+          'magnitude',
       ],
       extras_require = {
           'test': [

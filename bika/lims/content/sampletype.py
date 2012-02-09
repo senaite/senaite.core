@@ -1,11 +1,13 @@
 from AccessControl import ClassSecurityInfo
 from Products.ATContentTypes.lib.historyaware import HistoryAwareMixin
 from Products.Archetypes.public import *
+from Products.Archetypes.references import HoldingReference
 from Products.CMFCore.permissions import View, ModifyPortalContent
 from Products.CMFCore.utils import getToolByName
+from bika.lims import bikaMessageFactory as _
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
-from bika.lims import bikaMessageFactory as _
+from magnitude import mg
 from zope.interface import implements
 
 schema = BikaSchema.copy() + Schema((
@@ -15,7 +17,7 @@ schema = BikaSchema.copy() + Schema((
         widget = IntegerWidget(
             label = _("Retention period"),
             description = _("Retention period description",
-                            "The period for which Samples of this type can be kept before "
+                            "The period for which un-preserved samples of this type can be kept before "
                             "they expire and cannot be analysed any further"),
         )
     ),
@@ -31,6 +33,13 @@ schema = BikaSchema.copy() + Schema((
         required = True,
         widget = StringWidget(
             label = _('Sample Type Prefix'),
+        ),
+    ),
+    StringField('Unit',
+        required = 1,
+        widget = StringWidget(
+            label = _("Unit"),
+            description = _("Sample volume is specified in this unit."),
         ),
     ),
 ))
@@ -52,5 +61,8 @@ class SampleType(BaseContent, HistoryAwareMixin):
         """ get the default retention period """
         settings = getToolByName(self, 'bika_setup')
         return settings.getDefaultSampleLifetime()
+
+    def getUnits(self):
+        return getUnits(self)
 
 registerType(SampleType, PROJECTNAME)

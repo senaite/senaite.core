@@ -202,7 +202,7 @@
 
 		<tal:tables tal:repeat="table python:view.tables.items()">
 			<h3>
-				<img title="analyses" src="++resource++bika.lims.images/service.png">
+				<img title="analyses" src="++resource++bika.lims.images/analysisservice.png">
 				<span tal:content="python: table[0]"/>
 			</h3>
 			<span tal:replace="structure python: table[1]"/>

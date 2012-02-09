@@ -283,6 +283,7 @@ class BikaGenerator:
         at.setCatalogsByType('ReferenceManufacturer', ['bika_setup_catalog', ])
         at.setCatalogsByType('ReferenceSupplier', ['bika_setup_catalog', ])
         at.setCatalogsByType('ReferenceDefinition', ['bika_setup_catalog', ])
+        at.setCatalogsByType('Unit', ['bika_setup_catalog', ])
         at.setCatalogsByType('WorksheetTemplate', ['bika_setup_catalog', ])
 
         # create lexicon
