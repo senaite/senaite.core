@@ -26,6 +26,7 @@ schema = BikaSchema.copy() + Schema((
         relationship = 'ContainerPreservation',
         referenceClass = HoldingReference,
         widget = ReferenceWidget(
+            checkbox_bound = 1,
             label = _("Preservation"),
             description = _("Pre-Preserved Preservation description",
                             "If this container is pre-preserved, then the preservation "
@@ -69,6 +70,17 @@ class Container(BaseContent):
         bsc = getToolByName(self, 'bika_setup_catalog')
         items = [('','')] + [(o.UID, o.Title) for o in \
                                bsc(portal_type='ContainerType',
+                                   inactive_state = 'active')]
+        o = self.getContainerType()
+        if o and o.UID() not in [i[0] for i in items]:
+            items.append((o.UID(), o.Title()))
+        items.sort(lambda x,y: cmp(x[1], y[1]))
+        return DisplayList(list(items))
+
+    def getPreservations(self):
+        bsc = getToolByName(self, 'bika_setup_catalog')
+        items = [('','')] + [(o.UID, o.Title) for o in \
+                               bsc(portal_type='Preservation',
                                    inactive_state = 'active')]
         o = self.getContainerType()
         if o and o.UID() not in [i[0] for i in items]:
