@@ -10,6 +10,8 @@ from bika.lims.config import *
 from bika.lims.content.bikaschema import BikaFolderSchema
 from bika.lims.interfaces import IBikaSetup
 from bika.lims.interfaces import IHaveNoBreadCrumbs
+from bika.lims.browser.widgets import DurationWidget
+from bika.lims.browser.fields import DurationField
 from plone.app.folder import folder
 from zope.interface import implements
 import sys
@@ -187,11 +189,11 @@ schema = BikaFolderSchema.copy() + Schema((
                             "own configuration"),
         )
     ),
-    IntegerField('DefaultSampleLifetime',
+    DurationField('DefaultSampleLifetime',
         schemata = _("Analyses"),
         required = 1,
-        default = 30,
-        widget = IntegerWidget(
+        default = {"days":30, "hours":0, "minutes":0},
+        widget = DurationWidget(
             label = _("Default sample retention period"),
             description = _("Default sample retention period description",
                             "The number of days before a sample expires and cannot be analysed "

@@ -207,6 +207,7 @@ class LoadSetupData(BrowserView):
                 containertypes.append(self.containertypes[ct.strip()])
             obj.edit(title = unicode(row['title']),
                      description = unicode(row['description']),
+                     RetentionPeriod = row['RetentionPeriod'] and eval(row['RetentionPeriod']) or {},
                      ContainerType = containertypes
                      )
             obj.processForm()
@@ -228,8 +229,7 @@ class LoadSetupData(BrowserView):
             P = row['Preservation']
             obj.edit(title = unicode(row['title']),
                      description = unicode(row['description']),
-                     Capacity = row['Capacity'],
-                     Unit = unicode(row['Unit']),
+                     Capacity = unicode(row['Capacity']),
                      ContainerType = row['ContainerType'] \
                          and self.containertypes[row['ContainerType']] or None,
                      PrePreserved = row['PrePreserved'] and row['PrePreserved'] or False,
@@ -515,7 +515,7 @@ class LoadSetupData(BrowserView):
             self.sampletypes[row['title']] = obj
             obj.edit(title = unicode(row['title']),
                      description = unicode(row['description']),
-                     RetentionPeriod = int(row['RetentionPeriod']),
+                     RetentionPeriod = row['RetentionPeriod'] and eval(row['RetentionPeriod']) or {},
                      Prefix = unicode(row['Prefix']),
                      Unit = unicode(row['Unit']),
                      Hazardouus = row['Hazardous'] and True or False)

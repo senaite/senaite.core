@@ -6,15 +6,17 @@ from Products.CMFCore.permissions import View, ModifyPortalContent
 from Products.CMFCore.utils import getToolByName
 from bika.lims import bikaMessageFactory as _
 from bika.lims.config import PROJECTNAME
+from bika.lims.browser.widgets import DurationWidget
+from bika.lims.browser.fields import DurationField
 from bika.lims.content.bikaschema import BikaSchema
 from magnitude import mg
 from zope.interface import implements
 
 schema = BikaSchema.copy() + Schema((
-    IntegerField('RetentionPeriod',
+    DurationField('RetentionPeriod',
         required = 1,
         default_method = 'getDefaultLifetime',
-        widget = IntegerWidget(
+        widget = DurationWidget(
             label = _("Retention period"),
             description = _("Retention period description",
                             "The period for which un-preserved samples of this type can be kept before "

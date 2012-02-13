@@ -141,7 +141,7 @@
         <tr tal:condition="python:review_state != 'sample_due'">
             <th style="padding-left:3em" i18n:translate="">Date Received</th>
 			<td><span
-				tal:condition="python:review_state == 'received'"
+				tal:condition="python:review_state == 'sample_received'"
 				tal:define="date_received here/getDateReceived"
 				tal:content="python:view.TimeOrDate(context, date_received, long_format=1)"/>
             </td>

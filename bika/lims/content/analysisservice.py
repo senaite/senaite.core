@@ -42,9 +42,11 @@ def getContainers(instance, preservation=None, minvol="0 ml"):
     for container in bsc(portal_type='Container', sort_on='sortable_title'):
         container = container.getObject()
         try:
+            # If the units match, verify container is large enough.
+            # all other containers are considered valid
             cvol = container.getCapacity()
             cvol = cvol.split(" ")
-            cvol = mg(float(minvol[0]), " ".join(minvol[1:]).strip())
+            cvol = mg(float(cvol[0]), " ".join(cvol[1:]).strip())
             if cvol.out_unit == minvol.out_unit and cvol.val < minvol.val:
                 continue
         except MagnitudeError:
