@@ -226,17 +226,17 @@
     <form>
 
 	<span tal:define="
-		notes python:context.getNotes();
-		rows python:len(notes.splitlines());
+		remarks python:context.getRemarks();
+		rows python:len(remarks.splitlines());
 		rows python:rows > 5 and rows or 5;">
 		<fieldset>
 			<legend i18n:translate="">
-				<span i18n:translate="">Notes</span>&nbsp;
+				<span i18n:translate="">Remarks</span>&nbsp;
 				<span i18n:translate="" i18n:domain="plone">History</span>
 			</legend>
-			<textarea id="NotesHistory" cols="40" readonly="readonly"
+			<textarea id="RemarksHistory" cols="40" readonly="readonly"
 				tal:attributes="rows rows"
-				tal:content="notes"/>
+				tal:content="remarks"/>
 		</fieldset>
 	</span>
 

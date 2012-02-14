@@ -103,8 +103,8 @@
 
     <browser:page
       for="bika.lims.interfaces.IWorksheet"
-      name="setWSNotes"
-      class="bika.lims.browser.worksheet.ajaxSetNotes"
+      name="setWSRemarks"
+      class="bika.lims.browser.worksheet.ajaxSetRemarks"
       permission="zope.Public"
       layer="bika.lims.interfaces.IBikaLIMS"
     />

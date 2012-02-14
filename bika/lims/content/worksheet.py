@@ -58,12 +58,12 @@ schema = BikaSchema.copy() + Schema((
         referenceClass = HoldingReference,
     ),
 
-    TextField('Notes',
+    TextField('Remarks',
         searchable = True,
         default_content_type = 'text/plain',
         allowable_content_types = ('text/plain',),
         widget = TextAreaWidget(
-            label = _('Notes'),
+            label = _('Remarks'),
         ),
     ),
 ),

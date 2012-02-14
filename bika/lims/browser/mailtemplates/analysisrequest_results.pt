@@ -393,7 +393,7 @@ h1, h2, h3, h4, h5, h6 {
     <tr tal:repeat="ar view/batch">
     <th tal:content="string:${ar/getRequestID}:">AR:</th>
     <td width=50%
-      tal:content="python:ar.getNotes() or default">None</td>
+      tal:content="python:ar.getRemarks() or default">None</td>
     </tr>
   </table>
 

@@ -708,8 +708,8 @@ class bika_pdf_build(UniqueObject, SimpleItem):
 
         remarks = [['Remarks', ''], ]
         for ar in ars:
-            if ar.getNotes():
-                para = Paragraph(ar.getNotes(), paraStyle)
+            if ar.getRemarks():
+                para = Paragraph(ar.getRemarks(), paraStyle)
                 remarks.append([ar.getRequestID(), para])
             else:
                 remarks.append([ar.getRequestID(), 'None'])

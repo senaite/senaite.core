@@ -185,24 +185,24 @@ $(document).ready(function(){
 		});
 	});
 
-	// Append-only notes field
-	$('.saveNotes').live('click', function(event){
+	// Append-only remarks field
+	$('.saveRemarks').live('click', function(event){
 		event.preventDefault();
-		if ($("#Notes").val() == '' ||
-		    $("#Notes").val() == undefined) {
+		if ($("#Remarks").val() == '' ||
+		    $("#Remarks").val() == undefined) {
 			return false;
 		}
-		$("#NotesHistory").load(
-			window.location.href.replace("/manage_results", "") + "/setWSNotes",
-			{'value': $("#Notes").val(),
+		$("#RemarksHistory").load(
+			window.location.href.replace("/manage_results", "") + "/setWSRemarks",
+			{'value': $("#Remarks").val(),
 			 '_authenticator': $('input[name="_authenticator"]').val()}
 		);
-		$("#Notes").val("");
-		$("#NotesHistory").attr("rows", $("#NotesHistory").val().split("\n").length+3);
+		$("#Remarks").val("");
+		$("#RemarksHistory").attr("rows", $("#RemarksHistory").val().split("\n").length+3);
 		return false;
 	});
-	$("#Notes").empty();
-	$("#NotesContainer").show();
+	$("#Remarks").empty();
+	$("#RemarksContainer").show();
 
 });
 });

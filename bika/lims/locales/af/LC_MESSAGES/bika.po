@@ -1852,7 +1852,7 @@ msgstr "let wel dat dit etlike minute kan neem"
 #: ../content/analysisrequest.py:143
 #: ../content/invoice.py:39
 #: ../content/pricelist.py:65
-msgid "Notes"
+msgid "Remarks"
 msgstr "Notas"
 
 #: ../content/arimport.py:137

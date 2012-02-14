@@ -130,8 +130,8 @@
 
     <browser:page
       for="bika.lims.interfaces.IAnalysisRequest"
-      name="setARNotes"
-      class="bika.lims.browser.analysisrequest.ajaxSetNotes"
+      name="setARRemarks"
+      class="bika.lims.browser.analysisrequest.ajaxSetRemarks"
       permission="zope.Public"
       layer="bika.lims.interfaces.IBikaLIMS"
     />

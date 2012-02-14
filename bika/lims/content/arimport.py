@@ -437,7 +437,7 @@ class ARImport(BaseFolder):
                 SampleType = sampletype,
                 DateSampled = sample_date,
                 DateReceived = DateTime(),
-                Notes = aritem.getClientRemarks(),
+                Remarks = aritem.getClientRemarks(),
                 )
             sample.processForm()
             sample_uid = sample.UID()
@@ -457,7 +457,7 @@ class ARImport(BaseFolder):
                 Sample = sample_uid,
                 Profile = ar_profile,
                 ClientOrderNumber = self.getOrderID(),
-                Notes = aritem.getClientRemarks(),
+                Remarks = aritem.getClientRemarks(),
                 Analyses = analyses,
                 )
             ar.processForm()

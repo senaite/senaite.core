@@ -32,11 +32,11 @@ schema = BikaSchema.copy() + Schema((
             label = _("Date"),
         ),
     ),
-    TextField('Notes',
+    TextField('Remarks',
         default_content_type = 'text/plain',
         allowable_content_types = ('text/plain',),
         widget = TextAreaWidget(
-            label = _("Notes")
+            label = _("Remarks")
         )
     ),
     ComputedField('Subtotal',
