@@ -547,7 +547,7 @@ Table cells for each column from in review_state's column list.
 <tal:comment replace="nothing">***************
 Workflow Actions
 ********************************</tal:comment>
-		<td class="workfow_actions">
+		<td class="workflow_actions">
 			<span class="workflow_action_buttons"
 				tal:define="actions view/get_workflow_actions">
 				<span tal:omit-tag="python:True" tal:repeat="action actions"

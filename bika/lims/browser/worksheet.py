@@ -656,11 +656,8 @@ class AddBlankView(BrowserView):
             reference_uid = form['reference_uid']
             reference = rc.lookupObject(reference_uid)
             self.request['context_uid'] = self.context.UID()
-            ref_analyses = self.context.addReferences(position,
-                                                      reference,
-                                                      service_uids)
-            self.request.response.redirect(
-                self.context.absolute_url() + "/manage_results")
+            ref_analyses = self.context.addReferences(position, reference, service_uids)
+            self.request.response.redirect(self.context.absolute_url() + "/manage_results")
         else:
             self.Services = WorksheetServicesView(self.context, self.request)
             self.Services.view_url = self.Services.base_url + "/add_blank"
@@ -702,16 +699,12 @@ class AddControlView(BrowserView):
             reference_uid = form['reference_uid']
             reference = rc.lookupObject(reference_uid)
             self.request['context_uid'] = self.context.UID()
-            ref_analyses = self.context.addReferences(position,
-                                                      reference,
-                                                      service_uids)
-            self.request.response.redirect(
-                self.context.absolute_url() + "/manage_results")
-            return
-
-        self.Services = WorksheetServicesView(self.context, self.request)
-        self.Services.view_url = self.Services.base_url + "/add_control"
-        return self.template()
+            ref_analyses = self.context.addReferences(position, reference, service_uids)
+            self.request.response.redirect(self.context.absolute_url() + "/manage_results")
+        else:
+            self.Services = WorksheetServicesView(self.context, self.request)
+            self.Services.view_url = self.Services.base_url + "/add_control"
+            return self.template()
 
     def getAvailablePositions(self):
         """ Return a list of empty slot numbers
@@ -748,12 +741,10 @@ class AddDuplicateView(BrowserView):
             position = self.request.get('position', '')
             self.request['context_uid'] = self.context.UID()
             self.context.addDuplicateAnalyses(src_slot, position)
-            self.request.response.redirect(
-                self.context.absolute_url() + "/manage_results")
-            return
-
-        self.ARs = WorksheetARsView(self.context, self.request)
-        return self.template()
+            self.request.response.redirect(self.context.absolute_url() + "/manage_results")
+        else:
+            self.ARs = WorksheetARsView(self.context, self.request)
+            return self.template()
 
     def getAvailablePositions(self):
         """ Return a list of empty slot numbers
@@ -971,9 +962,14 @@ class ajaxGetWorksheetReferences(ReferenceSamplesView):
                 items[x]['nr_services'] = len(services)
                 items[x]['Definition'] = obj.getReferenceDefinition().Title()
                 services.sort()
-                items[x]['Services'] = \
-                    ", ".join(services)
+                items[x]['Services'] = ", ".join(services)
                 items[x]['replace'] = {}
+
+                after_icons = "<a href='%s' target='_blank'><img src='++resource++bika.lims.images/referencesample.png' title='%s: %s'></a>" % \
+                    (obj.absolute_url(), \
+                     self.context.translate(_("Reference sample")), obj.Title())
+                items[x]['before']['ID'] = after_icons
+
                 new_items.append(items[x])
 
         new_items = sorted(new_items, key = itemgetter('nr_services'))

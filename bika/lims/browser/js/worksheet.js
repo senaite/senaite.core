@@ -88,8 +88,11 @@ $(document).ready(function(){
 	get_updated_controls();
 
 	// click a Reference Sample in add_control or add_blank
-	$("#worksheet_add_references .bika-listing-table tbody tr").live('click', function(){
+	$("#worksheet_add_references .bika-listing-table tbody.item-listing-tbody tr").live('click', function(e){
 		// we want to submit to the worksheet.py/add_control or add_blank views.
+		if (e.target.src.search("referencesample.png") > -1) {
+			return;
+		}
 		if(window.location.href.search('add_control') > -1){
 			$(this).parents('form').attr("action", "add_control");
 		} else {
@@ -107,10 +110,10 @@ $(document).ready(function(){
 		// add the position dropdown's value to the form before submitting.
 		$(this).parents('form').append("<input type='hidden' value='"+$('#position').val()+"' name='position'/>");
 		$(this).parents('form').submit();
-	})
+	});
 
 	// click an AR in add_duplicate
-	$("#worksheet_add_duplicate_ars .bika-listing-table tbody tr").live('click', function(){
+	$("#worksheet_add_duplicate_ars .bika-listing-table tbody.item-listing-tbody tr").live('click', function(){
 		// we want to submit to the worksheet.py/add_duplicate view.
 		$(this).parents('form').attr("action", "add_duplicate");
 		// add the position dropdown's value to the form before submitting.

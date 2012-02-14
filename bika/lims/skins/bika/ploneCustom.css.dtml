@@ -563,13 +563,10 @@ fieldset.criteria p {
 	vertical-align:top !important;
 }
 
-.worksheet_add_references .bika-listing-table tbody tr:hover,
-.worksheet_add_references .bika-listing-table tbody tr:hover td,
-#worksheet_add_duplicate_ars .bika-listing-table tbody tr:hover,
-#worksheet_add_duplicate_ars .bika-listing-table tbody tr:hover td {
+.worksheet_add_references tbody.item-listing-tbody tr:hover,
+#worksheet_add_duplicate_ars tbody.item-listing-tbody tr:hover {
     cursor:pointer;
 	background:&dtml-notifyBackgroundColor; !important;
-
 }
 
 /* sample links in ws listing */
