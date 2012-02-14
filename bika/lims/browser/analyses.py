@@ -32,6 +32,9 @@ class AnalysesView(BikaListingView):
         self.pagesize = 100
         self.form_id = 'analyses_form'
 
+        pc = getToolByName(context, 'portal_catalog')
+        self.contentsMethod = pc
+
         request.set('disable_plone.rightcolumn', 1);
 
         # each editable item needs it's own allow_edit
@@ -47,6 +50,7 @@ class AnalysesView(BikaListingView):
             'retested': {'title': "<img src='++resource++bika.lims.images/retested.png' title='%s'/>" % _('Retested'),
                          'type':'boolean'},
             'Attachments': {'title': _('Attachments')},
+            'CaptureDate': {'title': _('Captured')},
             'DueDate': {'title': _('Due Date')},
         }
 
@@ -56,6 +60,7 @@ class AnalysesView(BikaListingView):
              'columns':['Service',
                         'Result',
                         'Uncertainty',
+                        'CaptureDate',
                         'DueDate',
                         'state_title',
                         'Attachments'],
@@ -111,8 +116,11 @@ class AnalysesView(BikaListingView):
             items[i]['calculation'] = calculation and True or False
             if obj.portal_type == "ReferenceAnalysis":
                 items[i]['DueDate'] = ''
+                items[i]['CaptureDate'] = ''
             else:
                 items[i]['DueDate'] = obj.getDueDate()
+                cd = obj.getResultCaptureDate()
+                items[i]['CaptureDate'] = cd and TimeOrDate(self.context, cd) or ''
             items[i]['Attachments'] = ''
 
             # calculate specs
@@ -328,10 +336,10 @@ class AnalysesView(BikaListingView):
             self.show_select_column = True
 
         # Dry Matter.
-        # XXX The Dry Matter column is always enabled for worksheets,
-        #     never enabled for reference sample contexts, and refers to
-        #     getReportDryMatter in ARs.
-        #     It should be enabled only if any of the ARs present asked for DM.
+        # The Dry Matter column is always enabled for worksheets,
+        # never enabled for reference sample contexts, and refers to
+        # getReportDryMatter in ARs.
+        # XXX It should be enabled only if any of the ARs present asked for DM.
         if items and \
            (self.context.portal_type == 'Worksheet' or \
             (hasattr(self.context, 'getReportDryMatter') and \

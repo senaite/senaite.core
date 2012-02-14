@@ -408,7 +408,6 @@ Table cells for each column from in review_state's column list.
 			tal:condition="python:column == 'Result' and
 								item['calculation']">
 			<span
-				tal:condition="python:ViewResults"
 				tal:attributes="
 					field string:formatted_result;
 					uid item/uid;
@@ -416,7 +415,6 @@ Table cells for each column from in review_state's column list.
 					size input_width;"
 				tal:content="python:item['formatted_result']"/>
 			<input
-				tal:condition="python:ViewResults"
 				type="hidden"
 				tal:attributes="
 					uid string:${item/uid};

@@ -85,10 +85,10 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
             results = {}
             hasInterims = {}
 
-            # first save results for entire form
+            # check that the form values match the database
+            # save them if not.
             for uid, result in self.request.form['Result'][0].items():
-                # if the AR has ReportDryMatter set, then
-                # ResultDM column will exist in manage_results form.
+                # if the AR has ReportDryMatter set, get dry_result from form.
                 dry_result = ''
                 if self.context.getReportDryMatter():
                     for k, v in self.request.form['ResultDM'][0].items():
@@ -112,14 +112,23 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
                     hasInterims[uid] = True
                 else:
                     hasInterims[uid] = False
-                unit = service.getUnit()
-                analysis.edit(
-                    Result = result,
-                    ResultDM = dry_result,
-                    InterimFields = interimFields,
-                    Retested = form.has_key('retested') and \
-                               form['retested'].has_key(uid),
-                    Unit = unit and unit or '')
+                unit = service.getUnit() and service.getUnit() or ''
+                retested = form.has_key('retested') and form['retested'].has_key(uid)
+                # Some silly if statements here to avoid saving if it isn't necessary.
+                if analysis.getInterimFields != interimFields or \
+                   analysis.getRetested != retested or \
+                   analysis.getUnit != unit:
+                    analysis.edit(
+                        InterimFields = interimFields,
+                        Retested = retested,
+                        Unit = unit)
+                # results get checked/saved seperately, so the setResults()
+                # mutator only sets the ResultsCapturedDate when it needs to.
+                if analysis.getResult() != result or \
+                   analysis.getResultDM() != dry_result:
+                    analysis.edit(
+                        ResultDM = dry_result,
+                        Result = result)
 
             # discover which items may be submitted
             submissable = []
