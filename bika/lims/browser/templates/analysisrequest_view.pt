@@ -52,6 +52,7 @@
 
     <img tal:condition="view/getHazardous"
         title="Hazardous"
+	    i18n:attributes="value"
         tal:attributes="src string:++resource++bika.lims.images/hazardous_big.png"/>
 
         <table

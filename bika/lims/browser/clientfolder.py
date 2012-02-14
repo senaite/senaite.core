@@ -18,7 +18,7 @@ class ClientFolderContentsView(BikaListingView):
                                  'icon': '++resource++bika.lims.images/add.png'}}
         self.icon = "++resource++bika.lims.images/client_big.png"
         self.title = _("Clients")
-        self.description = _("Clients description", "")
+        self.description = ""
         self.show_sort_column = False
         self.show_select_row = False
         self.show_select_all_checkbox = False

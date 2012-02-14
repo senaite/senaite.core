@@ -19,8 +19,7 @@ schema = BikaSchema.copy() + Schema((
         schemata = 'Description',
         widget = StringWidget(
             label = _("Profile Keyword"),
-            description = _("Profile Keyword description",
-                            "The profile's keyword is used to uniquely identify "
+            description = _("The profile's keyword is used to uniquely identify "
                             "it in import files. It has to be unique, and it may "
                             "not be the same as any Calculation Interim field ID."),
         ),
@@ -33,8 +32,7 @@ schema = BikaSchema.copy() + Schema((
         relationship = 'ARProfileAnalysisService',
         widget = ServicesWidget(
             label = _("Profile Analyses"),
-            description = _("Profile Analyses description",
-                            "The analyses included in this profile, grouped per category"),
+            description = _("The analyses included in this profile, grouped per category"),
         )
     ),
     TextField('Remarks',

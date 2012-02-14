@@ -38,8 +38,7 @@ schema = BikaSchema.copy() + Schema((
         default = False,
         widget = BooleanWidget(
             label = _("Blank"),
-            description = _("Blank description",
-                            "Reference sample values are zero or 'blank'"),
+            description = _("Reference sample values are zero or 'blank'"),
         ),
     ),
     BooleanField('Hazardous',
@@ -47,8 +46,7 @@ schema = BikaSchema.copy() + Schema((
         default = False,
         widget = BooleanWidget(
             label = _("Hazardous"),
-            description = _("Hazardous description",
-                            "Samples of this type should be treated as hazardous"),
+            description = _("Samples of this type should be treated as hazardous"),
         ),
     ),
     ReferenceField('ReferenceManufacturer',
@@ -167,8 +165,8 @@ class ReferenceSample(BaseFolder):
             # definition is selected
             if not o:
                 return ''
-            blankstr = self.translate(_('indicator_blank', 'Blank: '))
-            hazstr = self.translate(_('indicator_hazardous', ' (!)'))
+            blankstr = self.translate(_('indicator_blank', 'Blank:'))
+            hazstr = self.translate(_('indicator_hazardous', '(!)'))
             return '%s%s%s'%(o.getBlank() and blankstr or '',
                              o.Title(),
                              o.getHazardous() and hazstr or '')

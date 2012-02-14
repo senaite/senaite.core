@@ -60,8 +60,7 @@ schema = BikaSchema.copy() + Schema((
     DurationField('MaxTimeAllowed',
         widget = DurationWidget(
             label = _("Maximum turn-around time"),
-            description = _("Maximum turn-around time description",
-                            "Maximum time allowed for completion of the analysis. "
+            description = _("Maximum time allowed for completion of the analysis. "
                             "A late analysis alert is raised when this period elapses"),
         ),
     ),

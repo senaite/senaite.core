@@ -444,7 +444,7 @@
     </tr>
 </thead>
 
-<!-- -- -- Analyses -- -- -->
+<!-- Analyses -->
 <tal:i define="
     cats view/Categories;
     POINTS_OF_CAPTURE python: modules['bika.lims.config'].POINTS_OF_CAPTURE;

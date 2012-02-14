@@ -12,8 +12,7 @@ schema = BikaSchema.copy() + Schema((
         default = False,
         widget = BooleanWidget(
             label = _("Pre-preserved"),
-            description = _("Pre-preserved description",
-                            "Check this box if this container is already preserved."
+            description = _("Check this box if this container is already preserved."
                             "Setting this will short-circuit the preservation workflow "
                             "for sample partitions stored in this container."),
         ),
@@ -28,8 +27,7 @@ schema = BikaSchema.copy() + Schema((
         widget = ReferenceWidget(
             checkbox_bound = 1,
             label = _("Preservation"),
-            description = _("Pre-preserved Preservation description",
-                            "If this container is pre-preserved, then the preservation "
+            description = _("If this container is pre-preserved, then the preservation "
                             "method could be selected here."),
         ),
     ),

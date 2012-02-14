@@ -37,8 +37,7 @@ schema = BikaSchema.copy() + Schema((
             format = "select",
             size = 5,
             label = _("Container Type"),
-            description=_("Preservation Container Type description",
-                          "This preservation requires the sample partition to be stored in one of these container types. Choose multiple values by holding CTRL and clicking.")
+            description=_("This preservation requires the sample partition to be stored in one of these container types. Choose multiple values by holding CTRL and clicking.")
         ),
     ),
 ))

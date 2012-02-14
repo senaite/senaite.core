@@ -514,8 +514,7 @@ class AnalysisRequestSelectCCView(BikaListingView):
         super(AnalysisRequestSelectCCView, self).__init__(context, request)
         self.icon = "++resource++bika.lims.images/contact_big.png"
         self.title = _("Contacts to CC")
-        self.description = _("Contacts to CC description",
-                             "Select the contacts that will receive analysis results for this request.")
+        self.description = _("Select the contacts that will receive analysis results for this request.")
         self.contentFilter = {'portal_type': 'Contact',
                               'sort_on':'sortable_title',
                               'inactive_state': 'active',
@@ -1244,7 +1243,7 @@ class AnalysisRequestsView(BikaListingView):
 
         self.icon = "++resource++bika.lims.images/analysisrequest_big.png"
         self.title = _("Analysis Requests")
-        self.description = _("Analysis Requests description", "")
+        self.description = ""
 
         self.columns = {
             'getRequestID': {'title': _('Request ID'),

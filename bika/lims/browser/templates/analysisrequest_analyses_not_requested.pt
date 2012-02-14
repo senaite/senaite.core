@@ -69,6 +69,7 @@
 					<img tal:condition="view/getHazardous"
 						src=""
                         title="Hazardous"
+						i18n:attributes="title"
                         tal:attributes="src string:++resource.bika.lims.images/hazardous_big.png"/>
 				</td>
 			</tr>
@@ -185,7 +186,9 @@
 		</tal:ar_actions>
 
 		<img tal:condition="sampletype/getHazardous"
-			tal:attributes="src string:++resource++bika.lims.images/hazardous_big.png">
+			title="Hazardous"
+			i18n:attributes="title"
+			tal:attributes="src string:++resource++bika.lims.images/hazardous_big.png"/>
 
 	</form>
 

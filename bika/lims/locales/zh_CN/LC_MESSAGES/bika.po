@@ -1,26 +1,27 @@
 # 
 # Translators:
+# Inus Scheepers <inus@animatica.co.za>, 2012.
 msgid ""
 msgstr ""
 "Project-Id-Version: Bika-LIMS\n"
 "POT-Creation-Date: 2012-02-14 12:48+0000\n"
-"PO-Revision-Date: 2012-02-14 11:55+0000\n"
+"PO-Revision-Date: 2012-02-14 11:54+0000\n"
 "Last-Translator: lemoene Smit <admin@bikalabs.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1)\n"
+"Plural-Forms: nplurals=1; plural=0\n"
 "Language-Code: en\n"
 "Language-Name: English\n"
 "Preferred-Encodings: utf-8 latin1\n"
 "Domain: DOMAIN\n"
 "Report-Msgid-Bugs-To: http://github.com/bikalabs/Bika-LIMS/issues\n"
-"Language: ur\n"
+"Language: zh_CN\n"
 
 #: ../content/analysisspec.py:71
 msgid "% Error"
-msgstr ""
+msgstr "%错误"
 
 #: ../content/bikasetup.py:150
 msgid "'Classic' indicates importing analysis requests per sample and analysis service selection. With 'Profiles', analysis profile keywords are used to select multiple analysis services together"
@@ -28,19 +29,19 @@ msgstr ""
 
 #: ../skins/bika/attachments.pt:202
 msgid "(Blank)"
-msgstr ""
+msgstr "(空)"
 
 #: ../skins/bika/attachments.pt:209
 msgid "(Control)"
-msgstr ""
+msgstr "(控制)"
 
 #: ../skins/bika/attachments.pt:216
 msgid "(Duplicate)"
-msgstr ""
+msgstr "(复制)"
 
 #: ../browser/templates/contact_login_details.pt:51
 msgid "(Required)"
-msgstr ""
+msgstr "(所需)"
 
 #: ../browser/analyses.py:45
 #: ../browser/referencesample.py:63
@@ -68,96 +69,99 @@ msgstr ""
 
 #: ../content/bikasetup.py:171
 msgid "AR Attachment Option"
-msgstr ""
+msgstr "分析请求附件选项"
 
 #. attachments are required, permitted or not per analysis request"
 #. Default: "The system wide default configuration to indicate whether file attachments are required, permitted or not per analysis request"
 #: ../content/bikasetup.py:172
+#, fuzzy
 msgid "AR Attachment Option description"
-msgstr ""
+msgstr "分析请求附件选择"
 
 #: ../content/bikasetup.py:263
 msgid "AR ID Padding"
-msgstr ""
+msgstr "分析请求帐号填充"
 
 #. Default: "The length of the zero-padding for the AR number in AR IDs"
 #: ../content/bikasetup.py:264
 msgid "AR ID Padding description"
-msgstr ""
+msgstr "分析请求帐号填充描写"
 
 #: ../browser/client.py:484
 msgid "AR Import"
-msgstr ""
+msgstr "分析请求导入"
 
 #: ../content/bikasetup.py:159
 msgid "AR Import options"
-msgstr ""
+msgstr "分析请求导入选择"
 
 #. analysis service selection. With 'Profiles', analysis profile keywords are
 #. used to select multiple analysis services together"
 #. Default: "'Classic' indicates importing analysis requests per sample and analysis service selection. With 'Profiles', analysis profile keywords are used to select multiple analysis services together"
 #: ../content/bikasetup.py:160
+#, fuzzy
 msgid "AR Import options description"
-msgstr ""
+msgstr "分析请求导入选择描写"
 
 #: ../skins/bika/portlet_to_be_verified.pt:72
 msgid "ARs"
-msgstr ""
+msgstr "分析请求单"
 
 #: ../content/organisation.py:71
 msgid "Account Name"
-msgstr ""
+msgstr "账号名"
 
 #: ../content/organisation.py:77
 msgid "Account Number"
-msgstr ""
+msgstr "帐号"
 
 #: ../content/organisation.py:65
 msgid "Account Type"
-msgstr ""
+msgstr "帐号类型"
 
 #: ../content/bikasetup.py:71
 msgid "Accounting"
-msgstr ""
+msgstr "会计"
 
 #: ../content/laboratory.py:74
 #: ../skins/bika/accreditation.pt:18
 msgid "Accreditation"
-msgstr ""
+msgstr "认证"
 
 #: ../content/laboratory.py:46
 msgid "Accreditation Body"
-msgstr ""
+msgstr "认证机构"
 
 #: ../content/laboratory.py:56
 msgid "Accreditation Body Abbreviation"
-msgstr ""
+msgstr "认证机构简称"
 
 #. Default: "E.g. SANAS, APLAC, etc."
 #: ../content/laboratory.py:57
 msgid "Accreditation Body Abbreviation description"
-msgstr ""
+msgstr "认证机构简称描写"
 
 #: ../content/laboratory.py:65
 msgid "Accreditation Body URL"
-msgstr ""
+msgstr "认证机构URL"
 
 #. Default: "Web address for the accreditation body"
 #: ../content/laboratory.py:66
 msgid "Accreditation Body URL description"
-msgstr ""
+msgstr "认证机构URL描写"
 
 #. abbreviation above,  e.g. South African National Accreditation Service for
 #. SANAS"
 #. Default: "The name of the accreditation body corresponding to the abbreviation above,  e.g. South African National Accreditation Service for SANAS"
 #: ../content/laboratory.py:47
+#, fuzzy
 msgid "Accreditation Body description"
-msgstr ""
+msgstr "认证机构描写"
 
 #. Default: "The accreditation standard that applies, e.g. ISO 17025"
 #: ../content/laboratory.py:75
 msgid "Accreditation Description"
-msgstr ""
+msgstr "认证描写"
 
 #: ../content/laboratory.py:90
 msgid "Accreditation Logo"
@@ -170,79 +174,82 @@ msgstr ""
 
 #: ../content/laboratory.py:83
 msgid "Accreditation Reference"
-msgstr ""
+msgstr "认证描写提及"
 
 #. Default: "The reference code issued to the lab by the accreditation body"
 #: ../content/laboratory.py:84
 msgid "Accreditation Reference description"
-msgstr ""
+msgstr "认证描写提及描写"
 
 #: ../content/analysisservice.py:202
 #: ../content/pricelistlineitem.py:25
 msgid "Accredited"
-msgstr ""
+msgstr "认可"
 
 #. laboratory's schedule of accredited analyses"
 #. Default: "Check this box if the analysis service is included in the laboratory's schedule of accredited analyses"
 #: ../content/analysisservice.py:203
+#, fuzzy
 msgid "Accredited description"
-msgstr ""
+msgstr "认可描写"
 
 #: ../browser/log.py:39
 msgid "Action"
-msgstr ""
+msgstr "行动"
 
 msgid "Activate"
-msgstr ""
+msgstr "激活"
 
 #: ../browser/clientfolder.py:47
 #: ../controlpanel/bika_analysiscategories.py:49
 #: ../controlpanel/bika_analysisservices.py:66
 msgid "Active"
-msgstr ""
+msgstr "启动的"
 
 #: ../browser/client.py:112
 #: ../browser/clientfolder.py:16
 #: ../browser/referencesupplier.py:13
 msgid "Add"
-msgstr ""
+msgstr "加"
 
 #: ../browser/worksheet.py:473
 msgid "Add Analyses"
-msgstr ""
+msgstr "加分析单"
 
 #: ../browser/worksheet.py:474
 msgid "Add Analyses description"
-msgstr ""
+msgstr "加分析单描写"
 
 #: ../browser/worksheet.py:616
 msgid "Add Blank Reference"
-msgstr ""
+msgstr "加空描写提"
 
 #. Select a reference by clicking it. "
 #. Default: "Select services in the left column to locate reference samples. Select a reference by clicking it. "
 #: ../browser/worksheet.py:617
+#, fuzzy
 msgid "Add Blank Reference description"
-msgstr ""
+msgstr "加空描写提及"
 
 #: ../browser/worksheet.py:665
 msgid "Add Control Reference"
-msgstr ""
+msgstr "加控制"
 
 #. Select a reference by clicking it. "
 #. Default: "Select services in the left column to locate reference samples. Select a reference by clicking it. "
 #: ../browser/worksheet.py:666
+#, fuzzy
 msgid "Add Control Reference description"
-msgstr ""
+msgstr "加控制"
 
 #: ../browser/worksheet.py:714
 msgid "Add Duplicate"
-msgstr ""
+msgstr "加复制"
 
 #. Default: "Select a destinaton position and the AR to duplicate."
 #: ../browser/worksheet.py:715
 msgid "Add Duplicate description"
-msgstr ""
+msgstr "加复制提及"
 
 #: ../content/bikasetup.py:237
 msgid "Adds a two-digit year after the ID prefix."
@@ -252,19 +259,19 @@ msgstr ""
 #: ../browser/analysisrequest.py:539
 #: ../browser/bika_listing.py:208
 msgid "All"
-msgstr ""
+msgstr "所有"
 
 #: ../browser/analysisrequest.py:607
 msgid "All Samples"
-msgstr ""
+msgstr "所有样品"
 
 #: ../browser/client.py:325
 msgid "All analyses assigned"
-msgstr ""
+msgstr "所有分析分配"
 
 #: ../skins/bika/attachments.pt:269
 msgid "All analyses of type"
-msgstr ""
+msgstr "所有分析之类"
 
 #: ../browser/referencesample.py:180
 msgid "All reference samples in the system are displayed here."
@@ -274,29 +281,29 @@ msgstr ""
 #: ../browser/worksheetfolder.py:117
 #: ../content/arimport.py:153
 msgid "Analyses"
-msgstr ""
+msgstr "分析"
 
 #: ../browser/templates/reports_qualitycontrol.pt:28
 msgid "Analyses out of range"
-msgstr ""
+msgstr "分析超出范围"
 
 #: ../browser/templates/reports_productivity.pt:49
 msgid "Analyses per sample type"
-msgstr ""
+msgstr "分析按照类型"
 
 #: ../browser/templates/reports_productivity.pt:39
 msgid "Analyses per service"
-msgstr ""
+msgstr "分析按照服务"
 
 #: ../browser/templates/reports_qualitycontrol.pt:34
 msgid "Analyses repeated"
-msgstr ""
+msgstr "分析重复"
 
 #: ../browser/analyses.py:41
 #: ../browser/late_analyses.py:37
 #: ../browser/templates/analysisrequest_analyses_not_requested.pt:97
 msgid "Analysis"
-msgstr ""
+msgstr "分析"
 
 #: ../content/bikasetup.py:183
 msgid "Analysis Attachment Option"
@@ -339,11 +346,11 @@ msgstr ""
 
 #: ../config.py:152
 msgid "Analysis Request ID"
-msgstr ""
+msgstr "分析请求帐号"
 
 #: ../browser/client.py:493
 msgid "Analysis Request Imports"
-msgstr ""
+msgstr "分析请求求导入"
 
 #: ../browser/client.py:494
 msgid "Analysis Request Imports description"
@@ -361,64 +368,64 @@ msgstr ""
 #: ../browser/analysisrequest.py:1221
 #: ../browser/client.py:129
 msgid "Analysis Requests"
-msgstr ""
+msgstr "分析请求"
 
 #: ../browser/analysisrequest.py:1222
 #: ../browser/client.py:130
 msgid "Analysis Requests description"
-msgstr ""
+msgstr "分析请求描写"
 
 #: ../browser/fields/referenceresultsfield.py:20
 #: ../content/analysis.py:34
 #: ../content/analysisspec.py:68
 msgid "Analysis Service"
-msgstr ""
+msgstr "分析服务"
 
 #. Default: "Select which Analyses should be included on the Worksheet"
 #: ../content/worksheettemplate.py:48
 msgid "Analysis Service description"
-msgstr ""
+msgstr "分析服务描写"
 
 #: ../config.py:122
 #: ../controlpanel/bika_analysisservices.py:29
 msgid "Analysis Services"
-msgstr ""
+msgstr "分析服务"
 
 #: ../browser/client.py:593
 msgid "Analysis Specifications"
-msgstr ""
+msgstr "分析规范"
 
 #: ../browser/client.py:594
 msgid "Analysis Specifications description"
-msgstr ""
+msgstr "分析规范描写"
 
 #: ../controlpanel/bika_analysisspecs.py:28
 msgid "Analysis Specs"
-msgstr ""
+msgstr "分析规范"
 
 #: ../content/worksheettemplate.py:25
 msgid "Analysis Type"
-msgstr ""
+msgstr "分析类型"
 
 #: ../browser/templates/reports_productivity.pt:60
 msgid "Analysis requests and analyses"
-msgstr ""
+msgstr "分析单请求和分析"
 
 #: ../browser/templates/reports_productivity.pt:72
 msgid "Analysis requests and analyses per client"
-msgstr ""
+msgstr "分析单请求和分析按照顾客"
 
 #: ../browser/templates/reports_administration.pt:28
 msgid "Analysis requests not invoiced"
-msgstr ""
+msgstr "没单据的分析"
 
 #: ../browser/templates/reports_qualitycontrol.pt:30
 msgid "Analysis results out of lab or client specified range"
-msgstr ""
+msgstr "分析结果不在范围"
 
 #: ../browser/mailtemplates/analysisrequest_results.pt:526
 msgid "Analysis results relate only to the samples tested"
-msgstr ""
+msgstr "分析结果有关化验"
 
 #: ../browser/client.py:649
 msgid "Analysis specs reset to lab defaults."
@@ -431,15 +438,15 @@ msgstr ""
 #: ../browser/templates/worksheet_manage_results.pt:39
 #: ../browser/worksheetfolder.py:113
 msgid "Analyst"
-msgstr ""
+msgstr "分析师"
 
 #: ../browser/templates/analysisrequest_sticker.pt:66
 msgid "Analyst Name"
-msgstr ""
+msgstr "分析师名字"
 
 #: ../browser/templates/worksheet_add_analyses.pt:67
 msgid "Any"
-msgstr ""
+msgstr "任何"
 
 #: ../browser/client.py:514
 msgid "Applied"

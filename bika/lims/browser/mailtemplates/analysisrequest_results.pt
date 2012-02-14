@@ -169,8 +169,9 @@ h1, h2, h3, h4, h5, h6 {
         contact_address python:contact_address or client.getPhysicalAddress()">
         <span tal:content="contact/getFullname"/>
         <span tal:content="client/Title"/>
+        <br/>
         <span tal:define="address python:contact_address.get('address','')"
-          tal:content="structure python:'<br/>' + modules['Products.PythonScripts.standard'].newline_to_br(address)"/>
+          tal:content="structure python:modules['Products.PythonScripts.standard'].newline_to_br(address)"/>
         <div>
           <span tal:content="python:contact_address.get('city','')"/>,
           <span tal:content="python:contact_address.get('state','')"/>,
@@ -181,8 +182,9 @@ h1, h2, h3, h4, h5, h6 {
 
       <td>
         <span tal:content="laboratory/Title"/>
+        <br/>
         <span tal:define="address python:lab_address.get('address','')"
-          tal:content="structure python:'<br/>' + modules['Products.PythonScripts.standard'].newline_to_br(address)"/>
+          tal:content="structure python:modules['Products.PythonScripts.standard'].newline_to_br(address)"/>
         <div>
           <span tal:content="python:lab_address.get('city','')"/>,
           <span tal:content="python:lab_address.get('state','')"/>,

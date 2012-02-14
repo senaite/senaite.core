@@ -20,8 +20,7 @@ schema = BikaSchema.copy() + Schema((
         required = 1,
         widget = ReferenceResultsWidget(
             label = _("Reference Results"),
-            description = _("Reference Results description",
-                            "Click on Analysis Categories (against shaded background) "
+            description = _("Click on Analysis Categories (against shaded background) "
                             "to see Analysis Services in each category. Enter minimum "
                             "and maximum values to indicate a valid results range. "
                             "Any result outside this range will raise an alert. "
@@ -37,8 +36,7 @@ schema = BikaSchema.copy() + Schema((
         default = False,
         widget = BooleanWidget(
             label = _("Blank"),
-            description = _("Blank description",
-                            "Reference sample values are zero or 'blank'"),
+            description = _("Reference sample values are zero or 'blank'"),
         ),
     ),
     BooleanField('Hazardous',
@@ -46,8 +44,7 @@ schema = BikaSchema.copy() + Schema((
         default = False,
         widget = BooleanWidget(
             label = _("Hazardous"),
-            description = _("Hazardous description",
-                            "Samples of this type should be treated as hazardous"),
+            description = _("Samples of this type should be treated as hazardous"),
         ),
     ),
 ))

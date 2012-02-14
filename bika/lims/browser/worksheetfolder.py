@@ -77,7 +77,7 @@ class WorksheetFolderListingView(BikaListingView):
 
         self.icon = "++resource++bika.lims.images/worksheet_big.png"
         self.title = _("Worksheets")
-        self.description = _("Worksheets description", "")
+        self.description = ""
         self.TimeOrDate = TimeOrDate
 
         pm = getToolByName(context, "portal_membership")

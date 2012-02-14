@@ -38,8 +38,7 @@ schema = BikaSchema.copy() + Schema((
         searchable = True,
         widget = StringWidget(
             label = _('Request ID'),
-            description = _('Request ID description',
-                            'The ID assigned to the client\'s request by the lab'),
+            description = _("The ID assigned to the client's request by the lab"),
             visible = {'edit':'hidden'},
         ),
     ),
@@ -102,16 +101,14 @@ schema = BikaSchema.copy() + Schema((
         default = False,
         widget = BooleanWidget(
             label = _('Invoice Exclude'),
-            description = _('Invoice Exclude description',
-                            'Select if analyses to be excluded from invoice'),
+            description = _('Select if analyses to be excluded from invoice'),
         ),
     ),
     BooleanField('ReportDryMatter',
         default = False,
         widget = BooleanWidget(
             label = _('Report as Dry Matter'),
-            description = _('Report as Dry Matter description',
-                            'This result can be reported as dry matter'),
+            description = _('This result can be reported as dry matter'),
         ),
     ),
     DateTimeField('DateRequested',
@@ -146,8 +143,7 @@ schema = BikaSchema.copy() + Schema((
         default_method = 'getDefaultMemberDiscount',
         widget = DecimalWidget(
             label = _('Member discount %'),
-            description = _('Member discount % description',
-                            'Enter percentage value eg. 33.0'),
+            description = _('Enter percentage value eg. 33.0'),
         ),
     ),
     ComputedField('ClientUID',

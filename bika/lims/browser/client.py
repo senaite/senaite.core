@@ -155,7 +155,7 @@ class ClientARImportsView(BikaListingView):
 
         self.icon = "++resource++bika.lims.images/arimport_big.png"
         self.title = _("Analysis Request Imports")
-        self.description = _("Analysis Request Imports description", default="")
+        self.description = ""
 
         self.columns = {
             'title': {'title': _('Import')},
@@ -213,7 +213,7 @@ class ClientARProfilesView(BikaListingView):
         self.pagesize = 50
         self.icon = "++resource++bika.lims.images/arprofile_big.png"
         self.title = _("Analysis Request Profiles")
-        self.description = _("Analysis Request Profiles description", "")
+        self.description = ""
 
         self.columns = {
             'title': {'title': _('Title'),
@@ -335,7 +335,7 @@ class ClientAttachmentsView(BikaListingView):
 
         self.icon = "++resource++bika.lims.images/attachment_big.png"
         self.title = _("Attachments")
-        self.description = _("Attachments description", default="")
+        self.description = ""
 
         self.columns = {
             'getTextTitle': {'title': _('Request ID')},
@@ -463,7 +463,7 @@ class ClientContactsView(BikaListingView):
 
         self.icon = "++resource++bika.lims.images/client_contact_big.png"
         self.title = _("Contacts")
-        self.description = _("Contacts description", "")
+        self.description = ""
 
         self.columns = {
             'getFullname': {'title': _('Full Name'),

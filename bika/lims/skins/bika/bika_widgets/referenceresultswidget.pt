@@ -18,8 +18,8 @@
 
 	<input type="hidden"
 		id="i18n_strings"
-		indicator_blank="Blank: "
-		indicator_hazardous=" (!)"
+		indicator_blank="Blank:"
+		indicator_hazardous="(!)"
 		i18n:attributes="
 			indicator_blank indicator_blank;
 			indicator_hazardous indicator_hazardous;"/>

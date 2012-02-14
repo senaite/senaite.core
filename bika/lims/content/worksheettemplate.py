@@ -27,8 +27,7 @@ schema = BikaSchema.copy() + Schema((
                            'dup': _('Duplicate Of')},
         widget = WorksheetTemplateLayoutWidget(
             label = _("Worksheet Layout"),
-            description = _("Worksheet Layout description",
-                            "Specify the size of the Worksheet, e.g. corresponding to a "
+            description = _("Specify the size of the Worksheet, e.g. corresponding to a "
                             "specific instrument's tray size. Then select an Analysis 'type' "
                             "per Worksheet position. Where QC samples are selected, also select "
                             "which Reference Sample should be used. If a duplicate analysis is "
@@ -44,8 +43,7 @@ schema = BikaSchema.copy() + Schema((
         referenceClass = HoldingReference,
         widget = ServicesWidget(
             label = _("Analysis Service"),
-            description = _("Analysis Service description",
-                            "Select which Analyses should be included on the Worksheet"),
+            description = _("Select which Analyses should be included on the Worksheet"),
         )
     ),
     ReferenceField('Instrument',
@@ -59,8 +57,7 @@ schema = BikaSchema.copy() + Schema((
         widget = ReferenceWidget(
             checkbox_bound = 1,
             label = _("Instrument"),
-            description = _("Instrument description",
-                            "Select the preferred instrument"),
+            description = _("Select the preferred instrument"),
         ),
     ),
     ComputedField('InstrumentTitle',

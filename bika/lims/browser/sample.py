@@ -169,7 +169,7 @@ class SamplesView(BikaListingView):
 
         self.icon = "++resource++bika.lims.images/sample_big.png"
         self.title = _("Samples")
-        self.description = _("Samples description", "")
+        self.description = ""
 
         self.columns = {
             'SampleID': {'title': _('Sample ID'),

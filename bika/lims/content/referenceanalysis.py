@@ -28,8 +28,7 @@ schema = BikaSchema.copy() + Schema((
         searchable = True,
         widget = StringWidget(
             label = _("ReferenceAnalysis ID"),
-            description = _("ReferenceAnalysis ID description",
-                            "The ID assigned to the reference analysis"),
+            description = _("The ID assigned to the reference analysis"),
             visible = {'edit':'hidden'},
         ),
     ),

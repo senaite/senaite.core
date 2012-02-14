@@ -45,7 +45,7 @@ td {
 
 <tr>
     <th i18n:translate="">Reference</th>
-    <td><strong tal:content="reference/Title"/>
+    <td><strong tal:content="reference/Title"/></td>
 </tr>
 
 <tr>

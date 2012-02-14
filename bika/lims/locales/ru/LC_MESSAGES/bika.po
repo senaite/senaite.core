@@ -1,12 +1,12 @@
-#
+# 
 # Translators:
 msgid ""
 msgstr ""
 "Project-Id-Version: Bika-LIMS\n"
 "Report-Msgid-Bugs-To: http://github.com/bikalabs/Bika-LIMS/issues\n"
 "POT-Creation-Date: 2012-01-04 12:43+0000\n"
-"PO-Revision-Date: 2012-01-04 12:46+0000\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"PO-Revision-Date: 2012-02-14 11:53+0000\n"
+"Last-Translator: lemoene Smit <admin@bikalabs.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -41,7 +41,7 @@ msgstr ""
 #: ../browser/analyses.py:45 ../browser/referencesample.py:63
 #: ../browser/worksheet.py:203
 msgid "+-"
-msgstr ""
+msgstr "±"
 
 #: ../content/bikasetup.py:171
 msgid "AR Attachment Option"
@@ -1670,7 +1670,7 @@ msgstr ""
 
 #: ../content/analysisrequest.py:143 ../content/invoice.py:39
 #: ../content/pricelist.py:65
-msgid "Remarks"
+msgid "Notes"
 msgstr ""
 
 #: ../content/arimport.py:137
@@ -2798,5 +2798,3 @@ msgstr ""
 #: ../browser/menu.py:222
 msgid "workflow_policy"
 msgstr ""
-
-

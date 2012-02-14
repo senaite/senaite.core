@@ -30,8 +30,7 @@ schema = BikaSchema.copy() + Schema((
         searchable = True,
         widget = StringWidget(
             label = _("Sample ID"),
-            description = _("Sample ID description",
-                            "The ID assigned to the client\'s sample by the lab"),
+            description = _("The ID assigned to the client's sample by the lab"),
             visible = {'edit':'hidden'},
         ),
     ),

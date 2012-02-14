@@ -61,10 +61,10 @@ td {
 <thead>
 
 <tr>
-<th i18n:translate="">Sample ID</th>
-<td><strong tal:content="sample/getSampleID"/>
-<th i18n:translate="">Hazardous</th>
-<td tal:content="sampletype/getHazardous|nothing"/>
+  <th i18n:translate="">Sample ID</th>
+  <td><strong tal:content="sample/getSampleID"/></td>
+  <th i18n:translate="">Hazardous</th>
+  <td tal:content="sampletype/getHazardous|nothing"/>
 </tr>
 
 <tr>

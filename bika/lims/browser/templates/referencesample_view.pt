@@ -126,14 +126,16 @@
             class="context workflow_action_button"
             type="submit"
             value="deactivate"
+            i18n:attributes="value"
             name="workflow_action"/>
         <input
             tal:condition="python:inactive_state == 'inactive'"
             class="context workflow_action_button"
             type="submit"
             value="activate"
+            i18n:attributes="value"
             name="workflow_action"/>
-    <form>
+    </form>
 
 </metal:content>
 </body>

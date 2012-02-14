@@ -20,8 +20,7 @@ schema = BikaSchema.copy() + Schema((
         widget = ReferenceWidget(
             checkbox_bound = 1,
             label = _("Manager"),
-            description = _("Manager description",
-                            "Select a manager from the available personnel configured under the "
+            description = _("Select a manager from the available personnel configured under the "
                             "'lab contacts' setup item. Departmental managers are referenced on "
                             "analysis results reports containing analyses by their department."),
         ),

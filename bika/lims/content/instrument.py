@@ -19,29 +19,25 @@ schema = BikaSchema.copy() + Schema((
     StringField('Brand',
         widget = StringWidget(
             label = _("Brand"),
-            description = _("Brand description",
-                            "The commercial 'make' of the instrument"),
+            description = _("The commercial 'make' of the instrument"),
         )
     ),
     StringField('Model',
         widget = StringWidget(
             label = _("Model"),
-            description = _("Model description",
-                            "The instrument's model number"),
+            description = _("The instrument's model number"),
         )
     ),
     StringField('SerialNo',
         widget = StringWidget(
             label = _("Serial No"),
-            description = _("Serial No description",
-                            "The serial number that uniquely identifies the instrument"),
+            description = _("The serial number that uniquely identifies the instrument"),
         )
     ),
     StringField('CalibrationCertificate',
         widget = StringWidget(
             label = _("Calibration Certificate"),
-            description = _("Calibration Certificate description",
-                            "The instrument's calibration certificate and number"),
+            description = _("The instrument's calibration certificate and number"),
         )
     ),
     DateTimeField('CalibrationExpiryDate',
@@ -49,8 +45,7 @@ schema = BikaSchema.copy() + Schema((
         with_date = 1,
         widget = DateTimeWidget(
             label = _("Calibration Expiry Date"),
-            description = _("Calibration Expiry Date description",
-                            "Due Date for next calibration"),
+            description = _("Due Date for next calibration"),
         ),
     ),
     StringField('DataInterface',
@@ -58,8 +53,7 @@ schema = BikaSchema.copy() + Schema((
         widget = ReferenceWidget(
             checkbox_bound = 1,
             label = _("Data Interface"),
-            description = _("Data Interface description",
-                            "Select an Import/Export interface for this instrument."),
+            description = _("Select an Import/Export interface for this instrument."),
         ),
     ),
     RecordsField('DataInterfaceOptions',
@@ -70,8 +64,7 @@ schema = BikaSchema.copy() + Schema((
                            'OptionText': _('Value'),},
         widget = RecordsWidget(
             label = _("Data Interface Options"),
-            description = _("Data Interface Options description",
-                            "Use this field to pass arbitrary parameters to the export/import "
+            description = _("Use this field to pass arbitrary parameters to the export/import "
                             "modules."),
         ),
     ),

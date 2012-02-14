@@ -36,8 +36,7 @@ schema = Schema((
         widget = ReferenceWidget(
             checkbox_bound = 0,
             label = _("Sample Type"),
-            description = _("Sample Type description",
-                            "If the sample type you are looking for is not listed here, "
+            description = _("If the sample type you are looking for is not listed here, "
                             "a specification for it has been created already. To edit existing, "
                             "specifications, navigate 1 level up and select the specification by "
                             "clicking on the sample type in the list"),
@@ -71,8 +70,7 @@ Schema((
         widget = SpecWidget(
             checkbox_bound = 1,
             label = _("Reference Results"),
-            description = _("Reference Results description",
-                            "Click on Analysis Categories (against shaded background) "
+            description = _("Click on Analysis Categories (against shaded background) "
                             "to see Analysis Services in each category. Enter minimum "
                             "and maximum values to indicate a valid results range. "
                             "Any result outside this range will raise an alert. "

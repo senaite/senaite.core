@@ -15,8 +15,7 @@ schema = BikaSchema.copy() + Schema((
         widget = StringWidget(
             label = _("Salutation",
                       "Title"),
-            description = _("Salutation description",
-                            "Greeting title eg. Mr, Mrs, Dr"),
+            description = _("Greeting title eg. Mr, Mrs, Dr"),
         ),
     ),
     StringField('Firstname',

@@ -492,7 +492,7 @@ class AddAnalysesView(BikaListingView):
         BikaListingView.__init__(self, context, request)
         self.icon = "++resource++bika.lims.images/worksheet_big.png"
         self.title = _("Add Analyses")
-        self.description = _("Add Analyses description", "")
+        self.description = ""
         self.contentsMethod = self.context.getFolderContents
         self.context_actions = {}
         # initial review state for first form display of the worksheet
@@ -639,8 +639,7 @@ class AddBlankView(BrowserView):
         BrowserView.__init__(self, context, request)
         self.icon = "++resource++bika.lims.images/worksheet_big.png"
         self.title = _("Add Blank Reference")
-        self.description = _("Add Blank Reference description",
-                             "Select services in the left column to locate "
+        self.description = _("Select services in the left column to locate "
                              "reference samples. Select a reference by clicking it. ")
 
     def __call__(self):
@@ -687,8 +686,7 @@ class AddControlView(BrowserView):
         BrowserView.__init__(self, context, request)
         self.icon = "++resource++bika.lims.images/worksheet_big.png"
         self.title = _("Add Control Reference")
-        self.description = _("Add Control Reference description",
-                             "Select services in the left column to locate "
+        self.description = _("Select services in the left column to locate "
                              "reference samples. Select a reference by clicking it. ")
     def __call__(self):
         if not(getSecurityManager().checkPermission(EditWorksheet, self.context)):
@@ -735,8 +733,7 @@ class AddDuplicateView(BrowserView):
         BrowserView.__init__(self, context, request)
         self.icon = "++resource++bika.lims.images/worksheet_big.png"
         self.title = _("Add Duplicate")
-        self.description = _("Add Duplicate description",
-                             "Select a destinaton position and the AR to duplicate.")
+        self.description = _("Select a destinaton position and the AR to duplicate.")
 
     def __call__(self):
         if not(getSecurityManager().checkPermission(EditWorksheet, self.context)):

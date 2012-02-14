@@ -27,16 +27,14 @@ schema = BikaSchema.copy() + Schema((
     FixedPointField('Discount',
         widget = DecimalWidget(
             label = _("Discount %"),
-            description = _("Discount % description",
-                            "Enter discount percentage value"),
+            description = _("Enter discount percentage value"),
         ),
     ),
     BooleanField('Descriptions',
         default = False,
         widget = BooleanWidget(
             label = _("Include descriptions"),
-            description = _("Include descriptions description",
-                            "Select if the descriptions should be included"),
+            description = _("Select if the descriptions should be included"),
         ),
     ),
     DateTimeField('StartDate',

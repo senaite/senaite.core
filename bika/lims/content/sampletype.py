@@ -18,8 +18,7 @@ schema = BikaSchema.copy() + Schema((
         default_method = 'getDefaultLifetime',
         widget = DurationWidget(
             label = _("Retention period"),
-            description = _("Retention period description",
-                            "The period for which un-preserved samples of this type can be kept before "
+            description = _("The period for which un-preserved samples of this type can be kept before "
                             "they expire and cannot be analysed any further"),
         )
     ),
@@ -27,8 +26,7 @@ schema = BikaSchema.copy() + Schema((
         default = False,
         widget = BooleanWidget(
             label = _("Hazardous"),
-            description = _("Hazardous description",
-                            "Samples of this type should be treated as hazardous"),
+            description = _("Samples of this type should be treated as hazardous"),
         ),
     ),
     StringField('Prefix',

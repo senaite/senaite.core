@@ -103,8 +103,7 @@ class ReferenceResultsView(BikaListingView):
         bsc = getToolByName(context, 'bika_setup_catalog')
         self.contentsMethod = bsc
         self.title = _("Reference Results")
-        self.description = _("Reference Results description",
-                             "Click on Analysis Categories (against shaded background) "
+        self.description = _("Click on Analysis Categories (against shaded background) "
                              "to see Analysis Services in each category. Enter minimum "
                              "and maximum values to indicate a valid results range. "
                              "Any result outside this range will raise an alert. "
@@ -178,8 +177,7 @@ class ReferenceSamplesView(BikaListingView):
         portal = getToolByName(context, 'portal_url').getPortalObject()
         self.icon = "++resource++bika.lims.images/referencesample_big.png"
         self.title = _("Reference Samples")
-        self.description = _("Reference Samples description",
-                             "All reference samples in the system are displayed here.")
+        self.description = _("All reference samples in the system are displayed here.")
         self.contentFilter = {'portal_type': 'ReferenceSample',
                               'sort_on':'id',
                               'sort_order': 'reverse',
