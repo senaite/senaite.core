@@ -20,19 +20,13 @@ from magnitude import mg, MagnitudeError
 from zope.interface import implements
 import sys
 
-def getContainers(instance, preservation=None, minvol="0 ml"):
+def getContainers(instance, preservation=None, minvol=None):
     # This is a seperate class so that it can be called from
     # browser/analysisservice.py via ajax with a some parameters which
     # limit the PartitionSetup widget's container list.
     bsc = getToolByName(instance, 'bika_setup_catalog')
     items = [['','']]
     pres_c_types = preservation and preservation.getContainerType() or None
-
-    try:
-        minvol = minvol.split(" ")
-        minvol = mg(float(minvol[0]), " ".join(minvol[1:]).strip())
-    except MagnitudeError:
-        minvol = mg(0, "ml")
 
     containers = {}
     containers_notype = []
@@ -41,16 +35,17 @@ def getContainers(instance, preservation=None, minvol="0 ml"):
                                          sort_on='sortable_title')]
     for container in bsc(portal_type='Container', sort_on='sortable_title'):
         container = container.getObject()
-        try:
-            # If the units match, verify container is large enough.
-            # all other containers are considered valid
-            cvol = container.getCapacity()
-            cvol = cvol.split(" ")
-            cvol = mg(float(cvol[0]), " ".join(cvol[1:]).strip())
-            if cvol.out_unit == minvol.out_unit and cvol.val < minvol.val:
-                continue
-        except MagnitudeError:
-            pass
+        if minvol:
+            try:
+                # If the units match, verify container is large enough.
+                # all other containers are considered valid
+                cvol = container.getCapacity()
+                cvol = cvol.split(" ")
+                cvol = mg(float(cvol[0]), " ".join(cvol[1:]).strip())
+                if cvol.out_unit == minvol.out_unit and cvol.val < minvol.val:
+                    continue
+            except MagnitudeError:
+                pass
 
         ctype = container.getContainerType()
         if ctype:

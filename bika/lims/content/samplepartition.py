@@ -1,6 +1,7 @@
 from AccessControl import ClassSecurityInfo
 from DateTime import DateTime
 from Products.ATContentTypes.lib.historyaware import HistoryAwareMixin
+from Products.ATContentTypes.utils import DT2dt,dt2DT
 from Products.Archetypes.public import *
 from Products.Archetypes.references import HoldingReference
 from Products.CMFCore.utils import getToolByName
@@ -71,8 +72,11 @@ class SamplePartition(BaseContent, HistoryAwareMixin):
     security.declarePublic('disposal_date')
     def disposal_date(self):
         """ return disposal date """
-        delay = self.aq_parent.getSampleType().getRetentionPeriod()
-        dis_date = self.getDateSampled() + int(delay)
+        rp = self.getSampleType().getRetentionPeriod()
+        td = timedelta(days = rp['days'] and int(rp['days']) or 0,
+                       hours = rp['hours'] and int(rp['hours']) or 0,
+                       minutes = rp['minutes'] and int(rp['minutes']) or 0)
+        dis_date = dt2DT(DT2dt(self.getDateSampled()) + td)
         return dis_date
 
     security.declarePublic('current_user')

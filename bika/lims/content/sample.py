@@ -2,8 +2,10 @@
 """
 from AccessControl import ClassSecurityInfo
 from DateTime import DateTime
+from datetime import timedelta
 from Products.ATContentTypes.content import schemata
 from Products.ATContentTypes.lib.historyaware import HistoryAwareMixin
+from Products.ATContentTypes.utils import DT2dt,dt2DT
 from Products.ATExtensions.ateapi import DateTimeField, DateTimeWidget
 from Products.Archetypes import atapi
 from Products.Archetypes.config import REFERENCE_CATALOG
@@ -244,8 +246,12 @@ class Sample(BaseFolder, HistoryAwareMixin):
     security.declarePublic('disposal_date')
     def disposal_date(self):
         """ return disposal date """
-        delay = self.getSampleType().getRetentionPeriod()
-        dis_date = self.getDateSampled() + int(delay)
+        print "BBB disposal date moves FROM sample TO partition"
+        rp = self.getSampleType().getRetentionPeriod()
+        td = timedelta(days = rp['days'] and int(rp['days']) or 0,
+                       hours = rp['hours'] and int(rp['hours']) or 0,
+                       minutes = rp['minutes'] and int(rp['minutes']) or 0)
+        dis_date = dt2DT(DT2dt(self.getDateSampled()) + td)
         return dis_date
 
     security.declarePublic('current_user')
