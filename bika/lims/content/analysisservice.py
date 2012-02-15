@@ -442,7 +442,7 @@ class AnalysisService(BaseContent, HistoryAwareMixin):
     _at_rename_after_creation = True
     def _renameAfterCreation(self, check_auto_id=False):
         from bika.lims.idserver import renameAfterCreation
-        renameAfterCreation(self)
+        return renameAfterCreation(self)
 
     security.declarePublic('getDiscountedPrice')
     def getDiscountedPrice(self):
@@ -589,34 +589,5 @@ class AnalysisService(BaseContent, HistoryAwareMixin):
             return None
         else:
             return None
-
-    def duplicateService(self, context):
-        """ Create a copy of the service and return the copy's id """
-        _id = context.invokeFactory(type_name = 'AnalysisService', id = 'tmp')
-        dup = context[_id]
-        dup.setTitle('%s (copy)' % self.Title())
-        dup.edit(
-            description = self.Description(),
-            Instructions = self.getInstructions(),
-            ReportDryMatter = self.getReportDryMatter(),
-            Unit = self.getUnit(),
-            Precision = self.getPrecision(),
-            Price = self.getPrice(),
-            CorporatePrice = self.getCorporatePrice(),
-            VAT = self.getVAT(),
-            Keyword = self.getKeyword(),
-            Instrument = self.getInstrument(),
-            Calculation = self.getCalculation(),
-            MaxTimeAllowed = self.getMaxTimeAllowed(),
-            DuplicateVariation = self.getDuplicateVariation(),
-            AnalysisCategory = self.getAnalysisCategory(),
-            Department = self.getDepartment(),
-            Accredited = self.getAccredited(),
-            Uncertainties = self.getUncertainties(),
-            ResultOptions = self.getResultOptions(),
-            )
-        dup.processForm()
-        dup.reindexObject()
-        return _id
 
 registerType(AnalysisService, PROJECTNAME)

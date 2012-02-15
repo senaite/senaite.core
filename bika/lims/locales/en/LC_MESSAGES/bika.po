@@ -3,7 +3,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Bika-LIMS\n"
-"POT-Creation-Date: 2012-02-14 12:48+0000\n"
+"POT-Creation-Date: 2012-02-15 08:51+0000\n"
 "PO-Revision-Date: 2012-01-02 20:15+0000\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Bika Lab Systems <support@bikalabs.com>\n"
@@ -400,6 +400,10 @@ msgstr ""
 msgid "Analysis Type"
 msgstr ""
 
+#: ../controlpanel/bika_analysisservices.py:70
+msgid "Analysis request ${service} was successfully created."
+msgstr ""
+
 #: ../browser/templates/reports_productivity.pt:60
 msgid "Analysis requests and analyses"
 msgstr ""
@@ -708,6 +712,10 @@ msgstr ""
 
 #: ../content/container.py:38
 msgid "Capacity"
+msgstr ""
+
+#: ../browser/analyses.py:53
+msgid "Captured"
 msgstr ""
 
 #: ../browser/templates/referencesample_view.pt:67
@@ -2403,6 +2411,10 @@ msgstr ""
 msgid "Reference Type"
 msgstr ""
 
+#: ../browser/worksheet.py:970
+msgid "Reference sample"
+msgstr ""
+
 #: ../content/referencedefinition.py:39
 #: ../content/referencesample.py:41
 msgid "Reference sample values are zero or 'blank'"
@@ -2826,6 +2838,10 @@ msgstr ""
 #: ../browser/worksheet.py:923
 #: ../browser/worksheetfolder.py:119
 msgid "Services"
+msgstr ""
+
+#: ../controlpanel/bika_analysisservices.py:66
+msgid "Services ${services} were successfully created."
 msgstr ""
 
 #: ../content/bikasetup.py:106

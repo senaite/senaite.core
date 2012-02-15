@@ -3,6 +3,8 @@ from Products.CMFCore.utils import getToolByName
 from Products.ATContentTypes.content import schemata
 from Products.Archetypes import atapi
 from Products.Archetypes.ArchetypeTool import registerType
+from Products.Archetypes.config import REFERENCE_CATALOG
+from bika.lims.browser.bika_listing import WorkflowAction
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.config import PROJECTNAME
 from bika.lims import bikaMessageFactory as _
@@ -11,8 +13,71 @@ from plone.app.layout.globals.interfaces import IViewView
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.folder.folder import ATFolder, ATFolderSchema
 from bika.lims.interfaces import IAnalysisServices
+from bika.lims.idserver import renameAfterCreation
 from zope.interface.declarations import implements
 from operator import itemgetter
+import plone.protect
+
+class AnalysisServicesWorkflowAction(WorkflowAction):
+    """ Workflow actions taken in Analysis Services page
+    """
+    def __call__(self):
+        form = self.request.form
+        plone.protect.CheckAuthenticator(form)
+        workflow = getToolByName(self.context, 'portal_workflow')
+        rc = getToolByName(self.context, REFERENCE_CATALOG)
+        uc = getToolByName(self.context, 'uid_catalog')
+        action, came_from = WorkflowAction._get_form_workflow_action(self)
+
+        if action == 'duplicate':
+            selected_services = WorkflowAction._get_selected_items(self)
+
+            ## Create a copy of the selected services
+            folder = self.context.bika_setup.bika_analysisservices
+            created = []
+            for service in selected_services.values():
+                _id = folder.invokeFactory('AnalysisService', id = 'tmp')
+                dup = folder[_id]
+                dup.setTitle('%s (copy)' % service.Title())
+                _id = renameAfterCreation(dup)
+                dup.edit(
+                    description = service.Description(),
+                    PointOfCapture = service.getPointOfCapture(),
+                    ReportDryMatter = service.getReportDryMatter(),
+                    Unit = service.getUnit(),
+                    Precision = service.getPrecision(),
+                    Price = service.getPrice(),
+                    CorporatePrice = service.getCorporatePrice(),
+                    VAT = service.getVAT(),
+                    Calculation = service.getCalculation(),
+                    Instrument = service.getInstrument(),
+                    MaxTimeAllowed = service.getMaxTimeAllowed(),
+                    DuplicateVariation = service.getDuplicateVariation(),
+                    Category = service.getCategory(),
+                    Department = service.getDepartment(),
+                    Accredited = service.getAccredited(),
+                    Uncertainties = service.getUncertainties(),
+                    ResultOptions = service.getResultOptions()
+                )
+                created.append(_id)
+
+            if len(created) > 1:
+                message = self.context.translate(
+                    _('Services ${services} were successfully created.',
+                      mapping = {'services': ', '.join(created)}))
+            else:
+                message = self.context.translate(
+                    _('Analysis request ${service} was successfully created.',
+                    mapping = {'service': ', '.join(created)}))
+            self.context.plone_utils.addPortalMessage(message, 'info')
+
+            self.destination_url = self.request.get_header("referer",
+                                   self.context.absolute_url())
+            self.request.response.redirect(self.destination_url)
+        else:
+            # default bika_listing.py/WorkflowAction for other transitions
+            WorkflowAction.__call__(self)
+
 
 class AnalysisServicesView(BikaListingView):
     implements(IFolderContentsView, IViewView)
@@ -58,7 +123,9 @@ class AnalysisServicesView(BikaListingView):
                          'DuplicateVariation',
                          'Calculation',
                          ],
+             'custom_actions':[{'id': 'duplicate', 'title': 'Duplicate'}, ]
              },
+
             {'id':'active',
              'title': _('Active'),
              'contentFilter': {'inactive_state': 'active'},
@@ -73,6 +140,7 @@ class AnalysisServicesView(BikaListingView):
                          'DuplicateVariation',
                          'Calculation',
                          ],
+             'custom_actions':[{'id': 'duplicate', 'title': 'Duplicate'}, ]
              },
             {'id':'inactive',
              'title': _('Dormant'),
@@ -88,6 +156,7 @@ class AnalysisServicesView(BikaListingView):
                          'DuplicateVariation',
                          'Calculation',
                          ],
+             'custom_actions':[{'id': 'duplicate', 'title': 'Duplicate'}, ]
              },
         ]
 

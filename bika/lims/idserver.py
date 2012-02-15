@@ -157,3 +157,4 @@ def renameAfterCreation(obj):
     transaction.savepoint(optimistic=True)
     new_id = generateUniqueId(obj)
     obj.aq_inner.aq_parent.manage_renameObject(obj.id, new_id)
+    return new_id

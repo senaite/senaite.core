@@ -4,10 +4,10 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Bika-LIMS\n"
-"POT-Creation-Date: 2012-02-14 12:48+0000\n"
-"PO-Revision-Date: 2012-01-24 12:14+0000\n"
+"POT-Creation-Date: 2012-02-15 08:51+0000\n"
+"PO-Revision-Date: 2012-02-14 13:09+0000\n"
 "Last-Translator: lemoene Smit <admin@bikalabs.com>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language-Team: Bika <bikasupport@bikalabs.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -166,6 +166,8 @@ msgstr "Accreditatie beschrijving"
 msgid "Accreditation Logo"
 msgstr ""
 
+#. and results reports by your accreditation body. Maximum size is 175 x 175
+#. pixels."
 #. Default: "Please upload the logo you are authorised to use on your website and results reports by your accreditation body. Maximum size is 175 x 175 pixels."
 #: ../content/laboratory.py:91
 msgid "Accreditation Logo descr"
@@ -403,6 +405,10 @@ msgstr "Analyse Specs"
 #: ../content/worksheettemplate.py:25
 msgid "Analysis Type"
 msgstr "Soort analyse"
+
+#: ../controlpanel/bika_analysisservices.py:70
+msgid "Analysis request ${service} was successfully created."
+msgstr ""
 
 #: ../browser/templates/reports_productivity.pt:60
 msgid "Analysis requests and analyses"
@@ -715,6 +721,10 @@ msgstr "Geannuleerd"
 
 #: ../content/container.py:38
 msgid "Capacity"
+msgstr ""
+
+#: ../browser/analyses.py:53
+msgid "Captured"
 msgstr ""
 
 #: ../browser/templates/referencesample_view.pt:67
@@ -1405,7 +1415,6 @@ msgstr ""
 msgid "Hazardous description"
 msgstr ""
 
-### actions.xml ###
 msgid "Home"
 msgstr ""
 
@@ -1622,7 +1631,6 @@ msgstr "Geaccrediteerd laboratorium"
 msgid "Laboratory Accredited description"
 msgstr "Laboratorium Accredited beschrijving"
 
-### controlpanel.xml ###
 msgid "Laboratory Information"
 msgstr ""
 
@@ -1790,6 +1798,7 @@ msgstr ""
 msgid "Maximum holding time"
 msgstr ""
 
+#. period"
 #. Default: "Once preserved, the sample must be disposed of within this time period"
 #: ../content/preservation.py:21
 msgid "Maximum holding time description"
@@ -1964,6 +1973,7 @@ msgstr ""
 msgid "No data was entered"
 msgstr ""
 
+#. Spreadsheet (.xlsx) file."
 #. Default: "No file data submitted.  Please submit  a valid Open XML Spreadsheet (.xlsx) file."
 #: ../browser/load_setup_data.py:58
 msgid "No file data submitted.  Please submit a valid Open XML Spreadsheet (.xlsx) file."
@@ -2145,11 +2155,14 @@ msgstr ""
 msgid "Pre-Preserved"
 msgstr ""
 
+#. could be selected here."
 #. Default: "If this container is pre-preserved, then the preservation method could be selected here."
 #: ../content/container.py:30
 msgid "Pre-Preserved Preservation description"
 msgstr ""
 
+#. this will short-circuit the preservation workflow for sample partitions
+#. stored in this container."
 #. Default: "Check this box if this container is already preserved.Setting this will short-circuit the preservation workflow for sample partitions stored in this container."
 #: ../content/container.py:15
 msgid "Pre-Preserved description"
@@ -2160,11 +2173,14 @@ msgstr ""
 msgid "Pre-preserved"
 msgstr ""
 
+#. could be selected here."
 #. Default: "If this container is pre-preserved, then the preservation method could be selected here."
 #: ../content/container.py:31
 msgid "Pre-preserved Preservation description"
 msgstr ""
 
+#. this will short-circuit the preservation workflow for sample partitions
+#. stored in this container."
 #. Default: "Check this box if this container is already preserved.Setting this will short-circuit the preservation workflow for sample partitions stored in this container."
 #: ../content/container.py:15
 msgid "Pre-preserved description"
@@ -2209,6 +2225,8 @@ msgstr ""
 msgid "Preservation Category"
 msgstr ""
 
+#. one of these container types. Choose multiple values by holding CTRL and
+#. clicking."
 #. Default: "This preservation requires the sample partition to be stored in one of these container types. Choose multiple values by holding CTRL and clicking."
 #: ../content/preservation.py:40
 msgid "Preservation Container Type description"
@@ -2412,6 +2430,10 @@ msgstr ""
 
 #: ../content/referenceanalysis.py:39
 msgid "Reference Type"
+msgstr ""
+
+#: ../browser/worksheet.py:970
+msgid "Reference sample"
 msgstr ""
 
 #: ../content/referencedefinition.py:39
@@ -2839,6 +2861,10 @@ msgstr ""
 msgid "Services"
 msgstr ""
 
+#: ../controlpanel/bika_analysisservices.py:66
+msgid "Services ${services} were successfully created."
+msgstr ""
+
 #: ../content/bikasetup.py:106
 msgid "Set the maximum number of analysis requests per results email. Too many columns per email are difficult to read for some clients who prefer fewer results per email"
 msgstr ""
@@ -2912,6 +2938,7 @@ msgstr ""
 msgid "Submit ARImport"
 msgstr ""
 
+#. records to continue."
 #. Default: "Submit a valid Open XML (.XLSX) file containing Bika setup records to continue."
 #: ../browser/load_setup_data.py:27
 msgid "Submit a valid Open XML (.XLSX) file containing Bika setup records to continue."
@@ -3445,11 +3472,14 @@ msgstr ""
 msgid "accreditation_body_description"
 msgstr ""
 
+#. (${body}). ${abbr} is recognised by government as a national accreditation
+#. body in ${labcountry}"
 #. Default: "${labname} has been accredited as ${accr} conformant by ${abbr}, (${body}). ${abbr} is recognised by government as a national accreditation body in ${labcountry}"
 #: ../browser/accreditation.py:28
 msgid "accreditation_description"
 msgstr ""
 
+#. configured"
 #. Default: "The lab is not accredited, or accreditation has not been configured"
 #: ../browser/accreditation.py:37
 msgid "accreditation_not_accredited"
@@ -3573,6 +3603,7 @@ msgstr ""
 msgid "import_service_keyword_not_found"
 msgstr ""
 
+#. updated"
 #. Default: "Analysis ${service} at slot ${slot} in state ${state} - not updated"
 #: ../exportimport/instruments/fiastar.py:242
 msgid "import_service_not_updateable"

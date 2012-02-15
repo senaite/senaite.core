@@ -63,9 +63,10 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
                                    [self.context, ])()
             if len(transitioned) == 1:
                 action_title = '%sed' % action
-                message = _('message_item_published',
-                    default = '${items} published.',
-                    mapping = {'items': ', '.join(transitioned)})
+                message = self.context.translate(
+                    _('message_item_published',
+                      default = '${items} published.',
+                      mapping = {'items': ', '.join(transitioned)}))
             else:
                 message = self.context.translate(_("No items were published"))
             self.context.plone_utils.addPortalMessage(message, 'info')
