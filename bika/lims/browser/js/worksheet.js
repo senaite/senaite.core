@@ -90,7 +90,7 @@ $(document).ready(function(){
 	// click a Reference Sample in add_control or add_blank
 	$("#worksheet_add_references .bika-listing-table tbody.item-listing-tbody tr").live('click', function(e){
 		// we want to submit to the worksheet.py/add_control or add_blank views.
-		if (e.target.src.search("referencesample.png") > -1) {
+		if (e.target.src != undefined) {
 			return;
 		}
 		if(window.location.href.search('add_control') > -1){
