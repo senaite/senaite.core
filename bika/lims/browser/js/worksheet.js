@@ -195,8 +195,14 @@ $(document).ready(function(){
 		    $("#Remarks").val() == undefined) {
 			return false;
 		}
+		// could have arrived here from any worksheet view
 		$("#RemarksHistory").load(
-			window.location.href.replace("/manage_results", "") + "/setWSRemarks",
+			window.location.href
+				.replace("/manage_results", "")
+				.replace("/add_analyses", "")
+				.replace("/add_control", "")
+				.replace("/add_blank", "").
+				replace("/add_duplicate", "")  + "/setWSRemarks",
 			{'value': $("#Remarks").val(),
 			 '_authenticator': $('input[name="_authenticator"]').val()}
 		);
