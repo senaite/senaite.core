@@ -462,6 +462,7 @@ table.analysisrequest input {
 .deleteAttachmentButton {
     border: 0;
 	cursor: pointer;
+	margin-left:3px !important;
 }
 
 .deleteSampleButton{
