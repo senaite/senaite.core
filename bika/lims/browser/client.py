@@ -31,6 +31,7 @@ class ClientWorkflowAction(WorkflowAction):
         workflow = getToolByName(self.context, 'portal_workflow')
         pc = getToolByName(self.context, 'portal_catalog')
         rc = getToolByName(self.context, REFERENCE_CATALOG)
+        translate = self.context.translation_service.translate
 
         # use came_from to decide which UI action was clicked.
         # "workflow_action" is the action name specified in the
@@ -76,16 +77,14 @@ class ClientWorkflowAction(WorkflowAction):
                                        ARs_to_publish)()
 
             if len(transitioned) > 1:
-                message = _('message_items_published',
-                    default = '${items} were published.',
-                    mapping = {'items': ', '.join(transitioned)})
+                message = _('${items} were published.',
+                            mapping = {'items': ', '.join(transitioned)})
             elif len(transitioned) == 1:
-                message = _('message_item_published',
-                    default = '${items} published.',
-                    mapping = {'items': ', '.join(transitioned)})
+                message = _('${item} published.',
+                            mapping = {'item': ', '.join(transitioned)})
             else:
                 message = _('No items were published')
-            message = self.context.translate(message)
+            message = translate(message)
             self.context.plone_utils.addPortalMessage(message, 'info')
             self.destination_url = self.request.get_header("referer",
                                    self.context.absolute_url())
@@ -103,6 +102,8 @@ class ClientAnalysisRequestsView(AnalysisRequestsView):
         self.contentFilter['path'] = {"query": "/".join(context.getPhysicalPath()),
                                       "level" : 0 }
 
+        translate = self.context.translation_service.translate
+
         self.context_actions = {}
         wf = getToolByName(self.context, 'portal_workflow')
         # client contact required
@@ -110,13 +111,13 @@ class ClientAnalysisRequestsView(AnalysisRequestsView):
                            wf.getInfoFor(c, 'inactive_state', '') == 'active']
         if context.portal_type == "Client" and not active_contacts:
             msg = _("Client contact required before request may be submitted")
-            self.context.plone_utils.addPortalMessage(self.context.translate(msg))
+            self.context.plone_utils.addPortalMessage(translate(msg))
         else:
             # add actions enabled only for active clients
             # XXX subtractive workflow for these kinds of perms.
             self.context_actions = {}
             if wf.getInfoFor(self.context, 'inactive_state', '') == 'active':
-                self.context_actions[_('Add')] = {
+                self.context_actions[translate(_('Add'))] = {
                     'url':'analysisrequest_add',
                     'icon': '++resource++bika.lims.images/add.png'}
 
@@ -314,8 +315,8 @@ class SetSpecsToLabDefaults(BrowserView):
                 SampleType = labspec.getSampleType(),
                 ResultsRange = labspec.getResultsRange(),
             )
-        message = self.context.translate(
-            _("Analysis specs reset to lab defaults."))
+        translate = self.context.translation_service.translate
+        message = translate(_("Analysis specs reset to lab defaults."))
         self.context.plone_utils.addPortalMessage(message, 'info')
         self.request.RESPONSE.redirect(self.context.absolute_url() + "/analysisspecs")
         return

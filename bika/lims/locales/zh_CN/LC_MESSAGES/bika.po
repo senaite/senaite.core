@@ -1,4 +1,4 @@
-# 
+#
 # Translators:
 # Inus Scheepers <inus@animatica.co.za>, 2012.
 msgid ""
@@ -3607,23 +3607,18 @@ msgstr ""
 #. Default: "Indet"
 #: ../browser/analyses.py:213
 #: ../browser/calcs.py:137
-msgid "indeterminate_abbrev"
+msgid "Indet"
 msgstr ""
 
 #. Default: "Indeterminate result"
 #: ../browser/analyses.py:218
 #: ../browser/calcs.py:43
-msgid "indeterminate_result"
+msgid "Indeterminate result"
 msgstr ""
 
 #. Default: "Blank: "
 #: ../content/referencesample.py:166
 msgid "indicator_blank"
-msgstr ""
-
-#. Default: " (!)"
-#: ../content/referencesample.py:167
-msgid "indicator_hazardous"
 msgstr ""
 
 #. Default: "${id} is not a valid sample ID"

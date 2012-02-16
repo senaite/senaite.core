@@ -62,11 +62,11 @@ class AnalysisServicesWorkflowAction(WorkflowAction):
                 created.append(_id)
 
             if len(created) > 1:
-                message = self.context.translate(
+                message = self.context.translation_service.translate(
                     _('Services ${services} were successfully created.',
                       mapping = {'services': ', '.join(created)}))
             else:
-                message = self.context.translate(
+                message = self.context.translation_service.translate(
                     _('Analysis request ${service} was successfully created.',
                     mapping = {'service': ', '.join(created)}))
             self.context.plone_utils.addPortalMessage(message, 'info')

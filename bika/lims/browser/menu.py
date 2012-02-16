@@ -59,12 +59,14 @@ class WorkflowSubMenuItem(WorkflowSubMenuItem):
         state = self.context_state.workflow_state()
         stateTitle = self._currentStateTitle()
 
+        translate = instance.translation_service.translate
+
         if workflow.getInfoFor(self.context, 'cancellation_state', '') == 'cancelled':
-            title2 = self.context.translate(_('Cancelled'))
+            title2 = translate(_('Cancelled'))
             # cater for bika_one_state_workflow (always Active)
             if not stateTitle or \
                workflow.getInfoFor(self.context, 'review_state', '') == 'active':
-                stateTitle = self.context.translate(_('Cancelled'))
+                stateTitle = translate(_('Cancelled'))
             else:
                 stateTitle = "%s (%s)" % (stateTitle,_(title2))
             return {'id'         : 'plone-contentmenu-workflow',
@@ -72,12 +74,12 @@ class WorkflowSubMenuItem(WorkflowSubMenuItem):
                     'state'      : state,
                     'stateTitle' : stateTitle,}
         elif workflow.getInfoFor(self.context, 'inactive_state', '') == 'inactive':
-            title2 = self.context.translate(_('Dormant'))
+            title2 = translate(_('Dormant'))
             # cater for bika_one_state_workflow (always Active)
             if not stateTitle or \
                (workflow.getInfoFor(self.context, 'review_state', '') in \
                                                     ('active', 'current')):
-                stateTitle = self.context.translate(_('Dormant'))
+                stateTitle = translate(_('Dormant'))
             else:
                 stateTitle = "%s (%s)" % (stateTitle,_(title2))
             return {'id'         : 'plone-contentmenu-workflow',

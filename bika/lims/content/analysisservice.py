@@ -18,12 +18,25 @@ from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IAnalysisService
 from magnitude import mg, MagnitudeError
 from zope.interface import implements
+from zope import i18n
 import sys
 
 def getContainers(instance, preservation=None, minvol=None):
-    # This is a seperate class so that it can be called from
-    # browser/analysisservice.py via ajax with a some parameters which
-    # limit the PartitionSetup widget's container list.
+    """ Containers vocabulary
+
+    This is a seperate class so that it can be called from ajax to
+    filter the container list.
+
+    >>> from bika.lims import bikaMessageFactory as _
+    >>> from bika.lims.content.analysisservice import getContainers
+    >>> folder = self.portal.bika_setup.bika_analysisservices
+    >>> obj = folder.objectValues()[0]
+    >>> obj
+    <AnalysisService at ...>
+
+    >>> getContainers(obj)
+
+    """
     bsc = getToolByName(instance, 'bika_setup_catalog')
     items = [['','']]
     pres_c_types = preservation and preservation.getContainerType() or None
@@ -62,7 +75,9 @@ def getContainers(instance, preservation=None, minvol=None):
             if not pres_c_types:
                 containers_notype.append((container.UID(), container.Title()))
 
-    cat_str = instance.translate(_('Container Type'))
+    translate = instance.translation_service.translate
+    cat_str = translate(_('Container Type'))
+
     for ctype in containers.keys():
         items.append([ctype_to_uid[ctype], "%s: %s"%(cat_str, ctype) ])
         for container in containers[ctype]:

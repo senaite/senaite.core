@@ -74,7 +74,7 @@ class AnalysesView(BikaListingView):
         bsc = getToolByName(self.context, 'bika_setup_catalog')
         workflow = getToolByName(self.context, 'portal_workflow')
         portal = getToolByName(self.context, 'portal_url').getPortalObject()
-
+        translate = self.context.translation_service.translate
         can_edit_analyses = self.allow_edit and \
             getSecurityManager().checkPermission(ManageResults, self.context)
 
@@ -219,22 +219,17 @@ class AnalysesView(BikaListingView):
                                 str("%%.%sf" % precision) % float(result) or result
                         except:
                             items[i]['formatted_result'] = result
-                            indet = _('indeterminate_abbrev',
-                                      default='Indet')
-                            indet = self.context.translate(indet)
+                            indet = translate(_('Indet'))
                             if result == indet:
                                 # 'Indeterminate' results flag a specific error
-                                Indet = _('indeterminate_result',
-                                          default="Indeterminate result")
-                                Indet = self.context.translate(Indet)
+                                Indet = translate(_("Indeterminate result"))
                                 items[i]['after']['Result'] = \
                                     '<img width="16" height="16" title="%s"' % Indet + \
                                     'src="%s/++resource++bika.lims.images/exclamation.png"/>' % \
                                     (portal.absolute_url())
                             else:
                                 # result being un-floatable, is an error.
-                                msg = _("Invalid result")
-                                msg = self.context.translate(msg)
+                                msg = translate(_("Invalid result"))
                                 items[i]['after']['Result'] = \
                                     '<img width="16" height="16" title="%s"' % msg + \
                                     'src="%s/++resource++bika.lims.images/exclamation.png"/>' % \
@@ -284,11 +279,11 @@ class AnalysesView(BikaListingView):
                     if self.context.portal_type == 'AnalysisRequest':
                         items[i]['replace']['DueDate'] = '%s <img width="16" height="16" src="%s/++resource++bika.lims.images/late.png" title="%s"/>' % \
                             (DueDate, portal.absolute_url(),
-                             self.context.translate(_("Due Date")) + ": " + DueDate)
+                             translate(_("Due Date")) + ": " + DueDate)
                     else:
                         items[i]['replace']['DueDate'] = '%s <img width="16" height="16" src="%s/++resource++bika.lims.images/late.png" title="%s"/>' % \
                             (DueDate, portal.absolute_url(),
-                             self.context.translate(_("Late Analysis")))
+                             translate(_("Late Analysis")))
                 else:
                     items[i]['replace']['DueDate'] = TimeOrDate(self.context, item['DueDate'])
 

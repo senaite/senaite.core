@@ -27,6 +27,9 @@ class HistoryAwareReferenceField(ReferenceField):
     security.declarePrivate('set')
     def set(self, instance, value, **kwargs):
         """ Mutator. """
+
+        translate = instance.translation_service.translate
+
         rc = getToolByName(instance, REFERENCE_CATALOG)
         targetUIDs = [ref.targetUID for ref in
                       rc.getReferences(instance, self.relationship)]
@@ -77,7 +80,7 @@ class HistoryAwareReferenceField(ReferenceField):
                     pr = getToolByName(instance, 'portal_repository')
                     if pr.isVersionable(targets[uid]):
                         pr.save(obj=targets[uid],
-                                comment=instance.translate(_("Initial revision")))
+                                comment=translate(_("Initial revision")))
                 if not hasattr(instance, 'reference_versions'):
                     instance.reference_versions = {}
                 if not hasattr(targets[uid], 'version_id'):

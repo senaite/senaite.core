@@ -98,7 +98,7 @@
                     tal:attributes="
                         value item;
                         selected python: item in (this_contact, ) and 'selected' or '';"
-                    tal:content="python:here.translate(vocab.getValue(item), default=vocab.getValue(item))">
+                    tal:content="python:vocab.getValue(item)">
                 </option>
             </tal:item>
         </select>

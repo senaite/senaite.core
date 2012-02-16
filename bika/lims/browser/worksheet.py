@@ -540,6 +540,8 @@ class AddAnalysesView(BikaListingView):
             self.request.response.redirect(self.context.absolute_url())
             return
 
+        translate = instance.translation_service.translate
+
         form_id = self.form_id
         form = self.request.form
         rc = getToolByName(self.context, REFERENCE_CATALOG)
@@ -551,11 +553,11 @@ class AddAnalysesView(BikaListingView):
                 self.context.applyWorksheetTemplate(wst)
                 if len(self.context.getLayout()) != len(layout):
                     self.context.plone_utils.addPortalMessage(
-                        self.context.translate(PMF("Changes saved.")))
+                        translate(PMF("Changes saved.")))
                     self.request.RESPONSE.redirect(self.context.absolute_url() + "/manage_results")
                 else:
                     self.context.plone_utils.addPortalMessage(
-                        self.context.translate(_("No analyses were added to this worksheet.")))
+                        translate(_("No analyses were added to this worksheet.")))
                     self.request.RESPONSE.redirect(self.context.absolute_url() + "/add_analyses")
 
         self._process_request()
@@ -566,6 +568,8 @@ class AddAnalysesView(BikaListingView):
             return self.template()
 
     def folderitems(self):
+        translate = instance.translation_service.translate
+
         pc = getToolByName(self.context, 'portal_catalog')
         self.contentsMethod = pc
         items = BikaListingView.folderitems(self)
@@ -584,7 +588,7 @@ class AddAnalysesView(BikaListingView):
             if DueDate < DateTime():
                 items[x]['after']['DueDate'] = '<img width="16" height="16" src="%s/++resource++bika.lims.images/late.png" title="%s"/>' % \
                     (self.context.absolute_url(),
-                     self.context.translate(_("Late Analysis")))
+                     translate(_("Late Analysis")))
             items[x]['CategoryTitle'] = service.getCategory().Title()
 
             if getSecurityManager().checkPermission(ManageResults, obj.aq_parent):
@@ -947,6 +951,8 @@ class ajaxGetWorksheetReferences(ReferenceSamplesView):
         ]
 
     def folderitems(self):
+        translate = instance.translation_service.translate
+
         items = super(ajaxGetWorksheetReferences, self).folderitems()
         new_items = []
         for x in range(len(items)):
@@ -967,7 +973,7 @@ class ajaxGetWorksheetReferences(ReferenceSamplesView):
 
                 after_icons = "<a href='%s' target='_blank'><img src='++resource++bika.lims.images/referencesample.png' title='%s: %s'></a>" % \
                     (obj.absolute_url(), \
-                     self.context.translate(_("Reference sample")), obj.Title())
+                     translate(_("Reference sample")), obj.Title())
                 items[x]['before']['ID'] = after_icons
 
                 new_items.append(items[x])
@@ -981,7 +987,7 @@ class ajaxGetWorksheetReferences(ReferenceSamplesView):
         self.service_uids = self.request.get('service_uids', '').split(",")
         self.control_type = self.request.get('control_type', '')
         if not self.control_type:
-            return self.context.translate(_("No control type specified"))
+            return translate(_("No control type specified"))
         return super(ajaxGetWorksheetReferences, self).contents_table()
 
 class ExportView(BrowserView):
@@ -989,19 +995,19 @@ class ExportView(BrowserView):
     """
     def __call__(self):
 
+        translate = instance.translation_service.translate
+
         instrument = self.context.getInstrument()
         if not instrument:
-            message = _("You must select an instrument")
             self.context.plone_utils.addPortalMessage(
-                self.context.translate(message), 'info')
+                translate(_("You must select an instrument")), 'info')
             self.request.RESPONSE.redirect(self.context.absolute_url())
             return
 
         exim = instrument.getDataInterface()
         if not exim:
-            message = _("Instrument has no Data Interface selected")
             self.context.plone_utils.addPortalMessage(
-                self.context.translate(message), 'info')
+                translate(_("Instrument has no Data Interface selected")), 'info')
             self.request.RESPONSE.redirect(self.context.absolute_url())
             return
 
@@ -1012,9 +1018,8 @@ class ExportView(BrowserView):
 
         # search instruments module for 'exim' module
         if not hasattr(instruments, exim):
-            message = _("Instrument exporter not found")
             self.context.plone_utils.addPortalMessage(
-                self.context.translate(message), 'error')
+                translate(_("Instrument exporter not found")), 'error')
             self.request.RESPONSE.redirect(self.context.absolute_url())
             return
 

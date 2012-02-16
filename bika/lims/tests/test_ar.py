@@ -21,7 +21,6 @@ class Tests(unittest.TestCase):
         self.portal_registration = getToolByName(self.portal, 'portal_registration')
         self.portal_groups = getToolByName(self.portal, 'portal_groups')
         self.portal_membership = getToolByName(self.portal, 'portal_membership')
-        self.translate = getToolByName(self.portal, 'translation_service').translate
         self.plone_utils = getToolByName(self.portal, 'plone_utils')
 
     def test_AR(self):

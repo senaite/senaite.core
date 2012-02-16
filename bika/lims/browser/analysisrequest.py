@@ -34,6 +34,7 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
         plone.protect.CheckAuthenticator(form)
         workflow = getToolByName(self.context, 'portal_workflow')
         rc = getToolByName(self.context, REFERENCE_CATALOG)
+        translate = self.context.translation_service.translate
         skiplist = self.request.get('workflow_skiplist', [])
         action, came_from = WorkflowAction._get_form_workflow_action(self)
 
@@ -50,7 +51,7 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
         ## publish
         if action in ('prepublish', 'publish', 'republish'):
             if not isActive(self.context):
-                message = self.context.translate(_('Item is inactive.'))
+                message = translate(_('Item is inactive.'))
                 self.context.plone_utils.addPortalMessage(message, 'info')
                 self.request.response.redirect(self.context.absolute_url())
                 return
@@ -63,12 +64,10 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
                                    [self.context, ])()
             if len(transitioned) == 1:
                 action_title = '%sed' % action
-                message = self.context.translate(
-                    _('message_item_published',
-                      default = '${items} published.',
-                      mapping = {'items': ', '.join(transitioned)}))
+                message = translate('${items} published.',
+                                    mapping = {'items': ', '.join(transitioned)})
             else:
-                message = self.context.translate(_("No items were published"))
+                message = translate(_("No items were published"))
             self.context.plone_utils.addPortalMessage(message, 'info')
             self.destination_url = self.request.get_header("referer",
                                    self.context.absolute_url())
@@ -77,7 +76,7 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
         ## submit
         elif action == 'submit' and self.request.form.has_key("Result"):
             if not isActive(self.context):
-                message = self.context.translate(_('Item is inactive.'))
+                message = translate(_('Item is inactive.'))
                 self.context.plone_utils.addPortalMessage(message, 'info')
                 self.request.response.redirect(self.context.absolute_url())
                 return
@@ -158,7 +157,7 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
                     except WorkflowException:
                         pass
 
-            message = self.context.translate(PMF("Changes saved."))
+            message = translate(PMF("Changes saved."))
             self.context.plone_utils.addPortalMessage(message, 'info')
             self.destination_url = self.request.get_header("referer",
                                    self.context.absolute_url())
@@ -216,6 +215,7 @@ class AnalysisRequestViewView(BrowserView):
     def arprofiles(self):
         """ Return applicable client and Lab ARProfile records
         """
+        translate = self.context.translation_service.translate
         profiles = []
         bsc = getToolByName(self.context, 'bika_setup_catalog')
         for proxy in bsc(portal_type = 'ARProfile',
@@ -227,8 +227,7 @@ class AnalysisRequestViewView(BrowserView):
                         getClientUID = self.context.bika_setup.bika_arprofiles.UID(),
                         inactive_state = 'active',
                         sort_on = 'sortable_title'):
-                profiles.append((self.context.translate(_('Lab')) + ": " + \
-                                 proxy.title, proxy.getObject()))
+                profiles.append((translate(_('Lab')) + ": " + proxy.title, proxy.getObject()))
         return profiles
 
     def SelectedServices(self):
@@ -649,6 +648,7 @@ class AnalysisRequestSelectSampleView(BikaListingView):
 
     def folderitems(self):
         items = BikaListingView.folderitems(self)
+        translate = self.context.translation_service.translate
         for x, item in enumerate(items):
             if not items[x].has_key('obj'): continue
             obj = items[x]['obj']
@@ -663,7 +663,7 @@ class AnalysisRequestSelectSampleView(BikaListingView):
             if obj.getSampleType().getHazardous():
                 items[x]['after']['SampleID'] = \
                      "<img src='++resource++bika.lims.images/hazardous.png' title='%s'>"%\
-                     self.context.translate(_("Hazardous"))
+                     translate(_("Hazardous"))
             items[x]['SampleTypeTitle'] = obj.getSampleTypeTitle()
             items[x]['SamplePointTitle'] = obj.getSamplePointTitle()
             items[x]['row_data'] = json.dumps({
@@ -843,7 +843,7 @@ class ajaxAnalysisRequestSubmit():
         form = self.request.form
         plone.protect.CheckAuthenticator(self.request.form)
         plone.protect.PostOnly(self.request.form)
-
+        translate = self.context.translation_service.translate
         came_from = form.has_key('came_from') and form['came_from'] or 'add'
         wftool = getToolByName(self.context, 'portal_workflow')
         pc = getToolByName(self.context, 'portal_catalog')
@@ -852,10 +852,7 @@ class ajaxAnalysisRequestSubmit():
         errors = {}
         def error(field = None, column = None, message = None):
             if not message:
-                message = self.context.translate(
-                    'message_input_required',
-                    default = 'Input is required but no input given.',
-                    domain = 'bika')
+                message = translate(_('Input is required but no input given.'))
             if (column or field):
                 error_key = " %s.%s" % (int(column) + 1, field or '')
             else:
@@ -879,7 +876,7 @@ class ajaxAnalysisRequestSubmit():
 
             if not can_edit:
                 # Go back to 'View' screen with message.
-                message = self.context.translate(_("Changes not allowed"))
+                message = translate(_("Changes not allowed"))
                 ar.plone_utils.addPortalMessage(message, 'info')
                 return json.dumps({'success':message})
 
@@ -934,18 +931,16 @@ class ajaxAnalysisRequestSubmit():
                         if not bsc(portal_type = 'SampleType',
                                    inactive_state = 'active',
                                    Title = values[field]):
-                            msg = _("invalid_sample_type",
-                                    default="${st} is not a valid sample type",
-                                    mapping={'st':values[field]})
-                            error(field, 0, self.context.translate(msg))
+                            msg = _("${sampletype} is not a valid sample type",
+                                    mapping={'sampletype':values[field]})
+                            error(field, 0, translate(msg))
                     elif field == "SamplePoint":
                         if not bsc(portal_type = 'SamplePoint',
                                    inactive_state = 'active',
                                    Title = values[field]):
-                            msg = _("invalid_sample_point",
-                                    default="${sp} is not a valid sample point",
-                                    mapping={'sp':values[field]})
-                            error(field, 0, self.context.translate(msg))
+                            msg = _("${samplepoint} is not a valid sample point",
+                                    mapping={'samplepoint':values[field]})
+                            error(field, 0, translate(msg))
 
             # Check if there is any general AR info
             if can_edit_ar:
@@ -955,8 +950,7 @@ class ajaxAnalysisRequestSubmit():
 
             # Check for analyses
             if not values.has_key("Analyses"):
-                error(message = self.context.translate(
-                    _("No analyses have been selected.")))
+                error(message = translate(_("No analyses have been selected.")))
 
             if errors:
                 return json.dumps({'errors':errors})
@@ -1031,7 +1025,7 @@ class ajaxAnalysisRequestSubmit():
             prices = form['Prices']
             ar.setAnalyses(Analyses, prices = prices)
 
-            message = self.context.translate(PMF("Changes saved."))
+            message = translate(PMF("Changes saved."))
 
 
         else:
@@ -1052,7 +1046,7 @@ class ajaxAnalysisRequestSubmit():
                 columns.append(column)
 
             if len(columns) == 0:
-                error(message = self.context.translate(_("No data was entered")))
+                error(message = translate(_("No data was entered")))
                 return json.dumps({'errors':errors})
 
             # Now some basic validation
@@ -1063,8 +1057,7 @@ class ajaxAnalysisRequestSubmit():
                 formkey = "ar.%s" % column
                 ar = form[formkey]
                 if not ar.has_key("Analyses"):
-                    error('Analyses', column,
-                          self.context.translate(_("No analyses have been selected")))
+                    error('Analyses', column, translate(_("No analyses have been selected")))
 
                 # check that required fields have values
                 for field in required_fields:
@@ -1084,25 +1077,23 @@ class ajaxAnalysisRequestSubmit():
                             msg = _("invalid_sample_id",
                                     default="${id} is not a valid sample ID",
                                     mapping={'id':ar[field]})
-                            error(field, column, self.context.translate(msg))
+                            error(field, column, translate(msg))
 
                     elif field == "SampleType":
                         if not bsc(portal_type = 'SampleType',
                                    inactive_state = 'active',
                                    Title = ar[field]):
-                            msg = _("invalid_sample_type",
-                                    default="${st} is not a valid sample type",
-                                    mapping={'st':ar[field]})
-                            error(field, column, self.contex.translate(msg))
+                            msg = _("${sampletype} is not a valid sample type",
+                                    mapping={'sampletype':ar[field]})
+                            error(field, column, translate(msg))
 
                     elif field == "SamplePoint":
                         if not bsc(portal_type = 'SamplePoint',
                                    inactive_state = 'active',
                                    Title = ar[field]):
-                            msg = _("invalid_sample_point",
-                                    default="${sp} is not a valid sample point",
-                                    mapping={'sp':ar[field]})
-                            error(field, column, self.contex.translate(msg))
+                            msg = _("${samplepoint} is not a valid sample point",
+                                    mapping={'samplepoint':ar[field]})
+                            error(field, column, translate(msg))
 
             if errors:
                 return json.dumps({'errors':errors})
@@ -1203,15 +1194,11 @@ class ajaxAnalysisRequestSubmit():
                     wftool.doActionFor(ar, 'receive')
 
             if len(ARs) > 1:
-                message = self.context.translate(
-                    'message_ars_created',
-                    default = 'Analysis requests ${ARs} were successfully created.',
-                    mapping = {'ARs': ', '.join(ARs)}, domain = 'bika')
+                message = translate('Analysis requests ${ARs} were successfully created.',
+                                    mapping = {'ARs': ', '.join(ARs)}, domain = 'bika')
             else:
-                message = self.context.translate(
-                    'message_ar_created',
-                    default = 'Analysis request ${AR} was successfully created.',
-                    mapping = {'AR': ', '.join(ARs)}, domain = 'bika')
+                message = translate('Analysis request ${AR} was successfully created.',
+                                    mapping = {'AR': ', '.join(ARs)}, domain = 'bika')
 
         self.context.plone_utils.addPortalMessage(message, 'info')
         # automatic label printing
@@ -1246,6 +1233,8 @@ class AnalysisRequestsView(BikaListingView):
             self.request.set('disable_border', 1)
         else:
             self.view_url = self.view_url + "/analysisrequests"
+
+        translate = self.context.translation_service.translate
 
         self.show_sort_column = False
         self.show_select_row = False
@@ -1412,7 +1401,7 @@ class AnalysisRequestsView(BikaListingView):
                         'state_title']},
             {'id':'assigned',
              'title': _("<img title='%s' src='++resource++bika.lims.images/assigned.png'/>" %
-                        self.context.translate(_("Assigned"))),
+                        translate(_("Assigned"))),
              'contentFilter': {'worksheetanalysis_review_state': 'assigned',
                                'review_state': ('sample_received', 'to_be_verified',
                                                 'attachment_due', 'verified',
@@ -1438,7 +1427,7 @@ class AnalysisRequestsView(BikaListingView):
                         'state_title']},
             {'id':'unassigned',
              'title': _("<img title='%s' src='++resource++bika.lims.images/unassigned.png'/>" %
-                        self.context.translate(_("Unassigned"))),
+                        translate(_("Unassigned"))),
              'contentFilter': {'worksheetanalysis_review_state': 'unassigned',
                                'review_state': ('sample_received', 'to_be_verified',
                                                 'attachment_due', 'verified',
@@ -1468,6 +1457,8 @@ class AnalysisRequestsView(BikaListingView):
     def folderitems(self):
         workflow = getToolByName(self.context, "portal_workflow")
         items = BikaListingView.folderitems(self)
+
+        translate = self.context.translation_service.translate
 
         for x in range(len(items)):
             if not items[x].has_key('obj'): continue
@@ -1500,21 +1491,21 @@ class AnalysisRequestsView(BikaListingView):
             if workflow.getInfoFor(obj, 'worksheetanalysis_review_state') == 'assigned':
                 items[x]['after']['state_title'] = \
                      "<img src='++resource++bika.lims.images/worksheet.png' title='%s'/>" % \
-                     self.context.translate(_("All analyses assigned"))
+                     translate(_("All analyses assigned"))
 
             sample = obj.getSample()
             after_icons = "<a href='%s'><img src='++resource++bika.lims.images/sample.png' title='%s: %s'></a>" % \
                         (sample.absolute_url(), \
-                         self.context.translate(_("Sample")), sample.Title())
+                         translate(_("Sample")), sample.Title())
             if obj.getLate():
                 after_icons += "<img src='++resource++bika.lims.images/late.png' title='%s'>" % \
-                    self.context.translate(_("Late Analyses"))
+                    translate(_("Late Analyses"))
             if sample.getSampleType().getHazardous():
                 after_icons += "<img src='++resource++bika.lims.images/hazardous.png' title='%s'>" % \
-                    self.context.translate(_("Hazardous"))
+                    translate(_("Hazardous"))
             if datesampled > DateTime():
                 after_icons += "<img src='++resource++bika.lims.images/calendar.png' title='%s'>" % \
-                    self.context.translate(_("Future dated sample"))
+                    translate(_("Future dated sample"))
             if after_icons:
                 items[x]['after']['getRequestID'] = after_icons
 

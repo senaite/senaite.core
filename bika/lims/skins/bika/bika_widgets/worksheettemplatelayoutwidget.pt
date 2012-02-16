@@ -77,7 +77,7 @@
 				tal:attributes="
 					value item;
 					selected this_selected"
-				tal:content="python:context.translate(item, default=vocab.getValue(item))"></option>
+				tal:content="python:context.translation_service.translate(item, default=vocab.getValue(item))"></option>
 		</tal:item>
 		</select>
 	</td>

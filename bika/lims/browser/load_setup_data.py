@@ -56,13 +56,13 @@ class LoadSetupData(BrowserView):
         self.portal_registration = getToolByName(self.context, 'portal_registration')
         self.portal_groups = getToolByName(self.context, 'portal_groups')
         self.portal_membership = getToolByName(self.context, 'portal_membership')
-        self.translate = getToolByName(self.context, 'translation_service').translate
+        translate = self.context.translation_service.translate
         self.plone_utils = getToolByName(self.context, 'plone_utils')
         portal = getSite()
 
         file_name = 'xlsx' in form and form['xlsx'] or None
         if not file_name:
-            msg = self.context.translate(_("No file data submitted.  Please submit a valid Open XML Spreadsheet (.xlsx) file."))
+            msg = translate(_("No file data submitted.  Please submit a valid Open XML Spreadsheet (.xlsx) file."))
             self.plone_utils.addPortalMessage(msg)
             return self.template()
 
@@ -241,7 +241,6 @@ class LoadSetupData(BrowserView):
         portal_registration = getToolByName(self.context, 'portal_registration')
         portal_groups = getToolByName(self.context, 'portal_groups')
         portal_membership = getToolByName(self.context, 'portal_membership')
-        translate = getToolByName(self.context, 'translation_service').translate
         plone_utils = getToolByName(self.context, 'plone_utils')
 
         nr_rows = sheet.get_highest_row()

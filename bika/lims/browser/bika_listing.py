@@ -86,6 +86,7 @@ class WorkflowAction:
         form = self.request.form
         plone.protect.CheckAuthenticator(form)
         workflow = getToolByName(self.context, 'portal_workflow')
+        translate = self.context.translation_service.translate
         if self.destination_url == "":
             self.destination_url = self.request.get_header("referer",
                                    self.context.absolute_url())
@@ -98,7 +99,7 @@ class WorkflowAction:
             # the only actions allowed on inactive/cancelled
             # items are "reinstate" and "activate"
             if not isActive(obj) and action not in ('reinstate', 'activate'):
-                message = self.context.translate(_('Item is inactive.'))
+                message = translate(_('Item is inactive.'))
                 self.context.plone_utils.addPortalMessage(message, 'info')
                 self.request.response.redirect(self.destination_url)
                 return
@@ -131,7 +132,7 @@ class WorkflowAction:
                         pass
 
         if len(transitioned) > 0:
-            message = self.context.translate(PMF('Changes saved.'))
+            message = translate(PMF('Changes saved.'))
             self.context.plone_utils.addPortalMessage(message, 'info')
 
         # automatic label printing

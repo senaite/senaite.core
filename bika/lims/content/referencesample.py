@@ -165,11 +165,9 @@ class ReferenceSample(BaseFolder):
             # definition is selected
             if not o:
                 return ''
-            blankstr = self.translate(_('indicator_blank', 'Blank:'))
-            hazstr = self.translate(_('indicator_hazardous', '(!)'))
-            return '%s%s%s'%(o.getBlank() and blankstr or '',
-                             o.Title(),
-                             o.getHazardous() and hazstr or '')
+            blankstr = self.translation_service.translate(_('Blank:'))
+            return '%s%s'%(o.getBlank() and blankstr or '',
+                             o.Title())
         bsc = getToolByName(self, 'bika_setup_catalog')
         defs = [o.getObject() for o in \
                 bsc(portal_type = 'ReferenceDefinition',

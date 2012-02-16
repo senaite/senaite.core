@@ -76,7 +76,7 @@ def getDataInterfaces(context):
     """ Return the current list of data interfaces
     """
     from bika.lims.exportimport import instruments
-    exims = [('',context.translate(_('None')))]
+    exims = [('',context.translation_service.translate(_('None')))]
     for exim_id in instruments.__all__:
         exim = getattr(instruments, exim_id)
         exims.append((exim_id, exim.title))
