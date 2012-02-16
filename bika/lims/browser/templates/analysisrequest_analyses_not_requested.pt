@@ -39,6 +39,8 @@
 			sample python:here.getSample();
 			sampletype python:sample.getSampleType()">
 
+		<input tal:replace="structure context/@@authenticator/authenticator"/>
+
 		<table width="100%">
 			<tr>
 				<td>
@@ -191,6 +193,33 @@
 			tal:attributes="src string:++resource++bika.lims.images/hazardous_big.png"/>
 
 	</form>
+
+	<div id="RemarksContainer" style="display:none">
+		<tal:remarks
+			tal:condition="python: hasattr(view.context, 'setRemarks')"
+			tal:define="errors python:hasattr(request, 'errors') and request['errors'] or {}">
+			<metal:fieldMacro use-macro="python:view.context.widget('Remarks', mode='edit')" />
+		</tal:remarks>
+		<input
+			class="context workflow_action_button allowMultiSubmit saveRemarks"
+			type="submit"
+			value="Save remarks"
+			i18n:attributes="value"/>
+		<span tal:define="
+			remarks python:context.getRemarks();
+			rows python:len(remarks.splitlines());
+			rows python:rows > 5 and rows or 5;">
+			<fieldset>
+				<legend i18n:translate="">
+					<span i18n:translate="">Remarks</span>
+					<span i18n:translate="" i18n:domain="plone">History</span>
+				</legend>
+				<textarea id="RemarksHistory" cols="40" readonly="readonly"
+					tal:attributes="rows rows"
+					tal:content="remarks"/>
+			</fieldset>
+		</span>
+	</div>
 
 </metal:content>
 </body>

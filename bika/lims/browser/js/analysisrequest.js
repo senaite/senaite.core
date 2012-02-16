@@ -615,7 +615,11 @@ jQuery( function($) {
 				return false;
 			}
 			$("#RemarksHistory").load(
-				window.location.href.replace("/manage_results", "").replace("/base_edit", "") + "/setARRemarks",
+				window.location.href
+					.replace("/manage_results", "")
+					.replace("/base_edit", "")
+					.replace("/base_view", "")
+					.replace("/not_requested", "") + "/setARRemarks",
 				{'value': $("#Remarks").val(),
 				 '_authenticator': $('input[name="_authenticator"]').val()}
 			);
