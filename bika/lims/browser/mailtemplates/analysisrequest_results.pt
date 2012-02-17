@@ -203,7 +203,7 @@ h1, h2, h3, h4, h5, h6 {
     <thead>
 
       <tr>
-        <th i18n:translate="">Client Order ID</th>
+        <th i18n:translate="">Client Order</th>
         <td tal:repeat="ar view/batch"
           tal:attributes="colspan python:ar.getReportDryMatter() and 2 or 1"
           tal:content="ar/getClientOrderNumber">123</td>

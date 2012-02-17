@@ -57,12 +57,12 @@ td {
 </tr>
 
 <tr>
-<th i18n:translate="">Client Order ID</th>
+<th i18n:translate="">Client Order</th>
 <td><strong tal:content="ar/getClientOrderNumber|nothing"/></td>
 </tr>
 
 <tr>
-<th i18n:translate="">Analyst Name</th>
+<th i18n:translate="">Analyst</th>
 <td></td>
 </tr>
 

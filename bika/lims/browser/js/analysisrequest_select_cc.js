@@ -1,9 +1,12 @@
 jQuery( function($) {
 $(document).ready(function(){
 
+	jarn.i18n.loadCatalog('bika');
+	_ = jarn.i18n.MessageFactory('bika');
+
 	// hack the save button into workflow_actions
 	$(".workflow_action_buttons")
-		.append("<input type='submit' value='Save' class='select_cc_save'/>");
+		.append("<input type='submit' value='"+_('Save')+"' class='select_cc_save'/>");
 
 	// ##cc_uids is the parent AR form's CC contacts box
 	$.each(window.opener.$("#cc_uids").val().split(","), function(i,e){
@@ -23,9 +26,6 @@ $(document).ready(function(){
 		window.opener.$("#cc_uids").val(uids.join(','));
 		window.close();
 	});
-
-
-
 
 });
 });

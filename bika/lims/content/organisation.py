@@ -8,13 +8,16 @@ from bika.lims.content.bikaschema import BikaSchema, BikaFolderSchema
 from archetypes.referencebrowserwidget import ReferenceBrowserWidget
 from plone.app.folder.folder import ATFolder
 from bika.lims.browser.fields import AddressField
-from bika.lims import bikaMessageFactory as _
+from bika.lims import PMF, bikaMessageFactory as _
 
 schema = BikaFolderSchema.copy() + BikaSchema.copy() + ManagedSchema((
     StringField('Name',
         required = 1,
         searchable = True,
         validators = ('uniquefieldvalidator',),
+        widget = StringWidget(
+            label = _("Name"),
+        ),
     ),
     StringField('TaxNumber',
         widget = StringWidget(
@@ -27,64 +30,64 @@ schema = BikaFolderSchema.copy() + BikaSchema.copy() + ManagedSchema((
         ),
     ),
     StringField('Fax',
-            widget = StringWidget(
+        widget = StringWidget(
             label = _("Fax"),
         ),
     ),
     StringField('EmailAddress',
-        schemata = 'Address',
+        schemata = PMF('Address'),
         widget = StringWidget(
             label = _("Email Address"),
         ),
         validators = ('isEmail',)
     ),
     AddressField('PhysicalAddress',
-        schemata = 'Address',
+        schemata = PMF('Address'),
         widget = RecordWidget(
            macro = 'bika_widgets/custom_address_widget',
            label = _("Physical address"),
         ),
     ),
     AddressField('PostalAddress',
-        schemata = 'Address',
+        schemata = PMF('Address'),
         widget = RecordWidget(
            macro = 'bika_widgets/custom_address_widget',
            label = _("Postal address"),
         ),
     ),
     AddressField('BillingAddress',
-        schemata = 'Address',
+        schemata = PMF('Address'),
         widget = RecordWidget(
            macro = 'bika_widgets/custom_address_widget',
            label = _("Billing address"),
         ),
     ),
     StringField('AccountType',
-        schemata = 'Bank details',
+        schemata = PMF('Bank details'),
         widget = StringWidget(
             label = _("Account Type"),
         ),
     ),
     StringField('AccountName',
-        schemata = 'Bank details',
+        schemata = PMF('Bank details'),
         widget = StringWidget(
             label = _("Account Name"),
         ),
     ),
     StringField('AccountNumber',
-        schemata = 'Bank details',
+        schemata = PMF('Bank details'),
         widget = StringWidget(
             label = _("Account Number"),
         ),
     ),
     StringField('BankName',
-        schemata = 'Bank details',
+        schemata = PMF('Bank details'),
         widget = StringWidget(
             label = _("Bank name"),
         ),
     ),
     StringField('BankBranch',
-        schemata = 'Bank details',
+        schemata = PMF('Bank details'),
         widget = StringWidget(
             label = _("Bank branch"),
         ),

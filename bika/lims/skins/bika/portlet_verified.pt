@@ -49,7 +49,7 @@
                 tal:attributes="href string:${context/portal_url}/analysisrequests?review_state=verified"
                 >
                 <span tal:content="python:str(len(rs)-5)"/>
-                <span i18n:translate="">More...</span>
+                <span i18n:translate="">More</span>
             </a>
 
         </dd>

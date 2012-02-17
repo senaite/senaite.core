@@ -1,13 +1,15 @@
 <?xml version="1.0"?>
-<dc-workflow workflow_id="bika_referenceanalysis_workflow"
-             title="Reference Analysis Workflow [bika]"
+<dc-workflow xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+             i18n:domain="bika"
+             workflow_id="bika_referenceanalysis_workflow"
+             title="Bika Reference Analysis Workflow"
              state_variable="review_state"
              initial_state="unassigned">
 
  <permission>BIKA: View Results</permission>
  <permission>BIKA: Edit Results</permission>
 
- <state state_id="unassigned" title="Unassigned">
+ <state state_id="unassigned" title="Unassigned" i18n:attributes="title">
   <exit-transition transition_id="assign"/>
   <permission-map name="BIKA: View Results" acquired="False">
    <permission-role>Manager</permission-role>
@@ -19,7 +21,7 @@
   </permission-map>
  </state>
 
- <state state_id="assigned" title="Assigned">
+ <state state_id="assigned" title="Assigned" i18n:attributes="title">
   <exit-transition transition_id="submit"/>
   <exit-transition transition_id="unassign"/>
   <permission-map name="BIKA: View Results" acquired="False">
@@ -35,7 +37,7 @@
   </permission-map>
  </state>
 
- <state state_id="attachment_due" title="Attachment Outstanding">
+ <state state_id="attachment_due" title="Attachment Outstanding" i18n:attributes="title">
   <exit-transition transition_id="attach"/>
   <exit-transition transition_id="retract"/>
   <exit-transition transition_id="reject"/>
@@ -50,7 +52,7 @@
   </permission-map>
  </state>
 
- <state state_id="to_be_verified" title="To be verified">
+ <state state_id="to_be_verified" title="To be verified" i18n:attributes="title">
   <exit-transition transition_id="verify"/>
   <exit-transition transition_id="retract"/>
   <exit-transition transition_id="reject"/>
@@ -65,7 +67,7 @@
   </permission-map>
  </state>
 
- <state state_id="verified" title="Verified">
+ <state state_id="verified" title="Verified" i18n:attributes="title">
   <exit-transition transition_id="unassign"/>
   <permission-map name="BIKA: View Results" acquired="False">
    <permission-role>Manager</permission-role>
@@ -77,7 +79,7 @@
   </permission-map>
  </state>
 
- <state state_id="rejected" title="Rejected">
+ <state state_id="rejected" title="Rejected" i18n:attributes="title">
   <permission-map name="BIKA: View Results" acquired="False">
    <permission-role>Manager</permission-role>
    <permission-role>LabManager</permission-role>
@@ -88,11 +90,18 @@
   </permission-map>
  </state>
 
-
- <transition transition_id="retract" title="Retract"
-             new_state="assigned" trigger="USER"
-             before_script="" after_script="">
-  <action url="workflow_action?workflow_action=retract" category="workflow" icon="">Retract</action>
+ <transition transition_id="retract"
+             title="Retract"
+             new_state="assigned"
+			 trigger="USER"
+             before_script=""
+			 after_script=""
+             i18n:attributes="title">
+  <description i18n:translate=""></description>
+  <action url="workflow_action?workflow_action=retract"
+          category="workflow"
+		  icon=""
+		  i18n:translate="">Retract</action>
   <guard>
    <guard-permission>BIKA: Retract</guard-permission>
   </guard>
@@ -100,61 +109,106 @@
 
  <transition transition_id="submit"
              title="Submit for verification"
-             new_state="attachment_due" trigger="USER"
-             before_script="" after_script="">
-  <action url="workflow_action?workflow_action=submit" category="workflow" icon="">Submit for verification</action>
+             new_state="attachment_due"
+			 trigger="USER"
+             before_script=""
+			 after_script=""
+             i18n:attributes="title">
+  <description i18n:translate=""></description>
+  <action url="workflow_action?workflow_action=submit"
+          category="workflow"
+		  icon=""
+		  i18n:translate="">Submit for verification</action>
   <guard>
   </guard>
  </transition>
 
  <transition transition_id="attach"
-			 title="Attach" new_state="to_be_verified" trigger="USER"
-			 before_script="" after_script="">
-  <action url="workflow_action?workflow_action=submit" category="workflow" icon="">Add attachmnt</action>
+			 title="Attach"
+			 new_state="to_be_verified"
+			 trigger="USER"
+			 before_script=""
+			 after_script=""
+             i18n:attributes="title">
+  <description i18n:translate=""></description>
+  <action url="workflow_action?workflow_action=submit"
+          category="workflow"
+		  icon=""
+		  i18n:translate="">Add attachmnt</action>
   <guard>
    <guard-expression>python:here.guard_attach_analysis()</guard-expression>
   </guard>
  </transition>
 
- <transition transition_id="verify" title="Verify"
-             new_state="verified" trigger="USER"
-             before_script="" after_script="">
-  <action url="workflow_action?workflow_action=verify" category="workflow" icon="">Verify</action>
+ <transition transition_id="verify"
+             title="Verify"
+             new_state="verified"
+			 trigger="USER"
+             before_script=""
+			 after_script=""
+             i18n:attributes="title">
+  <description i18n:translate=""></description>
+  <action url="workflow_action?workflow_action=verify"
+          category="workflow"
+		  icon=""
+		  i18n:translate="">Verify</action>
   <guard>
    <guard-permission>BIKA: Verify</guard-permission>
    <guard-expression>python:here.guard_verify_analysis()</guard-expression>
   </guard>
  </transition>
 
- <transition transition_id="reject" title="Reject"
-             new_state="rejected" trigger="USER"
-             before_script="" after_script="">
-  <action url="workflow_action?workflow_action=reject" category="workflow" icon="">Reject</action>
+ <transition transition_id="reject"
+             title="Reject"
+             new_state="rejected"
+			 trigger="USER"
+             before_script=""
+			 after_script=""
+			 i18n:attributes="title">
+  <description i18n:translate=""></description>
+  <action url="workflow_action?workflow_action=reject"
+          category="workflow"
+		  icon=""
+		  i18n:translate="">Reject</action>
   <guard>
    <guard-permission>BIKA: Verify</guard-permission>
   </guard>
  </transition>
 
- <transition transition_id="assign" title="Assign"
-             new_state="assigned" trigger="USER"
-             before_script="" after_script="">
-  <action url="workflow_action?workflow_action=assign" category="workflow" icon="">Assign</action>
+ <transition transition_id="assign"
+             title="Assign"
+             new_state="assigned"
+			 trigger="USER"
+             before_script=""
+			 after_script=""
+             i18n:attributes="title">
+  <description i18n:translate=""></description>
+  <action url="workflow_action?workflow_action=assign"
+          category="workflow"
+		  icon=""
+		  i18n:translate="">Assign</action>
   <guard>
   </guard>
  </transition>
 
- <transition transition_id="unassign" title="Remove"
-             new_state="unassigned" trigger="USER"
-             before_script="" after_script="">
-  <action url="workflow_action?workflow_action=unassign" category="workflow" icon="">Remove</action>
+ <transition transition_id="unassign"
+             title="Remove"
+             new_state="unassigned"
+			 trigger="USER"
+             before_script=""
+			 after_script=""
+             i18n:attributes="title">
+  <description i18n:translate=""></description>
+  <action url="workflow_action?workflow_action=unassign"
+          category="workflow"
+		  icon=""
+		  i18n:translate="">Remove</action>
   <guard>
   </guard>
  </transition>
 
-
- <variable variable_id="action" for_catalog="False"
-           for_status="True" update_always="True">
-  <description>The last transition</description>
+ <variable variable_id="action" for_catalog="False" for_status="True" update_always="True">
+  <description i18n:translate="">The last transition</description>
   <default>
    <expression>transition/getId|nothing</expression>
   </default>
@@ -162,9 +216,8 @@
   </guard>
  </variable>
 
- <variable variable_id="actor" for_catalog="False"
-           for_status="True" update_always="True">
-  <description>The ID of the user who performed the last transition</description>
+ <variable variable_id="actor" for_catalog="False" for_status="True" update_always="True">
+  <description i18n:translate="">The ID of the user who performed the last transition</description>
   <default>
    <expression>user/getId</expression>
   </default>
@@ -172,9 +225,8 @@
   </guard>
  </variable>
 
- <variable variable_id="comments" for_catalog="False"
-           for_status="True" update_always="True">
-  <description>Comments about the last transition</description>
+ <variable variable_id="comments" for_catalog="False" for_status="True" update_always="True">
+  <description i18n:translate="">Comments about the last transition</description>
   <default>
    <expression>python:state_change.kwargs.get('comment', '')</expression>
   </default>
@@ -182,9 +234,8 @@
   </guard>
  </variable>
 
- <variable variable_id="review_history" for_catalog="False"
-           for_status="False" update_always="False">
-  <description>Provides access to workflow history</description>
+ <variable variable_id="review_history" for_catalog="False" for_status="False" update_always="False">
+  <description i18n:translate="">Provides access to workflow history</description>
   <default>
    <expression>state_change/getHistory</expression>
   </default>
@@ -192,9 +243,8 @@
   </guard>
  </variable>
 
- <variable variable_id="time" for_catalog="False"
-           for_status="True" update_always="True">
-  <description>Time of the last transition</description>
+ <variable variable_id="time" for_catalog="False" for_status="True" update_always="True">
+  <description i18n:translate="">Time of the last transition</description>
   <default>
    <expression>state_change/getDateTime</expression>
   </default>

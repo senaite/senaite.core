@@ -1,9 +1,12 @@
 jQuery( function($) {
 $(document).ready(function(){
 
+	jarn.i18n.loadCatalog('bika');
+	_ = jarn.i18n.MessageFactory('bika')
+
 	function portalMessage(message){
 		str = "<dl class='portalMessage error'>"+
-			"<dt>Error</dt>"+
+			"<dt>"+_("errors")+"</dt>"+
 			"<dd><ul>" + message +
 			"</ul></dd></dl>";
 		$('.portalMessage').remove();

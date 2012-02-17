@@ -590,8 +590,8 @@ class bika_pdf_build(UniqueObject, SimpleItem):
         oor = []
         dries = []
         cats = []
-        first_heads.append(['Client Order ID', ])
-        other_heads.append(['Client Order ID', ])
+        first_heads.append(['Client Order', ])
+        other_heads.append(['Client Order', ])
         first_heads.append(['Client Reference', ])
         other_heads.append(['Client Reference', ])
         first_heads.append(['Client SID', ])

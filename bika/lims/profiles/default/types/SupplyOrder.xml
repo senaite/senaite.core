@@ -1,9 +1,10 @@
 <?xml version="1.0"?>
 <object name="SupplyOrder"
-   meta_type="Factory-based Type Information with dynamic views"
-   xmlns:i18n="http://xml.zope.org/namespaces/i18n">
- <property name="title">SupplyOrder</property>
- <property name="description"> </property>
+        meta_type="Factory-based Type Information with dynamic views"
+        xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+        i18n:domain="plone">
+ <property name="title" i18n:translate="">Supply Order</property>
+ <property name="description"></property>
  <property name="content_icon">++resource++bika.lims.images/order.png</property>
  <property name="content_meta_type">SupplyOrder</property>
  <property name="product">bika.lims</property>
@@ -17,32 +18,57 @@
  </property>
  <property name="allow_discussion">False</property>
  <property name="default_view_fallback">False</property>
+
  <alias from="(Default)" to="base_view"/>
  <alias from="view" to="base_view"/>
  <alias from="edit" to="base_edit"/>
- <action title="View" action_id="view" category="object" condition_expr=""
-    icon_expr="" link_target="" url_expr="string:${object_url}/"
-    visible="True">
+
+ <action title="View"
+         action_id="view"
+         category="object"
+         condition_expr=""
+         icon_expr=""
+         link_target=""
+         url_expr="string:${object_url}/"
+         i18n:attributes="title"
+         i18n:domain="plone"
+         visible="True">
   <permission value="View"/>
  </action>
- <action title="Edit" action_id="edit" category="object" condition_expr=""
-    icon_expr="" link_target="" url_expr="string:${object_url}/base_edit"
-    visible="True">
+
+ <action title="Edit"
+         action_id="edit"
+         category="object"
+         condition_expr=""
+         icon_expr=""
+         link_target=""
+         url_expr="string:${object_url}/base_edit"
+         i18n:attributes="title"
+         i18n:domain="plone"
+         visible="True">
   <permission value="Modify portal content"/>
  </action>
- <action title="Folder Listing" action_id="folderlisting" category="folder"
-    condition_expr="object/isPrincipiaFolderish" icon_expr="" link_target=""
-    url_expr="string:${folder_url}/view" visible="False">
+
+ <action title="Print order"
+         action_id="print"
+         category="object"
+         condition_expr="" icon_expr="" link_target=""
+         url_expr="string:${object_url}/order_print"
+         i18n:attributes="title"
+         visible="True">
   <permission value="View"/>
  </action>
- <action title="Print order" action_id="print" category="object"
-    condition_expr="" icon_expr="" link_target=""
-    url_expr="string:${object_url}/order_print" visible="True">
-  <permission value="View"/>
- </action>
- <action title="Log" action_id="log" category="object" condition_expr=""
-    icon_expr="" link_target="" url_expr="string:${object_url}/status_log"
-    visible="True">
+
+ <action title="Log"
+         action_id="log"
+         category="object"
+         condition_expr=""
+         icon_expr=""
+         link_target=""
+         url_expr="string:${object_url}/status_log"
+         i18n:attributes="title"
+         visible="True">
   <permission value="BIKA: Manage Bika"/>
  </action>
+
 </object>

@@ -34,7 +34,8 @@ class ReferenceSamplesView(BikaListingView):
             'state_title': {'title': _('State')},
         }
         self.review_states = [
-            {'title': _('All'), 'id':'all',
+            {'id':'all',
+             'title': _('All'),
              'columns': ['ID',
                          'Title',
                          'Manufacturer',
@@ -124,7 +125,8 @@ class ContactsView(BikaListingView):
           }
 
     review_states = [
-                {'title': 'All', 'id':'all',
+                {'id':'all',
+                 'title': _('All'),
                  'columns': ['getFullname',
                              'getEmailAddress',
                              'getBusinessPhone',
@@ -135,8 +137,7 @@ class ContactsView(BikaListingView):
     def __init__(self, context, request):
         super(ContactsView, self).__init__(context, request)
         self.icon = "++resource++bika.lims.images/referencesupplier_contact_big.png"
-        self.title = _("contacts_title", default="Contacts")
-        self.descriotion = _("contacts_descr", default="")
+        self.title = _("Contacts")
 
     def folderitems(self):
         items = BikaListingView.folderitems(self)

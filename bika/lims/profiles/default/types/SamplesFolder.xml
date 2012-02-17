@@ -1,8 +1,9 @@
 <?xml version="1.0"?>
 <object name="SamplesFolder"
-   meta_type="Factory-based Type Information with dynamic views"
-   xmlns:i18n="http://xml.zope.org/namespaces/i18n">
- <property name="title">SamplesFolder</property>
+        meta_type="Factory-based Type Information with dynamic views"
+        xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+        i18n:domain="plone">
+ <property name="title" i18n:translate="">SamplesFolder</property>
  <property name="description"></property>
  <property name="content_icon">++resource++bika.lims.images/sample.png</property>
  <property name="content_meta_type">SamplesFolder</property>
@@ -19,19 +20,25 @@
  <alias from="(Default)" to="base_view"/>
  <alias from="view" to="base_view"/>
  <alias from="edit" to="base_view"/>
+
  <action title="View"
          action_id="view"
          category="object"
          condition_expr=""
          url_expr="string:${object_url}/base_view"
+         i18n:attributes="title"
+         i18n:domain="plone"
          visible="False">
   <permission value="View"/>
  </action>
+
  <action title="Edit"
          action_id="edit"
          category="object"
          condition_expr=""
          url_expr="string:${object_url}/base_view"
+         i18n:attributes="title"
+         i18n:domain="plone"
          visible="False">
   <permission value="Modify portal content"/>
  </action>

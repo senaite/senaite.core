@@ -1,9 +1,10 @@
 <?xml version="1.0"?>
 <object name="InvoiceBatch"
-   meta_type="Factory-based Type Information with dynamic views"
-   xmlns:i18n="http://xml.zope.org/namespaces/i18n">
- <property name="title">Invoice batch</property>
- <property name="description">Container for Invoice instances </property>
+        meta_type="Factory-based Type Information with dynamic views"
+        xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+        i18n:domain="plone">
+ <property name="title" i18n:translate="">Invoice batch</property>
+ <property name="description"></property>
  <property name="content_icon">++resource++bika.lims.images/invoice.png</property>
  <property name="content_meta_type">InvoiceBatch</property>
  <property name="product">bika.lims</property>
@@ -22,34 +23,66 @@
  <alias from="view" to="invoicebatch_invoices"/>
  <alias from="edit" to="base_edit"/>
 
- <action title="Invoices" action_id="invoices" category="object"
-    condition_expr="" icon_expr="" link_target=""
-    url_expr="string:${object_url}/invoicebatch_invoices" visible="True">
-  <permission value="List folder contents"/>
+ <action title="Invoices"
+         action_id="invoices"
+         category="object"
+         condition_expr=""
+         icon_expr=""
+         link_target=""
+         url_expr="string:${object_url}/invoicebatch_invoices"
+         i18n:attributes="title"
+         visible="True">
+    <permission value="List folder contents"/>
  </action>
- <action title="View" action_id="view" category="object" condition_expr=""
-    icon_expr="" link_target="" url_expr="string:${object_url}/base_view"
-    visible="False">
-  <permission value="View"/>
+
+ <action title="View"
+         action_id="view"
+         category="object"
+         condition_expr=""
+         icon_expr=""
+         link_target=""
+         url_expr="string:${object_url}/base_view"
+         i18n:attributes="title"
+         i18n:domain="plone"
+         visible="False">
+    <permission value="View"/>
  </action>
- <action title="Edit" action_id="edit" category="object" condition_expr=""
-    icon_expr="" link_target="" url_expr="string:${object_url}/base_edit"
-    visible="False">
-  <permission value="Modify portal content"/>
+
+ <action title="Edit"
+         action_id="edit"
+         category="object"
+         condition_expr=""
+         icon_expr=""
+         link_target=""
+         url_expr="string:${object_url}/base_edit"
+         i18n:attributes="title"
+         i18n:domain="plone"
+         visible="False">
+    <permission value="Modify portal content"/>
  </action>
- <action title="Folder Listing" action_id="folderlisting" category="folder"
-    condition_expr="object/isPrincipiaFolderish" icon_expr="" link_target=""
-    url_expr="string:${folder_url}/view" visible="False">
-  <permission value="View"/>
+
+ <action title="Print batch"
+         action_id="printbatch"
+         category="object"
+         condition_expr=""
+         icon_expr=""
+         link_target=""
+         url_expr="string:${object_url}/invoicebatch_print"
+         i18n:attributes="title"
+         visible="True">
+    <permission value="BIKA: Manage Invoices"/>
  </action>
- <action title="Print batch" action_id="printbatch" category="object"
-    condition_expr="" icon_expr="" link_target=""
-    url_expr="string:${object_url}/invoicebatch_print" visible="True">
-  <permission value="BIKA: Manage Invoices"/>
+
+ <action title="Export batch"
+         action_id="exportbatch"
+         category="folder_buttons"
+         condition_expr=""
+         icon_expr=""
+         link_target=""
+         url_expr="string:invoicebatch_export:method"
+         i18n:attributes="title"
+         visible="True">
+    <permission value="BIKA: Manage Invoices"/>
  </action>
- <action title="Export batch" action_id="exportbatch"
-    category="folder_buttons" condition_expr="" icon_expr="" link_target=""
-    url_expr="string:invoicebatch_export:method" visible="True">
-  <permission value="BIKA: Manage Invoices"/>
- </action>
+
 </object>

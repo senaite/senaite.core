@@ -31,6 +31,10 @@ jQuery( function($) {
 
 	$(document).ready(function(){
 
+		jarn.i18n.loadCatalog('bika');
+		_ = jarn.i18n.MessageFactory('bika');
+
+
 		$('body').append('<div id="global-spinner" class="global-spinner" style="display:none"><img id="img-global-spinner" src="spinner.gif" alt="Loading"/></div>');
 		$('#global-spinner')
 			.ajaxStart(function() { $(this).show(); })

@@ -1,6 +1,9 @@
 jQuery( function($) {
 $(document).ready(function(){
 
+	jarn.i18n.loadCatalog('bika');
+	_ = jarn.i18n.MessageFactory('bika');
+
 	// return a reference from the Sample popup window back into the widget
 	// and populate the form with this sample's data
 	$('.select_sample').click(function(){
@@ -52,13 +55,13 @@ $(document).ready(function(){
 	};
 
 	function createTooltip(event, row_data){
-		$('<div class="tooltip">'+
-			'<table summary="Sample view" class="analysisrequest listing nosort" cellpadding="0" cellspacing="0">' +
-		    '<thead>'+
-            '<tr><th>Requests</th><td class="left">'+row_data['Requests']+'</td></tr>'+
-            '<tr><th>Date Sampled</th><td class="left">'+row_data['DateSampled']+'</td></tr>'+
-            '<tr><th>Date Received</th><td class="left">'+row_data['DateReceived']+'</td></tr>'+
-			'</thead>'+
+		$('<div class="tooltip">' +
+			'<table class="analysisrequest listing nosort" cellpadding="0" cellspacing="0">' +
+		    '<thead>' +
+            '<tr><th>' + _('Analysis Requests') + '</th><td class="left">' + row_data['Requests'] + '</td></tr>' +
+            '<tr><th>' + _('Date Sampled') + '</th><td class="left">' + row_data['DateSampled'] + '</td></tr>' +
+            '<tr><th>' + _('Date Received') + '</th><td class="left">' + row_data['DateReceived'] + '</td></tr>' +
+			'</thead>' +
 			'</table></div>').appendTo('body');
 		positionTooltip(event);
 	};

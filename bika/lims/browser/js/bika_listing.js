@@ -1,27 +1,28 @@
 jQuery( function($) {
-
-function setoddeven(){
-	// set alternating odd and even classes if table has setoddeven class
-	$.each($("table.setoddeven tbody.item-listing-tbody tr"), function(i,tr){
-		if (i%2 == 0) {
-			$(tr).addClass('odd');
-		} else {
-			$(tr).addClass('even');
-		}
-	});
-}
-
-function portalMessage(message){
-	str = "<dl class='portalMessage error'>"+
-		"<dt>Error</dt>"+
-		"<dd><ul>" + message +
-		"</ul></dd></dl>";
-	$('.portalMessage').remove();
-	$(str).appendTo('#viewlet-above-content');
-}
-
-
 $(document).ready(function(){
+
+	jarn.i18n.loadCatalog('bika');
+	_ = jarn.i18n.MessageFactory('bika');
+
+	function setoddeven(){
+		// set alternating odd and even classes if table has setoddeven class
+		$.each($("table.setoddeven tbody.item-listing-tbody tr"), function(i,tr){
+			if (i%2 == 0) {
+				$(tr).addClass('odd');
+			} else {
+				$(tr).addClass('even');
+			}
+		});
+	}
+
+	function portalMessage(message){
+		str = "<dl class='portalMessage error'>"+
+			"<dt>"+_("error")+"</dt>"+
+			"<dd><ul>" + message +
+			"</ul></dd></dl>";
+		$('.portalMessage').remove();
+		$(str).appendTo('#viewlet-above-content');
+	}
 
 	setoddeven();
 

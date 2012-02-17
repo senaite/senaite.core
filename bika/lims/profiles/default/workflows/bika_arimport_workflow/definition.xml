@@ -1,13 +1,15 @@
 <?xml version="1.0"?>
-<dc-workflow workflow_id="bika_arimport_workflow"
-             title="ARImport Workflow [bika]"
+<dc-workflow xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+             i18n:domain="bika"
+             workflow_id="bika_arimport_workflow"
+             title="Bika ARImport Workflow"
              state_variable="review_state"
              initial_state="imported">
+
  <permission>Modify portal content</permission>
  <permission>Delete objects</permission>
- 
- 
- <state state_id="submitted" title="Submitted">
+
+ <state state_id="submitted" title="Submitted" i18n:attributes="title">
   <permission-map name="Delete objects" acquired="False">
    <permission-role>Manager</permission-role>
    <permission-role>LabManager</permission-role>
@@ -17,8 +19,8 @@
    <permission-role>Manager</permission-role>
   </permission-map>
  </state>
- 
- <state state_id="imported" title="Imported">
+
+ <state state_id="imported" title="Imported" i18n:attributes="title">
   <exit-transition transition_id="submit"/>
   <permission-map name="Delete objects" acquired="False">
    <permission-role>Manager</permission-role>
@@ -36,51 +38,51 @@
    <permission-role>Owner</permission-role>
   </permission-map>
  </state>
- 
- 
- <transition transition_id="submit" title="Submit ARImport"
-             new_state="submitted" trigger="USER"
-             before_script="" after_script="">
-  <action url="" category="workflow">Submit</action>
+
+ <transition transition_id="submit"
+             title="Submit ARImport"
+             new_state="submitted"
+             trigger="USER"
+             before_script=""
+             after_script=""
+             i18n:attributes="title">
+  <description i18n:translate=""></description>
+  <action url="" category="workflow" i18n:translate="">Submit</action>
   <guard>
    <guard-permission>BIKA: Manage ARImport</guard-permission>
    <guard-expression></guard-expression>
   </guard>
  </transition>
- 
- 
- <variable variable_id="action" for_catalog="False"
-           for_status="True" update_always="True">
-  <description>The last transition</description>
+
+
+ <variable variable_id="action" for_catalog="False" for_status="True" update_always="True">
+  <description i18n:translate="">The last transition</description>
   <default>
    <expression>transition/getId|nothing</expression>
   </default>
   <guard>
   </guard>
  </variable>
- 
- <variable variable_id="actor" for_catalog="False"
-           for_status="True" update_always="True">
-  <description>The ID of the user who performed the last transition</description>
+
+ <variable variable_id="actor" for_catalog="False" for_status="True" update_always="True">
+  <description i18n:translate="">The ID of the user who performed the last transition</description>
   <default>
    <expression>user/getId</expression>
   </default>
   <guard>
   </guard>
  </variable>
- 
- <variable variable_id="comments" for_catalog="False"
-           for_status="True" update_always="True">
-  <description>Comments about the last transition</description>
+
+ <variable variable_id="comments" for_catalog="False" for_status="True" update_always="True">
+  <description i18n:translate="">Comments about the last transition</description>
   <default>
    <expression>python:state_change.kwargs.get('comment', '')</expression>
   </default>
   <guard>
   </guard>
  </variable>
- 
- <variable variable_id="review_history" for_catalog="False"
-           for_status="False" update_always="False">
+
+ <variable variable_id="review_history" for_catalog="False" for_status="False" update_always="False">
   <description>Provides access to workflow history</description>
   <default>
    <expression>state_change/getHistory</expression>
@@ -90,15 +92,14 @@
    <guard-permission>Review portal content</guard-permission>
   </guard>
  </variable>
- 
- <variable variable_id="time" for_catalog="False"
-           for_status="True" update_always="True">
-  <description>Time of the last transition</description>
+
+ <variable variable_id="time" for_catalog="False" for_status="True" update_always="True">
+  <description i18n:translate="">Time of the last transition</description>
   <default>
    <expression>state_change/getDateTime</expression>
   </default>
   <guard>
   </guard>
  </variable>
- 
+
 </dc-workflow>

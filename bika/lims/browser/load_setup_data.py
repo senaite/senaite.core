@@ -26,8 +26,6 @@ class LoadSetupData(BrowserView):
         BrowserView.__init__(self, context, request)
         self.title = _("Load Setup Data")
         self.description = _("Submit a valid Open XML (.XLSX) file containing Bika setup records to continue.")
-        self.helptext = _("load_setup_data_helptext",
-                          default="")
         # dependencies to resolve
         self.deferred = {}
 

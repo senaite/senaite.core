@@ -1,8 +1,9 @@
 <?xml version="1.0"?>
 <object name="LabProducts"
-   meta_type="Factory-based Type Information with dynamic views"
-   xmlns:i18n="http://xml.zope.org/namespaces/i18n">
- <property name="title">Lab Products</property>
+        meta_type="Factory-based Type Information with dynamic views"
+        xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+        i18n:domain="plone">
+ <property name="title" i18n:translate="">Lab Products</property>
  <property name="description"></property>
  <property name="content_icon">++resource++bika.lims.images/product.png</property>
  <property name="content_meta_type">LabProducts</property>
@@ -17,7 +18,9 @@
  </property>
  <property name="allow_discussion">False</property>
  <property name="default_view_fallback">False</property>
+
  <alias from="(Default)" to="folder_view"/>
  <alias from="view" to="folder_view"/>
  <alias from="edit" to="base_edit"/>
+
 </object>

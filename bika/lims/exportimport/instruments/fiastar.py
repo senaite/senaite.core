@@ -128,8 +128,7 @@ def Import(context,request):
     for param in ['F SO2', 'T SO2']:
         service = bsc(getKeyword = options[param])
         if not service:
-            msg = _('import_service_keyword_not_found',
-                    default = 'Service keyword ${keyword} not found',
+            msg = _('Service keyword ${keyword} not found',
                     mapping = {'keyword': options[param], })
             res['errors'].append(translate(msg))
             continue
@@ -184,8 +183,7 @@ def Import(context,request):
         p_uid = row['Sample name']
         parent = uc(UID = p_uid)
         if len(parent) == 0:
-            msg = _('import_analysis_parent_not_found',
-                    default = 'Analysis parent UID ${parent_uid} not found',
+            msg = _('Analysis parent UID ${parent_uid} not found',
                     mapping = {'parent_uid': row['Sample name'], })
             res['errors'].append(translate(msg))
             continue
@@ -194,8 +192,7 @@ def Import(context,request):
         c_uid = row['Sample type']
         container = uc(UID = c_uid)
         if len(container) == 0:
-            msg = _('import_analysis_container_not_found',
-                    default = 'Analysis container UID ${parent_uid} not found',
+            msg = _('Analysis container UID ${parent_uid} not found',
                     mapping = {'container_uid': row['Sample type'], })
             res['errors'].append(translate(msg))
             continue
@@ -215,8 +212,7 @@ def Import(context,request):
                    dup.getKeyword() in (options['F SO2'], options['T SO2']):
                     analysis = dup
             if not analysis:
-                msg = _('import_duplicate_not_found',
-                        default = 'Duplicate analysis for slot ${slot} not found',
+                msg = _('Duplicate analysis for slot ${slot} not found',
                         mapping = {'slot': row['Cup'], })
                 res['errors'].append(translate(msg))
                 continue
@@ -245,16 +241,14 @@ def Import(context,request):
 
         as_state = wf_tool.getInfoFor(analysis, 'review_state', '')
         if (as_state not in updateable_states):
-            msg = _('import_service_not_updateable',
-                    default = 'Analysis ${service} at slot ${slot} in state ${state} - not updated',
+            msg = _('Analysis ${service} at slot ${slot} in state ${state} - not updated',
                     mapping = {'service': service.Title(),
                                'slot': row['Cup'],
                                'state': as_state,})
             res['errors'].append(translate(msg))
             continue
         if analysis.getResult():
-            msg = _('import_service_has_result',
-                    default = 'Analysis ${service} at slot ${slot} has a result - not updated',
+            msg = _('Analysis ${service} at slot ${slot} has a result - not updated',
                     mapping = {'service': service.Title(),
                                'slot': row['Cup'], })
             res['errors'].append(translate(msg))
@@ -301,8 +295,7 @@ def Import(context,request):
             ]
         )
 
-        msg = _('import_analysis_ok',
-                default = 'Analysis ${service} at slot ${slot}: OK',
+        msg = _('Analysis ${service} at slot ${slot}: OK',
                 mapping = {'service': service.Title(),
                            'slot': row['Cup'], })
         res['log'].append(translate(msg))

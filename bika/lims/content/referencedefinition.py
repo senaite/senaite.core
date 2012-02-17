@@ -11,12 +11,12 @@ from bika.lims.browser.widgets import ReferenceResultsWidget
 from bika.lims.config import PROJECTNAME
 import sys
 import time
-from bika.lims import bikaMessageFactory as _
+from bika.lims import PMF, bikaMessageFactory as _
 from zope.interface import implements
 
 schema = BikaSchema.copy() + Schema((
     ReferenceResultsField('ReferenceResults',
-        schemata = 'Reference Results',
+        schemata = PMF('Reference Results'),
         required = 1,
         widget = ReferenceResultsWidget(
             label = _("Reference Results"),
@@ -32,7 +32,7 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     BooleanField('Blank',
-        schemata = 'Description',
+        schemata = PMF('Description'),
         default = False,
         widget = BooleanWidget(
             label = _("Blank"),
@@ -40,7 +40,7 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     BooleanField('Hazardous',
-        schemata = 'Description',
+        schemata = PMF('Description'),
         default = False,
         widget = BooleanWidget(
             label = _("Hazardous"),
@@ -49,9 +49,9 @@ schema = BikaSchema.copy() + Schema((
     ),
 ))
 
-schema['title'].schemata = 'Description'
+schema['title'].schemata = PMF('Description')
 schema['title'].widget.visible = True
-schema['description'].schemata = 'Description'
+schema['description'].schemata = PMF('Description')
 schema['description'].widget.visible = True
 
 class ReferenceDefinition(BaseContent):

@@ -166,17 +166,20 @@ class ClientARImportsView(BikaListingView):
             'state_title': {'title': _('State')},
         }
         self.review_states = [
-            {'title': _('All'), 'id':'all',
+            {'id':'all',
+             'title': _('All'),
              'columns': ['title',
                          'getDateImported',
                          'getStatus',
                          'getDateApplied',
                          'state_title']},
-            {'title': _('Imported'), 'id':'imported',
+            {'id':'imported',
+             'title': _('Imported'),
              'columns': ['title',
                          'getDateImported',
                          'getStatus']},
-            {'title': _('Applied'), 'id':'submitted',
+            {'id':'submitted',
+             'title': _('Applied'),
              'columns': ['title',
                          'getDateImported',
                          'getStatus',
@@ -262,7 +265,6 @@ class ClientAnalysisSpecsView(BikaListingView):
 
         self.icon = "++resource++bika.lims.images/analysisspec_big.png"
         self.title = _("Analysis Specifications")
-        self.description = _("Analysis Specifications description")
 
         self.columns = {
             'SampleType': {'title': _('Sample Type'),
@@ -316,7 +318,7 @@ class SetSpecsToLabDefaults(BrowserView):
                 ResultsRange = labspec.getResultsRange(),
             )
         translate = self.context.translation_service.translate
-        message = translate(_("Analysis specs reset to lab defaults."))
+        message = translate(_("Analysis specifications reset to lab defaults."))
         self.context.plone_utils.addPortalMessage(message, 'info')
         self.request.RESPONSE.redirect(self.context.absolute_url() + "/analysisspecs")
         return
@@ -347,7 +349,8 @@ class ClientAttachmentsView(BikaListingView):
             'DateLoaded': {'title': _('Date Loaded')},
         }
         self.review_states = [
-            {'title': 'All', 'id':'all',
+            {'id':'all',
+             'title': 'All',
              'columns': ['getTextTitle',
                          'AttachmentFile',
                          'AttachmentType',
@@ -407,7 +410,6 @@ class ClientOrdersView(BikaListingView):
 
         self.icon = "++resource++bika.lims.images/order_big.png"
         self.title = _("Orders")
-        self.description = _("Orders description")
 
         self.columns = {
             'OrderNumber': {'title': _('Order Number')},
@@ -416,15 +418,18 @@ class ClientOrdersView(BikaListingView):
             'state_title': {'title': _('State')},
         }
         self.review_states = [
-            {'title': _('All'), 'id':'all',
+            {'id':'all',
+             'title': _('All'),
              'columns': ['OrderNumber',
                          'OrderDate',
                          'DateDispatched',
                          'state_title']},
-            {'title': _('Pending'), 'id':'pending',
+            {'id':'pending',
+             'title': _('Pending'),
              'columns': ['OrderNumber',
                          'OrderDate']},
-            {'title': _('Dispatched'), 'id':'dispatched',
+            {'id':'dispatched',
+             'title': _('Dispatched'),
              'columns': ['OrderNumber',
                          'OrderDate',
                          'DateDispatched']},
@@ -475,13 +480,15 @@ class ClientContactsView(BikaListingView):
             'getFax': {'title': _('Fax')},
         }
         self.review_states = [
-            {'title': 'All', 'id':'all',
+            {'id':'all',
+             'title': _('All'),
              'columns': ['getFullname',
                          'getEmailAddress',
                          'getBusinessPhone',
                          'getMobilePhone',
                          'getFax']},
-            {'title': 'Active', 'id':'active',
+            {'id':'active',
+             'title': _('Active'),
              'contentFilter': {'inactive_state': 'active'},
              'transitions': [{'id':'deactivate'}, ],
              'columns': ['getFullname',
@@ -489,7 +496,8 @@ class ClientContactsView(BikaListingView):
                          'getBusinessPhone',
                          'getMobilePhone',
                          'getFax']},
-            {'title': 'Dormant', 'id':'inactive',
+            {'id':'inactive',
+             'title': _('Dormant'),
              'contentFilter': {'inactive_state': 'inactive'},
              'transitions': [{'id':'activate'}, ],
              'columns': ['getFullname',

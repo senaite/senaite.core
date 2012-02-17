@@ -213,9 +213,9 @@
             </td>
         </tal:linksample>
     </tr>
-    <!-- Client Order ID -->
+    <!-- Client Order -->
     <tr tal:define="field_name string:ClientOrderNumber">
-        <th colspan="2" i18n:translate="">Client Order ID</th>
+        <th colspan="2" i18n:translate="">Client Order</th>
         <td>
             <img class="copyButton" tal:condition="not: edit"
                 tal:attributes="name field_name;src string:${portal/absolute_url}/++resource++bika.lims.images/copy.png"/>
@@ -372,9 +372,9 @@
             </td>
         </tal:block>
     </tr>
-    <!-- Composite Sample -->
+    <!-- Composite -->
     <tr tal:define="field_name string:Composite">
-        <th colspan="2" i18n:translate="">Composite Sample</th>
+        <th colspan="2" i18n:translate="">Composite</th>
         <td>
             <img class="copyButton" tal:condition="not: edit"
                 tal:attributes="name field_name;src string:${portal/absolute_url}/++resource++bika.lims.images/copy.png"/>
@@ -598,9 +598,8 @@
 			rows python:len(remarks.splitlines());
 			rows python:rows > 5 and rows or 5;">
 			<fieldset>
-				<legend i18n:translate="">
-					<span i18n:translate="">Remarks</span>
-					<span i18n:translate="" i18n:domain="plone">History</span>
+				<legend>
+					<span i18n:translate="">Remarks History</span>
 				</legend>
 				<textarea id="RemarksHistory" cols="40" readonly="readonly"
 					tal:attributes="rows rows"

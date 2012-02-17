@@ -21,7 +21,7 @@ class LogView(BikaListingView):
     def __init__(self, context, request):
         BikaListingView.__init__(self, context, request)
 
-        translate = instance.translation_service.translate
+        translate = context.translation_service.translate
 
         self.show_sort_column = False
         self.show_select_row = False

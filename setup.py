@@ -32,6 +32,7 @@ setup(name='bika.lims',
           'plone.app.iterate',
           'reportlab',
           'magnitude',
+          'jarn.jsi18n',
       ],
       extras_require = {
           'test': [

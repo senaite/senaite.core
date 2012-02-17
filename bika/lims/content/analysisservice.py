@@ -9,7 +9,7 @@ from Products.CMFCore.permissions import View, ModifyPortalContent
 from Products.CMFCore.utils import getToolByName
 from Products.validation import validation
 from Products.validation.validators.RegexValidator import RegexValidator
-from bika.lims import bikaMessageFactory as _
+from bika.lims import PMF, bikaMessageFactory as _
 from bika.lims.browser.fields import DurationField
 from bika.lims.browser.fields import HistoryAwareReferenceField
 from bika.lims.browser.widgets import ServicesWidget, RecordsWidget, DurationWidget
@@ -150,7 +150,7 @@ registerField(PartitionSetupField, title = "", description = "")
 
 schema = BikaSchema.copy() + Schema((
     StringField('Unit',
-        schemata = _("Description"),
+        schemata = PMF("Description"),
         required = 1,
         widget = StringWidget(
             label = _("Unit"),
@@ -159,14 +159,14 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     IntegerField('Precision',
-        schemata = _("Analysis"),
+        schemata = PMF("Analysis"),
         widget = IntegerWidget(
             label = _("Precision as number of decimals"),
             description = _("Define the number of decimals to be used for this result"),
         ),
     ),
     BooleanField('ReportDryMatter',
-        schemata = _("Analysis"),
+        schemata = PMF("Analysis"),
         default = False,
         widget = BooleanWidget(
             label = _("Report as Dry Matter"),
@@ -174,7 +174,7 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     StringField('AttachmentOption',
-        schemata = _("Analysis"),
+        schemata = PMF("Analysis"),
         default = 'p',
         vocabulary = ATTACHMENT_OPTIONS,
         widget = SelectionWidget(
@@ -185,7 +185,7 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     StringField('Keyword',
-        schemata = _("Description"),
+        schemata = PMF("Description"),
         required = 1,
         searchable = True,
         validators = ('servicekeywordvalidator'),
@@ -198,7 +198,7 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     ReferenceField('Method',
-        schemata = _("Method"),
+        schemata = PMF("Method"),
         required = 0,
         searchable = True,
         vocabulary_display_path_bound = sys.maxint,
@@ -213,7 +213,7 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     ReferenceField('Instrument',
-        schemata = _("Method"),
+        schemata = PMF("Method"),
         searchable = True,
         required = 0,
         vocabulary_display_path_bound = sys.maxint,
@@ -234,7 +234,7 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     HistoryAwareReferenceField('Calculation',
-        schemata = _("Method"),
+        schemata = PMF("Method"),
         required = 0,
         vocabulary_display_path_bound = sys.maxint,
         vocabulary = 'getCalculations',
@@ -263,7 +263,7 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     DurationField('MaxTimeAllowed',
-        schemata = _("Analysis"),
+        schemata = PMF("Analysis"),
         widget = DurationWidget(
             label = _("Maximum turn-around time"),
             description = _("Maximum time allowed for completion of the analysis. "
@@ -271,7 +271,7 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     FixedPointField('DuplicateVariation',
-        schemata = _("Method"),
+        schemata = PMF("Method"),
         widget = DecimalWidget(
             label = _("Duplicate Variation %"),
             description = _("When the results of duplicate analyses on worksheets, "
@@ -280,7 +280,7 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     BooleanField('Accredited',
-        schemata = _("Method"),
+        schemata = PMF("Method"),
         default = False,
         widget = BooleanWidget(
             label = _("Accredited"),
@@ -289,7 +289,7 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     StringField('PointOfCapture',
-        schemata = _("Description"),
+        schemata = PMF("Description"),
         required = 1,
         default = 'lab',
         vocabulary = SERVICE_POINT_OF_CAPTURE,
@@ -303,7 +303,7 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     ReferenceField('Category',
-        schemata = _("Description"),
+        schemata = PMF("Description"),
         required = 1,
         vocabulary_display_path_bound = sys.maxint,
         allowed_types = ('AnalysisCategory',),
@@ -317,14 +317,14 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     FixedPointField('Price',
-        schemata = _("Description"),
+        schemata = PMF("Description"),
         default = '0.00',
         widget = DecimalWidget(
             label = _("Price (excluding VAT)"),
             ),
         ),
     FixedPointField('CorporatePrice',
-        schemata = _("Description"),
+        schemata = PMF("Description"),
         default = '0.00',
         widget = DecimalWidget(
             label = _("Bulk price (excluding VAT)"),
@@ -332,7 +332,7 @@ schema = BikaSchema.copy() + Schema((
                         ),
         ),
     ComputedField('VATAmount',
-        schemata = _("Description"),
+        schemata = PMF("Description"),
         expression = 'context.getVATAmount()',
         widget = ComputedWidget(
             label = _("VAT"),
@@ -340,7 +340,7 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     ComputedField('TotalPrice',
-        schemata = _("Description"),
+        schemata = PMF("Description"),
         expression = 'context.getTotalPrice()',
         widget = ComputedWidget(
             label = _("Total price"),
@@ -348,7 +348,7 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     FixedPointField('VAT',
-        schemata = _("Description"),
+        schemata = PMF("Description"),
         default_method = 'getDefaultVAT',
         widget = DecimalWidget(
             label = _("VAT %"),
@@ -368,7 +368,7 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     ReferenceField('Department',
-        schemata = _("Description"),
+        schemata = PMF("Description"),
         required = 0,
         vocabulary_display_path_bound = sys.maxint,
         allowed_types = ('Department',),
@@ -389,7 +389,7 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     RecordsField('Uncertainties',
-        schemata = _("Uncertainties"),
+        schemata = PMF("Uncertainties"),
         type = 'uncertainties',
         subfields = ('intercept_min', 'intercept_max', 'errorvalue'),
         required_subfields = ('intercept_min', 'intercept_max', 'errorvalue'),
@@ -411,7 +411,7 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     RecordsField('ResultOptions',
-        schemata = _("Result Options"),
+        schemata = PMF("Result Options"),
         type = 'resultsoptions',
         subfields = ('ResultValue','ResultText'),
         required_subfields = ('ResultValue','ResultText'),
@@ -426,7 +426,7 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     PartitionSetupField('PartitionSetup',
-        schemata = _('Partition Setup'),
+        schemata = PMF('Partition Setup'),
 ##        accessor = 'getPartitionSetup',
 ##        edit_accessor = 'getPartitionSetup',
 ##        mutator = 'setPartitionSetup',
@@ -442,11 +442,11 @@ schema = BikaSchema.copy() + Schema((
 ))
 
 schema['id'].widget.visible = False
-schema['description'].schemata = 'Description'
+schema['description'].schemata = PMF('Description')
 schema['description'].widget.visible = True
 schema['title'].required = True
 schema['title'].widget.visible = True
-schema['title'].schemata = 'Description'
+schema['title'].schemata = PMF('Description')
 
 class AnalysisService(BaseContent, HistoryAwareMixin):
     security = ClassSecurityInfo()

@@ -1,7 +1,8 @@
 <?xml version="1.0"?>
-<dc-workflow workflow_id="bika_inactive_workflow"
+<dc-workflow xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+             i18n:domain="bika"
+             workflow_id="bika_inactive_workflow"
              title="Bika Inactive workflow"
-             description="This workflow allows users to Deactivate objects"
              state_variable="inactive_state"
              initial_state="active"
              manager_bypass="False">
@@ -9,7 +10,7 @@
  <permission>Modify portal content</permission>
  <permission>Delete objects</permission>
 
- <state state_id="active" title="Active">
+ <state state_id="active" title="Active" i18n:attributes="title">
   <description>Item is active and visible</description>
   <exit-transition transition_id="deactivate"/>
   <permission-map name="Delete objects" acquired="True">
@@ -18,7 +19,7 @@
   </permission-map>
  </state>
 
- <state state_id="inactive" title="Inactive">
+ <state state_id="inactive" title="Inactive" i18n:attributes="title">
   <exit-transition transition_id="activate"/>
   <permission-map name="Delete objects" acquired="False">
    <permission-role>Manager</permission-role>
@@ -36,21 +37,41 @@
   </permission-map>
  </state>
 
- <transition transition_id="activate" title="Activate" new_state="active" trigger="USER" before_script="" after_script="">
-  <action url="workflow_action?workflow_action=activate" category="" icon="">Activate</action>
+ <transition transition_id="activate"
+             title="Activate"
+             new_state="active"
+             trigger="USER"
+             before_script=""
+             after_script=""
+             i18n:attributes="title">
+  <description i18n:translate=""></description>
+  <action url="workflow_action?workflow_action=activate"
+          category=""
+          icon=""
+          i18n:translate="">Activate</action>
   <guard>
   </guard>
  </transition>
 
- <transition transition_id="deactivate" title="Deactivate" new_state="inactive" trigger="USER" before_script="" after_script="">
+ <transition transition_id="deactivate"
+             title="Deactivate"
+             new_state="inactive"
+             trigger="USER"
+             before_script=""
+             after_script=""
+             i18n:attributes="title">
+  <description i18n:translate=""></description>
   <description>Flag item as inactive.</description>
-  <action url="workflow_action?workflow_action=deactivate" category="" icon="">Deactivate</action>
+  <action url="workflow_action?workflow_action=deactivate"
+          category=""
+          icon=""
+          i18n:translate="">Deactivate</action>
   <guard>
   </guard>
  </transition>
 
  <variable variable_id="action" for_catalog="False" for_status="True" update_always="True">
-  <description>The last transition</description>
+  <description i18n:translate="">The last transition</description>
   <default>
    <expression>transition/getId|nothing</expression>
   </default>
@@ -59,7 +80,7 @@
  </variable>
 
  <variable variable_id="actor" for_catalog="False" for_status="True" update_always="True">
-  <description>The ID of the user who performed the last transition</description>
+  <description i18n:translate="">The ID of the user who performed the last transition</description>
   <default>
    <expression>user/getId</expression>
   </default>
@@ -68,7 +89,7 @@
  </variable>
 
  <variable variable_id="comments" for_catalog="False" for_status="True" update_always="True">
-  <description>Comments about the last transition</description>
+  <description i18n:translate="">Comments about the last transition</description>
   <default>
    <expression>python:state_change.kwargs.get('comment', '')</expression>
   </default>
@@ -77,7 +98,7 @@
  </variable>
 
  <variable variable_id="review_history" for_catalog="False" for_status="False" update_always="False">
-  <description>Provides access to workflow history</description>
+  <description i18n:translate="">Provides access to workflow history</description>
   <default>
    <expression>state_change/getHistory</expression>
   </default>
@@ -86,7 +107,7 @@
  </variable>
 
  <variable variable_id="time" for_catalog="False" for_status="True" update_always="True">
-  <description>Time of the last transition</description>
+  <description i18n:translate="">Time of the last transition</description>
   <default>
    <expression>state_change/getDateTime</expression>
   </default>

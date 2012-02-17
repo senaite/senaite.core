@@ -1,8 +1,11 @@
 jQuery( function($) {
 $(document).ready(function(){
 
+	jarn.i18n.loadCatalog('bika');
+	_ = jarn.i18n.MessageFactory('bika');
+
 	// a reference definition is selected from the dropdown
-	// see referenceresultswidget.js
+	// (../../skins/bika/bika_widgets/referenceresultswidget.js)
 	$('#ReferenceDefinition\\:list').change(function(){
 		authenticator = $('input[name="_authenticator"]').val();
 		uid = $(this).val();
@@ -18,16 +21,13 @@ $(document).ready(function(){
 			return;
 		}
 
-		indicator_blank = $.trim($("#i18n_strings").attr("indicator_blank"));
-		indicator_hazardous = $.trim($("#i18n_strings").attr("indicator_hazardous"));
-
-		if(option.search(indicator_blank) > -1){
+		if(option.search(_("(Blank)")) > -1){
 			$("#Blank").attr("checked", true);
 		} else {
 			$("#Blank").attr("checked", false);
 		}
 
-		if(option.search(indicator_hazardous) > -1){
+		if(option.search(_("(Hazardous)")) > -1){
 			$("#Hazardous").attr("checked", true);
 		} else {
 			$("#Hazardous").attr("checked", false);

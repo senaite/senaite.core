@@ -9,12 +9,12 @@ from bika.lims.browser.widgets import CoordinateWidget
 from bika.lims.browser.fields import DurationField
 from bika.lims.browser.widgets import DurationWidget
 import sys
-from bika.lims import bikaMessageFactory as _
+from bika.lims import PMF, bikaMessageFactory as _
 from zope.interface import implements
 
 schema = BikaSchema.copy() + Schema((
     CoordinateField('Latitude',
-        schemata = _('Location'),
+        schemata = PMF('Location'),
         widget=CoordinateWidget(
             label= _("Latitude"),
             description = _("Enter the Sample Point's latitude in "
@@ -22,7 +22,7 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     CoordinateField('Longitude',
-        schemata = _('Location'),
+        schemata = PMF('Location'),
         widget=CoordinateWidget(
             label= _("Longitude"),
             description = _("Enter the Sample Point's longitude in "
@@ -30,7 +30,7 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     StringField('Elevation',
-        schemata = _('Location'),
+        schemata = PMF('Location'),
         widget=StringWidget(
             label =  _("Elevation"),
             description = _("The height or depth at which the sample has to be taken"),

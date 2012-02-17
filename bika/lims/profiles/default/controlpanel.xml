@@ -2,7 +2,7 @@
 
 <object name="portal_controlpanel" meta_type="Plone Control Panel Tool"
  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
- i18n:domain="bika.lims">
+ i18n:domain="plone">
 
  <configlet title="Bika Setup" action_id="bika_setup"
     appId="bika.lims" category="Products" condition_expr=""
@@ -57,7 +57,7 @@
   <permission>BIKA: Manage Bika</permission>
  </configlet>
 
- <configlet title="Analysis Specs" action_id="bika_analysisspecs"
+ <configlet title="Analysis Specifications" action_id="bika_analysisspecs"
     appId="bika.lims" category="Products" condition_expr=""
     icon_expr="string:++resource++bika.lims.images/analysisspec.png"
     url_expr="string:$portal_url/bika_setup/bika_analysisspecs"

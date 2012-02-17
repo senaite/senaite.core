@@ -13,6 +13,8 @@
 <!--  <include file="contentmirror.zcml" zcml:condition="installed ore.contentmirror" />-->
 
   <include package="collective.subtractiveworkflow" />
+  
+  <include package="jarn.jsi18n" />
 
   <include package=".browser" />
   <include package=".content" />

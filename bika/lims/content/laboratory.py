@@ -7,18 +7,11 @@ from plone.app import folder
 from Products.Archetypes.public import *
 from bika.lims.content.organisation import Organisation
 from bika.lims.config import ManageBika, PROJECTNAME
-from bika.lims import bikaMessageFactory as _
+from bika.lims import PMF, bikaMessageFactory as _
 
 schema = Organisation.schema.copy() + Schema((
-    IntegerField('Confidence',
-        schemata = 'Accreditation',
-        widget = IntegerWidget(
-            label = _("Confidence Level %"),
-            description = _("This value is reported at the bottom of all published results"),
-        ),
-    ),
     StringField('LabURL',
-        schemata = 'Address',
+        schemata = PMF('Address'),
         write_permission = ManageBika,
         widget = StringWidget(
             size = 60,
@@ -26,9 +19,16 @@ schema = Organisation.schema.copy() + Schema((
             description = _("The Laboratory's web address"),
         ),
     ),
+    IntegerField('Confidence',
+        schemata = PMF('Accreditation'),
+        widget = IntegerWidget(
+            label = _("Confidence Level %"),
+            description = _("This value is reported at the bottom of all published results"),
+        ),
+    ),
     BooleanField('LaboratoryAccredited',
         default = False,
-        schemata = 'Accreditation',
+        schemata = PMF('Accreditation'),
         write_permission = ManageBika,
         widget = BooleanWidget(
             label = _("Laboratory Accredited"),
@@ -36,17 +36,17 @@ schema = Organisation.schema.copy() + Schema((
         ),
     ),
     StringField('AccreditationBodyLong',
-        schemata = 'Accreditation',
+        schemata = PMF('Accreditation'),
         write_permission = ManageBika,
         widget = StringWidget(
             size = 60,
             label = _("Accreditation Body"),
             description = _("The name of the accreditation body corresponding to the abbreviation above, "
-                            " e.g. South African National Accreditation Service for SANAS"),
+                            "e.g. South African National Accreditation Service for SANAS"),
         ),
     ),
     StringField('AccreditationBody',
-        schemata = 'Accreditation',
+        schemata = PMF('Accreditation'),
         write_permission = ManageBika,
         widget = StringWidget(
             label = _("Accreditation Body Abbreviation"),
@@ -54,7 +54,7 @@ schema = Organisation.schema.copy() + Schema((
         ),
     ),
     StringField('AccreditationBodyURL',
-        schemata = 'Accreditation',
+        schemata = PMF('Accreditation'),
         write_permission = ManageBika,
         widget = StringWidget(
             label = _("Accreditation Body URL"),
@@ -62,7 +62,7 @@ schema = Organisation.schema.copy() + Schema((
         ),
     ),
     StringField('Accreditation',
-        schemata = 'Accreditation',
+        schemata = PMF('Accreditation'),
         write_permission = ManageBika,
         widget = StringWidget(
             label = _("Accreditation"),
@@ -70,7 +70,7 @@ schema = Organisation.schema.copy() + Schema((
         ),
     ),
     StringField('AccreditationReference',
-        schemata = 'Accreditation',
+        schemata = PMF('Accreditation'),
         write_permission = ManageBika,
         widget = StringWidget(
             label = _("Accreditation Reference"),
@@ -78,11 +78,10 @@ schema = Organisation.schema.copy() + Schema((
         ),
     ),
     ImageField('AccreditationBodyLogo',
-        schemata = 'Accreditation',
+        schemata = PMF('Accreditation'),
         widget = ImageWidget(
             label = _("Accreditation Logo"),
-            description = _("Accreditation Logo descr",
-                            "Please upload the logo you are authorised to use on your "
+            description = _("Please upload the logo you are authorised to use on your "
                             "website and results reports by your accreditation body. "
                             "Maximum size is 175 x 175 pixels.")
         ),

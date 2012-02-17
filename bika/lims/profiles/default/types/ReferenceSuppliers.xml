@@ -1,11 +1,10 @@
 <?xml version="1.0"?>
 <object name="ReferenceSuppliers"
-   meta_type="Factory-based Type Information with dynamic views"
-   xmlns:i18n="http://xml.zope.org/namespaces/i18n">
- <property name="title">Reference Suppliers</property>
- <property name="description">
-   Enter reference sample supplier details
- </property>
+        meta_type="Factory-based Type Information with dynamic views"
+        xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+        i18n:domain="plone">
+ <property name="title" i18n:translate="">Reference Suppliers</property>
+ <property name="description"></property>
  <property name="content_icon">++resource++bika.lims.images/referencesupplier.png</property>
  <property name="content_meta_type">ReferenceSuppliers</property>
  <property name="product">bika.lims</property>
@@ -24,7 +23,9 @@
   <element value="folder_view"/>
  </property>
  <property name="default_view_fallback">False</property>
+
  <alias from="(Default)" to="folder_view"/>
  <alias from="view" to="folder_view"/>
  <alias from="edit" to="base_edit"/>
+
 </object>

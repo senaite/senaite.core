@@ -159,10 +159,10 @@ jQuery( function($) {
 				});
 				if (affected_services.length > 0) {
 					$("#confirm_add_deps").after(
-						"<div id='messagebox' style='display:none' title='Service dependencies'>"+
-						$("#confirm_add_deps").html()
-							.replace("_SERVICE_", $(element).attr('title'))
-							.replace("_DEPS_", affected_titles.join("<br/>"))+"</div>");
+						"<div id='messagebox' style='display:none' title='" + window.jsi18n("Service dependencies") + "'>"+
+						window.jsi18n("<p>${service} requires the following services to be selected:</p><br/><p>${deps}</p><br/><p>Do you want to apply these selections now?</p>",
+							{service:$(element).attr('title'),
+							 deps: affected_titles.join("<br/>")})+"</div>");
 						function add_Yes(){
 							$.each(dep_args, function(i,args){
 								tbody = $("#"+args[0]+"_"+args[1]);
@@ -224,10 +224,10 @@ jQuery( function($) {
 						}
 					});
 					$("#confirm_remove_deps").after(
-						"<div id='messagebox' style='display:none' title='Service dependencies'>"+
-						$("#confirm_remove_deps").html()
-							.replace("_SERVICE_", $(element).attr('title'))
-							.replace("_DEPS_", affected_titles.join("<br/>"))+"</div>");
+						"<div id='messagebox' style='display:none' title='" + window.jsi18n("Service dependencies") + "'>"+
+						window.jsi18n("<p>The following services depend on ${service}, and will be unselected if you continue:</p><br/><p>${deps}</p><br/><p>Do you want to remove these selections now?</p>",
+							{service:$(element).attr('title'),
+							 deps: affected_titles.join("<br/>")})+"</div>");
 					if (affected_services.length > 0) {
 						$("#messagebox").dialog({width:450, resizable:false, closeOnEscape: false, buttons:{
 							'Yes': function(){
@@ -345,6 +345,9 @@ jQuery( function($) {
 	}
 
 	$(document).ready(function(){
+
+		jarn.i18n.loadCatalog('bika');
+		window.jsi18n = jarn.i18n.MessageFactory('bika');
 
 		// DateSampled field is readonly to prevent invalid data entry, so
 		// clicking date_sampled field clears existing values.
@@ -606,29 +609,6 @@ jQuery( function($) {
 		// these go here so that popup windows can access them in our context
 		window.recalc_prices = recalc_prices;
 		window.toggleCat = toggleCat;
-
-		// Append-only remarks field
-		$('.saveRemarks').live('click', function(event){
-			event.preventDefault();
-			if ($("#Remarks").val() == '' ||
-				$("#Remarks").val() == undefined) {
-				return false;
-			}
-			$("#RemarksHistory").load(
-				window.location.href
-					.replace("/manage_results", "")
-					.replace("/base_edit", "")
-					.replace("/base_view", "")
-					.replace("/not_requested", "") + "/setARRemarks",
-				{'value': $("#Remarks").val(),
-				 '_authenticator': $('input[name="_authenticator"]').val()}
-			);
-			$("#Remarks").val("");
-			$("#RemarksHistory").attr("rows", $("#RemarksHistory").val().split("\n").length+3);
-			return false;
-		});
-		$("#Remarks").empty();
-		$("#RemarksContainer").show();
 
 	});
 });

@@ -1,12 +1,10 @@
 <?xml version="1.0"?>
 <object name="SamplePoints"
-   meta_type="Factory-based Type Information with dynamic views"
-   xmlns:i18n="http://xml.zope.org/namespaces/i18n">
- <property name="title">Sample Points</property>
- <property name="description">
-   The places where samples are routinely taken, Including geographical co-ordinates.
-   Could be a certain bore hole for water samples, or point on production line in a factory etc.
- </property>
+        meta_type="Factory-based Type Information with dynamic views"
+        xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+        i18n:domain="plone">
+ <property name="title" i18n:translate="">Sample Points</property>
+ <property name="description"></property>
  <property name="content_icon">++resource++bika.lims.images/samplepoint.png</property>
  <property name="content_meta_type">SamplePoints</property>
  <property name="product">bika.lims</property>
@@ -19,7 +17,9 @@
   <element value="SamplePoint"/>
  </property>
  <property name="default_view_fallback">False</property>
+
  <alias from="(Default)" to="folder_view"/>
  <alias from="view" to="folder_view"/>
  <alias from="edit" to="base_edit"/>
+
 </object>

@@ -64,7 +64,7 @@ schema = BikaSchema.copy() + Schema((
     StringField('ClientOrderNumber',
         searchable = True,
         widget = StringWidget(
-            label = _('Client Order ID'),
+            label = _('Client Order'),
         ),
     ),
     ReferenceField('Attachment',

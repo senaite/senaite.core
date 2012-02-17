@@ -852,7 +852,7 @@ class ajaxAnalysisRequestSubmit():
         errors = {}
         def error(field = None, column = None, message = None):
             if not message:
-                message = translate(_('Input is required but no input given.'))
+                message = translate(_('Input is required but no input given.'), domain="plone")
             if (column or field):
                 error_key = " %s.%s" % (int(column) + 1, field or '')
             else:
@@ -1074,8 +1074,7 @@ class ajaxAnalysisRequestSubmit():
                         if not pc(portal_type = 'Sample',
                                   cancellation_state = 'active',
                                   id = ar[field]):
-                            msg = _("invalid_sample_id",
-                                    default="${id} is not a valid sample ID",
+                            msg = _("${id} is not a valid sample ID",
                                     mapping={'id':ar[field]})
                             error(field, column, translate(msg))
 
@@ -1194,11 +1193,11 @@ class ajaxAnalysisRequestSubmit():
                     wftool.doActionFor(ar, 'receive')
 
             if len(ARs) > 1:
-                message = translate('Analysis requests ${ARs} were successfully created.',
-                                    mapping = {'ARs': ', '.join(ARs)}, domain = 'bika')
+                message = translate(_('Analysis requests ${ARs} were successfully created.',
+                                    mapping = {'ARs': ', '.join(ARs)}, domain = 'bika'))
             else:
-                message = translate('Analysis request ${AR} was successfully created.',
-                                    mapping = {'AR': ', '.join(ARs)}, domain = 'bika')
+                message = translate(_('Analysis request ${AR} was successfully created.',
+                                    mapping = {'AR': ', '.join(ARs)}, domain = 'bika'))
 
         self.context.plone_utils.addPortalMessage(message, 'info')
         # automatic label printing
@@ -1255,7 +1254,7 @@ class AnalysisRequestsView(BikaListingView):
             'getClientReference': {'title': _('Client Ref'),
                                    'index': 'getClientReference',
                                    'toggle': False},
-            'getClientSampleID': {'title': _('Client Sample'),
+            'getClientSampleID': {'title': _('Client SID'),
                                   'index': 'getClientSampleID',
                                   'toggle': False},
             'getSampleTypeTitle': {'title': _('Sample Type'),
@@ -1400,8 +1399,8 @@ class AnalysisRequestsView(BikaListingView):
                         'getDatePublished',
                         'state_title']},
             {'id':'assigned',
-             'title': _("<img title='%s' src='++resource++bika.lims.images/assigned.png'/>" %
-                        translate(_("Assigned"))),
+             'title': "<img title='%s' src='++resource++bika.lims.images/assigned.png'/>" %
+                        translate(_("Assigned")),
              'contentFilter': {'worksheetanalysis_review_state': 'assigned',
                                'review_state': ('sample_received', 'to_be_verified',
                                                 'attachment_due', 'verified',
@@ -1426,8 +1425,8 @@ class AnalysisRequestsView(BikaListingView):
                         'getDateReceived',
                         'state_title']},
             {'id':'unassigned',
-             'title': _("<img title='%s' src='++resource++bika.lims.images/unassigned.png'/>" %
-                        translate(_("Unassigned"))),
+             'title': "<img title='%s' src='++resource++bika.lims.images/unassigned.png'/>" %
+                        translate(_("Unassigned")),
              'contentFilter': {'worksheetanalysis_review_state': 'unassigned',
                                'review_state': ('sample_received', 'to_be_verified',
                                                 'attachment_due', 'verified',

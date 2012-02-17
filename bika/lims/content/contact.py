@@ -9,26 +9,26 @@ from Products.CMFCore import permissions
 from Products.CMFCore.utils import getToolByName
 from bika.lims.config import ManageClients, PUBLICATION_PREFS, PROJECTNAME
 from bika.lims.content.person import Person
-from bika.lims import bikaMessageFactory as _
+from bika.lims import PMF, bikaMessageFactory as _
 from zope.interface import implements
 
 schema = Person.schema.copy() + Schema((
     LinesField('PublicationPreference',
         vocabulary = PUBLICATION_PREFS,
-        schemata = 'Publication preference',
+        schemata = PMF('Publication preference'),
         widget = MultiSelectionWidget(
             label = _("Publication preference"),
         ),
     ),
     BooleanField('AttachmentsPermitted',
         default = False,
-        schemata = 'Publication preference',
+        schemata = PMF('Publication preference'),
         widget = BooleanWidget(
             label = _("Attachments Permitted"),
         ),
     ),
     ReferenceField('CCContact',
-        schemata = 'Publication preference',
+        schemata = PMF('Publication preference'),
         vocabulary = 'getCCContactsDisplayList',
         multiValued = 1,
         allowed_types = ('Contact',),

@@ -140,9 +140,10 @@
        <input
         type="button"
         class="context"
+		value="More"
         tal:condition="python: field.showMore(values)"
         tal:attributes="id string:${fieldName}_more;tabindex tabindex/next|nothing"
-        i18n:attributes="value more_entries" />
+        i18n:attributes="value" />
        </fieldset>
        </tal:block>
       </metal:use>

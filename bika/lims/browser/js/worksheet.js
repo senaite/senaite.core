@@ -1,9 +1,12 @@
 jQuery( function($) {
 $(document).ready(function(){
 
+	jarn.i18n.loadCatalog('bika');
+	_ = jarn.i18n.MessageFactory('bika');
+
 	function portalMessage(message){
 		str = "<dl class='portalMessage error'>"+
-			"<dt>Error</dt>"+
+			"<dt>"+_("error")+"</dt>"+
 			"<dd><ul>" + message +
 			"</ul></dd></dl>";
 		$('.portalMessage').remove();
@@ -30,7 +33,7 @@ $(document).ready(function(){
 		val = $('[name=list_getCategoryTitle]').val();
 		if(val == 'any'){
 			$('[name=list_Title]').empty();
-			$('[name=list_Title]').append("<option value='any'>Any</option>");
+			$('[name=list_Title]').append("<option value='any'>"+_('Any')+"</option>");
 			return;
 		}
 		$.ajax({
@@ -42,7 +45,7 @@ $(document).ready(function(){
 			success: function(data, textStatus, $XHR){
 				current_service_selection = $('[name=list_Title]').val();
 				$('[name=list_Title]').empty();
-				$('[name=list_Title]').append("<option value='any'>Any</option>");
+				$('[name=list_Title]').append("<option value='any'>"+_('Any')+"</option>");
 				for(i=0; i<data.length; i++){
 					if (data[i] == current_service_selection){
 						selected = 'selected="selected" ';

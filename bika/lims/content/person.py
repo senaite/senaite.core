@@ -8,7 +8,7 @@ from Products.ATExtensions.ateapi import RecordWidget
 from archetypes.referencebrowserwidget import ReferenceBrowserWidget
 from bika.lims.config import GENDERS, PROJECTNAME
 from bika.lims.browser.fields import AddressField
-from bika.lims import bikaMessageFactory as _
+from bika.lims import PMF, bikaMessageFactory as _
 
 schema = BikaSchema.copy() + Schema((
     StringField('Salutation',
@@ -44,32 +44,32 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     StringField('EmailAddress',
-        schemata = 'Email Telephone Fax',
+        schemata = PMF('Email Telephone Fax'),
         searchable = 1,
         widget = StringWidget(
             label = _("Email Address"),
         ),
     ),
     StringField('BusinessPhone',
-        schemata = 'Email Telephone Fax',
+        schemata = PMF('Email Telephone Fax'),
         widget = StringWidget(
             label = _("Phone (business)"),
         ),
     ),
     StringField('BusinessFax',
-        schemata = 'Email Telephone Fax',
+        schemata = PMF('Email Telephone Fax'),
         widget = StringWidget(
             label = _("Fax (business)"),
         ),
     ),
     StringField('HomePhone',
-        schemata = 'Email Telephone Fax',
+        schemata = PMF('Email Telephone Fax'),
         widget = StringWidget(
             label = _("Phone (home)"),
         ),
     ),
     StringField('MobilePhone',
-        schemata = 'Email Telephone Fax',
+        schemata = PMF('Email Telephone Fax'),
         widget = StringWidget(
             label = _("Phone (mobile)"),
         ),
@@ -85,14 +85,14 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     AddressField('PhysicalAddress',
-        schemata = 'Address',
+        schemata = PMF('Address'),
         widget = RecordWidget(
            macro = 'bika_widgets/custom_address_widget',
            label = _("Physical address"),
         ),
     ),
     AddressField('PostalAddress',
-        schemata = 'Address',
+        schemata = PMF('Address'),
         widget = RecordWidget(
            macro = 'bika_widgets/custom_address_widget',
            label = _("Postal address"),

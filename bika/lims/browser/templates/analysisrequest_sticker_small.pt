@@ -50,7 +50,7 @@ td {
 </tr>
 
 <tr>
-<th i18n:translate="">Client Order ID</th>
+<th i18n:translate="">Client Order</th>
 <td><strong tal:content="here/getClientOrderNumber|nothing"/></td>
 </tr>
 

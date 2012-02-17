@@ -1,8 +1,9 @@
 <?xml version="1.0"?>
 <object name="Client"
-   meta_type="Factory-based Type Information with dynamic views"
-   xmlns:i18n="http://xml.zope.org/namespaces/i18n">
- <property name="title">Client</property>
+        meta_type="Factory-based Type Information with dynamic views"
+        xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+        i18n:domain="plone">
+ <property name="title" i18n:translate="">Client</property>
  <property name="description"></property>
  <property name="content_icon">++resource++bika.lims.images/client.png</property>
  <property name="content_meta_type">Client</property>
@@ -33,13 +34,18 @@
          action_id="edit"
          category="object"
          url_expr="string:${object_url}/base_edit"
-         visible="True"/>
+         i18n:attributes="title"
+         i18n:domain="plone"
+         visible="True">
+    <permission value="Modify portal content"/>
+ </action>
 
  <action title="Contacts"
          action_id="contacts"
          category="object"
          icon_expr="string:${portal_url}/images/client_contact.png"
          url_expr="string:${object_url}/contacts"
+         i18n:attributes="title"
          visible="True">
   <permission value="List folder contents"/>
  </action>
@@ -51,6 +57,7 @@
          icon_expr="string:${portal_url}/images/sample.png"
          link_target=""
          url_expr="string:${object_url}/samples"
+         i18n:attributes="title"
          visible="True">
   <permission value="List folder contents"/>
  </action>
@@ -62,6 +69,7 @@
          icon_expr="string:${portal_url}/images/ar.png"
          link_target=""
          url_expr="string:${object_url}/analysisrequests"
+         i18n:attributes="title"
          visible="True">
   <permission value="List folder contents"/>
  </action>
@@ -73,6 +81,7 @@
          icon_expr="string:${portal_url}/images/arimport.png"
          link_target=""
          url_expr="string:${object_url}/arimports"
+         i18n:attributes="title"
          visible="False">
   <permission value="List folder contents"/>
  </action>
@@ -84,17 +93,19 @@
          icon_expr="string:${portal_url}/images/arprofile.png"
          link_target=""
          url_expr="string:${object_url}/arprofiles"
+         i18n:attributes="title"
          visible="True">
   <permission value="List folder contents"/>
  </action>
 
- <action title="Specs"
+ <action title="Analysis Specs"
          action_id="specs"
          category="object"
          condition_expr=""
          icon_expr="string:${portal_url}/images/analysisspec.png"
          link_target=""
          url_expr="string:${object_url}/analysisspecs"
+         i18n:attributes="title"
          visible="True">
   <permission value="List folder contents"/>
  </action>
@@ -106,6 +117,7 @@
          icon_expr="string:${portal_url}/images/attachment.png"
          link_target=""
          url_expr="string:${object_url}/attachments"
+         i18n:attributes="title"
          visible="False">
   <permission value="List folder contents"/>
  </action>
@@ -117,6 +129,7 @@
          icon_expr="string:${portal_url}/images/order.png"
          link_target=""
          url_expr="string:${object_url}/orders"
+         i18n:attributes="title"
          visible="False">
   <permission value="List folder contents"/>
  </action>

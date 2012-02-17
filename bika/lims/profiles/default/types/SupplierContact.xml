@@ -1,11 +1,10 @@
 <?xml version="1.0"?>
 <object name="SupplierContact"
-   meta_type="Factory-based Type Information with dynamic views"
-   xmlns:i18n="http://xml.zope.org/namespaces/i18n">
- <property name="title">Contact</property>
- <property name="description">
-	Contact
-  </property>
+        meta_type="Factory-based Type Information with dynamic views"
+        xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+        i18n:domain="plone">
+ <property name="title" i18n:translate="">Contact</property>
+ <property name="description"></property>
  <property name="content_icon">++resource++bika.lims.images/referencesupplier_contact.png</property>
  <property name="content_meta_type">SupplierContact</property>
  <property name="product">bika.lims</property>
@@ -24,19 +23,30 @@
  <alias from="view" to="base_view"/>
  <alias from="edit" to="base_edit"/>
 
- <action title="View" action_id="view" category="object" condition_expr=""
-    icon_expr="" link_target="" url_expr="string:${object_url}/base_view"
-    visible="False">
+ <action title="View"
+         action_id="view"
+         category="object"
+         condition_expr=""
+         icon_expr=""
+         link_target=""
+         url_expr="string:${object_url}/base_view"
+         i18n:attributes="title"
+         i18n:domain="plone"
+         visible="False">
   <permission value="View"/>
  </action>
- <action title="Edit" action_id="edit" category="object" condition_expr=""
-    icon_expr="" link_target="" url_expr="string:${object_url}/base_edit"
-    visible="True">
+
+ <action title="Edit"
+         action_id="edit"
+         category="object"
+         condition_expr=""
+         icon_expr=""
+         link_target=""
+         url_expr="string:${object_url}/base_edit"
+         i18n:attributes="title"
+         i18n:domain="plone"
+         visible="True">
   <permission value="Modify portal content"/>
  </action>
- <action title="Folder Listing" action_id="folderlisting" category="folder"
-    condition_expr="object/isPrincipiaFolderish" icon_expr="" link_target=""
-    url_expr="string:${folder_url}/view" visible="False">
-  <permission value="View"/>
- </action>
+
 </object>

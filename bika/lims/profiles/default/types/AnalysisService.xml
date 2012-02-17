@@ -1,9 +1,10 @@
 <?xml version="1.0"?>
 <object name="AnalysisService"
-   meta_type="Factory-based Type Information with dynamic views"
-   xmlns:i18n="http://xml.zope.org/namespaces/i18n">
- <property name="title">Analysis Service</property>
- <property name="description">The analysis services (or tests) offered by the lab</property>
+        meta_type="Factory-based Type Information with dynamic views"
+        xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+        i18n:domain="plone">
+ <property name="title" i18n:translate="">Analysis Service</property>
+ <property name="description"></property>
  <property name="content_icon">++resource++bika.lims.images/analysisservice.png</property>
  <property name="content_meta_type">AnalysisService</property>
  <property name="product">bika.lims</property>
@@ -15,6 +16,7 @@
  <property name="allowed_content_types"/>
  <property name="allow_discussion">False</property>
  <property name="default_view_fallback">False</property>
+
  <alias from="(Default)" to="base_edit"/>
  <alias from="view" to="base_edit"/>
  <alias from="edit" to="base_edit"/>
@@ -24,8 +26,10 @@
          category="object"
          condition_expr=""
          url_expr="string:${object/aq_parent/absolute_url}"
+         i18n:attributes="title"
+         i18n:domain="plone"
          visible="False">
-  <permission value="View"/>
+    <permission value="View"/>
  </action>
 
  <action title="Edit"
@@ -33,8 +37,10 @@
          category="object"
          condition_expr=""
          url_expr="string:${object_url}/edit"
+         i18n:attributes="title"
+         i18n:domain="plone"
          visible="False">
-  <permission value="Modify portal content"/>
+    <permission value="Modify portal content"/>
  </action>
 
  <action title="Log"
@@ -42,8 +48,9 @@
          category="object"
          condition_expr=""
          url_expr="string:${object_url}/log"
+         i18n:attributes="title"
          visible="True">
-  <permission value="View"/>
+    <permission value="View"/>
  </action>
 
 </object>

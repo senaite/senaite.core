@@ -28,19 +28,16 @@ class AccreditationView(AnalysisServicesView):
                         'ref': lab.getAccreditationReference()
                         }
         if accredited:
-            msg = _("accreditation_description",
-                    default = "${labname} has been accredited as ${accr} " + \
+            msg = _("${labname} has been accredited as ${accr} " + \
                     "conformant by ${abbr}, (${body}). ${abbr} is " + \
                     "recognised by government as a national " + \
                     "accreditation body in ${labcountry}. ",
                     mapping = self.mapping)
         else:
-            msg = _("accreditation_not_accredited",
-                    "The lab is not accredited, or accreditation has not been configured. ")
+            msg = _("The lab is not accredited, or accreditation has not been configured. ")
         translate = context.translation_service.translate
         self.description = translate(msg)
-        msg = _("accredited_services_description",
-                "All Accredited analysis services are listed here.")
+        msg = _("All Accredited analysis services are listed here.")
         self.description = "%s<p><br/>%s</p>"%(self.description,
                                                translate(msg))
 

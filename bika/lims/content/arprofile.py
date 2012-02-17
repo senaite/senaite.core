@@ -7,7 +7,7 @@ from AccessControl import ClassSecurityInfo
 from Products.Archetypes.public import *
 from Products.Archetypes.references import HoldingReference
 from Products.CMFCore.permissions import View, ModifyPortalContent
-from bika.lims import bikaMessageFactory as _
+from bika.lims import PMF, bikaMessageFactory as _
 from bika.lims.browser.widgets import ServicesWidget
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
@@ -16,7 +16,7 @@ import sys
 
 schema = BikaSchema.copy() + Schema((
     StringField('ProfileKey',
-        schemata = 'Description',
+        schemata = PMF('Description'),
         widget = StringWidget(
             label = _("Profile Keyword"),
             description = _("The profile's keyword is used to uniquely identify "
@@ -25,7 +25,7 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     ReferenceField('Service',
-        schemata = 'Analyses',
+        schemata = PMF('Analyses'),
         required = 1,
         multiValued = 1,
         allowed_types = ('AnalysisService',),
@@ -36,7 +36,7 @@ schema = BikaSchema.copy() + Schema((
         )
     ),
     TextField('Remarks',
-        schemata = 'Description',
+        schemata = PMF('Description'),
         default_content_type = 'text/plain',
         allowable_content_types = ('text/plain',),
         widget = TextAreaWidget(
@@ -58,9 +58,9 @@ schema = BikaSchema.copy() + Schema((
 ),
 )
 schema['title'].widget.visible = True
-schema['title'].schemata = 'Description'
+schema['title'].schemata = PMF('Description')
 schema['description'].widget.visible = True
-schema['description'].schemata = 'Description'
+schema['description'].schemata = PMF('Description')
 IdField = schema['id']
 
 class ARProfile(BaseContent):

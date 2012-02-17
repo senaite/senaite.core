@@ -540,7 +540,7 @@ class AddAnalysesView(BikaListingView):
             self.request.response.redirect(self.context.absolute_url())
             return
 
-        translate = instance.translation_service.translate
+        translate = self.context.translation_service.translate
 
         form_id = self.form_id
         form = self.request.form
@@ -568,7 +568,7 @@ class AddAnalysesView(BikaListingView):
             return self.template()
 
     def folderitems(self):
-        translate = instance.translation_service.translate
+        translate = self.context.translation_service.translate
 
         pc = getToolByName(self.context, 'portal_catalog')
         self.contentsMethod = pc
@@ -951,7 +951,7 @@ class ajaxGetWorksheetReferences(ReferenceSamplesView):
         ]
 
     def folderitems(self):
-        translate = instance.translation_service.translate
+        translate = self.context.translation_service.translate
 
         items = super(ajaxGetWorksheetReferences, self).folderitems()
         new_items = []
@@ -995,7 +995,7 @@ class ExportView(BrowserView):
     """
     def __call__(self):
 
-        translate = instance.translation_service.translate
+        translate = self.context.translation_service.translate
 
         instrument = self.context.getInstrument()
         if not instrument:

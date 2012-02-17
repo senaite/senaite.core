@@ -6,3 +6,8 @@ file_filter = <lang>/LC_MESSAGES/bika.po
 source_file = bika.pot
 source_lang = en
 
+[bika-lims.plone]
+file_filter = <lang>/LC_MESSAGES/plone.po
+source_file = plone.pot
+source_lang = en
+

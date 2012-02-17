@@ -275,7 +275,7 @@ class SamplesView(BikaListingView):
     def folderitems(self):
         items = BikaListingView.folderitems(self)
 
-        translate = instance.translation_service.translate
+        translate = self.context.translation_service.translate
 
         for x in range(len(items)):
             if not items[x].has_key('obj'): continue

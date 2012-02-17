@@ -1,6 +1,9 @@
 jQuery( function($) {
 $(document).ready(function(){
 
+	jarn.i18n.loadCatalog('bika');
+	_ = jarn.i18n.MessageFactory('bika');
+
 	// if collection gets something worth submitting,
 	// it's sent to utils.getObject here.
 	function redirect(code){

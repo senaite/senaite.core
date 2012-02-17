@@ -34,7 +34,7 @@
 				<tal:options repeat="position view/getAvailablePositions">
 					<option tal:attributes="value position" tal:content="position"/>
 				</tal:options>
-				<option value="new" tal:content="string:New" i18n:translate=""/>
+				<option value="new" i18n:translate="">New</option>
 			</select>
 		</div>
 		<span id="worksheet_add_duplicate_ars" tal:content="structure view/ARs/contents_table"/>
@@ -57,9 +57,8 @@
 			rows python:len(remarks.splitlines());
 			rows python:rows > 5 and rows or 5;">
 			<fieldset>
-				<legend i18n:translate="">
-					<span i18n:translate="">Remarks</span>
-					<span i18n:translate="" i18n:domain="plone">History</span>
+				<legend>
+					<span i18n:translate="">Remarks History</span>
 				</legend>
 				<textarea id="RemarksHistory" cols="40" readonly="readonly"
 					tal:attributes="rows rows"

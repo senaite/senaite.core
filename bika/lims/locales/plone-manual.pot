@@ -1,0 +1,80 @@
+# this file is maintained manually.
+# contains bika translations from the plone domain.
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Bika-LIMS\n"
+"POT-Creation-Date: 2012-01-01 23:11+0000\n"
+"PO-Revision-Date: 2012-01-01 23:11+0000\n"
+"Last-Translator: Bika <bikasupport@bikalabs.com>\n"
+"Language-Team: Bika <bikasupport@bikalabs.com>\n\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+msgid "label_schema_Accounting"
+msgstr ""
+
+msgid "label_schema_Address"
+msgstr ""
+
+msgid "label_schema_Analysis"
+msgstr ""
+
+msgid "label_schema_Analyses"
+msgstr ""
+
+msgid "label_schema_Bank details"
+msgstr ""
+
+msgid "label_schema_Calculation"
+msgstr ""
+
+msgid "label_schema_Dates"
+msgstr ""
+
+msgid "label_schema_Description"
+msgstr ""
+
+msgid "label_schema_Email Telephone Fax"
+msgstr ""
+
+msgid "label_schema_ID Server"
+msgstr ""
+
+msgid "label_schema_Labels"
+msgstr ""
+
+msgid "label_schema_Layout"
+msgstr ""
+
+msgid "label_schema_Location"
+msgstr ""
+
+msgid "label_schema_Method"
+msgstr ""
+
+msgid "label_schema_Partition Setup"
+msgstr ""
+
+msgid "label_schema_Preferences"
+msgstr ""
+
+msgid "label_schema_Publication preference"
+msgstr ""
+
+msgid "label_schema_Reference Results"
+msgstr ""
+
+msgid "label_schema_Result Options"
+msgstr ""
+
+msgid "label_schema_Results Reports"
+msgstr ""
+
+msgid "label_schema_Security"
+msgstr ""
+
+msgid "label_schema_Uncertainties"
+msgstr ""

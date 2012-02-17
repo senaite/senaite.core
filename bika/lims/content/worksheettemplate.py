@@ -9,13 +9,13 @@ from bika.lims.browser.widgets import ServicesWidget
 from bika.lims.browser.widgets import WorksheetTemplateLayoutWidget
 from bika.lims.config import ANALYSIS_TYPES, PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
-from bika.lims import bikaMessageFactory as _
+from bika.lims import PMF, bikaMessageFactory as _
 from zope.interface import implements
 import sys
 
 schema = BikaSchema.copy() + Schema((
     RecordsField('Layout',
-        schemata = 'Layout',
+        schemata = PMF('Layout'),
         required = 1,
         type = 'templateposition',
         subfields = ('pos', 'type', 'blank_ref', 'control_ref', 'dup'),
@@ -35,7 +35,7 @@ schema = BikaSchema.copy() + Schema((
         )
     ),
     ReferenceField('Service',
-        schemata = 'Analyses',
+        schemata = PMF('Analyses'),
         required = 1,
         multiValued = 1,
         allowed_types = ('AnalysisService',),
@@ -47,7 +47,7 @@ schema = BikaSchema.copy() + Schema((
         )
     ),
     ReferenceField('Instrument',
-        schemata = _("Description"),
+        schemata = PMF("Description"),
         required = 0,
         vocabulary_display_path_bound = sys.maxint,
         vocabulary = 'getInstruments',
@@ -68,10 +68,10 @@ schema = BikaSchema.copy() + Schema((
     ),
 ))
 
-schema['title'].schemata = 'Description'
+schema['title'].schemata = PMF('Description')
 schema['title'].widget.visible = True
 
-schema['description'].schemata = 'Description'
+schema['description'].schemata = PMF('Description')
 schema['description'].widget.visible = True
 
 

@@ -15,11 +15,11 @@ from zope.interface import implements
 from zope.site.hooks import getSite
 from zExceptions import Redirect
 import sys,re
-from bika.lims import bikaMessageFactory as _
+from bika.lims import PMF, bikaMessageFactory as _
 
 schema = BikaSchema.copy() + Schema((
     InterimFieldsField('InterimFields',
-        schemata = 'Calculation',
+        schemata = PMF('Calculation'),
         widget = BikaRecordsWidget(
             label = _("Calculation Interim Fields"),
             description =_("Define interim fields such as vessel mass, dilution factors, "
@@ -29,7 +29,7 @@ schema = BikaSchema.copy() + Schema((
         )
     ),
     HistoryAwareReferenceField('DependentServices',
-        schemata = 'Calculation',
+        schemata = PMF('Calculation'),
         required = 1,
         multiValued = 1,
         vocabulary_display_path_bound = sys.maxint,
@@ -43,7 +43,7 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     TextField('Formula',
-        schemata = 'Calculation',
+        schemata = PMF('Calculation'),
         validators = ('formulavalidator',),
         default_content_type = 'text/plain',
         allowable_content_types = ('text/plain',),
@@ -63,9 +63,9 @@ schema = BikaSchema.copy() + Schema((
     ),
 ))
 schema['title'].widget.visible = True
-schema['title'].schemata = 'Description'
+schema['title'].schemata = PMF('Description')
 schema['description'].widget.visible = True
-schema['description'].schemata = 'Description'
+schema['description'].schemata = PMF('Description')
 
 class Calculation(BaseFolder, HistoryAwareMixin):
     security = ClassSecurityInfo()

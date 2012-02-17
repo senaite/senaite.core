@@ -1,0 +1,543 @@
+# this file is maintained manually.
+# contains bika translations from the plone domain.
+# Translators:
+msgid ""
+msgstr ""
+"Project-Id-Version: Bika-LIMS\n"
+"POT-Creation-Date: 2012-02-21 17:06+0000\n"
+"PO-Revision-Date: 2012-02-18 12:52+0000\n"
+"Last-Translator: lemoene Smit <admin@bikalabs.com>\n"
+"Language-Team: Bika <bikasupport@bikalabs.com>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1)\n"
+"Language-Code: en\n"
+"Language-Name: English\n"
+"Preferred-Encodings: utf-8 latin1\n"
+"Domain: DOMAIN\n"
+"Report-Msgid-Bugs-To: http://github.com/bikalabs/Bika-LIMS/issues\n"
+"Language: en\n"
+
+#: ../profiles/default/types/ARProfile.xml
+msgid "AR Profile"
+msgstr "[ȦŘ Ƥřǿƒīŀḗ ǈǅ ϵſϱǈϕϰϐ]"
+
+#: ../profiles/default/types/ARProfiles.xml
+msgid "AR Profiles"
+msgstr "[ȦŘ Ƥřǿƒīŀḗş ſϵ ϐǅ鶱ǈıϕΰ衋]"
+
+#: ../profiles/default/types/Worksheet.xml
+msgid "Add Analyses"
+msgstr "[Ȧḓḓ Ȧƞȧŀẏşḗş ΰϑϐ 鶱鶱靐ϐϵϰ]"
+
+#: ../profiles/default/types/Worksheet.xml
+msgid "Add Blank Reference"
+msgstr "[Ȧḓḓ Ɓŀȧƞķ Řḗƒḗřḗƞƈḗ ϱǈϐ ẛϱϱǅ鶱 ϕ]"
+
+#: ../profiles/default/types/Worksheet.xml
+msgid "Add Control Reference"
+msgstr "[Ȧḓḓ Ƈǿƞŧřǿŀ Řḗƒḗřḗƞƈḗ ϕǈϐ ǋΐϕΰǲ鶱]"
+
+#: ../profiles/default/types/Worksheet.xml
+msgid "Add Duplicate"
+msgstr "[Ȧḓḓ Ḓŭƥŀīƈȧŧḗ ǈϰǲ ϐǈ衋ςǲΐϰ]"
+
+#: ../profiles/default/types/Reports.xml
+msgid "Administration"
+msgstr "[Ȧḓḿīƞīşŧřȧŧīǿƞ ϑϖΰıǈϱςΰϑ衋ϖϐ]"
+
+#: ../profiles/default/types/ReferenceSample.xml
+msgid "Analyses"
+msgstr "[Ȧƞȧŀẏşḗş ϑǲς鶱ΐςΐǈ]"
+
+#: ../profiles/default/types/Analysis.xml
+msgid "Analysis"
+msgstr "[Ȧƞȧŀẏşīş ϱẛϖςϰϕ鶱ϵ]"
+
+#: ../profiles/default/controlpanel.xml
+#: ../profiles/default/types/AnalysisCategories.xml
+msgid "Analysis Categories"
+msgstr "[Ȧƞȧŀẏşīş Ƈȧŧḗɠǿřīḗş ϵǲΐǋſϵϑ鶱 衋ϖ]"
+
+#: ../profiles/default/types/AnalysisCategory.xml
+msgid "Analysis Category"
+msgstr "[Ȧƞȧŀẏşīş Ƈȧŧḗɠǿřẏ ǋıǲϵ鶱ϱϐ靐 ǲϐΰ]"
+
+#: ../profiles/default/types/AnalysisRequest.xml
+msgid "Analysis Request"
+msgstr "[Ȧƞȧŀẏşīş Řḗɋŭḗşŧ ǅςǈςϰϑϱΐ 衋ϑ]"
+
+#: ../profiles/default/controlpanel.xml
+msgid "Analysis Request Profiles"
+msgstr "[Ȧƞȧŀẏşīş Řḗɋŭḗşŧ Ƥřǿƒīŀḗş ǈẛẛΐϰϑΐϰ 靐ǋ]"
+
+#: ../profiles/default/actions.xml
+#: ../profiles/default/types/AnalysisRequestsFolder.xml
+#: ../profiles/default/types/Client.xml
+msgid "Analysis Requests"
+msgstr "[Ȧƞȧŀẏşīş Řḗɋŭḗşŧş ϑϵςϵǲǲ靐ς 靐鶱靐]"
+
+#: ../profiles/default/types/AnalysisService.xml
+msgid "Analysis Service"
+msgstr "[Ȧƞȧŀẏşīş Şḗřṽīƈḗ ſǅϕ鶱ϐϕϐϰ ϵϐ]"
+
+#: ../profiles/default/controlpanel.xml
+#: ../profiles/default/types/AnalysisServices.xml
+msgid "Analysis Services"
+msgstr "[Ȧƞȧŀẏşīş Şḗřṽīƈḗş ıſϖǋϐǅϖϖ ϵ鶱ǋ]"
+
+#: ../profiles/default/types/AnalysisSpec.xml
+msgid "Analysis Specification"
+msgstr "[Ȧƞȧŀẏşīş Şƥḗƈīƒīƈȧŧīǿƞ ǅ靐ǲı鶱ı衋ǈ 衋鶱]"
+
+#: ../profiles/default/controlpanel.xml
+#: ../profiles/default/types/AnalysisSpecs.xml
+msgid "Analysis Specifications"
+msgstr "[Ȧƞȧŀẏşīş Şƥḗƈīƒīƈȧŧīǿƞş ſϵΰϕ衋靐ẛϖ ϱ鶱]"
+
+#: ../profiles/default/types/Client.xml
+msgid "Analysis Specs"
+msgstr "[Ȧƞȧŀẏşīş Şƥḗƈş ϰ衋ǲǅǋϖǋ鶱 ϰıΰ]"
+
+#: ../profiles/default/types/Attachment.xml
+msgid "Attachment"
+msgstr "[Ȧŧŧȧƈħḿḗƞŧ ΐΰϕϕϑ靐ΰΐ靐ϕ]"
+
+#: ../profiles/default/types/AttachmentType.xml
+msgid "Attachment Type"
+msgstr "[Ȧŧŧȧƈħḿḗƞŧ Ŧẏƥḗ ϵϖϱ靐ϐẛǲ鶱鶱鶱]"
+
+#: ../profiles/default/controlpanel.xml
+#: ../profiles/default/types/AttachmentTypes.xml
+msgid "Attachment Types"
+msgstr "[Ȧŧŧȧƈħḿḗƞŧ Ŧẏƥḗş ΰςẛ衋ϐ衋ΐ鶱ǋϵ]"
+
+#: ../profiles/default/types/Client.xml
+msgid "Attachments"
+msgstr "[Ȧŧŧȧƈħḿḗƞŧş 鶱ſ鶱ǈϕςϑſϵſǋ]"
+
+#: ../profiles/default/types/BikaSetup.xml
+msgid "Bika Setup"
+msgstr "[Ɓīķȧ Şḗŧŭƥ ſϑıϱ ſϐı鶱ϵ]"
+
+#: ../profiles/default/types/Calculation.xml
+msgid "Calculation"
+msgstr "[Ƈȧŀƈŭŀȧŧīǿƞ ϵ衋ΐϑẛ鶱ϕΐ靐ϰϕ]"
+
+#: ../profiles/default/controlpanel.xml
+#: ../profiles/default/types/Calculations.xml
+msgid "Calculations"
+msgstr "[Ƈȧŀƈŭŀȧŧīǿƞş ΐ鶱ǲϖǈΰǅııſ]"
+
+#: ../profiles/default/types/Client.xml
+msgid "Client"
+msgstr "[Ƈŀīḗƞŧ ςſΐſϑ靐]"
+
+#: ../profiles/default/actions.xml
+#: ../profiles/default/types/ClientFolder.xml
+msgid "Clients"
+msgstr "[Ƈŀīḗƞŧş ΐϕϰıϕẛ鶱]"
+
+#: ../profiles/default/types/Client.xml
+#: ../profiles/default/types/ReferenceSupplier.xml
+msgid "Contacts"
+msgstr "[Ƈǿƞŧȧƈŧş ϖ靐靐ǲϱςǲΰ]"
+
+#: ../profiles/default/types/Container.xml
+msgid "Container"
+msgstr "[Ƈǿƞŧȧīƞḗř ſǋǅςϱ靐ſϱ鶱]"
+
+#: ../profiles/default/types/ContainerType.xml
+msgid "Container Type"
+msgstr "[Ƈǿƞŧȧīƞḗř Ŧẏƥḗ ς衋ϑǲΐςſǅǋ ϰ靐]"
+
+#: ../profiles/default/controlpanel.xml
+#: ../profiles/default/types/ContainerTypes.xml
+msgid "Container Types"
+msgstr "[Ƈǿƞŧȧīƞḗř Ŧẏƥḗş ϐϕıǋϑǋ靐ϕϕ]"
+
+#: ../profiles/default/controlpanel.xml
+#: ../profiles/default/types/Containers.xml
+msgid "Containers"
+msgstr "[Ƈǿƞŧȧīƞḗřş 靐衋ϰ鶱靐ϵΐΐϖϕ]"
+
+#: ../profiles/default/types/Department.xml
+msgid "Department"
+msgstr "[Ḓḗƥȧřŧḿḗƞŧ ϵ鶱ſ靐ϖΰ靐鶱ǋſ]"
+
+#: ../profiles/default/types/Departments.xml
+msgid "Departments"
+msgstr "[Ḓḗƥȧřŧḿḗƞŧş ǋϖǲϐςǈǲϑǋς鶱]"
+
+#: ../profiles/default/types/DuplicateAnalysis.xml
+msgid "Duplicate Analysis"
+msgstr "[Ḓŭƥŀīƈȧŧḗ Ȧƞȧŀẏşīş ǋϰſϵıϖϐϐǅ]"
+
+#: ../profiles/default/types/Pricelist.xml
+msgid "Email pricelist"
+msgstr "[Ḗḿȧīŀ ƥřīƈḗŀīşŧ ǈ靐ϑ靐ϰ ǲΰϵς]"
+
+#: ../profiles/default/types/Worksheet.xml
+msgid "Export"
+msgstr "[Ḗẋƥǿřŧ ıϕϱϐǈϖ]"
+
+#: ../profiles/default/types/InvoiceBatch.xml
+msgid "Export batch"
+msgstr "[Ḗẋƥǿřŧ ƀȧŧƈħ ΰ鶱ſǈẛϐ ǈϕǅ]"
+
+#: ../profiles/default/actions.xml
+msgid "Extracts"
+msgstr "[Ḗẋŧřȧƈŧş ϑϖǋΐϱϰϱϵ]"
+
+#: ../profiles/default/actions.xml
+msgid "Import"
+msgstr "[Īḿƥǿřŧ ϵſ衋ΐıǋ]"
+
+#: ../profiles/default/types/Client.xml
+msgid "Imports"
+msgstr "[Īḿƥǿřŧş ϐǅ靐ϵǲǅſ]"
+
+#: ../profiles/default/types/Instrument.xml
+msgid "Instrument"
+msgstr "[Īƞşŧřŭḿḗƞŧ ΐſϱẛϵΰ衋鶱衋ǈ]"
+
+#: ../profiles/default/controlpanel.xml
+#: ../profiles/default/types/Instruments.xml
+msgid "Instruments"
+msgstr "[Īƞşŧřŭḿḗƞŧş ϐςǋϖ衋ǈſǅϑΰϰ]"
+
+#: ../profiles/default/types/Invoice.xml
+msgid "Invoice"
+msgstr "[Īƞṽǿīƈḗ ϖ鶱ϵıςϖϐ]"
+
+#: ../profiles/default/types/InvoiceBatch.xml
+msgid "Invoice batch"
+msgstr "[Īƞṽǿīƈḗ ƀȧŧƈħ ϐϰϕǋǈϰı ϵıς]"
+
+#: ../profiles/default/types/InvoiceFolder.xml
+msgid "Invoice batches"
+msgstr "[Īƞṽǿīƈḗ ƀȧŧƈħḗş 靐ϕſǲϵǅϰ ϵϐ]"
+
+#: ../profiles/default/types/InvoiceBatch.xml
+#: ../profiles/default/types/InvoiceFolder.xml
+msgid "Invoices"
+msgstr "[Īƞṽǿīƈḗş 靐ϵǈǋẛΐǅ靐]"
+
+#: ../profiles/default/actions.xml
+msgid "LIMS"
+msgstr "[ĿĪḾŞ ϱſϐϰ]"
+
+#: ../profiles/default/types/LabContact.xml
+msgid "Lab Contact"
+msgstr "[Ŀȧƀ Ƈǿƞŧȧƈŧ ſςΐ ϱſϵϐϑ靐ǅ]"
+
+#: ../profiles/default/controlpanel.xml
+#: ../profiles/default/types/LabContacts.xml
+msgid "Lab Contacts"
+msgstr "[Ŀȧƀ Ƈǿƞŧȧƈŧş ǈı靐 ıϵςǅǅẛ]"
+
+#: ../profiles/default/controlpanel.xml
+msgid "Lab Departments"
+msgstr "[Ŀȧƀ Ḓḗƥȧřŧḿḗƞŧş ϰϱı ǅǲϰΰſϰ]"
+
+#: ../profiles/default/controlpanel.xml
+#: ../profiles/default/types/LabProducts.xml
+msgid "Lab Products"
+msgstr "[Ŀȧƀ Ƥřǿḓŭƈŧş ǈ衋ΐ ϰ靐ıϱΰǈ]"
+
+#: ../profiles/default/types/Laboratory.xml
+msgid "Laboratory"
+msgstr "[Ŀȧƀǿřȧŧǿřẏ 衋ǈǈϐǅϱ靐ǅϑς]"
+
+#: ../profiles/default/controlpanel.xml
+msgid "Laboratory Information"
+msgstr "[Ŀȧƀǿřȧŧǿřẏ Īƞƒǿřḿȧŧīǿƞ ǲςςıϕǅǋǲϰ鶱]"
+
+#: ../profiles/default/types/AnalysisRequest.xml
+#: ../profiles/default/types/Sample.xml
+#: ../profiles/default/types/SamplePartition.xml
+msgid "Large Sticker"
+msgstr "[Ŀȧřɠḗ Şŧīƈķḗř 衋ϱΰ鶱ſ ẛϖϖϕǅ]"
+
+#: ../profiles/default/types/AnalysisRequest.xml
+#: ../profiles/default/types/AnalysisService.xml
+#: ../profiles/default/types/ReferenceSample.xml
+msgid "Log"
+msgstr "[Ŀǿɠ ϖẛς]"
+
+#: ../profiles/default/types/LogEntry.xml
+msgid "Log entry"
+msgstr "[Ŀǿɠ ḗƞŧřẏ ΐǲ鶱 ϱϱΐ鶱衋]"
+
+#: ../profiles/default/types/Contact.xml
+msgid "Login details"
+msgstr "[Ŀǿɠīƞ ḓḗŧȧīŀş ǅςΐϑ鶱 ϕǲıΰϕ]"
+
+#: ../profiles/default/types/AnalysisRequest.xml
+#: ../profiles/default/types/Worksheet.xml
+msgid "Manage Results"
+msgstr "[Ḿȧƞȧɠḗ Řḗşŭŀŧş 靐ςΰ鶱ςǋ ϵϱϖΐϑ]"
+
+#: ../profiles/default/types/Method.xml
+msgid "Method"
+msgstr "[Ḿḗŧħǿḓ 鶱ϱϕǈςϕ]"
+
+#: ../profiles/default/controlpanel.xml
+#: ../profiles/default/types/Methods.xml
+msgid "Methods"
+msgstr "[Ḿḗŧħǿḓş ϑϖϐǋǋ衋ǈ]"
+
+#: ../profiles/default/actions.xml
+#: ../profiles/default/types/Client.xml
+msgid "Orders"
+msgstr "[Ǿřḓḗřş ΐǋıǲϑǈ]"
+
+#: ../profiles/default/types/Preservation.xml
+msgid "Preservation"
+msgstr "[Ƥřḗşḗřṽȧŧīǿƞ ϖǈϖ靐ǅϐϰϰſϕ]"
+
+#: ../profiles/default/controlpanel.xml
+#: ../profiles/default/types/Preservations.xml
+msgid "Preservations"
+msgstr "[Ƥřḗşḗřṽȧŧīǿƞş ςẛǋϑ鶱ǅǲϰıϵǈ]"
+
+#: ../profiles/default/types/Pricelist.xml
+msgid "Pricelist"
+msgstr "[Ƥřīƈḗŀīşŧ ϰǲςϑ衋ϖϖ靐ǲ]"
+
+#: ../profiles/default/types/PricelistFolder.xml
+msgid "Pricelists"
+msgstr "[Ƥřīƈḗŀīşŧş 衋靐ıǅǈſϱǅς靐]"
+
+#: ../profiles/default/actions.xml
+msgid "Prices"
+msgstr "[Ƥřīƈḗş ϖϑΰẛſẛ]"
+
+#: ../profiles/default/types/InvoiceBatch.xml
+msgid "Print batch"
+msgstr "[Ƥřīƞŧ ƀȧŧƈħ ϖ鶱ǈϵϰ 衋ϕϵϰ衋]"
+
+#: ../profiles/default/types/Invoice.xml
+msgid "Print invoice"
+msgstr "[Ƥřīƞŧ īƞṽǿīƈḗ ϑϑǋſǈ ϵςς靐ϕ]"
+
+#: ../profiles/default/types/SupplyOrder.xml
+msgid "Print order"
+msgstr "[Ƥřīƞŧ ǿřḓḗř ııςıϰ ϰǈΰ靐ς]"
+
+#: ../profiles/default/types/Pricelist.xml
+msgid "Print pricelist"
+msgstr "[Ƥřīƞŧ ƥřīƈḗŀīşŧ ϑǋϖϱẛ ıΐΐϑ]"
+
+#: ../profiles/default/types/Reports.xml
+msgid "Productivity"
+msgstr "[Ƥřǿḓŭƈŧīṽīŧẏ ϐǲǈ鶱ǲϵϰẛ靐ϖ]"
+
+#: ../profiles/default/types/Client.xml
+msgid "Profiles"
+msgstr "[Ƥřǿƒīŀḗş ẛǅ靐靐ſϱ靐ǅ]"
+
+#: ../profiles/default/types/Reports.xml
+msgid "Quality Control"
+msgstr "[Ɋŭȧŀīŧẏ Ƈǿƞŧřǿŀ ϖı衋ẛϖǈΐ 衋ϐ]"
+
+#: ../profiles/default/actions.xml
+msgid "Queries"
+msgstr "[Ɋŭḗřīḗş ǈǅ鶱鶱ǲǋϑ]"
+
+#: ../profiles/default/types/ReferenceAnalysis.xml
+msgid "Reference Analysis"
+msgstr "[Řḗƒḗřḗƞƈḗ Ȧƞȧŀẏşīş ϰϕǋΰǋ鶱ϱǲς]"
+
+#: ../profiles/default/types/ReferenceDefinition.xml
+msgid "Reference Definition"
+msgstr "[Řḗƒḗřḗƞƈḗ Ḓḗƒīƞīŧīǿƞ ǈϰ靐靐衋ǲΐς鶱 ẛϑ]"
+
+#: ../profiles/default/controlpanel.xml
+#: ../profiles/default/types/ReferenceDefinitions.xml
+msgid "Reference Definitions"
+msgstr "[Řḗƒḗřḗƞƈḗ Ḓḗƒīƞīŧīǿƞş ϱϐϱẛϰ鶱鶱ϕǲ]"
+
+#: ../profiles/default/types/ReferenceManufacturer.xml
+msgid "Reference Manufacturer"
+msgstr "[Řḗƒḗřḗƞƈḗ Ḿȧƞŭƒȧƈŧŭřḗř ǲǲϵǅ靐ıϵıǈ ΰ]"
+
+#: ../profiles/default/controlpanel.xml
+#: ../profiles/default/types/ReferenceManufacturers.xml
+msgid "Reference Manufacturers"
+msgstr "[Řḗƒḗřḗƞƈḗ Ḿȧƞŭƒȧƈŧŭřḗřş ǲΰΰǈǋ衋ϖ鶱ǋ 靐]"
+
+#: ../profiles/default/types/ReferenceSample.xml
+msgid "Reference Results"
+msgstr "[Řḗƒḗřḗƞƈḗ Řḗşŭŀŧş ς鶱衋鶱ǈςϐ靐ϖ ẛ鶱]"
+
+#: ../profiles/default/types/ReferenceSample.xml
+msgid "Reference Sample"
+msgstr "[Řḗƒḗřḗƞƈḗ Şȧḿƥŀḗ 靐ϐ靐ſẛǲ衋衋ΰ 衋]"
+
+#: ../profiles/default/actions.xml
+#: ../profiles/default/types/ReferenceSamplesFolder.xml
+#: ../profiles/default/types/ReferenceSupplier.xml
+msgid "Reference Samples"
+msgstr "[Řḗƒḗřḗƞƈḗ Şȧḿƥŀḗş ǋıǅſϕϵϑϰǈ ϰϑ]"
+
+#: ../profiles/default/types/ReferenceSupplier.xml
+msgid "Reference Supplier"
+msgstr "[Řḗƒḗřḗƞƈḗ Şŭƥƥŀīḗř ϕǈǅẛϐſϑǋΐ]"
+
+#: ../profiles/default/controlpanel.xml
+#: ../profiles/default/types/ReferenceSuppliers.xml
+msgid "Reference Suppliers"
+msgstr "[Řḗƒḗřḗƞƈḗ Şŭƥƥŀīḗřş ǋϰϑ鶱ǋϑǈϵẛ ſ]"
+
+#: ../profiles/default/types/RejectAnalysis.xml
+msgid "Reject Analysis"
+msgstr "[Řḗĵḗƈŧ Ȧƞȧŀẏşīş ϱſΐẛΐϵ ΰςϕ]"
+
+#: ../profiles/default/actions.xml
+#: ../profiles/default/types/Reports.xml
+msgid "Reports"
+msgstr "[Řḗƥǿřŧş 靐ϵǲΰϕϱǋ]"
+
+#: ../profiles/default/types/AnalysisRequest.xml
+msgid "Results not requested"
+msgstr "[Řḗşŭŀŧş ƞǿŧ řḗɋŭḗşŧḗḓ ϰϱϱΐϵǈϕ ςΐ]"
+
+#: ../profiles/default/types/Sample.xml
+msgid "Sample"
+msgstr "[Şȧḿƥŀḗ ǲΐϑϕ衋ſ]"
+
+#: ../profiles/default/types/SamplePartition.xml
+msgid "Sample Partition"
+msgstr "[Şȧḿƥŀḗ Ƥȧřŧīŧīǿƞ 靐ǲ衋ϑıϖ ǲǲϑς]"
+
+#: ../profiles/default/types/SamplePoint.xml
+msgid "Sample Point"
+msgstr "[Şȧḿƥŀḗ Ƥǿīƞŧ 靐ϱſ衋ǈẛ ϕϖΰ]"
+
+#: ../profiles/default/controlpanel.xml
+#: ../profiles/default/types/SamplePoints.xml
+msgid "Sample Points"
+msgstr "[Şȧḿƥŀḗ Ƥǿīƞŧş ϖſϕΐ衋鶱 ς鶱ıϖ]"
+
+#: ../profiles/default/types/SampleType.xml
+msgid "Sample Type"
+msgstr "[Şȧḿƥŀḗ Ŧẏƥḗ ϰ鶱ϐϖǋẛ ẛ靐衋ΐ]"
+
+#: ../profiles/default/controlpanel.xml
+#: ../profiles/default/types/SampleTypes.xml
+msgid "Sample Types"
+msgstr "[Şȧḿƥŀḗ Ŧẏƥḗş ϐϐΰϐ靐ǋ ǲϵϰ]"
+
+#: ../profiles/default/actions.xml
+#: ../profiles/default/types/Client.xml
+msgid "Samples"
+msgstr "[Şȧḿƥŀḗş ϐẛǅς鶱靐ſ]"
+
+#: ../profiles/default/types/SamplesFolder.xml
+msgid "SamplesFolder"
+msgstr "[ŞȧḿƥŀḗşƑǿŀḓḗř ϑϵ衋ϵǅϖϰΰǈϱǅ]"
+
+#: ../profiles/default/types/AnalysisRequest.xml
+#: ../profiles/default/types/Sample.xml
+#: ../profiles/default/types/SamplePartition.xml
+msgid "Small Sticker"
+msgstr "[Şḿȧŀŀ Şŧīƈķḗř ϐ靐靐ǋΰ ϑǅ鶱ϑϰ]"
+
+#: ../profiles/default/types/ReferenceSample.xml
+msgid "Sticker"
+msgstr "[Şŧīƈķḗř ϱ衋ϐſǋẛϰ]"
+
+#: ../profiles/default/actions.xml
+msgid "Suppliers"
+msgstr "[Şŭƥƥŀīḗřş ϰϑϰϰǈǈΐςǋ]"
+
+#: ../profiles/default/types/SupplyOrder.xml
+msgid "Supply Order"
+msgstr "[Şŭƥƥŀẏ Ǿřḓḗř ϕΐǲςϵϖ ςΐϵ]"
+
+#: ../profiles/default/types/Worksheet.xml
+msgid "Worksheet"
+msgstr "[Ẇǿřķşħḗḗŧ ϕ衋ſ鶱ǋϕ衋ϵϑ]"
+
+#: ../profiles/default/types/WorksheetTemplate.xml
+msgid "Worksheet Template"
+msgstr "[Ẇǿřķşħḗḗŧ Ŧḗḿƥŀȧŧḗ 衋ϖǋςẛǈϖΰ靐]"
+
+#: ../profiles/default/controlpanel.xml
+#: ../profiles/default/types/WorksheetTemplates.xml
+msgid "Worksheet Templates"
+msgstr "[Ẇǿřķşħḗḗŧ Ŧḗḿƥŀȧŧḗş ǈ鶱ϱϵϱϱϕ靐ϕ ϑ]"
+
+#: ../profiles/default/actions.xml
+#: ../profiles/default/types/WorksheetFolder.xml
+msgid "Worksheets"
+msgstr "[Ẇǿřķşħḗḗŧş ǲǅϖΐẛΰǅϖϱϰ]"
+
+msgid "label_schema_Accounting"
+msgstr "[ŀȧƀḗŀ_şƈħḗḿȧ_Ȧƈƈǿŭƞŧīƞɠ ǈΐǋǅΰΐ衋ſẛϰϖ]"
+
+msgid "label_schema_Address"
+msgstr "[ŀȧƀḗŀ_şƈħḗḿȧ_Ȧḓḓřḗşş ı衋ϱΐΰϐϱſ靐ǋς鶱]"
+
+msgid "label_schema_Analyses"
+msgstr "[ŀȧƀḗŀ_şƈħḗḿȧ_Ȧƞȧŀẏşḗş ϱẛϵϱΐΐǅςſϑ]"
+
+msgid "label_schema_Analysis"
+msgstr "[ŀȧƀḗŀ_şƈħḗḿȧ_Ȧƞȧŀẏşīş ϐϕ靐靐ϐϖΰǅ靐ΐ]"
+
+msgid "label_schema_Bank details"
+msgstr "[ŀȧƀḗŀ_şƈħḗḿȧ_Ɓȧƞķ ḓḗŧȧīŀş ϰϐΐϖΐſϑǲſ靐ϕ]"
+
+msgid "label_schema_Calculation"
+msgstr "[ŀȧƀḗŀ_şƈħḗḿȧ_Ƈȧŀƈŭŀȧŧīǿƞ ẛǋϖϐϵ鶱ǅ鶱ϐẛ]"
+
+msgid "label_schema_Dates"
+msgstr "[ŀȧƀḗŀ_şƈħḗḿȧ_Ḓȧŧḗş ςıΐſ靐ΐϐǅǋǅ]"
+
+msgid "label_schema_Description"
+msgstr "[ŀȧƀḗŀ_şƈħḗḿȧ_Ḓḗşƈřīƥŧīǿƞ ΰ衋鶱ǲϕϵϵϑϱǅ]"
+
+msgid "label_schema_Email Telephone Fax"
+msgstr "[ŀȧƀḗŀ_şƈħḗḿȧ_Ḗḿȧīŀ Ŧḗŀḗƥħǿƞḗ Ƒȧẋ ẛǅ靐ϑϵςϖǋϰſǅ]"
+
+msgid "label_schema_ID Server"
+msgstr "[ŀȧƀḗŀ_şƈħḗḿȧ_ĪḒ Şḗřṽḗř ϐΰϱǲΐǈΐıΰϖϱ]"
+
+msgid "label_schema_Labels"
+msgstr "[ŀȧƀḗŀ_şƈħḗḿȧ_Ŀȧƀḗŀş ǈΐǋΐſ衋ſΐǅıſ]"
+
+msgid "label_schema_Layout"
+msgstr "[ŀȧƀḗŀ_şƈħḗḿȧ_Ŀȧẏǿŭŧ ϖςςıϕϖ鶱ıϖϑ鶱]"
+
+msgid "label_schema_Location"
+msgstr "[ŀȧƀḗŀ_şƈħḗḿȧ_Ŀǿƈȧŧīǿƞ ẛΰΰϱϐǅǲ靐ǲẛ]"
+
+msgid "label_schema_Method"
+msgstr "[ŀȧƀḗŀ_şƈħḗḿȧ_Ḿḗŧħǿḓ ϐϵϖ衋ΰϑΐǋϱϐΐ]"
+
+msgid "label_schema_Partition Setup"
+msgstr "[ŀȧƀḗŀ_şƈħḗḿȧ_Ƥȧřŧīŧīǿƞ Şḗŧŭƥ ϑǲϰ衋ϕſϱΰΐϑϖ]"
+
+msgid "label_schema_Preferences"
+msgstr "[ŀȧƀḗŀ_şƈħḗḿȧ_Ƥřḗƒḗřḗƞƈḗş ǅ靐ſ靐ſϕϕ鶱ǋΐ]"
+
+msgid "label_schema_Publication preference"
+msgstr "[ŀȧƀḗŀ_şƈħḗḿȧ_Ƥŭƀŀīƈȧŧīǿƞ ƥřḗƒḗřḗƞƈḗ ϰϰςϑ衋衋ẛϵẛΐΐ]"
+
+msgid "label_schema_Reference Results"
+msgstr "[ŀȧƀḗŀ_şƈħḗḿȧ_Řḗƒḗřḗƞƈḗ Řḗşŭŀŧş ǲϱǲſϕǲϵϵǲϱ]"
+
+msgid "label_schema_Result Options"
+msgstr "[ŀȧƀḗŀ_şƈħḗḿȧ_Řḗşŭŀŧ Ǿƥŧīǿƞş 靐ǋΰ鶱ǋϵϰςǲς]"
+
+msgid "label_schema_Results Reports"
+msgstr "[ŀȧƀḗŀ_şƈħḗḿȧ_Řḗşŭŀŧş Řḗƥǿřŧş 鶱衋ǅſǋ鶱ϱϕſǈϱ]"
+
+msgid "label_schema_Security"
+msgstr "[ŀȧƀḗŀ_şƈħḗḿȧ_Şḗƈŭřīŧẏ ϐςϐǈ鶱ϵϱẛϕẛ]"
+
+msgid "label_schema_Uncertainties"
+msgstr "[ŀȧƀḗŀ_şƈħḗḿȧ_Ŭƞƈḗřŧȧīƞŧīḗş ẛΐı鶱ϰςǅϑ靐ΐǋ]"
+

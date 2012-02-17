@@ -14,7 +14,7 @@ from bika.lims.interfaces import IClient
 from zope.interface import implements
 from zope.interface.declarations import alsoProvides
 import sys
-from bika.lims import bikaMessageFactory as _
+from bika.lims import PMF, bikaMessageFactory as _
 
 schema = Organisation.schema.copy() + atapi.Schema((
     atapi.StringField('ClientID',
@@ -25,7 +25,6 @@ schema = Organisation.schema.copy() + atapi.Schema((
     ),
     atapi.BooleanField('MemberDiscountApplies',
         default = False,
-        schemata = 'default',
         write_permission = ManageClients,
         widget = atapi.BooleanWidget(
             label = _("Member discount applies"),
@@ -41,16 +40,16 @@ schema = Organisation.schema.copy() + atapi.Schema((
         ),
     ),
     atapi.LinesField('EmailSubject',
-        schemata = 'preferences',
+        schemata = PMF('Preferences'),
         default = ['ar', ],
         vocabulary = EMAIL_SUBJECT_OPTIONS,
         widget = atapi.MultiSelectionWidget(
-            description = 'Items to be included in email subject lines',
+            description = _('Items to be included in email subject lines'),
             label = _("Email subject line"),
         ),
     ),
     atapi.ReferenceField('DefaultCategory',
-        schemata = 'preferences',
+        schemata = PMF('Preferences'),
         required = 0,
         multiValued = 1,
         vocabulary_display_path_bound = sys.maxint,
@@ -63,7 +62,7 @@ schema = Organisation.schema.copy() + atapi.Schema((
     ),
     atapi.BooleanField('RestrictCategories',
         default = False,
-        schemata = 'preferences',
+        schemata = PMF('Preferences'),
         widget = atapi.BooleanWidget(
             label = _("Restrict client to selected categories"),
         ),

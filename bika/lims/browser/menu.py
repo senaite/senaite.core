@@ -59,7 +59,7 @@ class WorkflowSubMenuItem(WorkflowSubMenuItem):
         state = self.context_state.workflow_state()
         stateTitle = self._currentStateTitle()
 
-        translate = instance.translation_service.translate
+        translate = self.context.translation_service.translate
 
         if workflow.getInfoFor(self.context, 'cancellation_state', '') == 'cancelled':
             title2 = translate(_('Cancelled'))

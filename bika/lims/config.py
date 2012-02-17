@@ -112,8 +112,8 @@ PRICELIST_TYPES = DisplayList((
 ))
 
 CLIENT_TYPES = DisplayList((
-    ('corporate', 'Bulk Discount'),
-    ('noncorporate', 'Standard Price'),
+    ('corporate', _('Bulk Discount')),
+    ('noncorporate', _('Standard Price')),
 ))
 
 ANALYSIS_TYPES = DisplayList((
@@ -140,7 +140,7 @@ EMAIL_SUBJECT_OPTIONS = DisplayList((
     ('ar', _('Analysis Request ID')),
     ('co', _('Order ID')),
     ('cr', _('Client Reference')),
-    ('cs', _('Client Sample ID')),
+    ('cs', _('Client SID')),
 ))
 
 GENDERS = DisplayList((
