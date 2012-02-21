@@ -65,15 +65,17 @@ class AnalysisServicesWorkflowAction(WorkflowAction):
                 message = self.context.translation_service.translate(
                     _('Services ${services} were successfully created.',
                       mapping = {'services': ', '.join(created)}))
+                self.destination_url = self.request.get_header("referer",
+                                                               self.context.absolute_url())
             else:
                 message = self.context.translation_service.translate(
                     _('Analysis request ${service} was successfully created.',
                     mapping = {'service': ', '.join(created)}))
-            self.context.plone_utils.addPortalMessage(message, 'info')
+                self.destination_url = dup.absolute_url() + "/base_edit"
 
-            self.destination_url = self.request.get_header("referer",
-                                   self.context.absolute_url())
+            self.context.plone_utils.addPortalMessage(message, 'info')
             self.request.response.redirect(self.destination_url)
+
         else:
             # default bika_listing.py/WorkflowAction for other transitions
             WorkflowAction.__call__(self)
