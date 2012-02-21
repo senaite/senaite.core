@@ -63,7 +63,8 @@
     type="submit"
     name="delARAttachment:method"
     value=""
-    title="delete"
+    title="Delete attachment"
+    i18n:attributes="title"
     tal:condition="deleteable"/>
 <input type="hidden" name="ARAttachment" value=""
     tal:attributes="value attachment/UID"/>

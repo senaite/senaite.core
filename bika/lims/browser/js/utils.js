@@ -31,8 +31,12 @@ jQuery( function($) {
 
 	$(document).ready(function(){
 
-		jarn.i18n.loadCatalog('bika');
-		_ = jarn.i18n.MessageFactory('bika');
+		if ( ! window.jsi18n) {
+			// jarn.i18n.setTTL(1000); // testing 10 seconds
+			jarn.i18n.loadCatalog('bika');
+			window.jsi18n = jarn.i18n.MessageFactory('bika');
+		}
+		_ = window.jsi18n;
 
 
 		$('body').append('<div id="global-spinner" class="global-spinner" style="display:none"><img id="img-global-spinner" src="spinner.gif" alt="Loading"/></div>');

@@ -253,14 +253,24 @@ class AnalysisRequestViewView(BrowserView):
         """
         bsc = getToolByName(self.context, 'bika_setup_catalog')
         cats = {}
+        restricted = [u.UID() for u in self.context.getRestrictedCategories()]
         for service in bsc(portal_type = "AnalysisService",
                            inactive_state = 'active'):
+            cat = (service.getCategoryUID, service.getCategoryTitle)
+            if restricted and cat[0] not in restricted:
+                continue
             poc = service.getPointOfCapture
             if not cats.has_key(poc): cats[poc] = []
-            cat = (service.getCategoryUID, service.getCategoryTitle)
             if cat not in cats[poc]:
                 cats[poc].append(cat)
         return cats
+
+    def DefaultCategories(self):
+        """ Used in AR add context, to return list of UIDs for
+        automatically-expanded categories.
+        """
+        cats = self.context.getDefaultCategories()
+        return [cat.UID() for cat in cats]
 
     def getDefaultSpec(self):
         """ Returns 'lab' or 'client' to set the initial value of the

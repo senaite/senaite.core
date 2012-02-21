@@ -1,8 +1,7 @@
 jQuery( function($) {
 $(document).ready(function(){
 
-	jarn.i18n.loadCatalog('bika');
-	_ = jarn.i18n.MessageFactory('bika');
+	_ = window.jsi18n;
 
 // PartitionSetup RecordsWidget AJAX things
 

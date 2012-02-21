@@ -1,8 +1,7 @@
 jQuery( function($) {
 $(document).ready(function(){
 
-	jarn.i18n.loadCatalog('bika');
-	_ = jarn.i18n.MessageFactory('bika');
+	_ = window.jsi18n;
 
 	// return a reference from the Sample popup window back into the widget
 	// and populate the form with this sample's data

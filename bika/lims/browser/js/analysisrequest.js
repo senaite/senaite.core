@@ -158,9 +158,9 @@ jQuery( function($) {
 					});
 				});
 				if (affected_services.length > 0) {
-					$("#confirm_add_deps").after(
-						"<div id='messagebox' style='display:none' title='" + window.jsi18n("Service dependencies") + "'>"+
-						window.jsi18n("<p>${service} requires the following services to be selected:</p><br/><p>${deps}</p><br/><p>Do you want to apply these selections now?</p>",
+					$("body").append(
+						"<div id='messagebox' style='display:none' title='" + _("Service dependencies") + "'>"+
+						_("<p>${service} requires the following services to be selected:</p><br/><p>${deps}</p><br/><p>Do you want to apply these selections now?</p>",
 							{service:$(element).attr('title'),
 							 deps: affected_titles.join("<br/>")})+"</div>");
 						function add_Yes(){
@@ -200,9 +200,11 @@ jQuery( function($) {
 					if (auto_yes) {
 						add_Yes();
 					} else {
+						yes = _("Yes");
+						no = _("No");
 						$("#messagebox").dialog({width:450, resizable:false, closeOnEscape: false, buttons:{
-									'Yes': add_Yes,
-									'No': add_No
+									yes: add_Yes,
+									no: add_No
 									}});
 					}
 				}
@@ -223,14 +225,16 @@ jQuery( function($) {
 							affected_titles.push(cb.attr('title'));
 						}
 					});
-					$("#confirm_remove_deps").after(
-						"<div id='messagebox' style='display:none' title='" + window.jsi18n("Service dependencies") + "'>"+
-						window.jsi18n("<p>The following services depend on ${service}, and will be unselected if you continue:</p><br/><p>${deps}</p><br/><p>Do you want to remove these selections now?</p>",
+					$("body").append(
+						"<div id='messagebox' style='display:none' title='" + _("Service dependencies") + "'>"+
+						_("<p>The following services depend on ${service}, and will be unselected if you continue:</p><br/><p>${deps}</p><br/><p>Do you want to remove these selections now?</p>",
 							{service:$(element).attr('title'),
 							 deps: affected_titles.join("<br/>")})+"</div>");
+					yes = _("Yes");
+					no = _("No");
 					if (affected_services.length > 0) {
 						$("#messagebox").dialog({width:450, resizable:false, closeOnEscape: false, buttons:{
-							'Yes': function(){
+							yes: function(){
 								$.each(affected_services, function(i,serviceUID){
 									cb = $('input[column="'+column+'"]').filter('#'+serviceUID).attr('checked', false);
 									if ($(cb).val() == $("#getDryMatterService").val()) {
@@ -248,7 +252,7 @@ jQuery( function($) {
 								$(this).dialog("close");
 								$('#messagebox').remove()
 							},
-							'No':function(){
+							no:function(){
 								$(element).attr("checked", true);
 								for(col in remaining_columns){
 									$('input[column="'+remaining_columns[col]+'"]').filter('#'+serviceUID).attr("checked", true);
@@ -346,8 +350,7 @@ jQuery( function($) {
 
 	$(document).ready(function(){
 
-		jarn.i18n.loadCatalog('bika');
-		window.jsi18n = jarn.i18n.MessageFactory('bika');
+		_ = window.jsi18n;
 
 		// DateSampled field is readonly to prevent invalid data entry, so
 		// clicking date_sampled field clears existing values.

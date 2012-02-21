@@ -14,67 +14,67 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 
 msgid "label_schema_Accounting"
-msgstr ""
+msgstr "Accounting"
 
 msgid "label_schema_Address"
-msgstr ""
+msgstr "Address"
 
 msgid "label_schema_Analysis"
-msgstr ""
+msgstr "Analysis"
 
 msgid "label_schema_Analyses"
-msgstr ""
+msgstr "Analyses"
 
 msgid "label_schema_Bank details"
-msgstr ""
+msgstr "Bank details"
 
 msgid "label_schema_Calculation"
-msgstr ""
+msgstr "Calculation"
 
 msgid "label_schema_Dates"
-msgstr ""
+msgstr "Dates"
 
 msgid "label_schema_Description"
-msgstr ""
+msgstr "Description"
 
 msgid "label_schema_Email Telephone Fax"
-msgstr ""
+msgstr "Email Telephone Fax"
 
 msgid "label_schema_ID Server"
-msgstr ""
+msgstr "ID Server"
 
 msgid "label_schema_Labels"
-msgstr ""
+msgstr "Labels"
 
 msgid "label_schema_Layout"
-msgstr ""
+msgstr "Layout"
 
 msgid "label_schema_Location"
-msgstr ""
+msgstr "Location"
 
 msgid "label_schema_Method"
-msgstr ""
+msgstr "Method"
 
 msgid "label_schema_Partition Setup"
-msgstr ""
+msgstr "Partition Setup"
 
 msgid "label_schema_Preferences"
-msgstr ""
+msgstr "Preferences"
 
 msgid "label_schema_Publication preference"
-msgstr ""
+msgstr "Publication preference"
 
 msgid "label_schema_Reference Results"
-msgstr ""
+msgstr "Reference Results"
 
 msgid "label_schema_Result Options"
-msgstr ""
+msgstr "Result Options"
 
 msgid "label_schema_Results Reports"
-msgstr ""
+msgstr "Results Reports"
 
 msgid "label_schema_Security"
-msgstr ""
+msgstr "Security"
 
 msgid "label_schema_Uncertainties"
-msgstr ""
+msgstr "Uncertainties"

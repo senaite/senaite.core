@@ -18,17 +18,6 @@
               expression="" id="++resource++plone.app.jquerytools.form.js"
               insert-after="++resource++plone.app.jquerytools.js" inline="False"/>
 
-   <javascript authenticated="False"
-                cacheable="True"
-                compression="safe"
-                conditionalcomment=""
-                cookable="True"
-                enabled="on"
-                expression=""
-                id="++resource++bika.lims.js/utils.js"
-                inline="False"
-                insert-after="*"/>
-
     <javascript authenticated="False"
                 cacheable="True"
                 compression="safe"
@@ -50,6 +39,17 @@
                 id="++resource++bika.lims.js/jquery.json.js"
                 inline="False"
                 insert-after="*"/>
+
+   <javascript authenticated="False"
+                cacheable="True"
+                compression="safe"
+                conditionalcomment=""
+                cookable="True"
+                enabled="on"
+                expression=""
+                id="++resource++bika.lims.js/utils.js"
+                inline="False"
+                insert-after="jquery.js"/>
 
     <javascript authenticated="False"
                 cacheable="True"

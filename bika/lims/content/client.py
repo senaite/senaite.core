@@ -48,23 +48,33 @@ schema = Organisation.schema.copy() + atapi.Schema((
             label = _("Email subject line"),
         ),
     ),
-    atapi.ReferenceField('DefaultCategory',
+    atapi.ReferenceField('DefaultCategories',
         schemata = PMF('Preferences'),
         required = 0,
         multiValued = 1,
+        vocabulary = 'getAnalysisCategories',
         vocabulary_display_path_bound = sys.maxint,
         allowed_types = ('AnalysisCategory',),
-        relationship = 'ClientAnalysisCategory',
+        relationship = 'ClientDefaultCategories',
         widget = atapi.ReferenceWidget(
             checkbox_bound = 1,
-            label = _("Default analysis categories"),
+            label = _("Default categories"),
+            description = _("Always expand the selected categories in client views"),
         ),
     ),
-    atapi.BooleanField('RestrictCategories',
-        default = False,
+    atapi.ReferenceField('RestrictedCategories',
         schemata = PMF('Preferences'),
-        widget = atapi.BooleanWidget(
-            label = _("Restrict client to selected categories"),
+        required = 0,
+        multiValued = 1,
+        vocabulary = 'getAnalysisCategories',
+        validators = ('restrictedcategoriesvalidator',),
+        vocabulary_display_path_bound = sys.maxint,
+        allowed_types = ('AnalysisCategory',),
+        relationship = 'ClientRestrictedCategories',
+        widget = atapi.ReferenceWidget(
+            checkbox_bound = 1,
+            label = _("Restrict categories"),
+            description = _("Show only selected categories in client views"),
         ),
     ),
 ))
@@ -163,9 +173,21 @@ class Client(Organisation):
         bsc = getToolByName(self, 'bika_setup_catalog')
         sampletypes = []
         for st in bsc(portal_type = 'SampleType',
+                      inactive_state = 'active',
                       sort_on = 'sortable_title'):
             sampletypes.append((st.UID, st.Title))
         return DisplayList(sampletypes)
+
+    security.declarePublic('getSampleTypeDisplayList')
+    def getAnalysisCategories(self):
+        """ return all available analysis categories """
+        bsc = getToolByName(self, 'bika_setup_catalog')
+        cats = []
+        for st in bsc(portal_type = 'AnalysisCategory',
+                      inactive_state = 'active',
+                      sort_on = 'sortable_title'):
+            cats.append((st.UID, st.Title))
+        return DisplayList(cats)
 
 schemata.finalizeATCTSchema(schema, folderish = True, moveDiscussion = False)
 

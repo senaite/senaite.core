@@ -50,22 +50,6 @@
 <input type="hidden" id="col_count" name="col_count"
     tal:attributes="value view/col_count" />
 
-<!-- jquery dialogs -->
-<div id="confirm_add_deps" style="display:none" title="Service dependencies">
-    <p>_SERVICE_ requires the following services to be selected:</p>
-    <br/>
-    <p>_DEPS_</p>
-    <br/>
-    <p>Do you want to apply these selections now?</p>
-</div>
-<div id="confirm_remove_deps" style="display:none" title="Service dependencies">
-    <p>The following services depend on _SERVICE_, and will be unselected if you continue:</p>
-    <br/>
-    <p>_DEPS_</p>
-    <br/>
-    <p>Do you want to remove these selections now?</p>
-</div>
-
 <!-- The system configured 'Dry Matter Service' -->
 <tal:i define="dms python:context.bika_setup.getDryMatterService()">
     <input type="hidden" id="getDryMatterService" name="getDryMatterService"
@@ -467,12 +451,15 @@
         <thead>
             <tr class="analysiscategory">
                 <th tal:content="python:cat[1]"
+					tal:define="add_prefill python:cat[0] in view.DefaultCategories();
+								edit_prefill python:edit and [poc,cat[0]] in [[s[0],s[1]] for s in ViewSelectedServices]"
                     tal:attributes="
                         colspan python:view.col_count + 3;
                         poc poc;
                         cat python:cat[0];
                         selectedservices python: ','.join([s[2] for s in ViewSelectedServices if s[1] == cat[0]]);
-                        class python: 'analysiscategory collapsed%s' % (edit and [poc,cat[0]] in [[s[0],s[1]] for s in ViewSelectedServices] and ' prefill' or '')"/>
+                        class python: 'analysiscategory collapsed%s' % (edit_prefill or add_prefill and ' prefill' or '')"/>
+
             </tr>
         </thead>
         <tbody class="analysisservices" tal:attributes="
