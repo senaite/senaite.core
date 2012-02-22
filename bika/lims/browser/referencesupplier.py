@@ -25,13 +25,13 @@ class ReferenceSamplesView(BikaListingView):
         self.columns = {
             'ID': {'title': _('ID')},
             'Title': {'title': _('Title')},
-            'Manufacturer': {'title': _('Manufacturer')},
-            'Definition': {'title': _('Reference Definition')},
-            'DateSampled': {'title': _('Date Sampled')},
-            'DateReceived': {'title': _('Date Received')},
-            'DateOpened': {'title': _('Date Opened')},
-            'ExpiryDate': {'title': _('Expiry Date')},
-            'state_title': {'title': _('State')},
+            'Manufacturer': {'title': _('Manufacturer'), 'toggle':True},
+            'Definition': {'title': _('Reference Definition'), 'toggle':True},
+            'DateSampled': {'title': _('Date Sampled'), 'toggle':True},
+            'DateReceived': {'title': _('Date Received'), 'toggle':True},
+            'DateOpened': {'title': _('Date Opened'), 'toggle':True},
+            'ExpiryDate': {'title': _('Expiry Date'), 'toggle':True},
+            'state_title': {'title': _('State'), 'toggle':True},
         }
         self.review_states = [
             {'id':'all',
@@ -118,10 +118,10 @@ class ContactsView(BikaListingView):
 
     columns = {
            'getFullname': {'title': _('Full Name')},
-           'getEmailAddress': {'title': _('Email Address')},
-           'getBusinessPhone': {'title': _('Business Phone')},
-           'getMobilePhone': {'title': _('Mobile Phone')},
-           'getFax': {'title': _('Fax')},
+           'getEmailAddress': {'title': _('Email Address'), 'toggle':True},
+           'getBusinessPhone': {'title': _('Business Phone'), 'toggle':True},
+           'getMobilePhone': {'title': _('Mobile Phone'), 'toggle':True},
+           'getFax': {'title': _('Fax'), 'toggle':True},
           }
 
     review_states = [

@@ -56,14 +56,14 @@ class ReferenceAnalysesView(AnalysesView):
 
         self.columns = {
             'id': {'title': _('ID')},
-            'Category': {'title': _('Category')},
-            'Service': {'title': _('Service')},
-            'Worksheet': {'title': _('Worksheet')},
-            'Result': {'title': _('Result')},
-            'Uncertainty': {'title': _('+-')},
-            'DueDate': {'title': _('Due Date')},
-            'retested': {'title': _('Retested'), 'type':'boolean'},
-            'state_title': {'title': _('State')},
+            'Category': {'title': _('Category'), 'toggle':True},
+            'Service': {'title': _('Service'), 'toggle':True},
+            'Worksheet': {'title': _('Worksheet'), 'toggle':True},
+            'Result': {'title': _('Result'), 'toggle':True},
+            'Uncertainty': {'title': _('+-'), 'toggle':True},
+            'DueDate': {'title': _('Due Date'), 'toggle':True},
+            'retested': {'title': _('Retested'), 'type':'boolean', 'toggle':True},
+            'state_title': {'title': _('State'), 'toggle':True},
         }
         self.review_states = [
             {'id':'all',
@@ -192,13 +192,13 @@ class ReferenceSamplesView(BikaListingView):
 
         self.columns = {
             'ID': {'title': _('ID')},
-            'Title': {'title': _('Title')},
-            'Supplier': {'title': _('Supplier')},
-            'Definition': {'title': _('Reference Definition')},
-            'DateSampled': {'title': _('Date Sampled')},
-            'DateReceived': {'title': _('Date Received')},
-            'ExpiryDate': {'title': _('Expiry Date')},
-            'state_title': {'title': _('State')},
+            'Title': {'title': _('Title'), 'toggle':True},
+            'Supplier': {'title': _('Supplier'), 'toggle':True},
+            'Definition': {'title': _('Reference Definition'), 'toggle':True},
+            'DateSampled': {'title': _('Date Sampled'), 'toggle':True},
+            'DateReceived': {'title': _('Date Received'), 'toggle':True},
+            'ExpiryDate': {'title': _('Expiry Date'), 'toggle':True},
+            'state_title': {'title': _('State'), 'toggle':True},
         }
         self.review_states = [
             {'id':'all',
