@@ -48,9 +48,6 @@ class WorksheetWorkflowAction(WorkflowAction):
             else:
                 item_data = json.loads(form['item_data'])
 
-        if 'Remarks' in form:
-            self.context.setRemarks(form['Remarks'])
-
         if action == 'submit' and self.request.form.has_key("Result"):
             selected_analyses = WorkflowAction._get_selected_items(self)
             results = {}
@@ -1143,17 +1140,3 @@ class ajaxSetInstrument():
 ##        if not value:
 ##            return
         self.context.setInstrument(value)
-
-class ajaxSetRemarks(BrowserView):
-    """ Modify Remarks field and return new rendered field
-    """
-    def __call__(self):
-        plone.protect.CheckAuthenticator(self.request)
-        value = self.request['value']
-        date = TimeOrDate(self.context, DateTime(), long_format=True)
-        user = getSecurityManager().getUser()
-        remarks = "%s\n\n=== %s (%s)\n%s"%\
-            (self.context.getRemarks().strip(), date, user, value)
-        remarks = remarks.strip()
-        self.context.setRemarks(remarks)
-        return remarks

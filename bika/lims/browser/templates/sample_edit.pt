@@ -161,6 +161,13 @@
 
 	</form>
 
+	<br/>
+	<tal:remarks define="
+		field python:context.Schema()['Remarks'];
+		errors python:{};">
+		 <metal:widget use-macro="python:context.widget('Remarks', mode='edit')" />
+	</tal:remarks>
+
 </metal:content>
 </body>
 </html>

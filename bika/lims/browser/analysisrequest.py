@@ -1203,10 +1203,10 @@ class ajaxAnalysisRequestSubmit():
 
             if len(ARs) > 1:
                 message = translate(_('Analysis requests ${ARs} were successfully created.',
-                                    mapping = {'ARs': ', '.join(ARs)}, domain = 'bika'))
+                                    mapping = {'ARs': ', '.join(ARs)}))
             else:
                 message = translate(_('Analysis request ${AR} was successfully created.',
-                                    mapping = {'AR': ', '.join(ARs)}, domain = 'bika'))
+                                    mapping = {'AR': ', '.join(ARs)}))
 
         self.context.plone_utils.addPortalMessage(message, 'info')
         # automatic label printing
@@ -1518,17 +1518,3 @@ class AnalysisRequestsView(BikaListingView):
                 items[x]['after']['getRequestID'] = after_icons
 
         return items
-
-class ajaxSetRemarks(BrowserView):
-    """ Modify Remarks field and return new rendered value
-    """
-    def __call__(self):
-        plone.protect.CheckAuthenticator(self.request)
-        value = self.request['value']
-        date = TimeOrDate(self.context, DateTime(), long_format=True)
-        user = getSecurityManager().getUser()
-        remarks = "%s\n\n=== %s (%s)\n%s"%\
-            (self.context.getRemarks().strip(), date, user, value)
-        remarks = remarks.strip()
-        self.context.setRemarks(remarks)
-        return remarks

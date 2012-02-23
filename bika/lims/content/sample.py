@@ -122,10 +122,13 @@ schema = BikaSchema.copy() + Schema((
     ),
     TextField('Remarks',
         searchable = True,
-        default_content_type = 'text/plain',
-        allowable_content_types = ('text/plain',),
+        default_content_type = 'text/x-web-intelligent',
+        allowable_content_types = ('text/x-web-intelligent',),
+        default_output_type="text/html",
         widget = TextAreaWidget(
-            label = _("Remarks")
+            macro = "bika_widgets/remarks",
+            label = _('Remarks'),
+            append_only = True,
         ),
     ),
     ComputedField('ClientUID',

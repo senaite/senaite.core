@@ -190,30 +190,5 @@ $(document).ready(function(){
 		});
 	});
 
-	// Append-only remarks field
-	$('.saveRemarks').live('click', function(event){
-		event.preventDefault();
-		if ($("#Remarks").val() == '' ||
-		    $("#Remarks").val() == undefined) {
-			return false;
-		}
-		// could have arrived here from any worksheet view
-		$("#RemarksHistory").load(
-			window.location.href
-				.replace("/manage_results", "")
-				.replace("/add_analyses", "")
-				.replace("/add_control", "")
-				.replace("/add_blank", "").
-				replace("/add_duplicate", "")  + "/setWSRemarks",
-			{'value': $("#Remarks").val(),
-			 '_authenticator': $('input[name="_authenticator"]').val()}
-		);
-		$("#Remarks").val("");
-		$("#RemarksHistory").attr("rows", $("#RemarksHistory").val().split("\n").length+3);
-		return false;
-	});
-	$("#Remarks").empty();
-	$("#RemarksContainer").show();
-
 });
 });

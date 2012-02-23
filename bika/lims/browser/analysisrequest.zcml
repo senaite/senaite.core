@@ -128,12 +128,4 @@
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
-    <browser:page
-      for="bika.lims.interfaces.IAnalysisRequest"
-      name="setARRemarks"
-      class="bika.lims.browser.analysisrequest.ajaxSetRemarks"
-      permission="zope.Public"
-      layer="bika.lims.interfaces.IBikaLIMS"
-    />
-
 </configure>
