@@ -17,7 +17,7 @@ schema = BikaSchema.copy() + Schema((
         required = 1,
         default_method = 'getDefaultLifetime',
         widget = DurationWidget(
-            label = _("Retention period"),
+            label = _("Retention Period"),
             description = _("The period for which un-preserved samples of this type can be kept before "
                             "they expire and cannot be analysed any further"),
         )

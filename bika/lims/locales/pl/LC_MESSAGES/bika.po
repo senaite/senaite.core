@@ -2161,7 +2161,7 @@ msgstr ""
 #: ../content/analysisservice.py:106
 #: ../content/preservation.py:24
 #: ../content/sampletype.py:20
-msgid "Retention period"
+msgid "Retention Period"
 msgstr ""
 
 #: ../browser/analyses.py:50

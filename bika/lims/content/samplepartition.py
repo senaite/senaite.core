@@ -31,7 +31,7 @@ schema = BikaSchema.copy() + Schema((
         index='FieldIndex',
         searchable=True,
     ),
-    TextField('PreservationComments',
+    TextField('Remarks',
     ),
 ),
 )

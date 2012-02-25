@@ -21,7 +21,7 @@ schema = BikaSchema.copy() + Schema((
     ),
     DurationField('RetentionPeriod',
         widget=DurationWidget(
-            label=_('Retention period'),
+            label=_('Retention Period'),
             description=_('Once preserved, the sample must be disposed of within this time period.  If not specified, the sample type retention period will be used.')
         ),
     ),

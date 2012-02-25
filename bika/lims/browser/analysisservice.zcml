@@ -6,7 +6,7 @@
 
     <browser:page
       for="bika.lims.interfaces.IAnalysisService"
-      name="getContainers"
+      name="getUpdatedContainers"
       class="bika.lims.browser.analysisservice.ajaxGetContainers"
       permission="zope.Public"
       layer="bika.lims.interfaces.IBikaLIMS"

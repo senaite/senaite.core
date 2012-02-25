@@ -66,8 +66,8 @@ jQuery( function($) {
 						$(this).attr("checked", "checked");
 					}
 			}
-				recalc_prices(column);
-				$(tbody).toggle(true);
+			recalc_prices(column);
+			$(tbody).toggle(true);
 			} else {
 				if (force_expand){ $(tbody).toggle(true); }
 				else { $(tbody).toggle(); }
@@ -90,8 +90,11 @@ jQuery( function($) {
 					$('input[name*="Analyses"]').bind('change', service_checkbox_change);
 					if(selectedservices!=[]){
 						recalc_prices(column);
+						// XXX template should do this one for us
+						calculate_parts();
+					}
 				}
-			});
+			);
 		}
 	}
 
@@ -106,7 +109,7 @@ jQuery( function($) {
 		for(var i = 0; i<elements.length; i++){
 			remaining_columns.push($(elements[i]).attr('column'));
 		}
-		options = {
+		var options = {
 			type: 'POST',
 			async: false,
 			beforeSubmit: function(formData, jqForm, options) {
@@ -183,7 +186,8 @@ jQuery( function($) {
 							});
 							recalc_prices();
 							$(this).dialog("close");
-							$('#messagebox').remove()
+							$('#messagebox').remove();
+							calculate_parts();
 						}
 						function add_No(){
 							$(element).attr("checked", false);
@@ -195,9 +199,11 @@ jQuery( function($) {
 							}
 							recalc_prices(column);
 							$(this).dialog("close");
-							$('#messagebox').remove()
+							$('#messagebox').remove();
+							calculate_parts();
 						}
 					if (auto_yes) {
+						$('#messagebox').remove();
 						add_Yes();
 					} else {
 						yes = _("Yes");
@@ -213,12 +219,12 @@ jQuery( function($) {
 		}
 		else {
 			// unselecting a service; discover back dependencies
-			affected_titles = [];
-			affected_services = [];
+			var affected_titles = [];
+			var affected_services = [];
 			options.url = 'get_back_references';
-			options.success = function(service_uids,textStatus,$XHR){
-				if (service_uids.length > 0){
-					$.each(service_uids, function(i, serviceUID){
+			options.success = function(s_uids,textStatus,$XHR){
+				if (s_uids.length > 0){
+					$.each(s_uids, function(i, serviceUID){
 						cb = $('input[column="'+column+'"]').filter('#'+serviceUID);
 						if (cb.attr("checked")){
 							affected_services.push(serviceUID);
@@ -250,7 +256,8 @@ jQuery( function($) {
 								});
 								recalc_prices();
 								$(this).dialog("close");
-								$('#messagebox').remove()
+								$('#messagebox').remove();
+								calculate_parts();
 							},
 							no:function(){
 								$(element).attr("checked", true);
@@ -259,9 +266,12 @@ jQuery( function($) {
 								}
 								recalc_prices(column);
 								$(this).dialog("close");
-								$('#messagebox').remove()
+								$('#messagebox').remove();
+								calculate_parts();
 							}
 						}});
+					} else {
+						$('#messagebox').remove();
 					}
 				}
 			},
@@ -269,9 +279,76 @@ jQuery( function($) {
 		}
 	}
 
+	function calculate_parts(){
+		// Set the little partition number next to service checkboxes
+
+		var uids = [];
+		var formvalues = {};
+		var partitionable = 0;
+		var partitioned_services = $.parseJSON($("#partitioned_services").val());
+		// gather up SampleType and all selected service checkboxes by column
+		for (var col=0; col<parseInt($("#col_count").val()); col++) {
+			var st_title = $("#ar_"+col+"_SampleType").val();
+			formvalues[parseInt(col)] = {'st_title':st_title,
+										'services': []};
+			var checkboxes_checked = $('[name^="ar\\.'+col+'\\.Analyses"]').filter(':checked');
+			$.each(checkboxes_checked, function(i,e){
+				var uid = $(e).attr('value');
+				if(partitioned_services != null
+				   && partitioned_services.indexOf(uid) > -1){
+					partitionable++;
+				}
+				formvalues[parseInt(col)]['services'].push(uid);
+				uids.push(uid);
+			});
+		}
+		// skip everything if no selected services have partition setup info
+		if (partitionable == 0){
+			return;
+		}
+		// all unchecked services have their part numbers removed
+		var checkboxes_unchecked = $('[name*="\\.Analyses"]').not(':checked');
+		$.each(checkboxes_unchecked, function(i,e){
+			pe = $(".partnr_"+$(e).attr('value')).filter("[column="+$(e).attr('column')+"]");
+			$(pe).empty();
+		});
+
+		// send form values to python
+		$.ajax({
+			type: 'POST',
+			url: $('base').attr('href') + 'getparts',
+			data: {'formvalues': $.toJSON(formvalues),
+					'_authenticator': $('input[name="_authenticator"]').val()
+				},
+			success: function(data,textStatus,$XHR){
+
+				// parts[col][ {'services':,'seperate':}, ]
+				var colparts = data['parts'];// [{uid:, part:}...]
+				for (var col=0; col<parseInt($("#col_count").val()); col++) {
+					var parts = colparts[col];
+					// unset all checkboxes on columns with less than 2 parts
+					// and leave them off
+					if(parts.length < 2){
+						$.each($('[name^="ar\\.'+col+'\\.Analyses"]').filter(':checked'), function(i,e){
+							$(".partnr_"+$(e).attr('value')).filter("[column="+col+"]").empty();
+						});
+					} else {
+						$.each(parts, function(p,part){
+							$.each(part['services'], function(s,service_uid){
+								$(".partnr_"+service_uid).filter("[column="+col+"]").empty().append(p+1);
+							});
+						});
+					}
+				}
+
+			},
+			dataType: "json"
+		});
+	}
+
 	function service_checkbox_change(){
-		column = $(this).attr("column");
-		element = $(this);
+		var column = $(this).attr("column");
+		var element = $(this);
 		if($("#ar_"+column+"_ARProfile").val() != ""){
 			$("#ar_"+column+"_ARProfile").val("");
 		}
@@ -280,6 +357,7 @@ jQuery( function($) {
 		}
 		calcdependencies([element]);
 		recalc_prices();
+		calculate_parts();
 	};
 
 	function unsetARProfile(column){
@@ -314,6 +392,7 @@ jQuery( function($) {
 				}
 			});
 			$(".ARProfileCopyButton").toggle(true);
+			calculate_parts();
 		}
 		// cached value in #profileUID
 		if($("#"+profileUID).length > 0){
@@ -341,6 +420,23 @@ jQuery( function($) {
 			callback(data);
 		});
 	}
+	// changing sampletype sets partition numbers.
+	// it's done funny, because autocomplete didn't like .change()
+	// and autocomplete's callback fires at the wrong time.
+	$(".sampletype").focus(function(){
+		window.sampletype_focus = $(this).val();
+	});
+	$(".sampletype").blur(function(){
+		if ($(this).val() != window.sampletype_focus){
+			calculate_parts();
+		}
+		window.sampletype_focus = '';
+	})
+	// also set on .change() though,
+	// because sometimes we set these fields manually.
+	$(".sampletype").change(function(){
+		calculate_parts()
+	});
 
 	function autocomplete_samplepoint(request,callback){
 		$.getJSON('ajax_samplepoints', {'term':request.term}, function(data,textStatus){
@@ -355,7 +451,7 @@ jQuery( function($) {
 		// DateSampled field is readonly to prevent invalid data entry, so
 		// clicking date_sampled field clears existing values.
 		// clear date widget values if the page is reloaded.
-		e = $('input[id$="_DateSampled"]')
+		e = $('input[id$="_DateSampled"]');
 		if(e.length > 0){
 			// XXX Datepicker format is not i18n aware (dd Oct 2011)
 			if($($(e).parents('form').children('[name=came_from]')).val() == 'add'){
@@ -398,8 +494,9 @@ jQuery( function($) {
 						affected_elements.push(other_elem);
 					}
 				}
-				calcdependencies(affected_elements);
+				calcdependencies(affected_elements, true);
 				recalc_prices();
+				calculate_parts();
 			}
 			else if ($('input[name^="ar\\.0\\.'+field_name+'"]').attr("type") == "checkbox") {
 				// other checkboxes

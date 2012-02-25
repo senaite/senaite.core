@@ -28,6 +28,7 @@
         edit python:view.came_from == 'edit' and True or False;
         can_edit_sample python:view.can_edit_sample;
         can_edit_ar python:view.can_edit_ar;
+		partitionable view/partitioned_services;
         review_state python:edit and context.portal_workflow.getInfoFor(view.context, 'review_state') or ''">
 
 <form id="analysisrequest_edit_form"
@@ -49,6 +50,10 @@
 <!-- col_count goes here for the jquery expanding services rows to know how to print themselves -->
 <input type="hidden" id="col_count" name="col_count"
     tal:attributes="value view/col_count" />
+
+<!-- These services have partition setup records -->
+<input type="hidden" id="partitioned_services" name="partitioned_services"
+    tal:attributes="value partitionable" />
 
 <!-- The system configured 'Dry Matter Service' -->
 <tal:i define="dms python:context.bika_setup.getDryMatterService()">
@@ -475,6 +480,32 @@
 
 <tfoot>
 
+<!-- Partition Setup -->
+<tr tal:condition="partitionable">
+	<td colspan="3">&nbsp;</td>
+	<tal:parts repeat="column python:range(view.col_count)">
+		<td class="center">
+			<!-- Actual value for form is stored in hidden field -->
+			<a href="#"
+				i18n:translate=""
+				class="edit_partitions"
+				tal:attributes="column column">Partition Setup</a>
+		</td>
+	</tal:parts>
+</tr>
+<tr>
+    <th colspan="3" i18n:translate="">Save new profile</th>
+    <tal:save repeat="column python:range(view.col_count)">
+        <td class="topborder">
+            <input type="text" size="10"
+                tal:define="
+                    input_name string:ar.${column}.profileTitle"
+                tal:attributes="
+                    id input_name;
+                    name string:${input_name}:ignore_empty:record;"/>
+        </td>
+    </tal:save>
+</tr>
 <tr tal:condition="here/getMemberDiscountApplies">
     <th class="topborder" colspan="2">
         <b i18n:translate="">Discount</b>
@@ -546,19 +577,6 @@
     </tal:block>
 </tr>
 
-<tr>
-    <th class="topborder" colspan="3" i18n:translate="">Save</th>
-    <tal:save repeat="column python:range(view.col_count)">
-        <td class="topborder">
-            <input type="text" size="10"
-                tal:define="
-                    input_name string:ar.${column}.profileTitle"
-                tal:attributes="
-                    id input_name;
-                    name string:${input_name}:ignore_empty:record;"/>
-        </td>
-    </tal:save>
-</tr>
 </tfoot>
 </table>
 

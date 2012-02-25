@@ -9,28 +9,31 @@ import re
 
 ### AJAX methods for AnalysisService context
 
-# partition setup widget
+# ajax Preservaition/Container widget filter
+# in preservationwidget rows,we get st_uid, pres_uid and minvol.
+# in Service Setup context, all we get is [pres_uid,]
 
 class ajaxGetContainers(BrowserView):
     def __call__(self):
         plone.protect.CheckAuthenticator(self.request)
         uc = getToolByName(self, 'uid_catalog')
-        st_uid = 'st_uid' in self.request and self.request['st_uid'] or ''
+        st_uid = self.request.get('st_uid', [])
         st = st_uid and uc(UID=st_uid)[0].getObject() or None
-        pres_uid = 'pres_uid' in self.request and self.request['pres_uid'] or ''
-        minvol = 'minvol' in self.request and self.request['minvol'].split(" ") or []
+        allow_blank = self.request.get('allow_blank', False) == 'true'
+        pres_uid = json.loads(self.request.get('pres_uid', '[]'))
+        minvol = self.request.get('minvol', '').split(" ")
         try:
             minvol = mg(float(minvol[0]), " ".join(minvol[1:]))
         except:
             minvol = mg(0)
 
-        pres = pres_uid and uc(UID=pres_uid) or None
-        if pres:
-            pres = pres[0].getObject()
-            containers = getContainers(self.context,
-                                       preservation = pres,
-                                       minvol = minvol)
-        else:
-            containers = getContainers(self.context,
-                                       minvol = minvol)
+        if not type(pres_uid) in (list, tuple):
+            pres_uid = [pres_uid,]
+        preservations = [p and uc(UID=p)[0].getObject() or '' for p in pres_uid]
+
+        containers = getContainers(self.context,
+                                   preservation = preservations and preservations or [],
+                                   minvol = minvol,
+                                   allow_blank = allow_blank)
+
         return json.dumps(containers)

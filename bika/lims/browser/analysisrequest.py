@@ -1,3 +1,4 @@
+import App
 from AccessControl import getSecurityManager
 from DateTime import DateTime
 from Products.Archetypes.config import REFERENCE_CATALOG
@@ -389,6 +390,7 @@ class AnalysisRequestViewView(BrowserView):
 
         return actions.values()
 
+
 class AnalysisRequestAddView(AnalysisRequestViewView):
     """ The main AR Add form
     """
@@ -407,6 +409,119 @@ class AnalysisRequestAddView(AnalysisRequestViewView):
 
     def __call__(self):
         return self.template()
+
+    def partitioned_services(self):
+        bsc = getToolByName(self.context, 'bika_setup_catalog')
+        ps = []
+        for service in bsc(portal_type='AnalysisService'):
+            service = service.getObject()
+            if service.getPartitionSetup() \
+               or service.getSeperate():
+                ps.append(service.UID())
+        return json.dumps(ps)
+
+
+class ajaxCalculateParts():
+    """ Return partition information as JSON string
+    the request contains:
+        formvalues - [column number] [ {'st_title':sample type,
+                                        'services':list},
+                                     ]
+    """
+
+    def __init__(self, context, request):
+        self.context = context
+        self.request = request
+
+    def __call__(self):
+        plone.protect.CheckAuthenticator(self.request)
+        bsc = getToolByName(self.context, 'bika_setup_catalog')
+        uc = getToolByName(self.context, 'uid_catalog')
+        formvalues = json.loads(self.request['formvalues'])
+
+        debug = App.config.getConfiguration().debug_mode
+
+        parts = {}
+        for col in formvalues.keys():
+            # parts[col][ {'services':,'seperate':}, ]
+            parts[col] = []
+
+        for col in formvalues.keys():
+            st_title = formvalues[col]['st_title']
+            st = bsc(portal_type='SampleType', title=st_title)
+            st = st and st[0].getObject()
+            st_uid = st and st.UID()
+            service_uids = formvalues[col]['services']
+
+            for service_uid in service_uids:
+                service = bsc(UID=service_uid)[0].getObject()
+
+                partsetup = [s for s in service.getPartitionSetup() \
+                             if s['sampletype'] == st_uid]
+                partsetup = partsetup and partsetup[0] or {}
+
+                # grab service partition setup info
+                seperate = service.getSeperate()
+
+                container = [c.getObject() for c
+                                in uc(UID=partsetup.get('container', []))
+                                if c] \
+                                or service.getContainer()
+
+                preservation = [p.getObject() for p
+                                in uc(UID=partsetup.get('preservation', []))
+                                if p] \
+                                or service.getPreservation()
+
+                if seperate or (partsetup.get('seperate', False)):
+                    # create me a new partition
+                    part = {'services': [service_uid,],
+                            'seperate': True,
+                            'container': container and container[0].UID() or '',
+                            'preservation': preservation and preservation[0].UID() or ''}
+                    parts[col].append(part)
+                    if debug:
+                        logger.info("Col %s: Creating seperate partition (%s) for %s" %
+                                    (col, len(parts[col]), service.Title()))
+                else:
+                    # find an existing partition
+                    if debug:
+                        logger.info("Col %s: Searching for a partition for %s" %
+                                    (col, service.Title()))
+                    possibles = []
+                    for p in range(len(parts[col])):
+                        # we can't land in 'seperate' partitions
+                        if parts[col][p].get('seperate', None): continue
+
+                        # we can land here if the part's container matches ours
+                        # but only if the part's preservation also matches ours
+                        if parts[col][p].get('container', '') == (container and container.UID() or '') \
+                           and parts[col][p].get('preservation', '') == (preservation and preservation.UID() or ''):
+                            if debug:
+                                logger.info("Col %s: adding part %s to possible landing parts for %s" %
+                                            (col, p, service.Title()))
+                            possibles.append(p)
+
+                    if possibles:
+                        # if we have possibles, pick one
+                        parts[col][possibles[0]]['services'].append(service.UID())
+                        if debug:
+                            logger.info("Col %s: selecting first possible partition (%s) for %s" %
+                                        (col, possibles[0], service.Title()))
+                    else:
+                        # if we have no possibles, create me a new partition
+                        # use first available container/preservation
+                        part = {'services': [service_uid,],
+                                'seperate': False,
+                                'container': container and container.UID() or '',
+                                'preservation': preservation and preservation.UID() or ''}
+                        parts[col].append(part)
+                        if debug:
+                            logger.info("Col %s: No parts found, create new part (%s) for %s" %
+                                        (col, len(parts[col]), service.Title()))
+
+        return json.dumps({'parts':parts})
+
 
 class AnalysisRequestEditView(AnalysisRequestAddView):
     implements(IViewView)

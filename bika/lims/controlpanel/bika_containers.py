@@ -64,9 +64,9 @@ class ContainersView(BikaListingView):
             if not items[x].has_key('obj'): continue
             obj = items[x]['obj']
             items[x]['Description'] = obj.Description()
-            items[x]['ContainerType'] = obj.getContainerType().Title()
-            items[x]['Capacity'] = obj.getCapacity() and "%s %s" % \
-                (obj.getCapacity(), obj.getUnit()) or ''
+            items[x]['ContainerType'] = obj.getContainerType() and obj.getContainerType().Title() or ''
+            items[x]['Capacity'] = obj.getCapacity() and "%s" % \
+                (obj.getCapacity()) or ''
             pre = obj.getPrePreserved()
             pres = obj.getPreservation()
             items[x]['Pre-preserved'] = ''

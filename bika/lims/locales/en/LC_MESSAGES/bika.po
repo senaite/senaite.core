@@ -2159,8 +2159,8 @@ msgstr "Result out of range"
 #: ../content/analysisservice.py:106
 #: ../content/preservation.py:24
 #: ../content/sampletype.py:20
-msgid "Retention period"
-msgstr "Retention period"
+msgid "Retention Period"
+msgstr "Retention Period"
 
 #: ../browser/analyses.py:50
 #: ../browser/mailtemplates/analysisrequest_results.pt:363

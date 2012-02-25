@@ -95,6 +95,14 @@
 		  tal:content="python:'\n'.join(field.getSubfieldValue(values, idx, key, []))" >
 	</textarea>
 	</tal:text>
+	<tal:boolean condition="python: type == 'boolean'">
+		<span style="width:100%;border-bottom:1px solid red;"></span>
+		<input type="checkbox" name=""
+			  tabindex="#"
+			  tal:attributes="name string:${fieldName}.${key}:records:ignore_empty;
+								tabindex tabindex/next|nothing;
+								checked python:field.getSubfieldValue(values, idx, key) and 'checked' or ''"/>
+	</tal:boolean>
 	<tal:date condition="python:type == 'datetime'">
 	<div tal:define="id string:${fieldName}_${key}_${idx};
                value python:field.getSubfieldValue(values, idx, key);

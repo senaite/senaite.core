@@ -21,7 +21,7 @@ from zope.interface import implements
 from zope import i18n
 import sys
 
-def getContainers(instance, preservation=None, minvol=None):
+def getContainers(instance, preservation=None, minvol=None, allow_blank=True):
     """ Containers vocabulary
 
     This is a seperate class so that it can be called from ajax to
@@ -38,8 +38,19 @@ def getContainers(instance, preservation=None, minvol=None):
 
     """
     bsc = getToolByName(instance, 'bika_setup_catalog')
-    items = [['','']]
-    pres_c_types = preservation and preservation.getContainerType() or None
+    if allow_blank:
+        items = [['','']]
+    else:
+        items = []
+
+    if not type(preservation) in (list, tuple):
+        preservation = [preservation,]
+    pres_c_types = []
+    for pres in preservation:
+        if pres:
+            for pres_ct in pres.getContainerType():
+                if pres_ct not in pres_c_types:
+                    pres_c_types.append(pres_ct)
 
     containers = {}
     containers_notype = []
@@ -96,21 +107,21 @@ class PartitionSetupField(RecordsField):
                       'preservation',
                       'container',
                       'seperate',
-                      'vol',
-                      'retentionperiod'),
+                      'vol'),
+                      #'retentionperiod'),
         'subfield_labels': {'sampletype':_('Sample Type'),
                             'preservation':_('Preservation'),
                             'container':_('Container'),
                             'seperate':_('Seperate Partition'),
-                            'vol':_('Required Volume'),
-                            'retentionperiod': _('Retention period')},
+                            'vol':_('Required Volume')},
+                            #'retentionperiod': _('Retention Period')},
         'subfield_types': {'seperate':'boolean',
                            'vol':'int'},
         'subfield_vocabularies': {'sampletype':'SampleTypes',
                                   'preservation':'Preservations',
                                   'container':'Containers'},
-        'subfield_sizes': {'vol':5,
-                           'retentionperiod':10}
+        'subfield_sizes': {'vol':5}
+                           #'retentionperiod':10}
     })
     security = ClassSecurityInfo()
 
@@ -425,18 +436,52 @@ schema = BikaSchema.copy() + Schema((
                             "'Indeterminable'.  The option's result value must be a number."),
         ),
     ),
+    BooleanField('Seperate',
+        schemata = PMF('Partition Setup'),
+        default = False,
+        required = 0,
+        widget = BooleanWidget(
+            label = _('Seperate Partition'),
+            description = _("This service will always be assigned it's own seperate sample partition."),
+        ),
+    ),
+    ReferenceField('Container',
+        schemata = PMF('Partition Setup'),
+        allowed_types=('Container',),
+        relationship='AnalysisServiceContainer',
+        referenceClass=HoldingReference,
+        vocabulary = 'getContainers',
+        required=0,
+        multiValued=1,
+        widget = ReferenceWidget(
+            checkbox_bound = 1,
+            label = _('Container'),
+            description = _("Service partition will always be stored in one of the selected containers"),
+        ),
+    ),
+    ReferenceField('Preservation',
+        schemata = PMF('Partition Setup'),
+        allowed_types=('Preservation',),
+        relationship='AnalysisServicePreservation',
+        referenceClass=HoldingReference,
+        vocabulary = 'getPreservations',
+        required=0,
+        multiValued=1,
+        widget = ReferenceWidget(
+            checkbox_bound = 1,
+            label = _('Preservation'),
+            description = _("Service partition will always require one of the selected preservation methods"),
+        ),
+    ),
     PartitionSetupField('PartitionSetup',
         schemata = PMF('Partition Setup'),
-##        accessor = 'getPartitionSetup',
-##        edit_accessor = 'getPartitionSetup',
-##        mutator = 'setPartitionSetup',
         widget = RecordsWidget(
-            label = "",
+            label = PMF("Partition Setup"),
             description = _("Select any combination of these fields to configure how "
                             "the LIMS will create sample partitions for new ARs. "
                             "Adding only a few very general rules will cause the empty "
                             "fields to be set to computed, empty or default values. "
-                            "This field is ignored if a service calculation is specified."),
+                            "Values set above take precendence over those set in this table."),
         ),
     ),
 ))
@@ -604,5 +649,23 @@ class AnalysisService(BaseContent, HistoryAwareMixin):
             return None
         else:
             return None
+
+    security.declarePublic('ContainerTypes')
+    def getContainers(self, instance=None):
+        # On first render, the containers must be limited according to
+        # self.Preservation(). After that, the JS takes care of it with
+        # getContainers above.
+        instance = instance or self
+        return DisplayList(getContainers(instance,
+                                         preservation=self.getPreservation(),
+                                         allow_blank=False))
+
+    def getPreservations(self):
+        bsc = getToolByName(self, 'bika_setup_catalog')
+        items = [(o.UID, o.Title) for o in \
+                 bsc(portal_type='Preservation',
+                     inactive_state = 'active')]
+        items.sort(lambda x,y: cmp(x[1], y[1]))
+        return DisplayList(list(items))
 
 registerType(AnalysisService, PROJECTNAME)

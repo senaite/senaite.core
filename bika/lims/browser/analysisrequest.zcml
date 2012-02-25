@@ -88,6 +88,14 @@
 
     <browser:page
       for="*"
+      name="getparts"
+      class=".analysisrequest.ajaxCalculateParts"
+      permission="zope.Public"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
+      for="*"
       name="get_back_references"
       class=".analysisrequest.ajaxgetBackReferences"
       permission="zope.Public"
