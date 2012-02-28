@@ -81,11 +81,10 @@ class WorksheetFolderListingView(BikaListingView):
         self.TimeOrDate = TimeOrDate
 
         pm = getToolByName(context, "portal_membership")
-        bsc = getToolByName(context, 'bika_setup_catalog')
-
-        analyst = pm.getAuthenticatedMember().getId()
-
+        # this is a property of self, because self.getAnalysts returns it
         self.analysts = getAnalysts(self)
+
+        bsc = getToolByName(context, 'bika_setup_catalog')
 
         templates = [t for t in bsc(portal_type = 'WorksheetTemplate',
                                     inactive_state = 'active')]
@@ -152,11 +151,12 @@ class WorksheetFolderListingView(BikaListingView):
                         'QC',
                         'CreationDate',
                         'state_title']},
+            # getAuthenticatedMember does not work in __init__
+            # so 'mine' is configured further in 'folderitems' below.
             {'id':'mine',
              'title': _('Mine'),
              'contentFilter': {'portal_type': 'Worksheet',
                                'review_state':['open', 'to_be_verified', 'verified', 'rejected'],
-                               'getAnalyst': analyst,
                                'sort_on':'id',
                                'sort_order': 'reverse'},
              'transitions':[{'id':'retract'},
@@ -224,43 +224,61 @@ class WorksheetFolderListingView(BikaListingView):
         ]
 
     def folderitems(self):
-        items = BikaListingView.folderitems(self)
-        mtool = getToolByName(self, 'portal_membership')
         wf = getToolByName(self, 'portal_workflow')
         rc = getToolByName(self, REFERENCE_CATALOG)
-        member = mtool.getAuthenticatedMember()
+        pm = getToolByName(self.context, "portal_membership")
+
+        member = pm.getAuthenticatedMember()
+
+        items = BikaListingView.folderitems(self)
         new_items = []
         analyst_choices = []
         for a in self.analysts:
             analyst_choices.append({'ResultValue': a,
                                     'ResultText': self.analysts.getValue(a)})
         can_reassign = False
+
         for x in range(len(items)):
             if not items[x].has_key('obj'):
                 new_items.append(items[x])
                 continue
+
             obj = items[x]['obj']
-            items[x]['Title'] = obj.Title()
+
             analyst = obj.getAnalyst().strip()
-            # XXX This should not be needed - why is contentFilter/analyst not working?
-            if 'getAnalyst' in self.contentFilter:
-                if analyst != member.getId():
-                    continue
+            creator = obj.Creator().strip()
+
+            items[x]['Title'] = obj.Title()
             wst = obj.getWorksheetTemplate()
             items[x]['Template'] = wst and wst.Title() or ''
             if wst:
                 items[x]['replace']['Template'] = "<a href='%s'>%s</a>" % \
                     (wst.absolute_url(), wst.Title())
+
             items[x]['Analyses'] = str(len(obj.getAnalyses()))
+
+            # this cannot be setup in contentFilter, because AuthenticatedMember
+            # is not available in __init__
+            if self.request.get("%s_review_state"%self.form_id, '') == 'mine':
+                if member.getId() not in (analyst, creator):
+                    continue
+
             if items[x]['Analyses'] == '0':
-                # Don't display empty worksheets that aren't ours
-                if member.getId() != analyst:
+                # manager and labmanager see *all* worksheets
+                # otherwise we must be Analyst or Creator to see empties.
+                roles = member.getRoles()
+                if not 'Manager' in roles \
+                   and not 'LabManager' in roles \
+                   and not member.getId() in (analyst, creator):
                     continue
                 # give empties pretty classes.
                 items[x]['table_row_class'] = 'state-empty-worksheet'
                 items[x]['class']['Analyses'] = "empty"
+
             items[x]['CreationDate'] = TimeOrDate(self.context, obj.creation_date)
+
             layout = obj.getLayout()
+
             if len(layout) > 0:
                 items[x]['replace']['Title'] = "<a href='%s/manage_results'>%s</a>" % \
                     (items[x]['url'], items[x]['Title'])
@@ -293,6 +311,7 @@ class WorksheetFolderListingView(BikaListingView):
                 if slot['position'] in pos_parent:
                     continue
                 pos_parent[slot['position']] = rc.lookupObject(slot['container_uid'])
+
             sampletypes = {}
             blanks = {}
             controls = {}
@@ -331,15 +350,14 @@ class WorksheetFolderListingView(BikaListingView):
             items[x]['replace']['QC'] = " ".join(blanks + controls)
 
             if items[x]['review_state'] == 'open':
-                items[x]['Analyst'] = analyst
+                items[x]['Analyst'] = member.getId()
                 items[x]['allow_edit'] = ['Analyst', ]
                 items[x]['required'] = ['Analyst', ]
                 can_reassign = True
                 items[x]['choices'] = {'Analyst': analyst_choices}
             else:
-                analyst_member = mtool.getMemberById(analyst)
-                if analyst_member != None:
-                    items[x]['Analyst'] = analyst_member.getProperty('fullname')
+                if member != None:
+                    items[x]['Analyst'] = member.getProperty('fullname')
                 else:
                     items[x]['Analyst'] = ''
 
