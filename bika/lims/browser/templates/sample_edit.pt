@@ -161,7 +161,12 @@
 
 	</form>
 
-	<br/>
+	<fieldset/>
+
+	<tal:parts replace="structure view/parts"/>
+
+	<fieldset/><br/>
+
 	<tal:remarks define="
 		field python:context.Schema()['Remarks'];
 		errors python:{};">

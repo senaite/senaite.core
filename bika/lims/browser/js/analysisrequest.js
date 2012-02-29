@@ -321,11 +321,9 @@ jQuery( function($) {
 					'_authenticator': $('input[name="_authenticator"]').val()
 				},
 			success: function(data,textStatus,$XHR){
-
-				// parts[col][ {'services':,'seperate':}, ]
-				var colparts = data['parts'];// [{uid:, part:}...]
+				$("#parts").val($.toJSON(data));
 				for (var col=0; col<parseInt($("#col_count").val()); col++) {
-					var parts = colparts[col];
+					var parts = data['parts'][col];
 					// unset all checkboxes on columns with less than 2 parts
 					// and leave them off
 					if(parts.length < 2){
@@ -340,7 +338,6 @@ jQuery( function($) {
 						});
 					}
 				}
-
 			},
 			dataType: "json"
 		});

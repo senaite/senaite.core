@@ -8,11 +8,34 @@ from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.utils import TimeOrDate
 from bika.lims import EditSample
 from bika.lims import PMF, logger
+from bika.lims.browser.analyses import AnalysesView
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.layout.globals.interfaces import IViewView
 from zope.interface import implements
 import json
 import plone
+
+class SamplePartitionsView(AnalysesView):
+
+    def selected_cats(self, items):
+        return self.categories
+
+    def folderitems(self, full_objects=True):
+        self.contentsMethod = self.context.getAnalyses
+        items = super(SamplePartitionsView, self).folderitems()
+
+        self.categories = []
+        for x in range(len(items)):
+            part = items[x]['obj'].getSamplePartition()
+            cat = "%s %s %s" % (part.id,
+                                ",".join([c.Title() for c in part.getContainer()]),
+                                ",".join([p.Title() for p in part.getPreservation()]))
+            items[x]['category'] = cat
+            if not cat in self.categories:
+                self.categories.append(cat)
+
+        return items
+
 
 class SampleViewView(BrowserView):
     """ Sample View form
@@ -29,8 +52,13 @@ class SampleViewView(BrowserView):
         return DateTime()
 
     def __call__(self):
+        p = SamplePartitionsView(self.context,
+                                 self.request,
+                                 sort_on = 'getServiceTitle')
+        p.show_select_column = False
+        p.review_states[0]['transitions'] = [{'id':'submit'}]
+        self.parts = p.contents_table()
         return self.template()
-
 
 class SampleEditView(SampleViewView):
     """ Sample Edit form
@@ -48,6 +76,17 @@ class SampleEditView(SampleViewView):
         return DateTime()
 
     def __call__(self):
+
+        p = SamplePartitionsView(self.context,
+                                 self.request,
+                                 sort_on = 'getServiceTitle')
+        p.allow_edit = True
+        p.review_states[0]['transitions'] = [{'id':'submit'},
+                                             {'id':'retract'},
+                                             {'id':'verify'}]
+        p.show_select_column = True
+        self.parts = p.contents_table()
+
         workflow = getToolByName(self.context, 'portal_workflow')
 
         if workflow.getInfoFor(self.context, 'cancellation_state') == "cancelled":
@@ -145,6 +184,8 @@ class ajaxSampleSubmit():
 
         self.context.plone_utils.addPortalMessage(message, 'info')
         return json.dumps({'success':message})
+
+
 
 class SamplesView(BikaListingView):
     implements(IViewView)

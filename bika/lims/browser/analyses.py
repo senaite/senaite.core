@@ -144,6 +144,12 @@ class AnalysesView(BikaListingView):
                     if st_uid not in self.specs:
                         proxies = bsc(portal_type = 'AnalysisSpec',
                                       getSampleTypeUID = st_uid)
+                elif self.context.portal_type == 'Sample':
+                    st_uid = self.context.getSampleType().UID()
+                    items[i]['st_uid'] = st_uid
+                    if st_uid not in self.specs:
+                        proxies = bsc(portal_type = 'AnalysisSpec',
+                                      getSampleTypeUID = st_uid)
                 else:
                     proxies = []
                 if st_uid not in self.specs:

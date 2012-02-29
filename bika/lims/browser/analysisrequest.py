@@ -19,6 +19,7 @@ from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.layout.globals.interfaces import IViewView
 from zope.component import getMultiAdapter
 from zope.interface import implements, alsoProvides
+import pprint
 import json
 import plone
 import transaction
@@ -439,7 +440,9 @@ class ajaxCalculateParts():
         uc = getToolByName(self.context, 'uid_catalog')
         formvalues = json.loads(self.request['formvalues'])
 
-        debug = App.config.getConfiguration().debug_mode
+        def info(msg):
+           if App.config.getConfiguration().debug_mode:
+               logger.info(msg)
 
         parts = {}
         for col in formvalues.keys():
@@ -455,71 +458,77 @@ class ajaxCalculateParts():
 
             for service_uid in service_uids:
                 service = bsc(UID=service_uid)[0].getObject()
+                infobit = "Col %s: %s: " % (col,service.Title())
 
                 partsetup = [s for s in service.getPartitionSetup() \
                              if s['sampletype'] == st_uid]
                 partsetup = partsetup and partsetup[0] or {}
 
-                # grab service partition setup info
+                # partition setup info
                 seperate = service.getSeperate()
 
-                container = [c.getObject() for c
+                # container from the matching sample type record, OR default
+                container = [c.getObject().UID() for c
                                 in uc(UID=partsetup.get('container', []))
-                                if c] \
-                                or service.getContainer()
+                                if c]
+                container = container or [c.UID() for c
+                                          in service.getContainer()]
 
+                # preservation from the matching sample type record, OR default
                 preservation = [p.getObject() for p
                                 in uc(UID=partsetup.get('preservation', []))
-                                if p] \
-                                or service.getPreservation()
+                                if p]
+                preservation = preservation or [p.UID() for p
+                                                in service.getPreservation()]
 
                 if seperate or (partsetup.get('seperate', False)):
                     # create me a new partition
                     part = {'services': [service_uid,],
                             'seperate': True,
-                            'container': container and container[0].UID() or '',
-                            'preservation': preservation and preservation[0].UID() or ''}
+                            'container': container,
+                            'preservation': preservation}
                     parts[col].append(part)
-                    if debug:
-                        logger.info("Col %s: Creating seperate partition (%s) for %s" %
-                                    (col, len(parts[col]), service.Title()))
+                    info(infobit+"Creating seperate partition %s" % (len(parts[col])-1))
                 else:
                     # find an existing partition
-                    if debug:
-                        logger.info("Col %s: Searching for a partition for %s" %
-                                    (col, service.Title()))
-                    possibles = []
+                    # possible: [(partnr, containers, partitions), ]
+                    # best match (most matching containers/parts) wins
+                    possible = []
                     for p in range(len(parts[col])):
+                        part = parts[col][p]
+
                         # we can't land in 'seperate' partitions
-                        if parts[col][p].get('seperate', None): continue
+                        if part.get('seperate', None): continue
 
-                        # we can land here if the part's container matches ours
-                        # but only if the part's preservation also matches ours
-                        if parts[col][p].get('container', '') == (container and container.UID() or '') \
-                           and parts[col][p].get('preservation', '') == (preservation and preservation.UID() or ''):
-                            if debug:
-                                logger.info("Col %s: adding part %s to possible landing parts for %s" %
-                                            (col, p, service.Title()))
-                            possibles.append(p)
+                        # we can land here if the part's container matches ours.
+                        cc = filter(lambda x:x in part['container'], container)
+                        if cc or (not part['container'] and not container):
 
-                    if possibles:
-                        # if we have possibles, pick one
-                        parts[col][possibles[0]]['services'].append(service.UID())
-                        if debug:
-                            logger.info("Col %s: selecting first possible partition (%s) for %s" %
-                                        (col, possibles[0], service.Title()))
+                            # but only if the part's preservation also matches ours
+                            cp = filter(lambda x:x in part['preservation'], preservation)
+                            if cp or (not part['preservation'] and not preservation):
+                                possible.append((p, cc, cp))
+
+                    if possible:
+                        if len(possible) > 1:
+                            # sort on sum of containers and preservations matched
+                            possible.sort(lambda x,y:cmp(len(x[0])+len(x[1]),
+                                                          len(y[0])+len(y[1])))
+                        info(infobit+"possible partitions: %s" % possible)
+                        possible = possible[0]
+                        parts[col][possible[0]]['services'].append(service_uid)
+                        parts[col][possible[0]]['container'] = possible[1]
+                        parts[col][possible[0]]['preservation'] = possible[2]
+                        info(infobit+"using part %s" % possible[0])
                     else:
-                        # if we have no possibles, create me a new partition
-                        # use first available container/preservation
+                        # Create new partition
                         part = {'services': [service_uid,],
                                 'seperate': False,
-                                'container': container and container.UID() or '',
-                                'preservation': preservation and preservation.UID() or ''}
+                                'container': container,
+                                'preservation': preservation}
                         parts[col].append(part)
-                        if debug:
-                            logger.info("Col %s: No parts found, create new part (%s) for %s" %
-                                        (col, len(parts[col]), service.Title()))
-
+                        info(infobit+"No parts found, create %s" % (len(parts[col])-1))
+        info("parts:\n%s" % pprint.pformat(parts))
         return json.dumps({'parts':parts})
 
 
@@ -976,13 +985,14 @@ class ajaxAnalysisRequestSubmit():
         errors = {}
         def error(field = None, column = None, message = None):
             if not message:
-                message = translate(_('Input is required but no input given.'), domain="plone")
+                message = translate(PMF('Input is required but no input given.'))
             if (column or field):
                 error_key = " %s.%s" % (int(column) + 1, field or '')
             else:
                 error_key = "Form Error"
             errors[error_key] = message
 
+        form_parts = json.loads(self.request.form['parts']).get('parts',{})
 
         if came_from == "edit":
 
@@ -1151,7 +1161,6 @@ class ajaxAnalysisRequestSubmit():
 
             message = translate(PMF("Changes saved."))
 
-
         else:
         # came_from == "add"
         # ------------------
@@ -1226,6 +1235,7 @@ class ajaxAnalysisRequestSubmit():
 
             # The actual submission
             for column in columns:
+                parts = form_parts.get(unicode(column), '')
                 formkey = "ar.%s" % column
                 values = form[formkey].copy()
                 ar_number = 1
@@ -1303,6 +1313,27 @@ class ajaxAnalysisRequestSubmit():
                 ARs.append(ar_id)
 
                 ar.setAnalyses(Analyses, prices = prices)
+                ar_analyses = ar.objectValues('Analysis')
+
+                # Create sample partitions
+                if not parts:
+                    parts = [{'services':Analyses,
+                             'container':[],
+                             'preservation':'',
+                             'seperate':False}]
+                for p in parts:
+                    analyses = [a for a in ar_analyses
+                                if a.getServiceUID() in p['services']]
+                    _id = sample.invokeFactory('SamplePartition', id = 'tmp')
+                    part = sample[_id]
+                    part.edit(
+                        Container = p['container'],
+                        Preservation = p['preservation'],
+                        Analyses = analyses,
+                    )
+                    part.processForm()
+                    for analysis in analyses:
+                        analysis.setSamplePartition(part)
 
                 if (values.has_key('profileTitle')):
                     _id = self.context.invokeFactory(type_name = 'ARProfile', id = 'tmp')

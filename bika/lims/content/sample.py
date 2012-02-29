@@ -223,21 +223,13 @@ class Sample(BaseFolder, HistoryAwareMixin):
         return ars
 
     security.declarePublic('getAnalyses')
-    def getAnalyses(self):
-        """ return list of titles of analyses linked to this sample """
-        ars = self.getAnalysisRequests()
+    def getAnalyses(self, full_objects=True):
+        """ return list of analyses for all partitions in this sample
+        ignore full_objects
+        """
         analyses = []
-        for ar in ars:
-            for analysis in ar.getAnalyses():
-                analyses.append(analysis.Title())
-        """ sort, and remove duplicates """
-        if analyses:
-            analyses.sort()
-            last = analyses[-1]
-            for i in range(len(analyses) - 2, -1, -1):
-                if last == analyses[i]: del analyses[i]
-                else: last = analyses[i]
-
+        for part in self.objectValues('SamplePartition'):
+            analyses += part.getAnalyses()
         return analyses
 
     security.declarePublic('current_date')
@@ -289,7 +281,4 @@ class Sample(BaseFolder, HistoryAwareMixin):
             return uid
         return fullname
 
-
-
 atapi.registerType(Sample, PROJECTNAME)
-

@@ -27,9 +27,6 @@ def AfterTransitionEventHandler(sample, event):
             raise WorkflowException
         sample.setDateReceived(DateTime())
         sample.reindexObject(idxs = ["review_state", "getDateReceived", ])
-        # Transition moves all partitions to recieved state
-        for spart in sample.objectValues("SamplePartition"):
-            wf.doActionFor(spart, 'receive')
         # when a sample is received, all associated
         # AnalysisRequests are also transitioned
         for ar in sample.getAnalysisRequests():

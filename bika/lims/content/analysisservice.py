@@ -21,7 +21,12 @@ from zope.interface import implements
 from zope import i18n
 import sys
 
-def getContainers(instance, preservation=None, minvol=None, allow_blank=True):
+def getContainers(instance,
+                  preservation=None,
+                  minvol=None,
+                  allow_blank=True,
+                  container_type_entries=False):
+
     """ Containers vocabulary
 
     This is a seperate class so that it can be called from ajax to
@@ -71,10 +76,13 @@ def getContainers(instance, preservation=None, minvol=None, allow_blank=True):
             except MagnitudeError:
                 pass
 
+        # This is to sort the container dropdown contents by type
         ctype = container.getContainerType()
         if ctype:
             if ctype.Title() in all_ctypes:
                 all_ctypes.remove(ctype.Title())
+            # and discard those containers that don't match the preservation
+            # requirement
             if pres_c_types and ctype not in pres_c_types:
                 continue
             if ctype.Title() in containers:
@@ -90,9 +98,11 @@ def getContainers(instance, preservation=None, minvol=None, allow_blank=True):
     cat_str = translate(_('Container Type'))
 
     for ctype in containers.keys():
-        items.append([ctype_to_uid[ctype], "%s: %s"%(cat_str, ctype) ])
+        if container_type_entries:
+            items.append([ctype_to_uid[ctype], "%s: %s"%(cat_str, ctype) ])
         for container in containers[ctype]:
             items.append(container)
+
     # all remaining containers
     for container in containers_notype:
         items.append(list(container))
@@ -152,7 +162,7 @@ class PartitionSetupField(RecordsField):
         items = [['','']] + list(items)
         return DisplayList(items)
 
-    security.declarePublic('ContainerTypes')
+    security.declarePublic('Containers')
     def Containers(self, instance=None):
         instance = instance or self
         return DisplayList(getContainers(instance))
@@ -650,7 +660,7 @@ class AnalysisService(BaseContent, HistoryAwareMixin):
         else:
             return None
 
-    security.declarePublic('ContainerTypes')
+    security.declarePublic('getContainers')
     def getContainers(self, instance=None):
         # On first render, the containers must be limited according to
         # self.Preservation(). After that, the JS takes care of it with

@@ -75,6 +75,14 @@ def generateUniqueId(context):
                            str(sample_number).zfill(sample_padding),
                            str(ar_number).zfill(ar_padding))
 
+    # Sample Partition IDs
+    if context.portal_type == "SamplePartition":
+        matches = [p for p in prefixes if ['portal_type'] == 'SamplePartition']
+        prefix = matches and matches[0]['prefix'] or 'samplepartition'
+        padding = int(matches and matches[0]['padding'] or '0')
+        partnr = str(len(self.context.objectValues('SamplePartition'))+1)
+        return "%s-%s" % (prefix,partnr.zfill(padding))
+
     if context.bika_setup.getExternalIDServer():
 
         # if using external server
