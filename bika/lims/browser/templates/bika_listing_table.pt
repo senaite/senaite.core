@@ -127,16 +127,15 @@ Workflow review state selector
 filter search
 ********************************</tal:comment>
 			<td class="filter noborder" style="text-align:right;whitespace:nowrap;padding:0 0 0 5px;">
-				<tal:filters_enabled tal:condition="python:hasattr(view.bika_listing, 'filter_indexes') and view.bika_listing.filter_indexes">
+				<tal:filters_enabled
+					tal:define="term python:request.get(form_id+'_filter', '');"
+					tal:condition="python:hasattr(view.bika_listing, 'filter_indexes') and view.bika_listing.filter_indexes">
+					<span class="filter-search-button">&nbsp;</span>
 		            <input
-						class="filter-search-input" size="10" autocomplete="off"
+						class="filter-search-input" autocomplete="off"
 						tal:attributes="
 							name python:form_id+'_filter';
-							value python:request.get(form_id+'_filter', '')"/>
-					<a class="filter-search-button"
-						tal:attributes="href view/view_url;"
-						i18n:translate=""><img style="vertical-align:middle;margin-bottom:2px;"
-						src="++resource++bika.lims.images/search_field.png"/></a>
+							value python:term;"/>
 				</tal:filters_enabled>
 			</td>
 		</tr>

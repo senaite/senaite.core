@@ -20,6 +20,11 @@ class SamplePartitionsView(AnalysesView):
     def selected_cats(self, items):
         return self.categories
 
+    def __init__(self, context, request, **kwargs):
+        super(SamplePartitionsView, self).__init__(context, request, **kwargs)
+        self.columns['request'] = {'title': _("Analysis Request")}
+        self.review_states[0]['columns'].insert(0, "request")
+
     def folderitems(self, full_objects=True):
         self.contentsMethod = self.context.getAnalyses
         wf = getToolByName(self.context, 'portal_workflow')
@@ -36,11 +41,17 @@ class SamplePartitionsView(AnalysesView):
             container = container and " | %s"%container or ''
             preservation = ",".join([p.Title() for p in part.getPreservation()])
             preservation = preservation and " | %s"%preservation or ''
+
             cat = "%s%s%s | %s" % \
                 (part.id, container, preservation, state_title)
             items[x]['category'] = cat
             if not cat in self.categories:
                 self.categories.append(cat)
+
+            ar = items[x]['obj'].aq_parent
+            items[x]['request'] = ''
+            items[x]['after']['request'] = "<a href='%s'>%s</a>" % \
+                (ar.absolute_url(), ar.id)
 
         return items
 

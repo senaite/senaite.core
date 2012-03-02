@@ -14,9 +14,8 @@
                  title="Bika web based free and open source LIMS. For more information visit www.bikalabs.com"
 	             tal:attributes="src string:${portal/absolute_url}/++resource++bika.lims.images/logobikalabsfooter.png"
                  i18n:attributes="alt; title" />
-</a>
-
-&nbsp;
+		  </a>
+		  &nbsp;
           <a href="http://plone.org">
             <img src=""
                  height="16"
@@ -29,7 +28,13 @@
         </li>
       </ul>
     </div>
-</div> 
-
-
-
+    <div class="cell width-full position-0">
+	  <p>
+	  <span i18n:translate="">
+	  Copyright &copy; 2000 - <span i18n:name="current_year" tal:define="now modules/DateTime/DateTime" tal:content="now/year" /> by
+	  <span i18n:name="label_bika"><a href="http://www.bikalabs.com" i18n:translate="">Bika Lab Systems</a></span>
+	  </span>
+	  </p>
+	</div>
+	<br/>
+</div>

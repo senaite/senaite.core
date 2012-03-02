@@ -657,10 +657,11 @@ class AnalysisRequestSelectCCView(BikaListingView):
         self.icon = "++resource++bika.lims.images/contact_big.png"
         self.title = _("Contacts to CC")
         self.description = _("Select the contacts that will receive analysis results for this request.")
+        c = context.portal_type == 'AnalysisRequest' and context.aq_parent or context
         self.contentFilter = {'portal_type': 'Contact',
                               'sort_on':'sortable_title',
                               'inactive_state': 'active',
-                              'path': {"query": "/".join(context.getPhysicalPath()),
+                              'path': {"query": "/".join(c.getPhysicalPath()),
                                        "level" : 0 }
                               }
 
@@ -717,12 +718,13 @@ class AnalysisRequestSelectSampleView(BikaListingView):
         self.icon = "++resource++bika.lims.images/sample_big.png"
         self.title = _("Select Sample")
         self.description = _("Click on a sample to create a secondary AR")
+        c = context.portal_type == 'AnalysisRequest' and context.aq_parent or context
         self.contentFilter = {'portal_type': 'Sample',
                               'sort_on':'id',
                               'sort_order': 'reverse',
                               'review_state': ['due', 'received'],
                               'cancellation_state': 'active',
-                              'path': {"query": "/".join(context.getPhysicalPath()),
+                              'path': {"query": "/".join(c.getPhysicalPath()),
                                        "level" : 0 }
                               }
         self.show_sort_column = False

@@ -2,16 +2,7 @@
      i18n:domain="plone"
      class="row">
     <div class="cell width-full position-0">
-
         <div id="portal-footer">
-<p>
-<span i18n:translate="">
-Copyright &copy; 2000 - <span i18n:name="current_year" tal:define="now modules/DateTime/DateTime" tal:content="now/year" /> by
-<span i18n:name="label_bika"><a href="http://www.bikalabs.com" i18n:translate="">Bika Lab Systems</a></span>
-</span>
-</p>
-
         </div>
-
     </div>
 </div>

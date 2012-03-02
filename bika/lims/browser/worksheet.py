@@ -1120,7 +1120,7 @@ class ajaxSetAnalyst():
         value = request.get('value', '')
         if not value:
             return
-        if not mtool.getMemberById(analyst):
+        if not mtool.getMemberById(value):
             return
         self.context.setAnalyst(value)
 

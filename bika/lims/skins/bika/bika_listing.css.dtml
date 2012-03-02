@@ -54,7 +54,7 @@ div.bika_listing {
 }
 
 .bika-listing-table tr {
-	line-height: 2.1em;
+	line-height: 2em; /*2.1em;*/
     border-left: &dtml-borderWidth; &dtml-borderStyle; &dtml-borderColor;;
 }
 
@@ -70,7 +70,7 @@ div.bika_listing {
 .bika-listing-table th {
     background-color: &dtml-tableHeaderBackgroundColor;;
 	color: &dtml-tableHeaderTextColor;;
-	padding:4px;
+	padding:1px;
 	text-align:center;
     vertical-align: middle;
 /* <dtml-if tableVerticalGrid> */ border-right: 1px solid &dtml-borderColor;;
@@ -79,7 +79,7 @@ div.bika_listing {
 
 .bika-listing-table td {
     vertical-align: middle;
-	padding:2px 4px 2px 4px;
+	padding:1px 4px 1px 4px;
 /* <dtml-if tableHorizontalGrid> */	border-right: 1px solid &dtml-borderColor;;
 /* <dtml-else> */	border-right: none; /* </dtml-if> */
 }
@@ -229,23 +229,27 @@ td.review_state_selector{
 /***  filter text entry and buttons   ***/
 
 .filter-search-input {
-	background: transparent;
+	background:transparent;
+	background-image:url(&dtml-portal_url;/++resource++bika.lims.images/search_submit.png);
+	background-position:2% 55%;
+	background-repeat:no-repeat;
     border: 1px solid #DDD !important;
-    border-radius: 0.25em 0.25em 0.25em 0.25em;
+    border-radius: &dtml-buttonBorderRadius;;
     font-weight: normal;
-    padding: 2px 5px !important;
-}
-
-.filter-search-clear {
-  border-radius: &dtml-buttonBorderRadius;;
-  background: &dtml-buttonBackgroundColor;;
-  border:1px solid &dtml-buttonBorderColor; !important;
-  color: &dtml-buttonTextColor; !important;
-  font-weight:normal;
-  padding:2px 2px 2px 2px !important;
+	width:8em;
+    padding: 2px 5px 2px 20px !important;
 }
 
 .filter-search-button {
+  border:medium none;
+  background:transparent;
+  padding:5px 7px;
+  cursor:pointer;
+  position:relative;
+  left:20px;
+}
+
+.ws-analyses-search-button {
   border-radius: &dtml-buttonBorderRadius;;
   background: &dtml-buttonBackgroundColor;;
   border:1px solid &dtml-buttonBorderColor; !important;
@@ -253,8 +257,6 @@ td.review_state_selector{
   font-weight:normal;
   padding:2px 5px 2px 5px !important;
 }
-
-
 
 /* pagesize dropdown */
 .pagesize_selector {

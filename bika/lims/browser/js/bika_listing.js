@@ -217,10 +217,7 @@ $(document).ready(function(){
 	});
 
 	// trap the Clear search / Search buttons
-	$('.filter-search-button,.filter-search-clear').live('click', function(event){
-		if ($(this).hasClass('filter-search-clear')){
-			$('.filter-search-input').val('');
-		}
+	$('.filter-search-button').live('click', function(event){
 		form = $(this).parents('form');
 		form_id = $(form).attr('id');
 		stored_form_action = $(form).attr("action");

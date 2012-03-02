@@ -248,6 +248,8 @@ class WorksheetFolderListingView(BikaListingView):
             analyst = obj.getAnalyst().strip()
             creator = obj.Creator().strip()
 
+            items[x]['Analyst'] = analyst
+
             items[x]['Title'] = obj.Title()
             wst = obj.getWorksheetTemplate()
             items[x]['Template'] = wst and wst.Title() or ''
@@ -350,16 +352,10 @@ class WorksheetFolderListingView(BikaListingView):
             items[x]['replace']['QC'] = " ".join(blanks + controls)
 
             if items[x]['review_state'] == 'open':
-                items[x]['Analyst'] = member.getId()
                 items[x]['allow_edit'] = ['Analyst', ]
                 items[x]['required'] = ['Analyst', ]
                 can_reassign = True
                 items[x]['choices'] = {'Analyst': analyst_choices}
-            else:
-                if member != None:
-                    items[x]['Analyst'] = member.getProperty('fullname')
-                else:
-                    items[x]['Analyst'] = ''
 
             new_items.append(items[x])
 

@@ -105,7 +105,7 @@
 				</tal:options>
 			</select>&nbsp;
 			<a href="view/view_url" i18n:translate=""
-				class="filter-search-button">Search</a>
+				class="ws-analyses-search-button">Search</a>
 		</fieldset>
 
 	</tal:searchform>
