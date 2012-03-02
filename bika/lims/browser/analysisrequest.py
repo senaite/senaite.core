@@ -475,7 +475,7 @@ class ajaxCalculateParts():
                                           in service.getContainer()]
 
                 # preservation from the matching sample type record, OR default
-                preservation = [p.getObject() for p
+                preservation = [p.getObject().UID() for p
                                 in uc(UID=partsetup.get('preservation', []))
                                 if p]
                 preservation = preservation or [p.UID() for p

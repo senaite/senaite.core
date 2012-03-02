@@ -22,20 +22,27 @@ class SamplePartitionsView(AnalysesView):
 
     def folderitems(self, full_objects=True):
         self.contentsMethod = self.context.getAnalyses
+        wf = getToolByName(self.context, 'portal_workflow')
         items = super(SamplePartitionsView, self).folderitems()
 
         self.categories = []
         for x in range(len(items)):
+
             part = items[x]['obj'].getSamplePartition()
-            cat = "%s %s %s" % (part.id,
-                                ",".join([c.Title() for c in part.getContainer()]),
-                                ",".join([p.Title() for p in part.getPreservation()]))
+            rs = wf.getInfoFor(part, 'review_state')
+            state_title = wf.getTitleForStateOnType(rs, part.portal_type)
+
+            container = ",".join([c.Title() for c in part.getContainer()])
+            container = container and " | %s"%container or ''
+            preservation = ",".join([p.Title() for p in part.getPreservation()])
+            preservation = preservation and " | %s"%preservation or ''
+            cat = "%s%s%s | %s" % \
+                (part.id, container, preservation, state_title)
             items[x]['category'] = cat
             if not cat in self.categories:
                 self.categories.append(cat)
 
         return items
-
 
 class SampleViewView(BrowserView):
     """ Sample View form

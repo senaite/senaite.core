@@ -47,7 +47,7 @@
          url_expr="string:${object_url}/contacts"
          i18n:attributes="title"
          visible="True">
-  <permission value="List folder contents"/>
+  <permission value="BIKA: Manage Clients"/>
  </action>
 
  <action title="Samples"
@@ -59,7 +59,7 @@
          url_expr="string:${object_url}/samples"
          i18n:attributes="title"
          visible="True">
-  <permission value="List folder contents"/>
+  <permission value="BIKA: Manage Sample"/>
  </action>
 
  <action title="Analysis Requests"
@@ -71,7 +71,7 @@
          url_expr="string:${object_url}/analysisrequests"
          i18n:attributes="title"
          visible="True">
-  <permission value="List folder contents"/>
+  <permission value="BIKA: Manage Analysis Requests"/>
  </action>
 
  <action title="Imports"
@@ -83,7 +83,7 @@
          url_expr="string:${object_url}/arimports"
          i18n:attributes="title"
          visible="False">
-  <permission value="List folder contents"/>
+  <permission value="BIKA: Manage ARImport"/>
  </action>
 
  <action title="Profiles"
@@ -95,7 +95,7 @@
          url_expr="string:${object_url}/arprofiles"
          i18n:attributes="title"
          visible="True">
-  <permission value="List folder contents"/>
+  <permission value="BIKA: Manage Analysis Requests"/>
  </action>
 
  <action title="Analysis Specs"
@@ -107,7 +107,7 @@
          url_expr="string:${object_url}/analysisspecs"
          i18n:attributes="title"
          visible="True">
-  <permission value="List folder contents"/>
+  <permission value="BIKA: Manage Analysis Requests"/>
  </action>
 
  <action title="Attachments"
@@ -119,7 +119,7 @@
          url_expr="string:${object_url}/attachments"
          i18n:attributes="title"
          visible="False">
-  <permission value="List folder contents"/>
+  <permission value="BIKA: Manage Analysis Requests"/>
  </action>
 
  <action title="Orders"
@@ -131,7 +131,7 @@
          url_expr="string:${object_url}/orders"
          i18n:attributes="title"
          visible="False">
-  <permission value="List folder contents"/>
+  <permission value="BIKA: Manage Analysis Requests"/>
  </action>
 
 </object>

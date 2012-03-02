@@ -656,6 +656,7 @@ jQuery( function($) {
 				url: window.location.href.replace("/analysisrequest_add","/analysisrequest_submit").
 					 replace("/base_edit","/analysisrequest_submit"),
 				dataType: 'json',
+				data: {'_authenticator': $('input[name="_authenticator"]').val()},
 				beforeSubmit: function(formData, jqForm, options) {
 					$("input[class~='context']").attr('disabled',true);
 				},

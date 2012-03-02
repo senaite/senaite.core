@@ -77,10 +77,11 @@ def generateUniqueId(context):
 
     # Sample Partition IDs
     if context.portal_type == "SamplePartition":
-        matches = [p for p in prefixes if ['portal_type'] == 'SamplePartition']
+        matches = [p for p in prefixes if p['portal_type'] == 'SamplePartition']
         prefix = matches and matches[0]['prefix'] or 'samplepartition'
         padding = int(matches and matches[0]['padding'] or '0')
-        partnr = str(len(self.context.objectValues('SamplePartition'))+1)
+        # at this time the part exists, so +1 would be 1 too many
+        partnr = str(len(context.aq_parent.objectValues('SamplePartition')))
         return "%s-%s" % (prefix,partnr.zfill(padding))
 
     if context.bika_setup.getExternalIDServer():

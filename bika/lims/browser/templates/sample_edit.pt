@@ -161,7 +161,9 @@
 
 	</form>
 
+	<br/>
 	<fieldset/>
+	<br/>
 
 	<tal:parts replace="structure view/parts"/>
 

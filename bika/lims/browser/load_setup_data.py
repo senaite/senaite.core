@@ -12,11 +12,9 @@ from xml.etree.ElementTree import XML
 from zipfile import ZipFile, ZIP_DEFLATED
 from zope.app.component.hooks import getSite
 import Globals
-import App
 import tempfile
 import transaction
 import zope
-import time
 from pkg_resources import resource_listdir, resource_filename
 
 class LoadSetupData(BrowserView):
@@ -45,9 +43,6 @@ class LoadSetupData(BrowserView):
         if not 'submitted' in form:
             return self.template()
 
-        if App.config.getConfiguration().debug_mode:
-            start = time.time()
-
         self.portal_catalog = getToolByName(self.context, 'portal_catalog')
         self.bsc = bsc = getToolByName(self.context, 'bika_setup_catalog')
         self.reference_catalog = getToolByName(self.context, REFERENCE_CATALOG)
@@ -69,10 +64,8 @@ class LoadSetupData(BrowserView):
         sheets = {}
         for sheetname in wb.get_sheet_names():
             sheets[sheetname] = wb.get_sheet_by_name(sheetname)
-        #self.load_prefixes(sheets['Prefixes'])
         self.load_lab_users(sheets['Lab Users'])
         self.load_lab_contacts(sheets['Lab Contacts'])
-        self.departments = {}
         self.load_lab_departments(sheets['Lab Departments'])
         self.load_containertypes(sheets["Container Types"])
         self.load_preservations(sheets["Preservations"])
@@ -92,6 +85,7 @@ class LoadSetupData(BrowserView):
         self.services = {}
         self.load_analysis_services(sheets['Analysis Services'])
         self.load_calculations(sheets['Calculations'])
+        self.load_partition_setup(sheets['Partition Setup'])
 
         # process deferred services and calculations which depend on each other
         nr_deferred = 0
@@ -151,22 +145,6 @@ class LoadSetupData(BrowserView):
         #drawings = xml.etree.ElementTree.XML
         pass
 
-    def load_prefixes(self, sheet):
-        bs = self.context.bika_setup
-        prefixes = []
-        nr_rows = sheet.get_highest_row()
-        nr_cols = sheet.get_highest_column()
-##        self.request.response.write("<input type='hidden' id='load_section' value='Prefixes' max='%s'/>"%(nr_rows-3))
-##        self.request.response.flush()
-        rows = [[sheet.cell(row=row_nr, column=col_nr).value for col_nr in range(nr_cols)] for row_nr in range(nr_rows)]
-        fields = rows[1]
-        for row in rows[3:]:
-            row = dict(zip(fields, row))
-            prefixes.append({'portal_type':row['portal_type'],
-                             'prefix':row['prefix'],
-                             'padding':row['padding']})
-        bs.setPrefixes(prefixes)
-
 
     def load_containertypes(self, sheet):
         nr_rows = sheet.get_highest_row()
@@ -220,6 +198,7 @@ class LoadSetupData(BrowserView):
         rows = [[sheet.cell(row=row_nr, column=col_nr).value for col_nr in range(nr_cols)] for row_nr in range(nr_rows)]
         fields = rows[1]
         folder = self.context.bika_setup.bika_containers
+        self.containers = {}
         for row in rows[3:]:
             row = dict(zip(fields, row))
             _id = folder.invokeFactory('Container', id = 'tmp')
@@ -233,6 +212,7 @@ class LoadSetupData(BrowserView):
                      PrePreserved = row['PrePreserved'] and row['PrePreserved'] or False,
                      Preservation = P and self.preservations[P] or None)
             obj.processForm()
+            self.containers[unicode(row['title'])] = obj
 
 
     def load_lab_users(self, sheet):
@@ -262,6 +242,7 @@ class LoadSetupData(BrowserView):
             for group_id in group_ids:
                 group = portal_groups.getGroupById(group_id)
                 if not group:
+                    translate = self.context.translation_service.translate
                     message = translate(
                         "message_invalid_group",
                         "bika",
@@ -308,6 +289,7 @@ class LoadSetupData(BrowserView):
             self.lab_contacts.append(row)
 
     def load_lab_departments(self, sheet):
+        self.departments = {}
         lab_contacts = self.bsc(portal_type="LabContact")
         nr_rows = sheet.get_highest_row()
         nr_cols = sheet.get_highest_column()
@@ -562,95 +544,46 @@ class LoadSetupData(BrowserView):
             self.service_objs = {}
         if not self.deferred.has_key('Analysis Services'):
             self.deferred['Analysis Services'] = []
+
         folder = self.context.bika_setup.bika_analysisservices
+
         for row in services:
-            if not row['title']:
-                if deferred:
-                    r = []
-                    if (row['ResultValue'] not in ['', None]):
-                        r.append({'ResultValue': str(row['ResultValue']),
-                                  'ResultText': str(row['ResultText'])})
-                        self.deferred['Analysis Services'][-1]['_choices'].append(r)
-                    if row['intercept_min'] and row['errorvalue'] and row['intercept_max']:
-                        u = {'intercept_min': unicode(row['intercept_min']),
-                             'intercept_max': unicode(row['intercept_max']),
-                             'errorvalue': unicode(row['errorvalue'])}
-                        self.deferred['Analysis Services'][-1]['_uncert'].append(u)
-                    continue
-                r = []
-                if (row['ResultValue'] not in ['', None]):
-                    r.append({'ResultValue': str(row['ResultValue']),
-                              'ResultText': str(row['ResultText'])})
-                    service_obj.setResultOptions(
-                        service_obj.getResultOptions() + r
-                    )
-                if row['intercept_min'] and \
-                   row['intercept_max'] and \
-                   row['errorvalue']:
-                    u = [{'intercept_min': unicode(row['intercept_min']),
-                          'intercept_max': unicode(row['intercept_max']),
-                          'errorvalue': unicode(row['errorvalue'])}]
-                    service_obj.setUncertainties(
-                        service_obj.getUncertainties() + u
-                    )
-                continue
             if row['Calculation'] and not row['Calculation'] in \
                [c.Title() for c in self.calcs.values()]:
-                # remaining uncertainty values in subsequent rows
-                # for deferred services get stored here
-                if not '_uncert' in row:
-                    row['_uncert'] = []
-                if not '_choices' in row:
-                    row['_choices'] = []
                 self.deferred['Analysis Services'].append(row)
                 deferred = 1
                 continue
             deferred = 0
+
             _id = folder.invokeFactory('AnalysisService', id = 'tmp')
             obj = folder[_id]
-            if row['errorvalue']:
-                u = [{'intercept_min': unicode(row['intercept_min']),
-                     'intercept_max': unicode(row['intercept_max']),
-                     'errorvalue': unicode(row['errorvalue'])}]
-            else:
-                u = []
-            resultoptions = []
-            if (row['ResultValue'] not in ['', None]):
-                resultoptions.append({'ResultValue': str(row['ResultValue']),
-                                      'ResultText': str(row['ResultText'])})
-            cat = row['Category'] and unicode(row['Category']) or unicode('Uncategorised')
-            obj.edit(title = unicode(row['title']),
-                 description = unicode(row['description']),
-                 PointOfCapture = unicode(row['PointOfCapture']),
-                 Unit = row['Unit'] and unicode(row['Unit']) or None,
-                 Category = self.cats[unicode(row['Category'])].UID(),
-                 Price = "%02f" % float(row['Price']),
-
-                 CorporatePrice = "%02f" % float(row['BulkPrice']),
-                 VAT = "%02f" % float(row['VAT']),
-                 Precision = unicode(row['Precision']),
-                 Accredited = row['Accredited'] and True or False,
-                 Keyword = unicode(row['Keyword']),
-                 MaxTimeAllowed = {'days':unicode(row['Days']),
-                                   'hours':unicode(row['Hours']),
-                                   'minutes':unicode(row['Minutes'])},
-                 DuplicateVariation = "%02f" % float(row['DuplicateVariation']),
-                 Uncertanties = u,
-                 ResultOptions = resultoptions,
-                 ReportDryMatter = row['ReportDryMatter'] and True or False
-                 )
+            obj.edit(
+                title = unicode(row['title']),
+                description = unicode(row['description']),
+                Container = row['Container'] and [self.containers[c] for c in row['Container'].split(",")] or [],
+                Preservation = row['Preservation'] and [self.preservations[c] for c in row['Preservation'].split(",")] or [],
+                PointOfCapture = unicode(row['PointOfCapture']),
+                Unit = row['Unit'] and unicode(row['Unit']) or None,
+                Category = self.cats[unicode(row['Category'])].UID(),
+                Price = "%02f" % float(row['Price']),
+                CorporatePrice = "%02f" % float(row['BulkPrice']),
+                VAT = "%02f" % float(row['VAT']),
+                Precision = unicode(row['Precision']),
+                Accredited = row['Accredited'] and True or False,
+                Keyword = unicode(row['Keyword']),
+                MaxTimeAllowed = row['MaxTimeAllowed'] and eval(row['MaxTimeAllowed']) or {},
+                DuplicateVariation = "%02f" % float(row['DuplicateVariation']),
+                Uncertanties = row['Uncertainties'] and eval(row['Uncertainties']) or [],
+                ResultOptions = row['Uncertainties'] and eval(row['Uncertainties']) or [],
+                ReportDryMatter = row['ReportDryMatter'] and True or False
+            )
             if row['Instrument']:
                 obj.setInstrument(row['Instrument'] in self.instruments and self.instruments[row['Instrument']].UID()),
             if row['Calculation']:
                 obj.setCalculation(self.calcs[row['Calculation']])
-            if '_uncert' in row:
-                obj.setUncertainties(obj.getUncertainties() + row['_uncert'])
-            if '_choices' in row:
-                obj.setResultOptions(obj.getResultOptions() + row['_choices'])
             service_obj = obj
             self.services[row['Keyword']] = obj
             obj.processForm()
-
 
     def load_analysis_services(self, sheet):
         nr_rows = sheet.get_highest_row()
@@ -980,3 +913,23 @@ class LoadSetupData(BrowserView):
                      description = unicode(row['description']))
             obj.processForm()
 
+    def load_partition_setup(self, sheet):
+        nr_rows = sheet.get_highest_row()
+        nr_cols = sheet.get_highest_column()
+##        self.request.response.write("<input type='hidden' id='load_section' value='Reference Manufacturers' max='%s'/>"%(nr_rows-3))
+##        self.request.response.flush()
+        rows = [[sheet.cell(row=row_nr, column=col_nr).value for col_nr in range(nr_cols)] for row_nr in range(nr_rows)]
+        fields = rows[1]
+        folder = self.context.bika_setup.bika_analysisservices
+        for row in rows[3:]:
+            row = dict(zip(fields, row))
+            if not row['Analysis Service']: continue
+            service = self.services[row['Analysis Service']]
+            sampletype = self.sampletypes[row['Sample Type']]
+            ps = service.getPartitionSetup()
+            ps.append({'service': service.UID(),
+                       'sampletype': sampletype.UID(),
+                       'container':self.containers[row['Container']].UID(),
+                       'preservation':self.preservations[row['Preservation']].UID(),
+                       'seperate':row['Seperate']})
+            service.setPartitionSetup(ps)

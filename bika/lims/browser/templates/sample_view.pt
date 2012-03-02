@@ -159,7 +159,9 @@
             name="workflow_action"/>
     </form>
 
+	<br/>
 	<fieldset/>
+	<br/>
 
 	<tal:parts replace="structure view/parts"/>
 
