@@ -574,7 +574,7 @@ class LoadSetupData(BrowserView):
                 MaxTimeAllowed = row['MaxTimeAllowed'] and eval(row['MaxTimeAllowed']) or {},
                 DuplicateVariation = "%02f" % float(row['DuplicateVariation']),
                 Uncertanties = row['Uncertainties'] and eval(row['Uncertainties']) or [],
-                ResultOptions = row['Uncertainties'] and eval(row['Uncertainties']) or [],
+                ResultOptions = row['ResultOptions'] and eval(row['ResultOptions']) or [],
                 ReportDryMatter = row['ReportDryMatter'] and True or False
             )
             if row['Instrument']:
