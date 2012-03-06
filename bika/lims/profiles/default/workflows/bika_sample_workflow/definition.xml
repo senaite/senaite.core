@@ -72,6 +72,42 @@
   </permission-map>
  </state>
 
+ <transition transition_id="sampled"
+             title="Sampled"
+             new_state=""
+             trigger="USER"
+             before_script=""
+             after_script=""
+             i18n:attributes="title">
+  <description i18n:translate=""></description>
+  <action url="workflow_action?workflow_action=sampled"
+          category="workflow"
+          icon=""
+          i18n:translate="">Sampled</action>
+  <guard>
+   <guard-permission>BIKA: Sample Sample</guard-permission>
+   <guard-expression>python:here.guard_sampled_transition()</guard-expression>
+  </guard>
+ </transition>
+
+ <transition transition_id="preserved"
+             title="Preserved"
+             new_state=""
+             trigger="USER"
+             before_script=""
+             after_script=""
+             i18n:attributes="title">
+  <description i18n:translate=""></description>
+  <action url="workflow_action?workflow_action=preserved"
+          category="workflow"
+          icon=""
+          i18n:translate="">Preserved</action>
+  <guard>
+   <guard-permission>BIKA: Preserve Sample</guard-permission>
+   <guard-expression>python:here.guard_preserved_transition()</guard-expression>
+  </guard>
+ </transition>
+
  <transition transition_id="receive"
              title="Receive"
              new_state="sample_received"

@@ -4,7 +4,7 @@
              workflow_id="bika_ar_workflow"
              title="Bika AR Workflow"
              state_variable="review_state"
-             initial_state="sample_due"
+             initial_state="sample_registered"
              manager_bypass="False">
 
 <permission>BIKA: Edit AR</permission>
@@ -17,10 +17,31 @@
 <permission>BIKA: Manage Invoices</permission>
 <permission>BIKA: Cancel and reinstate</permission>
 
-<state state_id="sample_due" title="Sample Due" i18n:attributes="title">
-    <exit-transition transition_id="sample"/>
-    <exit-transition transition_id="preserve"/>
-    <exit-transition transition_id="receive"/>
+<state state_id="sample_registered" title="Registered" i18n:attributes="title">
+    <exit-transition transition_id="auto_sampling_workflow"/>
+    <exit-transition transition_id="auto_no_sampling_workflow"/>
+    <permission-map name="BIKA: Edit AR" acquired="False">
+    </permission-map>
+    <permission-map name="BIKA: Edit Results" acquired="False">
+    </permission-map>
+    <permission-map name="BIKA: Edit Field Results" acquired="False">
+    </permission-map>
+    <permission-map name="BIKA: Sample Sample" acquired="False">
+    </permission-map>
+    <permission-map name="BIKA: Preserve Sample" acquired="False">
+    </permission-map>
+    <permission-map name="BIKA: Receive Sample" acquired="False">
+    </permission-map>
+    <permission-map name="BIKA: Results not requested" acquired="False">
+    </permission-map>
+    <permission-map name="BIKA: Manage Invoices" acquired="False">
+    </permission-map>
+    <permission-map name="BIKA: Cancel and reinstate" acquired="False">
+    </permission-map>
+</state>
+
+<state state_id="to_be_sampled" title="To Be Sampled" i18n:attributes="title">
+    <exit-transition transition_id="sampled"/>
     <permission-map name="BIKA: Edit AR" acquired="False">
         <permission-role>Manager</permission-role>
         <permission-role>LabManager</permission-role>
@@ -44,16 +65,8 @@
         <permission-role>Sampler</permission-role>
     </permission-map>
     <permission-map name="BIKA: Preserve Sample" acquired="False">
-        <permission-role>Manager</permission-role>
-        <permission-role>LabManager</permission-role>
-        <permission-role>LabClerk</permission-role>
-        <permission-role>Preserver</permission-role>
     </permission-map>
     <permission-map name="BIKA: Receive Sample" acquired="False">
-        <permission-role>Manager</permission-role>
-        <permission-role>LabManager</permission-role>
-        <permission-role>LabClerk</permission-role>
-        <permission-role>Sampler</permission-role>
     </permission-map>
     <permission-map name="BIKA: Results not requested" acquired="False">
     </permission-map>
@@ -63,6 +76,106 @@
         <permission-role>Manager</permission-role>
         <permission-role>LabManager</permission-role>
         <permission-role>Owner</permission-role>
+        <permission-role>LabClerk</permission-role>
+    </permission-map>
+</state>
+
+<state state_id="sampled" title="Sampled" i18n:attributes="title">
+    <exit-transition transition_id="auto_preservation_required"/>
+    <exit-transition transition_id="auto_no_preservation_required"/>
+    <permission-map name="BIKA: Edit AR" acquired="False">
+    </permission-map>
+    <permission-map name="BIKA: Edit Results" acquired="False">
+    </permission-map>
+    <permission-map name="BIKA: Edit Field Results" acquired="False">
+    </permission-map>
+    <permission-map name="BIKA: Sample Sample" acquired="False">
+    </permission-map>
+    <permission-map name="BIKA: Preserve Sample" acquired="False">
+    </permission-map>
+    <permission-map name="BIKA: Receive Sample" acquired="False">
+    </permission-map>
+    <permission-map name="BIKA: Results not requested" acquired="False">
+    </permission-map>
+    <permission-map name="BIKA: Manage Invoices" acquired="False">
+    </permission-map>
+    <permission-map name="BIKA: Cancel and reinstate" acquired="False">
+    </permission-map>
+</state>
+
+<state state_id="to_be_preserved" title="To Be Preserved" i18n:attributes="title">
+    <exit-transition transition_id="preserved"/>
+    <permission-map name="BIKA: Edit AR" acquired="False">
+        <permission-role>Manager</permission-role>
+        <permission-role>LabManager</permission-role>
+        <permission-role>LabClerk</permission-role>
+        <permission-role>Preserver</permission-role>
+        <permission-role>Owner</permission-role>
+    </permission-map>
+    <permission-map name="BIKA: Edit Results" acquired="False">
+    </permission-map>
+    <permission-map name="BIKA: Edit Field Results" acquired="False">
+        <permission-role>Manager</permission-role>
+        <permission-role>LabManager</permission-role>
+        <permission-role>Analyst</permission-role>
+        <permission-role>LabClerk</permission-role>
+    </permission-map>
+    <permission-map name="BIKA: Sample Sample" acquired="False">
+    </permission-map>
+    <permission-map name="BIKA: Preserve Sample" acquired="False">
+        <permission-role>Manager</permission-role>
+        <permission-role>LabManager</permission-role>
+        <permission-role>LabClerk</permission-role>
+        <permission-role>Preserver</permission-role>
+    </permission-map>
+    <permission-map name="BIKA: Receive Sample" acquired="False">
+    </permission-map>
+    <permission-map name="BIKA: Results not requested" acquired="False">
+    </permission-map>
+    <permission-map name="BIKA: Manage Invoices" acquired="False">
+    </permission-map>
+    <permission-map name="BIKA: Cancel and reinstate" acquired="False">
+        <permission-role>Manager</permission-role>
+        <permission-role>LabManager</permission-role>
+        <permission-role>Owner</permission-role>
+        <permission-role>LabClerk</permission-role>
+    </permission-map>
+</state>
+
+<state state_id="sample_due" title="Sample Due" i18n:attributes="title">
+    <exit-transition transition_id="receive"/>
+    <permission-map name="BIKA: Edit AR" acquired="False">
+        <permission-role>Manager</permission-role>
+        <permission-role>LabManager</permission-role>
+        <permission-role>LabClerk</permission-role>
+        <permission-role>Owner</permission-role>
+    </permission-map>
+    <permission-map name="BIKA: Edit Results" acquired="False">
+    </permission-map>
+    <permission-map name="BIKA: Edit Field Results" acquired="False">
+        <permission-role>Manager</permission-role>
+        <permission-role>LabManager</permission-role>
+        <permission-role>Analyst</permission-role>
+        <permission-role>LabClerk</permission-role>
+    </permission-map>
+    <permission-map name="BIKA: Sample Sample" acquired="False">
+    </permission-map>
+    <permission-map name="BIKA: Preserve Sample" acquired="False">
+    </permission-map>
+    <permission-map name="BIKA: Receive Sample" acquired="False">
+        <permission-role>Manager</permission-role>
+        <permission-role>LabManager</permission-role>
+        <permission-role>LabClerk</permission-role>
+    </permission-map>
+    <permission-map name="BIKA: Results not requested" acquired="False">
+    </permission-map>
+    <permission-map name="BIKA: Manage Invoices" acquired="False">
+    </permission-map>
+    <permission-map name="BIKA: Cancel and reinstate" acquired="False">
+        <permission-role>Manager</permission-role>
+        <permission-role>LabManager</permission-role>
+        <permission-role>Owner</permission-role>
+        <permission-role>LabClerk</permission-role>
     </permission-map>
 </state>
 
@@ -165,6 +278,89 @@
   </permission-map>
  </state>
 
+ <transition transition_id="auto_sampling_workflow"
+             title="auto_sampling_workflow"
+             new_state="to_be_sampled"
+             trigger="AUTOMATIC"
+             before_script=""
+             after_script="">
+  <description i18n:translate=""></description>
+  <guard>
+   <guard-expression>python:object.portal_properties.bika_properties.getProperty('sampling_workflow_enabled')</guard-expression>
+  </guard>
+ </transition>
+
+ <transition transition_id="auto_no_sampling_workflow"
+             title="auto_no_sampling_workflow"
+             new_state="sample_due"
+             trigger="AUTOMATIC"
+             before_script=""
+             after_script="">
+  <description i18n:translate=""></description>
+  <guard>
+   <guard-expression>python:not object.portal_properties.bika_properties.getProperty('sampling_workflow_enabled')</guard-expression>
+  </guard>
+ </transition>
+
+ <transition transition_id="sampled"
+             title="Sampled"
+             new_state="sampled"
+             trigger="USER"
+             before_script=""
+             after_script=""
+             i18n:attributes="title">
+  <description i18n:translate=""></description>
+  <action url="workflow_action?workflow_action=sampled"
+          category="workflow"
+          icon=""
+          i18n:translate="">Sampled</action>
+  <guard>
+   <guard-permission>BIKA: Sample Sample</guard-permission>
+   <guard-expression>python:here.guard_sampled_transition()</guard-expression>
+  </guard>
+ </transition>
+
+ <transition transition_id="auto_preservation_required"
+             title="auto_preservation_required"
+             new_state="to_be_preserved"
+             trigger="AUTOMATIC"
+             before_script=""
+             after_script="">
+  <description i18n:translate=""></description>
+  <guard>
+   <guard-expression>python:here.guard_auto_preservation_required()</guard-expression>
+  </guard>
+ </transition>
+
+ <transition transition_id="auto_no_preservation_required"
+             title="auto_no_preservation_required"
+             new_state="sample_due"
+             trigger="AUTOMATIC"
+             before_script=""
+             after_script="">
+  <description i18n:translate=""></description>
+  <guard>
+   <guard-expression>python:here.guard_auto_no_preservation_required()</guard-expression>
+  </guard>
+ </transition>
+
+ <transition transition_id="preserved"
+             title="Preserved"
+             new_state="sample_due"
+             trigger="USER"
+             before_script=""
+             after_script=""
+             i18n:attributes="title">
+  <description i18n:translate=""></description>
+  <action url="workflow_action?workflow_action=preserved"
+          category="workflow"
+          icon=""
+          i18n:translate="">Preserved</action>
+  <guard>
+   <guard-permission>BIKA: Preserve Sample</guard-permission>
+   <guard-expression>python:here.guard_preserved_transition()</guard-expression>
+  </guard>
+ </transition>
 
  <transition transition_id="receive"
              title="Receive sample"

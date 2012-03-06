@@ -1,5 +1,12 @@
 <?xml version="1.0"?>
+
 <object name="portal_properties" meta_type="Plone Properties Tool">
+
+ <object name="bika_properties" meta_type="Plone Property Sheet">
+  <property name="title">Bika-LIMS Site Properties</property>
+    <property name="sampling_workflow_enabled" type="boolean">True</property>
+ </object>
+
  <object name="navtree_properties" meta_type="Plone Property Sheet">
   <property name="title">NavigationTree properties</property>
   <property name="sortAttribute"
@@ -87,6 +94,7 @@
   <property name="enable_wf_state_filtering" type="boolean">False</property>
   <property name="wf_states_to_show" type="lines"/>
 </object>
+
 <object name="site_properties" meta_type="Plone Property Sheet">
   <property name="localTimeFormat" type="string">%d %b %Y</property>
   <property name="localLongTimeFormat" type="string">%d %b %Y %I:%M %p</property>
@@ -94,6 +102,7 @@
   <property name="disable_folder_sections" type="boolean">True</property>
   <property name="disable_nonfolderish_sections" type="boolean">True</property>
 </object>
+
 </object>
 
 

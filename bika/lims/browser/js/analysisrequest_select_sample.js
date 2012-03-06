@@ -11,8 +11,8 @@ $(document).ready(function(){
 		window.opener.$("#ar_"+column+"_SampleID_button").val(row_data['SampleID']);
 		window.opener.$("#ar_"+column+"_SampleID").val(row_data['SampleID']);
 		window.opener.$("#deleteSampleButton_" + column).toggle(true);
-		window.opener.$("#ar_"+column+"_DateSampled")
-			.val(row_data['DateSampled'])
+		window.opener.$("#ar_"+column+"_SamplingDate")
+			.val(row_data['SamplingDate'])
 			.removeClass('hasDatepicker')
 			.removeData('datepicker')
 			.unbind();
@@ -58,7 +58,7 @@ $(document).ready(function(){
 			'<table class="analysisrequest listing nosort" cellpadding="0" cellspacing="0">' +
 		    '<thead>' +
             '<tr><th>' + _('Analysis Requests') + '</th><td class="left">' + row_data['Requests'] + '</td></tr>' +
-            '<tr><th>' + _('Date Sampled') + '</th><td class="left">' + row_data['DateSampled'] + '</td></tr>' +
+            '<tr><th>' + _('Sampling Date') + '</th><td class="left">' + row_data['SamplingDate'] + '</td></tr>' +
             '<tr><th>' + _('Date Received') + '</th><td class="left">' + row_data['DateReceived'] + '</td></tr>' +
 			'</thead>' +
 			'</table></div>').appendTo('body');

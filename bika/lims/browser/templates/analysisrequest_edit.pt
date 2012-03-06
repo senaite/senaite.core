@@ -268,10 +268,10 @@
             </td>
         </tal:block>
     </tr>
-    <!-- Date Sampled -->
-    <tr tal:define="field_name string:DateSampled">
+    <!-- Sampling Date -->
+    <tr tal:define="field_name string:SamplingDate">
         <th colspan="2">
-            <span i18n:translate="">Date Sampled</span>&nbsp;
+            <span i18n:translate="">Sampling Date</span>&nbsp;
             <span class="fieldRequired"
                 tal:condition="can_edit_sample"/>
         </th>
@@ -286,10 +286,10 @@
                 tal:attributes="
                     id input_id;name input_name;
 					column column;
-                    value python:edit and view.TimeOrDate(here, here.getSample().getDateSampled()) or '';
+                    value python:edit and view.TimeOrDate(here, here.getSample().getSamplingDate()) or '';
                     tabindex python:column*100+tabindex.next();"/>
             <span tal:condition="not: can_edit_sample"
-                tal:content="python:view.TimeOrDate(here, here.getSample().getDateSampled())"/>
+                tal:content="python:view.TimeOrDate(here, here.getSample().getsamplingDate())"/>
             </td>
         </tal:block>
     </tr>

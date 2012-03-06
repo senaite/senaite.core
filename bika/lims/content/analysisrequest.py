@@ -163,8 +163,8 @@ schema = BikaSchema.copy() + Schema((
             visible = False,
         ),
     ),
-    ComputedField('DateSampled',
-        expression = 'here.getSample() and here.getSample().getDateSampled() or ""',
+    ComputedField('SamplingDate',
+        expression = 'here.getSample() and here.getSample().getSamplingDate() or ""',
         widget = ComputedWidget(
             visible = False,
         ),

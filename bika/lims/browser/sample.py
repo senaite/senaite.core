@@ -37,10 +37,10 @@ class SamplePartitionsView(AnalysesView):
             rs = wf.getInfoFor(part, 'review_state')
             state_title = wf.getTitleForStateOnType(rs, part.portal_type)
 
-            container = ",".join([c.Title() for c in part.getContainer()])
-            container = container and " | %s"%container or ''
-            preservation = ",".join([p.Title() for p in part.getPreservation()])
-            preservation = preservation and " | %s"%preservation or ''
+            container = part.getContainer()
+            container = container and " | %s"%container.Title() or ''
+            preservation = part.getPreservation()
+            preservation = preservation and " | %s"%preservation.Title() or ''
 
             cat = "%s%s%s | %s" % \
                 (part.id, container, preservation, state_title)
@@ -56,30 +56,7 @@ class SamplePartitionsView(AnalysesView):
         return items
 
 class SampleViewView(BrowserView):
-    """ Sample View form
-    """
-    implements(IViewView)
-    template = ViewPageTemplateFile("templates/sample_view.pt")
-
-    def __init__(self, context, request):
-        BrowserView.__init__(self, context, request)
-        self.icon = "++resource++bika.lims.images/sample_big.png"
-        self.TimeOrDate = TimeOrDate
-
-    def now(self):
-        return DateTime()
-
-    def __call__(self):
-        p = SamplePartitionsView(self.context,
-                                 self.request,
-                                 sort_on = 'getServiceTitle')
-        p.show_select_column = False
-        p.review_states[0]['transitions'] = [{'id':'submit'}]
-        self.parts = p.contents_table()
-        return self.template()
-
-class SampleEditView(SampleViewView):
-    """ Sample Edit form
+    """ Sample View/Edit form
     """
 
     implements(IViewView)
@@ -94,6 +71,61 @@ class SampleEditView(SampleViewView):
         return DateTime()
 
     def __call__(self):
+
+        if 'submitted' in self.request.form:
+
+            can_edit = True
+            workflow = getToolByName(self.context, 'portal_workflow')
+            if workflow.getInfoFor(self.context, 'cancellation_state') == "cancelled":
+                can_edit = False
+            elif not(getSecurityManager().checkPermission(EditSample, self.context)):
+                can_edit = False
+            else:
+                ars = self.context.getAnalysisRequests()
+                for ar in ars:
+                    for a in ar.getAnalyses():
+                        if workflow.getInfoFor(a.getObject(), 'review_state') in ('verified', 'published'):
+                            can_edit = False
+                            break
+                    if not can_edit:
+                        break
+
+            if can_edit:
+                sample = self.context
+                sampleType = form['SampleType']
+                samplePoint = form['SamplePoint']
+                composite = form.get('Composite', False)
+                bsc = getToolByName(self.context, 'bika_setup_catalog')
+                if sampleType == '':
+                    message = _('Sample Type is required')
+                else:
+                    if not bsc(portal_type = 'SampleType', title = sampleType):
+                        message = _("${sampletype} is not a valid sample type",
+                                    mapping={'sampletype':sampleType})
+                if samplePoint != "":
+                    if not bsc(portal_type = 'SamplePoint', title = samplePoint):
+                        message = _("${samplepoint} is not a valid sample point",
+                                    mapping={'sampletype':samplePoint})
+                if not message:
+                    sample.edit(
+                        ClientReference = form['ClientReference'],
+                        ClientSampleID = form['ClientSampleID'],
+                        SampleType = sampleType,
+                        SamplePoint = samplePoint,
+                        SamplingDate = form['SamplingDate'],
+                        Composite = composite
+                    )
+                    sample.reindexObject()
+                    ars = sample.getAnalysisRequests()
+                    for ar in ars:
+                        ar.reindexObject()
+                    message = PMF("Changes saved.")
+            else:
+                message = _("Changes not allowed")
+
+            self.context.plone_utils.addPortalMessage(message, 'info')
+
+            ## End of form submit handler
 
         p = SamplePartitionsView(self.context,
                                  self.request,
@@ -131,79 +163,6 @@ class SampleEditView(SampleViewView):
         while True:
             i += 1
             yield i
-
-    def fmtDateSampled(self):
-        return TimeOrDate(self.context,
-                          self.request.form.has_key("DateSampled") and \
-                          self.request.form["DateSampled"] or \
-                          self.context.getDateSampled())
-
-class ajaxSampleSubmit():
-
-    def __init__(self, context, request):
-        self.context = context
-        self.request = request
-
-    def __call__(self):
-        form = self.request.form
-        plone.protect.CheckAuthenticator(self.request.form)
-        plone.protect.PostOnly(self.request.form)
-
-        can_edit = True
-        workflow = getToolByName(self.context, 'portal_workflow')
-
-        if workflow.getInfoFor(self.context, 'cancellation_state') == "cancelled":
-            can_edit = False
-        elif not(getSecurityManager().checkPermission(EditSample, self.context)):
-            can_edit = False
-        else:
-            ars = self.context.getAnalysisRequests()
-            for ar in ars:
-                for a in ar.getAnalyses():
-                    if workflow.getInfoFor(a.getObject(), 'review_state') in ('verified', 'published'):
-                        can_edit = False
-                        break
-                if not can_edit:
-                    break
-
-        if can_edit:
-            sample = self.context
-            sampleType = form['SampleType']
-            samplePoint = form['SamplePoint']
-            composite = form.get('Composite', False)
-            errors = {}
-            bsc = getToolByName(self.context, 'bika_setup_catalog')
-            if sampleType == '':
-                errors['SampleType'] = 'Sample Type is required'
-            else:
-                if not bsc(portal_type = 'SampleType', Title = sampleType):
-                    errors['SampleType'] = sampleType + ' is not a valid sample type'
-            if samplePoint != "":
-                if not bsc(portal_type = 'SamplePoint', Title = samplePoint):
-                    errors['SamplePoint'] = samplePoint + ' is not a valid sample point'
-            if errors:
-                return json.dumps({'errors':errors})
-
-            sample.edit(
-                ClientReference = form['ClientReference'],
-                ClientSampleID = form['ClientSampleID'],
-                SampleType = sampleType,
-                SamplePoint = samplePoint,
-                DateSampled = form['DateSampled'],
-                Composite = composite
-            )
-            sample.reindexObject()
-            ars = sample.getAnalysisRequests()
-            for ar in ars:
-                ar.reindexObject()
-            message = PMF("Changes saved.")
-        else:
-            message = _("Changes not allowed")
-
-        self.context.plone_utils.addPortalMessage(message, 'info')
-        return json.dumps({'success':message})
-
-
 
 class SamplesView(BikaListingView):
     implements(IViewView)
@@ -249,10 +208,8 @@ class SamplesView(BikaListingView):
             'SamplePointTitle': {'title': _('Sample Point'),
                                 'index': 'getSamplePointTitle',
                                 'toggle': False},
-            'DateSampled': {'title': _('Date Sampled'),
-                            'index':'getDateSampled'},
-            'future_DateSampled': {'title': _('Sampling Date'),
-                                   'index':'getDateSampled'},
+            'SamplingDate': {'title': _('Sampling Date'),
+                             'toggle':True},
             'DateReceived': {'title': _('Date Received'),
                              'index': 'getDateReceived',
                              'toggle': False},
@@ -291,7 +248,7 @@ class SamplesView(BikaListingView):
                          'ClientSampleID',
                          'SampleTypeTitle',
                          'SamplePointTitle',
-                         'DateSampled',
+                         'SamplingDate',
                          'DateReceived']},
             {'id':'expired',
              'title': _('Expired'),
@@ -302,7 +259,7 @@ class SamplesView(BikaListingView):
                          'ClientSampleID',
                          'SampleTypeTitle',
                          'SamplePointTitle',
-                         'DateSampled',
+                         'SamplingDate',
                          'DateReceived']},
             {'id':'disposed',
              'title': _('Disposed'),
@@ -313,7 +270,7 @@ class SamplesView(BikaListingView):
                          'ClientSampleID',
                          'SampleTypeTitle',
                          'SamplePointTitle',
-                         'DateSampled',
+                         'SamplingDate',
                          'DateReceived']},
             {'id':'cancelled',
              'title': _('Cancelled'),
@@ -326,7 +283,7 @@ class SamplesView(BikaListingView):
                          'ClientSampleID',
                          'SampleTypeTitle',
                          'SamplePointTitle',
-                         'DateSampled',
+                         'SamplingDate',
                          'DateReceived',
                          'state_title']},
             ]
@@ -353,17 +310,17 @@ class SamplesView(BikaListingView):
             items[x]['replace']['Client'] = "<a href='%s'>%s</a>" % \
                      (obj.aq_parent.absolute_url(), obj.aq_parent.Title())
 
-            datesampled = obj.getDateSampled()
-            items[x]['DateSampled'] = TimeOrDate(self.context, datesampled, long_format = 0)
-            items[x]['future_DateSampled'] = datesampled.Date() > DateTime() and \
-                TimeOrDate(self.context, datesampled) or ''
-
-            items[x]['DateReceived'] = TimeOrDate(self.context, obj.getDateReceived())
+            samplingdate = obj.getSamplingDate()
+            items[x]['SamplingDate'] = TimeOrDate(self.context,
+                                                  samplingdate,
+                                                  long_format = 0)
+            items[x]['DateReceived'] = TimeOrDate(self.context,
+                                                  obj.getDateReceived())
 
             after_icons = ''
             if obj.getSampleType().getHazardous():
                 after_icons += "<img title='Hazardous' src='++resource++bika.lims.images/hazardous.png'>"
-            if datesampled > DateTime():
+            if samplingdate > DateTime():
                 after_icons += "<img src='++resource++bika.lims.images/calendar.png' title='%s'>" % \
                     translate(_("Future dated sample"))
             if after_icons:

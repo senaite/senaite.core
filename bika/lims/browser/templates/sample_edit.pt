@@ -100,15 +100,38 @@
 
    		<tr>
 			<th>
-				<span i18n:translate="">Date Sampled</span> &nbsp;
+				<span i18n:translate="">Sampling Date</span> &nbsp;
 				<span class="fieldRequired"/>
 			</th>
-			<td class="left">
+			<td class="left"
+				tal:define="date here/getSamplingDate">
 				<input size="10" type='text' readonly="readonly"
+					tal:condition="python:review_state == 'sample_due'"
+					class="datepicker"
+					tal:attributes="
+						id string:SamplingDate;
+						name string:SamplingDate;
+						value python:view.TimeOrDate(context, date)"/>
+				<span
+					tal:condition="python:review_state != 'sample_due'"
+					tal:content="python:view.TimeOrDate(context, date, long_format=1)"/>
+			</td>
+		</tr>
+
+		<tr>
+			<th i18n:translate="">Date Sampled</th>
+			<td class="left"
+				tal:define="date here/getDateSampled">
+				<input size="10" type='text' readonly="readonly"
+					tal:condition="not:date"
+					class="datepicker"
 					tal:attributes="
 						id string:DateSampled;
 						name string:DateSampled;
-						value python:view.TimeOrDate(context, here.getDateSampled())"/>
+						value python:view.TimeOrDate(context, date)"/>
+				<span
+					tal:condition="date"
+					tal:content="python:view.TimeOrDate(context, date, long_format=1)"/>
 			</td>
 		</tr>
 

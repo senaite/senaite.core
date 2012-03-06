@@ -11,9 +11,9 @@
 from DateTime import DateTime
 workflow = context.portal_workflow
 
-# If enable_sampling_workflow is not set, this transition is not available.
+# If sampling_workflow_enabled is not set, this transition is not available.
 props = context.portal_properties.bika_properties
-if not props.getProperty('enable_sampling_workflow', True):
+if not props.getProperty('sampling_workflow_enabled', True):
     return False
 
 # False if object is cancelled

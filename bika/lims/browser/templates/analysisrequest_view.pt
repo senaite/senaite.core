@@ -126,14 +126,13 @@
         <tr>
             <th style="padding-left:3em" i18n:translate="">Status</th>
             <td tal:content="python:review_state.replace('_', ' ')"/>
-            <th style="padding-left:3em" i18n:translate="">Date Sampled</th>
-            <td>
+            <th style="padding-left:3em" i18n:translate="">Sampling Date</th>
+            <td tal:define="sampling_date sample/getSamplingDate">
                 <span
-                    tal:define="date_sampled sample/getDateSampled"
-                    tal:condition="date_sampled"
-                    tal:content="python:view.TimeOrDate(context, date_sampled, long_format=1)"/>
+                    tal:condition="sampling_date"
+                    tal:content="python:view.TimeOrDate(context, sampling_date, long_format=1)"/>
                 <img src='++resource++bika.lims.images/calendar.png'
-                     tal:condition="python:context.getDateSampled() > view.now()"
+                     tal:condition="python:sampling_date > view.now()"
                      title="Future dated sample"
                      i18n:attributes="title"/>
             </td>

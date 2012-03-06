@@ -42,6 +42,15 @@ def AfterTransitionEventHandler(ar, event):
 
     wf = getToolByName(ar, 'portal_workflow')
 
+    if event.transition.id == "sampled":
+        # transition our sample
+        sample = ar.getSample()
+        if not sample.getDateSampled():
+            workflow.doActionFor(sample, 'sampled')
+
+    if event.transition.id == "preserved":
+        pass
+
     if event.transition.id == "receive":
         ar.setDateReceived(DateTime())
         ar.reindexObject(idxs = ["review_state", "getDateReceived", ])

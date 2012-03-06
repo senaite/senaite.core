@@ -52,7 +52,7 @@ class Tests(unittest.TestCase):
                         ClientSampleID = chr(random.randint(70,90))*5,
                         LastARNumber = 1,
                         DateSubmitted = DateTime(),
-                        DateSampled = (i == count_ars and DateTime()+86400 or DateTime()),
+                        SamplingDate = (i == count_ars and DateTime()+86400 or DateTime()),
                         SubmittedByUser = 'testing'
                     )
                     sample.processForm()

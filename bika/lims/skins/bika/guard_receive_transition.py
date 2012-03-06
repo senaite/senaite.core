@@ -24,7 +24,7 @@ if context.portal_type == 'AnalysisRequest':
     # False if the Sampling Workflow is enabled, and any of our sample's
     # partitions are not yet Sampled.
     props = context.portal_properties.bika_properties
-    sampling_workflow_enabled = props.getProperty('enable_sampling_workflow', True)
+    sampling_workflow_enabled = props.getProperty('sampling_workflow_enabled', True)
     if sampling_workflow_enabled:
         if not context.getSample().getDateSampled():
             return False
@@ -43,7 +43,7 @@ elif context.portal_type == 'Sample':
 
     # False if the Sampling Workflow is enabled and not "sampled" yet
     props = context.portal_properties.bika_properties
-    sampling_workflow_enabled = props.getProperty('enable_sampling_workflow', True)
+    sampling_workflow_enabled = props.getProperty('sampling_workflow_enabled', True)
     if sampling_workflow_enabled:
         if not context.getDateSampled():
             return False

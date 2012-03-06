@@ -445,10 +445,10 @@ jQuery( function($) {
 
 		_ = window.jsi18n;
 
-		// DateSampled field is readonly to prevent invalid data entry, so
-		// clicking date_sampled field clears existing values.
+		// Sampling Date field is readonly to prevent invalid data entry, so
+		// clicking SamplingDate field clears existing values.
 		// clear date widget values if the page is reloaded.
-		e = $('input[id$="_DateSampled"]');
+		e = $('input[id$="_SamplingDate"]');
 		if(e.length > 0){
 			// XXX Datepicker format is not i18n aware (dd Oct 2011)
 			if($($(e).parents('form').children('[name=came_from]')).val() == 'add'){
@@ -608,7 +608,7 @@ jQuery( function($) {
 			$("#ar_"+column+"_SampleID").val('');
 			$("#ar_"+column+"_ClientReference").val('').removeAttr("readonly");
 			// XXX Datepicker format is not i18n aware (dd Oct 2011)
-			$("#ar_"+column+"_DateSampled")
+			$("#ar_"+column+"_SamplingDate")
 				.datepicker({'dateFormat': 'dd M yy', showAnim: ''})
 				.click(function(){$(this).attr('value', '');})
 				.attr('value', '');
