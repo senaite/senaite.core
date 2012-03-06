@@ -198,12 +198,17 @@ class AnalysisRequestViewView(BrowserView):
         self.tables = {}
         for poc in POINTS_OF_CAPTURE:
             if self.context.getAnalyses(getPointOfCapture = poc):
-                t = AnalysesView(ar,
-                                 self.request,
-                                 getPointOfCapture = poc)
-                t.show_workflow_action_buttons = False
-                t.allow_edit = False
-                t.show_select_column = False
+                t = AnalysesView(ar, self.request, getPointOfCapture = poc)
+                if getSecurityManager().checkPermission(EditFieldResults, self.context) \
+                   and poc == 'field':
+                    t.review_states[0]['transitions'] = [{'id': 'submit'}]
+                    t.show_workflow_action_buttons = True
+                    t.allow_edit = True
+                    t.show_select_column = True
+                else:
+                    t.show_workflow_action_buttons = False
+                    t.allow_edit = False
+                    t.show_select_column = False
                 self.tables[POINTS_OF_CAPTURE.getValue(poc)] = t.contents_table()
         return self.template()
 
@@ -562,7 +567,7 @@ class AnalysisRequestEditView(AnalysisRequestAddView):
                     break
             if can_edit_sample:
                 sample = ar.getSample()
-                if workflow.getInfoFor(sample, 'cancellation_state') == "cancelled":
+                if workflow.getInfoFor(sample, 'cancellation_state', "active") == "cancelled":
                 # Redundant check. If sample is cancelled then AR is too (in theory).
                     can_edit_sample = False
                 else:
@@ -593,7 +598,7 @@ class AnalysisRequestManageResultsView(AnalysisRequestViewView):
 
         if workflow.getInfoFor(ar, 'cancellation_state') == "cancelled":
             self.request.response.redirect(ar.absolute_url())
-        elif not(getSecurityManager().checkPermission(ManageResults, ar)):
+        elif not(getSecurityManager().checkPermission(EditResults, ar)):
             self.request.response.redirect(ar.absolute_url())
         else:
             self.tables = {}
@@ -725,7 +730,7 @@ class AnalysisRequestSelectSampleView(BikaListingView):
         self.contentFilter = {'portal_type': 'Sample',
                               'sort_on':'id',
                               'sort_order': 'reverse',
-                              'review_state': ['due', 'received'],
+                              'review_state': ['sample_due', 'sample_received'],
                               'cancellation_state': 'active',
                               'path': {"query": "/".join(c.getPhysicalPath()),
                                        "level" : 0 }
@@ -752,6 +757,7 @@ class AnalysisRequestSelectSampleView(BikaListingView):
                                  'index': 'getSamplePointTitle', },
             'DateReceived': {'title': _('Date Received'),
                              'index': 'getDateReceived', },
+            'SamplingDate': {'title': _('Sampling Date')},
             'state_title': {'title': _('State'),
                             'index': 'review_state', },
         }
@@ -764,23 +770,26 @@ class AnalysisRequestSelectSampleView(BikaListingView):
                          'ClientSampleID',
                          'SampleTypeTitle',
                          'SamplePointTitle',
+                         'SamplingDate',
                          'state_title']},
             {'id':'due',
              'title': _('Sample Due'),
-             'contentFilter': {'review_state': 'due'},
-             'columns': ['SampleID',
-                         'ClientReference',
-                         'ClientSampleID',
-                         'SampleTypeTitle',
-                         'SamplePointTitle']},
-            {'id':'received',
-             'title': _('Received'),
-             'contentFilter': {'review_state': 'received'},
+             'contentFilter': {'review_state': 'sample_due'},
              'columns': ['SampleID',
                          'ClientReference',
                          'ClientSampleID',
                          'SampleTypeTitle',
                          'SamplePointTitle',
+                         'SamplingDate']},
+            {'id':'sample_received',
+             'title': _('Sample Received'),
+             'contentFilter': {'review_state': 'sample_received'},
+             'columns': ['SampleID',
+                         'ClientReference',
+                         'ClientSampleID',
+                         'SampleTypeTitle',
+                         'SamplePointTitle',
+                         'SamplingDate',
                          'DateReceived']},
         ]
 
@@ -811,8 +820,8 @@ class AnalysisRequestSelectSampleView(BikaListingView):
                 'ClientSampleID': items[x]['ClientSampleID'],
                 'DateReceived': obj.getDateReceived() and \
                                TimeOrDate(self.context, obj.getDateReceived()) or '',
-                'DateSampled': obj.getDateSampled() and \
-                               TimeOrDate(self.context, obj.getDateSampled()) or '',
+                'SamplingDate': obj.getSamplingDate() and \
+                               TimeOrDate(self.context, obj.getSamplingDate()) or '',
                 'SampleType': items[x]['SampleTypeTitle'],
                 'SamplePoint': items[x]['SamplePointTitle'],
                 'Composite': obj.getComposite(),
@@ -821,8 +830,8 @@ class AnalysisRequestSelectSampleView(BikaListingView):
             })
             items[x]['DateReceived'] = obj.getDateReceived() and \
                  TimeOrDate(self.context, obj.getDateReceived()) or ''
-            items[x]['DateSampled'] = obj.getDateSampled() and \
-                 TimeOrDate(self.context, obj.getDateSampled()) or ''
+            items[x]['SamplingDate'] = obj.getSamplingDate() and \
+                 TimeOrDate(self.context, obj.getSamplingDate()) or ''
         return items
 
     def FieldAnalyses(self, sample):
@@ -1057,7 +1066,7 @@ class ajaxAnalysisRequestSubmit():
                     can_edit_sample = False
 
             if can_edit_sample:
-                required_fields = ['SampleType', 'DateSampled']
+                required_fields = ['SampleType', 'SamplingDate']
                 for field in required_fields:
                     if not values.has_key(field):
                         error(field, 0)
@@ -1105,7 +1114,7 @@ class ajaxAnalysisRequestSubmit():
                 sample.edit(
                     ClientReference = values.has_key('ClientReference') and values['ClientReference'] or '',
                     ClientSampleID = values.has_key('ClientSampleID') and values['ClientSampleID'] or '',
-                    DateSampled = values.has_key('DateSampled') and values['DateSampled'] or '',
+                    SamplingDate = values.has_key('SamplingDate') and values['SamplingDate'] or '',
                     SampleType = values.has_key('SampleType') and values['SampleType'] or '',
                     SamplePoint = values.has_key('SamplePoint') and values['SamplePoint'] or '',
                     Composite = values.has_key('Composite') and values['Composite'] or ''
@@ -1188,7 +1197,7 @@ class ajaxAnalysisRequestSubmit():
                 return json.dumps({'errors':errors})
 
             # Now some basic validation
-            required_fields = ['SampleType', 'DateSampled']
+            required_fields = ['SampleType', 'SamplingDate']
             validated_fields = ('SampleID', 'SampleType', 'SamplePoint')
 
             for column in columns:
@@ -1277,7 +1286,7 @@ class ajaxAnalysisRequestSubmit():
                         SampleType = values['SampleType'],
                         SubmittedByUser = sample.current_user(),
                         DateSubmitted = DateTime(),
-                        DateSampled = values['DateSampled'],
+                        SamplingDate = values['SamplingDate'],
                         Composite = values.get('Composite',False),
                     )
                     sample.processForm()
@@ -1285,10 +1294,6 @@ class ajaxAnalysisRequestSubmit():
                     # Object has been renamed
                     sample_id = sample.getId()
                     sample.edit(SampleID = sample_id)
-
-                    # XXX move to subscriber
-                    dis_date = sample.disposal_date()
-                    sample.setDisposalDate(dis_date)
 
                 sample_uid = sample.UID()
 
@@ -1331,8 +1336,9 @@ class ajaxAnalysisRequestSubmit():
                                 if a.getServiceUID() in p['services']]
                     _id = sample.invokeFactory('SamplePartition', id = 'tmp')
                     part = sample[_id]
+                    container = p['container'] and p['container'][0] or ''
                     part.edit(
-                        Container = p['container'],
+                        Container = container,
                         Preservation = p['preservation'],
                         Analyses = analyses,
                     )
@@ -1349,7 +1355,7 @@ class ajaxAnalysisRequestSubmit():
                     ar.edit(Profile = profile)
 
                 if values.has_key('SampleID') and \
-                   wftool.getInfoFor(sample, 'review_state') != 'due':
+                   wftool.getInfoFor(sample, 'review_state') != 'sample_due':
                     wftool.doActionFor(ar, 'receive')
 
             if len(ARs) > 1:
@@ -1357,7 +1363,7 @@ class ajaxAnalysisRequestSubmit():
                                     mapping = {'ARs': ', '.join(ARs)}))
             else:
                 message = translate(_('Analysis request ${AR} was successfully created.',
-                                    mapping = {'AR': ', '.join(ARs)}))
+                                    mapping = {'AR': ARs[0]}))
 
         self.context.plone_utils.addPortalMessage(message, 'info')
         # automatic label printing
@@ -1423,10 +1429,11 @@ class AnalysisRequestsView(BikaListingView):
             'getSamplePointTitle': {'title': _('Sample Point'),
                                     'index': 'getSamplePointTitle',
                                     'toggle': False},
+            'SamplingDate': {'title': _('Sampling Date'),
+                             'toggle': True},
             'DateSampled': {'title': _('Date Sampled'),
-                            'index': 'getDateSampled'},
-            'future_DateSampled': {'title': _('Sampling Date'),
-                                   'index': 'getDateSampled'},
+                            'index': 'getDateSampled',
+                            'toggle': True},
             'getDateReceived': {'title': _('Date Received'),
                                 'index': 'getDateReceived',
                                 'toggle': False},
@@ -1453,6 +1460,7 @@ class AnalysisRequestsView(BikaListingView):
                         'getClientSampleID',
                         'getSampleTypeTitle',
                         'getSamplePointTitle',
+                        'SamplingDate',
                         'DateSampled',
                         'getDateReceived',
                         'state_title']},
@@ -1469,7 +1477,7 @@ class AnalysisRequestsView(BikaListingView):
                         'getClientOrderNumber',
                         'getClientReference',
                         'getClientSampleID',
-                        'future_DateSampled',
+                        'SamplingDate',
                         'getSampleTypeTitle',
                         'getSamplePointTitle']},
             {'id':'sample_received',
@@ -1608,6 +1616,7 @@ class AnalysisRequestsView(BikaListingView):
                         'getClientSampleID',
                         'getSampleTypeTitle',
                         'getSamplePointTitle',
+                        'SamplingDate',
                         'DateSampled',
                         'getDateReceived',
                         'state_title']},
@@ -1623,7 +1632,7 @@ class AnalysisRequestsView(BikaListingView):
             if not items[x].has_key('obj'): continue
             obj = items[x]['obj']
 
-            if getSecurityManager().checkPermission(ManageResults, obj):
+            if getSecurityManager().checkPermission(EditResults, obj):
                 url = obj.absolute_url() + "/manage_results"
             else:
                 url = obj.absolute_url()
@@ -1636,21 +1645,22 @@ class AnalysisRequestsView(BikaListingView):
             items[x]['replace']['Client'] = "<a href='%s'>%s</a>" % \
                  (obj.aq_parent.absolute_url(), obj.aq_parent.Title())
 
+            samplingdate = obj.getSample().getSamplingDate()
+            items[x]['SamplingDate'] = TimeOrDate(self.context,
+                                                  samplingdate,
+                                                  long_format = 0)
             datesampled = obj.getSample().getDateSampled()
             items[x]['DateSampled'] = TimeOrDate(self.context, datesampled, long_format = 0)
-            items[x]['future_DateSampled'] = datesampled.Date() > DateTime() and \
-                TimeOrDate(self.context, datesampled) or ''
+            items[x]['getDateReceived'] = (self.context,
+                                           obj.getDateReceived())
+            items[x]['getDatePublished'] =  TimeOrDate(self.context,
+                                                       obj.getDatePublished())
 
-            items[x]['getDateReceived'] = \
-                TimeOrDate(self.context, obj.getDateReceived())
-
-            items[x]['getDatePublished'] = \
-                TimeOrDate(self.context, obj.getDatePublished())
-
-            if workflow.getInfoFor(obj, 'worksheetanalysis_review_state') == 'assigned':
+            state = workflow.getInfoFor(obj, 'worksheetanalysis_review_state')
+            if state == 'assigned':
                 items[x]['after']['state_title'] = \
-                     "<img src='++resource++bika.lims.images/worksheet.png' title='%s'/>" % \
-                     translate(_("All analyses assigned"))
+                    "<img src='++resource++bika.lims.images/worksheet.png' title='%s'/>" % \
+                    translate(_("All analyses assigned"))
 
             sample = obj.getSample()
             after_icons = "<a href='%s'><img src='++resource++bika.lims.images/sample.png' title='%s: %s'></a>" % \
@@ -1662,7 +1672,7 @@ class AnalysisRequestsView(BikaListingView):
             if sample.getSampleType().getHazardous():
                 after_icons += "<img src='++resource++bika.lims.images/hazardous.png' title='%s'>" % \
                     translate(_("Hazardous"))
-            if datesampled > DateTime():
+            if samplingdate > DateTime():
                 after_icons += "<img src='++resource++bika.lims.images/calendar.png' title='%s'>" % \
                     translate(_("Future dated sample"))
             if after_icons:
