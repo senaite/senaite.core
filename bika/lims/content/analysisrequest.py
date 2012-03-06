@@ -318,14 +318,14 @@ class AnalysisRequest(BaseFolder):
     security.declareProtected(View, 'getLate')
     def getLate(self):
         """ return True if any analyses are late """
-        wf_tool = getToolByName(self, 'portal_workflow')
-        review_state = wf_tool.getInfoFor(self, 'review_state', '')
+        workflow = getToolByName(self, 'portal_workflow')
+        review_state = workflow.getInfoFor(self, 'review_state', '')
         if review_state in ['sample_due', 'published']:
             return False
 
         now = DateTime()
         for analysis in self.objectValues('Analysis'):
-            review_state = wf_tool.getInfoFor(analysis, 'review_state', '')
+            review_state = workflow.getInfoFor(analysis, 'review_state', '')
             if review_state == 'published':
                 continue
             if analysis.getDueDate() < now:

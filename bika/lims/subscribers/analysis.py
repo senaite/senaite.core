@@ -18,7 +18,7 @@ def ObjectInitializedEventHandler(analysis, event):
     logger.info("ObjectInitialized: %s" % analysis.getService().getKeyword())
 
     # 'receive' analysis if AR is received.
-    # Adding a new analysis to an AR retracts the AR to 'received'
+    # Adding a new analysis to an AR retracts the AR to 'sample_received'
     # AR may have to be unassigned too
 
     ar = analysis.aq_parent

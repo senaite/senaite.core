@@ -7,7 +7,7 @@
 <div metal:define-macro="portlet"
      tal:define="member python: context.portal_membership.getAuthenticatedMember()"
      tal:condition="python:member.has_role('LabClerk')">
-<tal:due
+<tal:sample_due
      tal:define="portal context/portal_url/getPortalObject;
                  plone_view context/@@plone;
                  DateTime python:modules['DateTime'].DateTime;
@@ -17,7 +17,7 @@
                  results python:[p.getObject() for p in rs[:5]];"
      tal:condition="results">
 
-    <dl class="portlet" id="portlet-workflow-due">
+    <dl class="portlet" id="portlet-workflow-sample_due">
 
         <dt class="portletHeader"
             i18n:translate="">Sample Due</dt>
@@ -57,7 +57,7 @@
         </dd>
 
     </dl>
-</tal:due>
+</tal:sample_due>
 </div>
 
 </body>

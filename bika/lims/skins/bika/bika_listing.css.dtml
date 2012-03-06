@@ -102,7 +102,6 @@ div.bika_listing {
 	color: &dtml-inactiveTextColor; !important;
 }
 
-.bika-listing-table .state-due,
 .bika-listing-table .state-sample_due {
 	background-color: &dtml-sampleDueBackgroundColor;
 	color: &dtml-sampleDueTextColor; !important;

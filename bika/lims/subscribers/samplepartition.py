@@ -37,9 +37,9 @@ def AfterTransitionEventHandler(part, event):
 
         # if all sibling partitions are received, promote sample
         if not sample.UID() in part.REQUEST['workflow_skiplist']:
-            due = [sp for sp in sample.objectValues("SamplePartition")
-                   if workflow.getInfoFor(sp, 'review_state') == 'due']
-            if sample_state == 'due' and not due:
+            sample_due = [sp for sp in sample.objectValues("SamplePartition")
+                          if workflow.getInfoFor(sp, 'review_state') == 'sample_due']
+            if sample_state == 'sample_due' and not sample_due:
                 workflow.doActionFor(sample, 'receive')
 
 

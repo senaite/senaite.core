@@ -74,7 +74,7 @@
 
  <transition transition_id="receive"
              title="Receive"
-             new_state="received"
+             new_state="sample_received"
              trigger="USER"
              before_script=""
              after_script=""

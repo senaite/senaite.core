@@ -121,7 +121,7 @@
 			</td>
 		</tr>
 
-		<tr tal:condition="python:review_state != 'due'">
+		<tr tal:condition="python:review_state != 'sample_due'">
 			<th i18n:translate="">Date Received</th>
 			<td class="left">
 				<span

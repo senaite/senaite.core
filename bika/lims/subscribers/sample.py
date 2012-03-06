@@ -29,10 +29,10 @@ def AfterTransitionEventHandler(sample, event):
         sample.setDateReceived(DateTime())
         sample.reindexObject(idxs = ["review_state", "getDateReceived", ])
 
-        # Receive all sample partitions that are still 'due'
-        due = [sp for sp in parts \
-               if workflow.getInfoFor(sp, 'review_state') == 'due']
-        for sp in due:
+        # Receive all sample partitions that are still 'sample_due'
+        sample_due = [sp for sp in parts \
+                      if workflow.getInfoFor(sp, 'review_state') == 'sample_due']
+        for sp in sample_due:
             workflow.doActionFor(sp, 'receive')
 
         # when a sample is received, all associated
