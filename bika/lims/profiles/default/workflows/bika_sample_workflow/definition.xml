@@ -4,22 +4,51 @@
              workflow_id="bika_sample_workflow"
              title="Bika Sample Workflow"
              state_variable="review_state"
-             initial_state="due">
+             initial_state="sample_due"
+             manager_bypass="False">
 
- <permission>BIKA: Edit Sample</permission>
+<permission>BIKA: Edit Sample</permission>
+<permission>BIKA: Sample Sample</permission>
+<permission>BIKA: Preserve Sample</permission>
+<permission>BIKA: Receive Sample</permission>
+<permission>BIKA: Cancel and reinstate</permission>
 
- <state state_id="due" title="Due" i18n:attributes="title">
-  <exit-transition transition_id="receive"/>
-  <permission-map name="BIKA: Edit Sample"
-                  acquired="False">
-   <permission-role>Manager</permission-role>
-   <permission-role>LabManager</permission-role>
-   <permission-role>Analyst</permission-role>
-   <permission-role>LabClerk</permission-role>
-  </permission-map>
- </state>
+<state state_id="sample_due" title="Sample Due" i18n:attributes="title">
+    <exit-transition transition_id="sampled"/>
+    <exit-transition transition_id="preserved"/>
+    <exit-transition transition_id="receive"/>
+    <permission-map name="BIKA: Edit Sample" acquired="False">
+        <permission-role>Manager</permission-role>
+        <permission-role>LabManager</permission-role>
+        <permission-role>Analyst</permission-role>
+        <permission-role>LabClerk</permission-role>
+    </permission-map>
+    <permission-map name="BIKA: Sample Sample" acquired="False">
+        <permission-role>Manager</permission-role>
+        <permission-role>LabManager</permission-role>
+        <permission-role>Analyst</permission-role>
+        <permission-role>LabClerk</permission-role>
+    </permission-map>
+    <permission-map name="BIKA: Preserve Sample" acquired="False">
+        <permission-role>Manager</permission-role>
+        <permission-role>LabManager</permission-role>
+        <permission-role>LabClerk</permission-role>
+        <permission-role>Preserver</permission-role>
+    </permission-map>
+    <permission-map name="BIKA: Receive Sample" acquired="False">
+        <permission-role>Manager</permission-role>
+        <permission-role>LabManager</permission-role>
+        <permission-role>LabClerk</permission-role>
+        <permission-role>Sampler</permission-role>
+    </permission-map>
+    <permission-map name="BIKA: Cancel and reinstate" acquired="False">
+        <permission-role>Manager</permission-role>
+        <permission-role>LabManager</permission-role>
+        <permission-role>Owner</permission-role>
+    </permission-map>
+</state>
 
- <state state_id="received" title="Received" i18n:attributes="title">
+ <state state_id="sample_received" title="Sample Received" i18n:attributes="title">
   <exit-transition transition_id="expire"/>
   <permission-map name="BIKA: Edit Sample"
                   acquired="False">

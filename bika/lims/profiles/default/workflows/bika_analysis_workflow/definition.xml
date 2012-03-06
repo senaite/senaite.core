@@ -6,6 +6,7 @@
 			 state_variable="review_state"
 			 initial_state="sample_due">
 
+ <permission>BIKA: Receive Sample</permission>
  <permission>BIKA: View Results</permission>
  <permission>BIKA: Edit Results</permission>
  <permission>BIKA: Cancel and reinstate</permission>
@@ -13,9 +14,22 @@
  <state state_id="sample_due" title="Sample Due" i18n:attributes="title">
   <exit-transition transition_id="import"/>
   <exit-transition transition_id="receive"/>
-  <permission-map name="BIKA: View Results" acquired="False">
+  <!-- Sampling Workflow: Field Analyses may be submitted when 'sample_due' -->
+  <exit-transition transition_id="submit"/>
+  <permission-map name="BIKA: Receive Sample" acquired="True">
+   <permission-role>LabManager</permission-role>
+   <permission-role>LabClerk</permission-role>
+   <permission-role>Sampler</permission-role>
   </permission-map>
-  <permission-map name="BIKA: Edit Results" acquired="False">
+  <permission-map name="BIKA: View Results" acquired="True">
+   <permission-role>LabManager</permission-role>
+   <permission-role>LabClerk</permission-role>
+   <permission-role>Sampler</permission-role>
+  </permission-map>
+  <permission-map name="BIKA: Edit Results" acquired="True">
+   <permission-role>LabManager</permission-role>
+   <permission-role>LabClerk</permission-role>
+   <permission-role>Sampler</permission-role>
   </permission-map>
   <permission-map name="BIKA: Cancel and reinstate" acquired="False">
    <permission-role>Manager</permission-role>

@@ -7,7 +7,7 @@ from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import transaction_note
 from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from bika.lims import ManageResults, ViewResults, EditResults
+from bika.lims.permissions import ViewResults, EditResults, EditFieldResults
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.utils import isActive, TimeOrDate
@@ -76,7 +76,8 @@ class AnalysesView(BikaListingView):
         portal = getToolByName(self.context, 'portal_url').getPortalObject()
         translate = self.context.translation_service.translate
         can_edit_analyses = self.allow_edit and \
-            getSecurityManager().checkPermission(ManageResults, self.context)
+            getSecurityManager().checkPermission(EditResults, self.context) and \
+            getSecurityManager().checkPermission(EditFieldResults, self.context)
 
         context_active = True
         if not isActive(self.context):

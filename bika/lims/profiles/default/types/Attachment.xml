@@ -31,7 +31,7 @@
          i18n:attributes="title"
          i18n:domain="plone"
          visible="True">
-    <permission value="BIKA: Manage Results"/>
+    <permission value="BIKA: Edit Results"/>
  </action>
 
  <action title="View"

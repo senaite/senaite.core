@@ -1,3 +1,5 @@
+from AccessControl import getSecurityManager
+from bika.lims.permissions import AddClient
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims import bikaMessageFactory as _
 from bika.lims.interfaces import IClientFolder
@@ -13,9 +15,14 @@ class ClientFolderContentsView(BikaListingView):
         super(ClientFolderContentsView, self).__init__(context, request)
         self.contentFilter = {'portal_type': 'Client',
                               'sort_on': 'sortable_title'}
-        self.context_actions = {_('Add'):
-                                {'url': 'createObject?type_name=Client',
-                                 'icon': '++resource++bika.lims.images/add.png'}}
+
+        self.context_actions = {}
+        sm = getSecurityManager()
+        if (sm.checkPermission(AddClient, self.context)):
+            self.context_actions['Add'] = \
+                {'url': 'createObject?type_name=Client',
+                 'icon': '++resource++bika.lims.images/add.png'}
+
         self.icon = "++resource++bika.lims.images/client_big.png"
         self.title = _("Clients")
         self.description = ""

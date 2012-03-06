@@ -10,7 +10,6 @@ from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.browser.bika_listing import WorkflowAction
 from bika.lims.browser.publish import Publish
 from bika.lims.browser.sample import SamplesView
-from bika.lims.config import ManageResults
 from bika.lims.utils import TimeOrDate
 from operator import itemgetter
 from plone.app.content.browser.interfaces import IFolderContentsView

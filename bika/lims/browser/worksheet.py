@@ -7,8 +7,7 @@ from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from bika.lims import ManageResults
-from bika.lims import EditResults, EditWorksheet
+from bika.lims import EditResults, EditWorksheet, ManageWorksheets
 from bika.lims import PMF, logger
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.analyses import AnalysesView
@@ -588,7 +587,7 @@ class AddAnalysesView(BikaListingView):
                      translate(_("Late Analysis")))
             items[x]['CategoryTitle'] = service.getCategory().Title()
 
-            if getSecurityManager().checkPermission(ManageResults, obj.aq_parent):
+            if getSecurityManager().checkPermission(EditResults, obj.aq_parent):
                 url = obj.aq_parent.absolute_url() + "/manage_results"
             else:
                 url = obj.aq_parent.absolute_url()

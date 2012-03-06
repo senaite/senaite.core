@@ -8,8 +8,16 @@
 
 <!--
 	All permissions are defined here.
-	They are duplicated in python code in config.py so they can be imported in our own code
+	They are also defined in permissions.py.
+	The two files must be kept in sync.
 /-->
+
+# Add Permissions:
+# ----------------
+<permission id="bika.lims.AddClient" title="BIKA: Add Client"/>
+<permission id="bika.lims.AddAnalysisRequest" title="BIKA: Add Analysis Request"/>
+<permission id="bika.lims.AddSample" title="BIKA: Add Sample"/>
+
 
 # Old stuff I haven't looked at
 # =============================
@@ -23,7 +31,6 @@
 <permission id="bika.lims.ManageReference" title="BIKA: Manage Reference"/>
 <permission id="bika.lims.ManagePricelists" title="BIKA: Manage Pricelists"/>
 <permission id="bika.lims.ManageARImport" title="BIKA: Manage ARImport"/>
-
 <permission id="bika.lims.DispatchOrder" title="BIKA: Dispatch Order"/>
 <permission id="bika.lims.PostInvoiceBatch" title="BIKA: Post Invoice batch"/>
 
@@ -31,6 +38,8 @@
 # ==================
 # For workflow transitions:
 # -------------------------
+<permission id="bika.lims.SampleSample" title="BIKA: Sample Sample"/>
+<permission id="bika.lims.PreserveSample" title="BIKA: Preserve Sample"/>
 <permission id="bika.lims.ReceiveSample" title="BIKA: Receive Sample"/>
 <permission id="bika.lims.ExpireSample" title="BIKA: Expire Sample"/>
 <permission id="bika.lims.DisposeSample" title="BIKA: Dispose Sample"/>
@@ -50,7 +59,6 @@
 <permission id="bika.lims.EditAR" title="BIKA: Edit AR"/>
 <permission id="bika.lims.EditWorksheet" title="BIKA: Edit Worksheet"/>
 
-<permission id="bika.lims.ManageResults" title="BIKA: Manage Results"/>
 <permission id="bika.lims.ResultsNotRequested" title="BIKA: Results not requested"/>
 <permission id="bika.lims.ManageInvoices" title="BIKA: Manage Invoices"/>
 
@@ -58,6 +66,8 @@
 # ------
 <permission id="bika.lims.ViewResults" title="BIKA: View Results"/>
 <permission id="bika.lims.EditResults" title="BIKA: Edit Results"/>
+# Sampling workflow - allows editing field results while in sample_due state
+<permission id="bika.lims.EditFieldResults" title="BIKA: Edit Field Results"/>
 
 
 </configure>

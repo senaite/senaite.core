@@ -9,6 +9,7 @@ logger = logging.getLogger('Bika')
 
 from bika.lims.validators import *
 from bika.lims.config import *
+from bika.lims.permissions import *
 
 from AccessControl import ModuleSecurityInfo, allow_module
 from Products.Archetypes.atapi import process_types, listTypes
@@ -106,11 +107,16 @@ def initialize(context):
         listTypes(PROJECTNAME),
         PROJECTNAME)
 
-    ContentInit(
-        PROJECTNAME,
-        content_types = content_types,
-        permission = ADD_CONTENT_PERMISSION,
-        extra_constructors = constructors,
-        fti = ftis,
-        ).initialize(context)
-
+    # Register each type with it's own Add permission
+    # use ADD_CONTENT_PERMISSION as default
+    allTypes = zip(content_types, constructors)
+    for atype, constructor in allTypes:
+        kind = "%s: Add %s" % (config.PROJECTNAME, atype.portal_type)
+        perm = ADD_CONTENT_PERMISSIONS.get(atype.portal_type,
+                                           ADD_CONTENT_PERMISSION)
+        utils.ContentInit(kind,
+                          content_types      = (atype,),
+                          permission         = perm,
+                          extra_constructors = (constructor,),
+                          fti                = ftis,
+                          ).initialize(context)

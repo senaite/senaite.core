@@ -7,7 +7,8 @@ from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import transaction_note
 from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from bika.lims import EditResults, EditAR, ManageResults, ResultsNotRequested
+from bika.lims.permissions import EditAR, ViewResults, EditResults, EditFieldResults, \
+     ResultsNotRequested
 from bika.lims import PMF, logger
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.analyses import AnalysesView
@@ -104,7 +105,8 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
                 if not analysis:
                     # ignore result if analysis object no longer exists
                     continue
-                if not(getSecurityManager().checkPermission(EditResults, analysis)):
+                if not getSecurityManager().checkPermission(EditResults, analysis) \
+                   and not getSecurityManager().checkPermission(EditFieldResults, analysis):
                     # or changes no longer allowed
                     continue
                 results[uid] = result
@@ -133,6 +135,7 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
                         Result = result)
 
             # discover which items may be submitted
+            # guard_submit does a lot of the same stuff, too.
             submissable = []
             for uid, analysis in selected_analyses.items():
                 if uid not in results:

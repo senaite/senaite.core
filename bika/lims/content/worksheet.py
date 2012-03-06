@@ -9,7 +9,7 @@ from Products.Archetypes.Registry import registerField
 from bika.lims.browser.fields import HistoryAwareReferenceField
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.config import PROJECTNAME
-from bika.lims.config import EditWorksheet, ManageResults
+from bika.lims.permissions import EditWorksheet
 from Products.ATExtensions.ateapi import RecordsField
 from zope.interface import implements
 from bika.lims.interfaces import IWorksheet

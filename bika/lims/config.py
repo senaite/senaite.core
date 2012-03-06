@@ -1,44 +1,10 @@
-from Products.CMFCore.permissions import AddPortalContent
 from Products.Archetypes.public import DisplayList
 from bika.lims import bikaMessageFactory as _
+from bika.lims.permissions import *
 
-ADD_CONTENT_PERMISSION = AddPortalContent
 PROJECTNAME = "bika.lims"
 
 GLOBALS = globals()
-
-# Very Old permissions:
-ManageBika = 'BIKA: Manage Bika'
-ManageClients = 'BIKA: Manage Clients'
-ManageWorksheets = 'BIKA: Manage Worksheets'
-ManageOrders = 'BIKA: Manage Orders'
-DispatchOrder = 'BIKA: Dispatch Order'
-ManageAnalysisRequests = 'BIKA: Manage Analysis Requests'
-ManageARImport = 'BIKA: Manage ARImport'
-ManageSample = 'BIKA: Manage Sample'
-ManageReferenceSuppliers = 'BIKA: Manage Reference Suppliers'
-ManageReference = 'BIKA: Manage Reference'
-PostInvoiceBatch = 'BIKA: Post Invoice batch'
-ManagePricelists = 'BIKA: Manage Pricelists'
-# New or changed permissions:
-ReceiveSample = 'BIKA: Receive Sample'
-ExpireSample = 'BIKA: Expire Sample'
-DisposeSample = 'BIKA: Dispose Sample'
-ImportAnalysis = 'BIKA: Import Analysis'
-RejectWorksheet = 'BIKA: Reject Worksheet'
-Retract = "BIKA: Retract"
-Verify = 'BIKA: Verify'
-VerifyOwnResults = 'BIKA: Verify own results'
-Publish = 'BIKA: Publish'
-EditSample = 'BIKA: Edit Sample'
-EditAR = 'BIKA: Edit AR'
-EditWorksheet = 'BIKA: Edit Worksheet'
-ManageResults = 'BIKA: Manage Results'
-ResultsNotRequested = 'BIKA: Results not requested'
-ManageInvoices = 'BIKA: Manage Invoices'
-ViewResults = 'BIKA: View Results'
-EditResults = 'BIKA: Edit Results'
-CancelAndReinstate = 'BIKA: Cancel and reinstate'
 
 VERSIONABLE_TYPES = ('AnalysisService',
                      'Calculation',
@@ -47,40 +13,6 @@ VERSIONABLE_TYPES = ('AnalysisService',
                      'AnalysisSpec',
                      'WorksheetTemplate',
                      )
-
-BIKA_PERMISSIONS = (
-    (ManageBika, ()),
-    (ManageClients, ()),
-    (ManageWorksheets, ()),
-    (ManageOrders, ()),
-    (ManageAnalysisRequests, ()),
-    (ManageSample, ()),
-    (ManageReferenceSuppliers, ()),
-    (ManageReference, ()),
-    (ManagePricelists, ()),
-    (ManageARImport, ()),
-    (DispatchOrder, ()),
-    (PostInvoiceBatch, ()),
-    (ReceiveSample, ()),
-    (ExpireSample, ()),
-    (DisposeSample, ()),
-    (ImportAnalysis, ()),
-    (RejectWorksheet, ()),
-    (Retract, ()),
-    (Verify, ()),
-    (VerifyOwnResults, ()),
-    (Publish, ()),
-    (EditSample, ()),
-    (EditAR, ()),
-    (EditWorksheet, ()),
-    (ManageResults, ()),
-    (ResultsNotRequested, ()),
-    (ManageInvoices, ()),
-    (ViewResults, ()),
-    (EditResults, ()),
-    (CancelAndReinstate, ()),
-)
-
 
 PUBLICATION_PREFS = DisplayList((
     ('email', _('Email')),

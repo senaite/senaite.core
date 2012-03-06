@@ -1,38 +1,70 @@
 <?xml version="1.0"?>
 <dc-workflow xmlns:i18n="http://xml.zope.org/namespaces/i18n"
              i18n:domain="bika"
-             workflow_id="bika_analysis_workflow"
-             title="Bika Analysis Workflow"
+             workflow_id="bika_ar_workflow"
+             title="Bika AR Workflow"
              state_variable="review_state"
              initial_state="sample_due"
              manager_bypass="False">
 
- <permission>BIKA: Edit AR</permission>
- <permission>BIKA: Manage Results</permission>
- <permission>BIKA: Results not requested</permission>
- <permission>BIKA: Manage Invoices</permission>
- <permission>BIKA: Cancel and reinstate</permission>
+<permission>BIKA: Edit AR</permission>
+<permission>BIKA: Edit Results</permission>
+<permission>BIKA: Edit Field Results</permission>
+<permission>BIKA: Sample Sample</permission>
+<permission>BIKA: Preserve Sample</permission>
+<permission>BIKA: Receive Sample</permission>
+<permission>BIKA: Results not requested</permission>
+<permission>BIKA: Manage Invoices</permission>
+<permission>BIKA: Cancel and reinstate</permission>
 
- <state state_id="sample_due" title="Sample Due" i18n:attributes="title">
-  <exit-transition transition_id="receive"/>
-  <permission-map name="BIKA: Edit AR" acquired="False">
-   <permission-role>Manager</permission-role>
-   <permission-role>LabManager</permission-role>
-   <permission-role>LabClerk</permission-role>
-   <permission-role>Owner</permission-role>
-  </permission-map>
-  <permission-map name="BIKA: Manage Results" acquired="False">
-  </permission-map>
-  <permission-map name="BIKA: Results not requested" acquired="False">
-  </permission-map>
-  <permission-map name="BIKA: Manage Invoices" acquired="False">
-  </permission-map>
-  <permission-map name="BIKA: Cancel and reinstate" acquired="False">
-   <permission-role>Manager</permission-role>
-   <permission-role>LabManager</permission-role>
-   <permission-role>Owner</permission-role>
-  </permission-map>
- </state>
+<state state_id="sample_due" title="Sample Due" i18n:attributes="title">
+    <exit-transition transition_id="sample"/>
+    <exit-transition transition_id="preserve"/>
+    <exit-transition transition_id="receive"/>
+    <permission-map name="BIKA: Edit AR" acquired="False">
+        <permission-role>Manager</permission-role>
+        <permission-role>LabManager</permission-role>
+        <permission-role>LabClerk</permission-role>
+        <permission-role>Sampler</permission-role>
+        <permission-role>Owner</permission-role>
+    </permission-map>
+    <permission-map name="BIKA: Edit Results" acquired="False">
+    </permission-map>
+    <permission-map name="BIKA: Edit Field Results" acquired="False">
+        <permission-role>Manager</permission-role>
+        <permission-role>LabManager</permission-role>
+        <permission-role>Analyst</permission-role>
+        <permission-role>LabClerk</permission-role>
+        <permission-role>Sampler</permission-role>
+    </permission-map>
+    <permission-map name="BIKA: Sample Sample" acquired="False">
+        <permission-role>Manager</permission-role>
+        <permission-role>LabManager</permission-role>
+        <permission-role>LabClerk</permission-role>
+        <permission-role>Sampler</permission-role>
+    </permission-map>
+    <permission-map name="BIKA: Preserve Sample" acquired="False">
+        <permission-role>Manager</permission-role>
+        <permission-role>LabManager</permission-role>
+        <permission-role>LabClerk</permission-role>
+        <permission-role>Preserver</permission-role>
+    </permission-map>
+    <permission-map name="BIKA: Receive Sample" acquired="False">
+        <permission-role>Manager</permission-role>
+        <permission-role>LabManager</permission-role>
+        <permission-role>LabClerk</permission-role>
+        <permission-role>Sampler</permission-role>
+    </permission-map>
+    <permission-map name="BIKA: Results not requested" acquired="False">
+    </permission-map>
+    <permission-map name="BIKA: Manage Invoices" acquired="False">
+    </permission-map>
+    <permission-map name="BIKA: Cancel and reinstate" acquired="False">
+        <permission-role>Manager</permission-role>
+        <permission-role>LabManager</permission-role>
+        <permission-role>Owner</permission-role>
+    </permission-map>
+</state>
 
  <state state_id="sample_received" title="Received" i18n:attributes="title">
   <exit-transition transition_id="prepublish"/>
@@ -42,7 +74,7 @@
    <permission-role>LabManager</permission-role>
    <permission-role>LabClerk</permission-role>
   </permission-map>
-  <permission-map name="BIKA: Manage Results" acquired="False">
+  <permission-map name="BIKA: Edit Results" acquired="False">
    <permission-role>Manager</permission-role>
    <permission-role>LabManager</permission-role>
    <permission-role>Analyst</permission-role>
@@ -66,7 +98,7 @@
    <permission-role>LabManager</permission-role>
    <permission-role>LabClerk</permission-role>
   </permission-map>
-  <permission-map name="BIKA: Manage Results" acquired="False">
+  <permission-map name="BIKA: Edit Results" acquired="False">
    <permission-role>Manager</permission-role>
    <permission-role>LabManager</permission-role>
    <permission-role>Analyst</permission-role>
@@ -90,7 +122,7 @@
    <permission-role>LabManager</permission-role>
    <permission-role>LabClerk</permission-role>
   </permission-map>
-  <permission-map name="BIKA: Manage Results" acquired="False">
+  <permission-map name="BIKA: Edit Results" acquired="False">
    <permission-role>Manager</permission-role>
    <permission-role>LabManager</permission-role>
    <permission-role>Analyst</permission-role>
@@ -109,7 +141,7 @@
   <exit-transition transition_id="publish"/>
   <permission-map name="BIKA: Edit AR" acquired="False">
   </permission-map>
-  <permission-map name="BIKA: Manage Results" acquired="False">
+  <permission-map name="BIKA: Edit Results" acquired="False">
   </permission-map>
   <permission-map name="BIKA: Results not requested" acquired="True">
   </permission-map>
@@ -123,7 +155,7 @@
   <exit-transition transition_id="republish"/>
   <permission-map name="BIKA: Edit AR" acquired="False">
   </permission-map>
-  <permission-map name="BIKA: Manage Results" acquired="False">
+  <permission-map name="BIKA: Edit Results" acquired="False">
   </permission-map>
   <permission-map name="BIKA: Results not requested" acquired="True">
   </permission-map>
