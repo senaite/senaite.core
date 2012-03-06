@@ -31,7 +31,7 @@
           i18n:translate="">Cancel</action>
   <guard>
    <guard-permission>BIKA: Cancel and reinstate</guard-permission>
-   <guard-expression>python:here.guard_cancel()</guard-expression>
+   <guard-expression>python:here.guard_cancel_transition()</guard-expression>
   </guard>
  </transition>
 
@@ -49,7 +49,7 @@
           i18n:translate="">Reinstate</action>
   <guard>
    <guard-permission>BIKA: Cancel and reinstate</guard-permission>
-   <guard-expression>python:here.guard_reinstate()</guard-expression>
+   <guard-expression>python:here.guard_reinstate_transition()</guard-expression>
   </guard>
  </transition>
 

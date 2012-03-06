@@ -136,7 +136,7 @@
 		  icon=""
 		  i18n:translate="">Add attachment</action>
   <guard>
-   <guard-expression>python:here.guard_attach_analysis()</guard-expression>
+   <guard-expression>python:here.guard_attach_transition()</guard-expression>
   </guard>
  </transition>
 
@@ -154,7 +154,7 @@
 		  i18n:translate="">Verify</action>
   <guard>
    <guard-permission>BIKA: Verify</guard-permission>
-   <guard-expression>python:here.guard_verify_analysis()</guard-expression>
+   <guard-expression>python:here.guard_verify_transition()</guard-expression>
   </guard>
  </transition>
 

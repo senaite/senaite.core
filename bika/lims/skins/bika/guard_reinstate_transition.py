@@ -1,4 +1,4 @@
-## Script (Python) "guard_cancel"
+## Script (Python) "guard_reinstate_transition"
 ##bind container=container
 ##bind context=context
 ##bind namespace=
@@ -10,9 +10,13 @@
 
 from bika.lims import CancelAndReinstate
 
+workflow = context.portal_workflow
 checkPermission = context.portal_membership.checkPermission
 
 if context.portal_type == 'AnalysisRequest':
+    sample = context.getSample()
+    if workflow.getInfoFor(sample, 'cancellation_state') == "cancelled":
+        return False
     for analysis in context.getAnalyses(full_objects = True):
         if not checkPermission(CancelAndReinstate, analysis):
             return False
@@ -23,7 +27,7 @@ elif context.portal_type == 'Sample':
         if not checkPermission(CancelAndReinstate, ar):
             return False
         for analysis in ar.getAnalyses(full_objects = True):
-            if not checkPermission(CancelAndReinstate, analysis):
+            if not checkPermission(CancelAndReinstate, ar):
                 return False
     return True
 

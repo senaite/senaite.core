@@ -87,7 +87,7 @@
           icon=""
           i18n:translate="">Retract</action>
   <guard>
-   <guard-expression>python:here.guard_retract_worksheet()</guard-expression>
+   <guard-expression>python:here.guard_retract_transition()</guard-expression>
   </guard>
  </transition>
 
@@ -104,7 +104,7 @@
           icon=""
           i18n:translate="">Submit for verification</action>
   <guard>
-   <guard-expression>python:here.guard_submit_worksheet()</guard-expression>
+   <guard-expression>python:here.guard_submit_transition()</guard-expression>
   </guard>
  </transition>
 
@@ -121,7 +121,7 @@
           icon=""
           i18n:translate="">Submit for verification</action>
   <guard>
-   <guard-expression>python:here.guard_attach_worksheet()</guard-expression>
+   <guard-expression>python:here.guard_attach_transition()</guard-expression>
   </guard>
  </transition>
 
@@ -138,7 +138,7 @@
           icon=""
           i18n:translate="">Verify</action>
   <guard>
-   <guard-expression>python:here.guard_verify_worksheet()</guard-expression>
+   <guard-expression>python:here.guard_verify_transition()</guard-expression>
   </guard>
  </transition>
 

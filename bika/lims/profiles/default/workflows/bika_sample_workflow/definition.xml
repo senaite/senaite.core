@@ -57,7 +57,7 @@
           i18n:translate="">Receive</action>
   <guard>
    <guard-permission>BIKA: Receive Sample</guard-permission>
-   <guard-expression>python:here.guard_receive_sample()</guard-expression>
+   <guard-expression>python:here.guard_receive_transition()</guard-expression>
   </guard>
  </transition>
 

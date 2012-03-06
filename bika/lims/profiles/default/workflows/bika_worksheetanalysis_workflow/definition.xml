@@ -28,7 +28,7 @@
           icon=""
           i18n:translate="">Assign</action>
   <guard>
-   <guard-expression>python:here.guard_assign()</guard-expression>
+   <guard-expression>python:here.guard_assign_transition()</guard-expression>
   </guard>
  </transition>
 
@@ -45,7 +45,7 @@
           icon=""
           i18n:translate="">Remove</action>
   <guard>
-   <guard-expression>python:here.guard_unassign()</guard-expression>
+   <guard-expression>python:here.guard_unassign_transition()</guard-expression>
   </guard>
  </transition>
 

@@ -8,13 +8,12 @@
 ##title=
 ##
 
-wf_tool = context.portal_workflow
+workflow = context.portal_workflow
 
-# Note: Used by profiles/default/types/AnalysisRequest.xml as well as workflows.
+# Note: Also used by profiles/default/types/AnalysisRequest.xml
 
 # Can't do anything to the object if it's cancelled
-if wf_tool.getInfoFor(context, 'cancellation_state') == "cancelled":
+if workflow.getInfoFor(context, 'cancellation_state', "active") == "cancelled":
     return False
 
 return True
-

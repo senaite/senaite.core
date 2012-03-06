@@ -1,4 +1,4 @@
-## Script (Python) "guard_unassign"
+## Script (Python) "guard_unassign_transition"
 ##bind container=container
 ##bind context=context
 ##bind namespace=

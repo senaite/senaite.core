@@ -148,9 +148,10 @@
           i18n:translate="">Receive sample</action>
   <guard>
    <guard-permission>BIKA: Receive Sample</guard-permission>
-   <guard-expression>python:here.guard_receive_ar()</guard-expression>
+   <guard-expression>python:here.guard_receive_transition()</guard-expression>
   </guard>
  </transition>
+
 
  <transition transition_id="prepublish"
              title="Prepublish"
@@ -166,7 +167,7 @@
           i18n:translate="">Prepublish</action>
   <guard>
    <guard-permission>BIKA: Publish</guard-permission>
-   <guard-expression>python:here.guard_prepublish_ar()</guard-expression>
+   <guard-expression>python:here.guard_prepublish_transition()</guard-expression>
   </guard>
  </transition>
 
@@ -183,7 +184,7 @@
           icon=""
           i18n:translate="">Submit for verification</action>
   <guard>
-   <guard-expression>python:here.guard_submit_ar()</guard-expression>
+   <guard-expression>python:here.guard_submit_transition()</guard-expression>
   </guard>
  </transition>
 
@@ -200,7 +201,7 @@
           icon=""
           i18n:translate="">Retract</action>
   <guard>
-   <guard-expression>python:here.guard_retract_ar()</guard-expression>
+   <guard-expression>python:here.guard_retract_transition()</guard-expression>
   </guard>
  </transition>
 
@@ -217,7 +218,7 @@
           icon=""
           i18n:translate="">Add attachment</action>
   <guard>
-   <guard-expression>python:here.guard_attach_ar()</guard-expression>
+   <guard-expression>python:here.guard_attach_transition()</guard-expression>
   </guard>
  </transition>
 
@@ -234,7 +235,7 @@
           icon=""
           i18n:translate="">Verify</action>
   <guard>
-   <guard-expression>python:here.guard_verify_ar()</guard-expression>
+   <guard-expression>python:here.guard_verify_transition()</guard-expression>
   </guard>
  </transition>
 

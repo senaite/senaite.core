@@ -1,4 +1,4 @@
-## Script (Python) "guard_assign"
+## Script (Python) "guard_assign_transition"
 ##bind container=container
 ##bind context=context
 ##bind namespace=
@@ -8,10 +8,10 @@
 ##title=
 ##
 
-wf_tool = context.portal_workflow
+workflow = context.portal_workflow
 
 # Can't do anything to the object if it's cancelled
-if wf_tool.getInfoFor(context, 'cancellation_state', '') == "cancelled":
+if workflow.getInfoFor(context, 'cancellation_state', '') == "cancelled":
     return False
 
 if context.portal_type != 'AnalysisRequest':
