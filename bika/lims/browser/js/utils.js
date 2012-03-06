@@ -41,8 +41,11 @@ jQuery( function($) {
 
 		$('body').append('<div id="global-spinner" class="global-spinner" style="display:none"><img id="img-global-spinner" src="spinner.gif" alt="Loading"/></div>');
 		$('#global-spinner')
-			.ajaxStart(function() { $(this).stop().fadeIn(2000); })
-			.ajaxStop(function() { $(this).stop().hide(); });
+			.ajaxStart(function() { $(this).toggle(true); })
+			.ajaxStop(function() { $(this).toggle(false); });
+// "some" browsers don't like our spinner fading
+//			.ajaxStart(function() { $(this).stop().fadeIn(2000); })
+//			.ajaxStop(function() { $(this).stop().hide(); });
 		$("#kss-spinner").empty();
 
 		$(".numeric").live('keypress', function(event) {

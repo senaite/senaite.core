@@ -195,7 +195,7 @@ msgstr ""
 #: ../profiles/default/workflows/bika_analysis_workflow/definition.xml
 #: ../profiles/default/workflows/bika_ar_workflow/definition.xml
 #: ../profiles/default/workflows/bika_referenceanalysis_workflow/definition.xml
-msgid "Add attachmnt"
+msgid "Add attachment"
 msgstr ""
 
 #: ../content/bikasetup.py:237
@@ -2237,7 +2237,7 @@ msgid "Sample Points"
 msgstr ""
 
 #: ../controlpanel/bika_preservations.py:29
-msgid "Sample Preservations"
+msgid "Preservations"
 msgstr ""
 
 #: ../browser/analysisrequest.py:620

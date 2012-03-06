@@ -35,7 +35,7 @@ class bika_ar_import(UniqueObject, SimpleItem):
             log.append('   Could not find Client %s' % client_id)
             return '\n'.join(log)
         client = r[0].getObject()
-        wf_tool = getToolByName(self, 'portal_workflow')
+        workflow = getToolByName(self, 'portal_workflow')
         updateable_states = ['sample_received', 'assigned']
         reader = csv.reader(csvfile)
         samples = []
@@ -160,7 +160,7 @@ class bika_ar_import(UniqueObject, SimpleItem):
             log.append('   Could not find Client %s' % client_id)
             return '\n'.join(log)
         client = r[0].getObject()
-        wf_tool = getToolByName(self, 'portal_workflow')
+        workflow = getToolByName(self, 'portal_workflow')
         reader = csv.reader(csvfile)
         samples = []
         sample_headers = None

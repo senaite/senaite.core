@@ -433,13 +433,13 @@ class ManageResultsView(BrowserView):
                 analysis.setAttachment(attachments)
 
             if service_uid:
-                wf_tool = getToolByName(self.context, 'portal_workflow')
+                workflow = getToolByName(self.context, 'portal_workflow')
                 for analysis in self.context.getAnalyses():
                     if analysis.portal_type not in ('Analysis', 'DuplicateAnalysis'):
                         continue
                     if not analysis.getServiceUID() == service_uid:
                         continue
-                    review_state = wf_tool.getInfoFor(analysis, 'review_state', '')
+                    review_state = workflow.getInfoFor(analysis, 'review_state', '')
                     if not review_state in ['assigned', 'sample_received', 'to_be_verified']:
                         continue
                     # client refers to Client in case of Analysis, and to

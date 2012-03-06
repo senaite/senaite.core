@@ -21,11 +21,16 @@ def AfterTransitionEventHandler(part, event):
     logger.info("Starting: %s on %s" % (event.transition.id, part))
 
     workflow = getToolByName(part, 'portal_workflow')
+    membership_tool = getToolByName(sample, 'membership_tool')
+    member = membership_tool.getAuthenticatedMember()
     sample = part.aq_parent
     sample_state = workflow.getInfoFor(sample, 'review_state')
 
+    if event.transition.id == "preserved":
+        pass
+
     if event.transition.id == "receive":
-        if sample.getDateSampled() > DateTime():
+        if sample.getSamplingDate() > DateTime():
             raise WorkflowException
         part.setDateReceived(DateTime())
         part.reindexObject(idxs = ["getDateReceived", ])

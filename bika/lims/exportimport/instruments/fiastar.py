@@ -106,7 +106,7 @@ def Import(context,request):
     pc = getToolByName(context, 'portal_catalog')
     uc = getToolByName(context, 'uid_catalog')
     bsc = getToolByName(context, 'bika_setup_catalog')
-    wf_tool = getToolByName(context, 'portal_workflow')
+    workflow = getToolByName(context, 'portal_workflow')
 
     updateable_states = ['sample_received', 'assigned', 'not_requested']
     now = DateTime().strftime('%Y%m%d-%H%M')
@@ -239,7 +239,7 @@ def Import(context,request):
                 zope.event.notify(ObjectInitializedEvent(analysis))
                 row['analysis'] = analysis
 
-        as_state = wf_tool.getInfoFor(analysis, 'review_state', '')
+        as_state = workflow.getInfoFor(analysis, 'review_state', '')
         if (as_state not in updateable_states):
             msg = _('Analysis ${service} at slot ${slot} in state ${state} - not updated',
                     mapping = {'service': service.Title(),

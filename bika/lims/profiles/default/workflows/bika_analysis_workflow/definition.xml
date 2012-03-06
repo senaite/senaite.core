@@ -207,7 +207,7 @@
   <action url="workflow_action?workflow_action=submit"
           category="workflow"
 		  icon=""
-		  i18n:translate="">Add attachmnt</action>
+		  i18n:translate="">Add attachment</action>
   <guard>
    <guard-expression>python:here.guard_attach_analysis()</guard-expression>
   </guard>

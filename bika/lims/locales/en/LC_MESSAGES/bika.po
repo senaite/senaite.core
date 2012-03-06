@@ -193,8 +193,8 @@ msgstr "Add attachment"
 #: ../profiles/default/workflows/bika_analysis_workflow/definition.xml
 #: ../profiles/default/workflows/bika_ar_workflow/definition.xml
 #: ../profiles/default/workflows/bika_referenceanalysis_workflow/definition.xml
-msgid "Add attachmnt"
-msgstr "Add attachmnt"
+msgid "Add attachment"
+msgstr "Add attachment"
 
 #: ../content/bikasetup.py:237
 msgid "Adds a two-digit year after the ID prefix."
@@ -2235,8 +2235,8 @@ msgid "Sample Points"
 msgstr "Sample Points"
 
 #: ../controlpanel/bika_preservations.py:29
-msgid "Sample Preservations"
-msgstr "Sample Preservations"
+msgid "Preservations"
+msgstr "Preservations"
 
 #: ../browser/analysisrequest.py:620
 #: ../browser/client.py:270

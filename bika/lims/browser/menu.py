@@ -93,8 +93,8 @@ class WorkflowSubMenuItem(WorkflowSubMenuItem):
                     'stateTitle' : stateTitle,}
 
     def _transitions(self):
-        wf_tool = getToolByName(self.context, 'portal_workflow')
-        return wf_tool.listActionInfos(object=self.context, max=1)
+        workflow = getToolByName(self.context, 'portal_workflow')
+        return workflow.listActionInfos(object=self.context, max=1)
 
     def get_workflow_actions(self):
         """ Compile a list of possible workflow transitions for items
@@ -171,8 +171,8 @@ class WorkflowMenu(BrowserMenu):
         if locking_info and locking_info.is_locked_for_current_user():
             return []
 
-        wf_tool = getToolByName(context, 'portal_workflow')
-        workflowActions = wf_tool.listActionInfos(object=context)
+        workflow = getToolByName(context, 'portal_workflow')
+        workflowActions = workflow.listActionInfos(object=context)
 
         for action in workflowActions:
             if action['category'] != 'workflow':

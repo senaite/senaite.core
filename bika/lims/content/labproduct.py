@@ -31,7 +31,7 @@ schema = BikaSchema.copy() + Schema((
         )
     ),
     ComputedField('VATAmount',
-        expression = 'context.getVATAmount',
+        expression = 'context.getVATAmount()',
         widget = ComputedWidget(
             label = _("VAT"),
             visible = {'edit':'hidden', }

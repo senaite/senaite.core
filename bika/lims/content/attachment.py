@@ -145,8 +145,8 @@ class Attachment(BaseFolder):
             if len(uids) == 1:
                 reference = uids[0]
                 parent = tool.lookupObject(reference.sourceUID)
-        wf_tool = getToolByName(self, 'portal_workflow')
-        return wf_tool.getInfoFor(parent, 'review_state', '')
+        workflow = getToolByName(self, 'portal_workflow')
+        return workflow.getInfoFor(parent, 'review_state', '')
 
     security.declarePublic('current_date')
     def current_date(self):

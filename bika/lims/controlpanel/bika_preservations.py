@@ -26,7 +26,7 @@ class PreservationsView(BikaListingView):
         self.context_actions = {_('Add'):
                                 {'url': 'createObject?type_name=Preservation',
                                  'icon': '++resource++bika.lims.images/add.png'}}
-        self.title = _("Sample Preservations")
+        self.title = _("Preservations")
         self.icon = "++resource++bika.lims.images/preservation_big.png"
         self.description = ""
         self.show_sort_column = False

@@ -335,10 +335,10 @@ class AnalysisRequest(BaseFolder):
     security.declareProtected(View, 'getBillableItems')
     def getBillableItems(self):
         """ Return all items except those in 'not_requested' state """
-        wf_tool = getToolByName(self, 'portal_workflow')
+        workflow = getToolByName(self, 'portal_workflow')
         items = []
         for analysis in self.objectValues('Analysis'):
-            review_state = wf_tool.getInfoFor(analysis, 'review_state', '')
+            review_state = workflow.getInfoFor(analysis, 'review_state', '')
             if review_state != 'not_requested':
                 items.append(analysis)
         return items

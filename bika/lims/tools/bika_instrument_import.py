@@ -22,7 +22,7 @@ class bika_instrument_import(UniqueObject, SimpleItem):
 
     security.declareProtected(ManageAnalysisRequests, 'import_file')
     def import_file(self, csvfile):
-        wf_tool = getToolByName(self, 'portal_workflow')
+        workflow = getToolByName(self, 'portal_workflow')
         prefixes = self.bika_setup.getPrefixes()
         ws_prefix = 'WS-'
         for d in prefixes:
@@ -69,7 +69,7 @@ class bika_instrument_import(UniqueObject, SimpleItem):
                     results[sample_id]['errors'].append('Not found')
                     continue
                 ws = r[0].getObject()
-                ws_state = wf_tool.getInfoFor(ws, 'review_state', '')
+                ws_state = workflow.getInfoFor(ws, 'review_state', '')
                 if (ws_state not in updateable_states):
                     results[sample_id]['errors'].append('Worksheet in %s status '
                                '- not updated' % (ws_state))
@@ -86,7 +86,7 @@ class bika_instrument_import(UniqueObject, SimpleItem):
                     results[sample_id]['errors'].append('Not found')
                     continue
                 ar = r[0].getObject()
-                ar_state = wf_tool.getInfoFor(ar, 'review_state', '')
+                ar_state = workflow.getInfoFor(ar, 'review_state', '')
                 if (ar_state not in updateable_states):
                     results[sample_id]['errors'].append('Analysis request in %s status '
                                '- not updated' % (ar_state))
@@ -112,7 +112,7 @@ class bika_instrument_import(UniqueObject, SimpleItem):
                         analysis = ws_analyses[service_id]
                     else:
                         analysis = ar._getOb(service_id)
-                    as_state = wf_tool.getInfoFor(analysis, 'review_state', '')
+                    as_state = workflow.getInfoFor(analysis, 'review_state', '')
                     if (as_state in ['assigned']):
                         if (analysis.getResult() is None) or (analysis.getResult() == ''):
                             pass
@@ -154,7 +154,7 @@ class bika_instrument_import(UniqueObject, SimpleItem):
                             Unit = service.getUnit(),
                         )
                         self.REQUEST.set('suppress_escalation', 1)
-                        wf_tool.doActionFor(analysis, 'import')
+                        workflow.doActionFor(analysis, 'import')
                         del self.REQUEST.other['suppress_escalation']
                         results[sample_id]['added'].append('%s' % (service_title))
 
