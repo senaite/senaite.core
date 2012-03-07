@@ -60,7 +60,7 @@ class SampleViewView(BrowserView):
     """
 
     implements(IViewView)
-    template = ViewPageTemplateFile("templates/sample_edit.pt")
+    template = ViewPageTemplateFile("templates/sample.pt")
 
     def __init__(self, context, request):
         BrowserView.__init__(self, context, request)
