@@ -37,7 +37,7 @@ schema = BikaSchema.copy() + Schema((
     ),
     DateTimeField('DateSampled',
     ),
-    StringField('SampledByUser',
+    StringField('Sampler',
         searchable=True
     ),
     DateTimeField('DatePreserved',
@@ -135,54 +135,5 @@ class SamplePartition(BaseContent, HistoryAwareMixin):
     def expiry_date(self):
         """ return expiry date """
         return 0
-
-    security.declarePublic('current_user')
-    def current_user(self):
-        """ get the current user """
-        user = self.REQUEST.AUTHENTICATED_USER
-        user_id = user.getUserName()
-        return user_id
-
-    security.declarePublic('getPreservedByName')
-    def getPreservedByName(self):
-        """ get the name of the user who preserved this partition """
-        uid = self.getPreservedByUser()
-        if uid in (None, ''):
-            return ' '
-
-        r = self.portal_catalog(portal_type = 'Contact', getUsername = uid)
-        if len(r) == 1:
-            return r[0].Title
-
-        mtool = getToolByName(self, 'portal_membership')
-        member = mtool.getMemberById(uid)
-        if member is None:
-            return uid
-        else:
-            fullname = member.getProperty('fullname')
-        if fullname in (None, ''):
-            return uid
-        return fullname
-
-    security.declarePublic('getSampledByName')
-    def getSampledByName(self):
-        """ get the name of the user who sampled this partition """
-        uid = self.getSampledByUser()
-        if uid in (None, ''):
-            return ' '
-
-        r = self.portal_catalog(portal_type = 'Contact', getUsername = uid)
-        if len(r) == 1:
-            return r[0].Title
-
-        mtool = getToolByName(self, 'portal_membership')
-        member = mtool.getMemberById(uid)
-        if member is None:
-            return uid
-        else:
-            fullname = member.getProperty('fullname')
-        if fullname in (None, ''):
-            return uid
-        return fullname
 
 registerType(SamplePartition, PROJECTNAME)

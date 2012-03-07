@@ -69,17 +69,16 @@ def isActive(obj):
 def TimeOrDate(context, datetime, long_format = False):
     """ Return the Time date is today,
         otherwise return the Date.
-        XXX timeordate needs long/short/time/date formats in bika_setup
     """
-    localLongTimeFormat = context.portal_properties.site_properties.localLongTimeFormat
-    localTimeFormat = context.portal_properties.site_properties.localTimeFormat
-    localTimeOnlyFormat = context.portal_properties.site_properties.localTimeOnlyFormat
+    localLongTimeFormat = context.portal_properties.site_properties.getProperty('localLongTimeFormat')
+    localTimeFormat = context.portal_properties.site_properties.getProperty('localTimeFormat')
+    localTimeOnlyFormat = context.portal_properties.site_properties.getProperty('localTimeOnlyFormat')
 
     if hasattr(datetime, 'Date'):
         if (datetime.Date() > DateTime().Date()) or long_format:
             dt = datetime.asdatetime().strftime(localLongTimeFormat)
         elif (datetime.Date() < DateTime().Date()):
-            dt = datetime.asdatetime().strftime("%d %b %Y")
+            dt = datetime.asdatetime().strftime(localTimeFormat)
         elif datetime.Date() == DateTime().Date():
             dt = datetime.asdatetime().strftime(localTimeOnlyFormat)
         else:
@@ -172,6 +171,22 @@ def sortable_title(portal, title):
             sortabletitle = sortabletitle[:30]
             break
     return sortabletitle
+
+def pretty_user_name_or_id(context, userid):
+    pc = getToolByName(self, 'portal_catalog')
+    r = pc(portal_type = 'Contact', getUsername = userid)
+    if len(r) == 1:
+        return r[0].Title
+
+    mtool = getToolByName(self, 'portal_membership')
+    member = mtool.getMemberById(userid)
+    if member is None:
+        return userid
+    else:
+        fullname = member.getProperty('fullname')
+    if fullname in (None, ''):
+        return userid
+    return fullname
 
 def changeWorkflowState(content, state_id, acquire_permissions=False,
                         portal_workflow=None, **kw):

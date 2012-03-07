@@ -1288,8 +1288,6 @@ class ajaxAnalysisRequestSubmit():
                         ClientSampleID = values.get('ClientSampleID', ''),
                         SamplePoint = values.get('SamplePoint', ''),
                         SampleType = values['SampleType'],
-                        SubmittedByUser = sample.current_user(),
-                        DateSubmitted = DateTime(),
                         SamplingDate = values['SamplingDate'],
                         Composite = values.get('Composite',False),
                     )
@@ -1436,7 +1434,6 @@ class AnalysisRequestsView(BikaListingView):
             'SamplingDate': {'title': _('Sampling Date'),
                              'toggle': True},
             'DateSampled': {'title': _('Date Sampled'),
-                            'index': 'getDateSampled',
                             'toggle': True},
             'getDateReceived': {'title': _('Date Received'),
                                 'index': 'getDateReceived',

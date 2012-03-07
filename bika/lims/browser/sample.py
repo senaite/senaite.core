@@ -7,12 +7,10 @@ from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.utils import TimeOrDate
 from bika.lims import EditSample
-from bika.lims import PMF, logger
+from bika.lims import PMF
 from bika.lims.browser.analyses import AnalysesView
-from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.layout.globals.interfaces import IViewView
 from zope.interface import implements
-import json
 import plone
 
 class SamplePartitionsView(AnalysesView):
@@ -72,7 +70,11 @@ class SampleViewView(BrowserView):
 
     def __call__(self):
 
+        form = self.request.form
+
         if 'submitted' in self.request.form:
+
+            message = None
 
             can_edit = True
             workflow = getToolByName(self.context, 'portal_workflow')
@@ -112,7 +114,6 @@ class SampleViewView(BrowserView):
                         ClientSampleID = form['ClientSampleID'],
                         SampleType = sampleType,
                         SamplePoint = samplePoint,
-                        SamplingDate = form['SamplingDate'],
                         Composite = composite
                     )
                     sample.reindexObject()
@@ -190,26 +191,30 @@ class SamplesView(BikaListingView):
         self.description = ""
 
         self.columns = {
-            'SampleID': {'title': _('Sample ID'),
+            'getSampleID': {'title': _('Sample ID'),
                          'index':'getSampleID'},
             'Client': {'title': _("Client"),
                        'toggle': True,},
             'Requests': {'title': _('Requests'),
                          'sortable': False,
                          'toggle': False},
-            'ClientReference': {'title': _('Client Ref'),
+            'getClientReference': {'title': _('Client Ref'),
                                 'index': 'getClientReference',
                                 'toggle': False},
-            'ClientSampleID': {'title': _('Client SID'),
+            'getClientSampleID': {'title': _('Client SID'),
                                'index': 'getClientSampleID',
                                'toggle': False},
-            'SampleTypeTitle': {'title': _('Sample Type'),
+            'getSampleTypeTitle': {'title': _('Sample Type'),
                                 'index': 'getSampleTypeTitle'},
-            'SamplePointTitle': {'title': _('Sample Point'),
+            'getSamplePointTitle': {'title': _('Sample Point'),
                                 'index': 'getSamplePointTitle',
                                 'toggle': False},
-            'SamplingDate': {'title': _('Sampling Date'),
-                             'toggle':True},
+            'getSamplingDate': {'title': _('Sampling Date'),
+                             'toggle': True},
+            'getDateSampled': {'title': _('Date Sampled'),
+                             'toggle': True},
+            'getSampler': {'title': _('Sampler'),
+                             'toggle': True},
             'DateReceived': {'title': _('Date Received'),
                              'index': 'getDateReceived',
                              'toggle': False},
@@ -219,72 +224,108 @@ class SamplesView(BikaListingView):
         self.review_states = [
             {'id':'all',
              'title': _('All'),
-             'columns': ['SampleID',
+             'columns': ['getSampleID',
                          'Client',
                          'Requests',
-                         'ClientReference',
-                         'ClientSampleID',
-                         'SampleTypeTitle',
-                         'SamplePointTitle',
-                         'SamplingDate',
+                         'getClientReference',
+                         'getClientSampleID',
+                         'getSampleTypeTitle',
+                         'getSamplePointTitle',
+                         'getSamplingDate',
+                         'getDateSampled',
+                         'getSampler',
                          'DateReceived',
                          'state_title']},
+            {'id':'to_be_sampled',
+             'title': _('To Be Sampled'),
+             'columns': ['getSampleID',
+                         'Client',
+                         'Requests',
+                         'getClientReference',
+                         'getClientSampleID',
+                         'getSamplingDate',
+                         'getDateSampled',
+                         'getSampler',
+                         'getSampleTypeTitle',
+                         'getSamplePointTitle']},
+            {'id':'to_be_preserved',
+             'title': _('To Be Preserved'),
+             'columns': ['getSampleID',
+                         'Client',
+                         'Requests',
+                         'getClientReference',
+                         'getClientSampleID',
+                         'getSamplingDate',
+                         'getDateSampled',
+                         'getSampler',
+                         'getSampleTypeTitle',
+                         'getSamplePointTitle']},
             {'id':'sample_due',
              'title': _('Due'),
-             'columns': ['SampleID',
+             'columns': ['getSampleID',
                          'Client',
                          'Requests',
-                         'ClientReference',
-                         'ClientSampleID',
-                         'SamplingDate',
-                         'SampleTypeTitle',
-                         'SamplePointTitle']},
+                         'getClientReference',
+                         'getClientSampleID',
+                         'getSamplingDate',
+                         'getDateSampled',
+                         'getSampler',
+                         'getSampleTypeTitle',
+                         'getSamplePointTitle']},
             {'id':'sample_received',
              'title': _('Received'),
-             'columns': ['SampleID',
+             'columns': ['getSampleID',
                          'Client',
                          'Requests',
-                         'ClientReference',
-                         'ClientSampleID',
-                         'SampleTypeTitle',
-                         'SamplePointTitle',
-                         'SamplingDate',
+                         'getClientReference',
+                         'getClientSampleID',
+                         'getSampleTypeTitle',
+                         'getSamplePointTitle',
+                         'getSamplingDate',
+                         'getDateSampled',
+                         'getSampler',
                          'DateReceived']},
             {'id':'expired',
              'title': _('Expired'),
-             'columns': ['SampleID',
+             'columns': ['getSampleID',
                          'Client',
                          'Requests',
-                         'ClientReference',
-                         'ClientSampleID',
-                         'SampleTypeTitle',
-                         'SamplePointTitle',
-                         'SamplingDate',
+                         'getClientReference',
+                         'getClientSampleID',
+                         'getSampleTypeTitle',
+                         'getSamplePointTitle',
+                         'getSamplingDate',
+                         'getDateSampled',
+                         'getSampler',
                          'DateReceived']},
             {'id':'disposed',
              'title': _('Disposed'),
-             'columns': ['SampleID',
+             'columns': ['getSampleID',
                          'Client',
                          'Requests',
-                         'ClientReference',
-                         'ClientSampleID',
-                         'SampleTypeTitle',
-                         'SamplePointTitle',
-                         'SamplingDate',
+                         'getClientReference',
+                         'getClientSampleID',
+                         'getSampleTypeTitle',
+                         'getSamplePointTitle',
+                         'getSamplingDate',
+                         'getDateSampled',
+                         'getSampler',
                          'DateReceived']},
             {'id':'cancelled',
              'title': _('Cancelled'),
              'contentFilter': {'cancellation_state': 'cancelled'},
              'transitions': [{'id':'reinstate'}, ],
-             'columns': ['SampleID',
+             'columns': ['getSampleID',
                          'Client',
                          'Requests',
-                         'ClientReference',
-                         'ClientSampleID',
-                         'SampleTypeTitle',
-                         'SamplePointTitle',
-                         'SamplingDate',
+                         'getClientReference',
+                         'getClientSampleID',
+                         'getSampleTypeTitle',
+                         'getSamplePointTitle',
+                         'getSamplingDate',
                          'DateReceived',
+                         'getDateSampled',
+                         'getSampler',
                          'state_title']},
             ]
 
@@ -296,34 +337,68 @@ class SamplesView(BikaListingView):
         for x in range(len(items)):
             if not items[x].has_key('obj'): continue
             obj = items[x]['obj']
-            items[x]['SampleID'] = obj.getSampleID()
-            items[x]['replace']['SampleID'] = "<a href='%s'>%s</a>" % \
-                 (items[x]['url'], items[x]['SampleID'])
-            items[x]['replace']['Requests'] = ",".join(
-                ["<a href='%s'>%s</a>" % (o.absolute_url(), o.Title())
-                 for o in obj.getAnalysisRequests()])
-            items[x]['ClientReference'] = obj.getClientReference()
-            items[x]['ClientSampleID'] = obj.getClientSampleID()
-            items[x]['SampleTypeTitle'] = obj.getSampleTypeTitle()
-            items[x]['SamplePointTitle'] = obj.getSamplePointTitle()
+            items[x]['replace']['getSampleID'] = "<a href='%s'>%s</a>" % \
+                 (items[x]['url'], obj.getSampleID())
+
+            requests = ["<a href='%s'>%s</a>" % (o.absolute_url(), o.Title())
+                        for o in obj.getAnalysisRequests()]
+            items[x]['replace']['Requests'] = ",".join(requests)
+
             items[x]['Client'] = obj.aq_parent.Title()
             items[x]['replace']['Client'] = "<a href='%s'>%s</a>" % \
-                     (obj.aq_parent.absolute_url(), obj.aq_parent.Title())
+                (obj.aq_parent.absolute_url(), obj.aq_parent.Title())
 
-            samplingdate = obj.getSamplingDate()
-            items[x]['SamplingDate'] = TimeOrDate(self.context,
-                                                  samplingdate,
-                                                  long_format = 0)
             items[x]['DateReceived'] = TimeOrDate(self.context,
                                                   obj.getDateReceived())
 
             after_icons = ''
             if obj.getSampleType().getHazardous():
                 after_icons += "<img title='Hazardous' src='++resource++bika.lims.images/hazardous.png'>"
-            if samplingdate > DateTime():
+            if obj.getSamplingDate() > DateTime():
                 after_icons += "<img src='++resource++bika.lims.images/calendar.png' title='%s'>" % \
                     translate(_("Future dated sample"))
             if after_icons:
-                items[x]['after']['SampleID'] = after_icons
+                items[x]['after']['getSampleID'] = after_icons
 
         return items
+
+class ajaxSetDateSampled():
+    """ DateSampled is set immediately.
+    """
+
+    def __init__(self, context, request):
+        self.context = context
+        self.request = request
+
+    def __call__(self):
+        plone.protect.CheckAuthenticator(self.request)
+        plone.protect.PostOnly(self.request)
+        value = self.request.get('value', '')
+        if not value:
+            return
+        for part in self.context.objectValues("SamplePartition"):
+            if not part.getDateSampled():
+                part.setDateSampled(value)
+        return "ok"
+
+class ajaxSetSampler():
+    """ Sampler is set immediately.
+    """
+
+    def __init__(self, context, request):
+        self.context = context
+        self.request = request
+
+    def __call__(self):
+        mtool = getToolByName(self, 'portal_membership')
+        plone.protect.CheckAuthenticator(self.request)
+        plone.protect.PostOnly(self.request)
+        value = self.request.get('value', '')
+        if not value:
+            return
+        if not mtool.getMemberById(value):
+            return
+        for part in self.context.objectValues("SamplePartition"):
+            if not part.getSampler():
+                part.setSampler(value)
+        return "ok"

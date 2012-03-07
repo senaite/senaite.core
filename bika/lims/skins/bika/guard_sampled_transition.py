@@ -20,16 +20,7 @@ if not props.getProperty('sampling_workflow_enabled', True):
 if workflow.getInfoFor(context, 'cancellation_state', "active") == "cancelled":
     return False
 
-# (Sample Partiton shares the Sample Workflow, so this guard is called)
-# Transition is always available on SamplePartition objects
-if context.portal_type == 'SamplePartition':
-    return True
-
 if context.portal_type == 'AnalysisRequest':
-
-    # False if this sample has been "sampled"
-    if context.getSample().getDateSampled():
-        return False
 
     # False if our SamplingDate is the future
     if context.getSample().getSamplingDate() > DateTime():
@@ -37,12 +28,9 @@ if context.portal_type == 'AnalysisRequest':
 
 elif context.portal_type == 'Sample':
 
-    # False if this sample has been "sampled"
-    if context.getDateSampled():
-        return False
-
     # False if our SamplingDate is the future
     if context.getSamplingDate() > DateTime():
         return False
+
 
 return True

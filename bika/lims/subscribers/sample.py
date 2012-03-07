@@ -27,26 +27,37 @@ def AfterTransitionEventHandler(sample, event):
     parts = sample.objectValues('SamplePartition')
 
     if event.transition.id == "sampled":
-        # Right now this we just set DateSampled to DateTime().
-        # XXX we should be letting the user enter this.
-        DateSampled = DateTime()
-        sample.setSamplingDate(DateSampled)
-        # Right now this we just sets SampledByUser to current user
-        # XXX we should be letting the user enter this.
-        SampledByUser = member.id
-        sample.setSampledByUser(SampledByUser)
+        # Transition all sample partitions that are still 'to_be_sampled'
+        tbs = [sp for sp in parts \
+               if workflow.getInfoFor(sp, 'review_state') == 'to_be_sampled']
+        for sp in tbs:
+            workflow.doActionFor(sp, 'sampled')
+
+        # All associated AnalysisRequests are also transitioned
+        for ar in sample.getAnalysisRequests():
+            if not ar.UID() in sample.REQUEST['workflow_skiplist']:
+                workflow.doActionFor(ar, "sampled")
 
     if event.transition.id == "preserved":
-        pass
+        # Transition all sample partitions that are still 'to_be_preserved'
+        tbp = [sp for sp in parts \
+               if workflow.getInfoFor(sp, 'review_state') == 'to_be_preserved']
+        for sp in tbp:
+            workflow.doActionFor(sp, 'preserved')
+
+        # All associated AnalysisRequests are also transitioned
+        for ar in sample.getAnalysisRequests():
+            if not ar.UID() in sample.REQUEST['workflow_skiplist']:
+                workflow.doActionFor(ar, "sampled")
 
     if event.transition.id == "receive":
         if not props.getProperty('sampling_workflow_enabled', True):
             # If the sampling workflow is disabled, we set the DateSampled
             # to the current date
             DateSampled = DateTime()
-            SampledByUser = member.id
+            Sampler = member.id
             sample.setSamplingDate(DateSampled)
-            sample.setSampledByUser(SampledByUser)
+            sample.setSampler(Sampler)
 
         sample.setDateReceived(DateTime())
         sample.reindexObject(idxs = ["review_state", "getDateReceived"])

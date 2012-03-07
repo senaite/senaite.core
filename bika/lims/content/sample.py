@@ -17,7 +17,7 @@ from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFCore.utils import getToolByName
 from bika.lims.config import ManageBika, PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
-from bika.lims.utils import sortable_title
+from bika.lims.utils import sortable_title, pretty_user_name_or_id
 import sys
 import time
 from zope.interface import implements
@@ -89,18 +89,6 @@ schema = BikaSchema.copy() + Schema((
         expression = "here.getSamplePoint() and here.getSamplePoint().Title() or ''",
         widget = ComputedWidget(
             visible = False,
-        ),
-    ),
-    ComputedField('SubmittedByUser',
-        searchable = True,
-        expression = "here.getSubmittedByUser()",
-    ),
-    DateTimeField('DateSubmitted',
-        required = 1,
-        default_method = 'current_date',
-        widget = DateTimeWidget(
-            label = _("Date Submitted"),
-            visible = {'edit':'hidden'},
         ),
     ),
     DateTimeField('SamplingDate',
@@ -209,17 +197,21 @@ class Sample(BaseFolder, HistoryAwareMixin):
     def getDateSampled(self):
         """ Return the dates that our Partitions were sampled.
         """
-        dates = dict([(p.getDateSampled(), p.id)
-                      for p in self.objectValues("SamplePartition")
-                      if p.getDateSampled()])
+        props = getToolByName(self, 'portal_properties').site_properties
+        localTimeFormat = props.getProperty('localTimeFormat')
+        dates = dict(
+            [(p.getDateSampled().asdatetime().strftime(localTimeFormat), p.id)
+             for p in self.objectValues("SamplePartition")
+             if p.getDateSampled()])
         return ", ".join(dates.keys())
 
-    def getSampledByUser(self):
+    def getSampler(self):
         """ Return the users recorded as sampling our Partitions.
         """
-        users = dict([(p.getSampledByName(), p.id)
-                      for p in self.objectValues("SamplePartition")
-                      if p.getSampledByUser()])
+        users = [(pretty_user_name_or_id(p.getSampler()), p.id)
+                 for p in self.objectValues("SamplePartition")
+                 if p.getSampler()]
+        users = dict(users)
         return ", ".join(users.keys())
 
     def getDatePreserved(self):
@@ -230,12 +222,13 @@ class Sample(BaseFolder, HistoryAwareMixin):
                       if p.getDatePreserved()])
         return ", ".join(dates.keys())
 
-    def getPreservedByUser(self):
+    def getPreserver(self):
         """ Return the users recorded as Preserving our Partitions.
         """
-        users = dict([(p.getPreservedByName(), p.id)
+        users = [(pretty_user_name_or_id(p.getPreserver()), p.id)
                       for p in self.objectValues("SamplePartition")
-                      if p.getPreservedByUser()])
+                      if p.getPreserver()]
+        users = dict(users)
         return ", ".join(users.keys())
 
     security.declarePublic('getAnalysisRequests')
@@ -261,11 +254,6 @@ class Sample(BaseFolder, HistoryAwareMixin):
             analyses += part.getAnalyses()
         return analyses
 
-    security.declarePublic('current_date')
-    def current_date(self):
-        """ return current date """
-        return DateTime()
-
     def disposal_date(self):
         """ Calculate the disposal date by returning the latest
             disposal date in this sample's partitions """
@@ -281,38 +269,5 @@ class Sample(BaseFolder, HistoryAwareMixin):
         else:
             dis_date = None
         return dis_date
-
-    security.declarePublic('current_user')
-    def current_user(self):
-        """ get the current user """
-        user = self.REQUEST.AUTHENTICATED_USER
-        user_id = user.getUserName()
-        return user_id
-
-    security.declarePublic('getSubmittedByName')
-    def getSubmittedByName(self):
-        """ get the name of the user who submitted the sample """
-        uid = self.getSubmittedByUser()
-        if uid is None:
-            return ' '
-
-        if uid == '':
-            return ' '
-
-        r = self.portal_catalog(portal_type = 'Contact', getUsername = uid)
-        if len(r) == 1:
-            return r[0].Title
-
-        mtool = getToolByName(self, 'portal_membership')
-        member = mtool.getMemberById(uid)
-        if member is None:
-            return uid
-        else:
-            fullname = member.getProperty('fullname')
-        if fullname is None:
-            return uid
-        if fullname == '':
-            return uid
-        return fullname
 
 atapi.registerType(Sample, PROJECTNAME)

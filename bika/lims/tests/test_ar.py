@@ -51,9 +51,7 @@ class Tests(unittest.TestCase):
                         ClientReference = chr(random.randint(70,90))*5,
                         ClientSampleID = chr(random.randint(70,90))*5,
                         LastARNumber = 1,
-                        DateSubmitted = DateTime(),
                         SamplingDate = (i == count_ars and DateTime()+86400 or DateTime()),
-                        SubmittedByUser = 'testing'
                     )
                     sample.processForm()
                     self.assertEqual(len(sample.getId().split("-")), 2)

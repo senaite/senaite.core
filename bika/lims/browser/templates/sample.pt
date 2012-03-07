@@ -19,7 +19,8 @@
 <metal:content fill-slot="content-core" tal:define="
 	review_state python:context.portal_workflow.getInfoFor(here, 'review_state', '');
 	portal context/@@plone_portal_state/portal;
-	checkPermission nocall:context/portal_membership/checkPermission">
+	checkPermission nocall:context/portal_membership/checkPermission;
+	mtool here/portal_membership;">
 
 	<form name="sample_edit_form" method="post" id="sample_edit_form">
 	<input type="hidden" name="submitted" value="1" />
@@ -33,7 +34,7 @@
 		<tr>
 			<th id="" i18n:translate="">Client Reference</th>
 			<td class="left">
-				<input type="text" size="10" name="ClientReference" id="ClientReference"
+				<input type="text" size="25" name="ClientReference" id="ClientReference"
 					tal:attributes="
 						value here/getClientReference;"/>
 			</td>
@@ -42,7 +43,7 @@
 		<tr>
 			<th id="" i18n:translate="">Client SID</th>
 			<td class="left">
-				<input type="text" size="10" name="ClientSampleID"
+				<input type="text" size="25" name="ClientSampleID"
 					tal:attributes="
 						value here/getClientSampleID;"/>
 			</td>
@@ -97,8 +98,8 @@
 		</tr>
 
 		<tr>
-			<th i18n:translate="">Date Submitted</th>
-			<td class="left" tal:content="python:view.TimeOrDate(context, context.getDateSubmitted(), long_format=1)"/>
+			<th i18n:translate="" i18n:domain="plone">Date Created</th>
+			<td class="left" tal:content="python:view.TimeOrDate(context, context.created(), long_format=1)"/>
 		</tr>
 
    		<tr>
@@ -113,20 +114,78 @@
 			<th i18n:translate="">Date Sampled</th>
 			<td class="left"
 				tal:define="date context/getDateSampled">
-				<input type="text" size="10" readonly="readonly" class="datepicker"
+				<input type="text" size="10" readonly="readonly"
 					id="DateSampled" name="DateSampled"
-					tal:condition="python: checkPermission('BIKA: Sample Sample', context) and not date"
+					tal:condition="python: checkPermission('BIKA: Sample Sample', context)"
 					tal:attributes="value python:view.TimeOrDate(context, date)"/>
 				<span
-					tal:condition="date"
+					tal:condition="python: review_state != 'to_be_sampled'
+					                       or not checkPermission('BIKA: Sample Sample', context)"
 					tal:content="python:view.TimeOrDate(context, date, long_format=1)"/>
 			</td>
 		</tr>
 
-		<tr tal:condition="context/getSampledByUser">
-			<th i18n:translate="">Sampled By</th>
-			<td class="left" tal:content="context/getSampledByUser"/>
+		<tr>
+			<th i18n:translate="">Sampler</th>
+			<td class="left"
+				tal:define="sampler context/getSampler">
+				<select id="Sampler"
+					tal:condition="python: checkPermission('BIKA: Sample Sample', context)"
+					tal:define="
+						users python:mtool.searchForMembers(roles=['Sampler']);
+						users python:dict([(user, user.getProperty('fullname')) for user in users]);">
+					<option value="" class="empty_sampler_option" tal:condition="not:sampler"></option>
+					<tal:options tal:repeat="user python:users.keys()">
+						<option
+							tal:attributes="value user;
+							                selected python:user==sampler and 'selected' or ''"
+							tal:content="python:users[user]"/>
+					</tal:options>
+				</select>
+				<span
+					tal:condition="python: review_state != 'to_be_sampled'
+					                       or not checkPermission('BIKA: Sample Sample', context)"
+					tal:content="sampler"/>
+			</td>
 		</tr>
+
+		<tr>
+			<th i18n:translate="">Date Preserved</th>
+			<td class="left">
+				<input type="text" size="10" readonly="readonly"
+					id="DatePreserved" name="DatePreserved"
+					tal:condition="python: checkPermission('BIKA: Preserve Sample', context)"
+					tal:attributes="value python:view.TimeOrDate(context, context.getDatePreserved())"/>
+				<span
+					tal:condition="python: review_state != 'to_be_preserved'
+					                       or not checkPermission('BIKA: Preserve Sample', context)"
+					tal:content="python:view.TimeOrDate(context, context.getDatePreserved(), long_format=1)"/>
+			</td>
+		</tr>
+
+<!--		<tr>-->
+<!--			<th i18n:translate="">Preserver</th>-->
+<!--			<td class="left"-->
+<!--				tal:define="preserver context/getPreserver">-->
+<!--				<select id="Preserver"-->
+<!--					tal:condition="python: checkPermission('BIKA: Preserve Sample', context)"-->
+<!--					tal:define="-->
+<!--						users python:mtool.searchForMembers(roles=['Preserver']);-->
+<!--						users python:dict([(user, user.getProperty('fullname')) for user in users]);">-->
+<!--					<option value="" class="empty_preserver_option" tal:condition="not:preserver"></option>-->
+<!--					<tal:options tal:repeat="user python:users.keys()">-->
+<!--						<option-->
+<!--							tal:attributes="value user;-->
+<!--							                selected python:user==preserver and 'selected' or ''"-->
+<!--							tal:content="python:users[user]"/>-->
+<!--					</tal:options>-->
+<!--				</select>-->
+<!--				<span-->
+<!--					tal:condition="python: review_state != 'to_be_preserved'-->
+<!--					                       or not checkPermission('BIKA: Preserve Sample', context)"-->
+<!--					tal:content="preserver"/>-->
+<!--			</td>-->
+<!--		</tr>-->
 
 		<tr tal:condition="python:review_state != 'sample_due'">
 			<th i18n:translate="">Date Received</th>
