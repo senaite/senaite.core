@@ -27,12 +27,13 @@ def ObjectInitializedEventHandler(analysis, event):
     ar_state = wf.getInfoFor(ar, 'review_state')
     ar_ws_state = wf.getInfoFor(ar, 'worksheetanalysis_review_state')
 
-    if ar_state != 'sample_due':
+    if ar_state not in ('to_be_sampled', 'to_be_preserved', 'sample_due'):
         wf.doActionFor(analysis, 'receive')
 
     # Note: AR adds itself to the skiplist so we have to take it off again
     #       to allow possible promotions if other analyses are deleted.
-    if ar_state not in ('sample_due', 'sample_received'):
+    if ar_state not in ('to_be_sampled', 'to_be_preserved',
+                        'sample_due', 'sample_received'):
         if not analysis.REQUEST.has_key('workflow_skiplist'):
             analysis.REQUEST['workflow_skiplist'] = ['retract all analyses', ]
         else:
@@ -69,16 +70,22 @@ def ObjectRemovedEventHandler(analysis, event):
     for a in ar.getAnalyses():
         a_state = a.review_state
         if a_state in \
-           ('sample_due', 'sample_received',):
+           ('to_be_sampled', 'to_be_preserved',
+            'sample_due', 'sample_received',):
             can_submit = False
         if a_state in \
-           ('sample_due', 'sample_received', 'attachment_due',):
+           ('to_be_sampled', 'to_be_preserved',
+            'sample_due', 'sample_received', 'attachment_due',):
             can_attach = False
         if a_state in \
-           ('sample_due', 'sample_received', 'attachment_due', 'to_be_verified',):
+           ('to_be_sampled', 'to_be_preserved',
+            'sample_due', 'sample_received',
+            'attachment_due', 'to_be_verified',):
             can_verify = False
         if a_state in \
-           ('sample_due', 'sample_received', 'attachment_due', 'to_be_verified', 'verified',):
+           ('to_be_sampled', 'to_be_preserved',
+            'sample_due', 'sample_received',
+            'attachment_due', 'to_be_verified', 'verified',):
             can_publish = False
 
     # Note: AR adds itself to the skiplist so we have to take it off again
@@ -157,7 +164,9 @@ def AfterTransitionEventHandler(analysis, event):
                 if can_attach:
                     dependencies = dependent.getDependencies()
                     for dependency in dependencies:
-                        if wf.getInfoFor(dependency, 'review_state') in ('sample_due', 'sample_received', 'attachment_due',):
+                        if wf.getInfoFor(dependency, 'review_state') in \
+                           ('to_be_sampled', 'to_be_preserved', 'sample_due',
+                            'sample_received', 'attachment_due',):
                             can_attach = False
                             break
                 if can_attach:
@@ -171,7 +180,8 @@ def AfterTransitionEventHandler(analysis, event):
             can_attach = True
             for a in ar.getAnalyses():
                 if a.review_state in \
-                   ('sample_due', 'sample_received', 'attachment_due',):
+                   ('to_be_sampled', 'to_be_preserved',
+                    'sample_due', 'sample_received', 'attachment_due',):
                     can_attach = False
                     break
             if can_attach:
@@ -188,7 +198,8 @@ def AfterTransitionEventHandler(analysis, event):
                 can_attach = True
                 for a in ws.getAnalyses():
                     if wf.getInfoFor(a, 'review_state') in \
-                       ('sample_due', 'sample_received', 'attachment_due', 'assigned',):
+                       ('to_be_sampled', 'to_be_preserved', 'sample_due',
+                        'sample_received', 'attachment_due', 'assigned',):
                         # Note: referenceanalyses and duplicateanalyses can still have review_state = "assigned".
                         can_attach = False
                         break
@@ -260,7 +271,9 @@ def AfterTransitionEventHandler(analysis, event):
                 if can_submit:
                     dependencies = dependent.getDependencies()
                     for dependency in dependencies:
-                        if wf.getInfoFor(dependency, 'review_state') in ('sample_due', 'sample_received',):
+                        if wf.getInfoFor(dependency, 'review_state') in \
+                           ('to_be_sampled', 'to_be_preserved',
+                            'sample_due', 'sample_received',):
                             can_submit = False
                 if can_submit:
                     wf.doActionFor(dependent, 'submit')
@@ -271,7 +284,8 @@ def AfterTransitionEventHandler(analysis, event):
             all_submitted = True
             for a in ar.getAnalyses():
                 if a.review_state in \
-                   ('sample_due', 'sample_received',):
+                   ('to_be_sampled', 'to_be_preserved',
+                    'sample_due', 'sample_received',):
                     all_submitted = False
                     break
             if all_submitted:
@@ -287,7 +301,8 @@ def AfterTransitionEventHandler(analysis, event):
                 all_submitted = True
                 for a in ws.getAnalyses():
                     if wf.getInfoFor(a, 'review_state') in \
-                       ('sample_due', 'sample_received', 'assigned',):
+                       ('to_be_sampled', 'to_be_preserved',
+                        'sample_due', 'sample_received', 'assigned',):
                         # Note: referenceanalyses and duplicateanalyses can still have review_state = "assigned".
                         all_submitted = False
                         break
@@ -303,7 +318,9 @@ def AfterTransitionEventHandler(analysis, event):
         if can_attach:
             dependencies = analysis.getDependencies()
             for dependency in dependencies:
-                if wf.getInfoFor(dependency, 'review_state') in ('sample_due', 'sample_received', 'attachment_due',):
+                if wf.getInfoFor(dependency, 'review_state') in \
+                   ('to_be_sampled', 'to_be_preserved', 'sample_due',
+                    'sample_received', 'attachment_due',):
                     can_attach = False
         if can_attach:
             wf.doActionFor(analysis, 'attach')
@@ -366,7 +383,9 @@ def AfterTransitionEventHandler(analysis, event):
                             can_submit = True
                             for dependency in dependencies:
                                 if wf.getInfoFor(dependency, 'review_state') in \
-                                    ('sample_due', 'sample_received', 'attachment_due', 'to_be_verified'):
+                                    ('to_be_sampled', 'to_be_preserved',
+                                     'sample_due', 'sample_received',
+                                     'attachment_due', 'to_be_verified'):
                                     can_submit = False
                                     break
                             if can_submit:
@@ -376,7 +395,9 @@ def AfterTransitionEventHandler(analysis, event):
                             can_verify = True
                             for dependency in dependencies:
                                 if wf.getInfoFor(dependency, 'review_state') in \
-                                    ('sample_due', 'sample_received', 'attachment_due', 'to_be_verified'):
+                                    ('to_be_sampled', 'to_be_preserved',
+                                     'sample_due', 'sample_received',
+                                     'attachment_due', 'to_be_verified'):
                                     can_verify = False
                                     break
                             if can_verify:
@@ -388,7 +409,8 @@ def AfterTransitionEventHandler(analysis, event):
             all_verified = True
             for a in ar.getAnalyses():
                 if a.review_state in \
-                   ('sample_due', 'sample_received', 'attachment_due', 'to_be_verified'):
+                   ('to_be_sampled', 'to_be_preserved', 'sample_due',
+                    'sample_received', 'attachment_due', 'to_be_verified'):
                     all_verified = False
                     break
             if all_verified:
@@ -407,8 +429,11 @@ def AfterTransitionEventHandler(analysis, event):
                 all_verified = True
                 for a in ws.getAnalyses():
                     if wf.getInfoFor(a, 'review_state') in \
-                       ('sample_due', 'sample_received', 'attachment_due', 'to_be_verified', 'assigned'):
-                        # Note: referenceanalyses and duplicateanalyses can still have review_state = "assigned".
+                       ('to_be_sampled', 'to_be_preserved', 'sample_due',
+                        'sample_received', 'attachment_due', 'to_be_verified',
+                        'assigned'):
+                        # Note: referenceanalyses and duplicateanalyses can
+                        # still have review_state = "assigned".
                         all_verified = False
                         break
                 if all_verified:
@@ -502,16 +527,19 @@ def AfterTransitionEventHandler(analysis, event):
             ws_empty = False
             a_state = wf.getInfoFor(a, 'review_state')
             if a_state in \
-               ('assigned', 'sample_due', 'sample_received',):
+               ('to_be_sampled', 'to_be_preserved', 'assigned',
+                'sample_due', 'sample_received',):
                 can_submit = False
             else:
                 if not ws.getAnalyst():
                     can_submit = False
             if a_state in \
-               ('assigned', 'sample_due', 'sample_received', 'attachment_due',):
+               ('to_be_sampled', 'to_be_preserved', 'assigned',
+                'sample_due', 'sample_received', 'attachment_due',):
                 can_attach = False
             if a_state in \
-               ('assigned', 'sample_due', 'sample_received', 'attachment_due', 'to_be_verified',):
+               ('to_be_sampled', 'to_be_preserved', 'assigned', 'sample_due',
+                'sample_received', 'attachment_due', 'to_be_verified',):
                 can_verify = False
 
         if not ws_empty:

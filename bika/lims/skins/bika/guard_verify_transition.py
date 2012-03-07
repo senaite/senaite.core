@@ -24,7 +24,8 @@ if workflow.getInfoFor(context, 'cancellation_state', 'active') == "cancelled":
 if context.portal_type == "Analysis":
     for d in context.getDependencies():
         review_state = workflow.getInfoFor(d, 'review_state')
-        if review_state in ('sample_due', 'sample_received', 'attachment_due', 'to_be_verified'):
+        if review_state in ('to_be_sampled', 'to_be_preserved', 'sample_due',
+                            'sample_received', 'attachment_due', 'to_be_verified'):
             return False
 
 # All kinds of analyses get their submitter and verifier compared
@@ -56,7 +57,9 @@ if context.portal_type == "AnalysisRequest":
         # if all analyses are already verified.
         for analysis in context.getAnalyses(full_objects = True):
             review_state = workflow.getInfoFor(analysis, 'review_state')
-            if review_state in ('sample_due', 'sample_received', 'attachment_due', 'to_be_verified'):
+            if review_state in ('to_be_sampled', 'to_be_preserved',
+                                'sample_due', 'sample_received',
+                                'attachment_due', 'to_be_verified'):
                 return False
         return True
 
@@ -89,7 +92,7 @@ if context.portal_type == "Worksheet":
         # if all analyses are already verified.
         for analysis in context.getAnalyses(full_objects = True):
             review_state = workflow.getInfoFor(analysis, 'review_state')
-            if review_state in ('sample_due', 'sample_received', 'attachment_due', 'to_be_verified'):
+            if review_state in ('sample_received', 'attachment_due', 'to_be_verified'):
                 return False
         return True
 

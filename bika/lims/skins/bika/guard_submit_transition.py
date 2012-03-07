@@ -25,10 +25,13 @@ if context.portal_type == "Analysis":
         for dep in dependencies:
             review_state = workflow.getInfoFor(dep, 'review_state')
             if interim_fields:
-                if review_state in ('sample_due', 'sample_received', 'attachment_due', 'to_be_verified',):
+                if review_state in ('to_be_sampled', 'to_be_preserved',
+                                    'sample_due', 'sample_received',
+                                    'attachment_due', 'to_be_verified',):
                     return False
             else:
-                if review_state in ('sample_due', 'sample_received',):
+                if review_state in ('to_be_sampled', 'to_be_preserved',
+                                    'sample_due', 'sample_received',):
                     return False
     return True
 
@@ -38,7 +41,8 @@ if context.portal_state == "AnalysisRequest":
     for a in context.objectValues('Analysis'):
         has_analyses = True
         review_state = workflow.getInfoFor(a, 'review_state')
-        if review_state in ('sample_due', 'sample_received',):
+        if review_state in ('to_be_sampled', 'to_be_preserved',
+                            'sample_due', 'sample_received',):
             return False
     return has_analyses
 
@@ -53,7 +57,7 @@ if context.portal_type == "Worksheet":
     for a in context.getAnalyses():
         has_analyses = True
         review_state = workflow.getInfoFor(a, 'review_state', '')
-        if review_state in ('sample_due', 'sample_received', 'assigned',):
+        if review_state in ('sample_received', 'assigned',):
             # Note: referenceanalyses and duplicateanalyses can still have review_state = "assigned".
             return False
     return has_analyses

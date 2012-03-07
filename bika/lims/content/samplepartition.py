@@ -1,11 +1,13 @@
 from AccessControl import ClassSecurityInfo
 from DateTime import DateTime
+from datetime import timedelta
 from Products.ATContentTypes.lib.historyaware import HistoryAwareMixin
 from Products.ATContentTypes.utils import DT2dt,dt2DT
 from Products.Archetypes.public import *
 from Products.Archetypes.references import HoldingReference
 from Products.CMFCore.utils import getToolByName
 from bika.lims import bikaMessageFactory as _
+from bika.lims.browser.fields import DurationField
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import ISamplePartition
@@ -17,14 +19,14 @@ schema = BikaSchema.copy() + Schema((
         relationship='SamplePartitionContainer',
         referenceClass=HoldingReference,
         required=1,
-        multiValued=1,
+        multiValued=0,
     ),
     ReferenceField('Preservation',
         allowed_types=('Preservation',),
         relationship='SamplePartitionPreservation',
         referenceClass=HoldingReference,
         required=0,
-        multiValued=1,
+        multiValued=0,
     ),
     ReferenceField('Analyses',
         allowed_types=('Analysis',),
@@ -38,10 +40,19 @@ schema = BikaSchema.copy() + Schema((
     StringField('PreservedByUser',
         searchable=True
     ),
-    DateTimeField('DateSampled'
+    DurationField('RetentionPeriod',
     ),
-    StringField('SampledByUser',
-        searchable=True
+    ComputedField('ExpiryDate',
+        expression = 'context.expiry_date()',
+        widget = ComputedWidget(
+            visible = False,
+        ),
+    ),
+    ComputedField('DisposalDate',
+        expression = 'context.disposal_date()',
+        widget = ComputedWidget(
+            visible = False,
+        ),
     ),
     TextField('Remarks',
         searchable = True,
@@ -93,12 +104,32 @@ class SamplePartition(BaseContent, HistoryAwareMixin):
     security.declarePublic('disposal_date')
     def disposal_date(self):
         """ return disposal date """
-        rp = self.getSampleType().getRetentionPeriod()
-        td = timedelta(days = rp['days'] and int(rp['days']) or 0,
-                       hours = rp['hours'] and int(rp['hours']) or 0,
-                       minutes = rp['minutes'] and int(rp['minutes']) or 0)
-        dis_date = dt2DT(DT2dt(self.getDateSampled()) + td)
+
+        DateSampled = self.aq_parent.getDateSampled()
+
+        # fallback to sampletype retention period
+        st_retention = self.aq_parent.getSampleType().getRetentionPeriod()
+        pres = self.getPreservation()
+        pres_retention = pres and pres.getRetentionPeriod() or None
+
+        #XXX
+        part_retention = None
+
+        rp = pres_retention and pres_retention or None
+        rp = rp or st_retention
+
+
+        td = timedelta(
+            days = rp['days'] and int(rp['days']) or 0,
+            hours = rp['hours'] and int(rp['hours']) or 0,
+            minutes = rp['minutes'] and int(rp['minutes']) or 0)
+        dis_date = DateSampled and dt2DT(DT2dt(DateSampled) + td) or None
         return dis_date
+
+    security.declarePublic('expiry_date')
+    def expiry_date(self):
+        """ return expiry date """
+        return 0
 
     security.declarePublic('current_user')
     def current_user(self):

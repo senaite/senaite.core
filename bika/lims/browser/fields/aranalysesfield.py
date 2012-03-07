@@ -57,12 +57,13 @@ class ARAnalysesField(ObjectField):
             return
 
         assert type(service_uids) in (list, tuple)
-   #     assert type(prices) == dict
 
         workflow = instance.portal_workflow
+
         # one can only edit Analyses up to a certain state.
         ar_state = workflow.getInfoFor(instance, 'review_state', '')
-        assert ar_state in ('sample_due', 'sample_received', 'attachment_due', 'to_be_verified')
+        assert ar_state in ('to_be_sampled', 'to_be_preserved', 'sample_due',
+                            'sample_received', 'attachment_due', 'to_be_verified')
 
         bsc = getToolByName(instance, 'bika_setup_catalog')
         services = bsc(UID = service_uids)
@@ -108,6 +109,11 @@ class ARAnalysesField(ObjectField):
                     ws = analysis.getBackReferences("WorksheetAnalysis")[0]
                     ws.removeAnalysis(analysis)
                 delete_ids.append(analysis.getId())
+
+        # before we delete, check if there are partitions linking here
+        # if so, remove the reference.
+        # if removing the reference *empties* the partition, remove it.
+
         instance.manage_delObjects(ids = delete_ids)
         instance.AutoIndex = True
         # Note: subscriber might promote the AR
@@ -135,4 +141,3 @@ registerField(ARAnalysesField,
               title = 'Analyses',
               description = ('Used for Analysis instances')
               )
-

@@ -280,7 +280,7 @@ class AnalysesView(BikaListingView):
             # check if this analysis is late/overdue
             if items[i]['obj'].portal_type != "DuplicateAnalysis":
                 if (not calculation or (calculation and not calculation.getDependentServices())) and \
-                   items[i]['review_state'] not in ['sample_due', 'published'] and \
+                   items[i]['review_state'] not in ['to_be_sampled', 'to_be_preserved', 'sample_due', 'published'] and \
                    items[i]['DueDate'] < DateTime():
                     DueDate = TimeOrDate(self.context, item['DueDate'], long_format = 0)
                     if self.context.portal_type == 'AnalysisRequest':

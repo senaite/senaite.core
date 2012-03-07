@@ -18,7 +18,6 @@ class LateAnalysesView(BikaListingView):
                               'getDueDate': {'query': [DateTime(),], 'range': 'max'},
                               'review_state':['assigned',
                                               'sample_received',
-                                              'sample_due',
                                               'to_be_verified',
                                               'verified'],
                               'cancellation_state': 'active',

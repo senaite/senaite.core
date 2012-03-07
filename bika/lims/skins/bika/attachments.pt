@@ -17,7 +17,7 @@
     <dd class="collapsibleContent" style="margin-bottom:0;">
       <table class="attachments" style="margin-bottom:0;">
         <tr>
-          <td tal:define="updateable python:ar_review_state in ('sample_due', 'sample_received', 'to_be_verified')"
+          <td tal:define="updateable python:ar_review_state in ('to_be_sampled', 'to_be_preserved', 'sample_due', 'sample_received', 'to_be_verified')"
               tal:condition="python:updateable and update_attachments">
             <metal:block use-macro="here/attachments/macros/attachments_update"/>
           </td>
@@ -54,7 +54,7 @@
 
 <div metal:define-macro="ar_attachments_list"
      class="ar_attachments_list"
-    tal:define="deleteable python:delete_attachments and ar_review_state in  ['sample_due', 'sample_received', 'to_be_verified']">
+    tal:define="deleteable python:delete_attachments and ar_review_state in  ['to_be_sampled', 'to_be_preserved', 'sample_due', 'sample_received', 'to_be_verified']">
     <metal:block tal:define="dummy python:request.RESPONSE.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate, post-check=0, pre-check=0')" />
 <tal:repeat tal:repeat="attachment attachments">
 <form action="." method="post" name="list_attachment">
@@ -102,7 +102,7 @@
 
 <div metal:define-macro="analysis_attachments_list"
     tal:define="
-        deleteable python:delete_attachments and ar_review_state in  ['sample_due', 'sample_received', 'to_be_verified'];
+        deleteable python:delete_attachments and ar_review_state in ['to_be_sampled', 'to_be_preserved', 'sample_due', 'sample_received', 'to_be_verified'];
         dummy python:request.RESPONSE.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate, post-check=0, pre-check=0')" >
 <tal:repeat tal:repeat="attachment attachments">
 <div>

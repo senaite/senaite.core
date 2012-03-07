@@ -43,7 +43,8 @@ def AfterTransitionEventHandler(analysis, event):
             can_attach = True
             for a in ws.getAnalyses():
                 if wf.getInfoFor(a, 'review_state') in \
-                   ('sample_due', 'sample_received', 'attachment_due', 'assigned',):
+                   ('to_be_sampled', 'to_be_preserved', 'sample_due',
+                    'sample_received', 'attachment_due', 'assigned',):
                     can_attach = False
                     break
             if can_attach:
@@ -80,7 +81,8 @@ def AfterTransitionEventHandler(analysis, event):
             all_submitted = True
             for a in ws.getAnalyses():
                 if wf.getInfoFor(a, 'review_state') in \
-                   ('sample_due', 'sample_received', 'assigned',):
+                   ('to_be_sampled', 'to_be_preserved', 'sample_due',
+                    'sample_received', 'assigned',):
                     all_submitted = False
                     break
             if all_submitted:
@@ -121,7 +123,8 @@ def AfterTransitionEventHandler(analysis, event):
             all_verified = True
             for a in ws.getAnalyses():
                 if wf.getInfoFor(a, 'review_state') in \
-                   ('sample_due', 'sample_received', 'attachment_due', 'to_be_verified', 'assigned'):
+                   ('to_be_sampled', 'to_be_preserved', 'sample_due',
+                    'sample_received', 'attachment_due', 'to_be_verified', 'assigned'):
                     all_verified = False
                     break
             if all_verified:

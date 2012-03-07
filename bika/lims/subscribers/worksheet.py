@@ -50,7 +50,8 @@ def AfterTransitionEventHandler(ws, event):
         can_attach = True
         for a in ws.getAnalyses():
             if wf.getInfoFor(a, 'review_state') in \
-               ('sample_due', 'sample_received', 'attachment_due', 'assigned',):
+               ('to_be_sampled', 'to_be_preserved', 'sample_due',
+                'sample_received', 'attachment_due', 'assigned',):
                 # Note: referenceanalyses and duplicateanalyses can still have review_state = "assigned".
                 can_attach = False
                 break

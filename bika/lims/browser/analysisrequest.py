@@ -144,11 +144,14 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
                 for dependency in analysis.getDependencies():
                     dep_state = workflow.getInfoFor(dependency, 'review_state')
                     if hasInterims[uid]:
-                        if dep_state in ('sample_due', 'sample_received', 'attachment_due', 'to_be_verified',):
+                        if dep_state in ('to_be_sampled', 'to_be_preserved',
+                                         'sample_due', 'sample_received',
+                                         'attachment_due', 'to_be_verified',):
                             can_submit = False
                             break
                     else:
-                        if dep_state in ('sample_due', 'sample_received',):
+                        if dep_state in ('to_be_sampled', 'to_be_preserved',
+                                         'sample_due', 'sample_received',):
                             can_submit = False
                             break
                 if can_submit and analysis not in submissable:
@@ -730,7 +733,8 @@ class AnalysisRequestSelectSampleView(BikaListingView):
         self.contentFilter = {'portal_type': 'Sample',
                               'sort_on':'id',
                               'sort_order': 'reverse',
-                              'review_state': ['sample_due', 'sample_received'],
+                              'review_state': ['to_be_sampled', 'to_be_preserved',
+                                               'sample_due', 'sample_received'],
                               'cancellation_state': 'active',
                               'path': {"query": "/".join(c.getPhysicalPath()),
                                        "level" : 0 }
@@ -1549,7 +1553,8 @@ class AnalysisRequestsView(BikaListingView):
             {'id':'cancelled',
              'title': _('Cancelled'),
              'contentFilter': {'cancellation_state': 'cancelled',
-                               'review_state': ('sample_due', 'sample_received',
+                               'review_state': ('to_be_sampled', 'to_be_preserved',
+                                                'sample_due', 'sample_received',
                                                 'to_be_verified', 'attachment_due',
                                                 'verified', 'published'),
                                'sort_on':'id',

@@ -138,7 +138,7 @@
             </td>
         </tr>
 
-        <tr tal:condition="python:review_state != 'sample_due'">
+        <tr tal:condition="python:review_state not in ('to_be_sampled', 'to_be_preserved', 'sample_due')">
             <th style="padding-left:3em" i18n:translate="">Date Received</th>
 			<td><span
 				tal:condition="python:review_state == 'sample_received'"

@@ -158,10 +158,10 @@ schema = BikaSchema.copy() + Schema((
             label = _("Composite"),
         ),
     ),
-    DateTimeField('DisposalDate',
-        widget = DateTimeWidget(
-            label = _("Disposal date"),
-            visible = {'edit':'hidden'},
+    ComputedField('DisposalDate',
+        expression = 'context.disposal_date()',
+        widget = ComputedWidget(
+            visible = False,
         ),
     ),
     DateTimeField('DateExpired',
@@ -240,15 +240,20 @@ class Sample(BaseFolder, HistoryAwareMixin):
         """ return current date """
         return DateTime()
 
-    security.declarePublic('disposal_date')
     def disposal_date(self):
-        """ return disposal date """
-        print "BBB disposal date moves FROM sample TO partition"
-        rp = self.getSampleType().getRetentionPeriod()
-        td = timedelta(days = rp['days'] and int(rp['days']) or 0,
-                       hours = rp['hours'] and int(rp['hours']) or 0,
-                       minutes = rp['minutes'] and int(rp['minutes']) or 0)
-        dis_date = dt2DT(DT2dt(self.getDateSampled()) + td)
+        """ Calculate the disposal date by returning the latest
+            disposal date in this sample's partitions """
+
+        parts = self.objectValues("SamplePartition")
+        dates = []
+        for part in parts:
+            date = part.getDisposalDate()
+            if date:
+                dates.append(date)
+        if dates:
+            dis_date = dt2DT(max([DT2dt(date) for date in dates]))
+        else:
+            dis_date = None
         return dis_date
 
     security.declarePublic('current_user')
