@@ -35,6 +35,11 @@ schema = BikaSchema.copy() + Schema((
         required=0,
         multiValued=1,
     ),
+    DateTimeField('DateSampled',
+    ),
+    StringField('SampledByUser',
+        searchable=True
+    ),
     DateTimeField('DatePreserved',
     ),
     StringField('PreservedByUser',
@@ -105,7 +110,7 @@ class SamplePartition(BaseContent, HistoryAwareMixin):
     def disposal_date(self):
         """ return disposal date """
 
-        DateSampled = self.aq_parent.getDateSampled()
+        DateSampled = self.getDateSampled()
 
         # fallback to sampletype retention period
         st_retention = self.aq_parent.getSampleType().getRetentionPeriod()
@@ -142,6 +147,27 @@ class SamplePartition(BaseContent, HistoryAwareMixin):
     def getPreservedByName(self):
         """ get the name of the user who preserved this partition """
         uid = self.getPreservedByUser()
+        if uid in (None, ''):
+            return ' '
+
+        r = self.portal_catalog(portal_type = 'Contact', getUsername = uid)
+        if len(r) == 1:
+            return r[0].Title
+
+        mtool = getToolByName(self, 'portal_membership')
+        member = mtool.getMemberById(uid)
+        if member is None:
+            return uid
+        else:
+            fullname = member.getProperty('fullname')
+        if fullname in (None, ''):
+            return uid
+        return fullname
+
+    security.declarePublic('getSampledByName')
+    def getSampledByName(self):
+        """ get the name of the user who sampled this partition """
+        uid = self.getSampledByUser()
         if uid in (None, ''):
             return ' '
 

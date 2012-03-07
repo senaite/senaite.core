@@ -20,6 +20,13 @@ $(document).ready(function(){
 	$("#SampleType").autocomplete({ minLength: 0, source: autocomplete_sampletype});
 	$("#SamplePoint").autocomplete({ minLength: 0, source: autocomplete_samplepoint});
 
+	$("#DateSampled").change(function(){
+		$.getJSON('ajax_setDateSampled', {'date':$(this).val()}, function(data,textStatus){
+			callback(data);
+		});
+
+	});
+
 	$("#ClientReference").focus();
 
 });

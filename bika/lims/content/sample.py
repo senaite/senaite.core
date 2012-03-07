@@ -91,18 +91,9 @@ schema = BikaSchema.copy() + Schema((
             visible = False,
         ),
     ),
-    DateTimeField('SamplingDate',
-        required = 1,
-        widget = DateTimeWidget(
-            label = _("Sampling Date"),
-        ),
-    ),
-    DateTimeField('DateSampled',
-        with_time = False,
-        widget = DateTimeWidget(
-            label = _("Date Sampled"),
-            visible = {'edit':'hidden'},
-        ),
+    ComputedField('SubmittedByUser',
+        searchable = True,
+        expression = "here.getSubmittedByUser()",
     ),
     DateTimeField('DateSubmitted',
         required = 1,
@@ -112,8 +103,11 @@ schema = BikaSchema.copy() + Schema((
             visible = {'edit':'hidden'},
         ),
     ),
-    StringField('SubmittedByUser',
-        searchable = True,
+    DateTimeField('SamplingDate',
+        widget = DateTimeWidget(
+            label = _("Sampling Date"),
+            visible = {'edit':'hidden'},
+        ),
     ),
     DateTimeField('DateReceived',
         widget = DateTimeWidget(
@@ -211,6 +205,38 @@ class Sample(BaseFolder, HistoryAwareMixin):
             if samplepoints:
                 sp_uid = samplepoints[0].UID
         return self.Schema()['SamplePoint'].set(self, sp_uid)
+
+    def getDateSampled(self):
+        """ Return the dates that our Partitions were sampled.
+        """
+        dates = dict([(p.getDateSampled(), p.id)
+                      for p in self.objectValues("SamplePartition")
+                      if p.getDateSampled()])
+        return ", ".join(dates.keys())
+
+    def getSampledByUser(self):
+        """ Return the users recorded as sampling our Partitions.
+        """
+        users = dict([(p.getSampledByName(), p.id)
+                      for p in self.objectValues("SamplePartition")
+                      if p.getSampledByUser()])
+        return ", ".join(users.keys())
+
+    def getDatePreserved(self):
+        """ Return the dates that our Partitions were preserved.
+        """
+        dates = dict([(p.getDatePreserved(), p.id)
+                      for p in self.objectValues("SamplePartition")
+                      if p.getDatePreserved()])
+        return ", ".join(dates.keys())
+
+    def getPreservedByUser(self):
+        """ Return the users recorded as Preserving our Partitions.
+        """
+        users = dict([(p.getPreservedByName(), p.id)
+                      for p in self.objectValues("SamplePartition")
+                      if p.getPreservedByUser()])
+        return ", ".join(users.keys())
 
     security.declarePublic('getAnalysisRequests')
     def getAnalysisRequests(self):

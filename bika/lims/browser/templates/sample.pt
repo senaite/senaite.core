@@ -18,12 +18,10 @@
 
 <metal:content fill-slot="content-core" tal:define="
 	review_state python:context.portal_workflow.getInfoFor(here, 'review_state', '');
-	portal context/@@plone_portal_state/portal;">
+	portal context/@@plone_portal_state/portal;
+	checkPermission nocall:context/portal_membership/checkPermission">
 
-	<form name="sample_edit_form"
-		method="post"
-		id="sample_edit_form">
-
+	<form name="sample_edit_form" method="post" id="sample_edit_form">
 	<input type="hidden" name="submitted" value="1" />
 	<span tal:replace="structure context/@@authenticator/authenticator"/>
 
@@ -98,50 +96,36 @@
 			</td>
 		</tr>
 
+		<tr>
+			<th i18n:translate="">Date Submitted</th>
+			<td class="left" tal:content="python:view.TimeOrDate(context, context.getDateSubmitted(), long_format=1)"/>
+		</tr>
+
    		<tr>
 			<th>
 				<span i18n:translate="">Sampling Date</span> &nbsp;
 				<span class="fieldRequired"/>
 			</th>
-			<td class="left"
-				tal:define="date here/getSamplingDate">
-				<input size="10" type='text' readonly="readonly"
-					tal:condition="python:review_state == 'sample_due'"
-					class="datepicker"
-					tal:attributes="
-						id string:SamplingDate;
-						name string:SamplingDate;
-						value python:view.TimeOrDate(context, date)"/>
-				<span
-					tal:condition="python:review_state != 'sample_due'"
-					tal:content="python:view.TimeOrDate(context, date, long_format=1)"/>
-			</td>
+			<td class="left" tal:content="python:view.TimeOrDate(context, context.getSamplingDate(), long_format=1)"/>
 		</tr>
 
 		<tr>
 			<th i18n:translate="">Date Sampled</th>
 			<td class="left"
-				tal:define="date here/getDateSampled">
-				<input size="10" type='text' readonly="readonly"
-					tal:condition="not:date"
-					class="datepicker"
-					tal:attributes="
-						id string:DateSampled;
-						name string:DateSampled;
-						value python:view.TimeOrDate(context, date)"/>
+				tal:define="date context/getDateSampled">
+				<input type="text" size="10" readonly="readonly" class="datepicker"
+					id="DateSampled" name="DateSampled"
+					tal:condition="python: checkPermission('BIKA: Sample Sample', context) and not date"
+					tal:attributes="value python:view.TimeOrDate(context, date)"/>
 				<span
 					tal:condition="date"
 					tal:content="python:view.TimeOrDate(context, date, long_format=1)"/>
 			</td>
 		</tr>
 
-		<tr>
-			<th i18n:translate="">Date Submitted</th>
-			<td class="left">
-				<span
-					tal:define="date_submitted here/getDateSubmitted"
-					tal:content="python:view.TimeOrDate(context, date_submitted, long_format=1)"/>
-			</td>
+		<tr tal:condition="context/getSampledByUser">
+			<th i18n:translate="">Sampled By</th>
+			<td class="left" tal:content="context/getSampledByUser"/>
 		</tr>
 
 		<tr tal:condition="python:review_state != 'sample_due'">

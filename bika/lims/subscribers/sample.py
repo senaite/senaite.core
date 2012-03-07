@@ -21,7 +21,7 @@ def AfterTransitionEventHandler(sample, event):
     logger.info("Starting: %s on %s" % (event.transition.id, sample))
 
     workflow = getToolByName(sample, 'portal_workflow')
-    membership_tool = getToolByName(sample, 'membership_tool')
+    membership_tool = getToolByName(sample, 'portal_membership')
     member = membership_tool.getAuthenticatedMember()
     props = getToolByName(sample, 'portal_properties').bika_properties
     parts = sample.objectValues('SamplePartition')
