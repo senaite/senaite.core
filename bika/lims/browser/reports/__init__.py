@@ -1,3 +1,5 @@
+from analysesperservice import AnalysesPerService
+from analysespersampletype import AnalysesPerSampleType
 from AccessControl import getSecurityManager
 from DateTime import DateTime
 from Products.CMFCore.utils import getToolByName
@@ -17,7 +19,7 @@ class ProductivityView(BrowserView):
     """ Sample View form
     """
     implements(IViewView)
-    template = ViewPageTemplateFile("templates/reports_productivity.pt")
+    template = ViewPageTemplateFile("reports_productivity.pt")
 
     def __init__(self, context, request):
         BrowserView.__init__(self, context, request)
@@ -31,7 +33,7 @@ class QualityControlView(BrowserView):
     """ Sample View form
     """
     implements(IViewView)
-    template = ViewPageTemplateFile("templates/reports_qualitycontrol.pt")
+    template = ViewPageTemplateFile("reports_qualitycontrol.pt")
 
     def __init__(self, context, request):
         BrowserView.__init__(self, context, request)
@@ -45,7 +47,7 @@ class AdministrationView(BrowserView):
     """ Sample View form
     """
     implements(IViewView)
-    template = ViewPageTemplateFile("templates/reports_administration.pt")
+    template = ViewPageTemplateFile("reports_administration.pt")
 
     def __init__(self, context, request):
         BrowserView.__init__(self, context, request)
@@ -54,3 +56,21 @@ class AdministrationView(BrowserView):
 
     def __call__(self):
         return self.template()
+
+class SubmitForm(BrowserView):
+    """ Redirect to specific report
+    """
+    implements(IViewView)
+    template = ViewPageTemplateFile("report_frame.pt")
+
+    def __init__(self, context, request):
+        BrowserView.__init__(self, context, request)
+        self.TimeOrDate = TimeOrDate
+
+    def __call__(self):
+        #self.request.form values to determine which report really wanted jkkkk
+        self.reportout = AnalysesPerService(self.context, self.request)()
+        #self.reportout = AnalysesPerSampleType(self.context, self.request)()
+
+        return self.template()
+
