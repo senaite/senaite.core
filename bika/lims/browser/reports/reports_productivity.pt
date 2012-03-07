@@ -7,17 +7,6 @@
 	i18n:domain="bika">
 <body>
 
-<metal:content-title fill-slot="content-title">
-<!--
-	<h1>
-        <img tal:condition="view/icon | nothing"
-            src="" tal:attributes="src view/icon"/>
-        <span class="documentFirstHeading" tal:content="view/title | nothing"/>
-    </h1>
--->
-</metal:content-title>
-
-
 <metal:content-description fill-slot="content-description">
 </metal:content-description>
 
@@ -28,7 +17,7 @@
                                 sort_on='sortable_title');">
 <br/>
 <br/>
-<form action="reports" method="post" name="search">
+<div>
 <table>
 <tr>
 <td VALIGN="top">
@@ -41,7 +30,7 @@
     i18n:translate=""
 >Analyses per service</a>
 <br/>
-<span i18n:translate="">The number of analyses annelineverasweetnam 
+<span i18n:translate="">The number of analyses 
         requested per analysis service
 </span>
 </p>
@@ -106,6 +95,8 @@
 <td VALIGN="top">
 
 <div id="analysestotals" style="display:none" class="criteria">
+<form action="reports" method="post" name="analysestotals">
+<input type="hidden" name="report_id" value="analysesperservice" />
 <fieldset>
 
 <legend i18n:translate="">Selection criteria</legend>
@@ -222,9 +213,19 @@
 
 
 </fieldset>
+    <input tabindex=""
+        class="searchButton"
+        type="submit"
+        name="submit"
+        value="Search"
+        i18n:attributes="value"
+        />
+</form>
 </div>
 
 <div id="analysespersampletype" style="display:none" class="criteria">
+<form action="reports" method="post" name="analysestotals">
+<input type="hidden" name="report_id" value="analysespersampletype" />
 <fieldset>
 
 <legend i18n:translate="">Selection criteria</legend>
@@ -285,9 +286,20 @@
 </div>
 
 </fieldset>
+    <input tabindex=""
+        class="searchButton"
+        type="submit"
+        name="submit"
+        value="Search"
+        i18n:attributes="value"
+        />
+</form>
 </div>
 
+
 <div id="analysesperclient" style="display:none" class="criteria">
+<form action="reports" method="post" name="analysestotals">
+<input type="hidden" name="report_id" value="analysesperclient" />
 <fieldset>
 
 <legend i18n:translate="">Selection criteria</legend>
@@ -327,9 +339,19 @@
 </div>
 
 </fieldset>
+    <input tabindex=""
+        class="searchButton"
+        type="submit"
+        name="submit"
+        value="Search"
+        i18n:attributes="value"
+        />
+</form>
 </div>
 
 <div id="tats" style="display:none" class="criteria">
+<form action="reports" method="post" name="analysestotals">
+<input type="hidden" name="report_id" value="analysestats" />
 <fieldset>
 
 <legend i18n:translate="">Selection criteria</legend>
@@ -391,10 +413,20 @@
 </div>
 
 </fieldset>
+    <input tabindex=""
+        class="searchButton"
+        type="submit"
+        name="submit"
+        value="Search"
+        i18n:attributes="value"
+        />
+</form>
 </div>
 
 
 <div id="attachments" style="display:none" class="criteria">
+<form action="reports" method="post" name="analysestotals">
+<input type="hidden" name="report_id" value="analysesattachments" />
 <fieldset>
 
 <legend i18n:translate="">Selection criteria</legend>
@@ -457,13 +489,6 @@
 
 
 </fieldset>
-</div>
-</td>
-</tr>
-<tr><td></td>
-<td>
-
-<div id="submitter" style="display:none !important">
     <input tabindex=""
         class="searchButton"
         type="submit"
@@ -471,13 +496,16 @@
         value="Search"
         i18n:attributes="value"
         />
+</form>
 </div>
 </td>
 </tr>
+
+
 </table>
 
 
-</form>
+</div>
 </metal:content-core>
 
 	</body>

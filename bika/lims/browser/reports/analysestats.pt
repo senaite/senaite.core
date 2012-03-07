@@ -6,9 +6,9 @@
 	i18n:domain="bika">
 <body>
 
-<h1>
-        <span> Analyses per Service </span>
-</h1>
+	<h1>
+            <span> Analyses TATS </span>
+    </h1>
 
 
 <b tal:content="view/datalines | nothing"/>

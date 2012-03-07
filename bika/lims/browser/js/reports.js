@@ -8,7 +8,6 @@ $(document).ready(function(){
 		.click(function(){$(this).attr('value', '');})
 
 	$("#analysestotals_selector").click(function(event){
-		$("#submitter").toggle(true);
 		$(".criteria").toggle(false);
 		event.preventDefault();
 		$("#analysestotals").toggle(true);

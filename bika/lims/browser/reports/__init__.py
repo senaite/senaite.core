@@ -1,5 +1,8 @@
 from analysesperservice import AnalysesPerService
 from analysespersampletype import AnalysesPerSampleType
+from analysesattachments import AnalysesAttachments
+from analysesperclient import AnalysesPerClient
+from analysestats import AnalysesTats
 from AccessControl import getSecurityManager
 from DateTime import DateTime
 from Products.CMFCore.utils import getToolByName
@@ -68,9 +71,20 @@ class SubmitForm(BrowserView):
         self.TimeOrDate = TimeOrDate
 
     def __call__(self):
-        #self.request.form values to determine which report really wanted jkkkk
-        self.reportout = AnalysesPerService(self.context, self.request)()
-        #self.reportout = AnalysesPerSampleType(self.context, self.request)()
+        report_id =  self.request.form['report_id']
+        if report_id == 'analysesperservice':
+            self.reportout = AnalysesPerService(self.context, self.request)()
+        elif report_id == 'analysespersampletype':
+            self.reportout = AnalysesPerSampleType(self.context, self.request)()
+        elif report_id == 'analysesperclient':
+            self.reportout = AnalysesPerClient(self.context, self.request)()
+        elif report_id == 'analysestats':
+            self.reportout = AnalysesTats(self.context, self.request)()
+        elif report_id == 'analysesattachments':
+            self.reportout = AnalysesAttachments(self.context, self.request)()
+        else:
+            self.reportout = "no report to out"
+
 
         return self.template()
 

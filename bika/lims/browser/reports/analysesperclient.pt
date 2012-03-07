@@ -7,9 +7,8 @@
 <body>
 
 <h1>
-        <span> Analyses per Service </span>
+<span> Analyses per Client </span>
 </h1>
-
 
 <b tal:content="view/datalines | nothing"/>
 

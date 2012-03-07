@@ -13,18 +13,18 @@ from zope.interface import implements
 import json
 import plone
 
-class AnalysesPerService(BrowserView):
+class AnalysesPerClient(BrowserView):
     """ stuff
     """
     implements(IViewView)
-    template = ViewPageTemplateFile("analysesperservice.pt")
+    template = ViewPageTemplateFile("analysesperclient.pt")
 
     def __init__(self, context, request):
         BrowserView.__init__(self, context, request)
         self.TimeOrDate = TimeOrDate
 
     def __call__(self):
-        self.datalines = 'here is the stuff for the analyses per service report'
+        self.datalines = 'here is the stuff for the analyses per client type report'
 
         return self.template()
 
