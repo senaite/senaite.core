@@ -22,7 +22,7 @@ class UniqueFieldValidator:
         request = kwargs.get('REQUEST', {})
         form = request.get('form', {})
 
-        ts = getToolByName(instance, 'translation_service')
+        ts = getToolByName(instance, 'translation_service').translate
 
         if value == instance.get(fieldname):
             return True
@@ -32,7 +32,7 @@ class UniqueFieldValidator:
                item.schema.get(fieldname).getAccessor(item)() == value:
                 msg = _("Validation failed: '${value}' is not unique",
                         mapping = {'value': value})
-                return ts.translate(msg)
+                return ts(msg)
         return True
 
 validation.register(UniqueFieldValidator())
@@ -53,7 +53,7 @@ class ServiceKeywordValidator:
         request = kwargs.get('REQUEST', {})
         form = request.get('form', {})
 
-        ts = getToolByName(instance, 'translation_service')
+        ts = getToolByName(instance, 'translation_service').translate
 
         if re.findall(r"[^A-Za-z\w\d\-\_]", value):
             return _("Validation failed: keyword contains invalid characters")
@@ -68,7 +68,7 @@ class ServiceKeywordValidator:
                 msg = _("Validation failed: '${title}': "
                         "This keyword is already in use by service '${used_by}'",
                         mapping = {'title': value, 'used_by': service.Title})
-                return ts.translate(msg)
+                return ts(msg)
 
         calc = hasattr(instance, 'getCalculation') and \
              instance.getCalculation() or None
@@ -85,7 +85,7 @@ class ServiceKeywordValidator:
                     msg = _("Validation failed: '${title}': " \
                             "This keyword is already in use by calculation '${used_by}'",
                             mapping = {'title': value, 'used_by': calc.Title()})
-                    return ts.translate(msg)
+                    return ts(msg)
         return True
 
 validation.register(ServiceKeywordValidator())
@@ -110,7 +110,7 @@ class InterimFieldsValidator:
         form = request.form
         interim_fields = form.get(fieldname)
 
-        ts = getToolByName(instance, 'translation_service')
+        ts = getToolByName(instance, 'translation_service').translate
         bsc = getToolByName(instance, 'bika_setup_catalog')
 
         if instance.REQUEST.get('validated', '') == fieldname:
@@ -138,11 +138,11 @@ class InterimFieldsValidator:
         for k in [k for k in keywords.keys() if keywords[k] > 1]:
             msg = _("Validation failed: '${keyword}': duplicate keyword",
                     mapping = {'keyword': k})
-            return ts.translate(msg)
+            return ts(msg)
         for t in [t for t in titles.keys() if titles[t] > 1]:
             msg = _("Validation failed: '${title}': duplicate title",
                     mapping = {'title': t})
-            return ts.translate(msg)
+            return ts(msg)
 
         # check all keywords against all AnalysisService keywords for dups
         services = bsc(portal_type='AnalysisService', getKeyword = value)
@@ -150,7 +150,7 @@ class InterimFieldsValidator:
             msg = _("Validation failed: '${title}': "\
                     "This keyword is already in use by service '${used_by}'",
                     mapping = {'title': value, 'used_by': services[0].Title})
-            return ts.translate(msg)
+            return ts(msg)
 
         # any duplicated interimfield titles must share the same keyword
         # any duplicated interimfield keywords must share the same title
@@ -174,7 +174,7 @@ class InterimFieldsValidator:
                         "must have keyword '${keyword}'",
                         mapping={'title': field['title'],
                                  'keyword': title_keywords[field['title']]})
-                return ts.translate(msg)
+                return ts(msg)
             if 'keyword' in field and \
                field['keyword'] in keyword_titles.keys() and \
                keyword_titles[field['keyword']] != field['title']:
@@ -182,7 +182,7 @@ class InterimFieldsValidator:
                         "must have column title '${title}'",
                         mapping={'keyword': field['keyword'],
                                  'title': keyword_titles[field['keyword']]})
-                return ts.translate(msg)
+                return ts(msg)
 
         return True
 
@@ -204,7 +204,7 @@ class FormulaValidator:
         form = request.form
         interim_fields = form.get('InterimFields')
 
-        ts = getToolByName(instance, 'translation_service')
+        ts = getToolByName(instance, 'translation_service').translate
         bsc = getToolByName(instance, 'bika_setup_catalog')
         interim_keywords = interim_fields and \
                                [f['keyword'] for f in interim_fields] or []
@@ -217,7 +217,7 @@ class FormulaValidator:
                not keyword in interim_keywords:
                 msg = _("Validation failed: Keyword '${keyword}' is invalid",
                         mapping = {'keyword': keyword})
-                return ts.translate(msg)
+                return ts(msg)
         return True
 
 validation.register(FormulaValidator())
@@ -244,7 +244,7 @@ class CoordinateValidator:
         form = request.form
         form_value = form.get(fieldname)
 
-        ts = getToolByName(instance, 'translation_service')
+        ts = getToolByName(instance, 'translation_service').translate
         bsc = getToolByName(instance, 'bika_setup_catalog')
 
         try:
@@ -311,7 +311,7 @@ class ResultOptionsValidator:
         form = request.form
         form_value = form.get(fieldname)
 
-        ts = getToolByName(instance, 'translation_service')
+        ts = getToolByName(instance, 'translation_service').translate
         bsc = getToolByName(instance, 'bika_setup_catalog')
 
         # ResultValue must always be a number
@@ -338,7 +338,7 @@ class RestrictedCategoriesValidator:
         request = kwargs.get('REQUEST', {})
         form = request.get('form', {})
 
-        ts = getToolByName(instance, 'translation_service')
+        ts = getToolByName(instance, 'translation_service').translate
         bsc = getToolByName(instance, 'bika_setup_catalog')
         uc = getToolByName(instance, 'uid_catalog')
 
@@ -362,7 +362,7 @@ class RestrictedCategoriesValidator:
             msg = _("Validation failed: The selection requires the following "
                     "categories to be selected: ${categories}",
                     mapping={'categories': ','.join(failures)})
-            return ts.translate(msg)
+            return ts(msg)
 
         return True
 

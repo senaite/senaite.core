@@ -39,7 +39,15 @@ def getContainers(instance,
     >>> obj
     <AnalysisService at ...>
 
-    >>> getContainers(obj)
+    >>> ('06cdaafc-4439-4670-aee0-cd0921c51bdb', '20 ml glass vial') in getContainers(obj)
+    >>> True
+
+    >>> import pdb;pdb.set_trace()
+
+    >>> ('06cdaafc-4439-4670-aee0-cd0921c51bdb', '20 ml glass vial') in getContainers(obj)
+    >>> True
+
+
 
     """
     bsc = getToolByName(instance, 'bika_setup_catalog')

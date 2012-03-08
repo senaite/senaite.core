@@ -45,7 +45,7 @@ class BikaLimsLayer(PloneSandboxLayer):
         self.applyProfile(portal, 'bika.lims:default')
 
         request.form['submitted'] = 1
-        request.form['xlsx'] = "_testing"
+        request.form['xlsx'] = "test"
 
         lsd = LoadSetupData(portal, request)
         lsd()

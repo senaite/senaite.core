@@ -42,6 +42,7 @@ class TestCase(PloneTestCase.FunctionalTestCase):
 
 def test_suite():
     suite = unittest.TestSuite()
+    suite.addTests(ztc.ZopeDocTestSuite(module="bika.lims.browser.sample", test_class=TestCase))
 ##    suite.addTests(doctest.DocTestSuite(analysis))
 ##    suite.addTests(doctest.DocTestSuite(analysiscategory))
 ##    suite.addTests(doctest.DocTestSuite(analysisrequest))
