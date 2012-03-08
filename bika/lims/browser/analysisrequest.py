@@ -1439,7 +1439,8 @@ class AnalysisRequestsView(BikaListingView):
                                 'index': 'getDateReceived',
                                 'toggle': False},
             'getDatePublished': {'title': _('Date Published'),
-                                 'index': 'getDatePublished'},
+                                 'index': 'getDatePublished',
+                                 'toggle': False},
             'state_title': {'title': _('State'),
                             'index': 'review_state'},
         }

@@ -212,6 +212,17 @@
                 cookable="True"
                 enabled="on"
                 expression=""
+                id="++resource++bika.lims.js/jquery.cookie.js"
+                inline="False"
+                insert-after="*"/>
+
+    <javascript authenticated="True"
+                cacheable="True"
+                compression="safe"
+                conditionalcomment=""
+                cookable="True"
+                enabled="on"
+                expression=""
                 id="++resource++bika.lims.js/attachments.js"
                 inline="False"
                 insert-after="*"/>
