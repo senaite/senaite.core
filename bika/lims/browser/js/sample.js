@@ -26,7 +26,6 @@ $(document).ready(function(){
 	}
 
 	// XXX Datepicker format is not i18n aware (dd Oct 2011)
-	$(".datepicker").datepicker({'dateFormat': 'dd M yy', showAnim: ''});
 	$("#SampleType").autocomplete({ minLength: 0, source: autocomplete_sampletype});
 	$("#SamplePoint").autocomplete({ minLength: 0, source: autocomplete_samplepoint});
 
