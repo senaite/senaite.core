@@ -1649,15 +1649,11 @@ class AnalysisRequestsView(BikaListingView):
                  (obj.aq_parent.absolute_url(), obj.aq_parent.Title())
 
             samplingdate = obj.getSample().getSamplingDate()
-            items[x]['SamplingDate'] = TimeOrDate(self.context,
-                                                  samplingdate,
-                                                  long_format = 0)
-            datesampled = obj.getSample().getDateSampled()
+            items[x]['SamplingDate'] = TimeOrDate(self.context, samplingdate, long_format = 0)
+            datesampled = TimeOrDate(self.context, obj.getSample().getDateSampled())
             items[x]['DateSampled'] = TimeOrDate(self.context, datesampled, long_format = 0)
-            items[x]['getDateReceived'] = (self.context,
-                                           obj.getDateReceived())
-            items[x]['getDatePublished'] =  TimeOrDate(self.context,
-                                                       obj.getDatePublished())
+            items[x]['getDateReceived'] = TimeOrDate(self.context, obj.getDateReceived())
+            items[x]['getDatePublished'] =  TimeOrDate(self.context, obj.getDatePublished())
 
             state = workflow.getInfoFor(obj, 'worksheetanalysis_review_state')
             if state == 'assigned':

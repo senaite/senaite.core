@@ -250,11 +250,10 @@ $(document).ready(function(){
 	function positionTooltip(event){
 		var tPosX = event.pageX-5;
 		var tPosY = event.pageY-5;
-		$('div.tooltip').css({'border': '1px solid #ccc',
+		$('div.tooltip').css({'border': '1px solid #fff',
 							  'border-radius':'.25em',
 							  'background-color':'#fff',
 							  'position': 'absolute',
-							  'padding':'5px',
 							  'top': tPosY,
 							  'left': tPosX});
 	};
@@ -263,25 +262,51 @@ $(document).ready(function(){
 	$('th[id^="foldercontents-"]').live('contextmenu', function(event){
 		event.preventDefault();
 		form_id = $(this).parents("form").attr("id");
+		base_url = window.location.href;
 		toggle_cols = $("#" + form_id + "_toggle_cols").val();
 		if (toggle_cols == ""){
 			return false;
 		}
-		toggle_cols = toggle_cols.split(",");
-		txt = '<div class="tooltip"><table cellpadding="0" cellspacing="0">';
-		txt = txt + "<tr><th colspan='2' style='border-bottom:1px solid #ccc;'>"+$('[name=toggle_columns]').val()+"</th></tr>"
-		for(i=0;i<toggle_cols.length;i++){
-			col = toggle_cols[i];
-			coltitle = $('[name=coltitle_'+col+']').val();
-			txt = txt + "<tr><td style='padding:2px 5px 2px 0px;'>";
-			enabled = $("#foldercontents-"+col+"-column");
+		sorted_toggle_cols = [];
+		$.each($.parseJSON(toggle_cols), function(col_id,v){
+			v['id'] = col_id;
+			sorted_toggle_cols.push(v);
+		});
+		sorted_toggle_cols.sort(function(a, b){
+			var titleA=a['title'].toLowerCase();
+			var titleB=b['title'].toLowerCase();
+			if (titleA < titleB) return -1;
+			if (titleA > titleB) return 1;
+			return 0;
+		});
+
+		txt = '<div class="tooltip"><table class="contextmenu" cellpadding="0" cellspacing="0">';
+		txt = txt + "<tr><th colspan='2'>"+_("Display columns")+"</th></tr>";
+		for(i=0;i<sorted_toggle_cols.length;i++){
+			col = sorted_toggle_cols[i];
+			col_id = _(col['id']);
+			col_title = _(col['title']);
+			enabled = $("#foldercontents-"+col_id+"-column");
 			if(enabled.length > 0){
-				txt = txt + "<input type='checkbox' form_id='"+form_id+"' name='"+col+"' class='toggle_col' checked='checked'>";
+				txt = txt + "<tr class='enabled' col_id='"+col_id+"' form_id='"+form_id+"'>";
+				txt = txt + "<td>";
+	            txt = txt + "<img style='height:1em;' src='"+base_url+"/++resource++bika.lims.images/ok.png'/>";
+				txt = txt + "</td>";
+				txt = txt + "<td>"+col_title+"</td></tr>";
 			} else {
-				txt = txt + "<input type='checkbox' form_id='"+form_id+"' name='"+col+"' class='toggle_col'>";
+				txt = txt + "<tr col_id='"+col_id+"' form_id='"+form_id+"'>";
+				txt = txt + "<td>&nbsp;</td>";
+				txt = txt + "<td>"+col_title+"</td></tr>";
 			}
-			txt = txt + "</td><td>"+coltitle+"</td></tr>";
 		}
+		txt = txt + "<tr col_id='ALL' form_id='"+form_id+"'>";
+		txt = txt + "<td style='border-top:1px solid #ddd'>&nbsp;</td>";
+		txt = txt + "<td style='border-top:1px solid #ddd'>"+_('All')+"</td></tr>";
+
+		txt = txt + "<tr col_id='DEFAULT' form_id='"+form_id+"'>";
+		txt = txt + "<td>&nbsp;</td>";
+		txt = txt + "<td>"+_('Default')+"</td></tr>";
+
 		txt = txt + '</table></div>';
 		$(txt).appendTo('body');
 		positionTooltip(event);
@@ -292,15 +317,62 @@ $(document).ready(function(){
 	});
 
 	// show / hide columns - the action when a checkbox is clicked in the menu
-	$('.toggle_col').live('click', function(event){
-		$(".tooltip").remove();
+	$('.contextmenu tr').live('click', function(event){
+		col_id = $(this).attr('col_id');
 		form_id = $(this).attr('form_id');
 		form = $("form#"+form_id);
-		col = $(this).attr('name');
+
+		if(col_id=='DEFAULT'){
+			$.cookie('toggle_cols', null);
+		} else if(col_id=='ALL') {
+			cookie = $.cookie("toggle_cols");
+			cookie = $.parseJSON(cookie);
+			if (cookie == null) {
+				cookie = {};
+			}
+			toggle_cols = [];
+			$.each($.parseJSON($('#'+form_id+"_toggle_cols").val()), function(i,v){
+				toggle_cols.push(i);
+			});
+			cookie[form_id] = toggle_cols;
+			$.cookie('toggle_cols', $.toJSON(cookie), { expires: 7 });
+		} else {
+			cookie = $.cookie("toggle_cols");
+			cookie = $.parseJSON(cookie);
+			if (cookie != null){
+				toggle_cols = cookie[form_id];
+				if (toggle_cols == null) {
+					toggle_cols = [];
+					$.each($.parseJSON($('#'+form_id+"_toggle_cols").val()), function(i,v){
+						if(v['toggle']) toggle_cols.push(i);
+					});
+				} else {
+					if($(this).hasClass('enabled')){
+						toggle_cols.splice(toggle_cols.indexOf(col_id), 1);
+					}
+					else {
+						toggle_cols.push(col_id);
+					}
+				}
+			} else {
+				cookie = {};
+				toggle_cols = [];
+				$.each($.parseJSON($('#'+form_id+"_toggle_cols").val()), function(i,v){
+					if(v['toggle']) toggle_cols.push(i);
+				});
+				if($(this).hasClass('enabled')){
+					toggle_cols.splice(toggle_cols.indexOf(col_id), 1);
+				}
+				else {
+					toggle_cols.push(col_id);
+				}
+			}
+			cookie[form_id] = toggle_cols;
+			$.cookie('toggle_cols', $.toJSON(cookie), { expires: 7 });
+		}
 		stored_form_action = $(form).attr("action");
 		$(form).attr("action", window.location.href);
 		$(form).append("<input type='hidden' name='table_only' value='"+form_id+"'>");
-		$(form).append("<input type='hidden' name='toggle_col' value='"+col+"'>");
 		options = {
 			target: $(form).children(".bika-listing-table"),
 			replaceTarget: true,
@@ -309,10 +381,10 @@ $(document).ready(function(){
 				setoddeven();
 			}
 		}
+		$(".tooltip").remove();
 		form.ajaxSubmit(options);
 		$('[name=table_only]').remove();
-		$('[name=toggle_col]').remove();
-		$(form).attr('action', stored_form_action)
+		$(form).attr('action', stored_form_action);
 		return false;
 	});
 

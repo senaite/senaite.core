@@ -334,25 +334,21 @@ class BikaListingView(BrowserView):
                 ##self.Or.append(MatchGlob(index, self.request[request_key]))
                 self.Or.append(MatchRegexp(index, self.request[request_key]))
 
-        if 'toggle_col' in self.request.form:
-            toggle_col = self.request.form['toggle_col']
-            toggle_cols = [col for col in self.columns.keys() \
-                           if 'toggle' in self.columns[col] \
-                           and (self.columns[col]['toggle'] \
-                           or col in self.request.get('toggle_cols', '').split(","))]
-            if toggle_col in toggle_cols:
-                toggle_cols.remove(toggle_col)
-                self.columns[toggle_col]['toggle'] = False
+        # get toggle_cols cookie value
+        # and modify self.columns[]['toggle'] to match.
+        cookie = json.loads(self.request.get("toggle_cols", "{}"))
+        if form_id in cookie:
+            toggle_cols = cookie[form_id]
+        else:
+            toggle_cols = [col for col in self.columns.keys()
+                           if col in review_state['columns']
+                           and ('toggle' not in self.columns[col]
+                                or self.columns[col]['toggle'])]
+        for col in self.columns.keys():
+            if col in toggle_cols:
+                self.columns[col]['toggle'] = True
             else:
-                toggle_cols.append(toggle_col)
-                self.columns[toggle_col]['toggle'] = True
-            toggle_cols = ",".join(toggle_cols)
-            self.request.RESPONSE.setCookie(
-                'toggle_cols',
-                toggle_cols,
-                expires='Thu, 20 Feb 2020 10:00:00 GMT',
-                path=self.view_url)
-            self.request['toggle_cols'] = toggle_cols
+                self.columns[col]['toggle'] = False
 
     def __call__(self):
         """ Handle request parameters and render the form."""

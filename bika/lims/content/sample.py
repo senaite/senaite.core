@@ -208,7 +208,7 @@ class Sample(BaseFolder, HistoryAwareMixin):
     def getSampler(self):
         """ Return the users recorded as sampling our Partitions.
         """
-        users = [(pretty_user_name_or_id(p.getSampler()), p.id)
+        users = [(pretty_user_name_or_id(self, p.getSampler()), p.id)
                  for p in self.objectValues("SamplePartition")
                  if p.getSampler()]
         users = dict(users)
@@ -225,7 +225,7 @@ class Sample(BaseFolder, HistoryAwareMixin):
     def getPreserver(self):
         """ Return the users recorded as Preserving our Partitions.
         """
-        users = [(pretty_user_name_or_id(p.getPreserver()), p.id)
+        users = [(pretty_user_name_or_id(self, p.getPreserver()), p.id)
                       for p in self.objectValues("SamplePartition")
                       if p.getPreserver()]
         users = dict(users)

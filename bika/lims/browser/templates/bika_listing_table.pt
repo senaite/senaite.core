@@ -10,10 +10,13 @@
 		global colspan_max python:1;
 		nosortclass view/get_nosort_class;
 		portal context/@@plone_portal_state/portal;
+		review_state_id python:request.get(form_id+'_review_state', 'all');
 		review_state python:[t for t in view.bika_listing.review_states
-							 if t['id'] == request.get(form_id+'_review_state', 'all')][0];
+							 if t['id'] == review_state_id][0];
+		toggle_cols python:dict([(col, view.bika_listing.columns[col])
+		                         for col in view.bika_listing.columns.keys()
+		                         if col in review_state['columns']]);
 		specification python:view.request.get('specification', 'lab');
-
 		sm python:modules['AccessControl'].getSecurityManager();
 		EditAnalyses python:sm.checkPermission('BIKA: Edit analyses', context);
 		ViewResults python:sm.checkPermission('BIKA: View Results', context);
@@ -24,44 +27,33 @@
 		nr_cols python:view.bika_listing.show_select_column and nr_cols + 1 or nr_cols;
 		nr_cols python:view.bika_listing.show_sort_column and nr_cols + 1 or nr_cols;
 		nr_cols python:str(nr_cols);">
-<input tal:condition="python:not table_only"
-	   tal:replace="structure context/@@authenticator/authenticator"/>
-<input type="hidden" tal:omit-tag="python:table_only" name="submitted"
-       value="1"/>
-<input type="hidden" tal:omit-tag="python:table_only" name="form_id"
-       tal:attributes="value form_id"/>
+
+<input tal:condition="python:not table_only" tal:replace="structure context/@@authenticator/authenticator"/>
+
+<input type="hidden" tal:omit-tag="python:table_only" name="submitted" value="1"/>
+<input type="hidden" tal:omit-tag="python:table_only" name="form_id" tal:attributes="value form_id"/>
 <input type="hidden" tal:omit-tag="python:table_only" name="view_url"
-       tal:attributes="value view/bika_listing/view_url"/>
-
-<!-- table state request values -->
-<input type="hidden" tal:omit-tag="python:table_only" tal:attributes="
-	name python:form_id+'_sort_on';
-	value python:request.get(form_id+'_sort_on', 'id')"/>
-<input type="hidden" tal:omit-tag="python:table_only" tal:attributes="
-	name python:form_id+'_sort_order';
-	value python:request.get(form_id+'_sort_order', 'ascending')"/>
-<input type="hidden" tal:omit-tag="python:table_only" tal:attributes="
-	name python:form_id+'_review_state';
-	value python:request.get(form_id+'_review_state', 'all')"/>
-<input type="hidden" tal:omit-tag="python:table_only" tal:attributes="
-	name python:form_id+'_pagesize';
-	value python:request.get(form_id+'_pagesize', view.bika_listing.pagesize)"/>
-<input type="hidden" tal:omit-tag="python:table_only" tal:attributes="
-	name python:form_id+'_pagenumber';
-	value python:request.get(form_id+'_pagenumber', '1')"/>
-
-<!-- columns that can be enabled/disabled -->
-<tal:cookie define="toggle_cols python:request.get('toggle_cols', '').split(',')">
-<input type="hidden" tal:attributes="
-	id python:form_id+'_toggle_cols';
-	value python:','.join([col for col in view.bika_listing.columns.keys() if 'toggle' in view.bika_listing.columns[col]])"/>
-<!-- i18n Column Names -->
-<input type="hidden" tal:repeat="col python:view.bika_listing.columns.keys()"
-		tal:attributes="
-			name python:'coltitle_%s'%col;
-			value python:view.bika_listing.columns[col]['title']"/>
-<input type="hidden" name="toggle_columns" value="Display columns"
-       i18n:attributes="value"/>
+	tal:attributes="value view/bika_listing/view_url"/>
+<input type="hidden" tal:omit-tag="python:table_only"
+	tal:attributes="
+		name python:form_id+'_sort_on';
+		value python:request.get(form_id+'_sort_on', 'id')"/>
+<input type="hidden" tal:omit-tag="python:table_only"
+	tal:attributes="
+		name python:form_id+'_sort_order';
+		value python:request.get(form_id+'_sort_order', 'ascending')"/>
+<input type="hidden" tal:omit-tag="python:table_only"
+	tal:attributes="
+		name python:form_id+'_review_state';
+		value review_state_id"/>
+<input type="hidden" tal:omit-tag="python:table_only"
+	tal:attributes="
+		name python:form_id+'_pagesize';
+		value python:request.get(form_id+'_pagesize', view.bika_listing.pagesize)"/>
+<input type="hidden" tal:omit-tag="python:table_only"
+	tal:attributes="
+		name python:form_id+'_pagenumber';
+		value python:request.get(form_id+'_pagenumber', '1')"/>
 
 <tal:worksheet-cheat-1 condition="python:hasattr(view.bika_listing, 'analyst')">
 	<input type="hidden"
@@ -152,6 +144,12 @@ Colum Headers
 			tal:condition="view/bika_listing/show_sort_column"/>
 		<th class="nosort column"
 			tal:condition="view/bika_listing/show_select_column">
+			<!-- All toggleable columns in this review_state,
+			     regardless of state. JS uses this for the popup menu -->
+			<input type="hidden"
+				tal:attributes="
+					id python:form_id+'_toggle_cols';
+					value python:modules['json'].dumps(toggle_cols);"/>
 			<input
 				type="checkbox"
 				class="noborder"
@@ -160,7 +158,8 @@ Colum Headers
 		</th>
 		<tal:col repeat="column column_list">
 			<th
-				tal:condition="python: 'toggle' not in view.bika_listing.columns[column] or (view.bika_listing.columns[column].get('toggle', True) or column in toggle_cols)"
+				tal:condition="python: 'toggle' not in view.bika_listing.columns[column]
+				                       or view.bika_listing.columns[column].get('toggle', True)"
 				tal:define="
 					klass python:view.bika_listing.columns[column].get('sortable', True) and 'sortable column' or 'column';
 					klass python:'%s%s'%(klass, request.get(form_id+'_sort_on', '') == column and ' sort_on' or '');
@@ -281,7 +280,8 @@ Table cells for each column from in review_state's column list.
 	<tal:cell
 		tal:repeat="column review_state/columns">
 	<tal:rowcolspan
-		tal:condition="python: 'toggle' not in view.bika_listing.columns[column] or (view.bika_listing.columns[column].get('toggle', True) or column in toggle_cols)"
+		tal:condition="python: 'toggle' not in view.bika_listing.columns[column]
+		                       or view.bika_listing.columns[column].get('toggle', True)"
 		tal:define="
 			dummy python: 'rowspan' in item and column in item['rowspan'] and rowspan_max.update({column: item['rowspan'][column]});
 			dummy python: column in rowspan_max or rowspan_max.update({column: 1});
@@ -662,7 +662,5 @@ Batching
 </tfoot>
 
 </table>
-
-</tal:cookie>
 
 </form>

@@ -20,6 +20,9 @@ msgstr ""
 msgid "No"
 msgstr
 
+msgid "Default"
+msgstr ""
+
 #. The variables used here are the same as used in the strftime formating.
 #. Supported are ${A}, ${a}, ${B}, ${b}, ${H}, ${I}, ${m}, ${d}, ${M}, ${p},
 #. ${S}, ${Y}, ${y}, ${Z}, each used as variable in the msgstr.

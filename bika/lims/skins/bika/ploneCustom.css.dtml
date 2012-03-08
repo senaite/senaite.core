@@ -620,6 +620,34 @@ select {
   border:1px solid &dtml-buttonClickBorderColor; !important;
 }
 
+.contextmenu{
+  background: &dtml-contextmenuBackgroundColor;;
+  color: &dtml-contextmenuTextColor;;
+  border:1px solid &dtml-contextmenuBorderColor;;
+  cursor:default;
+  border-radius:.25em;
+}
+
+.contextmenu th,
+.contextmenu th:hover {
+  padding:2px 5px 2px 0px;
+  border-bottom:1px solid &dtml-contextmenuBorderColor;;
+  background: &dtml-contextmenuHeaderBackgroundColor;;
+  color: &dtml-contextmenuHeaderTextColor;;
+  cursor:default;
+}
+
+.contextmenu td {
+  padding:2px 5px 2px 0px;
+  cursor:default;
+}
+
+.contextmenu tr:hover {
+  background: &dtml-contextmenuHighlightBackgroundColor;;
+  color: &dtml-contextmenuHighlightTextColor;;
+  cursor:default;
+}
+
 .noborder {border:none !important;}
 .nomargin {margin:0 !important;}
 .nopadding {padding:0 !important;}

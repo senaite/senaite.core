@@ -348,8 +348,9 @@ class SamplesView(BikaListingView):
             items[x]['replace']['Client'] = "<a href='%s'>%s</a>" % \
                 (obj.aq_parent.absolute_url(), obj.aq_parent.Title())
 
-            items[x]['DateReceived'] = TimeOrDate(self.context,
-                                                  obj.getDateReceived())
+            items[x]['DateReceived'] = TimeOrDate(self.context,  obj.getDateReceived())
+            items[x]['getDateSampled'] = TimeOrDate(self.context, obj.getDateSampled())
+            items[x]['getSamplingDate'] = TimeOrDate(self.context, obj.getSamplingDate())
 
             after_icons = ''
             if obj.getSampleType().getHazardous():

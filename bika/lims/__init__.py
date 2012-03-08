@@ -20,8 +20,9 @@ from Products.CMFPlone import PloneMessageFactory
 from Products.CMFPlone.interfaces import IPloneSiteRoot
 from Products.GenericSetup import EXTENSION, profile_registry
 
-allow_module('bika.lims')
 allow_module('AccessControl')
+allow_module('bika.lims')
+allow_module('json')
 
 def initialize(context):
 
