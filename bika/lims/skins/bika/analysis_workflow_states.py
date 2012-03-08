@@ -9,7 +9,7 @@
 ##
 
 states_folder = context.portal_workflow.bika_analysis_workflow.states
-state_ids = ('to_be_sampled', 'to_be_preserved', 'sample_due', 'sample_received',
+state_ids = ('sample_due', 'sample_received',
              'attachment_due', 'to_be_verified', 'verified', 'published')
 l = []
 for state_id in state_ids:
