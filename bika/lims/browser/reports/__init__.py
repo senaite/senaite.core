@@ -14,9 +14,13 @@ from bika.lims.utils import TimeOrDate
 from bika.lims.interfaces import IReports
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.layout.globals.interfaces import IViewView
+import xhtml2pdf.pisa as pisa
 from zope.interface import implements
 import json
 import plone
+import pdb
+from cStringIO import StringIO
+import sys
 
 class ProductivityView(BrowserView):
     """ Sample View form
@@ -71,6 +75,7 @@ class SubmitForm(BrowserView):
         self.TimeOrDate = TimeOrDate
 
     def __call__(self):
+        #pdb.set_trace()
         report_id =  self.request.form['report_id']
         if report_id == 'analysesperservice':
             self.reportout = AnalysesPerService(self.context, self.request)()
@@ -84,6 +89,46 @@ class SubmitForm(BrowserView):
             self.reportout = AnalysesAttachments(self.context, self.request)()
         else:
             self.reportout = "no report to out"
+
+
+        # this works but the html is not rendered. 
+        #filename = "testing4.pdf"
+        #ramdisk = StringIO()
+        #pdf = pisa.CreatePDF(StringIO(self.reportout), ramdisk) 
+        #result = ramdisk.getvalue()
+        #ramdisk.close()
+
+        #if not pdf.err:
+        #    #stream file to browser
+        #    setheader = self.request.RESPONSE.setHeader
+        #    #setheader('Content-Length',len(result))
+        #    setheader('Content-Type', 'Application/pdf')
+        #    setheader('Content-Disposition', 'inline; filename=%s' % filename)
+        #    self.request.RESPONSE.write(result)
+
+        #filename = "testing4.pdf"
+        ramdisk = StringIO()
+        pdf = pisa.CreatePDF(self.reportout, ramdisk) 
+        result = ramdisk.getvalue()
+        ramdisk.close()
+
+        if not pdf.err:
+            #stream file to browser
+            setheader = self.request.RESPONSE.setHeader
+            #setheader('Content-Length',len(result))
+            setheader('Content-Type', 'application/pdf')
+            #setheader('Content-Disposition', 'inline; filename=%s' % filename)
+            #self.request.RESPONSE.write(result)
+            pdb.set_trace()
+            thisid = self.context.invokeFactory("File",id="temp")
+            thisfile = self.context[thisid]
+            thisfile.setFile(result)
+            self.request.RESPONSE.redirect(thisfile.absolute_url())
+
+        pisa.showLogging()
+
+        """pisa.CreatePDF(self.reportout, "testing.pdf")
+        """
 
 
         return self.template()
