@@ -32,22 +32,17 @@ def getContainers(instance,
     This is a seperate class so that it can be called from ajax to
     filter the container list.
 
-    >>> from bika.lims import bikaMessageFactory as _
-    >>> from bika.lims.content.analysisservice import getContainers
-    >>> folder = self.portal.bika_setup.bika_analysisservices
-    >>> obj = folder.objectValues()[0]
-    >>> obj
-    <AnalysisService at ...>
+    >>> bsc = self.portal.bika_setup_catalog
 
-    >>> ('06cdaafc-4439-4670-aee0-cd0921c51bdb', '20 ml glass vial') in getContainers(obj)
-    >>> True
+    >>> obj = bsc(getKeyword='Moist')[0].getObject()
+    >>> u'Canvas bag' in obj.getContainers().values()
+    True
 
-    >>> import pdb;pdb.set_trace()
-
-    >>> ('06cdaafc-4439-4670-aee0-cd0921c51bdb', '20 ml glass vial') in getContainers(obj)
-    >>> True
-
-
+    >>> obj = bsc(getKeyword='Aflatox')[0].getObject()
+    >>> u'20 ml glass vial' in obj.getContainers().values()
+    True
+    >>> u'Canvas bag' in obj.getContainers().values()
+    False
 
     """
     bsc = getToolByName(instance, 'bika_setup_catalog')

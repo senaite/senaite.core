@@ -39,15 +39,16 @@ def printfile(portal, from_addr, to_addrs, msg):
     """
     pass
 
-def getAnalysts(context):
-    """ Present the LabManagers and Analysts as options for analyst
+def getUsers(context, roles, allow_empty=False):
+    """ Present a DisplayList containing users in the specified
+        list of roles
     """
     mtool = getToolByName(context, 'portal_membership')
-    pairs = []
-    analysts = mtool.searchForMembers(roles = ['Manager', 'LabManager', 'Analyst'])
-    for member in analysts:
-        uid = member.getId()
-        fullname = member.getProperty('fullname')
+    pairs = allow_empty and [['','']] or []
+    users = mtool.searchForMembers(roles = roles)
+    for user in users:
+        uid = user.getId()
+        fullname = user.getProperty('fullname')
         if fullname is None:
             fullname = uid
         pairs.append((uid, fullname))

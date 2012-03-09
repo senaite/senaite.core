@@ -26,9 +26,9 @@ class Tests(unittest.TestCase):
     def test_AR(self):
         login(self.portal, TEST_USER_NAME)
 
-        profiles = {'Digestible Energy': 2,
-                    'Micro-Bio check': 2,
-                    'Micro-Bio counts': 2}
+        profiles = {'Digestible Energy': 1,
+                    'Micro-Bio check': 1,
+                    'Micro-Bio counts': 1}
 
         sampletypes = [p.getObject() for p in self.bsc(portal_type="SampleType")]
         samplepoints = [p.getObject() for p in self.bsc(portal_type="SamplePoint")]
@@ -50,7 +50,6 @@ class Tests(unittest.TestCase):
                         SamplePoint = random.choice(samplepoints).Title(),
                         ClientReference = chr(random.randint(70,90))*5,
                         ClientSampleID = chr(random.randint(70,90))*5,
-                        LastARNumber = 1,
                         SamplingDate = (i == count_ars and DateTime()+86400 or DateTime()),
                     )
                     sample.processForm()

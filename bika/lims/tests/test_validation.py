@@ -41,7 +41,7 @@ class Tests(unittest.TestCase):
             u"Validation failed: 'Ash': This keyword is already in use by service 'Ash'")
         self.assertEqual(
             service1.schema.get('Keyword').validate('TV', service1),
-            u"Validation failed: 'TV': This keyword is used by calculation 'Titration'")
+            u"Validation failed: 'TV': This keyword is already in use by calculation 'Titration'")
         self.assertEqual(None,service1.schema.get('Keyword').validate('VALID_KW', service1))
 
     def test_InterimFieldsValidator(self):
@@ -101,7 +101,7 @@ class Tests(unittest.TestCase):
         self.portal.REQUEST['validated'] = None
         self.assertEqual(
             calc1.schema.get('InterimFields').validate(interim_fields, calc1, REQUEST=self.portal.REQUEST),
-            u"Validation failed: 'Ash': This keyword is used by service 'Ash'")
+            u"Validation failed: 'Ash': This keyword is already in use by service 'Ash'")
 
         interim_fields = [{'keyword': 'TV', 'title':'Titration Volume', 'unit':'','default':''},
                           {'keyword': 'TF', 'title':'Titration Factor', 'unit':'','default':''}]

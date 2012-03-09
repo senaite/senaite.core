@@ -10,7 +10,7 @@ from bika.lims import PMF, logger
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.browser.bika_listing import WorkflowAction
 from bika.lims.utils import TimeOrDate
-from bika.lims.utils import getAnalysts
+from bika.lims.utils import getUsers
 from plone.app.content.browser.interfaces import IFolderContentsView
 from zope.interface import implements
 import plone
@@ -82,7 +82,7 @@ class WorksheetFolderListingView(BikaListingView):
 
         pm = getToolByName(context, "portal_membership")
         # this is a property of self, because self.getAnalysts returns it
-        self.analysts = getAnalysts(self)
+        self.analysts = getUsers(self, ['Manager', 'LabManager', 'Analyst'])
 
         bsc = getToolByName(context, 'bika_setup_catalog')
 
@@ -112,11 +112,7 @@ class WorksheetFolderListingView(BikaListingView):
                         'index':'getAnalyst',
                         'toggle': True},
             'Template': {'title': _('Template'),
-                         'index': 'getWorksheetTemplateTitle',
                          'toggle': True},
-            'Analyses': {'title': _('Analyses'),
-                         'index': 'getNrAnalyses',
-                         'toggle': False},
             'Services': {'title': _('Services'),
                          'sortable':False,
                          'toggle': False},
@@ -145,7 +141,6 @@ class WorksheetFolderListingView(BikaListingView):
              'columns':['Title',
                         'Analyst',
                         'Template',
-                        'Analyses',
                         'Services',
                         'SampleTypes',
                         'QC',
@@ -165,7 +160,6 @@ class WorksheetFolderListingView(BikaListingView):
              'columns':['Title',
                         'Analyst',
                         'Template',
-                        'Analyses',
                         'Services',
                         'SampleTypes',
                         'QC',
@@ -181,7 +175,6 @@ class WorksheetFolderListingView(BikaListingView):
              'columns':['Title',
                         'Analyst',
                         'Template',
-                        'Analyses',
                         'Services',
                         'SampleTypes',
                         'QC',
@@ -199,7 +192,6 @@ class WorksheetFolderListingView(BikaListingView):
              'columns':['Title',
                         'Analyst',
                         'Template',
-                        'Analyses',
                         'Services',
                         'SampleTypes',
                         'QC',
@@ -215,7 +207,6 @@ class WorksheetFolderListingView(BikaListingView):
              'columns':['Title',
                         'Analyst',
                         'Template',
-                        'Analyses',
                         'Services',
                         'SampleTypes',
                         'QC',
@@ -257,15 +248,14 @@ class WorksheetFolderListingView(BikaListingView):
                 items[x]['replace']['Template'] = "<a href='%s'>%s</a>" % \
                     (wst.absolute_url(), wst.Title())
 
-            items[x]['Analyses'] = str(len(obj.getAnalyses()))
-
             # this cannot be setup in contentFilter, because AuthenticatedMember
             # is not available in __init__
             if self.request.get("%s_review_state"%self.form_id, '') == 'mine':
                 if member.getId() not in (analyst, creator):
                     continue
 
-            if items[x]['Analyses'] == '0':
+            nr_analyses = len(obj.getAnalyses())
+            if nr_analyses == '0':
                 # manager and labmanager see *all* worksheets
                 # otherwise we must be Analyst or Creator to see empties.
                 roles = member.getRoles()
@@ -275,7 +265,6 @@ class WorksheetFolderListingView(BikaListingView):
                     continue
                 # give empties pretty classes.
                 items[x]['table_row_class'] = 'state-empty-worksheet'
-                items[x]['class']['Analyses'] = "empty"
 
             items[x]['CreationDate'] = TimeOrDate(self.context, obj.creation_date)
 

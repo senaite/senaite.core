@@ -15,7 +15,7 @@ from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.browser.bika_listing import WorkflowAction
 from bika.lims.browser.referencesample import ReferenceSamplesView
 from bika.lims.exportimport import instruments
-from bika.lims.utils import getAnalysts, isActive, TimeOrDate
+from bika.lims.utils import getUsers, isActive, TimeOrDate
 from operator import itemgetter
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.layout.globals.interfaces import IViewView
@@ -393,7 +393,7 @@ class ManageResultsView(BrowserView):
     template = ViewPageTemplateFile("templates/worksheet_manage_results.pt")
     def __init__(self, context, request):
         BrowserView.__init__(self, context, request)
-        self.getAnalysts = getAnalysts(context)
+        self.getAnalysts = getUsers(context, ['Manager', 'LabManager', 'Analyst'])
 
     def __call__(self):
         self.icon = "++resource++bika.lims.images/worksheet_big.png"

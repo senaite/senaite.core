@@ -42,7 +42,6 @@ class InstrumentsView(BikaListingView):
                      'index': 'getType',
                      'toggle': True},
             'Brand': {'title': _('Brand'),
-                      'index': 'getBrand',
                       'toggle': True},
             'Model': {'title': _('Model'),
                       'index': 'getModel',

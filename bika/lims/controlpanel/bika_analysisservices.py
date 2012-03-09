@@ -82,19 +82,9 @@ class AnalysisServicesWorkflowAction(WorkflowAction):
 
 
 class AnalysisServicesView(BikaListingView):
-    """
-
-    >>> atest = 1
-    >>> import pdb
-    >>> pdb.set_trace()
-
-    """
     implements(IFolderContentsView, IViewView)
     def __init__(self, context, request):
         """
-        >>> atest += 1
-        >>> import pdb
-        >>> pdb.set_trace()
         """
 
         super(AnalysisServicesView, self).__init__(context, request)
@@ -176,11 +166,6 @@ class AnalysisServicesView(BikaListingView):
         ]
 
     def folderitems(self):
-        """
-        >>> atest += 1
-        >>> import pdb
-        >>> pdb.set_trace()
-        """
         items = BikaListingView.folderitems(self)
         self.categories = []
 

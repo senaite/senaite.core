@@ -70,7 +70,6 @@ def generateUniqueId(context):
         sample_number = sample_id.split(s_prefix)[1]
         ar_number = sample.getLastARNumber()
         ar_number = ar_number and ar_number + 1 or 1
-        sample.setLastARNumber(ar_number)
         return "%s%s-%s" % (s_prefix,
                            str(sample_number).zfill(sample_padding),
                            str(ar_number).zfill(ar_padding))

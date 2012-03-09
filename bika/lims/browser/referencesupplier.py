@@ -118,10 +118,10 @@ class ContactsView(BikaListingView):
 
     columns = {
            'getFullname': {'title': _('Full Name')},
-           'getEmailAddress': {'title': _('Email Address'), 'toggle':True},
-           'getBusinessPhone': {'title': _('Business Phone'), 'toggle':True},
-           'getMobilePhone': {'title': _('Mobile Phone'), 'toggle':True},
-           'getFax': {'title': _('Fax'), 'toggle':True},
+           'getEmailAddress': {'title': _('Email Address')},
+           'getBusinessPhone': {'title': _('Business Phone')},
+           'getMobilePhone': {'title': _('Mobile Phone')},
+           'getFax': {'title': _('Fax')},
           }
 
     review_states = [
@@ -143,14 +143,7 @@ class ContactsView(BikaListingView):
         items = BikaListingView.folderitems(self)
         for x in range(len(items)):
             if not items[x].has_key('obj'): continue
-
-            obj = items[x]['obj']
-            items[x]['getFullname'] = obj.getFullname()
-            items[x]['getEmailAddress'] = obj.getEmailAddress()
-            items[x]['getBusinessPhone'] = obj.getBusinessPhone()
-            items[x]['getMobilePhone'] = obj.getMobilePhone()
-
             items[x]['replace']['getFullName'] = "<a href='%s'>%s</a>" % \
-                 (items[x]['url'], items[x]['getFullname'])
+                 (items[x]['url'], items[x]['obj'].getFullname())
 
         return items

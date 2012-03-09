@@ -103,8 +103,6 @@ schema = BikaSchema.copy() + Schema((
             visible = {'edit':'hidden'},
         ),
     ),
-    IntegerField('LastARNumber',
-    ),
     TextField('Remarks',
         searchable = True,
         default_content_type = 'text/x-web-intelligent',
@@ -269,5 +267,14 @@ class Sample(BaseFolder, HistoryAwareMixin):
         else:
             dis_date = None
         return dis_date
+
+    def getLastARNumber(self):
+        ARs = self.getBackReferences("AnalysisRequestSample")
+        ar_ids = [AR.id for AR in ARs]
+        ar_ids.sort()
+        if ar_ids[-1] == 'tmp':
+            return 1
+        last_ar_number = int(ar_ids[-1].split("-")[-1])
+        return last_ar_number
 
 atapi.registerType(Sample, PROJECTNAME)

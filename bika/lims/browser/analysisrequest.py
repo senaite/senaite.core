@@ -4,7 +4,6 @@ from DateTime import DateTime
 from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFCore.utils import getToolByName
-from Products.CMFPlone.utils import transaction_note
 from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims.permissions import EditAR, ViewResults, EditResults, EditFieldResults, \
@@ -16,16 +15,12 @@ from bika.lims.browser.bika_listing import BikaListingView, WorkflowAction
 from bika.lims.browser.publish import Publish
 from bika.lims.config import POINTS_OF_CAPTURE
 from bika.lims.utils import isActive, TimeOrDate
-from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.layout.globals.interfaces import IViewView
-from zope.component import getMultiAdapter
+from plone.app.content.browser.interfaces import IFolderContentsView
 from zope.interface import implements, alsoProvides
 import pprint
 import json
 import plone
-import transaction
-import urllib
-import zope
 
 class AnalysisRequestWorkflowAction(WorkflowAction):
     """ Workflow actions taken in AnalysisRequest context
@@ -59,14 +54,13 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
                 self.request.response.redirect(self.context.absolute_url())
                 return
 
-            # XXX publish entire AR.
+            # publish entire AR.
             self.context.setDatePublished(DateTime())
             transitioned = Publish(self.context,
                                    self.request,
                                    action,
                                    [self.context, ])()
             if len(transitioned) == 1:
-                action_title = '%sed' % action
                 message = translate('${items} published.',
                                     mapping = {'items': ', '.join(transitioned)})
             else:
@@ -190,9 +184,6 @@ class AnalysisRequestViewView(BrowserView):
 
     def __init__(self, context, request):
         super(AnalysisRequestViewView, self).__init__(context, request)
-
-        plone_layout = getMultiAdapter((context, request), name = u'plone_layout')
-        #self.view_url = self.absolute_url()
         self.icon = "++resource++bika.lims.images/analysisrequest_big.png"
         self.TimeOrDate = TimeOrDate
 
@@ -234,12 +225,12 @@ class AnalysisRequestViewView(BrowserView):
                          getClientUID = self.context.UID(),
                          inactive_state = 'active',
                          sort_on = 'sortable_title'):
-                profiles.append((proxy.Title, proxy.getObject()))
+            profiles.append((proxy.Title, proxy.getObject()))
         for proxy in bsc(portal_type = 'ARProfile',
                         getClientUID = self.context.bika_setup.bika_arprofiles.UID(),
                         inactive_state = 'active',
                         sort_on = 'sortable_title'):
-                profiles.append((translate(_('Lab')) + ": " + proxy.title, proxy.getObject()))
+            profiles.append((translate(_('Lab')) + ": " + proxy.title, proxy.getObject()))
         return profiles
 
     def SelectedServices(self):
@@ -290,7 +281,7 @@ class AnalysisRequestViewView(BrowserView):
         """
         mt = getToolByName(self.context, 'portal_membership')
         pg = getToolByName(self.context, 'portal_groups')
-        member = mt.getAuthenticatedMember();
+        member = mt.getAuthenticatedMember()
         member_groups = [pg.getGroupById(group.id).getGroupName() \
                          for group in pg.getGroupsByUserId(member.id)]
         default_spec = ('Clients' in member_groups) and 'client' or 'lab'
@@ -301,7 +292,7 @@ class AnalysisRequestViewView(BrowserView):
 
     def getARProfileTitle(self):
         return self.context.getProfile() and \
-               self.context.getProfile().Title() or '';
+               self.context.getProfile().Title() or ''
 
     def get_requested_analyses(self):
         ##
@@ -363,7 +354,7 @@ class AnalysisRequestViewView(BrowserView):
         except:
             return 'access denied'
 
-        [review for review in review_history if review.get('action', '')]
+        review_history = [review for review in review_history if review.get('action', '')]
         if not review_history:
             return 'no history'
         for items in  review_history:
@@ -376,31 +367,6 @@ class AnalysisRequestViewView(BrowserView):
             if verifier is None or verifier == '':
                 verifier = actor
         return verifier
-
-    def get_analysis_request_actions(self):
-        ## Script (Python) "get_analysis_request_actions"
-        ##bind container=container
-        ##bind context=context
-        ##bind namespace=
-        ##bind script=script
-        ##bind subpath=traverse_subpath
-        ##parameters=
-        ##title=
-        ##
-        actions_tool = self.context.portal_actions
-
-        actions = {}
-        for analysis in self.context.getAnalyses():
-            if analysis.review_state in \
-               ('not_requested', 'to_be_verified', 'verified'):
-                analysis = analysis.getObject()
-                a = actions_tool.listFilteredActionsFor(analysis)
-                for action in a['workflow']:
-                    if actions.has_key(action['id']):
-                        continue
-                    actions[action['id']] = action
-
-        return actions.values()
 
 
 class AnalysisRequestAddView(AnalysisRequestViewView):
@@ -415,7 +381,7 @@ class AnalysisRequestAddView(AnalysisRequestViewView):
         self.can_edit_sample = True
         self.can_edit_ar = True
         self.DryMatterService = self.context.bika_setup.getDryMatterService()
-        request.set('disable_plone.rightcolumn', 1);
+        request.set('disable_plone.rightcolumn', 1)
 
         self.col_count = 6
 
@@ -452,8 +418,8 @@ class ajaxCalculateParts():
         formvalues = json.loads(self.request['formvalues'])
 
         def info(msg):
-           if App.config.getConfiguration().debug_mode:
-               logger.info(msg)
+            if App.config.getConfiguration().debug_mode:
+                logger.info(msg)
 
         parts = {}
         for col in formvalues.keys():
@@ -589,7 +555,7 @@ class AnalysisRequestEditView(AnalysisRequestAddView):
 
     def getARProfileUID(self):
         return self.context.getProfile() and \
-               self.context.getProfile().UID() or '';
+               self.context.getProfile().UID() or ''
 
 class AnalysisRequestManageResultsView(AnalysisRequestViewView):
     implements(IViewView)
@@ -701,10 +667,10 @@ class AnalysisRequestSelectCCView(BikaListingView):
              },
         ]
 
-    def folderitems(self):
+    def folderitems(self, full_objects = False):
         old_items = BikaListingView.folderitems(self)
         items = []
-        for x, item in enumerate(old_items):
+        for item in old_items:
             if not item.has_key('obj'):
                 items.append(item)
                 continue
@@ -797,10 +763,10 @@ class AnalysisRequestSelectSampleView(BikaListingView):
                          'DateReceived']},
         ]
 
-    def folderitems(self):
+    def folderitems(self, full_objects = False):
         items = BikaListingView.folderitems(self)
         translate = self.context.translation_service.translate
-        for x, item in enumerate(items):
+        for x in range(len(items)):
             if not items[x].has_key('obj'): continue
             obj = items[x]['obj']
             items[x]['class']['SampleID'] = "select_sample"
@@ -894,7 +860,7 @@ def getServiceDependencies(context, service_uid):
     walk(deps)
     return result
 
-class ajaxgetServiceDependencies():
+class ajaxgetServiceDependencies(BrowserView):
     """ Return json(getServiceDependencies) """
 
     def __call__(self):
@@ -1010,7 +976,7 @@ class ajaxAnalysisRequestSubmit():
                 error_key = "Form Error"
             errors[error_key] = message
 
-        form_parts = json.loads(self.request.form['parts']).get('parts',{})
+        form_parts = json.loads(self.request.form['parts']).get('parts', {})
 
         if came_from == "edit":
 
@@ -1275,8 +1241,7 @@ class ajaxAnalysisRequestSubmit():
                     sample = sample_proxy[0].getObject()
                     ar_number = sample.getLastARNumber() + 1
                     composite = values.get('Composite', False)
-                    sample.edit(LastARNumber = ar_number,
-                                Composite = composite)
+                    sample.edit(Composite = composite)
                     sample.reindexObject()
                 else:
                     # Primary AR
@@ -1625,7 +1590,7 @@ class AnalysisRequestsView(BikaListingView):
                         'state_title']},
             ]
 
-    def folderitems(self):
+    def folderitems(self, full_objects = False):
         workflow = getToolByName(self.context, "portal_workflow")
         items = BikaListingView.folderitems(self)
 

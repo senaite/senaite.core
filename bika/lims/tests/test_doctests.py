@@ -48,6 +48,7 @@ def test_suite():
 ##    suite.addTests(doctest.DocTestSuite(analysisrequest))
 ##    suite.addTests(doctest.DocTestSuite(analysisrequestsfolder))
     suite.addTests(ztc.ZopeDocTestSuite(module="bika.lims.content.analysisservice", test_class=TestCase))
+    suite.addTests(ztc.ZopeDocTestSuite(module="bika.lims.controlpanel.bika_analysisservices", test_class=TestCase))
 ##    suite.addTests(doctest.DocTestSuite(analysisservice))
 ##    suite.addTests(doctest.DocTestSuite(analysisspec))
 ##    suite.addTests(doctest.DocTestSuite(ar))

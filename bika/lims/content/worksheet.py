@@ -41,13 +41,6 @@ schema = BikaSchema.copy() + Schema((
         allowed_types = ('Analysis', 'DuplicateAnalysis', 'ReferenceAnalysis',),
         relationship = 'WorksheetAnalysis',
     ),
-    ComputedField('NrAnalyses',
-        expression = "len(context.getAnalyses())",
-        widget = ComputedWidget(
-            visible = False,
-        ),
-    ),
-
     StringField('Analyst',
         searchable = True,
     ),
