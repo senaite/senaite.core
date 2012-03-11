@@ -343,7 +343,7 @@ class BikaListingView(BrowserView):
             toggle_cols = [col for col in self.columns.keys()
                            if col in review_state['columns']
                            and ('toggle' not in self.columns[col]
-                                or self.columns[col]['toggle'])]
+                                or self.columns[col]['toggle'] == True)]
         for col in self.columns.keys():
             if col in toggle_cols:
                 self.columns[col]['toggle'] = True
