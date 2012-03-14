@@ -122,7 +122,7 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
                         InterimFields = interimFields,
                         Retested = retested,
                         Unit = unit)
-                # results get checked/saved seperately, so the setResults()
+                # results get checked/saved separately, so the setResults()
                 # mutator only sets the ResultsCapturedDate when it needs to.
                 if analysis.getResult() != result or \
                    analysis.getResultDM() != dry_result:
@@ -396,7 +396,7 @@ class AnalysisRequestAddView(AnalysisRequestViewView):
         for service in bsc(portal_type='AnalysisService'):
             service = service.getObject()
             if service.getPartitionSetup() \
-               or service.getSeperate():
+               or service.getSeparate():
                 ps.append(service.UID())
         return json.dumps(ps)
 
@@ -426,7 +426,7 @@ class ajaxCalculateParts():
 
         parts = {}
         for col in formvalues.keys():
-            # parts[col][ {'services':,'seperate':}, ]
+            # parts[col][ {'services':,'separate':}, ]
             parts[col] = []
 
         for col in formvalues.keys():
@@ -445,7 +445,7 @@ class ajaxCalculateParts():
                 partsetup = partsetup and partsetup[0] or {}
 
                 # partition setup info
-                seperate = service.getSeperate()
+                separate = service.getSeparate()
 
                 # container from the matching sample type record, OR default
                 container = [c.getObject().UID() for c
@@ -461,14 +461,14 @@ class ajaxCalculateParts():
                 preservation = preservation or [p.UID() for p
                                                 in service.getPreservation()]
 
-                if seperate or (partsetup.get('seperate', False)):
+                if separate or (partsetup.get('separate', False)):
                     # create me a new partition
                     part = {'services': [service_uid,],
-                            'seperate': True,
+                            'separate': True,
                             'container': container,
                             'preservation': preservation}
                     parts[col].append(part)
-                    info(infobit+"Creating seperate partition %s" % (len(parts[col])-1))
+                    info(infobit+"Creating separate partition %s" % (len(parts[col])-1))
                 else:
                     # find an existing partition
                     # possible: [(partnr, containers, partitions), ]
@@ -477,8 +477,8 @@ class ajaxCalculateParts():
                     for p in range(len(parts[col])):
                         part = parts[col][p]
 
-                        # we can't land in 'seperate' partitions
-                        if part.get('seperate', None): continue
+                        # we can't land in 'separate' partitions
+                        if part.get('separate', None): continue
 
                         # we can land here if the part's container matches ours.
                         cc = filter(lambda x:x in part['container'], container)
@@ -503,7 +503,7 @@ class ajaxCalculateParts():
                     else:
                         # Create new partition
                         part = {'services': [service_uid,],
-                                'seperate': False,
+                                'separate': False,
                                 'container': container,
                                 'preservation': preservation}
                         parts[col].append(part)
@@ -1300,7 +1300,7 @@ class ajaxAnalysisRequestSubmit():
                     parts = [{'services':Analyses,
                              'container':[],
                              'preservation':'',
-                             'seperate':False}]
+                             'separate':False}]
                 for p in parts:
                     analyses = [a for a in ar_analyses
                                 if a.getServiceUID() in p['services']]
