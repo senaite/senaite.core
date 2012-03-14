@@ -247,7 +247,9 @@ class SampleView(BrowserView):
             {'id': 'DateSampled',
              'title': _('Date Sampled'),
              'allow_edit': checkPermission(SampleSample, self.context),
-             'value': self.context.getDateSampled().strftime(datepicker_format),
+             'value': self.context.getDateSampled() \
+                      and self.context.getDateSampled().strftime(datepicker_format) \
+                      or '',
              'formatted_value': TimeOrDate(self.context,
                                            self.context.getDateSampled()),
              'type': 'text',
