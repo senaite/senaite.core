@@ -217,12 +217,12 @@ class Sample(BaseFolder, HistoryAwareMixin):
         return ars
 
     security.declarePublic('getAnalyses')
-    def getAnalyses(self, *args, **kwargs):
+    def getAnalyses(self, contentFilter):
         """ return list of all analyses against this sample
         """
         analyses = []
         for ar in self.getAnalysisRequests():
-            analyses += ar.getAnalyses(**kwargs)
+            analyses += ar.getAnalyses(**contentFilter)
         return analyses
 
     def disposal_date(self):
