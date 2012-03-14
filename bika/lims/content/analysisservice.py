@@ -29,7 +29,7 @@ def getContainers(instance,
 
     """ Containers vocabulary
 
-    This is a seperate class so that it can be called from ajax to
+    This is a separate class so that it can be called from ajax to
     filter the container list.
 
     >>> bsc = self.portal.bika_setup_catalog
@@ -119,16 +119,16 @@ class PartitionSetupField(RecordsField):
         'subfields': ('sampletype',
                       'preservation',
                       'container',
-                      'seperate',
+                      'separate',
                       'vol'),
                       #'retentionperiod'),
         'subfield_labels': {'sampletype':_('Sample Type'),
                             'preservation':_('Preservation'),
                             'container':_('Container'),
-                            'seperate':_('Seperate Partition'),
+                            'separate':_('Separate Partition'),
                             'vol':_('Required Volume')},
                             #'retentionperiod': _('Retention Period')},
-        'subfield_types': {'seperate':'boolean',
+        'subfield_types': {'separate':'boolean',
                            'vol':'int'},
         'subfield_vocabularies': {'sampletype':'SampleTypes',
                                   'preservation':'Preservations',
@@ -449,13 +449,13 @@ schema = BikaSchema.copy() + Schema((
                             "'Indeterminable'.  The option's result value must be a number."),
         ),
     ),
-    BooleanField('Seperate',
+    BooleanField('Separate',
         schemata = PMF('Partition Setup'),
         default = False,
         required = 0,
         widget = BooleanWidget(
-            label = _('Seperate Partition'),
-            description = _("This service will always be assigned it's own seperate sample partition."),
+            label = _('Separate Partition'),
+            description = _("This service will always be assigned it's own separate sample partition."),
         ),
     ),
     ReferenceField('Container',

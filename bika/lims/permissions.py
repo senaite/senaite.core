@@ -14,6 +14,8 @@ from Products.CMFCore.permissions import AddPortalContent
 AddClient = 'BIKA: Add Client'
 AddAnalysisRequest = 'BIKA: Add Analysis Request'
 AddSample = 'BIKA: Add Sample'
+AddARProfile = 'BIKA: Add ARProfile'
+AddAnalysisSpec = 'BIKA: Add AnalysisSpec'
 
 # Default Archetypes Add Permission
 ADD_CONTENT_PERMISSION = AddPortalContent
@@ -23,8 +25,9 @@ ADD_CONTENT_PERMISSIONS = {
     'Client': AddClient,
     'AnalysisRequest': AddAnalysisRequest,
     'Sample': AddSample,
+    'ARProfile': AddARProfile,
+    'ARAnalysisSpec': AddAnalysisSpec,
 }
-
 
 # Very Old permissions:
 # ---------------------
@@ -34,7 +37,7 @@ ManageOrders = 'BIKA: Manage Orders'
 DispatchOrder = 'BIKA: Dispatch Order'
 ManageAnalysisRequests = 'BIKA: Manage Analysis Requests'
 ManageARImport = 'BIKA: Manage ARImport'
-ManageSample = 'BIKA: Manage Sample'
+ManageSamples = 'BIKA: Manage Samples'
 ManageReferenceSuppliers = 'BIKA: Manage Reference Suppliers'
 ManageReference = 'BIKA: Manage Reference'
 PostInvoiceBatch = 'BIKA: Post Invoice batch'
@@ -48,7 +51,7 @@ RejectWorksheet = 'BIKA: Reject Worksheet'
 
 # New or changed permissions:
 # ---------------------------
-SampleSample = 'BIKA: Receive Sample'
+SampleSample = 'BIKA: Sample Sample'
 PreserveSample = 'BIKA: Preserve Sample'
 ReceiveSample = 'BIKA: Receive Sample'
 ExpireSample = 'BIKA: Expire Sample'

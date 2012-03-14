@@ -293,7 +293,6 @@ Table cells for each column from in review_state's column list.
 	<td
 		tal:condition="python:rowspan[column] == rowspan_max[column] and colspan == colspan_max"
 		tal:define="
-			input_width python:5;
 			allow_edit python:column in item['allow_edit'];
 			required python:'required' in item and column in item['required'] or False;
 			before python:column in item['before'] and
@@ -306,6 +305,10 @@ Table cells for each column from in review_state's column list.
 				columns[column]['type'] or 'string';
 			field_type python:'choices' in item and column in item['choices'] and
 				'choices' or field_type;
+			input_class python:'input_class' in columns[column] and
+				columns[column]['input_class'] or 'numeric';
+			input_width python:'input_width' in columns[column] and
+				columns[column]['input_width'] or '5';
 			table_row_class python:'table_row_class' in columns[column] and
 				columns[column]['table_row_class'] or '';
 			klass python:column in item['class'] and
@@ -334,11 +337,11 @@ Table cells for each column from in review_state's column list.
 			tal:condition="python:type(item[column]) == type({})">
 			<tal:comment replace="nothing"><!-- edit --></tal:comment>
 			<input
-				type="text"
+				type="text" style="font-size: 100%"
 				autocomplete="off"
-				class="listing_string_entry numeric"
 				tal:condition="python:allow_edit"
 				tal:attributes="
+					class python:'listing_string_entry %s' % input_class;
 					tabindex tabindex/next;
 					size input_width;
 					uid string:${item/uid};
@@ -367,11 +370,11 @@ Table cells for each column from in review_state's column list.
 							not (column == 'Result' and item['calculation'])">
 			<tal:comment replace="nothing"><!-- edit --></tal:comment>
 			<input
-				type="text"
+				type="text" style="font-size: 100%"
 				autocomplete="off"
 				tal:condition="python:allow_edit"
-				class="listing_string_entry numeric"
 				tal:attributes="
+					class python:'listing_string_entry %s' % input_class;
 					tabindex tabindex/next;
 					size input_width;
 					uid string:${item/uid};
@@ -430,7 +433,7 @@ Table cells for each column from in review_state's column list.
 	<span tal:omit-tag="python:True"
 		tal:condition="python:field_type == 'boolean'">
 		<input
-			type="checkbox"
+			type="checkbox" style="font-size: 100%"
 			tal:condition="allow_edit"
 			tal:attributes="
 				class item/state_class;
@@ -552,14 +555,16 @@ Workflow Actions
 					<input
 						type="hidden"
 						tal:attributes="name action/title;
-										value action/id;"/>
+										value action/id;"
+						i18n:attributes="name"/>
 					<input
 						class="context workflow_action_button allowMultiSubmit"
 						type="submit"
 						name="workflow_action_button"
 						tal:attributes="
 							transition action/id;
-							value action/title;"/>
+							value action/title;"
+						i18n:attributes="value"/>
 				</span>
 				<p tal:condition="actions"/>
 			</span>

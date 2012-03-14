@@ -13,7 +13,7 @@ def AfterTransitionEventHandler(sample, event):
         sample.REQUEST['workflow_skiplist'] = [sample.UID(), ]
     else:
         if sample.UID() in sample.REQUEST['workflow_skiplist']:
-            logger.info("SM Skip")
+            ##logger.info("SM Skip")
             return
         else:
             sample.REQUEST["workflow_skiplist"].append(sample.UID())
@@ -36,7 +36,8 @@ def AfterTransitionEventHandler(sample, event):
         # All associated AnalysisRequests are also transitioned
         for ar in sample.getAnalysisRequests():
             if not ar.UID() in sample.REQUEST['workflow_skiplist']:
-                workflow.doActionFor(ar, "sampled")
+                try: workflow.doActionFor(ar, "sampled")
+                except WorkflowException: pass
 
     if event.transition.id == "preserved":
         # Transition all sample partitions that are still 'to_be_preserved'
@@ -48,7 +49,8 @@ def AfterTransitionEventHandler(sample, event):
         # All associated AnalysisRequests are also transitioned
         for ar in sample.getAnalysisRequests():
             if not ar.UID() in sample.REQUEST['workflow_skiplist']:
-                workflow.doActionFor(ar, "sampled")
+                try: workflow.doActionFor(ar, "sampled")
+                except WorkflowException: pass
 
     if event.transition.id == "receive":
         if not props.getProperty('sampling_workflow_enabled', True):

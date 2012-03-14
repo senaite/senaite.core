@@ -32,5 +32,4 @@ elif context.portal_type == 'Sample':
     if context.getSamplingDate() > DateTime():
         return False
 
-
 return True

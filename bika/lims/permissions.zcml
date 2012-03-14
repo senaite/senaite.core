@@ -17,6 +17,8 @@
 <permission id="bika.lims.AddClient" title="BIKA: Add Client"/>
 <permission id="bika.lims.AddAnalysisRequest" title="BIKA: Add Analysis Request"/>
 <permission id="bika.lims.AddSample" title="BIKA: Add Sample"/>
+<permission id="bika.lims.AddARProfile" title="BIKA: Add ARProfile"/>
+<permission id="bika.lims.AddAnalysisSpec" title="BIKA: Add AnalysisSpec"/>
 
 
 # Old stuff I haven't looked at
@@ -26,7 +28,7 @@
 <permission id="bika.lims.ManageWorksheets" title="BIKA: Manage Worksheets"/>
 <permission id="bika.lims.ManageOrders" title="BIKA: Manage Orders"/>
 <permission id="bika.lims.ManageAnalysisRequests" title="BIKA: Manage Analysis Requests"/>
-<permission id="bika.lims.ManageSample" title="BIKA: Manage Sample"/>
+<permission id="bika.lims.ManageSamples" title="BIKA: Manage Samples"/>
 <permission id="bika.lims.ManageReferenceSuppliers" title="BIKA: Manage Reference Suppliers"/>
 <permission id="bika.lims.ManageReference" title="BIKA: Manage Reference"/>
 <permission id="bika.lims.ManagePricelists" title="BIKA: Manage Pricelists"/>

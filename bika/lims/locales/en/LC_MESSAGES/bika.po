@@ -629,8 +629,8 @@ msgid "Check this box if your laboratory is accredited"
 msgstr "Check this box if your laboratory is accredited"
 
 #: ../content/bikasetup.py:263
-msgid "Check this if you want to use a seperate ID server. Prefixes are configurable seperately in each Bika site."
-msgstr "Check this if you want to use a seperate ID server. Prefixes are configurable seperately in each Bika site."
+msgid "Check this if you want to use a separate ID server. Prefixes are configurable separately in each Bika site."
+msgstr "Check this if you want to use a separate ID server. Prefixes are configurable separately in each Bika site."
 
 #: ../skins/bika/bika_widgets/custom_address_widget.pt:65
 msgid "City"
@@ -2375,8 +2375,8 @@ msgid "Selection criteria"
 msgstr "Selection criteria"
 
 #: ../content/analysisservice.py:104
-msgid "Seperate Partition"
-msgstr "Seperate Partition"
+msgid "Separate Partition"
+msgstr "Separate Partition"
 
 #: ../content/instrument.py:33
 msgid "Serial No"

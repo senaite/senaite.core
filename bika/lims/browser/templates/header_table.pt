@@ -1,0 +1,106 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en"
+	xmlns:tal="http://xml.zope.org/namespaces/tal"
+	xmlns:metal="http://xml.zope.org/namespaces/metal"
+	xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+	i18n:domain="bika">
+
+<body
+	tal:condition="view/header_rows"
+	tal:define="
+		portal context/@@plone_portal_state/portal;
+		global edit_enabled python:False;">
+
+	<form method="post">
+	<input type="hidden" name="header_submitted" value="1" />
+	<span tal:replace="structure context/@@authenticator/authenticator"/>
+	<table class="header_table" cellpadding="0" cellspacing="0">
+
+		<tal:row repeat="row view/header_rows">
+		<tr tal:condition="python:row.get('condition', True)">
+			<th>
+				<span tal:content="row/title"/>
+				<span
+					tal:condition="python: row['allow_edit'] and row.get('required', False)"
+					class="fieldRequired">&nbsp;</span>
+			</th>
+			<td class="left">
+
+				<tal:view
+					condition="not:row/allow_edit"
+					tal:define="value python:row.get('formatted_value', row.get('value'));">
+					<!-- VIEW for text / date / choices -->
+					<span
+						tal:condition="python:row['type'] in ('text','date','choices')"
+						tal:replace="structure value"/>
+					<!-- VIEW for boolean -->
+					<input
+						style="font-size: 100%"
+						tal:condition="python:row['type'] in ('boolean')"
+						type="checkbox"
+						disabled="disabled"
+						tal:attributes="
+							checked python:value and 'checked' or '';"/>
+				</tal:view>
+
+				<tal:edit condition="row/allow_edit">
+					<tal:define define="global edit_enabled python:True"/>
+					<!-- EDIT for text -->
+					<input
+						style="font-size: 100%"
+						tal:condition="python:row['type'] == 'text'"
+						type="text"
+						size="20"
+						tal:attributes="
+							class python:row.get('class', '');
+							name row/id;
+							id row/id;
+							value row/value;"/>
+					<!-- EDIT for choices -->
+					<select
+						style="font-size: 100%"
+						tal:condition="python:row['type'] == 'choices'"
+						tal:attributes="
+							class python:row.get('class', '');
+							name row/id;
+							id row/id;">
+						<option value=""></option>
+						<tal:options tal:repeat="option python:row['vocabulary'].keys()">
+							<option
+								tal:attributes="
+									value python:option;
+									selected python:row['value'] == option and 'selected' or '';"
+								tal:content="python:row['vocabulary'].getValue(option)">
+							</option>
+						</tal:options>
+					</select>
+					<!-- EDIT for boolean -->
+					<input
+						style="font-size: 100%"
+						tal:condition="python:row['type'] in ('boolean')"
+						type="checkbox"
+						tal:attributes="
+							name row/id;
+							id row/id;
+							checked python:row['value'] and 'checked' or '';"/>
+
+				</tal:edit>
+
+			</td>
+		</tr>
+		</tal:row>
+
+	</table>
+
+	<input
+		tal:condition="edit_enabled"
+		class="context allowMultiSubmit"
+		type="submit"
+		name="save_button"
+		value="Save"
+		i18n:attributes="value"/>
+
+	</form>
+
+</body>
+</html>
+

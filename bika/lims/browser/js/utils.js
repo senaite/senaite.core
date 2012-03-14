@@ -29,6 +29,7 @@ jQuery( function($) {
 	    return
 	}
 
+
 	$(document).ready(function(){
 
 		if ( ! window.jsi18n) {
@@ -38,6 +39,15 @@ jQuery( function($) {
 		}
 		_ = window.jsi18n;
 
+		$('input.datepicker').live('click', function() {
+			$(this).datepicker({
+				showOn:'focus',
+				showAnim:'',
+				dateFormat:'dd M yy',
+				changeMonth:true,
+				changeYear:true
+			}).focus();
+		});
 
 		$('body').append('<div id="global-spinner" class="global-spinner" style="display:none"><img id="img-global-spinner" src="spinner.gif" alt="Loading"/></div>');
 		$('#global-spinner')

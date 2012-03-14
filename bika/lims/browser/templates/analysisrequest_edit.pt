@@ -24,6 +24,7 @@
 <div metal:fill-slot="content-core"
     tal:define="portal context/@@plone_portal_state/portal;
         plone_view context/@@plone;
+	    checkPermission nocall: context/portal_membership/checkPermission;
         tabindex view/tabindex;
         edit python:view.came_from == 'edit' and True or False;
         can_edit_sample python:view.can_edit_sample;
@@ -77,7 +78,7 @@
         tal:define="cc_contact python:hasattr(context, 'getCCContact') and context.getCCContact() or ''">
         <th colspan="2" class="rowheader">
             <span i18n:translate="">Contact Person</span>
-            &nbsp;<span class="fieldRequired"/>
+            &nbsp;<span class="fieldRequired">&nbsp;</span>
         </th>
         <td class="contact"
             tal:attributes="colspan python: view.col_count+2"
@@ -272,8 +273,6 @@
     <tr tal:define="field_name string:SamplingDate">
         <th colspan="2">
             <span i18n:translate="">Sampling Date</span>&nbsp;
-            <span class="fieldRequired"
-                tal:condition="can_edit_sample"/>
         </th>
         <td>
             <img class="copyButton" tal:condition="not: edit"
@@ -324,7 +323,9 @@
     <tr tal:define="field_name string:SampleType">
         <th colspan="2">
             <span id="" i18n:translate="">Sample Type</span>
-            &nbsp;<span class="fieldRequired" tal:condition="can_edit_sample"/>
+            &nbsp;
+            <span class="fieldRequired"
+                tal:condition="can_edit_sample">&nbsp;</span>
         </th>
         <td>
             <img class="copyButton" tal:condition="not: edit"
@@ -553,8 +554,7 @@
         </td>
     </tal:block>
 </tr>
-
-<tr>
+<tr tal:condition="python:checkPermission('BIKA: Add ARProfile', context)">
     <th colspan="3" i18n:translate="">Save</th>
     <tal:save repeat="column python:range(view.col_count)">
         <td class="topborder">

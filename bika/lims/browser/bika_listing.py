@@ -49,20 +49,13 @@ class WorkflowAction:
         action = form.get(came_from, '')
         if not action:
             came_from = "workflow_action_button"
-            action = form.get(came_from, '')
-            # XXX some browsers agree better than others about our JS ideas.
-            # Two actions (eg ['submit','submit']) are present in the form.
-            if type(action) in(list, tuple): action = action[0]
+            action = form.get('workflow_action_id', '')
             if not action:
                 if self.destination_url == "":
                     self.destination_url = self.request.get_header("referer",
                                            self.context.absolute_url())
                 self.request.response.redirect(self.destination_url)
                 return None, None
-        # convert button text to action id
-        if came_from == "workflow_action_button":
-            action = form[action]
-        if type(action) in(list, tuple): action = action[0]
         return (action, came_from)
 
     def _get_selected_items(self, full_objects = True):
@@ -180,17 +173,25 @@ class BikaListingView(BrowserView):
 
      ### possible column dictionary keys are:
      - allow_edit
-       if View.allow_edit is also True, this field is made editable
+       if self.allow_edit is also True, this field is made editable
        Interim fields are always editable
      - type
-       possible values: "string", "boolean", "choices".
-       if "choices" is selected, item['choices'][column_id] must
-       be a list of choice strings.
+       "string" is the default, and actually, will require a NUMBER entry
+                in the rendered text field.
+       "choices" renders a dropdown.  Selected automatically if a vocabulary
+                 exists.  the vocabulary data must be placed in
+                 item['choices'][column_id].  it's a list of dictionaries:
+                 [{'ResultValue':x}, {'ResultText',x}].
+                 TODO 'choices' should probably expect a DisplayList...
+       "boolean" a checkbox is rendered
+       "date" A text field is rendered, with a jquery DatePicker attached.
      - index
        the name of the catalog index for the column. adds 'indexed' class,
        to allow ajax table sorting for indexed columns
      - sortable: defaults True.  if False, adds nosort class
      - toggle: enable/disable column toggle ability
+     - input_class: CSS class applied to input widget in edit mode
+     - input_width: size attribute applied to input widget in edit mode
     """
     columns = {
            'obj_type': {'title': _('Type')},
@@ -336,14 +337,13 @@ class BikaListingView(BrowserView):
 
         # get toggle_cols cookie value
         # and modify self.columns[]['toggle'] to match.
-        cookie = json.loads(self.request.get("toggle_cols", "{}"))
-        if form_id in cookie:
-            toggle_cols = cookie[form_id]
-        else:
-            toggle_cols = [col for col in self.columns.keys()
-                           if col in review_state['columns']
-                           and ('toggle' not in self.columns[col]
-                                or self.columns[col]['toggle'] == True)]
+        toggles = json.loads(self.request.get("toggle_cols", "{}"))
+        cookie_key = "%s %s" % (self.view_url, form_id)
+        toggle_cols = toggles.get(cookie_key,
+                                  [col for col in self.columns.keys()
+                                   if col in review_state['columns']
+                                   and ('toggle' not in self.columns[col]
+                                        or self.columns[col]['toggle'] == True)])
         for col in self.columns.keys():
             if col in toggle_cols:
                 self.columns[col]['toggle'] = True

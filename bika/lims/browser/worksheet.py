@@ -1,3 +1,4 @@
+from zope.i18n import translate
 from AccessControl import getSecurityManager
 from DateTime import DateTime
 from DocumentTemplate import sequence

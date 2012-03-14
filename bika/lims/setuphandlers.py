@@ -170,7 +170,7 @@ class BikaGenerator:
         mp(ManageWorksheets, ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 1)
         mp(ManageOrders, ['Manager', 'LabManager', 'LabClerk'], 1)
         mp(ManageAnalysisRequests, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler', 'Preserver'], 1)
-        mp(ManageSample, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler', 'Preserver'], 1)
+        mp(ManageSamples, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler', 'Preserver'], 1)
         mp(ManageReferenceSuppliers, ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 1)
         mp(ManageReference, ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 1)
         mp(ManagePricelists, ['Manager', 'LabManager', 'Owner'], 1)

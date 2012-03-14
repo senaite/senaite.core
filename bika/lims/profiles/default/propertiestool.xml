@@ -5,6 +5,7 @@
  <object name="bika_properties" meta_type="Plone Property Sheet">
   <property name="title">Bika-LIMS Site Properties</property>
     <property name="sampling_workflow_enabled" type="boolean">True</property>
+    <property name="datepicker_format" type="string">%d %b %Y</property>
  </object>
 
  <object name="navtree_properties" meta_type="Plone Property Sheet">

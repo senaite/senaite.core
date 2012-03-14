@@ -18,7 +18,7 @@ def AfterTransitionEventHandler(ws, event):
             ws.REQUEST['workflow_attach_skiplist'] = [ws.UID(), ]
         else:
             if ws.UID() in ws.REQUEST['workflow_attach_skiplist']:
-                logger.info("WS Skip")
+                ##logger.info("WS Skip")
                 return
             else:
                 ws.REQUEST["workflow_attach_skiplist"].append(ws.UID())
@@ -33,7 +33,7 @@ def AfterTransitionEventHandler(ws, event):
         ws.REQUEST['workflow_skiplist'] = [ws.UID(), ]
     else:
         if ws.UID() in ws.REQUEST['workflow_skiplist']:
-            logger.info("WS Skip")
+            ##logger.info("WS Skip")
             return
         else:
             ws.REQUEST["workflow_skiplist"].append(ws.UID())

@@ -1,17 +1,95 @@
 from AccessControl import getSecurityManager
 from DateTime import DateTime
+from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from bika.lims import bikaMessageFactory as _
-from bika.lims.browser.bika_listing import BikaListingView
-from bika.lims.utils import TimeOrDate
 from bika.lims import EditSample
 from bika.lims import PMF
+from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.analyses import AnalysesView
+from bika.lims.browser.bika_listing import BikaListingView
+from bika.lims.browser.bika_listing import WorkflowAction
+from bika.lims.config import POINTS_OF_CAPTURE
+from bika.lims.permissions import ManageSamples
+from bika.lims.permissions import SampleSample
+from bika.lims.permissions import EditResults
+from bika.lims.permissions import EditFieldResults
+from bika.lims.utils import TimeOrDate
+from bika.lims.utils import getUsers
+from bika.lims.utils import pretty_user_name_or_id
 from plone.app.layout.globals.interfaces import IViewView
 from zope.interface import implements
 import plone
+
+class SampleWorkflowAction(WorkflowAction):
+    """ This function is called to do sample workflow transitions, when
+        they are invoked from the bika_listing_folder or the plone UI.
+    """
+
+    def __call__(self):
+        form = self.request.form
+        plone.protect.CheckAuthenticator(form)
+        workflow = getToolByName(self.context, 'portal_workflow')
+        rc = getToolByName(self.context, REFERENCE_CATALOG)
+        translate = self.context.translation_service.translate
+        skiplist = self.request.get('workflow_skiplist', [])
+        action, came_from = WorkflowAction._get_form_workflow_action(self)
+
+        if action == "sampled":
+            objects = WorkflowAction._get_selected_items(self)
+            transitioned = {'to_be_preserved':[], 'sample_due':[]}
+            for obj_uid, obj in objects.items():
+                # can't transition inactive items
+                if workflow.getInfoFor(obj, 'inactive_state', '') == 'inactive':
+                    continue
+
+                # grab this object's Sampler and DateSampled from the form
+                Sampler = form['getSampler'][0][obj_uid].strip()
+                DateSampled = form['getDateSampled'][0][obj_uid].strip()
+
+                # write them to the sample
+                obj.edit(Sampler = Sampler and Sampler or '',
+                         DateSampled = DateSampled and DateTime(DateSampled) or '')
+
+                # transition the object if both values are present
+                if Sampler and DateSampled:
+                    workflow.doActionFor(obj, 'sampled')
+                    new_state = workflow.getInfoFor(obj, 'review_state')
+                    transitioned[new_state].append(obj.Title())
+
+            message = None
+            for state in transitioned:
+                t = transitioned[state]
+                if len(t) > 1:
+                    if state == 'to_be_preserved':
+                        message = _('${items} are waiting for preservation.',
+                                    mapping = {'items': ', '.join(t)})
+                    else:
+                        message = _('${items} are waiting to be received.',
+                                    mapping = {'items': ', '.join(t)})
+                    message = self.context.translate(message)
+                    self.context.plone_utils.addPortalMessage(message, 'info')
+                elif len(t) == 1:
+                    if state == 'to_be_preserved':
+                        message = _('${item} is waiting for preservation.',
+                                    mapping = {'item': ', '.join(t)})
+                    else:
+                        message = _('${item} is waiting to be received.',
+                                    mapping = {'item': ', '.join(t)})
+                    message = self.context.translate(message)
+                    self.context.plone_utils.addPortalMessage(message, 'info')
+            if not message:
+                message = _('No changes made.')
+                message = self.context.translate(message)
+                self.context.plone_utils.addPortalMessage(message, 'info')
+            self.destination_url = self.request.get_header("referer",
+                                   self.context.absolute_url())
+            self.request.response.redirect(self.destination_url)
+
+        else:
+            # default bika_listing.py/WorkflowAction for other transitions
+            WorkflowAction.__call__(self)
 
 class SamplePartitionsView(AnalysesView):
 
@@ -53,12 +131,25 @@ class SamplePartitionsView(AnalysesView):
 
         return items
 
-class SampleViewView(BrowserView):
+class SampleAnalysesView(AnalysesView):
+    """ This renders the Field and Lab analyses tables for Samples
+    """
+    def __init__(self, context, request, **kwargs):
+        AnalysesView.__init__(self, context, request)
+        for k,v in kwargs.items():
+            self.contentFilter[k] = v
+
+    def folderitems(self):
+        self.contentsMethod = self.context.getAnalyses
+        return AnalysesView.folderitems(self)
+
+class SampleView(BrowserView):
     """ Sample View/Edit form
     """
 
     implements(IViewView)
     template = ViewPageTemplateFile("templates/sample.pt")
+    header_table = ViewPageTemplateFile("templates/header_table.pt")
 
     def __init__(self, context, request):
         BrowserView.__init__(self, context, request)
@@ -69,65 +160,180 @@ class SampleViewView(BrowserView):
         return DateTime()
 
     def __call__(self):
-
         form = self.request.form
+        bsc = getToolByName(self.context, 'bika_setup_catalog')
+        checkPermission = self.context.portal_membership.checkPermission
+        workflow = getToolByName(self.context, 'portal_workflow')
+        ars = self.context.getAnalysisRequests()
 
-        if 'submitted' in self.request.form:
+        props = getToolByName(self.context, 'portal_properties').bika_properties
+        sampling_workflow_enabled = props.getProperty('sampling_workflow_enabled')
+        datepicker_format = props.getProperty('datepicker_format')
 
+        ## Create header_table data rows
+        ar_links = ", ".join(
+            ["<a href='%s'>%s</a>"%(ar.absolute_url(), ar.Title())
+             for ar in ars])
+        sp = self.context.getSamplePoint()
+        st = self.context.getSampleType()
+        if workflow.getInfoFor(self.context, 'cancellation_state') == "cancelled":
+            allow_sample_edit = False
+        else:
+            edit_states = ['to_be_sampled', 'to_be_preserved', 'sample_due']
+            allow_sample_edit = checkPermission(ManageSamples, self.context) \
+                and workflow.getInfoFor(self.context, 'review_state') in edit_states
+        self.header_rows = [
+            {'id': 'ClientReference',
+             'title': _('Client Reference'),
+             'allow_edit': allow_sample_edit,
+             'value': self.context.getClientReference(),
+             'type': 'text'},
+            {'id': 'ClientSampleID',
+             'title': _('Client SID'),
+             'allow_edit': allow_sample_edit,
+             'value': self.context.getClientSampleID(),
+             'type': 'text'},
+            {'id': 'Requests',
+             'title': _('Requests'),
+             'allow_edit': False,
+             'value': ar_links,
+             'type': 'text'},
+            {'id': 'SampleType',
+             'title': _('Sample Type'),
+             'allow_edit': allow_sample_edit,
+             'value': st and st.Title() or '',
+             'type': 'text',
+             'required': True},
+            {'id': 'SamplePoint',
+             'title': _('Sample Point'),
+             'allow_edit': allow_sample_edit,
+             'value': sp and sp.Title() or '',
+             'type': 'text'},
+            {'id': 'Composite',
+             'title': _('Composite'),
+             'allow_edit': allow_sample_edit,
+             'value': self.context.getComposite(),
+             'type': 'boolean'},
+            {'id': 'Creator',
+             'title': PMF('Creator'),
+             'allow_edit': False,
+             'value': self.context.Creator(),
+             'type': 'text'},
+            {'id': 'DateCreated',
+             'title': PMF('Date Created'),
+             'allow_edit': False,
+             'value': self.context.created(),
+             'formatted_value': TimeOrDate(self.context,
+                                           self.context.created()),
+             'type': 'text'},
+            {'id': 'SamplingDate',
+             'title': _('Sampling Date'),
+             'allow_edit': False,
+             'value': self.context.getSamplingDate(),
+             'formatted_value': TimeOrDate(self.context,
+                                           self.context.getSamplingDate()),
+             'type': 'text'},
+            {'id': 'Sampler',
+             'title': _('Sampler'),
+             'allow_edit': checkPermission(SampleSample, self.context),
+             'value': self.context.getSampler(),
+             'formatted_value': pretty_user_name_or_id(self.context,
+                                                       self.context.getSampler()),
+             'type': 'choices',
+             'vocabulary': getUsers(self.context,
+                                    ['Sampler', 'LabManager', 'Manager']),
+             ##'required': True,
+             'condition': sampling_workflow_enabled},
+            {'id': 'DateSampled',
+             'title': _('Date Sampled'),
+             'allow_edit': checkPermission(SampleSample, self.context),
+             'value': self.context.getDateSampled().strftime(datepicker_format),
+             'formatted_value': TimeOrDate(self.context,
+                                           self.context.getDateSampled()),
+             'type': 'text',
+             'class': 'datepicker',
+             ##'required': True,
+             'condition': sampling_workflow_enabled},
+            {'id': 'DateReceived',
+             'title': _('Date Received'),
+             'allow_edit': False,
+             'value': self.context.getDateReceived(),
+             'formatted_value': TimeOrDate(self.context,
+                                           self.context.getDateReceived()),
+             'type': 'text'},
+            {'id': 'DateExpired',
+             'title': _('Date Expired'),
+             'allow_edit': False,
+             'value': self.context.getDateExpired(),
+             'formatted_value': TimeOrDate(self.context,
+                                           self.context.getDateExpired()),
+             'type': 'text'},
+            {'id': 'DisposalDate',
+             'title': _('Disposal Date'),
+             'allow_edit': False,
+             'value': self.context.getDisposalDate(),
+             'formatted_value': TimeOrDate(self.context,
+                                           self.context.getDisposalDate()),
+             'type': 'text'},
+            {'id': 'DateDisposed',
+             'title': _('Date Disposed'),
+             'allow_edit': False,
+             'value': self.context.getDateDisposed(),
+             'formatted_value': TimeOrDate(self.context,
+                                           self.context.getDateDisposed()),
+             'type': 'text'},
+        ]
+
+        if 'header_submitted' in form:
             message = None
+            values = {}
+            for row in [r for r in self.header_rows if r['allow_edit']]:
+                value = form.get(row['id'], '')
 
-            can_edit = True
-            workflow = getToolByName(self.context, 'portal_workflow')
-            if workflow.getInfoFor(self.context, 'cancellation_state') == "cancelled":
-                can_edit = False
-            elif not(getSecurityManager().checkPermission(EditSample, self.context)):
-                can_edit = False
-            else:
-                ars = self.context.getAnalysisRequests()
-                for ar in ars:
-                    for a in ar.getAnalyses():
-                        if workflow.getInfoFor(a.getObject(), 'review_state') in ('verified', 'published'):
-                            can_edit = False
-                            break
-                    if not can_edit:
+                if row.get('required', False) \
+                   and row.get('condition', True) \
+                   and not value:
+                    message = PMF("Input is required but no input given.")
+                    break
+
+                if row['id'] == 'SampleType':
+                    if not value:
+                        message = _('Sample Type is required')
+                        break
+                    if not bsc(portal_type = 'SampleType', title = value):
+                        message = _("${sampletype} is not a valid sample type",
+                                    mapping={'sampletype':value})
                         break
 
-            if can_edit:
-                sample = self.context
-                sampleType = form['SampleType']
-                samplePoint = form['SamplePoint']
-                composite = form.get('Composite', False)
-                bsc = getToolByName(self.context, 'bika_setup_catalog')
-                if sampleType == '':
-                    message = _('Sample Type is required')
-                else:
-                    if not bsc(portal_type = 'SampleType', title = sampleType):
-                        message = _("${sampletype} is not a valid sample type",
-                                    mapping={'sampletype':sampleType})
-                if samplePoint != "":
-                    if not bsc(portal_type = 'SamplePoint', title = samplePoint):
+                if row['id'] == 'SamplePoint':
+                    if value and \
+                       not bsc(portal_type = 'SamplePoint', title = value):
                         message = _("${samplepoint} is not a valid sample point",
-                                    mapping={'sampletype':samplePoint})
-                if not message:
-                    sample.edit(
-                        ClientReference = form['ClientReference'],
-                        ClientSampleID = form['ClientSampleID'],
-                        SampleType = sampleType,
-                        SamplePoint = samplePoint,
-                        Composite = composite
-                    )
-                    sample.reindexObject()
-                    ars = sample.getAnalysisRequests()
-                    for ar in ars:
-                        ar.reindexObject()
-                    message = PMF("Changes saved.")
-            else:
-                message = _("Changes not allowed")
+                                    mapping={'sampletype':value})
+                        break
+
+                values[row['id']] = value
+
+            # boolean - checkboxes are present, or not present in form.
+            for row in [r for r in self.header_rows
+                        if r.get('type', '') == 'boolean']:
+                values[row['id']] = row['id'] in form
+
+            if not message:
+                self.context.edit(**values)
+                self.context.reindexObject()
+                ars = self.context.getAnalysisRequests()
+                for ar in ars:
+                    ar.reindexObject()
+                message = PMF("Changes saved.")
 
             self.context.plone_utils.addPortalMessage(message, 'info')
 
+            self.request.RESPONSE.redirect(self.context.absolute_url())
+
             ## End of form submit handler
 
+        ## Create Sample Partitions table
         p = SamplePartitionsView(self.context,
                                  self.request,
                                  sort_on = 'getServiceTitle')
@@ -138,26 +344,25 @@ class SampleViewView(BrowserView):
         p.show_select_column = True
         self.parts = p.contents_table()
 
-        workflow = getToolByName(self.context, 'portal_workflow')
-
-        if workflow.getInfoFor(self.context, 'cancellation_state') == "cancelled":
-            self.request.response.redirect(self.context.absolute_url())
-        elif not(getSecurityManager().checkPermission(EditSample, self.context)):
-            self.request.response.redirect(self.context.absolute_url())
-        else:
-            can_edit_sample = True
-            ars = self.context.getAnalysisRequests()
-            for ar in ars:
-                for a in ar.getAnalyses():
-                    if workflow.getInfoFor(a.getObject(), 'review_state') in ('verified', 'published'):
-                        can_edit_sample = False
-                        break
-                if not can_edit_sample:
-                    break
-            if not can_edit_sample:
-                self.request.response.redirect(self.context.absolute_url())
+        ## Create Field and Lab Analyses tables
+        self.tables = {}
+        for poc in POINTS_OF_CAPTURE:
+            t = SampleAnalysesView(self.context,
+                             self.request,
+                             getPointOfCapture = poc,
+                             sort_on = 'getServiceTitle')
+            t.form_id = "sample_%s_analyses" % poc
+            if poc == 'field':
+                t.allow_edit = EditFieldResults
             else:
-                return self.template()
+                t.allow_edit = EditResults
+            t.review_states[0]['transitions'] = [{'id':'submit'},
+                                                 {'id':'retract'},
+                                                 {'id':'verify'}]
+            t.show_select_column = True
+            self.tables[POINTS_OF_CAPTURE.getValue(poc)] = t.contents_table()
+
+        return self.template()
 
     def tabindex(self):
         i = 0
@@ -180,6 +385,7 @@ class SamplesView(BikaListingView):
         self.show_sort_column = False
         self.show_select_row = False
         self.show_select_column = True
+        self.allow_edit = True
 
         if self.view_url.find("/samples") > -1:
             self.request.set('disable_border', 1)
@@ -192,29 +398,31 @@ class SamplesView(BikaListingView):
 
         self.columns = {
             'getSampleID': {'title': _('Sample ID'),
-                         'index':'getSampleID'},
+                            'index':'getSampleID'},
             'Client': {'title': _("Client"),
                        'toggle': True,},
             'Requests': {'title': _('Requests'),
                          'sortable': False,
                          'toggle': False},
             'getClientReference': {'title': _('Client Ref'),
-                                'index': 'getClientReference',
-                                'toggle': False},
+                                   'index': 'getClientReference',
+                                   'toggle': False},
             'getClientSampleID': {'title': _('Client SID'),
-                               'index': 'getClientSampleID',
-                               'toggle': False},
+                                  'index': 'getClientSampleID',
+                                  'toggle': False},
             'getSampleTypeTitle': {'title': _('Sample Type'),
-                                'index': 'getSampleTypeTitle'},
+                                   'index': 'getSampleTypeTitle'},
             'getSamplePointTitle': {'title': _('Sample Point'),
-                                'index': 'getSamplePointTitle',
-                                'toggle': False},
+                                    'index': 'getSamplePointTitle',
+                                    'toggle': False},
             'getSamplingDate': {'title': _('Sampling Date'),
-                             'toggle': True},
+                                'toggle': True},
             'getDateSampled': {'title': _('Date Sampled'),
-                             'toggle': True},
+                               'toggle': True,
+                               'input_class': 'datepicker',
+                               'input_width': '10'},
             'getSampler': {'title': _('Sampler'),
-                             'toggle': True},
+                           'toggle': True},
             'DateReceived': {'title': _('Date Received'),
                              'index': 'getDateReceived',
                              'toggle': False},
@@ -327,9 +535,9 @@ class SamplesView(BikaListingView):
                          'getDateSampled',
                          'getSampler',
                          'state_title']},
-            ]
+        ]
 
-    def folderitems(self):
+    def folderitems(self, full_objects = False):
         items = BikaListingView.folderitems(self)
 
         translate = self.context.translation_service.translate
@@ -338,7 +546,7 @@ class SamplesView(BikaListingView):
             if not items[x].has_key('obj'): continue
             obj = items[x]['obj']
             items[x]['replace']['getSampleID'] = "<a href='%s'>%s</a>" % \
-                 (items[x]['url'], obj.getSampleID())
+                (items[x]['url'], obj.getSampleID())
 
             requests = ["<a href='%s'>%s</a>" % (o.absolute_url(), o.Title())
                         for o in obj.getAnalysisRequests()]
@@ -350,6 +558,9 @@ class SamplesView(BikaListingView):
 
             items[x]['DateReceived'] = TimeOrDate(self.context,  obj.getDateReceived())
             items[x]['getDateSampled'] = TimeOrDate(self.context, obj.getDateSampled())
+
+            items[x]['getSampler'] = obj.getSampler().strip()
+
             items[x]['getSamplingDate'] = TimeOrDate(self.context, obj.getSamplingDate())
 
             after_icons = ''
@@ -361,45 +572,43 @@ class SamplesView(BikaListingView):
             if after_icons:
                 items[x]['after']['getSampleID'] = after_icons
 
+            # sampling workflow - inline edits for Sampler and Date Sampled
+            checkPermission = self.context.portal_membership.checkPermission
+            if checkPermission(SampleSample, obj):
+                items[x]['required'] = ['getSampler', 'getDateSampled']
+                items[x]['allow_edit'] = ['getSampler', 'getDateSampled']
+                users = getUsers(self.context,
+                                 ['Sampler', 'LabManager', 'Manager'],
+                                 allow_empty=True)
+                users = [({'ResultValue': u, 'ResultText': users.getValue(u)})
+                         for u in users]
+                items[x]['choices'] = {'getSampler': users}
         return items
 
-class ajaxSetDateSampled():
+class ajaxSetDateSampled(BrowserView):
     """ DateSampled is set immediately.
     """
 
-    def __init__(self, context, request):
-        self.context = context
-        self.request = request
-
     def __call__(self):
         plone.protect.CheckAuthenticator(self.request)
-        plone.protect.PostOnly(self.request)
         value = self.request.get('value', '')
         if not value:
-            return
-        for part in self.context.objectValues("SamplePartition"):
-            if not part.getDateSampled():
-                part.setDateSampled(value)
+            value = ""
+        self.context.setDateSampled(value)
         return "ok"
 
-class ajaxSetSampler():
+class ajaxSetSampler(BrowserView):
     """ Sampler is set immediately.
     """
 
-    def __init__(self, context, request):
-        self.context = context
-        self.request = request
-
     def __call__(self):
-        mtool = getToolByName(self, 'portal_membership')
+        mtool = getToolByName(self.context, 'portal_membership')
         plone.protect.CheckAuthenticator(self.request)
-        plone.protect.PostOnly(self.request)
         value = self.request.get('value', '')
         if not value:
-            return
+            value = ""
         if not mtool.getMemberById(value):
+            asdf
             return
-        for part in self.context.objectValues("SamplePartition"):
-            if not part.getSampler():
-                part.setSampler(value)
+        self.context.setSampler(value)
         return "ok"

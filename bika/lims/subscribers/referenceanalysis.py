@@ -22,7 +22,7 @@ def AfterTransitionEventHandler(analysis, event):
             analysis.REQUEST['workflow_attach_skiplist'] = [analysis.UID(), ]
         else:
             if analysis.UID() in analysis.REQUEST['workflow_attach_skiplist']:
-                logger.info("ref Skip")
+                ##logger.info("ref Skip")
                 return
             else:
                 analysis.REQUEST["workflow_attach_skiplist"].append(analysis.UID())
@@ -58,7 +58,7 @@ def AfterTransitionEventHandler(analysis, event):
         analysis.REQUEST['workflow_skiplist'] = [analysis.UID(), ]
     else:
         if analysis.UID() in analysis.REQUEST['workflow_skiplist']:
-            logger.info("ref Skip")
+            ##logger.info("ref Skip")
             return
         else:
             analysis.REQUEST["workflow_skiplist"].append(analysis.UID())

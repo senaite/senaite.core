@@ -1,3 +1,5 @@
+from zope.i18n import translate
+from bika.lims.permissions import ManageClients
 from AccessControl import getSecurityManager
 from DateTime import DateTime
 from Products.Archetypes.config import REFERENCE_CATALOG
@@ -10,6 +12,7 @@ from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.browser.bika_listing import WorkflowAction
 from bika.lims.browser.publish import Publish
 from bika.lims.browser.sample import SamplesView
+from bika.lims.permissions import AddARProfile
 from bika.lims.utils import TimeOrDate
 from operator import itemgetter
 from plone.app.content.browser.interfaces import IFolderContentsView
@@ -18,8 +21,7 @@ from zope.interface import implements
 import plone
 
 class ClientWorkflowAction(WorkflowAction):
-    """ Workflow actions taken in AnalysisRequest context
-        This function is called to do the worflow actions
+    """ This function is called to do the worflow actions
         that apply to objects transitioned directly
         from Client views
     """
@@ -41,9 +43,7 @@ class ClientWorkflowAction(WorkflowAction):
             # workflow_action_button is the action name specified in
             # the bika_listing_view table buttons.
             came_from = "workflow_action_button"
-            action = form.get(came_from, '')
-            # XXX some browsers agree better than others about our JS ideas.
-            if type(action) == type([]): action = action[0]
+            action = form.get('workflow_action_id', '')
             if not action:
                 if self.destination_url == "":
                     self.destination_url = self.request.get_header("referer",
@@ -51,7 +51,60 @@ class ClientWorkflowAction(WorkflowAction):
                 self.request.response.redirect(self.destination_url)
                 return
 
-        if action in ('prepublish', 'publish', 'prepublish'):
+        if action == "sampled":
+            objects = WorkflowAction._get_selected_items(self)
+            transitioned = {'to_be_preserved':[], 'sample_due':[]}
+            for obj_uid, obj in objects.items():
+                # can't transition inactive items
+                if workflow.getInfoFor(obj, 'inactive_state', '') == 'inactive':
+                    continue
+
+                # grab this object's Sampler and DateSampled from the form
+                Sampler = form['getSampler'][0][obj_uid].strip()
+                DateSampled = form['getDateSampled'][0][obj_uid].strip()
+
+                # write them to the sample
+                sample = obj.getSample()
+                sample.edit(Sampler = Sampler and Sampler or '',
+                            DateSampled = DateSampled and DateTime(DateSampled) or '')
+
+                # transition the object if both values are present
+                if Sampler and DateSampled:
+                    workflow.doActionFor(obj, 'sampled')
+                    new_state = workflow.getInfoFor(obj, 'review_state')
+                    transitioned[new_state].append(obj.Title())
+
+            message = None
+            for state in transitioned:
+                t = transitioned[state]
+                if len(t) > 1:
+                    if state == 'to_be_preserved':
+                        message = _('${items} are waiting for preservation.',
+                                    mapping = {'items': ', '.join(t)})
+                    else:
+                        message = _('${items} are waiting to be received.',
+                                    mapping = {'items': ', '.join(t)})
+                    message = self.context.translate(message)
+                    self.context.plone_utils.addPortalMessage(message, 'info')
+                elif len(t) == 1:
+                    if state == 'to_be_preserved':
+                        message = _('${item} is waiting for preservation.',
+                                    mapping = {'item': ', '.join(t)})
+                    else:
+                        message = _('${item} is waiting to be received.',
+                                    mapping = {'item': ', '.join(t)})
+                    message = self.context.translate(message)
+                    self.context.plone_utils.addPortalMessage(message, 'info')
+            if not message:
+                message = _('No changes made.')
+                message = self.context.translate(message)
+                self.context.plone_utils.addPortalMessage(message, 'info')
+            self.destination_url = self.request.get_header("referer",
+                                   self.context.absolute_url())
+            self.request.response.redirect(self.destination_url)
+
+
+        if action in ('prepublish', 'publish', 'republish'):
             # We pass a list of AR objects to Publish.
             # it returns a list of AR IDs which were actually published.
             ARs_to_publish = []
@@ -113,7 +166,6 @@ class ClientAnalysisRequestsView(AnalysisRequestsView):
             self.context.plone_utils.addPortalMessage(translate(msg))
         else:
             # add actions enabled only for active clients
-            # XXX subtractive workflow for these kinds of perms.
             self.context_actions = {}
             if wf.getInfoFor(self.context, 'inactive_state', '') == 'active':
                 self.context_actions[translate(_('Add'))] = {
@@ -206,10 +258,8 @@ class ClientARProfilesView(BikaListingView):
                                        "level" : 0 }
                               }
         bsc = getToolByName(context, 'bika_setup_catalog')
+        wf = getToolByName(context, 'portal_workflow')
         self.contentsMethod = bsc
-        self.context_actions = {_('Add'):
-                                {'url': 'createObject?type_name=ARProfile',
-                                 'icon': '++resource++bika.lims.images/add.png'}}
         self.show_sort_column = False
         self.show_select_row = False
         self.show_select_column = True
@@ -217,6 +267,14 @@ class ClientARProfilesView(BikaListingView):
         self.icon = "++resource++bika.lims.images/arprofile_big.png"
         self.title = _("Analysis Request Profiles")
         self.description = ""
+
+        self.context_actions = {}
+        checkPermission = self.context.portal_membership.checkPermission
+        if checkPermission(AddARProfile, self.context):
+            if wf.getInfoFor(self.context, 'inactive_state', '') == 'active':
+                self.context_actions[translate(_('Add'))] = \
+                    {'url': 'createObject?type_name=ARProfile',
+                     'icon': '++resource++bika.lims.images/add.png'}
 
         self.columns = {
             'title': {'title': _('Title'),
@@ -245,18 +303,26 @@ class ClientAnalysisSpecsView(BikaListingView):
     def __init__(self, context, request):
         super(ClientAnalysisSpecsView, self).__init__(context, request)
         bsc = getToolByName(context, 'bika_setup_catalog')
+        wf = getToolByName(context, 'portal_workflow')
         self.contentFilter = {'portal_type': 'AnalysisSpec',
                               'getClientUID': context.UID(),
                               'path': {"query": "/".join(context.getPhysicalPath()),
                                        "level" : 0 }
                               }
         self.contentsMethod = bsc
-        self.context_actions = {_('Add'):
-                                {'url': 'createObject?type_name=AnalysisSpec',
-                                 'icon': '++resource++bika.lims.images/add.png'},
-                                _('Set to lab defaults'):
-                                {'url': 'set_to_lab_defaults',
-                                 'icon': '++resource++bika.lims.images/analysisspec.png'}}
+
+        checkPermission = self.context.portal_membership.checkPermission
+        self.context_actions = {}
+        if wf.getInfoFor(self.context, 'inactive_state', '') == 'active':
+            if checkPermission(AddARProfile, self.context):
+                self.context_actions[translate(_('Add'))] = \
+                    {'url': 'createObject?type_name=AnalysisSpec',
+                     'icon': '++resource++bika.lims.images/add.png'}
+            if checkPermission(ManageClients, self.context):
+                self.context_actions[translate(_('Set to lab defaults'))] = \
+                    {'url': 'set_to_lab_defaults',
+                     'icon': '++resource++bika.lims.images/analysisspec.png'}
+
         self.show_sort_column = False
         self.show_select_row = False
         self.show_select_column = True

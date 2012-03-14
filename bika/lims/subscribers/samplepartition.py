@@ -13,7 +13,7 @@ def AfterTransitionEventHandler(part, event):
         part.REQUEST['workflow_skiplist'] = [part.UID(), ]
     else:
         if part.UID() in part.REQUEST['workflow_skiplist']:
-            logger.info("part Skip")
+            ##logger.info("part Skip")
             return
         else:
             part.REQUEST["workflow_skiplist"].append(part.UID())
@@ -54,18 +54,24 @@ def AfterTransitionEventHandler(part, event):
 
     elif event.transition.id == "reinstate":
         part.reindexObject(idxs = ["cancellation_state", ])
+        sample_c_state = workflow.getInfoFor(sample, 'cancellation_state')
 
-        # Re-instate all sample partitions
-        for sp in [sp for sp in parts
-                   if workflow.getInfoFor(sp, 'cancellation_state') == 'cancelled']:
-            workflow.doActionFor(sp, 'reinstate')
+        # if all sibling partitions are active, activate sample
+        if not sample.UID() in part.REQUEST['workflow_skiplist']:
+            cancelled = [sp for sp in sample.objectValues("SamplePartition")
+                         if workflow.getInfoFor(sp, 'cancellation_state') == 'cancelled']
+            if sample_c_state == 'cancelled' and not cancelled:
+                workflow.doActionFor(sample, 'reinstate')
 
     elif event.transition.id == "cancel":
-        sample.reindexObject(idxs = ["cancellation_state", ])
+        part.reindexObject(idxs = ["cancellation_state", ])
+        sample_c_state = workflow.getInfoFor(sample, 'cancellation_state')
 
-        # Re-instate all sample partitions
-        for sp in [sp for sp in parts
-                   if workflow.getInfoFor(sp, 'cancellation_state') == 'cancelled']:
-            workflow.doActionFor(sp, 'reinstate')
+        # if all sibling partitions are active, activate sample
+        if not sample.UID() in part.REQUEST['workflow_skiplist']:
+            active = [sp for sp in sample.objectValues("SamplePartition")
+                      if workflow.getInfoFor(sp, 'cancellation_state') == 'active']
+            if sample_c_state == 'active' and not active:
+                workflow.doActionFor(sample, 'cancel')
 
     return

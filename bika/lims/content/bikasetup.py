@@ -260,8 +260,8 @@ schema = BikaFolderSchema.copy() + Schema((
         default = False,
         widget = BooleanWidget(
             label = _("Use external ID server"),
-            description = _("Check this if you want to use a seperate ID server. "
-                            "Prefixes are configurable seperately in each Bika site.")
+            description = _("Check this if you want to use a separate ID server. "
+                            "Prefixes are configurable separately in each Bika site.")
         ),
     ),
     StringField('IDServerURL',

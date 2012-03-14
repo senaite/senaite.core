@@ -35,23 +35,12 @@ schema = BikaSchema.copy() + Schema((
         required=0,
         multiValued=1,
     ),
-    DateTimeField('DateSampled',
-    ),
-    StringField('Sampler',
-        searchable=True
-    ),
     DateTimeField('DatePreserved',
     ),
     StringField('PreservedByUser',
         searchable=True
     ),
     DurationField('RetentionPeriod',
-    ),
-    ComputedField('ExpiryDate',
-        expression = 'context.expiry_date()',
-        widget = ComputedWidget(
-            visible = False,
-        ),
     ),
     ComputedField('DisposalDate',
         expression = 'context.disposal_date()',
@@ -130,10 +119,5 @@ class SamplePartition(BaseContent, HistoryAwareMixin):
             minutes = rp['minutes'] and int(rp['minutes']) or 0)
         dis_date = DateSampled and dt2DT(DT2dt(DateSampled) + td) or None
         return dis_date
-
-    security.declarePublic('expiry_date')
-    def expiry_date(self):
-        """ return expiry date """
-        return 0
 
 registerType(SamplePartition, PROJECTNAME)

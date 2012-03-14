@@ -91,6 +91,11 @@ schema = BikaSchema.copy() + Schema((
             visible = False,
         ),
     ),
+    DateTimeField('DateSampled',
+    ),
+    StringField('Sampler',
+        searchable=True
+    ),
     DateTimeField('SamplingDate',
         widget = DateTimeWidget(
             label = _("Sampling Date"),
@@ -138,15 +143,21 @@ schema = BikaSchema.copy() + Schema((
             label = _("Composite"),
         ),
     ),
+    DateTimeField('DateExpired',
+        widget = DateTimeWidget(
+            label = _("Date Expired"),
+            visible = {'edit':'hidden'},
+        ),
+    ),
     ComputedField('DisposalDate',
         expression = 'context.disposal_date()',
         widget = ComputedWidget(
             visible = False,
         ),
     ),
-    DateTimeField('DateExpired',
+    DateTimeField('DateDisposed',
         widget = DateTimeWidget(
-            label = _("Date Expired"),
+            label = _("Date Disposed"),
             visible = {'edit':'hidden'},
         ),
     ),
@@ -192,43 +203,6 @@ class Sample(BaseFolder, HistoryAwareMixin):
                 sp_uid = samplepoints[0].UID
         return self.Schema()['SamplePoint'].set(self, sp_uid)
 
-    def getDateSampled(self):
-        """ Return the dates that our Partitions were sampled.
-        """
-        props = getToolByName(self, 'portal_properties').site_properties
-        localTimeFormat = props.getProperty('localTimeFormat')
-        dates = dict(
-            [(p.getDateSampled().asdatetime().strftime(localTimeFormat), p.id)
-             for p in self.objectValues("SamplePartition")
-             if p.getDateSampled()])
-        return ", ".join(dates.keys())
-
-    def getSampler(self):
-        """ Return the users recorded as sampling our Partitions.
-        """
-        users = [(pretty_user_name_or_id(self, p.getSampler()), p.id)
-                 for p in self.objectValues("SamplePartition")
-                 if p.getSampler()]
-        users = dict(users)
-        return ", ".join(users.keys())
-
-    def getDatePreserved(self):
-        """ Return the dates that our Partitions were preserved.
-        """
-        dates = dict([(p.getDatePreserved(), p.id)
-                      for p in self.objectValues("SamplePartition")
-                      if p.getDatePreserved()])
-        return ", ".join(dates.keys())
-
-    def getPreserver(self):
-        """ Return the users recorded as Preserving our Partitions.
-        """
-        users = [(pretty_user_name_or_id(self, p.getPreserver()), p.id)
-                      for p in self.objectValues("SamplePartition")
-                      if p.getPreserver()]
-        users = dict(users)
-        return ", ".join(users.keys())
-
     security.declarePublic('getAnalysisRequests')
     def getAnalysisRequests(self):
         tool = getToolByName(self, REFERENCE_CATALOG)
@@ -243,13 +217,12 @@ class Sample(BaseFolder, HistoryAwareMixin):
         return ars
 
     security.declarePublic('getAnalyses')
-    def getAnalyses(self, full_objects=True):
-        """ return list of analyses for all partitions in this sample
-        ignore full_objects
+    def getAnalyses(self, *args, **kwargs):
+        """ return list of all analyses against this sample
         """
         analyses = []
-        for part in self.objectValues('SamplePartition'):
-            analyses += part.getAnalyses()
+        for ar in self.getAnalysisRequests():
+            analyses += ar.getAnalyses(**kwargs)
         return analyses
 
     def disposal_date(self):
@@ -272,9 +245,10 @@ class Sample(BaseFolder, HistoryAwareMixin):
         ARs = self.getBackReferences("AnalysisRequestSample")
         ar_ids = [AR.id for AR in ARs]
         ar_ids.sort()
-        if ar_ids[-1] == 'tmp':
+        try:
+            last_ar_number = int(ar_ids[-1].split("-")[-1])
+        except ValueError:
             return 1
-        last_ar_number = int(ar_ids[-1].split("-")[-1])
         return last_ar_number
 
 atapi.registerType(Sample, PROJECTNAME)

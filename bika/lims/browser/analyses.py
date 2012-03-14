@@ -44,7 +44,9 @@ class AnalysesView(BikaListingView):
         self.columns = {
             'Service': {'title': _('Analysis')},
             'state_title': {'title': _('Status')},
-            'Result': {'title': _('Result')},
+            'Result': {'title': _('Result'),
+                       'input_width': '6',
+                       'input_class': 'ajax_calculate'},
             'ResultDM': {'title': _('Dry')},
             'Uncertainty': {'title': _('+-')},
             'retested': {'title': "<img src='++resource++bika.lims.images/retested.png' title='%s'/>" % _('Retested'),
@@ -75,13 +77,16 @@ class AnalysesView(BikaListingView):
         workflow = getToolByName(self.context, 'portal_workflow')
         portal = getToolByName(self.context, 'portal_url').getPortalObject()
         translate = self.context.translation_service.translate
-        can_edit_analyses = self.allow_edit and \
-            getSecurityManager().checkPermission(EditResults, self.context) and \
-            getSecurityManager().checkPermission(EditFieldResults, self.context)
+        checkPermission = getSecurityManager().checkPermission
+        if not self.allow_edit:
+            can_edit_analyses = False
+        else:
+            if self.contentFilter.get('getPointOfCapture', '') == 'field':
+                can_edit_analyses = checkPermission(EditFieldResults, self.context)
+            else:
+                can_edit_analyses = checkPermission(EditResults, self.context)
 
-        context_active = True
-        if not isActive(self.context):
-            context_active = False
+        context_active = isActive(self.context)
 
         items = super(AnalysesView, self).folderitems(full_objects = True)
 
@@ -316,7 +321,9 @@ class AnalysesView(BikaListingView):
         # add InterimFields keys to columns
         for col_id in interim_keys:
             if col_id not in self.columns:
-                self.columns[col_id] = {'title': self.interim_columns[col_id]}
+                self.columns[col_id] = {'title': self.interim_columns[col_id],
+                                        'input_width': '6',
+                                        'input_class': 'ajax_calculate'}
 
         if can_edit_analyses:
             new_states = []

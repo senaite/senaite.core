@@ -931,5 +931,5 @@ class LoadSetupData(BrowserView):
                        'sampletype': sampletype.UID(),
                        'container':self.containers[row['Container']].UID(),
                        'preservation':self.preservations[row['Preservation']].UID(),
-                       'seperate':row['Seperate']})
+                       'separate':row['Separate']})
             service.setPartitionSetup(ps)

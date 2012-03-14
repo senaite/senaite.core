@@ -2,7 +2,7 @@ jQuery( function($) {
 
 $(document).ready(function(){
 
-	$(".listing_string_entry,.listing_select_entry").live('change', function(){
+	$(".ajax_calculate").live('change', function(){
 		form_id = $(this).parents("form").attr("id");
 		td = $(this).parents('td');
 		uid = $(this).attr('uid');

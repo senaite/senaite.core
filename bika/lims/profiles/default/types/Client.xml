@@ -59,7 +59,7 @@
          url_expr="string:${object_url}/samples"
          i18n:attributes="title"
          visible="True">
-  <permission value="BIKA: Manage Sample"/>
+  <permission value="BIKA: Manage Samples"/>
  </action>
 
  <action title="Analysis Requests"
@@ -95,7 +95,7 @@
          url_expr="string:${object_url}/arprofiles"
          i18n:attributes="title"
          visible="True">
-  <permission value="BIKA: Manage Analysis Requests"/>
+  <permission value="BIKA: Manage Clients"/>
  </action>
 
  <action title="Analysis Specs"
@@ -107,7 +107,7 @@
          url_expr="string:${object_url}/analysisspecs"
          i18n:attributes="title"
          visible="True">
-  <permission value="BIKA: Manage Analysis Requests"/>
+  <permission value="BIKA: Manage Clients"/>
  </action>
 
  <action title="Attachments"
@@ -131,7 +131,7 @@
          url_expr="string:${object_url}/orders"
          i18n:attributes="title"
          visible="False">
-  <permission value="BIKA: Manage Analysis Requests"/>
+  <permission value="BIKA: Manage Clients"/>
  </action>
 
 </object>

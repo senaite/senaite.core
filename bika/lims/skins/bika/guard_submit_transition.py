@@ -35,7 +35,7 @@ if context.portal_type == "Analysis":
                     return False
     return True
 
-if context.portal_state == "AnalysisRequest":
+if context.portal_type == "AnalysisRequest":
     # Only transition to 'attachment_due' if all analyses are at least there.
     has_analyses = False
     for a in context.objectValues('Analysis'):

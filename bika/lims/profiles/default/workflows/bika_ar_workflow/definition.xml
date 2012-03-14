@@ -36,7 +36,6 @@
     <permission-map name="BIKA: Edit Field Results" acquired="False">
         <permission-role>Manager</permission-role>
         <permission-role>LabManager</permission-role>
-        <permission-role>Analyst</permission-role>
         <permission-role>LabClerk</permission-role>
         <permission-role>Sampler</permission-role>
     </permission-map>
@@ -82,6 +81,7 @@
         <permission-role>LabManager</permission-role>
         <permission-role>Analyst</permission-role>
         <permission-role>LabClerk</permission-role>
+        <permission-role>Sampler</permission-role>
     </permission-map>
     <permission-map name="BIKA: Sample Sample" acquired="False">
     </permission-map>
@@ -99,7 +99,6 @@
     <permission-map name="BIKA: Cancel and reinstate" acquired="False">
         <permission-role>Manager</permission-role>
         <permission-role>LabManager</permission-role>
-        <permission-role>Owner</permission-role>
         <permission-role>LabClerk</permission-role>
     </permission-map>
 </state>
@@ -119,6 +118,7 @@
         <permission-role>LabManager</permission-role>
         <permission-role>Analyst</permission-role>
         <permission-role>LabClerk</permission-role>
+        <permission-role>Sampler</permission-role>
     </permission-map>
     <permission-map name="BIKA: Sample Sample" acquired="False">
     </permission-map>
@@ -161,6 +161,7 @@
   <permission-map name="BIKA: Cancel and reinstate" acquired="False">
    <permission-role>Manager</permission-role>
    <permission-role>LabManager</permission-role>
+   <permission-role>LabClerk</permission-role>
   </permission-map>
  </state>
 
@@ -185,6 +186,7 @@
   <permission-map name="BIKA: Cancel and reinstate" acquired="False">
    <permission-role>Manager</permission-role>
    <permission-role>LabManager</permission-role>
+   <permission-role>LabClerk</permission-role>
   </permission-map>
  </state>
 
@@ -209,6 +211,7 @@
   <permission-map name="BIKA: Cancel and reinstate" acquired="False">
    <permission-role>Manager</permission-role>
    <permission-role>LabManager</permission-role>
+   <permission-role>LabClerk</permission-role>
   </permission-map>
  </state>
 
@@ -302,7 +305,7 @@
              after_script="">
   <description i18n:translate=""></description>
   <guard>
-   <guard-expression>python:here.guard_auto_no_preservation_required()</guard-expression>
+   <guard-expression>python:not here.guard_auto_preservation_required()</guard-expression>
   </guard>
  </transition>
 

@@ -1,3 +1,5 @@
+from bika.lims.utils import getUsers
+from bika.lims.permissions import SampleSample
 import App
 from AccessControl import getSecurityManager
 from DateTime import DateTime
@@ -418,8 +420,9 @@ class ajaxCalculateParts():
         formvalues = json.loads(self.request['formvalues'])
 
         def info(msg):
-            if App.config.getConfiguration().debug_mode:
-                logger.info(msg)
+            #if App.config.getConfiguration().debug_mode:
+            #    logger.info(msg)
+            pass
 
         parts = {}
         for col in formvalues.keys():
@@ -1368,6 +1371,8 @@ class AnalysisRequestsView(BikaListingView):
 
         translate = self.context.translation_service.translate
 
+        self.allow_edit = True
+
         self.show_sort_column = False
         self.show_select_row = False
         self.show_select_column = True
@@ -1398,8 +1403,12 @@ class AnalysisRequestsView(BikaListingView):
                                     'toggle': False},
             'SamplingDate': {'title': _('Sampling Date'),
                              'toggle': True},
-            'DateSampled': {'title': _('Date Sampled'),
-                            'toggle': True},
+            'getDateSampled': {'title': _('Date Sampled'),
+                               'toggle': True,
+                               'input_class': 'datepicker',
+                               'input_width': '10'},
+            'getSampler': {'title': _('Sampler'),
+                           'toggle': True},
             'getDateReceived': {'title': _('Date Received'),
                                 'index': 'getDateReceived',
                                 'toggle': False},
@@ -1412,7 +1421,9 @@ class AnalysisRequestsView(BikaListingView):
         self.review_states = [
             {'id':'all',
              'title': _('All'),
-             'transitions': [{'id':'receive'},
+             'transitions': [{'id':'sampled'},
+                             {'id':'preserved'},
+                             {'id':'receive'},
                              {'id':'retract'},
                              {'id':'verify'},
                              {'id':'prepublish'},
@@ -1428,9 +1439,46 @@ class AnalysisRequestsView(BikaListingView):
                         'getSampleTypeTitle',
                         'getSamplePointTitle',
                         'SamplingDate',
-                        'DateSampled',
+                        'getDateSampled',
+                        'getSampler',
                         'getDateReceived',
                         'state_title']},
+##            {'id':'to_be_sampled',
+##             'title': _('To Be Sampled'),
+##             'contentFilter': {'review_state': 'to_be_sampled',
+##                               'sort_on':'id',
+##                               'sort_order': 'reverse'},
+##             'transitions': [{'id':'sampled'},
+##                             {'id':'cancel'},
+##                             {'id':'reinstate'}],
+##             'columns':['getRequestID',
+##                        'Client',
+##                        'getClientOrderNumber',
+##                        'getClientReference',
+##                        'getClientSampleID',
+##                        'getSampleTypeTitle',
+##                        'getSamplePointTitle',
+##                        'SamplingDate',
+##                        'getDateSampled',
+##                        'getSampler']},
+##            {'id':'to_be_preserved',
+##             'title': _('To Be Preserved'),
+##             'contentFilter': {'review_state': 'to_be_preserved',
+##                               'sort_on':'id',
+##                               'sort_order': 'reverse'},
+##             'transitions': [{'id':'preserved'},
+##                             {'id':'cancel'},
+##                             {'id':'reinstate'}],
+##             'columns':['getRequestID',
+##                        'Client',
+##                        'getClientOrderNumber',
+##                        'getClientReference',
+##                        'getClientSampleID',
+##                        'getSampleTypeTitle',
+##                        'getSamplePointTitle',
+##                        'SamplingDate',
+##                        'getDateSampled',
+##                        'getSampler']},
             {'id':'sample_due',
              'title': _('Due'),
              'contentFilter': {'review_state': 'sample_due',
@@ -1444,7 +1492,8 @@ class AnalysisRequestsView(BikaListingView):
                         'getClientOrderNumber',
                         'getClientReference',
                         'getClientSampleID',
-                        'SamplingDate',
+                        'getDateSampled',
+                        'getSampler',
                         'getSampleTypeTitle',
                         'getSamplePointTitle']},
             {'id':'sample_received',
@@ -1462,7 +1511,8 @@ class AnalysisRequestsView(BikaListingView):
                         'getClientSampleID',
                         'getSampleTypeTitle',
                         'getSamplePointTitle',
-                        'DateSampled',
+                        'getDateSampled',
+                        'getSampler',
                         'getDateReceived']},
             {'id':'to_be_verified',
              'title': _('To be verified'),
@@ -1481,7 +1531,8 @@ class AnalysisRequestsView(BikaListingView):
                         'getClientSampleID',
                         'getSampleTypeTitle',
                         'getSamplePointTitle',
-                        'DateSampled',
+                        'getDateSampled',
+                        'getSampler',
                         'getDateReceived']},
             {'id':'verified',
              'title': _('Verified'),
@@ -1496,7 +1547,8 @@ class AnalysisRequestsView(BikaListingView):
                         'getClientSampleID',
                         'getSampleTypeTitle',
                         'getSamplePointTitle',
-                        'DateSampled',
+                        'getDateSampled',
+                        'getSampler',
                         'getDateReceived']},
             {'id':'published',
              'title': _('Published'),
@@ -1510,7 +1562,8 @@ class AnalysisRequestsView(BikaListingView):
                         'getClientSampleID',
                         'getSampleTypeTitle',
                         'getSamplePointTitle',
-                        'DateSampled',
+                        'getDateSampled',
+                        'getSampler',
                         'getDateReceived',
                         'getDatePublished']},
             {'id':'cancelled',
@@ -1530,7 +1583,8 @@ class AnalysisRequestsView(BikaListingView):
                         'getClientSampleID',
                         'getSampleTypeTitle',
                         'getSamplePointTitle',
-                        'DateSampled',
+                        'getDateSampled',
+                        'getSampler',
                         'getDateReceived',
                         'getDatePublished',
                         'state_title']},
@@ -1557,7 +1611,8 @@ class AnalysisRequestsView(BikaListingView):
                         'getClientSampleID',
                         'getSampleTypeTitle',
                         'getSamplePointTitle',
-                        'DateSampled',
+                        'getDateSampled',
+                        'getSampler',
                         'getDateReceived',
                         'state_title']},
             {'id':'unassigned',
@@ -1585,7 +1640,8 @@ class AnalysisRequestsView(BikaListingView):
                         'getSampleTypeTitle',
                         'getSamplePointTitle',
                         'SamplingDate',
-                        'DateSampled',
+                        'getDateSampled',
+                        'getSampler',
                         'getDateReceived',
                         'state_title']},
             ]
@@ -1599,6 +1655,7 @@ class AnalysisRequestsView(BikaListingView):
         for x in range(len(items)):
             if not items[x].has_key('obj'): continue
             obj = items[x]['obj']
+            sample = obj.getSample()
 
             if getSecurityManager().checkPermission(EditResults, obj):
                 url = obj.absolute_url() + "/manage_results"
@@ -1615,8 +1672,11 @@ class AnalysisRequestsView(BikaListingView):
 
             samplingdate = obj.getSample().getSamplingDate()
             items[x]['SamplingDate'] = TimeOrDate(self.context, samplingdate, long_format = 0)
-            datesampled = TimeOrDate(self.context, obj.getSample().getDateSampled())
-            items[x]['DateSampled'] = TimeOrDate(self.context, datesampled, long_format = 0)
+            datesampled = TimeOrDate(self.context, sample.getDateSampled())
+            items[x]['getDateSampled'] = TimeOrDate(self.context, datesampled, long_format = 0)
+            sampler = sample.getSampler()
+            items[x]['getSampler'] = sampler
+
             items[x]['getDateReceived'] = TimeOrDate(self.context, obj.getDateReceived())
             items[x]['getDatePublished'] =  TimeOrDate(self.context, obj.getDatePublished())
 
@@ -1626,7 +1686,6 @@ class AnalysisRequestsView(BikaListingView):
                     "<img src='++resource++bika.lims.images/worksheet.png' title='%s'/>" % \
                     translate(_("All analyses assigned"))
 
-            sample = obj.getSample()
             after_icons = "<a href='%s'><img src='++resource++bika.lims.images/sample.png' title='%s: %s'></a>" % \
                         (sample.absolute_url(), \
                          translate(_("Sample")), sample.Title())
@@ -1641,5 +1700,17 @@ class AnalysisRequestsView(BikaListingView):
                     translate(_("Future dated sample"))
             if after_icons:
                 items[x]['after']['getRequestID'] = after_icons
+
+            # sampling workflow - inline edits for Sampler and Date Sampled
+            checkPermission = self.context.portal_membership.checkPermission
+            if checkPermission(SampleSample, obj):
+                items[x]['required'] = ['getSampler', 'getDateSampled']
+                items[x]['allow_edit'] = ['getSampler', 'getDateSampled']
+                users = getUsers(self.context,
+                                 ['Manager', 'LabManager', 'Sampler'],
+                                 allow_empty=True)
+                users = [({'ResultValue': u, 'ResultText': users.getValue(u)})
+                         for u in users]
+                items[x]['choices'] = {'getSampler': users}
 
         return items

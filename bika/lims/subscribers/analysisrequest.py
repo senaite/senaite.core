@@ -8,6 +8,8 @@ import transaction
 
 def AfterTransitionEventHandler(ar, event):
 
+    workflow = getToolByName(ar, 'portal_workflow')
+
     # creation doesn't have a 'transition'
     if not event.transition:
         return
@@ -18,7 +20,7 @@ def AfterTransitionEventHandler(ar, event):
             ar.REQUEST['workflow_attach_skiplist'] = [ar.UID(), ]
         else:
             if ar.UID() in ar.REQUEST['workflow_attach_skiplist']:
-                logger.info("AR Skip")
+                ##logger.info("AR Skip")
                 return
             else:
                 ar.REQUEST["workflow_attach_skiplist"].append(ar.UID())
@@ -33,7 +35,7 @@ def AfterTransitionEventHandler(ar, event):
         ar.REQUEST['workflow_skiplist'] = [ar.UID(), ]
     else:
         if ar.UID() in ar.REQUEST['workflow_skiplist']:
-            logger.info("AR Skip")
+            ##logger.info("AR Skip")
             return
         else:
             ar.REQUEST["workflow_skiplist"].append(ar.UID())

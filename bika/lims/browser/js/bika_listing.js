@@ -91,7 +91,7 @@ $(document).ready(function(){
 		$(form).attr("action", stored_form_action);
 	});
 
-	// select all (on this screen at least)
+	// select all (on this page at least)
 	$("input[id*='select_all']").live('click', function(){
 		form_id = $(this).parents("form").attr("id");
 		checked = $(this).attr("checked");
@@ -237,14 +237,27 @@ $(document).ready(function(){
 		return false;
 	});
 
-	// wait for all asynchronous requests to complete before allowing clicks
+	// Workflow Action button was clicked.
 	$('.workflow_action_button').live('click', function(event){
+
+		// wait for all asynchronous requests to complete before allowing clicks
 		if($.active > 0){
 			event.preventDefault();
 			$(this).ajaxStop(function(){
 				$(this).click();
 			});
 		}
+
+		// The submit buttons would like to put the translated action title
+		// into the request.  Insert the real action name here to prevent the
+		// WorkflowAction handler from having to look it up (painful/slow).
+		form = $(this).parents('form');
+		form_id = $(form).attr('id');
+		$(form).append("<input type='hidden' name='workflow_action_id' value='"+$(this).attr('transition')+"'>");
+
+		$(form).submit();
+
+
 	});
 
 	function positionTooltip(event){
@@ -335,7 +348,7 @@ $(document).ready(function(){
 				toggle_cols.push(i);
 			});
 			cookie[form_id] = toggle_cols;
-			$.cookie('toggle_cols', $.toJSON(cookie), { expires: 7 });
+			$.cookie('toggle_cols', $.toJSON(cookie), { expires: 365, path: window.location.href });
 		} else {
 			cookie = $.cookie("toggle_cols");
 			cookie = $.parseJSON(cookie);
@@ -368,7 +381,7 @@ $(document).ready(function(){
 				}
 			}
 			cookie[form_id] = toggle_cols;
-			$.cookie('toggle_cols', $.toJSON(cookie), { expires: 7 });
+			$.cookie('toggle_cols', $.toJSON(cookie), { expires: 365, path: window.location.href });
 		}
 		stored_form_action = $(form).attr("action");
 		$(form).attr("action", window.location.href);

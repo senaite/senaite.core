@@ -4,35 +4,44 @@
     xmlns:i18n="http://namespaces.zope.org/i18n"
     i18n_domain="bika">
 
+    <!-- Workflow action button clicked -->
+    <browser:page
+      for="bika.lims.interfaces.ISamplesFolder"
+      name="workflow_action"
+      class="bika.lims.browser.sample.SampleWorkflowAction"
+      permission="zope.Public"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
     <browser:page
       for="bika.lims.interfaces.ISamplesFolder"
       name="base_view"
       class="bika.lims.browser.sample.SamplesView"
-      permission="bika.lims.ManageSample"
+      permission="bika.lims.ManageSamples"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
     <browser:page
       for="bika.lims.interfaces.ISample"
       name="base_view"
-      class="bika.lims.browser.sample.SampleViewView"
-      permission="zope2.View"
+      class="bika.lims.browser.sample.SampleView"
+      permission="bika.lims.ManageSamples"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
     <browser:page
       for="bika.lims.interfaces.ISample"
-      name="setDateSampled"
+      name="set_datesampled"
       class="bika.lims.browser.sample.ajaxSetDateSampled"
-      permission="zope2.View"
+      permission="zope.Public"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
     <browser:page
       for="bika.lims.interfaces.ISample"
-      name="setSampler"
+      name="set_sampler"
       class="bika.lims.browser.sample.ajaxSetSampler"
-      permission="zope2.View"
+      permission="zope.Public"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
