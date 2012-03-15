@@ -37,7 +37,7 @@ schema = BikaSchema.copy() + Schema((
     ),
     DateTimeField('DatePreserved',
     ),
-    StringField('PreservedByUser',
+    StringField('Preserver',
         searchable=True
     ),
     DurationField('RetentionPeriod',
@@ -46,17 +46,6 @@ schema = BikaSchema.copy() + Schema((
         expression = 'context.disposal_date()',
         widget = ComputedWidget(
             visible = False,
-        ),
-    ),
-    TextField('Remarks',
-        searchable = True,
-        default_content_type = 'text/x-web-intelligent',
-        allowable_content_types = ('text/x-web-intelligent',),
-        default_output_type="text/html",
-        widget = TextAreaWidget(
-            macro = "bika_widgets/remarks",
-            label = _('Remarks'),
-            append_only = True,
         ),
     ),
 ),
@@ -103,20 +92,19 @@ class SamplePartition(BaseContent, HistoryAwareMixin):
 
         # fallback to sampletype retention period
         st_retention = self.aq_parent.getSampleType().getRetentionPeriod()
+
+        # but prefer retention period from preservation
         pres = self.getPreservation()
         pres_retention = pres and pres.getRetentionPeriod() or None
 
-        #XXX
-        part_retention = None
-
         rp = pres_retention and pres_retention or None
         rp = rp or st_retention
-
 
         td = timedelta(
             days = rp['days'] and int(rp['days']) or 0,
             hours = rp['hours'] and int(rp['hours']) or 0,
             minutes = rp['minutes'] and int(rp['minutes']) or 0)
+
         dis_date = DateSampled and dt2DT(DT2dt(DateSampled) + td) or None
         return dis_date
 

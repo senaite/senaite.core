@@ -153,6 +153,7 @@ class BikaListingView(BrowserView):
     show_select_all_checkbox = True
     show_sort_column = False
     show_workflow_action_buttons = True
+    show_column_toggles = True
     categories = []
     # setting pagesize to 1000 specifically disables the batch sizez dropdown
     pagesize = 25

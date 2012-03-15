@@ -7,9 +7,9 @@ $(document).ready(function(){
 		// set alternating odd and even classes if table has setoddeven class
 		$.each($("table.setoddeven tbody.item-listing-tbody tr"), function(i,tr){
 			if (i%2 == 0) {
-				$(tr).addClass('odd');
-			} else {
 				$(tr).addClass('even');
+			} else {
+				$(tr).addClass('odd');
 			}
 		});
 	}
@@ -277,7 +277,9 @@ $(document).ready(function(){
 		form_id = $(this).parents("form").attr("id");
 		base_url = window.location.href;
 		toggle_cols = $("#" + form_id + "_toggle_cols").val();
-		if (toggle_cols == ""){
+		if (toggle_cols == ""
+		    || toggle_cols == undefined
+			|| toggle_cols == null){
 			return false;
 		}
 		sorted_toggle_cols = [];

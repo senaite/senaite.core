@@ -254,9 +254,8 @@ class LoadSetupData(BrowserView):
                 group.addMember(unicode(row['Username']))
             # If user is in LabManagers, add Owner local role on clients folder
             if 'LabManager' in group_ids:
-                portal_membership.setLocalRoles(obj = self.context.clients,
-                                                member_ids = (unicode(row['Username']),),
-                                                member_role = 'Owner')
+                self.context.clients.manage_setLocalRoles(unicode(row['Username']),
+                                                          ['Owner',] )
 
     def load_lab_contacts(self, sheet):
         self.lab_contacts = []
@@ -402,11 +401,8 @@ class LoadSetupData(BrowserView):
                     logger.info("username %s is already in use" % unicode(row['Username']))
                     raise
                 # Give contact's user an Owner local role on their client
-                pm = getToolByName(contact, 'portal_membership')
-                pm.setLocalRoles(obj = contact.aq_parent,
-                                 member_ids = [unicode(row['Username']),],
-                                 member_role = 'Owner')
-
+                contact.aq_parent.manage_setLocalRoles(unicode(row['Username']),
+                                                       ["Owner",])
                 # add user to Clients group
                 group = self.context.portal_groups.getGroupById('Clients')
                 group.addMember(row['Username'])

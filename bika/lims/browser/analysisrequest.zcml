@@ -13,7 +13,17 @@
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
-    <!-- Workflow action button clicked -->
+    <!-- Workflow action button clicked in AR folder list-->
+    <browser:page
+      for="bika.lims.interfaces.IAnalysisRequestsFolder"
+      name="workflow_action"
+      class="bika.lims.browser.client.ClientWorkflowAction"
+      permission="zope.Public"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
+
+    <!-- Workflow action button clicked inside AR -->
     <browser:page
       for="bika.lims.interfaces.IAnalysisRequest"
       name="workflow_action"

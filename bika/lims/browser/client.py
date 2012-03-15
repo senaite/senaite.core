@@ -1,3 +1,4 @@
+from bika.lims.permissions import SampleSample
 from zope.i18n import translate
 from bika.lims.permissions import ManageClients
 from AccessControl import getSecurityManager
@@ -22,8 +23,11 @@ import plone
 
 class ClientWorkflowAction(WorkflowAction):
     """ This function is called to do the worflow actions
-        that apply to objects transitioned directly
-        from Client views
+        that apply to objects transitioned directly from Client views
+
+        The main lab 'analysisrequests' and 'samples' views also have
+        workflow_action urls bound to this handler.
+
     """
 
     def __call__(self):
@@ -33,6 +37,7 @@ class ClientWorkflowAction(WorkflowAction):
         pc = getToolByName(self.context, 'portal_catalog')
         rc = getToolByName(self.context, REFERENCE_CATALOG)
         translate = self.context.translation_service.translate
+        checkPermission = self.context.portal_membership.checkPermission
 
         # use came_from to decide which UI action was clicked.
         # "workflow_action" is the action name specified in the
@@ -55,8 +60,14 @@ class ClientWorkflowAction(WorkflowAction):
             objects = WorkflowAction._get_selected_items(self)
             transitioned = {'to_be_preserved':[], 'sample_due':[]}
             for obj_uid, obj in objects.items():
+                if obj.portal_type == "AnalysisRequest":
+                    sample = obj.getSample()
+                else:
+                    sample = obj
                 # can't transition inactive items
-                if workflow.getInfoFor(obj, 'inactive_state', '') == 'inactive':
+                if workflow.getInfoFor(sample, 'inactive_state', '') == 'inactive':
+                    continue
+                if not checkPermission(SampleSample, sample):
                     continue
 
                 # grab this object's Sampler and DateSampled from the form
@@ -64,15 +75,14 @@ class ClientWorkflowAction(WorkflowAction):
                 DateSampled = form['getDateSampled'][0][obj_uid].strip()
 
                 # write them to the sample
-                sample = obj.getSample()
                 sample.edit(Sampler = Sampler and Sampler or '',
                             DateSampled = DateSampled and DateTime(DateSampled) or '')
 
                 # transition the object if both values are present
                 if Sampler and DateSampled:
-                    workflow.doActionFor(obj, 'sampled')
-                    new_state = workflow.getInfoFor(obj, 'review_state')
-                    transitioned[new_state].append(obj.Title())
+                    workflow.doActionFor(sample, 'sampled')
+                    new_state = workflow.getInfoFor(sample, 'review_state')
+                    transitioned[new_state].append(sample.Title())
 
             message = None
             for state in transitioned:
@@ -103,8 +113,7 @@ class ClientWorkflowAction(WorkflowAction):
                                    self.context.absolute_url())
             self.request.response.redirect(self.destination_url)
 
-
-        if action in ('prepublish', 'publish', 'republish'):
+        elif action in ('prepublish', 'publish', 'republish'):
             # We pass a list of AR objects to Publish.
             # it returns a list of AR IDs which were actually published.
             ARs_to_publish = []

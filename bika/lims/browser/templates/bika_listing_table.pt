@@ -147,6 +147,7 @@ Colum Headers
 			<!-- All toggleable columns in this review_state,
 			     regardless of state. JS uses this for the popup menu -->
 			<input type="hidden"
+				tal:condition="view/bika_listing/show_column_toggles"
 				tal:attributes="
 					id python:form_id+'_toggle_cols';
 					value python:modules['json'].dumps(toggle_cols);"/>
@@ -541,8 +542,9 @@ Table cells for each column from in review_state's column list.
 <tfoot>
 <tr>
 <td class="noborder"
-	tal:attributes="colspan nr_cols">
-<table width="100%">
+	tal:attributes="colspan nr_cols"
+	tal:condition="python:(view.batch.multiple_pages and not view.show_all) or (view.bika_listing.show_workflow_action_buttons)">
+<table style="margin:0" width="100%">
 	<tr class="noborder">
 <tal:comment replace="nothing">***************
 Workflow Actions
@@ -566,7 +568,6 @@ Workflow Actions
 							value action/title;"
 						i18n:attributes="value"/>
 				</span>
-				<p tal:condition="actions"/>
 			</span>
 		</td>
 <tal:comment replace="nothing">***************

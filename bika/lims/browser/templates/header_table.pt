@@ -7,6 +7,10 @@
 <body
 	tal:condition="view/header_rows"
 	tal:define="
+		columns python:hasattr(view, 'header_columns') and view.header_columns or 3;
+		header_rows python: [ view.header_rows[x:x+3]
+		                      for x in range(0, len(view.header_rows), columns)
+							  if view.header_rows[x].get('condition', True) ];
 		portal context/@@plone_portal_state/portal;
 		global edit_enabled python:False;">
 
@@ -15,77 +19,84 @@
 	<span tal:replace="structure context/@@authenticator/authenticator"/>
 	<table class="header_table" cellpadding="0" cellspacing="0">
 
-		<tal:row repeat="row view/header_rows">
-		<tr tal:condition="python:row.get('condition', True)">
-			<th>
-				<span tal:content="row/title"/>
+		<tal:row repeat="row header_rows">
+		<tr tal:attributes="class python: repeat['row'].even() and 'even' or 'odd'">
+
+		<tal:item repeat="item row">
+			<th tal:attributes="class python:repeat['item'].index > 0 and 'column_padding' or ''">
+				<span tal:content="item/title"/>
 				<span
-					tal:condition="python: row['allow_edit'] and row.get('required', False)"
+					tal:condition="python: item['allow_edit'] and item.get('required', False)"
 					class="fieldRequired">&nbsp;</span>
 			</th>
 			<td class="left">
 
 				<tal:view
-					condition="not:row/allow_edit"
-					tal:define="value python:row.get('formatted_value', row.get('value'));">
+					condition="not:item/allow_edit"
+					tal:define="value python:item.get('formatted_value', item.get('value'));">
 					<!-- VIEW for text / date / choices -->
 					<span
-						tal:condition="python:row['type'] in ('text','date','choices')"
+						tal:condition="python:item['type'] in ('text','date','choices')"
 						tal:replace="structure value"/>
 					<!-- VIEW for boolean -->
 					<input
 						style="font-size: 100%"
-						tal:condition="python:row['type'] in ('boolean')"
+						tal:condition="python:item['type'] in ('boolean')"
 						type="checkbox"
 						disabled="disabled"
 						tal:attributes="
 							checked python:value and 'checked' or '';"/>
 				</tal:view>
 
-				<tal:edit condition="row/allow_edit">
+				<tal:edit condition="item/allow_edit">
 					<tal:define define="global edit_enabled python:True"/>
 					<!-- EDIT for text -->
 					<input
 						style="font-size: 100%"
-						tal:condition="python:row['type'] == 'text'"
+						tal:condition="python:item['type'] == 'text'"
 						type="text"
 						size="20"
 						tal:attributes="
-							class python:row.get('class', '');
-							name row/id;
-							id row/id;
-							value row/value;"/>
+							class python:item.get('class', '');
+							name item/id;
+							id item/id;
+							value item/value;"/>
 					<!-- EDIT for choices -->
 					<select
 						style="font-size: 100%"
-						tal:condition="python:row['type'] == 'choices'"
+						tal:condition="python:item['type'] == 'choices'"
 						tal:attributes="
-							class python:row.get('class', '');
-							name row/id;
-							id row/id;">
-						<option value=""></option>
-						<tal:options tal:repeat="option python:row['vocabulary'].keys()">
+							class python:item.get('class', '');
+							name item/id;
+							id item/id;">
+						<option
+							tal:condition="python: (item.get('required', False) and not item.get('value', ''))
+							                        or not item.get('required', False)"
+							tal:attributes="id python:'%s_empty_option'%(item['id']);"
+							value=""></option>
+						<tal:options tal:repeat="option python:item['vocabulary'].keys()">
 							<option
 								tal:attributes="
 									value python:option;
-									selected python:row['value'] == option and 'selected' or '';"
-								tal:content="python:row['vocabulary'].getValue(option)">
+									selected python:item['value'] == option and 'selected' or '';"
+								tal:content="python:item['vocabulary'].getValue(option)">
 							</option>
 						</tal:options>
 					</select>
 					<!-- EDIT for boolean -->
 					<input
 						style="font-size: 100%"
-						tal:condition="python:row['type'] in ('boolean')"
+						tal:condition="python:item['type'] in ('boolean')"
 						type="checkbox"
 						tal:attributes="
-							name row/id;
-							id row/id;
-							checked python:row['value'] and 'checked' or '';"/>
+							name item/id;
+							id item/id;
+							checked python:item['value'] and 'checked' or '';"/>
 
 				</tal:edit>
 
 			</td>
+		</tal:item>
 		</tr>
 		</tal:row>
 

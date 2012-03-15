@@ -25,11 +25,11 @@ class AnalysesView(BikaListingView):
         self.contentFilter = dict(kwargs)
         self.contentFilter['portal_type'] = 'Analysis'
         self.context_actions = {}
-        self.setoddeven = False
+        self.setoddeven = True
         self.show_sort_column = False
         self.show_select_row = False
-        self.show_select_column = True
-        self.pagesize = 100
+        self.show_select_column = False
+        self.pagesize = 1000
         self.form_id = 'analyses_form'
 
         pc = getToolByName(context, 'portal_catalog')
@@ -42,18 +42,27 @@ class AnalysesView(BikaListingView):
         self.allow_edit = False
 
         self.columns = {
-            'Service': {'title': _('Analysis')},
-            'state_title': {'title': _('Status')},
+            'Service': {'title': _('Analysis'),
+                        'sortable': False},
+            'state_title': {'title': _('Status'),
+                            'sortable': False},
             'Result': {'title': _('Result'),
                        'input_width': '6',
-                       'input_class': 'ajax_calculate'},
-            'ResultDM': {'title': _('Dry')},
-            'Uncertainty': {'title': _('+-')},
+                       'input_class': 'ajax_calculate',
+                       'sortable': False},
+            'ResultDM': {'title': _('Dry'),
+                         'sortable': False},
+            'Uncertainty': {'title': _('+-'),
+                            'sortable': False},
             'retested': {'title': "<img src='++resource++bika.lims.images/retested.png' title='%s'/>" % _('Retested'),
-                         'type':'boolean'},
-            'Attachments': {'title': _('Attachments')},
-            'CaptureDate': {'title': _('Captured')},
-            'DueDate': {'title': _('Due Date')},
+                         'type':'boolean',
+                         'sortable': False},
+            'Attachments': {'title': _('Attachments'),
+                            'sortable': False},
+            'CaptureDate': {'title': _('Captured'),
+                            'sortable': False},
+            'DueDate': {'title': _('Due Date'),
+                        'sortable': False},
         }
 
         self.review_states = [
@@ -200,8 +209,12 @@ class AnalysesView(BikaListingView):
                 getSecurityManager().checkPermission(ViewResults, obj)
 
             # permission to edit this item's results
+            # Editing Field Results is possible while in Sample Due.
+            poc = self.contentFilter.get("getPointOfCapture", 'lab')
             can_edit_analysis = self.allow_edit and context_active and \
-                getSecurityManager().checkPermission(EditResults, obj)
+                ( (poc == 'field' and getSecurityManager().checkPermission(EditFieldResults, obj))
+                  or
+                  (poc != 'field' and getSecurityManager().checkPermission(EditResults, obj)) )
 
             if can_edit_analysis:
                 items[i]['allow_edit'] = ['Result', ]
@@ -323,7 +336,8 @@ class AnalysesView(BikaListingView):
             if col_id not in self.columns:
                 self.columns[col_id] = {'title': self.interim_columns[col_id],
                                         'input_width': '6',
-                                        'input_class': 'ajax_calculate'}
+                                        'input_class': 'ajax_calculate',
+                                        'sortable': False}
 
         if can_edit_analyses:
             new_states = []

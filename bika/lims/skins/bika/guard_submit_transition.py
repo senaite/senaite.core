@@ -33,6 +33,13 @@ if context.portal_type == "Analysis":
                 if review_state in ('to_be_sampled', 'to_be_preserved',
                                     'sample_due', 'sample_received',):
                     return False
+    # State checking
+    # If our state is Sample Due, then we permit Submit transition only
+    # if the PointOfCapture is 'field'
+    if workflow.getInfoFor(context, "review_state") == 'sample_due':
+        if context.getPointOfCapture() == "lab":
+            return False
+
     return True
 
 if context.portal_type == "AnalysisRequest":

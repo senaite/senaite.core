@@ -338,6 +338,28 @@ th.expanded {
 
 
 /*
+ * Header tables (header_table.pt)
+ */
+.header_table tr.odd {
+	background-color: &dtml-oddRowBackgroundColor;;
+}
+
+.header_table tr.even {
+	background-color: &dtml-evenRowBackgroundColor;;
+}
+
+.header_table td,
+.header_table th {
+  line-height:1.5em;
+  padding:.25em;
+}
+
+.header_table th.column_padding {
+  padding-left:1.25em;
+}
+
+
+/*
  * Analysis Request tables
  */
 
@@ -595,6 +617,7 @@ input.cb {
 }
 fieldset {
 	padding:.5em;
+	margin: 0;
 }
 select {
     vertical-align: middle !important;

@@ -25,7 +25,6 @@ borderStyleAnnotations:string=dashed
 
 evenRowTextColor:string=#eee
 evenRowBackgroundColor:string=#eee
-
 oddRowTextColor:string=#fff
 oddRowBackgroundColor:string=#fff
 

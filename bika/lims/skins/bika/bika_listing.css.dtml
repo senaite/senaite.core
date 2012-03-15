@@ -47,6 +47,7 @@ div.bika_listing {
 .bika-listing-table {
     font-size: &dtml-fontSmallSize;;
     border-bottom: medium none;
+	margin-bottom: 0 !important;
 }
 
 .bika-listing-table a {

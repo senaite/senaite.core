@@ -4,11 +4,11 @@
     xmlns:i18n="http://namespaces.zope.org/i18n"
     i18n_domain="bika">
 
-    <!-- Workflow action button clicked -->
+    <!-- Workflow action button clicked for Samples Folder-->
     <browser:page
       for="bika.lims.interfaces.ISamplesFolder"
       name="workflow_action"
-      class="bika.lims.browser.sample.SampleWorkflowAction"
+      class="bika.lims.browser.client.ClientWorkflowAction"
       permission="zope.Public"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
@@ -18,6 +18,15 @@
       name="base_view"
       class="bika.lims.browser.sample.SamplesView"
       permission="bika.lims.ManageSamples"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
+    <!-- Workflow action button clicked for Sample -->
+    <browser:page
+      for="bika.lims.interfaces.ISample"
+      name="workflow_action"
+      class="bika.lims.browser.sample.SampleWorkflowAction"
+      permission="zope.Public"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 

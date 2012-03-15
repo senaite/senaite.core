@@ -15,8 +15,10 @@ workflow = context.portal_workflow
 if workflow.getInfoFor(context, 'cancellation_state', "active") == "cancelled":
     return False
 
-# False for Sample objects (auto_preserve_sample handles those)
+# Prevent auto-transition if any of our partitions are not yet sample_due
 if context.portal_type == "Sample":
-    return False
+    for part in context.objectValues("SamplePartition"):
+        if workflow.getInfoFor(part, "review_state") == 'to_be_preserved':
+            return False
 
 return True

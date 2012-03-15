@@ -68,16 +68,12 @@ $(document).ready(function(){
 					if ($("#DateSampled").val() != "" && $("#Sampler").val() != "") {
 						$("#workflow-transition-sampled").parent().toggle(true);
 					}
-					// But hide it if sampler set to none
-					if ($("#Sampler").val() == ""){
-						$("#workflow-transition-sampled").parent().toggle(false);
-					}
 				}
 			}
 		});
 	});
 
-	$("#ClientReference").focus();
+	//$("#ClientReference").focus();
 
 });
 });
