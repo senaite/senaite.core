@@ -38,21 +38,4 @@
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
-    <browser:page
-      for="bika.lims.interfaces.ISample"
-      name="set_datesampled"
-      class="bika.lims.browser.sample.ajaxSetDateSampled"
-      permission="zope.Public"
-      layer="bika.lims.interfaces.IBikaLIMS"
-    />
-
-    <browser:page
-      for="bika.lims.interfaces.ISample"
-      name="set_sampler"
-      class="bika.lims.browser.sample.ajaxSetSampler"
-      permission="zope.Public"
-      layer="bika.lims.interfaces.IBikaLIMS"
-    />
-
-
 </configure>

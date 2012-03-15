@@ -415,12 +415,6 @@ class SampleView(BrowserView):
             for row in [r for r in self.header_rows if r['allow_edit']]:
                 value = form.get(row['id'], '')
 
-##                if row.get('required', False) \
-##                   and row.get('condition', True) \
-##                   and not value:
-##                    message = PMF("Input is required but no input given.")
-##                    break
-
                 if row['id'] == 'SampleType':
                     if not value:
                         message = _('Sample Type is required')
@@ -440,8 +434,7 @@ class SampleView(BrowserView):
                 values[row['id']] = value
 
             # boolean - checkboxes are present, or not present in form.
-            for row in [r for r in self.header_rows
-                        if r.get('type', '') == 'boolean']:
+            for row in [r for r in self.header_rows if r.get('type', '') == 'boolean']:
                 values[row['id']] = row['id'] in form
 
             if not message:
@@ -452,8 +445,12 @@ class SampleView(BrowserView):
                     ar.reindexObject()
                 message = PMF("Changes saved.")
 
-            self.context.plone_utils.addPortalMessage(message, 'info')
+            if checkPermission(SampleSample, self.context) and \
+               values.get('Sampler', '') != '' and \
+               values.get('DateSampled', '') != '':
+                workflow.doActionFor(self.context, 'sampled')
 
+            self.context.plone_utils.addPortalMessage(message, 'info')
             self.request.RESPONSE.redirect(self.context.absolute_url())
 
             ## End of form submit handler
@@ -706,30 +703,3 @@ class SamplesView(BikaListingView):
                          for u in users]
                 items[x]['choices'] = {'getSampler': users}
         return items
-
-class ajaxSetDateSampled(BrowserView):
-    """ DateSampled is set immediately.
-    """
-
-    def __call__(self):
-        plone.protect.CheckAuthenticator(self.request)
-        value = self.request.get('value', '')
-        if not value:
-            value = ""
-        self.context.setDateSampled(value)
-        return "ok"
-
-class ajaxSetSampler(BrowserView):
-    """ Sampler is set immediately.
-    """
-
-    def __call__(self):
-        mtool = getToolByName(self.context, 'portal_membership')
-        plone.protect.CheckAuthenticator(self.request)
-        value = self.request.get('value', '')
-        if not value:
-            value = ""
-        if not mtool.getMemberById(value):
-            return
-        self.context.setSampler(value)
-        return "ok"
