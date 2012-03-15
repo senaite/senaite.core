@@ -44,7 +44,7 @@
       for="bika.lims.interfaces.IAnalysisRequest"
       name="base_view"
       class="bika.lims.browser.analysisrequest.AnalysisRequestViewView"
-      permission="bika.lims.ManageAnalysisRequests"
+      permission="zope2.View"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 

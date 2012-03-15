@@ -61,7 +61,6 @@
 
 <state state_id="to_be_preserved" title="To Be Preserved" i18n:attributes="title">
     <exit-transition transition_id="preserved"/>
-    <exit-transition transition_id="auto_preserved"/>
     <permission-map name="BIKA: Edit Sample" acquired="False">
         <permission-role>Manager</permission-role>
         <permission-role>LabManager</permission-role>
@@ -248,19 +247,6 @@
   <guard>
    <guard-permission>BIKA: Preserve Sample</guard-permission>
    <guard-expression>python:here.guard_preserved_transition()</guard-expression>
-  </guard>
- </transition>
-
- <transition transition_id="auto_preserve_sample"
-             title="auto_preserved"
-             new_state="sample_due"
-             trigger="AUTOMATIC"
-             before_script=""
-             after_script="">
-  <description i18n:translate=""></description>
-  <guard>
-   <guard-permission>BIKA: Preserve Sample</guard-permission>
-   <guard-expression>python:here.guard_auto_preserve_sample()</guard-expression>
   </guard>
  </transition>
 

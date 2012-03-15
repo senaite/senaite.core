@@ -1,3 +1,5 @@
+from bika.lims.permissions import PreserveSample
+from bika.lims.utils import pretty_user_name_or_id
 from bika.lims.utils import getUsers
 from bika.lims.permissions import SampleSample
 import App
@@ -8,13 +10,17 @@ from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from bika.lims.permissions import EditAR, ViewResults, EditResults, EditFieldResults, \
-     ResultsNotRequested
+from bika.lims.permissions import EditAR
+from bika.lims.permissions import ViewResults
+from bika.lims.permissions import EditResults
+from bika.lims.permissions import EditFieldResults
+from bika.lims.permissions import ResultsNotRequested
 from bika.lims import PMF, logger
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.analyses import AnalysesView
 from bika.lims.browser.bika_listing import BikaListingView, WorkflowAction
 from bika.lims.browser.publish import Publish
+from bika.lims.browser.sample import SamplePartitionsView
 from bika.lims.config import POINTS_OF_CAPTURE
 from bika.lims.utils import isActive, TimeOrDate
 from plone.app.layout.globals.interfaces import IViewView
@@ -25,9 +31,11 @@ import json
 import plone
 
 class AnalysisRequestWorkflowAction(WorkflowAction):
-    """ Workflow actions taken in AnalysisRequest context
-        This function is called to do the worflow actions
-        that apply to Analysis objects
+    """Workflow actions taken in AnalysisRequest context
+        Sample context workflow actions also redirect here
+        Applies to
+            Analysis objects
+            SamplePartition objects
     """
     def __call__(self):
         form = self.request.form
@@ -37,8 +45,11 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
         translate = self.context.translation_service.translate
         skiplist = self.request.get('workflow_skiplist', [])
         action, came_from = WorkflowAction._get_form_workflow_action(self)
+        checkPermission = self.context.portal_membership.checkPermission
+        getAuthenticatedMember = self.context.portal_membership.getAuthenticatedMember
 
-        # calcs.js has kept item_data and form input interim values synced.
+        # calcs.js has kept item_data and form input interim values synced,
+        # so the json strings from item_data will be the same as the form values
         item_data = {}
         if 'item_data' in form:
             if type(form['item_data']) == list:
@@ -48,26 +59,51 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
             else:
                 item_data = json.loads(form['item_data'])
 
-        ## publish
-        if action in ('prepublish', 'publish', 'republish'):
-            if not isActive(self.context):
-                message = translate(_('Item is inactive.'))
-                self.context.plone_utils.addPortalMessage(message, 'info')
-                self.request.response.redirect(self.context.absolute_url())
-                return
+        ## Partition Preservation
+        # the partition table shown in AR and Sample views sends it's
+        # action button submits here.
+        if action == "preserved":
+            objects = WorkflowAction._get_selected_items(self)
+            transitioned = []
+            for obj_uid, obj in objects.items():
+                part = obj
+                # can't transition inactive items
+                if workflow.getInfoFor(part, 'inactive_state', '') == 'inactive':
+                    continue
+                if not checkPermission(PreserveSample, part):
+                    continue
 
-            # publish entire AR.
-            self.context.setDatePublished(DateTime())
-            transitioned = Publish(self.context,
-                                   self.request,
-                                   action,
-                                   [self.context, ])()
-            if len(transitioned) == 1:
-                message = translate('${items} published.',
-                                    mapping = {'items': ', '.join(transitioned)})
-            else:
-                message = translate(_("No items were published"))
-            self.context.plone_utils.addPortalMessage(message, 'info')
+                # grab this object's Preserver and DatePreserved from the form
+                Preserver = form['getPreserver'][0][obj_uid].strip()
+                DatePreserved = form['getDatePreserved'][0][obj_uid].strip()
+
+                # write them to the sample
+                part.edit(Preserver = Preserver and Preserver or '',
+                          DatePreserved = DatePreserved and DateTime(DatePreserved) or '')
+
+                # transition the object if both values are present
+                if Preserver and DatePreserved:
+                    workflow.doActionFor(part, 'preserved')
+                    transitioned.append(part.Title())
+
+                part.reindexObject()
+                part.aq_parent.reindexObject()
+
+            message = None
+            if len(transitioned) > 1:
+                message = _('${items} are waiting to be received.',
+                            mapping = {'items': ', '.join(transitioned)})
+                message = self.context.translate(message)
+                self.context.plone_utils.addPortalMessage(message, 'info')
+            elif len(transitioned) == 1:
+                message = _('${item} is waiting to be received.',
+                            mapping = {'item': ', '.join(transitioned)})
+                message = self.context.translate(message)
+                self.context.plone_utils.addPortalMessage(message, 'info')
+            if not message:
+                message = _('No changes made.')
+                message = self.context.translate(message)
+                self.context.plone_utils.addPortalMessage(message, 'info')
             self.destination_url = self.request.get_header("referer",
                                    self.context.absolute_url())
             self.request.response.redirect(self.destination_url)
@@ -166,6 +202,30 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
             self.destination_url = self.context.absolute_url() + "/manage_results"
             self.request.response.redirect(self.destination_url)
 
+        ## publish
+        elif action in ('prepublish', 'publish', 'republish'):
+            if not isActive(self.context):
+                message = translate(_('Item is inactive.'))
+                self.context.plone_utils.addPortalMessage(message, 'info')
+                self.request.response.redirect(self.context.absolute_url())
+                return
+
+            # publish entire AR.
+            self.context.setDatePublished(DateTime())
+            transitioned = Publish(self.context,
+                                   self.request,
+                                   action,
+                                   [self.context, ])()
+            if len(transitioned) == 1:
+                message = translate('${items} published.',
+                                    mapping = {'items': ', '.join(transitioned)})
+            else:
+                message = translate(_("No items were published"))
+            self.context.plone_utils.addPortalMessage(message, 'info')
+            self.destination_url = self.request.get_header("referer",
+                                   self.context.absolute_url())
+            self.request.response.redirect(self.destination_url)
+
         ## verify
         elif action == 'verify':
             # default bika_listing.py/WorkflowAction, but then go to view screen.
@@ -183,6 +243,7 @@ class AnalysisRequestViewView(BrowserView):
 
     implements(IViewView)
     template = ViewPageTemplateFile("templates/analysisrequest_view.pt")
+    header_table = ViewPageTemplateFile("templates/header_table.pt")
 
     def __init__(self, context, request):
         super(AnalysisRequestViewView, self).__init__(context, request)
@@ -190,7 +251,163 @@ class AnalysisRequestViewView(BrowserView):
         self.TimeOrDate = TimeOrDate
 
     def __call__(self):
+        form = self.request.form
         ar = self.context
+        checkPermission = self.context.portal_membership.checkPermission
+        getAuthenticatedMember = self.context.portal_membership.getAuthenticatedMember
+        workflow = getToolByName(self.context, 'portal_workflow')
+        props = getToolByName(self.context, 'portal_properties').bika_properties
+        sampling_workflow_enabled = props.getProperty('sampling_workflow_enabled')
+        datepicker_format = props.getProperty('datepicker_format')
+
+        ## Create header_table data rows
+        sample = self.context.getSample()
+        sp = sample.getSamplePoint()
+        st = sample.getSampleType()
+
+        contact = self.context.getContact()
+        ccs = ["<a href='%s'>%s</a>"%(contact.absolute_url(), contact.Title()),]
+        for cc in self.context.getCCContact():
+            ccs.append("<a href='%s'>%s</a>"%(cc.absolute_url(), cc.Title()),)
+        for cc in self.context.getCCEmails():
+            ccs.append("<a href='mailto:%s'>%s</a>"%(cc, cc))
+
+        samplers = getUsers(self.context, ['Sampler', 'LabManager', 'Manager'], allow_empty=False)
+        sampler = sample.getSampler()
+        username = getAuthenticatedMember().getUserName()
+
+        self.header_columns = 3
+        self.header_rows = [
+            {'id': 'SampleID',
+             'title': _('Sample ID'),
+             'allow_edit': False,
+             'value': "<a href='%s'>%s</a>"%(sample.absolute_url(), sample.id),
+             'type': 'text'},
+            {'id': 'ClientSampleID',
+             'title': _('Client SID'),
+             'allow_edit': False,
+             'value': sample.getClientSampleID(),
+             'type': 'text'},
+            {'id': 'Contact',
+             'title': _('Contact Person'),
+             'allow_edit': False,
+             'value': "; ".join(ccs),
+             'type': 'text'},
+            {'id': 'ClientReference',
+             'title': _('Client Reference'),
+             'allow_edit': False,
+             'value': sample.getClientReference(),
+             'type': 'text'},
+            {'id': 'ClientOrderNumber',
+             'title': _('Client Order'),
+             'allow_edit': False,
+             'value': self.context.getClientOrderNumber(),
+             'type': 'text'},
+            {'id': 'SampleType',
+             'title': _('Sample Type'),
+             'allow_edit': False,
+             'value': st and st.Title() or '',
+             'type': 'text',
+             'required': True},
+            {'id': 'SamplePoint',
+             'title': _('Sample Point'),
+             'allow_edit': False,
+             'value': sp and sp.Title() or '',
+             'type': 'text'},
+            {'id': 'Creator',
+             'title': PMF('Creator'),
+             'allow_edit': False,
+             'value': pretty_user_name_or_id(self.context, self.context.Creator()),
+             'type': 'text'},
+            {'id': 'DateCreated',
+             'title': PMF('Date Created'),
+             'allow_edit': False,
+             'value': self.context.created(),
+             'formatted_value': TimeOrDate(self.context, self.context.created()),
+             'type': 'text'},
+            {'id': 'SamplingDate',
+             'title': _('Sampling Date'),
+             'allow_edit': False,
+             'value': sample.getSamplingDate(),
+             'formatted_value': TimeOrDate(self.context, self.context.getSamplingDate()),
+             'type': 'text'},
+            {'id': 'Sampler',
+             'title': _('Sampler'),
+             'allow_edit': checkPermission(SampleSample, sample),
+             'value': sampler and sampler or (username in samplers.keys() and username) or '',
+             'formatted_value': pretty_user_name_or_id(self.context, sampler and sampler or (username in samplers.keys() and username) or ''),
+             'type': 'choices',
+             'required': True,
+             'vocabulary': samplers,
+             'condition': sampling_workflow_enabled},
+            {'id': 'DateSampled',
+             'title': _('Date Sampled'),
+             'allow_edit': checkPermission(SampleSample, sample),
+             'value': sample.getDateSampled() and sample.getDateSampled().strftime(datepicker_format) or '',
+             'required': True,
+             'formatted_value': TimeOrDate(self.context, sample.getDateSampled()),
+             'type': 'text',
+             'class': 'datepicker_nofuture',
+             'condition': sampling_workflow_enabled},
+            {'id': 'DateReceived',
+             'title': _('Date Received'),
+             'allow_edit': False,
+             'value': self.context.getDateReceived(),
+             'formatted_value': TimeOrDate(self.context, self.context.getDateReceived()),
+             'type': 'text'},
+        ]
+
+        if 'header_submitted' in form:
+            message = None
+            values = {}
+            for row in [r for r in self.header_rows if r['allow_edit']]:
+                value = form.get(row['id'], '')
+
+                if row['id'] == 'SampleType':
+                    if not value:
+                        message = _('Sample Type is required')
+                        break
+                    if not bsc(portal_type = 'SampleType', title = value):
+                        message = _("${sampletype} is not a valid sample type",
+                                    mapping={'sampletype':value})
+                        break
+
+                if row['id'] == 'SamplePoint':
+                    if value and \
+                       not bsc(portal_type = 'SamplePoint', title = value):
+                        message = _("${samplepoint} is not a valid sample point",
+                                    mapping={'sampletype':value})
+                        break
+
+                values[row['id']] = value
+
+            # boolean - checkboxes are present, or not present in form.
+            for row in [r for r in self.header_rows if r.get('type', '') == 'boolean']:
+                values[row['id']] = row['id'] in form
+
+            if not message:
+                self.context.edit(**values)
+                self.context.reindexObject()
+                sample.edit(**values)
+                sample.reindexObject()
+                message = PMF("Changes saved.")
+
+            if checkPermission(SampleSample, self.context) and \
+               values.get('Sampler', '') != '' and \
+               values.get('DateSampled', '') != '':
+                workflow.doActionFor(sample, 'sampled')
+
+            self.context.plone_utils.addPortalMessage(message, 'info')
+            self.request.RESPONSE.redirect(self.context.absolute_url())
+
+            ## End of form submit handler
+
+        ## Create Partitions View for this ARs sample
+        p = SamplePartitionsView(self.context.getSample(), self.request)
+        p.show_column_toggles = False
+        self.parts = p.contents_table()
+
+        ## Create Field and Lab Analyses tables
         self.tables = {}
         for poc in POINTS_OF_CAPTURE:
             if self.context.getAnalyses(getPointOfCapture = poc):
@@ -1092,8 +1309,6 @@ class ajaxAnalysisRequestSubmit():
                     SamplePoint = values.has_key('SamplePoint') and values['SamplePoint'] or '',
                     Composite = values.has_key('Composite') and values['Composite'] or ''
                 )
-                dis_date = sample.disposal_date()
-                sample.setDisposalDate(dis_date)
 
             if can_edit_ar:
             # update general AR info
@@ -1405,7 +1620,7 @@ class AnalysisRequestsView(BikaListingView):
                              'toggle': True},
             'getDateSampled': {'title': _('Date Sampled'),
                                'toggle': True,
-                               'input_class': 'datepicker',
+                               'input_class': 'datepicker_nofuture',
                                'input_width': '10'},
             'getSampler': {'title': _('Sampler'),
                            'toggle': True},
@@ -1672,8 +1887,10 @@ class AnalysisRequestsView(BikaListingView):
 
             samplingdate = obj.getSample().getSamplingDate()
             items[x]['SamplingDate'] = TimeOrDate(self.context, samplingdate, long_format = 0)
+
             datesampled = TimeOrDate(self.context, sample.getDateSampled())
             items[x]['getDateSampled'] = TimeOrDate(self.context, datesampled, long_format = 0)
+
             sampler = sample.getSampler()
             items[x]['getSampler'] = sampler
 
@@ -1706,11 +1923,13 @@ class AnalysisRequestsView(BikaListingView):
             if checkPermission(SampleSample, obj):
                 items[x]['required'] = ['getSampler', 'getDateSampled']
                 items[x]['allow_edit'] = ['getSampler', 'getDateSampled']
-                users = getUsers(self.context,
-                                 ['Manager', 'LabManager', 'Sampler'],
-                                 allow_empty=True)
-                users = [({'ResultValue': u, 'ResultText': users.getValue(u)})
-                         for u in users]
+                samplers = getUsers(sample, ['Sampler', 'LabManager', 'Manager'])
+                getAuthenticatedMember = self.context.portal_membership.getAuthenticatedMember
+                username = getAuthenticatedMember().getUserName()
+                users = [({'ResultValue': u, 'ResultText': samplers.getValue(u)})
+                         for u in samplers]
                 items[x]['choices'] = {'getSampler': users}
+                items[x]['getSampler'] = sampler and sampler or \
+                    (username in samplers.keys() and username) or ''
 
         return items

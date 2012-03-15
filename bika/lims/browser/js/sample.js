@@ -9,9 +9,7 @@ $(document).ready(function(){
 	if ($("#DateSampled").val() == "" || $("#Sampler").val() == "") {
 		$("#workflow-transition-sampled").parent().toggle(false);
 	}
-	if ($("#DatePreserved").val() == "" || $("#Preserver").val() == "") {
-		$("#workflow-transition-preserved").parent().toggle(false);
-	}
+	$("#workflow-transition-preserved").parent().toggle(false);
 
 	function autocomplete_sampletype(request,callback){
 		$.getJSON('ajax_sampletypes', {'term':request.term}, function(data,textStatus){

@@ -8,7 +8,7 @@
 ##title=
 ##
 
-# Automatic transition.
+# Automatic transition that fires when object enters "Sampled" state
 # If this guard returns True, the object will transition to to_be_preserved.
 # If the guard returns False, the object will be transitioned to sample_due.
 
@@ -26,9 +26,28 @@ if context.portal_type == 'Sample':
             break
     return preservation_required
 
+elif context.portal_type == 'AnalysisRequest':
+    sample = context.getSample()
+
+    # If none of this sample's partitions require preservation, then we return
+    # false.
+    preservation_required = False
+    for part in sample.objectValues("SamplePartition"):
+        if part.getPreservation():
+            preservation_required = True
+            break
+    return preservation_required
+
 elif context.portal_type == 'SamplePartition':
 
     if context.getPreservation():
+        return True
+    else:
+        return False
+
+elif context.portal_type == 'Analysis':
+
+    if context.getSamplePartition().getPreservation():
         return True
     else:
         return False

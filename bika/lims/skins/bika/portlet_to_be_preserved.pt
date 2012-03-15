@@ -1,0 +1,64 @@
+<html xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      i18n:domain="bika">
+
+<body>
+
+<div metal:define-macro="portlet"
+     tal:define="member python: context.portal_membership.getAuthenticatedMember()"
+     tal:condition="python:member.has_role('Preserver')">
+<tal:sample
+     tal:define="portal context/portal_url/getPortalObject;
+                 plone_view context/@@plone;
+                 DateTime python:modules['DateTime'].DateTime;
+                 rs python:here.portal_catalog(portal_type='Sample',
+                                               review_state='to_be_preserved',
+                                               cancellation_state='active');
+                 results python:[p.getObject() for p in rs[:5]];"
+     tal:condition="results">
+
+    <dl class="portlet" id="portlet-workflow-to_be_received">
+
+        <dt class="portletHeader"
+            i18n:translate="">To Be Preserved</dt>
+
+        <tal:block repeat="o results">
+        <dd style="padding-top:4px;padding-bottom:0px;">
+
+            <a href="#"
+                class="marker"
+                tal:attributes="href string:${o/absolute_url};
+                                title o/Title">
+                <img src="" height="16" width="16"
+                        tal:attributes="src string:${here/portal_url}/${o/getIcon};
+                                        title o/Type;" />
+                <span tal:replace="o/Title|o/getId">
+                AR-00001
+                </span>
+            </a>
+
+            <div class="portletDetails"
+                 style="text-align:right"
+                 tal:define="moddate o/ModificationDate;"
+                 tal:content="python:plone_view.toLocalizedTime(moddate)"/>
+        </dd>
+        </tal:block>
+
+        <dd class="portletFooter" tal:condition="python:len(rs) > 5">
+
+            <a href=""
+                class="portletMore"
+                tal:attributes="href string:${context/portal_url}/samples?review_state=to_be_preserved">
+                <span tal:content="python:str(len(rs)-5)"/>
+                <span i18n:translate="">More</span>
+            </a>
+
+        </dd>
+
+    </dl>
+</tal:sample>
+</div>
+
+</body>
+
+</html>

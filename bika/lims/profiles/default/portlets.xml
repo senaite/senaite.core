@@ -29,6 +29,28 @@
     </assignment>
 
     <assignment
+        name="portlet_to_be_sampled-pt"
+        category="context"
+        key="/"
+        manager="plone.rightcolumn"
+        type="portlets.Classic"
+        visible="True">
+      <property name="macro">portlet</property>
+      <property name="template">portlet_to_be_sampled</property>
+    </assignment>
+
+    <assignment
+        name="portlet_to_be_preserved-pt"
+        category="context"
+        key="/"
+        manager="plone.rightcolumn"
+        type="portlets.Classic"
+        visible="True">
+      <property name="macro">portlet</property>
+      <property name="template">portlet_to_be_preserved</property>
+    </assignment>
+
+    <assignment
         name="portlet_late_analyses-pt"
         category="context"
         key="/"

@@ -273,6 +273,8 @@
     <tr tal:define="field_name string:SamplingDate">
         <th colspan="2">
             <span i18n:translate="">Sampling Date</span>&nbsp;
+            <span class="fieldRequired"
+                tal:condition="can_edit_sample">&nbsp;</span>
         </th>
         <td>
             <img class="copyButton" tal:condition="not: edit"
@@ -300,7 +302,7 @@
             <td tal:define="input_name string:ar.${column}.${field_name}:ignore_empty:record;
                 input_id string:ar_${column}_${field_name}">
             <span
-                tal:content="python:view.TimeOrDate(here, here.getDateRequested(), long_format=1)"/>
+                tal:content="python:view.TimeOrDate(here, here.created(), long_format=1)"/>
             </td>
         </tal:block>
     </tr>

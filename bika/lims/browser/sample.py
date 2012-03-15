@@ -9,7 +9,6 @@ from bika.lims import PMF
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.analyses import AnalysesView
 from bika.lims.browser.bika_listing import BikaListingView
-from bika.lims.browser.bika_listing import WorkflowAction
 from bika.lims.config import POINTS_OF_CAPTURE
 from bika.lims.permissions import EditFieldResults
 from bika.lims.permissions import EditResults
@@ -18,123 +17,12 @@ from bika.lims.permissions import SampleSample
 from bika.lims.permissions import PreserveSample
 from bika.lims.utils import TimeOrDate
 from bika.lims.utils import getUsers
+from bika.lims.utils import isActive
 from bika.lims.utils import pretty_user_name_or_id
 from plone.app.layout.globals.interfaces import IViewView
 from zope.interface import implements
 import plone
-
-class SampleWorkflowAction(WorkflowAction):
-    """ Workflow actions taken in Sample context
-        This function is called to do the worflow actions
-        that apply to Analysis objects and Partitions
-    """
-    def __call__(self):
-        form = self.request.form
-        plone.protect.CheckAuthenticator(form)
-        workflow = getToolByName(self.context, 'portal_workflow')
-        rc = getToolByName(self.context, REFERENCE_CATALOG)
-        translate = self.context.translation_service.translate
-        skiplist = self.request.get('workflow_skiplist', [])
-        action, came_from = WorkflowAction._get_form_workflow_action(self)
-
-        # calcs.js has kept item_data and form input interim values synced.
-        item_data = {}
-        if 'item_data' in form:
-            if type(form['item_data']) == list:
-                for i_d in form['item_data']:
-                    for i, d in json.loads(i_d).items():
-                        item_data[i] = d
-            else:
-                item_data = json.loads(form['item_data'])
-
-        ## submit
-        elif action == 'submit' and self.request.form.has_key("Result"):
-            if not isActive(self.context):
-                message = translate(_('Item is inactive.'))
-                self.context.plone_utils.addPortalMessage(message, 'info')
-                self.request.response.redirect(self.context.absolute_url())
-                return
-
-            selected_analyses = WorkflowAction._get_selected_items(self)
-            results = {}
-            hasInterims = {}
-
-            # check that the form values match the database
-            # save them if not.
-            for uid, result in self.request.form['Result'][0].items():
-                # if the AR has ReportDryMatter set, get dry_result from form.
-                dry_result = ''
-                if self.context.getReportDryMatter():
-                    for k, v in self.request.form['ResultDM'][0].items():
-                        if uid == k:
-                            dry_result = v
-                            break
-                analysis = selected_analyses.get(uid, rc.lookupObject(uid))
-                results[uid] = result
-                service = analysis.getService()
-                interimFields = item_data[uid]
-                if len(interimFields) > 0:
-                    hasInterims[uid] = True
-                else:
-                    hasInterims[uid] = False
-                unit = service.getUnit() and service.getUnit() or ''
-                retested = form.has_key('retested') and form['retested'].has_key(uid)
-                # Some silly if statements here to avoid saving if it isn't necessary.
-                if analysis.getInterimFields != interimFields or \
-                   analysis.getRetested != retested or \
-                   analysis.getUnit != unit:
-                    analysis.edit(
-                        InterimFields = interimFields,
-                        Retested = retested,
-                        Unit = unit)
-                # results get checked/saved separately, so the setResults()
-                # mutator only sets the ResultsCapturedDate when it needs to.
-                if analysis.getResult() != result or \
-                   analysis.getResultDM() != dry_result:
-                    analysis.edit(
-                        ResultDM = dry_result,
-                        Result = result)
-
-            # discover which items may be submitted
-            # guard_submit does a lot of the same stuff, too.
-            submissable = []
-            for uid, analysis in selected_analyses.items():
-                if uid not in results:
-                    continue
-                can_submit = True
-                for dependency in analysis.getDependencies():
-                    dep_state = workflow.getInfoFor(dependency, 'review_state')
-                    if hasInterims[uid]:
-                        if dep_state in ('to_be_sampled', 'to_be_preserved',
-                                         'sample_due', 'sample_received',
-                                         'attachment_due', 'to_be_verified',):
-                            can_submit = False
-                            break
-                    else:
-                        if dep_state in ('to_be_sampled', 'to_be_preserved',
-                                         'sample_due', 'sample_received',):
-                            can_submit = False
-                            break
-                if can_submit and analysis not in submissable:
-                    submissable.append(analysis)
-
-            # and then submit them.
-            for analysis in submissable:
-                if not analysis.UID() in skiplist:
-                    try:
-                        workflow.doActionFor(analysis, 'submit')
-                    except WorkflowException:
-                        pass
-
-            message = translate(PMF("Changes saved."))
-            self.context.plone_utils.addPortalMessage(message, 'info')
-            self.destination_url = self.context.absolute_url() + "/manage_results"
-            self.request.response.redirect(self.destination_url)
-
-        else:
-            # default bika_listing.py/WorkflowAction for other transitions
-            WorkflowAction.__call__(self)
-
+import json
 
 class SamplePartitionsView(BikaListingView):
     def __init__(self, context, request):
@@ -160,7 +48,7 @@ class SamplePartitionsView(BikaListingView):
             'getPreservation': {'title': _('Preservation')},
             'getPreserver': {'title': _('Preserver')},
             'getDatePreserved': {'title': _('Date Preserved'),
-                                 'input_class': 'datepicker',
+                                 'input_class': 'datepicker_nofuture',
                                  'input_width': '10'},
             'getDisposalDate': {'title': _('Disposal Date')},
             'state_title': {'title': _('State')},
@@ -206,19 +94,20 @@ class SamplePartitionsView(BikaListingView):
             items[x]['getPreserver'] = \
                 preserver and pretty_user_name_or_id(self.context, preserver) or ''
 
-
             # Partition Preservation required
             # inline edits for Preserver and Date Preserved
             checkPermission = self.context.portal_membership.checkPermission
             if checkPermission(PreserveSample, obj):
                 items[x]['required'] = ['getPreserver', 'getDatePreserved']
                 items[x]['allow_edit'] = ['getPreserver', 'getDatePreserved']
-                users = getUsers(self.context,
-                                 ['Preserver', 'LabManager', 'Manager'],
-                                 allow_empty=True)
-                users = [({'ResultValue': u, 'ResultText': users.getValue(u)})
-                         for u in users]
+                preservers = getUsers(obj, ['Preserver', 'LabManager', 'Manager'])
+                getAuthenticatedMember = obj.portal_membership.getAuthenticatedMember
+                username = getAuthenticatedMember().getUserName()
+                users = [({'ResultValue': u, 'ResultText': preservers.getValue(u)})
+                         for u in preservers]
                 items[x]['choices'] = {'getPreserver': users}
+                items[x]['getPreserver'] = preserver and preserver or \
+                    (username in preservers.keys() and username) or ''
 
         return items
 
@@ -284,6 +173,7 @@ class SampleView(BrowserView):
         bsc = getToolByName(self.context, 'bika_setup_catalog')
         pc = getToolByName(self.context, 'portal_catalog')
         checkPermission = self.context.portal_membership.checkPermission
+        getAuthenticatedMember = self.context.portal_membership.getAuthenticatedMember
         workflow = getToolByName(self.context, 'portal_workflow')
         ars = self.context.getAnalysisRequests()
 
@@ -303,7 +193,10 @@ class SampleView(BrowserView):
             edit_states = ['to_be_sampled', 'to_be_preserved', 'sample_due']
             allow_sample_edit = checkPermission(ManageSamples, self.context) \
                 and workflow.getInfoFor(self.context, 'review_state') in edit_states
-        self.header_table_rows = 8
+        samplers = getUsers(self.context, ['Sampler', 'LabManager', 'Manager'], allow_empty=False)
+        sampler = self.context.getSampler()
+        username = getAuthenticatedMember().getUserName()
+        self.header_columns = 3
         self.header_rows = [
             {'id': 'ClientReference',
              'title': _('Client Reference'),
@@ -339,33 +232,29 @@ class SampleView(BrowserView):
             {'id': 'Creator',
              'title': PMF('Creator'),
              'allow_edit': False,
-             'value': pretty_user_name_or_id(self.context,
-                                             self.context.Creator()),
+             'value': pretty_user_name_or_id(self.context, self.context.Creator()),
              'type': 'text'},
             {'id': 'DateCreated',
              'title': PMF('Date Created'),
              'allow_edit': False,
              'value': self.context.created(),
-             'formatted_value': TimeOrDate(self.context,
-                                           self.context.created()),
+             'formatted_value': TimeOrDate(self.context, self.context.created()),
              'type': 'text'},
             {'id': 'SamplingDate',
              'title': _('Sampling Date'),
              'allow_edit': False,
              'value': self.context.getSamplingDate(),
-             'formatted_value': TimeOrDate(self.context,
-                                           self.context.getSamplingDate()),
+             'formatted_value': TimeOrDate(self.context, self.context.getSamplingDate()),
              'type': 'text'},
             {'id': 'Sampler',
              'title': _('Sampler'),
              'allow_edit': checkPermission(SampleSample, self.context),
-             'value': self.context.getSampler(),
+             'value': sampler and sampler or (username in samplers.keys() and username) or '',
              'formatted_value': pretty_user_name_or_id(self.context,
-                                                       self.context.getSampler()),
+                 sampler and sampler or (username in samplers.keys() and username) or ''),
              'type': 'choices',
              'required': True,
-             'vocabulary': getUsers(self.context,
-                                    ['Sampler', 'LabManager', 'Manager']),
+             'vocabulary': samplers,
              'condition': sampling_workflow_enabled},
             {'id': 'DateSampled',
              'title': _('Date Sampled'),
@@ -374,38 +263,33 @@ class SampleView(BrowserView):
                       and self.context.getDateSampled().strftime(datepicker_format) \
                       or '',
              'required': True,
-             'formatted_value': TimeOrDate(self.context,
-                                           self.context.getDateSampled()),
+             'formatted_value': TimeOrDate(self.context, self.context.getDateSampled()),
              'type': 'text',
-             'class': 'datepicker',
+             'class': 'datepicker_nofuture',
              'condition': sampling_workflow_enabled},
             {'id': 'DateReceived',
              'title': _('Date Received'),
              'allow_edit': False,
              'value': self.context.getDateReceived(),
-             'formatted_value': TimeOrDate(self.context,
-                                           self.context.getDateReceived()),
+             'formatted_value': TimeOrDate(self.context, self.context.getDateReceived()),
              'type': 'text'},
             {'id': 'DateExpired',
              'title': _('Date Expired'),
              'allow_edit': False,
              'value': self.context.getDateExpired(),
-             'formatted_value': TimeOrDate(self.context,
-                                           self.context.getDateExpired()),
+             'formatted_value': TimeOrDate(self.context, self.context.getDateExpired()),
              'type': 'text'},
             {'id': 'DisposalDate',
              'title': _('Disposal Date'),
              'allow_edit': False,
              'value': self.context.getDisposalDate(),
-             'formatted_value': TimeOrDate(self.context,
-                                           self.context.getDisposalDate()),
+             'formatted_value': TimeOrDate(self.context, self.context.getDisposalDate()),
              'type': 'text'},
             {'id': 'DateDisposed',
              'title': _('Date Disposed'),
              'allow_edit': False,
              'value': self.context.getDateDisposed(),
-             'formatted_value': TimeOrDate(self.context,
-                                           self.context.getDateDisposed()),
+             'formatted_value': TimeOrDate(self.context, self.context.getDateDisposed()),
              'type': 'text'},
         ]
 
@@ -538,7 +422,7 @@ class SamplesView(BikaListingView):
                                 'toggle': True},
             'getDateSampled': {'title': _('Date Sampled'),
                                'toggle': True,
-                               'input_class': 'datepicker',
+                               'input_class': 'datepicker_nofuture',
                                'input_width': '10'},
             'getSampler': {'title': _('Sampler'),
                            'toggle': True},
@@ -586,7 +470,8 @@ class SamplesView(BikaListingView):
                          'getDateSampled',
                          'getSampler',
                          'getSampleTypeTitle',
-                         'getSamplePointTitle']},
+                         'getSamplePointTitle'],
+             'transitions':[{'id':'empty'},]},
             {'id':'sample_due',
              'title': _('Due'),
              'columns': ['getSampleID',
@@ -678,7 +563,8 @@ class SamplesView(BikaListingView):
             items[x]['DateReceived'] = TimeOrDate(self.context,  obj.getDateReceived())
             items[x]['getDateSampled'] = TimeOrDate(self.context, obj.getDateSampled())
 
-            items[x]['getSampler'] = obj.getSampler().strip()
+            sampler = obj.getSampler().strip()
+            items[x]['getSampler'] = sampler
 
             items[x]['getSamplingDate'] = TimeOrDate(self.context, obj.getSamplingDate())
 
@@ -696,10 +582,13 @@ class SamplesView(BikaListingView):
             if checkPermission(SampleSample, obj):
                 items[x]['required'] = ['getSampler', 'getDateSampled']
                 items[x]['allow_edit'] = ['getSampler', 'getDateSampled']
-                users = getUsers(self.context,
-                                 ['Sampler', 'LabManager', 'Manager'],
-                                 allow_empty=True)
-                users = [({'ResultValue': u, 'ResultText': users.getValue(u)})
-                         for u in users]
+                samplers = getUsers(obj, ['Sampler', 'LabManager', 'Manager'])
+                getAuthenticatedMember = self.context.portal_membership.getAuthenticatedMember
+                username = getAuthenticatedMember().getUserName()
+                users = [({'ResultValue': u, 'ResultText': samplers.getValue(u)})
+                         for u in samplers]
                 items[x]['choices'] = {'getSampler': users}
+                items[x]['getSampler'] = sampler and sampler or \
+                    (username in samplers.keys() and username) or ''
+
         return items

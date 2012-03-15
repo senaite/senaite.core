@@ -220,8 +220,9 @@ def AfterTransitionEventHandler(analysis, event):
             return
         else:
             analysis.REQUEST["workflow_skiplist"].append(analysis.UID())
-
-    logger.info("Starting: %s on %s" % (event.transition.id, analysis.getService().getKeyword()))
+    service = analysis.getService()
+    if service:
+        logger.info("Starting: %s on %s" % (event.transition.id, service.getKeyword()))
 
     wf = getToolByName(analysis, 'portal_workflow')
     ar = analysis.aq_parent

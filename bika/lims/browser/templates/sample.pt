@@ -23,60 +23,61 @@
 	specification python:request.get('specification', view.getDefaultSpec());
 	mtool here/portal_membership;">
 
-		<span tal:replace="structure view/header_table"/>
+	<span tal:replace="structure view/header_table"/>
 
-	<fieldset style="margin-top:2em;">
-        <h3>
-			<img
+	<h3 style="margin-top:2em;">
+		<img
+			i18n:attributes="title"
+			title="Partitions"
+			src="++resource++bika.lims.images/samplepartition.png"/>
+		<span i18n:translate="">Sample Partitions</span>
+	</h3>
+	<tal:parts replace="structure view/parts"/>
+
+    <h3 style="margin-top:2em;">
+        <tal:range>
+            <form name="specificationForm"
+                enctype="multipart/form-data"
+                method="post">
+            <img
+				title="range"
 				i18n:attributes="title"
-				title="Partitions"
-				src="++resource++bika.lims.images/samplepartition.png"/>
-	        <span i18n:translate="">Sample Partitions</span>
-        </h3>
-		<tal:parts replace="structure view/parts"/>
-	</fieldset>
+                tal:attributes="src string:++resource++bika.lims.images/analysisspec.png"/>
+            <span i18n:translate="">Range Specification</span>
+            <a class="specification" id="lab" value="lab"
+                href=""
+				i18n:translate=""
+                tal:attributes="
+                    href python:context.absolute_url();
+                    class python:specification == 'lab' and 'specification selected' or 'specification'">Lab</a>
+            <a class="specification" id="client" value="client"
+                href=""
+				i18n:translate=""
+                tal:attributes="
+                    href python:context.absolute_url();
+                    class python:specification == 'client' and 'specification selected' or 'specification'">Client</a>
+            </form>
+        </tal:range>
+    </h3>
 
     <tal:tables tal:repeat="table python:view.tables.items()">
-		<fieldset>
-		<form name="specificationForm" method="post">
-		<table cellpadding="0" cellspacing="0" style="margin:0"><tr><td>
-	        <h3>
-				<img
-					i18n:attributes="title"
-					title="Analyses"
-					src="++resource++bika.lims.images/analysisservice.png"/>
-				<span tal:content="python: table[0]"/>
-	        </h3>
-		</td><td style="text-align:right">
-			<img title="range"
-				tal:attributes="src string:++resource++bika.lims.images/analysisspec.png"/>
-			<a class="review_state_selector" id="lab" value="lab"
-				href=""
-				i18n:translate=""
-				tal:attributes="
-					href python:context.absolute_url();
-					class python:specification == 'lab' and 'specification selected' or 'specification'">Lab</a>
-			<a class="review_state_selector" id="client" value="client"
-				href=""
-				i18n:translate=""
-				tal:attributes="
-					href python:context.absolute_url();
-					class python:specification == 'client' and 'specification selected' or 'specification'">Client</a>
-		</td></tr>
-		<tr><td colspan="2">
+		<h3 style="margin-top:2em;">
+			<img
+				i18n:attributes="title"
+				title="Analyses"
+				src="++resource++bika.lims.images/analysisservice.png"/>
+			<span tal:content="python: table[0]"/>
+		</h3>
         <span tal:replace="structure python: table[1]"/>
-		</td></tr></table>
-		</form>
-		</fieldset>
     </tal:tables>
 
-	<fieldset>
+	<span style="margin-top:2em;">
 		<tal:remarks define="
 			field python:context.Schema()['Remarks'];
 			errors python:{};">
 			 <metal:widget use-macro="python:context.widget('Remarks', mode='edit')" />
 		</tal:remarks>
-	</fieldset>
+	</span>
 
 </metal:content>
 </body>

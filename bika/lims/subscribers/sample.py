@@ -39,7 +39,7 @@ def AfterTransitionEventHandler(sample, event):
                 try: workflow.doActionFor(ar, "sampled")
                 except WorkflowException: pass
 
-    if event.transition.id == "preserved":
+    elif event.transition.id == "preserved":
         # Transition all sample partitions that are still 'to_be_preserved'
         tbp = [sp for sp in parts \
                if workflow.getInfoFor(sp, 'review_state') == 'to_be_preserved']
@@ -49,10 +49,10 @@ def AfterTransitionEventHandler(sample, event):
         # All associated AnalysisRequests are also transitioned
         for ar in sample.getAnalysisRequests():
             if not ar.UID() in sample.REQUEST['workflow_skiplist']:
-                try: workflow.doActionFor(ar, "sampled")
+                try: workflow.doActionFor(ar, "preserved")
                 except WorkflowException: pass
 
-    if event.transition.id == "receive":
+    elif event.transition.id == "receive":
         if not props.getProperty('sampling_workflow_enabled', True):
             # If the sampling workflow is disabled, we set the DateSampled
             # to the current date

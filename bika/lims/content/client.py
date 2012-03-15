@@ -126,6 +126,7 @@ class Client(Organisation):
         # be manipulated in javascript
         client_ccs = []
         cc_data = {}
+        wf = getToolByName(self, 'portal_workflow')
         for contact in self.objectValues('Contact'):
             cc_contacts = []
             cc_uids = ''

@@ -292,16 +292,20 @@ dt.attachments {
 	line-height:1em !important;
 }
 
+dt.collapsibleHeader {
+	margin-left:1px !important;
+}
+
 dl.expandedInlineCollapsible dt.collapsibleHeader,
 dl.expandedBlockCollapsible dt.collapsibleHeader {
     background: &dtml-backgroundColor; !important;
-    padding-left: .5em !important;
+    padding-left: 0 !important;
 }
 
 dl.collapsedInlineCollapsible dt.collapsibleHeader,
 dl.collapsedBlockCollapsible dt.collapsibleHeader {
     background: &dtml-backgroundColor; !important;
-    padding-left:.5em !important;
+    padding-left:0 !important;
     position: relative;
 }
 

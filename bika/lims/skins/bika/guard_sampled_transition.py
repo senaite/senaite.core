@@ -32,4 +32,6 @@ elif context.portal_type == 'Sample':
     if context.getSamplingDate() > DateTime():
         return False
 
+# Always available for Analysis
+
 return True

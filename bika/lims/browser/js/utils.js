@@ -49,13 +49,22 @@ jQuery( function($) {
 			}).focus();
 		});
 
+		$('input.datepicker_nofuture').live('click', function() {
+			$(this).datepicker({
+				showOn:'focus',
+				showAnim:'',
+				dateFormat:'dd M yy',
+				changeMonth:true,
+				changeYear:true,
+				maxDate: '+0d'
+			}).focus();
+		});
+
 		$('body').append('<div id="global-spinner" class="global-spinner" style="display:none"><img id="img-global-spinner" src="spinner.gif" alt="Loading"/></div>');
 		$('#global-spinner')
 			.ajaxStart(function() { $(this).toggle(true); })
 			.ajaxStop(function() { $(this).toggle(false); });
-// "some" browsers don't like our spinner fading
-//			.ajaxStart(function() { $(this).stop().fadeIn(2000); })
-//			.ajaxStop(function() { $(this).stop().hide(); });
+		// we don't use #kss-spinner but it gets in the way.
 		$("#kss-spinner").empty();
 
 		$(".numeric").live('keypress', function(event) {

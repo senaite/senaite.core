@@ -26,10 +26,29 @@ def AfterTransitionEventHandler(part, event):
     sample = part.aq_parent
     sample_state = workflow.getInfoFor(sample, 'review_state')
 
-    if event.transition.id == "preserved":
-        pass
+    if event.transition.id == "sampled":
 
-    if event.transition.id == "receive":
+        # set "Sampled" on all our Analyses
+        analyses = part.getBackReferences('AnalysisSamplePartition')
+        for analysis in analyses:
+            workflow.doActionFor(analysis, 'sampled')
+
+    elif event.transition.id == "preserved":
+
+        # set "Preserved" on all our Analyses
+        analyses = part.getBackReferences('AnalysisSamplePartition')
+        for analysis in analyses:
+            workflow.doActionFor(analysis, 'preserved')
+
+        # if all sibling partitions are 'sample_due' (preserved),
+        # promote sample
+        if not sample.UID() in part.REQUEST['workflow_skiplist']:
+            unpreserved = [sp for sp in sample.objectValues("SamplePartition")
+                           if workflow.getInfoFor(sp, 'review_state') != 'sample_due']
+            if not unpreserved:
+                workflow.doActionFor(sample, 'preserved')
+
+    elif event.transition.id == "receive":
         if sample.getSamplingDate() > DateTime():
             raise WorkflowException
         part.setDateReceived(DateTime())
@@ -67,7 +86,7 @@ def AfterTransitionEventHandler(part, event):
         part.reindexObject(idxs = ["cancellation_state", ])
         sample_c_state = workflow.getInfoFor(sample, 'cancellation_state')
 
-        # if all sibling partitions are active, activate sample
+        # if all sibling partitions are cancelled, cancel sample
         if not sample.UID() in part.REQUEST['workflow_skiplist']:
             active = [sp for sp in sample.objectValues("SamplePartition")
                       if workflow.getInfoFor(sp, 'cancellation_state') == 'active']

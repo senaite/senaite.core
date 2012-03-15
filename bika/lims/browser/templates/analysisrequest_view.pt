@@ -33,16 +33,25 @@
 		attachments_allowed here/bika_setup/getAttachmentsPermitted;
 		attachments here/getAttachment | nothing;
 		delete_attachments python:True;
-		update_attachments python:True">
-
+		update_attachments python:context.portal_membership.checkPermission('EditResults', context) or
+		                          context.portal_membership.checkPermission('EditFieldResults', context)">
 
     <div
-        tal:condition="attachments_allowed"
+        tal:condition="update_attachments"
         tal:define="ar_review_state review_state">
         <metal:block use-macro="here/attachments/macros/attachments"/>
     </div>
 
-	<br/>
+	<span tal:replace="structure view/header_table"/>
+
+	<h3 style="margin-top:2em;">
+		<img
+			i18n:attributes="title"
+			title="Partitions"
+			src="++resource++bika.lims.images/samplepartition.png"/>
+		<span i18n:translate="">Sample Partitions</span>
+	</h3>
+	<tal:parts replace="structure view/parts"/>
 
     <form
         id="analysisrequest_edit_form"
@@ -50,129 +59,19 @@
         method="POST"
         enctype="multipart/form-data">
 
-    <img tal:condition="view/getHazardous"
-        title="Hazardous"
-	    i18n:attributes="value"
-        tal:attributes="src string:++resource++bika.lims.images/hazardous_big.png"/>
+		<img tal:condition="view/getHazardous"
+			title="Hazardous"
+			i18n:attributes="value"
+			tal:attributes="src string:++resource++bika.lims.images/hazardous_big.png"/>
 
-        <table
-            summary="Analysisrequest view"
-            class="listing analysisrequest nosort"
-            cellpadding="0" cellspacing="0">
-
-        <thead>
-
-        <tr>
-            <th>
-	            <img tal:attributes="
-	                 title string:${sample/Title};
-	                 src string:++resource++bika.lims.images/sample.png"/>
-	            <span i18n:translate="">Sample ID</span>
-            </th>
-            <td>
-				<a tal:attributes="href sample/absolute_url"
-	               tal:content="sample/Title"/>
-            </td>
-            <th>
-				<img tal:attributes="
-					 src string:++resource++bika.lims.images/contact.png"/>
-				<span i18n:translate="">Contact Person</span>
-			</th>
-            <td>
-                <a tal:define="contact here/getContact"
-                    tal:condition="nocall:contact"
-                    tal:attributes="href contact/absolute_url"
-                    tal:content="contact/Title"/>
-                <tal:ccs define="ccs here/getCCContact" condition="nocall:ccs" repeat="cc ccs">
-                    <span tal:condition="python:repeat['cc'].index == 0">;&nbsp;</span>
-                    <span tal:condition="python:repeat['cc'].index > 0">;&nbsp;</span>
-                    <a tal:content="cc/Title" tal:attributes="href cc/absolute_url"/>
-                </tal:ccs>
-                <tal:ccemails>
-                    <span tal:content="here/getCCEmails"/>
-                </tal:ccemails>
-            </td>
-        </tr>
-
-        <tr>
-
-
-        <tr>
-            <th style="padding-left:3em" i18n:translate="">Client Sample</th>
-            <td tal:content="sample/getClientSampleID"/>
-            <th style="padding-left:3em" i18n:translate="">Client Order</th>
-            <td tal:content="here/getClientOrderNumber|nothing"/>
-        </tr>
-
-        <tr>
-            <th style="padding-left:3em" i18n:translate="">Sample Type</th>
-            <td tal:content="context/getSampleTypeTitle"/>
-            <th style="padding-left:3em" i18n:translate="">Client Reference</th>
-            <td tal:content="sample/getClientReference"/>
-        </tr>
-
-        <tr>
-            <th style="padding-left:3em" i18n:translate="">Sample Point</th>
-            <td tal:content="context/getSamplePointTitle"/>
-            <th style="padding-left:3em" i18n:translate="">Date Requested</th>
-            <td>
-                <span
-                    tal:define="date_requested here/getDateRequested"
-                    tal:condition="date_requested"
-                    tal:content="python:view.TimeOrDate(context, date_requested, long_format=1)"/>
-            </td>
-        </tr>
-
-        <tr>
-            <th style="padding-left:3em" i18n:translate="">Status</th>
-            <td tal:content="python:review_state.replace('_', ' ')"/>
-            <th style="padding-left:3em" i18n:translate="">Sampling Date</th>
-            <td tal:define="sampling_date sample/getSamplingDate">
-                <span
-                    tal:condition="sampling_date"
-                    tal:content="python:view.TimeOrDate(context, sampling_date, long_format=1)"/>
-                <img src='++resource++bika.lims.images/calendar.png'
-                     tal:condition="python:sampling_date > view.now()"
-                     title="Future dated sample"
-                     i18n:attributes="title"/>
-            </td>
-        </tr>
-
-        <tr tal:condition="python:review_state not in ('to_be_sampled', 'to_be_preserved', 'sample_due')">
-            <th style="padding-left:3em" i18n:translate="">Date Received</th>
-			<td><span
-				tal:condition="python:review_state == 'sample_received'"
-				tal:define="date_received here/getDateReceived"
-				tal:content="python:view.TimeOrDate(context, date_received, long_format=1)"/>
-            </td>
-			<th style="padding-left:3em" i18n:translate="">Date Published</th>
-			<td><span
-				tal:condition="python:review_state == 'published'"
-				tal:define="date_published here/getDatePublished"
-				tal:content="python:view.TimeOrDate(context, date_published, long_format=1)"/>
-			</td>
-		</tr>
-
-        <tr tal:condition="python:review_state in ('verified', 'published')">
-            <th style="padding-left:3em" i18n:translate="">Verified by</th>
-            <td colspan="3">
-                <span
-                    tal:define="verifier python:view.get_analysisrequest_verifier(here)"
-                    tal:content="verifier"/>
-            </td>
-        </tr>
-
-        </thead>
-        </table>
-
-        <h3>
-        <tal:profile tal:condition="view/getARProfileTitle">
-            <img title="profile"
-                tal:attributes="src string:++resource++bika.lims.images/arprofile.png">
-            <span i18n:translate="">Profile</span>:
-            <span tal:content="view/getARProfileTitle"/>
-	        &nbsp&nbsp&nbsp&nbsp
-        </tal:profile>
+		<h3 style="margin-top:1em;">
+		<tal:profile tal:condition="view/getARProfileTitle">
+			<img title="profile"
+				tal:attributes="src string:++resource++bika.lims.images/arprofile.png">
+			<span i18n:translate="">Profile</span>:
+			<span tal:content="view/getARProfileTitle"/>
+			&nbsp&nbsp&nbsp&nbsp
+		</tal:profile>
 
         <form name="specificationForm"
 					enctype="multipart/form-data"
@@ -201,7 +100,7 @@
         <br/>
 
 		<tal:tables tal:repeat="table python:view.tables.items()">
-			<h3>
+			<h3 style="margin-top:1em;">
 				<img title="analyses" src="++resource++bika.lims.images/analysisservice.png">
 				<span tal:content="python: table[0]"/>
 			</h3>
@@ -210,21 +109,23 @@
 
     </form>
 
-    <form action="workflow_action">
-        <input
-            tal:condition="python:inactive_state == 'active'"
-            class="context workflow_action_button"
-            type="submit"
-            value="deactivate"
-            name="workflow_action">
-        <input
-            tal:condition="python:inactive_state == 'inactive'"
-            class="context workflow_action_button"
-            type="submit"
-            value="activate"
-            name="workflow_action">
-    <form>
+<!--    <form action="workflow_action">-->
+<!--        <input-->
+<!--            tal:condition="python:inactive_state == 'active'"-->
+<!--            class="context workflow_action_button"-->
+<!--            type="submit"-->
+<!--            value="deactivate"-->
+<!--            name="workflow_action">-->
+<!--        <input-->
+<!--            tal:condition="python:inactive_state == 'inactive'"-->
+<!--            class="context workflow_action_button"-->
+<!--            type="submit"-->
+<!--            value="activate"-->
+<!--            name="workflow_action">-->
+<!--    <form>-->
+<!---->
 
+	<br/>
 	<tal:remarks define="
 		field python:context.Schema()['Remarks'];
 		errors python:{};">

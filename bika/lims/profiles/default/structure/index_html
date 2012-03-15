@@ -62,9 +62,7 @@ Dormant setup items can be de-activated, which will remove them from general vie
 <p> Using AJAX, Plone 4's user interface and a host of smaller enhancements, many clicks were saved and general performance improved</p>
 </td>
 <td>
-<p align="center" class="callout"><strong>Where did all the columns go?</strong><br /><br />
-<img class="image-inline" src="list-column-toggles" alt="List Column Toggles" /><br /><br />To facilitate small screen displays, users select which columns they want displayed on Samples, Analysis Request and Worksheet lists<br /><br /><strong>Right click </strong>on the column headers on these list to display the column display toggle menu<br /><br /></p>
-</td>
+&nbsp;</td>
 </tr>
 </tbody>
 </table>

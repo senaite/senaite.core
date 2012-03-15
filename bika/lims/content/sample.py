@@ -248,7 +248,7 @@ class Sample(BaseFolder, HistoryAwareMixin):
         try:
             last_ar_number = int(ar_ids[-1].split("-")[-1])
         except ValueError:
-            return 1
+            return 0
         return last_ar_number
 
 atapi.registerType(Sample, PROJECTNAME)

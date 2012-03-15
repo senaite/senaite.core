@@ -179,6 +179,8 @@ class BikaGenerator:
         mp(DispatchOrder, ['Manager', 'LabManager', 'LabClerk'], 1)
         mp(PostInvoiceBatch, ['Manager', 'LabManager', 'Owner'], 1)
 
+        mp(CancelAndReinstate, ['Manager', 'LabManager'], 0)
+
         mp(VerifyOwnResults, ['Manager', ], 1)
 
         mp(ReceiveSample, ['Manager', 'LabManager', 'LabClerk', 'Sampler'], 1)
@@ -202,15 +204,15 @@ class BikaGenerator:
         # /clients folder permissions
         mp = portal.clients.manage_permission
         mp(permissions.ListFolderContents, ['Manager', 'LabManager', 'Member', 'LabClerk', 'Analyst', 'Sampler', 'Preserver'], 0)
-        mp(permissions.View, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Owner', 'Sampler', 'Preserver'], 0)
+        mp(permissions.View, ['Manager', 'LabManager', 'LabClerk', 'Member', 'Analyst', 'Sampler', 'Preserver'], 0)
         mp('Access contents information', ['Manager', 'LabManager', 'Member', 'LabClerk', 'Analyst', 'Sampler', 'Preserver', 'Owner'], 0)
         mp(ManageClients, ['Manager', 'LabManager', 'LabClerk', 'Owner'], 0)
-        mp(ManageAnalysisRequests, ['Manager', 'LabManager', 'LabClerk', 'Owner'], 0)
         mp(permissions.AddPortalContent, ['Manager', 'LabManager', 'LabClerk', 'Owner'], 0)
         portal.clients.reindexObject()
 
         # /worksheets folder permissions
         mp = portal.worksheets.manage_permission
+        mp(CancelAndReinstate, ['Manager', 'LabManager', 'LabClerk'], 0)
         mp(permissions.ListFolderContents, ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 0)
         mp(permissions.AddPortalContent, ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 0)
         mp(permissions.View, ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 0)
@@ -220,6 +222,7 @@ class BikaGenerator:
 
         # /analysisrequests folder permissions
         mp = portal.analysisrequests.manage_permission
+        mp(CancelAndReinstate, ['Manager', 'LabManager', 'LabClerk'], 0)
         mp(permissions.ListFolderContents, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler'], 0)
         mp(permissions.AddPortalContent, ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 0)
         mp(permissions.View, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler'], 0)
@@ -229,6 +232,7 @@ class BikaGenerator:
 
         # /referencesamples folder permissions
         mp = portal.referencesamples.manage_permission
+        mp(CancelAndReinstate, ['Manager', 'LabManager', 'LabClerk'], 0)
         mp(permissions.ListFolderContents, ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 0)
         mp(permissions.AddPortalContent, ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 0)
         mp(permissions.View, ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 0)
@@ -238,6 +242,7 @@ class BikaGenerator:
 
         # /samples folder permissions
         mp = portal.samples.manage_permission
+        mp(CancelAndReinstate, ['Manager', 'LabManager', 'LabClerk'], 0)
         mp(permissions.ListFolderContents, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler', 'Preserver'], 0)
         mp(permissions.AddPortalContent, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler'], 0)
         mp(permissions.View, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler', 'Preserver'], 0)
@@ -247,6 +252,7 @@ class BikaGenerator:
 
         # /invoices folder permissions
         mp = portal.invoices.manage_permission
+        mp(CancelAndReinstate, ['Manager', 'LabManager', 'LabClerk'], 0)
         mp(permissions.ListFolderContents, ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 1)
         mp(permissions.AddPortalContent, ['Manager', 'LabManager', 'Owner'], 0)
         mp(permissions.DeleteObjects, ['Manager', 'LabManager', 'Owner'], 0)
@@ -255,6 +261,7 @@ class BikaGenerator:
 
         # /pricelists folder permissions
         mp = portal.pricelists.manage_permission
+        mp(CancelAndReinstate, ['Manager', 'LabManager', 'LabClerk'], 0)
         mp(permissions.ListFolderContents, ['Member'], 1)
         mp(permissions.AddPortalContent, ['Manager', 'LabManager', 'Owner'], 0)
         mp(permissions.DeleteObjects, ['Manager', 'LabManager', 'Owner'], 0)

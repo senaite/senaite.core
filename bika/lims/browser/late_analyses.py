@@ -29,6 +29,7 @@ class LateAnalysesView(BikaListingView):
         self.show_select_row = False
         self.show_select_column = False
         self.pagesize = 100
+        self.show_workflow_action_buttons = False
         self.view_url = self.view_url + "/late_analyses"
 
         request.set('disable_border', 1)

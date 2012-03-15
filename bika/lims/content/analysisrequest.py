@@ -486,7 +486,7 @@ class AnalysisRequest(BaseFolder):
         RESPONSE.redirect(
                 '%s/manage_results' % self.absolute_url())
 
-    security.declarePublic('getContactUIDForUser')
+    security.declarePublic('get_verifier')
     def get_verifier(self):
         wtool = getToolByName(self, 'portal_workflow')
         mtool = getToolByName(self, 'portal_membership')

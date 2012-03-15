@@ -8,9 +8,10 @@
 	tal:condition="view/header_rows"
 	tal:define="
 		columns python:hasattr(view, 'header_columns') and view.header_columns or 3;
-		header_rows python: [ view.header_rows[x:x+3]
+		header_rows python: [ view.header_rows[x:x+columns]
 		                      for x in range(0, len(view.header_rows), columns)
 							  if view.header_rows[x].get('condition', True) ];
+		empty_cells python:columns - len(header_rows[-1]);
 		portal context/@@plone_portal_state/portal;
 		global edit_enabled python:False;">
 
@@ -97,6 +98,10 @@
 
 			</td>
 		</tal:item>
+		<tal:e tal:condition="repeat/row/end" tal:repeat="e python:range(empty_cells)">
+			<th>&nbsp;</th>
+			<td>&nbsp;</td>
+		</tal:e>
 		</tr>
 		</tal:row>
 

@@ -39,7 +39,7 @@ def printfile(portal, from_addr, to_addrs, msg):
     """
     pass
 
-def getUsers(context, roles, allow_empty=False):
+def getUsers(context, roles, allow_empty=True):
     """ Present a DisplayList containing users in the specified
         list of roles
     """
