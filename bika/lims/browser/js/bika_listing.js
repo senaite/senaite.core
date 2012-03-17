@@ -331,11 +331,12 @@ $(document).ready(function(){
 		$(".tooltip").remove();
 	});
 
-	// show / hide columns - the action when a checkbox is clicked in the menu
+	// show / hide columns - the action when a column is clicked in the menu
 	$('.contextmenu tr').live('click', function(event){
 		col_id = $(this).attr('col_id');
 		form_id = $(this).attr('form_id');
 		form = $("form#"+form_id);
+		cookie_key = window.location.href + "/" + form_id;
 
 		if(col_id=='DEFAULT'){
 			$.cookie('toggle_cols', null);
@@ -349,13 +350,13 @@ $(document).ready(function(){
 			$.each($.parseJSON($('#'+form_id+"_toggle_cols").val()), function(i,v){
 				toggle_cols.push(i);
 			});
-			cookie[form_id] = toggle_cols;
-			$.cookie('toggle_cols', $.toJSON(cookie), { expires: 365, path: window.location.href });
+			cookie[cookie_key] = toggle_cols;
+			$.cookie('toggle_cols', $.toJSON(cookie), { expires: 365 });
 		} else {
 			cookie = $.cookie("toggle_cols");
 			cookie = $.parseJSON(cookie);
 			if (cookie != null){
-				toggle_cols = cookie[form_id];
+				toggle_cols = cookie[cookie_key];
 				if (toggle_cols == null) {
 					toggle_cols = [];
 					$.each($.parseJSON($('#'+form_id+"_toggle_cols").val()), function(i,v){
@@ -382,8 +383,8 @@ $(document).ready(function(){
 					toggle_cols.push(col_id);
 				}
 			}
-			cookie[form_id] = toggle_cols;
-			$.cookie('toggle_cols', $.toJSON(cookie), { expires: 365, path: window.location.href });
+			cookie[cookie_key] = toggle_cols;
+			$.cookie('toggle_cols', $.toJSON(cookie), { expires: 365 });
 		}
 		stored_form_action = $(form).attr("action");
 		$(form).attr("action", window.location.href);
