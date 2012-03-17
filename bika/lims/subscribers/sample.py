@@ -51,6 +51,7 @@ def AfterTransitionEventHandler(sample, event):
             if not ar.UID() in sample.REQUEST['workflow_skiplist']:
                 try: workflow.doActionFor(ar, "preserved")
                 except WorkflowException: pass
+                ar.reindexObject()
 
     elif event.transition.id == "receive":
         if not props.getProperty('sampling_workflow_enabled', True):
