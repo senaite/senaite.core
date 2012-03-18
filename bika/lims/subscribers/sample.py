@@ -51,10 +51,10 @@ def AfterTransitionEventHandler(sample, event):
     elif event.transition.id == "receive":
         if not props.getProperty('sampling_workflow_enabled', True):
             # If the sampling workflow is disabled, we set the DateSampled
-            # to the current date
+            # to the current date and Sampler to the current user
             DateSampled = DateTime()
             Sampler = member.id
-            sample.setSamplingDate(DateSampled)
+            sample.setDateSampled(DateSampled)
             sample.setSampler(Sampler)
 
         sample.setDateReceived(DateTime())
