@@ -404,6 +404,9 @@ class SamplesView(BikaListingView):
                             'index':'getSampleID'},
             'Client': {'title': _("Client"),
                        'toggle': True,},
+            'Creator': {'title': PMF('Creator'),
+                                     'index': 'Creator',
+                                     'toggle': False},
             'Requests': {'title': _('Requests'),
                          'sortable': False,
                          'toggle': False},
@@ -437,6 +440,7 @@ class SamplesView(BikaListingView):
              'title': _('All'),
              'columns': ['getSampleID',
                          'Client',
+                         'Creator',
                          'Requests',
                          'getClientReference',
                          'getClientSampleID',
@@ -451,6 +455,7 @@ class SamplesView(BikaListingView):
              'title': _('To Be Sampled'),
              'columns': ['getSampleID',
                          'Client',
+                         'Creator',
                          'Requests',
                          'getClientReference',
                          'getClientSampleID',
@@ -463,6 +468,7 @@ class SamplesView(BikaListingView):
              'title': _('To Be Preserved'),
              'columns': ['getSampleID',
                          'Client',
+                         'Creator',
                          'Requests',
                          'getClientReference',
                          'getClientSampleID',
@@ -476,6 +482,7 @@ class SamplesView(BikaListingView):
              'title': _('Due'),
              'columns': ['getSampleID',
                          'Client',
+                         'Creator',
                          'Requests',
                          'getClientReference',
                          'getClientSampleID',
@@ -488,6 +495,7 @@ class SamplesView(BikaListingView):
              'title': _('Received'),
              'columns': ['getSampleID',
                          'Client',
+                         'Creator',
                          'Requests',
                          'getClientReference',
                          'getClientSampleID',
@@ -501,6 +509,7 @@ class SamplesView(BikaListingView):
              'title': _('Expired'),
              'columns': ['getSampleID',
                          'Client',
+                         'Creator',
                          'Requests',
                          'getClientReference',
                          'getClientSampleID',
@@ -514,6 +523,7 @@ class SamplesView(BikaListingView):
              'title': _('Disposed'),
              'columns': ['getSampleID',
                          'Client',
+                         'Creator',
                          'Requests',
                          'getClientReference',
                          'getClientSampleID',
@@ -529,6 +539,7 @@ class SamplesView(BikaListingView):
              'transitions': [{'id':'reinstate'}, ],
              'columns': ['getSampleID',
                          'Client',
+                         'Creator',
                          'Requests',
                          'getClientReference',
                          'getClientSampleID',
@@ -559,6 +570,9 @@ class SamplesView(BikaListingView):
             items[x]['Client'] = obj.aq_parent.Title()
             items[x]['replace']['Client'] = "<a href='%s'>%s</a>" % \
                 (obj.aq_parent.absolute_url(), obj.aq_parent.Title())
+
+            items[x]['Creator'] = pretty_user_name_or_id(self.context,
+                                                         obj.Creator())
 
             items[x]['DateReceived'] = TimeOrDate(self.context,  obj.getDateReceived())
             items[x]['getDateSampled'] = TimeOrDate(self.context, obj.getDateSampled())
