@@ -180,7 +180,7 @@ class ReferenceSample(BaseFolder):
             return title
 
         bsc = getToolByName(self, 'bika_setup_catalog')
-        defs = [o.getObject() for o in \
+        defs = [o.getObject() for o in
                 bsc(portal_type = 'ReferenceDefinition',
                     inactive_state = 'active')]
         items = [('','')] + [(o.UID(), make_title(o)) for o in defs]
@@ -193,7 +193,7 @@ class ReferenceSample(BaseFolder):
 
     def getReferenceManufacturers(self):
         bsc = getToolByName(self, 'bika_setup_catalog')
-        items = [('','')] + [(o.UID, o.Title) for o in \
+        items = [('','')] + [(o.UID, o.Title) for o in
                                bsc(portal_type='ReferenceManufacturer',
                                    inactive_state = 'active')]
         o = self.getReferenceDefinition()

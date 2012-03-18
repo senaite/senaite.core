@@ -181,8 +181,8 @@ class ajaxCalculateAnalysisEntry():
         if dm:
             dry_service = self.context.bika_setup.getDryMatterService()
             # get the UID of the DryMatter Analysis from our parent AR
-            dry_analysis = [a for a in \
-                            analysis.aq_parent.getAnalyses(full_objects=True) \
+            dry_analysis = [a for a in
+                            analysis.aq_parent.getAnalyses(full_objects=True)
                             if a.getService().UID() == dry_service.UID()]
             if dry_analysis:
                 dry_analysis = dry_analysis[0]

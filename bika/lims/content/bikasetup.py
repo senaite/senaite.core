@@ -310,7 +310,7 @@ class BikaSetup(folder.ATFolder):
         """
         """
         bsc = getToolByName(self, 'bika_setup_catalog')
-        items = [('','')] + [(o.UID, o.Title) for o in \
+        items = [('','')] + [(o.UID, o.Title) for o in
                                bsc(portal_type='AnalysisService',
                                    inactive_state = 'active')]
         items.sort(lambda x,y: cmp(x[1], y[1]))

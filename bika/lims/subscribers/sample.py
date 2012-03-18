@@ -61,7 +61,7 @@ def AfterTransitionEventHandler(sample, event):
         sample.reindexObject(idxs = ["review_state", "getDateReceived"])
 
         # Receive all sample partitions that are still 'sample_due'
-        sample_due = [sp for sp in parts \
+        sample_due = [sp for sp in parts
                       if workflow.getInfoFor(sp, 'review_state') == 'sample_due']
         for sp in sample_due:
             workflow.doActionFor(sp, 'receive')

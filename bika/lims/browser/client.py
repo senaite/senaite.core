@@ -177,7 +177,7 @@ class ClientAnalysisRequestsView(AnalysisRequestsView):
         mtool = getToolByName(self.context, 'portal_membership')
         addPortalMessage = self.context.plone_utils.addPortalMessage
         # client contact required
-        active_contacts = [c for c in self.context.objectValues('Contact') if \
+        active_contacts = [c for c in self.context.objectValues('Contact') if
                            wf.getInfoFor(c, 'inactive_state', '') == 'active']
         if isActive(self.context):
             if self.context.portal_type == "Client" and not active_contacts:

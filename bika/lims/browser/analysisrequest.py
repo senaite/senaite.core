@@ -657,7 +657,7 @@ class ajaxCalculateParts():
                 service = bsc(UID=service_uid)[0].getObject()
                 infobit = "Col %s: %s: " % (col,service.Title())
 
-                partsetup = [s for s in service.getPartitionSetup() \
+                partsetup = [s for s in service.getPartitionSetup()
                              if s['sampletype'] == st_uid]
                 partsetup = partsetup and partsetup[0] or {}
 
@@ -1602,6 +1602,9 @@ class AnalysisRequestsView(BikaListingView):
             'getClientOrderNumber': {'title': _('Client Order'),
                                      'index': 'getClientOrderNumber',
                                      'toggle': False},
+            'Creator': {'title': PMF('Creator'),
+                                     'index': 'Creator',
+                                     'toggle': False},
             'Client': {'title': _('Client'),
                        'toggle': True},
             'getClientReference': {'title': _('Client Ref'),
@@ -1648,6 +1651,7 @@ class AnalysisRequestsView(BikaListingView):
                              {'id':'reinstate'}],
              'columns':['getRequestID',
                         'Client',
+                        'Creator',
                         'getClientOrderNumber',
                         'getClientReference',
                         'getClientSampleID',
@@ -1704,6 +1708,7 @@ class AnalysisRequestsView(BikaListingView):
                              {'id':'reinstate'}],
              'columns':['getRequestID',
                         'Client',
+                        'Creator',
                         'getClientOrderNumber',
                         'getClientReference',
                         'getClientSampleID',
@@ -1721,6 +1726,7 @@ class AnalysisRequestsView(BikaListingView):
                              {'id':'reinstate'}],
              'columns':['getRequestID',
                         'Client',
+                        'Creator',
                         'getClientOrderNumber',
                         'getClientReference',
                         'getClientSampleID',
@@ -1741,6 +1747,7 @@ class AnalysisRequestsView(BikaListingView):
                              {'id':'reinstate'}],
              'columns':['getRequestID',
                         'Client',
+                        'Creator',
                         'getClientOrderNumber',
                         'getClientReference',
                         'getClientSampleID',
@@ -1757,6 +1764,7 @@ class AnalysisRequestsView(BikaListingView):
              'transitions': [{'id':'publish'}],
              'columns':['getRequestID',
                         'Client',
+                        'Creator',
                         'getClientOrderNumber',
                         'getClientReference',
                         'getClientSampleID',
@@ -1772,6 +1780,7 @@ class AnalysisRequestsView(BikaListingView):
                                'sort_order': 'reverse'},
              'columns':['getRequestID',
                         'Client',
+                        'Creator',
                         'getClientOrderNumber',
                         'getClientReference',
                         'getClientSampleID',
@@ -1793,6 +1802,7 @@ class AnalysisRequestsView(BikaListingView):
              'transitions': [{'id':'reinstate'}],
              'columns':['getRequestID',
                         'Client',
+                        'Creator',
                         'getClientOrderNumber',
                         'getClientReference',
                         'getClientSampleID',
@@ -1821,6 +1831,7 @@ class AnalysisRequestsView(BikaListingView):
                              {'id':'reinstate'}],
              'columns':['getRequestID',
                         'Client',
+                        'Creator',
                         'getClientOrderNumber',
                         'getClientReference',
                         'getClientSampleID',
@@ -1849,6 +1860,7 @@ class AnalysisRequestsView(BikaListingView):
                              {'id':'reinstate'}],
              'columns':['getRequestID',
                         'Client',
+                        'Creator',
                         'getClientOrderNumber',
                         'getClientReference',
                         'getClientSampleID',
@@ -1884,6 +1896,9 @@ class AnalysisRequestsView(BikaListingView):
             items[x]['Client'] = obj.aq_parent.Title()
             items[x]['replace']['Client'] = "<a href='%s'>%s</a>" % \
                  (obj.aq_parent.absolute_url(), obj.aq_parent.Title())
+
+            items[x]['Creator'] = pretty_user_name_or_id(self.context,
+                                                         obj.Creator())
 
             samplingdate = obj.getSample().getSamplingDate()
             items[x]['SamplingDate'] = TimeOrDate(self.context, samplingdate, long_format = 0)

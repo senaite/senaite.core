@@ -415,7 +415,7 @@ class LoadSetupData(BrowserView):
                                          Title = unicode(row['_Client_Name']))
             contact = self.reference_catalog.lookupObject(row['uid'])
             cc = self.portal_catalog(portal_type="Contact",
-                                     getUsername = [c.strip() for c in \
+                                     getUsername = [c.strip() for c in
                                                     unicode(row['CC']).split(',')])
             if cc:
                 contact.setCCContact([c.UID for c in cc])

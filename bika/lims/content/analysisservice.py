@@ -158,7 +158,7 @@ class PartitionSetupField(RecordsField):
     def Preservations(self, instance=None):
         instance = instance or self
         bsc = getToolByName(instance, 'bika_setup_catalog')
-        items = [(c.UID,c.title) for c in \
+        items = [(c.UID,c.title) for c in
                  bsc(portal_type='Preservation',
                      inactive_state='active',
                      sort_on = 'sortable_title')]
@@ -588,7 +588,7 @@ class AnalysisService(BaseContent, HistoryAwareMixin):
 
     def getAnalysisCategories(self):
         bsc = getToolByName(self, 'bika_setup_catalog')
-        items = [('','')] + [(o.UID, o.Title) for o in \
+        items = [('','')] + [(o.UID, o.Title) for o in
                                bsc(portal_type='AnalysisCategory',
                                    inactive_state = 'active')]
         o = self.getCategory()
@@ -599,7 +599,7 @@ class AnalysisService(BaseContent, HistoryAwareMixin):
 
     def getMethods(self):
         bsc = getToolByName(self, 'bika_setup_catalog')
-        items = [('','')] + [(o.UID, o.Title) for o in \
+        items = [('','')] + [(o.UID, o.Title) for o in
                                bsc(portal_type='Method',
                                    inactive_state = 'active')]
         o = self.getMethod()
@@ -610,7 +610,7 @@ class AnalysisService(BaseContent, HistoryAwareMixin):
 
     def getInstruments(self):
         bsc = getToolByName(self, 'bika_setup_catalog')
-        items = [('','')] + [(o.UID, o.Title) for o in \
+        items = [('','')] + [(o.UID, o.Title) for o in
                                bsc(portal_type='Instrument',
                                    inactive_state = 'active')]
         o = self.getInstrument()
@@ -621,7 +621,7 @@ class AnalysisService(BaseContent, HistoryAwareMixin):
 
     def getCalculations(self):
         bsc = getToolByName(self, 'bika_setup_catalog')
-        items = [('','')] + [(o.UID, o.Title) for o in \
+        items = [('','')] + [(o.UID, o.Title) for o in
                                bsc(portal_type='Calculation',
                                    inactive_state = 'active')]
         o = self.getCalculation()
@@ -632,7 +632,7 @@ class AnalysisService(BaseContent, HistoryAwareMixin):
 
     def getDepartments(self):
         bsc = getToolByName(self, 'bika_setup_catalog')
-        items = [('','')] + [(o.UID, o.Title) for o in \
+        items = [('','')] + [(o.UID, o.Title) for o in
                                bsc(portal_type='Department',
                                    inactive_state = 'active')]
         o = self.getDepartment()
@@ -675,7 +675,7 @@ class AnalysisService(BaseContent, HistoryAwareMixin):
 
     def getPreservations(self):
         bsc = getToolByName(self, 'bika_setup_catalog')
-        items = [(o.UID, o.Title) for o in \
+        items = [(o.UID, o.Title) for o in
                  bsc(portal_type='Preservation',
                      inactive_state = 'active')]
         items.sort(lambda x,y: cmp(x[1], y[1]))

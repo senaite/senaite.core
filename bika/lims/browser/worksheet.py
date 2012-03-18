@@ -237,7 +237,7 @@ class WorksheetAnalysesView(AnalysesView):
         highest_position = 0
         for x, item in enumerate(items):
             obj = item['obj']
-            pos = [int(slot['position']) for slot in layout if \
+            pos = [int(slot['position']) for slot in layout if
                    slot['analysis_uid'] == obj.UID()][0]
             highest_position = max(highest_position, pos)
             items[x]['Pos'] = pos
@@ -476,7 +476,7 @@ class ManageResultsView(BrowserView):
 
     def getInstruments(self):
         bsc = getToolByName(self, 'bika_setup_catalog')
-        items = [('', '')] + [(o.UID, o.Title) for o in \
+        items = [('', '')] + [(o.UID, o.Title) for o in
                                bsc(portal_type = 'Instrument',
                                    inactive_state = 'active')]
         o = self.context.getInstrument()
@@ -607,7 +607,7 @@ class AddAnalysesView(BikaListingView):
 
     def getServices(self):
         bsc = getToolByName(self.context, 'bika_setup_catalog')
-        return [c.Title for c in \
+        return [c.Title for c in
                 bsc(portal_type = 'AnalysisService',
                    getCategoryUID = self.request.get('list_getCategoryUID', ''),
                    inactive_state = 'active',
@@ -615,14 +615,14 @@ class AddAnalysesView(BikaListingView):
 
     def getClients(self):
         pc = getToolByName(self.context, 'portal_catalog')
-        return [c.Title for c in \
+        return [c.Title for c in
                 pc(portal_type = 'Client',
                    inactive_state = 'active',
                    sort_on = 'sortable_title')]
 
     def getCategories(self):
         bsc = getToolByName(self.context, 'bika_setup_catalog')
-        return [c.Title for c in \
+        return [c.Title for c in
                 bsc(portal_type = 'AnalysisCategory',
                    inactive_state = 'active',
                    sort_on = 'sortable_title')]
@@ -631,7 +631,7 @@ class AddAnalysesView(BikaListingView):
         """ Return WS Templates """
         profiles = []
         bsc = getToolByName(self.context, 'bika_setup_catalog')
-        return [(c.UID, c.Title) for c in \
+        return [(c.UID, c.Title) for c in
                 bsc(portal_type = 'WorksheetTemplate',
                    inactive_state = 'active',
                    sort_on = 'sortable_title')]
@@ -674,7 +674,7 @@ class AddBlankView(BrowserView):
         layout = self.context.getLayout()
         used_positions = [int(slot['position']) for slot in layout]
         if used_positions:
-            available_positions = [pos for pos in range(1, max(used_positions) + 1) if \
+            available_positions = [pos for pos in range(1, max(used_positions) + 1) if
                                    pos not in used_positions]
         else:
             available_positions = []
@@ -717,7 +717,7 @@ class AddControlView(BrowserView):
         layout = self.context.getLayout()
         used_positions = [int(slot['position']) for slot in layout]
         if used_positions:
-            available_positions = [pos for pos in range(1, max(used_positions) + 1) if \
+            available_positions = [pos for pos in range(1, max(used_positions) + 1) if
                                    pos not in used_positions]
         else:
             available_positions = []
@@ -741,7 +741,7 @@ class AddDuplicateView(BrowserView):
         form = self.request.form
         if 'submitted' in form:
             ar_uid = self.request.get('ar_uid', '')
-            src_slot = [slot['position'] for slot in self.context.getLayout() if \
+            src_slot = [slot['position'] for slot in self.context.getLayout() if
                         slot['container_uid'] == ar_uid and slot['type'] == 'a'][0]
             position = self.request.get('position', '')
             self.request['context_uid'] = self.context.UID()
@@ -757,7 +757,7 @@ class AddDuplicateView(BrowserView):
         layout = self.context.getLayout()
         used_positions = [int(slot['position']) for slot in layout]
         if used_positions:
-            available_positions = [pos for pos in range(1, max(used_positions) + 1) if \
+            available_positions = [pos for pos in range(1, max(used_positions) + 1) if
                                    pos not in used_positions]
         else:
             available_positions = []
@@ -962,7 +962,7 @@ class ajaxGetWorksheetReferences(ReferenceSamplesView):
             if self.control_type == 'b' and not obj.getBlank(): continue
             if self.control_type == 'c' and obj.getBlank(): continue
             ref_services = obj.getServices()
-            ws_ref_services = [rs for rs in ref_services if \
+            ws_ref_services = [rs for rs in ref_services if
                                rs.UID() in self.service_uids]
             if ws_ref_services:
                 services = [rs.Title() for rs in ws_ref_services]
@@ -1036,7 +1036,7 @@ class ajaxGetServices(BrowserView):
     def __call__(self):
         plone.protect.CheckAuthenticator(self.request)
         bsc = getToolByName(self.context, 'bika_setup_catalog')
-        return json.dumps([c.Title for c in \
+        return json.dumps([c.Title for c in
                 bsc(portal_type = 'AnalysisService',
                    getCategoryTitle = self.request.get('getCategoryTitle', ''),
                    inactive_state = 'active',
@@ -1090,7 +1090,7 @@ class ajaxAttachAnalyses(BrowserView):
             orig_rows = rows
             rows = []
             for row in orig_rows:
-                matches = [v for v in row.values() \
+                matches = [v for v in row.values()
                            if str(v).lower().startswith(searchTerm)]
                 if matches:
                     rows.append(row)

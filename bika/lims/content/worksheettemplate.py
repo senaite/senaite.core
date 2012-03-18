@@ -92,7 +92,7 @@ class WorksheetTemplate(BaseContent):
 
     def getInstruments(self):
         bsc = getToolByName(self, 'bika_setup_catalog')
-        items = [('', '')] + [(o.UID, o.Title) for o in \
+        items = [('', '')] + [(o.UID, o.Title) for o in
                                bsc(portal_type = 'Instrument',
                                    inactive_state = 'active')]
         o = self.getInstrument()

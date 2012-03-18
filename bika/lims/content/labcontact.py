@@ -62,7 +62,7 @@ class LabContact(Person):
 
     def getDepartments(self):
         bsc = getToolByName(self, 'bika_setup_catalog')
-        items = [('','')] + [(o.UID, o.Title) for o in \
+        items = [('','')] + [(o.UID, o.Title) for o in
                                bsc(portal_type='Department',
                                    inactive_state = 'active')]
         o = self.getDepartment()

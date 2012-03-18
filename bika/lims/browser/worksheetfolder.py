@@ -92,7 +92,7 @@ class WorksheetFolderListingView(BikaListingView):
         self.templates = [(t.UID, t.Title) for t in templates]
         self.templates.sort(lambda x, y: cmp(x[1], y[1]))
 
-        self.instruments = [(i.UID, i.Title) for i in \
+        self.instruments = [(i.UID, i.Title) for i in
                             bsc(portal_type = 'Instrument',
                                 inactive_state = 'active')]
         self.instruments.sort(lambda x, y: cmp(x[1], y[1]))

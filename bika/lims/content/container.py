@@ -67,7 +67,7 @@ class Container(BaseContent):
 
     def getContainerTypes(self):
         bsc = getToolByName(self, 'bika_setup_catalog')
-        items = [('','')] + [(o.UID, o.Title) for o in \
+        items = [('','')] + [(o.UID, o.Title) for o in
                                bsc(portal_type='ContainerType')]
         o = self.getContainerType()
         if o and o.UID() not in [i[0] for i in items]:
@@ -77,7 +77,7 @@ class Container(BaseContent):
 
     def getPreservations(self):
         bsc = getToolByName(self, 'bika_setup_catalog')
-        items = [('','')] + [(o.UID, o.Title) for o in \
+        items = [('','')] + [(o.UID, o.Title) for o in
                                bsc(portal_type='Preservation',
                                    inactive_state = 'active')]
         o = self.getPreservation()

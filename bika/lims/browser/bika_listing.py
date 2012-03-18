@@ -596,7 +596,7 @@ class BikaListingTable(tableview.Table):
         workflow = getToolByName(self.context, 'portal_workflow')
 
         state = self.request.get('review_state', 'all')
-        review_state = [i for i in self.bika_listing.review_states \
+        review_state = [i for i in self.bika_listing.review_states
                         if i['id'] == state][0]
 
         # get all transitions for all items.

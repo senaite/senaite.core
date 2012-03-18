@@ -109,13 +109,13 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
 
         # if our parent has a position, use that one.
         if analysis.aq_parent.UID() in [slot['container_uid'] for slot in layout]:
-            position = [int(slot['position']) for slot in layout if \
+            position = [int(slot['position']) for slot in layout if
                         slot['container_uid'] == analysis.aq_parent.UID()][0]
         else:
             # prefer supplied position parameter
             if not position:
                 used_positions = [0, ] + [int(slot['position']) for slot in layout]
-                position = [pos for pos in range(1, max(used_positions) + 2) \
+                position = [pos for pos in range(1, max(used_positions) + 2)
                             if pos not in used_positions][0]
         self.setLayout(layout + [{'position': position,
                                   'type': 'a',
@@ -207,7 +207,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         wst = self.getWorksheetTemplate()
         wstlayout = wst and wst.getLayout() or []
 
-        src_ar = [slot['container_uid'] for slot in layout if \
+        src_ar = [slot['container_uid'] for slot in layout if
                   slot['position'] == src_slot]
         if src_ar:
             src_ar = src_ar[0]
@@ -292,7 +292,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         for t in ('b', 'c'):
             form_key = t == 'b' and 'blank_ref' or 'control_ref'
             ws_slots = [row['position'] for row in layout if row['type'] == t]
-            for row in [r for r in wstlayout if \
+            for row in [r for r in wstlayout if
                         r['type'] == t and r['pos'] not in ws_slots]:
                 reference_definition_uid = row[form_key]
                 samples = pc(portal_type = 'ReferenceSample',
@@ -342,7 +342,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         # fill duplicate positions
         layout = self.getLayout()
         ws_slots = [row['position'] for row in layout if row['type'] == 'd']
-        for row in [r for r in wstlayout if \
+        for row in [r for r in wstlayout if
                     r['type'] == 'd' and r['pos'] not in ws_slots]:
             dest_pos = int(row['pos'])
             src_pos = int(row['dup'])
