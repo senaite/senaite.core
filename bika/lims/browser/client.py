@@ -14,7 +14,9 @@ from bika.lims.browser.bika_listing import WorkflowAction
 from bika.lims.browser.publish import Publish
 from bika.lims.browser.sample import SamplesView
 from bika.lims.permissions import AddARProfile
+from bika.lims.permissions import AddAnalysisRequest
 from bika.lims.utils import TimeOrDate
+from bika.lims.utils import isActive
 from operator import itemgetter
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.layout.globals.interfaces import IViewView
@@ -172,20 +174,20 @@ class ClientAnalysisRequestsView(AnalysisRequestsView):
     def __call__(self):
         self.context_actions = {}
         wf = getToolByName(self.context, 'portal_workflow')
+        mtool = getToolByName(self.context, 'portal_membership')
+        addPortalMessage = self.context.plone_utils.addPortalMessage
         # client contact required
         active_contacts = [c for c in self.context.objectValues('Contact') if \
                            wf.getInfoFor(c, 'inactive_state', '') == 'active']
-        if self.context.portal_type == "Client" and not active_contacts:
-            msg = _("Client contact required before request may be submitted")
-            self.context.plone_utils.addPortalMessage(translate(msg))
-        else:
-            # add actions enabled only for active clients
-            self.context_actions = {}
-            translate = self.context.translation_service.translate
-            if wf.getInfoFor(self.context, 'inactive_state', '') == 'active':
-                self.context_actions[translate(_('Add'))] = {
-                    'url':'analysisrequest_add',
-                    'icon': '++resource++bika.lims.images/add.png'}
+        if isActive(self.context):
+            if self.context.portal_type == "Client" and not active_contacts:
+                msg = _("Client contact required before request may be submitted")
+                addPortalMessage(self.context.translate(msg))
+            else:
+                if mtool.checkPermission(AddAnalysisRequest, self.context):
+                    self.context_actions[self.context.translate(_('Add'))] = {
+                        'url':'analysisrequest_add',
+                        'icon': '++resource++bika.lims.images/add.png'}
         return super(ClientAnalysisRequestsView, self).__call__()
 
 class ClientSamplesView(SamplesView):
