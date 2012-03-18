@@ -160,7 +160,6 @@ class ClientWorkflowAction(WorkflowAction):
 class ClientAnalysisRequestsView(AnalysisRequestsView):
     def __init__(self, context, request):
         super(ClientAnalysisRequestsView, self).__init__(context, request)
-        self.view_url = self.view_url + "/analysisrequests"
 
         self.contentFilter['path'] = {"query": "/".join(context.getPhysicalPath()),
                                       "level" : 0 }
