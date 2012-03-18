@@ -33,6 +33,7 @@
 			<option value='' i18n:translate="">Select analyst</option>
 			<tal:options repeat="option alist">
 				<option
+					tal:condition="python:option"
 					tal:attributes="value python:option"
 					tal:content="python:alist.getValue(option)"/>
 			</tal:options>
