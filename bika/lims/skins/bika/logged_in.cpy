@@ -44,10 +44,22 @@ member_groups = [groups_tool.getGroupById(group.id).getGroupName()
                  for group in groups_tool.getGroupsByUserId(member.id)]
 
 if 'Clients' in member_groups:
-    for obj in context.clients.objectValues():
+    for obj in context.clients.objectValues("Client"):
         if member.id in obj.users_with_local_role('Owner'):
-            return context.REQUEST.response.redirect(obj.absolute_url())
+            url = obj.absolute_url()
+            return context.REQUEST.response.redirect(url)
+
 elif 'Analysts' in member_groups:
-    context.REQUEST.RESPONSE.redirect(context.worksheets.absolute_url())
+    url = context.worksheets.absolute_url()
+    return context.REQUEST.RESPONSE.redirect(url)
+
+elif 'Sampler' in member_groups:
+    # We only route to the to_be_sampled list if there are
+    # sample partitions waiting to be "sampled".
+    bsc = getToolByName(context, 'bika_setup_catalog')
+    url = context.samples.absolute_url()
+    if bsc(portal_type='SamplePartition', review_state='to_be_sampled'):
+        url += "/list_review_state=to_be_sampled"
+    return context.REQUEST.RESPONSE.redirect(url)
 
 return state
