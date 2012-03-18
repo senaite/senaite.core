@@ -158,33 +158,35 @@ class ClientWorkflowAction(WorkflowAction):
 class ClientAnalysisRequestsView(AnalysisRequestsView):
     def __init__(self, context, request):
         super(ClientAnalysisRequestsView, self).__init__(context, request)
+        self.view_url = self.view_url + "/analysisrequests"
 
         self.contentFilter['path'] = {"query": "/".join(context.getPhysicalPath()),
                                       "level" : 0 }
-
-        translate = self.context.translation_service.translate
-
-        self.context_actions = {}
-        wf = getToolByName(self.context, 'portal_workflow')
-        # client contact required
-        active_contacts = [c for c in context.objectValues('Contact') if \
-                           wf.getInfoFor(c, 'inactive_state', '') == 'active']
-        if context.portal_type == "Client" and not active_contacts:
-            msg = _("Client contact required before request may be submitted")
-            self.context.plone_utils.addPortalMessage(translate(msg))
-        else:
-            # add actions enabled only for active clients
-            self.context_actions = {}
-            if wf.getInfoFor(self.context, 'inactive_state', '') == 'active':
-                self.context_actions[translate(_('Add'))] = {
-                    'url':'analysisrequest_add',
-                    'icon': '++resource++bika.lims.images/add.png'}
 
         review_states = []
         for review_state in self.review_states:
             review_state['columns'].remove('Client')
             review_states.append(review_state)
         self.review_states = review_states
+
+    def __call__(self):
+        self.context_actions = {}
+        wf = getToolByName(self.context, 'portal_workflow')
+        # client contact required
+        active_contacts = [c for c in self.context.objectValues('Contact') if \
+                           wf.getInfoFor(c, 'inactive_state', '') == 'active']
+        if self.context.portal_type == "Client" and not active_contacts:
+            msg = _("Client contact required before request may be submitted")
+            self.context.plone_utils.addPortalMessage(translate(msg))
+        else:
+            # add actions enabled only for active clients
+            self.context_actions = {}
+            translate = self.context.translation_service.translate
+            if wf.getInfoFor(self.context, 'inactive_state', '') == 'active':
+                self.context_actions[translate(_('Add'))] = {
+                    'url':'analysisrequest_add',
+                    'icon': '++resource++bika.lims.images/add.png'}
+        return super(ClientAnalysisRequestsView, self).__call__()
 
 class ClientSamplesView(SamplesView):
     def __init__(self, context, request):
