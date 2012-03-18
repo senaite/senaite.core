@@ -104,7 +104,7 @@
 						tal:content="python:client"/>
 				</tal:options>
 			</select>&nbsp;
-			<a href="view/view_url" i18n:translate=""
+			<a tal:attributes="href view/view_url" i18n:translate=""
 				class="ws-analyses-search-button">Search</a>
 		</fieldset>
 
