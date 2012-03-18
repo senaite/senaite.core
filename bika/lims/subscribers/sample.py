@@ -27,8 +27,9 @@ def AfterTransitionEventHandler(sample, event):
     parts = sample.objectValues('SamplePartition')
 
     if event.transition.id == "sampled":
-        # Transition all sample partitions that are still 'to_be_sampled'
-        tbs = [sp for sp in parts \
+        # This action happens in the Sample UI.  So we transition all
+        # sample partitions that are still 'to_be_sampled'
+        tbs = [sp for sp in parts
                if workflow.getInfoFor(sp, 'review_state') == 'to_be_sampled']
         for sp in tbs:
             workflow.doActionFor(sp, 'sampled')
@@ -36,21 +37,15 @@ def AfterTransitionEventHandler(sample, event):
         # All associated AnalysisRequests are also transitioned
         for ar in sample.getAnalysisRequests():
             if not ar.UID() in sample.REQUEST['workflow_skiplist']:
-                try: workflow.doActionFor(ar, "sampled")
-                except WorkflowException: pass
+                workflow.doActionFor(ar, "sampled")
+                ar.reindexObject()
 
     elif event.transition.id == "preserved":
-        # Transition all sample partitions that are still 'to_be_preserved'
-        tbp = [sp for sp in parts \
-               if workflow.getInfoFor(sp, 'review_state') == 'to_be_preserved']
-        for sp in tbp:
-            workflow.doActionFor(sp, 'preserved')
 
         # All associated AnalysisRequests are also transitioned
         for ar in sample.getAnalysisRequests():
             if not ar.UID() in sample.REQUEST['workflow_skiplist']:
-                try: workflow.doActionFor(ar, "preserved")
-                except WorkflowException: pass
+                workflow.doActionFor(ar, "preserved")
                 ar.reindexObject()
 
     elif event.transition.id == "receive":

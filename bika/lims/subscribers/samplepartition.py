@@ -33,6 +33,9 @@ def AfterTransitionEventHandler(part, event):
         for analysis in analyses:
             workflow.doActionFor(analysis, 'sampled')
 
+        # This transition is only called from sample.py in the "sampled"
+        # handler - so we let the sample take care of itself
+
     elif event.transition.id == "preserved":
 
         # set "Preserved" on all our Analyses
@@ -40,13 +43,14 @@ def AfterTransitionEventHandler(part, event):
         for analysis in analyses:
             workflow.doActionFor(analysis, 'preserved')
 
-        # if all sibling partitions are 'sample_due' (preserved),
-        # promote sample
-        if not sample.UID() in part.REQUEST['workflow_skiplist']:
-            unpreserved = [sp for sp in sample.objectValues("SamplePartition")
-                           if workflow.getInfoFor(sp, 'review_state') != 'sample_due']
-            if not unpreserved:
-                workflow.doActionFor(sample, 'preserved')
+        # This transition is called directly on the SamplePartition object,
+        # so we promote the sample.
+        try:
+            workflow.doActionFor(sample, 'preserved')
+        except WorkflowException:
+            # guard_preserved_transition may fail if the states
+            # of our sibling partitions prevent sample transition
+            pass
 
     elif event.transition.id == "receive":
         if sample.getSamplingDate() > DateTime():

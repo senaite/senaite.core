@@ -15,4 +15,10 @@ workflow = context.portal_workflow
 if workflow.getInfoFor(context, 'cancellation_state', "active") == "cancelled":
     return False
 
+# A sample can't be "preserved" until all it's partitions are sample_due
+# ie, sampling and/or preservation completed.
+if [sp for sp in context.objectValues("SamplePartition")
+    if workflow.getInfoFor(sp, 'review_state') != 'sample_due']:
+    return False
+
 return True
