@@ -356,6 +356,7 @@ class SampleView(BrowserView):
             t.form_id = "sample_%s_analyses" % poc
             if poc == 'field':
                 t.allow_edit = EditFieldResults
+                t.review_states[0]['columns'].remove('DueDate')
             else:
                 t.allow_edit = EditResults
             t.show_column_toggles = False
@@ -602,7 +603,9 @@ class SamplesView(BikaListingView):
                 users = [({'ResultValue': u, 'ResultText': samplers.getValue(u)})
                          for u in samplers]
                 items[x]['choices'] = {'getSampler': users}
-                items[x]['getSampler'] = sampler and sampler or \
+                Sampler = sampler and sampler or \
                     (username in samplers.keys() and username) or ''
+                items[x]['getSampler'] = pretty_user_name_or_id(self.context,
+                                                                Sampler)
 
         return items

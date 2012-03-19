@@ -28,7 +28,7 @@
          condition_expr=""
          icon_expr=""
          link_target=""
-         url_expr="string:${portal_url}/plone_control_panel"
+         url_expr="string:${object_url}/base_edit"
          i18n:attributes="title"
          i18n:domain="plone"
          visible="False">

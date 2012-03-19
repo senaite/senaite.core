@@ -9,8 +9,8 @@ from Products.Five.browser import BrowserView
 from bika.lims import PMF, logger
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.analysisrequest import AnalysisRequestsView
+from bika.lims.browser.analysisrequest import AnalysisRequestWorkflowAction
 from bika.lims.browser.bika_listing import BikaListingView
-from bika.lims.browser.bika_listing import WorkflowAction
 from bika.lims.browser.publish import Publish
 from bika.lims.browser.sample import SamplesView
 from bika.lims.permissions import AddARProfile
@@ -23,12 +23,15 @@ from plone.app.layout.globals.interfaces import IViewView
 from zope.interface import implements
 import plone
 
-class ClientWorkflowAction(WorkflowAction):
+class ClientWorkflowAction(AnalysisRequestWorkflowAction):
     """ This function is called to do the worflow actions
         that apply to objects transitioned directly from Client views
 
         The main lab 'analysisrequests' and 'samples' views also have
         workflow_action urls bound to this handler.
+
+        The parent AnalysisRequestWorkflowAction handles
+        AR and Sample context workflow actions (affecting parts/analyses)
 
     """
 
@@ -59,7 +62,7 @@ class ClientWorkflowAction(WorkflowAction):
                 return
 
         if action == "sampled":
-            objects = WorkflowAction._get_selected_items(self)
+            objects = AnalysisRequestWorkflowAction._get_selected_items(self)
             transitioned = {'to_be_preserved':[], 'sample_due':[]}
             for obj_uid, obj in objects.items():
                 if obj.portal_type == "AnalysisRequest":
@@ -153,10 +156,8 @@ class ClientWorkflowAction(WorkflowAction):
             self.destination_url = self.request.get_header("referer",
                                    self.context.absolute_url())
             self.request.response.redirect(self.destination_url)
-
         else:
-            # default bika_listing.py/WorkflowAction for other transitions
-            WorkflowAction.__call__(self)
+            AnalysisRequestWorkflowAction.__call__(self)
 
 class ClientAnalysisRequestsView(AnalysisRequestsView):
     def __init__(self, context, request):
@@ -291,13 +292,15 @@ class ClientARProfilesView(BikaListingView):
         self.columns = {
             'title': {'title': _('Title'),
                       'index': 'sortable_title'},
-            'getProfileKey': {'title': _('Profile Key'),
-                              'index':'getProfileKey'},
+            'Description': {'title': _('Description'),
+                            'index': 'description'},
+            'getProfileKey': {'title': _('Profile Key')},
+
         }
         self.review_states = [
             {'id':'all',
              'title': _('All'),
-             'columns': ['title', 'getProfileKey']},
+             'columns': ['title', 'Description', 'getProfileKey']},
         ]
 
     def folderitems(self):

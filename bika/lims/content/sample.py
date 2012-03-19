@@ -184,6 +184,8 @@ class Sample(BaseFolder, HistoryAwareMixin):
         """ Return the Sample ID as title """
         return self.getId()
 
+    # Forms submit Title Strings which need
+    # to be converted to objects somewhere along the way...
     def setSampleType(self, value, **kw):
         """ convert SampleType title to UID
         """
@@ -192,6 +194,8 @@ class Sample(BaseFolder, HistoryAwareMixin):
         value = sampletype[0].UID
         return self.Schema()['SampleType'].set(self, value)
 
+    # Forms submit Title Strings which need
+    # to be converted to objects somewhere along the way...
     def setSamplePoint(self, value, **kw):
         """ convert SamplePoint title to UID
         """

@@ -19,6 +19,7 @@
 <permission id="bika.lims.permissions.AddSample" title="BIKA: Add Sample"/>
 <permission id="bika.lims.permissions.AddARProfile" title="BIKA: Add ARProfile"/>
 <permission id="bika.lims.permissions.AddAnalysisSpec" title="BIKA: Add AnalysisSpec"/>
+<permission id="bika.lims.permissions.AddAnalysis" title="BIKA: Add Analysis"/>
 
 
 # Old stuff I haven't looked at

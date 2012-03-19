@@ -1,8 +1,3 @@
-from bika.lims.permissions import PreserveSample
-from bika.lims.utils import pretty_user_name_or_id
-from bika.lims.utils import getUsers
-from bika.lims.permissions import SampleSample
-import App
 from AccessControl import getSecurityManager
 from DateTime import DateTime
 from Products.Archetypes.config import REFERENCE_CATALOG
@@ -10,11 +5,6 @@ from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from bika.lims.permissions import EditAR
-from bika.lims.permissions import ViewResults
-from bika.lims.permissions import EditResults
-from bika.lims.permissions import EditFieldResults
-from bika.lims.permissions import ResultsNotRequested
 from bika.lims import PMF, logger
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.analyses import AnalysesView
@@ -22,13 +12,23 @@ from bika.lims.browser.bika_listing import BikaListingView, WorkflowAction
 from bika.lims.browser.publish import Publish
 from bika.lims.browser.sample import SamplePartitionsView
 from bika.lims.config import POINTS_OF_CAPTURE
+from bika.lims.permissions import EditAR
+from bika.lims.permissions import EditFieldResults
+from bika.lims.permissions import EditResults
+from bika.lims.permissions import PreserveSample
+from bika.lims.permissions import ResultsNotRequested
+from bika.lims.permissions import SampleSample
+from bika.lims.permissions import ViewResults
+from bika.lims.utils import getUsers
 from bika.lims.utils import isActive, TimeOrDate
-from plone.app.layout.globals.interfaces import IViewView
+from bika.lims.utils import pretty_user_name_or_id
 from plone.app.content.browser.interfaces import IFolderContentsView
+from plone.app.layout.globals.interfaces import IViewView
 from zope.interface import implements, alsoProvides
-import pprint
+import App
 import json
 import plone
+import pprint
 
 class AnalysisRequestWorkflowAction(WorkflowAction):
     """Workflow actions taken in AnalysisRequest context
@@ -46,7 +46,6 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
         skiplist = self.request.get('workflow_skiplist', [])
         action, came_from = WorkflowAction._get_form_workflow_action(self)
         checkPermission = self.context.portal_membership.checkPermission
-        getAuthenticatedMember = self.context.portal_membership.getAuthenticatedMember
 
         # calcs.js has kept item_data and form input interim values synced,
         # so the json strings from item_data will be the same as the form values
@@ -125,7 +124,8 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
             for uid, result in self.request.form['Result'][0].items():
                 # if the AR has ReportDryMatter set, get dry_result from form.
                 dry_result = ''
-                if self.context.getReportDryMatter():
+                if hasattr(self.context, 'getReportDryMatter') \
+                   and self.context.getReportDryMatter():
                     for k, v in self.request.form['ResultDM'][0].items():
                         if uid == k:
                             dry_result = v
@@ -199,7 +199,11 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
 
             message = translate(PMF("Changes saved."))
             self.context.plone_utils.addPortalMessage(message, 'info')
-            self.destination_url = self.context.absolute_url() + "/manage_results"
+            mtool = getToolByName(self.context, 'portal_membership')
+            if mtool.checkPermission(EditResults, self.context):
+                self.destination_url = self.context.absolute_url() + "/manage_results"
+            else:
+                self.destination_url = self.context.absolute_url()
             self.request.response.redirect(self.destination_url)
 
         ## publish
@@ -253,6 +257,7 @@ class AnalysisRequestViewView(BrowserView):
     def __call__(self):
         form = self.request.form
         ar = self.context
+        bsc = getToolByName(self.context, 'bika_setup_catalog')
         checkPermission = self.context.portal_membership.checkPermission
         getAuthenticatedMember = self.context.portal_membership.getAuthenticatedMember
         workflow = getToolByName(self.context, 'portal_workflow')
@@ -415,6 +420,7 @@ class AnalysisRequestViewView(BrowserView):
                 if getSecurityManager().checkPermission(EditFieldResults, self.context) \
                    and poc == 'field':
                     t.review_states[0]['transitions'] = [{'id': 'submit'}]
+                    t.review_states[0]['columns'].remove('DueDate')
                     t.show_workflow_action_buttons = True
                     t.allow_edit = True
                     t.show_select_column = True
@@ -1149,11 +1155,18 @@ def getBackReferences(context, service_uid):
 
     services = []
 
+    # this function follows _all_ backreferences,
+    # so we need to prevent recursion.
+    # It could be modified below to only walk certain references...
+    skip = []
+
     def walk(items):
         for item in items:
             if item.portal_type == 'AnalysisService':
                 services.append(item)
-            walk(item.getBackReferences())
+            if item not in skip:
+                skip.append(item)
+                walk(item.getBackReferences())
     walk([service, ])
 
     return services
@@ -1947,7 +1960,9 @@ class AnalysisRequestsView(BikaListingView):
                 users = [({'ResultValue': u, 'ResultText': samplers.getValue(u)})
                          for u in samplers]
                 items[x]['choices'] = {'getSampler': users}
-                items[x]['getSampler'] = sampler and sampler or \
+                Sampler = sampler and sampler or \
                     (username in samplers.keys() and username) or ''
+                items[x]['getSampler'] = pretty_user_name_or_id(self.context,
+                                                                Sampler)
 
         return items

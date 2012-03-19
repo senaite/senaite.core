@@ -362,6 +362,7 @@ class ARImport(BaseFolder):
                 this_profile = None
                 if not profiles.has_key(profilekey):
                     profiles[profilekey] = []
+                    # there is no profilekey index
                     l_prox = self.portal_catalog(portal_type = 'ARProfile',
                                     getProfileKey = profilekey)
                     if l_prox:
@@ -369,6 +370,7 @@ class ARImport(BaseFolder):
                         profiles[profilekey] = [s.UID() for s in p.getService()]
                         this_profile = p
                     else:
+                        # there is no profilekey index
                         c_prox = self.portal_catalog(portal_type = 'ARProfile',
                                     getClientUID = client.UID(),
                                     getProfileKey = profilekey)

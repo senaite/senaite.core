@@ -338,7 +338,8 @@ class BikaListingView(BrowserView):
 
         # get toggle_cols cookie value
         # and modify self.columns[]['toggle'] to match.
-        toggles = json.loads(self.request.get("toggle_cols", "{}"))
+        try: toggles = json.loads(self.request.get("toggle_cols", "{}"))
+        except: toggles = {}
         cookie_key = "%s/%s" % (self.view_url, form_id)
         toggle_cols = toggles.get(cookie_key,
                                   [col for col in self.columns.keys()

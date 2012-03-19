@@ -151,10 +151,12 @@ class BikaGenerator:
         # Root permissions
         mp = portal.manage_permission
 
-        mp(permissions.AddPortalContent, ['Manager', 'Owner', 'LabManager'], 0)
-        mp(AddClient, ['Manager', 'Owner', 'LabManager'], 0)
-        mp(AddAnalysisRequest, ['Manager', 'Owner', 'LabManager', 'LabClerk', 'Sampler'], 0)
-        mp(AddSample, ['Manager', 'Owner', 'LabManager', 'LabClerk', 'Sampler'], 0)
+        mp(permissions.AddPortalContent, ['Manager', 'Owner', 'LabManager'], 1)
+        mp(AddClient, ['Manager', 'Owner', 'LabManager'], 1)
+        mp(AddAnalysisRequest, ['Manager', 'Owner', 'LabManager', 'LabClerk', 'Sampler'], 1)
+        mp(AddSample, ['Manager', 'Owner', 'LabManager', 'LabClerk', 'Sampler'], 1)
+        mp(AddAnalysis, ['Manager', 'Owner', 'LabManager', 'LabClerk', 'Sampler'], 1)
+        mp(AddARProfile, ['Manager', 'Owner', 'LabManager', 'LabClerk'], 1)
 
         mp(permissions.ListFolderContents, ['Manager', 'Owner'], 1)
         mp(permissions.FTPAccess, ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 1)
@@ -162,9 +164,9 @@ class BikaGenerator:
         mp(permissions.ModifyPortalContent, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Owner'], 1)
         mp(permissions.ManageUsers, ['Manager', 'LabManager', ], 1)
 
-        mp(ApplyVersionControl, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Owner'], 0)
-        mp(SaveNewVersion, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Owner'], 0)
-        mp(AccessPreviousVersions, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Owner'], 0)
+        mp(ApplyVersionControl, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Owner'], 1)
+        mp(SaveNewVersion, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Owner'], 1)
+        mp(AccessPreviousVersions, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Owner'], )
 
         mp(ManageBika, ['Manager', 'LabManager'], 1)
         mp(ManageClients, ['Manager', 'LabManager', 'LabClerk'], 1)
@@ -377,7 +379,6 @@ class BikaGenerator:
         bsc.addIndex('getName', 'FieldIndex')
         bsc.addIndex('getPointOfCapture', 'FieldIndex')
         bsc.addIndex('getPrice', 'FieldIndex')
-        bsc.addIndex('getProfileKey', 'FieldIndex')
         bsc.addIndex('getSamplePointTitle', 'FieldIndex')
         bsc.addIndex('getSampleTypeTitle', 'FieldIndex')
         bsc.addIndex('getSamplePointUID', 'FieldIndex')
@@ -431,7 +432,6 @@ class BikaGenerator:
         bsc.addColumn('getName')
         bsc.addColumn('getPointOfCapture')
         bsc.addColumn('getPrice')
-        bsc.addColumn('getProfileKey')
         bsc.addColumn('getSamplePointTitle')
         bsc.addColumn('getSampleTypeTitle')
         bsc.addColumn('getSamplePointUID')

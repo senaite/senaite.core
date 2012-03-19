@@ -16,6 +16,7 @@ AddAnalysisRequest = 'BIKA: Add Analysis Request'
 AddSample = 'BIKA: Add Sample'
 AddARProfile = 'BIKA: Add ARProfile'
 AddAnalysisSpec = 'BIKA: Add AnalysisSpec'
+AddAnalysis = 'BIKA: Add Analysis'
 
 # Default Archetypes Add Permission
 ADD_CONTENT_PERMISSION = AddPortalContent
@@ -27,6 +28,7 @@ ADD_CONTENT_PERMISSIONS = {
     'Sample': AddSample,
     'ARProfile': AddARProfile,
     'ARAnalysisSpec': AddAnalysisSpec,
+    'Analysis': AddAnalysis,
 }
 
 # Very Old permissions:

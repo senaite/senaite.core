@@ -24,10 +24,6 @@
     <permission-map name="BIKA: Edit Results" acquired="False">
     </permission-map>
     <permission-map name="BIKA: Edit Field Results" acquired="False">
-        <permission-role>Manager</permission-role>
-        <permission-role>LabManager</permission-role>
-        <permission-role>LabClerk</permission-role>
-        <permission-role>Sampler</permission-role>
     </permission-map>
     <permission-map name="BIKA: Sample Sample" acquired="False">
         <permission-role>Manager</permission-role>
@@ -54,7 +50,6 @@
     <permission-map name="BIKA: Edit Field Results" acquired="False">
         <permission-role>Manager</permission-role>
         <permission-role>LabManager</permission-role>
-        <permission-role>Analyst</permission-role>
         <permission-role>LabClerk</permission-role>
         <permission-role>Sampler</permission-role>
     </permission-map>
@@ -93,7 +88,8 @@
   </permission-map>
   <permission-map name="BIKA: Edit Results" acquired="True">
   </permission-map>
-  <permission-map name="BIKA: Edit Field Results" acquired="True">
+  <permission-map name="BIKA: Edit Field Results" acquired="False">
+   <permission-role>Manager</permission-role>
    <permission-role>LabManager</permission-role>
    <permission-role>LabClerk</permission-role>
    <permission-role>Sampler</permission-role>
@@ -134,9 +130,6 @@
    <permission-role>LabClerk</permission-role>
   </permission-map>
   <permission-map name="BIKA: Edit Field Results" acquired="True">
-   <permission-role>LabManager</permission-role>
-   <permission-role>LabClerk</permission-role>
-   <permission-role>Sampler</permission-role>
   </permission-map>
   <permission-map name="BIKA: Edit Results" acquired="False">
    <permission-role>Manager</permission-role>
@@ -177,7 +170,9 @@
    <permission-role>Manager</permission-role>
    <permission-role>LabManager</permission-role>
    <permission-role>Analyst</permission-role>
+   <permission-role>Sampler</permission-role>
    <permission-role>LabClerk</permission-role>
+   <permission-role>Verifier</permission-role>
   </permission-map>
   <permission-map name="BIKA: Edit Results" acquired="False">
   </permission-map>

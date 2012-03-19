@@ -7,6 +7,7 @@
              initial_state="sample_registered"
              manager_bypass="False">
 
+<permission>BIKA: Add Analysis</permission>
 <permission>BIKA: Edit AR</permission>
 <permission>BIKA: Edit Results</permission>
 <permission>BIKA: Edit Field Results</permission>
@@ -24,6 +25,13 @@
 
 <state state_id="to_be_sampled" title="To Be Sampled" i18n:attributes="title">
     <exit-transition transition_id="sampled"/>
+    <permission-map name="BIKA: Add Analysis" acquired="False">
+        <permission-role>Manager</permission-role>
+        <permission-role>LabManager</permission-role>
+        <permission-role>LabClerk</permission-role>
+        <permission-role>Sampler</permission-role>
+        <permission-role>Owner</permission-role>
+    </permission-map>
     <permission-map name="BIKA: Edit AR" acquired="False">
         <permission-role>Manager</permission-role>
         <permission-role>LabManager</permission-role>
@@ -67,6 +75,13 @@
 
 <state state_id="to_be_preserved" title="To Be Preserved" i18n:attributes="title">
     <exit-transition transition_id="preserved"/>
+    <permission-map name="BIKA: Add Analysis" acquired="False">
+        <permission-role>Manager</permission-role>
+        <permission-role>LabManager</permission-role>
+        <permission-role>Sampler</permission-role>
+        <permission-role>LabClerk</permission-role>
+        <permission-role>Owner</permission-role>
+    </permission-map>
     <permission-map name="BIKA: Edit AR" acquired="False">
         <permission-role>Manager</permission-role>
         <permission-role>LabManager</permission-role>
@@ -106,6 +121,13 @@
 
 <state state_id="sample_due" title="Sample Due" i18n:attributes="title">
     <exit-transition transition_id="receive"/>
+    <permission-map name="BIKA: Add Analysis" acquired="False">
+        <permission-role>Manager</permission-role>
+        <permission-role>LabManager</permission-role>
+        <permission-role>LabClerk</permission-role>
+        <permission-role>Sampler</permission-role>
+        <permission-role>Owner</permission-role>
+    </permission-map>
     <permission-map name="BIKA: Edit AR" acquired="False">
         <permission-role>Manager</permission-role>
         <permission-role>LabManager</permission-role>
@@ -145,6 +167,8 @@
  <state state_id="sample_received" title="Received" i18n:attributes="title">
   <exit-transition transition_id="prepublish"/>
   <exit-transition transition_id="submit"/>
+  <permission-map name="BIKA: Add Analysis" acquired="False">
+  </permission-map>
   <permission-map name="BIKA: Edit AR" acquired="False">
    <permission-role>Manager</permission-role>
    <permission-role>LabManager</permission-role>
@@ -174,6 +198,8 @@
   <exit-transition transition_id="prepublish"/>
   <exit-transition transition_id="attach"/>
   <exit-transition transition_id="retract"/>
+  <permission-map name="BIKA: Add Analysis" acquired="False">
+  </permission-map>
   <permission-map name="BIKA: Edit AR" acquired="False">
    <permission-role>Manager</permission-role>
    <permission-role>LabManager</permission-role>
@@ -203,6 +229,8 @@
   <exit-transition transition_id="prepublish"/>
   <exit-transition transition_id="verify"/>
   <exit-transition transition_id="retract"/>
+  <permission-map name="BIKA: Add Analysis" acquired="False">
+  </permission-map>
   <permission-map name="BIKA: Edit AR" acquired="False">
    <permission-role>Manager</permission-role>
    <permission-role>LabManager</permission-role>
@@ -230,6 +258,8 @@
 
  <state state_id="verified" title="Verified" i18n:attributes="title">
   <exit-transition transition_id="publish"/>
+  <permission-map name="BIKA: Add Analysis" acquired="False">
+  </permission-map>
   <permission-map name="BIKA: Edit AR" acquired="False">
   </permission-map>
   <permission-map name="BIKA: Edit Results" acquired="False">
@@ -248,6 +278,8 @@
 
  <state state_id="published" title="Published" i18n:attributes="title">
   <exit-transition transition_id="republish"/>
+  <permission-map name="BIKA: Add Analysis" acquired="False">
+  </permission-map>
   <permission-map name="BIKA: Edit AR" acquired="False">
   </permission-map>
   <permission-map name="BIKA: Sample Sample" acquired="False">

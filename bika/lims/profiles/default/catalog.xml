@@ -99,7 +99,6 @@
  <index name="getName" meta_type="FieldIndex"> <indexed_attr value="getName"/> </index>
  <index name="getObjPositionInParent" meta_type="GopipIndex"> <indexed_attr value="getObjPositionInParent"/> </index>
  <index name="getPointOfCapture" meta_type="FieldIndex"> <indexed_attr value="getPointOfCapture"/> </index>
- <index name="getProfileKey" meta_type="FieldIndex"> <indexed_attr value="getProfileKey"/> </index>
  <index name="getRequestID" meta_type="FieldIndex"> <indexed_attr value="getRequestID"/> </index>
  <index name="getSampleID" meta_type="FieldIndex"> <indexed_attr value="getSampleID"/> </index>
  <index name="getSamplePointTitle" meta_type="FieldIndex"> <indexed_attr value="getSamplePointTitle"/> </index>
