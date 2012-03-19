@@ -29,6 +29,7 @@ class AnalysesView(BikaListingView):
         self.show_sort_column = False
         self.show_select_row = False
         self.show_select_column = False
+        self.show_column_toggles = False
         self.pagesize = 1000
         self.form_id = 'analyses_form'
 
