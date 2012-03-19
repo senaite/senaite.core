@@ -79,6 +79,7 @@ class ClientWorkflowAction(WorkflowAction):
                 # write them to the sample
                 sample.edit(Sampler = Sampler and Sampler or '',
                             DateSampled = DateSampled and DateTime(DateSampled) or '')
+                sample.reindexObject()
 
                 # transition the object if both values are present
                 if Sampler and DateSampled:
