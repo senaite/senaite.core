@@ -65,7 +65,7 @@
             <br tal:condition="ws"/>
             <a  tal:condition="ar"
                 class="portletMore"
-                tal:attributes="href string:${context/portal_url}/analysisrequests?review_state=to_be_verified">
+                tal:attributes="href string:${context/portal_url}/analysisrequests?list_review_state=to_be_verified">
                 <span tal:content="python:str(len(ar))"/>
                 <span i18n:translate="">ARs</span>
             </a>

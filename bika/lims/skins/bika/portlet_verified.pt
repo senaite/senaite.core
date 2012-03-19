@@ -46,7 +46,7 @@
 
             <a href=""
                 class="portletMore"
-                tal:attributes="href string:${context/portal_url}/analysisrequests?review_state=verified"
+                tal:attributes="href string:${context/portal_url}/analysisrequests?list_review_state=verified"
                 >
                 <span tal:content="python:str(len(rs)-5)"/>
                 <span i18n:translate="">More</span>
