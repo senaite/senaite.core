@@ -183,6 +183,8 @@ class BikaGenerator:
 
         mp(VerifyOwnResults, ['Manager', ], 1)
 
+        mp(SampleSample, ['Manager', 'LabManager', 'Sampler'], 0)
+        mp(PreserveSample, ['Manager', 'LabManager', 'Preserver'], 0)
         mp(ReceiveSample, ['Manager', 'LabManager', 'LabClerk', 'Sampler'], 1)
         mp(ExpireSample, ['Manager', 'LabManager', 'LabClerk'], 1)
         mp(DisposeSample, ['Manager', 'LabManager', 'LabClerk'], 1)

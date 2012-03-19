@@ -66,6 +66,7 @@
         <permission-role>LabManager</permission-role>
         <permission-role>Analyst</permission-role>
         <permission-role>LabClerk</permission-role>
+        <permission-role>Sampler</permission-role>
         <permission-role>Preserver</permission-role>
     </permission-map>
     <permission-map name="BIKA: Edit Results" acquired="False">

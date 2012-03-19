@@ -71,6 +71,7 @@
         <permission-role>Manager</permission-role>
         <permission-role>LabManager</permission-role>
         <permission-role>LabClerk</permission-role>
+        <permission-role>Sampler</permission-role>
         <permission-role>Preserver</permission-role>
         <permission-role>Owner</permission-role>
     </permission-map>
