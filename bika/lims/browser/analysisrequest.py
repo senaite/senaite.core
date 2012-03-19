@@ -341,6 +341,9 @@ class AnalysisRequestViewView(BrowserView):
                 continue
             actor = items.get('actor')
             member = mtool.getMemberById(actor)
+            if not member:
+                verifier = actor
+                continue
             verifier = member.getProperty('fullname')
             if verifier is None or verifier == '':
                 verifier = actor
