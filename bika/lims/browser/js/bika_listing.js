@@ -336,8 +336,8 @@ $(document).ready(function(){
 		col_id = $(this).attr('col_id');
 		form_id = $(this).attr('form_id');
 		form = $("form#"+form_id);
-		cookie_key = window.location.href + "/" + form_id;
-
+		cookie_key = $(form[0].view_url).val() + "/" + form_id;
+		console.log(cookie_key)
 		if(col_id=='DEFAULT'){
 			$.cookie('toggle_cols', null);
 		} else if(col_id=='ALL') {

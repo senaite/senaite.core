@@ -582,6 +582,9 @@ class AnalysisRequestViewView(BrowserView):
                 continue
             actor = items.get('actor')
             member = mtool.getMemberById(actor)
+            if not member:
+                verifier = actor
+                continue
             verifier = member.getProperty('fullname')
             if verifier is None or verifier == '':
                 verifier = actor
@@ -1578,11 +1581,11 @@ class AnalysisRequestsView(BikaListingView):
 
         self.context_actions = {}
 
-        if self.view_url.find("/analysisrequests") > -1:
-            self.request.set('disable_border', 1)
+        if self.context.portal_type == "Client":
+            if self.view_url.find("analysisrequests") == -1:
+                self.view_url = self.view_url + "/analysisrequests"
         else:
-
-            self.view_url = self.view_url + "/analysisrequests"
+            self.request.set('disable_border', 1)
 
         translate = self.context.translation_service.translate
 

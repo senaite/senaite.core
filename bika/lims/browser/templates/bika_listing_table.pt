@@ -243,7 +243,7 @@ Item select checkboxes.
 ********************************</tal:comment>
 	<td style="text-align:center"
 		tal:condition="view/bika_listing/show_select_column"
-		tal:define="cl python:'select_column' in item['class'] and
+		tal:define="cl python:'class' in item and 'select_column' in item['class'] and
 					item['class']['select_column'] or '';"
 		tal:attributes="class string:notDraggable ${item/state_class} $cl">
 	<tal:replace
