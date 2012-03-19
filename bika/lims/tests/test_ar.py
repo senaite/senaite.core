@@ -59,7 +59,6 @@ class Tests(unittest.TestCase):
                     _ars.append(ar)
                     ar.edit(
                         RequestID = ar_id,
-                        DateRequested = DateTime(),
                         Contact = contacts[0],
                         CCContact = contacts[1],
                         CCEmails = "",

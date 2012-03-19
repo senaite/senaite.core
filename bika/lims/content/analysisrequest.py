@@ -111,14 +111,6 @@ schema = BikaSchema.copy() + Schema((
             description = _('This result can be reported as dry matter'),
         ),
     ),
-    DateTimeField('DateRequested',
-        required = 1,
-        default_method = 'current_date',
-        widget = DateTimeWidget(
-            label = _('Date Requested'),
-            visible = {'edit':'hidden'},
-        ),
-    ),
     DateTimeField('DateReceived',
         widget = DateTimeWidget(
             label = _('Date Received'),

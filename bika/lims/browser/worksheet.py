@@ -783,12 +783,12 @@ class WorksheetARsView(BikaListingView):
             'Position': {'title': _('Position')},
             'RequestID': {'title': _('Request ID')},
             'Client': {'title': _('Client')},
-            'DateRequested': {'title': _('Date Requested')},
+            'created': {'title': _('Date Requested')},
         }
         self.review_states = [
             {'title': _('All'), 'id':'all',
              'transitions': [],
-             'columns':['Position', 'RequestID', 'Client', 'DateRequested'],
+             'columns':['Position', 'RequestID', 'Client', 'created'],
             },
         ]
 
@@ -818,7 +818,7 @@ class WorksheetARsView(BikaListingView):
                 'Position': pos,
                 'RequestID': ar.id,
                 'Client': ar.aq_parent.Title(),
-                'DateRequested': TimeOrDate(ar, ar.getDateRequested()),
+                'created': TimeOrDate(ar, ar.created()),
                 'replace': {},
                 'before': {},
                 'after': {},

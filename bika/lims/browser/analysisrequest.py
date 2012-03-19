@@ -1492,7 +1492,6 @@ class ajaxAnalysisRequestSubmit():
                 ar = self.context[_id]
                 # ar.edit() for some fields before firing the event
                 ar.edit(
-                    DateRequested = DateTime(),
                     Contact = form['Contact'],
                     CCContact = form['cc_uids'].split(","),
                     CCEmails = form['CCEmails'],
@@ -1582,6 +1581,7 @@ class AnalysisRequestsView(BikaListingView):
         if self.view_url.find("/analysisrequests") > -1:
             self.request.set('disable_border', 1)
         else:
+
             self.view_url = self.view_url + "/analysisrequests"
 
         translate = self.context.translation_service.translate

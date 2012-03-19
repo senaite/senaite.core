@@ -295,7 +295,6 @@ class ARImport(BaseFolder):
                 CCEmails = self.getCCEmails(),
                 ClientOrderNumber = self.getOrderID(),
                 ReportDryMatter = report_dry_matter,
-                DateRequested = DateTime(),
                 Sample = sample_uid,
                 Analyses = analyses
                 )
@@ -453,7 +452,6 @@ class ARImport(BaseFolder):
                 Contact = self.getContact(),
                 CCEmails = self.getCCEmails(),
                 ReportDryMatter = report_dry_matter,
-                DateRequested = DateTime(),
                 Sample = sample_uid,
                 Profile = ar_profile,
                 ClientOrderNumber = self.getOrderID(),

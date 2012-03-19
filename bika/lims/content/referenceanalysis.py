@@ -80,13 +80,6 @@ schema = BikaSchema.copy() + Schema((
             label = _("Retested"),
         ),
     ),
-    DateTimeField('DateRequested',
-        required = 1,
-        default_method = 'current_date',
-        widget = DateTimeWidget(
-            label = _("Date Requested"),
-        ),
-    ),
     ComputedField('ReferenceSampleUID',
         expression = 'context.aq_parent.UID()',
         widget = ComputedWidget(

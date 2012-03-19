@@ -295,7 +295,7 @@
         </tal:block>
     </tr>
     <!-- Date Requested -->
-    <tr tal:define="field_name string:DateRequested" tal:condition="python:edit">
+    <tr tal:define="field_name string:created" tal:condition="python:edit">
         <th colspan="2" i18n:translate="">Date Requested</th>
         <td>&nbsp;</td>
         <tal:block repeat="column python:range(view.col_count)">
