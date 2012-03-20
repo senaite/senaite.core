@@ -1335,6 +1335,9 @@ class ajaxAnalysisRequestSubmit():
                     ClientOrderNumber = values.has_key('ClientOrderNumber') and values['ClientOrderNumber'] or ''
                 )
 
+            reportDryMatter = values.has_key('ReportDryMatter')
+            invoiceExclude = values.has_key('InvoiceExclude')
+
             # update Analyses and related info
             setProfile = False
             if not (values.has_key('ARProfile') and values['ARProfile'] != ""):
@@ -1347,20 +1350,20 @@ class ajaxAnalysisRequestSubmit():
                 client = ar.aq_parent
                 _id = client.invokeFactory(type_name = 'ARProfile', id = 'tmp')
                 profile = client[_id]
-                profile.edit(title = values['profileTitle'],
-                             Service = Analyses)
+                if form.get('ARProfileType', 'analyses_only') == 'analyses_only':
+                    profile.edit(title = values['profileTitle'],
+                                 Service = Analyses)
+                else:
+                    profile.edit(title = values['profileTitle'],
+                                 ReportDryMatter = reportDryMatter,
+                                 InvoiceExclude = invoiceExclude,
+                                 SampleType = values.has_key('SampleType') and values['SampleType'] or '',
+                                 SamplePoint = values.has_key('SamplePoint') and values['SamplePoint'] or '',
+                                 Composite = values.has_key('Composite') and values['Composite'] or '',
+                                 Service = Analyses,
+                                 )
                 profile.processForm()
                 setProfile = True
-
-            if values.has_key('ReportDryMatter'):
-                reportDryMatter = True
-            else:
-                reportDryMatter = False
-
-            if values.has_key('InvoiceExclude'):
-                invoiceExclude = True
-            else:
-                invoiceExclude = False
 
             if setProfile:
                 ar.edit(
@@ -1549,8 +1552,18 @@ class ajaxAnalysisRequestSubmit():
                 if (values.has_key('profileTitle')):
                     _id = self.context.invokeFactory(type_name = 'ARProfile', id = 'tmp')
                     profile = self.context[_id]
-                    profile.edit(title = values['profileTitle'],
-                                 Service = Analyses)
+                    if form.get('ARProfileType', 'analyses_only') == 'analyses_only':
+                        profile.edit(title = values['profileTitle'],
+                                     Service = Analyses)
+                    else:
+                        profile.edit(title = values['profileTitle'],
+                                     ReportDryMatter = values.get('reportDryMatter', False),
+                                     InvoiceExclude = values.get('invoiceExclude', False),
+                                     SampleType = values.get('SampleType', ''),
+                                     SamplePoint = values.get('SamplePoint', ''),
+                                     Composite = values.get('Composite', False),
+                                     Service = Analyses,
+                                     )
                     profile.processForm()
                     ar.edit(Profile = profile)
 

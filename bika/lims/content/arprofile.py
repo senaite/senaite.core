@@ -7,6 +7,7 @@ from AccessControl import ClassSecurityInfo
 from Products.Archetypes.public import *
 from Products.Archetypes.references import HoldingReference
 from Products.CMFCore.permissions import View, ModifyPortalContent
+from Products.CMFCore.utils import getToolByName
 from bika.lims import PMF, bikaMessageFactory as _
 from bika.lims.browser.widgets import ServicesWidget
 from bika.lims.config import PROJECTNAME
@@ -16,7 +17,6 @@ import sys
 
 schema = BikaSchema.copy() + Schema((
     StringField('ProfileKey',
-        schemata = PMF('Description'),
         widget = StringWidget(
             label = _("Profile Keyword"),
             description = _("The profile's keyword is used to uniquely identify "
@@ -34,6 +34,48 @@ schema = BikaSchema.copy() + Schema((
             label = _("Profile Analyses"),
             description = _("The analyses included in this profile, grouped per category"),
         )
+    ),
+    ReferenceField('SampleType',
+        vocabulary_display_path_bound = sys.maxint,
+        allowed_types = ('SampleType',),
+        relationship = 'ARProfileSampleType',
+        referenceClass = HoldingReference,
+        vocabulary = 'SampleTypes',
+        widget = ReferenceWidget(
+            checkbox_bound = 1,
+            label = _("Sample Type"),
+        ),
+    ),
+    ReferenceField('SamplePoint',
+        vocabulary_display_path_bound = sys.maxint,
+        allowed_types = ('SamplePoint',),
+        relationship = 'ARPRofileSamplePoint',
+        referenceClass = HoldingReference,
+        vocabulary = 'SamplePoints',
+        widget = ReferenceWidget(
+            checkbox_bound = 1,
+            label = _("Sample Point"),
+        ),
+    ),
+    BooleanField('Composite',
+        default = False,
+        widget = BooleanWidget(
+            label = _("Composite"),
+        ),
+    ),
+    BooleanField('InvoiceExclude',
+        default = False,
+        widget = BooleanWidget(
+            label = _('Invoice Exclude'),
+            description = _('Select if analyses to be excluded from invoice'),
+        ),
+    ),
+    BooleanField('ReportDryMatter',
+        default = False,
+        widget = BooleanWidget(
+            label = _('Report as Dry Matter'),
+            description = _('This result can be reported as dry matter'),
+        ),
     ),
     TextField('Remarks',
         searchable = True,
@@ -61,9 +103,7 @@ schema = BikaSchema.copy() + Schema((
 ),
 )
 schema['title'].widget.visible = True
-schema['title'].schemata = PMF('Description')
 schema['description'].widget.visible = True
-schema['description'].schemata = PMF('Description')
 IdField = schema['id']
 
 class ARProfile(BaseContent):
@@ -75,5 +115,58 @@ class ARProfile(BaseContent):
     def _renameAfterCreation(self, check_auto_id=False):
         from bika.lims.idserver import renameAfterCreation
         renameAfterCreation(self)
+
+    # Rubbish transplanted here from sample.py
+    # Forms submit Title Strings which need
+    # to be converted to objects somewhere along the way...
+    def setSampleType(self, value, **kw):
+        """ convert SampleType title to UID
+        """
+        bsc = getToolByName(self, 'bika_setup_catalog')
+        sampletype = bsc(portal_type = 'SampleType', Title = value)
+        value = sampletype[0].UID
+        return self.Schema()['SampleType'].set(self, value)
+
+    # Rubbish transplanted here from sample.py
+    # Forms submit Title Strings which need
+    # to be converted to objects somewhere along the way...
+    def setSamplePoint(self, value, **kw):
+        """ convert SamplePoint title to UID
+        """
+        sp_uid = None
+        if value:
+            bsc = getToolByName(self, 'bika_setup_catalog')
+            samplepoints = bsc(portal_type = 'SamplePoint', Title = value)
+            if samplepoints:
+                sp_uid = samplepoints[0].UID
+        return self.Schema()['SamplePoint'].set(self, sp_uid)
+
+    security.declarePublic('SampleTypes')
+    def SampleTypes(self, instance=None):
+        instance = instance or self
+        bsc = getToolByName(instance, 'bika_setup_catalog')
+        items = []
+        for st in bsc(portal_type='SampleType',
+                      inactive_state='active',
+                      sort_on = 'sortable_title'):
+            st = st.getObject()
+            title = st.Title()
+            items.append((st.UID(), title))
+        items = [['','']] + list(items)
+        return DisplayList(items)
+
+    security.declarePublic('SamplePoints')
+    def SamplePoints(self, instance=None):
+        instance = instance or self
+        bsc = getToolByName(instance, 'bika_setup_catalog')
+        items = []
+        for st in bsc(portal_type='SamplePoint',
+                      inactive_state='active',
+                      sort_on = 'sortable_title'):
+            st = st.getObject()
+            title = st.Title()
+            items.append((st.UID(), title))
+        items = [['','']] + list(items)
+        return DisplayList(items)
 
 registerType(ARProfile, PROJECTNAME)

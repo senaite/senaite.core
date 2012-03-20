@@ -557,7 +557,13 @@
     </tal:block>
 </tr>
 <tr tal:condition="python:checkPermission('BIKA: Add ARProfile', context)">
-    <th colspan="3" i18n:translate="">Save</th>
+    <th i18n:translate="">Save</th>
+    <th colspan="2">
+	<select id="ARProfileType" name="ARProfileType">
+		<option value="analyses_only" i18n:translate="">Analyses only</option>
+		<option value="all_ar_fields" i18n:translate="">All AR Fields</option>
+	</select>
+	</th>
     <tal:save repeat="column python:range(view.col_count)">
         <td class="topborder">
             <input type="text" size="10"
