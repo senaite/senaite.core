@@ -35,48 +35,6 @@ schema = BikaSchema.copy() + Schema((
             description = _("The analyses included in this profile, grouped per category"),
         )
     ),
-    ReferenceField('SampleType',
-        vocabulary_display_path_bound = sys.maxint,
-        allowed_types = ('SampleType',),
-        relationship = 'ARProfileSampleType',
-        referenceClass = HoldingReference,
-        vocabulary = 'SampleTypes',
-        widget = ReferenceWidget(
-            checkbox_bound = 1,
-            label = _("Sample Type"),
-        ),
-    ),
-    ReferenceField('SamplePoint',
-        vocabulary_display_path_bound = sys.maxint,
-        allowed_types = ('SamplePoint',),
-        relationship = 'ARPRofileSamplePoint',
-        referenceClass = HoldingReference,
-        vocabulary = 'SamplePoints',
-        widget = ReferenceWidget(
-            checkbox_bound = 1,
-            label = _("Sample Point"),
-        ),
-    ),
-    BooleanField('Composite',
-        default = False,
-        widget = BooleanWidget(
-            label = _("Composite"),
-        ),
-    ),
-    BooleanField('InvoiceExclude',
-        default = False,
-        widget = BooleanWidget(
-            label = _('Invoice Exclude'),
-            description = _('Select if analyses to be excluded from invoice'),
-        ),
-    ),
-    BooleanField('ReportDryMatter',
-        default = False,
-        widget = BooleanWidget(
-            label = _('Report as Dry Matter'),
-            description = _('This result can be reported as dry matter'),
-        ),
-    ),
     TextField('Remarks',
         searchable = True,
         default_content_type = 'text/x-web-intelligent',
@@ -86,18 +44,6 @@ schema = BikaSchema.copy() + Schema((
             macro = "bika_widgets/remarks",
             label = _('Remarks'),
             append_only = True,
-        ),
-    ),
-    ComputedField('ClientTitle',
-        expression = 'context.aq_parent.Title()',
-        widget = ComputedWidget(
-            visible = False,
-        ),
-    ),
-    ComputedField('ClientUID',
-        expression = 'context.aq_parent.UID()',
-        widget = ComputedWidget(
-            visible = False,
         ),
     ),
 ),
@@ -115,58 +61,5 @@ class ARProfile(BaseContent):
     def _renameAfterCreation(self, check_auto_id=False):
         from bika.lims.idserver import renameAfterCreation
         renameAfterCreation(self)
-
-    # Rubbish transplanted here from sample.py
-    # Forms submit Title Strings which need
-    # to be converted to objects somewhere along the way...
-    def setSampleType(self, value, **kw):
-        """ convert SampleType title to UID
-        """
-        bsc = getToolByName(self, 'bika_setup_catalog')
-        sampletype = bsc(portal_type = 'SampleType', Title = value)
-        value = sampletype[0].UID
-        return self.Schema()['SampleType'].set(self, value)
-
-    # Rubbish transplanted here from sample.py
-    # Forms submit Title Strings which need
-    # to be converted to objects somewhere along the way...
-    def setSamplePoint(self, value, **kw):
-        """ convert SamplePoint title to UID
-        """
-        sp_uid = None
-        if value:
-            bsc = getToolByName(self, 'bika_setup_catalog')
-            samplepoints = bsc(portal_type = 'SamplePoint', Title = value)
-            if samplepoints:
-                sp_uid = samplepoints[0].UID
-        return self.Schema()['SamplePoint'].set(self, sp_uid)
-
-    security.declarePublic('SampleTypes')
-    def SampleTypes(self, instance=None):
-        instance = instance or self
-        bsc = getToolByName(instance, 'bika_setup_catalog')
-        items = []
-        for st in bsc(portal_type='SampleType',
-                      inactive_state='active',
-                      sort_on = 'sortable_title'):
-            st = st.getObject()
-            title = st.Title()
-            items.append((st.UID(), title))
-        items = [['','']] + list(items)
-        return DisplayList(items)
-
-    security.declarePublic('SamplePoints')
-    def SamplePoints(self, instance=None):
-        instance = instance or self
-        bsc = getToolByName(instance, 'bika_setup_catalog')
-        items = []
-        for st in bsc(portal_type='SamplePoint',
-                      inactive_state='active',
-                      sort_on = 'sortable_title'):
-            st = st.getObject()
-            title = st.Title()
-            items.append((st.UID(), title))
-        items = [['','']] + list(items)
-        return DisplayList(items)
 
 registerType(ARProfile, PROJECTNAME)

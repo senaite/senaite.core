@@ -5,6 +5,8 @@
 /* General Bika Listing Table */
 
 .context_action_link {
+	position:relative;
+	top:-0.5em;
     margin-right: .5em;
     font-size: 50%;
     border:1px solid #eee !important;

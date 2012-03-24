@@ -134,6 +134,32 @@
                   tal:content="python:hasattr(context, 'CCEmails') and context.CCEmails or ''"/>
         </td>
     </tr>
+    <!-- AR Template (only visible and useable for AR-Add-->
+    <tr tal:define="field_name string:ARTemplate" tal:condition="not: edit">
+        <th colspan="2" i18n:translate="">Template</th>
+        <td>
+            <img class="copyButton ARTemplateCopyButton"
+                tal:attributes="name field_name;src string:${portal/absolute_url}/++resource++bika.lims.images/copy.png"/>
+        </td>
+        <tal:block repeat="column python:range(view.col_count)">
+            <td class="topborder ar_column" tal:define="input_name string:ar.${column}.${field_name}:ignore_empty:record;
+                                              input_id string:ar_${column}_${field_name}">
+                <select tal:attributes="
+                    class field_name;
+                    column column;
+                    id input_id;
+                    name input_name;">
+                    <option value="" i18n:translate="">None</option>
+                    <tal:template repeat="template view/artemplates">
+                        <option
+                            tal:content="python:template[0]"
+                            tal:attributes="
+                                value python:template[1].UID();"></option>
+                    </tal:template>
+                </select>
+            </td>
+        </tal:block>
+    </tr>
     <!-- AR Profile (only visible and useable for AR-Add-->
     <tr tal:define="field_name string:ARProfile" tal:condition="not: edit">
         <th colspan="2" i18n:translate="">Profile</th>
@@ -557,11 +583,11 @@
     </tal:block>
 </tr>
 <tr tal:condition="python:checkPermission('BIKA: Add ARProfile', context)">
-    <th i18n:translate="">Save</th>
+    <th style="vertical-align:middle;" i18n:translate="">Save</th>
     <th colspan="2">
 	<select id="ARProfileType" name="ARProfileType">
-		<option value="analyses_only" i18n:translate="">Analyses only</option>
-		<option value="all_ar_fields" i18n:translate="">All AR Fields</option>
+		<option value="ARProfile" i18n:translate="">AR Profile</option>
+		<option value="ARTemplate" i18n:translate="">AR Template</option>
 	</select>
 	</th>
     <tal:save repeat="column python:range(view.col_count)">

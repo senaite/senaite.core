@@ -152,11 +152,13 @@ class BikaGenerator:
         mp = portal.manage_permission
 
         mp(permissions.AddPortalContent, ['Manager', 'Owner', 'LabManager'], 1)
+        mp(AddClientFolder, ['Manager'], 1)
         mp(AddClient, ['Manager', 'Owner', 'LabManager'], 1)
         mp(AddAnalysisRequest, ['Manager', 'Owner', 'LabManager', 'LabClerk', 'Sampler'], 1)
         mp(AddSample, ['Manager', 'Owner', 'LabManager', 'LabClerk', 'Sampler'], 1)
         mp(AddAnalysis, ['Manager', 'Owner', 'LabManager', 'LabClerk', 'Sampler'], 1)
         mp(AddARProfile, ['Manager', 'Owner', 'LabManager', 'LabClerk'], 1)
+        mp(AddARTemplate, ['Manager', 'Owner', 'LabManager', 'LabClerk'], 1)
 
         mp(permissions.ListFolderContents, ['Manager', 'Owner'], 1)
         mp(permissions.FTPAccess, ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 1)
@@ -308,6 +310,7 @@ class BikaGenerator:
         at.setCatalogsByType('AttachmentType', ['bika_setup_catalog', ])
         at.setCatalogsByType('Calculation', ['bika_setup_catalog', ])
         at.setCatalogsByType('ARProfile', ['bika_setup_catalog', ])
+        at.setCatalogsByType('ARTemplate', ['bika_setup_catalog', ])
         at.setCatalogsByType('LabProduct', ['bika_setup_catalog', ])
         at.setCatalogsByType('LabContact', ['bika_setup_catalog', ])
         at.setCatalogsByType('Preservation', ['bika_setup_catalog', ])

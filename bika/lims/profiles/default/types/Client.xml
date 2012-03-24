@@ -21,6 +21,7 @@
   <element value="SupplyOrder"/>
   <element value="ARImport"/>
   <element value="ARProfile"/>
+  <element value="ARTemplate"/>
   <element value="AnalysisSpec"/>
  </property>
  <property name="allow_discussion">False</property>
@@ -118,7 +119,7 @@
          link_target=""
          url_expr="string:${object_url}/attachments"
          i18n:attributes="title"
-         visible="False">
+         visible="True">
   <permission value="BIKA: Manage Analysis Requests"/>
  </action>
 

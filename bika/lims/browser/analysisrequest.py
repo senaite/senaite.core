@@ -1,6 +1,7 @@
 from AccessControl import getSecurityManager
 from DateTime import DateTime
 from Products.Archetypes.config import REFERENCE_CATALOG
+from Products.Archetypes.public import DisplayList
 from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser import BrowserView
@@ -443,20 +444,28 @@ class AnalysisRequestViewView(BrowserView):
     def arprofiles(self):
         """ Return applicable client and Lab ARProfile records
         """
-        translate = self.context.translation_service.translate
+        translate = self.context.translate
         profiles = []
-        bsc = getToolByName(self.context, 'bika_setup_catalog')
-        for proxy in bsc(portal_type = 'ARProfile',
-                         getClientUID = self.context.UID(),
-                         inactive_state = 'active',
-                         sort_on = 'sortable_title'):
-            profiles.append((proxy.Title, proxy.getObject()))
-        for proxy in bsc(portal_type = 'ARProfile',
-                        getClientUID = self.context.bika_setup.bika_arprofiles.UID(),
-                        inactive_state = 'active',
-                        sort_on = 'sortable_title'):
-            profiles.append((translate(_('Lab')) + ": " + proxy.title, proxy.getObject()))
+        for profile in self.context.objectValues("ARProfile"):
+            if isActive(profile):
+                profiles.append((profile.Title(), profile))
+        for profile in self.context.bika_setup.bika_arprofiles.objectValues("ARProfile"):
+            if isActive(profile):
+                profiles.append((translate(_('Lab')) + ": " + profile.Title(), profile))
         return profiles
+
+    def artemplates(self):
+        """ Return applicable client and Lab ARTemplate records
+        """
+        translate = self.context.translate
+        templates = []
+        for template in self.context.objectValues("ARTemplate"):
+            if isActive(template):
+                templates.append((template.Title(), template))
+        for template in self.context.bika_setup.bika_arprofiles.objectValues("ARTemplate"):
+            if isActive(template):
+                templates.append((translate(_('Lab')) + ": " + template.Title(), template))
+        return templates
 
     def SelectedServices(self):
         """ return information about services currently selected in the
@@ -516,8 +525,16 @@ class AnalysisRequestViewView(BrowserView):
         return self.context.getSample().getSampleType().getHazardous()
 
     def getARProfileTitle(self):
+        """Grab the context's current ARProfile Title if any
+        """
         return self.context.getProfile() and \
                self.context.getProfile().Title() or ''
+
+    def getARTemplateTitle(self):
+        """Grab the context's current ARTemplate Title if any
+        """
+        return self.context.getTemplate() and \
+               self.context.getTemplate().Title() or ''
 
     def get_requested_analyses(self):
         ##
@@ -1348,21 +1365,24 @@ class ajaxAnalysisRequestSubmit():
             if values.has_key('profileTitle'):
                 # User wants to save a new profile.
                 client = ar.aq_parent
-                _id = client.invokeFactory(type_name = 'ARProfile', id = 'tmp')
-                profile = client[_id]
-                if form.get('ARProfileType', 'analyses_only') == 'analyses_only':
+                if form.get('ARProfileType', 'ARProfile') == 'ARProfile':
+                    _id = client.invokeFactory(type_name = 'ARProfile', id = 'tmp')
+                    profile = client[_id]
                     profile.edit(title = values['profileTitle'],
                                  Service = Analyses)
+                    profile.processForm()
                 else:
-                    profile.edit(title = values['profileTitle'],
+                    _id = client.invokeFactory(type_name = 'ARTemplate', id = 'tmp')
+                    template = client[_id]
+                    template.edit(title = values['profileTitle'],
                                  ReportDryMatter = reportDryMatter,
                                  InvoiceExclude = invoiceExclude,
                                  SampleType = values.has_key('SampleType') and values['SampleType'] or '',
                                  SamplePoint = values.has_key('SamplePoint') and values['SamplePoint'] or '',
                                  Composite = values.has_key('Composite') and values['Composite'] or '',
-                                 Service = Analyses,
+                                 ARProfile = values.has_key('ARProfile') and values['ARProfile'] or None,
                                  )
-                profile.processForm()
+                    template.processForm()
                 setProfile = True
 
             if setProfile:
@@ -1467,6 +1487,13 @@ class ajaxAnalysisRequestSubmit():
                                      inactive_state = 'active',
                                      UID = profileUID):
                         profile = proxy.getObject()
+                template = None
+                if (values.has_key('ARTemplate')):
+                    templateUID = values['ARTemplate']
+                    for proxy in bsc(portal_type = 'ARTemplate',
+                                     inactive_state = 'active',
+                                     UID = templateUID):
+                        template = proxy.getObject()
 
                 if values.has_key('SampleID'):
                     # Secondary AR
@@ -1549,23 +1576,33 @@ class ajaxAnalysisRequestSubmit():
                     for analysis in analyses:
                         analysis.setSamplePartition(part)
 
+                profile = None
+                template = None
                 if (values.has_key('profileTitle')):
-                    _id = self.context.invokeFactory(type_name = 'ARProfile', id = 'tmp')
-                    profile = self.context[_id]
-                    if form.get('ARProfileType', 'analyses_only') == 'analyses_only':
+                    if form.get('ARProfileType', 'ARProfile') == 'ARProfile':
+                        _id = self.context.invokeFactory(type_name='ARProfile',
+                                                         id='tmp')
+                        profile = self.context[_id]
                         profile.edit(title = values['profileTitle'],
                                      Service = Analyses)
+                        profile.processForm()
+                        ar.edit(Profile = profile,
+                                Template = None)
                     else:
-                        profile.edit(title = values['profileTitle'],
+                        _id = self.context.invokeFactory(type_name='ARTemplate',
+                                                         id='tmp')
+                        template = self.context[_id]
+                        template.edit(title = values['profileTitle'],
                                      ReportDryMatter = values.get('reportDryMatter', False),
                                      InvoiceExclude = values.get('invoiceExclude', False),
                                      SampleType = values.get('SampleType', ''),
                                      SamplePoint = values.get('SamplePoint', ''),
                                      Composite = values.get('Composite', False),
-                                     Service = Analyses,
+                                     ARProfile = values.get("ARProfile", None)
                                      )
-                    profile.processForm()
-                    ar.edit(Profile = profile)
+                        template.processForm()
+                        ar.edit(Profile = None,
+                                Template = template)
 
                 if values.has_key('SampleID') and \
                    wftool.getInfoFor(sample, 'review_state') != 'sample_due':

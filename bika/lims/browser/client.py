@@ -1,25 +1,28 @@
-from bika.lims.permissions import SampleSample
-from zope.i18n import translate
-from bika.lims.permissions import ManageClients
 from AccessControl import getSecurityManager
 from DateTime import DateTime
 from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser import BrowserView
+from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import PMF, logger
 from bika.lims import bikaMessageFactory as _
-from bika.lims.browser.analysisrequest import AnalysisRequestsView
 from bika.lims.browser.analysisrequest import AnalysisRequestWorkflowAction
+from bika.lims.browser.analysisrequest import AnalysisRequestsView
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.browser.publish import Publish
 from bika.lims.browser.sample import SamplesView
 from bika.lims.permissions import AddARProfile
+from bika.lims.permissions import AddARTemplate
 from bika.lims.permissions import AddAnalysisRequest
+from bika.lims.permissions import AddAnalysisSpec
+from bika.lims.permissions import ManageClients
+from bika.lims.permissions import SampleSample
 from bika.lims.utils import TimeOrDate
 from bika.lims.utils import isActive
 from operator import itemgetter
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.layout.globals.interfaces import IViewView
+from zope.i18n import translate
 from zope.interface import implements
 import plone
 
@@ -261,33 +264,17 @@ class ClientARImportsView(BikaListingView):
         return items
 
 class ClientARProfilesView(BikaListingView):
-    implements(IViewView)
+    """This is displayed in the Profiles client action,
+       in the "AR Profiles" tab
+    """
 
     def __init__(self, context, request):
         super(ClientARProfilesView, self).__init__(context, request)
-        self.contentFilter = {'portal_type': 'ARProfile',
-                              'getClientUID': context.UID(),
-                              'path': {"query": "/".join(context.getPhysicalPath()),
-                                       "level" : 0 }
-                              }
-        bsc = getToolByName(context, 'bika_setup_catalog')
         wf = getToolByName(context, 'portal_workflow')
-        self.contentsMethod = bsc
         self.show_sort_column = False
         self.show_select_row = False
         self.show_select_column = True
         self.pagesize = 50
-        self.icon = "++resource++bika.lims.images/arprofile_big.png"
-        self.title = _("Analysis Request Profiles")
-        self.description = ""
-
-        self.context_actions = {}
-        checkPermission = self.context.portal_membership.checkPermission
-        if checkPermission(AddARProfile, self.context):
-            if wf.getInfoFor(self.context, 'inactive_state', '') == 'active':
-                self.context_actions[translate(_('Add'))] = \
-                    {'url': 'createObject?type_name=ARProfile',
-                     'icon': '++resource++bika.lims.images/add.png'}
 
         self.columns = {
             'title': {'title': _('Title'),
@@ -303,7 +290,20 @@ class ClientARProfilesView(BikaListingView):
              'columns': ['title', 'Description', 'getProfileKey']},
         ]
 
+    def getProfiles(self, contentFilter={}):
+        istate = contentFilter.get("inactive_state", None)
+        if istate == 'active':
+            profiles = [p for p in self.context.objectValues("ARProfile")
+                        if isActive(p)]
+        elif istate == 'inactive':
+            profiles = [p for p in self.context.objectValues("ARProfile")
+                        if not isActive(p)]
+        else:
+            profiles = [p for p in self.context.objectValues("ARProfile")]
+        return profiles
+
     def folderitems(self):
+        self.contentsMethod = self.getProfiles
         items = BikaListingView.folderitems(self)
         for x in range(len(items)):
             if not items[x].has_key('obj'): continue
@@ -311,6 +311,83 @@ class ClientARProfilesView(BikaListingView):
                  (items[x]['url'], items[x]['title'])
 
         return items
+
+class ClientARTemplatesView(BikaListingView):
+    """This is displayed in the Templates client action,
+       in the "AR Profiles" tab
+    """
+
+    def __init__(self, context, request):
+        super(ClientARTemplatesView, self).__init__(context, request)
+        wf = getToolByName(context, 'portal_workflow')
+        self.show_sort_column = False
+        self.show_select_row = False
+        self.show_select_column = True
+        self.pagesize = 50
+
+        self.columns = {
+            'title': {'title': _('Title'),
+                      'index': 'sortable_title'},
+            'Description': {'title': _('Description'),
+                            'index': 'description'},
+
+        }
+        self.review_states = [
+            {'id':'all',
+             'title': _('All'),
+             'columns': ['title', 'Description']},
+        ]
+
+    def getTemplates(self, contentFilter={}):
+        istate = contentFilter.get("inactive_state", None)
+        if istate == 'active':
+            templates = [p for p in self.context.objectValues("ARTemplate")
+                        if isActive(p)]
+        elif istate == 'inactive':
+            templates = [p for p in self.context.objectValues("ARTemplate")
+                        if not isActive(p)]
+        else:
+            templates = [p for p in self.context.objectValues("ARTemplate")]
+        return templates
+
+    def folderitems(self):
+        self.contentsMethod = self.getTemplates
+        items = BikaListingView.folderitems(self)
+        for x in range(len(items)):
+            if not items[x].has_key('obj'): continue
+            obj = items[x]['obj']
+            items[x]['title'] = obj.Title()
+            items[x]['replace']['title'] = "<a href='%s'>%s</a>" % \
+                 (items[x]['url'], items[x]['title'])
+
+        return items
+
+class ClientARProfilesAndTemplates(BrowserView):
+    """This little template ties up ARProfiles and ARTemplates in one view
+    """
+    implements(IViewView)
+    template = ViewPageTemplateFile("templates/client_arprofiles_and_templates.pt")
+
+    icon = "++resource++bika.lims.images/arprofile_big.png"
+    title = _("Analysis Request Profiles")
+    description = ""
+
+    def __call__(self):
+        self.profiles = ClientARProfilesView(self.context, self.request).contents_table()
+        self.templates = ClientARTemplatesView(self.context, self.request).contents_table()
+
+        self.context_actions = {}
+        cp = getToolByName(self.context, 'portal_membership').checkPermission
+        if cp(AddARProfile, self.context) and isActive(self.context):
+            self.context_actions[translate(_('Add Profile'))] = \
+                {'url': 'createObject?type_name=ARProfile',
+                 'icon': '++resource++bika.lims.images/add.png'}
+        if cp(AddARTemplate, self.context) and isActive(self.context):
+            self.context_actions[translate(_('Add Template'))] = \
+                {'url': 'createObject?type_name=ARTemplate',
+                 'icon': '++resource++bika.lims.images/add.png'}
+
+        return self.template()
 
 class ClientAnalysisSpecsView(BikaListingView):
     implements(IViewView)
@@ -328,8 +405,8 @@ class ClientAnalysisSpecsView(BikaListingView):
 
         checkPermission = self.context.portal_membership.checkPermission
         self.context_actions = {}
-        if wf.getInfoFor(self.context, 'inactive_state', '') == 'active':
-            if checkPermission(AddARProfile, self.context):
+        if isActive(self.context):
+            if checkPermission(AddAnalysisSpec, self.context):
                 self.context_actions[translate(_('Add'))] = \
                     {'url': 'createObject?type_name=AnalysisSpec',
                      'icon': '++resource++bika.lims.images/add.png'}

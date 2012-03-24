@@ -54,6 +54,7 @@ def test_suite():
 ##    suite.addTests(doctest.DocTestSuite(ar))
 ##    suite.addTests(doctest.DocTestSuite(ar))
 ##    suite.addTests(doctest.DocTestSuite(arprofile))
+##    suite.addTests(doctest.DocTestSuite(artemplate))
 ##    suite.addTests(doctest.DocTestSuite(attachment))
 ##    suite.addTests(doctest.DocTestSuite(attachmenttype))
 ##    suite.addTests(doctest.DocTestSuite(bikaschema))

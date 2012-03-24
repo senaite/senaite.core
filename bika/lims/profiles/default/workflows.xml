@@ -33,6 +33,10 @@
    <bound-workflow workflow_id="bika_one_state_workflow"/>
    <bound-workflow workflow_id="bika_inactive_workflow"/>
   </type>
+ <type type_id="ARTemplate">
+   <bound-workflow workflow_id="bika_one_state_workflow"/>
+   <bound-workflow workflow_id="bika_inactive_workflow"/>
+  </type>
   <type type_id="ATBooleanCriterion"/>
   <type type_id="ATCurrentAuthorCriterion"/>
   <type type_id="ATDateCriteria"/>

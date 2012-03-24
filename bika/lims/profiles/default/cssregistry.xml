@@ -3,7 +3,7 @@
 
 <stylesheet
     id="++resource++bika.lims.css/hide_contentmenu.css"
-    expression="python:here.portal_type in ['Client', 'AnalysisRequest', 'Worksheet', 'Sample', 'AnalysisCategory', 'ARProfile', 'AnalysisService', 'AnalysisSpec', 'Attachment', 'Calculation', 'Instrument', 'LabContact', 'Laboratory', 'Method', 'Department', 'ReferenceDefinition', 'ReferenceManufacturer', 'Reports', 'SampleType', 'SamplePoint', 'WorksheetTemplate', 'LabProduct', 'ReferenceSupplier', 'ReferenceSample', 'Preservation']"
+    expression="python:here.portal_type in ['Client', 'AnalysisRequest', 'Worksheet', 'Sample', 'AnalysisCategory', 'ARProfile', 'ARTemplate', 'AnalysisService', 'AnalysisSpec', 'Attachment', 'Calculation', 'Instrument', 'LabContact', 'Laboratory', 'Method', 'Department', 'ReferenceDefinition', 'ReferenceManufacturer', 'Reports', 'SampleType', 'SamplePoint', 'WorksheetTemplate', 'LabProduct', 'ReferenceSupplier', 'ReferenceSample', 'Preservation']"
     media="screen"
     rel="stylesheet"
     rendering="link"
@@ -11,7 +11,7 @@
 
 <stylesheet
     id="++resource++bika.lims.css/hide_editable_border.css"
-    expression="python:here.portal_type in ['SampleType', 'ClientFolder', 'BikaSetup', 'AttachmentType', 'AttachmentTypes', 'AnalysisCategories', 'Containers', 'ContainerTypes', 'Preservations', 'ARProfiles', 'AnalysisServices', 'AnalysisSpecs', 'Calculations', 'Instruments', 'LabContacts', 'Departments', 'Methods', 'LabProducts', 'ReferenceDefinitions', 'ReferenceManufacturers', 'ReferenceSuppliers', 'SamplePoints', 'SampleTypes', 'WorksheetTemplates', 'Container', 'ContainerType', 'Laboratory']"
+    expression="python:here.portal_type in ['SampleType', 'ClientFolder', 'BikaSetup', 'AttachmentType', 'AttachmentTypes', 'AnalysisCategories', 'Containers', 'ContainerTypes', 'Preservations', 'ARProfiles', 'AnalysisServices', 'AnalysisSpecs', 'Calculations', 'Instruments', 'LabContacts', 'Departments', 'Methods', 'LabProducts', 'ReferenceDefinitions', 'ReferenceManufacturers', 'ReferenceSuppliers', 'SamplePoints', 'SampleTypes', 'WorksheetTemplates', 'Container', 'ContainerType', 'Laboratory', 'ARTemplate', ]"
     media="screen"
     rel="stylesheet"
     rendering="link"

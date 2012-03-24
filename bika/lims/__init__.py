@@ -36,6 +36,7 @@ def initialize(context):
     from content.arimport import ARImport
     from content.arimportitem import ARImportItem
     from content.arprofile import ARProfile
+    from content.artemplate import ARTemplate
     from content.attachment import Attachment
     from content.attachmenttype import AttachmentType
     from content.bikaschema import BikaSchema

@@ -10,24 +10,33 @@
 
     <div metal:define-macro="header">
       <metal:block define-slot="title">
-        <h1 i18n:translate=""
+        <h1
             tal:condition="python:context.checkCreationFlag()">
 			<img tal:attributes="src python:context.portal_url() + '/++resource++bika.lims.images/' + context.portal_type.lower() + '_big.png'"/>
-          Add
-          <span i18n:name="itemtype"
-                tal:define="fti python:context.portal_types.getTypeInfo(here)">
-            <span i18n:translate=""
+          <span i18n:translate="">
+			Add
+			<span i18n:name="itemtype"
+                tal:define="fti python:context.portal_types.getTypeInfo(here)"
+				tal:omit-tag="python:True">
+			  <span i18n:translate=""
                   tal:content="fti/Title"
-                  tal:omit-tag="">Item type</span>
-          </span>
+                  tal:omit-tag="python:True">Item type</span>
+			</span>
+		  </span>
         </h1>
-        <h1 i18n:translate=""
+        <h1
             tal:condition="python: not context.checkCreationFlag()">
 			<img tal:attributes="src python:context.portal_url() + '/++resource++bika.lims.images/' + context.portal_type.lower() + '_big.png'"/>
-          Edit
-		  <span i18n:translate=""
-				tal:content="here/title_or_id"
-				tal:omit-tag="">Item</span>
+          <span i18n:translate="">
+			Edit
+			<span i18n:name="itemtype"
+                tal:define="fti python:context.portal_types.getTypeInfo(here)"
+				tal:omit-tag="python:True">
+			  <span i18n:translate=""
+                  tal:content="fti/Title"
+                  tal:omit-tag="python:True">Item type</span>
+			</span>
+		  </span>
         </h1>
 
 <dl class="portalMessage info"

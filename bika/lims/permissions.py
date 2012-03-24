@@ -11,10 +11,12 @@ from Products.CMFCore.permissions import AddPortalContent
 
 # Add Permissions:
 # ----------------
+AddClientFolder = 'BIKA: Add ClientFolder'
 AddClient = 'BIKA: Add Client'
 AddAnalysisRequest = 'BIKA: Add Analysis Request'
 AddSample = 'BIKA: Add Sample'
 AddARProfile = 'BIKA: Add ARProfile'
+AddARTemplate = 'BIKA: Add ARTemplate'
 AddAnalysisSpec = 'BIKA: Add AnalysisSpec'
 AddAnalysis = 'BIKA: Add Analysis'
 

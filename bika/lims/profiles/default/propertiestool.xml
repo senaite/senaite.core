@@ -41,6 +41,7 @@
     <element value="ARImport"/>
     <element value="ARImportItem"/>
     <element value="ARProfile"/>
+    <element value="ARTemplate"/>
     <element value="Attachment"/>
     <element value="AttachmentType"/>
     <element value="BikaSetup"/>

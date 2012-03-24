@@ -161,6 +161,17 @@
                 inline="False"
                 insert-after="*"/>
 
+    <javascript authenticated="False"
+                cacheable="True"
+                compression="safe"
+                conditionalcomment=""
+                cookable="True"
+                enabled="on"
+                expression="python:here.portal_type in ['ARTemplate',]"
+                id="++resource++bika.lims.js/artemplate.js"
+                inline="False"
+                insert-after="*"/>
+
     <javascript authenticated="True"
                 cacheable="True"
                 compression="safe"
