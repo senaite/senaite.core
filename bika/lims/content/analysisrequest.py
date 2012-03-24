@@ -520,21 +520,6 @@ class AnalysisRequest(BaseFolder):
         if len(r) == 1:
             return r[0].UID
 
-    security.declarePublic('getCCDisplays')
-    def getCCDisplays(self):
-        """ get a string of titles of the contacts
-        """
-        cc_uids = ''
-        cc_titles = ''
-        for cc in self.getCCContact():
-            if cc_uids:
-                cc_uids = cc_uids + ', ' + cc.UID()
-                cc_titles = cc_titles + ', ' + cc.Title()
-            else:
-                cc_uids = cc.UID()
-                cc_titles = cc.Title()
-        return [cc_uids, cc_titles]
-
     security.declarePublic('current_date')
     def current_date(self):
         """ return current date """

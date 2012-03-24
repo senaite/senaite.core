@@ -116,25 +116,40 @@ def getContainers(instance,
 class PartitionSetupField(RecordsField):
     _properties = RecordsField._properties.copy()
     _properties.update({
-        'subfields': ('sampletype',
-                      'preservation',
-                      'container',
-                      'separate',
-                      'vol'),
-                      #'retentionperiod'),
-        'subfield_labels': {'sampletype':_('Sample Type'),
-                            'preservation':_('Preservation'),
-                            'container':_('Container'),
-                            'separate':_('Separate Partition'),
-                            'vol':_('Required Volume')},
-                            #'retentionperiod': _('Retention Period')},
-        'subfield_types': {'separate':'boolean',
-                           'vol':'int'},
-        'subfield_vocabularies': {'sampletype':'SampleTypes',
-                                  'preservation':'Preservations',
-                                  'container':'Containers'},
-        'subfield_sizes': {'vol':5}
-                           #'retentionperiod':10}
+        'subfields': (
+            'sampletype',
+            'preservation',
+            'container',
+            'separate',
+            'vol',
+            #'retentionperiod',
+            ),
+        'subfield_labels': {
+            'sampletype':_('Sample Type'),
+            'preservation':_('Preservation'),
+            'container':_('Container'),
+            'separate':_('Separate Partition'),
+            'vol':_('Required Volume'),
+            #'retentionperiod': _('Retention Period'),
+            },
+        'subfield_types': {
+            'separate':'boolean',
+            'vol':'int',
+            'container':'selection',
+            'preservation':'selection',
+            },
+        'subfield_vocabularies': {
+            'sampletype':'SampleTypes',
+            'preservation':'Preservations',
+            'container':'Containers',
+            },
+        'subfield_sizes': {
+            'sampletype': 1,
+            'vol':5,
+            'container': 5,
+            'preservation':5,
+            #'retentionperiod':10,
+        }
     })
     security = ClassSecurityInfo()
 
@@ -162,13 +177,15 @@ class PartitionSetupField(RecordsField):
                  bsc(portal_type='Preservation',
                      inactive_state='active',
                      sort_on = 'sortable_title')]
-        items = [['','']] + list(items)
+        items = [['',_('Any')]] + list(items)
         return DisplayList(items)
 
     security.declarePublic('Containers')
     def Containers(self, instance=None):
         instance = instance or self
-        return DisplayList(getContainers(instance))
+        items = getContainers(instance, allow_blank=False)
+        items = [['',_('Any')]] + list(items)
+        return DisplayList(items)
 
 registerField(PartitionSetupField, title = "", description = "")
 

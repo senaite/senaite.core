@@ -82,32 +82,8 @@
 
     <browser:page
       for="*"
-      name="analysisrequest_profileservices"
-      class="bika.lims.browser.analysisrequest.ajaxProfileServices"
-      permission="zope.Public"
-      layer="bika.lims.interfaces.IBikaLIMS"
-    />
-
-    <browser:page
-      for="*"
-      name="get_service_dependencies"
-      class=".analysisrequest.ajaxgetServiceDependencies"
-      permission="zope.Public"
-      layer="bika.lims.interfaces.IBikaLIMS"
-    />
-
-    <browser:page
-      for="*"
-      name="getparts"
-      class=".analysisrequest.ajaxCalculateParts"
-      permission="zope.Public"
-      layer="bika.lims.interfaces.IBikaLIMS"
-    />
-
-    <browser:page
-      for="*"
-      name="get_back_references"
-      class=".analysisrequest.ajaxgetBackReferences"
+      name="ar_formdata"
+      class="bika.lims.browser.analysisrequest.ar_formdata"
       permission="zope.Public"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
@@ -133,16 +109,6 @@
       name="analysisrequest_select_cc"
       class="bika.lims.browser.analysisrequest.AnalysisRequestSelectCCView"
       permission="bika.lims.ManageAnalysisRequests"
-      layer="bika.lims.interfaces.IBikaLIMS"
-    />
-
-<!--    When a contact is selected; get their default CCs automatically-->
-<!--    Also run when the form is first rendered-->
-    <browser:page
-      for="*"
-      name="analysisrequest_contact_ccs"
-      class="bika.lims.browser.analysisrequest.AnalysisRequestContactCCs"
-      permission="cmf.ListFolderContents"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 

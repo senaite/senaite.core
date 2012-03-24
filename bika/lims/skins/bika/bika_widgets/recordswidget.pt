@@ -71,10 +71,27 @@
 	</tal:string>
 	<tal:selection condition="python: field.isSelection(key)">
 	<tal:block tal:define="value python:field.getSubfieldValue(values, idx, key);
-                               vocab python:field.getVocabularyFor(key, here)">
-	   <select tal:attributes="name string:${fieldName}.${key}:records:ignore_empty;
-                                   id fieldName;
-		                   tabindex tabindex/next|nothing;"
+							vocab python:field.getVocabularyFor(key, here);
+							size python:field.getSubfieldSize(key);">
+		<select tal:condition="python:size and size < 2 or False"
+			tal:attributes="name string:${fieldName}.${key}:records:ignore_empty;
+						   id fieldName;
+						   tabindex tabindex/next|nothing;"
+                   i18n:domain="python:i18n_domain">
+	      <option tal:repeat="item vocab"
+		      tal:attributes="value item;
+		      selected python:test(here.checkSelected(item, value), 'selected', None);"
+		      tal:content="python: vocab.getValue(item)"
+		      i18n:translate=""
+		      />
+	    </select>
+		<!-- multi-select selection -->
+		<select tal:condition="python:size and size > 1 or False"
+			multiple="multiple"
+			tal:attributes="name string:${fieldName}.${key}:records:ignore_empty;
+						   id fieldName;
+						   tabindex tabindex/next|nothing;
+						   size size;"
                    i18n:domain="python:i18n_domain">
 	      <option tal:repeat="item vocab"
 		      tal:attributes="value item;

@@ -119,36 +119,36 @@ class Client(Organisation):
                 return contact.UID()
         return
 
-    security.declarePublic('getCCContacts')
-    def getCCContacts(self):
-        # for every contact, get the list of CC Contacts
-        # using comma delimited strings in arrays so that it can
-        # be manipulated in javascript
-        client_ccs = []
-        cc_data = {}
-        wf = getToolByName(self, 'portal_workflow')
-        for contact in self.objectValues('Contact'):
-            cc_contacts = []
-            cc_uids = ''
-            cc_titles = ''
-            for cc_contact in contact.getCCContact():
-                if wf.getInfoFor(cc_contact, 'inactive_state', '') == 'active':
-                    if cc_uids:
-                        cc_uids = cc_uids + ', ' + cc_contact.UID()
-                        cc_titles = cc_titles + ', ' + cc_contact.Title()
-                    else:
-                        cc_uids = cc_contact.UID()
-                        cc_titles = cc_contact.Title()
-            cc_contacts.append(contact.UID())
-            cc_contacts.append(cc_uids)
-            cc_contacts.append(cc_titles)
-            cc_data[contact.Title()] = cc_contacts
-
-        cc_keys = cc_data.keys()
-        cc_keys.sort()
-        for cc_key in cc_keys:
-            client_ccs.append(cc_data[cc_key])
-        return client_ccs
+##    security.declarePublic('getCCContacts')
+##    def getCCContacts(self):
+##        # for every contact, get the list of CC Contacts
+##        # using comma delimited strings in arrays so that it can
+##        # be manipulated in javascript
+##        client_ccs = []
+##        cc_data = {}
+##        wf = getToolByName(self, 'portal_workflow')
+##        for contact in self.objectValues('Contact'):
+##            cc_contacts = []
+##            cc_uids = ''
+##            cc_titles = ''
+##            for cc_contact in contact.getCCContact():
+##                if wf.getInfoFor(cc_contact, 'inactive_state', '') == 'active':
+##                    if cc_uids:
+##                        cc_uids = cc_uids + ', ' + cc_contact.UID()
+##                        cc_titles = cc_titles + ', ' + cc_contact.Title()
+##                    else:
+##                        cc_uids = cc_contact.UID()
+##                        cc_titles = cc_contact.Title()
+##            cc_contacts.append(contact.UID())
+##            cc_contacts.append(cc_uids)
+##            cc_contacts.append(cc_titles)
+##            cc_data[contact.Title()] = cc_contacts
+##
+##        cc_keys = cc_data.keys()
+##        cc_keys.sort()
+##        for cc_key in cc_keys:
+##            client_ccs.append(cc_data[cc_key])
+##        return client_ccs
 
     security.declarePublic('getContactUIDForUser')
     def getContactUIDForUser(self):
