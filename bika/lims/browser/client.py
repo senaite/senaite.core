@@ -80,12 +80,13 @@ class ClientWorkflowAction(AnalysisRequestWorkflowAction):
 
                 # grab this object's Sampler and DateSampled from the form
                 Sampler = form['getSampler'][0][obj_uid].strip()
+                Sampler = Sampler and Sampler or ''
                 DateSampled = form['getDateSampled'][0][obj_uid].strip()
+                DateSampled = DateSampled and DateTime(DateSampled) or ''
 
                 # write them to the sample
-                sample.edit(Sampler = Sampler and Sampler or '',
-                            DateSampled = DateSampled and DateTime(DateSampled) or '')
-                sample.reindexObject()
+                sample.setSampler(Sampler)
+                sample.setDateSampled(DateSampled)
 
                 # transition the object if both values are present
                 if Sampler and DateSampled:

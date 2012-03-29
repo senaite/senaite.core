@@ -9,7 +9,8 @@ from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import PMF, logger
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.analyses import AnalysesView
-from bika.lims.browser.bika_listing import BikaListingView, WorkflowAction
+from bika.lims.browser.bika_listing import BikaListingView
+from bika.lims.browser.bika_listing import  WorkflowAction
 from bika.lims.browser.publish import Publish
 from bika.lims.browser.sample import SamplePartitionsView
 from bika.lims.config import POINTS_OF_CAPTURE
