@@ -20,7 +20,7 @@ if workflow.getInfoFor(context, 'cancellation_state', 'active') == "cancelled":
 if checkPermission(Retract, context):
     return True
 
-if portal_type == "AnalysisRequest":
+if context.portal_type == "AnalysisRequest":
 
     # Allow automatic retract (Disregard permission)
     # if any analysis is 'sample_due' or 'sample_received'.
@@ -29,7 +29,7 @@ if portal_type == "AnalysisRequest":
         if review_state in ('sample_due', 'sample_received'):
             return True
 
-if portal_type == "Worksheet":
+if context.portal_type == "Worksheet":
 
     # Allow automatic retract if any analysis is 'sample_received'
     # or any duplicate or reference analysis is 'assigned'.
