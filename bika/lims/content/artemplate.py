@@ -27,26 +27,32 @@ schema = BikaSchema.copy() + Schema((
             description = _("The AR Profile selection for this template"),
         ),
     ),
-    ReferenceField('SampleType',
-        vocabulary_display_path_bound = sys.maxint,
-        allowed_types = ('SampleType',),
-        relationship = 'ARTemplateSampleType',
-        referenceClass = HoldingReference,
-        vocabulary = 'SampleTypes',
-        widget = ReferenceWidget(
-            checkbox_bound = 1,
-            label = _("Sample Type"),
-        ),
-    ),
+    ## SamplePoint and SampleType references are managed with
+    ## accessors and mutators below to get/set a string value
+    ## (the Title of the object), but still store a normal Reference.
+    ## Form autocomplete widgets can then work with the Titles.
     ReferenceField('SamplePoint',
         vocabulary_display_path_bound = sys.maxint,
         allowed_types = ('SamplePoint',),
         relationship = 'ARTemplateSamplePoint',
         referenceClass = HoldingReference,
-        vocabulary = 'SamplePoints',
-        widget = ReferenceWidget(
-            checkbox_bound = 1,
+        accessor = 'getSamplePoint',
+        edit_accessor = 'getSamplePoint',
+        mutator = 'setSamplePoint',
+        widget = StringWidget(
             label = _("Sample Point"),
+        ),
+    ),
+    ReferenceField('SampleType',
+        vocabulary_display_path_bound = sys.maxint,
+        allowed_types = ('SampleType',),
+        relationship = 'ARTemplateSampleType',
+        referenceClass = HoldingReference,
+        accessor = 'getSampleType',
+        edit_accessor = 'getSampleType',
+        mutator = 'setSampleType',
+        widget = StringWidget(
+            label = _("Sample Type"),
         ),
     ),
     BooleanField('Composite',
@@ -96,55 +102,6 @@ class ARTemplate(BaseContent):
         from bika.lims.idserver import renameAfterCreation
         renameAfterCreation(self)
 
-    # Rubbish transplanted here from sample.py
-    # Forms submit Title Strings which need
-    # to be converted to objects somewhere along the way...
-    def setSampleType(self, value, **kw):
-        """ convert SampleType title to UID
-        """
-        bsc = getToolByName(self, 'bika_setup_catalog')
-        sampletype = bsc(portal_type = 'SampleType', Title = value)
-        value = sampletype[0].UID
-        return self.Schema()['SampleType'].set(self, value)
-
-    # Rubbish transplanted here from sample.py
-    # Forms submit Title Strings which need
-    # to be converted to objects somewhere along the way...
-    def setSamplePoint(self, value, **kw):
-        """ convert SamplePoint title to UID
-        """
-        sp_uid = None
-        if value:
-            bsc = getToolByName(self, 'bika_setup_catalog')
-            samplepoints = bsc(portal_type = 'SamplePoint', Title = value)
-            if samplepoints:
-                sp_uid = samplepoints[0].UID
-        return self.Schema()['SamplePoint'].set(self, sp_uid)
-
-    security.declarePublic('SampleTypes')
-    def SampleTypes(self, instance=None):
-        instance = instance or self
-        bsc = getToolByName(instance, 'bika_setup_catalog')
-        items = []
-        for st in bsc(portal_type='SampleType',
-                      inactive_state='active',
-                      sort_on = 'sortable_title'):
-            items.append((st.Title, st.Title))
-        items = [['','']] + list(items)
-        return DisplayList(items)
-
-    security.declarePublic('SamplePoints')
-    def SamplePoints(self, instance=None):
-        instance = instance or self
-        bsc = getToolByName(instance, 'bika_setup_catalog')
-        items = []
-        for sp in bsc(portal_type='SamplePoint',
-                      inactive_state='active',
-                      sort_on = 'sortable_title'):
-            items.append((sp.Title, sp.Title))
-        items = [['','']] + list(items)
-        return DisplayList(items)
-
     security.declarePublic('ARProfiles')
     def ARProfiles(self, instance=None):
         instance = instance or self
@@ -158,5 +115,65 @@ class ARTemplate(BaseContent):
             items.append((p.UID(), title))
         items = [['','']] + list(items)
         return DisplayList(items)
+
+    def setSampleType(self, value, **kw):
+        """ convert object title to UID
+        """
+        uid = None
+        if value:
+            bsc = getToolByName(self, 'bika_setup_catalog')
+            items = bsc(portal_type = 'SampleType', Title = value)
+            if not items:
+                msg = _("${sampletype} is not a valid sample type",
+                        mapping={'sampletype':value})
+                self.context.plone_utils.addPortalMessage(msg, 'error')
+                self.destination_url = self.request.get_header("referer",
+                                       self.context.absolute_url())
+                self.request.response.redirect(self.destination_url)
+                return False
+            uid = items[0].UID
+        return self.Schema()['SampleType'].set(self, uid)
+
+    def getSampleType(self, **kw):
+        """ retrieve referenced object and return it's title
+        """
+        uid = self.Schema()['SampleType'].get(self)
+        if not uid:
+            return ''
+        rc = getToolByName(self, 'uid_catalog')
+        items = rc(UID=uid)
+        if not items:
+            return ''
+        return items[0].Title
+
+    def setSamplePoint(self, value, **kw):
+        """ convert object title to UID
+        """
+        uid = None
+        if value:
+            bsc = getToolByName(self, 'bika_setup_catalog')
+            items = bsc(portal_type = 'SamplePoint', Title = value)
+            if not items:
+                msg = _("${samplepoint} is not a valid sample point",
+                        mapping={'samplepoint':value})
+                self.context.plone_utils.addPortalMessage(msg, 'error')
+                self.destination_url = self.request.get_header("referer",
+                                       self.context.absolute_url())
+                self.request.response.redirect(self.destination_url)
+                return False
+            uid = items[0].UID
+        return self.Schema()['SamplePoint'].set(self, uid)
+
+    def getSamplePoint(self, **kw):
+        """ retrieve referenced object and return it's title
+        """
+        uid = self.Schema()['SamplePoint'].get(self)
+        if not uid:
+            return ''
+        rc = getToolByName(self, 'uid_catalog')
+        items = rc(UID=uid)
+        if not items:
+            return ''
+        return items[0].Title
 
 registerType(ARTemplate, PROJECTNAME)

@@ -2,15 +2,20 @@ from AccessControl import ClassSecurityInfo
 from Products.Archetypes.public import *
 from Products.ATContentTypes.lib.historyaware import HistoryAwareMixin
 from Products.CMFCore.permissions import View, ModifyPortalContent
+from Products.CMFCore.utils import getToolByName
+from Products.Five.browser import BrowserView
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.config import PROJECTNAME
 from bika.lims.browser.fields import CoordinateField
 from bika.lims.browser.widgets import CoordinateWidget
 from bika.lims.browser.fields import DurationField
 from bika.lims.browser.widgets import DurationWidget
-import sys
+from zope.i18n import translate
 from bika.lims import PMF, bikaMessageFactory as _
 from zope.interface import implements
+import json
+import plone
+import sys
 
 schema = BikaSchema.copy() + Schema((
     CoordinateField('Latitude',
@@ -44,6 +49,20 @@ schema = BikaSchema.copy() + Schema((
                             " enter frequency here, e.g. weekly"),
         ),
     ),
+    ReferenceField('SampleTypes',
+        required = 0,
+        multiValued = 1,
+        allowed_types = ('SampleType',),
+        vocabulary = 'SampleTypes',
+        relationship = 'SamplePointSampleType',
+        widget = ReferenceWidget(
+            checkbox_bound = 1,
+            label = _("Sample Types"),
+            description = _("The list of sample types that can be collected "
+                            "at this sample point.  If no sample types are "
+                            "selected, then all sample types are available."),
+        ),
+    ),
     BooleanField('Composite',
         default=False,
         widget=BooleanWidget(
@@ -68,4 +87,19 @@ class SamplePoint(BaseContent, HistoryAwareMixin):
         from bika.lims.idserver import renameAfterCreation
         renameAfterCreation(self)
 
+    def SampleTypes(self):
+        from bika.lims.content.sampletype import SampleTypes
+        return SampleTypes(self)
+
 registerType(SamplePoint, PROJECTNAME)
+
+def SamplePoints(self, instance=None):
+    instance = instance or self
+    bsc = getToolByName(instance, 'bika_setup_catalog')
+    items = []
+    for sp in bsc(portal_type='SamplePoint',
+                  inactive_state='active',
+                  sort_on = 'sortable_title'):
+        items.append((sp.UID, sp.Title))
+    items = [['','']] + list(items)
+    return DisplayList(items)

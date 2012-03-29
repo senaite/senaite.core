@@ -16,6 +16,7 @@ from plone.app.folder.folder import ATFolder, ATFolderSchema
 from zope.interface.declarations import implements
 from Products.CMFCore.utils import getToolByName
 import json
+import plone
 
 class SampleTypesView(BikaListingView):
     implements(IFolderContentsView, IViewView)
@@ -84,17 +85,28 @@ atapi.registerType(SampleTypes, PROJECTNAME)
 class ajax_SampleTypes():
     """ autocomplete data source for sample types field
         return JSON data [string,string]
+        if "samplepoint" is in the request, it's expected to be a title string
+        The objects returned will be filtered by samplepoint's SampleTypes.
+        if no items are found, all items are returned.
     """
     def __call__(self):
+        plone.protect.CheckAuthenticator(self.request)
         bsc = getToolByName(self.context, 'bika_setup_catalog')
         term = self.request.get('term', '').lower()
         items = bsc(portal_type = "SampleType", sort_on='sortable_title')
-        nr_items = len(items)
-        items = [s.title for s in items if s.title.lower().find(term) > -1]
 
-        ##XXX why does it return not all values in index?  only those that are 'referenced' by samples?
-        #values = pc.Indexes['getSampleTypeTitle'].uniqueValues()
-        #items = term and [v for v in values if v.lower().find(term.lower()) > -1]
-        ###
+        items = bsc(portal_type = "SampleType", sort_on='sortable_title')
+        items = [s.getObject() for s in items if s.Title.lower().find(term) > -1]
+
+        samplepoint = self.request.get('samplepoint', '')
+        if samplepoint and len(samplepoint) > 1:
+            sp = bsc(portal_type="SamplePoint",Title=samplepoint)
+            if not sp:
+                return json.dumps([])
+            sp = sp[0].getObject()
+            new = [s for s in items if s in sp.getSampleTypes()]
+            if new:
+                items = new
+
+        items = [s.Title() for s in items]
         return json.dumps(items)
-

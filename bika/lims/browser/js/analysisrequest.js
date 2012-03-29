@@ -328,6 +328,11 @@ jQuery( function($) {
 			// get column field values
 			st_title = formvalues[col]['st_title'];
 			st_uid = formdata['st_uids'][st_title];
+			if (st_uid != undefined && st_uid != null){
+				st_uid = st_uid['uid'];
+			} else {
+				st_uid = '';
+			}
 			service_uids = formvalues[col]['services']
 
 			// loop through each selected service, assigning or creating
@@ -538,34 +543,6 @@ jQuery( function($) {
 		calculate_parts();
 	}
 
-	function autocomplete_sampletype(request,callback){
-		$.getJSON('ajax_sampletypes', {'term':request.term}, function(data,textStatus){
-			callback(data);
-		});
-	}
-	// changing sampletype sets partition numbers.
-	// it's done funny, because autocomplete didn't like .change()
-	// and autocomplete's callback fires at the wrong time.
-	$(".sampletype").focus(function(){
-		window.sampletype_focus = $(this).val();
-	});
-	$(".sampletype").blur(function(){
-		if ($(this).val() != window.sampletype_focus){
-			calculate_parts();
-		}
-		window.sampletype_focus = '';
-	})
-	// also set on .change() though,
-	// because sometimes we set these fields manually.
-	$(".sampletype").change(function(){
-		calculate_parts()
-	});
-
-	function autocomplete_samplepoint(request,callback){
-		$.getJSON('ajax_samplepoints', {'term':request.term}, function(data,textStatus){
-			callback(data);
-		});
-	}
 
 	$(document).ready(function(){
 
@@ -613,10 +590,75 @@ jQuery( function($) {
 				.datepicker({'dateFormat': 'dd M yy', showAnim: ''})
 			}
 		}
-		$(".sampletype").autocomplete({ minLength: 0, source: autocomplete_sampletype});
-		$(".samplepoint").autocomplete({ minLength: 0, source: autocomplete_samplepoint});
+
+		// define these for each autocomplete dropdown individually
+		// this is done like this so that they can depend on each other's
+		// values
+		for (col=0; col<parseInt($("#col_count").val()); col++) {
+			$("#ar_"+col+"_SamplePoint").autocomplete({
+				minLength: 0,
+				source: function(request,callback){
+					$.getJSON('ajax_samplepoints',
+						{'term':request.term,
+						 'sampletype':$("#ar_"+window._ac_focus.id.split("_")[1]+"_SampleType").val(),
+						 '_authenticator': $('input[name="_authenticator"]').val()},
+						function(data,textStatus){
+							callback(data);
+						}
+					);
+				}
+			});
+			$("#ar_"+col+"_SampleType").autocomplete({
+				minLength: 0,
+				source: function(request,callback){
+					$.getJSON('ajax_sampletypes',
+						{'term':request.term,
+						 'samplepoint':$("#ar_"+window._ac_focus.id.split("_")[1]+"_SamplePoint").val(),
+						 '_authenticator': $('input[name="_authenticator"]').val()},
+						function(data,textStatus){
+							callback(data);
+						}
+					);
+				}
+			});
+		}
 		$("select[class='ARTemplate']").change(setARTemplate);
 		$("select[class='ARProfile']").change(setARProfile);
+
+		// when SamplePoint is selected, reset Composite flag to SP value
+		$(".samplepoint").focus(function(){
+			window._ac_focus = this;
+		});
+		function set_sp(e){
+			col = e.id.split("_")[1];
+			sp = formdata['sp_uids'][$(e).val()];
+			if (sp != undefined && sp != null){
+				$("#ar_"+col+"+Composite").attr("checked", sp['composite']);
+			}
+		}
+		$(".samplepoint").change(function(){
+			set_sp(this);
+		});
+		$(".samplepoint").blur(function(){
+			set_sp(this);
+		});
+
+		// changing sampletype sets partition numbers.
+		// it's done funny, because autocomplete didn't like .change()
+		// and autocomplete's callback fires at the wrong time.
+		$(".sampletype").focus(function(){
+			window._ac_focus = this;
+		});
+		$(".sampletype").blur(function(){
+			if ($(this).val() != $(window._ac_focus).val()){
+				calculate_parts();
+			}
+		})
+		// also set on .change() though,
+		// because sometimes we set these fields manually.
+		$(".sampletype").change(function(){
+			calculate_parts()
+		});
 
 		$(".copyButton").live('click',  function (){
 			field_name = $(this).attr("name");

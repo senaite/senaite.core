@@ -1020,14 +1020,16 @@ class ar_formdata(BrowserView):
                 title = context == self.context.bika_setup.bika_arprofiles \
                     and translate(_('Lab')) + ": " + template.Title() \
                     or template.Title()
-                sp = template.getSamplePoint()
-                st = template.getSampleType()
+                sp_title = template.getSamplePoint()
+                sp = bsc(portal_type='SamplePoint', Title=sp_title)[0]
+                st_title = template.getSampleType()
+                st = bsc(portal_type='SampleType', Title=st_title)[0]
                 t_dict = {
                     'UID':template.UID(),
                     'Title':template.Title(),
                     'ARProfile':template.getARProfile().UID(),
-                    'SamplePoint':sp and sp.Title() or '',
-                    'SampleType':st and st.Title() or '',
+                    'SamplePoint':sp_title,
+                    'SampleType':st_title,
                     'Composite':template.getComposite(),
                     'InvoiceExclude':template.getInvoiceExclude(),
                     'ReportDryMatter':template.getReportDryMatter(),
@@ -1137,15 +1139,24 @@ class ar_formdata(BrowserView):
             formdata['services'][uid]['PartitionSetup'] = \
                 partsetup
 
-        ## Until SampleType and SamplePoint get proper lookup fields,
-        ## the autocomplete widget returns strings only.
-        ## So we need lookups here, from title->UID.
-        formdata['st_uids'] = dict([(st.Title,st.UID) for st \
-                                    in bsc(portal_type = 'SampleType',
-                                           inactive_review_state = 'active')])
-        formdata['sp_uids'] = dict([(sp.Title,sp.UID) for sp \
-                                    in bsc(portal_type = 'SamplePoint',
-                                           inactive_review_state = 'active')])
+        ## SamplePoint and SampleType autocomplete lookups need a reference
+        ## to resolve Title->UID
+        formdata['st_uids'] = {}
+        for s in bsc(portal_type = 'SampleType',
+                        inactive_review_state = 'active'):
+            s = s.getObject()
+            formdata['st_uids'][s.Title()] = {
+                'uid':s.UID(),
+            }
+
+        formdata['sp_uids'] = {}
+        for s in bsc(portal_type = 'SamplePoint',
+                        inactive_review_state = 'active'):
+            s = s.getObject()
+            formdata['sp_uids'][s.Title()] = {
+                'uid':s.UID(),
+                'composite':s.getComposite(),
+            }
 
         return json.dumps(formdata)
 

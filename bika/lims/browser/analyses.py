@@ -49,7 +49,7 @@ class AnalysesView(BikaListingView):
                             'sortable': False},
             'Result': {'title': _('Result'),
                        'input_width': '6',
-                       'input_class': 'ajax_calculate',
+                       'input_class': 'ajax_calculate numeric',
                        'sortable': False},
             'ResultDM': {'title': _('Dry'),
                          'sortable': False},
@@ -337,7 +337,7 @@ class AnalysesView(BikaListingView):
             if col_id not in self.columns:
                 self.columns[col_id] = {'title': self.interim_columns[col_id],
                                         'input_width': '6',
-                                        'input_class': 'ajax_calculate',
+                                        'input_class': 'ajax_calculate numeric',
                                         'sortable': False}
 
         if can_edit_analyses:

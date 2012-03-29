@@ -53,7 +53,7 @@ elif 'Analysts' in member_groups:
     url = context.worksheets.absolute_url()
     return context.REQUEST.RESPONSE.redirect(url)
 
-elif 'Sampler' in member_groups:
+elif 'Samplers' in member_groups:
     # We only route to the to_be_sampled list if there are
     # sample partitions waiting to be "sampled".
     bsc = getToolByName(context, 'bika_setup_catalog')
