@@ -1,6 +1,8 @@
 jQuery( function($) {
 $(document).ready(function(){
 
+	_ = window.jsi18n;
+
 	// Worksheets need to check these before enabling Add button
     $("#AttachFile,#Service,#Analysis").change(function(event){
         attachfile = $("#AttachFile").val();
@@ -46,10 +48,10 @@ $(document).ready(function(){
 	// Dropdown grid of Analyses in attachment forms
 	$( "#Analysis" ).combogrid({
 		colModel: [{'columnName':'analysis_uid','hidden':true},
-		           {'columnName':'slot','width':'10','label':'Slot'},
-		           {'columnName':'service','width':'35','label':'Service'},
-		           {'columnName':'parent','width':'35','label':'Parent'},
-		           {'columnName':'type','width':'20','label':'Type'}],
+		           {'columnName':'slot','width':'10','label':_('Slot')},
+		           {'columnName':'service','width':'35','label':_('Service')},
+		           {'columnName':'parent','width':'35','label':_('Parent')},
+		           {'columnName':'type','width':'20','label':_('Type')}],
 		url: window.location.href.replace("/manage_results","") + "/attachAnalyses?_authenticator=" + $('input[name="_authenticator"]').val(),
 		select: function( event, ui ) {
 			$( "#Analysis" ).val(ui.item.service + " (slot "+ui.item.slot+")");

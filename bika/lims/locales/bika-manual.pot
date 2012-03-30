@@ -57,3 +57,13 @@ msgstr ""
 
 msgid "Save remarks"
 msgstr ""
+
+# ../browser/js/attachments.js
+msgid "Slot"
+msgstr ""
+
+msgid "Parent"
+msgstr ""
+
+msgid "Type"
+msgstr ""
