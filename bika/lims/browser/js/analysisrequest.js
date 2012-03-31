@@ -662,7 +662,14 @@ jQuery( function($) {
 
 		$(".copyButton").live('click',  function (){
 			field_name = $(this).attr("name");
-			if ($(this).hasClass('ARProfileCopyButton')){ // Profile selector
+			if ($(this).hasClass('ARTemplateCopyButton')){ // Template selector
+				first_val = $('#ar_0_ARTemplate').val();
+				for (col=1; col<parseInt($("#col_count").val()); col++) {
+					$("#ar_"+col+"_ARTemplate").val(first_val);
+					$("#ar_"+col+"_ARTemplate").change();
+				}
+			}
+			else if ($(this).hasClass('ARProfileCopyButton')){ // Profile selector
 				first_val = $('#ar_0_ARProfile').val();
 				for (col=1; col<parseInt($("#col_count").val()); col++) {
 					$("#ar_"+col+"_ARProfile").val(first_val);
