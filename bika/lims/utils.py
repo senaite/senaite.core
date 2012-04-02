@@ -93,23 +93,6 @@ def TimeOrDate(context, datetime, long_format = False):
         dt = datetime
     return dt
 
-class ajaxGetObject(BrowserView):
-    """ return redirect url if the item exists
-        passes the request to portal_catalog
-        requires '_authenticator' in request.
-    """
-    def __call__(self):
-        try:
-            plone.protect.CheckAuthenticator(self.request)
-            plone.protect.PostOnly(self.request)
-        except:
-            return ""
-        pc = getToolByName(self.context, 'portal_catalog')
-        id = self.request.get("id", '').replace("*", "")
-        items = pc(self.request)
-        if items:
-            return items[0].getObject().absolute_url()
-
 # encode_header function copied from roundup's rfc2822 package.
 hqre = re.compile(r'^[A-z0-9!"#$%%&\'()*+,-./:;<=>?@\[\]^_`{|}~ ]+$')
 

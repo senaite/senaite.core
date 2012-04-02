@@ -4,13 +4,12 @@ $(document).ready(function(){
 	_ = window.jsi18n;
 
 	// if collection gets something worth submitting,
-	// it's sent to utils.getObject here.
+	// it's sent to utils.barcode_entry here.
 	function redirect(code){
-		code = code.replace("*","");
 		$.ajax({
 			type: 'POST',
-			url: 'getObject',
-			data: {'id':code,
+			url: 'barcode_entry',
+			data: {'entry':code.replace("*",""),
 					'_authenticator': $('input[name="_authenticator"]').val()},
 			success: function(responseText, statusText, xhr, $form) {
 				if (responseText) {
@@ -23,22 +22,25 @@ $(document).ready(function(){
 	var collecting = false;
 	var code = ""
 
-	$(document).keypress(function(event) {
-		if(event.target == document.documentElement){
-			if (collecting) {
-				code = code + String.fromCharCode(event.which);
-			} else {
-				// valid barcodes start with "*"
-				if (event.which == "42") {
-					collecting = true;
-					code = String.fromCharCode(event.which);
-					setTimeout(function(){
-						if(collecting == true && code != ""){
-							collecting = false;
-							redirect(code);
-						}
-					}, 500)
-				}
+	$(window).keypress(function(event) {
+		if (collecting) {
+			// short-circuit tineout when ending * is reached
+			if (event.which == "42"){
+				collecting = false;
+				redirect(code);
+			}
+			code = code + String.fromCharCode(event.which);
+		} else {
+			// valid barcodes will start and end with "*"
+			if (event.which == "42") {
+				collecting = true;
+				code = String.fromCharCode(event.which);
+				setTimeout(function(){
+					if(collecting == true && code != ""){
+						collecting = false;
+						redirect(code);
+					}
+				}, 500)
 			}
 		}
 	});

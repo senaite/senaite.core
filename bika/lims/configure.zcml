@@ -13,7 +13,7 @@
 <!--  <include file="contentmirror.zcml" zcml:condition="installed ore.contentmirror" />-->
 
   <include package="collective.subtractiveworkflow" />
-  
+
   <include package="jarn.jsi18n" />
 
   <include package=".browser" />
@@ -31,8 +31,8 @@
   <!-- jquery redirects here when values are entered into 'document' context (barcodes) -->
   <browser:page
     for="*"
-    name="getObject"
-    class="bika.lims.utils.ajaxGetObject"
+    name="barcode_entry"
+    class="bika.lims.barcode.barcode_entry"
     permission="zope.Public"
     layer="bika.lims.interfaces.IBikaLIMS"
   />
