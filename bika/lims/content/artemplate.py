@@ -137,14 +137,8 @@ class ARTemplate(BaseContent):
     def getSampleType(self, **kw):
         """ retrieve referenced object and return it's title
         """
-        uid = self.Schema()['SampleType'].get(self)
-        if not uid:
-            return ''
-        rc = getToolByName(self, 'uid_catalog')
-        items = rc(UID=uid)
-        if not items:
-            return ''
-        return items[0].Title
+        item = self.Schema()['SampleType'].get(self)
+        return item.Title()
 
     def setSamplePoint(self, value, **kw):
         """ convert object title to UID
@@ -167,13 +161,7 @@ class ARTemplate(BaseContent):
     def getSamplePoint(self, **kw):
         """ retrieve referenced object and return it's title
         """
-        uid = self.Schema()['SamplePoint'].get(self)
-        if not uid:
-            return ''
-        rc = getToolByName(self, 'uid_catalog')
-        items = rc(UID=uid)
-        if not items:
-            return ''
-        return items[0].Title
+        item = self.Schema()['SamplePoint'].get(self)
+        return item.Title()
 
 registerType(ARTemplate, PROJECTNAME)

@@ -1021,9 +1021,7 @@ class ar_formdata(BrowserView):
                     and translate(_('Lab')) + ": " + template.Title() \
                     or template.Title()
                 sp_title = template.getSamplePoint()
-                sp = bsc(portal_type='SamplePoint', Title=sp_title)[0]
                 st_title = template.getSampleType()
-                st = bsc(portal_type='SampleType', Title=st_title)[0]
                 t_dict = {
                     'UID':template.UID(),
                     'Title':template.Title(),
