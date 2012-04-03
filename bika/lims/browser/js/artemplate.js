@@ -4,7 +4,7 @@ $(document).ready(function(){
 	_ = window.jsi18n;
 
 	function autocomplete_samplepoint(request,callback){
-		$.getJSON('ajax_samplepoints',
+		$.getJSON(window.portal_url + "/ajax_samplepoints",
 			{'term':request.term,
 			 'sampletype':$("#SampleType").val(),
 			 '_authenticator': $('input[name="_authenticator"]').val()},
@@ -15,7 +15,7 @@ $(document).ready(function(){
 	}
 
 	function autocomplete_sampletype(request,callback){
-		$.getJSON('ajax_sampletypes',
+		$.getJSON(window.portal_url + "/ajax_sampletypes",
 			{'term':request.term,
 			 'samplepoint':$("#SamplePoint").val(),
 			 '_authenticator': $('input[name="_authenticator"]').val(),},

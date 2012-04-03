@@ -49,7 +49,7 @@ schema = BikaSchema.copy() + Schema((
         required = 0,
         multiValued = 1,
         allowed_types = ('SamplePoint',),
-        vocabulary = 'SamplePoints',
+        vocabulary = 'SamplePointsVocabulary',
         relationship = 'SampleTypeSamplePoint',
         widget = ReferenceWidget(
             checkbox_bound = 1,
@@ -82,13 +82,44 @@ class SampleType(BaseContent, HistoryAwareMixin):
     def getUnits(self):
         return getUnits(self)
 
-    def SamplePoints(self):
+    def SamplePointsVocabulary(self):
         from bika.lims.content.samplepoint import SamplePoints
-        return SamplePoints(self)
+        return SamplePoints(self, allow_blank=False)
+
+    def setSamplePoints(self, value, **kw):
+        """ For the moment, we're manually trimming the sampletype<>samplepoint
+            relation to be equal on both sides, here.
+            It's done strangely, because it may be required to behave strangely.
+        """
+        bsc = getToolByName(self, 'bika_setup_catalog')
+        ## convert value to objects
+        if value and type(value) == str:
+            value = [bsc(UID=value)[0].getObject(),]
+        elif value and type(value) in (list, tuple) and type(value[0]) == str:
+            value = [bsc(UID=uid)[0].getObject() for uid in value if uid]
+        ## Find all SamplePoints that were removed
+        existing = self.Schema()['SamplePoints'].get(self)
+        removed = existing and [s for s in existing if s not in value] or []
+        added = value and [s for s in value if s not in existing] or []
+        ret = self.Schema()['SamplePoints'].set(self, value)
+
+        for sp in removed:
+            sampletypes = sp.getSampleTypes()
+            if self in sampletypes:
+                sampletypes.remove(self)
+                sp.setSampleTypes(sampletypes)
+
+        for sp in added:
+            sp.setSampleTypes(list(sp.getSampleTypes()) + [self,])
+
+        return ret
+
+    def getSamplePoints(self, **kw):
+        return self.Schema()['SamplePoints'].get(self)
 
 registerType(SampleType, PROJECTNAME)
 
-def SampleTypes(self, instance=None):
+def SampleTypes(self, instance=None, allow_blank=False):
     instance = instance or self
     bsc = getToolByName(instance, 'bika_setup_catalog')
     items = []
@@ -96,5 +127,5 @@ def SampleTypes(self, instance=None):
                   inactive_state='active',
                   sort_on = 'sortable_title'):
         items.append((st.UID, st.Title))
-    items = [['','']] + list(items)
+    items = allow_blank and [['','']] + list(items) or list(items)
     return DisplayList(items)

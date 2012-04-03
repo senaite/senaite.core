@@ -82,7 +82,7 @@ class SamplePoints(ATFolder):
 schemata.finalizeATCTSchema(schema, folderish = True, moveDiscussion = False)
 atapi.registerType(SamplePoints, PROJECTNAME)
 
-class ajax_SamplePoints():
+class ajax_SamplePoints(BrowserView):
     """ autocomplete data source for sample points field
         return JSON data [string,string]
         if "sampletype" is in the request, it's expected to be a title string
@@ -95,7 +95,10 @@ class ajax_SamplePoints():
         term = self.request.get('term', '').lower()
 
         items = bsc(portal_type = "SamplePoint", sort_on='sortable_title')
-        items = [s.getObject() for s in items if s.Title.lower().find(term) > -1]
+        if term and len(term) > 1:
+            items = [s.getObject() for s in items if s.Title.lower().find(term) > -1]
+        else:
+            items = [s.getObject() for s in items]
 
         sampletype = self.request.get('sampletype', '')
         if sampletype and len(sampletype) > 1:
