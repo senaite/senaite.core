@@ -215,6 +215,7 @@ class AnalysisServicesView(BikaListingView):
             items[x]['replace']['Calculation'] = calculation and "<a href='%s'>%s</a>" % \
                  (calculation.absolute_url() + "/edit", calculation.Title()) or ''
 
+        self.categories.sort()
         return items
 
 schema = ATFolderSchema.copy()
