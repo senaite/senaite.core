@@ -32,11 +32,10 @@ jQuery( function($) {
 
 	$(document).ready(function(){
 
-		if ( ! window.jsi18n) {
-			// jarn.i18n.setTTL(1000); // testing 10 seconds
-			jarn.i18n.loadCatalog('bika');
-			window.jsi18n = jarn.i18n.MessageFactory('bika');
-		}
+		jarn.i18n.loadCatalog('bika');
+		jarn.i18n.setTTL(3600000); // 1 hour refresh
+		window.jsi18n = jarn.i18n.MessageFactory('bika');
+
 		_ = window.jsi18n;
 
 		$('input.datepicker').live('click', function() {

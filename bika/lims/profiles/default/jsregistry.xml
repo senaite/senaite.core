@@ -180,7 +180,7 @@
               expression=""
               id="++resource++bika.lims.js/utils.js"
               inline="False"
-              insert-after="jquery.js"/>
+              insert-after="++resource++jsi18n.js"/>
 
   <javascript authenticated="False"
               cacheable="True"
