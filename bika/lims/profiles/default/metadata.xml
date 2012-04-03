@@ -5,5 +5,6 @@
     <dependency>profile-jarn.jsi18n:default</dependency>
     <dependency>profile-Products.ATExtensions:default</dependency>
     <dependency>profile-plone.app.iterate:plone.app.iterate</dependency>
+    <dependency>profile-Products.TinyMCE:TinyMCE</dependency>
   </dependencies>
 </metadata>

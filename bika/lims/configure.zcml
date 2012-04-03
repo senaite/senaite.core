@@ -16,6 +16,8 @@
 
   <include package="jarn.jsi18n" />
 
+  <include package="Products.TinyMCE" />
+
   <include package=".browser" />
   <include package=".content" />
   <include package=".controlpanel" />

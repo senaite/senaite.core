@@ -337,11 +337,10 @@ $(document).ready(function(){
 		form_id = $(this).attr('form_id');
 		form = $("form#"+form_id);
 		cookie_key = $(form[0].view_url).val() + "/" + form_id;
-		console.log(cookie_key)
 		if(col_id=='DEFAULT'){
-			$.cookie('toggle_cols', null);
+			createCookie('toggle_cols', null, 365);
 		} else if(col_id=='ALL') {
-			cookie = $.cookie("toggle_cols");
+			cookie = readCookie("toggle_cols");
 			cookie = $.parseJSON(cookie);
 			if (cookie == null) {
 				cookie = {};
@@ -351,9 +350,9 @@ $(document).ready(function(){
 				toggle_cols.push(i);
 			});
 			cookie[cookie_key] = toggle_cols;
-			$.cookie('toggle_cols', $.toJSON(cookie), { expires: 365 });
+			createCookie('toggle_cols', $.toJSON(cookie), 365);
 		} else {
-			cookie = $.cookie("toggle_cols");
+			cookie = readCookie("toggle_cols");
 			cookie = $.parseJSON(cookie);
 			if (cookie != null){
 				toggle_cols = cookie[cookie_key];
@@ -384,7 +383,7 @@ $(document).ready(function(){
 				}
 			}
 			cookie[cookie_key] = toggle_cols;
-			$.cookie('toggle_cols', $.toJSON(cookie), { expires: 365 });
+			createCookie('toggle_cols', $.toJSON(cookie), 365);
 		}
 		stored_form_action = $(form).attr("action");
 		$(form).attr("action", window.location.href);
