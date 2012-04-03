@@ -1184,7 +1184,7 @@ class ajaxAnalysisRequestSubmit():
                 error_key = "Form Error"
             errors[error_key] = message
 
-        form_parts = json.loads(self.request.form['parts']).get('parts', {})
+        form_parts = json.loads(self.request.form['parts'])
 
         if came_from == "edit":
 
@@ -1431,7 +1431,7 @@ class ajaxAnalysisRequestSubmit():
 
             # The actual submission
             for column in columns:
-                parts = form_parts.get(unicode(column), '')
+                parts = form_parts[column]
                 formkey = "ar.%s" % column
                 values = form[formkey].copy()
                 profile = None

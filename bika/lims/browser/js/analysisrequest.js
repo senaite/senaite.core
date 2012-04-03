@@ -316,14 +316,14 @@ jQuery( function($) {
 		// parts is where we will store the table of which services
 		// belong to which partition, for each column.
 		// a 'partition' is a slice of this dictionary:
-		parts = {};
+		parts = [];
 
 		// formvalues looks like this:
 		// formvalues[col] = {services: [uid,uid], st_title: sampletype title}
 
 		for (col=0; col<parseInt($("#col_count").val()); col++) {
 			// blank entry for each column
-            parts[col] = [];
+            parts.push([]);
 
 			// get column field values
 			st_title = formvalues[col]['st_title'];
@@ -458,6 +458,7 @@ jQuery( function($) {
 				});
 			}
 		}
+		$("#parts").val($.toJSON(parts));
 	}
 
 	function service_checkbox_change(){
