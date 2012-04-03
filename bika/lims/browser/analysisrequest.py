@@ -31,6 +31,7 @@ import App
 import json
 import plone
 import pprint
+import re
 
 class AnalysisRequestWorkflowAction(WorkflowAction):
     """Workflow actions taken in AnalysisRequest context
@@ -1391,6 +1392,12 @@ class ajaxAnalysisRequestSubmit():
                     if not ar.has_key(field):
                         error(field, column)
 
+                # If a new ARTemplate or ARProfile's name is specified,
+                # make sure it's clean.
+                if ar.has_key('profileTitle'):
+                    if re.findall(r"[^A-Za-z\w\d\_\s]", ar['profileTitle']):
+                        error(message="Validation failed: Profile title contains invalid characters")
+
                 # validate field values
                 for field in validated_fields:
                     # ignore empty field values
@@ -1429,7 +1436,10 @@ class ajaxAnalysisRequestSubmit():
 
             # The actual submission
             for column in columns:
-                parts = form_parts[column]
+                if form_parts:
+                    parts = form_parts[column]
+                else:
+                    parts = []
                 formkey = "ar.%s" % column
                 values = form[formkey].copy()
                 profile = None
@@ -1527,6 +1537,7 @@ class ajaxAnalysisRequestSubmit():
                     for analysis in analyses:
                         analysis.setSamplePartition(part)
 
+                ## Save new ARProfile/ARTemplate
                 profile = None
                 template = None
                 if (values.has_key('profileTitle')):
@@ -1543,11 +1554,12 @@ class ajaxAnalysisRequestSubmit():
                         _id = self.context.invokeFactory(type_name='ARTemplate',
                                                          id='tmp')
                         template = self.context[_id]
+                        ## Create new ARProfile if none was specified.
                         template.edit(title = values['profileTitle'],
-                                     ReportDryMatter = values.get('reportDryMatter', False),
-                                     SampleType = values.get('SampleType', ''),
-                                     SamplePoint = values.get('SamplePoint', ''),
-                                     ARProfile = values.get("ARProfile", None)
+                                      ReportDryMatter = values.get('reportDryMatter', False),
+                                      SampleType = values.get('SampleType', ''),
+                                      SamplePoint = values.get('SamplePoint', ''),
+                                      ARProfile = values.get("ARProfile", None)
                                      )
                         template.processForm()
                         ar.edit(Profile = None,

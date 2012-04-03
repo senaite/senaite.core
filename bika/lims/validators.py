@@ -1,5 +1,6 @@
 from Products.CMFCore.utils import getToolByName
 from Acquisition import aq_parent
+from Products.Archetypes.interfaces import IObjectPostValidation
 from Products.validation.interfaces.IValidator import IValidator
 from Products.validation import validation
 from bika.lims.utils import sortable_title
