@@ -55,19 +55,6 @@ schema = BikaSchema.copy() + Schema((
             label = _("Sample Type"),
         ),
     ),
-    BooleanField('Composite',
-        default = False,
-        widget = BooleanWidget(
-            label = _("Composite"),
-        ),
-    ),
-    BooleanField('InvoiceExclude',
-        default = False,
-        widget = BooleanWidget(
-            label = _('Invoice Exclude'),
-            description = _('Select if analyses to be excluded from invoice'),
-        ),
-    ),
     BooleanField('ReportDryMatter',
         default = False,
         widget = BooleanWidget(

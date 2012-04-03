@@ -506,10 +506,9 @@ jQuery( function($) {
 		// SampleType and SamplePoint are strings - the item's Title.
 		$('#ar_'+column+'_SampleType').val(template_data['SampleType']);
 		$('#ar_'+column+'_SamplePoint').val(template_data['SamplePoint']);
+		$('#ar_'+column+'_SamplePoint').change();
 
-		$('#ar_'+column+'_Composite').attr('checked', template_data['Composite']);
 		$('#ar_'+column+'_ReportDryMatter').attr('checked', template_data['ReportDryMatter']);
-		$('#ar_'+column+'_InvoiceExclude').attr('checked', template_data['InvoiceExclude']);
 
 	}
 

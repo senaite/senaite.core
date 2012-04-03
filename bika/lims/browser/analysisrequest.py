@@ -1028,8 +1028,6 @@ class ar_formdata(BrowserView):
                     'ARProfile':template.getARProfile().UID(),
                     'SamplePoint':sp_title,
                     'SampleType':st_title,
-                    'Composite':template.getComposite(),
-                    'InvoiceExclude':template.getInvoiceExclude(),
                     'ReportDryMatter':template.getReportDryMatter(),
                 }
                 formdata['templates'][template.UID()] = t_dict
@@ -1547,10 +1545,8 @@ class ajaxAnalysisRequestSubmit():
                         template = self.context[_id]
                         template.edit(title = values['profileTitle'],
                                      ReportDryMatter = values.get('reportDryMatter', False),
-                                     InvoiceExclude = values.get('invoiceExclude', False),
                                      SampleType = values.get('SampleType', ''),
                                      SamplePoint = values.get('SamplePoint', ''),
-                                     Composite = values.get('Composite', False),
                                      ARProfile = values.get("ARProfile", None)
                                      )
                         template.processForm()
