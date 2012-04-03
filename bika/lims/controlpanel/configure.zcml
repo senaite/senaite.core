@@ -104,7 +104,7 @@
       for="bika.lims.interfaces.IMethods"
       name="folder_view"
       class=".bika_methods.MethodsView"
-      permission="bika.lims.ManageBika"
+      permission="zope2.View"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 

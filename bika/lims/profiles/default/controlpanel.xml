@@ -96,7 +96,7 @@
  <configlet title="Methods" action_id="bika_methods"
     appId="bika.lims" category="Products" condition_expr=""
     icon_expr="string:++resource++bika.lims.images/method.png"
-    url_expr="string:$portal_url/bika_setup/bika_methods"
+    url_expr="string:$portal_url/bika_methods"
     visible="True"
 	i18n:attributes="title">
   <permission>BIKA: Manage Bika</permission>

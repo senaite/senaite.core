@@ -63,7 +63,6 @@ class BikaGenerator:
                        'bika_analysisspecs',
                        'bika_arprofiles',
                        'bika_labcontacts',
-                       'bika_methods',
                        'bika_labproducts',
                        'bika_samplepoints',
                        'bika_sampletypes',
@@ -74,6 +73,9 @@ class BikaGenerator:
             obj = bika_setup._getOb(obj_id)
             obj.unmarkCreationFlag()
             obj.reindexObject()
+        obj = portal._getOb('bika_methods')
+        obj.unmarkCreationFlag()
+        obj.reindexObject()
 
         lab = bika_setup.laboratory
         lab.edit(title = _('Laboratory'))
@@ -159,6 +161,7 @@ class BikaGenerator:
         mp(AddAnalysis, ['Manager', 'Owner', 'LabManager', 'LabClerk', 'Sampler'], 1)
         mp(AddARProfile, ['Manager', 'Owner', 'LabManager', 'LabClerk'], 1)
         mp(AddARTemplate, ['Manager', 'Owner', 'LabManager', 'LabClerk'], 1)
+        mp(AddMethod, ['Manager', 'LabManager'], 1)
 
         mp(permissions.ListFolderContents, ['Manager', 'Owner'], 1)
         mp(permissions.FTPAccess, ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 1)

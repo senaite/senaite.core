@@ -22,6 +22,7 @@
 <permission id="bika.lims.permissions.AddARTemplate" title="BIKA: Add ARTemplate"/>
 <permission id="bika.lims.permissions.AddAnalysisSpec" title="BIKA: Add AnalysisSpec"/>
 <permission id="bika.lims.permissions.AddAnalysis" title="BIKA: Add Analysis"/>
+<permission id="bika.lims.permissions.AddMethod" title="BIKA: Add Method"/>
 
 
 # Old stuff I haven't looked at
