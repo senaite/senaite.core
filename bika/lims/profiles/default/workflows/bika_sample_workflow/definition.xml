@@ -175,7 +175,7 @@
              after_script="">
   <description i18n:translate=""></description>
   <guard>
-   <guard-expression>python:object.portal_properties.bika_properties.getProperty('sampling_workflow_enabled')</guard-expression>
+   <guard-expression>python:object.bika_setup.getSamplingWorkflowEnabled()</guard-expression>
   </guard>
  </transition>
 
@@ -187,7 +187,7 @@
              after_script="">
   <description i18n:translate=""></description>
   <guard>
-   <guard-expression>python:not object.portal_properties.bika_properties.getProperty('sampling_workflow_enabled')</guard-expression>
+   <guard-expression>python:not object.bika_setup.getSamplingWorkflowEnabled()</guard-expression>
   </guard>
  </transition>
 

@@ -49,7 +49,7 @@ def AfterTransitionEventHandler(sample, event):
                 ar.reindexObject()
 
     elif event.transition.id == "receive":
-        if not props.getProperty('sampling_workflow_enabled', True):
+        if not sample.bika_setup.getSamplingWorkflowEnabled():
             # If the sampling workflow is disabled, we set the DateSampled
             # to the current date and Sampler to the current user
             DateSampled = DateTime()

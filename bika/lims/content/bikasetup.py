@@ -129,6 +129,14 @@ schema = BikaFolderSchema.copy() + Schema((
                             "number will be prepended to"),
         )
     ),
+    BooleanField('SamplingWorkflowEnabled',
+        schemata = PMF("Analyses"),
+        default = True,
+        widget = BooleanWidget(
+            label = _("Enable the Sampling workflow"),
+            description = _("Select this to activate the sample collection workflow steps.")
+        ),
+    ),
     ReferenceField('DryMatterService',
         schemata = PMF("Analyses"),
         required = 0,

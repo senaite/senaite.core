@@ -265,8 +265,9 @@ class AnalysisRequestViewView(BrowserView):
         getAuthenticatedMember = self.context.portal_membership.getAuthenticatedMember
         workflow = getToolByName(self.context, 'portal_workflow')
         props = getToolByName(self.context, 'portal_properties').bika_properties
-        sampling_workflow_enabled = props.getProperty('sampling_workflow_enabled')
         datepicker_format = props.getProperty('datepicker_format')
+
+        SamplingWorkflowEnabled = self.context.bika_setup.getSamplingWorkflowEnabled()
 
         ## Create header_table data rows
         sample = self.context.getSample()
@@ -347,7 +348,7 @@ class AnalysisRequestViewView(BrowserView):
              'type': 'choices',
              'required': True,
              'vocabulary': samplers,
-             'condition': sampling_workflow_enabled},
+             'condition': SamplingWorkflowEnabled},
             {'id': 'DateSampled',
              'title': _('Date Sampled'),
              'allow_edit': checkPermission(SampleSample, sample),
@@ -356,7 +357,7 @@ class AnalysisRequestViewView(BrowserView):
              'formatted_value': TimeOrDate(self.context, sample.getDateSampled()),
              'type': 'text',
              'class': 'datepicker_nofuture',
-             'condition': sampling_workflow_enabled},
+             'condition': SamplingWorkflowEnabled},
             {'id': 'DateReceived',
              'title': _('Date Received'),
              'allow_edit': False,
