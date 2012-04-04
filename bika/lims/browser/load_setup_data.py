@@ -523,6 +523,7 @@ class LoadSetupData(BrowserView):
         rows = [[sheet.cell(row=row_nr, column=col_nr).value for col_nr in range(nr_cols)] for row_nr in range(nr_rows)]
         fields = rows[1]
         folder = self.context.bika_methods
+        self.methods = {}
         for row in rows[3:]:
             row = dict(zip(fields, row))
             _id = folder.invokeFactory('Method', id = 'tmp')
@@ -532,6 +533,7 @@ class LoadSetupData(BrowserView):
                      Instructions = unicode(row['Instructions']))
 #                     MethodDocument = row['MethodDocument'])
             obj.processForm()
+            self.methods[unicode(row['title'])] = obj
 
 
     def CreateServiceObjects(self, services):
@@ -555,7 +557,8 @@ class LoadSetupData(BrowserView):
             obj = folder[_id]
             obj.edit(
                 title = unicode(row['title']),
-                description = unicode(row['description']),
+                description = row['description'] and unicode(row['description']) or '',
+                Method = row['Method'] and self.methods[unicode(row['Method'])] or None,
                 Container = row['Container'] and [self.containers[c] for c in row['Container'].split(",")] or [],
                 Preservation = row['Preservation'] and [self.preservations[c] for c in row['Preservation'].split(",")] or [],
                 PointOfCapture = unicode(row['PointOfCapture']),
