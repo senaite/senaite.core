@@ -283,10 +283,7 @@ jQuery( function($) {
 			for(i=0;i<checkboxes_checked.length;i++){
 				e = checkboxes_checked[i];
 				var uid = $(e).attr('value');
-				if(partitioned_services != null
-				   && partitioned_services.indexOf(uid) > -1){
-					partitionable++;
-				}
+				partitionable++;
 				formvalues[parseInt(col)]['services'].push(uid);
 			}
 		}
@@ -350,7 +347,6 @@ jQuery( function($) {
 						'Preservation': [],
 						'PartitionSetup': ''
 					}
-					continue;
 				}
 
 				// set service default partition setup field values
@@ -404,7 +400,11 @@ jQuery( function($) {
 						if (part['container'].length > 0 || container.length > 0) {
 							// check our containers against this partition's
 							c_intersection = $.grep(container, function(c, y){
-								return (part['container'].indexOf(container) > -1);
+								if(part['container'].indexOf(c) > -1){
+									return true;
+								} else {
+									return false;
+								}
 							});
 							if (c_intersection.length == 0){
 								// no match
@@ -416,8 +416,12 @@ jQuery( function($) {
 						var p_intersection = [];
 						if (part['preservation'].length > 0 || preservation.length > 0) {
 							// check our preservation against this partition's
-							p_intersection = $.grep(preservation, function(c, y){
-								return (part['preservation'].indexOf(preservation) > -1);
+							p_intersection = $.grep(preservation, function(p, y){
+								if(part['preservation'].indexOf(p) > -1){
+									return true;
+								} else {
+									return false;
+								}
 							});
 							if (p_intersection.length == 0){
 								// no match
@@ -446,17 +450,11 @@ jQuery( function($) {
 				}
 			}
 			// unset all this column's part numbers if 0 or 1 partitions
-			if(parts[col].length < 2){
-				$.each($('[name^="ar\\.'+col+'\\.Analyses"]').filter(':checked'), function(i,e){
-					$(".partnr_"+$(e).attr('value')).filter("[column="+col+"]").empty();
+			$.each(parts[col], function(p,part){
+				$.each(part['services'], function(s,service_uid){
+					$(".partnr_"+service_uid).filter("[column="+col+"]").empty().append(p+1);
 				});
-			} else {
-				$.each(parts[col], function(p,part){
-					$.each(part['services'], function(s,service_uid){
-						$(".partnr_"+service_uid).filter("[column="+col+"]").empty().append(p+1);
-					});
-				});
-			}
+			});
 		}
 		$("#parts").val($.toJSON(parts));
 	}

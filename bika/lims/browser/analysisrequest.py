@@ -1081,7 +1081,8 @@ class ar_formdata(BrowserView):
 
             def walk(items):
                 for item in items:
-                    if item.portal_type == 'AnalysisService':
+                    if item.portal_type == 'AnalysisService'\
+                       and item.UID() != service.UID():
                         backrefs.append(item)
                     if item not in skip:
                         skip.append(item)
@@ -1116,6 +1117,15 @@ class ar_formdata(BrowserView):
             containers = service.getContainer()
             preservations = service.getPreservation()
             partsetup = service.getPartitionSetup()
+
+            # Single values become lists here
+            for x in range(len(partsetup)):
+                if partsetup[x].has_key('container') \
+                   and type(partsetup[x]['container']) == str:
+                    partsetup[x]['container'] = [partsetup[x]['container'],]
+                if partsetup[x].has_key('preservation') \
+                   and type(partsetup[x]['preservation']) == str:
+                    partsetup[x]['preservation'] = [partsetup[x]['preservation'],]
 
             # If no dependents, backrefs or partition setup exists
             # nothing is stored for this service
@@ -1528,7 +1538,9 @@ class ajaxAnalysisRequestSubmit():
                                 if a.getServiceUID() in p['services']]
                     _id = sample.invokeFactory('SamplePartition', id = 'tmp')
                     part = sample[_id]
-                    container = p['container'] and p['container'][0] or ''
+                    container = p['container'] \
+                        and type(p['container']) in (tuple, list) \
+                        and p['container'][0] or p['container']
                     part.edit(
                         Container = container,
                         Preservation = p['preservation'],
