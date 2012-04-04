@@ -698,4 +698,8 @@ class AnalysisService(BaseContent, HistoryAwareMixin):
         items.sort(lambda x,y: cmp(x[1], y[1]))
         return DisplayList(list(items))
 
+##    def getMethod(self, **kw):
+##        item = self.Schema()['Method'].get(self)
+##        return item
+##
 registerType(AnalysisService, PROJECTNAME)

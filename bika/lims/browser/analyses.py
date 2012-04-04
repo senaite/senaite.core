@@ -194,6 +194,7 @@ class AnalysesView(BikaListingView):
             service_uid = service.UID()
             latest_service = rc.lookupObject(service_uid)
             items[i]['Service'] = service.Title()
+            items[i]['class']['Service'] = "service_title"
             if hasattr(obj, 'reference_versions') and \
                service_uid in obj.reference_versions and \
                latest_service.version_id != obj.reference_versions[service_uid]:

@@ -7,7 +7,10 @@
 		tal:attributes="id service/UID">
         <tal:service tal:define="service_obj python:service.getObject()">
 		<td style="text-align:left">
-			<span tal:content="service/title"/>
+			<span
+				class="service_title"
+				tal:attributes="uid service/UID"
+				tal:content="service/title"/>
 			<em
 				class="discreet"
 				style="white-space:nowrap;"

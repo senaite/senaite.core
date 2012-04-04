@@ -511,6 +511,15 @@ table.analysisrequest input {
     text-align: center;
 }
 
+/*************
+ * Service Title
+ * This is clickable (utils.py) for a popup with service info
+ */
+.service_title {
+  color:&dtml-linkColor;;
+  cursor:pointer;
+}
+
 
 /***********************
 * worksheets

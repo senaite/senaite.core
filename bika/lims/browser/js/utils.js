@@ -59,6 +59,23 @@ jQuery( function($) {
 			}).focus();
 		});
 
+		// Analysis Service popup trigger
+		$(".service_title").live('click', function(){
+			var dialog = $('<div></div>');
+			dialog
+				.load(window.portal_url + "/analysisservice_popup",
+					{'service_title':$(this).text(),
+					 '_authenticator': $('input[name="_authenticator"]').val()}
+				)
+				.dialog({
+					width:450,
+					height:450,
+					closeText: _("Close"),
+					resizable:true,
+					title: "<img src='" + window.portal_url + "/++resource++bika.lims.images/analysisservice.png'/>&nbsp;" + $(this).text()
+				});
+		});
+
 		$('body').append('<div id="global-spinner" class="global-spinner" style="display:none"><img id="img-global-spinner" src="spinner.gif" alt="Loading"/></div>');
 		$('#global-spinner')
 			.ajaxStart(function() { $(this).toggle(true); })
