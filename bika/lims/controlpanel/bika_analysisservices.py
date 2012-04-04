@@ -101,18 +101,26 @@ class AnalysisServicesView(BikaListingView):
         self.show_select_row = False
         self.show_select_column = True
         self.show_select_all_checkbox = False
-        self.pagesize = 1000
+        self.pagesize = 25
 
         self.columns = {
-            'Title': {'title': _('Service'), 'sortable':False},
-            'Keyword': {'title': _('Keyword'), 'sortable':False, 'toggle': True},
-            'Department': {'title': _('Department'), 'sortable':False, 'toggle': False},
-            'Instrument': {'title': _('Instrument'), 'sortable':False, 'toggle': True},
-            'Unit': {'title': _('Unit'), 'sortable':False, 'toggle': True},
-            'Price': {'title': _('Price'), 'sortable':False, 'toggle': True},
-            'MaxTimeAllowed': {'title': _('Max Time'), 'sortable':False, 'toggle': False},
-            'DuplicateVariation': {'title': _('Dup Var'), 'sortable':False, 'toggle': False},
-            'Calculation': {'title': _('Calculation'), 'sortable':False, 'toggle': True},
+            'Title': {'title': _('Service'),
+                      'index': 'sortable_title'},
+            'Keyword': {'title': _('Keyword'),
+                        'index': 'getKeyword'},
+            'Category': {'title': _('Category')},
+            'Method': {'title': _('Method'),
+                       'toggle': False},
+            'Department': {'title': _('Department'),
+                           'toggle': False},
+            'Instrument': {'title': _('Instrument')},
+            'Unit': {'title': _('Unit')},
+            'Price': {'title': _('Price')},
+            'MaxTimeAllowed': {'title': _('Max Time'),
+                               'toggle': False},
+            'DuplicateVariation': {'title': _('Dup Var'),
+                                   'toggle': False},
+            'Calculation': {'title': _('Calculation')},
         }
 
         self.review_states = [
@@ -120,6 +128,8 @@ class AnalysisServicesView(BikaListingView):
              'title': _('All'),
              'columns': ['Title',
                          'Keyword',
+                         'Category',
+                         'Method',
                          'Department',
                          'Instrument',
                          'Unit',
@@ -136,7 +146,9 @@ class AnalysisServicesView(BikaListingView):
              'contentFilter': {'inactive_state': 'active'},
              'transitions': [{'id':'deactivate'}, ],
              'columns': ['Title',
+                         'Category',
                          'Keyword',
+                         'Method',
                          'Department',
                          'Instrument',
                          'Unit',
@@ -152,7 +164,9 @@ class AnalysisServicesView(BikaListingView):
              'contentFilter': {'inactive_state': 'inactive'},
              'transitions': [{'id':'activate'}, ],
              'columns': ['Title',
+                         'Category',
                          'Keyword',
+                         'Method',
                          'Department',
                          'Instrument',
                          'Unit',
@@ -166,24 +180,46 @@ class AnalysisServicesView(BikaListingView):
         ]
 
     def folderitems(self):
-        items = BikaListingView.folderitems(self)
         self.categories = []
+        do_cats = self.context.bika_setup.getCategoriseAnalysisServices()
+        if do_cats:
+            self.pagesize = 1000 # hide batching controls
+
+        items = BikaListingView.folderitems(self)
 
         for x in range(len(items)):
             if not items[x].has_key('obj'): continue
             obj = items[x]['obj']
             items[x]['Keyword'] = obj.getKeyword()
             items[x]['Category'] = obj.getCategoryTitle()
-            items[x]['category'] = items[x]['Category']
-            if items[x]['Category'] not in self.categories:
+            if do_cats:
+                items[x]['category'] = items[x]['Category']
+            if items[x]['Category'] not in self.categories \
+               and do_cats:
                 self.categories.append(items[x]['Category'])
-            items[x]['Instrument'] = obj.getInstrument() and obj.getInstrument().Title() or ' '
-            items[x]['Department'] = obj.getDepartment() and obj.getDepartment().Title() or ' '
+
+            items[x]['replace']['Title'] = "<a href='%s'>%s</a>" % \
+                 (items[x]['url'], items[x]['Title'])
+
+            instrument = obj.getInstrument()
+            items[x]['Instrument'] = instrument and instrument.Title() or ''
+            items[x]['replace']['Instrument'] = instrument and "<a href='%s'>%s</a>" % \
+                 (instrument.absolute_url() + "/edit", instrument.Title()) or ''
+
+            items[x]['Department'] = obj.getDepartment() and obj.getDepartment().Title() or ''
+
             calculation = obj.getCalculation()
             items[x]['Calculation'] = calculation and calculation.Title()
+            items[x]['replace']['Calculation'] = calculation and "<a href='%s'>%s</a>" % \
+                 (calculation.absolute_url() + "/edit", calculation.Title()) or ''
+
             items[x]['Unit'] = obj.getUnit() and obj.getUnit() or ''
             items[x]['Price'] = "%s.%02d" % (obj.Price)
-            maxtime = obj.MaxTimeAllowed
+
+            method = obj.getMethod()
+            items[x]['Method'] = method and method.Title() or ''
+            items[x]['replace']['Method'] = method and "<a href='%s'>%s</a>" % \
+                 (method.absolute_url(), method.Title()) or ''
 
             maxtime = obj.MaxTimeAllowed
             maxtime_string = ""
@@ -199,8 +235,7 @@ class AnalysisServicesView(BikaListingView):
             if obj.DuplicateVariation is not None:
                 items[x]['DuplicateVariation'] = "%s.%02d" % (obj.DuplicateVariation)
             else: items[x]['DuplicateVariation'] = ""
-            items[x]['replace']['Title'] = "<a href='%s'>%s</a>" % \
-                 (items[x]['url'], items[x]['Title'])
+
             after_icons = ''
             if obj.getAccredited():
                 after_icons += "<img src='++resource++bika.lims.images/accredited.png' title='%s'>"%(_("Accredited"))
@@ -212,8 +247,6 @@ class AnalysisServicesView(BikaListingView):
                 after_icons += "<img src='++resource++bika.lims.images/attach_no.png' title='%s'>"%(_('Attachment not permitted'))
             if after_icons:
                 items[x]['after']['Title'] = after_icons
-            items[x]['replace']['Calculation'] = calculation and "<a href='%s'>%s</a>" % \
-                 (calculation.absolute_url() + "/edit", calculation.Title()) or ''
 
         self.categories.sort()
         return items

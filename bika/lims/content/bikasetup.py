@@ -137,6 +137,15 @@ schema = BikaFolderSchema.copy() + Schema((
             description = _("Select this to activate the sample collection workflow steps.")
         ),
     ),
+    BooleanField('CategoriseAnalysisServices',
+        schemata = PMF("Analyses"),
+        default = False,
+        widget = BooleanWidget(
+            label = _("Categorise Analysis Services"),
+            description = _("If there are many analysis services, the control "
+                            "panel view can group services by category")
+        ),
+    ),
     ReferenceField('DryMatterService',
         schemata = PMF("Analyses"),
         required = 0,
