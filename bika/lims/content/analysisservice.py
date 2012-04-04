@@ -192,7 +192,6 @@ registerField(PartitionSetupField, title = "", description = "")
 schema = BikaSchema.copy() + Schema((
     StringField('Unit',
         schemata = PMF("Description"),
-        required = 1,
         widget = StringWidget(
             label = _("Unit"),
             description = _("The measurement units for this analysis service' results, "
@@ -364,6 +363,7 @@ schema = BikaSchema.copy() + Schema((
             label = _("Price (excluding VAT)"),
             ),
         ),
+    # read access permission
     FixedPointField('CorporatePrice',
         schemata = PMF("Description"),
         default = '0.00',
