@@ -5,7 +5,7 @@
         i18n:domain="plone">
  <property name="title" i18n:translate="">Bika Setup</property>
  <property name="description"></property>
- <property name="content_icon">++resource++bika.lims.images/setup.png</property>
+ <property name="content_icon">++resource++bika.lims.images/bikasetup.png</property>
  <property name="content_meta_type">BikaSetup</property>
  <property name="product">bika.lims</property>
  <property name="factory">addBikaSetup</property>
