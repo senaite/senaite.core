@@ -446,10 +446,11 @@ table.analysisrequest .right {
 }
 
 table.analysisrequest .price {
-	border: 0;
+	border: 1px solid #eee;
+	border-radius:.25em;
 	background:transparent;
     text-align: right;
-    padding: none;
+    padding: 1px 2px;
 }
 
 table.analysisrequest .unit {

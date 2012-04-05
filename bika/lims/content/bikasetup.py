@@ -67,6 +67,17 @@ schema = BikaFolderSchema.copy() + Schema((
                             "0 disables automatic log-off"),
         )
     ),
+    StringField('Currency',
+        schemata = PMF("Accounting"),
+        required = 1,
+        vocabulary = CURRENCIES,
+        default = 'ZAR',
+        widget = SelectionWidget(
+            label = _("Currency"),
+            description = _("Select the currency the site will use to display "
+                            "prices."),
+        )
+    ),
     FixedPointField('MemberDiscount',
         schemata = PMF("Accounting"),
         default = '33.33',

@@ -22,8 +22,12 @@
 </metal:title>
 
 <div metal:fill-slot="content-core"
-    tal:define="portal context/@@plone_portal_state/portal;
+    tal:define="
+		portal context/@@plone_portal_state/portal;
         plone_view context/@@plone;
+		portal_state context/@@plone_portal_state;
+		locale portal_state/locale;
+		currency python:context.bika_setup.getCurrency();
 	    checkPermission nocall: context/portal_membership/checkPermission;
         tabindex view/tabindex;
         edit python:view.came_from == 'edit' and True or False;
@@ -517,9 +521,9 @@
         <b i18n:translate="">Discount</b>
         <span class="discreet">(<tal:i content="here/bika_setup/getMemberDiscount"/>%)</span>
     </th>
-    <th class="topborder noleftborder"
-        style="text-align:center"
-        i18n:translate="">R</th>
+    <th class="topborder noleftborder" style="text-align:center">
+		<span tal:replace="python:locale.numbers.currencies[currency].symbol"/>
+	</th>
     <tal:block repeat="column python:range(view.col_count)">
         <td class="topborder" tal:define="input_id string:ar_${column}_discount;">
             <input class="price noborder" size="10" disabled="disabled" value="0.00"
@@ -530,9 +534,9 @@
 
 <tr>
     <th class="topborder" colspan="2"><b i18n:translate="">Subtotal</b></th>
-    <th class="topborder noleftborder"
-        style="text-align:center"
-        i18n:translate="">R</th>
+    <th class="topborder noleftborder" style="text-align:center">
+		<span tal:replace="python:locale.numbers.currencies[currency].symbol"/>
+	</th>
     <tal:block repeat="column python:range(view.col_count)">
         <td class="topborder" tal:define="input_id string:ar_${column}_subtotal;
             input_name string:ar.${column}.subtotal">
@@ -548,9 +552,9 @@
 
 <tr>
     <th colspan="2" class="topborder"><b i18n:translate="">VAT</b></th>
-    <th class="topborder noleftborder"
-        style="text-align:center"
-        i18n:translate="">R</th>
+    <th class="topborder noleftborder" style="text-align:center">
+		<span tal:replace="python:locale.numbers.currencies[currency].symbol"/>
+	</th>
     <tal:block repeat="column python:range(view.col_count)">
         <td class="topborder" tal:define="input_id string:ar_${column}_vat;
             input_name string:ar.${column}.vat">
@@ -566,9 +570,9 @@
 
 <tr>
     <th class="topborder" colspan="2"><b i18n:translate="">Total</b></th>
-    <th class="topborder noleftborder"
-        style="text-align:center"
-        i18n:translate="">R</th>
+    <th class="topborder noleftborder" style="text-align:center">
+		<span tal:replace="python:locale.numbers.currencies[currency].symbol"/>
+	</th>
     <tal:block repeat="column python:range(view.col_count)">
         <td class="topborder" tal:define="
             input_id string:ar_${column}_total;

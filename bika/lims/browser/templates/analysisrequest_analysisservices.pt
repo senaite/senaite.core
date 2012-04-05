@@ -1,4 +1,7 @@
 <tal:define define="
+	portal_state context/@@plone_portal_state;
+	locale portal_state/locale;
+	currency python:context.bika_setup.getCurrency();
 	categoryUID python:view.request['categoryUID'];
 	poc python:view.request['poc'];
 	col_count python:int(view.request.get('col_count', 1));
@@ -26,9 +29,9 @@
 			style="white-space:nowrap;"
 		    tal:define="analysis python: hasattr(here, service.id) and here[service.id] or None;
                 vat python:service_obj.getVAT()">
-			<span i18n:translate="">R</span>
+			<span tal:replace="python:locale.numbers.currencies[currency].symbol"/>
 			<input
-				class="price numeric noborder"
+				class="price numeric"
 				type="text"
 				size="5"
 				tal:attributes="

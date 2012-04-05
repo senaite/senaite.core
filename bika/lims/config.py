@@ -1,6 +1,7 @@
 from Products.Archetypes.public import DisplayList
 from bika.lims import bikaMessageFactory as _
 from bika.lims.permissions import *
+from zope.i18n.locales import locales
 
 PROJECTNAME = "bika.lims"
 
@@ -86,3 +87,12 @@ ADDRESS_TYPES = DisplayList((
     ('billing', _('Billing address')),
     ('shipping', _('Shipping address')),
     ))
+
+english = locales.getLocale('en')
+currencies = english.numbers.currencies.values()
+currencies.sort(lambda x,y:cmp(x.displayName, y.displayName))
+
+CURRENCIES = DisplayList(
+    [(c.type, "%s (%s)" % (c.displayName, c.symbol))
+     for c in currencies]
+)
