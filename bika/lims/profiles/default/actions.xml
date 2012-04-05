@@ -36,6 +36,18 @@
 			</property>
 			<property name="visible">False</property>
 		</object>
+		<object name="front-page" meta_type="CMF Action" i18n:domain="plone">
+			<property name="title" i18n:translate="">Home</property>
+			<property name="description" i18n:translate=""/>
+			<property name="url_expr">string:${globals_view/navigationRootUrl}</property>
+			<property name="link_target"/>
+			<property name="icon_expr"/>
+			<property name="available_expr"/>
+			<property name="permissions">
+				<element value="View"/>
+			</property>
+			<property name="visible">False</property>
+		</object>
 		<object name="lims" meta_type="CMF Action" i18n:domain="plone">
 			<property name="title" i18n:translate="">LIMS</property>
 			<property name="description" i18n:translate=""/>

@@ -24,16 +24,16 @@ class BikaGenerator:
 
         wf = getToolByName(portal, 'portal_workflow')
 
-        obj = portal._getOb('index_html')
+        obj = portal._getOb('front-page')
         alsoProvides(obj, IHaveNoBreadCrumbs)
 
         # remove undesired content objects
-        del_ids = []
-        for obj_id in ['Members', 'front-page', 'news', 'events']:
-            if obj_id in portal.objectIds():
-                del_ids.append(obj_id)
-        if del_ids:
-            portal.manage_delObjects(ids = del_ids)
+##        del_ids = []
+##        for obj_id in ['Members', 'front-page', 'news', 'events']:
+##            if obj_id in portal.objectIds():
+##                del_ids.append(obj_id)
+##        if del_ids:
+##            portal.manage_delObjects(ids = del_ids)
 
         # index objects - importing through GenericSetup doesn't
         for obj_id in ('clients',
