@@ -1682,7 +1682,6 @@ class AnalysisRequestsView(BikaListingView):
             {'id':'all',
              'title': _('All'),
              'transitions': [{'id':'sampled'},
-                             {'id':'preserved'},
                              {'id':'receive'},
                              {'id':'retract'},
                              {'id':'verify'},
