@@ -1645,6 +1645,8 @@ class AnalysisRequestsView(BikaListingView):
             'Creator': {'title': PMF('Creator'),
                                      'index': 'Creator',
                                      'toggle': False},
+            'Created': {'title': PMF('Date Created'),
+                                     'toggle': False},
             'Client': {'title': _('Client'),
                        'toggle': True},
             'getClientReference': {'title': _('Client Ref'),
@@ -1692,6 +1694,7 @@ class AnalysisRequestsView(BikaListingView):
              'columns':['getRequestID',
                         'Client',
                         'Creator',
+                        'Created',
                         'getClientOrderNumber',
                         'getClientReference',
                         'getClientSampleID',
@@ -1749,6 +1752,7 @@ class AnalysisRequestsView(BikaListingView):
              'columns':['getRequestID',
                         'Client',
                         'Creator',
+                        'Created',
                         'getClientOrderNumber',
                         'getClientReference',
                         'getClientSampleID',
@@ -1767,6 +1771,7 @@ class AnalysisRequestsView(BikaListingView):
              'columns':['getRequestID',
                         'Client',
                         'Creator',
+                        'Created',
                         'getClientOrderNumber',
                         'getClientReference',
                         'getClientSampleID',
@@ -1788,6 +1793,7 @@ class AnalysisRequestsView(BikaListingView):
              'columns':['getRequestID',
                         'Client',
                         'Creator',
+                        'Created',
                         'getClientOrderNumber',
                         'getClientReference',
                         'getClientSampleID',
@@ -1805,6 +1811,7 @@ class AnalysisRequestsView(BikaListingView):
              'columns':['getRequestID',
                         'Client',
                         'Creator',
+                        'Created',
                         'getClientOrderNumber',
                         'getClientReference',
                         'getClientSampleID',
@@ -1821,6 +1828,7 @@ class AnalysisRequestsView(BikaListingView):
              'columns':['getRequestID',
                         'Client',
                         'Creator',
+                        'Created',
                         'getClientOrderNumber',
                         'getClientReference',
                         'getClientSampleID',
@@ -1843,6 +1851,7 @@ class AnalysisRequestsView(BikaListingView):
              'columns':['getRequestID',
                         'Client',
                         'Creator',
+                        'Created',
                         'getClientOrderNumber',
                         'getClientReference',
                         'getClientSampleID',
@@ -1872,6 +1881,7 @@ class AnalysisRequestsView(BikaListingView):
              'columns':['getRequestID',
                         'Client',
                         'Creator',
+                        'Created',
                         'getClientOrderNumber',
                         'getClientReference',
                         'getClientSampleID',
@@ -1901,6 +1911,7 @@ class AnalysisRequestsView(BikaListingView):
              'columns':['getRequestID',
                         'Client',
                         'Creator',
+                        'Created',
                         'getClientOrderNumber',
                         'getClientReference',
                         'getClientSampleID',
@@ -1972,6 +1983,9 @@ class AnalysisRequestsView(BikaListingView):
                     translate(_("Future dated sample"))
             if after_icons:
                 items[x]['after']['getRequestID'] = after_icons
+
+            items[x]['Created'] = TimeOrDate(self.context,
+                                             obj.created())
 
             # sampling workflow - inline edits for Sampler and Date Sampled
             checkPermission = self.context.portal_membership.checkPermission
