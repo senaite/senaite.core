@@ -39,7 +39,7 @@ class PrefixesField(RecordsField):
 LABEL_AUTO_OPTIONS = DisplayList((
     ('None', _('None')),
     ('register', _('Register')),
-    ('receive', _('Recieve')),
+    ('receive', _('Receive')),
 ))
 
 LABEL_AUTO_SIZES = DisplayList((
