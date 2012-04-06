@@ -125,7 +125,7 @@ class ARTemplate(BaseContent):
         """ retrieve referenced object and return it's title
         """
         item = self.Schema()['SampleType'].get(self)
-        return item.Title()
+        return item and item.Title() or ''
 
     def setSamplePoint(self, value, **kw):
         """ convert object title to UID
@@ -149,6 +149,6 @@ class ARTemplate(BaseContent):
         """ retrieve referenced object and return it's title
         """
         item = self.Schema()['SamplePoint'].get(self)
-        return item.Title()
+        return item and item.Title() or ''
 
 registerType(ARTemplate, PROJECTNAME)
