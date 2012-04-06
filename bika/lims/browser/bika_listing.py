@@ -277,24 +277,33 @@ class BikaListingView(BrowserView):
 
         # sort on
         sort_on = self.request.get(form_id + '_sort_on', '')
+        # manual_sort_on: only sort the current batch of items
+        # this is a compromise for sorting without column indexes
+        self.manual_sort_on = None
         if sort_on \
            and sort_on in self.columns.keys() \
            and self.columns[sort_on].get('index', None):
             idx = self.columns[sort_on].get('index', sort_on)
             self.contentFilter['sort_on'] = idx
         else:
-            if 'sort_on' not in self.contentFilter:
-                self.contentFilter['sort_on'] = 'id'
-                self.request.set(form_id+'_sort_on', 'id')
+            if sort_on:
+                self.manual_sort_on = sort_on
+                if 'sort_on' in self.contentFilter:
+                    del self.contentFilter['sort_on']
 
         # sort order
-        sort_order = self.request.get(form_id + '_sort_order', '')
-        if sort_order:
-            self.contentFilter['sort_order'] = sort_order
+        self.sort_order = self.request.get(form_id + '_sort_order', '')
+        if self.sort_order:
+            self.contentFilter['sort_order'] = self.sort_order
         else:
             if 'sort_order' not in self.contentFilter:
+                self.sort_order = 'ascending'
                 self.contentFilter['sort_order'] = 'ascending'
                 self.request.set(form_id+'_sort_order', 'ascending')
+            else:
+                self.sort_order = self.contentFilter['sort_order']
+        if self.manual_sort_on:
+            del self.contentFilter['sort_order']
 
         # pagesize
         self.pagesize = int(self.request.get(form_id + '_pagesize', self.pagesize))
@@ -413,6 +422,7 @@ class BikaListingView(BrowserView):
             brains = self.contentsMethod(self.contentFilter)
 
         results = []
+        self.page_start_index = ""
         for i, obj in enumerate(brains):
             # we don't know yet if it's a brain or an object
             path = hasattr(obj, 'getPath') and obj.getPath() or \
@@ -427,6 +437,8 @@ class BikaListingView(BrowserView):
                     uid = obj.UID()
                 results.append(dict(path = path, uid = uid))
                 continue
+            if self.page_start_index == "":
+                self.page_start_index = i
 
             if hasattr(obj, 'getObject'):
                 obj = obj.getObject()
@@ -567,6 +579,23 @@ class BikaListingTable(tableview.Table):
         self.bika_listing = bika_listing
         self.pagesize = bika_listing.pagesize
         folderitems = bika_listing.folderitems()
+
+        if hasattr(self.bika_listing, 'manual_sort_on') \
+           and self.bika_listing.manual_sort_on:
+            psi = self.bika_listing.page_start_index
+
+            # We do a sort of the current page using self.manual_sort_on, here
+            page = folderitems[psi:psi+self.bika_listing.pagesize]
+            page.sort(lambda x,y:cmp(x.get(self.bika_listing.manual_sort_on, ''),
+                                     y.get(self.bika_listing.manual_sort_on, '')))
+
+            if self.bika_listing.sort_order[0] in ['d','r']:
+                page.reverse()
+
+            folderitems = folderitems[:psi] \
+                + page \
+                + folderitems[psi+self.bika_listing.pagesize:]
+
 
         tableview.Table.__init__(self,
                                  bika_listing.request,
