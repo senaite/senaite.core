@@ -67,7 +67,7 @@ def isActive(obj):
         return False
     return True
 
-def TimeOrDate(context, datetime, long_format = False):
+def TimeOrDate(context, datetime, long_format = False, with_time = True):
     """ Return the Time date is today,
         otherwise return the Date.
     """
@@ -77,7 +77,10 @@ def TimeOrDate(context, datetime, long_format = False):
 
     if hasattr(datetime, 'Date'):
         if (datetime.Date() > DateTime().Date()) or long_format:
-            dt = datetime.asdatetime().strftime(localLongTimeFormat)
+            if with_time:
+                dt = datetime.asdatetime().strftime(localLongTimeFormat)
+            else:
+                dt = datetime.asdatetime().strftime(localTimeFormat)
         elif (datetime.Date() < DateTime().Date()):
             dt = datetime.asdatetime().strftime(localTimeFormat)
         elif datetime.Date() == DateTime().Date():

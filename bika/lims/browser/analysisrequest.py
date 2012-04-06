@@ -30,7 +30,6 @@ from zope.interface import implements, alsoProvides
 import App
 import json
 import plone
-import pprint
 import re
 
 class AnalysisRequestWorkflowAction(WorkflowAction):
@@ -269,6 +268,59 @@ class AnalysisRequestViewView(BrowserView):
 
         SamplingWorkflowEnabled = self.context.bika_setup.getSamplingWorkflowEnabled()
 
+        ## handle_header table submit
+        if 'header_submitted' in form:
+
+            if 'sampled_button' in form:
+                if checkPermission(SampleSample, self.context) and \
+                   form.get('Sampler', '') != '' and \
+                   form.get('DateSampled', '') != '':
+                    sample = self.context.getSample()
+                    sample.setSampler(form['Sampler'])
+                    sample.setDateSampled(form['DateSampled'])
+                    workflow.doActionFor(self.context, 'sampled')
+                    message = PMF("Changes saved.")
+                else:
+                    message = _("No changes made.")
+                self.context.plone_utils.addPortalMessage(message, 'info')
+
+            if 'save_button' in form:
+                message = None
+                values = {}
+                for row in [r for r in self.header_rows if r['allow_edit']]:
+                    value = form.get(row['id'], '')
+
+                    if row['id'] == 'SampleType':
+                        if not value:
+                            message = _('Sample Type is required')
+                            break
+                        if not bsc(portal_type = 'SampleType', title = value):
+                            message = _("${sampletype} is not a valid sample type",
+                                        mapping={'sampletype':value})
+                            break
+
+                    if row['id'] == 'SamplePoint':
+                        if value and \
+                           not bsc(portal_type = 'SamplePoint', title = value):
+                            message = _("${samplepoint} is not a valid sample point",
+                                        mapping={'sampletype':value})
+                            break
+
+                    values[row['id']] = value
+
+                # boolean - checkboxes are present, or not present in form.
+                for row in [r for r in self.header_rows if r.get('type', '') == 'boolean']:
+                    values[row['id']] = row['id'] in form
+
+                if not message:
+                    self.context.edit(**values)
+                    self.context.reindexObject()
+                    sample.edit(**values)
+                    sample.reindexObject()
+                    message = PMF("Changes saved.")
+
+                self.context.plone_utils.addPortalMessage(message, 'info')
+
         ## Create header_table data rows
         sample = self.context.getSample()
         sp = sample.getSamplePoint()
@@ -344,18 +396,26 @@ class AnalysisRequestViewView(BrowserView):
              'title': _('Sampler'),
              'allow_edit': checkPermission(SampleSample, sample),
              'value': sampler and sampler or (username in samplers.keys() and username) or '',
-             'formatted_value': pretty_user_name_or_id(self.context, sampler and sampler or (username in samplers.keys() and username) or ''),
+             'formatted_value': pretty_user_name_or_id(self.context,
+                 sampler and sampler or (username in samplers.keys() and username) or ''),
              'type': 'choices',
              'required': True,
+             'class': sample.getSampler() and 'provisional' or '',
              'vocabulary': samplers,
              'condition': SamplingWorkflowEnabled},
             {'id': 'DateSampled',
              'title': _('Date Sampled'),
              'allow_edit': checkPermission(SampleSample, sample),
-             'value': sample.getDateSampled() and sample.getDateSampled().strftime(datepicker_format) or '',
+             'value': sample.getDateSampled() \
+                      and sample.getDateSampled().strftime(datepicker_format) \
+                      or DateTime().strftime(datepicker_format),
              'required': True,
-             'formatted_value': TimeOrDate(self.context, sample.getDateSampled()),
+             'value': sample.getDateSampled() \
+                      and sample.getDateSampled().strftime(datepicker_format) \
+                      or DateTime().strftime(datepicker_format),
              'type': 'text',
+             'class': 'datepicker_nofuture %s' % \
+                 (sample.getDateSampled() and 'provisional' or ''),
              'class': 'datepicker_nofuture',
              'condition': SamplingWorkflowEnabled},
             {'id': 'DateReceived',
@@ -365,51 +425,12 @@ class AnalysisRequestViewView(BrowserView):
              'formatted_value': TimeOrDate(self.context, self.context.getDateReceived()),
              'type': 'text'},
         ]
-
-        if 'header_submitted' in form:
-            message = None
-            values = {}
-            for row in [r for r in self.header_rows if r['allow_edit']]:
-                value = form.get(row['id'], '')
-
-                if row['id'] == 'SampleType':
-                    if not value:
-                        message = _('Sample Type is required')
-                        break
-                    if not bsc(portal_type = 'SampleType', title = value):
-                        message = _("${sampletype} is not a valid sample type",
-                                    mapping={'sampletype':value})
-                        break
-
-                if row['id'] == 'SamplePoint':
-                    if value and \
-                       not bsc(portal_type = 'SamplePoint', title = value):
-                        message = _("${samplepoint} is not a valid sample point",
-                                    mapping={'sampletype':value})
-                        break
-
-                values[row['id']] = value
-
-            # boolean - checkboxes are present, or not present in form.
-            for row in [r for r in self.header_rows if r.get('type', '') == 'boolean']:
-                values[row['id']] = row['id'] in form
-
-            if not message:
-                self.context.edit(**values)
-                self.context.reindexObject()
-                sample.edit(**values)
-                sample.reindexObject()
-                message = PMF("Changes saved.")
-
-            if checkPermission(SampleSample, self.context) and \
-               values.get('Sampler', '') != '' and \
-               values.get('DateSampled', '') != '':
-                workflow.doActionFor(sample, 'sampled')
-
-            self.context.plone_utils.addPortalMessage(message, 'info')
-            self.request.RESPONSE.redirect(self.context.absolute_url())
-
-            ## End of form submit handler
+        if workflow.getInfoFor(self.context, 'review_state') == 'to_be_sampled':
+            self.header_buttons = [{'name':'sampled_button',
+                                    'title':_('Sampled')}]
+        else:
+            self.header_buttons = [{'name':'save_button',
+                                    'title':_('Save')}]
 
         ## Create Partitions View for this ARs sample
         p = SamplePartitionsView(self.context.getSample(), self.request)
@@ -1893,7 +1914,8 @@ class AnalysisRequestsView(BikaListingView):
     def folderitems(self, full_objects = False):
         workflow = getToolByName(self.context, "portal_workflow")
         items = BikaListingView.folderitems(self)
-
+        mtool = getToolByName(self.context, 'portal_membership')
+        member = mtool.getAuthenticatedMember()
         translate = self.context.translation_service.translate
 
         for x in range(len(items)):
@@ -1921,9 +1943,19 @@ class AnalysisRequestsView(BikaListingView):
             items[x]['SamplingDate'] = TimeOrDate(self.context, samplingdate, long_format = 0)
 
             datesampled = TimeOrDate(self.context, sample.getDateSampled())
-            items[x]['getDateSampled'] = TimeOrDate(self.context, datesampled, long_format = 0)
+            if not datesampled:
+                datesampled = TimeOrDate(self.context, DateTime(),
+                                         long_format=1, with_time = False)
+                items[x]['class']['getDateSampled'] = 'provisional'
+            items[x]['getDateSampled'] = datesampled
 
-            sampler = sample.getSampler()
+            sampler = sample.getSampler().strip()
+            if sampler:
+                items[x]['replace']['getSampler'] = pretty_user_name_or_id(
+                    self.context, sampler)
+            if 'Sampler' in member.getRoles() and not sampler:
+                sampler = member.id
+                items[x]['class']['getSampler'] = 'provisional'
             items[x]['getSampler'] = sampler
 
             items[x]['getDateReceived'] = TimeOrDate(self.context, obj.getDateReceived())
@@ -1966,7 +1998,6 @@ class AnalysisRequestsView(BikaListingView):
                 items[x]['choices'] = {'getSampler': users}
                 Sampler = sampler and sampler or \
                     (username in samplers.keys() and username) or ''
-                items[x]['getSampler'] = pretty_user_name_or_id(self.context,
-                                                                Sampler)
+                items[x]['getSampler'] = Sampler
 
         return items

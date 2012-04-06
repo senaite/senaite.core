@@ -107,13 +107,16 @@
 
 	</table>
 
-	<input
-		tal:condition="edit_enabled"
-		class="context allowMultiSubmit"
-		type="submit"
-		name="save_button"
-		value="Save"
-		i18n:attributes="value"/>
+	<tal:buttons
+		repeat="button view/header_buttons"
+		tal:condition="edit_enabled">
+		<input
+			class="context allowMultiSubmit"
+			type="submit"
+			tal:attributes="
+				value button/title;
+				name button/name;"/>
+	</tal:buttons>
 
 	</form>
 

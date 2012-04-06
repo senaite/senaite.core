@@ -465,6 +465,11 @@ table.analysisrequest input {
     text-align: left;
 }
 
+.provisional input,
+.provisional select {
+	color: #777 !important;
+}
+
 .delAttachmentButton {
     background: &dtml-globalBackgroundColor; url(&dtml-portal_url;/++resource++bika.lims.images/delete.png) center center no-repeat;
 	background-color: transparent;
