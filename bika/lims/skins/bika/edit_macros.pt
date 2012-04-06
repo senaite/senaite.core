@@ -35,12 +35,12 @@
 			  <span i18n:translate=""
                   tal:content="fti/Title"
                   tal:omit-tag="python:True">Item type</span>
+			  (<span
+				  tal:content="context/title_or_id"
+				  tal:omit-tag="python:True">Item title</span>)
 			</span>
 		  </span>
-		  (<span
-			  tal:content="context/title"
-			  tal:omit-tag="python:True">Item title</span>)
-        </h1>
+		</h1>
 
 <dl class="portalMessage info"
     tal:condition="context/@@plone/isDefaultPageInFolder|nothing">
