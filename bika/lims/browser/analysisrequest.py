@@ -330,7 +330,10 @@ class AnalysisRequestViewView(BrowserView):
         ccs = ["<a href='%s'>%s</a>"%(contact.absolute_url(), contact.Title()),]
         for cc in self.context.getCCContact():
             ccs.append("<a href='%s'>%s</a>"%(cc.absolute_url(), cc.Title()),)
-        for cc in self.context.getCCEmails():
+        emails = self.context.getCCEmails()
+        if type(emails) == str:
+            emails = [emails,]
+        for cc in emails:
             ccs.append("<a href='mailto:%s'>%s</a>"%(cc, cc))
 
         samplers = getUsers(self.context, ['Sampler', 'LabManager', 'Manager'], allow_empty=False)
