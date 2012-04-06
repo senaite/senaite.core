@@ -37,6 +37,9 @@
                   tal:omit-tag="python:True">Item type</span>
 			</span>
 		  </span>
+		  (<span
+			  tal:content="context/title"
+			  tal:omit-tag="python:True">Item title</span>)
         </h1>
 
 <dl class="portalMessage info"
