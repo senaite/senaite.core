@@ -1048,10 +1048,11 @@ class ar_formdata(BrowserView):
                     or template.Title()
                 sp_title = template.getSamplePoint()
                 st_title = template.getSampleType()
+                profile = template.getARProfile()
                 t_dict = {
                     'UID':template.UID(),
                     'Title':template.Title(),
-                    'ARProfile':template.getARProfile().UID(),
+                    'ARProfile':profile and profile.UID() or '',
                     'SamplePoint':sp_title,
                     'SampleType':st_title,
                     'ReportDryMatter':template.getReportDryMatter(),
@@ -1469,6 +1470,10 @@ class ajaxAnalysisRequestSubmit():
             prices = form['Prices']
             ARs = []
 
+            # if a new profile is created automatically,
+            # this flag triggers the status message
+            new_profile = None
+
             # The actual submission
             for column in columns:
                 if form_parts:
@@ -1574,11 +1579,12 @@ class ajaxAnalysisRequestSubmit():
                     for analysis in analyses:
                         analysis.setSamplePartition(part)
 
-                ## Save new ARProfile/ARTemplate
+                # Save new ARProfile/ARTemplate
                 profile = None
                 template = None
                 if (values.has_key('profileTitle')):
-                    if form.get('ARProfileType', 'ARProfile') == 'ARProfile':
+                    if self.request.ARProfileType == 'ARProfile':
+                        # Save a normal AR Profile
                         _id = self.context.invokeFactory(type_name='ARProfile',
                                                          id='tmp')
                         profile = self.context[_id]
@@ -1588,18 +1594,37 @@ class ajaxAnalysisRequestSubmit():
                         ar.edit(Profile = profile,
                                 Template = None)
                     else:
+                        # saving a new AR Template
+
+                        # First create new ARProfile if none was specified.
+                        selected_arprofile = values.get('ARProfile', '')
+                        if not selected_arprofile:
+                            _id = self.context.invokeFactory(type_name='ARProfile',
+                                                             id='tmp')
+                            new_profile = self.context[_id]
+                            message = translate(_("The AR Profile '${profile_name}' was "
+                                                  "automatically created.",
+                                                  mapping = {'profile_name':
+                                                             values['profileTitle']}))
+                            new_profile.edit(
+                                title = values['profileTitle'],
+                                description = message,
+                                Service = Analyses)
+                            new_profile.processForm()
+                            selected_arprofile = new_profile
+
                         _id = self.context.invokeFactory(type_name='ARTemplate',
                                                          id='tmp')
                         template = self.context[_id]
-                        ## Create new ARProfile if none was specified.
-                        template.edit(title = values['profileTitle'],
-                                      ReportDryMatter = values.get('reportDryMatter', False),
-                                      SampleType = values.get('SampleType', ''),
-                                      SamplePoint = values.get('SamplePoint', ''),
-                                      ARProfile = values.get("ARProfile", None)
-                                     )
+                        template.edit(
+                            title = values['profileTitle'],
+                            ReportDryMatter = values.get('reportDryMatter', False),
+                            SampleType = values.get('SampleType', ''),
+                            SamplePoint = values.get('SamplePoint', ''),
+                            ARProfile = selected_arprofile,
+                        )
                         template.processForm()
-                        ar.edit(Profile = None,
+                        ar.edit(Profile = selected_arprofile,
                                 Template = template)
 
                 if values.has_key('SampleID') and \
@@ -1607,13 +1632,22 @@ class ajaxAnalysisRequestSubmit():
                     wftool.doActionFor(ar, 'receive')
 
             if len(ARs) > 1:
-                message = translate(_('Analysis requests ${ARs} were successfully created.',
-                                    mapping = {'ARs': ', '.join(ARs)}))
+                message = translate(_("Analysis requests ${ARs} were "
+                                      "successfully created.",
+                                      mapping = {'ARs': ', '.join(ARs)}))
             else:
-                message = translate(_('Analysis request ${AR} was successfully created.',
-                                    mapping = {'AR': ARs[0]}))
+                message = translate(_("Analysis request ${AR} was "
+                                      "successfully created.",
+                                      mapping = {'AR': ARs[0]}))
 
         self.context.plone_utils.addPortalMessage(message, 'info')
+
+        if new_profile:
+            message = translate(_("The AR Profile '${profile_name}' was "
+                                  "automatically created.",
+                                  mapping = {'profile_name': new_profile.Title()}))
+            self.context.plone_utils.addPortalMessage(message, 'info')
+
         # automatic label printing
         # won't print labels for Register on Secondary ARs
         new_ars = None

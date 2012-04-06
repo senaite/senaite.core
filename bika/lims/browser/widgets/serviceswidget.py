@@ -31,12 +31,14 @@ class ServicesView(BikaListingView):
 
         self.columns = {
             'Service': {'title': _('Service')},
+            'Keyword': {'title': _('Keyword'),
+                        'index': 'getKeyword'},
         }
         self.review_states = [
             {'id':'all',
              'title': _('All'),
              'transitions': [],
-             'columns':['Service'],
+             'columns':['Service', 'Keyword'],
             },
         ]
 
@@ -53,19 +55,21 @@ class ServicesView(BikaListingView):
                 self.categories.append(cat)
             # this folderitems doesn't subclass from the bika_listing.py
             # so we create items from scratch
+            service_title = service.Title
             item = {
                 'obj': service,
+                'Keyword': service.getKeyword,
                 'id': service.id,
                 'uid': service.UID,
-                'title': service.Title,
+                'title': service_title,
                 'category': cat,
                 'selected': service.UID in self.selected,
                 'type_class': 'contenttype-AnalysisService',
                 'url': service.absolute_url(),
                 'relative_url': service.absolute_url(),
                 'view_url': service.absolute_url(),
-                'Service': service.Title,
-                'replace': {},
+                'Service': service_title,
+                'replace': {'Service':"<span class='service_title'>%s</span>"%service_title},
                 'before': {},
                 'after': {},
                 'choices':{},
