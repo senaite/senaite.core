@@ -17,6 +17,7 @@ from bika.lims.permissions import AddAnalysisRequest
 from bika.lims.permissions import AddAnalysisSpec
 from bika.lims.permissions import ManageClients
 from bika.lims.permissions import SampleSample
+from bika.lims.permissions import PreserveSample
 from bika.lims.utils import TimeOrDate
 from bika.lims.utils import isActive
 from operator import itemgetter
@@ -122,6 +123,58 @@ class ClientWorkflowAction(AnalysisRequestWorkflowAction):
             self.destination_url = self.request.get_header("referer",
                                    self.context.absolute_url())
             self.request.response.redirect(self.destination_url)
+
+        elif action == "preserved":
+            objects = AnalysisRequestWorkflowAction._get_selected_items(self)
+            transitioned = []
+            not_transitioned = []
+            for obj_uid, obj in objects.items():
+                if obj.portal_type == "AnalysisRequest":
+                    sample = obj.getSample()
+                else:
+                    sample = obj
+                # can't transition inactive items
+                if workflow.getInfoFor(sample, 'inactive_state', '') == 'inactive':
+                    continue
+                if not checkPermission(PreserveSample, sample):
+                    continue
+
+                # grab this object's Preserver and DatePreserved from the form
+                Preserver = form['getPreserver'][0][obj_uid].strip()
+                Preserver = Preserver and Preserver or ''
+                DatePreserved = form['getDatePreserved'][0][obj_uid].strip()
+                DatePreserved = DatePreserved and DateTime(DatePreserved) or ''
+
+                ## We do the workflow cascade manually here,
+                ## so that we can set these values on our partitions.
+                for sp in sample.objectValues("SamplePartition"):
+                    if workflow.getInfoFor(sp, 'review_state') == 'to_be_preserved':
+                        sp.setDatePreserved(DatePreserved)
+                        sp.setPreserver(Preserver)
+                        if Preserver and DatePreserved:
+                            workflow.doActionFor(sp, 'preserved')
+                            transitioned.append(sp.Title())
+                        else:
+                            not_transitioned.append(sp)
+
+                if len(transitioned) > 1:
+                    message = _('${items} are waiting to be received.',
+                            mapping = {'items': ', '.join(transitioned)})
+                else:
+                    message = _('${item} is waiting to be received.',
+                                mapping = {'item': ', '.join(transitioned)})
+                message = self.context.translate(message)
+                self.context.plone_utils.addPortalMessage(message, 'info')
+
+                # And then the sample itself
+                if Preserver and DatePreserved and not not_transitioned:
+                    workflow.doActionFor(sample,'preserved')
+                    message = _('${item} is waiting to be received.',
+                                mapping = {'item': sample.Title()})
+
+                self.destination_url = self.request.get_header(
+                    "referer", self.context.absolute_url())
+                self.request.response.redirect(self.destination_url)
 
         elif action in ('prepublish', 'publish', 'republish'):
             # We pass a list of AR objects to Publish.

@@ -34,7 +34,8 @@ import plone
 import re
 
 class AnalysisRequestWorkflowAction(WorkflowAction):
-    """Workflow actions taken in AnalysisRequest context
+    """Workflow actions taken in AnalysisRequest context.
+
         Sample context workflow actions also redirect here
         Applies to
             Analysis objects
@@ -1725,6 +1726,10 @@ class AnalysisRequestsView(BikaListingView):
 
         SamplingWorkflowEnabled = self.context.bika_setup.getSamplingWorkflowEnabled()
 
+        mtool = getToolByName(self.context, 'portal_membership')
+        member = mtool.getAuthenticatedMember()
+        user_is_preserver = 'Preserver' in member.getRoles()
+
         self.columns = {
             'getRequestID': {'title': _('Request ID'),
                              'index': 'getRequestID'},
@@ -1758,6 +1763,16 @@ class AnalysisRequestsView(BikaListingView):
                                'input_width': '10'},
             'getSampler': {'title': _('Sampler'),
                            'toggle': not SamplingWorkflowEnabled},
+            'getDatePreserved': {'title': _('Date Preserved'),
+                                 'toggle': user_is_preserver,
+                                 'input_class': 'datepicker_nofuture',
+                                 'input_width': '10'},
+            'getPreserver': {'title': _('Preserver'),
+                             'toggle': user_is_preserver},
+            'getDatePreserved': {'title': _('Date Preserved'),
+                               'input_class': 'datepicker_nofuture',
+                               'input_width': '10'},
+            'getPreserver': {'title': _('Preserver')},
             'getDateReceived': {'title': _('Date Received'),
                                 'index': 'getDateReceived',
                                 'toggle': False},
@@ -1771,6 +1786,7 @@ class AnalysisRequestsView(BikaListingView):
             {'id':'all',
              'title': _('All'),
              'transitions': [{'id':'sampled'},
+                             {'id':'preserved'},
                              {'id':'receive'},
                              {'id':'retract'},
                              {'id':'verify'},
@@ -1791,6 +1807,8 @@ class AnalysisRequestsView(BikaListingView):
                         'SamplingDate',
                         'getDateSampled',
                         'getSampler',
+                        'getDatePreserved',
+                        'getPreserver',
                         'getDateReceived',
                         'state_title']},
             {'id':'sample_due',
@@ -1812,6 +1830,8 @@ class AnalysisRequestsView(BikaListingView):
                         'getClientSampleID',
                         'getDateSampled',
                         'getSampler',
+                        'getDatePreserved',
+                        'getPreserver',
                         'getSampleTypeTitle',
                         'getSamplePointTitle',
                         'state_title']},
@@ -1834,6 +1854,8 @@ class AnalysisRequestsView(BikaListingView):
                         'getSamplePointTitle',
                         'getDateSampled',
                         'getSampler',
+                        'getDatePreserved',
+                        'getPreserver',
                         'getDateReceived']},
             {'id':'to_be_verified',
              'title': _('To be verified'),
@@ -1856,6 +1878,8 @@ class AnalysisRequestsView(BikaListingView):
                         'getSamplePointTitle',
                         'getDateSampled',
                         'getSampler',
+                        'getDatePreserved',
+                        'getPreserver',
                         'getDateReceived']},
             {'id':'verified',
              'title': _('Verified'),
@@ -1874,6 +1898,8 @@ class AnalysisRequestsView(BikaListingView):
                         'getSamplePointTitle',
                         'getDateSampled',
                         'getSampler',
+                        'getDatePreserved',
+                        'getPreserver',
                         'getDateReceived']},
             {'id':'published',
              'title': _('Published'),
@@ -1891,6 +1917,8 @@ class AnalysisRequestsView(BikaListingView):
                         'getSamplePointTitle',
                         'getDateSampled',
                         'getSampler',
+                        'getDatePreserved',
+                        'getPreserver',
                         'getDateReceived',
                         'getDatePublished']},
             {'id':'cancelled',
@@ -1914,6 +1942,8 @@ class AnalysisRequestsView(BikaListingView):
                         'getSamplePointTitle',
                         'getDateSampled',
                         'getSampler',
+                        'getDatePreserved',
+                        'getPreserver',
                         'getDateReceived',
                         'getDatePublished',
                         'state_title']},
@@ -1944,6 +1974,8 @@ class AnalysisRequestsView(BikaListingView):
                         'getSamplePointTitle',
                         'getDateSampled',
                         'getSampler',
+                        'getDatePreserved',
+                        'getPreserver',
                         'getDateReceived',
                         'state_title']},
             {'id':'unassigned',
@@ -1975,6 +2007,8 @@ class AnalysisRequestsView(BikaListingView):
                         'SamplingDate',
                         'getDateSampled',
                         'getSampler',
+                        'getDatePreserved',
+                        'getPreserver',
                         'getDateReceived',
                         'state_title']},
             ]
@@ -2067,5 +2101,29 @@ class AnalysisRequestsView(BikaListingView):
                 Sampler = sampler and sampler or \
                     (username in samplers.keys() and username) or ''
                 items[x]['getSampler'] = Sampler
+
+            # These don't exist on ARs
+            # the columns exist just to set "preserved" from lists.
+            # XXX This should be a list of preservers...
+            items[x]['getPreserver'] = ''
+            items[x]['getDatePreserved'] = ''
+
+            # inline edits for Preserver and Date Preserved
+            checkPermission = self.context.portal_membership.checkPermission
+            if checkPermission(PreserveSample, obj):
+                items[x]['required'] = ['getPreserver', 'getDatePreserved']
+                items[x]['allow_edit'] = ['getPreserver', 'getDatePreserved']
+                preservers = getUsers(obj, ['Preserver', 'LabManager', 'Manager'])
+                getAuthenticatedMember = self.context.portal_membership.getAuthenticatedMember
+                username = getAuthenticatedMember().getUserName()
+                users = [({'ResultValue': u, 'ResultText': preservers.getValue(u)})
+                         for u in preservers]
+                items[x]['choices'] = {'getPreserver': users}
+                preserver = username in preservers.keys() and username or ''
+                items[x]['getPreserver'] = preserver
+                items[x]['getDatePreserved'] = TimeOrDate(
+                    self.context, DateTime(), long_format=1, with_time=False)
+                items[x]['class']['getPreserver'] = 'provisional'
+                items[x]['class']['getDatePreserved'] = 'provisional'
 
         return items

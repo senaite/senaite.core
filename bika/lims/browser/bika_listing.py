@@ -344,6 +344,7 @@ class BikaListingView(BrowserView):
                 ##logger.info("Or: %s=%s"%(index, self.request[request_key]))
                 ##self.Or.append(MatchGlob(index, self.request[request_key]))
                 self.Or.append(MatchRegexp(index, self.request[request_key]))
+            self.Or.append(MatchRegexp('review_state', self.request[request_key]))
 
         # get toggle_cols cookie value
         # and modify self.columns[]['toggle'] to match.

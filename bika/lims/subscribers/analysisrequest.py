@@ -46,16 +46,17 @@ def AfterTransitionEventHandler(ar, event):
 
     if event.transition.id == "sampled":
         # transition our sample
-        # This is required here because the "sampled" transition
-        # can happen on ARs, unlike Preservation which
-        # can only happen to the actual SamplePartition objects
+        # This is required here because the transition can happen in AR context
         sample = ar.getSample()
         if sample.UID() not in ar.REQUEST['workflow_skiplist']:
             workflow.doActionFor(sample, 'sampled')
 
     if event.transition.id == "preserved":
-        # Nothing needs to be done here.
-        pass
+        # transition our sample
+        # This is required here because the transition can happen in AR context
+        sample = ar.getSample()
+        if sample.UID() not in ar.REQUEST['workflow_skiplist']:
+            workflow.doActionFor(sample, 'preserved')
 
     if event.transition.id == "receive":
         ar.setDateReceived(DateTime())

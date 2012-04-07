@@ -78,6 +78,9 @@ class SamplePartitionsView(BikaListingView):
         workflow = getToolByName(self.context, "portal_workflow")
         items = BikaListingView.folderitems(self)
 
+        props = getToolByName(self.context, 'portal_properties').bika_properties
+        datepicker_format = props.getProperty('datepicker_format')
+
         for x in range(len(items)):
             if not items[x].has_key('obj'): continue
             obj = items[x]['obj']
@@ -115,7 +118,11 @@ class SamplePartitionsView(BikaListingView):
                 items[x]['choices'] = {'getPreserver': users}
                 items[x]['getPreserver'] = preserver and preserver or \
                     (username in preservers.keys() and username) or ''
-
+                items[x]['getDatePreserved'] = self.context.getDateSampled() \
+                    and self.context.getDateSampled().strftime(datepicker_format) \
+                    or DateTime().strftime(datepicker_format)
+                items[x]['class']['getPreserver'] = 'provisional'
+                items[x]['class']['getDatePreserved'] = 'provisional'
         return items
 
 class SampleAnalysesView(AnalysesView):
@@ -445,6 +452,10 @@ class SamplesView(BikaListingView):
 
         SamplingWorkflowEnabled = self.context.bika_setup.getSamplingWorkflowEnabled()
 
+        mtool = getToolByName(self.context, 'portal_membership')
+        member = mtool.getAuthenticatedMember()
+        user_is_preserver = 'Preserver' in member.getRoles()
+
         self.columns = {
             'getSampleID': {'title': _('Sample ID'),
                             'index':'getSampleID'},
@@ -477,6 +488,12 @@ class SamplesView(BikaListingView):
                                'input_width': '10'},
             'getSampler': {'title': _('Sampler'),
                            'toggle': not SamplingWorkflowEnabled},
+            'getDatePreserved': {'title': _('Date Preserved'),
+                                 'toggle': user_is_preserver,
+                                 'input_class': 'datepicker_nofuture',
+                                 'input_width': '10'},
+            'getPreserver': {'title': _('Preserver'),
+                             'toggle': user_is_preserver},
             'DateReceived': {'title': _('Date Received'),
                              'index': 'getDateReceived',
                              'toggle': False},
@@ -498,6 +515,8 @@ class SamplesView(BikaListingView):
                          'getSamplingDate',
                          'getDateSampled',
                          'getSampler',
+                         'getDatePreserved',
+                         'getPreserver',
                          'DateReceived',
                          'state_title']},
             {'id':'sample_due',
@@ -517,6 +536,8 @@ class SamplesView(BikaListingView):
                          'getSamplingDate',
                          'getDateSampled',
                          'getSampler',
+                         'getDatePreserved',
+                         'getPreserver',
                          'getSampleTypeTitle',
                          'getSamplePointTitle',
                          'state_title']},
@@ -534,6 +555,8 @@ class SamplesView(BikaListingView):
                          'getSamplingDate',
                          'getDateSampled',
                          'getSampler',
+                         'getDatePreserved',
+                         'getPreserver',
                          'DateReceived']},
             {'id':'expired',
              'title': _('Expired'),
@@ -549,6 +572,8 @@ class SamplesView(BikaListingView):
                          'getSamplingDate',
                          'getDateSampled',
                          'getSampler',
+                         'getDatePreserved',
+                         'getPreserver',
                          'DateReceived']},
             {'id':'disposed',
              'title': _('Disposed'),
@@ -564,6 +589,8 @@ class SamplesView(BikaListingView):
                          'getSamplingDate',
                          'getDateSampled',
                          'getSampler',
+                         'getDatePreserved',
+                         'getPreserver',
                          'DateReceived']},
             {'id':'cancelled',
              'title': _('Cancelled'),
@@ -582,6 +609,8 @@ class SamplesView(BikaListingView):
                          'DateReceived',
                          'getDateSampled',
                          'getSampler',
+                         'getDatePreserved',
+                         'getPreserver',
                          'state_title']},
         ]
 
@@ -654,6 +683,30 @@ class SamplesView(BikaListingView):
                 items[x]['choices'] = {'getSampler': users}
                 Sampler = sampler and sampler or \
                     (username in samplers.keys() and username) or ''
-                items[x]['getSampler'] = sampler
+                items[x]['getSampler'] = Sampler
+
+            # These don't exist on samples
+            # the columns exist just to set "preserved" from lists.
+            # XXX This should be a list of preservers...
+            items[x]['getPreserver'] = ''
+            items[x]['getDatePreserved'] = ''
+
+            # inline edits for Preserver and Date Preserved
+            checkPermission = self.context.portal_membership.checkPermission
+            if checkPermission(PreserveSample, obj):
+                items[x]['required'] = ['getPreserver', 'getDatePreserved']
+                items[x]['allow_edit'] = ['getPreserver', 'getDatePreserved']
+                preservers = getUsers(obj, ['Preserver', 'LabManager', 'Manager'])
+                getAuthenticatedMember = self.context.portal_membership.getAuthenticatedMember
+                username = getAuthenticatedMember().getUserName()
+                users = [({'ResultValue': u, 'ResultText': preservers.getValue(u)})
+                         for u in preservers]
+                items[x]['choices'] = {'getPreserver': users}
+                preserver = username in preservers.keys() and username or ''
+                items[x]['getPreserver'] = preserver
+                items[x]['getDatePreserved'] = TimeOrDate(
+                    self.context, DateTime(), long_format=1, with_time=False)
+                items[x]['class']['getPreserver'] = 'provisional'
+                items[x]['class']['getDatePreserved'] = 'provisional'
 
         return items
