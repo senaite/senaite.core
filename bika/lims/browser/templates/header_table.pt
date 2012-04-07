@@ -3,6 +3,10 @@
 	xmlns:metal="http://xml.zope.org/namespaces/metal"
 	xmlns:i18n="http://xml.zope.org/namespaces/i18n"
 	i18n:domain="bika">
+<head>
+<script type="text/javascript" tal:attributes="src python:context.absolute_url() + '/++resource++bika.lims.js/sample.js';">
+</script>
+</head>
 
 <body
 	tal:condition="view/header_rows"
@@ -24,7 +28,9 @@
 		<tr tal:attributes="class python: repeat['row'].even() and 'even' or 'odd'">
 
 		<tal:item repeat="item row">
-			<th tal:attributes="class python:repeat['item'].index > 0 and 'column_padding' or ''">
+			<th
+				style="white-space:nowrap;"
+				tal:attributes="class python:repeat['item'].index > 0 and 'column_padding' or ''">
 				<span tal:content="item/title"/>
 				<span
 					tal:condition="python: item['allow_edit'] and item.get('required', False)"

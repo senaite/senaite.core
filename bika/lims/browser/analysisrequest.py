@@ -17,6 +17,7 @@ from bika.lims.config import POINTS_OF_CAPTURE
 from bika.lims.permissions import EditAR
 from bika.lims.permissions import EditFieldResults
 from bika.lims.permissions import EditResults
+from bika.lims.permissions import ManageSamples
 from bika.lims.permissions import PreserveSample
 from bika.lims.permissions import ResultsNotRequested
 from bika.lims.permissions import SampleSample
@@ -281,7 +282,16 @@ class AnalysisRequestViewView(BrowserView):
         for cc in emails:
             ccs.append("<a href='mailto:%s'>%s</a>"%(cc, cc))
 
-        samplers = getUsers(self.context, ['Sampler', 'LabManager', 'Manager'], allow_empty=False)
+        # Some sample fields are editable here
+        if workflow.getInfoFor(sample, 'cancellation_state') == "cancelled":
+            allow_sample_edit = False
+        else:
+            edit_states = ['to_be_sampled', 'to_be_preserved', 'sample_due']
+            allow_sample_edit = checkPermission(ManageSamples, sample) \
+                and workflow.getInfoFor(sample, 'review_state') in edit_states
+
+        samplers = getUsers(self.context, ['Sampler', 'LabManager', 'Manager'],
+                            allow_empty=False)
         sampler = sample.getSampler()
         username = getAuthenticatedMember().getUserName()
 
@@ -295,7 +305,7 @@ class AnalysisRequestViewView(BrowserView):
              'type': 'text'},
             {'id': 'ClientSampleID',
              'title': _('Client SID'),
-             'allow_edit': False,
+             'allow_edit': allow_sample_edit,
              'value': sample.getClientSampleID(),
              'condition':True,
              'type': 'text'},
@@ -307,7 +317,7 @@ class AnalysisRequestViewView(BrowserView):
              'type': 'text'},
             {'id': 'ClientReference',
              'title': _('Client Reference'),
-             'allow_edit': False,
+             'allow_edit': allow_sample_edit,
              'value': sample.getClientReference(),
              'condition':True,
              'type': 'text'},
@@ -319,14 +329,14 @@ class AnalysisRequestViewView(BrowserView):
              'type': 'text'},
             {'id': 'SampleType',
              'title': _('Sample Type'),
-             'allow_edit': False,
+             'allow_edit': allow_sample_edit,
              'value': st and st.Title() or '',
              'condition':True,
              'type': 'text',
              'required': True},
             {'id': 'SamplePoint',
              'title': _('Sample Point'),
-             'allow_edit': False,
+             'allow_edit': allow_sample_edit,
              'value': sp and sp.Title() or '',
              'condition':True,
              'type': 'text'},
@@ -394,11 +404,12 @@ class AnalysisRequestViewView(BrowserView):
         ## handle_header table submit
         if 'header_submitted' in form:
 
+            sample = self.context.getSample()
+
             if 'sampled_button' in form:
                 if checkPermission(SampleSample, self.context) and \
                    form.get('Sampler', '') != '' and \
                    form.get('DateSampled', '') != '':
-                    sample = self.context.getSample()
                     sample.setSampler(form['Sampler'])
                     sample.setDateSampled(form['DateSampled'])
                     workflow.doActionFor(self.context, 'sampled')
