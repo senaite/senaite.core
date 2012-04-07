@@ -8,9 +8,9 @@
 	tal:condition="view/header_rows"
 	tal:define="
 		columns python:hasattr(view, 'header_columns') and view.header_columns or 3;
-		header_rows python: [ view.header_rows[x:x+columns]
-		                      for x in range(0, len(view.header_rows), columns)
-							  if view.header_rows[x].get('condition', True) ];
+		header_rows python:[row for row in view.header_rows if row['condition']];
+		header_rows python: [ header_rows[x:x+columns]
+		                      for x in range(0, len(header_rows), columns)];
 		empty_cells python:columns - len(header_rows[-1]);
 		portal context/@@plone_portal_state/portal;
 		global edit_enabled python:False;">

@@ -91,6 +91,8 @@ schema = BikaSchema.copy() + Schema((
             visible = False,
         ),
     ),
+    BooleanField('SamplingWorkflowEnabled',
+    ),
     DateTimeField('DateSampled',
     ),
     StringField('Sampler',

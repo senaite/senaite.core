@@ -43,15 +43,22 @@ class SamplePartitionsView(BikaListingView):
         self.pagesize = 1000
 
         self.columns = {
-            'Title': {'title': _('Partition')},
-            'getContainer': {'title': _('Container')},
-            'getPreservation': {'title': _('Preservation')},
-            'getPreserver': {'title': _('Preserver')},
+            'Title': {'title': _('Partition'),
+                      'sortable':False},
+            'getContainer': {'title': _('Container'),
+                             'sortable':False},
+            'getPreservation': {'title': _('Preservation'),
+                                'sortable':False},
+            'getPreserver': {'title': _('Preserver'),
+                             'sortable':False},
             'getDatePreserved': {'title': _('Date Preserved'),
                                  'input_class': 'datepicker_nofuture',
-                                 'input_width': '10'},
-            'getDisposalDate': {'title': _('Disposal Date')},
-            'state_title': {'title': _('State')},
+                                 'input_width': '10',
+                                 'sortable':False},
+            'getDisposalDate': {'title': _('Disposal Date'),
+                                'sortable':False},
+            'state_title': {'title': _('State'),
+                            'sortable':False},
         }
 
         self.review_states = [
@@ -120,8 +127,10 @@ class SampleAnalysesView(AnalysesView):
             self.contentFilter[k] = v
         if kwargs.get('getPointOfCapture', '') == 'lab':
             self.allow_edit = False
-            self.columns['Request'] = {'title': _("Request")}
-            self.columns['Partition'] = {'title': _("Partition")}
+            self.columns['Request'] = {'title': _("Request"),
+                                       'sortable':False}
+            self.columns['Partition'] = {'title': _("Partition"),
+                                         'sortable':False}
             # Add Request column
             pos = self.review_states[0]['columns'].index('Service') + 1
             self.review_states[0]['columns'].insert(pos, 'Request')
@@ -180,8 +189,6 @@ class SampleView(BrowserView):
         props = getToolByName(self.context, 'portal_properties').bika_properties
         datepicker_format = props.getProperty('datepicker_format')
 
-        SamplingWorkflowEnabled = self.context.bika_setup.getSamplingWorkflowEnabled()
-
         ## Create header_table data rows
         ar_links = ", ".join(
             ["<a href='%s'>%s</a>"%(ar.absolute_url(), ar.Title())
@@ -204,49 +211,58 @@ class SampleView(BrowserView):
              'title': _('Client Reference'),
              'allow_edit': allow_sample_edit,
              'value': self.context.getClientReference(),
+             'condition':True,
              'type': 'text'},
             {'id': 'ClientSampleID',
              'title': _('Client SID'),
              'allow_edit': allow_sample_edit,
              'value': self.context.getClientSampleID(),
+             'condition':True,
              'type': 'text'},
             {'id': 'Requests',
              'title': _('Requests'),
              'allow_edit': False,
              'value': ar_links,
+             'condition':True,
              'type': 'text'},
             {'id': 'SampleType',
              'title': _('Sample Type'),
              'allow_edit': allow_sample_edit,
              'value': st and st.Title() or '',
+             'condition':True,
              'type': 'text',
              'required': True},
             {'id': 'SamplePoint',
              'title': _('Sample Point'),
              'allow_edit': allow_sample_edit,
              'value': sp and sp.Title() or '',
+             'condition':True,
              'type': 'text'},
             {'id': 'Composite',
              'title': _('Composite'),
              'allow_edit': allow_sample_edit,
              'value': self.context.getComposite(),
+             'condition':True,
              'type': 'boolean'},
             {'id': 'Creator',
              'title': PMF('Creator'),
              'allow_edit': False,
              'value': pretty_user_name_or_id(self.context, self.context.Creator()),
+             'condition':True,
              'type': 'text'},
             {'id': 'DateCreated',
              'title': PMF('Date Created'),
              'allow_edit': False,
              'value': self.context.created(),
              'formatted_value': TimeOrDate(self.context, self.context.created()),
+             'condition':True,
              'type': 'text'},
             {'id': 'SamplingDate',
              'title': _('Sampling Date'),
              'allow_edit': False,
              'value': self.context.getSamplingDate(),
              'formatted_value': TimeOrDate(self.context, self.context.getSamplingDate()),
+             'condition':True,
              'type': 'text'},
             {'id': 'Sampler',
              'title': _('Sampler'),
@@ -258,7 +274,7 @@ class SampleView(BrowserView):
              'required': True,
              'class': self.context.getSampler() and 'provisional' or '',
              'vocabulary': samplers,
-             'condition': SamplingWorkflowEnabled},
+             'condition': self.context.getSamplingWorkflowEnabled()},
             {'id': 'DateSampled',
              'title': _('Date Sampled'),
              'allow_edit': checkPermission(SampleSample, self.context),
@@ -270,30 +286,34 @@ class SampleView(BrowserView):
              'type': 'text',
              'class': 'datepicker_nofuture %s' % \
                  (self.context.getDateSampled() and 'provisional' or ''),
-             'condition': SamplingWorkflowEnabled},
+             'condition': self.context.getSamplingWorkflowEnabled()},
             {'id': 'DateReceived',
              'title': _('Date Received'),
              'allow_edit': False,
              'value': self.context.getDateReceived(),
              'formatted_value': TimeOrDate(self.context, self.context.getDateReceived()),
+             'condition':True,
              'type': 'text'},
             {'id': 'DateExpired',
              'title': _('Date Expired'),
              'allow_edit': False,
              'value': self.context.getDateExpired(),
              'formatted_value': TimeOrDate(self.context, self.context.getDateExpired()),
+             'condition':True,
              'type': 'text'},
             {'id': 'DisposalDate',
              'title': _('Disposal Date'),
              'allow_edit': False,
              'value': self.context.getDisposalDate(),
              'formatted_value': TimeOrDate(self.context, self.context.getDisposalDate()),
+             'condition':True,
              'type': 'text'},
             {'id': 'DateDisposed',
              'title': _('Date Disposed'),
              'allow_edit': False,
              'value': self.context.getDateDisposed(),
              'formatted_value': TimeOrDate(self.context, self.context.getDateDisposed()),
+             'condition':True,
              'type': 'text'},
         ]
         if workflow.getInfoFor(self.context, 'review_state') == 'to_be_sampled':
@@ -423,6 +443,8 @@ class SamplesView(BikaListingView):
         self.title = _("Samples")
         self.description = ""
 
+        SamplingWorkflowEnabled = self.context.bika_setup.getSamplingWorkflowEnabled()
+
         self.columns = {
             'getSampleID': {'title': _('Sample ID'),
                             'index':'getSampleID'},
@@ -450,11 +472,11 @@ class SamplesView(BikaListingView):
             'getSamplingDate': {'title': _('Sampling Date'),
                                 'toggle': True},
             'getDateSampled': {'title': _('Date Sampled'),
-                               'toggle': True,
+                               'toggle': not SamplingWorkflowEnabled,
                                'input_class': 'datepicker_nofuture',
                                'input_width': '10'},
             'getSampler': {'title': _('Sampler'),
-                           'toggle': True},
+                           'toggle': not SamplingWorkflowEnabled},
             'DateReceived': {'title': _('Date Received'),
                              'index': 'getDateReceived',
                              'toggle': False},

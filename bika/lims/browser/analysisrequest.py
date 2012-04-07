@@ -266,8 +266,6 @@ class AnalysisRequestViewView(BrowserView):
         props = getToolByName(self.context, 'portal_properties').bika_properties
         datepicker_format = props.getProperty('datepicker_format')
 
-        SamplingWorkflowEnabled = self.context.bika_setup.getSamplingWorkflowEnabled()
-
         ## Create header_table data rows
         sample = self.context.getSample()
         sp = sample.getSamplePoint()
@@ -293,47 +291,56 @@ class AnalysisRequestViewView(BrowserView):
              'title': _('Sample ID'),
              'allow_edit': False,
              'value': "<a href='%s'>%s</a>"%(sample.absolute_url(), sample.id),
+             'condition':True,
              'type': 'text'},
             {'id': 'ClientSampleID',
              'title': _('Client SID'),
              'allow_edit': False,
              'value': sample.getClientSampleID(),
+             'condition':True,
              'type': 'text'},
             {'id': 'Contact',
              'title': _('Contact Person'),
              'allow_edit': False,
              'value': "; ".join(ccs),
+             'condition':True,
              'type': 'text'},
             {'id': 'ClientReference',
              'title': _('Client Reference'),
              'allow_edit': False,
              'value': sample.getClientReference(),
+             'condition':True,
              'type': 'text'},
             {'id': 'ClientOrderNumber',
              'title': _('Client Order'),
              'allow_edit': False,
              'value': self.context.getClientOrderNumber(),
+             'condition':True,
              'type': 'text'},
             {'id': 'SampleType',
              'title': _('Sample Type'),
              'allow_edit': False,
              'value': st and st.Title() or '',
+             'condition':True,
              'type': 'text',
              'required': True},
             {'id': 'SamplePoint',
              'title': _('Sample Point'),
              'allow_edit': False,
              'value': sp and sp.Title() or '',
+             'condition':True,
              'type': 'text'},
             {'id': 'Creator',
              'title': PMF('Creator'),
              'allow_edit': False,
              'value': pretty_user_name_or_id(self.context, self.context.Creator()),
+             'condition':True,
              'type': 'text'},
             {'id': 'DateCreated',
              'title': PMF('Date Created'),
              'allow_edit': False,
              'value': self.context.created(),
+             'condition':True,
              'formatted_value': TimeOrDate(self.context, self.context.created()),
              'type': 'text'},
             {'id': 'SamplingDate',
@@ -341,6 +348,7 @@ class AnalysisRequestViewView(BrowserView):
              'allow_edit': False,
              'value': sample.getSamplingDate(),
              'formatted_value': TimeOrDate(self.context, self.context.getSamplingDate()),
+             'condition':True,
              'type': 'text'},
             {'id': 'Sampler',
              'title': _('Sampler'),
@@ -352,7 +360,7 @@ class AnalysisRequestViewView(BrowserView):
              'required': True,
              'class': sample.getSampler() and 'provisional' or '',
              'vocabulary': samplers,
-             'condition': SamplingWorkflowEnabled},
+             'condition': sample.getSamplingWorkflowEnabled()},
             {'id': 'DateSampled',
              'title': _('Date Sampled'),
              'allow_edit': checkPermission(SampleSample, sample),
@@ -367,12 +375,13 @@ class AnalysisRequestViewView(BrowserView):
              'class': 'datepicker_nofuture %s' % \
                  (sample.getDateSampled() and 'provisional' or ''),
              'class': 'datepicker_nofuture',
-             'condition': SamplingWorkflowEnabled},
+             'condition': sample.getSamplingWorkflowEnabled()},
             {'id': 'DateReceived',
              'title': _('Date Received'),
              'allow_edit': False,
              'value': self.context.getDateReceived(),
              'formatted_value': TimeOrDate(self.context, self.context.getDateReceived()),
+             'condition':True,
              'type': 'text'},
         ]
         if workflow.getInfoFor(self.context, 'review_state') == 'to_be_sampled':
@@ -1215,6 +1224,8 @@ class ajaxAnalysisRequestSubmit():
         pc = getToolByName(self.context, 'portal_catalog')
         bsc = getToolByName(self.context, 'bika_setup_catalog')
 
+        SamplingWorkflowEnabled = self.context.bika_setup.getSamplingWorkflowEnabled()
+
         errors = {}
         def error(field = None, column = None, message = None):
             if not message:
@@ -1526,6 +1537,7 @@ class ajaxAnalysisRequestSubmit():
                         SampleType = values['SampleType'],
                         SamplingDate = values['SamplingDate'],
                         Composite = values.get('Composite',False),
+                        SamplingWorkflowEnabled = SamplingWorkflowEnabled,
                     )
                     sample.processForm()
 
@@ -1700,6 +1712,8 @@ class AnalysisRequestsView(BikaListingView):
         self.title = _("Analysis Requests")
         self.description = ""
 
+        SamplingWorkflowEnabled = self.context.bika_setup.getSamplingWorkflowEnabled()
+
         self.columns = {
             'getRequestID': {'title': _('Request ID'),
                              'index': 'getRequestID'},
@@ -1728,11 +1742,11 @@ class AnalysisRequestsView(BikaListingView):
             'SamplingDate': {'title': _('Sampling Date'),
                              'toggle': True},
             'getDateSampled': {'title': _('Date Sampled'),
-                               'toggle': True,
+                               'toggle': not SamplingWorkflowEnabled,
                                'input_class': 'datepicker_nofuture',
                                'input_width': '10'},
             'getSampler': {'title': _('Sampler'),
-                           'toggle': True},
+                           'toggle': not SamplingWorkflowEnabled},
             'getDateReceived': {'title': _('Date Received'),
                                 'index': 'getDateReceived',
                                 'toggle': False},
