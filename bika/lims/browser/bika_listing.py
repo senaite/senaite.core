@@ -347,8 +347,15 @@ class BikaListingView(BrowserView):
 
         # get toggle_cols cookie value
         # and modify self.columns[]['toggle'] to match.
-        try: toggles = json.loads(self.request.get("toggle_cols", "{}"))
-        except: toggles = {}
+        try:
+            toggles = {}
+            toggles = json.loads(self.request.get("toggle_cols", "{}"))
+        except:
+            pass
+        finally:
+            if not toggles:
+                toggles = {}
+
         cookie_key = "%s/%s" % (self.view_url, form_id)
         toggle_cols = toggles.get(cookie_key,
                                   [col for col in self.columns.keys()
@@ -583,7 +590,7 @@ class BikaListingTable(tableview.Table):
         if hasattr(self.bika_listing, 'manual_sort_on') \
            and self.bika_listing.manual_sort_on:
             psi = self.bika_listing.page_start_index
-
+            psi = psi and psi or 0
             # We do a sort of the current page using self.manual_sort_on, here
             page = folderitems[psi:psi+self.bika_listing.pagesize]
             page.sort(lambda x,y:cmp(x.get(self.bika_listing.manual_sort_on, ''),

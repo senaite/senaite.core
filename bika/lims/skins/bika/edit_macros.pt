@@ -32,12 +32,9 @@
 			<span i18n:name="itemtype"
                 tal:define="fti python:context.portal_types.getTypeInfo(here)"
 				tal:omit-tag="python:True">
-			  <span i18n:translate=""
-                  tal:content="fti/Title"
-                  tal:omit-tag="python:True">Item type</span>
-			  (<span
+			  <span
 				  tal:content="context/title_or_id"
-				  tal:omit-tag="python:True">Item title</span>)
+				  tal:omit-tag="python:True">Item title</span>
 			</span>
 		  </span>
 		</h1>

@@ -88,17 +88,34 @@ class ajax_SamplePoints(BrowserView):
         if "sampletype" is in the request, it's expected to be a title string
         The objects returned will be filtered by the sampletype's SamplePoints.
         if no items are found, all items are returned.
+
+        If term is a one or two letters, return items that begin with them
+            If there aren't any, return items that contain them
+
     """
     def __call__(self):
         plone.protect.CheckAuthenticator(self.request)
         bsc = getToolByName(self, 'bika_setup_catalog')
+
         term = self.request.get('term', '').lower()
 
         items = bsc(portal_type = "SamplePoint", sort_on='sortable_title')
-        if term and len(term) > 1:
-            items = [s.getObject() for s in items if s.Title.lower().find(term) > -1]
+
+        if term and len(term) < 3:
+            # Items that start with A or AA
+            items = [s.getObject()
+                     for s in items
+                     if s.Title.lower().startswith(term)]
+            if not items:
+                # or, items that contain A or AA
+                items = [s.getObject()
+                         for s in items
+                         if s.Title.lower().find(term) > -1]
         else:
-            items = [s.getObject() for s in items]
+            # or, items that contain term.
+            items = [s.getObject()
+                     for s in items
+                     if s.Title.lower().find(term) > -1]
 
         sampletype = self.request.get('sampletype', '')
         if sampletype and len(sampletype) > 1:

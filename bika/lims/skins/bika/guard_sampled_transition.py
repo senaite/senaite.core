@@ -11,10 +11,6 @@
 from DateTime import DateTime
 workflow = context.portal_workflow
 
-# If getSamplingWorkflowEnabled is not set, this transition is not available.
-if not context.bika_setup.getSamplingWorkflowEnabled():
-    return False
-
 # False if object is cancelled
 if workflow.getInfoFor(context, 'cancellation_state', "active") == "cancelled":
     return False

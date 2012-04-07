@@ -182,59 +182,6 @@ class SampleView(BrowserView):
 
         SamplingWorkflowEnabled = self.context.bika_setup.getSamplingWorkflowEnabled()
 
-        ## handle_header table submit
-        if 'header_submitted' in form:
-
-            if 'sampled_button' in form:
-                if checkPermission(SampleSample, self.context) and \
-                   form.get('Sampler', '') != '' and \
-                   form.get('DateSampled', '') != '':
-                    self.context.setSampler(form['Sampler'])
-                    self.context.setDateSampled(form['DateSampled'])
-                    workflow.doActionFor(self.context, 'sampled')
-                    message = PMF("Changes saved.")
-                else:
-                    message = _("No changes made.")
-                self.context.plone_utils.addPortalMessage(message, 'info')
-
-            if 'save_button' in form:
-                message = None
-                values = {}
-                for row in [r for r in self.header_rows if r['allow_edit']]:
-                    value = form.get(row['id'], '')
-
-                    if row['id'] == 'SampleType':
-                        if not value:
-                            message = _('Sample Type is required')
-                            break
-                        if not bsc(portal_type = 'SampleType', title = value):
-                            message = _("${sampletype} is not a valid sample type",
-                                        mapping={'sampletype':value})
-                            break
-
-                    if row['id'] == 'SamplePoint':
-                        if value and \
-                           not bsc(portal_type = 'SamplePoint', title = value):
-                            message = _("${samplepoint} is not a valid sample point",
-                                        mapping={'sampletype':value})
-                            break
-
-                    values[row['id']] = value
-
-                # boolean - checkboxes are present, or not present in form.
-                for row in [r for r in self.header_rows if r.get('type', '') == 'boolean']:
-                    values[row['id']] = row['id'] in form
-
-                if not message:
-                    self.context.edit(**values)
-                    self.context.reindexObject()
-                    ars = self.context.getAnalysisRequests()
-                    for ar in ars:
-                        ar.reindexObject()
-                    message = PMF("Changes saved.")
-
-                self.context.plone_utils.addPortalMessage(message, 'info')
-
         ## Create header_table data rows
         ar_links = ", ".join(
             ["<a href='%s'>%s</a>"%(ar.absolute_url(), ar.Title())
@@ -355,6 +302,65 @@ class SampleView(BrowserView):
         else:
             self.header_buttons = [{'name':'save_button',
                                     'title':_('Save')}]
+
+        ## handle_header table submit
+        if 'header_submitted' in form:
+
+            if 'sampled_button' in form:
+                if checkPermission(SampleSample, self.context) and \
+                   form.get('Sampler', '') != '' and \
+                   form.get('DateSampled', '') != '':
+                    self.context.setSampler(form['Sampler'])
+                    self.context.setDateSampled(form['DateSampled'])
+                    workflow.doActionFor(self.context, 'sampled')
+                    message = PMF("Changes saved.")
+                else:
+                    message = _("No changes made.")
+                self.context.plone_utils.addPortalMessage(message, 'info')
+                # we need to start the request again, to regenerate header
+                self.request.RESPONSE.redirect(self.context.absolute_url())
+                return
+
+            if 'save_button' in form:
+                message = None
+                values = {}
+                for row in [r for r in self.header_rows if r['allow_edit']]:
+                    value = form.get(row['id'], '')
+
+                    if row['id'] == 'SampleType':
+                        if not value:
+                            message = _('Sample Type is required')
+                            break
+                        if not bsc(portal_type = 'SampleType', title = value):
+                            message = _("${sampletype} is not a valid sample type",
+                                        mapping={'sampletype':value})
+                            break
+
+                    if row['id'] == 'SamplePoint':
+                        if value and \
+                           not bsc(portal_type = 'SamplePoint', title = value):
+                            message = _("${samplepoint} is not a valid sample point",
+                                        mapping={'sampletype':value})
+                            break
+
+                    values[row['id']] = value
+
+                # boolean - checkboxes are present, or not present in form.
+                for row in [r for r in self.header_rows if r.get('type', '') == 'boolean']:
+                    values[row['id']] = row['id'] in form
+
+                if not message:
+                    self.context.edit(**values)
+                    self.context.reindexObject()
+                    ars = self.context.getAnalysisRequests()
+                    for ar in ars:
+                        ar.reindexObject()
+                    message = PMF("Changes saved.")
+
+                self.context.plone_utils.addPortalMessage(message, 'info')
+                # we need to start the request again, to regenerate header
+                self.request.RESPONSE.redirect(self.context.absolute_url())
+                return
 
         ## Create Sample Partitions table
         p = SamplePartitionsView(self.context, self.request)
