@@ -350,7 +350,9 @@ class BikaListingView(BrowserView):
         # and modify self.columns[]['toggle'] to match.
         try:
             toggles = {}
-            toggles = json.loads(self.request.get("toggle_cols", "{}"))
+            # request OR cookie OR default
+            toggles = json.loads(self.request.get('toggle_cookie',
+                                 self.request.get("toggle_cols", "{}")))
         except:
             pass
         finally:

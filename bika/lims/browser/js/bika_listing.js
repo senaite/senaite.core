@@ -333,18 +333,26 @@ $(document).ready(function(){
 
 	// show / hide columns - the action when a column is clicked in the menu
 	$('.contextmenu tr').live('click', function(event){
-		col_id = $(this).attr('col_id');
 		form_id = $(this).attr('form_id');
 		form = $("form#"+form_id);
+
+		col_id = $(this).attr('col_id');
+		col_title = $(this).text();
+		enabled = $(this).hasClass("enabled");
+
+		cookie = readCookie("toggle_cols");
+		cookie = $.parseJSON(cookie);
 		cookie_key = $(form[0].view_url).val() + "/" + form_id;
+
+		if (cookie == null || cookie == undefined) {
+			cookie = {};
+		}
 		if(col_id=='DEFAULT'){
-			createCookie('toggle_cols', null, 365);
+			// Remove entry from existing cookie if there is one
+			delete(cookie[cookie_key]);
+			createCookie('toggle_cols', $.toJSON(cookie), 365);
 		} else if(col_id=='ALL') {
-			cookie = readCookie("toggle_cols");
-			cookie = $.parseJSON(cookie);
-			if (cookie == null) {
-				cookie = {};
-			}
+			// add all possible columns
 			toggle_cols = [];
 			$.each($.parseJSON($('#'+form_id+"_toggle_cols").val()), function(i,v){
 				toggle_cols.push(i);
@@ -352,33 +360,20 @@ $(document).ready(function(){
 			cookie[cookie_key] = toggle_cols;
 			createCookie('toggle_cols', $.toJSON(cookie), 365);
 		} else {
-			cookie = readCookie("toggle_cols");
-			cookie = $.parseJSON(cookie);
-			if (cookie != null){
-				toggle_cols = cookie[cookie_key];
-				if (toggle_cols == null) {
-					toggle_cols = [];
-					$.each($.parseJSON($('#'+form_id+"_toggle_cols").val()), function(i,v){
-						if(v['toggle']) toggle_cols.push(i);
-					});
-				} else {
-					if($(this).hasClass('enabled')){
-						toggle_cols.splice(toggle_cols.indexOf(col_id), 1);
-					}
-					else {
-						toggle_cols.push(col_id);
-					}
-				}
-			} else {
-				cookie = {};
+			toggle_cols = cookie[cookie_key];
+			if (toggle_cols == null || toggle_cols == undefined) {
+				// this cookie key not yet defined
 				toggle_cols = [];
 				$.each($.parseJSON($('#'+form_id+"_toggle_cols").val()), function(i,v){
-					if(v['toggle']) toggle_cols.push(i);
+					if(!(col_id == i && enabled) && v['toggle']) {
+						toggle_cols.push(i);
+					}
 				});
-				if($(this).hasClass('enabled')){
+			} else {
+				// modify existing cookie
+				if(enabled) {
 					toggle_cols.splice(toggle_cols.indexOf(col_id), 1);
-				}
-				else {
+				} else {
 					toggle_cols.push(col_id);
 				}
 			}
