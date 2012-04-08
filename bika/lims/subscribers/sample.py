@@ -55,13 +55,13 @@ def AfterTransitionEventHandler(sample, event):
                 ar.reindexObject()
 
     elif event.transition.id == "receive":
-        if not sample.getSamplingWorkflowEnabled():
-            # If the sampling workflow was disabled, we set the DateSampled
-            # to the current date and Sampler to the current user
-            DateSampled = DateTime()
-            Sampler = member.id
-            sample.setDateSampled(DateSampled)
-            sample.setSampler(Sampler)
+##        if not sample.getSamplingWorkflowEnabled():
+##            # If the sampling workflow was disabled, we set the DateSampled
+##            # to the current date and Sampler to the current user
+##            DateSampled = DateTime()
+##            Sampler = member.id
+##            sample.setDateSampled(DateSampled)
+##            sample.setSampler(Sampler)
 
         sample.setDateReceived(DateTime())
         sample.reindexObject(idxs = ["review_state", "getDateReceived"])

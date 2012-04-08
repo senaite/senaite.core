@@ -546,24 +546,30 @@ jQuery( function($) {
 
 		_ = window.jsi18n;
 
-//  change url to prevent caching
-//		$.getJSON('ar_formdata?' + new Date().getTime(), function(data) {
-		$.getJSON('ar_formdata',
-			{'_authenticator': $('input[name="_authenticator"]').val()},
-			function(data) {
-				$('body').data('ar_formdata', data);
 
-				// Contact dropdown is set in TAL to a default value.
-				// we force change it to run the primary_contact .change()
-				// code - but the ajax for ar_formdata must complete first.
-				// So it goes here, in the ajax complete handler.
-				contact_element = $("#primary_contact");
-				if(contact_element.length > 0) {
-					contact_element.change();
+//		href_bits = window.location.href.split("/")
+//		if (href_bits[href_bits.length-1] == 'analysisrequest_add'
+//			|| href_bits[href_bits.length-1] == 'base_edit'
+//			|| href_bits[href_bits.length-1] == 'edit') {
+			//change url to prevent caching
+			//$.getJSON('ar_formdata?' + new Date().getTime(), function(data) {
+			$.getJSON('ar_formdata',
+				{'_authenticator': $('input[name="_authenticator"]').val()},
+				function(data) {
+					$('body').data('ar_formdata', data);
+
+					// Contact dropdown is set in TAL to a default value.
+					// we force change it to run the primary_contact .change()
+					// code - but the ajax for ar_formdata must complete first.
+					// So it goes here, in the ajax complete handler.
+					contact_element = $("#primary_contact");
+					if(contact_element.length > 0) {
+						contact_element.change();
+					}
+
 				}
-
-			}
-		);
+			);
+//		}
 
 		// If any required fields are missing, then we hide the Plone UI
 		// transitions for Sampled and Preserved, and use our own buttons instead
