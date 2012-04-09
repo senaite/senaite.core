@@ -45,6 +45,8 @@ class AnalysesView(BikaListingView):
         self.columns = {
             'Service': {'title': _('Analysis'),
                         'sortable': False},
+            'Method': {'title': _('Method'),
+                       'sortable': False},
             'state_title': {'title': _('Status'),
                             'sortable': False},
             'Result': {'title': _('Result'),
@@ -70,6 +72,7 @@ class AnalysesView(BikaListingView):
             {'id':'all',
              'title': _('All'),
              'columns':['Service',
+                        'Method',
                         'Result',
                         'Uncertainty',
                         'CaptureDate',
@@ -188,6 +191,12 @@ class AnalysesView(BikaListingView):
                                     self.specs[st_uid][client_or_lab] = {keyword: results_range}
                             else:
                                 self.specs[st_uid] = {client_or_lab: {keyword: results_range}}
+
+            method = service.getMethod()
+            method = method and method or ''
+            items[i]['Method'] = method.Title()
+            items[i]['replace']['Method'] = "<a href='%s'>%s</a>" % \
+                (method.absolute_url(), method.Title())
 
             # if the reference version is older than the object itself,
             # insert the version number of referenced service after Title
