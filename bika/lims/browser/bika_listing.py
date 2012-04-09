@@ -164,6 +164,8 @@ class BikaListingView(BrowserView):
     select_checkbox_name = "uids"
     # when rendering multiple bika_listing tables, form_id must be unique
     form_id = "list"
+    review_state = 'all'
+
 
     """
      ### column definitions
@@ -266,6 +268,7 @@ class BikaListingView(BrowserView):
             or 'all'
         states = [r for r in self.review_states if r['id'] == review_state_name]
         review_state = states and states[0] or self.review_states[0]
+        self.review_state = review_state['id']
         self.request[request_key] = review_state['id']
         self.request.response.setCookie(request_key, review_state['id'], path=self.view_url)
         if review_state.has_key('contentFilter'):
@@ -635,7 +638,8 @@ class BikaListingTable(tableview.Table):
 
         workflow = getToolByName(self.context, 'portal_workflow')
 
-        state = self.request.get('review_state', 'all')
+        state = self.request.get('review_state',
+                                 self.bika_listing.review_state)
         review_state = [i for i in self.bika_listing.review_states
                         if i['id'] == state][0]
 

@@ -193,10 +193,11 @@ class AnalysesView(BikaListingView):
                                 self.specs[st_uid] = {client_or_lab: {keyword: results_range}}
 
             method = service.getMethod()
-            method = method and method or ''
-            items[i]['Method'] = method.Title()
-            items[i]['replace']['Method'] = "<a href='%s'>%s</a>" % \
-                (method.absolute_url(), method.Title())
+            items[i]['Method'] = method and method.Title() or ''
+            if method:
+                items[i]['replace']['Method'] = "<a href='%s'>%s</a>" % \
+                    (method.absolute_url(), method.Title())
+
 
             # if the reference version is older than the object itself,
             # insert the version number of referenced service after Title
