@@ -242,19 +242,19 @@
              after_script="">
   <description i18n:translate=""></description>
   <guard>
-   <guard-expression>python:here.guard_auto_sampling_workflow()</guard-expression>
+   <guard-expression>python:here.guard_auto_sampling_workflow() == True</guard-expression>
   </guard>
  </transition>
 
  <transition transition_id="auto_no_sampling_workflow"
              title="auto_no_sampling_workflow"
-             new_state="sample_due"
+             new_state="sampled"
              trigger="AUTOMATIC"
              before_script=""
              after_script="">
   <description i18n:translate=""></description>
   <guard>
-   <guard-expression>python:not here.guard_auto_sampling_workflow()</guard-expression>
+   <guard-expression>python:here.guard_auto_sampling_workflow() == False</guard-expression>
   </guard>
  </transition>
 
@@ -284,7 +284,7 @@
              after_script="">
   <description i18n:translate=""></description>
   <guard>
-   <guard-expression>python:here.guard_auto_preservation_required()</guard-expression>
+   <guard-expression>python:here.guard_auto_preservation_required() == True</guard-expression>
   </guard>
  </transition>
 
@@ -296,7 +296,7 @@
              after_script="">
   <description i18n:translate=""></description>
   <guard>
-   <guard-expression>python:not here.guard_auto_preservation_required()</guard-expression>
+   <guard-expression>python:here.guard_auto_preservation_required() == False</guard-expression>
   </guard>
  </transition>
 

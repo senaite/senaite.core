@@ -22,12 +22,9 @@ def AfterTransitionEventHandler(analysis, event):
             analysis.REQUEST['workflow_attach_skiplist'] = [analysis.UID(), ]
         else:
             if analysis.UID() in analysis.REQUEST['workflow_attach_skiplist']:
-                ##logger.info("ref Skip")
                 return
             else:
                 analysis.REQUEST["workflow_attach_skiplist"].append(analysis.UID())
-
-        logger.info("Starting: %s on ref %s" % (event.transition.id, analysis.getService().getKeyword()))
 
         wf = getToolByName(analysis, 'portal_workflow')
         analysis.reindexObject(idxs = ["review_state", ])
@@ -58,12 +55,9 @@ def AfterTransitionEventHandler(analysis, event):
         analysis.REQUEST['workflow_skiplist'] = [analysis.UID(), ]
     else:
         if analysis.UID() in analysis.REQUEST['workflow_skiplist']:
-            ##logger.info("ref Skip")
             return
         else:
             analysis.REQUEST["workflow_skiplist"].append(analysis.UID())
-
-    logger.info("Starting: %s on ref %s" % (event.transition.id, analysis.getService().getKeyword()))
 
     wf = getToolByName(analysis, 'portal_workflow')
 

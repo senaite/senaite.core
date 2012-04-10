@@ -1559,6 +1559,27 @@ class ajaxAnalysisRequestSubmit():
 
                 sample_uid = sample.UID()
 
+                if not parts:
+                    parts = [{'services':[],
+                             'container':[],
+                             'preservation':'',
+                             'separate':False}]
+
+                # Create sample partitions
+                parts_and_services = {}
+                for p in parts:
+                    _id = sample.invokeFactory('SamplePartition', id = 'tmp')
+                    part = sample[_id]
+                    container = p['container'] \
+                        and type(p['container']) in (tuple, list) \
+                        and p['container'][0] or p['container']
+                    part.edit(
+                        Container = container,
+                        Preservation = p['preservation'],
+                    )
+                    part.processForm()
+                    parts_and_services[part.id] = p['services']
+
                 # create the AR
 
                 Analyses = values['Analyses']
@@ -1583,31 +1604,20 @@ class ajaxAnalysisRequestSubmit():
 
                 ARs.append(ar_id)
 
-                ar.setAnalyses(Analyses, prices = prices)
+                new_analyses = ar.setAnalyses(Analyses, prices = prices)
                 ar_analyses = ar.objectValues('Analysis')
 
-                # Create sample partitions
-                if not parts:
-                    parts = [{'services':Analyses,
-                             'container':[],
-                             'preservation':'',
-                             'separate':False}]
-                for p in parts:
-                    analyses = [a for a in ar_analyses
-                                if a.getServiceUID() in p['services']]
-                    _id = sample.invokeFactory('SamplePartition', id = 'tmp')
-                    part = sample[_id]
-                    container = p['container'] \
-                        and type(p['container']) in (tuple, list) \
-                        and p['container'][0] or p['container']
-                    part.edit(
-                        Container = container,
-                        Preservation = p['preservation'],
-                        Analyses = analyses,
-                    )
-                    part.processForm()
-                    for analysis in analyses:
-                        analysis.setSamplePartition(part)
+                # Add analyses to sample partitions
+                for part in sample.objectValues("SamplePartition"):
+                    part_services = parts_and_services[part.id]
+                    analyses = [a for a in new_analyses
+                                if a.getServiceUID() in part_services]
+                    if analyses:
+                        part.edit(
+                            Analyses = analyses,
+                        )
+                        for analysis in analyses:
+                            analysis.setSamplePartition(part)
 
                 # Save new ARProfile/ARTemplate
                 profile = None

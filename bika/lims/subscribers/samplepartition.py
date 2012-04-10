@@ -13,12 +13,9 @@ def AfterTransitionEventHandler(part, event):
         part.REQUEST['workflow_skiplist'] = [part.UID(), ]
     else:
         if part.UID() in part.REQUEST['workflow_skiplist']:
-            ##logger.info("part Skip")
             return
         else:
             part.REQUEST["workflow_skiplist"].append(part.UID())
-
-    logger.info("Starting: %s on %s" % (event.transition.id, part))
 
     workflow = getToolByName(part, 'portal_workflow')
     membership_tool = getToolByName(part, 'portal_membership')

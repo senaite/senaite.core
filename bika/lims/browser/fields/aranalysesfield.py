@@ -62,13 +62,15 @@ class ARAnalysesField(ObjectField):
 
         # one can only edit Analyses up to a certain state.
         ar_state = workflow.getInfoFor(instance, 'review_state', '')
-        instance.plone_log("ar_state %s" % ar_state)
-        assert ar_state in ('to_be_sampled', 'to_be_preserved', 'sample_due',
-                            'sample_received', 'attachment_due', 'to_be_verified')
-
+        assert ar_state in ('sample_registered', 'sampled',
+                            'to_be_sampled', 'to_be_preserved',
+                            'sample_due', 'sample_received',
+                            'attachment_due', 'to_be_verified')
 
         bsc = getToolByName(instance, 'bika_setup_catalog')
         services = bsc(UID = service_uids)
+
+        new_analyses = []
 
         for service in services:
             service_uid = service.UID
@@ -94,6 +96,7 @@ class ARAnalysesField(ObjectField):
                 analysis.unmarkCreationFlag()
                 analysis.AutoIndex = True
                 zope.event.notify(ObjectInitializedEvent(analysis))
+                new_analyses.append(analysis)
                 # Note: subscriber might retract and/or unassign the AR
 
         # delete analyses
@@ -119,6 +122,8 @@ class ARAnalysesField(ObjectField):
         instance.manage_delObjects(ids = delete_ids)
         instance.AutoIndex = True
         # Note: subscriber might promote the AR
+
+        return new_analyses
 
     security.declarePublic('Vocabulary')
     def Vocabulary(self, content_instance = None):

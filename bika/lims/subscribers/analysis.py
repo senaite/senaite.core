@@ -15,8 +15,6 @@ def ObjectInitializedEventHandler(analysis, event):
     if analysis.portal_type == "DuplicateAnalysis":
         return
 
-    logger.info("ObjectInitialized: %s" % analysis.getService().getKeyword())
-
     # 'receive' analysis if AR is received.
     # Adding a new analysis to an AR retracts the AR to 'sample_received'
     # AR may have to be unassigned too
@@ -27,12 +25,15 @@ def ObjectInitializedEventHandler(analysis, event):
     ar_state = wf.getInfoFor(ar, 'review_state')
     ar_ws_state = wf.getInfoFor(ar, 'worksheetanalysis_review_state')
 
-    if ar_state not in ('to_be_sampled', 'to_be_preserved', 'sample_due'):
+    if ar_state not in ('sample_registered', 'sampled',
+                        'to_be_sampled', 'to_be_preserved',
+                        'sample_due'):
         wf.doActionFor(analysis, 'receive')
 
     # Note: AR adds itself to the skiplist so we have to take it off again
     #       to allow possible promotions if other analyses are deleted.
-    if ar_state not in ('to_be_sampled', 'to_be_preserved',
+    if ar_state not in ('sample_registered', 'sampled',
+                        'to_be_sampled', 'to_be_preserved',
                         'sample_due', 'sample_received'):
         if not analysis.REQUEST.has_key('workflow_skiplist'):
             analysis.REQUEST['workflow_skiplist'] = ['retract all analyses', ]
@@ -54,8 +55,6 @@ def ObjectRemovedEventHandler(analysis, event):
     # DuplicateAnalysis doesn't have analysis_workflow.
     if analysis.portal_type == "DuplicateAnalysis":
         return
-
-    logger.info("ObjectRemoved: %s" % analysis)
 
     # May need to promote the AR's review_state
     #  if all other analyses are at a higher state than this one was.
@@ -132,12 +131,9 @@ def AfterTransitionEventHandler(analysis, event):
             analysis.REQUEST['workflow_attach_skiplist'] = [analysis.UID(), ]
         else:
             if analysis.UID() in analysis.REQUEST['workflow_attach_skiplist']:
-                ##logger.info("an Skip")
                 return
             else:
                 analysis.REQUEST["workflow_attach_skiplist"].append(analysis.UID())
-
-        logger.info("Starting: %s on %s" % (event.transition.id, analysis.getService().getKeyword()))
 
         wf = getToolByName(analysis, 'portal_workflow')
         ar = analysis.aq_parent
@@ -216,13 +212,10 @@ def AfterTransitionEventHandler(analysis, event):
         analysis.REQUEST['workflow_skiplist'] = [analysis.UID(), ]
     else:
         if analysis.UID() in analysis.REQUEST['workflow_skiplist']:
-            ##logger.info("an Skip")
             return
         else:
             analysis.REQUEST["workflow_skiplist"].append(analysis.UID())
     service = analysis.getService()
-    if service:
-        logger.info("Starting: %s on %s" % (event.transition.id, service.getKeyword()))
 
     wf = getToolByName(analysis, 'portal_workflow')
     ar = analysis.aq_parent

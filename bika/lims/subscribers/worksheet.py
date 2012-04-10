@@ -18,12 +18,9 @@ def AfterTransitionEventHandler(ws, event):
             ws.REQUEST['workflow_attach_skiplist'] = [ws.UID(), ]
         else:
             if ws.UID() in ws.REQUEST['workflow_attach_skiplist']:
-                ##logger.info("WS Skip")
                 return
             else:
                 ws.REQUEST["workflow_attach_skiplist"].append(ws.UID())
-
-        logger.info("Starting: %s on %s" % (event.transition.id, ws))
 
         ws.reindexObject(idxs = ["review_state", ])
         # Don't cascade. Shouldn't be attaching WSs for now (if ever).
@@ -33,12 +30,9 @@ def AfterTransitionEventHandler(ws, event):
         ws.REQUEST['workflow_skiplist'] = [ws.UID(), ]
     else:
         if ws.UID() in ws.REQUEST['workflow_skiplist']:
-            ##logger.info("WS Skip")
             return
         else:
             ws.REQUEST["workflow_skiplist"].append(ws.UID())
-
-    logger.info("Starting: %s on %s" % (event.transition.id, ws))
 
     wf = getToolByName(ws, 'portal_workflow')
 

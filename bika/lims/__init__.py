@@ -24,6 +24,7 @@ allow_module('AccessControl')
 allow_module('bika.lims')
 allow_module('bika.lims.permissions')
 allow_module('json')
+allow_module('pdb')
 
 def initialize(context):
 

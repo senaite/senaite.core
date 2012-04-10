@@ -20,12 +20,9 @@ def AfterTransitionEventHandler(ar, event):
             ar.REQUEST['workflow_attach_skiplist'] = [ar.UID(), ]
         else:
             if ar.UID() in ar.REQUEST['workflow_attach_skiplist']:
-                ##logger.info("AR Skip")
                 return
             else:
                 ar.REQUEST["workflow_attach_skiplist"].append(ar.UID())
-
-        logger.info("Starting: %s on %s" % (event.transition.id, ar))
 
         ar.reindexObject(idxs = ["review_state", ])
         # Don't cascade. Shouldn't be attaching ARs for now (if ever).
@@ -35,12 +32,9 @@ def AfterTransitionEventHandler(ar, event):
         ar.REQUEST['workflow_skiplist'] = [ar.UID(), ]
     else:
         if ar.UID() in ar.REQUEST['workflow_skiplist']:
-            ##logger.info("AR Skip")
             return
         else:
             ar.REQUEST["workflow_skiplist"].append(ar.UID())
-
-    logger.info("Starting: %s on %s" % (event.transition.id, ar))
 
     wf = getToolByName(ar, 'portal_workflow')
 

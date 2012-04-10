@@ -27,10 +27,10 @@ if context.portal_type == 'Sample':
     return preservation_required
 
 elif context.portal_type == 'AnalysisRequest':
-    sample = context.getSample()
 
     # If none of this sample's partitions require preservation, then we return
     # false.
+    sample = context.getSample()
     preservation_required = False
     for part in sample.objectValues("SamplePartition"):
         if part.getPreservation():

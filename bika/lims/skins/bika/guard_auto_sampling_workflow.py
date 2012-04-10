@@ -13,31 +13,8 @@ workflow = context.portal_workflow
 
 # Return TRUE if object advances to To Be Sampled
 # Return FALSE if object advances to Sample Due
-# We made it a seperate guard, so that ARs and Analyses can depend
-# on Sample.getSamplingWorkflowEnabled setting
 
 SamplingWorkflowEnabled = context.bika_setup.getSamplingWorkflowEnabled()
 
-if context.portal_type == 'Sample':
-    return SamplingWorkflowEnabled
+return SamplingWorkflowEnabled and True or False
 
-elif context.portal_type == "AnalysisRequest":
-    sample = context.getSample()
-    if sample:
-        return sample.getSamplingWorkflowEnabled()
-    else:
-        return SamplingWorkflowEnabled
-
-elif context.portal_type == "Analysis":
-    sample = context.aq_parent.getSample()
-    if sample:
-        return sample.getSamplingWorkflowEnabled()
-    else:
-        return SamplingWorkflowEnabled
-
-elif context.portal_type == "SamplePartition":
-    sample = context.aq_parent
-    if sample:
-        return sample.getSamplingWorkflowEnabled()
-    else:
-        return SamplingWorkflowEnabled

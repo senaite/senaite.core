@@ -13,12 +13,9 @@ def AfterTransitionEventHandler(sample, event):
         sample.REQUEST['workflow_skiplist'] = [sample.UID(), ]
     else:
         if sample.UID() in sample.REQUEST['workflow_skiplist']:
-            ##logger.info("SM Skip")
             return
         else:
             sample.REQUEST["workflow_skiplist"].append(sample.UID())
-
-    logger.info("Starting: %s on %s" % (event.transition.id, sample))
 
     workflow = getToolByName(sample, 'portal_workflow')
     membership_tool = getToolByName(sample, 'portal_membership')
@@ -50,18 +47,12 @@ def AfterTransitionEventHandler(sample, event):
 
         # All associated AnalysisRequests are also transitioned
         for ar in sample.getAnalysisRequests():
+            import pdb;pdb.set_trace()
             if not ar.UID() in sample.REQUEST['workflow_skiplist']:
                 workflow.doActionFor(ar, "preserved")
                 ar.reindexObject()
 
     elif event.transition.id == "receive":
-##        if not sample.getSamplingWorkflowEnabled():
-##            # If the sampling workflow was disabled, we set the DateSampled
-##            # to the current date and Sampler to the current user
-##            DateSampled = DateTime()
-##            Sampler = member.id
-##            sample.setDateSampled(DateSampled)
-##            sample.setSampler(Sampler)
 
         sample.setDateReceived(DateTime())
         sample.reindexObject(idxs = ["review_state", "getDateReceived"])

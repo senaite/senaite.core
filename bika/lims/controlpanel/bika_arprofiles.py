@@ -52,10 +52,10 @@ class ProfilesAndTemplatesView(BikaListingView):
              'title': _('AR Templates'),
              'columns': ['Title',
                          'Description']},
-            {'id':'WSTemplates',
-             'title': _('WS Templates'),
-             'columns': ['Title',
-                         'Description']},
+##            {'id':'WSTemplates',
+##             'title': _('WS Templates'),
+##             'columns': ['Title',
+##                         'Description']},
         ]
 
     def getARProfiles(self, contentFilter={}):

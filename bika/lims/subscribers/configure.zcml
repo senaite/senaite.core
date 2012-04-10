@@ -4,6 +4,13 @@
     xmlns:i18n="http://namespaces.zope.org/i18n"
     i18n_domain="bika">
 
+    <!-- Debug logging event handler for all transitions -->
+    <subscriber
+      for="*
+           Products.DCWorkflow.interfaces.IAfterTransitionEvent"
+      handler="bika.lims.subscribers.after_transition_log.AfterTransitionEventHandler"
+    />
+
     <!-- Newly created analyses -->
     <subscriber
       for="*

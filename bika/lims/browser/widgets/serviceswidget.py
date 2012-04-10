@@ -28,6 +28,7 @@ class ServicesView(BikaListingView):
         self.show_select_all_checkbox = False
         self.show_select_column = True
         self.pagesize = 1000
+        self.form_id = 'serviceswidget'
 
         self.columns = {
             'Service': {'title': _('Service')},
