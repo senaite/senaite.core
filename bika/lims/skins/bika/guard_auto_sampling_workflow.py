@@ -35,3 +35,9 @@ elif context.portal_type == "Analysis":
     else:
         return SamplingWorkflowEnabled
 
+elif context.portal_type == "SamplePartition":
+    sample = context.aq_parent
+    if sample:
+        return sample.getSamplingWorkflowEnabled()
+    else:
+        return SamplingWorkflowEnabled
