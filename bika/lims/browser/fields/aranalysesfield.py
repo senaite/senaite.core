@@ -89,21 +89,17 @@ class ARAnalysesField(ObjectField):
                 instance.invokeFactory(id = keyword,
                                        type_name = 'Analysis')
                 analysis = instance._getOb(keyword)
-                analysis.AutoIndex = False
                 analysis.edit(Service = service,
                               InterimFields = interim_fields,
                               MaxTimeAllowed = service.getMaxTimeAllowed())
                 analysis.unmarkCreationFlag()
-                analysis.AutoIndex = True
                 zope.event.notify(ObjectInitializedEvent(analysis))
                 new_analyses.append(analysis)
                 # Note: subscriber might retract and/or unassign the AR
 
         # delete analyses
         delete_ids = []
-        instance.AutoIndex = False
         for analysis in instance.objectValues('Analysis'):
-            analysis.AutoIndex = False
             service_uid = analysis.Schema()['Service'].getRaw(analysis)
             if service_uid not in service_uids:
                 # If it is verified or published, don't delete it.
@@ -120,7 +116,6 @@ class ARAnalysesField(ObjectField):
         # if removing the reference *empties* the partition, remove it.
 
         instance.manage_delObjects(ids = delete_ids)
-        instance.AutoIndex = True
         # Note: subscriber might promote the AR
 
         return new_analyses

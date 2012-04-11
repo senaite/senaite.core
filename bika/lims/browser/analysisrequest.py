@@ -25,6 +25,8 @@ from bika.lims.permissions import ViewResults
 from bika.lims.utils import getUsers
 from bika.lims.utils import isActive, TimeOrDate
 from bika.lims.utils import pretty_user_name_or_id
+from bika.lims.subscribers import skip
+from bika.lims.subscribers import doActionFor
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.layout.globals.interfaces import IViewView
 from zope.interface import implements, alsoProvides
@@ -47,7 +49,6 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
         workflow = getToolByName(self.context, 'portal_workflow')
         rc = getToolByName(self.context, REFERENCE_CATALOG)
         translate = self.context.translation_service.translate
-        skiplist = self.request.get('workflow_skiplist', [])
         action, came_from = WorkflowAction._get_form_workflow_action(self)
         checkPermission = self.context.portal_membership.checkPermission
 
@@ -195,11 +196,7 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
 
             # and then submit them.
             for analysis in submissable:
-                if not analysis.UID() in skiplist:
-                    try:
-                        workflow.doActionFor(analysis, 'submit')
-                    except WorkflowException:
-                        pass
+                doActionFor(analysis, 'submit')
 
             message = translate(PMF("Changes saved."))
             self.context.plone_utils.addPortalMessage(message, 'info')
@@ -1618,6 +1615,26 @@ class ajaxAnalysisRequestSubmit():
                         )
                         for analysis in analyses:
                             analysis.setSamplePartition(part)
+
+                # If Preservation is required for some partitions,
+                # and the SamplingWorkflow is disabled, we need
+                # to transition to to_be_preserved manually.
+                if not SamplingWorkflowEnabled:
+                    to_be_preserved = []
+                    sample_due = []
+                    lowest_state = 'sample_due'
+                    for p in sample.objectValues('SamplePartition'):
+                        if p.getPreservation():
+                            lowest_state = 'to_be_preserved'
+                            to_be_preserved.append(p)
+                        else:
+                            sample_due.append(p)
+                    for p in to_be_preserved:
+                        doActionFor(p, 'to_be_preserved')
+                    for p in sample_due:
+                        doActionFor(p, 'sample_due')
+                    doActionFor(sample, lowest_state)
+                    doActionFor(ar, lowest_state)
 
                 # Save new ARProfile/ARTemplate
                 profile = None

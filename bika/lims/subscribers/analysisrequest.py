@@ -4,121 +4,108 @@ from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFCore.utils import getToolByName
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
+from bika.lims.subscribers import skip
+from bika.lims.subscribers import doActionFor
 import transaction
 
-def AfterTransitionEventHandler(ar, event):
-
-    workflow = getToolByName(ar, 'portal_workflow')
+def AfterTransitionEventHandler(instance, event):
 
     # creation doesn't have a 'transition'
     if not event.transition:
         return
 
-    if event.transition.id == "attach":
-        # Need a separate skiplist for this due to double-jumps with 'submit'.
-        if not ar.REQUEST.has_key('workflow_attach_skiplist'):
-            ar.REQUEST['workflow_attach_skiplist'] = [ar.UID(), ]
-        else:
-            if ar.UID() in ar.REQUEST['workflow_attach_skiplist']:
-                return
-            else:
-                ar.REQUEST["workflow_attach_skiplist"].append(ar.UID())
+    action_id = event.transition.id
 
-        ar.reindexObject(idxs = ["review_state", ])
+    if skip(instance, action_id):
+        return
+
+    workflow = getToolByName(instance, 'portal_workflow')
+
+    if action_id == "attach":
+        instance.reindexObject(idxs = ["review_state", ])
         # Don't cascade. Shouldn't be attaching ARs for now (if ever).
         return
 
-    if not ar.REQUEST.has_key('workflow_skiplist'):
-        ar.REQUEST['workflow_skiplist'] = [ar.UID(), ]
-    else:
-        if ar.UID() in ar.REQUEST['workflow_skiplist']:
-            return
-        else:
-            ar.REQUEST["workflow_skiplist"].append(ar.UID())
-
-    wf = getToolByName(ar, 'portal_workflow')
-
-    if event.transition.id == "sampled":
+    elif action_id == "sampled":
         # transition our sample
-        # This is required here because the transition can happen in AR context
-        sample = ar.getSample()
-        if sample.UID() not in ar.REQUEST['workflow_skiplist']:
-            workflow.doActionFor(sample, 'sampled')
+        sample = instance.getSample()
+        if not skip(sample, action_id, peek=True):
+            workflow.doActionFor(sample, action_id)
 
-    if event.transition.id == "preserved":
+    elif action_id == "to_be_preserved":
+        pass
+
+    elif action_id == "sample_due":
+        pass
+
+    elif action_id == "preserved":
         # transition our sample
-        # This is required here because the transition can happen in AR context
-        sample = ar.getSample()
-        if sample.UID() not in ar.REQUEST['workflow_skiplist']:
-            workflow.doActionFor(sample, 'preserved')
+        sample = instance.getSample()
+        if not skip(sample, action_id, peek=True):
+            workflow.doActionFor(sample, action_id)
 
-    if event.transition.id == "receive":
-        ar.setDateReceived(DateTime())
-        ar.reindexObject(idxs = ["review_state", "getDateReceived", ])
+    elif action_id == "receive":
+        instance.setDateReceived(DateTime())
+        instance.reindexObject(idxs = ["review_state", "getDateReceived", ])
 
         # receive the AR's sample
-        sample = ar.getSample()
-        if sample.UID() not in ar.REQUEST['workflow_skiplist']:
+        sample = instance.getSample()
+        if not skip(sample, action_id, peek=True):
             # unless this is a secondary AR
-            if wf.getInfoFor(sample, 'review_state') == 'sample_due':
-                wf.doActionFor(sample, 'receive')
+            if workflow.getInfoFor(sample, 'review_state') == 'sample_due':
+                workflow.doActionFor(sample, 'receive')
 
         # receive all analyses in this AR.
-        analyses = ar.getAnalyses(review_state = 'sample_due')
+        analyses = instance.getAnalyses(review_state = 'sample_due')
         for analysis in analyses:
-            if not analysis.UID in ar.REQUEST['workflow_skiplist']:
-                wf.doActionFor(analysis.getObject(), 'receive')
+            if not skip(analysis, action_id):
+                workflow.doActionFor(analysis.getObject(), 'receive')
 
-    elif event.transition.id == "submit":
-        ar.reindexObject(idxs = ["review_state", ])
+    elif action_id == "submit":
+        instance.reindexObject(idxs = ["review_state", ])
         # Don't cascade. Shouldn't be submitting ARs directly for now.
 
-    elif event.transition.id == "retract":
-        ar.reindexObject(idxs = ["review_state", ])
-        if not "retract all analyses" in ar.REQUEST['workflow_skiplist']:
+    elif action_id == "retract":
+        instance.reindexObject(idxs = ["review_state", ])
+        if not "retract all analyses" in instance.REQUEST['workflow_skiplist']:
             # retract all analyses in this AR.
             # (NB: don't retract if it's verified)
-            analyses = ar.getAnalyses(review_state = ('attachment_due', 'to_be_verified',))
+            analyses = instance.getAnalyses(review_state = ('attachment_due', 'to_be_verified',))
             for analysis in analyses:
-                if not analysis.UID in ar.REQUEST['workflow_skiplist']:
-                    wf.doActionFor(analysis.getObject(), 'retract')
+                doActionFor(analysis.getObject(), 'retract')
 
-    elif event.transition.id == "verify":
-        ar.reindexObject(idxs = ["review_state", ])
-        if not "verify all analyses" in ar.REQUEST['workflow_skiplist']:
+    elif action_id == "verify":
+        instance.reindexObject(idxs = ["review_state", ])
+        if not "verify all analyses" in instance.REQUEST['workflow_skiplist']:
             # verify all analyses in this AR.
-            analyses = ar.getAnalyses(review_state = 'to_be_verified')
+            analyses = instance.getAnalyses(review_state = 'to_be_verified')
             for analysis in analyses:
-                if not analysis.UID in ar.REQUEST['workflow_skiplist']:
-                    wf.doActionFor(analysis.getObject(), "verify")
+                doActionFor(analysis.getObject(), "verify")
 
-    elif event.transition.id == "publish":
-        ar.reindexObject(idxs = ["review_state", "getDatePublished", ])
-        if not "publish all analyses" in ar.REQUEST['workflow_skiplist']:
+    elif action_id == "publish":
+        instance.reindexObject(idxs = ["review_state", "getDatePublished", ])
+        if not "publish all analyses" in instance.REQUEST['workflow_skiplist']:
             # publish all analyses in this AR. (except not requested ones)
-            analyses = ar.getAnalyses(review_state = 'verified')
+            analyses = instance.getAnalyses(review_state = 'verified')
             for analysis in analyses:
-                if not analysis.UID in ar.REQUEST['workflow_skiplist']:
-                    wf.doActionFor(analysis.getObject(), "publish")
+                doActionFor(analysis.getObject(), "publish")
 
     #---------------------
     # Secondary workflows:
     #---------------------
 
-    elif event.transition.id == "reinstate":
-        ar.reindexObject(idxs = ["cancellation_state", ])
+    elif action_id == "reinstate":
+        instance.reindexObject(idxs = ["cancellation_state", ])
         # activate all analyses in this AR.
-        analyses = ar.getAnalyses(cancellation_state = 'cancelled')
+        analyses = instance.getAnalyses(cancellation_state = 'cancelled')
         for analysis in analyses:
-            if not analysis.UID in ar.REQUEST['workflow_skiplist']:
-                wf.doActionFor(analysis.getObject(), 'reinstate')
+            doActionFor(analysis.getObject(), 'reinstate')
 
-    elif event.transition.id == "cancel":
-        ar.reindexObject(idxs = ["cancellation_state", ])
+    elif action_id == "cancel":
+        instance.reindexObject(idxs = ["cancellation_state", ])
         # deactivate all analyses in this AR.
-        analyses = ar.getAnalyses(cancellation_state = 'active')
+        analyses = instance.getAnalyses(cancellation_state = 'active')
         for analysis in analyses:
-            if not analysis.UID in ar.REQUEST['workflow_skiplist']:
-                wf.doActionFor(analysis.getObject(), 'cancel')
+            doActionFor(analysis.getObject(), 'cancel')
 
     return

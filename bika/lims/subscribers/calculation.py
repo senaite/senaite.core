@@ -38,7 +38,7 @@ def AfterTransitionEventHandler(instance, event):
             transaction.get().abort()
             raise WorkflowException
 
-    if event.transition.id == "deactivate":
+    elif event.transition.id == "deactivate":
         # A calculation cannot be deactivated if active services are using it.
         services = bsc(portal_type="AnalysisService",
                        inactive_state="active")

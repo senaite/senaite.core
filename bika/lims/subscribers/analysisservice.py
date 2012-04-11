@@ -31,7 +31,7 @@ def AfterTransitionEventHandler(instance, event):
                 transaction.get().abort()
                 raise WorkflowException
 
-    if event.transition.id == "activate":
+    elif event.transition.id == "activate":
         # A service cannot be activated if it's calculation is inactive
         calc = instance.getCalculation()
         if calc and \

@@ -16,6 +16,8 @@ from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.browser.bika_listing import WorkflowAction
 from bika.lims.browser.referencesample import ReferenceSamplesView
 from bika.lims.exportimport import instruments
+from bika.lims.subscribers import skip
+from bika.lims.subscribers import doActionFor
 from bika.lims.utils import getUsers, isActive, TimeOrDate
 from operator import itemgetter
 from plone.app.content.browser.interfaces import IFolderContentsView
@@ -35,7 +37,6 @@ class WorksheetWorkflowAction(WorkflowAction):
         plone.protect.CheckAuthenticator(form)
         workflow = getToolByName(self.context, 'portal_workflow')
         rc = getToolByName(self.context, REFERENCE_CATALOG)
-        skiplist = self.request.get('workflow_skiplist', [])
         action, came_from = WorkflowAction._get_form_workflow_action(self)
 
         # XXX combine data from multiple bika listing tables.
@@ -114,11 +115,7 @@ class WorksheetWorkflowAction(WorkflowAction):
 
             # and then submit them.
             for analysis in submissable:
-                if not analysis.UID() in skiplist:
-                    try:
-                        workflow.doActionFor(analysis, 'submit')
-                    except WorkflowException:
-                        pass
+                doActionFor(analysis, 'submit')
 
             message = PMF("Changes saved.")
             self.context.plone_utils.addPortalMessage(message, 'info')
@@ -152,15 +149,10 @@ class WorksheetWorkflowAction(WorkflowAction):
                 return
 
             selected_analyses = WorkflowAction._get_selected_items(self)
-            selected_analysis_uids = selected_analyses.keys()
-
-            if selected_analyses:
-                for uid in selected_analysis_uids:
-                    if self.context.REQUEST.has_key('workflow_skiplist'):
-                        if uid in self.context.REQUEST['workflow_skiplist']:
-                            continue
-                    analysis = rc.lookupObject(uid)
-                    self.context.removeAnalysis(analysis)
+            for analysis in selected_analyses:
+                if skip(analysis, action, peek=True):
+                    continue
+                self.context.removeAnalysis(analysis)
 
             self.destination_url = self.context.absolute_url()
             self.request.response.redirect(self.destination_url)

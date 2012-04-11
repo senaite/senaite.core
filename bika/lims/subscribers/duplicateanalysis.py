@@ -4,11 +4,13 @@ from Acquisition import aq_inner
 from DateTime import DateTime
 from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFCore.utils import getToolByName
+from bika.lims.subscribers import skip
+from bika.lims.subscribers import doActionFor
 from bika.lims import logger
 import transaction
 
 
-def AfterTransitionEventHandler(analysis, event):
+def AfterTransitionEventHandler(instance, event):
 
     # Note: Don't have dependencies or dependents, not on an AR
     #----------------------------------------------------------
@@ -17,26 +19,22 @@ def AfterTransitionEventHandler(analysis, event):
     if not event.transition:
         return
 
-    if event.transition.id == "attach":
-        # Need a separate skiplist for this due to double-jumps with 'submit'.
-        if not analysis.REQUEST.has_key('workflow_attach_skiplist'):
-            analysis.REQUEST['workflow_attach_skiplist'] = [analysis.UID(), ]
-        else:
-            if analysis.UID() in analysis.REQUEST['workflow_attach_skiplist']:
-                return
-            else:
-                analysis.REQUEST["workflow_attach_skiplist"].append(analysis.UID())
+    action_id = event.transition.id
 
-        wf = getToolByName(analysis, 'portal_workflow')
-        analysis.reindexObject(idxs = ["review_state", ])
+    if skip(instance, action_id):
+        return
+
+    wf = getToolByName(instance, 'portal_workflow')
+
+    if action_id == "attach":
+        instance.reindexObject(idxs = ["review_state", ])
 
         # If all analyses on the worksheet have been attached,
         # then attach the worksheet.
-        ws = analysis.getBackReferences('WorksheetAnalysis')
+        ws = instance.getBackReferences('WorksheetAnalysis')
         ws = ws[0]
         ws_state = wf.getInfoFor(ws, 'review_state')
-        if (ws_state == 'attachment_due'
-        and ws.UID() not in analysis.REQUEST['workflow_attach_skiplist']):
+        if ws_state == 'attachment_due' and not skip(ws, action_id, peek=True):
             can_attach = True
             for a in ws.getAnalyses():
                 if wf.getInfoFor(a, 'review_state') in \
@@ -53,25 +51,15 @@ def AfterTransitionEventHandler(analysis, event):
     # End of "attach" code, back to your basic nightmare...
     #------------------------------------------------------
 
-    if not analysis.REQUEST.has_key('workflow_skiplist'):
-        analysis.REQUEST['workflow_skiplist'] = [analysis.UID(), ]
-    else:
-        if analysis.UID() in analysis.REQUEST['workflow_skiplist']:
-            return
-        else:
-            analysis.REQUEST["workflow_skiplist"].append(analysis.UID())
-
-    wf = getToolByName(analysis, 'portal_workflow')
-
-    if event.transition.id == "submit":
-        analysis.reindexObject(idxs = ["review_state", ])
+    elif action_id == "submit":
+        instance.reindexObject(idxs = ["review_state", ])
 
         # If all analyses on the worksheet have been submitted,
         # then submit the worksheet.
-        ws = analysis.getBackReferences('WorksheetAnalysis')
+        ws = instance.getBackReferences('WorksheetAnalysis')
         ws = ws[0]
         # if the worksheet analyst is not assigned, the worksheet can't  be transitioned.
-        if ws.getAnalyst() and ws.UID() not in analysis.REQUEST['workflow_skiplist']:
+        if ws.getAnalyst() and not skip(ws, action_id, peek=True):
             all_submitted = True
             for a in ws.getAnalyses():
                 if wf.getInfoFor(a, 'review_state') in \
@@ -82,38 +70,37 @@ def AfterTransitionEventHandler(analysis, event):
             if all_submitted:
                 wf.doActionFor(ws, 'submit')
 
-        # If no problem with attachments, do 'attach' action for this analysis.
+        # If no problem with attachments, do 'attach' action for this instance.
         can_attach = True
-        if not analysis.getAttachment():
-            service = analysis.getService()
+        if not instance.getAttachment():
+            service = instance.getService()
             if service.getAttachmentOption() == 'r':
                 can_attach = False
         if can_attach:
-            wf.doActionFor(analysis, 'attach')
+            wf.doActionFor(instance, 'attach')
 
-    elif event.transition.id == "retract":
-        analysis.reindexObject(idxs = ["review_state", ])
+    elif action_id == "retract":
+        instance.reindexObject(idxs = ["review_state", ])
         # Escalate action to the Worksheet.
-        ws = analysis.getBackReferences('WorksheetAnalysis')
+        ws = instance.getBackReferences('WorksheetAnalysis')
         ws = ws[0]
-        if not ws.UID() in analysis.REQUEST['workflow_skiplist']:
+        if skip(ws, action_id, peek=True):
             if wf.getInfoFor(ws, 'review_state') == 'open':
-                analysis.REQUEST["workflow_skiplist"].append(ws.UID())
+                skip(ws, action_id)
             else:
-                if not "retract all analyses" in analysis.REQUEST['workflow_skiplist']:
-                    analysis.REQUEST["workflow_skiplist"].append("retract all analyses")
+                if not "retract all analyses" in instance.REQUEST['workflow_skiplist']:
+                    instance.REQUEST["workflow_skiplist"].append("retract all analyses")
                 wf.doActionFor(ws, 'retract')
 
-    elif event.transition.id == "verify":
-        analysis.reindexObject(idxs = ["review_state", ])
+    elif action_id == "verify":
+        instance.reindexObject(idxs = ["review_state", ])
 
         # If all other analyses on the worksheet are verified,
         # then verify the worksheet.
-        ws = analysis.getBackReferences('WorksheetAnalysis')
+        ws = instance.getBackReferences('WorksheetAnalysis')
         ws = ws[0]
         ws_state = wf.getInfoFor(ws, 'review_state')
-        if (ws_state == 'to_be_verified'
-        and ws.UID() not in analysis.REQUEST['workflow_skiplist']):
+        if ws_state == 'to_be_verified' and not skip(ws, action_id, peek=True):
             all_verified = True
             for a in ws.getAnalyses():
                 if wf.getInfoFor(a, 'review_state') in \
@@ -122,29 +109,29 @@ def AfterTransitionEventHandler(analysis, event):
                     all_verified = False
                     break
             if all_verified:
-                if not "verify all analyses" in analysis.REQUEST['workflow_skiplist']:
-                    analysis.REQUEST["workflow_skiplist"].append("verify all analyses")
+                if not "verify all analyses" in instance.REQUEST['workflow_skiplist']:
+                    instance.REQUEST["workflow_skiplist"].append("verify all analyses")
                 wf.doActionFor(ws, "verify")
 
-    elif event.transition.id == "assign":
-        analysis.reindexObject(idxs = ["review_state", ])
-        rc = getToolByName(analysis, REFERENCE_CATALOG)
-        wsUID = analysis.REQUEST['context_uid']
+    elif action_id == "assign":
+        instance.reindexObject(idxs = ["review_state", ])
+        rc = getToolByName(instance, REFERENCE_CATALOG)
+        wsUID = instance.REQUEST['context_uid']
         ws = rc.lookupObject(wsUID)
 
         # retract the worksheet to 'open'
         ws_state = wf.getInfoFor(ws, 'review_state')
         if ws_state != 'open':
-            if not analysis.REQUEST.has_key('workflow_skiplist'):
-                analysis.REQUEST['workflow_skiplist'] = ['retract all analyses', ]
+            if not instance.REQUEST.has_key('workflow_skiplist'):
+                instance.REQUEST['workflow_skiplist'] = ['retract all analyses', ]
             else:
-                analysis.REQUEST["workflow_skiplist"].append('retract all analyses')
+                instance.REQUEST["workflow_skiplist"].append('retract all analyses')
             wf.doActionFor(ws, 'retract')
 
-    elif event.transition.id == "unassign":
-        analysis.reindexObject(idxs = ["review_state", ])
-        rc = getToolByName(analysis, REFERENCE_CATALOG)
-        wsUID = analysis.REQUEST['context_uid']
+    elif action_id == "unassign":
+        instance.reindexObject(idxs = ["review_state", ])
+        rc = getToolByName(instance, REFERENCE_CATALOG)
+        wsUID = instance.REQUEST['context_uid']
         ws = rc.lookupObject(wsUID)
 
         # May need to promote the Worksheet's review_state
@@ -174,20 +161,20 @@ def AfterTransitionEventHandler(analysis, event):
 
         if not ws_empty:
         # Note: WS adds itself to the skiplist so we have to take it off again
-        #       to allow multiple promotions (maybe by more than one analysis).
+        #       to allow multiple promotions (maybe by more than one instance).
             if can_submit and wf.getInfoFor(ws, 'review_state') == 'open':
                 wf.doActionFor(ws, 'submit')
-                analysis.REQUEST["workflow_skiplist"].remove(wsUID)
+                skip(ws, 'submit', unskip=True)
             if can_attach and wf.getInfoFor(ws, 'review_state') == 'attachment_due':
                 wf.doActionFor(ws, 'attach')
-                analysis.REQUEST["workflow_attach_skiplist"].remove(wsUID)
+                skip(ws, 'attach', unskip=True)
             if can_verify and wf.getInfoFor(ws, 'review_state') == 'to_be_verified':
-                analysis.REQUEST["workflow_skiplist"].append('verify all analyses')
+                instance.REQUEST["workflow_skiplist"].append('verify all analyses')
                 wf.doActionFor(ws, 'verify')
-                analysis.REQUEST["workflow_skiplist"].remove(wsUID)
+                skip(ws, 'verify', unskip=True)
         else:
             if wf.getInfoFor(ws, 'review_state') != 'open':
                 wf.doActionFor(ws, 'retract')
-                analysis.REQUEST["workflow_skiplist"].remove(wsUID)
+                skip(ws, 'retract', unskip=True)
 
     return

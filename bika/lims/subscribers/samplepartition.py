@@ -1,102 +1,132 @@
 from DateTime import DateTime
 from Products.CMFCore.utils import getToolByName
 from Products.CMFCore.WorkflowCore import WorkflowException
+from bika.lims.subscribers import skip
+from bika.lims.subscribers import doActionFor
 from bika.lims import logger
 
-def AfterTransitionEventHandler(part, event):
+def AfterTransitionEventHandler(instance, event):
 
     # creation doesn't have a 'transition'
     if not event.transition:
         return
 
-    if not part.REQUEST.has_key('workflow_skiplist'):
-        part.REQUEST['workflow_skiplist'] = [part.UID(), ]
-    else:
-        if part.UID() in part.REQUEST['workflow_skiplist']:
-            return
-        else:
-            part.REQUEST["workflow_skiplist"].append(part.UID())
+    action_id = event.transition.id
 
-    workflow = getToolByName(part, 'portal_workflow')
-    membership_tool = getToolByName(part, 'portal_membership')
+    if skip(instance, action_id):
+        return
+
+    workflow = getToolByName(instance, 'portal_workflow')
+    membership_tool = getToolByName(instance, 'portal_membership')
     member = membership_tool.getAuthenticatedMember()
-    sample = part.aq_parent
+    sample = instance.aq_parent
     sample_state = workflow.getInfoFor(sample, 'review_state')
 
-    if event.transition.id == "sampled":
-
-        # set "Sampled" on all our Analyses
-        analyses = part.getBackReferences('AnalysisSamplePartition')
+    if action_id == "sampled":
+        # Transition our analyses
+        analyses = instance.getBackReferences('AnalysisSamplePartition')
         for analysis in analyses:
-            workflow.doActionFor(analysis, 'sampled')
+            doActionFor(analysis, action_id)
+        # Promote our parent
+        doActionFor(sample, action_id)
 
-        # This transition can be called directly on the SamplePartition object,
-        # so we promote the sample.
-        if not sample.UID() not in part.REQUEST['workflow_skiplist']:
-            try:
-                workflow.doActionFor(sample, 'sampled')
-            except WorkflowException:
-                # guard_preserved_transition may fail if the states
-                # of our sibling partitions prevent sample transition
-                pass
+    elif action_id == "to_be_preserved":
+        # Transition our analyses
+        analyses = instance.getBackReferences('AnalysisSamplePartition')
+        if analyses:
+            for analysis in analyses:
+                doActionFor(analysis, action_id)
+        # if all our siblings are now up to date, promote sample and ARs.
+        parts = sample.objectValues("SamplePartition")
+        if parts:
+            states = ['sample_due', 'to_be_preserved']
+            escalate = True
+            for part in parts:
+                if workflow.getInfoFor(part, 'review_state') not in states:
+                    escalate = False
+            if escalate:
+                doActionFor(sample, action_id)
+                for ar in sample.getAnalysisRequests():
+                    doActionFor(ar, action_id)
 
-    elif event.transition.id == "preserved":
+    elif action_id == "sample_due":
+        # Transition our analyses
+        analyses = instance.getBackReferences('AnalysisSamplePartition')
+        if analyses:
+            for analysis in analyses:
+                doActionFor(analysis, action_id)
+        # if all our siblings are now up to date, promote sample and ARs.
+        parts = sample.objectValues("SamplePartition")
+        if parts:
+            states = ['sample_due',]
+            escalate = True
+            for part in parts:
+                if workflow.getInfoFor(part, 'review_state') not in states:
+                    escalate = False
+            if escalate:
+                doActionFor(sample, action_id)
+                for ar in sample.getAnalysisRequests():
+                    doActionFor(ar, action_id)
 
-        # set "Preserved" on all our Analyses
-        analyses = part.getBackReferences('AnalysisSamplePartition')
-        for analysis in analyses:
-            workflow.doActionFor(analysis, 'preserved')
+    elif action_id == "preserved":
+        # Transition our analyses
+        analyses = instance.getBackReferences('AnalysisSamplePartition')
+        if analyses:
+            for analysis in analyses:
+                doActionFor(analysis, action_id)
+        # if all our siblings are now up to date, promote sample and ARs.
+        parts = sample.objectValues("SamplePartition")
+        if parts:
+            states = ['sample_due',]
+            escalate = True
+            for part in parts:
+                if workflow.getInfoFor(part, 'review_state') not in states:
+                    escalate = False
+            if escalate:
+                doActionFor(sample, action_id)
+                for ar in sample.getAnalysisRequests():
+                    doActionFor(ar, action_id)
 
-        # This transition can be called directly on the SamplePartition object,
-        # so we promote the sample.
-        if not sample.UID() not in part.REQUEST['workflow_skiplist']:
-            try:
-                workflow.doActionFor(sample, 'preserved')
-            except WorkflowException:
-                # guard_preserved_transition may fail if the states
-                # of our sibling partitions prevent sample transition
-                pass
-
-    elif event.transition.id == "receive":
+    elif action_id == "receive":
         if sample.getSamplingDate() > DateTime():
             raise WorkflowException
-        part.setDateReceived(DateTime())
-        part.reindexObject(idxs = ["getDateReceived", ])
+        instance.setDateReceived(DateTime())
+        instance.reindexObject(idxs = ["getDateReceived", ])
 
         # if all sibling partitions are received, promote sample
-        if not sample.UID() in part.REQUEST['workflow_skiplist']:
+        if not skip(sample, action_id, peek=True):
             sample_due = [sp for sp in sample.objectValues("SamplePartition")
                           if workflow.getInfoFor(sp, 'review_state') == 'sample_due']
             if sample_state == 'sample_due' and not sample_due:
                 workflow.doActionFor(sample, 'receive')
 
 
-    elif event.transition.id == "expire":
-        part.setDateExpired(DateTime())
-        part.reindexObject(idxs = ["review_state", "getDateExpired", ])
+    elif action_id == "expire":
+        instance.setDateExpired(DateTime())
+        instance.reindexObject(idxs = ["review_state", "getDateExpired", ])
 
 
     #---------------------
     # Secondary workflows:
     #---------------------
 
-    elif event.transition.id == "reinstate":
-        part.reindexObject(idxs = ["cancellation_state", ])
+    elif action_id == "reinstate":
+        instance.reindexObject(idxs = ["cancellation_state", ])
         sample_c_state = workflow.getInfoFor(sample, 'cancellation_state')
 
         # if all sibling partitions are active, activate sample
-        if not sample.UID() in part.REQUEST['workflow_skiplist']:
+        if not skip(sample, action_id, peek=True):
             cancelled = [sp for sp in sample.objectValues("SamplePartition")
                          if workflow.getInfoFor(sp, 'cancellation_state') == 'cancelled']
             if sample_c_state == 'cancelled' and not cancelled:
                 workflow.doActionFor(sample, 'reinstate')
 
-    elif event.transition.id == "cancel":
-        part.reindexObject(idxs = ["cancellation_state", ])
+    elif action_id == "cancel":
+        instance.reindexObject(idxs = ["cancellation_state", ])
         sample_c_state = workflow.getInfoFor(sample, 'cancellation_state')
 
         # if all sibling partitions are cancelled, cancel sample
-        if not sample.UID() in part.REQUEST['workflow_skiplist']:
+        if not skip(sample, action_id, peek=True):
             active = [sp for sp in sample.objectValues("SamplePartition")
                       if workflow.getInfoFor(sp, 'cancellation_state') == 'active']
             if sample_c_state == 'active' and not active:

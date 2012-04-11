@@ -71,6 +71,8 @@
 <state state_id="sampled" title="Sampled" i18n:attributes="title">
     <exit-transition transition_id="auto_preservation_required"/>
     <exit-transition transition_id="auto_no_preservation_required"/>
+    <exit-transition transition_id="to_be_preserved"/>
+    <exit-transition transition_id="sample_due"/>
 </state>
 
 <state state_id="to_be_preserved" title="To Be Preserved" i18n:attributes="title">
@@ -359,6 +361,28 @@
   <description i18n:translate=""></description>
   <guard>
    <guard-expression>python:here.guard_auto_preservation_required() == False</guard-expression>
+  </guard>
+ </transition>
+
+ <transition transition_id="to_be_preserved"
+             title="to_be_preserved"
+             new_state="to_be_preserved"
+             trigger="USER"
+             before_script=""
+             after_script="">
+  <description i18n:translate=""></description>
+  <guard>
+  </guard>
+ </transition>
+
+ <transition transition_id="sample_due"
+             title="sample_due"
+             new_state="sample_due"
+             trigger="USER"
+             before_script=""
+             after_script="">
+  <description i18n:translate=""></description>
+  <guard>
   </guard>
  </transition>
 

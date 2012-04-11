@@ -20,6 +20,8 @@ from bika.lims.permissions import SampleSample
 from bika.lims.permissions import PreserveSample
 from bika.lims.utils import TimeOrDate
 from bika.lims.utils import isActive
+from bika.lims.subscribers import skip
+from bika.lims.subscribers import doActionFor
 from operator import itemgetter
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.layout.globals.interfaces import IViewView
@@ -70,9 +72,11 @@ class ClientWorkflowAction(AnalysisRequestWorkflowAction):
             transitioned = {'to_be_preserved':[], 'sample_due':[]}
             for obj_uid, obj in objects.items():
                 if obj.portal_type == "AnalysisRequest":
+                    ar = obj
                     sample = obj.getSample()
                 else:
                     sample = obj
+                    ar = sample.aq_parent
                 # can't transition inactive items
                 if workflow.getInfoFor(sample, 'inactive_state', '') == 'inactive':
                     continue
@@ -80,10 +84,17 @@ class ClientWorkflowAction(AnalysisRequestWorkflowAction):
                     continue
 
                 # grab this object's Sampler and DateSampled from the form
-                Sampler = form['getSampler'][0][obj_uid].strip()
-                Sampler = Sampler and Sampler or ''
-                DateSampled = form['getDateSampled'][0][obj_uid].strip()
-                DateSampled = DateSampled and DateTime(DateSampled) or ''
+                # (if the columns are available and edit controls exist)
+                if 'getSampler' in form and 'getDateSampled' in form:
+                    try:
+                        Sampler = form['getSampler'][0][obj_uid].strip()
+                        DateSampled = form['getDateSampled'][0][obj_uid].strip()
+                    except KeyError:
+                        continue
+                    Sampler = Sampler and Sampler or ''
+                    DateSampled = DateSampled and DateTime(DateSampled) or ''
+                else:
+                    continue
 
                 # write them to the sample
                 sample.setSampler(Sampler)
@@ -94,6 +105,7 @@ class ClientWorkflowAction(AnalysisRequestWorkflowAction):
                     workflow.doActionFor(sample, 'sampled')
                     new_state = workflow.getInfoFor(sample, 'review_state')
                     transitioned[new_state].append(sample.Title())
+                doActionFor(ar, 'sampled')
 
             message = None
             for state in transitioned:
@@ -130,9 +142,11 @@ class ClientWorkflowAction(AnalysisRequestWorkflowAction):
             not_transitioned = []
             for obj_uid, obj in objects.items():
                 if obj.portal_type == "AnalysisRequest":
+                    ar = obj
                     sample = obj.getSample()
                 else:
                     sample = obj
+                    ar = sample.aq_parent
                 # can't transition inactive items
                 if workflow.getInfoFor(sample, 'inactive_state', '') == 'inactive':
                     continue
@@ -140,20 +154,27 @@ class ClientWorkflowAction(AnalysisRequestWorkflowAction):
                     continue
 
                 # grab this object's Preserver and DatePreserved from the form
-                Preserver = form['getPreserver'][0][obj_uid].strip()
-                Preserver = Preserver and Preserver or ''
-                DatePreserved = form['getDatePreserved'][0][obj_uid].strip()
-                DatePreserved = DatePreserved and DateTime(DatePreserved) or ''
+                # (if the columns are available and edit controls exist)
+                if 'getPreserver' in form and 'getDatePreserved' in form:
+                    try:
+                        Preserver = form['getPreserver'][0][obj_uid].strip()
+                        DatePreserved = form['getDatePreserved'][0][obj_uid].strip()
+                    except KeyError:
+                        continue
+                    Preserver = Preserver and Preserver or ''
+                    DatePreserved = DatePreserved and DateTime(DatePreserved) or ''
+                else:
+                    continue
 
-                ## We do the workflow cascade manually here,
-                ## so that we can set these values on our partitions.
                 for sp in sample.objectValues("SamplePartition"):
                     if workflow.getInfoFor(sp, 'review_state') == 'to_be_preserved':
                         sp.setDatePreserved(DatePreserved)
                         sp.setPreserver(Preserver)
+                for sp in sample.objectValues("SamplePartition"):
+                    if workflow.getInfoFor(sp, 'review_state') == 'to_be_preserved':
                         if Preserver and DatePreserved:
-                            workflow.doActionFor(sp, 'preserved')
-                            transitioned.append(sp.Title())
+                            doActionFor(sp, 'preserved')
+                            transitioned.append("%s (%s)" % (sp.aq_parent.Title(), sp.Title()))
                         else:
                             not_transitioned.append(sp)
 
@@ -168,7 +189,7 @@ class ClientWorkflowAction(AnalysisRequestWorkflowAction):
 
                 # And then the sample itself
                 if Preserver and DatePreserved and not not_transitioned:
-                    workflow.doActionFor(sample,'preserved')
+                    doActionFor(sample, 'preserved')
                     message = _('${item} is waiting to be received.',
                                 mapping = {'item': sample.Title()})
 

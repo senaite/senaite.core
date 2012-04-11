@@ -9,6 +9,7 @@ from Products.CMFPlone.utils import base_hasattr
 from Products.CMFPlone.utils import safe_callable
 from Products.ZCatalog.ZCatalog import ZCatalog
 from bika.lims.interfaces import IBikaSetupCatalog
+from bika.lims.subscribers import skip
 from zope.component import getUtility
 from zope.interface import Interface, implements
 
@@ -17,12 +18,10 @@ def getCatalog(instance, field = 'UID'):
         If an object is indexed by more than one catalog, the first match
         will be returned.
 
-        Set AutoIndex=True on the object to prevent spurious catalog reindexing
-        Remember to set it False again after your edit is complete.
-
     """
-    if (hasattr(self, 'AutoIndex', False) and self.AutoIndex == False) or  \
-       ('workflow_skiplist' in self.REQUEST and self.UID() in self.REQUEST['workflow_skiplist']):
+    uid = self.UID()
+    if 'workflow_skiplist' in self.REQUEST \
+         and [x for x in self.REQUEST['workflow_skiplist'] if x.find(uid) > -1]:
         return None
     else:
         # grab the first catalog we are indexed in.

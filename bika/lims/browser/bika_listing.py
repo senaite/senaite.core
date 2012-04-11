@@ -10,9 +10,11 @@ from Products.CMFPlone import PloneMessageFactory
 from Products.CMFPlone.utils import pretty_title_or_id, isExpired, safe_unicode
 from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from bika.lims import bikaMessageFactory as _
 from bika.lims import PMF
+from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
+from bika.lims.subscribers import doActionFor
+from bika.lims.subscribers import skip
 from bika.lims.utils import isActive, TimeOrDate
 from operator import itemgetter
 from plone.app.content.batching import Batch
@@ -21,8 +23,8 @@ from plone.app.content.browser.foldercontents import FolderContentsView, FolderC
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.i18n.normalizer.interfaces import IIDNormalizer
 from zope.app.component.hooks import getSite
-from zope.component._api import getMultiAdapter
 from zope.component import getUtility
+from zope.component._api import getMultiAdapter
 from zope.i18n import translate
 from zope.i18nmessageid import MessageFactory
 from zope.interface import implements
@@ -83,7 +85,6 @@ class WorkflowAction:
         if self.destination_url == "":
             self.destination_url = self.request.get_header("referer",
                                    self.context.absolute_url())
-        skiplist = self.request.get('workflow_skiplist', [])
         action, came_from = self._get_form_workflow_action()
 
         # transition the context object (plone edit bar dropdown)
@@ -96,7 +97,7 @@ class WorkflowAction:
                 self.context.plone_utils.addPortalMessage(message, 'info')
                 self.request.response.redirect(self.destination_url)
                 return
-            if obj.UID() not in skiplist:
+            if not skip(obj, action, peek=True):
                 allowed_transitions = []
                 for t in workflow.getTransitionsFor(obj):
                     allowed_transitions.append(t['id'])
@@ -113,16 +114,13 @@ class WorkflowAction:
             # items are "reinstate" and "activate"
             if not isActive(item) and action not in ('reinstate', 'activate'):
                 continue
-            if uid not in skiplist:
+            if not skip(item, action, peek=True):
                 allowed_transitions = []
                 for t in workflow.getTransitionsFor(item):
                     allowed_transitions.append(t['id'])
                 if action in allowed_transitions:
-                    try:
-                        workflow.doActionFor(item, action)
-                        transitioned.append(item.Title())
-                    except WorkflowException:
-                        pass
+                    doActionFor(item, action)
+                    transitioned.append(item.Title())
 
         if len(transitioned) > 0:
             message = translate(PMF('Changes saved.'))
