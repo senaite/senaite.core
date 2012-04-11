@@ -3,30 +3,19 @@
 	xmlns:tal="http://xml.zope.org/namespaces/tal"
 	xmlns:metal="http://xml.zope.org/namespaces/metal"
 	xmlns:i18n="http://xml.zope.org/namespaces/i18n"
-	metal:use-macro="here/main_template/macros/master"
 	i18n:domain="bika">
 <body>
 
-<metal:content-title fill-slot="content-title">
-<!--
 	<h1>
         <img tal:condition="view/icon | nothing"
             src="" tal:attributes="src view/icon"/>
         <span class="documentFirstHeading" tal:content="view/title | nothing"/>
     </h1>
--->
-</metal:content-title>
+<span> this is the report frame </span>
 
-
-<metal:content-description fill-slot="content-description">
-<b> this is the report frame </b>
-</metal:content-description>
-
-<metal:content-core fill-slot="content-core">
-<br/>
 <div tal:content="structure view/reportout"/>
-<br/>
-</metal:content-core>
 
-	</body>
+<span> This is the footer stuff at the bottom of the frame</span>
+</body>
+
 </html>

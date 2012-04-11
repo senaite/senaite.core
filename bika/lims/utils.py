@@ -67,6 +67,27 @@ def isActive(obj):
         return False
     return True
 
+def formatDateQuery(context, date_id):
+    """ Obtain and reformat the from and to dates
+        into a date query construct    
+    """
+    from_date = context.REQUEST.get('%s_fromdate' % date_id, None)
+    if from_date:
+        from_date = from_date + ' 00:00'
+    to_date = context.REQUEST.get('%s_todate' % date_id, None)
+    if to_date:
+        to_date = to_date + ' 23:59'
+
+    date_query = {}
+    if from_date and to_date:
+        date_query = {'query': [from_date, to_date],
+                      'range': 'min:max'}
+    elif from_date or to_date:
+        date_query = {'query': from_date or to_date,
+                      'range': from_date and 'min' or 'max'}
+
+    return
+
 def TimeOrDate(context, datetime, long_format = False, with_time = True):
     """ Return the Time date is today,
         otherwise return the Date.

@@ -7,14 +7,15 @@
 	i18n:domain="bika">
 <body>
 
+<metal:content-title fill-slot="content-title">
+<h1>Productivity Reports </h1>
+</metal:content-title>
+
 <metal:content-description fill-slot="content-description">
 </metal:content-description>
 
-<metal:content-core fill-slot="content-core"
-    tal:define="DateTime python:modules['DateTime'].DateTime;
-                now python: DateTime();
-                clients python:here.portal_catalog(portal_type='Client',
-                                sort_on='sortable_title');">
+<metal:content-core fill-slot="content-core">
+
 <br/>
 <br/>
 <div>
@@ -100,117 +101,25 @@
 <fieldset>
 
 <legend i18n:translate="">Selection criteria</legend>
+<metal:block use-macro="context/selection_macros/macros/client"/>
 
-<div class="field" tal:condition="not:here/member_is_client">
-    <label i18n:translate=""
-        >Client</label><br/>
-    <select name="getClientUID:ignore_empty"
-            style=""
-            id="getClientUID"
-            tal:attributes="style string:font-family:${here/base_properties/fontFamily};;font-size:100%;">
-        <option value=""/>
+<tal:created
+    tal:define="date_id string:DateRequested;
+                date_label string:Requested">  
+<metal:date use-macro="context/selection_macros/macros/date"/>
+</tal:created>
 
-        <tal:clients
-            tal:repeat="client clients">
-        <option value=""
-            tal:define="client_uid python:client.getObject().UID()"
-            tal:attributes="value client_uid;
-                selected python:request.get('getClientUID', '') == client_uid and 'selected' or ''"
-            tal:content="client/Title"></option>
+<tal:published
+    tal:define="date_id string:DatePublished;
+                date_label string:Published">  
+<metal:date use-macro="context/selection_macros/macros/date"/>
+</tal:published>
 
-        </tal:clients>
-    </select>
-</div>
+<metal:date use-macro="context/selection_macros/macros/review_state"/>
 
-<div class="field">
-    <label i18n:translate=""
-        >Date Requested</label><br/>
-    <table>
-    <tr><td>
-    <span i18n:translate="">From</span>
-    </td><td>
-    <tal:date tal:define="
-         input_id string:DateRequested_fromdate;
-         input_name input_id">
-        <input size="10" type='text' readonly="readonly"
-                tal:attributes="
-                    value python:'';
-                    id input_id;
-                    name input_name;"/>
-    </tal:date>
-    </td></tr>
+<metal:date use-macro="context/selection_macros/macros/cancellation_state"/>
 
-    <tr><td>
-    <span i18n:translate="">to</span>
-    </td><td>
-    <tal:date tal:define="
-         input_id string:DateRequested_todate;
-         input_name input_id">
-        <input size="10" type='text' readonly="readonly"
-                tal:attributes="
-                    value python:'';
-                    id input_id;
-                    name input_name;"/>
-    </tal:date>
-
-    </td></tr>
-    </table>
-</div>
-
-<div class="field">
-    <label i18n:translate=""
-        >Date Published</label><br/>
-    <table>
-    <tr><td>
-    <span i18n:translate="">From</span>
-    </td><td>
-    <tal:date tal:define="
-         input_id string:DatePublished_fromdate;
-         input_name input_id">
-        <input size="10" type='text' readonly="readonly"
-                tal:attributes="
-                    value python:'';
-                    id input_id;
-                    name input_name;"/>
-    </tal:date>
-    </td></tr>
-
-    <tr><td>
-    <span i18n:translate="">to</span>
-    </td><td>
-    <tal:date tal:define="
-         input_id string:DatePublished_todate;
-         input_name input_id">
-        <input size="10" type='text' readonly="readonly"
-                tal:attributes="
-                    value python:'';
-                    id input_id;
-                    name input_name;"/>
-    </tal:date>
-
-    </td></tr>
-    </table>
-</div>
-
-
-<div class="field">
-    <label i18n:translate=""
-        >Status</label><br/>
-    <select name="review_state:ignore_empty"
-            style=""
-            id="review_state">
-        <option value=""/>
-        <tal:states
-            define="states here/analysis_workflow_states"
-            tal:repeat="state states">
-        <option value=""
-            tal:attributes="value state/id;
-                selected python:request.get('review_state', '') == state['id'] and 'selected' or ''"
-            tal:content="state/title"></option>
-        </tal:states>
-    </select>
-</div>
-
+<metal:date use-macro="context/selection_macros/macros/ws_review_state"/>
 
 </fieldset>
     <input tabindex=""
@@ -230,60 +139,19 @@
 
 <legend i18n:translate="">Selection criteria</legend>
 
-<div class="field" tal:condition="not:here/member_is_client">
-    <label i18n:translate=""
-        >Client</label><br/>
-    <select name="getClientUID:ignore_empty"
-            style=""
-            id="getClientUID"
-            tal:attributes="style string:font-family:${here/base_properties/fontFamily};;font-size:100%;">
-        <option value=""/>
+<metal:block use-macro="context/selection_macros/macros/client"/>
 
-        <tal:clients
-            tal:repeat="client clients">
-        <option value=""
-            tal:define="client_uid python:client.getObject().UID()"
-            tal:attributes="value client_uid;
-                selected python:request.get('getClientUID', '') == client_uid and 'selected' or ''"
-            tal:content="client/Title"></option>
+<tal:created
+    tal:define="date_id string:xDateRequested;
+                date_label string:Requested">  
+<metal:date use-macro="context/selection_macros/macros/date"/>
+</tal:created>
 
-        </tal:clients>
-    </select>
-</div>
+<metal:date use-macro="context/selection_macros/macros/review_state"/>
 
-<div class="field">
-    <label i18n:translate="">Date Requested</label><br/>
-    <table>
-    <tr><td>
-    <span i18n:translate="">From</span>
-    </td><td>
-    <tal:date tal:define="
-         input_id string:DateRequested_fromdate;
-         input_name input_id">
-        <input size="10" type='text' readonly="readonly"
-                tal:attributes="
-                    value python:'';
-                    id input_id;
-                    name input_name;"/>
-    </tal:date>
-    </td></tr>
+<metal:date use-macro="context/selection_macros/macros/cancellation_state"/>
 
-    <tr><td>
-    <span i18n:translate="">to</span>
-    </td><td>
-    <tal:date tal:define="
-         input_id string:DateRequested_todate;
-         input_name input_id">
-        <input size="10" type='text' readonly="readonly"
-                tal:attributes="
-                    value python:'';
-                    id input_id;
-                    name input_name;"/>
-    </tal:date>
-
-    </td></tr>
-    </table>
-</div>
+<metal:date use-macro="context/selection_macros/macros/ws_review_state"/>
 
 </fieldset>
     <input tabindex=""
@@ -304,39 +172,17 @@
 
 <legend i18n:translate="">Selection criteria</legend>
 
-<div class="field">
-    <label i18n:translate="">Date Requested</label><br/>
-    <table>
-    <tr><td>
-    <span i18n:translate="">From</span>
-    </td><td>
-    <tal:date tal:define="
-         input_id string:DateRequested_fromdate;
-         input_name input_id">
-        <input size="10" type='text' readonly="readonly"
-                tal:attributes="
-                    value python:'';
-                    id input_id;
-                    name input_name;"/>
-    </tal:date>
-    </td></tr>
+<tal:created
+    tal:define="date_id string:DateRequested;
+                date_label string:Requested">  
+<metal:date use-macro="context/selection_macros/macros/date"/>
+</tal:created>
 
-    <tr><td>
-    <span i18n:translate="">to</span>
-    </td><td>
-    <tal:date tal:define="
-         input_id string:DateRequested_todate;
-         input_name input_id">
-        <input size="10" type='text' readonly="readonly"
-                tal:attributes="
-                    value python:'';
-                    id input_id;
-                    name input_name;"/>
-    </tal:date>
+<metal:date use-macro="context/selection_macros/macros/review_state"/>
 
-    </td></tr>
-    </table>
-</div>
+<metal:date use-macro="context/selection_macros/macros/cancellation_state"/>
+
+<metal:date use-macro="context/selection_macros/macros/ws_review_state"/>
 
 </fieldset>
     <input tabindex=""
@@ -356,61 +202,19 @@
 
 <legend i18n:translate="">Selection criteria</legend>
 
-<div class="field" tal:condition="not:here/member_is_client">
-    <label i18n:translate=""
-        >Client</label><br/>
-    <select name="getClientUID:ignore_empty"
-            style=""
-            id="getClientUID"
-            tal:attributes="style string:font-family:${here/base_properties/fontFamily};;font-size:100%;">
-        <option value=""/>
+<metal:block use-macro="context/selection_macros/macros/client"/>
 
-        <tal:clients
-            tal:repeat="client clients">
-        <option value=""
-            tal:define="client_uid python:client.getObject().UID()"
-            tal:attributes="value client_uid;
-                selected python:request.get('getClientUID', '') == client_uid and 'selected' or ''"
-            tal:content="client/Title"></option>
+<tal:received
+    tal:define="date_id string:DateReceived;
+                date_label string:Received">  
+<metal:date use-macro="context/selection_macros/macros/date"/>
+</tal:received>
 
-        </tal:clients>
-    </select>
-</div>
+<metal:date use-macro="context/selection_macros/macros/review_state"/>
 
-<div class="field">
-    <label i18n:translate=""
-        >Date Received</label><br/>
-    <table>
-    <tr><td>
-    <span i18n:translate="">From</span>
-    </td><td>
-    <tal:date tal:define="
-         input_id string:DateReceived_fromdate;
-         input_name input_id">
-        <input size="10" type='text' readonly="readonly"
-                tal:attributes="
-                    value python:'';
-                    id input_id;
-                    name input_name;"/>
-    </tal:date>
-    </td></tr>
+<metal:date use-macro="context/selection_macros/macros/cancellation_state"/>
 
-    <tr><td>
-    <span i18n:translate="">to</span>
-    </td><td>
-    <tal:date tal:define="
-         input_id string:DateReceived_todate;
-         input_name input_id">
-        <input size="10" type='text' readonly="readonly"
-                tal:attributes="
-                    value python:'';
-                    id input_id;
-                    name input_name;"/>
-    </tal:date>
-
-    </td></tr>
-    </table>
-</div>
+<metal:date use-macro="context/selection_macros/macros/ws_review_state"/>
 
 </fieldset>
     <input tabindex=""
@@ -431,62 +235,19 @@
 
 <legend i18n:translate="">Selection criteria</legend>
 
-<div class="field" tal:condition="not:here/member_is_client">
-    <label i18n:translate=""
-        >Client</label><br/>
-    <select name="getClientUID:ignore_empty"
-            style=""
-            id="getClientUID"
-            tal:attributes="style string:font-family:${here/base_properties/fontFamily};;font-size:100%;">
-        <option value=""/>
+<metal:block use-macro="context/selection_macros/macros/client"/>
 
-        <tal:clients
-            tal:repeat="client clients">
-        <option value=""
-            tal:define="client_uid python:client.getObject().UID()"
-            tal:attributes="value client_uid;
-                selected python:request.get('getClientUID', '') == client_uid and 'selected' or ''"
-            tal:content="client/Title"></option>
+<tal:loaded
+    tal:define="date_id string:DateLoaded;
+                date_label string:Loaded">  
+<metal:date use-macro="context/selection_macros/macros/date"/>
+</tal:loaded>
 
-        </tal:clients>
-    </select>
-</div>
+<metal:date use-macro="context/selection_macros/macros/review_state"/>
 
-<div class="field">
-    <label i18n:translate=""
-        >Date Loaded</label><br/>
-    <table>
-    <tr><td>
-    <span i18n:translate="">From</span>
-    </td><td>
-    <tal:date tal:define="
-         input_id string:DateLoaded_fromdate;
-         input_name input_id">
-        <input size="10" type='text' readonly="readonly"
-                tal:attributes="
-                    value python:'';
-                    id input_id;
-                    name input_name;"/>
-    </tal:date>
-    </td></tr>
+<metal:date use-macro="context/selection_macros/macros/cancellation_state"/>
 
-    <tr><td>
-    <span i18n:translate="">to</span>
-    </td><td>
-    <tal:date tal:define="
-         input_id string:DateLoaded_todate;
-         input_name input_id">
-        <input size="10" type='text' readonly="readonly"
-                tal:attributes="
-                    value python:'';
-                    id input_id;
-                    name input_name;"/>
-    </tal:date>
-
-    </td></tr>
-    </table>
-</div>
-
+<metal:date use-macro="context/selection_macros/macros/ws_review_state"/>
 
 </fieldset>
     <input tabindex=""

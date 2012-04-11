@@ -84,7 +84,7 @@ h1 span {
 /* overwrite sunburst special display of description fields */
 /*#content .field textarea[name$=".description"],  */
 #archetypes-fieldname-description textarea#description {
-    font-style: normal;;
+    font-style: normal;
     color: &dtml-inputFontColor; !important;
     font-size: &dtml-fontSmallSize; !important;
     font-weight: normal;
@@ -246,7 +246,7 @@ dl.portlet dt.portletLateAnalyses {
 }
 
 ul#portal-globalnav {
-  line height:2em;
+  line-height:2em;
 }
 
 /* portal_tabs bar */
@@ -347,6 +347,7 @@ th.expanded {
 }
 
 
+
 /*
  * Header tables (header_table.pt)
  */
@@ -372,7 +373,6 @@ th.expanded {
 /*
  * Analysis Request tables
  */
-
 table.analysisrequest {
 	border-top: 1px solid #dddddd;
 }

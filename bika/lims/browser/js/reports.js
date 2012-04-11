@@ -33,6 +33,31 @@ $(document).ready(function(){
 		event.preventDefault();
 		$("#attachments").toggle(true);
 	});
+	$("#analysesoutofrange_selector").click(function(event){
+		$(".criteria").toggle(false);
+		event.preventDefault();
+		$("#analysesoutofrange").toggle(true);
+	});
+	$("#analysesrepeated_selector").click(function(event){
+		$(".criteria").toggle(false);
+		event.preventDefault();
+		$("#analysesrepeated").toggle(true);
+	});
+	$("#standardanalysisqc_selector").click(function(event){
+		$(".criteria").toggle(false);
+		event.preventDefault();
+		$("#standardanalysisqc").toggle(true);
+	});
+	$("#duplicateanalysisqc_selector").click(function(event){
+		$(".criteria").toggle(false);
+		event.preventDefault();
+		$("#duplicateanalysisqc").toggle(true);
+	});
+	$("#arsnotinvoiced_selector").click(function(event){
+		$(".criteria").toggle(false);
+		event.preventDefault();
+		$("#arsnotinvoiced").toggle(true);
+	});
 
 });
 });

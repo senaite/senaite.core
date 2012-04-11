@@ -108,7 +108,7 @@ class SubmitForm(BrowserView):
 
         #filename = "testing4.pdf"
         ramdisk = StringIO()
-        pdf = pisa.CreatePDF(self.reportout, ramdisk) 
+        pdf = pisa.CreatePDF(self.template(), ramdisk) 
         result = ramdisk.getvalue()
         ramdisk.close()
 
@@ -119,9 +119,11 @@ class SubmitForm(BrowserView):
             setheader('Content-Type', 'application/pdf')
             #setheader('Content-Disposition', 'inline; filename=%s' % filename)
             #self.request.RESPONSE.write(result)
-            pdb.set_trace()
-            thisid = self.context.invokeFactory("File",id="temp")
+            #pdb.set_trace()
+            thisid = self.context.invokeFactory("File",id="tmp")
             thisfile = self.context[thisid]
+            from bika.lims.idserver import renameAfterCreation
+            renameAfterCreation(thisfile)
             thisfile.setFile(result)
             self.request.RESPONSE.redirect(thisfile.absolute_url())
 
@@ -131,5 +133,5 @@ class SubmitForm(BrowserView):
         """
 
 
-        return self.template()
+        #return self.template()
 
