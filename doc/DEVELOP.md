@@ -71,7 +71,7 @@ be translated.
 To Automatically recompile .mo files during development, edit your
 buildout.cfg to include the zope_i18n_compile_mo_files variable.
 
-    [instance]
+    [buildout]
     environment-vars =
         zope_i18n_compile_mo_files true
 
