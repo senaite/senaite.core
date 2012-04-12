@@ -636,26 +636,31 @@ class SamplesView(BikaListingView):
 
             items[x]['DateReceived'] = TimeOrDate(self.context,  obj.getDateReceived())
 
-            datesampled = TimeOrDate(self.context, obj.getDateSampled())
-            if not datesampled:
-                datesampled = TimeOrDate(self.context, DateTime(),
-                                         long_format=1, with_time = False)
-                items[x]['class']['getDateSampled'] = 'provisional'
-            items[x]['getDateSampled'] = datesampled
+            samplingdate = obj.getSamplingDate()
 
-            sampler = obj.getSampler().strip()
-            if sampler:
-                items[x]['replace']['getSampler'] = pretty_user_name_or_id(
-                    self.context, sampler)
-            if 'Sampler' in member.getRoles() and not sampler:
-                sampler = member.id
-                items[x]['class']['getSampler'] = 'provisional'
+            if not samplingdate > DateTime():
+                datesampled = TimeOrDate(self.context, obj.getDateSampled())
+                if not datesampled:
+                    datesampled = TimeOrDate(self.context, DateTime(),
+                                             long_format=1, with_time = False)
+                    items[x]['class']['getDateSampled'] = 'provisional'
+                sampler = obj.getSampler().strip()
+                if sampler:
+                    items[x]['replace']['getSampler'] = pretty_user_name_or_id(
+                        self.context, sampler)
+                if 'Sampler' in member.getRoles() and not sampler:
+                    sampler = member.id
+                    items[x]['class']['getSampler'] = 'provisional'
+            else:
+                datesampled = ''
+                sampler = ''
+            items[x]['getDateSampled'] = datesampled
             items[x]['getSampler'] = sampler
 
-            items[x]['Created'] = TimeOrDate(self.context,
-                                             obj.created())
+            items[x]['Created'] = TimeOrDate(self.context, obj.created())
 
-            items[x]['getSamplingDate'] = TimeOrDate(self.context, obj.getSamplingDate())
+            samplingdate = obj.getSamplingDate()
+            items[x]['getSamplingDate'] = TimeOrDate(self.context, samplingdate)
 
             after_icons = ''
             if obj.getSampleType().getHazardous():
@@ -668,7 +673,8 @@ class SamplesView(BikaListingView):
 
             # sampling workflow - inline edits for Sampler and Date Sampled
             checkPermission = self.context.portal_membership.checkPermission
-            if checkPermission(SampleSample, obj):
+            if checkPermission(SampleSample, obj) \
+                and not samplingdate > DateTime():
                 items[x]['required'] = ['getSampler', 'getDateSampled']
                 items[x]['allow_edit'] = ['getSampler', 'getDateSampled']
                 samplers = getUsers(obj, ['Sampler', 'LabManager', 'Manager'])

@@ -1845,7 +1845,9 @@ class AnalysisRequestsView(BikaListingView):
                                                 'sample_due'),
                                'sort_on':'id',
                                'sort_order': 'reverse'},
-             'transitions': [{'id':'receive'},
+             'transitions': [{'id':'sampled'},
+                             {'id':'preserved'},
+                             {'id':'receive'},
                              {'id':'cancel'},
                              {'id':'reinstate'}],
              'columns':['getRequestID',
@@ -2071,22 +2073,6 @@ class AnalysisRequestsView(BikaListingView):
             samplingdate = obj.getSample().getSamplingDate()
             items[x]['SamplingDate'] = TimeOrDate(self.context, samplingdate, long_format = 0)
 
-            datesampled = TimeOrDate(self.context, sample.getDateSampled())
-            if not datesampled:
-                datesampled = TimeOrDate(self.context, DateTime(),
-                                         long_format=1, with_time = False)
-                items[x]['class']['getDateSampled'] = 'provisional'
-            items[x]['getDateSampled'] = datesampled
-
-            sampler = sample.getSampler().strip()
-            if sampler:
-                items[x]['replace']['getSampler'] = pretty_user_name_or_id(
-                    self.context, sampler)
-            if 'Sampler' in member.getRoles() and not sampler:
-                sampler = member.id
-                items[x]['class']['getSampler'] = 'provisional'
-            items[x]['getSampler'] = sampler
-
             items[x]['getDateReceived'] = TimeOrDate(self.context, obj.getDateReceived())
             items[x]['getDatePublished'] =  TimeOrDate(self.context, obj.getDatePublished())
 
@@ -2114,9 +2100,30 @@ class AnalysisRequestsView(BikaListingView):
             items[x]['Created'] = TimeOrDate(self.context,
                                              obj.created())
 
+            if not samplingdate > DateTime():
+                datesampled = TimeOrDate(self.context, sample.getDateSampled())
+                if not datesampled:
+                    datesampled = TimeOrDate(self.context, DateTime(),
+                                             long_format=1, with_time = False)
+                    items[x]['class']['getDateSampled'] = 'provisional'
+                sampler = sample.getSampler().strip()
+                if sampler:
+                    items[x]['replace']['getSampler'] = pretty_user_name_or_id(
+                        self.context, sampler)
+                if 'Sampler' in member.getRoles() and not sampler:
+                    sampler = member.id
+                    items[x]['class']['getSampler'] = 'provisional'
+            else:
+                datesampled = ''
+                sampler = ''
+            items[x]['getDateSampled'] = datesampled
+            items[x]['getSampler'] = sampler
+
+
             # sampling workflow - inline edits for Sampler and Date Sampled
             checkPermission = self.context.portal_membership.checkPermission
-            if checkPermission(SampleSample, obj):
+            if checkPermission(SampleSample, obj) \
+                and not samplingdate > DateTime():
                 items[x]['required'] = ['getSampler', 'getDateSampled']
                 items[x]['allow_edit'] = ['getSampler', 'getDateSampled']
                 samplers = getUsers(sample, ['Sampler', 'LabManager', 'Manager'])
