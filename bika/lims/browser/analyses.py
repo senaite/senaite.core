@@ -45,6 +45,8 @@ class AnalysesView(BikaListingView):
         self.columns = {
             'Service': {'title': _('Analysis'),
                         'sortable': False},
+            'Partition': {'title': _("Partition"),
+                          'sortable':False},
             'Method': {'title': _('Method'),
                        'sortable': False},
             'state_title': {'title': _('Status'),
@@ -72,6 +74,7 @@ class AnalysesView(BikaListingView):
             {'id':'all',
              'title': _('All'),
              'columns':['Service',
+                        'Partition',
                         'Method',
                         'Result',
                         'Uncertainty',
@@ -133,6 +136,7 @@ class AnalysesView(BikaListingView):
             items[i]['retested'] = obj.getRetested()
             items[i]['class']['retested'] = 'center'
             items[i]['calculation'] = calculation and True or False
+            items[i]['Partition'] = obj.getSamplePartition().Title()
             if obj.portal_type == "ReferenceAnalysis":
                 items[i]['DueDate'] = ''
                 items[i]['CaptureDate'] = ''

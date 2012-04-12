@@ -138,7 +138,7 @@ class ClientWorkflowAction(AnalysisRequestWorkflowAction):
 
         elif action == "preserved":
             objects = AnalysisRequestWorkflowAction._get_selected_items(self)
-            transitioned = []
+            transitioned = {}
             not_transitioned = []
             for obj_uid, obj in objects.items():
                 if obj.portal_type == "AnalysisRequest":
@@ -174,24 +174,27 @@ class ClientWorkflowAction(AnalysisRequestWorkflowAction):
                     if workflow.getInfoFor(sp, 'review_state') == 'to_be_preserved':
                         if Preserver and DatePreserved:
                             doActionFor(sp, 'preserved')
-                            transitioned.append("%s (%s)" % (sp.aq_parent.Title(), sp.Title()))
+                            transitioned[sp.aq_parent.Title()] = sp.Title()
                         else:
                             not_transitioned.append(sp)
 
-                if len(transitioned) > 1:
-                    message = _('${items} are waiting to be received.',
-                            mapping = {'items': ', '.join(transitioned)})
+                if len(transitioned.keys()) > 1:
+                    message = _('${items}: partitions are waiting to be received.',
+                            mapping = {'items': ', '.join(transitioned.keys())})
                 else:
-                    message = _('${item} is waiting to be received.',
-                                mapping = {'item': ', '.join(transitioned)})
+                    message = _('${item}: ${part} is waiting to be received.',
+                                mapping = {'item': ', '.join(transitioned.keys()),
+                                           'part': ', '.join(transitioned.values()),})
                 message = self.context.translate(message)
                 self.context.plone_utils.addPortalMessage(message, 'info')
 
                 # And then the sample itself
                 if Preserver and DatePreserved and not not_transitioned:
                     doActionFor(sample, 'preserved')
-                    message = _('${item} is waiting to be received.',
-                                mapping = {'item': sample.Title()})
+##                    message = _('${item} is waiting to be received.',
+##                                mapping = {'item': sample.Title()})
+##                    message = self.context.translate(message)
+##                    self.context.plone_utils.addPortalMessage(message, 'info')
 
                 self.destination_url = self.request.get_header(
                     "referer", self.context.absolute_url())

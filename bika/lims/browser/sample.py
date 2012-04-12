@@ -136,13 +136,9 @@ class SampleAnalysesView(AnalysesView):
             self.allow_edit = False
             self.columns['Request'] = {'title': _("Request"),
                                        'sortable':False}
-            self.columns['Partition'] = {'title': _("Partition"),
-                                         'sortable':False}
             # Add Request column
             pos = self.review_states[0]['columns'].index('Service') + 1
             self.review_states[0]['columns'].insert(pos, 'Request')
-            # Add Partitioncolumn
-            self.review_states[0]['columns'].insert(pos, 'Partition')
 
     def folderitems(self):
         self.contentsMethod = self.context.getAnalyses
@@ -153,7 +149,6 @@ class SampleAnalysesView(AnalysesView):
             obj = items[x]['obj']
             ar = obj.aq_parent
             items[x]['replace']['Request'] = "<a href='%s'>%s</a>"%(ar.absolute_url(), ar.Title())
-            items[x]['Partition'] = obj.getSamplePartition().Title()
         return items
 
 class SampleView(BrowserView):
