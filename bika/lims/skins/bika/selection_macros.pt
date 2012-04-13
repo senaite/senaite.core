@@ -42,7 +42,7 @@
     <tal:date tal:define="
          input_id python:'%s_fromdate' %date_id;
          input_name input_id">
-        <input size="10" type='text' readonly="readonly"
+        <input class='datepicker' size="10" type='text' readonly="readonly"
                 tal:attributes="
                     value python:'';
                     id input_id;
@@ -56,7 +56,7 @@
     <tal:date tal:define="
          input_id python:'%s_todate' %date_id;
          input_name input_id">
-        <input size="10" type='text' readonly="readonly"
+        <input class='datepicker' size="10" type='text' readonly="readonly"
                 tal:attributes="
                     value python:'';
                     id input_id;

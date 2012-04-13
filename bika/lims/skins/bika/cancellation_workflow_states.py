@@ -8,11 +8,11 @@
 ##title=Get cancellation workflow states
 ##
 
-states_folder = context.portal_workflow.bika_cancellation_workflow.states
 state_ids = ('active', 'cancelled')
 
 l = []
 for state_id in state_ids:
-    state = states_folder[state_id]
-    l.append( {'id': state.getId(), 'title': state.title} )
+    state_title = context.portal_workflow.getTitleForStateOnType(state_id,
+                    'Analysis')
+    l.append( {'id': state_id, 'title': state_title} )
 return l

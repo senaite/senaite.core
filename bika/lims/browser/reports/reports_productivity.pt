@@ -138,7 +138,11 @@
 <fieldset>
 
 <legend i18n:translate="">Selection criteria</legend>
-
+<br/>
+<br/>
+<br/>
+<b> Under construction </b>
+<!--
 <metal:block use-macro="context/selection_macros/macros/client"/>
 
 <tal:created
@@ -153,7 +157,9 @@
 
 <metal:date use-macro="context/selection_macros/macros/ws_review_state"/>
 
+-->
 </fieldset>
+<!--
     <input tabindex=""
         class="searchButton"
         type="submit"
@@ -161,6 +167,7 @@
         value="Search"
         i18n:attributes="value"
         />
+-->
 </form>
 </div>
 
@@ -171,7 +178,11 @@
 <fieldset>
 
 <legend i18n:translate="">Selection criteria</legend>
-
+<br/>
+<br/>
+<br/>
+<b> Under construction </b>
+<!--
 <tal:created
     tal:define="date_id string:DateRequested;
                 date_label string:Requested">  
@@ -184,7 +195,9 @@
 
 <metal:date use-macro="context/selection_macros/macros/ws_review_state"/>
 
+-->
 </fieldset>
+<!--
     <input tabindex=""
         class="searchButton"
         type="submit"
@@ -192,6 +205,7 @@
         value="Search"
         i18n:attributes="value"
         />
+-->
 </form>
 </div>
 
@@ -201,7 +215,11 @@
 <fieldset>
 
 <legend i18n:translate="">Selection criteria</legend>
-
+<br/>
+<br/>
+<br/>
+<b> Under construction </b>
+<!--
 <metal:block use-macro="context/selection_macros/macros/client"/>
 
 <tal:received
@@ -215,8 +233,9 @@
 <metal:date use-macro="context/selection_macros/macros/cancellation_state"/>
 
 <metal:date use-macro="context/selection_macros/macros/ws_review_state"/>
-
+-->
 </fieldset>
+<!--
     <input tabindex=""
         class="searchButton"
         type="submit"
@@ -224,6 +243,7 @@
         value="Search"
         i18n:attributes="value"
         />
+-->
 </form>
 </div>
 
@@ -234,7 +254,11 @@
 <fieldset>
 
 <legend i18n:translate="">Selection criteria</legend>
-
+<br/>
+<br/>
+<br/>
+<b> Under construction </b>
+<!--
 <metal:block use-macro="context/selection_macros/macros/client"/>
 
 <tal:loaded
@@ -248,8 +272,9 @@
 <metal:date use-macro="context/selection_macros/macros/cancellation_state"/>
 
 <metal:date use-macro="context/selection_macros/macros/ws_review_state"/>
-
+-->
 </fieldset>
+<!--
     <input tabindex=""
         class="searchButton"
         type="submit"
@@ -257,6 +282,7 @@
         value="Search"
         i18n:attributes="value"
         />
+-->
 </form>
 </div>
 </td>

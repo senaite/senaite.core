@@ -259,6 +259,17 @@ class BikaGenerator:
         mp(permissions.DeleteObjects, ['Manager', 'LabManager', 'Owner'], 0)
         portal.samples.reindexObject()
 
+        # /reports folder permissions
+        mp = portal.reports.manage_permission
+        mp(permissions.ListFolderContents, ['Manager', 'Member', ], 0)
+        mp(permissions.View, ['Manager', 'Member', ], 0)
+        mp(permissions.AddPortalContent, ['Manager', 'Member', ], 0)
+        mp('Access contents information', ['Manager', 'Member',], 0)
+        mp(permissions.DeleteObjects, ['Manager', 'LabManager', 'Owner'], 0)
+        mp('ATContentTypes: Add Image', ['Manager', 'Member',], 0)
+        mp('ATContentTypes: Add File', ['Manager', 'Member',], 0)
+        portal.reports.reindexObject()
+
         # /invoices folder permissions
         mp = portal.invoices.manage_permission
         mp(CancelAndReinstate, ['Manager', 'LabManager', 'LabClerk'], 0)

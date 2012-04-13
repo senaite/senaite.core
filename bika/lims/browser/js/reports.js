@@ -3,10 +3,6 @@ $(document).ready(function(){
 
 	_ = window.jsi18n;
 
-	e = $('[id$="date"]')
-	$(e).datepicker({'dateFormat': 'dd M yy', showAnim: ''})
-		.click(function(){$(this).attr('value', '');})
-
 	$("#analysestotals_selector").click(function(event){
 		$(".criteria").toggle(false);
 		event.preventDefault();
