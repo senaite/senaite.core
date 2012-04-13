@@ -14,8 +14,7 @@
    <permission-role>Manager</permission-role>
    <permission-role>LabManager</permission-role>
   </permission-map>
-  <permission-map name="Modify portal content"
-                  acquired="False">
+  <permission-map name="Modify portal content" acquired="False">
    <permission-role>Manager</permission-role>
   </permission-map>
  </state>

@@ -133,6 +133,7 @@ def AfterTransitionEventHandler(instance, event):
     service = instance.getService()
     wf = getToolByName(instance, 'portal_workflow')
     ar = instance.aq_parent
+    part = instance.getSamplePartition()
 
     if action_id == "attach":
         instance.reindexObject(idxs = ["review_state", ])
@@ -213,7 +214,7 @@ def AfterTransitionEventHandler(instance, event):
             maxtime = {'days':0, 'hours':0, 'minutes':0}
         instance.setMaxTimeAllowed(maxtime)
         # set the due date
-        starttime = ar.getDateReceived()
+        starttime = part.getDateReceived()
         # default to old calc in case no calendars
         # still need a due time for selection to ws
         max_days = float(maxtime.get('days', 0)) + \

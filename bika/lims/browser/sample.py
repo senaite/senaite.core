@@ -81,7 +81,8 @@ class SamplePartitionsView(BikaListingView):
                          'getDisposalDate',
                          'state_title'],
              'transitions': [{'id': 'sampled'},
-                             {'id': 'preserved'}],
+                             {'id': 'preserved'},
+                             {'id': 'receive'}],
             },
         ]
 
@@ -389,11 +390,9 @@ class SampleView(BrowserView):
                              getPointOfCapture = poc,
                              sort_on = 'getServiceTitle')
             t.form_id = "sample_%s_analyses" % poc
+            t.allow_edit = True
             if poc == 'field':
-                t.allow_edit = EditFieldResults
                 t.review_states[0]['columns'].remove('DueDate')
-            else:
-                t.allow_edit = EditResults
             t.show_column_toggles = False
             t.review_states[0]['transitions'] = [{'id':'submit'},
                                                  {'id':'retract'},
