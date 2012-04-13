@@ -79,16 +79,18 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
 
                 # grab this object's Preserver and DatePreserved from the form
                 Preserver = form['getPreserver'][0][obj_uid].strip()
+                Preserver = Preserver and Preserver or ''
                 DatePreserved = form['getDatePreserved'][0][obj_uid].strip()
+                DatePreserved = DatePreserved and DateTime(DatePreserved) or ''
 
                 # write them to the sample
-                part.edit(Preserver = Preserver and Preserver or '',
-                          DatePreserved = DatePreserved and DateTime(DatePreserved) or '')
+                part.setPreserver(Preserver)
+                part.setDatePreserved(DatePreserved)
 
                 # transition the object if both values are present
                 if Preserver and DatePreserved:
                     workflow.doActionFor(part, 'preserved')
-                    transitioned.append(part.Title())
+                    transitioned.append(part.id)
 
                 part.reindexObject()
                 part.aq_parent.reindexObject()
@@ -104,6 +106,66 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
                             mapping = {'item': ', '.join(transitioned)})
                 message = self.context.translate(message)
                 self.context.plone_utils.addPortalMessage(message, 'info')
+            if not message:
+                message = _('No changes made.')
+                message = self.context.translate(message)
+                self.context.plone_utils.addPortalMessage(message, 'info')
+            self.destination_url = self.request.get_header("referer",
+                                   self.context.absolute_url())
+            self.request.response.redirect(self.destination_url)
+
+        elif action == "sampled":
+            objects = WorkflowAction._get_selected_items(self)
+            transitioned = {'to_be_preserved':[], 'sample_due':[]}
+            for obj_uid, obj in objects.items():
+                part = obj
+                sample = part.aq_parent
+                # can't transition inactive items
+                if workflow.getInfoFor(part, 'inactive_state', '') == 'inactive':
+                    continue
+                if not checkPermission(SampleSample, part):
+                    continue
+
+                # grab this object's Sampler and DateSampled from the form
+                Sampler = form['getSampler'][0][obj_uid].strip()
+                Sampler = Sampler and Sampler or ''
+                DateSampled = form['getDateSampled'][0][obj_uid].strip()
+                DateSampled = DateSampled and DateTime(DateSampled) or ''
+
+                # write them to the partition
+                part.setSampler(Sampler)
+                part.setDateSampled(DateSampled)
+
+                # transition the object if both values are present
+                if Sampler and DateSampled:
+                    workflow.doActionFor(part, 'sampled')
+                    new_state = workflow.getInfoFor(part, 'review_state')
+                    transitioned[new_state].append(part.id)
+
+                part.reindexObject()
+                part.aq_parent.reindexObject()
+
+            message = None
+            for state in transitioned:
+                t = transitioned[state]
+                if len(t) > 1:
+                    if state == 'to_be_preserved':
+                        message = _('${items} are waiting for preservation.',
+                                    mapping = {'items': ', '.join(t)})
+                    else:
+                        message = _('${items} are waiting to be received.',
+                                    mapping = {'items': ', '.join(t)})
+                    message = self.context.translate(message)
+                    self.context.plone_utils.addPortalMessage(message, 'info')
+                elif len(t) == 1:
+                    if state == 'to_be_preserved':
+                        message = _('${item} is waiting for preservation.',
+                                    mapping = {'item': ', '.join(t)})
+                    else:
+                        message = _('${item} is waiting to be received.',
+                                    mapping = {'item': ', '.join(t)})
+                    message = self.context.translate(message)
+                    self.context.plone_utils.addPortalMessage(message, 'info')
             if not message:
                 message = _('No changes made.')
                 message = self.context.translate(message)
@@ -288,11 +350,6 @@ class AnalysisRequestViewView(BrowserView):
             allow_sample_edit = checkPermission(ManageSamples, sample) \
                 and workflow.getInfoFor(sample, 'review_state') in edit_states
 
-        samplers = getUsers(self.context, ['Sampler', 'LabManager', 'Manager'],
-                            allow_empty=False)
-        sampler = sample.getSampler()
-        username = getAuthenticatedMember().getUserName()
-
         self.header_columns = 3
         self.header_rows = [
             {'id': 'SampleID',
@@ -353,37 +410,12 @@ class AnalysisRequestViewView(BrowserView):
              'type': 'text'},
             {'id': 'SamplingDate',
              'title': _('Sampling Date'),
-             'allow_edit': False,
-             'value': sample.getSamplingDate(),
+             'allow_edit': allow_sample_edit,
+             'value': sample.getSamplingDate().strftime(datepicker_format),
              'formatted_value': TimeOrDate(self.context, self.context.getSamplingDate()),
              'condition':True,
+             'class': 'datepicker',
              'type': 'text'},
-            {'id': 'Sampler',
-             'title': _('Sampler'),
-             'allow_edit': checkPermission(SampleSample, sample),
-             'value': sampler and sampler or (username in samplers.keys() and username) or '',
-             'formatted_value': pretty_user_name_or_id(self.context,
-                 sampler and sampler or (username in samplers.keys() and username) or ''),
-             'type': 'choices',
-             'required': True,
-             'class': sample.getSampler() and 'provisional' or '',
-             'vocabulary': samplers,
-             'condition': sample.getSamplingWorkflowEnabled()},
-            {'id': 'DateSampled',
-             'title': _('Date Sampled'),
-             'allow_edit': checkPermission(SampleSample, sample),
-             'value': sample.getDateSampled() \
-                      and sample.getDateSampled().strftime(datepicker_format) \
-                      or DateTime().strftime(datepicker_format),
-             'required': True,
-             'value': sample.getDateSampled() \
-                      and sample.getDateSampled().strftime(datepicker_format) \
-                      or DateTime().strftime(datepicker_format),
-             'type': 'text',
-             'class': 'datepicker_nofuture %s' % \
-                 (sample.getDateSampled() and 'provisional' or ''),
-             'class': 'datepicker_nofuture',
-             'condition': sample.getSamplingWorkflowEnabled()},
             {'id': 'DateReceived',
              'title': _('Date Received'),
              'allow_edit': False,
@@ -392,72 +424,48 @@ class AnalysisRequestViewView(BrowserView):
              'condition':True,
              'type': 'text'},
         ]
-        if workflow.getInfoFor(self.context, 'review_state') == 'to_be_sampled':
-            self.header_buttons = [{'name':'sampled_button',
-                                    'title':_('Sampled')}]
-        else:
-            self.header_buttons = [{'name':'save_button',
-                                    'title':_('Save')}]
+        self.header_buttons = [{'name':'save_button', 'title':_('Save')}]
 
         ## handle_header table submit
-        if 'header_submitted' in form:
+        if 'save_button' in form:
+            message = None
+            values = {}
+            for row in [r for r in self.header_rows if r['allow_edit']]:
+                value = form.get(row['id'], '')
 
-            sample = self.context.getSample()
+                if row['id'] == 'SampleType':
+                    if not value:
+                        message = _('Sample Type is required')
+                        break
+                    if not bsc(portal_type = 'SampleType', title = value):
+                        message = _("${sampletype} is not a valid sample type",
+                                    mapping={'sampletype':value})
+                        break
 
-            if 'sampled_button' in form:
-                if checkPermission(SampleSample, self.context) and \
-                   form.get('Sampler', '') != '' and \
-                   form.get('DateSampled', '') != '':
-                    sample.setSampler(form['Sampler'])
-                    sample.setDateSampled(form['DateSampled'])
-                    workflow.doActionFor(self.context, 'sampled')
-                    message = PMF("Changes saved.")
-                else:
-                    message = _("No changes made.")
-                self.context.plone_utils.addPortalMessage(message, 'info')
-                # we need to start the request again, to regenerate header
-                self.request.RESPONSE.redirect(self.context.absolute_url())
-                return
+                if row['id'] == 'SamplePoint':
+                    if value and \
+                       not bsc(portal_type = 'SamplePoint', title = value):
+                        message = _("${samplepoint} is not a valid sample point",
+                                    mapping={'sampletype':value})
+                        break
 
-            if 'save_button' in form:
-                message = None
-                values = {}
-                for row in [r for r in self.header_rows if r['allow_edit']]:
-                    value = form.get(row['id'], '')
+                values[row['id']] = value
 
-                    if row['id'] == 'SampleType':
-                        if not value:
-                            message = _('Sample Type is required')
-                            break
-                        if not bsc(portal_type = 'SampleType', title = value):
-                            message = _("${sampletype} is not a valid sample type",
-                                        mapping={'sampletype':value})
-                            break
+            # boolean - checkboxes are present, or not present in form.
+            for row in [r for r in self.header_rows if r.get('type', '') == 'boolean']:
+                values[row['id']] = row['id'] in form
 
-                    if row['id'] == 'SamplePoint':
-                        if value and \
-                           not bsc(portal_type = 'SamplePoint', title = value):
-                            message = _("${samplepoint} is not a valid sample point",
-                                        mapping={'sampletype':value})
-                            break
+            if not message:
+                self.context.edit(**values)
+                self.context.reindexObject()
+                sample.edit(**values)
+                sample.reindexObject()
+                message = PMF("Changes saved.")
 
-                    values[row['id']] = value
-
-                # boolean - checkboxes are present, or not present in form.
-                for row in [r for r in self.header_rows if r.get('type', '') == 'boolean']:
-                    values[row['id']] = row['id'] in form
-
-                if not message:
-                    self.context.edit(**values)
-                    self.context.reindexObject()
-                    sample.edit(**values)
-                    sample.reindexObject()
-                    message = PMF("Changes saved.")
-
-                self.context.plone_utils.addPortalMessage(message, 'info')
-                # we need to start the request again, to regenerate header
-                self.request.RESPONSE.redirect(self.context.absolute_url())
-                return
+            self.context.plone_utils.addPortalMessage(message, 'info')
+            # we need to start the request again, to regenerate header
+            self.request.RESPONSE.redirect(self.context.absolute_url())
+            return
 
         ## Create Partitions View for this ARs sample
         p = SamplePartitionsView(self.context.getSample(), self.request)

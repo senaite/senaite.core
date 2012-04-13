@@ -25,10 +25,22 @@ def AfterTransitionEventHandler(instance, event):
     if action_id == "sampled":
         # Transition our analyses
         analyses = instance.getBackReferences('AnalysisSamplePartition')
-        for analysis in analyses:
-            doActionFor(analysis, action_id)
-        # Promote our parent
-        doActionFor(sample, action_id)
+        if analyses:
+            for analysis in analyses:
+                doActionFor(analysis, action_id)
+        # if all our siblings are now up to date, promote sample and ARs.
+        parts = sample.objectValues("SamplePartition")
+        if parts:
+            lower_states = ['to_be_sampled',]
+            escalate = True
+            for part in parts:
+                pstate = workflow.getInfoFor(part, 'review_state')
+                if pstate in lower_states:
+                    escalate = False
+            if escalate:
+                doActionFor(sample, action_id)
+                for ar in sample.getAnalysisRequests():
+                    doActionFor(ar, action_id)
 
     elif action_id == "to_be_preserved":
         # Transition our analyses
@@ -39,10 +51,10 @@ def AfterTransitionEventHandler(instance, event):
         # if all our siblings are now up to date, promote sample and ARs.
         parts = sample.objectValues("SamplePartition")
         if parts:
-            states = ['sample_due', 'to_be_preserved']
+            lower_states = ['to_be_sampled', 'to_be_preserved',]
             escalate = True
             for part in parts:
-                if workflow.getInfoFor(part, 'review_state') not in states:
+                if workflow.getInfoFor(part, 'review_state') in lower_states:
                     escalate = False
             if escalate:
                 doActionFor(sample, action_id)
@@ -58,10 +70,11 @@ def AfterTransitionEventHandler(instance, event):
         # if all our siblings are now up to date, promote sample and ARs.
         parts = sample.objectValues("SamplePartition")
         if parts:
-            states = ['sample_due',]
+            lowest_state = 'to_be_preserved'
             escalate = True
             for part in parts:
-                if workflow.getInfoFor(part, 'review_state') not in states:
+                pstate =  workflow.getInfoFor(part, 'review_state')
+                if pstate in lower_states:
                     escalate = False
             if escalate:
                 doActionFor(sample, action_id)
@@ -77,10 +90,10 @@ def AfterTransitionEventHandler(instance, event):
         # if all our siblings are now up to date, promote sample and ARs.
         parts = sample.objectValues("SamplePartition")
         if parts:
-            states = ['sample_due',]
+            lower_states = ['to_be_sampled', 'to_be_preserved', ]
             escalate = True
             for part in parts:
-                if workflow.getInfoFor(part, 'review_state') not in states:
+                if workflow.getInfoFor(part, 'review_state') in lower_states:
                     escalate = False
             if escalate:
                 doActionFor(sample, action_id)

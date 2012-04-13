@@ -22,7 +22,8 @@ def AfterTransitionEventHandler(instance, event):
     parts = instance.objectValues('SamplePartition')
 
     if action_id == "sampled":
-        # Transition our children
+        # This action can happen in the Sample UI.  So we transition all
+        # instance partitions that are still 'to_be_sampled'
         tbs = [sp for sp in parts
                if workflow.getInfoFor(sp, 'review_state') == 'to_be_sampled']
         for sp in tbs:
@@ -33,6 +34,11 @@ def AfterTransitionEventHandler(instance, event):
             ar.reindexObject()
 
     elif action_id == "to_be_preserved":
+        # Transition our children
+        tbs = [sp for sp in parts
+               if workflow.getInfoFor(sp, 'review_state') == 'to_be_preserved']
+        for sp in tbs:
+            doActionFor(sp, action_id)
         # All associated AnalysisRequests are also transitioned
         for ar in instance.getAnalysisRequests():
             doActionFor(ar, action_id)
@@ -51,7 +57,6 @@ def AfterTransitionEventHandler(instance, event):
                if workflow.getInfoFor(sp, 'review_state') == 'to_be_preserved']
         for sp in tbs:
             doActionFor(sp, action_id)
-
         # All associated AnalysisRequests are also transitioned
         for ar in instance.getAnalysisRequests():
             doActionFor(ar, action_id)
