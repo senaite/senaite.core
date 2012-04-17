@@ -86,7 +86,7 @@ def formatDateQuery(context, date_id):
         date_query = {'query': from_date or to_date,
                       'range': from_date and 'min' or 'max'}
 
-    return
+    return date_query
 
 def TimeOrDate(context, datetime, long_format = False, with_time = True):
     """ Return the Time date is today,

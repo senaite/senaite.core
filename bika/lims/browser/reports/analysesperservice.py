@@ -12,6 +12,7 @@ from plone.app.layout.globals.interfaces import IViewView
 from zope.interface import implements
 import json
 import plone
+import pdb
 
 class AnalysesPerService(BrowserView):
     """ stuff
@@ -40,6 +41,7 @@ class AnalysesPerService(BrowserView):
         else:
             parms['client'] = 'None'
 
+        pdb.set_trace()
         date_query = formatDateQuery(self.context, 'DateRequested')
         if date_query:
             query['created'] = date_query
@@ -50,6 +52,7 @@ class AnalysesPerService(BrowserView):
             query['getDatePublished'] = date_query
         parms['datepublished'] = date_query
 
+        pdb.set_trace()
         if self.request.form.has_key('review_state'):
             query['review_state'] = self.request.form['review_state']
             parms['review_state'] = self.request.form['review_state']
