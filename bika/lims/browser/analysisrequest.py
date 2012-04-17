@@ -477,17 +477,15 @@ class AnalysisRequestViewView(BrowserView):
         for poc in POINTS_OF_CAPTURE:
             if self.context.getAnalyses(getPointOfCapture = poc):
                 t = AnalysesView(ar, self.request, getPointOfCapture = poc)
+                t.allow_edit = True
+                t.review_states[0]['transitions'] = [{'id':'submit'},
+                                                     {'id':'retract'},
+                                                     {'id':'verify'}]
+                t.show_workflow_action_buttons = True
+                t.show_select_column = True
                 if getSecurityManager().checkPermission(EditFieldResults, self.context) \
                    and poc == 'field':
-                    t.review_states[0]['transitions'] = [{'id': 'submit'}]
                     t.review_states[0]['columns'].remove('DueDate')
-                    t.show_workflow_action_buttons = True
-                    t.allow_edit = True
-                    t.show_select_column = True
-                else:
-                    t.show_workflow_action_buttons = False
-                    t.allow_edit = False
-                    t.show_select_column = False
                 self.tables[POINTS_OF_CAPTURE.getValue(poc)] = t.contents_table()
         return self.template()
 
@@ -1776,6 +1774,8 @@ class AnalysisRequestsView(BikaListingView):
                                      'toggle': False},
             'Created': {'title': PMF('Date Created'),
                                      'toggle': False},
+            'getSample': {'title': _("Sample"),
+                          'toggle': False,},
             'Client': {'title': _('Client'),
                        'toggle': True},
             'getClientReference': {'title': _('Client Ref'),
@@ -1831,6 +1831,7 @@ class AnalysisRequestsView(BikaListingView):
                              {'id':'cancel'},
                              {'id':'reinstate'}],
              'columns':['getRequestID',
+                        'getSample',
                         'Client',
                         'Creator',
                         'Created',
@@ -1859,6 +1860,7 @@ class AnalysisRequestsView(BikaListingView):
                              {'id':'cancel'},
                              {'id':'reinstate'}],
              'columns':['getRequestID',
+                        'getSample',
                         'Client',
                         'Creator',
                         'Created',
@@ -1881,6 +1883,7 @@ class AnalysisRequestsView(BikaListingView):
                              {'id':'cancel'},
                              {'id':'reinstate'}],
              'columns':['getRequestID',
+                        'getSample',
                         'Client',
                         'Creator',
                         'Created',
@@ -1905,6 +1908,7 @@ class AnalysisRequestsView(BikaListingView):
                              {'id':'cancel'},
                              {'id':'reinstate'}],
              'columns':['getRequestID',
+                        'getSample',
                         'Client',
                         'Creator',
                         'Created',
@@ -1925,6 +1929,7 @@ class AnalysisRequestsView(BikaListingView):
                                'sort_order': 'reverse'},
              'transitions': [{'id':'publish'}],
              'columns':['getRequestID',
+                        'getSample',
                         'Client',
                         'Creator',
                         'Created',
@@ -1944,6 +1949,7 @@ class AnalysisRequestsView(BikaListingView):
                                'sort_on':'id',
                                'sort_order': 'reverse'},
              'columns':['getRequestID',
+                        'getSample',
                         'Client',
                         'Creator',
                         'Created',
@@ -1969,6 +1975,7 @@ class AnalysisRequestsView(BikaListingView):
                                'sort_order': 'reverse'},
              'transitions': [{'id':'reinstate'}],
              'columns':['getRequestID',
+                        'getSample',
                         'Client',
                         'Creator',
                         'Created',
@@ -2001,6 +2008,7 @@ class AnalysisRequestsView(BikaListingView):
                              {'id':'cancel'},
                              {'id':'reinstate'}],
              'columns':['getRequestID',
+                        'getSample',
                         'Client',
                         'Creator',
                         'Created',
@@ -2033,6 +2041,7 @@ class AnalysisRequestsView(BikaListingView):
                              {'id':'cancel'},
                              {'id':'reinstate'}],
              'columns':['getRequestID',
+                        'getSample',
                         'Client',
                         'Creator',
                         'Created',
@@ -2090,9 +2099,7 @@ class AnalysisRequestsView(BikaListingView):
                     "<img src='++resource++bika.lims.images/worksheet.png' title='%s'/>" % \
                     translate(_("All analyses assigned"))
 
-            after_icons = "<a href='%s'><img src='++resource++bika.lims.images/sample.png' title='%s: %s'></a>" % \
-                        (sample.absolute_url(), \
-                         translate(_("Sample")), sample.Title())
+            after_icons = ""
             if obj.getLate():
                 after_icons += "<img src='++resource++bika.lims.images/late.png' title='%s'>" % \
                     translate(_("Late Analyses"))
@@ -2107,6 +2114,10 @@ class AnalysisRequestsView(BikaListingView):
 
             items[x]['Created'] = TimeOrDate(self.context,
                                              obj.created())
+
+            items[x]['getSample'] = sample
+            items[x]['replace']['getSample'] = \
+                "<a href='%s'>%s</a>" % (sample.absolute_url(), sample.Title())
 
             if not samplingdate > DateTime():
                 datesampled = TimeOrDate(self.context, sample.getDateSampled())

@@ -79,11 +79,12 @@
   <!-- Sampling Workflow: Field Analyses may be submitted when 'sample_due' -->
   <exit-transition transition_id="submit"/>
   <permission-map name="BIKA: Receive Sample" acquired="True">
+   <permission-role>Manager</permission-role>
    <permission-role>LabManager</permission-role>
    <permission-role>LabClerk</permission-role>
-   <permission-role>Sampler</permission-role>
   </permission-map>
   <permission-map name="BIKA: View Results" acquired="True">
+   <permission-role>Manager</permission-role>
    <permission-role>LabManager</permission-role>
    <permission-role>LabClerk</permission-role>
    <permission-role>Sampler</permission-role>

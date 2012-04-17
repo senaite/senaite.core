@@ -178,27 +178,27 @@ class ClientWorkflowAction(AnalysisRequestWorkflowAction):
                         else:
                             not_transitioned.append(sp)
 
-                if len(transitioned.keys()) > 1:
-                    message = _('${items}: partitions are waiting to be received.',
-                            mapping = {'items': ', '.join(transitioned.keys())})
-                else:
-                    message = _('${item}: ${part} is waiting to be received.',
-                                mapping = {'item': ', '.join(transitioned.keys()),
-                                           'part': ', '.join(transitioned.values()),})
-                message = self.context.translate(message)
-                self.context.plone_utils.addPortalMessage(message, 'info')
+            if len(transitioned.keys()) > 1:
+                message = _('${items}: partitions are waiting to be received.',
+                        mapping = {'items': ', '.join(transitioned.keys())})
+            else:
+                message = _('${item}: ${part} is waiting to be received.',
+                            mapping = {'item': ', '.join(transitioned.keys()),
+                                       'part': ', '.join(transitioned.values()),})
+            message = self.context.translate(message)
+            self.context.plone_utils.addPortalMessage(message, 'info')
 
-                # And then the sample itself
-                if Preserver and DatePreserved and not not_transitioned:
-                    doActionFor(sample, 'preserved')
-##                    message = _('${item} is waiting to be received.',
-##                                mapping = {'item': sample.Title()})
-##                    message = self.context.translate(message)
-##                    self.context.plone_utils.addPortalMessage(message, 'info')
+            # And then the sample itself
+            if Preserver and DatePreserved and not not_transitioned:
+                doActionFor(sample, 'preserved')
+                #message = _('${item} is waiting to be received.',
+                #            mapping = {'item': sample.Title()})
+                #message = self.context.translate(message)
+                #self.context.plone_utils.addPortalMessage(message, 'info')
 
-                self.destination_url = self.request.get_header(
-                    "referer", self.context.absolute_url())
-                self.request.response.redirect(self.destination_url)
+            self.destination_url = self.request.get_header(
+                "referer", self.context.absolute_url())
+            self.request.response.redirect(self.destination_url)
 
         elif action in ('prepublish', 'publish', 'republish'):
             # We pass a list of AR objects to Publish.

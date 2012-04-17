@@ -25,9 +25,8 @@ def AfterTransitionEventHandler(instance, event):
     if action_id == "sampled":
         # Transition our analyses
         analyses = instance.getBackReferences('AnalysisSamplePartition')
-        if analyses:
-            for analysis in analyses:
-                doActionFor(analysis, action_id)
+        for analysis in analyses:
+            doActionFor(analysis, action_id)
         # if all our siblings are now up to date, promote sample and ARs.
         parts = sample.objectValues("SamplePartition")
         if parts:
@@ -45,9 +44,8 @@ def AfterTransitionEventHandler(instance, event):
     elif action_id == "to_be_preserved":
         # Transition our analyses
         analyses = instance.getBackReferences('AnalysisSamplePartition')
-        if analyses:
-            for analysis in analyses:
-                doActionFor(analysis, action_id)
+        for analysis in analyses:
+            doActionFor(analysis, action_id)
         # if all our siblings are now up to date, promote sample and ARs.
         parts = sample.objectValues("SamplePartition")
         if parts:
@@ -64,9 +62,8 @@ def AfterTransitionEventHandler(instance, event):
     elif action_id == "sample_due":
         # Transition our analyses
         analyses = instance.getBackReferences('AnalysisSamplePartition')
-        if analyses:
-            for analysis in analyses:
-                doActionFor(analysis, action_id)
+        for analysis in analyses:
+            doActionFor(analysis, action_id)
         # if all our siblings are now up to date, promote sample and ARs.
         parts = sample.objectValues("SamplePartition")
         if parts:
@@ -105,19 +102,20 @@ def AfterTransitionEventHandler(instance, event):
             raise WorkflowException
         instance.setDateReceived(DateTime())
         instance.reindexObject(idxs = ["getDateReceived", ])
-
+        # Transition our analyses
+        analyses = instance.getBackReferences('AnalysisSamplePartition')
+        for analysis in analyses:
+            doActionFor(analysis, action_id)
         # if all sibling partitions are received, promote sample
         if not skip(sample, action_id, peek=True):
-            sample_due = [sp for sp in sample.objectValues("SamplePartition")
-                          if workflow.getInfoFor(sp, 'review_state') == 'sample_due']
-            if sample_state == 'sample_due' and not sample_due:
-                workflow.doActionFor(sample, 'receive')
-
+            due = [sp for sp in sample.objectValues("SamplePartition")
+                   if workflow.getInfoFor(sp, 'review_state') == 'sample_due']
+            if sample_state == 'sample_due' and not due:
+                doActionFor(sample, 'receive')
 
     elif action_id == "expire":
         instance.setDateExpired(DateTime())
         instance.reindexObject(idxs = ["review_state", "getDateExpired", ])
-
 
     #---------------------
     # Secondary workflows:
