@@ -70,7 +70,7 @@ def AfterTransitionEventHandler(instance, event):
         # if all our siblings are now up to date, promote sample and ARs.
         parts = sample.objectValues("SamplePartition")
         if parts:
-            lowest_state = 'to_be_preserved'
+            lower_states = ['to_be_preserved',]
             escalate = True
             for part in parts:
                 pstate =  workflow.getInfoFor(part, 'review_state')

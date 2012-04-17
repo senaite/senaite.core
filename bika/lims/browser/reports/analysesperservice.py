@@ -5,14 +5,13 @@ from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.client import ClientSamplesView
-from bika.lims.utils import formatDateQuery
+from bika.lims.utils import formatDateQuery, formatDateParms
 from bika.lims.interfaces import IReports
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.layout.globals.interfaces import IViewView
 from zope.interface import implements
 import json
 import plone
-import pdb
 
 class AnalysesPerService(BrowserView):
     """ stuff
@@ -39,38 +38,48 @@ class AnalysesPerService(BrowserView):
             client = rc.lookupObject(client_uid)
             parms['client'] = client.Title()
         else:
-            parms['client'] = 'None'
+            parms['client'] = 'Undefined'
 
-        pdb.set_trace()
         date_query = formatDateQuery(self.context, 'DateRequested')
         if date_query:
             query['created'] = date_query
-        parms['daterequested'] = date_query
+            date_parms = formatDateParms(self.context, 'DateRequested') 
+            parms['daterequested'] = date_parms
+        else:
+            parms['daterequested'] = 'Undefined'
 
         date_query = formatDateQuery(self.context, 'DatePublished')
         if date_query:
             query['getDatePublished'] = date_query
-        parms['datepublished'] = date_query
+            date_parms = formatDateParms(self.context, 'DatePublished') 
+            parms['datepublished'] = date_parms
+        else:
+            parms['datepublished'] = 'Undefined'
 
-        pdb.set_trace()
+
+        workflow = getToolByName(self.context, 'portal_workflow')
         if self.request.form.has_key('review_state'):
             query['review_state'] = self.request.form['review_state']
-            parms['review_state'] = self.request.form['review_state']
+            parms['review_state'] = workflow.getTitleForStateOnType(
+                        self.request.form['review_state'], 'Analysis')
         else:
-            parms['review_state'] = None
+            parms['review_state'] = 'Undefined'
 
         if self.request.form.has_key('cancellation_state'):
             query['cancellation_state'] = self.request.form['cancellation_state']
-            parms['cancellation_state'] = self.request.form['cancellation_state']
+            parms['cancellation_state'] = workflow.getTitleForStateOnType(
+                        self.request.form['cancellation_state'], 'Analysis')
         else:
-            parms['cancellation_state'] = None
+            parms['cancellation_state'] = 'Undefined'
 
 
         if self.request.form.has_key('ws_review_state'):
             query['worksheetanalysis_review_state'] = self.request.form['ws_review_state']
             parms['ws_review_state'] = self.request.form['ws_review_state']
+            parms['ws_review_state'] = workflow.getTitleForStateOnType(
+                        self.request.form['ws_review_state'], 'Analysis')
         else:
-            parms['ws_review_state'] = None
+            parms['ws_review_state'] = 'Undefined'
 
 
 

@@ -88,6 +88,23 @@ def formatDateQuery(context, date_id):
 
     return date_query
 
+def formatDateParms(context, date_id):
+    """ Obtain and reformat the from and to dates
+        into a printable date parameter construct    
+    """
+    from_date = context.REQUEST.get('%s_fromdate' % date_id, None)
+    to_date = context.REQUEST.get('%s_todate' % date_id, None)
+
+    date_parms = {}
+    if from_date and to_date:
+        date_parms = 'from %s to %s' %(from_date, to_date)
+    elif from_date:
+        date_parms = 'from %s' %(from_date)
+    elif to_date:
+        date_parms = 'to %s' %(to_date)
+
+    return date_parms
+
 def TimeOrDate(context, datetime, long_format = False, with_time = True):
     """ Return the Time date is today,
         otherwise return the Date.

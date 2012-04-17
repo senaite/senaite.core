@@ -64,6 +64,17 @@ Number of analyses requested per analysis service.
 </td>
 </tr>
 
+<tr>
+<td i18n:translate>Active </td>
+<td tal:content="report_parms/cancellation_state">
+</td>
+</tr>
+
+<tr>
+<td i18n:translate>Assigned to worksheet </td>
+<td tal:content="report_parms/ws_review_state">
+</td>
+</tr>
 </table>
 </div>
 
