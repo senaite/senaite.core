@@ -111,8 +111,7 @@ jQuery( function($) {
 		}
 
 		service_uid = $(element).attr('id');
-		formdata = $("body").data()['ar_formdata'];
-		service_data = formdata['services'][service_uid];
+		service_data = bsc.data.services[service_uid];
 		if (service_data == undefined || service_data == null){
 			return;
 		}
@@ -308,8 +307,6 @@ jQuery( function($) {
 			return;
 		}
 
-		formdata = $("body").data()['ar_formdata'];
-
 		// parts is where we will store the table of which services
 		// belong to which partition, for each column.
 		// a 'partition' is a slice of this dictionary:
@@ -324,7 +321,7 @@ jQuery( function($) {
 
 			// get column field values
 			st_title = formvalues[col]['st_title'];
-			st_uid = formdata['st_uids'][st_title];
+			st_uid = bsc.data.st_uids[st_title];
 			if (st_uid != undefined && st_uid != null){
 				st_uid = st_uid['uid'];
 			} else {
@@ -339,9 +336,9 @@ jQuery( function($) {
 
 				// part_setup is filled with defaults here, if it is not
 				// already defined
-				z = formdata['services'][service_uid];
+				z = bsc.data.services[service_uid];
 				if(z == undefined || z == null) {
-					formdata['services'][service_uid] = {
+					bsc.data.services[service_uid] = {
 						'Separate': false,
 						'Container': [],
 						'Preservation': [],
@@ -350,13 +347,13 @@ jQuery( function($) {
 				}
 
 				// set service default partition setup field values
-				separate = formdata['services'][service_uid]['Separate'];
-				container = formdata['services'][service_uid]['Container'];
-				preservation = formdata['services'][service_uid]['Preservation'];
+				separate = bsc.data.services[service_uid]['Separate'];
+				container = bsc.data.services[service_uid]['Container'];
+				preservation = bsc.data.services[service_uid]['Preservation'];
 				// discover if a more specific part_setup exists for this
 				// sample_type and service_uid
 				part_setup = '';
-				$.each(formdata['services'][service_uid]['PartitionSetup'],
+				$.each(bsc.data.services[service_uid]['PartitionSetup'],
 					function(x, ps){
 						if(ps['sampletype'] == st_uid){
 							part_setup = ps;
@@ -493,8 +490,7 @@ jQuery( function($) {
 		unsetARTemplate(column);
 		if(templateUID == "") return;
 
-		formdata = $("body").data()['ar_formdata'];
-		template_data = formdata['templates'][templateUID];
+		template_data = $.parseJSON($("#template_data").val())[templateUID];
 
 		// set ARProfile
 		$('#ar_'+column+'_ARProfile').val(template_data['ARProfile']);
@@ -516,8 +512,7 @@ jQuery( function($) {
 		unsetARProfile(column);
 		if(profileUID == "") return;
 
-		formdata = $("body").data()['ar_formdata'];
-		profile_data = formdata['profiles'][profileUID];
+		profile_data = $.parseJSON($("#profile_data").val())[profileUID];
 		profile_services = profile_data['Services'];
 
 		// Why is ReportDryMatter getting turned off explicity here
@@ -545,31 +540,6 @@ jQuery( function($) {
 	$(document).ready(function(){
 
 		_ = window.jsi18n;
-
-
-//		href_bits = window.location.href.split("/")
-//		if (href_bits[href_bits.length-1] == 'analysisrequest_add'
-//			|| href_bits[href_bits.length-1] == 'base_edit'
-//			|| href_bits[href_bits.length-1] == 'edit') {
-			//change url to prevent caching
-			//$.getJSON('ar_formdata?' + new Date().getTime(), function(data) {
-			$.getJSON('ar_formdata',
-				{'_authenticator': $('input[name="_authenticator"]').val()},
-				function(data) {
-					$('body').data('ar_formdata', data);
-
-					// Contact dropdown is set in TAL to a default value.
-					// we force change it to run the primary_contact .change()
-					// code - but the ajax for ar_formdata must complete first.
-					// So it goes here, in the ajax complete handler.
-					contact_element = $("#primary_contact");
-					if(contact_element.length > 0) {
-						contact_element.change();
-					}
-
-				}
-			);
-//		}
 
 		// If any required fields are missing, then we hide the Plone UI
 		// transitions for Sampled and Preserved, and use our own buttons instead
@@ -635,7 +605,7 @@ jQuery( function($) {
 		});
 		function set_sp(e){
 			col = e.id.split("_")[1];
-			sp = formdata['sp_uids'][$(e).val()];
+			sp = bsc.data.sp_uids[$(e).val()];
 			if (sp != undefined && sp != null){
 				$("#ar_"+col+"+Composite").attr("checked", sp['composite']);
 			}
@@ -756,13 +726,12 @@ jQuery( function($) {
 
 		// Contact dropdown changes
 		$("#primary_contact").live('change', function(){
-			formdata = $("body").data()['ar_formdata'];
-			cc_data = formdata['contact_ccs'][$(this).val()];
-			// This comma-separated value is used as part of the URL to the
-			// cc_selector popup, when that changes to a proper lookup field,
-			// this can go away.
-			$('#cc_uids').attr("value", cc_data['cc_uids']);
-			$('#cc_titles').val(cc_data['cc_titles']);
+			// XXX Should be passing along the cc_data value ('ccs_json')!
+			contact_uid = $(this).val();
+			elem = $("[uid="+contact_uid+"]");
+			cc_data = $.parseJSON($(elem).attr("ccs"));
+			$('#cc_uids').val($(elem).attr("cc_uids"));
+			$('#cc_titles').val($(elem).attr("cc_titles"));
 		});
 
 		// recalculate when price elements' values are changed
