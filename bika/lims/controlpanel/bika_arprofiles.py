@@ -43,15 +43,15 @@ class ProfilesAndTemplatesView(BikaListingView):
         }
 
         self.review_states = [
+            {'id':'ARTemplates',
+             'title': _('AR Templates'),
+             'columns': ['Title',
+                         'Description']},
             {'id':'ARProfiles',
              'title': _('AR Profiles'),
              'columns': ['Title',
                          'Description',
                          'ProfileKey']},
-            {'id':'ARTemplates',
-             'title': _('AR Templates'),
-             'columns': ['Title',
-                         'Description']},
 ##            {'id':'WSTemplates',
 ##             'title': _('WS Templates'),
 ##             'columns': ['Title',

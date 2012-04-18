@@ -12,6 +12,7 @@
 			<img tal:condition="view/icon | nothing"
 				 src="" tal:attributes="src view/icon"/>
 			<span class="documentFirstHeading" tal:content="view/title"/>
+			<br/>
 			<tal:add_actions repeat="add_item python:view.context_actions.keys()">
 				<a tal:attributes="
 					style python:'background: url(%s) 2px 50%% no-repeat'%(view.context_actions[add_item]['icon']);
@@ -30,12 +31,8 @@
 	</metal:content-description>
 
 	<metal:content-core fill-slot="content-core">
-	<dl class="enableFormTabbing">
-		<dt id="fieldsetlegend-profiles" i18n:translate="">AR Profiles</dt>
-		<dd id="fieldset-profiles" tal:content="structure view/profiles"/>
-		<dt id="fieldsetlegend-templates" i18n:translate="">AR Templates</dt>
-		<dd id="fieldset-templates" tal:content="structure view/templates"/>
-	</dl>
+		<div id="folderlisting-main-table"
+			tal:content="structure view/contents_table"/>
 	</metal:content-core>
 
 	</body>
