@@ -64,7 +64,8 @@
                 characters remaining
             </div>
 
-            <div style="margin-top:1em;">
+            <div style="margin-top:1em;"
+				tal:condition="python: 'portal_factory' not in context.absolute_url()" >
               <input class="saveRemarks context workflow_action_button allowMultiSubmit"
                 type="submit"
                 value="Save remarks"
@@ -72,7 +73,7 @@
 				i18n:domain="bika"/>
             </div>
 
-            <fieldset tal:condition="append_only">
+            <fieldset tal:condition="python:append_only and 'portal_factory' not in context.absolute_url()" >
               <legend i18n:translate=""
                       tal:define="label widget/label"
                       tal:content="string:HISTORY: ${label}">
