@@ -1,8 +1,8 @@
-I18NDUDE=~/Plone413/zinstance/bin/i18ndude
-PLONE_POT=~/Plone413/zinstance/parts/omelette/plone/app/locales/locales/plone.pot
+I18NDUDE=~/Plone414/zinstance/bin/i18ndude
+PLONE_POT=~/Plone414/zinstance/parts/omelette/plone/app/locales/locales/plone.pot
 
-echo Pull transifex
-tx pull -a -f
+#echo Pull transifex
+#tx pull -a -f
 
 echo Building bika
 $I18NDUDE rebuild-pot --pot bika.pot --exclude "build" --create bika --merge bika-manual.pot ..
@@ -17,8 +17,8 @@ echo Syncing plone
 $I18NDUDE sync --pot plone.pot */LC_MESSAGES/plone.po
 rm i18ndude.pot
 
-echo Push transifex
-tx push -s -t
+#echo Push transifex
+#tx push -s -t
 
 echo "#########################################################"
 echo "## untranslated messages"

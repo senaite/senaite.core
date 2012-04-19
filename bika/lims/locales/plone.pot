@@ -3,7 +3,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Bika-LIMS\n"
-"POT-Creation-Date: 2012-02-23 08:06+0000\n"
+"POT-Creation-Date: 2012-04-19 18:01+0000\n"
 "PO-Revision-Date: 2012-01-01 23:11+0000\n"
 "Last-Translator: Bika <bikasupport@bikalabs.com>\n"
 "Language-Team: Bika <bikasupport@bikalabs.com>\n"
@@ -22,6 +22,10 @@ msgstr ""
 
 #: ../profiles/default/types/ARProfiles.xml
 msgid "AR Profiles"
+msgstr ""
+
+#: ../profiles/default/types/ARTemplate.xml
+msgid "AR Template"
 msgstr ""
 
 #: ../profiles/default/types/Worksheet.xml
@@ -44,6 +48,7 @@ msgstr ""
 msgid "Administration"
 msgstr ""
 
+#: ../profiles/default/types/AnalysisRequest.xml
 #: ../profiles/default/types/ReferenceSample.xml
 msgid "Analyses"
 msgstr ""
@@ -393,6 +398,9 @@ msgid "Reject Analysis"
 msgstr ""
 
 #: ../profiles/default/actions.xml
+msgid "Report"
+msgstr ""
+
 #: ../profiles/default/types/Reports.xml
 msgid "Reports"
 msgstr ""

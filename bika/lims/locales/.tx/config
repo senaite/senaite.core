@@ -3,11 +3,12 @@ host = https://www.transifex.net
 
 [bika-lims.bika]
 file_filter = <lang>/LC_MESSAGES/bika.po
+host = https://www.transifex.net
 source_file = bika.pot
 source_lang = en
 
 [bika-lims.plone]
 file_filter = <lang>/LC_MESSAGES/plone.po
+host = https://www.transifex.net
 source_file = plone.pot
 source_lang = en
-
