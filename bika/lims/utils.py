@@ -397,4 +397,18 @@ class bsc_browserdata(BrowserView):
                 'composite':s.getComposite(),
             }
 
+        data['containers'] = {}
+        for s in bsc(portal_type = 'Container'):
+            s = s.getObject()
+            data['containers'][s.UID()] = {
+                'title':s.Title(),
+            }
+
+        data['preservations'] = {}
+        for s in bsc(portal_type = 'Preservation'):
+            s = s.getObject()
+            data['preservations'][s.UID()] = {
+                'title':s.Title(),
+            }
+
         return json.dumps(data)

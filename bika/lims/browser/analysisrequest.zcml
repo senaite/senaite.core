@@ -50,8 +50,8 @@
 
     <browser:page
       for="bika.lims.interfaces.IAnalysisRequest"
-      name="base_edit"
-      class="bika.lims.browser.analysisrequest.AnalysisRequestEditView"
+      name="analyses"
+      class="bika.lims.browser.analysisrequest.AnalysisRequestAnalysesView"
       permission="bika.lims.ManageAnalysisRequests"
       layer="bika.lims.interfaces.IBikaLIMS"
     />

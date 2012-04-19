@@ -32,6 +32,7 @@ from bika.lims.subscribers import doActionFor
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.layout.globals.interfaces import IViewView
 from zope.interface import implements, alsoProvides
+from zope.i18n.locales import locales
 import App
 import json
 import plone
@@ -65,10 +66,39 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
             else:
                 item_data = json.loads(form['item_data'])
 
+        ## Analyses added or removed
+        if action == "save_button":
+            ar = self.context
+            sample = ar.getSample()
+            objects = WorkflowAction._get_selected_items(self)
+            form_parts = json.loads(self.request.form['parts'])
+            if not form_parts:
+                message = _('No changes made.')
+            else:
+                new_analyses = ar.setAnalyses(objects.keys(),
+                                              prices = form['Price'][0])
+
+                # XXX
+
+                # stopgap - ignore selected values ; assign first partition
+                # to new analyses.  Form interface doesn't yet support
+                # selection of partition - AR Add and AR Edit will get some
+                # additional functionality for this, soon.
+                first_part = sample.objectValues("SamplePartition")[0]
+                for a in new_analyses:
+                    a.setSamplePartition(first_part)
+
+                message = translate(PMF("Changes saved."))
+
+            self.context.plone_utils.addPortalMessage(message, 'info')
+            self.destination_url = self.context.absolute_url()
+            self.request.response.redirect(self.destination_url)
+            return
+
         ## Partition Preservation
         # the partition table shown in AR and Sample views sends it's
         # action button submits here.
-        if action == "preserved":
+        elif action == "preserved":
             objects = WorkflowAction._get_selected_items(self)
             transitioned = []
             for obj_uid, obj in objects.items():
@@ -367,7 +397,7 @@ class AnalysisRequestViewView(BrowserView):
              'condition':True,
              'type': 'text'},
             {'id': 'Contact',
-             'title': "<a href='#' id='open_cc_browser'>%s" % _('Contact Person'),
+             'title': "<a href='#' id='open_cc_browser'>%s</a>" % _('Contact Person'),
              'allow_edit': False,
              'value': "; ".join(ccs),
              'condition':True,
@@ -777,54 +807,143 @@ class AnalysisRequestAddView(AnalysisRequestViewView):
                 templates[template.UID()] = t_dict
         return json.dumps(templates)
 
+class AnalysisRequestAnalysesView(BikaListingView):
+    implements(IFolderContentsView, IViewView)
 
-class AnalysisRequestEditView(AnalysisRequestAddView):
-    implements(IViewView)
-    template = ViewPageTemplateFile("templates/analysisrequest_edit.pt")
+    template = ViewPageTemplateFile("templates/analysisrequest_analyses.pt")
 
     def __init__(self, context, request):
-        super(AnalysisRequestEditView, self).__init__(context, request)
-        self.col_count = 1
-        self.came_from = "edit"
+        """
+        """
 
-    def __call__(self):
-        ar = self.context
-        workflow = getToolByName(ar, 'portal_workflow')
+        super(AnalysisRequestAnalysesView, self).__init__(context, request)
+        bsc = getToolByName(context, 'bika_setup_catalog')
+        self.contentsMethod = bsc
+        self.contentFilter = {'portal_type': 'AnalysisService',
+                              'sort_on': 'sortable_title',
+                              'inactive_state': 'active',}
+        self.context_actions = {}
+        self.icon = "++resource++bika.lims.images/analysisrequest_big.png"
+        self.title = self.context.Title()
+        self.show_sort_column = False
+        self.show_select_row = False
+        self.show_select_column = True
+        self.show_select_all_checkbox = False
+        self.pagesize = 1000
+        analyses = self.context.getAnalyses()
+        self.analyses = dict(
+            [(x.getObject().getServiceUID(), x.getObject()) for x in analyses]
+        )
+        self.selected = [x.getObject().getServiceUID() for x in analyses]
 
-        if workflow.getInfoFor(ar, 'cancellation_state') == "cancelled":
-            self.request.response.redirect(ar.absolute_url())
-        elif not(getSecurityManager().checkPermission(EditAR, ar)):
-            self.request.response.redirect(ar.absolute_url())
-        else:
-            can_edit_sample = True
-            can_edit_ar = True
-            for a in ar.getAnalyses():
-                if workflow.getInfoFor(a.getObject(), 'review_state') in ('verified', 'published'):
-                    can_edit_sample = False
-                    can_edit_ar = False
-                    break
-            if can_edit_sample:
-                sample = ar.getSample()
-                if workflow.getInfoFor(sample, 'cancellation_state', "active") == "cancelled":
-                # Redundant check. If sample is cancelled then AR is too (in theory).
-                    can_edit_sample = False
-                else:
-                    sars = sample.getAnalysisRequests()
-                    for sar in sars:
-                        if sar != ar:
-                            for a in sar.getAnalyses():
-                                if workflow.getInfoFor(a.getObject(), 'review_state') in ('verified', 'published'):
-                                    can_edit_sample = False
-                                    break
-                            if not can_edit_sample:
-                                break
-            self.can_edit_sample = can_edit_sample
-            self.can_edit_ar = can_edit_ar
-            return self.template()
+        self.columns = {
+            'Title': {'title': _('Service'),
+                      'index': 'sortable_title',
+                      'sortable': False,},
+            'Keyword': {'title': _('Keyword'),
+                        'index': 'getKeyword',
+                        'sortable': False,},
+            'Price': {'title': _('Price'),
+                      'sortable': False,},
+            'Method': {'title': _('Method'),
+                       'sortable': False,},
+            'Partition': {'title': _('Partition'),
+                          'sortable': False,},
+            'Container': {'title': _('Container'),
+                          'sortable': False,},
+            'Preservation': {'title': _('Preservation'),
+                             'sortable': False,},
+        }
 
-    def getARProfileUID(self):
-        return self.context.getProfile() and \
-               self.context.getProfile().UID() or ''
+        self.review_states = [
+            {'id':'all',
+             'title': _('All'),
+             'columns': ['Title',
+                         'Price',
+                         'Keyword',
+                         'Method',
+                         'Partition',
+                         'Container',
+                         'Preservation'
+                         ],
+             'transitions': [{'id':'empty'}, ], # none
+             'custom_actions':[{'id': 'save_button', 'title': _('Save')}, ]
+             },
+        ]
+
+    def folderitems(self):
+        self.categories = []
+
+        mtool = getToolByName(self.context, 'portal_membership')
+        member = mtool.getAuthenticatedMember()
+        roles = member.getRoles()
+        can_edit_price = 'LabManager' in roles or 'Manager' in roles
+        self.allow_edit = can_edit_price
+
+        items = BikaListingView.folderitems(self)
+
+        for x in range(len(items)):
+            if not items[x].has_key('obj'): continue
+            obj = items[x]['obj']
+
+            cat = obj.getCategoryTitle()
+            items[x]['category'] = cat
+            if cat not in self.categories:
+                self.categories.append(cat)
+
+            items[x]['selected'] = items[x]['uid'] in self.selected
+
+            items[x]['class']['Title'] = 'service_title'
+            items[x]['Keyword'] = obj.getKeyword()
+
+            calculation = obj.getCalculation()
+            items[x]['Calculation'] = calculation and calculation.Title()
+
+            method = obj.getMethod()
+            items[x]['Method'] = method and method.Title() or ''
+
+            locale = locales.getLocale('en')
+            currency = self.context.bika_setup.getCurrency()
+            symbol = locale.numbers.currencies[currency].symbol
+            items[x]['before']['Price'] = symbol
+            items[x]['Price'] = obj.getPrice()
+            items[x]['allow_edit'] = ['Price', ]
+            items[x]['class']['Price'] = 'nowrap'
+
+            if obj.UID() in self.analyses:
+                part = self.analyses[obj.UID()].getSamplePartition()
+                part = part and part or obj
+                items[x]['Partition'] = part.Title()
+                container = part.getContainer()
+                items[x]['Container'] = container and container.Title() or ''
+                preservation = part.getPreservation()
+                items[x]['Preservation'] = preservation and preservation.Title() or ''
+            else:
+                items[x]['Partition'] = ''
+                items[x]['Container'] = ''
+                items[x]['Preservation'] = ''
+
+            after_icons = ''
+            if obj.getAccredited():
+                after_icons += "<img\
+                src='++resource++bika.lims.images/accredited.png'\
+                title='%s'>"%(_("Accredited"))
+            if obj.getReportDryMatter():
+                after_icons += "<img src='++resource++bika.lims.images/dry.png'\
+                title='%s'>"%(_("Can be reported as dry matter"))
+            if obj.getAttachmentOption() == 'r':
+                after_icons += "<img\
+                src='++resource++bika.lims.images/attach_reqd.png'\
+                title='%s'>"%(_("Attachment required"))
+            if obj.getAttachmentOption() == 'n':
+                after_icons += "<img\
+                src='++resource++bika.lims.images/attach_no.png'\
+                title='%s'>"%(_('Attachment not permitted'))
+            if after_icons:
+                items[x]['after']['Title'] = after_icons
+
+        self.categories.sort()
+        return items
 
 class AnalysisRequestManageResultsView(AnalysisRequestViewView):
     implements(IViewView)
@@ -1330,455 +1449,280 @@ class ajaxAnalysisRequestSubmit():
 
         form_parts = json.loads(self.request.form['parts'])
 
-        if came_from == "edit":
+        # First make a list of non-empty columns
+        columns = []
+        for column in range(int(form['col_count'])):
+            formkey = "ar.%s" % column
+            # first time in, unused columns not in form
+            if not form.has_key(formkey):
+                continue
+            ar = form[formkey]
+            if len(ar.keys()) == 3: # three empty price fields
+                if ar.has_key('subtotal'):
+                    continue
+            columns.append(column)
 
-            # First figure out what can be updated
-            # ------------------------------------
+        if len(columns) == 0:
+            error(message = translate(_("No data was entered")))
+            return json.dumps({'errors':errors})
 
-            ar = self.context
+        # Now some basic validation
+        required_fields = ['SampleType', 'SamplingDate']
+        validated_fields = ('SampleID', 'SampleType', 'SamplePoint')
 
-            can_edit = True
+        for column in columns:
+            formkey = "ar.%s" % column
+            ar = form[formkey]
+            if not ar.has_key("Analyses"):
+                error('Analyses', column, translate(_("No analyses have been selected")))
 
-            if wftool.getInfoFor(ar, 'cancellation_state') == "cancelled":
-                can_edit = False
-            elif not(getSecurityManager().checkPermission(EditAR, ar)):
-                can_edit = False
+            # check that required fields have values
+            for field in required_fields:
+                if not ar.has_key(field):
+                    error(field, column)
 
-            if not can_edit:
-                # Go back to 'View' screen with message.
-                message = translate(_("Changes not allowed"))
-                ar.plone_utils.addPortalMessage(message, 'info')
-                return json.dumps({'success':message})
+            # If a new ARTemplate or ARProfile's name is specified,
+            # make sure it's clean.
+            if ar.has_key('profileTitle'):
+                if re.findall(r"[^A-Za-z\w\d\_\s]", ar['profileTitle']):
+                    error(message="Validation failed: Profile title contains invalid characters")
 
-            can_edit_sample = True
-            can_edit_ar = True
+            # validate field values
+            for field in validated_fields:
+                # ignore empty field values
+                if not ar.has_key(field):
+                    continue
 
-            for a in ar.getAnalyses():
-                if wftool.getInfoFor(a.getObject(), 'review_state') in ('verified', 'published'):
-                    can_edit_sample = False
-                    can_edit_ar = False
-                    break
+                if field == "SampleID":
+                    if not pc(portal_type = 'Sample',
+                              cancellation_state = 'active',
+                              id = ar[field]):
+                        msg = _("${id} is not a valid sample ID",
+                                mapping={'id':ar[field]})
+                        error(field, column, translate(msg))
 
-            if can_edit_sample:
-                sample = ar.getSample()
-                if wftool.getInfoFor(sample, 'cancellation_state') == "cancelled":
-                # Redundant check. If sample is cancelled then AR is too (in theory).
-                    can_edit_sample = False
-                else:
-                    sars = sample.getAnalysisRequests()
-                    for sar in sars:
-                        if sar != ar:
-                            for a in sar.getAnalyses():
-                                if wftool.getInfoFor(a.getObject(), 'review_state') in ('verified', 'published'):
-                                    can_edit_sample = False
-                                    break
-                            if not can_edit_sample:
-                                break
+                elif field == "SampleType":
+                    if not bsc(portal_type = 'SampleType',
+                               inactive_state = 'active',
+                               Title = ar[field]):
+                        msg = _("${sampletype} is not a valid sample type",
+                                mapping={'sampletype':ar[field]})
+                        error(field, column, translate(msg))
 
+                elif field == "SamplePoint":
+                    if not bsc(portal_type = 'SamplePoint',
+                               inactive_state = 'active',
+                               Title = ar[field]):
+                        msg = _("${samplepoint} is not a valid sample point",
+                                mapping={'samplepoint':ar[field]})
+                        error(field, column, translate(msg))
 
-            # Now see what's on the form and validate it
-            # ------------------------------------------
+        if errors:
+            return json.dumps({'errors':errors})
 
-            values = form["ar.0"].copy()
+        prices = form['Prices']
+        ARs = []
 
-            # Validate sample info (if there is any)
-            if can_edit_sample:
-                if not form['can_edit_sample']:
-                    # Was greyed-out on the screen.
-                    can_edit_sample = False
+        # if a new profile is created automatically,
+        # this flag triggers the status message
+        new_profile = None
 
-            if can_edit_sample:
-                required_fields = ['SampleType', 'SamplingDate']
-                for field in required_fields:
-                    if not values.has_key(field):
-                        error(field, 0)
-                validated_fields = ('SampleType', 'SamplePoint')
-                for field in validated_fields:
-                    # ignore empty field values
-                    if not values.has_key(field):
-                        continue
-                    if field == "SampleType":
-                        if not bsc(portal_type = 'SampleType',
-                                   inactive_state = 'active',
-                                   Title = values[field]):
-                            msg = _("${sampletype} is not a valid sample type",
-                                    mapping={'sampletype':values[field]})
-                            error(field, 0, translate(msg))
-                    elif field == "SamplePoint":
-                        if not bsc(portal_type = 'SamplePoint',
-                                   inactive_state = 'active',
-                                   Title = values[field]):
-                            msg = _("${samplepoint} is not a valid sample point",
-                                    mapping={'samplepoint':values[field]})
-                            error(field, 0, translate(msg))
+        # The actual submission
+        for column in columns:
+            if form_parts:
+                parts = form_parts[column]
+            else:
+                parts = []
+            formkey = "ar.%s" % column
+            values = form[formkey].copy()
+            profile = None
+            if (values.has_key('ARProfile')):
+                profileUID = values['ARProfile']
+                for proxy in bsc(portal_type = 'ARProfile',
+                                 inactive_state = 'active',
+                                 UID = profileUID):
+                    profile = proxy.getObject()
+            template = None
+            if (values.has_key('ARTemplate')):
+                templateUID = values['ARTemplate']
+                for proxy in bsc(portal_type = 'ARTemplate',
+                                 inactive_state = 'active',
+                                 UID = templateUID):
+                    template = proxy.getObject()
 
-            # Check if there is any general AR info
-            if can_edit_ar:
-                if not form['can_edit_ar']:
-                    # Was greyed-out on the screen.
-                    can_edit_ar = False
+            if values.has_key('SampleID'):
+                # Secondary AR
+                sample_id = values['SampleID']
+                sample_proxy = pc(portal_type = 'Sample',
+                                  cancellation_state = 'active',
+                                  id = sample_id)
+                assert len(sample_proxy) == 1
+                sample = sample_proxy[0].getObject()
+                composite = values.get('Composite', False)
+                sample.edit(Composite = composite)
+                sample.reindexObject()
+            else:
+                # Primary AR
+                client = self.context
+                _id = client.invokeFactory('Sample', id = 'tmp')
+                sample = client[_id]
+                sample.edit(
+                    ClientReference = values.get('ClientReference', ''),
+                    ClientSampleID = values.get('ClientSampleID', ''),
+                    SamplePoint = values.get('SamplePoint', ''),
+                    SampleType = values['SampleType'],
+                    SamplingDate = values['SamplingDate'],
+                    Composite = values.get('Composite',False),
+                    SamplingWorkflowEnabled = SamplingWorkflowEnabled,
+                )
+                sample.processForm()
 
-            # Check for analyses
-            if not values.has_key("Analyses"):
-                error(message = translate(_("No analyses have been selected.")))
+                # Object has been renamed
+                sample_id = sample.getId()
+                sample.edit(SampleID = sample_id)
 
-            if errors:
-                return json.dumps({'errors':errors})
+            sample_uid = sample.UID()
 
-            # OK, so there's something to update...
-            # -------------------------------------
+            if not parts:
+                parts = [{'services':[],
+                         'container':[],
+                         'preservation':'',
+                         'separate':False}]
+
+            # Create sample partitions
+            parts_and_services = {}
+            for p in parts:
+                _id = sample.invokeFactory('SamplePartition', id = 'tmp')
+                part = sample[_id]
+                container = p['container'] \
+                    and type(p['container']) in (tuple, list) \
+                    and p['container'][0] or p['container']
+                part.edit(
+                    Container = container,
+                    Preservation = p['preservation'],
+                )
+                part.processForm()
+                parts_and_services[part.id] = p['services']
+
+            # create the AR
 
             Analyses = values['Analyses']
             del values['Analyses']
 
-            if can_edit_sample:
-            # update Sample
-                sample.edit(
-                    ClientReference = values.has_key('ClientReference') and values['ClientReference'] or '',
-                    ClientSampleID = values.has_key('ClientSampleID') and values['ClientSampleID'] or '',
-                    SamplingDate = values.has_key('SamplingDate') and values['SamplingDate'] or '',
-                    SampleType = values.has_key('SampleType') and values['SampleType'] or '',
-                    SamplePoint = values.has_key('SamplePoint') and values['SamplePoint'] or '',
-                    Composite = values.has_key('Composite') and values['Composite'] or ''
-                )
+            _id = self.context.generateUniqueId('AnalysisRequest')
+            self.context.invokeFactory('AnalysisRequest', id = _id)
+            ar = self.context[_id]
+            # ar.edit() for some fields before firing the event
+            ar.edit(
+                Contact = form['Contact'],
+                CCContact = form['cc_uids'].split(","),
+                CCEmails = form['CCEmails'],
+                Sample = sample_uid,
+                Profile = profile,
+                **dict(values)
+            )
+            ar.processForm()
+            # Object has been renamed
+            ar_id = ar.getId()
+            ar.edit(RequestID = ar_id)
 
-            if can_edit_ar:
-            # update general AR info
-                ar.edit(
-                    Contact = form['Contact'],
-                    CCContact = form['cc_uids'].split(","),
-                    CCEmails = form['CCEmails'],
-                    ClientOrderNumber = values.has_key('ClientOrderNumber') and values['ClientOrderNumber'] or ''
-                )
+            ARs.append(ar_id)
 
-            reportDryMatter = values.has_key('ReportDryMatter')
-            invoiceExclude = values.has_key('InvoiceExclude')
+            new_analyses = ar.setAnalyses(Analyses, prices = prices)
+            ar_analyses = ar.objectValues('Analysis')
 
-            # update Analyses and related info
-            setProfile = False
-            if not (values.has_key('ARProfile') and values['ARProfile'] != ""):
-                # Profile may have been cleared due to addition/removal of analyses.
-                # Note: User is not allowed to select a profile on the edit screen.
-                setProfile = True
-                profile = None
-            if values.has_key('profileTitle'):
-                # User wants to save a new profile.
-                client = ar.aq_parent
-                if form.get('ARProfileType', 'ARProfile') == 'ARProfile':
-                    _id = client.invokeFactory(type_name = 'ARProfile', id = 'tmp')
-                    profile = client[_id]
+            # Add analyses to sample partitions
+            for part in sample.objectValues("SamplePartition"):
+                part_services = parts_and_services[part.id]
+                analyses = [a for a in new_analyses
+                            if a.getServiceUID() in part_services]
+                if analyses:
+                    part.edit(
+                        Analyses = analyses,
+                    )
+                    for analysis in analyses:
+                        analysis.setSamplePartition(part)
+
+            # If Preservation is required for some partitions,
+            # and the SamplingWorkflow is disabled, we need
+            # to transition to to_be_preserved manually.
+            if not SamplingWorkflowEnabled:
+                to_be_preserved = []
+                sample_due = []
+                lowest_state = 'sample_due'
+                for p in sample.objectValues('SamplePartition'):
+                    if p.getPreservation():
+                        lowest_state = 'to_be_preserved'
+                        to_be_preserved.append(p)
+                    else:
+                        sample_due.append(p)
+                for p in to_be_preserved:
+                    doActionFor(p, 'to_be_preserved')
+                for p in sample_due:
+                    doActionFor(p, 'sample_due')
+                doActionFor(sample, lowest_state)
+                doActionFor(ar, lowest_state)
+
+            # Save new ARProfile/ARTemplate
+            profile = None
+            template = None
+            if (values.has_key('profileTitle')):
+                if self.request.ARProfileType == 'ARProfile':
+                    # Save a normal AR Profile
+                    _id = self.context.invokeFactory(type_name='ARProfile',
+                                                     id='tmp')
+                    profile = self.context[_id]
                     profile.edit(title = values['profileTitle'],
                                  Service = Analyses)
                     profile.processForm()
+                    ar.edit(Profile = profile,
+                            Template = None)
                 else:
-                    _id = client.invokeFactory(type_name = 'ARTemplate', id = 'tmp')
-                    template = client[_id]
-                    template.edit(title = values['profileTitle'],
-                                 ReportDryMatter = reportDryMatter,
-                                 InvoiceExclude = invoiceExclude,
-                                 SampleType = values.has_key('SampleType') and values['SampleType'] or '',
-                                 SamplePoint = values.has_key('SamplePoint') and values['SamplePoint'] or '',
-                                 Composite = values.has_key('Composite') and values['Composite'] or '',
-                                 ARProfile = values.has_key('ARProfile') and values['ARProfile'] or None,
-                                 )
-                    template.processForm()
-                setProfile = True
+                    # saving a new AR Template
 
-            if setProfile:
-                ar.edit(
-                    ReportDryMatter = reportDryMatter,
-                    InvoiceExclude = invoiceExclude,
-                    Profile = profile
-                )
-            else:
-                ar.edit(
-                    ReportDryMatter = reportDryMatter,
-                    InvoiceExclude = invoiceExclude
-                )
-
-            prices = form['Prices']
-            ar.setAnalyses(Analyses, prices = prices)
-
-            message = translate(PMF("Changes saved."))
-
-        else:
-        # came_from == "add"
-        # ------------------
-
-            # First make a list of non-empty columns
-            columns = []
-            for column in range(int(form['col_count'])):
-                formkey = "ar.%s" % column
-                # first time in, unused columns not in form
-                if not form.has_key(formkey):
-                    continue
-                ar = form[formkey]
-                if len(ar.keys()) == 3: # three empty price fields
-                    if ar.has_key('subtotal'):
-                        continue
-                columns.append(column)
-
-            if len(columns) == 0:
-                error(message = translate(_("No data was entered")))
-                return json.dumps({'errors':errors})
-
-            # Now some basic validation
-            required_fields = ['SampleType', 'SamplingDate']
-            validated_fields = ('SampleID', 'SampleType', 'SamplePoint')
-
-            for column in columns:
-                formkey = "ar.%s" % column
-                ar = form[formkey]
-                if not ar.has_key("Analyses"):
-                    error('Analyses', column, translate(_("No analyses have been selected")))
-
-                # check that required fields have values
-                for field in required_fields:
-                    if not ar.has_key(field):
-                        error(field, column)
-
-                # If a new ARTemplate or ARProfile's name is specified,
-                # make sure it's clean.
-                if ar.has_key('profileTitle'):
-                    if re.findall(r"[^A-Za-z\w\d\_\s]", ar['profileTitle']):
-                        error(message="Validation failed: Profile title contains invalid characters")
-
-                # validate field values
-                for field in validated_fields:
-                    # ignore empty field values
-                    if not ar.has_key(field):
-                        continue
-
-                    if field == "SampleID":
-                        if not pc(portal_type = 'Sample',
-                                  cancellation_state = 'active',
-                                  id = ar[field]):
-                            msg = _("${id} is not a valid sample ID",
-                                    mapping={'id':ar[field]})
-                            error(field, column, translate(msg))
-
-                    elif field == "SampleType":
-                        if not bsc(portal_type = 'SampleType',
-                                   inactive_state = 'active',
-                                   Title = ar[field]):
-                            msg = _("${sampletype} is not a valid sample type",
-                                    mapping={'sampletype':ar[field]})
-                            error(field, column, translate(msg))
-
-                    elif field == "SamplePoint":
-                        if not bsc(portal_type = 'SamplePoint',
-                                   inactive_state = 'active',
-                                   Title = ar[field]):
-                            msg = _("${samplepoint} is not a valid sample point",
-                                    mapping={'samplepoint':ar[field]})
-                            error(field, column, translate(msg))
-
-            if errors:
-                return json.dumps({'errors':errors})
-
-            prices = form['Prices']
-            ARs = []
-
-            # if a new profile is created automatically,
-            # this flag triggers the status message
-            new_profile = None
-
-            # The actual submission
-            for column in columns:
-                if form_parts:
-                    parts = form_parts[column]
-                else:
-                    parts = []
-                formkey = "ar.%s" % column
-                values = form[formkey].copy()
-                profile = None
-                if (values.has_key('ARProfile')):
-                    profileUID = values['ARProfile']
-                    for proxy in bsc(portal_type = 'ARProfile',
-                                     inactive_state = 'active',
-                                     UID = profileUID):
-                        profile = proxy.getObject()
-                template = None
-                if (values.has_key('ARTemplate')):
-                    templateUID = values['ARTemplate']
-                    for proxy in bsc(portal_type = 'ARTemplate',
-                                     inactive_state = 'active',
-                                     UID = templateUID):
-                        template = proxy.getObject()
-
-                if values.has_key('SampleID'):
-                    # Secondary AR
-                    sample_id = values['SampleID']
-                    sample_proxy = pc(portal_type = 'Sample',
-                                      cancellation_state = 'active',
-                                      id = sample_id)
-                    assert len(sample_proxy) == 1
-                    sample = sample_proxy[0].getObject()
-                    composite = values.get('Composite', False)
-                    sample.edit(Composite = composite)
-                    sample.reindexObject()
-                else:
-                    # Primary AR
-                    client = self.context
-                    _id = client.invokeFactory('Sample', id = 'tmp')
-                    sample = client[_id]
-                    sample.edit(
-                        ClientReference = values.get('ClientReference', ''),
-                        ClientSampleID = values.get('ClientSampleID', ''),
-                        SamplePoint = values.get('SamplePoint', ''),
-                        SampleType = values['SampleType'],
-                        SamplingDate = values['SamplingDate'],
-                        Composite = values.get('Composite',False),
-                        SamplingWorkflowEnabled = SamplingWorkflowEnabled,
-                    )
-                    sample.processForm()
-
-                    # Object has been renamed
-                    sample_id = sample.getId()
-                    sample.edit(SampleID = sample_id)
-
-                sample_uid = sample.UID()
-
-                if not parts:
-                    parts = [{'services':[],
-                             'container':[],
-                             'preservation':'',
-                             'separate':False}]
-
-                # Create sample partitions
-                parts_and_services = {}
-                for p in parts:
-                    _id = sample.invokeFactory('SamplePartition', id = 'tmp')
-                    part = sample[_id]
-                    container = p['container'] \
-                        and type(p['container']) in (tuple, list) \
-                        and p['container'][0] or p['container']
-                    part.edit(
-                        Container = container,
-                        Preservation = p['preservation'],
-                    )
-                    part.processForm()
-                    parts_and_services[part.id] = p['services']
-
-                # create the AR
-
-                Analyses = values['Analyses']
-                del values['Analyses']
-
-                _id = self.context.generateUniqueId('AnalysisRequest')
-                self.context.invokeFactory('AnalysisRequest', id = _id)
-                ar = self.context[_id]
-                # ar.edit() for some fields before firing the event
-                ar.edit(
-                    Contact = form['Contact'],
-                    CCContact = form['cc_uids'].split(","),
-                    CCEmails = form['CCEmails'],
-                    Sample = sample_uid,
-                    Profile = profile,
-                    **dict(values)
-                )
-                ar.processForm()
-                # Object has been renamed
-                ar_id = ar.getId()
-                ar.edit(RequestID = ar_id)
-
-                ARs.append(ar_id)
-
-                new_analyses = ar.setAnalyses(Analyses, prices = prices)
-                ar_analyses = ar.objectValues('Analysis')
-
-                # Add analyses to sample partitions
-                for part in sample.objectValues("SamplePartition"):
-                    part_services = parts_and_services[part.id]
-                    analyses = [a for a in new_analyses
-                                if a.getServiceUID() in part_services]
-                    if analyses:
-                        part.edit(
-                            Analyses = analyses,
-                        )
-                        for analysis in analyses:
-                            analysis.setSamplePartition(part)
-
-                # If Preservation is required for some partitions,
-                # and the SamplingWorkflow is disabled, we need
-                # to transition to to_be_preserved manually.
-                if not SamplingWorkflowEnabled:
-                    to_be_preserved = []
-                    sample_due = []
-                    lowest_state = 'sample_due'
-                    for p in sample.objectValues('SamplePartition'):
-                        if p.getPreservation():
-                            lowest_state = 'to_be_preserved'
-                            to_be_preserved.append(p)
-                        else:
-                            sample_due.append(p)
-                    for p in to_be_preserved:
-                        doActionFor(p, 'to_be_preserved')
-                    for p in sample_due:
-                        doActionFor(p, 'sample_due')
-                    doActionFor(sample, lowest_state)
-                    doActionFor(ar, lowest_state)
-
-                # Save new ARProfile/ARTemplate
-                profile = None
-                template = None
-                if (values.has_key('profileTitle')):
-                    if self.request.ARProfileType == 'ARProfile':
-                        # Save a normal AR Profile
+                    # First create new ARProfile if none was specified.
+                    selected_arprofile = values.get('ARProfile', '')
+                    if not selected_arprofile:
                         _id = self.context.invokeFactory(type_name='ARProfile',
                                                          id='tmp')
-                        profile = self.context[_id]
-                        profile.edit(title = values['profileTitle'],
-                                     Service = Analyses)
-                        profile.processForm()
-                        ar.edit(Profile = profile,
-                                Template = None)
-                    else:
-                        # saving a new AR Template
-
-                        # First create new ARProfile if none was specified.
-                        selected_arprofile = values.get('ARProfile', '')
-                        if not selected_arprofile:
-                            _id = self.context.invokeFactory(type_name='ARProfile',
-                                                             id='tmp')
-                            new_profile = self.context[_id]
-                            message = translate(_("The AR Profile '${profile_name}' was "
-                                                  "automatically created.",
-                                                  mapping = {'profile_name':
-                                                             values['profileTitle']}))
-                            new_profile.edit(
-                                title = values['profileTitle'],
-                                description = message,
-                                Service = Analyses)
-                            new_profile.processForm()
-                            selected_arprofile = new_profile
-
-                        _id = self.context.invokeFactory(type_name='ARTemplate',
-                                                         id='tmp')
-                        template = self.context[_id]
-                        template.edit(
+                        new_profile = self.context[_id]
+                        message = translate(_("The AR Profile '${profile_name}' was "
+                                              "automatically created.",
+                                              mapping = {'profile_name':
+                                                         values['profileTitle']}))
+                        new_profile.edit(
                             title = values['profileTitle'],
-                            ReportDryMatter = values.get('reportDryMatter', False),
-                            SampleType = values.get('SampleType', ''),
-                            SamplePoint = values.get('SamplePoint', ''),
-                            ARProfile = selected_arprofile,
-                        )
-                        template.processForm()
-                        ar.edit(Profile = selected_arprofile,
-                                Template = template)
+                            description = message,
+                            Service = Analyses)
+                        new_profile.processForm()
+                        selected_arprofile = new_profile
 
-                if values.has_key('SampleID') and \
-                   wftool.getInfoFor(sample, 'review_state') != 'sample_due':
-                    wftool.doActionFor(ar, 'receive')
+                    _id = self.context.invokeFactory(type_name='ARTemplate',
+                                                     id='tmp')
+                    template = self.context[_id]
+                    template.edit(
+                        title = values['profileTitle'],
+                        ReportDryMatter = values.get('reportDryMatter', False),
+                        SampleType = values.get('SampleType', ''),
+                        SamplePoint = values.get('SamplePoint', ''),
+                        ARProfile = selected_arprofile,
+                    )
+                    template.processForm()
+                    ar.edit(Profile = selected_arprofile,
+                            Template = template)
 
-            if len(ARs) > 1:
-                message = translate(_("Analysis requests ${ARs} were "
-                                      "successfully created.",
-                                      mapping = {'ARs': ', '.join(ARs)}))
-            else:
-                message = translate(_("Analysis request ${AR} was "
-                                      "successfully created.",
-                                      mapping = {'AR': ARs[0]}))
+            if values.has_key('SampleID') and \
+               wftool.getInfoFor(sample, 'review_state') != 'sample_due':
+                wftool.doActionFor(ar, 'receive')
+
+        if len(ARs) > 1:
+            message = translate(_("Analysis requests ${ARs} were "
+                                  "successfully created.",
+                                  mapping = {'ARs': ', '.join(ARs)}))
+        else:
+            message = translate(_("Analysis request ${AR} was "
+                                  "successfully created.",
+                                  mapping = {'AR': ARs[0]}))
 
         self.context.plone_utils.addPortalMessage(message, 'info')
 

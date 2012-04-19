@@ -91,7 +91,7 @@ jQuery( function($) {
 					if(selectedservices!=[]){
 						recalc_prices(column);
 						// XXX template should do this one for us
-						calculate_parts();
+						ar_add_calculate_parts();
 					}
 				}
 			);
@@ -180,7 +180,7 @@ jQuery( function($) {
 						recalc_prices();
 						$(this).dialog("close");
 						$('#messagebox').remove();
-						calculate_parts();
+						ar_add_calculate_parts();
 					}
 					function add_No(){
 						$(element).attr("checked", false);
@@ -193,7 +193,7 @@ jQuery( function($) {
 						recalc_prices(column);
 						$(this).dialog("close");
 						$('#messagebox').remove();
-						calculate_parts();
+						ar_add_calculate_parts();
 					}
 				if (auto_yes) {
 					$('#messagebox').remove();
@@ -250,7 +250,7 @@ jQuery( function($) {
 							recalc_prices();
 							$(this).dialog("close");
 							$('#messagebox').remove();
-							calculate_parts();
+							ar_add_calculate_parts();
 						},
 						no:function(){
 							$(element).attr("checked", true);
@@ -260,7 +260,7 @@ jQuery( function($) {
 							recalc_prices(column);
 							$(this).dialog("close");
 							$('#messagebox').remove();
-							calculate_parts();
+							ar_add_calculate_parts();
 						}
 					}});
 				} else {
@@ -270,42 +270,7 @@ jQuery( function($) {
 		}
 	}
 
-	function calculate_parts(){
-		var formvalues = {};
-		var partitionable = 0;
-		var partitioned_services = $.parseJSON($("#partitioned_services").val());
-		// gather up SampleType and all selected service checkboxes by column
-		for (var col=0; col<parseInt($("#col_count").val()); col++) {
-			var st_title = $("#ar_"+col+"_SampleType").val();
-			formvalues[parseInt(col)] = {'st_title':st_title, 'services': []};
-			var checkboxes_checked = $('[name^="ar\\.'+col+'\\.Analyses"]').filter(':checked');
-			for(i=0;i<checkboxes_checked.length;i++){
-				e = checkboxes_checked[i];
-				var uid = $(e).attr('value');
-				partitionable++;
-				formvalues[parseInt(col)]['services'].push(uid);
-			}
-		}
-
-		// all unchecked services have their part numbers removed
-		ep = $("[class^='partnr_']").not(":empty");
-		for(i=0;i<ep.length;i++){
-			em = ep[i];
-			uid = $(ep[0]).attr('class').split("_")[1]
-			cb = $("#"+uid);
-			if ( ! $(cb).attr('checked') ){
-				$(em).empty();
-			}
-		}
-
-		// remove all and skip everything if no selected
-		// services have partition setup info
-		if (partitionable == 0){
-			$.each($('[name$="\\.Analyses"]').filter(':checked'), function(i,e){
-				$(".partnr_"+$(e).attr('value')).filter("[column="+col+"]").empty();
-			});
-			return;
-		}
+	function calculate_parts(formvalues, nr_cols){
 
 		// parts is where we will store the table of which services
 		// belong to which partition, for each column.
@@ -315,7 +280,7 @@ jQuery( function($) {
 		// formvalues looks like this:
 		// formvalues[col] = {services: [uid,uid], st_title: sampletype title}
 
-		for (col=0; col<parseInt($("#col_count").val()); col++) {
+		for (col=0; col<nr_cols; col++) {
 			// blank entry for each column
             parts.push([]);
 
@@ -446,7 +411,50 @@ jQuery( function($) {
 					}
 				}
 			}
-			// unset all this column's part numbers if 0 or 1 partitions
+		}
+		return parts
+	}
+
+	function ar_add_calculate_parts(){
+		var formvalues = {};
+		var partitionable = 0;
+		nr_cols = parseInt($("#col_count").val(), 10);
+		// gather up SampleType and all selected service checkboxes by column
+		for (var col=0; col<nr_cols; col++) {
+			var st_title = $("#ar_"+col+"_SampleType").val();
+			formvalues[col] = {'st_title':st_title, 'services': []};
+			var checkboxes_checked = $('[name^="ar\\.'+col+'\\.Analyses"]').filter(':checked');
+			for(i=0;i<checkboxes_checked.length;i++){
+				e = checkboxes_checked[i];
+				var uid = $(e).attr('value');
+				partitionable++;
+				formvalues[parseInt(col)]['services'].push(uid);
+			}
+		}
+
+		// all unchecked services have their part numbers removed
+		ep = $("[class^='partnr_']").not(":empty");
+		for(i=0;i<ep.length;i++){
+			em = ep[i];
+			uid = $(ep[0]).attr('class').split("_")[1]
+			cb = $("#"+uid);
+			if ( ! $(cb).attr('checked') ){
+				$(em).empty();
+			}
+		}
+
+		// remove all and skip everything if no selected
+		// services have partition setup info
+		if (partitionable == 0){
+			$.each($('[name$="\\.Analyses"]').filter(':checked'), function(i,e){
+				$(".partnr_"+$(e).attr('value')).filter("[column="+col+"]").empty();
+			});
+			return;
+		}
+		parts = calculate_parts(formvalues, nr_cols);
+
+		// Set new part numbers
+		for (var col=0; col<parts.length; col++) {
 			$.each(parts[col], function(p,part){
 				$.each(part['services'], function(s,service_uid){
 					$(".partnr_"+service_uid).filter("[column="+col+"]").empty().append(p+1);
@@ -455,6 +463,60 @@ jQuery( function($) {
 		}
 		$("#parts").val($.toJSON(parts));
 	}
+
+	function ar_analyses_calculate_parts(){
+		var formvalues = {};
+		var partitionable = 0;
+		nr_cols = 1;
+
+		// gather up SampleType and all selected service checkboxes by column
+		var st_title = $("#st_title").attr("st_title");
+		formvalues[0] = {'st_title':st_title, 'services': []};
+		var checkboxes_checked = $('[name="uids:list"]').filter(':checked');
+		for(i=0;i<checkboxes_checked.length;i++){
+			e = checkboxes_checked[i];
+			var uid = $(e).val();
+			partitionable++;
+			formvalues[0]['services'].push(uid);
+		}
+
+		parts = calculate_parts(formvalues, 1);
+
+		// Set new partition infos in selected rows
+		for(p=0;p<parts[0].length;p++){
+			part_nr = p+1;
+			part = parts[0][p];
+			if(part['container'].length > 0){
+				container = bsc.data.containers[part['container'][0]];
+				container = container['title'];
+			} else {
+				container = '';
+			}
+			if(part['preservation'].length > 0){
+				preservation = bsc.data.preservations[part['preservation'][0]];
+				preservation = preservation['title'];
+			} else {
+				preservation = '';
+			}
+			separate = part['separate'];
+			service_uids = part['services'];
+			for(s=0;s<service_uids.length;s++){
+				service_uid = service_uids[s];
+				//service_data = bsc.data.services[service_uid];
+				part_tr = $("[name=Partition."+service_uid+":records]").parent();
+				container_tr = $("[name=Container."+service_uid+":records]").parent();
+				preservation_tr = $("[name=Preservation."+service_uid+":records]").parent();
+				$($(part_tr).children()[1]).text('part-'+part_nr);
+				$($(container_tr).children()[1]).text(container);
+				$($(preservation_tr).children()[1]).text(preservation);
+			}
+		}
+		if ($("#parts").length == 0){
+			$("#list").append("<input type='hidden' id='parts' name='parts'/>");
+		}
+		$("#parts").val($.toJSON(parts));
+	}
+
 
 	function service_checkbox_change(){
 		var column = $(this).attr("column");
@@ -467,7 +529,7 @@ jQuery( function($) {
 		}
 		calcdependencies([element]);
 		recalc_prices();
-		calculate_parts();
+		ar_add_calculate_parts();
 	};
 
 	function unsetARTemplate(column){
@@ -515,7 +577,7 @@ jQuery( function($) {
 		profile_data = $.parseJSON($("#profile_data").val())[profileUID];
 		profile_services = profile_data['Services'];
 
-		// Why is ReportDryMatter getting turned off explicity here
+		// ReportDryMatter is getting turned off explicity here
 		$("#ar_"+column+"_ReportDryMatter").attr("checked", false);
 
 		$.each(profile_services, function(poc_categoryUID, selectedservices){
@@ -533,7 +595,7 @@ jQuery( function($) {
 				jQuery.ajaxSetup({async:true});
 			}
 		});
-		calculate_parts();
+		ar_add_calculate_parts();
 	}
 
 
@@ -564,6 +626,17 @@ jQuery( function($) {
 				.datepicker({'dateFormat': 'dd M yy', showAnim: ''})
 			}
 		}
+
+		$("[name='uids:list']").live('click', function(){
+			// check calculation dependencies
+			if (!$(this).attr("checked")){
+				service_uid = $(this).val();
+				$($("[name=Partition."+service_uid+":records]").siblings()[1]).text('');
+				$($("[name=Container."+service_uid+":records]").siblings()[1]).text('');
+				$($("[name=Preservation."+service_uid+":records]").siblings()[1]).text('');
+			}
+			ar_analyses_calculate_parts();
+		});
 
 		// define these for each autocomplete dropdown individually
 		// this is done like this so that they can depend on each other's
@@ -625,13 +698,13 @@ jQuery( function($) {
 		});
 		$(".sampletype").blur(function(){
 			if ($(this).val() != $(window._ac_focus).val()){
-				calculate_parts();
+				ar_add_calculate_parts();
 			}
 		})
 		// also set on .change() though,
 		// because sometimes we set these fields manually.
 		$(".sampletype").change(function(){
-			calculate_parts()
+			ar_add_calculate_parts()
 		});
 
 		$(".copyButton").live('click',  function (){
@@ -640,15 +713,15 @@ jQuery( function($) {
 				first_val = $('#ar_0_ARTemplate').val();
 				for (col=1; col<parseInt($("#col_count").val()); col++) {
 					$("#ar_"+col+"_ARTemplate").val(first_val);
-					$("#ar_"+col+"_ARTemplate").change();
 				}
+				//$("[id*=_ARTemplate]").change();
 			}
 			else if ($(this).hasClass('ARProfileCopyButton')){ // Profile selector
 				first_val = $('#ar_0_ARProfile').val();
 				for (col=1; col<parseInt($("#col_count").val()); col++) {
 					$("#ar_"+col+"_ARProfile").val(first_val);
-					$("#ar_"+col+"_ARProfile").change();
 				}
+				//$("[id*=_ARProfile]").change();
 			}
 			else if ($(this).parent().attr('class') == 'service'){ // Analysis Service checkbox
 				first_val = $('input[column="0"]').filter('#'+this.id).attr("checked");
@@ -670,7 +743,7 @@ jQuery( function($) {
 				}
 				calcdependencies(affected_elements, true);
 				recalc_prices();
-				calculate_parts();
+				ar_add_calculate_parts();
 			}
 			else if ($('input[name^="ar\\.0\\.'+field_name+'"]').attr("type") == "checkbox") {
 				// other checkboxes
@@ -680,9 +753,9 @@ jQuery( function($) {
 					other_elem = $('#ar_' + col + '_' + field_name);
 					if (!(other_elem.attr("checked")==first_val)) {
 						other_elem.attr("checked", first_val?true:false);
-						other_elem.change();
 					}
 				}
+				$('[id*=_' + field_name + "]").change();
 			}
 			else{
 				first_val = $('input[name^="ar\\.0\\.'+field_name+'"]').val();
@@ -691,9 +764,9 @@ jQuery( function($) {
 					other_elem = $('#ar_' + col + '_' + field_name);
 					if (!(other_elem.attr("disabled"))) {
 						other_elem.val(first_val);
-						other_elem.change();
 					}
 				}
+				$('[id*=_' + field_name + "]").change();
 			}
 		});
 

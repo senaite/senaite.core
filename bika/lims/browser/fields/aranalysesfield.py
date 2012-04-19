@@ -15,8 +15,7 @@ class ARAnalysesField(ObjectField):
     """A field that stores Analyses instances
 
     get() returns the list of Analyses contained inside the AnalysesRequest
-    set() converts a sequence of dictionaries to Analysis instances
-    created inside the AnalysisRequest.
+    set() converts a sequence of UIDS to Analysis instances in the AR
     """
 
     _properties = Field._properties.copy()

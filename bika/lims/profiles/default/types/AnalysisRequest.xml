@@ -35,21 +35,21 @@
      <permission value="View"/>
  </action>
 
- <action title="Edit"
-         action_id="edit"
+ <action title="Analyses"
+         action_id="analyses"
          category="object"
          condition_expr="python:here.guard_cancelled_object()"
          icon_expr=""
          link_target=""
-         url_expr="string:${object_url}/base_edit"
+         url_expr="string:${object_url}/analyses"
          i18n:attributes="title"
          i18n:domain="plone"
          visible="True">
-     <permission value="BIKA: Edit AR"/>
+     <permission value="BIKA: Manage Analysis Requests"/>
  </action>
 
  <action title="Manage Results"
-         action_id="analyses"
+         action_id="manage_results"
          category="object"
          condition_expr="python:here.guard_cancelled_object()"
          icon_expr=""

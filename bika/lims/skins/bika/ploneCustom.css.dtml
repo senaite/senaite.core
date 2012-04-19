@@ -700,6 +700,7 @@ select {
 .noborder {border:none !important;}
 .nomargin {margin:0 !important;}
 .nopadding {padding:0 !important;}
+.nowrap {  whitespace:nowrap !important; }
 
 /* Print Only */
 @media print {

@@ -1,32 +1,25 @@
 jQuery( function($) {
 
 	var bsc = bsc || {
-		storage: {},
 		init: function () {
-			try {
-				if ('localStorage' in window &&
-					window.localStorage !== null &&
-					'JSON' in window &&
-					window.JSON !== null) {
-						bsc.storage = localStorage;
-					}
-			} catch(e) {}
-			// add current time to prevent browser caching
-			stored_counter = bsc.storage.getItem('bsc_counter');
-			$.getJSON(portal_url+'/bsc_counter?' + new Date().getTime(),
-				function(counter) {
-					if (counter != stored_counter){
-						$.getJSON(portal_url+'/bsc_browserdata', function(data){
-							bsc.storage.setItem('bsc_counter', counter);
-							bsc.storage.setItem('bsc_browserdata', JSON.stringify(data));
-							bsc.data = data;
-						});
-					} else {
-						data = bsc.storage.getItem('bsc_browserdata');
-						bsc.data = $.parseJSON(data);
-					}
+			if ('localStorage' in window && window.localStorage !== null) {
+				bsc.storage = localStorage;
+			} else {
+				bsc.storage = {};
+			}
+			t = new Date().getTime();
+			stored_counter = bsc.storage['bsc_counter'];
+			$.getJSON(portal_url+'/bsc_counter?'+t, function(counter) {
+				if (counter != stored_counter){
+					$.getJSON(portal_url+'/bsc_browserdata?'+t, function(data){
+						bsc.storage['bsc_counter'] = counter;
+						bsc.storage['bsc_browserdata'] = $.toJSON(data);
+						bsc.data = data;
+					});
+				} else {
+					bsc.data = $.parseJSON(bsc.storage['bsc_browserdata']);
 				}
-			);
+			});
 		}
 	};
 	bsc.init();

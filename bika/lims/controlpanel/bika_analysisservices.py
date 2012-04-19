@@ -138,7 +138,7 @@ class AnalysisServicesView(BikaListingView):
                          'DuplicateVariation',
                          'Calculation',
                          ],
-             'custom_actions':[{'id': 'duplicate', 'title': 'Duplicate'}, ]
+             'custom_actions':[{'id': 'duplicate', 'title': _('Duplicate')}, ]
              },
 
             {'id':'active',
@@ -157,7 +157,7 @@ class AnalysisServicesView(BikaListingView):
                          'DuplicateVariation',
                          'Calculation',
                          ],
-             'custom_actions':[{'id': 'duplicate', 'title': 'Duplicate'}, ]
+             'custom_actions':[{'id': 'duplicate', 'title': _('Duplicate')}, ]
              },
             {'id':'inactive',
              'title': _('Dormant'),
@@ -175,7 +175,7 @@ class AnalysisServicesView(BikaListingView):
                          'DuplicateVariation',
                          'Calculation',
                          ],
-             'custom_actions':[{'id': 'duplicate', 'title': 'Duplicate'}, ]
+             'custom_actions':[{'id': 'duplicate', 'title': _('Duplicate')}, ]
              },
         ]
 
