@@ -31,7 +31,7 @@
 			<th
 				style="white-space:nowrap;"
 				tal:attributes="class python:repeat['item'].index > 0 and 'column_padding' or ''">
-				<span tal:content="item/title"/>
+				<span tal:content="structure item/title"/>
 				<span
 					tal:condition="python: item['allow_edit'] and item.get('required', False)"
 					class="fieldRequired">&nbsp;</span>
