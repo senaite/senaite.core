@@ -34,12 +34,17 @@ class ServicesView(BikaListingView):
             'Service': {'title': _('Service')},
             'Keyword': {'title': _('Keyword'),
                         'index': 'getKeyword'},
+            'Method': {'title': _('Method')},
+            'Calculation': {'title': _('Calculation')},
         }
         self.review_states = [
             {'id':'all',
              'title': _('All'),
              'transitions': [],
-             'columns':['Service', 'Keyword'],
+             'columns':['Service',
+                        'Keyword',
+                        'Method',
+                        'Calculation', ]
             },
         ]
 
@@ -51,26 +56,32 @@ class ServicesView(BikaListingView):
                        sort_on = 'sortable_title')
         items = []
         for service in services:
-            cat = service.getCategoryTitle
+            service = service.getObject()
+            cat = service.getCategoryTitle()
             if cat not in self.categories:
                 self.categories.append(cat)
             # this folderitems doesn't subclass from the bika_listing.py
             # so we create items from scratch
-            service_title = service.Title
+            service_title = service.Title()
+            calculation = service.getCalculation()
+            method = service.getMethod()
+
             item = {
                 'obj': service,
-                'Keyword': service.getKeyword,
-                'id': service.id,
-                'uid': service.UID,
+                'Keyword': service.getKeyword(),
+                'Method': method and method.Title() or '',
+                'Calculation': calculation and calculation.Title() or '',
+                'id': service.getId(),
+                'uid': service.UID(),
                 'title': service_title,
                 'category': cat,
-                'selected': service.UID in self.selected,
+                'selected': service.UID() in self.selected,
                 'type_class': 'contenttype-AnalysisService',
                 'url': service.absolute_url(),
                 'relative_url': service.absolute_url(),
                 'view_url': service.absolute_url(),
                 'Service': service_title,
-                'replace': {'Service':"<span class='service_title'>%s</span>"%service_title},
+                'replace': {'Service':"<span class='service_title'>%s</span>" % service_title},
                 'before': {},
                 'after': {},
                 'choices':{},
@@ -79,6 +90,7 @@ class ServicesView(BikaListingView):
                 'allow_edit': [],
             }
             items.append(item)
+
 
         self.categories.sort()
 
