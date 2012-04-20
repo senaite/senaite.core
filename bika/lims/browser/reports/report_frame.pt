@@ -3,15 +3,30 @@
 	xmlns:tal="http://xml.zope.org/namespaces/tal"
 	xmlns:metal="http://xml.zope.org/namespaces/metal"
 	xmlns:i18n="http://xml.zope.org/namespaces/i18n"
-	i18n:domain="bika">
+    i18n:domain="bika"
+    tal:define="plone_view context/@@plone">
 <body>
+<table>
+    <tr>
+        <td class="left">
+            <img tal:attributes="src string:${context/absolute_url}/logo.png"/>
+        </td>
+        <td align="right">
+            <br/>
+            <h3 tal:content="view/lab_title | nothing"/>
+            <tal:address tal:repeat="line view/address">
+                <span tal:content="structure line "/>
+                <br/>
+            </tal:address>
 
-	<h1>
-        <img tal:condition="view/icon | nothing"
-            src="" tal:attributes="src view/icon"/>
+            <p  tal:define="printdate view/date" 
+                tal:content="python:plone_view.toLocalizedTime(printdate, long_format=1)"/>
+
+        </td>
+    </tr>
+</table>
+
         <span class="documentFirstHeading" tal:content="view/title | nothing"/>
-    </h1>
-<span> this is the report frame </span>
 
 <div tal:content="structure view/reportout"/>
 

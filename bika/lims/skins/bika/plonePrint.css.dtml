@@ -1,27 +1,8 @@
-/*
-** Plone Print style sheet for CSS2-capable browsers.
-** Copyright Alexander Limi, 2001-2003 - http://www.plonesolutions.com
-**
-** Style sheet documentation can be found at http://plone.org/documentation
-**
-** You should preferrably use ploneCustom.css to add your own CSS classes and to
-** customize your portal, as these are the base fundaments of Plone, and will 
-** change and be refined in newer versions. Keeping your changes in
-** ploneCustom.css will make it easier to upgrade. 
-**
-** Feel free to use whole or parts of this for your own designs, but give credit
-** where credit is due.
-**
-*/
-
-/* <dtml-var "enableHTTPCompression(request=REQUEST, debug=1, css=1)"> (this is for http compression) */
-/* Thanks to A List Apart (http://alistapart.com/) for useful extras */
-
 body {
     background: White url(&dtml-portal_url;/logo.png) no-repeat fixed 95% 95%;
-    font-family:  "Lucida Grande", Verdana, Lucida, Arial, Helveutica, sans-serif;
+    font-family:  "Lucida Grande", Verdana, Lucida, Arial, Helvetica, sans-serif;
     font-size: 11pt !important;
-    color: Red;
+    color: Black;
     margin: 1em;
     padding: 0;
 }
@@ -66,7 +47,7 @@ li,
 p {
     background: transparent;
     border: none ! important;
-    font-family:  "Lucida Grande", Verdana, Lucida, Arial, Helveutica, sans-serif;
+    font-family:  "Lucida Grande", Verdana, Lucida, Arial, Helvetica, sans-serif;
     font-size: 11pt;
     padding: 5px ! important;
     margin: 0 ! important;
@@ -74,14 +55,14 @@ p {
 }
 
 .documentByLine {
-    font-family:  "Lucida Grande", Verdana, Lucida, Arial, Helveutica, sans-serif;
+    font-family:  "Lucida Grande", Verdana, Lucida, Arial, Helvetica, sans-serif;
 }
 
 
 h1, h2, h3, h4, h5, h6
 {
     border: none;
-    font-family:  "Lucida Grande", Verdana, Lucida, Arial, Helveutica, sans-serif;
+    font-family:  "Lucida Grande", Verdana, Lucida, Arial, Helvetica, sans-serif;
     font-weight: bold;
 }
 

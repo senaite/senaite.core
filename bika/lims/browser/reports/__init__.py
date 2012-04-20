@@ -18,9 +18,9 @@ import xhtml2pdf.pisa as pisa
 from zope.interface import implements
 import json
 import plone
-import pdb
 from cStringIO import StringIO
 import sys
+import pdb
 
 class ProductivityView(BrowserView):
     """ Sample View form
@@ -60,6 +60,7 @@ class AdministrationView(BrowserView):
         BrowserView.__init__(self, context, request)
         self.icon = "++resource++bika.lims.images/report_big.png"
         self.TimeOrDate = TimeOrDate
+        self.address = None
 
     def __call__(self):
         return self.template()
@@ -75,7 +76,10 @@ class SubmitForm(BrowserView):
         self.TimeOrDate = TimeOrDate
 
     def __call__(self):
-        #pdb.set_trace()
+        lab = self.context.bika_setup.laboratory
+        self.lab_title = lab.getName()
+        self.address = lab.getPrintAddress()
+        self.date = DateTime()
         report_id =  self.request.form['report_id']
         if report_id == 'analysesperservice':
             self.reportout = AnalysesPerService(self.context, self.request)()
@@ -119,7 +123,6 @@ class SubmitForm(BrowserView):
             setheader('Content-Type', 'application/pdf')
             #setheader('Content-Disposition', 'inline; filename=%s' % filename)
             #self.request.RESPONSE.write(result)
-            #pdb.set_trace()
             thisid = self.context.invokeFactory("File",id="tmp")
             thisfile = self.context[thisid]
             from bika.lims.idserver import renameAfterCreation

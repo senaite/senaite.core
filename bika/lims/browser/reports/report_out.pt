@@ -36,43 +36,13 @@ Number of analyses requested per analysis service.
     class="listing"
     summary="Parameters"
     cellpadding="0" cellspacing="0">
-<tr>
-<td i18n:translate>Client </td>
-<td tal:content="report_parms/client">
-</td>
-</tr>
+    <tal:parms tal:repeat="line report_parms">
+    <tr>
+        <td tal:content="python:line['title']"/>
+        <td tal:content="python:line['value']"/>
+    </tr>
+</tal:parms>
 
-<tr>
-<td i18n:translate>Requested </td>
-<td>
-       <span tal:content="report_parms/daterequested"/>
-</td>
-</tr>
-
-<tr>
-<td i18n:translate>Published </td>
-<td>
-       <span tal:content="report_parms/datepublished"/>
-</td>
-</tr>
-
-<tr>
-<td i18n:translate>Status </td>
-<td tal:content="report_parms/review_state">
-</td>
-</tr>
-
-<tr>
-<td i18n:translate>Active </td>
-<td tal:content="report_parms/cancellation_state">
-</td>
-</tr>
-
-<tr>
-<td i18n:translate>Assigned to worksheet </td>
-<td tal:content="report_parms/ws_review_state">
-</td>
-</tr>
 </table>
 </div>
 

@@ -119,4 +119,31 @@ class Organisation(ATFolder):
     def getPossibleAddresses(self):
         return ['PhysicalAddress', 'PostalAddress', 'BillingAddress']
 
+    def getPrintAddress(self):
+        address_lines = []
+        use_address = None
+        if self.getPostalAddress()['city']:
+            use_address = self.getPostalAddress()
+        elif self.getPhysicalAddress()['city']:
+            use_address = self.getPhysicalAddress()
+        elif self.getBillingAddress()['city']:
+            use_address = self.getBillingAddress()
+        if use_address:
+            if use_address['address']:
+                address_lines.append(use_address['address'])
+            city_line = ''
+            if use_address['city']:
+                city_line += use_address['city'] + ' '
+            if use_address['zip']:
+                city_line += use_address['zip'] + ' '
+            if use_address['state']:
+                city_line += use_address['state']
+            if city_line:
+                address_lines.append(city_line)
+            if use_address['country']:
+                address_lines.append(use_address['country'])
+
+
+        return address_lines
+
 registerType(Organisation, PROJECTNAME)

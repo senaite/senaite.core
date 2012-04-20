@@ -17,7 +17,7 @@ class AnalysesPerService(BrowserView):
     """ stuff
     """
     implements(IViewView)
-    template = ViewPageTemplateFile("analysesperservice.pt")
+    template = ViewPageTemplateFile("report_out.pt")
 
     def __init__(self, context, request):
         BrowserView.__init__(self, context, request)
@@ -29,57 +29,80 @@ class AnalysesPerService(BrowserView):
         pc = getToolByName(self.context, 'portal_catalog')
         rc = getToolByName(self.context, 'reference_catalog')
         self.report_content = {}
-        parms = {}
+        parm_lines = {}
+        parms = []
         count_all = 0
         query = {'portal_type': 'Analysis'}
         if self.request.form.has_key('getClientUID'):
             client_uid = self.request.form['getClientUID']
             query['getClientUID'] = client_uid
             client = rc.lookupObject(client_uid)
-            parms['client'] = client.Title()
+            client_title = client.Title()
         else:
-            parms['client'] = 'Undefined'
+            client_title = 'Undefined'
+        parms.append(
+            { 'title': _('Client'),
+             'value': client_title,
+             'type': 'text'})
 
         date_query = formatDateQuery(self.context, 'DateRequested')
         if date_query:
             query['created'] = date_query
-            date_parms = formatDateParms(self.context, 'DateRequested') 
-            parms['daterequested'] = date_parms
+            requested = formatDateParms(self.context, 'DateRequested') 
         else:
-            parms['daterequested'] = 'Undefined'
+            requested = 'Undefined'
+        parms.append(
+            { 'title': _('Requested'),
+             'value': requested,
+             'type': 'text'})
 
         date_query = formatDateQuery(self.context, 'DatePublished')
         if date_query:
             query['getDatePublished'] = date_query
-            date_parms = formatDateParms(self.context, 'DatePublished') 
-            parms['datepublished'] = date_parms
+            published = formatDateParms(self.context, 'DatePublished') 
         else:
-            parms['datepublished'] = 'Undefined'
+            published = 'Undefined'
+        parms.append(
+            { 'title': _('Published'),
+             'value': published,
+             'type': 'text'})
 
 
         workflow = getToolByName(self.context, 'portal_workflow')
         if self.request.form.has_key('review_state'):
             query['review_state'] = self.request.form['review_state']
-            parms['review_state'] = workflow.getTitleForStateOnType(
+            review_state = workflow.getTitleForStateOnType(
                         self.request.form['review_state'], 'Analysis')
         else:
-            parms['review_state'] = 'Undefined'
+            review_state = 'Undefined'
+        parms.append(
+            { 'title': _('Status'),
+             'value': review_state,
+             'type': 'text'})
 
         if self.request.form.has_key('cancellation_state'):
             query['cancellation_state'] = self.request.form['cancellation_state']
-            parms['cancellation_state'] = workflow.getTitleForStateOnType(
+            cancellation_state = workflow.getTitleForStateOnType(
                         self.request.form['cancellation_state'], 'Analysis')
         else:
-            parms['cancellation_state'] = 'Undefined'
+            cancellation_state = 'Undefined'
+        parms.append(
+            { 'title': self.context.translate(_('Active')),
+             'value': cancellation_state,
+             'type': 'text'})
+
 
 
         if self.request.form.has_key('ws_review_state'):
             query['worksheetanalysis_review_state'] = self.request.form['ws_review_state']
-            parms['ws_review_state'] = self.request.form['ws_review_state']
-            parms['ws_review_state'] = workflow.getTitleForStateOnType(
+            ws_review_state = workflow.getTitleForStateOnType(
                         self.request.form['ws_review_state'], 'Analysis')
         else:
-            parms['ws_review_state'] = 'Undefined'
+            ws_review_state = 'Undefined'
+        parms.append(
+            { 'title': _('Assigned to worksheet'),
+             'value': ws_review_state,
+             'type': 'text'})
 
 
 
