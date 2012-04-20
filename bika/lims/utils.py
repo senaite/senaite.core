@@ -7,6 +7,7 @@ from Products.Five.browser import BrowserView
 from bika.lims import bikaMessageFactory as _
 from bika.lims import interfaces
 from bika.lims import logger
+from bika.lims.config import POINTS_OF_CAPTURE
 from bika.lims.config import Publish
 from email.Utils import formataddr
 from plone.i18n.normalizer.interfaces import IIDNormalizer
@@ -14,6 +15,7 @@ from reportlab.graphics.barcode import getCodes, getCodeNames, createBarcodeDraw
 from zope.component import getUtility
 from zope.interface import providedBy
 import copy,re,urllib
+import json
 import plone.protect
 import transaction
 
@@ -69,7 +71,7 @@ def isActive(obj):
 
 def formatDateQuery(context, date_id):
     """ Obtain and reformat the from and to dates
-        into a date query construct    
+        into a date query construct
     """
     from_date = context.REQUEST.get('%s_fromdate' % date_id, None)
     if from_date:
@@ -263,3 +265,136 @@ def changeWorkflowState(content, state_id, acquire_permissions=False,
     # Map changes to the catalogs
     content.reindexObject(idxs=['allowedRolesAndUsers', 'review_state'])
     return
+
+class bsc_counter(BrowserView):
+    def __call__(self):
+        bsc = getToolByName(self.context, 'bika_setup_catalog')
+        return bsc.getCounter()
+
+class bsc_browserdata(BrowserView):
+    """Returns information about services from bika_setup_catalog.
+    This view is called from ./js/bika.js and it's output is cached
+    in browser localStorage.
+    """
+    def __call__(self):
+        translate = self.context.translate
+        bsc = getToolByName(self.context, 'bika_setup_catalog')
+
+        data = {
+            'categories':{},  # services keyed by "POC_category"
+            'services':{},    # service info, keyed by UID
+        }
+
+        ## Loop ALL SERVICES
+        services = dict([(b.UID, b.getObject()) for b
+                         in bsc(portal_type = "AnalysisService",
+                                inactive_state = "active")])
+
+        for uid, service in services.items():
+
+            ## Store categories
+            ## data['categories'][poc_catUID]: [uid, uid]
+            key = "%s_%s" % (service.getPointOfCapture(),
+                             service.getCategoryUID())
+            if key in data['categories']:
+                data['categories'][key].append(uid)
+            else:
+                data['categories'][key] = [uid, ]
+
+            ## Get dependants
+            ## (this service's Calculation backrefs' dependencies)
+            backrefs = []
+            # this function follows all backreferences so we need skip to
+            # avoid recursion. It should maybe be modified to be more smart...
+            skip = []
+            def walk(items):
+                for item in items:
+                    if item.portal_type == 'AnalysisService'\
+                       and item.UID() != service.UID():
+                        backrefs.append(item)
+                    if item not in skip:
+                        skip.append(item)
+                        walk(item.getBackReferences())
+            walk([service, ])
+
+            ## Get dependencies
+            ## (services we depend on)
+            deps = {}
+            calc = service.getCalculation()
+            if calc:
+                deps = calc.getCalculationDependencies()
+                def walk(deps):
+                    for depserv_uid, depserv_deps in deps.items():
+                        if depserv_uid == uid:
+                            continue
+                        depserv = services[depserv_uid]
+                        category = depserv.getCategory()
+                        cat = '%s_%s' % (category.UID(), category.Title())
+                        poc = '%s_%s' % \
+                            (depserv.getPointOfCapture(),
+                             POINTS_OF_CAPTURE.getValue(depserv.getPointOfCapture()))
+                        srv = '%s_%s' % (depserv.UID(), depserv.Title())
+                        if not deps.has_key(poc): deps[poc] = {}
+                        if not deps[poc].has_key(cat): deps[poc][cat] = []
+                        deps[poc][cat].append(srv)
+                        if depserv_deps:
+                            walk(depserv_deps)
+                walk(deps)
+
+            ## Get partition setup records for this service
+            separate = service.getSeparate()
+            containers = service.getContainer()
+            preservations = service.getPreservation()
+            partsetup = service.getPartitionSetup()
+
+            # Single values become lists here
+            for x in range(len(partsetup)):
+                if partsetup[x].has_key('container') \
+                   and type(partsetup[x]['container']) == str:
+                    partsetup[x]['container'] = [partsetup[x]['container'],]
+                if partsetup[x].has_key('preservation') \
+                   and type(partsetup[x]['preservation']) == str:
+                    partsetup[x]['preservation'] = [partsetup[x]['preservation'],]
+
+            ## If no dependents, backrefs or partition setup exists
+            ## nothing is stored for this service
+            if not (backrefs or deps or separate or
+                    containers or preservations or partsetup):
+                continue
+
+            # store info for this service
+            data['services'][uid] = {
+                'backrefs':[s.UID() for s in backrefs],
+                'deps':deps,
+            }
+
+            data['services'][uid]['Separate'] = separate
+            data['services'][uid]['Container'] = \
+                [container.UID() for container in containers]
+            data['services'][uid]['Preservation'] = \
+                [pres.UID() for pres in preservations]
+            data['services'][uid]['PartitionSetup'] = \
+                partsetup
+
+        uc = getToolByName(self.context, 'uid_catalog')
+
+        ## SamplePoint and SampleType autocomplete lookups need a reference
+        ## to resolve Title->UID
+        data['st_uids'] = {}
+        for s in bsc(portal_type = 'SampleType',
+                        inactive_review_state = 'active'):
+            s = s.getObject()
+            data['st_uids'][s.Title()] = {
+                'uid':s.UID(),
+            }
+
+        data['sp_uids'] = {}
+        for s in bsc(portal_type = 'SamplePoint',
+                        inactive_review_state = 'active'):
+            s = s.getObject()
+            data['sp_uids'][s.Title()] = {
+                'uid':s.UID(),
+                'composite':s.getComposite(),
+            }
+
+        return json.dumps(data)

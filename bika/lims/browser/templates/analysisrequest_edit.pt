@@ -41,11 +41,12 @@
     method="POST">
 
 <input type="hidden" name="submitted" value="1" />
+<span tal:replace="structure context/@@authenticator/authenticator"/>
 <input type="hidden" name="came_from" tal:attributes="value view/came_from" />
 <input type="hidden" name="can_edit_sample" tal:attributes="value can_edit_sample" />
 <input type="hidden" name="can_edit_ar" tal:attributes="value can_edit_ar" />
-
-<span tal:replace="structure context/@@authenticator/authenticator"/>
+<input type="hidden" id="template_data" tal:attributes="value view/listTemplates"/>
+<input type="hidden" id="profile_data" tal:attributes="value view/listProfiles"/>
 
 <!-- member discount percentage if applicable -->
 <input type="hidden" id="member_discount" name="member_discount"
@@ -79,23 +80,42 @@
 <thead>
     <!-- Contact -->
     <tr tal:condition="can_edit_sample"
-        tal:define="cc_contact python:hasattr(context, 'getCCContact') and context.getCCContact() or ''">
+        tal:define="client_contacts python:hasattr(context, 'getCCContacts')
+		                                   and context.getCCContacts() or '';
+					this_contact python:edit and context.getContactUID() or client_contacts[0]['uid'];
+					this_contact python:this_contact and
+								        [c for c in client_contacts
+					                     if c['uid'] == this_contact][0] or '';">
         <th colspan="2" class="rowheader">
             <span i18n:translate="">Contact Person</span>
             &nbsp;<span class="fieldRequired">&nbsp;</span>
         </th>
         <td class="contact"
-            tal:attributes="colspan python: view.col_count+2"
-            tal:define="this_contact python:edit and context.getContactUID();">
-        <select name="Contact" id="primary_contact" tal:attributes="tabindex tabindex/next;">
+            tal:attributes="colspan python: view.col_count+2">
+		<tal:default_ccs
+			tal:repeat="item client_contacts">
+			<span
+				style="display:none"
+				tal:attributes="
+					uid python:item['uid'];
+					title python:item['title'];
+					ccs python:item['ccs_json'];
+					cc_titles python:','.join([x['title'] for x in item['ccs']]);
+					cc_uids python:','.join([x['uid'] for x in item['ccs']]);">
+		</span>
+		</tal:default_ccs>
+        <select
+			name="Contact"
+			id="primary_contact"
+			tal:attributes="tabindex tabindex/next;">
             <tal:item
-                tal:define="vocab here/getContactsDisplayList"
-                tal:repeat="item vocab">
+                tal:repeat="item client_contacts">
                 <option
                     tal:attributes="
-                        value item;
-                        selected python: item in (this_contact, ) and 'selected' or '';"
-                    tal:content="python:vocab.getValue(item)">
+                        value python:item['uid'];
+                        selected python:this_contact and item['uid'] == this_contact['uid']
+						                and 'selected' or '';"
+                    tal:content="python:item['title']">
                 </option>
             </tal:item>
         </select>
@@ -108,10 +128,10 @@
             i18n:attributes="value"
             i18n:domain="bika"
             tal:attributes="tabindex tabindex/next;"/>
-        <input DISABLED="1" value="" id="cc_titles"
-            tal:attributes="value python:edit and ','.join([c.Title() for c in context.getCCContact()]) or ''"/>
+        <input DISABLED="1" id="cc_titles"
+            tal:attributes="value python:this_contact and ','.join([c['title'] for c in this_contact['ccs']]) or ''"/>
         <input type="hidden" id="cc_uids" name="cc_uids"
-            tal:attributes="value python:edit and ','.join([c.UID() for c in context.getCCContact()]) or ''"/>
+            tal:attributes="value python:this_contact and ','.join([c['uid'] for c in this_contact['ccs']]) or ''"/>
         </td>
     </tr>
     <tr tal:condition="not: can_edit_sample"

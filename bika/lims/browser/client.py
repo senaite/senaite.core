@@ -440,32 +440,86 @@ class ClientARTemplatesView(BikaListingView):
 
         return items
 
-class ClientARProfilesAndTemplates(BrowserView):
-    """This little template ties up ARProfiles and ARTemplates in one view
-    """
-    implements(IViewView)
-    template = ViewPageTemplateFile("templates/client_arprofiles_and_templates.pt")
+class ClientARProfilesAndTemplates(BikaListingView):
 
-    icon = "++resource++bika.lims.images/arprofile_big.png"
-    title = _("Analysis Request Profiles")
-    description = ""
+    template = ViewPageTemplateFile("templates/client_profiles_and_templates.pt")
 
-    def __call__(self):
-        self.profiles = ClientARProfilesView(self.context, self.request).contents_table()
-        self.templates = ClientARTemplatesView(self.context, self.request).contents_table()
+    def __init__(self, context, request):
+        super(ClientARProfilesAndTemplates, self).__init__(context, request)
+        self.show_sort_column = False
+        self.show_select_row = False
+        self.show_select_column = True
+        self.table_only = True
+        self.icon = "++resource++bika.lims.images/arprofile_big.png"
+        self.title = _("Profiles and Templates")
+        self.context_actions = {_('Add Profile'):
+                                {'url': 'createObject?type_name=ARProfile',
+                                 'icon': '++resource++bika.lims.images/add.png'},
+                                _('Add Template'):
+                                {'url': 'createObject?type_name=ARTemplate',
+                                 'icon': '++resource++bika.lims.images/add.png'}}
 
-        self.context_actions = {}
-        cp = getToolByName(self.context, 'portal_membership').checkPermission
-        if cp(AddARProfile, self.context) and isActive(self.context):
-            self.context_actions[translate(_('Add Profile'))] = \
-                {'url': 'createObject?type_name=ARProfile',
-                 'icon': '++resource++bika.lims.images/add.png'}
-        if cp(AddARTemplate, self.context) and isActive(self.context):
-            self.context_actions[translate(_('Add Template'))] = \
-                {'url': 'createObject?type_name=ARTemplate',
-                 'icon': '++resource++bika.lims.images/add.png'}
+        self.columns = {
+            'Title': {'title': _('Profile'),
+                      'index': 'sortable_title'},
+            'Description': {'title': _('Description'),
+                            'index': 'description'},
+            'ProfileKey': {'title': _('Profile Key')},
+        }
 
-        return self.template()
+        self.review_states = [
+            {'id':'ARTemplates',
+             'title': _('AR Templates'),
+             'columns': ['Title',
+                         'Description']},
+            {'id':'ARProfiles',
+             'title': _('AR Profiles'),
+             'columns': ['Title',
+                         'Description',
+                         'ProfileKey']},
+        ]
+
+    def getARProfiles(self, contentFilter={}):
+        istate = contentFilter.get("inactive_state", None)
+        if istate == 'active':
+            profiles = [p for p in self.context.objectValues("ARProfile")
+                        if isActive(p)]
+        elif istate == 'inactive':
+            profiles = [p for p in self.context.objectValues("ARProfile")
+                        if not isActive(p)]
+        else:
+            profiles = [p for p in self.context.objectValues("ARProfile")]
+        return profiles
+
+    def getARTemplates(self, contentFilter={}):
+        istate = contentFilter.get("inactive_state", None)
+        if istate == 'active':
+            templates = [p for p in self.context.objectValues("ARTemplate")
+                        if isActive(p)]
+        elif istate == 'inactive':
+            templates = [p for p in self.context.objectValues("ARTemplate")
+                        if not isActive(p)]
+        else:
+            templates = [p for p in self.context.objectValues("ARTemplate")]
+        return templates
+
+    def folderitems(self):
+        if self.review_state == 'ARProfiles':
+            self.contentsMethod = self.getARProfiles
+        elif self.review_state == 'ARTemplates':
+            self.contentsMethod = self.getARTemplates
+        items = BikaListingView.folderitems(self)
+        for x in range(len(items)):
+            if not items[x].has_key('obj'): continue
+            obj = items[x]['obj']
+            items[x]['Title'] = obj.Title()
+            items[x]['replace']['Title'] = "<a href='%s'>%s</a>" % \
+                 (items[x]['url'], items[x]['title'])
+
+            if self.review_state == 'ARProfiles':
+                items[x]['ProfileKey'] = obj.getProfileKey()
+
+        return items
 
 class ClientAnalysisSpecsView(BikaListingView):
     implements(IViewView)

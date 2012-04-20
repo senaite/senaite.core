@@ -1,20 +1,22 @@
 """Client - the main organisational entity in bika.
 """
-from bika.lims import interfaces
-from zope.component import getUtility
 from AccessControl import ClassSecurityInfo
 from Products.ATContentTypes.content import schemata
 from Products.Archetypes import atapi
 from Products.Archetypes.utils import DisplayList
 from Products.CMFCore import permissions
 from Products.CMFCore.utils import getToolByName
-from bika.lims.content.organisation import Organisation
+from bika.lims import PMF, bikaMessageFactory as _
+from bika.lims import interfaces
 from bika.lims.config import *
+from bika.lims.content.organisation import Organisation
 from bika.lims.interfaces import IClient
+from bika.lims.utils import isActive
+from zope.component import getUtility
 from zope.interface import implements
 from zope.interface.declarations import alsoProvides
+import json
 import sys
-from bika.lims import PMF, bikaMessageFactory as _
 
 schema = Organisation.schema.copy() + atapi.Schema((
     atapi.StringField('ClientID',
@@ -119,36 +121,27 @@ class Client(Organisation):
                 return contact.UID()
         return
 
-##    security.declarePublic('getCCContacts')
-##    def getCCContacts(self):
-##        # for every contact, get the list of CC Contacts
-##        # using comma delimited strings in arrays so that it can
-##        # be manipulated in javascript
-##        client_ccs = []
-##        cc_data = {}
-##        wf = getToolByName(self, 'portal_workflow')
-##        for contact in self.objectValues('Contact'):
-##            cc_contacts = []
-##            cc_uids = ''
-##            cc_titles = ''
-##            for cc_contact in contact.getCCContact():
-##                if wf.getInfoFor(cc_contact, 'inactive_state', '') == 'active':
-##                    if cc_uids:
-##                        cc_uids = cc_uids + ', ' + cc_contact.UID()
-##                        cc_titles = cc_titles + ', ' + cc_contact.Title()
-##                    else:
-##                        cc_uids = cc_contact.UID()
-##                        cc_titles = cc_contact.Title()
-##            cc_contacts.append(contact.UID())
-##            cc_contacts.append(cc_uids)
-##            cc_contacts.append(cc_titles)
-##            cc_data[contact.Title()] = cc_contacts
-##
-##        cc_keys = cc_data.keys()
-##        cc_keys.sort()
-##        for cc_key in cc_keys:
-##            client_ccs.append(cc_data[cc_key])
-##        return client_ccs
+    security.declarePublic('getCCContacts')
+    def getCCContacts(self):
+        """Return a JSON value, containing all Contacts and their default CCs
+        for this client.  This function is used to set form values for javascript.
+        """
+        contact_data = []
+        for contact in self.objectValues('Contact'):
+            if isActive(contact):
+                this_contact_data = {'title': contact.Title(),
+                                     'uid': contact.UID(), }
+                ccs = []
+                for cc in contact.getCCContact():
+                    if isActive(cc):
+                        ccs.append({'title': cc.Title(),
+                                    'uid': cc.UID(),})
+                this_contact_data['ccs_json'] = json.dumps(ccs)
+                this_contact_data['ccs'] = ccs
+            contact_data.append(this_contact_data)
+        contact_data.sort(lambda x, y:cmp(x['title'].lower(),
+                                          y['title'].lower()))
+        return contact_data
 
     security.declarePublic('getContactUIDForUser')
     def getContactUIDForUser(self):

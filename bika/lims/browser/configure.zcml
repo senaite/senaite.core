@@ -25,7 +25,6 @@
 
   <include package=".fields"/>
   <include package=".widgets"/>
-  <include package=".viewlets"/>
 
   <browser:page
       for="*"
@@ -47,6 +46,24 @@
       for="Products.CMFPlone.interfaces.IPloneSiteRoot"
       name="accreditation"
       class="bika.lims.browser.accreditation.AccreditationView"
+      permission="zope2.View"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
+  <!-- Some data from bika_setup_catalog gets cached temporarily in the browser.
+       bsc_counter checks if the catalog has been updated. if so,
+       bsc_browserdata returns the required data to the browser. -->
+  <browser:page
+      for="*"
+      name="bsc_counter"
+      class="bika.lims.utils.bsc_counter"
+      permission="zope2.View"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+  <browser:page
+      for="*"
+      name="bsc_browserdata"
+      class="bika.lims.utils.bsc_browserdata"
       permission="zope2.View"
       layer="bika.lims.interfaces.IBikaLIMS"
     />

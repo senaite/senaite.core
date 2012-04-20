@@ -1,8 +1,40 @@
 jQuery( function($) {
-	function showMethod(path, service )
-	{
-	    window.open(path + '/bika_analysisservices/' + service + '/analysis_method','analysismethod', 'toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=400,height=400');
-	}
+
+	var bsc = bsc || {
+		storage: {},
+		init: function () {
+			try {
+				if ('localStorage' in window &&
+					window.localStorage !== null &&
+					'JSON' in window &&
+					window.JSON !== null) {
+						bsc.storage = localStorage;
+					}
+			} catch(e) {}
+			// add current time to prevent browser caching
+			stored_counter = bsc.storage.getItem('bsc_counter');
+			$.getJSON(portal_url+'/bsc_counter?' + new Date().getTime(),
+				function(counter) {
+					if (counter != stored_counter){
+						$.getJSON(portal_url+'/bsc_browserdata', function(data){
+							bsc.storage.setItem('bsc_counter', counter);
+							bsc.storage.setItem('bsc_browserdata', JSON.stringify(data));
+							bsc.data = data;
+						});
+					} else {
+						data = bsc.storage.getItem('bsc_browserdata');
+						bsc.data = $.parseJSON(data);
+					}
+				}
+			);
+		}
+	};
+	bsc.init();
+	window.bsc = bsc;
+
+	jarn.i18n.loadCatalog('bika');
+	jarn.i18n.setTTL(3600000); // 1 hour refresh
+	window.jsi18n = jarn.i18n.MessageFactory('bika');
 
 	function enableAddAttachment(this_field) {
 		// XX move this to worksheet or AR or wherever it actually belongs
@@ -29,12 +61,7 @@ jQuery( function($) {
 	    return
 	}
 
-
 	$(document).ready(function(){
-
-		jarn.i18n.loadCatalog('bika');
-		jarn.i18n.setTTL(3600000); // 1 hour refresh
-		window.jsi18n = jarn.i18n.MessageFactory('bika');
 
 		_ = window.jsi18n;
 
@@ -106,5 +133,3 @@ jQuery( function($) {
 	});
 
 });
-
-

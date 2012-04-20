@@ -8,12 +8,15 @@
     i18n_domain="bika">
 
   <include package="jarn.jsi18n" />
+  <include package="collective.indexing" />
   <include package="collective.subtractiveworkflow" />
   <include package="plone.app.z3cform" />
   <include package="Products.TinyMCE" />
 
   <five:registerPackage package="." initialize=".initialize" />
+
   <include file="permissions.zcml" />
+  <include package="Products.CMFCore" file="permissions.zcml"/>
 
 <!--  <include file="contentmirror.zcml" zcml:condition="installed ore.contentmirror" />-->
 

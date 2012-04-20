@@ -6,7 +6,8 @@ from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from bika.lims import PMF, logger
+from bika.lims import PMF
+from bika.lims import logger
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.analyses import AnalysesView
 from bika.lims.browser.bika_listing import BikaListingView
@@ -23,7 +24,8 @@ from bika.lims.permissions import ResultsNotRequested
 from bika.lims.permissions import SampleSample
 from bika.lims.permissions import ViewResults
 from bika.lims.utils import getUsers
-from bika.lims.utils import isActive, TimeOrDate
+from bika.lims.utils import isActive
+from bika.lims.utils import TimeOrDate
 from bika.lims.utils import pretty_user_name_or_id
 from bika.lims.subscribers import skip
 from bika.lims.subscribers import doActionFor
@@ -699,6 +701,63 @@ class AnalysisRequestAddView(AnalysisRequestViewView):
                or service.getSeparate():
                 ps.append(service.UID())
         return json.dumps(ps)
+
+    def listProfiles(self):
+        ## List of selected services for each ARProfile
+        profiles = {}
+        client = self.context.portal_type == 'AnalysisRequest' \
+            and self.context.aq_parent or self.context
+        for context in (client, self.context.bika_setup.bika_arprofiles):
+            for profile in [p for p in context.objectValues("ARProfile")
+                            if isActive(p)]:
+                slist = {}
+                profile_services = profile.getService()
+                if type(profile_services) not in (list, tuple):
+                    profile_services = [profile_services, ]
+                for p_service in profile_services:
+                    key = "%s_%s" % (p_service.getPointOfCapture(),
+                                     p_service.getCategoryUID())
+                    if key in slist:
+                        slist[key].append(p_service.UID())
+                    else:
+                        slist[key] = [p_service.UID(), ]
+
+                title = context == self.context.bika_setup.bika_arprofiles \
+                    and self.context.translate(_('Lab')) + ": " + profile.Title() \
+                    or profile.Title()
+
+                p_dict = {
+                    'UID':profile.UID(),
+                    'Title':title,
+                    'Services':slist,
+                }
+                profiles[profile.UID()] = p_dict
+        return json.dumps(profiles)
+
+    def listTemplates(self):
+        ## parameters for all ARTemplates
+        templates = {}
+        client = self.context.portal_type == 'AnalysisRequest' \
+            and self.context.aq_parent or self.context
+        for context in (client, self.context.bika_setup.bika_arprofiles):
+            for template in [t for t in context.objectValues("ARTemplate")
+                             if isActive(t)]:
+                title = context == self.context.bika_setup.bika_arprofiles \
+                    and self.context.translate(_('Lab')) + ": " + template.Title() \
+                    or template.Title()
+                sp_title = template.getSamplePoint()
+                st_title = template.getSampleType()
+                profile = template.getARProfile()
+                t_dict = {
+                    'UID':template.UID(),
+                    'Title':template.Title(),
+                    'ARProfile':profile and profile.UID() or '',
+                    'SamplePoint':sp_title,
+                    'SampleType':st_title,
+                    'ReportDryMatter':template.getReportDryMatter(),
+                }
+                templates[template.UID()] = t_dict
+        return json.dumps(templates)
 
 
 class AnalysisRequestEditView(AnalysisRequestAddView):
