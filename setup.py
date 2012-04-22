@@ -35,6 +35,7 @@ setup(name='bika.lims',
           'xhtml2pdf',
           'magnitude',
           'jarn.jsi18n',
+          'collective.indexing',
       ],
       extras_require = {
           'test': [
