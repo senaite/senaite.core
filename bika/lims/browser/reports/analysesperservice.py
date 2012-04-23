@@ -31,6 +31,10 @@ class AnalysesPerService(BrowserView):
         self.report_content = {}
         parm_lines = {}
         parms = []
+        headings = {}
+        headings['header'] = _("Analyses per analysis service")
+        headings['subheader'] = _("Number of analyses requested per analysis service")
+
         count_all = 0
         query = {'portal_type': 'Analysis'}
         if self.request.form.has_key('getClientUID'):
@@ -87,7 +91,7 @@ class AnalysesPerService(BrowserView):
         else:
             cancellation_state = 'Undefined'
         parms.append(
-            { 'title': self.context.translate(_('Active')),
+            { 'title': _('Active'),
              'value': cancellation_state,
              'type': 'text'})
 
@@ -125,6 +129,7 @@ class AnalysesPerService(BrowserView):
         
 
         self.report_content = {
+                'headings': headings,
                 'parms': parms,
                 'datalines': datalines,
                 'total': count_all}

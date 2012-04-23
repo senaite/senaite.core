@@ -21,22 +21,25 @@
 <body
     tal:define="
         report_content view/report_content;
-        report_parms python:report_content['parms'];
+        report_parms python:report_content.has_key('parms')
+                and report_content['parms'] or [];
+        report_headers python:report_content.has_key('headings') 
+                and report_content['headings'] or {};
         lines python:report_content['datalines'];
         total python:report_content['total']"   >
 
-<h2>
-<span i18n:translate="">Analyses per analysis service</span> 
+<h2 tal:condition="python:report_headers.has_key('header')">
+<span tal:content="python:report_headers['header']"/>
 </h2>
-<p i18n:translate="">
-Number of analyses requested per analysis service.
-</p>
+<h3 tal:condition="python:report_headers.has_key('subheader')">
+<span tal:content="python:report_headers['subheader']"/>
+</h3>
 <div>
 <table
     class="listing"
     summary="Parameters"
     cellpadding="0" cellspacing="0">
-    <tal:parms tal:repeat="line report_parms">
+<tal:parms tal:repeat="line report_parms">
     <tr>
         <td tal:content="python:line['title']"/>
         <td tal:content="python:line['value']"/>

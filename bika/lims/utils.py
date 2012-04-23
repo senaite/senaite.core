@@ -18,6 +18,7 @@ import copy,re,urllib
 import json
 import plone.protect
 import transaction
+import pdb
 
 ModuleSecurityInfo('email.Utils').declarePublic('formataddr')
 allow_module('csv')
@@ -200,6 +201,7 @@ def sortable_title(portal, title):
     return sortabletitle
 
 def pretty_user_name_or_id(context, userid):
+    pdb.set_trace()
     pc = getToolByName(context, 'portal_catalog')
     r = pc(portal_type = 'Contact', getUsername = userid)
     if len(r) == 1:
@@ -214,6 +216,21 @@ def pretty_user_name_or_id(context, userid):
     if fullname in (None, ''):
         return userid
     return fullname
+
+def pretty_user_email(context, userid):
+    pdb.set_trace()
+    pc = getToolByName(context, 'portal_catalog')
+    r = pc(portal_type = 'Contact', getUsername = userid)
+    if len(r) == 1:
+        contact = r[0].getObject()
+        return contact.getEmailAddress()
+
+    mtool = getToolByName(context, 'portal_membership')
+    member = mtool.getMemberById(userid)
+    if member is None:
+        return None
+    else:
+        return member.getProperty('email')
 
 def changeWorkflowState(content, state_id, acquire_permissions=False,
                         portal_workflow=None, **kw):

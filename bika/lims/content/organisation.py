@@ -122,11 +122,14 @@ class Organisation(ATFolder):
     def getPrintAddress(self):
         address_lines = []
         use_address = None
-        if self.getPostalAddress()['city']:
+        if self.getPostalAddress().has_key('city') \
+        and self.getPostalAddress()['city']:
             use_address = self.getPostalAddress()
-        elif self.getPhysicalAddress()['city']:
-            use_address = self.getPhysicalAddress()
-        elif self.getBillingAddress()['city']:
+        elif self.getPhysicalAddress().has_key('city') \
+        and self.getPhysicalAddress()['city']:
+                use_address = self.getPhysicalAddress()
+        elif self.getBillingAddress().has_key('city') \
+        and self.getBillingAddress()['city']:
             use_address = self.getBillingAddress()
         if use_address:
             if use_address['address']:

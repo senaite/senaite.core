@@ -11,6 +11,7 @@ from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.client import ClientSamplesView
 from bika.lims.utils import TimeOrDate
+from bika.lims.utils import pretty_user_name_or_id, pretty_user_email
 from bika.lims.interfaces import IReports
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.layout.globals.interfaces import IViewView
@@ -61,6 +62,8 @@ class AdministrationView(BrowserView):
         self.icon = "++resource++bika.lims.images/report_big.png"
         self.TimeOrDate = TimeOrDate
         self.address = None
+        self.reporter = None
+        self.reporter_email = None
 
     def __call__(self):
         return self.template()
@@ -76,10 +79,15 @@ class SubmitForm(BrowserView):
         self.TimeOrDate = TimeOrDate
 
     def __call__(self):
+        #import pdb
+        #pdb.set_trace()
         lab = self.context.bika_setup.laboratory
         self.lab_title = lab.getName()
         self.address = lab.getPrintAddress()
         self.date = DateTime()
+        username = self.context.portal_membership.getAuthenticatedMember().getUserName()
+        self.reporter = pretty_user_name_or_id(self.context, username)
+        self.reporter_email = pretty_user_email(self.context, username)
         report_id =  self.request.form['report_id']
         if report_id == 'analysesperservice':
             self.reportout = AnalysesPerService(self.context, self.request)()
