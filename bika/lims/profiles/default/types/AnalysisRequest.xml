@@ -22,7 +22,7 @@
 
  <alias from="(Default)" to="base_view"/>
 
- <action title="View"
+ <action title="Edit"
          action_id="view"
          category="object"
          condition_expr=""
@@ -35,7 +35,7 @@
      <permission value="View"/>
  </action>
 
- <action title="Analyses"
+ <action title="Manage Analyses"
          action_id="analyses"
          category="object"
          condition_expr="python:here.guard_cancelled_object()"
