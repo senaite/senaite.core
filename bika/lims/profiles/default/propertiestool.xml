@@ -30,6 +30,7 @@
     <element value="InvoiceFolder"/>
 
     <element value="PricelistFolder"/>
+    <element value="ATFile"/>
 
     <element value="Address"/>
     <element value="Analysis"/>
