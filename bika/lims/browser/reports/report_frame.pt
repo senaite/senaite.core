@@ -8,18 +8,31 @@
 <table>
     <tr>
         <td class="left">
-            <img tal:attributes="src string:${context/absolute_url}/logo.png"/>
         </td>
         <td align="right">
+            <img tal:attributes="src string:${context/absolute_url}/logo.png"/>
             <br/>
             <h3 tal:content="view/lab_title | nothing"/>
             <tal:address tal:repeat="line view/address">
                 <span tal:content="structure line "/>
                 <br/>
             </tal:address>
+            <br/>
 
-            <p  tal:define="printdate view/date"
+            <span  tal:define="printdate view/date" 
                 tal:content="python:plone_view.toLocalizedTime(printdate, long_format=1)"/>
+            <tal:reporter tal:condition="view/reporter">
+                <br/>
+                <br/>
+                <span i18n:translate="">Created by:</span>
+                <span tal:content="view/reporter"/>
+                <tal:email tal:condition="view/reporter_email">
+                    <br/>
+                    <a tal:define="email view/reporter_email"
+                       tal:content="email"
+                       tal:attributes="href string:mailto:${email}"/>
+                </tal:email>
+            </tal:reporter>
 
         </td>
     </tr>

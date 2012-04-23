@@ -14,7 +14,7 @@
 
  <configlet title="Laboratory Information" action_id="bika_labinfo"
     appId="bika.lims" category="Products" condition_expr=""
-    icon_expr="string:++resource++bika.lims.images/lab.png"
+    icon_expr="string:++resource++bika.lims.images/laboratory.png"
 	url_expr="string:$portal_url/bika_setup/laboratory/base_edit"
     visible="True"
 	i18n:attributes="title">
