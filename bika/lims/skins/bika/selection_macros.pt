@@ -1,5 +1,5 @@
 <html
-    xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en"
+    xmlns="http://www.w3.org/1999/xhtml"
     i18n:domain="bika">
 
 <body>
@@ -29,7 +29,7 @@
         </tal:clients>
     </select>
 </div>
-       
+
 </div>
 
 <div metal:define-macro="date">
@@ -65,7 +65,7 @@
 
     </td></tr>
     </table>
-</div>       
+</div>
 </div>
 
 <div metal:define-macro="review_state"

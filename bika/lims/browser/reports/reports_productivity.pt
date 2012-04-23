@@ -1,5 +1,4 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
-	xml:lang="en" lang="en"
 	xmlns:tal="http://xml.zope.org/namespaces/tal"
 	xmlns:metal="http://xml.zope.org/namespaces/metal"
 	xmlns:i18n="http://xml.zope.org/namespaces/i18n"
@@ -31,7 +30,7 @@
     i18n:translate=""
 >Analyses per service</a>
 <br/>
-<span i18n:translate="">The number of analyses 
+<span i18n:translate="">The number of analyses
         requested per analysis service
 </span>
 </p>
@@ -105,13 +104,13 @@
 
 <tal:created
     tal:define="date_id string:DateRequested;
-                date_label string:Requested">  
+                date_label string:Requested">
 <metal:date use-macro="context/selection_macros/macros/date"/>
 </tal:created>
 
 <tal:published
     tal:define="date_id string:DatePublished;
-                date_label string:Published">  
+                date_label string:Published">
 <metal:date use-macro="context/selection_macros/macros/date"/>
 </tal:published>
 
@@ -147,7 +146,7 @@
 
 <tal:created
     tal:define="date_id string:xDateRequested;
-                date_label string:Requested">  
+                date_label string:Requested">
 <metal:date use-macro="context/selection_macros/macros/date"/>
 </tal:created>
 
@@ -185,7 +184,7 @@
 <!--
 <tal:created
     tal:define="date_id string:DateRequested;
-                date_label string:Requested">  
+                date_label string:Requested">
 <metal:date use-macro="context/selection_macros/macros/date"/>
 </tal:created>
 
@@ -224,7 +223,7 @@
 
 <tal:received
     tal:define="date_id string:DateReceived;
-                date_label string:Received">  
+                date_label string:Received">
 <metal:date use-macro="context/selection_macros/macros/date"/>
 </tal:received>
 
@@ -263,7 +262,7 @@
 
 <tal:loaded
     tal:define="date_id string:DateLoaded;
-                date_label string:Loaded">  
+                date_label string:Loaded">
 <metal:date use-macro="context/selection_macros/macros/date"/>
 </tal:loaded>
 

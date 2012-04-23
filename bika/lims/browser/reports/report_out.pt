@@ -1,5 +1,4 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
-	xml:lang="en" lang="en"
 	xmlns:tal="http://xml.zope.org/namespaces/tal"
 	xmlns:metal="http://xml.zope.org/namespaces/metal"
 	xmlns:i18n="http://xml.zope.org/namespaces/i18n"
@@ -9,7 +8,7 @@
 <head tal:define="portal_url nocall:context/portal_url;
                   portal portal_url/getPortalObject;">
 
-    <style type="text/css" media="all" 
+    <style type="text/css" media="all"
            tal:condition="python:exists('portal/ploneCustom.css')"
            tal:content="structure string:&lt;!-- @import url($portal_url/ploneCustom.css); --&gt;">
 
@@ -26,7 +25,7 @@
         total python:report_content['total']"   >
 
 <h2>
-<span i18n:translate="">Analyses per analysis service</span> 
+<span i18n:translate="">Analyses per analysis service</span>
 </h2>
 <p i18n:translate="">
 Number of analyses requested per analysis service.

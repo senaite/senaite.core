@@ -1,5 +1,4 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
-	xml:lang="en" lang="en"
 	xmlns:tal="http://xml.zope.org/namespaces/tal"
 	xmlns:metal="http://xml.zope.org/namespaces/metal"
 	xmlns:i18n="http://xml.zope.org/namespaces/i18n"
@@ -54,13 +53,13 @@
 
 <tal:created
     tal:define="date_id string:DateRequested;
-                date_label string:Requested">  
+                date_label string:Requested">
 <metal:date use-macro="context/selection_macros/macros/date"/>
 </tal:created>
 
 <tal:published
     tal:define="date_id string:DatePublished;
-                date_label string:Published">  
+                date_label string:Published">
 <metal:date use-macro="context/selection_macros/macros/date"/>
 </tal:published>
 

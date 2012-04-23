@@ -1,5 +1,4 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
-	xml:lang="en" lang="en"
 	xmlns:tal="http://xml.zope.org/namespaces/tal"
 	xmlns:metal="http://xml.zope.org/namespaces/metal"
 	xmlns:i18n="http://xml.zope.org/namespaces/i18n"
@@ -19,7 +18,7 @@
                 <br/>
             </tal:address>
 
-            <p  tal:define="printdate view/date" 
+            <p  tal:define="printdate view/date"
                 tal:content="python:plone_view.toLocalizedTime(printdate, long_format=1)"/>
 
         </td>
