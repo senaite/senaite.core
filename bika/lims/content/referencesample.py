@@ -10,7 +10,7 @@ from Products.CMFCore import permissions
 from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFCore.permissions import View
 from Products.CMFCore.utils import getToolByName
-from bika.lims import bikaMessageFactory as _
+from bika.lims import PMF, bikaMessageFactory as _
 from bika.lims.browser.fields import ReferenceResultsField
 from bika.lims.browser.widgets import DateTimeWidget as bika_DateTimeWidget
 from bika.lims.browser.widgets import ReferenceResultsWidget
@@ -23,7 +23,7 @@ import sys, time
 
 schema = BikaSchema.copy() + Schema((
     ReferenceField('ReferenceDefinition',
-        schemata = 'Description',
+        schemata = PMF('Description'),
         allowed_types = ('ReferenceDefinition',),
         relationship = 'ReferenceSampleReferenceDefinition',
         referenceClass = HoldingReference,
@@ -34,25 +34,23 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     BooleanField('Blank',
-        schemata = 'Description',
+        schemata = PMF('Description'),
         default = False,
         widget = BooleanWidget(
             label = _("Blank"),
-            description = _("Blank description",
-                            "Reference sample values are zero or 'blank'"),
+            description = _("Reference sample values are zero or 'blank'"),
         ),
     ),
     BooleanField('Hazardous',
-        schemata = 'Description',
+        schemata = PMF('Description'),
         default = False,
         widget = BooleanWidget(
             label = _("Hazardous"),
-            description = _("Hazardous description",
-                            "Samples of this type should be treated as hazardous"),
+            description = _("Samples of this type should be treated as hazardous"),
         ),
     ),
     ReferenceField('ReferenceManufacturer',
-        schemata = 'Description',
+        schemata = PMF('Description'),
         allowed_types = ('ReferenceManufacturer',),
         relationship = 'ReferenceSampleReferenceManufacturer',
         vocabulary = "getReferenceManufacturers",
@@ -63,52 +61,64 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     StringField('CatalogueNumber',
-        schemata = 'Description',
+        schemata = PMF('Description'),
         widget = StringWidget(
             label = _("Catalogue Number"),
         ),
     ),
     StringField('LotNumber',
-        schemata = 'Description',
+        schemata = PMF('Description'),
         widget = StringWidget(
             label = _("Lot Number"),
         ),
     ),
+    TextField('Remarks',
+        schemata = PMF('Description'),
+        searchable = True,
+        default_content_type = 'text/x-web-intelligent',
+        allowable_content_types = ('text/x-web-intelligent',),
+        default_output_type="text/html",
+        widget = TextAreaWidget(
+            macro = "bika_widgets/remarks",
+            label = _('Remarks'),
+            append_only = True,
+        ),
+    ),
     DateTimeField('DateSampled',
-        schemata = 'Dates',
+        schemata = PMF('Dates'),
         widget = bika_DateTimeWidget(
             label = _("Date Sampled"),
         ),
     ),
     DateTimeField('DateReceived',
-        schemata = 'Dates',
+        schemata = PMF('Dates'),
         default_method = 'current_date',
         widget = bika_DateTimeWidget(
             label = _("Date Received"),
         ),
     ),
     DateTimeField('DateOpened',
-        schemata = 'Dates',
+        schemata = PMF('Dates'),
         widget = bika_DateTimeWidget(
             label = _("Date Opened"),
         ),
     ),
     DateTimeField('ExpiryDate',
-        schemata = 'Dates',
+        schemata = PMF('Dates'),
         required = 1,
         widget = bika_DateTimeWidget(
             label = _("Expiry Date"),
         ),
     ),
     DateTimeField('DateExpired',
-        schemata = 'Dates',
+        schemata = PMF('Dates'),
         widget = bika_DateTimeWidget(
             label = _("Date Expired"),
             visible = {'edit':'hidden'},
         ),
     ),
     DateTimeField('DateDisposed',
-        schemata = 'Dates',
+        schemata = PMF('Dates'),
         widget = bika_DateTimeWidget(
             label = _("Date Disposed"),
             visible = {'edit':'hidden'},
@@ -119,14 +129,6 @@ schema = BikaSchema.copy() + Schema((
         required = 1,
         widget = ReferenceResultsWidget(
             label = _("Expected Results"),
-        ),
-    ),
-    TextField('Notes',
-        schemata = 'Description',
-        default_content_type = 'text/plain',
-        allowable_content_types = ('text/plain',),
-        widget = TextAreaWidget(
-            label = _("Notes"),
         ),
     ),
     ComputedField('ReferenceSupplierUID',
@@ -143,7 +145,7 @@ schema = BikaSchema.copy() + Schema((
     ),
 ))
 
-schema['title'].schemata = 'Description'
+schema['title'].schemata = PMF('Description')
 
 class ReferenceSample(BaseFolder):
     implements(IReferenceSample)
@@ -161,19 +163,24 @@ class ReferenceSample(BaseFolder):
         return DateTime()
 
     def getReferenceDefinitions(self):
+
         def make_title(o):
             # the javascript uses these strings to decide if it should
             # check the blank or hazardous checkboxes when a reference
-            # definition is selected
+            # definition is selected (./js/referencesample.js)
             if not o:
                 return ''
-            blankstr = self.translate(_('indicator_blank', 'Blank: '))
-            hazstr = self.translate(_('indicator_hazardous', ' (!)'))
-            return '%s%s%s'%(o.getBlank() and blankstr or '',
-                             o.Title(),
-                             o.getHazardous() and hazstr or '')
+            translate = self.translation_service.translate
+            title = o.Title()
+            if o.getBlank():
+                title += " %s" % translate(_('(Blank)'))
+            if o.getHazardous():
+                title += " %s" % translate(_('(Hazardous)'))
+
+            return title
+
         bsc = getToolByName(self, 'bika_setup_catalog')
-        defs = [o.getObject() for o in \
+        defs = [o.getObject() for o in
                 bsc(portal_type = 'ReferenceDefinition',
                     inactive_state = 'active')]
         items = [('','')] + [(o.UID(), make_title(o)) for o in defs]
@@ -186,7 +193,7 @@ class ReferenceSample(BaseFolder):
 
     def getReferenceManufacturers(self):
         bsc = getToolByName(self, 'bika_setup_catalog')
-        items = [('','')] + [(o.UID, o.Title) for o in \
+        items = [('','')] + [(o.UID, o.Title) for o in
                                bsc(portal_type='ReferenceManufacturer',
                                    inactive_state = 'active')]
         o = self.getReferenceDefinition()

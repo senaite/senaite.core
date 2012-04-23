@@ -7,7 +7,8 @@ from AccessControl import ClassSecurityInfo
 from Products.Archetypes.public import *
 from Products.Archetypes.references import HoldingReference
 from Products.CMFCore.permissions import View, ModifyPortalContent
-from bika.lims import bikaMessageFactory as _
+from Products.CMFCore.utils import getToolByName
+from bika.lims import PMF, bikaMessageFactory as _
 from bika.lims.browser.widgets import ServicesWidget
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
@@ -16,53 +17,39 @@ import sys
 
 schema = BikaSchema.copy() + Schema((
     StringField('ProfileKey',
-        schemata = 'Description',
         widget = StringWidget(
             label = _("Profile Keyword"),
-            description = _("Profile Keyword description",
-                            "The profile's keyword is used to uniquely identify "
+            description = _("The profile's keyword is used to uniquely identify "
                             "it in import files. It has to be unique, and it may "
                             "not be the same as any Calculation Interim field ID."),
         ),
     ),
     ReferenceField('Service',
-        schemata = 'Analyses',
+        schemata = PMF('Analyses'),
         required = 1,
         multiValued = 1,
         allowed_types = ('AnalysisService',),
         relationship = 'ARProfileAnalysisService',
         widget = ServicesWidget(
             label = _("Profile Analyses"),
-            description = _("Profile Analyses description",
-                            "The analyses included in this profile, grouped per category"),
+            description = _("The analyses included in this profile, grouped per category"),
         )
     ),
-    TextField('Notes',
-        schemata = 'Description',
-        default_content_type = 'text/plain',
-        allowable_content_types = ('text/plain',),
+    TextField('Remarks',
+        searchable = True,
+        default_content_type = 'text/x-web-intelligent',
+        allowable_content_types = ('text/x-web-intelligent',),
+        default_output_type="text/html",
         widget = TextAreaWidget(
-            label = _("Remarks"),
-        ),
-    ),
-    ComputedField('ClientTitle',
-        expression = 'context.aq_parent.Title()',
-        widget = ComputedWidget(
-            visible = False,
-        ),
-    ),
-    ComputedField('ClientUID',
-        expression = 'context.aq_parent.UID()',
-        widget = ComputedWidget(
-            visible = False,
+            macro = "bika_widgets/remarks",
+            label = _('Remarks'),
+            append_only = True,
         ),
     ),
 ),
 )
 schema['title'].widget.visible = True
-schema['title'].schemata = 'Description'
 schema['description'].widget.visible = True
-schema['description'].schemata = 'Description'
 IdField = schema['id']
 
 class ARProfile(BaseContent):

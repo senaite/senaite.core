@@ -1,40 +1,60 @@
 <?xml version="1.0"?>
-<dc-workflow workflow_id="bika_cancellation_workflow"
-             title="Cancellation Workflow [bika]"
-             description="This workflow allows users to Cancel objects"
+<dc-workflow xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+             i18n:domain="bika"
+             workflow_id="bika_cancellation_workflow"
+             title="Bika Cancellation Workflow"
              state_variable="cancellation_state"
              initial_state="active"
              manager_bypass="False">
 
-
- <state state_id="active" title="Active">
-  <description>Item is active and visible</description>
+ <state state_id="active" title="Active" i18n:attributes="title">
+  <description i18n:translate=""></description>
   <exit-transition transition_id="cancel"/>
  </state>
 
- <state state_id="cancelled" title="Cancelled">
-  <description>Item has been cancelled</description>
+ <state state_id="cancelled" title="Cancelled" i18n:attributes="title">
+  <description i18n:translate=""></description>
   <exit-transition transition_id="reinstate"/>
  </state>
 
- <transition transition_id="cancel" title="Cancel" new_state="cancelled" trigger="USER" before_script="" after_script="">
-  <action url="workflow_action?workflow_action=cancel" category="" icon="">Cancel</action>
+ <transition transition_id="cancel"
+             title="Cancel"
+             new_state="cancelled"
+             trigger="USER"
+             before_script=""
+             after_script=""
+             i18n:attributes="title">
+  <description i18n:translate=""></description>
+  <action url="workflow_action?workflow_action=cancel"
+          category=""
+          icon=""
+          i18n:translate="">Cancel</action>
   <guard>
    <guard-permission>BIKA: Cancel and reinstate</guard-permission>
-   <guard-expression>python:here.guard_cancel()</guard-expression>
+   <guard-expression>python:here.guard_cancel_transition()</guard-expression>
   </guard>
  </transition>
 
- <transition transition_id="reinstate" title="Reinstate" new_state="active" trigger="USER" before_script="" after_script="">
-  <action url="workflow_action?workflow_action=reinstate" category="" icon="">Reinstate</action>
+ <transition transition_id="reinstate"
+             title="Reinstate"
+             new_state="active"
+             trigger="USER"
+             before_script=""
+             after_script=""
+             i18n:attributes="title">
+  <description i18n:translate=""></description>
+  <action url="workflow_action?workflow_action=reinstate"
+          category=""
+          icon=""
+          i18n:translate="">Reinstate</action>
   <guard>
    <guard-permission>BIKA: Cancel and reinstate</guard-permission>
-   <guard-expression>python:here.guard_reinstate()</guard-expression>
+   <guard-expression>python:here.guard_reinstate_transition()</guard-expression>
   </guard>
  </transition>
 
  <variable variable_id="action" for_catalog="False" for_status="True" update_always="True">
-  <description>The last transition</description>
+  <description i18n:translate="">The last transition</description>
   <default>
    <expression>transition/getId|nothing</expression>
   </default>
@@ -43,7 +63,7 @@
  </variable>
 
  <variable variable_id="actor" for_catalog="False" for_status="True" update_always="True">
-  <description>The ID of the user who performed the last transition</description>
+  <description i18n:translate="">The ID of the user who performed the last transition</description>
   <default>
    <expression>user/getId</expression>
   </default>
@@ -52,7 +72,7 @@
  </variable>
 
  <variable variable_id="comments" for_catalog="False" for_status="True" update_always="True">
-  <description>Comments about the last transition</description>
+  <description i18n:translate="">Comments about the last transition</description>
   <default>
    <expression>python:state_change.kwargs.get('comment', '')</expression>
   </default>
@@ -61,7 +81,7 @@
  </variable>
 
  <variable variable_id="review_history" for_catalog="False" for_status="False" update_always="False">
-  <description>Provides access to workflow history</description>
+  <description i18n:translate="">Provides access to workflow history</description>
   <default>
    <expression>state_change/getHistory</expression>
   </default>
@@ -70,7 +90,7 @@
  </variable>
 
  <variable variable_id="time" for_catalog="False" for_status="True" update_always="True">
-  <description>Time of the last transition</description>
+  <description i18n:translate="">Time of the last transition</description>
   <default>
    <expression>state_change/getDateTime</expression>
   </default>

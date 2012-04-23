@@ -1,8 +1,9 @@
 <?xml version="1.0"?>
 <object name="Contact"
-   meta_type="Factory-based Type Information with dynamic views"
-   xmlns:i18n="http://xml.zope.org/namespaces/i18n">
- <property name="title">Contact</property>
+        meta_type="Factory-based Type Information with dynamic views"
+        xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+        i18n:domain="plone">
+ <property name="title" i18n:translate="">Contact</property>
  <property name="description"></property>
  <property name="content_icon">++resource++bika.lims.images/contact.png</property>
  <property name="content_meta_type">Contact</property>
@@ -21,21 +22,27 @@
  <alias from="(Default)" to="base_edit"/>
  <alias from="view" to="base_edit"/>
  <alias from="edit" to="base_edit"/>
+
  <action title="View"
          action_id="view"
          category="object"
          condition_expr=""
          url_expr="string:${object_url}/base_edit"
+         i18n:attributes="title"
+         i18n:domain="plone"
          visible="False">
-  <permission value="View"/>
+    <permission value="View"/>
  </action>
+
  <action title="Edit"
          action_id="edit"
          category="object"
          condition_expr=""
          url_expr="string:${object_url}/edit"
+         i18n:attributes="title"
+         i18n:domain="plone"
          visible="True">
-  <permission value="BIKA: Manage Clients"/>
+    <permission value="BIKA: Manage Clients"/>
  </action>
 
  <action title="Login details"
@@ -43,8 +50,9 @@
          category="object"
          condition_expr=""
          url_expr="string:${object_url}/contact_login_details"
+         i18n:attributes="title"
          visible="True">
-  <permission value="BIKA: Manage Clients"/>
+    <permission value="BIKA: Manage Clients"/>
  </action>
 
 </object>

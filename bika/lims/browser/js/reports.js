@@ -1,39 +1,59 @@
 jQuery( function($) {
+$(document).ready(function(){
 
-	$(document).ready(function(){
-        e = $('[id$="date"]')
-        $(e).datepicker({'dateFormat': 'dd M yy', showAnim: ''})
-			.click(function(){$(this).attr('value', '');})
+	_ = window.jsi18n;
 
-        $("#analysestotals_selector").click(function(event){
-            $("#submitter").toggle(true);
-            $(".criteria").toggle(false);
-            event.preventDefault();
-            $("#analysestotals").toggle(true);
-        });
-        $("#analysespersampletype_selector").click(function(event){
-            $(".criteria").toggle(false);
-            event.preventDefault();
-            $("#analysespersampletype").toggle(true);
-        });
-        $("#analysesperclient_selector, #memberanalysesperclient_selector")
-            .click(function(event){
-            $(".criteria").toggle(false);
-            event.preventDefault();
-            $("#analysesperclient").toggle(true);
-        });
-        $("#tats_selector").click(function(event){
-            $(".criteria").toggle(false);
-            event.preventDefault();
-            $("#tats").toggle(true);
-        });
-        $("#attachments_selector").click(function(event){
-            $(".criteria").toggle(false);
-            event.preventDefault();
-            $("#attachments").toggle(true);
-        });
+	$("#analysestotals_selector").click(function(event){
+		$(".criteria").toggle(false);
+		event.preventDefault();
+		$("#analysestotals").toggle(true);
+	});
+	$("#analysespersampletype_selector").click(function(event){
+		$(".criteria").toggle(false);
+		event.preventDefault();
+		$("#analysespersampletype").toggle(true);
+	});
+	$("#analysesperclient_selector, #memberanalysesperclient_selector")
+		.click(function(event){
+		$(".criteria").toggle(false);
+		event.preventDefault();
+		$("#analysesperclient").toggle(true);
+	});
+	$("#tats_selector").click(function(event){
+		$(".criteria").toggle(false);
+		event.preventDefault();
+		$("#tats").toggle(true);
+	});
+	$("#attachments_selector").click(function(event){
+		$(".criteria").toggle(false);
+		event.preventDefault();
+		$("#attachments").toggle(true);
+	});
+	$("#analysesoutofrange_selector").click(function(event){
+		$(".criteria").toggle(false);
+		event.preventDefault();
+		$("#analysesoutofrange").toggle(true);
+	});
+	$("#analysesrepeated_selector").click(function(event){
+		$(".criteria").toggle(false);
+		event.preventDefault();
+		$("#analysesrepeated").toggle(true);
+	});
+	$("#standardanalysisqc_selector").click(function(event){
+		$(".criteria").toggle(false);
+		event.preventDefault();
+		$("#standardanalysisqc").toggle(true);
+	});
+	$("#duplicateanalysisqc_selector").click(function(event){
+		$(".criteria").toggle(false);
+		event.preventDefault();
+		$("#duplicateanalysisqc").toggle(true);
+	});
+	$("#arsnotinvoiced_selector").click(function(event){
+		$(".criteria").toggle(false);
+		event.preventDefault();
+		$("#arsnotinvoiced").toggle(true);
 	});
 
 });
-
-
+});

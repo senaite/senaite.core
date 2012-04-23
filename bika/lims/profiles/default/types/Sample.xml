@@ -1,9 +1,10 @@
 <?xml version="1.0"?>
 <object name="Sample"
-   meta_type="Factory-based Type Information with dynamic views"
-   xmlns:i18n="http://xml.zope.org/namespaces/i18n">
- <property name="title">Sample</property>
- <property name="description">Sample object</property>
+        meta_type="Factory-based Type Information with dynamic views"
+        xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+        i18n:domain="plone">
+ <property name="title" i18n:translate="">Sample</property>
+ <property name="description"></property>
  <property name="content_icon">++resource++bika.lims.images/sample.png</property>
  <property name="content_meta_type">Sample</property>
  <property name="product">bika.lims</property>
@@ -13,34 +14,36 @@
  <property name="global_allow">False</property>
  <property name="filter_content_types">True</property>
  <property name="allowed_content_types">
- 	<element value="SamplePartition"/>
+  <element value="SamplePartition"/>
  </property>
  <property name="allow_discussion">False</property>
-
  <property name="default_view_fallback">False</property>
  <property name="default_view">base_view</property>
+
  <alias from="(Default)" to="base_view"/>
 
  <action title="View"
-    action_id="view"
-	category="object"
-	condition_expr=""
-    icon_expr=""
-	link_target=""
-	url_expr="string:${object_url}/base_view"
-    visible="True">
-  <permission value="View"/>
+         action_id="view"
+         category="object"
+         condition_expr=""
+         icon_expr=""
+         link_target=""
+         url_expr="string:${object_url}/base_view"
+         i18n:attributes="title"
+         i18n:domain="plone"
+         visible="True">
+   <permission value="View"/>
  </action>
 
  <action title="Edit"
-    action_id="edit"
-	category="object"
-	condition_expr="python:here.guard_edit_sample()"
-    icon_expr=""
-	link_target=""
-	url_expr="string:${object_url}/base_edit"
-    visible="True">
-  <permission value="BIKA: Edit Sample"/>
+         action_id="edit"
+         category="object"
+         icon_expr=""
+         link_target=""
+         url_expr="string:${object_url}/base_edit"
+         i18n:attributes="title"
+         i18n:domain="plone"
+         visible="False">
  </action>
 
  <action title="Log"
@@ -48,30 +51,33 @@
          category="object"
          condition_expr=""
          url_expr="string:${object_url}/log"
+         i18n:attributes="title"
          visible="True">
-  <permission value="View"/>
+   <permission value="View"/>
  </action>
 
 <action title="Large Sticker"
-	action_id="sticker_large"
-	category="document_actions"
-	condition_expr=""
-	icon_expr="string:${object_url}/++resource++bika.lims.images/sticker_large.png"
-	link_target=""
-	url_expr="string:${object_url}/sticker?size=large"
-	visible="True">
-	<permission value="View"/>
+        action_id="sticker_large"
+        category="document_actions"
+        condition_expr=""
+        icon_expr="string:${object_url}/++resource++bika.lims.images/sticker_large.png"
+        link_target=""
+        url_expr="string:${object_url}/sticker?size=large"
+        i18n:attributes="title"
+        visible="True">
+   <permission value="View"/>
 </action>
 
 <action title="Small Sticker"
-	action_id="sticker_small"
-	category="document_actions"
-	condition_expr=""
-	icon_expr="string:${object_url}/++resource++bika.lims.images/sticker_small.png"
-	link_target=""
-	url_expr="string:${object_url}/sticker?size=small"
-	visible="True">
-	<permission value="View"/>
+        action_id="sticker_small"
+        category="document_actions"
+        condition_expr=""
+        icon_expr="string:${object_url}/++resource++bika.lims.images/sticker_small.png"
+        link_target=""
+        url_expr="string:${object_url}/sticker?size=small"
+        i18n:attributes="title"
+        visible="True">
+   <permission value="View"/>
 </action>
 
 </object>

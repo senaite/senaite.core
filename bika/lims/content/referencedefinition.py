@@ -11,17 +11,16 @@ from bika.lims.browser.widgets import ReferenceResultsWidget
 from bika.lims.config import PROJECTNAME
 import sys
 import time
-from bika.lims import bikaMessageFactory as _
+from bika.lims import PMF, bikaMessageFactory as _
 from zope.interface import implements
 
 schema = BikaSchema.copy() + Schema((
     ReferenceResultsField('ReferenceResults',
-        schemata = 'Reference Results',
+        schemata = PMF('Reference Results'),
         required = 1,
         widget = ReferenceResultsWidget(
             label = _("Reference Results"),
-            description = _("Reference Results description",
-                            "Click on Analysis Categories (against shaded background) "
+            description = _("Click on Analysis Categories (against shaded background) "
                             "to see Analysis Services in each category. Enter minimum "
                             "and maximum values to indicate a valid results range. "
                             "Any result outside this range will raise an alert. "
@@ -33,28 +32,26 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     BooleanField('Blank',
-        schemata = 'Description',
+        schemata = PMF('Description'),
         default = False,
         widget = BooleanWidget(
             label = _("Blank"),
-            description = _("Blank description",
-                            "Reference sample values are zero or 'blank'"),
+            description = _("Reference sample values are zero or 'blank'"),
         ),
     ),
     BooleanField('Hazardous',
-        schemata = 'Description',
+        schemata = PMF('Description'),
         default = False,
         widget = BooleanWidget(
             label = _("Hazardous"),
-            description = _("Hazardous description",
-                            "Samples of this type should be treated as hazardous"),
+            description = _("Samples of this type should be treated as hazardous"),
         ),
     ),
 ))
 
-schema['title'].schemata = 'Description'
+schema['title'].schemata = PMF('Description')
 schema['title'].widget.visible = True
-schema['description'].schemata = 'Description'
+schema['description'].schemata = PMF('Description')
 schema['description'].widget.visible = True
 
 class ReferenceDefinition(BaseContent):

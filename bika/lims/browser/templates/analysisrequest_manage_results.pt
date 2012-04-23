@@ -1,5 +1,4 @@
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
-    lang="en"
+<html xmlns="http://www.w3.org/1999/xhtml"
     xmlns:tal="http://xml.zope.org/namespaces/tal"
     xmlns:metal="http://xml.zope.org/namespaces/metal"
     xmlns:i18n="http://xml.zope.org/namespaces/i18n"
@@ -84,11 +83,17 @@
             <img
 				i18n:attributes="title"
 				title="Analyses"
-				src="++resource++bika.lims.images/service.png"/>
+				src="++resource++bika.lims.images/analysisservice.png"/>
             <span tal:content="python: table[0]"/>
         </h3>
         <span tal:replace="structure python: table[1]"/>
     </tal:tables>
+
+	<tal:remarks define="
+		field python:context.Schema()['Remarks'];
+		errors python:{};">
+		 <metal:widget use-macro="python:context.widget('Remarks', mode='edit')" />
+	</tal:remarks>
 
 </metal:content-core>
 

@@ -2,8 +2,10 @@
 """
 from AccessControl import ClassSecurityInfo
 from DateTime import DateTime
+from datetime import timedelta
 from Products.ATContentTypes.content import schemata
 from Products.ATContentTypes.lib.historyaware import HistoryAwareMixin
+from Products.ATContentTypes.utils import DT2dt,dt2DT
 from Products.ATExtensions.ateapi import DateTimeField, DateTimeWidget
 from Products.Archetypes import atapi
 from Products.Archetypes.config import REFERENCE_CATALOG
@@ -15,7 +17,7 @@ from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFCore.utils import getToolByName
 from bika.lims.config import ManageBika, PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
-from bika.lims.utils import sortable_title
+from bika.lims.utils import sortable_title, pretty_user_name_or_id
 import sys
 import time
 from zope.interface import implements
@@ -28,8 +30,7 @@ schema = BikaSchema.copy() + Schema((
         searchable = True,
         widget = StringWidget(
             label = _("Sample ID"),
-            description = _("Sample ID description",
-                            "The ID assigned to the client\'s sample by the lab"),
+            description = _("The ID assigned to the client's sample by the lab"),
             visible = {'edit':'hidden'},
         ),
     ),
@@ -90,26 +91,18 @@ schema = BikaSchema.copy() + Schema((
             visible = False,
         ),
     ),
-    DateTimeField('DateSubmitted',
-        required = 1,
-        default_method = 'current_date',
-        widget = DateTimeWidget(
-            label = _("Date Submitted"),
-            visible = {'edit':'hidden'},
-        ),
+    BooleanField('SamplingWorkflowEnabled',
     ),
     DateTimeField('DateSampled',
-        with_time = False,
+    ),
+    StringField('Sampler',
+        searchable=True
+    ),
+    DateTimeField('SamplingDate',
         widget = DateTimeWidget(
-            label = _("Date Sampled"),
+            label = _("Sampling Date"),
             visible = {'edit':'hidden'},
         ),
-    ),
-    StringField('SubmittedByUser',
-        searchable = True,
-    ),
-    StringField('SampledByUser',
-        searchable = True,
     ),
     DateTimeField('DateReceived',
         widget = DateTimeWidget(
@@ -117,14 +110,15 @@ schema = BikaSchema.copy() + Schema((
             visible = {'edit':'hidden'},
         ),
     ),
-    IntegerField('LastARNumber',
-    ),
-    TextField('Notes',
+    TextField('Remarks',
         searchable = True,
-        default_content_type = 'text/plain',
-        allowable_content_types = ('text/plain',),
+        default_content_type = 'text/x-web-intelligent',
+        allowable_content_types = ('text/x-web-intelligent',),
+        default_output_type="text/html",
         widget = TextAreaWidget(
-            label = _("Notes")
+            macro = "bika_widgets/remarks",
+            label = _('Remarks'),
+            append_only = True,
         ),
     ),
     ComputedField('ClientUID',
@@ -151,15 +145,21 @@ schema = BikaSchema.copy() + Schema((
             label = _("Composite"),
         ),
     ),
-    DateTimeField('DisposalDate',
-        widget = DateTimeWidget(
-            label = _("Disposal date"),
-            visible = {'edit':'hidden'},
-        ),
-    ),
     DateTimeField('DateExpired',
         widget = DateTimeWidget(
             label = _("Date Expired"),
+            visible = {'edit':'hidden'},
+        ),
+    ),
+    ComputedField('DisposalDate',
+        expression = 'context.disposal_date()',
+        widget = ComputedWidget(
+            visible = False,
+        ),
+    ),
+    DateTimeField('DateDisposed',
+        widget = DateTimeWidget(
+            label = _("Date Disposed"),
             visible = {'edit':'hidden'},
         ),
     ),
@@ -186,6 +186,8 @@ class Sample(BaseFolder, HistoryAwareMixin):
         """ Return the Sample ID as title """
         return self.getId()
 
+    # Forms submit Title Strings which need
+    # to be converted to objects somewhere along the way...
     def setSampleType(self, value, **kw):
         """ convert SampleType title to UID
         """
@@ -194,6 +196,8 @@ class Sample(BaseFolder, HistoryAwareMixin):
         value = sampletype[0].UID
         return self.Schema()['SampleType'].set(self, value)
 
+    # Forms submit Title Strings which need
+    # to be converted to objects somewhere along the way...
     def setSamplePoint(self, value, **kw):
         """ convert SamplePoint title to UID
         """
@@ -219,69 +223,38 @@ class Sample(BaseFolder, HistoryAwareMixin):
         return ars
 
     security.declarePublic('getAnalyses')
-    def getAnalyses(self):
-        """ return list of titles of analyses linked to this sample """
-        ars = self.getAnalysisRequests()
+    def getAnalyses(self, contentFilter):
+        """ return list of all analyses against this sample
+        """
         analyses = []
-        for ar in ars:
-            for analysis in ar.getAnalyses():
-                analyses.append(analysis.Title())
-        """ sort, and remove duplicates """
-        if analyses:
-            analyses.sort()
-            last = analyses[-1]
-            for i in range(len(analyses) - 2, -1, -1):
-                if last == analyses[i]: del analyses[i]
-                else: last = analyses[i]
-
+        for ar in self.getAnalysisRequests():
+            analyses += ar.getAnalyses(**contentFilter)
         return analyses
 
-    security.declarePublic('current_date')
-    def current_date(self):
-        """ return current date """
-        return DateTime()
-
-    security.declarePublic('disposal_date')
     def disposal_date(self):
-        """ return disposal date """
-        delay = self.getSampleType().getRetentionPeriod()
-        dis_date = self.getDateSampled() + int(delay)
+        """ Calculate the disposal date by returning the latest
+            disposal date in this sample's partitions """
+
+        parts = self.objectValues("SamplePartition")
+        dates = []
+        for part in parts:
+            date = part.getDisposalDate()
+            if date:
+                dates.append(date)
+        if dates:
+            dis_date = dt2DT(max([DT2dt(date) for date in dates]))
+        else:
+            dis_date = None
         return dis_date
 
-    security.declarePublic('current_user')
-    def current_user(self):
-        """ get the current user """
-        user = self.REQUEST.AUTHENTICATED_USER
-        user_id = user.getUserName()
-        return user_id
-
-    security.declarePublic('getSubmittedByName')
-    def getSubmittedByName(self):
-        """ get the name of the user who submitted the sample """
-        uid = self.getSubmittedByUser()
-        if uid is None:
-            return ' '
-
-        if uid == '':
-            return ' '
-
-        r = self.portal_catalog(portal_type = 'Contact', getUsername = uid)
-        if len(r) == 1:
-            return r[0].Title
-
-        mtool = getToolByName(self, 'portal_membership')
-        member = mtool.getMemberById(uid)
-        if member is None:
-            return uid
-        else:
-            fullname = member.getProperty('fullname')
-        if fullname is None:
-            return uid
-        if fullname == '':
-            return uid
-        return fullname
-
-
+    def getLastARNumber(self):
+        ARs = self.getBackReferences("AnalysisRequestSample")
+        ar_ids = [AR.id for AR in ARs]
+        ar_ids.sort()
+        try:
+            last_ar_number = int(ar_ids[-1].split("-")[-1])
+        except ValueError:
+            return 0
+        return last_ar_number
 
 atapi.registerType(Sample, PROJECTNAME)
-

@@ -295,7 +295,6 @@ class ARImport(BaseFolder):
                 CCEmails = self.getCCEmails(),
                 ClientOrderNumber = self.getOrderID(),
                 ReportDryMatter = report_dry_matter,
-                DateRequested = DateTime(),
                 Sample = sample_uid,
                 Analyses = analyses
                 )
@@ -363,6 +362,7 @@ class ARImport(BaseFolder):
                 this_profile = None
                 if not profiles.has_key(profilekey):
                     profiles[profilekey] = []
+                    # there is no profilekey index
                     l_prox = self.portal_catalog(portal_type = 'ARProfile',
                                     getProfileKey = profilekey)
                     if l_prox:
@@ -370,6 +370,7 @@ class ARImport(BaseFolder):
                         profiles[profilekey] = [s.UID() for s in p.getService()]
                         this_profile = p
                     else:
+                        # there is no profilekey index
                         c_prox = self.portal_catalog(portal_type = 'ARProfile',
                                     getClientUID = client.UID(),
                                     getProfileKey = profilekey)
@@ -437,7 +438,7 @@ class ARImport(BaseFolder):
                 SampleType = sampletype,
                 DateSampled = sample_date,
                 DateReceived = DateTime(),
-                Notes = aritem.getClientRemarks(),
+                Remarks = aritem.getClientRemarks(),
                 )
             sample.processForm()
             sample_uid = sample.UID()
@@ -453,11 +454,10 @@ class ARImport(BaseFolder):
                 Contact = self.getContact(),
                 CCEmails = self.getCCEmails(),
                 ReportDryMatter = report_dry_matter,
-                DateRequested = DateTime(),
                 Sample = sample_uid,
                 Profile = ar_profile,
                 ClientOrderNumber = self.getOrderID(),
-                Notes = aritem.getClientRemarks(),
+                Remarks = aritem.getClientRemarks(),
                 Analyses = analyses,
                 )
             ar.processForm()

@@ -1,5 +1,4 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
-    xml:lang="en" lang="en"
     xmlns:tal="http://xml.zope.org/namespaces/tal"
     xmlns:metal="http://xml.zope.org/namespaces/metal"
     xmlns:i18n="http://xml.zope.org/namespaces/i18n"
@@ -126,14 +125,23 @@
             class="context workflow_action_button"
             type="submit"
             value="deactivate"
+            i18n:attributes="value"
             name="workflow_action"/>
         <input
             tal:condition="python:inactive_state == 'inactive'"
             class="context workflow_action_button"
             type="submit"
             value="activate"
+            i18n:attributes="value"
             name="workflow_action"/>
-    <form>
+    </form>
+
+	<br/>
+	<tal:remarks define="
+		field python:context.Schema()['Remarks'];
+		errors python:{};">
+		 <metal:widget use-macro="python:context.widget('Remarks', mode='edit')" />
+	</tal:remarks>
 
 </metal:content>
 </body>

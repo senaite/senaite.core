@@ -52,6 +52,11 @@ schema = BikaSchema.copy() + Schema((
     ),
     StringField('Result',
     ),
+    DateTimeField('ResultCaptureDate',
+        widget = ComputedWidget(
+            visible = False,
+        ),
+    ),
     StringField('ResultDM',
     ),
     BooleanField('Retested',
@@ -60,8 +65,7 @@ schema = BikaSchema.copy() + Schema((
     DurationField('MaxTimeAllowed',
         widget = DurationWidget(
             label = _("Maximum turn-around time"),
-            description = _("Maximum turn-around time description",
-                            "Maximum time allowed for completion of the analysis. "
+            description = _("Maximum time allowed for completion of the analysis. "
                             "A late analysis alert is raised when this period elapses"),
         ),
     ),
@@ -194,6 +198,11 @@ class Analysis(BaseContent):
         dep_services = [d.UID() for d in calculation.getDependentServices()]
         dep_analyses = [a for a in siblings if a.getServiceUID() in dep_services]
         return dep_analyses
+
+    def setResult(self, value, **kw):
+        # Always update ResultCapture date when this field is modified
+        self.setResultCaptureDate(DateTime())
+        self.getField('Result').set(self, value, **kw)
 
     def result_in_range(self, result = None, specification = "lab"):
         """ Check if a result is "in range".

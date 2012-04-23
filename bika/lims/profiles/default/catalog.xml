@@ -55,6 +55,8 @@
   <indexed_attr value="Type"/>
  </index>
 
+ <index name="id" meta_type="FieldIndex"> <indexed_attr value="id"/> </index>
+ <index name="getId" meta_type="FieldIndex"> <indexed_attr value="getId"/> </index>
  <index name="UID" meta_type="FieldIndex"> <indexed_attr value="UID"/> </index>
  <index name="allowedRolesAndUsers" meta_type="KeywordIndex"> <indexed_attr value="allowedRolesAndUsers"/> </index>
  <index name="cmf_uid" meta_type="FieldIndex"> <indexed_attr value="cmf_uid"/> </index>
@@ -63,8 +65,20 @@
  <index name="effectiveRange" meta_type="DateRangeIndex" since_field="effective" until_field="expires"/>
  <index name="end" meta_type="DateIndex"> <property name="index_naive_time_as_local">True</property> </index>
  <index name="expires" meta_type="DateIndex"> <property name="index_naive_time_as_local">True</property> </index>
+ <index name="in_reply_to" meta_type="FieldIndex"> <indexed_attr value="in_reply_to"/> </index>
+ <index name="is_default_page" meta_type="FieldIndex"> <indexed_attr value="is_default_page"/> </index>
+ <index name="is_folderish" meta_type="FieldIndex"> <indexed_attr value="is_folderish"/> </index>
+ <index name="meta_type" meta_type="FieldIndex"> <indexed_attr value="meta_type"/> </index>
+ <index name="modified" meta_type="DateIndex"> <property name="index_naive_time_as_local">True</property> </index>
+ <index name="object_provides" meta_type="KeywordIndex"> <indexed_attr value="object_provides"/> </index>
+ <index name="getRawRelatedItems" meta_type="KeywordIndex"> <indexed_attr value="getRawRelatedItems"/> </index>
+ <index name="path" meta_type="ExtendedPathIndex"/>
+ <index name="portal_type" meta_type="FieldIndex"> <indexed_attr value="portal_type"/> </index>
+ <index name="sortable_title" meta_type="FieldIndex"> <indexed_attr value="sortable_title"/> </index>
+ <index name="description" meta_type="FieldIndex"> <indexed_attr value="Description"/> </index>
+ <index name="start" meta_type="DateIndex"> <property name="index_naive_time_as_local">True</property> </index>
+
  <index name="getAnalyst" meta_type="FieldIndex"> <indexed_attr value="getAnalyst"/> </index>
- <index name="getBrand" meta_type="FieldIndex"> <indexed_attr value="getBrand"/> </index>
  <index name="getCategoryTitle" meta_type="FieldIndex"> <indexed_attr value="getCategoryTitle"/> </index>
  <index name="getCategoryUID" meta_type="FieldIndex"> <indexed_attr value="getCategoryUID"/> </index>
  <index name="getClientReference" meta_type="FieldIndex"> <indexed_attr value="getClientReference"/> </index>
@@ -82,16 +96,9 @@
  <index name="getDueDate" meta_type="DateIndex"> <property name="index_naive_time_as_local">True</property></index>
  <index name="getExpiryDate" meta_type="DateIndex"> <property name="index_naive_time_as_local">True</property></index>
  <index name="getFullname" meta_type="FieldIndex"> <indexed_attr value="getFullname"/> </index>
- <index name="getMobilePhone" meta_type="FieldIndex"> <indexed_attr value="getMobilePhone"/> </index>
- <index name="getId" meta_type="FieldIndex"> <indexed_attr value="getId"/> </index>
- <index name="getKeyword" meta_type="FieldIndex"> <indexed_attr value="getKeyword"/> </index>
- <index name="getLastARNumber" meta_type="FieldIndex"> <indexed_attr value="getLastARNumber"/> </index>
  <index name="getName" meta_type="FieldIndex"> <indexed_attr value="getName"/> </index>
- <index name="getNrAnalyses" meta_type="FieldIndex"> <indexed_attr value="getNrAnalyses"/> </index>
  <index name="getObjPositionInParent" meta_type="GopipIndex"> <indexed_attr value="getObjPositionInParent"/> </index>
  <index name="getPointOfCapture" meta_type="FieldIndex"> <indexed_attr value="getPointOfCapture"/> </index>
- <index name="getProfileKey" meta_type="FieldIndex"> <indexed_attr value="getProfileKey"/> </index>
- <index name="getRawRelatedItems" meta_type="KeywordIndex"> <indexed_attr value="getRawRelatedItems"/> </index>
  <index name="getRequestID" meta_type="FieldIndex"> <indexed_attr value="getRequestID"/> </index>
  <index name="getSampleID" meta_type="FieldIndex"> <indexed_attr value="getSampleID"/> </index>
  <index name="getSamplePointTitle" meta_type="FieldIndex"> <indexed_attr value="getSamplePointTitle"/> </index>
@@ -101,19 +108,6 @@
  <index name="getStatus" meta_type="FieldIndex"> <indexed_attr value="getStatus"/> </index>
  <index name="getType" meta_type="FieldIndex"> <indexed_attr value="getType"/> </index>
  <index name="getUsername" meta_type="FieldIndex"> <indexed_attr value="getUsername"/> </index>
- <index name="getWorksheetTemplateTitle" meta_type="FieldIndex"> <indexed_attr value="getWorksheetTemplateTitle"/> </index>
- <index name="id" meta_type="FieldIndex"> <indexed_attr value="id"/> </index>
- <index name="in_reply_to" meta_type="FieldIndex"> <indexed_attr value="in_reply_to"/> </index>
- <index name="is_default_page" meta_type="FieldIndex"> <indexed_attr value="is_default_page"/> </index>
- <index name="is_folderish" meta_type="FieldIndex"> <indexed_attr value="is_folderish"/> </index>
- <index name="meta_type" meta_type="FieldIndex"> <indexed_attr value="meta_type"/> </index>
- <index name="modified" meta_type="DateIndex"> <property name="index_naive_time_as_local">True</property> </index>
- <index name="object_provides" meta_type="KeywordIndex"> <indexed_attr value="object_provides"/> </index>
- <index name="path" meta_type="ExtendedPathIndex"/>
- <index name="portal_type" meta_type="FieldIndex"> <indexed_attr value="portal_type"/> </index>
- <index name="sortable_title" meta_type="FieldIndex"> <indexed_attr value="sortable_title"/> </index>
- <index name="description" meta_type="FieldIndex"> <indexed_attr value="Description"/> </index>
- <index name="start" meta_type="DateIndex"> <property name="index_naive_time_as_local">True</property> </index>
  <index name="review_state" meta_type="FieldIndex"> <indexed_attr value="review_state"/> </index>
  <index name="inactive_state" meta_type="FieldIndex"> <indexed_attr value="inactive_state"/> </index>
  <index name="worksheetanalysis_review_state" meta_type="FieldIndex"> <indexed_attr value="worksheetanalysis_review_state"/> </index>
@@ -140,8 +134,6 @@
  <column value="getCategoryUID"/>
  <column value="getIcon"/>
  <column value="getId"/>
- <column value="getKeyword"/>
- <column value="getLastARNumber"/>
  <column value="getObjSize"/>
  <column value="getRemoteUrl"/>
  <column value="getRequestID"/>

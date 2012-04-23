@@ -18,18 +18,18 @@ class LateAnalysesView(BikaListingView):
                               'getDueDate': {'query': [DateTime(),], 'range': 'max'},
                               'review_state':['assigned',
                                               'sample_received',
-                                              'sample_due',
                                               'to_be_verified',
                                               'verified'],
                               'cancellation_state': 'active',
                               'sort_on':'getDateReceived'}
         self.title = _("Late Analyses")
-        self.description = _("Late Analyses description", "")
+        self.description = ""
         self.context_actions = {}
         self.show_sort_column = False
         self.show_select_row = False
         self.show_select_column = False
         self.pagesize = 100
+        self.show_workflow_action_buttons = False
         self.view_url = self.view_url + "/late_analyses"
 
         request.set('disable_border', 1)

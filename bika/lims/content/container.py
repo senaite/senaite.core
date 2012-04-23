@@ -11,9 +11,8 @@ schema = BikaSchema.copy() + Schema((
     BooleanField('PrePreserved',
         default = False,
         widget = BooleanWidget(
-            label = _("Pre-Preserved"),
-            description = _("Pre-Preserved description",
-                            "Check this box if this container is already preserved."
+            label = _("Pre-preserved"),
+            description = _("Check this box if this container is already preserved."
                             "Setting this will short-circuit the preservation workflow "
                             "for sample partitions stored in this container."),
         ),
@@ -26,15 +25,16 @@ schema = BikaSchema.copy() + Schema((
         relationship = 'ContainerPreservation',
         referenceClass = HoldingReference,
         widget = ReferenceWidget(
+            checkbox_bound = 1,
             label = _("Preservation"),
-            description = _("Pre-Preserved Preservation description",
-                            "If this container is pre-preserved, then the preservation "
+            description = _("If this container is pre-preserved, then the preservation "
                             "method could be selected here."),
         ),
     ),
-    IntegerField('Capacity',
+    StringField('Capacity',
         required = 0,
-        widget = IntegerWidget(
+        default = "0 ml",
+        widget = StringWidget(
             label = _("Capacity"),
             description = _("Maximum possible size or volume of samples."),
         ),
@@ -67,10 +67,20 @@ class Container(BaseContent):
 
     def getContainerTypes(self):
         bsc = getToolByName(self, 'bika_setup_catalog')
-        items = [('','')] + [(o.UID, o.Title) for o in \
-                               bsc(portal_type='ContainerType',
-                                   inactive_state = 'active')]
+        items = [('','')] + [(o.UID, o.Title) for o in
+                               bsc(portal_type='ContainerType')]
         o = self.getContainerType()
+        if o and o.UID() not in [i[0] for i in items]:
+            items.append((o.UID(), o.Title()))
+        items.sort(lambda x,y: cmp(x[1], y[1]))
+        return DisplayList(list(items))
+
+    def getPreservations(self):
+        bsc = getToolByName(self, 'bika_setup_catalog')
+        items = [('','')] + [(o.UID, o.Title) for o in
+                               bsc(portal_type='Preservation',
+                                   inactive_state = 'active')]
+        o = self.getPreservation()
         if o and o.UID() not in [i[0] for i in items]:
             items.append((o.UID(), o.Title()))
         items.sort(lambda x,y: cmp(x[1], y[1]))

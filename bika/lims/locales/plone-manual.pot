@@ -1,0 +1,80 @@
+# this file is maintained manually.
+# contains bika translations from the plone domain.
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Bika-LIMS\n"
+"POT-Creation-Date: 2012-01-01 23:11+0000\n"
+"PO-Revision-Date: 2012-01-01 23:11+0000\n"
+"Last-Translator: Bika <bikasupport@bikalabs.com>\n"
+"Language-Team: Bika <bikasupport@bikalabs.com>\n\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+msgid "label_schema_Accounting"
+msgstr "Accounting"
+
+msgid "label_schema_Address"
+msgstr "Address"
+
+msgid "label_schema_Analysis"
+msgstr "Analysis"
+
+msgid "label_schema_Analyses"
+msgstr "Analyses"
+
+msgid "label_schema_Bank details"
+msgstr "Bank details"
+
+msgid "label_schema_Calculation"
+msgstr "Calculation"
+
+msgid "label_schema_Dates"
+msgstr "Dates"
+
+msgid "label_schema_Description"
+msgstr "Description"
+
+msgid "label_schema_Email Telephone Fax"
+msgstr "Email Telephone Fax"
+
+msgid "label_schema_ID Server"
+msgstr "ID Server"
+
+msgid "label_schema_Labels"
+msgstr "Labels"
+
+msgid "label_schema_Layout"
+msgstr "Layout"
+
+msgid "label_schema_Location"
+msgstr "Location"
+
+msgid "label_schema_Method"
+msgstr "Method"
+
+msgid "label_schema_Partition Setup"
+msgstr "Partition Setup"
+
+msgid "label_schema_Preferences"
+msgstr "Preferences"
+
+msgid "label_schema_Publication preference"
+msgstr "Publication preference"
+
+msgid "label_schema_Reference Results"
+msgstr "Reference Results"
+
+msgid "label_schema_Result Options"
+msgstr "Result Options"
+
+msgid "label_schema_Results Reports"
+msgstr "Results Reports"
+
+msgid "label_schema_Security"
+msgstr "Security"
+
+msgid "label_schema_Uncertainties"
+msgstr "Uncertainties"

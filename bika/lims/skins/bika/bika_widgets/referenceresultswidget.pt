@@ -16,14 +16,6 @@
 <metal:use use-macro="field_macro | context/widgets/field/macros/edit">
     <metal:body_macro fill-slot="widget_body">
 
-	<input type="hidden"
-		id="i18n_strings"
-		indicator_blank="Blank: "
-		indicator_hazardous=" (!)"
-		i18n:attributes="
-			indicator_blank indicator_blank;
-			indicator_hazardous indicator_hazardous;"/>
-
 	<div id="folderlisting-main-table"
 		tal:content="structure python:widget.ReferenceResults(field, allow_edit=True)"/>
 

@@ -1,5 +1,4 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
-  xml:lang="en" lang="en"
   xmlns:tal="http://xml.zope.org/namespaces/tal"
   xmlns:metal="http://xml.zope.org/namespaces/metal"
   xmlns:i18n="http://xml.zope.org/namespaces/i18n"
@@ -169,8 +168,9 @@ h1, h2, h3, h4, h5, h6 {
         contact_address python:contact_address or client.getPhysicalAddress()">
         <span tal:content="contact/getFullname"/>
         <span tal:content="client/Title"/>
+        <br/>
         <span tal:define="address python:contact_address.get('address','')"
-          tal:content="structure python:'<br/>' + modules['Products.PythonScripts.standard'].newline_to_br(address)"/>
+          tal:content="structure python:modules['Products.PythonScripts.standard'].newline_to_br(address)"/>
         <div>
           <span tal:content="python:contact_address.get('city','')"/>,
           <span tal:content="python:contact_address.get('state','')"/>,
@@ -181,8 +181,9 @@ h1, h2, h3, h4, h5, h6 {
 
       <td>
         <span tal:content="laboratory/Title"/>
+        <br/>
         <span tal:define="address python:lab_address.get('address','')"
-          tal:content="structure python:'<br/>' + modules['Products.PythonScripts.standard'].newline_to_br(address)"/>
+          tal:content="structure python:modules['Products.PythonScripts.standard'].newline_to_br(address)"/>
         <div>
           <span tal:content="python:lab_address.get('city','')"/>,
           <span tal:content="python:lab_address.get('state','')"/>,
@@ -201,7 +202,7 @@ h1, h2, h3, h4, h5, h6 {
     <thead>
 
       <tr>
-        <th i18n:translate="">Client Order ID</th>
+        <th i18n:translate="">Client Order</th>
         <td tal:repeat="ar view/batch"
           tal:attributes="colspan python:ar.getReportDryMatter() and 2 or 1"
           tal:content="ar/getClientOrderNumber">123</td>
@@ -393,7 +394,7 @@ h1, h2, h3, h4, h5, h6 {
     <tr tal:repeat="ar view/batch">
     <th tal:content="string:${ar/getRequestID}:">AR:</th>
     <td width=50%
-      tal:content="python:ar.getNotes() or default">None</td>
+      tal:content="python:ar.getRemarks() or default">None</td>
     </tr>
   </table>
 

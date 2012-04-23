@@ -1,3 +1,4 @@
+from zope.i18n import translate
 from AccessControl import getSecurityManager
 from DateTime import DateTime
 from DocumentTemplate import sequence
@@ -7,8 +8,7 @@ from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from bika.lims import ManageResults
-from bika.lims import EditResults, EditWorksheet
+from bika.lims import EditResults, EditWorksheet, ManageWorksheets
 from bika.lims import PMF, logger
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.analyses import AnalysesView
@@ -16,8 +16,9 @@ from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.browser.bika_listing import WorkflowAction
 from bika.lims.browser.referencesample import ReferenceSamplesView
 from bika.lims.exportimport import instruments
-from bika.lims.utils import getAnalysts
-from bika.lims.utils import isActive, TimeOrDate
+from bika.lims.subscribers import skip
+from bika.lims.subscribers import doActionFor
+from bika.lims.utils import getUsers, isActive, TimeOrDate
 from operator import itemgetter
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.layout.globals.interfaces import IViewView
@@ -36,7 +37,6 @@ class WorksheetWorkflowAction(WorkflowAction):
         plone.protect.CheckAuthenticator(form)
         workflow = getToolByName(self.context, 'portal_workflow')
         rc = getToolByName(self.context, REFERENCE_CATALOG)
-        skiplist = self.request.get('workflow_skiplist', [])
         action, came_from = WorkflowAction._get_form_workflow_action(self)
 
         # XXX combine data from multiple bika listing tables.
@@ -48,9 +48,6 @@ class WorksheetWorkflowAction(WorkflowAction):
                         item_data[i] = d
             else:
                 item_data = json.loads(form['item_data'])
-
-        if 'Notes' in form:
-            self.context.setNotes(form['Notes'])
 
         if action == 'submit' and self.request.form.has_key("Result"):
             selected_analyses = WorkflowAction._get_selected_items(self)
@@ -98,27 +95,27 @@ class WorksheetWorkflowAction(WorkflowAction):
                     for dependency in dependencies:
                         dep_state = workflow.getInfoFor(dependency, 'review_state')
                         if hasInterims[uid]:
-                            if dep_state in ('sample_due', 'sample_received', 'attachment_due', 'to_be_verified',):
+                            if dep_state in ('to_be_sampled', 'to_be_preserved',
+                                             'sample_due', 'sample_received',
+                                             'attachment_due', 'to_be_verified',):
                                 can_submit = False
                                 break
                         else:
-                            if dep_state in ('sample_due', 'sample_received',):
+                            if dep_state in ('to_be_sampled', 'to_be_preserved',
+                                             'sample_due', 'sample_received',):
                                 can_submit = False
                                 break
                     for dependency in dependencies:
                         if workflow.getInfoFor(dependency, 'review_state') in \
-                           ('sample_due', 'sample_received'):
+                           ('to_be_sampled', 'to_be_preserved',
+                            'sample_due', 'sample_received'):
                             can_submit = False
                 if can_submit:
                     submissable.append(analysis)
 
             # and then submit them.
             for analysis in submissable:
-                if not analysis.UID() in skiplist:
-                    try:
-                        workflow.doActionFor(analysis, 'submit')
-                    except WorkflowException:
-                        pass
+                doActionFor(analysis, 'submit')
 
             message = PMF("Changes saved.")
             self.context.plone_utils.addPortalMessage(message, 'info')
@@ -152,15 +149,10 @@ class WorksheetWorkflowAction(WorkflowAction):
                 return
 
             selected_analyses = WorkflowAction._get_selected_items(self)
-            selected_analysis_uids = selected_analyses.keys()
-
-            if selected_analyses:
-                for uid in selected_analysis_uids:
-                    if self.context.REQUEST.has_key('workflow_skiplist'):
-                        if uid in self.context.REQUEST['workflow_skiplist']:
-                            continue
-                    analysis = rc.lookupObject(uid)
-                    self.context.removeAnalysis(analysis)
+            for analysis in selected_analyses:
+                if skip(analysis, action, peek=True):
+                    continue
+                self.context.removeAnalysis(analysis)
 
             self.destination_url = self.context.absolute_url()
             self.request.response.redirect(self.destination_url)
@@ -204,7 +196,10 @@ class WorksheetAnalysesView(AnalysesView):
             'Pos': {'title': _('Position')},
             'DueDate': {'title': _('Due Date')},
             'Service': {'title': _('Analysis')},
-            'Result': {'title': _('Result')},
+            'Result': {'title': _('Result'),
+                       'input_width': '6',
+                       'input_class': 'ajax_calculate numeric',
+                       'sortable': False},
             'Uncertainty': {'title': _('+-')},
             'ResultDM': {'title': _('Dry')},
             'retested': {'title': "<img src='++resource++bika.lims.images/retested.png' title='%s'/>" % _('Retested'),
@@ -214,7 +209,10 @@ class WorksheetAnalysesView(AnalysesView):
         }
         self.review_states = [
             {'title': _('All'), 'id':'all',
-             'transitions': ['submit', 'verify', 'retract', 'unassign'],
+             'transitions': [{'id':'submit'},
+                             {'id':'verify'},
+                             {'id':'retract'},
+                             {'id':'unassign'}],
              'columns':['Pos',
                         'Service',
                         'Result',
@@ -234,7 +232,7 @@ class WorksheetAnalysesView(AnalysesView):
         highest_position = 0
         for x, item in enumerate(items):
             obj = item['obj']
-            pos = [int(slot['position']) for slot in layout if \
+            pos = [int(slot['position']) for slot in layout if
                    slot['analysis_uid'] == obj.UID()][0]
             highest_position = max(highest_position, pos)
             items[x]['Pos'] = pos
@@ -391,7 +389,7 @@ class ManageResultsView(BrowserView):
     template = ViewPageTemplateFile("templates/worksheet_manage_results.pt")
     def __init__(self, context, request):
         BrowserView.__init__(self, context, request)
-        self.getAnalysts = getAnalysts(context)
+        self.getAnalysts = getUsers(context, ['Manager', 'LabManager', 'Analyst'])
 
     def __call__(self):
         self.icon = "++resource++bika.lims.images/worksheet_big.png"
@@ -434,13 +432,13 @@ class ManageResultsView(BrowserView):
                 analysis.setAttachment(attachments)
 
             if service_uid:
-                wf_tool = getToolByName(self.context, 'portal_workflow')
+                workflow = getToolByName(self.context, 'portal_workflow')
                 for analysis in self.context.getAnalyses():
                     if analysis.portal_type not in ('Analysis', 'DuplicateAnalysis'):
                         continue
                     if not analysis.getServiceUID() == service_uid:
                         continue
-                    review_state = wf_tool.getInfoFor(analysis, 'review_state', '')
+                    review_state = workflow.getInfoFor(analysis, 'review_state', '')
                     if not review_state in ['assigned', 'sample_received', 'to_be_verified']:
                         continue
                     # client refers to Client in case of Analysis, and to
@@ -473,7 +471,7 @@ class ManageResultsView(BrowserView):
 
     def getInstruments(self):
         bsc = getToolByName(self, 'bika_setup_catalog')
-        items = [('', '')] + [(o.UID, o.Title) for o in \
+        items = [('', '')] + [(o.UID, o.Title) for o in
                                bsc(portal_type = 'Instrument',
                                    inactive_state = 'active')]
         o = self.context.getInstrument()
@@ -481,7 +479,6 @@ class ManageResultsView(BrowserView):
             items.append((o.UID(), o.Title()))
         items.sort(lambda x, y: cmp(x[1], y[1]))
         return DisplayList(list(items))
-
 
 class AddAnalysesView(BikaListingView):
     implements(IViewView)
@@ -491,7 +488,7 @@ class AddAnalysesView(BikaListingView):
         BikaListingView.__init__(self, context, request)
         self.icon = "++resource++bika.lims.images/worksheet_big.png"
         self.title = _("Add Analyses")
-        self.description = _("Add Analyses description", "")
+        self.description = ""
         self.contentsMethod = self.context.getFolderContents
         self.context_actions = {}
         # initial review state for first form display of the worksheet
@@ -509,7 +506,7 @@ class AddAnalysesView(BikaListingView):
 
         self.columns = {
             'Client': {'title': _('Client'),
-                            'index':'getClient'},
+                            'index':'getClientTitle'},
             'getClientOrderNumber': {'title': _('Order')},
             'getRequestID': {'title': _('Request ID')},
             'CategoryTitle': {'title': _('Category'),
@@ -523,7 +520,7 @@ class AddAnalysesView(BikaListingView):
         self.review_states = [
             {'id':'all',
              'title': _('All'),
-             'transitions': ['assign'],
+             'transitions': [{'id':'assign'}, ],
              'columns':['Client',
                         'getClientOrderNumber',
                         'getRequestID',
@@ -539,6 +536,8 @@ class AddAnalysesView(BikaListingView):
             self.request.response.redirect(self.context.absolute_url())
             return
 
+        translate = self.context.translation_service.translate
+
         form_id = self.form_id
         form = self.request.form
         rc = getToolByName(self.context, REFERENCE_CATALOG)
@@ -550,11 +549,11 @@ class AddAnalysesView(BikaListingView):
                 self.context.applyWorksheetTemplate(wst)
                 if len(self.context.getLayout()) != len(layout):
                     self.context.plone_utils.addPortalMessage(
-                        self.context.translate(PMF("Changes saved.")))
+                        translate(PMF("Changes saved.")))
                     self.request.RESPONSE.redirect(self.context.absolute_url() + "/manage_results")
                 else:
                     self.context.plone_utils.addPortalMessage(
-                        self.context.translate(_("No analyses were added to this worksheet.")))
+                        translate(_("No analyses were added to this worksheet.")))
                     self.request.RESPONSE.redirect(self.context.absolute_url() + "/add_analyses")
 
         self._process_request()
@@ -565,6 +564,8 @@ class AddAnalysesView(BikaListingView):
             return self.template()
 
     def folderitems(self):
+        translate = self.context.translation_service.translate
+
         pc = getToolByName(self.context, 'portal_catalog')
         self.contentsMethod = pc
         items = BikaListingView.folderitems(self)
@@ -583,10 +584,10 @@ class AddAnalysesView(BikaListingView):
             if DueDate < DateTime():
                 items[x]['after']['DueDate'] = '<img width="16" height="16" src="%s/++resource++bika.lims.images/late.png" title="%s"/>' % \
                     (self.context.absolute_url(),
-                     self.context.translate(_("Late Analysis")))
+                     translate(_("Late Analysis")))
             items[x]['CategoryTitle'] = service.getCategory().Title()
 
-            if getSecurityManager().checkPermission(ManageResults, obj.aq_parent):
+            if getSecurityManager().checkPermission(EditResults, obj.aq_parent):
                 url = obj.aq_parent.absolute_url() + "/manage_results"
             else:
                 url = obj.aq_parent.absolute_url()
@@ -601,7 +602,7 @@ class AddAnalysesView(BikaListingView):
 
     def getServices(self):
         bsc = getToolByName(self.context, 'bika_setup_catalog')
-        return [c.Title for c in \
+        return [c.Title for c in
                 bsc(portal_type = 'AnalysisService',
                    getCategoryUID = self.request.get('list_getCategoryUID', ''),
                    inactive_state = 'active',
@@ -609,14 +610,14 @@ class AddAnalysesView(BikaListingView):
 
     def getClients(self):
         pc = getToolByName(self.context, 'portal_catalog')
-        return [c.Title for c in \
+        return [c.Title for c in
                 pc(portal_type = 'Client',
                    inactive_state = 'active',
                    sort_on = 'sortable_title')]
 
     def getCategories(self):
         bsc = getToolByName(self.context, 'bika_setup_catalog')
-        return [c.Title for c in \
+        return [c.Title for c in
                 bsc(portal_type = 'AnalysisCategory',
                    inactive_state = 'active',
                    sort_on = 'sortable_title')]
@@ -625,7 +626,7 @@ class AddAnalysesView(BikaListingView):
         """ Return WS Templates """
         profiles = []
         bsc = getToolByName(self.context, 'bika_setup_catalog')
-        return [(c.UID, c.Title) for c in \
+        return [(c.UID, c.Title) for c in
                 bsc(portal_type = 'WorksheetTemplate',
                    inactive_state = 'active',
                    sort_on = 'sortable_title')]
@@ -638,8 +639,7 @@ class AddBlankView(BrowserView):
         BrowserView.__init__(self, context, request)
         self.icon = "++resource++bika.lims.images/worksheet_big.png"
         self.title = _("Add Blank Reference")
-        self.description = _("Add Blank Reference description",
-                             "Select services in the left column to locate "
+        self.description = _("Select services in the left column to locate "
                              "reference samples. Select a reference by clicking it. ")
 
     def __call__(self):
@@ -656,11 +656,8 @@ class AddBlankView(BrowserView):
             reference_uid = form['reference_uid']
             reference = rc.lookupObject(reference_uid)
             self.request['context_uid'] = self.context.UID()
-            ref_analyses = self.context.addReferences(position,
-                                                      reference,
-                                                      service_uids)
-            self.request.response.redirect(
-                self.context.absolute_url() + "/manage_results")
+            ref_analyses = self.context.addReferences(position, reference, service_uids)
+            self.request.response.redirect(self.context.absolute_url() + "/manage_results")
         else:
             self.Services = WorksheetServicesView(self.context, self.request)
             self.Services.view_url = self.Services.base_url + "/add_blank"
@@ -672,7 +669,7 @@ class AddBlankView(BrowserView):
         layout = self.context.getLayout()
         used_positions = [int(slot['position']) for slot in layout]
         if used_positions:
-            available_positions = [pos for pos in range(1, max(used_positions) + 1) if \
+            available_positions = [pos for pos in range(1, max(used_positions) + 1) if
                                    pos not in used_positions]
         else:
             available_positions = []
@@ -686,8 +683,7 @@ class AddControlView(BrowserView):
         BrowserView.__init__(self, context, request)
         self.icon = "++resource++bika.lims.images/worksheet_big.png"
         self.title = _("Add Control Reference")
-        self.description = _("Add Control Reference description",
-                             "Select services in the left column to locate "
+        self.description = _("Select services in the left column to locate "
                              "reference samples. Select a reference by clicking it. ")
     def __call__(self):
         if not(getSecurityManager().checkPermission(EditWorksheet, self.context)):
@@ -703,16 +699,12 @@ class AddControlView(BrowserView):
             reference_uid = form['reference_uid']
             reference = rc.lookupObject(reference_uid)
             self.request['context_uid'] = self.context.UID()
-            ref_analyses = self.context.addReferences(position,
-                                                      reference,
-                                                      service_uids)
-            self.request.response.redirect(
-                self.context.absolute_url() + "/manage_results")
-            return
-
-        self.Services = WorksheetServicesView(self.context, self.request)
-        self.Services.view_url = self.Services.base_url + "/add_control"
-        return self.template()
+            ref_analyses = self.context.addReferences(position, reference, service_uids)
+            self.request.response.redirect(self.context.absolute_url() + "/manage_results")
+        else:
+            self.Services = WorksheetServicesView(self.context, self.request)
+            self.Services.view_url = self.Services.base_url + "/add_control"
+            return self.template()
 
     def getAvailablePositions(self):
         """ Return a list of empty slot numbers
@@ -720,7 +712,7 @@ class AddControlView(BrowserView):
         layout = self.context.getLayout()
         used_positions = [int(slot['position']) for slot in layout]
         if used_positions:
-            available_positions = [pos for pos in range(1, max(used_positions) + 1) if \
+            available_positions = [pos for pos in range(1, max(used_positions) + 1) if
                                    pos not in used_positions]
         else:
             available_positions = []
@@ -734,8 +726,7 @@ class AddDuplicateView(BrowserView):
         BrowserView.__init__(self, context, request)
         self.icon = "++resource++bika.lims.images/worksheet_big.png"
         self.title = _("Add Duplicate")
-        self.description = _("Add Duplicate description",
-                             "Select a destinaton position and the AR to duplicate.")
+        self.description = _("Select a destinaton position and the AR to duplicate.")
 
     def __call__(self):
         if not(getSecurityManager().checkPermission(EditWorksheet, self.context)):
@@ -745,17 +736,15 @@ class AddDuplicateView(BrowserView):
         form = self.request.form
         if 'submitted' in form:
             ar_uid = self.request.get('ar_uid', '')
-            src_slot = [slot['position'] for slot in self.context.getLayout() if \
+            src_slot = [slot['position'] for slot in self.context.getLayout() if
                         slot['container_uid'] == ar_uid and slot['type'] == 'a'][0]
             position = self.request.get('position', '')
             self.request['context_uid'] = self.context.UID()
             self.context.addDuplicateAnalyses(src_slot, position)
-            self.request.response.redirect(
-                self.context.absolute_url() + "/manage_results")
-            return
-
-        self.ARs = WorksheetARsView(self.context, self.request)
-        return self.template()
+            self.request.response.redirect(self.context.absolute_url() + "/manage_results")
+        else:
+            self.ARs = WorksheetARsView(self.context, self.request)
+            return self.template()
 
     def getAvailablePositions(self):
         """ Return a list of empty slot numbers
@@ -763,7 +752,7 @@ class AddDuplicateView(BrowserView):
         layout = self.context.getLayout()
         used_positions = [int(slot['position']) for slot in layout]
         if used_positions:
-            available_positions = [pos for pos in range(1, max(used_positions) + 1) if \
+            available_positions = [pos for pos in range(1, max(used_positions) + 1) if
                                    pos not in used_positions]
         else:
             available_positions = []
@@ -789,12 +778,12 @@ class WorksheetARsView(BikaListingView):
             'Position': {'title': _('Position')},
             'RequestID': {'title': _('Request ID')},
             'Client': {'title': _('Client')},
-            'DateRequested': {'title': _('Date Requested')},
+            'created': {'title': _('Date Requested')},
         }
         self.review_states = [
             {'title': _('All'), 'id':'all',
              'transitions': [],
-             'columns':['Position', 'RequestID', 'Client', 'DateRequested'],
+             'columns':['Position', 'RequestID', 'Client', 'created'],
             },
         ]
 
@@ -824,7 +813,7 @@ class WorksheetARsView(BikaListingView):
                 'Position': pos,
                 'RequestID': ar.id,
                 'Client': ar.aq_parent.Title(),
-                'DateRequested': TimeOrDate(ar, ar.getDateRequested()),
+                'created': TimeOrDate(ar, ar.created()),
                 'replace': {},
                 'before': {},
                 'after': {},
@@ -958,6 +947,8 @@ class ajaxGetWorksheetReferences(ReferenceSamplesView):
         ]
 
     def folderitems(self):
+        translate = self.context.translation_service.translate
+
         items = super(ajaxGetWorksheetReferences, self).folderitems()
         new_items = []
         for x in range(len(items)):
@@ -966,16 +957,21 @@ class ajaxGetWorksheetReferences(ReferenceSamplesView):
             if self.control_type == 'b' and not obj.getBlank(): continue
             if self.control_type == 'c' and obj.getBlank(): continue
             ref_services = obj.getServices()
-            ws_ref_services = [rs for rs in ref_services if \
+            ws_ref_services = [rs for rs in ref_services if
                                rs.UID() in self.service_uids]
             if ws_ref_services:
                 services = [rs.Title() for rs in ws_ref_services]
                 items[x]['nr_services'] = len(services)
                 items[x]['Definition'] = obj.getReferenceDefinition().Title()
                 services.sort()
-                items[x]['Services'] = \
-                    ", ".join(services)
+                items[x]['Services'] = ", ".join(services)
                 items[x]['replace'] = {}
+
+                after_icons = "<a href='%s' target='_blank'><img src='++resource++bika.lims.images/referencesample.png' title='%s: %s'></a>" % \
+                    (obj.absolute_url(), \
+                     translate(_("Reference sample")), obj.Title())
+                items[x]['before']['ID'] = after_icons
+
                 new_items.append(items[x])
 
         new_items = sorted(new_items, key = itemgetter('nr_services'))
@@ -987,7 +983,7 @@ class ajaxGetWorksheetReferences(ReferenceSamplesView):
         self.service_uids = self.request.get('service_uids', '').split(",")
         self.control_type = self.request.get('control_type', '')
         if not self.control_type:
-            return self.context.translate(_("No control type specified"))
+            return translate(_("No control type specified"))
         return super(ajaxGetWorksheetReferences, self).contents_table()
 
 class ExportView(BrowserView):
@@ -995,19 +991,19 @@ class ExportView(BrowserView):
     """
     def __call__(self):
 
+        translate = self.context.translation_service.translate
+
         instrument = self.context.getInstrument()
         if not instrument:
-            message = _("You must select an instrument")
             self.context.plone_utils.addPortalMessage(
-                self.context.translate(message), 'info')
+                translate(_("You must select an instrument")), 'info')
             self.request.RESPONSE.redirect(self.context.absolute_url())
             return
 
         exim = instrument.getDataInterface()
         if not exim:
-            message = _("Instrument has no Data Interface selected")
             self.context.plone_utils.addPortalMessage(
-                self.context.translate(message), 'info')
+                translate(_("Instrument has no Data Interface selected")), 'info')
             self.request.RESPONSE.redirect(self.context.absolute_url())
             return
 
@@ -1018,9 +1014,8 @@ class ExportView(BrowserView):
 
         # search instruments module for 'exim' module
         if not hasattr(instruments, exim):
-            message = _("Instrument exporter not found")
             self.context.plone_utils.addPortalMessage(
-                self.context.translate(message), 'error')
+                translate(_("Instrument exporter not found")), 'error')
             self.request.RESPONSE.redirect(self.context.absolute_url())
             return
 
@@ -1036,7 +1031,7 @@ class ajaxGetServices(BrowserView):
     def __call__(self):
         plone.protect.CheckAuthenticator(self.request)
         bsc = getToolByName(self.context, 'bika_setup_catalog')
-        return json.dumps([c.Title for c in \
+        return json.dumps([c.Title for c in
                 bsc(portal_type = 'AnalysisService',
                    getCategoryTitle = self.request.get('getCategoryTitle', ''),
                    inactive_state = 'active',
@@ -1090,7 +1085,7 @@ class ajaxAttachAnalyses(BrowserView):
             orig_rows = rows
             rows = []
             for row in orig_rows:
-                matches = [v for v in row.values() \
+                matches = [v for v in row.values()
                            if str(v).lower().startswith(searchTerm)]
                 if matches:
                     rows.append(row)
@@ -1124,7 +1119,7 @@ class ajaxSetAnalyst():
         value = request.get('value', '')
         if not value:
             return
-        if not mtool.getMemberById(analyst):
+        if not mtool.getMemberById(value):
             return
         self.context.setAnalyst(value)
 

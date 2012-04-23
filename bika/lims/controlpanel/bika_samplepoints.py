@@ -16,6 +16,7 @@ from plone.app.folder.folder import ATFolder, ATFolderSchema
 from zope.interface.declarations import implements
 from Products.CMFCore.utils import getToolByName
 import json
+import plone
 
 class SamplePointsView(BikaListingView):
     implements(IFolderContentsView, IViewView)
@@ -52,12 +53,12 @@ class SamplePointsView(BikaListingView):
             {'id':'active',
              'title': _('Active'),
              'contentFilter': {'inactive_state': 'active'},
-             'transitions': ['deactivate'],
+             'transitions': [{'id':'deactivate'}, ],
              'columns': ['Title', 'Description']},
             {'id':'inactive',
              'title': _('Dormant'),
              'contentFilter': {'inactive_state': 'inactive'},
-             'transitions': ['activate',],
+             'transitions': [{'id':'activate'}, ],
              'columns': ['Title', 'Description']},
         ]
 
@@ -81,13 +82,50 @@ class SamplePoints(ATFolder):
 schemata.finalizeATCTSchema(schema, folderish = True, moveDiscussion = False)
 atapi.registerType(SamplePoints, PROJECTNAME)
 
-class ajax_SamplePoints():
+class ajax_SamplePoints(BrowserView):
     """ autocomplete data source for sample points field
         return JSON data [string,string]
+        if "sampletype" is in the request, it's expected to be a title string
+        The objects returned will be filtered by the sampletype's SamplePoints.
+        if no items are found, all items are returned.
+
+        If term is a one or two letters, return items that begin with them
+            If there aren't any, return items that contain them
+
     """
     def __call__(self):
+        plone.protect.CheckAuthenticator(self.request)
         bsc = getToolByName(self, 'bika_setup_catalog')
+
         term = self.request.get('term', '').lower()
+
         items = bsc(portal_type = "SamplePoint", sort_on='sortable_title')
-        items = [s.Title for s in items if s.Title.lower().find(term) > -1]
+
+        if term and len(term) < 3:
+            # Items that start with A or AA
+            items = [s.getObject()
+                     for s in items
+                     if s.Title.lower().startswith(term)]
+            if not items:
+                # or, items that contain A or AA
+                items = [s.getObject()
+                         for s in items
+                         if s.Title.lower().find(term) > -1]
+        else:
+            # or, items that contain term.
+            items = [s.getObject()
+                     for s in items
+                     if s.Title.lower().find(term) > -1]
+
+        sampletype = self.request.get('sampletype', '')
+        if sampletype and len(sampletype) > 1:
+            st = bsc(portal_type="SampleType",Title=sampletype)
+            if not st:
+                return json.dumps([])
+            st = st[0].getObject()
+            new = [s for s in items if s in st.getSamplePoints()]
+            if new:
+                items = new
+
+        items = [s.Title() for s in items]
         return json.dumps(items)

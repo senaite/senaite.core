@@ -1,10 +1,10 @@
 <?xml version="1.0"?>
-<object name="ARImportItem" meta_type="Factory-based Type Information"
-   xmlns:i18n="http://xml.zope.org/namespaces/i18n">
- <property name="title">ARImport item</property>
- <property
-    name="description">A not-so-basic CMF Content implementation with Dublin Core
-      Metadata included</property>
+<object name="ARImportItem"
+        meta_type="Factory-based Type Information"
+        xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+        i18n:domain="plone">
+ <property name="title">ARImportItem</property>
+ <property name="description"></property>
  <property name="content_icon">document_icon.gif</property>
  <property name="content_meta_type">ARImportItem</property>
  <property name="product">bika.lims</property>
@@ -13,14 +13,30 @@
  <property name="filter_content_types">True</property>
  <property name="allowed_content_types"/>
  <property name="allow_discussion">False</property>
+
  <alias from="(Default)" to="base_edit"/>
  <alias from="edit" to="base_edit"/>
- <action title="View" action_id="view" category="object" condition_expr=""
-    url_expr="string:${object_url}/base_view" visible="False">
+
+ <action title="View"
+         action_id="view"
+         category="object"
+         condition_expr=""
+         url_expr="string:${object_url}/base_view"
+         i18n:attributes="title"
+         i18n:domain="plone"
+         visible="False">
   <permission value="View"/>
  </action>
- <action title="Edit" action_id="edit" category="object" condition_expr=""
-    url_expr="string:${object_url}/base_edit" visible="True">
+
+ <action title="Edit"
+         action_id="edit"
+         category="object"
+         condition_expr=""
+         url_expr="string:${object_url}/base_edit"
+         i18n:attributes="title"
+         i18n:domain="plone"
+         visible="True">
   <permission value="Modify portal content"/>
  </action>
+
 </object>

@@ -14,7 +14,7 @@ from Products.CMFCore import permissions
 from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFCore.permissions import ListFolderContents, View
 from Products.CMFCore.utils import getToolByName
-from bika.lims import bikaMessageFactory as _
+from bika.lims import PMF, bikaMessageFactory as _
 from bika.lims.browser.fields import HistoryAwareReferenceField
 from bika.lims.browser.widgets import SpecWidget
 from bika.lims.config import PROJECTNAME
@@ -26,7 +26,7 @@ import time
 
 schema = Schema((
     HistoryAwareReferenceField('SampleType',
-        schemata = 'Description',
+        schemata = PMF('Description'),
         required = 1,
         vocabulary = "getRemainingSampleTypes",
         vocabulary_display_path_bound = sys.maxint,
@@ -36,8 +36,7 @@ schema = Schema((
         widget = ReferenceWidget(
             checkbox_bound = 0,
             label = _("Sample Type"),
-            description = _("Sample Type description",
-                            "If the sample type you are looking for is not listed here, "
+            description = _("If the sample type you are looking for is not listed here, "
                             "a specification for it has been created already. To edit existing, "
                             "specifications, navigate 1 level up and select the specification by "
                             "clicking on the sample type in the list"),
@@ -59,7 +58,7 @@ schema = Schema((
 BikaSchema.copy() + \
 Schema((
     RecordsField('ResultsRange',
-        schemata = 'Reference Results',
+        schemata = PMF('Reference Results'),
         required = 1,
         type = 'analysisspec',
         subfields = ('keyword', 'min', 'max', 'error'),
@@ -71,8 +70,7 @@ Schema((
         widget = SpecWidget(
             checkbox_bound = 1,
             label = _("Reference Results"),
-            description = _("Reference Results description",
-                            "Click on Analysis Categories (against shaded background) "
+            description = _("Click on Analysis Categories (against shaded background) "
                             "to see Analysis Services in each category. Enter minimum "
                             "and maximum values to indicate a valid results range. "
                             "Any result outside this range will raise an alert. "
@@ -90,9 +88,9 @@ Schema((
         ),
     ),
 ))
-schema['description'].schemata = 'Description'
+schema['description'].schemata = PMF('Description')
 schema['description'].widget.visible = True
-schema['title'].schemata = 'Description'
+schema['title'].schemata = PMF('Description')
 schema['title'].required = False
 schema['title'].widget.visible = False
 

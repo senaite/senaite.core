@@ -1,0 +1,3284 @@
+# 
+# Translators:
+# Pavel Shuper <shuper@bionixlab.com>, 2012.
+msgid ""
+msgstr ""
+"Project-Id-Version: Bika-LIMS\n"
+"POT-Creation-Date: 2012-04-19 18:01+0000\n"
+"PO-Revision-Date: 2012-03-03 14:12+0000\n"
+"Last-Translator: Pavel Shuper <shuper@bionixlab.com>\n"
+"Language-Team: Bika <bikasupport@bikalabs.com>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2)\n"
+"Language-Code: en\n"
+"Language-Name: English\n"
+"Preferred-Encodings: utf-8 latin1\n"
+"Domain: DOMAIN\n"
+"Report-Msgid-Bugs-To: http://github.com/bikalabs/Bika-LIMS/issues\n"
+"Language: uk_UA\n"
+
+#: ../browser/templates/contact_login_details.pt:19
+msgid "${contact_fullname} can log into the LIMS by using ${contact_username} as username. Contacts must change their own passwords. If a password is forgotten a contact can request a new password from the login form."
+msgstr ""
+
+#: ../browser/analysisrequest.py:1589
+msgid "${id} is not a valid sample ID"
+msgstr ""
+
+#: ../browser/analysisrequest.py:156
+#: ../browser/client.py:115
+msgid "${items} are waiting for preservation."
+msgstr ""
+
+#: ../browser/analysisrequest.py:103
+#: ../browser/client.py:118
+msgid "${items} are waiting to be received."
+msgstr ""
+
+#: ../browser/client.py:228
+msgid "${items} were published."
+msgstr ""
+
+#: ../browser/client.py:182
+msgid "${items}: partitions are waiting to be received."
+msgstr ""
+
+#: ../browser/analysisrequest.py:165
+#: ../browser/client.py:124
+msgid "${item} is waiting for preservation."
+msgstr ""
+
+#: ../browser/analysisrequest.py:108
+#: ../browser/client.py:127
+msgid "${item} is waiting to be received."
+msgstr ""
+
+#: ../browser/client.py:231
+msgid "${item} published."
+msgstr ""
+
+#: ../browser/client.py:185
+msgid "${item}: ${part} is waiting to be received."
+msgstr ""
+
+#: ../browser/accreditation.py:31
+msgid "${labname} has been accredited as ${accr} conformant by ${abbr}, (${body}). ${abbr} is recognised by government as a national accreditation body in ${labcountry}. "
+msgstr ""
+
+#: ../browser/analysisrequest.py:469
+#: ../browser/sample.py:355
+#: ../content/artemplate.py:138
+msgid "${samplepoint} is not a valid sample point"
+msgstr ""
+
+#: ../browser/analysisrequest.py:462
+#: ../browser/sample.py:348
+#: ../content/artemplate.py:114
+msgid "${sampletype} is not a valid sample type"
+msgstr ""
+
+#: ../content/analysisspec.py:69
+msgid "% Error"
+msgstr "% помилки"
+
+#: ../content/bikasetup.py:178
+msgid "'Classic' indicates importing analysis requests per sample and analysis service selection. With 'Profiles', analysis profile keywords are used to select multiple analysis services together"
+msgstr ""
+
+#: ../content/referencesample.py:176
+#: ../skins/bika/attachments.pt:207
+msgid "(Blank)"
+msgstr "(Пусто)"
+
+#: ../skins/bika/attachments.pt:214
+msgid "(Control)"
+msgstr "(Контроль)"
+
+#: ../skins/bika/attachments.pt:221
+msgid "(Duplicate)"
+msgstr "(Повторно)"
+
+#: ../content/referencesample.py:178
+msgid "(Hazardous)"
+msgstr ""
+
+#: ../browser/templates/contact_login_details.pt:52
+msgid "(Required)"
+msgstr "(Потребується)"
+
+#: ../browser/analyses.py:60
+#: ../browser/referencesample.py:63
+#: ../browser/worksheet.py:203
+msgid "+-"
+msgstr "+-"
+
+msgid "<p>${service} requires the following services to be selected:</p><br/><p>${deps}</p><br/><p>Do you want to apply these selections now?</p>"
+msgstr ""
+
+msgid "<p>The following services depend on ${service}, and will be unselected if you continue:</p><br/><p>${deps}</p><br/><p>Do you want to remove these selections now?</p>"
+msgstr ""
+
+#: ../content/bikasetup.py:188
+msgid "AR Attachment Option"
+msgstr "Властивості вкладень ЗА"
+
+#: ../content/bikasetup.py:282
+msgid "AR ID Padding"
+msgstr "Додатковий ID ЗА"
+
+#: ../browser/client.py:294
+msgid "AR Import"
+msgstr "Імпорт ЗА"
+
+#: ../content/bikasetup.py:177
+msgid "AR Import options"
+msgstr "Властивості імпорту ЗА"
+
+#: ../browser/templates/analysisrequest_edit.pt:613
+msgid "AR Profile"
+msgstr ""
+
+#: ../browser/client.py:476
+#: ../controlpanel/bika_arprofiles.py:51
+msgid "AR Profiles"
+msgstr ""
+
+#: ../browser/templates/analysisrequest_edit.pt:614
+msgid "AR Template"
+msgstr ""
+
+#: ../browser/client.py:472
+#: ../controlpanel/bika_arprofiles.py:47
+msgid "AR Templates"
+msgstr ""
+
+#: ../skins/bika/portlet_to_be_verified.pt:70
+msgid "ARs"
+msgstr "ЗА-и"
+
+#: ../content/organisation.py:74
+msgid "Account Name"
+msgstr "Найменування рахунку"
+
+#: ../content/organisation.py:80
+msgid "Account Number"
+msgstr "Номер рахунку"
+
+#: ../content/organisation.py:68
+msgid "Account Type"
+msgstr "Тип рахунку"
+
+#: ../browser/accreditation.py:16
+#: ../content/laboratory.py:68
+msgid "Accreditation"
+msgstr "Акредитація"
+
+#: ../content/laboratory.py:43
+msgid "Accreditation Body"
+msgstr "Тіло акредитації"
+
+#: ../content/laboratory.py:52
+msgid "Accreditation Body Abbreviation"
+msgstr "Абревіатура тіла акредитації"
+
+#: ../content/laboratory.py:60
+msgid "Accreditation Body URL"
+msgstr "URL тіла акредитації"
+
+#: ../content/laboratory.py:83
+msgid "Accreditation Logo"
+msgstr ""
+
+#: ../content/laboratory.py:76
+msgid "Accreditation Reference"
+msgstr "Еталон акредитації"
+
+#: ../browser/analysisrequest.py:849
+#: ../content/analysisservice.py:326
+#: ../content/pricelistlineitem.py:25
+msgid "Accredited"
+msgstr "Акредитовано"
+
+#: ../browser/log.py:42
+msgid "Action"
+msgstr "Дія"
+
+#: ../profiles/default/workflows/bika_inactive_workflow/definition.xml
+msgid "Activate"
+msgstr "Задіяти"
+
+#: ../browser/client.py:780
+#: ../browser/clientfolder.py:58
+#: ../controlpanel/bika_analysiscategories.py:51
+msgid "Active"
+msgstr "Активний"
+
+#: ../browser/analysisrequest.py:793
+#: ../browser/client.py:270
+#: ../browser/referencesupplier.py:17
+msgid "Add"
+msgstr "Додати"
+
+#: ../browser/worksheet.py:490
+msgid "Add Analyses"
+msgstr "Додати аналізи"
+
+#: ../browser/worksheet.py:641
+msgid "Add Blank Reference"
+msgstr "Додати пустий еталон"
+
+#: ../browser/worksheet.py:685
+msgid "Add Control Reference"
+msgstr "Додати контрольний еталон"
+
+#: ../browser/worksheet.py:728
+msgid "Add Duplicate"
+msgstr "Додати повторний"
+
+#: ../browser/client.py:455
+#: ../controlpanel/bika_arprofiles.py:30
+msgid "Add Profile"
+msgstr ""
+
+#: ../browser/client.py:458
+#: ../controlpanel/bika_arprofiles.py:33
+msgid "Add Template"
+msgstr ""
+
+#: ../profiles/default/workflows/bika_analysis_workflow/definition.xml
+#: ../profiles/default/workflows/bika_ar_workflow/definition.xml
+#: ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml
+msgid "Add attachment"
+msgstr ""
+
+#: ../content/bikasetup.py:265
+msgid "Adds a two-digit year after the ID prefix."
+msgstr ""
+
+#: ../browser/accreditation.py:62
+#: ../browser/analyses.py:75
+#: ../browser/analysisrequest.py:816
+msgid "All"
+msgstr "Всі"
+
+#: ../browser/accreditation.py:40
+msgid "All Accredited analysis services are listed here."
+msgstr ""
+
+#: ../browser/analysisrequest.py:1017
+msgid "All Samples"
+msgstr "Всі зразки"
+
+#: ../browser/analysisrequest.py:2210
+msgid "All analyses assigned"
+msgstr "Всі аналізи призначено"
+
+#: ../skins/bika/attachments.pt:274
+msgid "All analyses of type"
+msgstr "Всі аналізи типу"
+
+#: ../browser/referencesample.py:180
+msgid "All reference samples in the system are displayed here."
+msgstr ""
+
+#: ../content/client.py:64
+msgid "Always expand the selected categories in client views"
+msgstr ""
+
+#: ../browser/reports/analysesperservice.pt:77
+#: ../browser/templates/analysisrequest_manage_results.pt:84
+#: ../browser/templates/sample.pt:65
+msgid "Analyses"
+msgstr "Аналізи"
+
+#: ../browser/reports/reports_qualitycontrol.pt:29
+msgid "Analyses out of range"
+msgstr "Аналізи поза межами"
+
+#: ../browser/reports/analysesperservice.pt:31
+msgid "Analyses per analysis service"
+msgstr ""
+
+#: ../browser/reports/reports_productivity.pt:40
+msgid "Analyses per sample type"
+msgstr "Аналізи по типу зразка"
+
+#: ../browser/reports/reports_productivity.pt:29
+msgid "Analyses per service"
+msgstr "Аналізи по послугам"
+
+#: ../browser/reports/reports_qualitycontrol.pt:41
+msgid "Analyses repeated"
+msgstr "Аналізи повторено"
+
+#: ../browser/analyses.py:46
+#: ../browser/late_analyses.py:37
+#: ../browser/templates/analysisrequest_analyses_not_requested.pt:100
+msgid "Analysis"
+msgstr "Аналіз"
+
+#: ../exportimport/instruments/fiastar.py:251
+msgid "Analysis ${service} at slot ${slot} has a result - not updated"
+msgstr ""
+
+#: ../exportimport/instruments/fiastar.py:244
+msgid "Analysis ${service} at slot ${slot} in state ${state} - not updated"
+msgstr ""
+
+#: ../exportimport/instruments/fiastar.py:298
+msgid "Analysis ${service} at slot ${slot}: OK"
+msgstr ""
+
+#: ../content/bikasetup.py:199
+msgid "Analysis Attachment Option"
+msgstr "Властивості вкладень до аналізів"
+
+#: ../controlpanel/bika_analysiscategories.py:28
+msgid "Analysis Categories"
+msgstr "Категорії аналізів"
+
+#: ../content/analysisservice.py:355
+msgid "Analysis Category"
+msgstr "Категорія аналізів"
+
+#: ../content/analysisservice.py:233
+msgid "Analysis Keyword"
+msgstr "Ключове слово аналізу"
+
+#: ../content/arimportitem.py:60
+#: ../content/artemplate.py:26
+msgid "Analysis Profile"
+msgstr "Профіль аналізу"
+
+#: ../config.py:73
+msgid "Analysis Request ID"
+msgstr "ID запиту на аналіз"
+
+#: ../browser/client.py:303
+msgid "Analysis Request Imports"
+msgstr "Імпорт запиту на аналіз"
+
+#: ../browser/analysisrequest.py:1867
+msgid "Analysis Requests"
+msgstr "Запити на аналіз"
+
+#: ../browser/fields/referenceresultsfield.py:19
+#: ../content/analysis.py:34
+#: ../content/analysisspec.py:66
+msgid "Analysis Service"
+msgstr "Послуга по аналізам"
+
+#: ../browser/analysisrequest.py:797
+#: ../config.py:43
+#: ../controlpanel/bika_analysisservices.py:99
+msgid "Analysis Services"
+msgstr "Послуги по аналізам"
+
+#: ../browser/client.py:556
+#: ../controlpanel/bika_analysisspecs.py:30
+msgid "Analysis Specifications"
+msgstr "Специфікації аналізу"
+
+#: ../content/worksheettemplate.py:24
+msgid "Analysis Type"
+msgstr ""
+
+#: ../exportimport/instruments/fiastar.py:195
+msgid "Analysis container UID ${parent_uid} not found"
+msgstr ""
+
+#: ../exportimport/instruments/fiastar.py:186
+msgid "Analysis parent UID ${parent_uid} not found"
+msgstr ""
+
+#: ../browser/analysisrequest.py:1812
+msgid "Analysis request ${AR} was successfully created."
+msgstr ""
+
+#: ../controlpanel/bika_analysisservices.py:72
+msgid "Analysis request ${service} was successfully created."
+msgstr ""
+
+#: ../browser/analysisrequest.py:1808
+msgid "Analysis requests ${ARs} were successfully created."
+msgstr ""
+
+#: ../browser/reports/reports_productivity.pt:51
+msgid "Analysis requests and analyses"
+msgstr ""
+
+#: ../browser/reports/reports_productivity.pt:63
+msgid "Analysis requests and analyses per client"
+msgstr ""
+
+#: ../browser/reports/reports_administration.pt:29
+msgid "Analysis requests not invoiced"
+msgstr ""
+
+#: ../browser/reports/reports_qualitycontrol.pt:34
+msgid "Analysis results out of lab or client specified range Note that this may take several minutes"
+msgstr ""
+
+#: ../browser/mailtemplates/analysisrequest_results.pt:522
+msgid "Analysis results relate only to the samples tested"
+msgstr ""
+
+#: ../browser/client.py:610
+msgid "Analysis specifications reset to lab defaults."
+msgstr ""
+
+#: ../browser/reports/reports_productivity.pt:74
+msgid "Analysis turnaround time"
+msgstr ""
+
+#: ../browser/templates/analysisrequest_sticker.pt:65
+#: ../browser/templates/worksheet_manage_results.pt:39
+#: ../browser/worksheetfolder.py:111
+msgid "Analyst"
+msgstr ""
+
+#: ../browser/templates/worksheet_add_analyses.pt:68
+#: ../content/analysisservice.py:180
+msgid "Any"
+msgstr ""
+
+#: ../browser/client.py:327
+msgid "Applied"
+msgstr ""
+
+#: ../browser/templates/worksheet_add_analyses.pt:57
+msgid "Apply template"
+msgstr ""
+
+#: ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml
+#: ../profiles/default/workflows/bika_referenceanalysis_workflow/definition.xml
+#: ../profiles/default/workflows/bika_worksheetanalysis_workflow/definition.xml
+msgid "Assign"
+msgstr ""
+
+#: ../browser/analysisrequest.py:2106
+#: ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml
+#: ../profiles/default/workflows/bika_referenceanalysis_workflow/definition.xml
+msgid "Assigned"
+msgstr ""
+
+#: ../profiles/default/workflows/bika_analysis_workflow/definition.xml
+#: ../profiles/default/workflows/bika_ar_workflow/definition.xml
+#: ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml
+msgid "Attach"
+msgstr ""
+
+#: ../skins/bika/attachments.pt:261
+msgid "Attach to"
+msgstr ""
+
+#: ../content/attachment.py:24
+#: ../skins/bika/attachments.pt:12
+msgid "Attachment"
+msgstr ""
+
+#: ../content/attachment.py:38
+msgid "Attachment Keys"
+msgstr ""
+
+#: ../content/analysisservice.py:221
+msgid "Attachment Option"
+msgstr ""
+
+#: ../profiles/default/workflows/bika_analysis_workflow/definition.xml
+#: ../profiles/default/workflows/bika_ar_workflow/definition.xml
+#: ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml
+msgid "Attachment Outstanding"
+msgstr ""
+
+#: ../browser/client.py:635
+#: ../content/attachment.py:32
+#: ../controlpanel/bika_attachmenttypes.py:36
+msgid "Attachment Type"
+msgstr ""
+
+#: ../controlpanel/bika_attachmenttypes.py:29
+msgid "Attachment Types"
+msgstr ""
+
+#: ../browser/analysisrequest.py:855
+#: ../controlpanel/bika_analysisservices.py:247
+msgid "Attachment not permitted"
+msgstr ""
+
+#: ../browser/analysisrequest.py:853
+#: ../controlpanel/bika_analysisservices.py:245
+msgid "Attachment required"
+msgstr ""
+
+#: ../browser/analyses.py:65
+#: ../browser/client.py:629
+#: ../browser/mailtemplates/analysisrequest_results.pt:404
+msgid "Attachments"
+msgstr ""
+
+#: ../content/contact.py:27
+msgid "Attachments Permitted"
+msgstr ""
+
+#: ../content/bikasetup.py:221
+msgid "Automatic AR label printing"
+msgstr ""
+
+#: ../content/bikasetup.py:233
+msgid "Automatic AR label sizes"
+msgstr ""
+
+#: ../content/bikasetup.py:65
+msgid "Automatic log-off"
+msgstr ""
+
+#: ../browser/templates/analysisrequest_sticker.pt:110
+#: ../browser/templates/analysisrequest_sticker_small.pt:86
+#: ../browser/templates/sample_sticker.pt:123
+msgid "Back to list"
+msgstr ""
+
+#: ../content/organisation.py:92
+msgid "Bank branch"
+msgstr ""
+
+#: ../content/organisation.py:86
+msgid "Bank name"
+msgstr ""
+
+#: ../content/invoicebatch.py:25
+msgid "Batch end date"
+msgstr ""
+
+#: ../content/invoicebatch.py:18
+msgid "Batch start date"
+msgstr ""
+
+#: ../browser/fields/coordinatefield.py:23
+msgid "Bearing"
+msgstr ""
+
+#: ../config.py:87
+#: ../content/organisation.py:62
+msgid "Billing address"
+msgstr ""
+
+#: ../browser/templates/referencesample_view.pt:56
+#: ../config.py:54
+#: ../content/referencedefinition.py:38
+msgid "Blank"
+msgstr ""
+
+#: ../content/instrument.py:21
+#: ../controlpanel/bika_instruments.py:44
+msgid "Brand"
+msgstr ""
+
+#: ../config.py:48
+msgid "Bulk Discount"
+msgstr ""
+
+#: ../content/analysisservice.py:371
+msgid "Bulk price (excluding VAT)"
+msgstr ""
+
+#: ../browser/analysisrequest.py:935
+#: ../browser/client.py:767
+#: ../browser/referencesupplier.py:122
+msgid "Business Phone"
+msgstr ""
+
+#: ../browser/templates/analysisrequest_edit.pt:123
+msgid "CC"
+msgstr ""
+
+#: ../browser/templates/analysisrequest_edit.pt:151
+#: ../content/analysisrequest.py:86
+#: ../content/arimport.py:97
+msgid "CC Emails"
+msgstr ""
+
+#: ../browser/accreditation.py:57
+#: ../content/analysisservice.py:286
+#: ../controlpanel/bika_analysisservices.py:123
+msgid "Calculation"
+msgstr ""
+
+#: ../content/calculation.py:51
+msgid "Calculation Formula"
+msgstr ""
+
+#: ../content/analysis.py:50
+#: ../content/calculation.py:24
+#: ../content/referenceanalysis.py:52
+msgid "Calculation Interim Fields"
+msgstr ""
+
+#: ../controlpanel/bika_calculations.py:29
+msgid "Calculations"
+msgstr ""
+
+#: ../content/instrument.py:39
+msgid "Calibration Certificate"
+msgstr ""
+
+#: ../content/instrument.py:47
+msgid "Calibration Expiry Date"
+msgstr ""
+
+#: ../browser/analysisrequest.py:851
+#: ../browser/templates/analysisrequest_edit.pt:652
+#: ../controlpanel/bika_analysisservices.py:243
+msgid "Can be reported as dry matter"
+msgstr ""
+
+#: ../profiles/default/workflows/bika_cancellation_workflow/definition.xml
+msgid "Cancel"
+msgstr ""
+
+#: ../browser/analysisrequest.py:2078
+#: ../browser/menu.py:65
+#: ../browser/sample.py:580
+msgid "Cancelled"
+msgstr ""
+
+#: ../content/container.py:38
+#: ../controlpanel/bika_containers.py:45
+msgid "Capacity"
+msgstr ""
+
+#: ../browser/analyses.py:67
+msgid "Captured"
+msgstr ""
+
+#: ../browser/templates/referencesample_view.pt:66
+#: ../content/referencesample.py:66
+msgid "Catalogue Number"
+msgstr ""
+
+#: ../content/bikasetup.py:155
+msgid "Categorise Analysis Services"
+msgstr ""
+
+#: ../browser/accreditation.py:50
+#: ../browser/referencesample.py:59
+#: ../browser/templates/worksheet_add_analyses.pt:63
+msgid "Category"
+msgstr ""
+
+#: ../subscribers/analysiscategory.py:24
+msgid "Category cannot be deactivated because it contains Analysis Services"
+msgstr ""
+
+#: ../browser/analysisrequest.py:1382
+msgid "Changes not allowed"
+msgstr ""
+
+#: ../content/analysisservice.py:327
+msgid "Check this box if the analysis service is included in the laboratory's schedule of accredited analyses"
+msgstr ""
+
+#: ../content/samplepoint.py:70
+msgid "Check this box if the samples taken at this point are 'composite' and put together from more than one sub sample, e.g. several surface samples from a dam mixed together to be a representative sample for the dam. The default, unchecked, indicates 'grab' samples"
+msgstr ""
+
+#: ../content/container.py:15
+msgid "Check this box if this container is already preserved.Setting this will short-circuit the preservation workflow for sample partitions stored in this container."
+msgstr ""
+
+#: ../content/laboratory.py:35
+msgid "Check this box if your laboratory is accredited"
+msgstr ""
+
+#: ../content/bikasetup.py:291
+msgid "Check this if you want to use a separate ID server. Prefixes are configurable separately in each Bika site."
+msgstr ""
+
+#: ../skins/bika/bika_widgets/custom_address_widget.pt:65
+msgid "City"
+msgstr ""
+
+#: ../config.py:68
+msgid "Classic"
+msgstr ""
+
+#: ../browser/referencesample.py:106
+#: ../content/analysisspec.py:73
+#: ../content/referencedefinition.py:23
+msgid "Click on Analysis Categories (against shaded background) to see Analysis Services in each category. Enter minimum and maximum values to indicate a valid results range. Any result outside this range will raise an alert. The % Error field allows for an % uncertainty to be considered when evaluating results against minimum and maximum values. A result out of range but still in range if the % error is taken into consideration, will raise a less severe alert."
+msgstr ""
+
+#: ../browser/analysisrequest.py:977
+msgid "Click on a sample to create a secondary AR"
+msgstr ""
+
+#: ../browser/analysisrequest.py:1889
+#: ../browser/late_analyses.py:39
+#: ../browser/mailtemplates/analysisrequest_results.pt:255
+msgid "Client"
+msgstr ""
+
+#: ../content/arimport.py:47
+msgid "Client Address"
+msgstr "Адреса клієнта"
+
+#: ../content/arimport.py:52
+msgid "Client City"
+msgstr "Місто клієнта"
+
+#: ../content/arimport.py:85
+msgid "Client Email"
+msgstr "Електронна адреса клієнта"
+
+#: ../content/arimport.py:42
+msgid "Client Fax"
+msgstr "Факс клієнта"
+
+#: ../content/arimport.py:58
+#: ../content/client.py:25
+msgid "Client ID"
+msgstr "ID клієнта"
+
+#: ../content/arimport.py:32
+msgid "Client Name"
+msgstr "Ім'я клієнта"
+
+#: ../browser/analysisrequest.py:383
+#: ../browser/mailtemplates/analysisrequest_results.pt:206
+#: ../browser/templates/analysisrequest_edit.pt:261
+msgid "Client Order"
+msgstr "Замовлення клієнта"
+
+#: ../content/arimport.py:37
+msgid "Client Phone"
+msgstr "Телефон клієнта"
+
+#: ../browser/analysisrequest.py:1891
+#: ../browser/sample.py:456
+#: ../content/arimportitem.py:20
+msgid "Client Ref"
+msgstr "Пос. клієнта"
+
+#: ../browser/analysisrequest.py:377
+#: ../browser/mailtemplates/analysisrequest_results.pt:213
+#: ../browser/sample.py:248
+msgid "Client Reference"
+msgstr "Посилання клієнта"
+
+#: ../content/arimportitem.py:25
+msgid "Client Remarks"
+msgstr "Зауваження клієнта"
+
+#: ../browser/analysisrequest.py:365
+#: ../browser/mailtemplates/analysisrequest_results.pt:220
+#: ../browser/sample.py:254
+msgid "Client SID"
+msgstr "SID клієнта"
+
+#: ../content/client.py:41
+msgid "Client Type"
+msgstr "Тип клієнта"
+
+#: ../browser/client.py:266
+msgid "Client contact required before request may be submitted"
+msgstr "Для затвердження запиту потрібен контакт клієнта"
+
+#: ../browser/clientfolder.py:25
+msgid "Clients"
+msgstr "Клієнти"
+
+#: ../profiles/default/workflows/bika_analysis_workflow/definition.xml
+#: ../profiles/default/workflows/bika_ar_workflow/definition.xml
+#: ../profiles/default/workflows/bika_arimport_workflow/definition.xml
+msgid "Comments about the last transition"
+msgstr ""
+
+#: ../browser/analysisrequest.py:430
+#: ../browser/sample.py:279
+#: ../browser/templates/analysisrequest_edit.pt:422
+msgid "Composite"
+msgstr "Складений"
+
+#: ../content/laboratory.py:25
+msgid "Confidence Level %"
+msgstr "% рівня надійності"
+
+#: ../browser/templates/contact_login_details.pt:80
+msgid "Confirm password"
+msgstr "Підтвердіть пароль"
+
+#: ../browser/late_analyses.py:40
+msgid "Contact"
+msgstr "Контакт"
+
+#: ../content/arimport.py:63
+msgid "Contact ID"
+msgstr "ID контакту"
+
+#: ../content/arimport.py:68
+msgid "Contact Name"
+msgstr "Ім'я контакту"
+
+#: ../browser/analysisrequest.py:371
+#: ../browser/templates/analysisrequest_edit.pt:90
+msgid "Contact Person"
+msgstr "Контактна особа"
+
+#: ../browser/client.py:760
+#: ../browser/referencesupplier.py:140
+msgid "Contacts"
+msgstr "Контакти"
+
+#: ../browser/analysisrequest.py:913
+#: ../content/contact.py:38
+msgid "Contacts to CC"
+msgstr "Контакти для копії"
+
+#: ../browser/sample.py:49
+#: ../browser/templates/sample_sticker.pt:78
+#: ../browser/templates/sample_sticker_small.pt:78
+msgid "Container"
+msgstr "Контейнер"
+
+#: ../content/analysisservice.py:101
+#: ../content/container.py:51
+#: ../content/preservation.py:39
+msgid "Container Type"
+msgstr ""
+
+#: ../controlpanel/bika_containertypes.py:29
+msgid "Container Types"
+msgstr ""
+
+#: ../browser/client.py:636
+msgid "Content Type"
+msgstr "Тип змісту"
+
+#: ../config.py:55
+msgid "Control"
+msgstr "Контроль"
+
+#: ../skins/bika/bika_widgets/custom_address_widget.pt:47
+msgid "Copy from"
+msgstr ""
+
+#: ../skins/bika/bika_widgets/custom_address_widget.pt:108
+msgid "Country"
+msgstr ""
+
+#: ../browser/worksheetfolder.py:125
+msgid "Creation Date"
+msgstr "Дата створення"
+
+#: ../content/bikasetup.py:76
+msgid "Currency"
+msgstr ""
+
+#: ../browser/referencesample.py:215
+#: ../browser/referencesupplier.py:48
+#: ../profiles/default/workflows/bika_referencesample_workflow/definition.xml
+msgid "Current"
+msgstr "Дійсний"
+
+#: ../content/instrument.py:55
+msgid "Data Interface"
+msgstr "Інтерфейс даних"
+
+#: ../content/instrument.py:66
+msgid "Data Interface Options"
+msgstr "Властивості інтерфейсу даних"
+
+#: ../browser/log.py:40
+#: ../content/arimport.py:127
+#: ../content/invoice.py:32
+msgid "Date"
+msgstr "Дата"
+
+#: ../browser/client.py:706
+#: ../content/supplyorder.py:50
+msgid "Date Dispatched"
+msgstr "Дата відправки"
+
+#: ../browser/sample.py:327
+#: ../content/referencesample.py:123
+#: ../content/sample.py:162
+msgid "Date Disposed"
+msgstr "Дата вилучення"
+
+#: ../browser/sample.py:313
+#: ../content/referencesample.py:116
+#: ../content/sample.py:150
+msgid "Date Expired"
+msgstr "Кінцева дата"
+
+#: ../browser/client.py:308
+msgid "Date Imported"
+msgstr "Дата імпорту"
+
+#: ../browser/client.py:638
+#: ../content/attachment.py:45
+msgid "Date Loaded"
+msgstr "Дата завантаження"
+
+#: ../browser/referencesupplier.py:32
+#: ../browser/templates/referencesample_sticker.pt:72
+#: ../browser/templates/referencesample_view.pt:101
+msgid "Date Opened"
+msgstr "Дата відкриття"
+
+#: ../browser/analysisrequest.py:1911
+#: ../browser/sample.py:61
+msgid "Date Preserved"
+msgstr ""
+
+#: ../browser/analysisrequest.py:1924
+#: ../browser/mailtemplates/analysisrequest_results.pt:287
+#: ../content/analysis.py:74
+msgid "Date Published"
+msgstr "Дата публікації"
+
+#: ../browser/analysisrequest.py:423
+#: ../browser/late_analyses.py:41
+#: ../browser/mailtemplates/analysisrequest_results.pt:279
+msgid "Date Received"
+msgstr "Дата отримання"
+
+#: ../browser/templates/analysisrequest_edit.pt:349
+#: ../browser/worksheet.py:781
+msgid "Date Requested"
+msgstr "Дата запиту"
+
+#: ../browser/analysisrequest.py:1905
+#: ../browser/referencesample.py:198
+#: ../browser/referencesupplier.py:30
+msgid "Date Sampled"
+msgstr "Дата взяття зразка"
+
+#: ../browser/client.py:310
+msgid "Date Submitted"
+msgstr "Дата затвердження"
+
+#: ../browser/fields/durationfield.py:19
+msgid "Days"
+msgstr "Дні"
+
+#: ../profiles/default/workflows/bika_inactive_workflow/definition.xml
+msgid "Deactivate"
+msgstr "Деактивувати"
+
+msgid "Default"
+msgstr ""
+
+#: ../content/client.py:63
+msgid "Default categories"
+msgstr ""
+
+#: ../content/bikasetup.py:210
+msgid "Default sample retention period"
+msgstr "Стандартний період зберігання зразків"
+
+#: ../browser/fields/interimfieldsfield.py:16
+msgid "Default value"
+msgstr "Стандартне значення"
+
+#: ../content/calculation.py:25
+msgid "Define interim fields such as vessel mass, dilution factors, should your calculation require them. The field title specified here will be used as column headers and field descriptors where the interim fields are displayed"
+msgstr ""
+
+#: ../content/analysisservice.py:205
+msgid "Define the number of decimals to be used for this result"
+msgstr ""
+
+#: ../content/bikasetup.py:252
+msgid "Define the prefixes for the unique sequential IDs the system issues for objects such as samples and analysis requests. In the 'Padding' field, indicate with how many leading zeros the numbers must be padded. E.g. a prefix of AR with padding of 4 for analysis requests, will see them numbered from AR0001 to AR9999."
+msgstr ""
+
+#: ../browser/fields/coordinatefield.py:20
+msgid "Degrees"
+msgstr "Градуси"
+
+#: ../skins/bika/attachments.pt:61
+msgid "Delete attachment"
+msgstr ""
+
+#: ../browser/accreditation.py:51
+#: ../content/analysiscategory.py:26
+#: ../content/analysisservice.py:421
+msgid "Department"
+msgstr "Підрозділ"
+
+#: ../content/calculation.py:42
+msgid "Dependent Analyses"
+msgstr ""
+
+#: ../content/method.py:34
+msgid "Describes the method in layman terms. This information is made available to lab clients"
+msgstr ""
+
+#: ../browser/client.py:360
+#: ../browser/log.py:43
+#: ../content/invoicelineitem.py:23
+msgid "Description"
+msgstr ""
+
+#: ../browser/templates/sample_sticker.pt:71
+#: ../browser/templates/sample_sticker_small.pt:71
+msgid "Deviation"
+msgstr ""
+
+#: ../browser/templates/analysisrequest_edit.pt:541
+msgid "Discount"
+msgstr ""
+
+#: ../content/pricelist.py:29
+msgid "Discount %"
+msgstr ""
+
+#: ../profiles/default/workflows/bika_order_workflow/definition.xml
+msgid "Dispatch"
+msgstr ""
+
+#: ../profiles/default/workflows/bika_order_workflow/definition.xml
+msgid "Dispatch order"
+msgstr ""
+
+#: ../browser/client.py:721
+#: ../profiles/default/workflows/bika_order_workflow/definition.xml
+msgid "Dispatched"
+msgstr ""
+
+#: ../content/analysisservice.py:460
+msgid "Display Value"
+msgstr ""
+
+#: ../browser/sample.py:65
+msgid "Disposal Date"
+msgstr ""
+
+#: ../browser/templates/analysisrequest_sticker.pt:81
+#: ../browser/templates/analysisrequest_sticker_small.pt:58
+msgid "Disposal date"
+msgstr ""
+
+#: ../profiles/default/workflows/bika_sample_workflow/definition.xml
+msgid "Dispose"
+msgstr ""
+
+#: ../browser/referencesample.py:233
+#: ../browser/referencesupplier.py:66
+#: ../browser/sample.py:563
+msgid "Disposed"
+msgstr ""
+
+#: ../browser/client.py:789
+#: ../browser/clientfolder.py:68
+#: ../browser/menu.py:77
+msgid "Dormant"
+msgstr ""
+
+#: ../browser/analyses.py:58
+#: ../browser/worksheet.py:204
+msgid "Dry"
+msgstr ""
+
+#: ../browser/mailtemplates/analysisrequest_results.pt:323
+msgid "Dry Result"
+msgstr ""
+
+#: ../content/bikasetup.py:169
+msgid "Dry matter analysis"
+msgstr ""
+
+#: ../browser/analysisrequest.py:1961
+#: ../browser/sample.py:507
+msgid "Due"
+msgstr ""
+
+#: ../browser/analyses.py:69
+#: ../browser/late_analyses.py:42
+#: ../browser/referencesample.py:64
+msgid "Due Date"
+msgstr ""
+
+#: ../content/instrument.py:48
+msgid "Due Date for next calibration"
+msgstr ""
+
+#: ../browser/accreditation.py:56
+#: ../controlpanel/bika_analysisservices.py:121
+msgid "Dup Var"
+msgstr ""
+
+#: ../browser/worksheet.py:337
+#: ../config.py:56
+#: ../controlpanel/bika_analysisservices.py:141
+msgid "Duplicate"
+msgstr ""
+
+#: ../content/worksheettemplate.py:27
+msgid "Duplicate Of"
+msgstr ""
+
+#: ../content/analysisservice.py:316
+msgid "Duplicate Variation %"
+msgstr ""
+
+#: ../browser/reports/reports_qualitycontrol.pt:61
+msgid "Duplicate analysis QC"
+msgstr ""
+
+#: ../exportimport/instruments/fiastar.py:215
+msgid "Duplicate analysis for slot ${slot} not found"
+msgstr ""
+
+#: ../browser/reports/reports_qualitycontrol.pt:66
+msgid "Duplicate analysis quality control graphs"
+msgstr ""
+
+#: ../content/analysis.py:84
+msgid "Duration"
+msgstr ""
+
+#: ../content/laboratory.py:53
+msgid "E.g. SANAS, APLAC, etc."
+msgstr ""
+
+#: ../content/analysis.py:89
+msgid "Earliness"
+msgstr ""
+
+#: ../content/samplepoint.py:40
+msgid "Elevation"
+msgstr ""
+
+#: ../browser/templates/contact_login_details.pt:91
+#: ../config.py:19
+#: ../controlpanel/bika_referencesuppliers.py:45
+msgid "Email"
+msgstr ""
+
+#: ../browser/analysisrequest.py:934
+#: ../browser/client.py:766
+#: ../browser/clientfolder.py:36
+msgid "Email Address"
+msgstr ""
+
+#: ../content/client.py:50
+msgid "Email subject line"
+msgstr ""
+
+#: ../content/bikasetup.py:147
+msgid "Enable the Sampling workflow"
+msgstr ""
+
+#: ../browser/templates/contact_login_details.pt:55
+msgid "Enter a user name, usually something like 'jsmith'. No spaces or special characters. Usernames and passwords are case sensitive, make sure the caps lock key is not enabled. This is the name used to log in."
+msgstr ""
+
+#: ../browser/templates/contact_login_details.pt:95
+msgid "Enter an email address. This is necessary in case the password is lost. We respect your privacy, and will not give the address away to any third parties or expose it anywhere."
+msgstr ""
+
+#: ../content/pricelist.py:30
+msgid "Enter discount percentage value"
+msgstr ""
+
+#: ../content/analysisservice.py:396
+#: ../content/labproduct.py:25
+msgid "Enter percentage value eg. 14.0"
+msgstr ""
+
+#: ../content/bikasetup.py:96
+msgid "Enter percentage value eg. 14.0. This percentage is applied system wide but can be overwrittem on individual items"
+msgstr ""
+
+#: ../content/analysisrequest.py:146
+msgid "Enter percentage value eg. 33.0"
+msgstr ""
+
+#: ../content/samplepoint.py:25
+msgid "Enter the Sample Point's latitude in degrees 0-90, minutes 0-59, seconds 0-59 and N/S indicator"
+msgstr ""
+
+#: ../content/samplepoint.py:33
+msgid "Enter the Sample Point's longitude in degrees 0-180, minutes 0-59, seconds 0-59 and E/W indicator"
+msgstr ""
+
+#: ../browser/templates/analysisrequest_edit.pt:469
+msgid "Exclude from invoice"
+msgstr ""
+
+#: ../browser/fields/referenceresultsfield.py:20
+#: ../browser/widgets/referenceresultswidget.py:38
+msgid "Expected Result"
+msgstr ""
+
+#: ../content/referencesample.py:131
+msgid "Expected Results"
+msgstr ""
+
+#: ../profiles/default/workflows/bika_sample_workflow/definition.xml
+msgid "Expire"
+msgstr ""
+
+#: ../browser/referencesample.py:224
+#: ../browser/referencesupplier.py:57
+#: ../browser/sample.py:546
+msgid "Expired"
+msgstr ""
+
+#: ../browser/referencesample.py:200
+#: ../browser/referencesupplier.py:33
+#: ../browser/templates/referencesample_sticker.pt:82
+msgid "Expiry Date"
+msgstr ""
+
+#: Profile description in configure.zcml
+msgid "Extension profile for the Bika LIMS"
+msgstr ""
+
+#: ../browser/client.py:769
+#: ../browser/clientfolder.py:38
+#: ../browser/referencesupplier.py:124
+msgid "Fax"
+msgstr ""
+
+#: ../content/person.py:62
+msgid "Fax (business)"
+msgstr ""
+
+#: ../config.py:81
+msgid "Female"
+msgstr ""
+
+#: ../config.py:33
+msgid "Field"
+msgstr ""
+
+#: ../browser/templates/sample_sticker.pt:95
+#: ../browser/templates/sample_sticker_small.pt:95
+#: ../config.py:28
+msgid "Field Analyses"
+msgstr ""
+
+#: ../config.py:38
+msgid "Field Preservation"
+msgstr ""
+
+#: ../browser/fields/interimfieldsfield.py:15
+msgid "Field Title"
+msgstr ""
+
+#: ../browser/client.py:634
+#: ../config.py:21
+msgid "File"
+msgstr ""
+
+#: ../content/arimport.py:26
+msgid "Filename"
+msgstr ""
+
+#: ../content/person.py:24
+msgid "Firstname"
+msgstr ""
+
+#: ../controlpanel/bika_calculations.py:43
+msgid "Formula"
+msgstr ""
+
+#: ../skins/bika/selection_macros.pt:40
+msgid "From"
+msgstr ""
+
+#: ../browser/analysisrequest.py:932
+#: ../browser/client.py:764
+#: ../browser/referencesupplier.py:120
+msgid "Full Name"
+msgstr ""
+
+#: ../browser/analysisrequest.py:2221
+#: ../browser/sample.py:658
+msgid "Future dated sample"
+msgstr ""
+
+#: ../content/person.py:18
+msgid "Greeting title eg. Mr, Mrs, Dr"
+msgstr ""
+
+#: ../browser/analysisrequest.py:1063
+#: ../browser/templates/analysisrequest_analyses_not_requested.pt:71
+#: ../browser/templates/analysisrequest_manage_results.pt:49
+msgid "Hazardous"
+msgstr ""
+
+#: ../browser/fields/durationfield.py:20
+msgid "Hours"
+msgstr ""
+
+#: ../browser/bika_listing.py:199
+#: ../browser/referencesample.py:58
+#: ../browser/referencesupplier.py:26
+msgid "ID"
+msgstr ""
+
+#: ../content/bikasetup.py:298
+msgid "ID Server URL"
+msgstr ""
+
+#: ../controlpanel/bika_idserver.py:52
+#: ../idserver.py:46
+msgid "ID Server unavailable"
+msgstr ""
+
+#: ../content/samplepoint.py:48
+msgid "If a sample is taken periodically at this sample point,  enter frequency here, e.g. weekly"
+msgstr ""
+
+#: ../content/analysisservice.py:287
+msgid "If required, select a calculation for the analysis here. Calculations can be configured under the calculations item in the LIMS set-up"
+msgstr ""
+
+#: ../content/analysisspec.py:39
+msgid "If the sample type you are looking for is not listed here, a specification for it has been created already. To edit existing, specifications, navigate 1 level up and select the specification by clicking on the sample type in the list"
+msgstr ""
+
+#: ../content/bikasetup.py:156
+msgid "If there are many analysis services, the control panel view can group services by category"
+msgstr ""
+
+#: ../content/container.py:30
+msgid "If this container is pre-preserved, then the preservation method could be selected here."
+msgstr ""
+
+#: ../browser/client.py:307
+#: ../exportimport/import.py:23
+#: ../profiles/default/workflows/bika_analysis_workflow/definition.xml
+msgid "Import"
+msgstr ""
+
+#: ../content/arimport.py:20
+msgid "Import Option"
+msgstr "Властивості імпорту"
+
+#: ../browser/client.py:322
+#: ../profiles/default/workflows/bika_arimport_workflow/definition.xml
+msgid "Imported"
+msgstr "Імпортовано"
+
+#: ../profiles/default/workflows/bika_inactive_workflow/definition.xml
+msgid "Inactive"
+msgstr ""
+
+#: ../content/pricelist.py:36
+msgid "Include descriptions"
+msgstr "Включати опис"
+
+#: ../content/bikasetup.py:264
+msgid "Include year in ID prefix"
+msgstr "Включати рік в префіксі ID"
+
+#: ../browser/analyses.py:263
+#: ../browser/calcs.py:143
+msgid "Indet"
+msgstr ""
+
+#: ../browser/analyses.py:266
+#: ../browser/calcs.py:45
+msgid "Indeterminate result"
+msgstr ""
+
+#: ../content/analysisservice.py:222
+msgid "Indicates whether file attachments, e.g. microscope images, are required for this analysis and whether file upload function will be available for it on data capturing screens"
+msgstr ""
+
+#: ../browser/fields/historyawarereferencefield.py:83
+#: ../skins/bika/update_version_before_edit.cpy:22
+#: ../subscribers/objectinitialized.py:15
+msgid "Initial revision"
+msgstr "Початкова перевірка"
+
+#: ../browser/accreditation.py:52
+#: ../browser/templates/worksheet_manage_results.pt:56
+#: ../content/analysisservice.py:266
+msgid "Instrument"
+msgstr "Інструмент"
+
+#: ../browser/worksheet.py:1018
+msgid "Instrument exporter not found"
+msgstr "Експортер для інструмента не знайдено"
+
+#: ../browser/worksheet.py:1006
+msgid "Instrument has no Data Interface selected"
+msgstr "Інтерфейс даних для інструмента не вибрано"
+
+#: ../content/instrument.py:16
+msgid "Instrument type"
+msgstr "Тип інструмента"
+
+#: ../controlpanel/bika_instruments.py:30
+msgid "Instruments"
+msgstr "Інструменти"
+
+#: ../browser/analyses.py:273
+#: ../browser/calcs.py:151
+msgid "Invalid result"
+msgstr "Невірний результат"
+
+#: ../browser/analysisrequest.py:436
+#: ../content/analysisrequest.py:108
+msgid "Invoice Exclude"
+msgstr "Виключити рахунок"
+
+#: ../content/invoice.py:19
+msgid "Invoice number"
+msgstr "Номер рахунка"
+
+#: ../browser/analysisrequest.py:183
+#: ../browser/bika_listing.py:96
+msgid "Item is inactive."
+msgstr "Позиція не активна"
+
+#: ../browser/templates/bika_listing_table.pt:659
+msgid "Items per page"
+msgstr "Позицій на сторінку"
+
+#: ../content/client.py:49
+msgid "Items to be included in email subject lines"
+msgstr ""
+
+#: ../content/person.py:79
+msgid "Job title"
+msgstr "Заголовок роботи"
+
+#: ../content/instrument.py:63
+msgid "Key"
+msgstr "Ключ"
+
+#: ../browser/accreditation.py:49
+#: ../browser/analysisrequest.py:809
+#: ../browser/fields/interimfieldsfield.py:14
+msgid "Keyword"
+msgstr "Ключове слово"
+
+#: ../skins/bika/attachments.pt:231
+msgid "Keywords"
+msgstr "Ключові слова"
+
+#: ../browser/analysisrequest.py:532
+#: ../browser/templates/analysisrequest_manage_results.pt:64
+#: ../browser/templates/analysisrequest_view.pt:83
+msgid "Lab"
+msgstr "Лабораторія"
+
+#: ../config.py:29
+msgid "Lab Analyses"
+msgstr "Аналізи лабораторії"
+
+#: ../controlpanel/bika_labcontacts.py:29
+msgid "Lab Contacts"
+msgstr "Контакти лабораторії"
+
+#: ../controlpanel/bika_departments.py:29
+msgid "Lab Departments"
+msgstr "Підрозділи лабораторії"
+
+#: ../config.py:39
+msgid "Lab Preservation"
+msgstr ""
+
+#: ../config.py:44
+#: ../controlpanel/bika_labproducts.py:30
+msgid "Lab Products"
+msgstr "Продукти лабораторії"
+
+#: ../content/laboratory.py:18
+msgid "Lab URL"
+msgstr "URL лабораторії"
+
+#: ../content/laboratory.py:108
+#: ../setuphandlers.py:81
+msgid "Laboratory"
+msgstr "Лабораторія"
+
+#: ../content/laboratory.py:34
+msgid "Laboratory Accredited"
+msgstr "Лабораторію акредитовано"
+
+#: ../browser/bika_listing.py:201
+msgid "Last modified"
+msgstr "Востаннє змінено"
+
+#: ../browser/late_analyses.py:43
+msgid "Late"
+msgstr "Пізно"
+
+#: ../browser/analysisrequest.py:2215
+#: ../browser/late_analyses.py:25
+#: ../skins/bika/portlet_late_analyses.pt:34
+msgid "Late Analyses"
+msgstr "Запізнілі аналізи"
+
+#: ../browser/analyses.py:327
+#: ../browser/worksheet.py:587
+msgid "Late Analysis"
+msgstr "Запізнілий аналіз"
+
+#: ../content/samplepoint.py:24
+msgid "Latitude"
+msgstr "Широта"
+
+#: ../content/sample.py:56
+msgid "Linked Sample"
+msgstr "Зв'язаний зразок"
+
+#: ../browser/load_setup_data.py:25
+msgid "Load Setup Data"
+msgstr ""
+
+#: ../content/method.py:26
+msgid "Load documents describing the method here"
+msgstr ""
+
+#: ../browser/log.py:35
+msgid "Log"
+msgstr "Лог"
+
+#: ../browser/templates/contact_login_details.pt:12
+msgid "Login details"
+msgstr "Деталі авторизації"
+
+#: ../skins/bika/logged_in.cpy:22
+msgid "Login failed. Both email address and password are case sensitive, check that caps lock is not enabled."
+msgstr "Авторизація не відбулась. Ім'я користувача і пароль чутливі до регістру. Переконайтеся, що клавіша CapsLock не задіяна."
+
+#: ../skins/bika/logged_in.cpy:24
+msgid "Login failed. Both login name and password are case sensitive, check that caps lock is not enabled."
+msgstr "Авторизація не відбулась. Ім'я користувача і пароль чутливі до регістру. Переконайтеся, що клавіша CapsLock не задіяна."
+
+#: ../content/samplepoint.py:32
+msgid "Longitude"
+msgstr "Довгота"
+
+#: ../browser/templates/referencesample_sticker.pt:57
+#: ../browser/templates/referencesample_view.pt:71
+#: ../content/referencesample.py:72
+msgid "Lot Number"
+msgstr "Номер лоту"
+
+#: ../config.py:86
+msgid "Mailing address"
+msgstr "Поштова адреса"
+
+#: ../config.py:80
+msgid "Male"
+msgstr "Пошта"
+
+#: ../content/department.py:22
+#: ../controlpanel/bika_departments.py:43
+msgid "Manager"
+msgstr "Керівник"
+
+#: ../controlpanel/bika_departments.py:49
+msgid "Manager Email"
+msgstr "Електронна адреса керівника"
+
+#: ../controlpanel/bika_departments.py:46
+msgid "Manager Phone"
+msgstr "Телефон керівника"
+
+#: ../browser/referencesupplier.py:28
+#: ../browser/templates/referencesample_sticker.pt:52
+#: ../browser/templates/referencesample_view.pt:61
+msgid "Manufacturer"
+msgstr "Вировник"
+
+#: ../browser/fields/referenceresultsfield.py:23
+#: ../browser/referencesample.py:127
+#: ../browser/widgets/referenceresultswidget.py:41
+msgid "Max"
+msgstr "Макс"
+
+#: ../browser/accreditation.py:55
+#: ../controlpanel/bika_analysisservices.py:119
+msgid "Max Time"
+msgstr "Макс. час"
+
+#: ../content/bikasetup.py:116
+msgid "Maximum columns per results email"
+msgstr ""
+
+#: ../content/bikasetup.py:127
+msgid "Maximum columns per results fax"
+msgstr ""
+
+#: ../content/container.py:39
+msgid "Maximum possible size or volume of samples."
+msgstr "Максимальний можливий розмір або об'єм зразків."
+
+#: ../content/analysis.py:68
+#: ../content/analysisservice.py:309
+msgid "Maximum time allowed for completion of the analysis. A late analysis alert is raised when this period elapses"
+msgstr "Максимально допустимий час для завершення аналізів. При перевищенні цього періоду з'являється попередження про запізнілі аналізи"
+
+#: ../content/analysis.py:67
+#: ../content/analysisservice.py:308
+msgid "Maximum turn-around time"
+msgstr "Максимальний тривалість"
+
+#: ../content/analysisrequest.py:145
+#: ../content/bikasetup.py:85
+msgid "Member discount %"
+msgstr "% членської знижки"
+
+#: ../content/client.py:32
+msgid "Member discount applies"
+msgstr "Членська знижка застосовується"
+
+#: ../browser/analyses.py:50
+#: ../content/analysisservice.py:251
+#: ../controlpanel/bika_analysisservices.py:112
+msgid "Method"
+msgstr ""
+
+#: ../content/method.py:25
+msgid "Method Document"
+msgstr ""
+
+#. Default: "Instructions"
+#: ../content/method.py:18
+msgid "Method Instructions"
+msgstr ""
+
+#: ../controlpanel/bika_methods.py:29
+msgid "Methods"
+msgstr ""
+
+#: ../browser/mailtemplates/analysisrequest_results.pt:512
+#: ../browser/templates/analysisrequest_edit.pt:661
+msgid "Methods included in the ${accreditation_body} schedule of Accreditation for this Laboratory. Analysis remarks are not accredited"
+msgstr ""
+
+#: ../browser/mailtemplates/analysisrequest_results.pt:549
+msgid "Methods of analysis available by clicking on the 'Request' link"
+msgstr ""
+
+#: ../browser/fields/referenceresultsfield.py:22
+#: ../browser/referencesample.py:126
+#: ../browser/widgets/referenceresultswidget.py:40
+msgid "Min"
+msgstr ""
+
+#: ../browser/worksheetfolder.py:152
+msgid "Mine"
+msgstr ""
+
+#: ../browser/templates/contact_login_details.pt:72
+msgid "Minimum 5 characters."
+msgstr ""
+
+#: ../content/bikasetup.py:105
+msgid "Minimum number of results for QC stats calculations"
+msgstr "Мінімальна кількість результатів для обрахування статистики СЯ"
+
+#: ../browser/fields/coordinatefield.py:21
+#: ../browser/fields/durationfield.py:21
+msgid "Minutes"
+msgstr ""
+
+#: ../browser/analysisrequest.py:936
+#: ../browser/client.py:768
+#: ../browser/referencesupplier.py:123
+msgid "Mobile Phone"
+msgstr ""
+
+#: ../content/instrument.py:27
+#: ../controlpanel/bika_instruments.py:46
+msgid "Model"
+msgstr ""
+
+#: ../skins/bika/portlet_late_analyses.pt:61
+#: ../skins/bika/portlet_pending_orders.pt:53
+#: ../skins/bika/portlet_sample_due.pt:54
+msgid "More"
+msgstr ""
+
+#: ../browser/clientfolder.py:35
+#: ../content/organisation.py:19
+#: ../controlpanel/bika_labcontacts.py:38
+msgid "Name"
+msgstr ""
+
+#: ../browser/templates/worksheet_add_control.pt:44
+#: ../browser/templates/worksheet_add_duplicate.pt:37
+msgid "New"
+msgstr ""
+
+#: ../browser/analysisservice.py:74
+msgid "No"
+msgstr ""
+
+#: ../browser/viewlets.py:26
+msgid "No LIMS setup data configured.  <a href='load_setup_data'>Click here</a> to load pre-configured setup data, or visit <a href='@@overview-controlpanel'>Site Setup</a>"
+msgstr ""
+
+#: ../browser/analysisrequest.py:1566
+msgid "No analyses have been selected"
+msgstr ""
+
+#: ../browser/analysisrequest.py:1456
+msgid "No analyses have been selected."
+msgstr ""
+
+#: ../browser/worksheetfolder.py:431
+msgid "No analyses were added"
+msgstr "Не було додано жодного аналізу"
+
+#: ../browser/worksheet.py:556
+msgid "No analyses were added to this worksheet."
+msgstr "Не було додано жодного аналізу до цього журналу."
+
+#: ../browser/analysisrequest.py:113
+#: ../browser/client.py:132
+msgid "No changes made."
+msgstr ""
+
+#: ../browser/worksheet.py:986
+msgid "No control type specified"
+msgstr ""
+
+#: ../browser/analysisrequest.py:1555
+msgid "No data was entered"
+msgstr ""
+
+#: ../browser/load_setup_data.py:58
+msgid "No file data submitted.  Please submit a valid Open XML Spreadsheet (.xlsx) file."
+msgstr "Не вибрано файл даних. Будь ласка, виберіть дійсний файл формату Open XML Spreadsheet (.xlsx)."
+
+#: ../browser/analysisrequest.py:293
+#: ../browser/client.py:234
+msgid "No items were published"
+msgstr ""
+
+#: ../content/arimportitem.py:45
+msgid "No of containers"
+msgstr ""
+
+#: ../browser/templates/contact_login_details.pt:27
+msgid "No user exists for ${contact_fullname} and he/she will not be able to log in. Fill in the form below to create one for him/her."
+msgstr ""
+
+#: ../browser/templates/analysisrequest_edit.pt:176
+#: ../content/bikasetup.py:40
+#: ../content/instrument.py:79
+msgid "None"
+msgstr ""
+
+#: ../content/bikasetup.py:47
+msgid "Normal"
+msgstr ""
+
+#: ../config.py:65
+msgid "Not Permitted"
+msgstr ""
+
+#: ../browser/mailtemplates/analysisrequest_results.pt:505
+msgid "Not invoiced"
+msgstr ""
+
+#: ../profiles/default/workflows/bika_analysis_workflow/definition.xml
+msgid "Not requested"
+msgstr ""
+
+#: ../browser/reports/analysesperservice.pt:33
+msgid "Number of analyses requested per analysis service."
+msgstr ""
+
+#: ../content/arimport.py:137
+msgid "Number of samples"
+msgstr ""
+
+#: ../content/preservation.py:25
+msgid "Once preserved, the sample must be disposed of within this time period.  If not specified, the sample type retention period will be used."
+msgstr "При зберіганні зразок має бути видалено протягом цього періоду часу. Якщо він не вказаний, буде застосовано період зберігання для типу зразка."
+
+#: ../browser/worksheetfolder.py:169
+#: ../profiles/default/workflows/bika_worksheet_workflow/definition.xml
+msgid "Open"
+msgstr ""
+
+#: ../browser/worksheet.py:510
+msgid "Order"
+msgstr ""
+
+#: ../browser/client.py:705
+msgid "Order Date"
+msgstr ""
+
+#: ../config.py:74
+#: ../content/arimport.py:103
+msgid "Order ID"
+msgstr ""
+
+#: ../browser/client.py:704
+#: ../content/invoicelineitem.py:29
+#: ../content/supplyorder.py:32
+msgid "Order Number"
+msgstr ""
+
+#: ../profiles/default/workflows/bika_order_workflow/definition.xml
+msgid "Order pending"
+msgstr ""
+
+#: ../browser/client.py:701
+msgid "Orders"
+msgstr ""
+
+#: ../config.py:22
+msgid "PDF"
+msgstr ""
+
+msgid "Parent"
+msgstr ""
+
+#: ../browser/analyses.py:48
+#: ../browser/sample.py:47
+msgid "Partition"
+msgstr ""
+
+#: ../browser/templates/analysisrequest_view.pt:48
+#: ../browser/templates/sample.pt:29
+msgid "Partitions"
+msgstr ""
+
+#: ../browser/templates/contact_login_details.pt:68
+msgid "Password"
+msgstr ""
+
+#: ../content/bikasetup.py:56
+msgid "Password lifetime"
+msgstr ""
+
+#: ../browser/client.py:717
+msgid "Pending"
+msgstr ""
+
+#: ../skins/bika/portlet_pending_orders.pt:22
+msgid "Pending orders"
+msgstr ""
+
+#: ../config.py:64
+msgid "Permitted"
+msgstr ""
+
+#: ../browser/fields/referenceresultsfield.py:21
+#: ../browser/widgets/referenceresultswidget.py:39
+msgid "Permitted Error %"
+msgstr ""
+
+#: ../browser/clientfolder.py:37
+#: ../content/organisation.py:29
+#: ../controlpanel/bika_labcontacts.py:43
+msgid "Phone"
+msgstr ""
+
+#: ../content/person.py:56
+msgid "Phone (business)"
+msgstr ""
+
+#: ../content/person.py:68
+msgid "Phone (home)"
+msgstr ""
+
+#: ../content/person.py:74
+msgid "Phone (mobile)"
+msgstr ""
+
+#: ../config.py:85
+#: ../content/organisation.py:48
+#: ../content/person.py:91
+msgid "Physical address"
+msgstr ""
+
+#: ../content/arimportitem.py:50
+msgid "Picking Slip"
+msgstr ""
+
+#: ../content/analysisservice.py:464
+msgid "Please list all options for the analysis result if you want to restrict it to specific options only, e.g. 'Positive', 'Negative' and 'Indeterminable'.  The option's result value must be a number."
+msgstr ""
+
+#: ../content/laboratory.py:84
+msgid "Please upload the logo you are authorised to use on your website and results reports by your accreditation body. Maximum size is 175 x 175 pixels."
+msgstr ""
+
+#: ../content/analysisservice.py:338
+msgid "Point of Capture"
+msgstr ""
+
+#: ../browser/worksheet.py:196
+#: ../content/worksheettemplate.py:23
+msgid "Position"
+msgstr ""
+
+#: ../content/organisation.py:55
+#: ../content/person.py:98
+msgid "Postal address"
+msgstr ""
+
+#: ../skins/bika/bika_widgets/custom_address_widget.pt:94
+msgid "Postal code"
+msgstr ""
+
+#: ../content/container.py:14
+#: ../controlpanel/bika_containers.py:47
+msgid "Pre-preserved"
+msgstr ""
+
+#: ../content/analysisservice.py:204
+msgid "Precision as number of decimals"
+msgstr ""
+
+#: ../content/bikasetup.py:251
+msgid "Prefixes"
+msgstr ""
+
+#: ../profiles/default/workflows/bika_ar_workflow/definition.xml
+msgid "Prepublish"
+msgstr ""
+
+#: ../browser/sample.py:51
+#: ../browser/templates/sample_sticker.pt:80
+#: ../browser/templates/sample_sticker_small.pt:80
+msgid "Preservation"
+msgstr ""
+
+#: ../content/preservation.py:19
+msgid "Preservation Category"
+msgstr ""
+
+#: ../controlpanel/bika_preservations.py:29
+msgid "Preservations"
+msgstr ""
+
+#: ../profiles/default/workflows/bika_analysis_workflow/definition.xml
+#: ../profiles/default/workflows/bika_ar_workflow/definition.xml
+#: ../profiles/default/workflows/bika_sample_workflow/definition.xml
+msgid "Preserved"
+msgstr ""
+
+#: ../browser/analysisrequest.py:1915
+#: ../browser/sample.py:59
+msgid "Preserver"
+msgstr ""
+
+#: ../browser/accreditation.py:54
+#: ../browser/analysisrequest.py:811
+#: ../controlpanel/bika_analysisservices.py:118
+msgid "Price"
+msgstr "Ціна"
+
+#: ../content/analysisservice.py:363
+msgid "Price (excluding VAT)"
+msgstr "Ціна (без ПДВ)"
+
+#: ../content/labproduct.py:30
+msgid "Price excluding VAT"
+msgstr "Ціна з ПДВ"
+
+#: ../content/pricelist.py:17
+msgid "Pricelist for"
+msgstr "Прайс-лист для"
+
+#: ../content/pricelist.py:24
+msgid "Pricing model"
+msgstr "Модель ціноутворення"
+
+#: ../config.py:23
+msgid "Print"
+msgstr "Друкувати"
+
+#: ../content/supplyorderitem.py:19
+msgid "Product"
+msgstr "Продукт"
+
+#: ../browser/client.py:463
+#: ../browser/templates/analysisrequest_edit.pt:189
+#: ../browser/templates/analysisrequest_view.pt:71
+msgid "Profile"
+msgstr "Профіль"
+
+#: ../content/arprofile.py:34
+msgid "Profile Analyses"
+msgstr "Аналізи профілю"
+
+#: ../browser/client.py:362
+#: ../controlpanel/bika_arprofiles.py:42
+msgid "Profile Key"
+msgstr "Ключ профілю"
+
+#: ../content/arprofile.py:21
+msgid "Profile Keyword"
+msgstr "Ключове слово профілю"
+
+#: ../config.py:69
+msgid "Profiles"
+msgstr "Профілі"
+
+#: ../browser/client.py:454
+#: ../controlpanel/bika_arprofiles.py:29
+msgid "Profiles and Templates"
+msgstr ""
+
+#: ../profiles/default/workflows/bika_analysis_workflow/definition.xml
+#: ../profiles/default/workflows/bika_ar_workflow/definition.xml
+#: ../profiles/default/workflows/bika_cancellation_workflow/definition.xml
+msgid "Provides access to workflow history"
+msgstr ""
+
+#: ../content/contact.py:20
+msgid "Publication preference"
+msgstr "Налаштування публікації"
+
+#: ../profiles/default/workflows/bika_analysis_workflow/definition.xml
+#: ../profiles/default/workflows/bika_ar_workflow/definition.xml
+msgid "Publish"
+msgstr ""
+
+#: ../browser/analysisrequest.py:2057
+#: ../profiles/default/workflows/bika_analysis_workflow/definition.xml
+#: ../profiles/default/workflows/bika_ar_workflow/definition.xml
+msgid "Published"
+msgstr "Опубліковано"
+
+#: ../browser/worksheetfolder.py:122
+msgid "QC"
+msgstr "СЯ"
+
+#: ../content/supplyorderitem.py:26
+msgid "Quantity"
+msgstr "Кількість"
+
+#: ../content/arimport.py:109
+msgid "QuoteID"
+msgstr "ID посилання"
+
+#: ../browser/templates/analysisrequest_analyses_not_requested.pt:54
+#: ../browser/templates/analysisrequest_manage_results.pt:63
+#: ../browser/templates/analysisrequest_view.pt:82
+msgid "Range Specification"
+msgstr "Специфікація меж"
+
+#: ../content/analysisservice.py:442
+msgid "Range max"
+msgstr "Максимум межі"
+
+#: ../content/analysisservice.py:441
+msgid "Range min"
+msgstr "Мінімум межі"
+
+#: ../browser/templates/contact_login_details.pt:84
+msgid "Re-enter the password. Make sure the passwords are identical."
+msgstr ""
+
+#: ../content/bikasetup.py:42
+#: ../profiles/default/workflows/bika_sample_workflow/definition.xml
+msgid "Receive"
+msgstr ""
+
+#: ../profiles/default/workflows/bika_analysis_workflow/definition.xml
+msgid "Receive Sample"
+msgstr ""
+
+#: ../profiles/default/workflows/bika_analysis_workflow/definition.xml
+#: ../profiles/default/workflows/bika_ar_workflow/definition.xml
+msgid "Receive sample"
+msgstr ""
+
+#: ../browser/analysisrequest.py:1988
+#: ../browser/sample.py:529
+#: ../profiles/default/workflows/bika_analysis_workflow/definition.xml
+msgid "Received"
+msgstr "Отримано"
+
+#: ../browser/templates/referencesample_sticker.pt:47
+#: ../content/worksheettemplate.py:25
+msgid "Reference"
+msgstr "Посилання"
+
+#: ../browser/referencesample.py:197
+#: ../browser/referencesupplier.py:29
+#: ../browser/templates/referencesample_view.pt:76
+msgid "Reference Definition"
+msgstr "Визначення еталону"
+
+#: ../controlpanel/bika_referencedefinitions.py:30
+msgid "Reference Definitions"
+msgstr "Визначення еталонів"
+
+#: ../controlpanel/bika_referencemanufacturers.py:28
+msgid "Reference Manufacturers"
+msgstr "Виробники еталонів"
+
+#: ../browser/referencesample.py:105
+#: ../content/analysisspec.py:72
+#: ../content/referencedefinition.py:22
+msgid "Reference Results"
+msgstr "Еталонні результати"
+
+#: ../browser/referencesample.py:179
+#: ../browser/referencesupplier.py:10
+msgid "Reference Samples"
+msgstr "Еталонні зразки"
+
+#: ../controlpanel/bika_referencesuppliers.py:31
+msgid "Reference Suppliers"
+msgstr "Постачальники еталону"
+
+#: ../content/referenceanalysis.py:38
+msgid "Reference Type"
+msgstr "Тип еталону"
+
+#: ../browser/worksheet.py:972
+msgid "Reference sample"
+msgstr ""
+
+#: ../content/referencedefinition.py:39
+#: ../content/referencesample.py:41
+msgid "Reference sample values are zero or 'blank'"
+msgstr ""
+
+#: ../content/referenceanalysis.py:30
+msgid "ReferenceAnalysis ID"
+msgstr "ID еталонного аналізу"
+
+#: ../controlpanel/bika_referencedefinitions.py:31
+msgid "ReferenceDefinition represents a Reference Definition or sample type used for quality control testing"
+msgstr ""
+
+#: ../content/bikasetup.py:41
+msgid "Register"
+msgstr "Зареєструвати"
+
+#: ../profiles/default/workflows/bika_analysis_workflow/definition.xml
+#: ../profiles/default/workflows/bika_ar_workflow/definition.xml
+#: ../profiles/default/workflows/bika_sample_workflow/definition.xml
+msgid "Registered"
+msgstr ""
+
+#: ../profiles/default/workflows/bika_cancellation_workflow/definition.xml
+msgid "Reinstate"
+msgstr "Відновити"
+
+#: ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml
+#: ../profiles/default/workflows/bika_referenceanalysis_workflow/definition.xml
+#: ../profiles/default/workflows/bika_worksheet_workflow/definition.xml
+msgid "Reject"
+msgstr ""
+
+#: ../profiles/default/workflows/bika_worksheet_workflow/definition.xml
+msgid "Reject worksheet"
+msgstr ""
+
+#: ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml
+#: ../profiles/default/workflows/bika_referenceanalysis_workflow/definition.xml
+#: ../profiles/default/workflows/bika_worksheet_workflow/definition.xml
+msgid "Rejected"
+msgstr ""
+
+#: ../browser/mailtemplates/analysisrequest_results.pt:392
+#: ../content/analysisrequest.py:138
+#: ../content/arimport.py:148
+msgid "Remarks"
+msgstr "Коментарі"
+
+#: ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml
+#: ../profiles/default/workflows/bika_referenceanalysis_workflow/definition.xml
+#: ../profiles/default/workflows/bika_worksheetanalysis_workflow/definition.xml
+msgid "Remove"
+msgstr ""
+
+#: ../browser/reports/reports_qualitycontrol.pt:46
+msgid "Repeated analyses"
+msgstr ""
+
+#: ../browser/reports/reports_administration.pt:27
+#: ../browser/reports/reports_productivity.pt:27
+#: ../browser/reports/reports_qualitycontrol.pt:27
+msgid "Report"
+msgstr "Звіт"
+
+#: ../browser/analysisrequest.py:442
+#: ../browser/templates/analysisrequest_edit.pt:446
+#: ../content/analysisrequest.py:115
+msgid "Report as Dry Matter"
+msgstr "Давати у звіті як суху сировину"
+
+#: ../browser/reports/reports_administration.pt:34
+msgid "Report the published analysis requests which have not been invoiced"
+msgstr "Звіт про опубліковані запити на аналізи без створених рахунків"
+
+#: ../browser/mailtemplates/analysisrequest_results.pt:500
+msgid "Reported as dry matter"
+msgstr "Надано у звіті як суху сировину"
+
+#: ../profiles/default/workflows/bika_ar_workflow/definition.xml
+msgid "Republish"
+msgstr ""
+
+#: ../browser/sample.py:175
+msgid "Request"
+msgstr ""
+
+#: ../browser/analysisrequest.py:1877
+#: ../browser/client.py:633
+#: ../browser/late_analyses.py:38
+msgid "Request ID"
+msgstr "ID запиту"
+
+#: ../browser/templates/analysisrequest_edit.pt:16
+msgid "Request new analyses"
+msgstr "Запитати нові аналізи"
+
+#: ../browser/sample.py:260
+msgid "Requests"
+msgstr "Запити"
+
+#: ../browser/templates/contact_login_details.pt:52
+#: ../config.py:63
+msgid "Required"
+msgstr "Потребується"
+
+#: ../content/analysisservice.py:132
+msgid "Required Volume"
+msgstr ""
+
+#: ../content/client.py:78
+msgid "Restrict categories"
+msgstr ""
+
+#: ../browser/analyses.py:54
+#: ../browser/mailtemplates/analysisrequest_results.pt:322
+#: ../browser/referencesample.py:62
+msgid "Result"
+msgstr "Результат"
+
+#: ../content/analysisservice.py:463
+msgid "Result Options"
+msgstr "Налаштування результату"
+
+#: ../content/analysisservice.py:459
+msgid "Result Value"
+msgstr "Значення результату"
+
+#: ../browser/mailtemplates/analysisrequest_results.pt:493
+msgid "Result out of ${spec} specified range"
+msgstr "Результат виходить за ${spec} вказані межі"
+
+#: ../browser/calcs.py:229
+msgid "Result out of range"
+msgstr "Результат виходить за межі"
+
+#: ../content/preservation.py:24
+#: ../content/sampletype.py:23
+msgid "Retention Period"
+msgstr ""
+
+#: ../browser/analyses.py:62
+#: ../browser/mailtemplates/analysisrequest_results.pt:363
+#: ../browser/referencesample.py:65
+msgid "Retested"
+msgstr "Досліджено повторно"
+
+#: ../profiles/default/workflows/bika_analysis_workflow/definition.xml
+#: ../profiles/default/workflows/bika_ar_workflow/definition.xml
+#: ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml
+msgid "Retract"
+msgstr ""
+
+#: ../profiles/default/workflows/bika_worksheet_workflow/definition.xml
+msgid "Retract worksheet"
+msgstr ""
+
+#: ../config.py:24
+msgid "SMS"
+msgstr ""
+
+#: ../content/bikasetup.py:137
+msgid "SMS Gateway Email Address"
+msgstr ""
+
+#. Default: "Title"
+#: ../content/person.py:16
+msgid "Salutation"
+msgstr ""
+
+#: ../content/bikasetup.py:200
+msgid "Same as the above, but sets the default on analysis services. This setting can be set per individual analysis on its own configuration"
+msgstr ""
+
+#: ../browser/analysisrequest.py:1887
+#: ../content/arimportitem.py:15
+msgid "Sample"
+msgstr ""
+
+#: ../controlpanel/bika_containers.py:29
+msgid "Sample Containers"
+msgstr ""
+
+#: ../content/arimportitem.py:40
+msgid "Sample Date"
+msgstr ""
+
+#: ../browser/analysisrequest.py:1026
+#: ../profiles/default/workflows/bika_analysis_workflow/definition.xml
+#: ../profiles/default/workflows/bika_ar_workflow/definition.xml
+msgid "Sample Due"
+msgstr ""
+
+#: ../browser/analysisrequest.py:359
+#: ../browser/mailtemplates/analysisrequest_results.pt:244
+#: ../browser/sample.py:444
+msgid "Sample ID"
+msgstr ""
+
+#: ../content/bikasetup.py:273
+msgid "Sample ID Padding"
+msgstr ""
+
+#: ../browser/sample.py:37
+#: ../browser/templates/analysisrequest_view.pt:52
+#: ../browser/templates/sample.pt:33
+msgid "Sample Partitions"
+msgstr ""
+
+#: ../browser/analysisrequest.py:396
+#: ../browser/mailtemplates/analysisrequest_results.pt:269
+#: ../browser/sample.py:273
+msgid "Sample Point"
+msgstr ""
+
+#: ../content/sampletype.py:56
+#: ../controlpanel/bika_samplepoints.py:33
+msgid "Sample Points"
+msgstr ""
+
+#: ../browser/analysisrequest.py:1035
+#: ../profiles/default/workflows/bika_sample_workflow/definition.xml
+msgid "Sample Received"
+msgstr ""
+
+#: ../browser/analysisrequest.py:389
+#: ../browser/client.py:559
+#: ../browser/mailtemplates/analysisrequest_results.pt:262
+msgid "Sample Type"
+msgstr ""
+
+#: ../content/sampletype.py:38
+msgid "Sample Type Prefix"
+msgstr ""
+
+#: ../browser/analysisrequest.py:459
+#: ../browser/sample.py:345
+msgid "Sample Type is required"
+msgstr ""
+
+#: ../browser/worksheetfolder.py:119
+#: ../content/samplepoint.py:60
+#: ../controlpanel/bika_sampletypes.py:33
+msgid "Sample Types"
+msgstr ""
+
+#: ../content/sampletype.py:45
+msgid "Sample volume is specified in this unit."
+msgstr ""
+
+#: ../profiles/default/workflows/bika_analysis_workflow/definition.xml
+#: ../profiles/default/workflows/bika_ar_workflow/definition.xml
+#: ../profiles/default/workflows/bika_sample_workflow/definition.xml
+msgid "Sampled"
+msgstr ""
+
+#: ../browser/analysisrequest.py:1909
+#: ../browser/sample.py:53
+msgid "Sampler"
+msgstr ""
+
+#: ../browser/sample.py:434
+msgid "Samples"
+msgstr ""
+
+#: ../content/referencedefinition.py:47
+#: ../content/referencesample.py:49
+#: ../content/sampletype.py:32
+msgid "Samples of this type should be treated as hazardous"
+msgstr ""
+
+#: ../browser/analysisrequest.py:415
+#: ../browser/sample.py:298
+#: ../browser/templates/analysisrequest_edit.pt:325
+msgid "Sampling Date"
+msgstr ""
+
+#: ../content/samplepoint.py:47
+msgid "Sampling Frequency"
+msgstr ""
+
+#: ../browser/analysisrequest.py:448
+#: ../browser/sample.py:334
+#: ../browser/templates/analysisrequest_edit.pt:610
+msgid "Save"
+msgstr ""
+
+#: ../skins/bika/bika_widgets/remarks.pt:69
+msgid "Save remarks"
+msgstr ""
+
+#: ../browser/reports/reports_productivity.pt:125
+#: ../browser/templates/worksheet_add_analyses.pt:107
+msgid "Search"
+msgstr ""
+
+#: ../browser/fields/coordinatefield.py:22
+msgid "Seconds"
+msgstr ""
+
+#: ../content/bikasetup.py:222
+msgid "Select 'Register' if you want labels to be automatically printed when new ARs are created.  Select 'Receive' to print labels when the 'Receive' transition is invoked on ARs or Samples.  Select None to disable automatic printing"
+msgstr ""
+
+#: ../browser/analysisrequest.py:976
+#: ../browser/templates/analysisrequest_edit.pt:238
+msgid "Select Sample"
+msgstr ""
+
+#: ../exportimport/import.py:24
+msgid "Select a data interface"
+msgstr ""
+
+#: ../browser/worksheet.py:729
+msgid "Select a destinaton position and the AR to duplicate."
+msgstr ""
+
+#: ../content/department.py:23
+msgid "Select a manager from the available personnel configured under the 'lab contacts' setup item. Departmental managers are referenced on analysis results reports containing analyses by their department."
+msgstr ""
+
+#: ../browser/templates/analysisrequest_analyses_not_requested.pt:93
+msgid "Select all items"
+msgstr ""
+
+#: ../content/instrument.py:56
+msgid "Select an Import/Export interface for this instrument."
+msgstr ""
+
+#: ../content/analysisservice.py:252
+msgid "Select analysis method"
+msgstr ""
+
+#: ../browser/templates/worksheetfolder.pt:33
+msgid "Select analyst"
+msgstr ""
+
+#: ../content/analysisservice.py:510
+msgid "Select any combination of these fields to configure how the LIMS will create sample partitions for new ARs. Adding only a few very general rules will cause the empty fields to be set to computed, empty or default values. Values set above take precendence over those set in this table."
+msgstr ""
+
+#: ../content/analysisrequest.py:109
+msgid "Select if analyses to be excluded from invoice"
+msgstr ""
+
+#: ../content/pricelist.py:37
+msgid "Select if the descriptions should be included"
+msgstr ""
+
+#: ../browser/templates/worksheetfolder.pt:61
+msgid "Select instrument"
+msgstr ""
+
+#: ../browser/worksheet.py:642
+msgid "Select services in the left column to locate reference samples. Select a reference by clicking it. "
+msgstr ""
+
+#: ../browser/templates/worksheet_add_analyses.pt:46
+#: ../browser/templates/worksheetfolder.pt:48
+msgid "Select template"
+msgstr ""
+
+#: ../browser/analysisrequest.py:914
+msgid "Select the contacts that will receive analysis results for this request."
+msgstr ""
+
+#: ../content/bikasetup.py:77
+msgid "Select the currency the site will use to display prices."
+msgstr ""
+
+#: ../content/analysisservice.py:267
+#: ../content/worksheettemplate.py:60
+msgid "Select the preferred instrument"
+msgstr ""
+
+#: ../content/bikasetup.py:234
+msgid "Select the size label to print if Automatic label printing is enabled."
+msgstr ""
+
+#: ../content/bikasetup.py:148
+msgid "Select this to activate the sample collection workflow steps."
+msgstr ""
+
+#: ../content/worksheettemplate.py:46
+msgid "Select which Analyses should be included on the Worksheet"
+msgstr ""
+
+#: ../browser/reports/reports_administration.pt:47
+#: ../browser/reports/reports_productivity.pt:103
+#: ../browser/reports/reports_qualitycontrol.pt:80
+msgid "Selection criteria"
+msgstr ""
+
+#: ../content/analysisservice.py:131
+msgid "Separate Partition"
+msgstr ""
+
+#: ../content/instrument.py:33
+msgid "Serial No"
+msgstr ""
+
+#: ../browser/accreditation.py:48
+#: ../browser/analysisrequest.py:807
+#: ../browser/referencesample.py:60
+msgid "Service"
+msgstr ""
+
+# ../browser/js/analysisrequest.js
+msgid "Service dependencies"
+msgstr ""
+
+#: ../exportimport/instruments/fiastar.py:131
+msgid "Service keyword ${keyword} not found"
+msgstr ""
+
+#: ../content/analysisservice.py:503
+msgid "Service partition will always be stored in one of the selected containers"
+msgstr ""
+
+#: ../content/analysisservice.py:489
+msgid "Service partition will always require one of the selected preservation methods"
+msgstr ""
+
+#: ../browser/worksheet.py:936
+#: ../browser/worksheetfolder.py:116
+msgid "Services"
+msgstr ""
+
+#: ../controlpanel/bika_analysisservices.py:66
+msgid "Services ${services} were successfully created."
+msgstr ""
+
+#: ../content/bikasetup.py:117
+msgid "Set the maximum number of analysis requests per results email. Too many columns per email are difficult to read for some clients who prefer fewer results per email"
+msgstr ""
+
+#: ../browser/client.py:546
+msgid "Set to lab defaults"
+msgstr ""
+
+#: ../controlpanel/bika_analysisspecs.py:31
+msgid "Set up the laboratory analysis service results specifications"
+msgstr ""
+
+#: ../config.py:88
+msgid "Shipping address"
+msgstr ""
+
+#: ../content/client.py:79
+msgid "Show only selected categories in client views"
+msgstr ""
+
+#: ../content/labcontact.py:18
+msgid "Signature"
+msgstr ""
+
+#: ../browser/client.py:637
+msgid "Size"
+msgstr ""
+
+# ../browser/js/attachments.js
+msgid "Slot"
+msgstr ""
+
+#: ../content/bikasetup.py:46
+msgid "Small"
+msgstr ""
+
+#: ../config.py:70
+msgid "Special"
+msgstr ""
+
+#: ../content/worksheettemplate.py:30
+msgid "Specify the size of the Worksheet, e.g. corresponding to a specific instrument's tray size. Then select an Analysis 'type' per Worksheet position. Where QC samples are selected, also select which Reference Sample should be used. If a duplicate analysis is selected, indicate which sample position it should be a duplicate of"
+msgstr ""
+
+#: ../content/analysisservice.py:447
+msgid "Specify the uncertainty value for a given range, e.g. for results in a range with minimum of 0 and maximum of 10, the uncertainty value is 0.5 - a result of 6.67 will be reported as 6.67 +- 0.5. Please ensure successive ranges are continuous, e.g. 0.00 - 10.00 is followed by 10.01 - 20.00, 20.01 - 30 .00 etc."
+msgstr ""
+
+#: ../config.py:49
+msgid "Standard Price"
+msgstr ""
+
+#: ../browser/reports/reports_qualitycontrol.pt:51
+msgid "Standard analysis QC"
+msgstr ""
+
+#: ../browser/reports/reports_qualitycontrol.pt:56
+msgid "Standard analysis quality control graphs"
+msgstr ""
+
+#: ../browser/analysisrequest.py:1011
+#: ../browser/bika_listing.py:202
+#: ../browser/client.py:311
+msgid "State"
+msgstr ""
+
+#: ../browser/analyses.py:52
+#: ../browser/templates/analysisrequest_analyses_not_requested.pt:103
+#: ../content/arimport.py:143
+msgid "Status"
+msgstr ""
+
+#: ../browser/templates/load_setup_data.pt:53
+#: ../profiles/default/workflows/bika_arimport_workflow/definition.xml
+msgid "Submit"
+msgstr ""
+
+#: ../profiles/default/workflows/bika_arimport_workflow/definition.xml
+msgid "Submit ARImport"
+msgstr ""
+
+#: ../browser/load_setup_data.py:26
+msgid "Submit a valid Open XML (.XLSX) file containing Bika setup records to continue."
+msgstr ""
+
+#: ../profiles/default/workflows/bika_analysis_workflow/definition.xml
+#: ../profiles/default/workflows/bika_ar_workflow/definition.xml
+#: ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml
+msgid "Submit for verification"
+msgstr ""
+
+#: ../profiles/default/workflows/bika_worksheet_workflow/definition.xml
+msgid "Submit worksheet"
+msgstr ""
+
+#: ../profiles/default/workflows/bika_arimport_workflow/definition.xml
+msgid "Submitted"
+msgstr ""
+
+#: ../browser/templates/analysisrequest_edit.pt:556
+#: ../content/invoice.py:49
+#: ../content/invoicelineitem.py:37
+msgid "Subtotal"
+msgstr ""
+
+#: ../browser/referencesample.py:196
+msgid "Supplier"
+msgstr ""
+
+#: ../content/person.py:30
+msgid "Surname"
+msgstr ""
+
+#: ../content/method.py:20
+msgid "Technical description and instructions intended for analysts"
+msgstr ""
+
+#: ../content/arimport.py:120
+msgid "Temperature"
+msgstr ""
+
+#: ../browser/templates/analysisrequest_edit.pt:163
+#: ../browser/worksheetfolder.py:114
+msgid "Template"
+msgstr ""
+
+#: ../browser/mailtemplates/analysisrequest_results.pt:542
+msgid "Test results are at a ${lab_confidence} % confidence level"
+msgstr ""
+
+#: ../browser/analysisrequest.py:1778
+msgid "The AR Profile '${profile_name}' was automatically created."
+msgstr ""
+
+#: ../content/artemplate.py:27
+msgid "The AR Profile selection for this template"
+msgstr ""
+
+#: ../content/analysisrequest.py:41
+msgid "The ID assigned to the client's request by the lab"
+msgstr ""
+
+#: ../content/sample.py:33
+msgid "The ID assigned to the client's sample by the lab"
+msgstr ""
+
+#: ../content/referenceanalysis.py:31
+msgid "The ID assigned to the reference analysis"
+msgstr ""
+
+#: ../profiles/default/workflows/bika_analysis_workflow/definition.xml
+#: ../profiles/default/workflows/bika_ar_workflow/definition.xml
+#: ../profiles/default/workflows/bika_arimport_workflow/definition.xml
+msgid "The ID of the user who performed the last transition"
+msgstr ""
+
+#: ../content/laboratory.py:19
+msgid "The Laboratory's web address"
+msgstr ""
+
+#: ../content/laboratory.py:69
+msgid "The accreditation standard that applies, e.g. ISO 17025"
+msgstr ""
+
+#: ../content/arprofile.py:35
+msgid "The analyses included in this profile, grouped per category"
+msgstr ""
+
+#: ../content/bikasetup.py:170
+msgid "The analysis to be used for determining dry matter."
+msgstr ""
+
+#: ../browser/reports/reports_productivity.pt:89
+msgid "The attachments linked to analysis requests and analyses"
+msgstr ""
+
+#: ../content/analysisservice.py:356
+msgid "The category the analysis service belongs to"
+msgstr ""
+
+#: ../content/instrument.py:22
+msgid "The commercial 'make' of the instrument"
+msgstr ""
+
+#: ../content/bikasetup.py:86
+msgid "The discount percentage entered here, is applied to the prices for clients flagged as 'members', normally co-operative members or associates deserving of this discount"
+msgstr ""
+
+#: ../content/bikasetup.py:138
+msgid "The email to SMS gateway address. Either a complete email address, or just the domain, e.g. '@2way.co.za', the contact's mobile phone number will be prepended to"
+msgstr ""
+
+#: ../content/bikasetup.py:299
+msgid "The full URL: http://URL/path:port"
+msgstr ""
+
+#: ../content/samplepoint.py:41
+msgid "The height or depth at which the sample has to be taken"
+msgstr ""
+
+#: ../content/instrument.py:40
+msgid "The instrument's calibration certificate and number"
+msgstr ""
+
+#: ../content/instrument.py:28
+msgid "The instrument's model number"
+msgstr ""
+
+#: ../browser/accreditation.py:37
+msgid "The lab is not accredited, or accreditation has not been configured. "
+msgstr ""
+
+#: ../content/analysiscategory.py:27
+#: ../content/analysisservice.py:422
+#: ../content/labcontact.py:33
+msgid "The laboratory department"
+msgstr ""
+
+#: ../profiles/default/workflows/bika_analysis_workflow/definition.xml
+#: ../profiles/default/workflows/bika_ar_workflow/definition.xml
+#: ../profiles/default/workflows/bika_arimport_workflow/definition.xml
+msgid "The last transition"
+msgstr ""
+
+#: ../content/bikasetup.py:274
+msgid "The length of the zero-padding for Sample IDs"
+msgstr ""
+
+#: ../content/bikasetup.py:283
+msgid "The length of the zero-padding for the AR number in AR IDs"
+msgstr ""
+
+#: ../content/sampletype.py:57
+msgid "The list of sample points from which this sample type can be collected.  If no sample points are selected, then all sample points are available."
+msgstr ""
+
+#: ../content/samplepoint.py:61
+msgid "The list of sample types that can be collected at this sample point.  If no sample types are selected, then all sample types are available."
+msgstr ""
+
+#: ../content/analysisservice.py:197
+msgid "The measurement units for this analysis service' results, e.g. mg/l, ppm, dB, mV, etc."
+msgstr ""
+
+#: ../content/laboratory.py:44
+msgid "The name of the accreditation body corresponding to the abbreviation above, e.g. South African National Accreditation Service for SANAS"
+msgstr ""
+
+#: ../browser/reports/reports_productivity.pt:34
+msgid "The number of analyses requested per analysis service"
+msgstr ""
+
+#: ../browser/reports/reports_productivity.pt:45
+msgid "The number of analyses requested per sample type"
+msgstr ""
+
+#: ../content/bikasetup.py:57
+msgid "The number of days before a password expires. 0 disables password expiry"
+msgstr ""
+
+#: ../content/bikasetup.py:211
+msgid "The number of days before a sample expires and cannot be analysed any more. This setting can be overwritten per individual sample type in the sample types setup"
+msgstr ""
+
+#: ../content/bikasetup.py:66
+msgid "The number of minutes before a user is automatically logged off. 0 disables automatic log-off"
+msgstr ""
+
+#: ../browser/reports/reports_productivity.pt:56
+msgid "The number of requests and analyses"
+msgstr ""
+
+#: ../browser/reports/reports_productivity.pt:68
+msgid "The number of requests and analyses per client"
+msgstr "Кількість запитів і аналізів на клієнта"
+
+#: ../content/sampletype.py:24
+msgid "The period for which un-preserved samples of this type can be kept before they expire and cannot be analysed any further"
+msgstr ""
+
+#: ../content/analysisservice.py:372
+msgid "The price charged per analysis for clients who qualify for bulk discounts"
+msgstr ""
+
+#: ../content/arprofile.py:22
+msgid "The profile's keyword is used to uniquely identify it in import files. It has to be unique, and it may not be the same as any Calculation Interim field ID."
+msgstr ""
+
+#: ../content/laboratory.py:77
+msgid "The reference code issued to the lab by the accreditation body"
+msgstr ""
+
+#: ../content/analysisservice.py:339
+msgid "The results of field analyses are captured during sampling at the sample point, e.g. the temperature of a water sample in the river where it is sampled. Lab analyses are done in the laboratory"
+msgstr ""
+
+#: ../content/instrument.py:34
+msgid "The serial number that uniquely identifies the instrument"
+msgstr ""
+
+#: ../content/bikasetup.py:189
+msgid "The system wide default configuration to indicate whether file attachments are required, permitted or not per analysis request"
+msgstr ""
+
+#: ../browser/reports/reports_productivity.pt:79
+msgid "The turnaround times of analyses"
+msgstr "Тривалість досліджень"
+
+#: ../content/analysisservice.py:234
+msgid "The unique keyword used to identify the analysis service in import files of bulk AR requests and results imports from instruments. It is also used to identify dependent analysis services in user defined results calculations"
+msgstr ""
+
+#: ../browser/templates/analysisrequest_analyses_not_requested.pt:80
+msgid "There are no results."
+msgstr "Результату немає"
+
+#: ../subscribers/analysisservice.py:39
+msgid "This Analysis Service cannot be activated because it's calculation is inactive."
+msgstr "Послуга по аналізам не може бути активована, бо її калькуляція не активна."
+
+#: ../subscribers/analysisservice.py:27
+msgid "This Analysis Service cannot be deactivated because one or more active calculations list it as a dependency"
+msgstr "Послуга по аналізам не може бути деактивована, оскільки має залежні калькуляції."
+
+#: ../browser/mailtemplates/analysisrequest_results.pt:533
+msgid "This document shall not be reproduced except in full, without the written approval of ${name_lab}"
+msgstr "Цей документ не може були розповсюджено без письмового підтвердження ${name_lab}, і винятково у повному вигляді"
+
+#: ../content/preservation.py:40
+msgid "This preservation requires the sample partition to be stored in one of these container types. Choose multiple values by holding CTRL and clicking."
+msgstr ""
+
+#: ../content/analysisrequest.py:116
+#: ../content/analysisservice.py:213
+#: ../content/artemplate.py:62
+msgid "This result can be reported as dry matter"
+msgstr ""
+
+#: ../content/analysisservice.py:475
+msgid "This service will always be assigned it's own separate sample partition."
+msgstr ""
+
+#: ../content/laboratory.py:26
+msgid "This value is reported at the bottom of all published results"
+msgstr ""
+
+# ../browser/js/client.js
+msgid "This will remove all existing client analysis specifications and create copies of all lab specifications. Are you sure you want to do this?"
+msgstr ""
+
+#: ../profiles/default/workflows/bika_analysis_workflow/definition.xml
+#: ../profiles/default/workflows/bika_ar_workflow/definition.xml
+#: ../profiles/default/workflows/bika_arimport_workflow/definition.xml
+msgid "Time of the last transition"
+msgstr ""
+
+#: ../browser/bika_listing.py:200
+#: ../browser/client.py:358
+#: ../browser/referencesample.py:195
+msgid "Title"
+msgstr "Заголовок"
+
+#: ../profiles/default/workflows/bika_analysis_workflow/definition.xml
+#: ../profiles/default/workflows/bika_ar_workflow/definition.xml
+#: ../profiles/default/workflows/bika_sample_workflow/definition.xml
+msgid "To Be Preserved"
+msgstr ""
+
+#: ../profiles/default/workflows/bika_analysis_workflow/definition.xml
+#: ../profiles/default/workflows/bika_ar_workflow/definition.xml
+#: ../profiles/default/workflows/bika_sample_workflow/definition.xml
+msgid "To Be Sampled"
+msgstr ""
+
+#: ../browser/analysisrequest.py:2011
+#: ../browser/worksheetfolder.py:184
+#: ../profiles/default/workflows/bika_ar_workflow/definition.xml
+msgid "To be verified"
+msgstr "На перевірку"
+
+#: ../content/bikasetup.py:128
+msgid "Too many AR columns per fax will see the font size minimised and could render faxes illegible. 4 ARs maximum per page is recommended"
+msgstr ""
+
+#: ../browser/reports/analysesperservice.pt:105
+#: ../browser/templates/analysisrequest_edit.pt:592
+#: ../content/invoice.py:63
+msgid "Total"
+msgstr "Всього"
+
+#: ../controlpanel/bika_labproducts.py:54
+msgid "Total Price"
+msgstr "Загальна ціна"
+
+#: ../content/analysisservice.py:387
+#: ../content/labproduct.py:43
+msgid "Total price"
+msgstr "Загальна ціна"
+
+#: ../browser/bika_listing.py:198
+#: ../controlpanel/bika_instruments.py:41
+msgid "Type"
+msgstr "Тип"
+
+#: ../browser/analysisrequest.py:2138
+#: ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml
+#: ../profiles/default/workflows/bika_referenceanalysis_workflow/definition.xml
+msgid "Unassigned"
+msgstr ""
+
+#: ../content/analysisservice.py:446
+msgid "Uncertainty"
+msgstr "Невизначеність"
+
+#: ../content/analysisservice.py:443
+msgid "Uncertainty value"
+msgstr "Значення невизначеності"
+
+#: ../browser/accreditation.py:53
+#: ../browser/fields/interimfieldsfield.py:17
+#: ../browser/templates/analysisrequest_analyses_not_requested.pt:101
+msgid "Unit"
+msgstr "Одиниця"
+
+#: ../content/supplyorderitem.py:32
+msgid "Unit price"
+msgstr "Ціна одиниці"
+
+#: ../content/labcontact.py:19
+msgid "Upload a scanned signature to be used on printed analysis results reports. Ideal size is 250 pixels wide by 150 high"
+msgstr ""
+
+#: ../content/bikasetup.py:290
+msgid "Use external ID server"
+msgstr "Використовувати зовнішній ID сервер"
+
+#: ../content/instrument.py:67
+msgid "Use this field to pass arbitrary parameters to the export/import modules."
+msgstr ""
+
+#: ../browser/log.py:41
+msgid "User"
+msgstr "Користувач"
+
+#: ../browser/templates/contact_login_details.pt:51
+msgid "User Name"
+msgstr "Ім'я користувача"
+
+#: ../content/bikasetup.py:106
+msgid "Using too few data points does not make statistical sense. Set an acceptable minimum number of results before QC statistics will be calculated and plotted"
+msgstr ""
+
+#: ../browser/templates/analysisrequest_edit.pt:574
+#: ../content/analysisservice.py:379
+#: ../content/invoicelineitem.py:44
+msgid "VAT"
+msgstr "ПДВ"
+
+#: ../content/analysisservice.py:395
+#: ../content/bikasetup.py:95
+#: ../content/invoice.py:56
+msgid "VAT %"
+msgstr "% ПДВ"
+
+#: ../controlpanel/bika_labproducts.py:51
+msgid "VAT Amount"
+msgstr "Кількість ПДВ"
+
+#: ../content/organisation.py:24
+msgid "VAT number"
+msgstr "Номер ПДВ"
+
+#: ../content/pricelist.py:45
+msgid "Valid from"
+msgstr "Дійсно з"
+
+#: ../content/pricelist.py:54
+msgid "Valid until"
+msgstr "Дійсно до"
+
+#: ../validators.py:140
+msgid "Validation failed: '${keyword}': duplicate keyword"
+msgstr ""
+
+#: ../validators.py:86
+msgid "Validation failed: '${title}': This keyword is already in use by calculation '${used_by}'"
+msgstr ""
+
+#: ../validators.py:69
+msgid "Validation failed: '${title}': This keyword is already in use by service '${used_by}'"
+msgstr ""
+
+#: ../validators.py:144
+msgid "Validation failed: '${title}': duplicate title"
+msgstr ""
+
+#: ../validators.py:34
+msgid "Validation failed: '${value}' is not unique"
+msgstr ""
+
+#: ../validators.py:294
+msgid "Validation failed: Bearing must be E/W"
+msgstr ""
+
+#: ../validators.py:283
+msgid "Validation failed: Bearing must be N/S"
+msgstr ""
+
+#: ../validators.py:219
+msgid "Validation failed: Keyword '${keyword}' is invalid"
+msgstr ""
+
+#: ../validators.py:323
+msgid "Validation failed: Result Values must be numbers"
+msgstr "Перевірку не пройдено: значення результату повинно бути числовим"
+
+#: ../validators.py:363
+msgid "Validation failed: The selection requires the following categories to be selected: ${categories}"
+msgstr ""
+
+#: ../validators.py:174
+msgid "Validation failed: column title '${title}' must have keyword '${keyword}'"
+msgstr ""
+
+#: ../validators.py:290
+msgid "Validation failed: degrees is 180; minutes must be zero"
+msgstr ""
+
+#: ../validators.py:292
+msgid "Validation failed: degrees is 180; seconds must be zero"
+msgstr ""
+
+#: ../validators.py:279
+msgid "Validation failed: degrees is 90; minutes must be zero"
+msgstr ""
+
+#: ../validators.py:281
+msgid "Validation failed: degrees is 90; seconds must be zero"
+msgstr ""
+
+#: ../validators.py:287
+msgid "Validation failed: degrees must be 0 - 180"
+msgstr ""
+
+#: ../validators.py:276
+msgid "Validation failed: degrees must be 0 - 90"
+msgstr "Перевірку не пройдено: градуси мають бути від 0 до 90"
+
+#: ../validators.py:254
+msgid "Validation failed: degrees must be numeric"
+msgstr "Перевірку не пройдено: градуси мають бути в числах"
+
+#: ../validators.py:182
+msgid "Validation failed: keyword '${keyword}' must have column title '${title}'"
+msgstr ""
+
+#: ../validators.py:60
+msgid "Validation failed: keyword contains invalid characters"
+msgstr "Перевірку не пройдено: ключове слово містить недопустимі символи"
+
+#: ../validators.py:267
+msgid "Validation failed: minutes must be 0 - 59"
+msgstr "Перевірку не пройдено: хвилини мають бути від 0 до 59"
+
+#: ../validators.py:259
+msgid "Validation failed: minutes must be numeric"
+msgstr "Перевірку не пройдено: хвилини мають бути в числах"
+
+#: ../validators.py:270
+msgid "Validation failed: seconds must be 0 - 59"
+msgstr "Перевірку не пройдено:  секунди мають бути від 0 до 59"
+
+#: ../validators.py:264
+msgid "Validation failed: seconds must be numeric"
+msgstr "Перевірку не пройдено: секунди мають бути в числах"
+
+#: ../browser/client.py:309
+msgid "Validity"
+msgstr "Достовірність"
+
+#: ../content/instrument.py:64
+msgid "Value"
+msgstr "Значення"
+
+#: ../browser/analysisrequest.py:2036
+#: ../browser/worksheetfolder.py:201
+#: ../profiles/default/workflows/bika_analysis_workflow/definition.xml
+msgid "Verified"
+msgstr "Перевірено"
+
+#: ../browser/mailtemplates/analysisrequest_results.pt:295
+msgid "Verified by"
+msgstr "Перевірено:"
+
+#: ../profiles/default/workflows/bika_analysis_workflow/definition.xml
+#: ../profiles/default/workflows/bika_ar_workflow/definition.xml
+#: ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml
+msgid "Verify"
+msgstr ""
+
+#: ../browser/log.py:39
+msgid "Version"
+msgstr "Версія"
+
+#: ../skins/bika/update_version_on_edit.cpy:28
+msgid "Versioning for this file has been disabled because it is too large"
+msgstr "Версіонування для цього файлу було відключено через його великий розмір"
+
+#: ../content/labproduct.py:13
+#: ../controlpanel/bika_labproducts.py:42
+msgid "Volume"
+msgstr "Об'єм"
+
+#: ../content/laboratory.py:61
+msgid "Web address for the accreditation body"
+msgstr ""
+
+#: ../content/analysisservice.py:317
+msgid "When the results of duplicate analyses on worksheets, carried out on the same sample, differ with more than this percentage, an alert is raised"
+msgstr ""
+
+#: ../browser/referencesample.py:61
+#: ../browser/worksheetfolder.py:109
+#: ../skins/bika/selection_macros.pt:116
+msgid "Worksheet"
+msgstr "Журнал"
+
+#: ../content/worksheettemplate.py:29
+msgid "Worksheet Layout"
+msgstr "Вигляд журнала"
+
+#: ../controlpanel/bika_worksheettemplates.py:31
+msgid "Worksheet Templates"
+msgstr "Шаблони журналу"
+
+#: ../browser/worksheetfolder.py:79
+#: ../skins/bika/portlet_to_be_verified.pt:63
+msgid "Worksheets"
+msgstr "Журнали"
+
+#: ../browser/analysisservice.py:74
+msgid "Yes"
+msgstr ""
+
+#: ../browser/worksheet.py:999
+msgid "You must select an instrument"
+msgstr "Ви маєте вибрати інструмент"
+
+#: ../browser/templates/referencesample_view.pt:131
+msgid "activate"
+msgstr ""
+
+#: ../browser/templates/analysisrequest_analyses_not_requested.pt:61
+msgid "client"
+msgstr ""
+
+#. The variables used here are the same as used in the strftime formating.
+#. Supported are ${A}, ${a}, ${B}, ${b}, ${H}, ${I}, ${m}, ${d}, ${M}, ${p},
+#. ${S}, ${Y}, ${y}, ${Z}, each used as variable in the msgstr.
+#. For example: "${A} ${d}. ${B} ${Y}, ${H}:${M} ${Z}"
+#. In english speaking countries default is:
+#. ${b} ${d}, ${Y} ${I}:${M} ${p}
+msgid "date_format_long"
+msgstr ""
+
+msgid "date_format_short"
+msgstr ""
+
+#: ../browser/templates/referencesample_view.pt:124
+msgid "deactivate"
+msgstr ""
+
+#: ../browser/calcs.py:235
+msgid "error"
+msgstr ""
+
+#: ../browser/templates/analysisrequest_analyses_not_requested.pt:55
+msgid "lab"
+msgstr ""
+
+#: ../browser/calcs.py:225
+msgid "max"
+msgstr "макс"
+
+#: ../browser/calcs.py:224
+msgid "min"
+msgstr "мін"
+
+#: ../browser/reports/analysesperservice.pt:78
+msgid "number of requests"
+msgstr ""
+
+#: ../browser/templates/analysisrequest_analyses_not_requested.pt:51
+#: ../browser/templates/analysisrequest_manage_results.pt:59
+#: ../browser/templates/sample.pt:42
+msgid "range"
+msgstr "межі"
+
+msgid "time_format"
+msgstr ""
+
+#: ../skins/bika/selection_macros.pt:54
+msgid "to"
+msgstr ""
+

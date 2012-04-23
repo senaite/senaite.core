@@ -1,5 +1,4 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
-	xml:lang="en" lang="en"
 	xmlns:tal="http://xml.zope.org/namespaces/tal"
 	xmlns:metal="http://xml.zope.org/namespaces/metal"
 	xmlns:i18n="http://xml.zope.org/namespaces/i18n"
@@ -17,13 +16,12 @@
 		table_only python:hasattr(view, 'table_only') and view.table_only or view.request.get('table_only','') == form_id;"
 	tal:condition="python:not table_only">
     <h1>
-	<img tal:condition="view/icon | nothing"
-         src="" tal:attributes="src view/icon"/>
-
-		<span class="documentFirstHeading" tal:content="structure view/title"/>
+		<img tal:condition="view/icon | nothing"
+			 src="" tal:attributes="src view/icon"/>
+		<span style="position:relative;top:-0.2em;" class="documentFirstHeading" tal:content="view/title"/>
 		<tal:add_actions repeat="add_item python:view.context_actions.keys()">
 			<a tal:attributes="
-			    style python:'background: url(%s) 2px 50%% no-repeat'%(view.context_actions[add_item]['icon']);
+				style python:'background: url(%s) 2px 50%% no-repeat'%(view.context_actions[add_item]['icon']);
 				href python:view.context_actions[add_item]['url'];
 				class python:'context_action_link %s' % (view.context_actions[add_item].get('class',''))">
 				<span tal:replace="python:add_item"/>
@@ -46,6 +44,15 @@
 <metal:content-core fill-slot="content-core">
 	<div id="folderlisting-main-table"
 		tal:content="structure view/contents_table"/>
+
+	<tal:hasremarks tal:condition="python:hasattr(context, 'Remarks')">
+		<tal:remarks define="
+			field python:context.Schema()['Remarks'];
+			errors python:{};">
+			 <metal:widget use-macro="python:context.widget('Remarks', mode='edit')" />
+		</tal:remarks>
+	</tal:hasremarks>
+
 </metal:content-core>
 
 </body>

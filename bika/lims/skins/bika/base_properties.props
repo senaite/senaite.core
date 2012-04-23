@@ -32,10 +32,10 @@ contentViewBackgroundColor:string=#e2e2c7
 contentViewFontColor:string=black
 inputFontColor:string=Black
 
-textTransform:string=none
-
-evenRowBackgroundColor:string=#f7f9fa
+evenRowBackgroundColor:string=#eee
 oddRowBackgroundColor:string=transparent
+
+textTransform:string=none
 
 notifyBorderColor:string=#f7f32a
 notifyBackgroundColor:string=#fffd9e
@@ -79,5 +79,14 @@ portletHeaderTextColor:string=#000
 portletLateAnalysesBackgroundColor:string=red
 portletLateAnalysesTextColor:string=#fff
 
+contextmenuBackgroundColor:string=#fff
+contextmenuTextColor:string=#333
+contextmenuBorderColor:string=#ccc
+contextmenuHeaderBackgroundColor:string=#ddd
+contextmenuHeaderTextColor:string=#000
+contextmenuHighlightBackgroundColor:string=#00f
+contextmenuHighlightTextColor:string=#fff
+
 footerBackgroundColor:string=#fff
 footerTextColor:string=#000
+

@@ -27,7 +27,7 @@ class AnalysisSpecsView(BikaListingView):
                                 {'url': 'createObject?type_name=AnalysisSpec',
                                  'icon': '++resource++bika.lims.images/add.png'}}
         self.icon = "++resource++bika.lims.images/analysisspec_big.png"
-        self.title = _("Analysis Specs")
+        self.title = _("Analysis Specifications")
         self.description = _("Set up the laboratory analysis service results specifications")
         self.show_sort_column = False
         self.show_select_row = False
@@ -46,12 +46,12 @@ class AnalysisSpecsView(BikaListingView):
             {'id':'active',
              'title': _('Active'),
              'contentFilter': {'inactive_state': 'active'},
-             'transitions': ['deactivate'],
+             'transitions': [{'id':'deactivate'}, ],
              'columns': ['SampleType']},
             {'id':'inactive',
              'title': _('Dormant'),
              'contentFilter': {'inactive_state': 'inactive'},
-             'transitions': ['activate',],
+             'transitions': [{'id':'activate'}, ],
              'columns': ['SampleType']},
         ]
 

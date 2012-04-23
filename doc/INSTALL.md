@@ -43,6 +43,8 @@ Assign an ID of your choice, and select the checkbox to activate the
 Bika-LIMS extension profile.  To add Bika LIMS to an existing Plone site,
 visit the Addons page of Site Setup.
 
+if you need to re-add admin: bin\plonectl adduser admin admin
+or bin\instance adduser admin admin (for zeo)
 That's it!
 
 You should be able to test the site now by visiting

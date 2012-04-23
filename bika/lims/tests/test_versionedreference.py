@@ -28,8 +28,9 @@ class Tests(unittest.TestCase):
     def test_versionedreference(self):
         login(self.portal, TEST_USER_NAME)
 
-        moist = self.portal.bika_setup.bika_analysisservices['analysisservice-18']
-        weightloss = self.portal.bika_setup.bika_calculations['calculation-2']
+        bsc = getToolByName(self.portal, 'bika_setup_catalog')
+        moist = bsc(getKeyword = 'Moist')[0].getObject()
+        weightloss = bsc(portal_type="Calculation", title="Weight Loss")[0].getObject()
         self.assertEqual(moist.getCalculation(), weightloss)
         self.assertEqual(weightloss.version_id, moist.reference_versions[weightloss.UID()])
         weightloss.setTitle("New Title")

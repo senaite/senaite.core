@@ -16,7 +16,7 @@ def AfterTransitionEventHandler(instance, event):
     rc = getToolByName(instance, REFERENCE_CATALOG)
     pu = getToolByName(instance, 'plone_utils')
 
-    if event.action == "deactivate":
+    if event.transition.id == "deactivate":
         # A service cannot be deactivated if "active" calculations list it
         # as a dependency.
         calculations = (c.getObject() for c in \
@@ -31,7 +31,7 @@ def AfterTransitionEventHandler(instance, event):
                 transaction.get().abort()
                 raise WorkflowException
 
-    if event.action == "activate":
+    elif event.transition.id == "activate":
         # A service cannot be activated if it's calculation is inactive
         calc = instance.getCalculation()
         if calc and \

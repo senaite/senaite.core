@@ -1,0 +1,48 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:tal="http://xml.zope.org/namespaces/tal"
+	xmlns:metal="http://xml.zope.org/namespaces/metal"
+	xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+    i18n:domain="bika"
+    tal:define="plone_view context/@@plone">
+<body>
+<table>
+    <tr>
+        <td class="left">
+        </td>
+        <td align="right">
+            <img tal:attributes="src string:${context/absolute_url}/logo.png"/>
+            <br/>
+            <h3 tal:content="view/lab_title | nothing"/>
+            <tal:address tal:repeat="line view/address">
+                <span tal:content="structure line "/>
+                <br/>
+            </tal:address>
+            <br/>
+
+            <span  tal:define="printdate view/date" 
+                tal:content="python:plone_view.toLocalizedTime(printdate, long_format=1)"/>
+            <tal:reporter tal:condition="view/reporter">
+                <br/>
+                <br/>
+                <span i18n:translate="">Created by:</span>
+                <span tal:content="view/reporter"/>
+                <tal:email tal:condition="view/reporter_email">
+                    <br/>
+                    <a tal:define="email view/reporter_email"
+                       tal:content="email"
+                       tal:attributes="href string:mailto:${email}"/>
+                </tal:email>
+            </tal:reporter>
+
+        </td>
+    </tr>
+</table>
+
+        <span class="documentFirstHeading" tal:content="view/title | nothing"/>
+
+<div tal:content="structure view/reportout"/>
+
+<span> This is the footer stuff at the bottom of the frame</span>
+</body>
+
+</html>

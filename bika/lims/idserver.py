@@ -70,10 +70,18 @@ def generateUniqueId(context):
         sample_number = sample_id.split(s_prefix)[1]
         ar_number = sample.getLastARNumber()
         ar_number = ar_number and ar_number + 1 or 1
-        sample.setLastARNumber(ar_number)
         return "%s%s-%s" % (s_prefix,
                            str(sample_number).zfill(sample_padding),
                            str(ar_number).zfill(ar_padding))
+
+    # Sample Partition IDs
+    if context.portal_type == "SamplePartition":
+        matches = [p for p in prefixes if p['portal_type'] == 'SamplePartition']
+        prefix = matches and matches[0]['prefix'] or 'samplepartition'
+        padding = int(matches and matches[0]['padding'] or '0')
+        # at this time the part exists, so +1 would be 1 too many
+        partnr = str(len(context.aq_parent.objectValues('SamplePartition')))
+        return "%s-%s" % (prefix,partnr.zfill(padding))
 
     if context.bika_setup.getExternalIDServer():
 
@@ -157,3 +165,4 @@ def renameAfterCreation(obj):
     transaction.savepoint(optimistic=True)
     new_id = generateUniqueId(obj)
     obj.aq_inner.aq_parent.manage_renameObject(obj.id, new_id)
+    return new_id

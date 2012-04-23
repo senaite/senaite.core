@@ -59,12 +59,14 @@ class WorkflowSubMenuItem(WorkflowSubMenuItem):
         state = self.context_state.workflow_state()
         stateTitle = self._currentStateTitle()
 
+        translate = self.context.translation_service.translate
+
         if workflow.getInfoFor(self.context, 'cancellation_state', '') == 'cancelled':
-            title2 = self.context.translate(_('Cancelled'))
+            title2 = translate(_('Cancelled'))
             # cater for bika_one_state_workflow (always Active)
             if not stateTitle or \
                workflow.getInfoFor(self.context, 'review_state', '') == 'active':
-                stateTitle = self.context.translate(_('Cancelled'))
+                stateTitle = translate(_('Cancelled'))
             else:
                 stateTitle = "%s (%s)" % (stateTitle,_(title2))
             return {'id'         : 'plone-contentmenu-workflow',
@@ -72,12 +74,12 @@ class WorkflowSubMenuItem(WorkflowSubMenuItem):
                     'state'      : state,
                     'stateTitle' : stateTitle,}
         elif workflow.getInfoFor(self.context, 'inactive_state', '') == 'inactive':
-            title2 = self.context.translate(_('Dormant'))
+            title2 = translate(_('Dormant'))
             # cater for bika_one_state_workflow (always Active)
             if not stateTitle or \
                (workflow.getInfoFor(self.context, 'review_state', '') in \
                                                     ('active', 'current')):
-                stateTitle = self.context.translate(_('Dormant'))
+                stateTitle = translate(_('Dormant'))
             else:
                 stateTitle = "%s (%s)" % (stateTitle,_(title2))
             return {'id'         : 'plone-contentmenu-workflow',
@@ -91,8 +93,8 @@ class WorkflowSubMenuItem(WorkflowSubMenuItem):
                     'stateTitle' : stateTitle,}
 
     def _transitions(self):
-        wf_tool = getToolByName(self.context, 'portal_workflow')
-        return wf_tool.listActionInfos(object=self.context, max=1)
+        workflow = getToolByName(self.context, 'portal_workflow')
+        return workflow.listActionInfos(object=self.context, max=1)
 
     def get_workflow_actions(self):
         """ Compile a list of possible workflow transitions for items
@@ -122,8 +124,8 @@ class WorkflowSubMenuItem(WorkflowSubMenuItem):
         # these transitions
         if 'transitions' in review_state:
             ordered = []
-            for tid in review_state['transitions']:
-                if tid in transitions:
+            for transition_dict in review_state['transitions']:
+                if transition_dict['id'] in transitions:
                     ordered.append(transitions[tid])
             transitions = ordered
         else:
@@ -169,8 +171,8 @@ class WorkflowMenu(BrowserMenu):
         if locking_info and locking_info.is_locked_for_current_user():
             return []
 
-        wf_tool = getToolByName(context, 'portal_workflow')
-        workflowActions = wf_tool.listActionInfos(object=context)
+        workflow = getToolByName(context, 'portal_workflow')
+        workflowActions = workflow.listActionInfos(object=context)
 
         for action in workflowActions:
             if action['category'] != 'workflow':

@@ -1,5 +1,4 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
-	xml:lang="en" lang="en"
 	xmlns:tal="http://xml.zope.org/namespaces/tal"
 	xmlns:metal="http://xml.zope.org/namespaces/metal"
 	xmlns:i18n="http://xml.zope.org/namespaces/i18n"
@@ -28,19 +27,21 @@
 	tal:define="
 	portal context/@@plone_portal_state/portal;">
 
-<p tal:content="view/helptext"/>
-
 <form
 	name="load_setup_data"
 	method="post"
 	enctype="multipart/form-data"
 	id="load_setup_data">
 
-	<input
-		type="file"
+	<select
 		name="xlsx"
-		id="xlsx"
-		size="30">
+		id="xlsx">
+		<tal:options tal:repeat="option view/getSetupDatas">
+			<option tal:attributes="value option">
+				<span tal:content="option"/>
+			</option>
+		</tal:options>
+	</select>
 
 	<input
 		type="hidden"

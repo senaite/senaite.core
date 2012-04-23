@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<object name="ReferenceDefinitions" meta_type="Factory-based Type Information with dynamic views" xmlns:i18n="http://xml.zope.org/namespaces/i18n">
- <property name="title">Reference Definitions</property>
- <property name="description">
-    Reference definitions are used as templates for creating QC reference standard Samples in the system
- </property>
+<object name="ReferenceDefinitions"
+        meta_type="Factory-based Type Information with dynamic views"
+        xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+        i18n:domain="plone">
+ <property name="title" i18n:translate="">Reference Definitions</property>
+ <property name="description"></property>
  <property name="content_icon">++resource++bika.lims.images/referencedefinition.png</property>
  <property name="content_meta_type">ReferenceDefinition</property>
  <property name="product">bika.lims</property>
@@ -17,7 +18,9 @@
  </property>
  <property name="allow_discussion">False</property>
  <property name="default_view_fallback">False</property>
+
  <alias from="(Default)" to="folder_view"/>
  <alias from="view" to="folder_view"/>
  <alias from="edit" to="base_edit"/>
+
 </object>

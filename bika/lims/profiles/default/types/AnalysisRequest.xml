@@ -1,99 +1,110 @@
 <?xml version="1.0"?>
 <object name="AnalysisRequest"
-	meta_type="Factory-based Type Information with dynamic views"
-	xmlns:i18n="http://xml.zope.org/namespaces/i18n">
-<property name="title">Analysis request</property>
-<property name="description"></property>
-<property name="content_icon">++resource++bika.lims.images/analysisrequest.png</property>
-<property name="content_meta_type">AnalysisRequest</property>
-<property name="product">bika.lims</property>
-<property name="factory">addAnalysisRequest</property>
-<property name="add_view_expr"></property>
-<property name="link_target"></property>
-<property name="global_allow">False</property>
-<property name="filter_content_types">True</property>
-<property name="allowed_content_types">
-	<element value="Analysis"/>
-</property>
-<property name="allow_discussion">False</property>
+        meta_type="Factory-based Type Information with dynamic views"
+        xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+        i18n:domain="plone">
+ <property name="title" i18n:translate="">Analysis Request</property>
+ <property name="description"></property>
+ <property name="content_icon">++resource++bika.lims.images/analysisrequest.png</property>
+ <property name="content_meta_type">AnalysisRequest</property>
+ <property name="product">bika.lims</property>
+ <property name="factory">addAnalysisRequest</property>
+ <property name="add_view_expr"></property>
+ <property name="link_target"></property>
+ <property name="global_allow">False</property>
+ <property name="filter_content_types">True</property>
+ <property name="allowed_content_types">
+  <element value="Analysis"/>
+ </property>
+ <property name="allow_discussion">False</property>
+ <property name="default_view_fallback">False</property>
+ <property name="default_view">base_view</property>
 
-<property name="default_view_fallback">False</property>
-<property name="default_view">base_view</property>
-<alias from="(Default)" to="base_view"/>
+ <alias from="(Default)" to="base_view"/>
 
-<action title="View"
-	action_id="view"
-	category="object"
-	condition_expr=""
-	icon_expr=""
-	link_target=""
-	url_expr="string:${object_url}/base_view"
-	visible="True">
-	<permission value="View"/>
-</action>
+ <action title="Edit"
+         action_id="view"
+         category="object"
+         condition_expr=""
+         icon_expr=""
+         link_target=""
+         url_expr="string:${object_url}/base_view"
+         i18n:attributes="title"
+         i18n:domain="plone"
+         visible="True">
+     <permission value="View"/>
+ </action>
 
-<action title="Edit"
-	action_id="edit"
-	category="object"
-	condition_expr="python:here.guard_cancelled_object()"
-	icon_expr=""
-	link_target=""
-	url_expr="string:${object_url}/base_edit"
-	visible="True">
-	<permission value="BIKA: Edit AR"/>
-</action>
+ <action title="Manage Analyses"
+         action_id="analyses"
+         category="object"
+         condition_expr="python:here.guard_cancelled_object()"
+         icon_expr=""
+         link_target=""
+         url_expr="string:${object_url}/analyses"
+         i18n:attributes="title"
+         i18n:domain="plone"
+         visible="True">
+     <permission value="BIKA: Manage Analysis Requests"/>
+ </action>
 
-<action title="Manage results"
-	action_id="analyses"
-	category="object"
-	condition_expr="python:here.guard_cancelled_object()"
-	icon_expr=""
-	link_target=""
-	url_expr="string:${object_url}/manage_results"
-	visible="True">
-	<permission value="BIKA: Manage Results"/>
-</action>
+ <action title="Manage Results"
+         action_id="manage_results"
+         category="object"
+         condition_expr="python:here.guard_cancelled_object()"
+         icon_expr=""
+         link_target=""
+         url_expr="string:${object_url}/manage_results"
+         i18n:attributes="title"
+         visible="True">
+     <permission value="BIKA: Edit Results"/>
+ </action>
 
-<action title="Results not requested"
-	action_id="analyses_not_requested"
-	category="object"
-	condition_expr="python:here.guard_cancelled_object()"
-	icon_expr=""
-	link_target=""
-	url_expr="string:${object_url}/not_requested"
-	visible="True">
-	<permission value="BIKA: Results not requested"/>
-</action>
+ <action title="Results not requested"
+         action_id="analyses_not_requested"
+         category="object"
+         condition_expr="python:here.guard_cancelled_object()"
+         icon_expr=""
+         link_target=""
+         url_expr="string:${object_url}/not_requested"
+         i18n:attributes="title"
+         visible="True">
+     <permission value="BIKA: Results not requested"/>
+ </action>
 
-<action title="Log"
+ <action title="Log"
          action_id="log"
          category="object"
          condition_expr=""
          url_expr="string:${object_url}/log"
+         i18n:attributes="title"
          visible="True">
- <permission value="View"/>
-</action>
+     <permission value="View"/>
+ </action>
 
-<action title="Large Sticker"
-	action_id="sticker_large"
-	category="document_actions"
-	condition_expr=""
-	icon_expr="string:${object_url}/++resource++bika.lims.images/sticker_large.png"
-	link_target=""
-	url_expr="string:${object_url}/sticker?size=large"
-	visible="True">
-	<permission value="View"/>
-</action>
+ <action title="Large Sticker"
+         action_id="sticker_large"
+         category="document_actions"
+         condition_expr=""
+         icon_expr="string:${object_url}/++resource++bika.lims.images/sticker_large.png"
+         link_target=""
+         url_expr="string:${object_url}/sticker?size=large"
+         i18n:attributes="title"
+         visible="True">
+     <permission value="View"/>
+ </action>
 
-<action title="Small Sticker"
-	action_id="sticker_small"
-	category="document_actions"
-	condition_expr=""
-	icon_expr="string:${object_url}/++resource++bika.lims.images/sticker_small.png"
-	link_target=""
-	url_expr="string:${object_url}/sticker?size=small"
-	visible="True">
-	<permission value="View"/>
-</action>
+ <action title="Small Sticker"
+         action_id="sticker_small"
+         category="document_actions"
+         condition_expr=""
+         icon_expr="string:${object_url}/++resource++bika.lims.images/sticker_small.png"
+         link_target=""
+         url_expr="string:${object_url}/sticker?size=small"
+         i18n:attributes="title"
+         visible="True">
+     <permission value="View"/>
+ </action>
+
 
 </object>

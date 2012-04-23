@@ -7,90 +7,81 @@ from plone.app import folder
 from Products.Archetypes.public import *
 from bika.lims.content.organisation import Organisation
 from bika.lims.config import ManageBika, PROJECTNAME
-from bika.lims import bikaMessageFactory as _
+from bika.lims import PMF, bikaMessageFactory as _
 
 schema = Organisation.schema.copy() + Schema((
-    IntegerField('Confidence',
-        schemata = 'Accreditation',
-        widget = IntegerWidget(
-            label = _("Confidence Level %"),
-            description = _("Confidence Level % description",
-                            "This value is reported at the bottom of all published results"),
-        ),
-    ),
     StringField('LabURL',
-        schemata = 'Address',
+        schemata = PMF('Address'),
         write_permission = ManageBika,
         widget = StringWidget(
             size = 60,
             label = _("Lab URL"),
-            description = _("Lab URL description",
-                            "The Laboratory's web address"),
+            description = _("The Laboratory's web address"),
+        ),
+    ),
+    IntegerField('Confidence',
+        schemata = PMF('Accreditation'),
+        widget = IntegerWidget(
+            label = _("Confidence Level %"),
+            description = _("This value is reported at the bottom of all published results"),
         ),
     ),
     BooleanField('LaboratoryAccredited',
         default = False,
-        schemata = 'Accreditation',
+        schemata = PMF('Accreditation'),
         write_permission = ManageBika,
         widget = BooleanWidget(
             label = _("Laboratory Accredited"),
-            description = _("Laboratory Accredited description",
-                            "Check this box if your laboratory is accredited"),
+            description = _("Check this box if your laboratory is accredited"),
         ),
     ),
     StringField('AccreditationBodyLong',
-        schemata = 'Accreditation',
+        schemata = PMF('Accreditation'),
         write_permission = ManageBika,
         widget = StringWidget(
             size = 60,
             label = _("Accreditation Body"),
-            description = _("Accreditation Body description",
-                            "The name of the accreditation body corresponding to the abbreviation above, "
-                            " e.g. South African National Accreditation Service for SANAS"),
+            description = _("The name of the accreditation body corresponding to the abbreviation above, "
+                            "e.g. South African National Accreditation Service for SANAS"),
         ),
     ),
     StringField('AccreditationBody',
-        schemata = 'Accreditation',
+        schemata = PMF('Accreditation'),
         write_permission = ManageBika,
         widget = StringWidget(
             label = _("Accreditation Body Abbreviation"),
-            description = _("Accreditation Body Abbreviation description",
-                            "E.g. SANAS, APLAC, etc."),
+            description = _("E.g. SANAS, APLAC, etc."),
         ),
     ),
     StringField('AccreditationBodyURL',
-        schemata = 'Accreditation',
+        schemata = PMF('Accreditation'),
         write_permission = ManageBika,
         widget = StringWidget(
             label = _("Accreditation Body URL"),
-            description = _("Accreditation Body URL description",
-                            "Web address for the accreditation body"),
+            description = _("Web address for the accreditation body"),
         ),
     ),
     StringField('Accreditation',
-        schemata = 'Accreditation',
+        schemata = PMF('Accreditation'),
         write_permission = ManageBika,
         widget = StringWidget(
             label = _("Accreditation"),
-            description = _("Accreditation Description",
-                            "The accreditation standard that applies, e.g. ISO 17025"),
+            description = _("The accreditation standard that applies, e.g. ISO 17025"),
         ),
     ),
     StringField('AccreditationReference',
-        schemata = 'Accreditation',
+        schemata = PMF('Accreditation'),
         write_permission = ManageBika,
         widget = StringWidget(
             label = _("Accreditation Reference"),
-            description = _("Accreditation Reference description",
-                            "The reference code issued to the lab by the accreditation body"),
+            description = _("The reference code issued to the lab by the accreditation body"),
         ),
     ),
     ImageField('AccreditationBodyLogo',
-        schemata = 'Accreditation',
+        schemata = PMF('Accreditation'),
         widget = ImageWidget(
             label = _("Accreditation Logo"),
-            description = _("Accreditation Logo descr",
-                            "Please upload the logo you are authorised to use on your "
+            description = _("Please upload the logo you are authorised to use on your "
                             "website and results reports by your accreditation body. "
                             "Maximum size is 175 x 175 pixels.")
         ),

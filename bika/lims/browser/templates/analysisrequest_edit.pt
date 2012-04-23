@@ -1,5 +1,4 @@
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
-    lang="en"
+<html xmlns="http://www.w3.org/1999/xhtml"
     xmlns:tal="http://xml.zope.org/namespaces/tal"
     xmlns:metal="http://xml.zope.org/namespaces/metal"
     xmlns:i18n="http://xml.zope.org/namespaces/i18n"
@@ -22,12 +21,18 @@
 </metal:title>
 
 <div metal:fill-slot="content-core"
-    tal:define="portal context/@@plone_portal_state/portal;
+    tal:define="
+		portal context/@@plone_portal_state/portal;
         plone_view context/@@plone;
+		portal_state context/@@plone_portal_state;
+		locale portal_state/locale;
+		currency python:context.bika_setup.getCurrency();
+	    checkPermission nocall: context/portal_membership/checkPermission;
         tabindex view/tabindex;
         edit python:view.came_from == 'edit' and True or False;
         can_edit_sample python:view.can_edit_sample;
         can_edit_ar python:view.can_edit_ar;
+		partitionable view/partitioned_services;
         review_state python:edit and context.portal_workflow.getInfoFor(view.context, 'review_state') or ''">
 
 <form id="analysisrequest_edit_form"
@@ -35,11 +40,12 @@
     method="POST">
 
 <input type="hidden" name="submitted" value="1" />
+<span tal:replace="structure context/@@authenticator/authenticator"/>
 <input type="hidden" name="came_from" tal:attributes="value view/came_from" />
 <input type="hidden" name="can_edit_sample" tal:attributes="value can_edit_sample" />
 <input type="hidden" name="can_edit_ar" tal:attributes="value can_edit_ar" />
-
-<span tal:replace="structure context/@@authenticator/authenticator"/>
+<input type="hidden" id="template_data" tal:attributes="value view/listTemplates"/>
+<input type="hidden" id="profile_data" tal:attributes="value view/listProfiles"/>
 
 <!-- member discount percentage if applicable -->
 <input type="hidden" id="member_discount" name="member_discount"
@@ -50,21 +56,12 @@
 <input type="hidden" id="col_count" name="col_count"
     tal:attributes="value view/col_count" />
 
-<!-- jquery dialogs -->
-<div id="confirm_add_deps" style="display:none" title="Service dependencies">
-    <p>_SERVICE_ requires the following services to be selected:</p>
-    <br/>
-    <p>_DEPS_</p>
-    <br/>
-    <p>Do you want to apply these selections now?</p>
-</div>
-<div id="confirm_remove_deps" style="display:none" title="Service dependencies">
-    <p>The following services depend on _SERVICE_, and will be unselected if you continue:</p>
-    <br/>
-    <p>_DEPS_</p>
-    <br/>
-    <p>Do you want to remove these selections now?</p>
-</div>
+<!-- These services have partition setup records -->
+<input type="hidden" id="partitioned_services" name="partitioned_services"
+    tal:attributes="value partitionable" />
+
+<!-- And the current form partition configuration is stored here -->
+<input type="hidden" id="parts" name="parts" value="{}"/>
 
 <!-- The system configured 'Dry Matter Service' -->
 <tal:i define="dms python:context.bika_setup.getDryMatterService()">
@@ -82,23 +79,42 @@
 <thead>
     <!-- Contact -->
     <tr tal:condition="can_edit_sample"
-        tal:define="cc_contact python:hasattr(context, 'getCCContact') and context.getCCContact() or ''">
+        tal:define="client_contacts python:hasattr(context, 'getCCContacts')
+		                                   and context.getCCContacts() or '';
+					this_contact python:edit and context.getContactUID() or client_contacts[0]['uid'];
+					this_contact python:this_contact and
+								        [c for c in client_contacts
+					                     if c['uid'] == this_contact][0] or '';">
         <th colspan="2" class="rowheader">
             <span i18n:translate="">Contact Person</span>
-            &nbsp;<span class="fieldRequired"/>
+            &nbsp;<span class="fieldRequired">&nbsp;</span>
         </th>
         <td class="contact"
-            tal:attributes="colspan python: view.col_count+2"
-            tal:define="this_contact python:edit and context.getContactUID();">
-        <select name="Contact" id="primary_contact" tal:attributes="tabindex tabindex/next;">
+            tal:attributes="colspan python: view.col_count+2">
+		<tal:default_ccs
+			tal:repeat="item client_contacts">
+			<span
+				style="display:none"
+				tal:attributes="
+					uid python:item['uid'];
+					title python:item['title'];
+					ccs python:item['ccs_json'];
+					cc_titles python:','.join([x['title'] for x in item['ccs']]);
+					cc_uids python:','.join([x['uid'] for x in item['ccs']]);">
+		</span>
+		</tal:default_ccs>
+        <select
+			name="Contact"
+			id="primary_contact"
+			tal:attributes="tabindex tabindex/next;">
             <tal:item
-                tal:define="vocab here/getContactsDisplayList"
-                tal:repeat="item vocab">
+                tal:repeat="item client_contacts">
                 <option
                     tal:attributes="
-                        value item;
-                        selected python: item in (this_contact, ) and 'selected' or '';"
-                    tal:content="python:here.translate(vocab.getValue(item), default=vocab.getValue(item))">
+                        value python:item['uid'];
+                        selected python:this_contact and item['uid'] == this_contact['uid']
+						                and 'selected' or '';"
+                    tal:content="python:item['title']">
                 </option>
             </tal:item>
         </select>
@@ -111,10 +127,10 @@
             i18n:attributes="value"
             i18n:domain="bika"
             tal:attributes="tabindex tabindex/next;"/>
-        <input DISABLED="1" value="" id="cc_titles"
-            tal:attributes="value python:edit and ','.join([c.Title() for c in context.getCCContact()]) or ''"/>
+        <input DISABLED="1" id="cc_titles"
+            tal:attributes="value python:this_contact and ','.join([c['title'] for c in this_contact['ccs']]) or ''"/>
         <input type="hidden" id="cc_uids" name="cc_uids"
-            tal:attributes="value python:edit and ','.join([c.UID() for c in context.getCCContact()]) or ''"/>
+            tal:attributes="value python:this_contact and ','.join([c['uid'] for c in this_contact['ccs']]) or ''"/>
         </td>
     </tr>
     <tr tal:condition="not: can_edit_sample"
@@ -140,6 +156,32 @@
             <span tal:condition="not: can_edit_sample"
                   tal:content="python:hasattr(context, 'CCEmails') and context.CCEmails or ''"/>
         </td>
+    </tr>
+    <!-- AR Template (only visible and useable for AR-Add-->
+    <tr tal:define="field_name string:ARTemplate" tal:condition="not: edit">
+        <th colspan="2" i18n:translate="">Template</th>
+        <td>
+            <img class="copyButton ARTemplateCopyButton"
+                tal:attributes="name field_name;src string:${portal/absolute_url}/++resource++bika.lims.images/copy.png"/>
+        </td>
+        <tal:block repeat="column python:range(view.col_count)">
+            <td class="topborder ar_column" tal:define="input_name string:ar.${column}.${field_name}:ignore_empty:record;
+                                              input_id string:ar_${column}_${field_name}">
+                <select tal:attributes="
+                    class field_name;
+                    column column;
+                    id input_id;
+                    name input_name;">
+                    <option value="" i18n:translate="">None</option>
+                    <tal:template repeat="template view/artemplates">
+                        <option
+                            tal:content="python:template[0]"
+                            tal:attributes="
+                                value python:template[1].UID();"></option>
+                    </tal:template>
+                </select>
+            </td>
+        </tal:block>
     </tr>
     <!-- AR Profile (only visible and useable for AR-Add-->
     <tr tal:define="field_name string:ARProfile" tal:condition="not: edit">
@@ -213,9 +255,9 @@
             </td>
         </tal:linksample>
     </tr>
-    <!-- Client Order ID -->
+    <!-- Client Order -->
     <tr tal:define="field_name string:ClientOrderNumber">
-        <th colspan="2" i18n:translate="">Client Order ID</th>
+        <th colspan="2" i18n:translate="">Client Order</th>
         <td>
             <img class="copyButton" tal:condition="not: edit"
                 tal:attributes="name field_name;src string:${portal/absolute_url}/++resource++bika.lims.images/copy.png"/>
@@ -276,12 +318,12 @@
             </td>
         </tal:block>
     </tr>
-    <!-- Date Sampled -->
-    <tr tal:define="field_name string:DateSampled">
+    <!-- Sampling Date -->
+    <tr tal:define="field_name string:SamplingDate">
         <th colspan="2">
-            <span i18n:translate="">Date Sampled</span>&nbsp;
+            <span i18n:translate="">Sampling Date</span>&nbsp;
             <span class="fieldRequired"
-                tal:condition="can_edit_sample"/>
+                tal:condition="can_edit_sample">&nbsp;</span>
         </th>
         <td>
             <img class="copyButton" tal:condition="not: edit"
@@ -294,22 +336,22 @@
                 tal:attributes="
                     id input_id;name input_name;
 					column column;
-                    value python:edit and view.TimeOrDate(here, here.getSample().getDateSampled()) or '';
+                    value python:edit and view.TimeOrDate(here, here.getSample().getSamplingDate()) or '';
                     tabindex python:column*100+tabindex.next();"/>
             <span tal:condition="not: can_edit_sample"
-                tal:content="python:view.TimeOrDate(here, here.getSample().getDateSampled())"/>
+                tal:content="python:view.TimeOrDate(here, here.getSample().getsamplingDate())"/>
             </td>
         </tal:block>
     </tr>
     <!-- Date Requested -->
-    <tr tal:define="field_name string:DateRequested" tal:condition="python:edit">
+    <tr tal:define="field_name string:created" tal:condition="python:edit">
         <th colspan="2" i18n:translate="">Date Requested</th>
         <td>&nbsp;</td>
         <tal:block repeat="column python:range(view.col_count)">
             <td tal:define="input_name string:ar.${column}.${field_name}:ignore_empty:record;
                 input_id string:ar_${column}_${field_name}">
             <span
-                tal:content="python:view.TimeOrDate(here, here.getDateRequested(), long_format=1)"/>
+                tal:content="python:view.TimeOrDate(here, here.created(), long_format=1)"/>
             </td>
         </tal:block>
     </tr>
@@ -332,7 +374,9 @@
     <tr tal:define="field_name string:SampleType">
         <th colspan="2">
             <span id="" i18n:translate="">Sample Type</span>
-            &nbsp;<span class="fieldRequired" tal:condition="can_edit_sample"/>
+            &nbsp;
+            <span class="fieldRequired"
+                tal:condition="can_edit_sample">&nbsp;</span>
         </th>
         <td>
             <img class="copyButton" tal:condition="not: edit"
@@ -372,9 +416,9 @@
             </td>
         </tal:block>
     </tr>
-    <!-- Composite Sample -->
+    <!-- Composite -->
     <tr tal:define="field_name string:Composite">
-        <th colspan="2" i18n:translate="">Composite Sample</th>
+        <th colspan="2" i18n:translate="">Composite</th>
         <td>
             <img class="copyButton" tal:condition="not: edit"
                 tal:attributes="name field_name;src string:${portal/absolute_url}/++resource++bika.lims.images/copy.png"/>
@@ -444,7 +488,7 @@
     </tr>
 </thead>
 
-<!-- -- -- Analyses -- -- -->
+<!-- Analyses -->
 <tal:i define="
     cats view/Categories;
     POINTS_OF_CAPTURE python: modules['bika.lims.config'].POINTS_OF_CAPTURE;
@@ -455,7 +499,7 @@
             <tr>
                 <th tal:attributes="colspan python:view.col_count + 3">
                     <img title="analyses"
-                        tal:attributes="src string:++resource++bika.lims.images/service.png"/>
+                        tal:attributes="src string:++resource++bika.lims.images/analysisservice.png"/>
                 <span tal:content="python:POINTS_OF_CAPTURE.getValue(poc)"/>
                 </th>
             </tr>
@@ -467,12 +511,15 @@
         <thead>
             <tr class="analysiscategory">
                 <th tal:content="python:cat[1]"
+					tal:define="add_prefill python:cat[0] in view.DefaultCategories();
+								edit_prefill python:edit and [poc,cat[0]] in [[s[0],s[1]] for s in ViewSelectedServices]"
                     tal:attributes="
                         colspan python:view.col_count + 3;
                         poc poc;
                         cat python:cat[0];
                         selectedservices python: ','.join([s[2] for s in ViewSelectedServices if s[1] == cat[0]]);
-                        class python: 'analysiscategory collapsed%s' % (edit and [poc,cat[0]] in [[s[0],s[1]] for s in ViewSelectedServices] and ' prefill' or '')"/>
+                        class python: 'analysiscategory collapsed %s' % ((edit_prefill or add_prefill) and ' prefill' or '')"/>
+
             </tr>
         </thead>
         <tbody class="analysisservices" tal:attributes="
@@ -493,9 +540,9 @@
         <b i18n:translate="">Discount</b>
         <span class="discreet">(<tal:i content="here/bika_setup/getMemberDiscount"/>%)</span>
     </th>
-    <th class="topborder noleftborder"
-        style="text-align:center"
-        i18n:translate="">R</th>
+    <th class="topborder noleftborder" style="text-align:center">
+		<span tal:replace="python:locale.numbers.currencies[currency].symbol"/>
+	</th>
     <tal:block repeat="column python:range(view.col_count)">
         <td class="topborder" tal:define="input_id string:ar_${column}_discount;">
             <input class="price noborder" size="10" disabled="disabled" value="0.00"
@@ -506,9 +553,9 @@
 
 <tr>
     <th class="topborder" colspan="2"><b i18n:translate="">Subtotal</b></th>
-    <th class="topborder noleftborder"
-        style="text-align:center"
-        i18n:translate="">R</th>
+    <th class="topborder noleftborder" style="text-align:center">
+		<span tal:replace="python:locale.numbers.currencies[currency].symbol"/>
+	</th>
     <tal:block repeat="column python:range(view.col_count)">
         <td class="topborder" tal:define="input_id string:ar_${column}_subtotal;
             input_name string:ar.${column}.subtotal">
@@ -524,9 +571,9 @@
 
 <tr>
     <th colspan="2" class="topborder"><b i18n:translate="">VAT</b></th>
-    <th class="topborder noleftborder"
-        style="text-align:center"
-        i18n:translate="">R</th>
+    <th class="topborder noleftborder" style="text-align:center">
+		<span tal:replace="python:locale.numbers.currencies[currency].symbol"/>
+	</th>
     <tal:block repeat="column python:range(view.col_count)">
         <td class="topborder" tal:define="input_id string:ar_${column}_vat;
             input_name string:ar.${column}.vat">
@@ -542,9 +589,9 @@
 
 <tr>
     <th class="topborder" colspan="2"><b i18n:translate="">Total</b></th>
-    <th class="topborder noleftborder"
-        style="text-align:center"
-        i18n:translate="">R</th>
+    <th class="topborder noleftborder" style="text-align:center">
+		<span tal:replace="python:locale.numbers.currencies[currency].symbol"/>
+	</th>
     <tal:block repeat="column python:range(view.col_count)">
         <td class="topborder" tal:define="
             input_id string:ar_${column}_total;
@@ -558,9 +605,14 @@
         </td>
     </tal:block>
 </tr>
-
-<tr>
-    <th class="topborder" colspan="3" i18n:translate="">Save</th>
+<tr tal:condition="python:checkPermission('BIKA: Add ARProfile', context)">
+    <th style="vertical-align:middle;" i18n:translate="">Save</th>
+    <th colspan="2">
+	<select id="ARProfileType" name="ARProfileType">
+		<option value="ARProfile" i18n:translate="">AR Profile</option>
+		<option value="ARTemplate" i18n:translate="">AR Template</option>
+	</select>
+	</th>
     <tal:save repeat="column python:range(view.col_count)">
         <td class="topborder">
             <input type="text" size="10"
@@ -572,6 +624,7 @@
         </td>
     </tal:save>
 </tr>
+
 </tfoot>
 </table>
 
@@ -581,6 +634,15 @@
         value="Save"/>
 
     <br/>&nbsp;
+
+	<tal:condition condition="python:edit">
+		<tal:remarks
+			define="
+				field python:context.Schema()['Remarks'];
+				errors python:{};">
+			 <metal:widget use-macro="python:context.widget('Remarks', mode='edit')" />
+		</tal:remarks>
+	</tal:condition>
 
     <div class="discreeter">
 

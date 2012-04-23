@@ -1,14 +1,17 @@
 <?xml version="1.0"?>
-<dc-workflow workflow_id="bika_referencesample_workflow"
-             title="Reference Sample Workflow [bika]"
+<dc-workflow xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+             i18n:domain="bika"
+             workflow_id="bika_referencesample_workflow"
+             title="Bika Reference Sample Workflow"
              state_variable="review_state"
              initial_state="current">
+
  <permission>Modify portal content</permission>
  <permission>Delete objects</permission>
  <permission>BIKA: Manage Reference</permission>
 
-
- <state state_id="current" title="Current">
+ <state state_id="current" title="Current" i18n:attributes="title">
+  <description i18n:translate=""></description>
   <exit-transition transition_id="expire"/>
   <permission-map name="BIKA: Manage Reference"
                   acquired="False">
@@ -26,7 +29,8 @@
   </permission-map>
  </state>
 
- <state state_id="expired" title="Expired">
+ <state state_id="expired" title="Expired" i18n:attributes="title">
+  <description i18n:translate=""></description>
   <exit-transition transition_id="dispose"/>
   <permission-map name="BIKA: Manage Reference"
                   acquired="False">
@@ -41,7 +45,8 @@
   </permission-map>
  </state>
 
- <state state_id="disposed" title="Disposed">
+ <state state_id="disposed" title="Disposed" i18n:attributes="title">
+  <description i18n:translate=""></description>
   <permission-map name="BIKA: Manage Reference"
                   acquired="False">
    <permission-role>Manager</permission-role>
@@ -63,7 +68,6 @@
    <permission-role>LabClerk</permission-role>
   </permission-map>
  </state>
-
 
  <transition transition_id="expire" title="Expire"
              new_state="expired" trigger="USER"

@@ -22,8 +22,7 @@ schema = BikaSchema.copy() + Schema((
         default_method = 'getDefaultVAT',
         widget = DecimalWidget(
             label = _("VAT %"),
-            description = _("VAT % description",
-                            "Enter percentage value eg. 14.0"),
+            description = _("Enter percentage value eg. 14.0"),
         ),
     ),
     FixedPointField('Price',
@@ -32,7 +31,7 @@ schema = BikaSchema.copy() + Schema((
         )
     ),
     ComputedField('VATAmount',
-        expression = 'context.getVATAmount',
+        expression = 'context.getVATAmount()',
         widget = ComputedWidget(
             label = _("VAT"),
             visible = {'edit':'hidden', }

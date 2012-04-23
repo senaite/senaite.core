@@ -1,8 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <metal:block use-macro="context/global_defines/macros/defines" />
 
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
-      lang="en"
+<html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:tal="http://xml.zope.org/namespaces/tal"
       xmlns:metal="http://xml.zope.org/namespaces/metal"
       xmlns:i18n="http://xml.zope.org/namespaces/i18n"
@@ -61,10 +60,10 @@ td {
 <thead>
 
 <tr>
-<th i18n:translate="">Sample ID</th>
-<td><strong tal:content="sample/getSampleID"/>
-<th i18n:translate="">Hazardous</th>
-<td tal:content="sampletype/getHazardous|nothing"/>
+  <th i18n:translate="">Sample ID</th>
+  <td><strong tal:content="sample/getSampleID"/></td>
+  <th i18n:translate="">Hazardous</th>
+  <td tal:content="sampletype/getHazardous|nothing"/>
 </tr>
 
 <tr>

@@ -14,7 +14,19 @@ from bika.lims.interfaces import IReferenceSupplier
 from zope.interface import implements
 from bika.lims import bikaMessageFactory as _
 
-schema = Organisation.schema.copy()
+schema = Organisation.schema.copy() + ManagedSchema((
+    TextField('Remarks',
+        searchable = True,
+        default_content_type = 'text/x-web-intelligent',
+        allowable_content_types = ('text/x-web-intelligent',),
+        default_output_type = "text/html",
+        widget = TextAreaWidget(
+            macro = "bika_widgets/remarks",
+            label = _('Remarks'),
+            append_only = True,
+        ),
+    ),
+))
 
 schema['AccountNumber'].write_permission = ManageReferenceSuppliers
 

@@ -17,7 +17,7 @@
       for="bika.lims.interfaces.IWorksheet"
       name="manage_results"
       class="bika.lims.browser.worksheet.ManageResultsView"
-      permission="zope2.View"
+      permission="bika.lims.EditWorksheet"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
@@ -25,7 +25,7 @@
       for="bika.lims.interfaces.IWorksheet"
       name="add_analyses"
       class="bika.lims.browser.worksheet.AddAnalysesView"
-      permission="zope2.View"
+      permission="bika.lims.EditWorksheet"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
@@ -33,7 +33,7 @@
       for="bika.lims.interfaces.IWorksheet"
       name="add_blank"
       class="bika.lims.browser.worksheet.AddBlankView"
-      permission="zope2.View"
+      permission="bika.lims.EditWorksheet"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
@@ -41,7 +41,7 @@
       for="bika.lims.interfaces.IWorksheet"
       name="add_control"
       class="bika.lims.browser.worksheet.AddControlView"
-      permission="zope2.View"
+      permission="bika.lims.EditWorksheet"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
@@ -49,7 +49,7 @@
       for="bika.lims.interfaces.IWorksheet"
       name="add_duplicate"
       class="bika.lims.browser.worksheet.AddDuplicateView"
-      permission="zope2.View"
+      permission="bika.lims.EditWorksheet"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
@@ -57,7 +57,7 @@
       for="bika.lims.interfaces.IWorksheet"
       name="export"
       class="bika.lims.browser.worksheet.ExportView"
-      permission="zope2.View"
+      permission="bika.lims.EditWorksheet"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 

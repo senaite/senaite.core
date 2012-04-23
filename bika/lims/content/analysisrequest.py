@@ -38,8 +38,7 @@ schema = BikaSchema.copy() + Schema((
         searchable = True,
         widget = StringWidget(
             label = _('Request ID'),
-            description = _('Request ID description',
-                            'The ID assigned to the client\'s request by the lab'),
+            description = _("The ID assigned to the client's request by the lab"),
             visible = {'edit':'hidden'},
         ),
     ),
@@ -65,7 +64,7 @@ schema = BikaSchema.copy() + Schema((
     StringField('ClientOrderNumber',
         searchable = True,
         widget = StringWidget(
-            label = _('Client Order ID'),
+            label = _('Client Order'),
         ),
     ),
     ReferenceField('Attachment',
@@ -96,30 +95,25 @@ schema = BikaSchema.copy() + Schema((
     ReferenceField('Profile',
         allowed_types = ('ARProfile',),
         referenceClass = HoldingReference,
-        relationship = 'AnalysisRequestProfile',
+        relationship = 'AnalysisRequestARProfile',
+    ),
+    ReferenceField('Template',
+        allowed_types = ('ARTemplate',),
+        referenceClass = HoldingReference,
+        relationship = 'AnalysisRequestARTemplate',
     ),
     BooleanField('InvoiceExclude',
         default = False,
         widget = BooleanWidget(
             label = _('Invoice Exclude'),
-            description = _('Invoice Exclude description',
-                            'Select if analyses to be excluded from invoice'),
+            description = _('Select if analyses to be excluded from invoice'),
         ),
     ),
     BooleanField('ReportDryMatter',
         default = False,
         widget = BooleanWidget(
             label = _('Report as Dry Matter'),
-            description = _('Report as Dry Matter description',
-                            'This result can be reported as dry matter'),
-        ),
-    ),
-    DateTimeField('DateRequested',
-        required = 1,
-        default_method = 'current_date',
-        widget = DateTimeWidget(
-            label = _('Date Requested'),
-            visible = {'edit':'hidden'},
+            description = _('This result can be reported as dry matter'),
         ),
     ),
     DateTimeField('DateReceived',
@@ -134,20 +128,22 @@ schema = BikaSchema.copy() + Schema((
             visible = {'edit':'hidden'},
         ),
     ),
-    TextField('Notes',
+    TextField('Remarks',
         searchable = True,
-        default_content_type = 'text/plain',
-        allowable_content_types = ('text/plain',),
+        default_content_type = 'text/x-web-intelligent',
+        allowable_content_types = ('text/x-web-intelligent',),
+        default_output_type="text/html",
         widget = TextAreaWidget(
-            label = _('Notes'),
+            macro = "bika_widgets/remarks",
+            label = _('Remarks'),
+            append_only = True,
         ),
     ),
     FixedPointField('MemberDiscount',
         default_method = 'getDefaultMemberDiscount',
         widget = DecimalWidget(
             label = _('Member discount %'),
-            description = _('Member discount % description',
-                            'Enter percentage value eg. 33.0'),
+            description = _('Enter percentage value eg. 33.0'),
         ),
     ),
     ComputedField('ClientUID',
@@ -164,8 +160,8 @@ schema = BikaSchema.copy() + Schema((
             visible = False,
         ),
     ),
-    ComputedField('DateSampled',
-        expression = 'here.getSample() and here.getSample().getDateSampled() or ""',
+    ComputedField('SamplingDate',
+        expression = 'here.getSample() and here.getSample().getSamplingDate() or ""',
         widget = ComputedWidget(
             visible = False,
         ),
@@ -246,7 +242,6 @@ class AnalysisRequest(BaseFolder):
             self.aq_parent.Title()
         ))
 
-
     def getDefaultMemberDiscount(self):
         """ compute default member discount if it applies """
         if hasattr(self, 'getMemberDiscountApplies'):
@@ -320,14 +315,15 @@ class AnalysisRequest(BaseFolder):
     security.declareProtected(View, 'getLate')
     def getLate(self):
         """ return True if any analyses are late """
-        wf_tool = getToolByName(self, 'portal_workflow')
-        review_state = wf_tool.getInfoFor(self, 'review_state', '')
-        if review_state in ['sample_due', 'published']:
+        workflow = getToolByName(self, 'portal_workflow')
+        review_state = workflow.getInfoFor(self, 'review_state', '')
+        if review_state in ['to_be_sampled', 'to_be_preserved',
+                            'sample_due', 'published']:
             return False
 
         now = DateTime()
         for analysis in self.objectValues('Analysis'):
-            review_state = wf_tool.getInfoFor(analysis, 'review_state', '')
+            review_state = workflow.getInfoFor(analysis, 'review_state', '')
             if review_state == 'published':
                 continue
             if analysis.getDueDate() < now:
@@ -337,10 +333,10 @@ class AnalysisRequest(BaseFolder):
     security.declareProtected(View, 'getBillableItems')
     def getBillableItems(self):
         """ Return all items except those in 'not_requested' state """
-        wf_tool = getToolByName(self, 'portal_workflow')
+        workflow = getToolByName(self, 'portal_workflow')
         items = []
         for analysis in self.objectValues('Analysis'):
-            review_state = wf_tool.getInfoFor(analysis, 'review_state', '')
+            review_state = workflow.getInfoFor(analysis, 'review_state', '')
             if review_state != 'not_requested':
                 items.append(analysis)
         return items
@@ -487,7 +483,7 @@ class AnalysisRequest(BaseFolder):
         RESPONSE.redirect(
                 '%s/manage_results' % self.absolute_url())
 
-    security.declarePublic('getContactUIDForUser')
+    security.declarePublic('get_verifier')
     def get_verifier(self):
         wtool = getToolByName(self, 'portal_workflow')
         mtool = getToolByName(self, 'portal_membership')
@@ -523,21 +519,6 @@ class AnalysisRequest(BaseFolder):
                getUsername = user_id)
         if len(r) == 1:
             return r[0].UID
-
-    security.declarePublic('getCCDisplays')
-    def getCCDisplays(self):
-        """ get a string of titles of the contacts
-        """
-        cc_uids = ''
-        cc_titles = ''
-        for cc in self.getCCContact():
-            if cc_uids:
-                cc_uids = cc_uids + ', ' + cc.UID()
-                cc_titles = cc_titles + ', ' + cc.Title()
-            else:
-                cc_uids = cc.UID()
-                cc_titles = cc.Title()
-        return [cc_uids, cc_titles]
 
     security.declarePublic('current_date')
     def current_date(self):

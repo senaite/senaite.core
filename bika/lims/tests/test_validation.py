@@ -21,7 +21,7 @@ class Tests(unittest.TestCase):
         client1 = self.portal.clients['client-1']
         self.assertEqual(
             client1.schema.get('Name').validate('Norton Feeds', client1),
-            u"Validation failed: 'Norton Feeds' is in use")
+            u"Validation failed: 'Norton Feeds' is not unique")
         self.assertEqual(None,client1.schema.get('title').validate('Another Client', client1))
 
     def test_ServiceKeywordValidator(self):
@@ -38,10 +38,10 @@ class Tests(unittest.TestCase):
             u'Validation failed: keyword contains invalid characters')
         self.assertEqual(
             service1.schema.get('Keyword').validate('Ash', service1),
-            u"Validation failed: 'Ash': This keyword is used by service 'Ash'")
+            u"Validation failed: 'Ash': This keyword is already in use by service 'Ash'")
         self.assertEqual(
             service1.schema.get('Keyword').validate('TV', service1),
-            u"Validation failed: 'TV': This keyword is used by calculation 'Titration'")
+            u"Validation failed: 'TV': This keyword is already in use by calculation 'Titration'")
         self.assertEqual(None,service1.schema.get('Keyword').validate('VALID_KW', service1))
 
     def test_InterimFieldsValidator(self):
@@ -69,7 +69,7 @@ class Tests(unittest.TestCase):
         self.portal.REQUEST['validated'] = None
         self.assertEqual(
             calc1.schema.get('InterimFields').validate(interim_fields, calc1, REQUEST=self.portal.REQUEST),
-            u"Validation failed: column 'Gross Mass' must have keyword 'GM'")
+            u"Validation failed: column title 'Gross Mass' must have keyword 'GM'")
 
         interim_fields = [{'keyword': 'GM', 'title':'XXX', 'unit':'','default':''},
                           {'keyword': 'TV', 'title':'Titration Volume', 'unit':'','default':''}]
@@ -101,7 +101,7 @@ class Tests(unittest.TestCase):
         self.portal.REQUEST['validated'] = None
         self.assertEqual(
             calc1.schema.get('InterimFields').validate(interim_fields, calc1, REQUEST=self.portal.REQUEST),
-            u"Validation failed: 'Ash': This keyword is used by service 'Ash'")
+            u"Validation failed: 'Ash': This keyword is already in use by service 'Ash'")
 
         interim_fields = [{'keyword': 'TV', 'title':'Titration Volume', 'unit':'','default':''},
                           {'keyword': 'TF', 'title':'Titration Factor', 'unit':'','default':''}]

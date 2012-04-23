@@ -1,9 +1,11 @@
 jQuery( function($) {
 $(document).ready(function(){
 
+	_ = window.jsi18n;
+
 	function portalMessage(message){
 		str = "<dl class='portalMessage error'>"+
-			"<dt>Error</dt>"+
+			"<dt>"+_("error")+"</dt>"+
 			"<dd><ul>" + message +
 			"</ul></dd></dl>";
 		$('.portalMessage').remove();
@@ -30,7 +32,7 @@ $(document).ready(function(){
 		val = $('[name=list_getCategoryTitle]').val();
 		if(val == 'any'){
 			$('[name=list_Title]').empty();
-			$('[name=list_Title]').append("<option value='any'>Any</option>");
+			$('[name=list_Title]').append("<option value='any'>"+_('Any')+"</option>");
 			return;
 		}
 		$.ajax({
@@ -42,7 +44,7 @@ $(document).ready(function(){
 			success: function(data, textStatus, $XHR){
 				current_service_selection = $('[name=list_Title]').val();
 				$('[name=list_Title]').empty();
-				$('[name=list_Title]').append("<option value='any'>Any</option>");
+				$('[name=list_Title]').append("<option value='any'>"+_('Any')+"</option>");
 				for(i=0; i<data.length; i++){
 					if (data[i] == current_service_selection){
 						selected = 'selected="selected" ';
@@ -88,8 +90,11 @@ $(document).ready(function(){
 	get_updated_controls();
 
 	// click a Reference Sample in add_control or add_blank
-	$("#worksheet_add_references .bika-listing-table tbody tr").live('click', function(){
+	$("#worksheet_add_references .bika-listing-table tbody.item-listing-tbody tr").live('click', function(e){
 		// we want to submit to the worksheet.py/add_control or add_blank views.
+		if (e.target.src != undefined) {
+			return;
+		}
 		if(window.location.href.search('add_control') > -1){
 			$(this).parents('form').attr("action", "add_control");
 		} else {
@@ -107,10 +112,10 @@ $(document).ready(function(){
 		// add the position dropdown's value to the form before submitting.
 		$(this).parents('form').append("<input type='hidden' value='"+$('#position').val()+"' name='position'/>");
 		$(this).parents('form').submit();
-	})
+	});
 
 	// click an AR in add_duplicate
-	$("#worksheet_add_duplicate_ars .bika-listing-table tbody tr").live('click', function(){
+	$("#worksheet_add_duplicate_ars .bika-listing-table tbody.item-listing-tbody tr").live('click', function(){
 		// we want to submit to the worksheet.py/add_duplicate view.
 		$(this).parents('form').attr("action", "add_duplicate");
 		// add the position dropdown's value to the form before submitting.
@@ -121,23 +126,29 @@ $(document).ready(function(){
 	})
 
 	// add_analyses analysis search is handled by bika_listing default __call__
-	$(".filter-search-button").click(function(event){
+	$('.ws-analyses-search-button').live('click', function(event) {
 		// in this context we already know there is only one bika-listing-form
 		form_id = "list";
 		form = $("#list");
-		// request new table content
+
+		// request new table content by re-routing bika_listing_table form submit
 		stored_form_action = $(form).attr("action");
 		$(form).attr("action", window.location.href);
 		$(form).append("<input type='hidden' name='table_only' value='"+form_id+"'>");
+
+		// dropdowns are printed in ../templates/worksheet_add_analyses.pt
+		// We add list_<portal_catalog args>, which go
+		// into contentFilter in bika_listing.py
 		getCategoryTitle = $("[name=list_getCategoryTitle]").val();
+		Title = $("[name=list_Title]").val();
+		getClientTitle = $("[name=list_getClientTitle]").val();
 		if (getCategoryTitle != 'any')
 			$(form).append("<input type='hidden' name='list_getCategoryTitle' value='"+getCategoryTitle+"'>");
-		Title = $("[name=list_Title]").val();
 		if (Title != 'any')
 			$(form).append("<input type='hidden' name='list_Title' value='"+Title+"'>");
-		getClientTitle = $("[name=list_getClientTitle]").val();
 		if (getClientTitle != 'any')
 			$(form).append("<input type='hidden' name='list_getClientTitle' value='"+getClientTitle+"'>");
+
 		options = {
 			target: $('.bika-listing-table'),
 			replaceTarget: true,
@@ -146,6 +157,7 @@ $(document).ready(function(){
 			}
 		}
 		form.ajaxSubmit(options);
+
 		$("[name=table_only]").remove();
 		$("#list > [name=list_getCategoryTitle]").remove();
 		$("#list > [name=list_Title]").remove();

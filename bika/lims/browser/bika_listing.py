@@ -10,9 +10,11 @@ from Products.CMFPlone import PloneMessageFactory
 from Products.CMFPlone.utils import pretty_title_or_id, isExpired, safe_unicode
 from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from bika.lims import bikaMessageFactory as _
 from bika.lims import PMF
+from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
+from bika.lims.subscribers import doActionFor
+from bika.lims.subscribers import skip
 from bika.lims.utils import isActive, TimeOrDate
 from operator import itemgetter
 from plone.app.content.batching import Batch
@@ -21,8 +23,8 @@ from plone.app.content.browser.foldercontents import FolderContentsView, FolderC
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.i18n.normalizer.interfaces import IIDNormalizer
 from zope.app.component.hooks import getSite
-from zope.component._api import getMultiAdapter
 from zope.component import getUtility
+from zope.component._api import getMultiAdapter
 from zope.i18n import translate
 from zope.i18nmessageid import MessageFactory
 from zope.interface import implements
@@ -49,20 +51,13 @@ class WorkflowAction:
         action = form.get(came_from, '')
         if not action:
             came_from = "workflow_action_button"
-            action = form.get(came_from, '')
-            # XXX some browsers agree better than others about our JS ideas.
-            # Two actions (eg ['submit','submit']) are present in the form.
-            if type(action) in(list, tuple): action = action[0]
+            action = form.get('workflow_action_id', '')
             if not action:
                 if self.destination_url == "":
                     self.destination_url = self.request.get_header("referer",
                                            self.context.absolute_url())
                 self.request.response.redirect(self.destination_url)
                 return None, None
-        # convert button text to action id
-        if came_from == "workflow_action_button":
-            action = form[action]
-        if type(action) in(list, tuple): action = action[0]
         return (action, came_from)
 
     def _get_selected_items(self, full_objects = True):
@@ -86,52 +81,49 @@ class WorkflowAction:
         form = self.request.form
         plone.protect.CheckAuthenticator(form)
         workflow = getToolByName(self.context, 'portal_workflow')
+        translate = self.context.translation_service.translate
         if self.destination_url == "":
             self.destination_url = self.request.get_header("referer",
                                    self.context.absolute_url())
-        skiplist = self.request.get('workflow_skiplist', [])
         action, came_from = self._get_form_workflow_action()
 
-        # transition the context object.
+        # transition the context object (plone edit bar dropdown)
         if came_from == "workflow_action":
             obj = self.context
             # the only actions allowed on inactive/cancelled
             # items are "reinstate" and "activate"
             if not isActive(obj) and action not in ('reinstate', 'activate'):
-                message = self.context.translate(_('Item is inactive.'))
+                message = translate(_('Item is inactive.'))
                 self.context.plone_utils.addPortalMessage(message, 'info')
                 self.request.response.redirect(self.destination_url)
                 return
-            else:
-                if obj.UID() not in skiplist:
-                    allowed_transitions = []
-                    for t in workflow.getTransitionsFor(obj):
-                        allowed_transitions.append(t['id'])
-                    if action in allowed_transitions:
-                        workflow.doActionFor(obj, action)
-                self.request.response.redirect(self.destination_url)
-                return
+            if not skip(obj, action, peek=True):
+                allowed_transitions = []
+                for t in workflow.getTransitionsFor(obj):
+                    allowed_transitions.append(t['id'])
+                if action in allowed_transitions:
+                    workflow.doActionFor(obj, action)
+            self.request.response.redirect(self.destination_url)
+            return
 
         # transition selected items from the bika_listing/Table.
         transitioned = []
         selected_items = self._get_selected_items()
         for uid, item in selected_items.items():
-            # the only action allowed on inactive items is "activate"
+            # the only actions allowed on inactive/cancelled
+            # items are "reinstate" and "activate"
             if not isActive(item) and action not in ('reinstate', 'activate'):
                 continue
-            if uid not in skiplist:
+            if not skip(item, action, peek=True):
                 allowed_transitions = []
                 for t in workflow.getTransitionsFor(item):
                     allowed_transitions.append(t['id'])
                 if action in allowed_transitions:
-                    try:
-                        workflow.doActionFor(item, action)
-                        transitioned.append(item.Title())
-                    except WorkflowException:
-                        pass
+                    doActionFor(item, action)
+                    transitioned.append(item.Title())
 
         if len(transitioned) > 0:
-            message = self.context.translate(PMF('Changes saved.'))
+            message = translate(PMF('Changes saved.'))
             self.context.plone_utils.addPortalMessage(message, 'info')
 
         # automatic label printing
@@ -159,6 +151,7 @@ class BikaListingView(BrowserView):
     show_select_all_checkbox = True
     show_sort_column = False
     show_workflow_action_buttons = True
+    show_column_toggles = True
     categories = []
     # setting pagesize to 1000 specifically disables the batch sizez dropdown
     pagesize = 25
@@ -169,6 +162,8 @@ class BikaListingView(BrowserView):
     select_checkbox_name = "uids"
     # when rendering multiple bika_listing tables, form_id must be unique
     form_id = "list"
+    review_state = 'all'
+
 
     """
      ### column definitions
@@ -179,17 +174,25 @@ class BikaListingView(BrowserView):
 
      ### possible column dictionary keys are:
      - allow_edit
-       if View.allow_edit is also True, this field is made editable
+       if self.allow_edit is also True, this field is made editable
        Interim fields are always editable
      - type
-       possible values: "string", "boolean", "choices".
-       if "choices" is selected, item['choices'][column_id] must
-       be a list of choice strings.
+       "string" is the default, and actually, will require a NUMBER entry
+                in the rendered text field.
+       "choices" renders a dropdown.  Selected automatically if a vocabulary
+                 exists.  the vocabulary data must be placed in
+                 item['choices'][column_id].  it's a list of dictionaries:
+                 [{'ResultValue':x}, {'ResultText',x}].
+                 TODO 'choices' should probably expect a DisplayList...
+       "boolean" a checkbox is rendered
+       "date" A text field is rendered, with a jquery DatePicker attached.
      - index
        the name of the catalog index for the column. adds 'indexed' class,
        to allow ajax table sorting for indexed columns
      - sortable: defaults True.  if False, adds nosort class
      - toggle: enable/disable column toggle ability
+     - input_class: CSS class applied to input widget in edit mode
+     - input_width: size attribute applied to input widget in edit mode
     """
     columns = {
            'obj_type': {'title': _('Type')},
@@ -200,13 +203,22 @@ class BikaListingView(BrowserView):
     }
 
     # Additional indexes to be searched
-    # any index name not specified in self.columns[]
-    # can be added here.
+    # any index name not specified in self.columns[] can be added here.
     filter_indexes = ['Title', 'Description', 'SearchableText']
 
     """
     ### review_state filter
     with just one review_state, the selector won't show.
+
+    if review_state[x]['transitions'] is defined, it is a list of dictionaries:
+        [{'id':'x'}]
+    Transitions will be ordered by and restricted to, these items.
+
+    if review_state[x]['custom_actions'] is defined. it's a list of dict:
+        [{'id':'x'}]
+    These transitions will be forced into the list of workflow actions.
+    They will need to be handled manually in the appropriate WorkflowAction
+    subclass.
     """
     review_states = [
         {'id':'all',
@@ -233,6 +245,7 @@ class BikaListingView(BrowserView):
         #self.contentsMethod = self.context.getFolderContents
         self.contentsMethod = getToolByName(context, 'portal_catalog')
 
+
     def _process_request(self):
         # Use this function from a template that is using bika_listing_table
         # in such a way that the table_only request var will be used to
@@ -247,40 +260,51 @@ class BikaListingView(BrowserView):
         if form_id not in self.request.get('table_only', form_id):
             return ''
 
-        # review_state_selector
-        review_state_name = self.request.get(form_id + '_review_state', None)
-        if not review_state_name:
-            review_state_name = 'all'
-        self.request[form_id+'_review_state'] = review_state_name
+        # review_state_selector (POST value OR cookie value OR 'all')
+        request_key = form_id + '_review_state'
+        review_state_name = self.request.get(request_key, None) \
+            or 'all'
         states = [r for r in self.review_states if r['id'] == review_state_name]
         review_state = states and states[0] or self.review_states[0]
+        self.review_state = review_state['id']
+        self.request[request_key] = review_state['id']
+        self.request.response.setCookie(request_key, review_state['id'], path=self.view_url)
         if review_state.has_key('contentFilter'):
             for k, v in review_state['contentFilter'].items():
                 self.contentFilter[k] = v
         else:
-            if review_state_name != 'all':
-                self.contentFilter['review_state'] = review_state_name
+            if review_state['id'] != 'all':
+                self.contentFilter['review_state'] = review_state['id']
 
         # sort on
         sort_on = self.request.get(form_id + '_sort_on', '')
+        # manual_sort_on: only sort the current batch of items
+        # this is a compromise for sorting without column indexes
+        self.manual_sort_on = None
         if sort_on \
            and sort_on in self.columns.keys() \
            and self.columns[sort_on].get('index', None):
             idx = self.columns[sort_on].get('index', sort_on)
             self.contentFilter['sort_on'] = idx
         else:
-            if 'sort_on' not in self.contentFilter:
-                self.contentFilter['sort_on'] = 'id'
-                self.request.set(form_id+'_sort_on', 'id')
+            if sort_on:
+                self.manual_sort_on = sort_on
+                if 'sort_on' in self.contentFilter:
+                    del self.contentFilter['sort_on']
 
         # sort order
-        sort_order = self.request.get(form_id + '_sort_order', '')
-        if sort_order:
-            self.contentFilter['sort_order'] = sort_order
+        self.sort_order = self.request.get(form_id + '_sort_order', '')
+        if self.sort_order:
+            self.contentFilter['sort_order'] = self.sort_order
         else:
             if 'sort_order' not in self.contentFilter:
+                self.sort_order = 'ascending'
                 self.contentFilter['sort_order'] = 'ascending'
                 self.request.set(form_id+'_sort_order', 'ascending')
+            else:
+                self.sort_order = self.contentFilter['sort_order']
+        if self.manual_sort_on:
+            del self.contentFilter['sort_order']
 
         # pagesize
         self.pagesize = int(self.request.get(form_id + '_pagesize', self.pagesize))
@@ -301,6 +325,7 @@ class BikaListingView(BrowserView):
                 continue
             self.filter_indexes.append(v['index'])
         ##logger.info("Filter indexes: %s"%self.filter_indexes)
+
         # any request variable named ${form_id}_{index_name}
         # will pass it's value to that index in self.contentFilter.
         # all conditions using ${form_id}_{index_name} are searched with AND
@@ -310,6 +335,7 @@ class BikaListingView(BrowserView):
                 ##logger.info("And: %s=%s"%(index, self.request[request_key]))
                 ##self.And.append(MatchGlob(index, self.request[request_key]))
                 self.And.append(MatchRegexp(index, self.request[request_key]))
+
         # if there's a ${form_id}_filter in request, then all indexes
         # are are searched for it's value.
         # ${form_id}_filter is searched with OR agains all indexes
@@ -319,26 +345,32 @@ class BikaListingView(BrowserView):
                 ##logger.info("Or: %s=%s"%(index, self.request[request_key]))
                 ##self.Or.append(MatchGlob(index, self.request[request_key]))
                 self.Or.append(MatchRegexp(index, self.request[request_key]))
+            self.Or.append(MatchRegexp('review_state', self.request[request_key]))
 
-        if 'toggle_col' in self.request.form:
-            toggle_col = self.request.form['toggle_col']
-            toggle_cols = [col for col in self.columns.keys() \
-                           if 'toggle' in self.columns[col] \
-                           and (self.columns[col]['toggle'] \
-                           or col in self.request.get('toggle_cols', '').split(","))]
-            if toggle_col in toggle_cols:
-                toggle_cols.remove(toggle_col)
-                self.columns[toggle_col]['toggle'] = False
+        # get toggle_cols cookie value
+        # and modify self.columns[]['toggle'] to match.
+        try:
+            toggles = {}
+            # request OR cookie OR default
+            toggles = json.loads(self.request.get('toggle_cookie',
+                                 self.request.get("toggle_cols", "{}")))
+        except:
+            pass
+        finally:
+            if not toggles:
+                toggles = {}
+
+        cookie_key = "%s/%s" % (self.view_url, form_id)
+        toggle_cols = toggles.get(cookie_key,
+                                  [col for col in self.columns.keys()
+                                   if col in review_state['columns']
+                                   and ('toggle' not in self.columns[col]
+                                        or self.columns[col]['toggle'] == True)])
+        for col in self.columns.keys():
+            if col in toggle_cols:
+                self.columns[col]['toggle'] = True
             else:
-                toggle_cols.append(toggle_col)
-                self.columns[toggle_col]['toggle'] = True
-            toggle_cols = ",".join(toggle_cols)
-            self.request.RESPONSE.setCookie(
-                'toggle_cols',
-                toggle_cols,
-                expires='Thu, 20 Feb 2020 10:00:00 GMT',
-                path=self.view_url)
-            self.request['toggle_cols'] = toggle_cols
+                self.columns[col]['toggle'] = False
 
     def __call__(self):
         """ Handle request parameters and render the form."""
@@ -401,6 +433,7 @@ class BikaListingView(BrowserView):
             brains = self.contentsMethod(self.contentFilter)
 
         results = []
+        self.page_start_index = ""
         for i, obj in enumerate(brains):
             # we don't know yet if it's a brain or an object
             path = hasattr(obj, 'getPath') and obj.getPath() or \
@@ -415,6 +448,8 @@ class BikaListingView(BrowserView):
                     uid = obj.UID()
                 results.append(dict(path = path, uid = uid))
                 continue
+            if self.page_start_index == "":
+                self.page_start_index = i
 
             if hasattr(obj, 'getObject'):
                 obj = obj.getObject()
@@ -556,6 +591,23 @@ class BikaListingTable(tableview.Table):
         self.pagesize = bika_listing.pagesize
         folderitems = bika_listing.folderitems()
 
+        if hasattr(self.bika_listing, 'manual_sort_on') \
+           and self.bika_listing.manual_sort_on:
+            psi = self.bika_listing.page_start_index
+            psi = psi and psi or 0
+            # We do a sort of the current page using self.manual_sort_on, here
+            page = folderitems[psi:psi+self.bika_listing.pagesize]
+            page.sort(lambda x,y:cmp(x.get(self.bika_listing.manual_sort_on, ''),
+                                     y.get(self.bika_listing.manual_sort_on, '')))
+
+            if self.bika_listing.sort_order[0] in ['d','r']:
+                page.reverse()
+
+            folderitems = folderitems[:psi] \
+                + page \
+                + folderitems[psi+self.bika_listing.pagesize:]
+
+
         tableview.Table.__init__(self,
                                  bika_listing.request,
                                  bika_listing.base_url,
@@ -584,26 +636,26 @@ class BikaListingTable(tableview.Table):
 
         workflow = getToolByName(self.context, 'portal_workflow')
 
-        state = self.request.get('review_state', 'all')
-        review_state = [i for i in self.bika_listing.review_states if i['id'] == state][0]
+        state = self.request.get('review_state',
+                                 self.bika_listing.review_state)
+        review_state = [i for i in self.bika_listing.review_states
+                        if i['id'] == state][0]
 
         # get all transitions for all items.
         transitions = {}
         actions = []
         for obj in [i.get('obj', '') for i in self.items]:
-            obj = hasattr(obj, 'getObject') and \
-                obj.getObject() or \
-                obj
+            obj = hasattr(obj, 'getObject') and obj.getObject() or obj
             for t in workflow.getTransitionsFor(obj):
                 transitions[t['id']] = t
 
         # if there is a review_state['some_state']['transitions'] attribute
         # on the BikaListingView, the list is restricted to and ordered by
-        # these transitions
+        # these transitions.
         if 'transitions' in review_state:
-            for tid in review_state['transitions']:
-                if tid in transitions:
-                    actions.append(transitions[tid])
+            for transition_dict in review_state['transitions']:
+                if transition_dict['id'] in transitions:
+                    actions.append(transitions[transition_dict['id']])
         else:
             actions = transitions.values()
 

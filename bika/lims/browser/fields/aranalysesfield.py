@@ -15,8 +15,7 @@ class ARAnalysesField(ObjectField):
     """A field that stores Analyses instances
 
     get() returns the list of Analyses contained inside the AnalysesRequest
-    set() converts a sequence of dictionaries to Analysis instances
-    created inside the AnalysisRequest.
+    set() converts a sequence of UIDS to Analysis instances in the AR
     """
 
     _properties = Field._properties.copy()
@@ -57,15 +56,20 @@ class ARAnalysesField(ObjectField):
             return
 
         assert type(service_uids) in (list, tuple)
-   #     assert type(prices) == dict
 
         workflow = instance.portal_workflow
+
         # one can only edit Analyses up to a certain state.
         ar_state = workflow.getInfoFor(instance, 'review_state', '')
-        assert ar_state in ('sample_due', 'sample_received', 'attachment_due', 'to_be_verified')
+        assert ar_state in ('sample_registered', 'sampled',
+                            'to_be_sampled', 'to_be_preserved',
+                            'sample_due', 'sample_received',
+                            'attachment_due', 'to_be_verified')
 
         bsc = getToolByName(instance, 'bika_setup_catalog')
         services = bsc(UID = service_uids)
+
+        new_analyses = []
 
         for service in services:
             service_uid = service.UID
@@ -84,20 +88,17 @@ class ARAnalysesField(ObjectField):
                 instance.invokeFactory(id = keyword,
                                        type_name = 'Analysis')
                 analysis = instance._getOb(keyword)
-                analysis.AutoIndex = False
                 analysis.edit(Service = service,
                               InterimFields = interim_fields,
                               MaxTimeAllowed = service.getMaxTimeAllowed())
                 analysis.unmarkCreationFlag()
-                analysis.AutoIndex = True
                 zope.event.notify(ObjectInitializedEvent(analysis))
+                new_analyses.append(analysis)
                 # Note: subscriber might retract and/or unassign the AR
 
         # delete analyses
         delete_ids = []
-        instance.AutoIndex = False
         for analysis in instance.objectValues('Analysis'):
-            analysis.AutoIndex = False
             service_uid = analysis.Schema()['Service'].getRaw(analysis)
             if service_uid not in service_uids:
                 # If it is verified or published, don't delete it.
@@ -108,9 +109,15 @@ class ARAnalysesField(ObjectField):
                     ws = analysis.getBackReferences("WorksheetAnalysis")[0]
                     ws.removeAnalysis(analysis)
                 delete_ids.append(analysis.getId())
+
+        # before we delete, check if there are partitions linking here
+        # if so, remove the reference.
+        # if removing the reference *empties* the partition, remove it.
+
         instance.manage_delObjects(ids = delete_ids)
-        instance.AutoIndex = True
         # Note: subscriber might promote the AR
+
+        return new_analyses
 
     security.declarePublic('Vocabulary')
     def Vocabulary(self, content_instance = None):
@@ -135,4 +142,3 @@ registerField(ARAnalysesField,
               title = 'Analyses',
               description = ('Used for Analysis instances')
               )
-

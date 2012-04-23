@@ -1,0 +1,573 @@
+# this file is maintained manually.
+# contains bika translations from the plone domain.
+# Translators:
+msgid ""
+msgstr ""
+"Project-Id-Version: Bika-LIMS\n"
+"POT-Creation-Date: 2012-04-19 18:01+0000\n"
+"PO-Revision-Date: 2012-02-17 22:31+0000\n"
+"Last-Translator: Bika <bikasupport@bikalabs.com>\n"
+"Language-Team: Bika <bikasupport@bikalabs.com>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1)\n"
+"Language-Code: en\n"
+"Language-Name: English\n"
+"Preferred-Encodings: utf-8 latin1\n"
+"Domain: DOMAIN\n"
+"Report-Msgid-Bugs-To: http://github.com/bikalabs/Bika-LIMS/issues\n"
+"Language: de\n"
+
+#: ../profiles/default/types/ARProfile.xml
+msgid "AR Profile"
+msgstr ""
+
+#: ../profiles/default/types/ARProfiles.xml
+msgid "AR Profiles"
+msgstr ""
+
+#: ../profiles/default/types/ARTemplate.xml
+msgid "AR Template"
+msgstr ""
+
+#: ../profiles/default/types/Worksheet.xml
+msgid "Add Analyses"
+msgstr ""
+
+#: ../profiles/default/types/Worksheet.xml
+msgid "Add Blank Reference"
+msgstr ""
+
+#: ../profiles/default/types/Worksheet.xml
+msgid "Add Control Reference"
+msgstr ""
+
+#: ../profiles/default/types/Worksheet.xml
+msgid "Add Duplicate"
+msgstr ""
+
+#: ../profiles/default/types/Reports.xml
+msgid "Administration"
+msgstr ""
+
+#: ../profiles/default/types/AnalysisRequest.xml
+#: ../profiles/default/types/ReferenceSample.xml
+msgid "Analyses"
+msgstr ""
+
+#: ../profiles/default/types/Analysis.xml
+msgid "Analysis"
+msgstr ""
+
+#: ../profiles/default/controlpanel.xml
+#: ../profiles/default/types/AnalysisCategories.xml
+msgid "Analysis Categories"
+msgstr ""
+
+#: ../profiles/default/types/AnalysisCategory.xml
+msgid "Analysis Category"
+msgstr ""
+
+#: ../profiles/default/types/AnalysisRequest.xml
+msgid "Analysis Request"
+msgstr ""
+
+#: ../profiles/default/controlpanel.xml
+msgid "Analysis Request Profiles"
+msgstr ""
+
+#: ../profiles/default/actions.xml
+#: ../profiles/default/types/AnalysisRequestsFolder.xml
+#: ../profiles/default/types/Client.xml
+msgid "Analysis Requests"
+msgstr ""
+
+#: ../profiles/default/types/AnalysisService.xml
+msgid "Analysis Service"
+msgstr ""
+
+#: ../profiles/default/controlpanel.xml
+#: ../profiles/default/types/AnalysisServices.xml
+msgid "Analysis Services"
+msgstr ""
+
+#: ../profiles/default/types/AnalysisSpec.xml
+msgid "Analysis Specification"
+msgstr ""
+
+#: ../profiles/default/controlpanel.xml
+#: ../profiles/default/types/AnalysisSpecs.xml
+msgid "Analysis Specifications"
+msgstr ""
+
+#: ../profiles/default/types/Client.xml
+msgid "Analysis Specs"
+msgstr ""
+
+#: ../profiles/default/types/Attachment.xml
+msgid "Attachment"
+msgstr ""
+
+#: ../profiles/default/types/AttachmentType.xml
+msgid "Attachment Type"
+msgstr ""
+
+#: ../profiles/default/controlpanel.xml
+#: ../profiles/default/types/AttachmentTypes.xml
+msgid "Attachment Types"
+msgstr ""
+
+#: ../profiles/default/types/Client.xml
+msgid "Attachments"
+msgstr ""
+
+#: ../profiles/default/types/BikaSetup.xml
+msgid "Bika Setup"
+msgstr ""
+
+#: ../profiles/default/types/Calculation.xml
+msgid "Calculation"
+msgstr ""
+
+#: ../profiles/default/controlpanel.xml
+#: ../profiles/default/types/Calculations.xml
+msgid "Calculations"
+msgstr ""
+
+#: ../profiles/default/types/Client.xml
+msgid "Client"
+msgstr ""
+
+#: ../profiles/default/actions.xml
+#: ../profiles/default/types/ClientFolder.xml
+msgid "Clients"
+msgstr ""
+
+#: ../profiles/default/types/Client.xml
+#: ../profiles/default/types/ReferenceSupplier.xml
+msgid "Contacts"
+msgstr ""
+
+#: ../profiles/default/types/Container.xml
+msgid "Container"
+msgstr ""
+
+#: ../profiles/default/types/ContainerType.xml
+msgid "Container Type"
+msgstr ""
+
+#: ../profiles/default/controlpanel.xml
+#: ../profiles/default/types/ContainerTypes.xml
+msgid "Container Types"
+msgstr ""
+
+#: ../profiles/default/controlpanel.xml
+#: ../profiles/default/types/Containers.xml
+msgid "Containers"
+msgstr ""
+
+#: ../profiles/default/types/Department.xml
+msgid "Department"
+msgstr ""
+
+#: ../profiles/default/types/Departments.xml
+msgid "Departments"
+msgstr ""
+
+#: ../profiles/default/types/DuplicateAnalysis.xml
+msgid "Duplicate Analysis"
+msgstr ""
+
+#: ../profiles/default/types/Pricelist.xml
+msgid "Email pricelist"
+msgstr ""
+
+#: ../profiles/default/types/Worksheet.xml
+msgid "Export"
+msgstr ""
+
+#: ../profiles/default/types/InvoiceBatch.xml
+msgid "Export batch"
+msgstr ""
+
+#: ../profiles/default/actions.xml
+msgid "Extracts"
+msgstr ""
+
+#: ../profiles/default/actions.xml
+msgid "Import"
+msgstr ""
+
+#: ../profiles/default/types/Client.xml
+msgid "Imports"
+msgstr ""
+
+#: ../profiles/default/types/Instrument.xml
+msgid "Instrument"
+msgstr ""
+
+#: ../profiles/default/controlpanel.xml
+#: ../profiles/default/types/Instruments.xml
+msgid "Instruments"
+msgstr ""
+
+#: ../profiles/default/types/Invoice.xml
+msgid "Invoice"
+msgstr ""
+
+#: ../profiles/default/types/InvoiceBatch.xml
+msgid "Invoice batch"
+msgstr ""
+
+#: ../profiles/default/types/InvoiceFolder.xml
+msgid "Invoice batches"
+msgstr ""
+
+#: ../profiles/default/types/InvoiceBatch.xml
+#: ../profiles/default/types/InvoiceFolder.xml
+msgid "Invoices"
+msgstr ""
+
+#: ../profiles/default/actions.xml
+msgid "LIMS"
+msgstr ""
+
+#: ../profiles/default/types/LabContact.xml
+msgid "Lab Contact"
+msgstr ""
+
+#: ../profiles/default/controlpanel.xml
+#: ../profiles/default/types/LabContacts.xml
+msgid "Lab Contacts"
+msgstr ""
+
+#: ../profiles/default/controlpanel.xml
+msgid "Lab Departments"
+msgstr ""
+
+#: ../profiles/default/controlpanel.xml
+#: ../profiles/default/types/LabProducts.xml
+msgid "Lab Products"
+msgstr ""
+
+#: ../profiles/default/types/Laboratory.xml
+msgid "Laboratory"
+msgstr ""
+
+#: ../profiles/default/controlpanel.xml
+msgid "Laboratory Information"
+msgstr ""
+
+#: ../profiles/default/types/AnalysisRequest.xml
+#: ../profiles/default/types/Sample.xml
+#: ../profiles/default/types/SamplePartition.xml
+msgid "Large Sticker"
+msgstr ""
+
+#: ../profiles/default/types/AnalysisRequest.xml
+#: ../profiles/default/types/AnalysisService.xml
+#: ../profiles/default/types/ReferenceSample.xml
+msgid "Log"
+msgstr ""
+
+#: ../profiles/default/types/LogEntry.xml
+msgid "Log entry"
+msgstr ""
+
+#: ../profiles/default/types/Contact.xml
+msgid "Login details"
+msgstr ""
+
+#: ../profiles/default/types/AnalysisRequest.xml
+#: ../profiles/default/types/Worksheet.xml
+msgid "Manage Results"
+msgstr ""
+
+#: ../profiles/default/types/Method.xml
+msgid "Method"
+msgstr ""
+
+#: ../profiles/default/controlpanel.xml
+#: ../profiles/default/types/Methods.xml
+msgid "Methods"
+msgstr ""
+
+#: ../profiles/default/actions.xml
+#: ../profiles/default/types/Client.xml
+msgid "Orders"
+msgstr ""
+
+#: ../profiles/default/types/Preservation.xml
+msgid "Preservation"
+msgstr ""
+
+#: ../profiles/default/controlpanel.xml
+#: ../profiles/default/types/Preservations.xml
+msgid "Preservations"
+msgstr ""
+
+#: ../profiles/default/types/Pricelist.xml
+msgid "Pricelist"
+msgstr ""
+
+#: ../profiles/default/types/PricelistFolder.xml
+msgid "Pricelists"
+msgstr ""
+
+#: ../profiles/default/actions.xml
+msgid "Prices"
+msgstr ""
+
+#: ../profiles/default/types/InvoiceBatch.xml
+msgid "Print batch"
+msgstr ""
+
+#: ../profiles/default/types/Invoice.xml
+msgid "Print invoice"
+msgstr ""
+
+#: ../profiles/default/types/SupplyOrder.xml
+msgid "Print order"
+msgstr ""
+
+#: ../profiles/default/types/Pricelist.xml
+msgid "Print pricelist"
+msgstr ""
+
+#: ../profiles/default/types/Reports.xml
+msgid "Productivity"
+msgstr ""
+
+#: ../profiles/default/types/Client.xml
+msgid "Profiles"
+msgstr ""
+
+#: ../profiles/default/types/Reports.xml
+msgid "Quality Control"
+msgstr ""
+
+#: ../profiles/default/actions.xml
+msgid "Queries"
+msgstr ""
+
+#: ../profiles/default/types/ReferenceAnalysis.xml
+msgid "Reference Analysis"
+msgstr ""
+
+#: ../profiles/default/types/ReferenceDefinition.xml
+msgid "Reference Definition"
+msgstr ""
+
+#: ../profiles/default/controlpanel.xml
+#: ../profiles/default/types/ReferenceDefinitions.xml
+msgid "Reference Definitions"
+msgstr ""
+
+#: ../profiles/default/types/ReferenceManufacturer.xml
+msgid "Reference Manufacturer"
+msgstr ""
+
+#: ../profiles/default/controlpanel.xml
+#: ../profiles/default/types/ReferenceManufacturers.xml
+msgid "Reference Manufacturers"
+msgstr ""
+
+#: ../profiles/default/types/ReferenceSample.xml
+msgid "Reference Results"
+msgstr ""
+
+#: ../profiles/default/types/ReferenceSample.xml
+msgid "Reference Sample"
+msgstr ""
+
+#: ../profiles/default/actions.xml
+#: ../profiles/default/types/ReferenceSamplesFolder.xml
+#: ../profiles/default/types/ReferenceSupplier.xml
+msgid "Reference Samples"
+msgstr ""
+
+#: ../profiles/default/types/ReferenceSupplier.xml
+msgid "Reference Supplier"
+msgstr ""
+
+#: ../profiles/default/controlpanel.xml
+#: ../profiles/default/types/ReferenceSuppliers.xml
+msgid "Reference Suppliers"
+msgstr ""
+
+#: ../profiles/default/types/RejectAnalysis.xml
+msgid "Reject Analysis"
+msgstr ""
+
+#: ../profiles/default/actions.xml
+msgid "Report"
+msgstr ""
+
+#: ../profiles/default/types/Reports.xml
+msgid "Reports"
+msgstr ""
+
+#: ../profiles/default/types/AnalysisRequest.xml
+msgid "Results not requested"
+msgstr ""
+
+#: ../profiles/default/types/Sample.xml
+msgid "Sample"
+msgstr ""
+
+#: ../profiles/default/types/SamplePartition.xml
+msgid "Sample Partition"
+msgstr ""
+
+#: ../profiles/default/types/SamplePoint.xml
+msgid "Sample Point"
+msgstr ""
+
+#: ../profiles/default/controlpanel.xml
+#: ../profiles/default/types/SamplePoints.xml
+msgid "Sample Points"
+msgstr ""
+
+#: ../profiles/default/types/SampleType.xml
+msgid "Sample Type"
+msgstr ""
+
+#: ../profiles/default/controlpanel.xml
+#: ../profiles/default/types/SampleTypes.xml
+msgid "Sample Types"
+msgstr ""
+
+#: ../profiles/default/actions.xml
+#: ../profiles/default/types/Client.xml
+msgid "Samples"
+msgstr ""
+
+#: ../profiles/default/types/SamplesFolder.xml
+msgid "SamplesFolder"
+msgstr ""
+
+#: ../profiles/default/types/AnalysisRequest.xml
+#: ../profiles/default/types/Sample.xml
+#: ../profiles/default/types/SamplePartition.xml
+msgid "Small Sticker"
+msgstr ""
+
+#: ../profiles/default/types/ReferenceSample.xml
+msgid "Sticker"
+msgstr ""
+
+#: ../profiles/default/actions.xml
+msgid "Suppliers"
+msgstr ""
+
+#: ../profiles/default/types/SupplyOrder.xml
+msgid "Supply Order"
+msgstr ""
+
+#: ../profiles/default/types/Worksheet.xml
+msgid "Worksheet"
+msgstr ""
+
+#: ../profiles/default/types/WorksheetTemplate.xml
+msgid "Worksheet Template"
+msgstr ""
+
+#: ../profiles/default/controlpanel.xml
+#: ../profiles/default/types/WorksheetTemplates.xml
+msgid "Worksheet Templates"
+msgstr ""
+
+#: ../profiles/default/actions.xml
+#: ../profiles/default/types/WorksheetFolder.xml
+msgid "Worksheets"
+msgstr ""
+
+#. Default: "Accounting"
+msgid "label_schema_Accounting"
+msgstr ""
+
+#. Default: "Address"
+msgid "label_schema_Address"
+msgstr ""
+
+#. Default: "Analyses"
+msgid "label_schema_Analyses"
+msgstr ""
+
+#. Default: "Analysis"
+msgid "label_schema_Analysis"
+msgstr ""
+
+#. Default: "Bank details"
+msgid "label_schema_Bank details"
+msgstr ""
+
+#. Default: "Calculation"
+msgid "label_schema_Calculation"
+msgstr ""
+
+#. Default: "Dates"
+msgid "label_schema_Dates"
+msgstr ""
+
+#. Default: "Description"
+msgid "label_schema_Description"
+msgstr ""
+
+#. Default: "Email Telephone Fax"
+msgid "label_schema_Email Telephone Fax"
+msgstr ""
+
+#. Default: "ID Server"
+msgid "label_schema_ID Server"
+msgstr ""
+
+#. Default: "Labels"
+msgid "label_schema_Labels"
+msgstr ""
+
+#. Default: "Layout"
+msgid "label_schema_Layout"
+msgstr ""
+
+#. Default: "Location"
+msgid "label_schema_Location"
+msgstr ""
+
+#. Default: "Method"
+msgid "label_schema_Method"
+msgstr ""
+
+#. Default: "Partition Setup"
+msgid "label_schema_Partition Setup"
+msgstr ""
+
+#. Default: "Preferences"
+msgid "label_schema_Preferences"
+msgstr ""
+
+#. Default: "Publication preference"
+msgid "label_schema_Publication preference"
+msgstr ""
+
+#. Default: "Reference Results"
+msgid "label_schema_Reference Results"
+msgstr ""
+
+#. Default: "Result Options"
+msgid "label_schema_Result Options"
+msgstr ""
+
+#. Default: "Results Reports"
+msgid "label_schema_Results Reports"
+msgstr ""
+
+#. Default: "Security"
+msgid "label_schema_Security"
+msgstr ""
+
+#. Default: "Uncertainties"
+msgid "label_schema_Uncertainties"
+msgstr ""
+

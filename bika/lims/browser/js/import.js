@@ -1,18 +1,19 @@
 jQuery( function($) {
-
-function portalMessage(messages){
-	str = "<dl class='portalMessage error'>"+
-		"<dt>Error</dt>"+
-		"<dd>";
-	$.each(messages, function(i,v){
-		str = str + "<ul><li>" + v + "</li></ul>";
-	});
-	str = str + "</dd></dl>";
-	$('.portalMessage').remove();
-	$('#viewlet-above-content').append(str);
-}
-
 $(document).ready(function(){
+
+	_ = window.jsi18n;
+
+	function portalMessage(messages){
+		str = "<dl class='portalMessage error'>"+
+			"<dt>"+_('error')+"</dt>"+
+			"<dd>";
+		$.each(messages, function(i,v){
+			str = str + "<ul><li>" + v + "</li></ul>";
+		});
+		str = str + "</dd></dl>";
+		$('.portalMessage').remove();
+		$('#viewlet-above-content').append(str);
+	}
 
 	// Load import form for selected data interface
     $("#exim").change(function(){
@@ -58,7 +59,6 @@ $(document).ready(function(){
 		form.ajaxSubmit(options);
 		return false;
 	});
-
 
 });
 });

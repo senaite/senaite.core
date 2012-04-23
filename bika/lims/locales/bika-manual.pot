@@ -1,0 +1,69 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Bika-LIMS\n"
+"POT-Creation-Date: 2012-01-01 23:11+0000\n"
+"PO-Revision-Date: 2012-01-01 23:11+0000\n"
+"Last-Translator: Bika <bikasupport@bikalabs.com>\n"
+"Language-Team: Bika <bikasupport@bikalabs.com>\n\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#: Profile description in configure.zcml
+msgid "Extension profile for the Bika LIMS"
+msgstr ""
+
+msgid "Yes"
+msgstr ""
+
+msgid "No"
+msgstr
+
+msgid "Default"
+msgstr ""
+
+#. The variables used here are the same as used in the strftime formating.
+#. Supported are ${A}, ${a}, ${B}, ${b}, ${H}, ${I}, ${m}, ${d}, ${M}, ${p},
+#. ${S}, ${Y}, ${y}, ${Z}, each used as variable in the msgstr.
+#. For example: "${A} ${d}. ${B} ${Y}, ${H}:${M} ${Z}"
+#. In english speaking countries default is:
+#. ${b} ${d}, ${Y} ${I}:${M} ${p}
+msgid "date_format_long"
+msgstr ""
+
+msgid "date_format_short"
+msgstr ""
+
+msgid "time_format"
+msgstr ""
+
+# ../browser/js/analysisrequest.js
+msgid "Service dependencies"
+msgstr ""
+
+msgid "<p>${service} requires the following services to be selected:</p><br/><p>${deps}</p><br/><p>Do you want to apply these selections now?</p>"
+msgstr ""
+
+msgid "<p>The following services depend on ${service}, and will be unselected if you continue:</p><br/><p>${deps}</p><br/><p>Do you want to remove these selections now?</p>"
+msgstr ""
+
+# ../browser/js/client.js
+msgid ""
+"This will remove all existing client analysis specifications "
+"and create copies of all lab specifications. "
+"Are you sure you want to do this?"
+msgstr ""
+
+msgid "Save remarks"
+msgstr ""
+
+# ../browser/js/attachments.js
+msgid "Slot"
+msgstr ""
+
+msgid "Parent"
+msgstr ""
+
+msgid "Type"
+msgstr ""

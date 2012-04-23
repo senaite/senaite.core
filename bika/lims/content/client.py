@@ -1,20 +1,22 @@
 """Client - the main organisational entity in bika.
 """
-from bika.lims import interfaces
-from zope.component import getUtility
 from AccessControl import ClassSecurityInfo
 from Products.ATContentTypes.content import schemata
 from Products.Archetypes import atapi
 from Products.Archetypes.utils import DisplayList
 from Products.CMFCore import permissions
 from Products.CMFCore.utils import getToolByName
-from bika.lims.content.organisation import Organisation
+from bika.lims import PMF, bikaMessageFactory as _
+from bika.lims import interfaces
 from bika.lims.config import *
+from bika.lims.content.organisation import Organisation
 from bika.lims.interfaces import IClient
+from bika.lims.utils import isActive
+from zope.component import getUtility
 from zope.interface import implements
 from zope.interface.declarations import alsoProvides
+import json
 import sys
-from bika.lims import bikaMessageFactory as _
 
 schema = Organisation.schema.copy() + atapi.Schema((
     atapi.StringField('ClientID',
@@ -25,7 +27,6 @@ schema = Organisation.schema.copy() + atapi.Schema((
     ),
     atapi.BooleanField('MemberDiscountApplies',
         default = False,
-        schemata = 'default',
         write_permission = ManageClients,
         widget = atapi.BooleanWidget(
             label = _("Member discount applies"),
@@ -41,31 +42,41 @@ schema = Organisation.schema.copy() + atapi.Schema((
         ),
     ),
     atapi.LinesField('EmailSubject',
-        schemata = 'preferences',
+        schemata = PMF('Preferences'),
         default = ['ar', ],
         vocabulary = EMAIL_SUBJECT_OPTIONS,
         widget = atapi.MultiSelectionWidget(
-            description = 'Items to be included in email subject lines',
+            description = _('Items to be included in email subject lines'),
             label = _("Email subject line"),
         ),
     ),
-    atapi.ReferenceField('DefaultCategory',
-        schemata = 'preferences',
+    atapi.ReferenceField('DefaultCategories',
+        schemata = PMF('Preferences'),
         required = 0,
         multiValued = 1,
+        vocabulary = 'getAnalysisCategories',
         vocabulary_display_path_bound = sys.maxint,
         allowed_types = ('AnalysisCategory',),
-        relationship = 'ClientAnalysisCategory',
+        relationship = 'ClientDefaultCategories',
         widget = atapi.ReferenceWidget(
             checkbox_bound = 1,
-            label = _("Default analysis categories"),
+            label = _("Default categories"),
+            description = _("Always expand the selected categories in client views"),
         ),
     ),
-    atapi.BooleanField('RestrictCategories',
-        default = False,
-        schemata = 'preferences',
-        widget = atapi.BooleanWidget(
-            label = _("Restrict client to selected categories"),
+    atapi.ReferenceField('RestrictedCategories',
+        schemata = PMF('Preferences'),
+        required = 0,
+        multiValued = 1,
+        vocabulary = 'getAnalysisCategories',
+        validators = ('restrictedcategoriesvalidator',),
+        vocabulary_display_path_bound = sys.maxint,
+        allowed_types = ('AnalysisCategory',),
+        relationship = 'ClientRestrictedCategories',
+        widget = atapi.ReferenceWidget(
+            checkbox_bound = 1,
+            label = _("Restrict categories"),
+            description = _("Show only selected categories in client views"),
         ),
     ),
 ))
@@ -112,33 +123,25 @@ class Client(Organisation):
 
     security.declarePublic('getCCContacts')
     def getCCContacts(self):
-        # for every contact, get the list of CC Contacts
-        # using comma delimited strings in arrays so that it can
-        # be manipulated in javascript
-        client_ccs = []
-        cc_data = {}
+        """Return a JSON value, containing all Contacts and their default CCs
+        for this client.  This function is used to set form values for javascript.
+        """
+        contact_data = []
         for contact in self.objectValues('Contact'):
-            cc_contacts = []
-            cc_uids = ''
-            cc_titles = ''
-            for cc_contact in contact.getCCContact():
-                if wf.getInfoFor(cc_contact, 'inactive_state', '') == 'active':
-                    if cc_uids:
-                        cc_uids = cc_uids + ', ' + cc_contact.UID()
-                        cc_titles = cc_titles + ', ' + cc_contact.Title()
-                    else:
-                        cc_uids = cc_contact.UID()
-                        cc_titles = cc_contact.Title()
-            cc_contacts.append(contact.UID())
-            cc_contacts.append(cc_uids)
-            cc_contacts.append(cc_titles)
-            cc_data[contact.Title()] = cc_contacts
-
-        cc_keys = cc_data.keys()
-        cc_keys.sort()
-        for cc_key in cc_keys:
-            client_ccs.append(cc_data[cc_key])
-        return client_ccs
+            if isActive(contact):
+                this_contact_data = {'title': contact.Title(),
+                                     'uid': contact.UID(), }
+                ccs = []
+                for cc in contact.getCCContact():
+                    if isActive(cc):
+                        ccs.append({'title': cc.Title(),
+                                    'uid': cc.UID(),})
+                this_contact_data['ccs_json'] = json.dumps(ccs)
+                this_contact_data['ccs'] = ccs
+            contact_data.append(this_contact_data)
+        contact_data.sort(lambda x, y:cmp(x['title'].lower(),
+                                          y['title'].lower()))
+        return contact_data
 
     security.declarePublic('getContactUIDForUser')
     def getContactUIDForUser(self):
@@ -164,9 +167,21 @@ class Client(Organisation):
         bsc = getToolByName(self, 'bika_setup_catalog')
         sampletypes = []
         for st in bsc(portal_type = 'SampleType',
+                      inactive_state = 'active',
                       sort_on = 'sortable_title'):
             sampletypes.append((st.UID, st.Title))
         return DisplayList(sampletypes)
+
+    security.declarePublic('getSampleTypeDisplayList')
+    def getAnalysisCategories(self):
+        """ return all available analysis categories """
+        bsc = getToolByName(self, 'bika_setup_catalog')
+        cats = []
+        for st in bsc(portal_type = 'AnalysisCategory',
+                      inactive_state = 'active',
+                      sort_on = 'sortable_title'):
+            cats.append((st.UID, st.Title))
+        return DisplayList(cats)
 
 schemata.finalizeATCTSchema(schema, folderish = True, moveDiscussion = False)
 

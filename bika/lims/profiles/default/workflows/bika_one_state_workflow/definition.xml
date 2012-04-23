@@ -1,66 +1,71 @@
 <?xml version="1.0"?>
-<dc-workflow workflow_id="bika_one_state_workflow"
- title="Single State Workflow"
- description="- Essentially a workflow with no transitions, but has an Active state, so items which expect that state will continue to work."
- state_variable="review_state"
- initial_state="active"
- manager_bypass="False">
+<dc-workflow xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+             i18n:domain="bika"
+             workflow_id="bika_one_state_workflow"
+             title="Bika Single State Workflow"
+             state_variable="cancellation_state"
+             initial_state="active"
+             manager_bypass="False">
+
  <permission>Access contents information</permission>
  <permission>Change portal events</permission>
  <permission>Modify portal content</permission>
  <permission>View</permission>
- <state state_id="active" title="Active">
+
+ <state state_id="active" title="Active" i18n:attributes="title">
   <description></description>
   <permission-map name="Access contents information" acquired="False">
    <permission-role>Anonymous</permission-role>
   </permission-map>
   <permission-map name="Change portal events" acquired="False">
    <permission-role>Manager</permission-role>
+   <permission-role>LabManager</permission-role>
+   <permission-role>Site Administrator</permission-role>
    <permission-role>Owner</permission-role>
    <permission-role>Editor</permission-role>
-   <permission-role>Site Administrator</permission-role>
   </permission-map>
   <permission-map name="Modify portal content" acquired="False">
    <permission-role>Manager</permission-role>
+   <permission-role>LabManager</permission-role>
+   <permission-role>Site Administrator</permission-role>
    <permission-role>Owner</permission-role>
    <permission-role>Editor</permission-role>
-   <permission-role>Site Administrator</permission-role>
   </permission-map>
   <permission-map name="View" acquired="False">
    <permission-role>Anonymous</permission-role>
   </permission-map>
  </state>
- <variable variable_id="action" for_catalog="False" for_status="True" update_always="True">
-  <description>Previous transition</description>
-  <default>
 
+ <variable variable_id="action" for_catalog="False" for_status="True" update_always="True">
+  <description i18n:attributes="title">Previous transition</description>
+  <default>
    <expression>transition/getId|nothing</expression>
   </default>
   <guard>
   </guard>
  </variable>
- <variable variable_id="actor" for_catalog="False" for_status="True" update_always="True">
-  <description>The ID of the user who performed the previous transition</description>
-  <default>
 
+ <variable variable_id="actor" for_catalog="False" for_status="True" update_always="True">
+  <description i18n:attributes="title">The ID of the user who performed the previous transition</description>
+  <default>
    <expression>user/getId</expression>
   </default>
   <guard>
   </guard>
  </variable>
- <variable variable_id="comments" for_catalog="False" for_status="True" update_always="True">
-  <description>Comment about the last transition</description>
-  <default>
 
+ <variable variable_id="comments" for_catalog="False" for_status="True" update_always="True">
+  <description i18n:attributes="title">Comment about the last transition</description>
+  <default>
    <expression>python:state_change.kwargs.get('comment', '')</expression>
   </default>
   <guard>
   </guard>
  </variable>
- <variable variable_id="review_history" for_catalog="False" for_status="False" update_always="False">
-  <description>Provides access to workflow history</description>
-  <default>
 
+ <variable variable_id="review_history" for_catalog="False" for_status="False" update_always="False">
+  <description i18n:attributes="title">Provides access to workflow history</description>
+  <default>
    <expression>state_change/getHistory</expression>
   </default>
   <guard>
@@ -68,13 +73,14 @@
    <guard-permission>Review portal content</guard-permission>
   </guard>
  </variable>
- <variable variable_id="time" for_catalog="False" for_status="True" update_always="True">
-  <description>When the previous transition was performed</description>
-  <default>
 
+ <variable variable_id="time" for_catalog="False" for_status="True" update_always="True">
+  <description i18n:attributes="title">When the previous transition was performed</description>
+  <default>
    <expression>state_change/getDateTime</expression>
   </default>
   <guard>
   </guard>
  </variable>
+
 </dc-workflow>

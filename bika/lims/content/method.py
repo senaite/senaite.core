@@ -17,25 +17,21 @@ schema = BikaSchema.copy() + Schema((
         widget = TextAreaWidget(
             label = _("Method Instructions",
                       "Instructions"),
-            description = _("Method Instructions description",
-                            "Technical description and instructions intended for analysts"),
+            description = _("Technical description and instructions intended for analysts"),
         ),
     ),
     FileField('MethodDocument',  # XXX Multiple Method documents please
         widget = FileWidget(
             label = _("Method Document"),
-            description = _("Method Document description",
-                            "Load documents describing the method here"),
+            description = _("Load documents describing the method here"),
         )
     ),
 ))
 
 schema['description'].schemata = 'default'
 schema['description'].widget.visible = True
-schema['description'].widget.label = _("Method Description",
-                                       "Description")
-schema['description'].widget.description = _("Method Description description",
-                                             "Describes the method in layman terms. This information is made available to lab clients")
+schema['description'].widget.label = _("Description")
+schema['description'].widget.description = _("Describes the method in layman terms. This information is made available to lab clients")
 
 class Method(BaseFolder):
     security = ClassSecurityInfo()

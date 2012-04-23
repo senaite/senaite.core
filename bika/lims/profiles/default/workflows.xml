@@ -33,6 +33,10 @@
    <bound-workflow workflow_id="bika_one_state_workflow"/>
    <bound-workflow workflow_id="bika_inactive_workflow"/>
   </type>
+ <type type_id="ARTemplate">
+   <bound-workflow workflow_id="bika_one_state_workflow"/>
+   <bound-workflow workflow_id="bika_inactive_workflow"/>
+  </type>
   <type type_id="ATBooleanCriterion"/>
   <type type_id="ATCurrentAuthorCriterion"/>
   <type type_id="ATDateCriteria"/>
@@ -109,16 +113,10 @@
    <bound-workflow workflow_id="bika_inactive_workflow"/>
   </type>
 
-  <type type_id="Container">
-   <bound-workflow workflow_id="bika_one_state_workflow"/>
-   <bound-workflow workflow_id="bika_inactive_workflow"/>
-  </type>
+  <type type_id="Container"/>
   <type type_id="Containers"/>
 
-  <type type_id="ContainerType">
-   <bound-workflow workflow_id="bika_one_state_workflow"/>
-   <bound-workflow workflow_id="bika_inactive_workflow"/>
-  </type>
+  <type type_id="ContainerType"/>
   <type type_id="ContainerTypes"/>
 
   <type type_id="Department">
@@ -226,6 +224,7 @@
 
   <type type_id="SamplePartition">
    <bound-workflow workflow_id="bika_sample_workflow"/>
+   <bound-workflow workflow_id="bika_cancellation_workflow"/>
   </type>
 
   <type type_id="SamplePoints"/>

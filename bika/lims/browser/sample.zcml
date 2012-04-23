@@ -4,36 +4,39 @@
     xmlns:i18n="http://namespaces.zope.org/i18n"
     i18n_domain="bika">
 
-    <!-- Main samples view -->
+    <!-- Workflow action button clicked for Samples Folder-->
     <browser:page
       for="bika.lims.interfaces.ISamplesFolder"
-      name="base_view"
-      class="bika.lims.browser.sample.SamplesView"
-      permission="bika.lims.ManageSample"
+      name="workflow_action"
+      class="bika.lims.browser.client.ClientWorkflowAction"
+      permission="zope.Public"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
+    <!-- Workflow action button clicked for Sample -->
+    <!-- Uses the workflow action in analysisrequest.py, since the
+         forms are basically the same. -->
     <browser:page
-      for="*"
-      name="sample_submit"
-      class="bika.lims.browser.sample.ajaxSampleSubmit"
+      for="bika.lims.interfaces.ISample"
+      name="workflow_action"
+      class="bika.lims.browser.analysisrequest.AnalysisRequestWorkflowAction"
       permission="zope.Public"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
     <browser:page
-      for="bika.lims.interfaces.ISample"
+      for="bika.lims.interfaces.ISamplesFolder"
       name="base_view"
-      class="bika.lims.browser.sample.SampleViewView"
-      permission="zope2.View"
+      class="bika.lims.browser.sample.SamplesView"
+      permission="bika.lims.ManageSamples"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
     <browser:page
       for="bika.lims.interfaces.ISample"
-      name="base_edit"
-      class="bika.lims.browser.sample.SampleEditView"
-      permission="zope2.View"
+      name="base_view"
+      class="bika.lims.browser.sample.SampleView"
+      permission="bika.lims.ManageSamples"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 

@@ -1,9 +1,10 @@
 <?xml version="1.0"?>
 <object name="Analysis"
-   meta_type="Factory-based Type Information with dynamic views"
-   xmlns:i18n="http://xml.zope.org/namespaces/i18n">
- <property name="title">Analysis</property>
- <property name="description">Analysis Objects</property>
+        meta_type="Factory-based Type Information with dynamic views"
+        xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+        i18n:domain="plone">
+ <property name="title" i18n:translate="">Analysis</property>
+ <property name="description"></property>
  <property name="icon_expr">string:${portal_url}/document_icon.gif</property>
  <property name="content_meta_type">Analysis</property>
  <property name="product">bika.lims</property>

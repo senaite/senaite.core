@@ -1,5 +1,4 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
-	xml:lang="en" lang="en"
 	xmlns:tal="http://xml.zope.org/namespaces/tal"
 	xmlns:metal="http://xml.zope.org/namespaces/metal"
 	xmlns:i18n="http://xml.zope.org/namespaces/i18n"
@@ -39,6 +38,8 @@
 			sample python:here.getSample();
 			sampletype python:sample.getSampleType()">
 
+		<input tal:replace="structure context/@@authenticator/authenticator"/>
+
 		<table width="100%">
 			<tr>
 				<td>
@@ -69,6 +70,7 @@
 					<img tal:condition="view/getHazardous"
 						src=""
                         title="Hazardous"
+						i18n:attributes="title"
                         tal:attributes="src string:++resource.bika.lims.images/hazardous_big.png"/>
 				</td>
 			</tr>
@@ -161,33 +163,18 @@
 		</tal:buttons>
 
 
-		<tal:ar_actions
-			condition="batch"
-			define="ar_workflow_actions python: view.get_analysis_request_actions()">
-
-		<input type="hidden" id="workflow_action" name="workflow_action" value=""/>
-
-		<tal:buttons tal:repeat="transition ar_workflow_actions">
-
-		<input
-			class="context"
-			type="submit"
-			name="folder_publish:method"
-			value=""
-			tabindex=""
-			tal:condition="python:transition['id'] != 'assign'"
-			i18n:attributes="value"
-			tal:attributes="
-				value transition/title;
-				tabindex tabindex/next;
-				onclick string:this.form.workflow_action.value = '${transition/id}'" />
-		</tal:buttons>
-		</tal:ar_actions>
-
 		<img tal:condition="sampletype/getHazardous"
-			tal:attributes="src string:++resource++bika.lims.images/hazardous_big.png">
+			title="Hazardous"
+			i18n:attributes="title"
+			tal:attributes="src string:++resource++bika.lims.images/hazardous_big.png"/>
 
 	</form>
+
+	<tal:remarks define="
+		field python:context.Schema()['Remarks'];
+		errors python:{};">
+		 <metal:widget use-macro="python:context.widget('Remarks', mode='edit')" />
+	</tal:remarks>
 
 </metal:content>
 </body>

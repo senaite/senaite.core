@@ -1,0 +1,136 @@
+body {
+    background: White url(&dtml-portal_url;/logo.png) no-repeat fixed 95% 95%;
+    font-family:  "Lucida Grande", Verdana, Lucida, Arial, Helvetica, sans-serif;
+    font-size: 11pt !important;
+    color: Black;
+    margin: 1em;
+    padding: 0;
+}
+
+div.top,
+div.toggleOption,
+#portal-logo,
+#portal-siteactions,
+.hiddenStructure,
+#portal-searchbox,
+#portal-globalnav,
+#portal-personaltools,
+#portal-breadcrumbs,
+#portal-column-one,
+#portal-column-two,
+.contentViews,
+.contentActions,
+.help,
+.legend,
+div.portalMessage,
+div.documentActions,
+.documentByLine,
+.netscape4,
+#portal-footer,
+#portal-colophon,
+input,
+.skipnav,
+.visualNoPrint {
+    /* Hides all the elements irrelevant for presentations */
+    display: none;
+}
+
+ul { 
+    list-style-type: square;
+}
+
+#content,
+.documentDescription,
+.group,
+li,
+.stx,
+p {
+    background: transparent;
+    border: none ! important;
+    font-family:  "Lucida Grande", Verdana, Lucida, Arial, Helvetica, sans-serif;
+    font-size: 11pt;
+    padding: 5px ! important;
+    margin: 0 ! important;
+    text-align: left;
+}
+
+.documentByLine {
+    font-family:  "Lucida Grande", Verdana, Lucida, Arial, Helvetica, sans-serif;
+}
+
+
+h1, h2, h3, h4, h5, h6
+{
+    border: none;
+    font-family:  "Lucida Grande", Verdana, Lucida, Arial, Helvetica, sans-serif;
+    font-weight: bold;
+}
+
+p, .documentDescription {
+    margin: 1em 0 ! important;
+    line-height: 1.2em;    
+}
+
+pre {
+    border: 1pt dashed Red;
+    white-space: pre;
+    font-size: 8pt;
+    overflow: auto;
+    padding: 1em 0;
+}
+table.testthis {
+    color: Red;
+	border-top: 2px solid #dddddd;
+	border-bottom:9px solid #eee;
+	font-size:11pt;
+    font-weight:bold;
+}
+table.listing {
+    border: 1pt solid gray ! important;
+    border-collapse: collapse;
+    padding: 5px ! important;
+}
+table.listing td, th {
+    border: 1pt solid gray ! important;
+}
+
+a {
+    color: Red !important;
+    padding: 0 !important
+}
+
+a:link, a:visited {
+    color: #520;
+    background: transparent;
+    text-decoration: underline;
+}
+
+/*
+** disable layout
+*/
+
+#visual-portal-wrapper {
+    width: 100% !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+}
+
+#visual-column-wrapper {
+    margin: 0 !important;
+    float: none !important;
+}
+ 
+#portal-column-content {
+    float: none !important;
+    margin: 0 !important;
+}
+ 
+#portal-column-content #content {
+    float: none !important;
+    padding: 0em !important;
+    margin: 0 !important;
+}
+
+div#portal-columns #portal-column-content #content {
+    margin-right: 8em !important;
+}

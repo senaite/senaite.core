@@ -2,58 +2,72 @@ from AccessControl import ClassSecurityInfo
 from Products.Archetypes.public import *
 from Products.ATContentTypes.lib.historyaware import HistoryAwareMixin
 from Products.CMFCore.permissions import View, ModifyPortalContent
+from Products.CMFCore.utils import getToolByName
+from Products.Five.browser import BrowserView
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.config import PROJECTNAME
 from bika.lims.browser.fields import CoordinateField
 from bika.lims.browser.widgets import CoordinateWidget
 from bika.lims.browser.fields import DurationField
 from bika.lims.browser.widgets import DurationWidget
-import sys
-from bika.lims import bikaMessageFactory as _
+from zope.i18n import translate
+from bika.lims import PMF, bikaMessageFactory as _
 from zope.interface import implements
+import json
+import plone
+import sys
 
 schema = BikaSchema.copy() + Schema((
     CoordinateField('Latitude',
-        schemata = _('Location'),
+        schemata = PMF('Location'),
         widget=CoordinateWidget(
             label= _("Latitude"),
-            description = _("Latitude description",
-                            "Enter the Sample Point's latitude in "
+            description = _("Enter the Sample Point's latitude in "
                             "degrees 0-90, minutes 0-59, seconds 0-59 and N/S indicator"),
         ),
     ),
     CoordinateField('Longitude',
-        schemata = _('Location'),
+        schemata = PMF('Location'),
         widget=CoordinateWidget(
             label= _("Longitude"),
-            description = _("Longitude description",
-                            "Enter the Sample Point's longitude in "
+            description = _("Enter the Sample Point's longitude in "
                             "degrees 0-180, minutes 0-59, seconds 0-59 and E/W indicator"),
         ),
     ),
     StringField('Elevation',
-        schemata = _('Location'),
+        schemata = PMF('Location'),
         widget=StringWidget(
             label =  _("Elevation"),
-            description = _("Elevation description",
-                            "The height or depth at which the sample has to be taken"),
+            description = _("The height or depth at which the sample has to be taken"),
         ),
     ),
     DurationField('SamplingFrequency',
         vocabulary_display_path_bound=sys.maxint,
         widget=DurationWidget(
             label = _("Sampling Frequency"),
-            description = _("Sampling Frequency description",
-                            "If a sample is taken periodically at this sample point, "
+            description = _("If a sample is taken periodically at this sample point, "
                             " enter frequency here, e.g. weekly"),
+        ),
+    ),
+    ReferenceField('SampleTypes',
+        required = 0,
+        multiValued = 1,
+        allowed_types = ('SampleType',),
+        vocabulary = 'SampleTypesVocabulary',
+        relationship = 'SamplePointSampleType',
+        widget = ReferenceWidget(
+            checkbox_bound = 1,
+            label = _("Sample Types"),
+            description = _("The list of sample types that can be collected "
+                            "at this sample point.  If no sample types are "
+                            "selected, then all sample types are available."),
         ),
     ),
     BooleanField('Composite',
         default=False,
         widget=BooleanWidget(
             label = _("Composite"),
-            description = _("Composite description",
-                            "Check this box if the samples taken at this point are 'composite' "
+            description = _("Check this box if the samples taken at this point are 'composite' "
                             "and put together from more than one sub sample, e.g. several surface "
                             "samples from a dam mixed together to be a representative sample for the dam. "
                             "The default, unchecked, indicates 'grab' samples"),
@@ -73,4 +87,50 @@ class SamplePoint(BaseContent, HistoryAwareMixin):
         from bika.lims.idserver import renameAfterCreation
         renameAfterCreation(self)
 
+    def SampleTypesVocabulary(self):
+        from bika.lims.content.sampletype import SampleTypes
+        return SampleTypes(self, allow_blank=False)
+
+    def setSampleTypes(self, value, **kw):
+        """ For the moment, we're manually trimming the sampletype<>samplepoint
+            relation to be equal on both sides, here.
+            It's done strangely, because it may be required to behave strangely.
+        """
+        bsc = getToolByName(self, 'bika_setup_catalog')
+        ## convert value to objects
+        if value and type(value) == str:
+            value = [bsc(UID=value)[0].getObject(),]
+        elif value and type(value) in (list, tuple) and type(value[0]) == str:
+            value = [bsc(UID=uid)[0].getObject() for uid in value if uid]
+        ## Find all SampleTypes that were removed
+        existing = self.Schema()['SampleTypes'].get(self)
+        removed = existing and [s for s in existing if s not in value] or []
+        added = value and [s for s in value if s not in existing] or []
+        ret = self.Schema()['SampleTypes'].set(self, value)
+
+        for st in removed:
+            samplepoints = st.getSamplePoints()
+            if self in samplepoints:
+                samplepoints.remove(self)
+                st.setSamplePoints(samplepoints)
+
+        for st in added:
+            st.setSamplePoints(list(st.getSamplePoints()) + [self,])
+
+        return ret
+
+    def getSampleTypes(self, **kw):
+        return self.Schema()['SampleTypes'].get(self)
+
 registerType(SamplePoint, PROJECTNAME)
+
+def SamplePoints(self, instance=None, allow_blank=True):
+    instance = instance or self
+    bsc = getToolByName(instance, 'bika_setup_catalog')
+    items = []
+    for sp in bsc(portal_type='SamplePoint',
+                  inactive_state='active',
+                  sort_on = 'sortable_title'):
+        items.append((sp.UID, sp.Title))
+    items = allow_blank and [['','']] + list(items) or list(items)
+    return DisplayList(items)

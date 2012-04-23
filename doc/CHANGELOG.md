@@ -1,6 +1,28 @@
 3.0 dev
 =======
 
+2012-04-23
+----------
+
+#### Changes
+
+- Optional sampling and preservation workflows and roles.
+- Sample partitioning.
+- Container & preservation automation.
+- AR templates - Sample point & Sample type restrictions.
+- Reports - framework only. 'Analysis per service' shows what is planned.
+- Improved i18n handling, and updated strings from Transifex.
+- Numerous performance enhancements
+- Analysis Service & Method associations.
+- An improved Analysis Service pop-up window.
+- Sample Type and Sample Point relationship.
+- Currency selection from zope locales
+- Combined AR View and Edit tabs.
+- Re-factored AR 'Add/Remove Analyses' screen
+- Store the date of capture for analysis results
+- Append only remarks fields on more objects.
+
+
 2012-01-23
 ----------
 

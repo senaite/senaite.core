@@ -13,7 +13,17 @@
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
-    <!-- Workflow action button clicked -->
+    <!-- Workflow action button clicked in AR folder list-->
+    <browser:page
+      for="bika.lims.interfaces.IAnalysisRequestsFolder"
+      name="workflow_action"
+      class="bika.lims.browser.client.ClientWorkflowAction"
+      permission="zope.Public"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
+
+    <!-- Workflow action button clicked inside AR -->
     <browser:page
       for="bika.lims.interfaces.IAnalysisRequest"
       name="workflow_action"
@@ -26,7 +36,7 @@
       for="bika.lims.interfaces.IClient"
       name="analysisrequest_add"
       class="bika.lims.browser.analysisrequest.AnalysisRequestAddView"
-      permission="cmf.AddPortalContent"
+      permission="bika.lims.ManageAnalysisRequests"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
@@ -34,15 +44,15 @@
       for="bika.lims.interfaces.IAnalysisRequest"
       name="base_view"
       class="bika.lims.browser.analysisrequest.AnalysisRequestViewView"
-      permission="zope2.View"
+      permission="bika.lims.ManageAnalysisRequests"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
     <browser:page
       for="bika.lims.interfaces.IAnalysisRequest"
-      name="base_edit"
-      class="bika.lims.browser.analysisrequest.AnalysisRequestEditView"
-      permission="zope2.View"
+      name="analyses"
+      class="bika.lims.browser.analysisrequest.AnalysisRequestAnalysesView"
+      permission="bika.lims.ManageAnalysisRequests"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
@@ -50,7 +60,7 @@
       for="bika.lims.interfaces.IAnalysisRequest"
       name="manage_results"
       class="bika.lims.browser.analysisrequest.AnalysisRequestManageResultsView"
-      permission="zope2.View"
+      permission="bika.lims.EditResults"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
@@ -58,7 +68,7 @@
       for="bika.lims.interfaces.IAnalysisRequest"
       name="not_requested"
       class="bika.lims.browser.analysisrequest.AnalysisRequestResultsNotRequestedView"
-      permission="zope2.View"
+      permission="bika.lims.ManageAnalysisRequests"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
@@ -72,24 +82,8 @@
 
     <browser:page
       for="*"
-      name="analysisrequest_profileservices"
-      class="bika.lims.browser.analysisrequest.ajaxProfileServices"
-      permission="zope.Public"
-      layer="bika.lims.interfaces.IBikaLIMS"
-    />
-
-    <browser:page
-      for="*"
-      name="get_service_dependencies"
-      class=".analysisrequest.ajaxgetServiceDependencies"
-      permission="zope.Public"
-      layer="bika.lims.interfaces.IBikaLIMS"
-    />
-
-    <browser:page
-      for="*"
-      name="get_back_references"
-      class=".analysisrequest.ajaxgetBackReferences"
+      name="ar_formdata"
+      class="bika.lims.browser.analysisrequest.ar_formdata"
       permission="zope.Public"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
@@ -106,7 +100,7 @@
       for="*"
       name="analysisrequest_select_sample"
       class="bika.lims.browser.analysisrequest.AnalysisRequestSelectSampleView"
-      permission="zope2.View"
+      permission="bika.lims.ManageAnalysisRequests"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
@@ -114,17 +108,7 @@
       for="*"
       name="analysisrequest_select_cc"
       class="bika.lims.browser.analysisrequest.AnalysisRequestSelectCCView"
-      permission="zope2.View"
-      layer="bika.lims.interfaces.IBikaLIMS"
-    />
-
-<!--    When a contact is selected; get their default CCs automatically-->
-<!--    Also run when the form is first rendered-->
-    <browser:page
-      for="*"
-      name="analysisrequest_contact_ccs"
-      class="bika.lims.browser.analysisrequest.AnalysisRequestContactCCs"
-      permission="cmf.ListFolderContents"
+      permission="bika.lims.ManageAnalysisRequests"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 

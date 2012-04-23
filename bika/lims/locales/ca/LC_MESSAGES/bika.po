@@ -4,2800 +4,3281 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Bika-LIMS\n"
-"Report-Msgid-Bugs-To: http://github.com/bikalabs/Bika-LIMS/issues\n"
-"POT-Creation-Date: 2012-01-04 12:43+0000\n"
-"PO-Revision-Date: 2012-01-28 17:31+0000\n"
+"POT-Creation-Date: 2012-04-19 18:01+0000\n"
+"PO-Revision-Date: 2012-04-19 09:31+0000\n"
 "Last-Translator: Jordi Puiggené <jordi.puiggene@gmail.com>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language-Team: Bika <bikasupport@bikalabs.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Domain: DOMAIN\n"
-"Language: ca\n"
+"Plural-Forms: nplurals=2; plural=(n != 1)\n"
 "Language-Code: en\n"
 "Language-Name: English\n"
-"Plural-Forms: nplurals=2; plural=(n != 1)\n"
 "Preferred-Encodings: utf-8 latin1\n"
+"Domain: DOMAIN\n"
+"Report-Msgid-Bugs-To: http://github.com/bikalabs/Bika-LIMS/issues\n"
+"Language: ca\n"
 
-#: ../content/analysisspec.py:71
+#: ../browser/templates/contact_login_details.pt:19
+msgid "${contact_fullname} can log into the LIMS by using ${contact_username} as username. Contacts must change their own passwords. If a password is forgotten a contact can request a new password from the login form."
+msgstr "En/na ${contact_fullname} pot entrar al LIMS utilitzant ${contact_username} com a nom d'usuari. És convenient que els contactes modifiquin la seva contrasenya. En cas que l'usuari perdi la seva contrasenya, sempre podrà sol·licitar-ne una de nova des del formulari d'accés."
+
+#: ../browser/analysisrequest.py:1589
+msgid "${id} is not a valid sample ID"
+msgstr "L'identificador de mostra ${id} no és vàlid"
+
+#: ../browser/analysisrequest.py:156
+#: ../browser/client.py:115
+msgid "${items} are waiting for preservation."
+msgstr ""
+
+#: ../browser/analysisrequest.py:103
+#: ../browser/client.py:118
+msgid "${items} are waiting to be received."
+msgstr ""
+
+#: ../browser/client.py:228
+msgid "${items} were published."
+msgstr "S'han publicat ${items}."
+
+#: ../browser/client.py:182
+msgid "${items}: partitions are waiting to be received."
+msgstr ""
+
+#: ../browser/analysisrequest.py:165
+#: ../browser/client.py:124
+msgid "${item} is waiting for preservation."
+msgstr ""
+
+#: ../browser/analysisrequest.py:108
+#: ../browser/client.py:127
+msgid "${item} is waiting to be received."
+msgstr ""
+
+#: ../browser/client.py:231
+msgid "${item} published."
+msgstr "s'ha publicat ${item}."
+
+#: ../browser/client.py:185
+msgid "${item}: ${part} is waiting to be received."
+msgstr ""
+
+#: ../browser/accreditation.py:31
+msgid "${labname} has been accredited as ${accr} conformant by ${abbr}, (${body}). ${abbr} is recognised by government as a national accreditation body in ${labcountry}. "
+msgstr "${labname} ha estat acreditat com a ${accr}-conforme per ${abbr}, (${body}). El govern reconeix la validesa de ${abbr} com a entitat acreditadora a ${labcountry}."
+
+#: ../browser/analysisrequest.py:469
+#: ../browser/sample.py:355
+#: ../content/artemplate.py:138
+msgid "${samplepoint} is not a valid sample point"
+msgstr "el punt de mostreig ${samplepoint} no és vàlid"
+
+#: ../browser/analysisrequest.py:462
+#: ../browser/sample.py:348
+#: ../content/artemplate.py:114
+msgid "${sampletype} is not a valid sample type"
+msgstr "el tipus de mostra ${sampletype} no és vàlida"
+
+#: ../content/analysisspec.py:69
 msgid "% Error"
 msgstr "% Error"
 
-#: ../skins/bika/attachments.pt:202
+#: ../content/bikasetup.py:178
+msgid "'Classic' indicates importing analysis requests per sample and analysis service selection. With 'Profiles', analysis profile keywords are used to select multiple analysis services together"
+msgstr "L'opció 'Classic' indica que s'importaran les sol·licituds d'anàlisi per mostra i servei d'anàlisi. Si escull l'opció 'Perfils', les claus de perfil d'anàlisi s'utilitzaran per seleccionar múltiples serveis d'anàlisi de forma conjunta."
+
+#: ../content/referencesample.py:176
+#: ../skins/bika/attachments.pt:207
 msgid "(Blank)"
 msgstr "(Blanc)"
 
-#: ../skins/bika/attachments.pt:209
+#: ../skins/bika/attachments.pt:214
 msgid "(Control)"
 msgstr "(Control)"
 
-#: ../skins/bika/attachments.pt:216
+#: ../skins/bika/attachments.pt:221
 msgid "(Duplicate)"
 msgstr "(Duplicat)"
 
-#: ../browser/templates/contact_login_details.pt:51
+#: ../content/referencesample.py:178
+msgid "(Hazardous)"
+msgstr "(Perillós)"
+
+#: ../browser/templates/contact_login_details.pt:52
 msgid "(Required)"
 msgstr "(Obligatori)"
 
-#: ../browser/analyses.py:45 ../browser/referencesample.py:63
+#: ../browser/analyses.py:60
+#: ../browser/referencesample.py:63
 #: ../browser/worksheet.py:203
 msgid "+-"
-msgstr ""
+msgstr "±"
 
-#: ../content/bikasetup.py:171
+msgid "<p>${service} requires the following services to be selected:</p><br/><p>${deps}</p><br/><p>Do you want to apply these selections now?</p>"
+msgstr "<p>Pel servei ${service} és necessari que també seleccioni els serveis següents:</p><br/><p>${deps}</p><br/><p>Voleu marcar-los ara?</p>"
+
+msgid "<p>The following services depend on ${service}, and will be unselected if you continue:</p><br/><p>${deps}</p><br/><p>Do you want to remove these selections now?</p>"
+msgstr "<p>El serveis que es llisten a continuació depenen del servei ${service} i es desmarcaran si cotinueu:</p><br/><p>${deps}</p><br/><p>Voleu desmarcar-los ara?</p>"
+
+#: ../content/bikasetup.py:188
 msgid "AR Attachment Option"
-msgstr ""
+msgstr "Opcions de fitxers adjunts en sol·licituds d'anàlisi"
 
-#. Default: "The system wide default configuration to indicate whether file
-#. attachments are required, permitted or not per analysis request"
-#: ../content/bikasetup.py:172
-msgid "AR Attachment Option description"
-msgstr ""
-
-#: ../content/bikasetup.py:263
+#: ../content/bikasetup.py:282
 msgid "AR ID Padding"
-msgstr ""
+msgstr "Mida de l'ID de les sol·licituds d'anàlisi"
 
-#. Default: "The length of the zero-padding for the AR number in AR IDs"
-#: ../content/bikasetup.py:264
-msgid "AR ID Padding description"
-msgstr ""
-
-#: ../browser/client.py:484
+#: ../browser/client.py:294
 msgid "AR Import"
-msgstr ""
+msgstr "Importació de sol·licituds d'anàlisi"
 
-#: ../content/bikasetup.py:159
+#: ../content/bikasetup.py:177
 msgid "AR Import options"
+msgstr "Opcions d'importació de sol·licituds d'anàlisi"
+
+#: ../browser/templates/analysisrequest_edit.pt:613
+msgid "AR Profile"
 msgstr ""
 
-#. Default: "'Classic' indicates importing analysis requests per sample and
-#. analysis service selection. With 'Profiles', analysis profile keywords are
-#. used to select multiple analysis services together"
-#: ../content/bikasetup.py:160
-msgid "AR Import options description"
+#: ../browser/client.py:476
+#: ../controlpanel/bika_arprofiles.py:51
+msgid "AR Profiles"
 msgstr ""
 
-#: ../skins/bika/portlet_to_be_verified.pt:72
+#: ../browser/templates/analysisrequest_edit.pt:614
+msgid "AR Template"
+msgstr ""
+
+#: ../browser/client.py:472
+#: ../controlpanel/bika_arprofiles.py:47
+msgid "AR Templates"
+msgstr ""
+
+#: ../skins/bika/portlet_to_be_verified.pt:70
 msgid "ARs"
-msgstr ""
+msgstr "Sol·licituds d'anàlisi"
 
-#: ../content/organisation.py:71
+#: ../content/organisation.py:74
 msgid "Account Name"
 msgstr "Nom de compte"
 
-#: ../content/organisation.py:77
+#: ../content/organisation.py:80
 msgid "Account Number"
 msgstr "Número de compte"
 
-#: ../content/organisation.py:65
+#: ../content/organisation.py:68
 msgid "Account Type"
 msgstr "Tipus de compte"
 
-#: ../content/bikasetup.py:71
-msgid "Accounting"
-msgstr ""
-
-#: ../content/laboratory.py:74 ../skins/bika/accreditation.pt:18
+#: ../browser/accreditation.py:16
+#: ../content/laboratory.py:68
 msgid "Accreditation"
 msgstr "Acreditació"
 
-#: ../content/laboratory.py:46
+#: ../content/laboratory.py:43
 msgid "Accreditation Body"
-msgstr ""
+msgstr "Entitat acreditadora"
 
-#: ../content/laboratory.py:56
+#: ../content/laboratory.py:52
 msgid "Accreditation Body Abbreviation"
-msgstr ""
+msgstr "Abreviació de l'entitat acreditadora"
 
-#. Default: "E.g. SANAS, APLAC, etc."
-#: ../content/laboratory.py:57
-msgid "Accreditation Body Abbreviation description"
-msgstr ""
-
-#: ../content/laboratory.py:65
+#: ../content/laboratory.py:60
 msgid "Accreditation Body URL"
-msgstr ""
-
-#. Default: "Web address for the accreditation body"
-#: ../content/laboratory.py:66
-msgid "Accreditation Body URL description"
-msgstr ""
-
-#. Default: "The name of the accreditation body corresponding to the
-#. abbreviation above,  e.g. South African National Accreditation Service for
-#. SANAS"
-#: ../content/laboratory.py:47
-msgid "Accreditation Body description"
-msgstr ""
-
-#. Default: "The accreditation standard that applies, e.g. ISO 17025"
-#: ../content/laboratory.py:75
-msgid "Accreditation Description"
-msgstr "Descripció de l'acreditació"
+msgstr "Adreça URL de l'entitat acreditadora"
 
 #: ../content/laboratory.py:83
+msgid "Accreditation Logo"
+msgstr "Logotip de l'acreditació"
+
+#: ../content/laboratory.py:76
 msgid "Accreditation Reference"
 msgstr "Referència de l'acreditació"
 
-#. Default: "The reference code issued to the lab by the accreditation body"
-#: ../content/laboratory.py:84
-msgid "Accreditation Reference description"
-msgstr ""
-
-#: ../content/analysisservice.py:202 ../content/pricelistlineitem.py:25
+#: ../browser/analysisrequest.py:849
+#: ../content/analysisservice.py:326
+#: ../content/pricelistlineitem.py:25
 msgid "Accredited"
 msgstr "Acreditat"
 
-#. Default: "Check this box if the analysis service is included in the
-#. laboratory's schedule of accredited analyses"
-#: ../content/analysisservice.py:203
-msgid "Accredited description"
-msgstr "Descripció respecte de l'acreditació"
-
-#: ../browser/log.py:39
+#: ../browser/log.py:42
 msgid "Action"
 msgstr "Acció"
 
+#: ../profiles/default/workflows/bika_inactive_workflow/definition.xml
 msgid "Activate"
 msgstr "Activa"
 
-#: ../browser/clientfolder.py:47 ../controlpanel/bika_analysiscategories.py:49
-#: ../controlpanel/bika_analysisservices.py:66
+#: ../browser/client.py:780
+#: ../browser/clientfolder.py:58
+#: ../controlpanel/bika_analysiscategories.py:51
 msgid "Active"
 msgstr "Actius"
 
-#: ../browser/client.py:112 ../browser/clientfolder.py:16
-#: ../browser/referencesupplier.py:13
+#: ../browser/analysisrequest.py:793
+#: ../browser/client.py:270
+#: ../browser/referencesupplier.py:17
 msgid "Add"
 msgstr "Afegeix"
 
-#: ../browser/worksheet.py:473
+#: ../browser/worksheet.py:490
 msgid "Add Analyses"
 msgstr "Afegeix anàlisis"
 
-#: ../browser/worksheet.py:474
-msgid "Add Analyses description"
-msgstr "Afegeix la descripció de les anàlisis"
-
-#: ../browser/worksheet.py:616
+#: ../browser/worksheet.py:641
 msgid "Add Blank Reference"
-msgstr ""
+msgstr "Afegeix un blanc de referència"
 
-#. Default: "Select services in the left column to locate reference samples.
-#. Select a reference by clicking it. "
-#: ../browser/worksheet.py:617
-msgid "Add Blank Reference description"
-msgstr ""
-
-#: ../browser/worksheet.py:665
+#: ../browser/worksheet.py:685
 msgid "Add Control Reference"
-msgstr ""
+msgstr "Afegeix un control de referència"
 
-#. Default: "Select services in the left column to locate reference samples.
-#. Select a reference by clicking it. "
-#: ../browser/worksheet.py:666
-msgid "Add Control Reference description"
-msgstr ""
-
-#: ../browser/worksheet.py:714
+#: ../browser/worksheet.py:728
 msgid "Add Duplicate"
 msgstr "Afegeix un duplicat"
 
-#. Default: "Select a destinaton position and the AR to duplicate."
-#: ../browser/worksheet.py:715
-msgid "Add Duplicate description"
-msgstr "Afegeix la descripció d'un duplicat"
+#: ../browser/client.py:455
+#: ../controlpanel/bika_arprofiles.py:30
+msgid "Add Profile"
+msgstr ""
 
-#: ../browser/analyses.py:54 ../browser/analysisrequest.py:539
-#: ../browser/bika_listing.py:208
+#: ../browser/client.py:458
+#: ../controlpanel/bika_arprofiles.py:33
+msgid "Add Template"
+msgstr ""
+
+#: ../profiles/default/workflows/bika_analysis_workflow/definition.xml
+#: ../profiles/default/workflows/bika_ar_workflow/definition.xml
+#: ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml
+msgid "Add attachment"
+msgstr "Afegeix un fitxer adjunt"
+
+#: ../content/bikasetup.py:265
+msgid "Adds a two-digit year after the ID prefix."
+msgstr "Afegeix els dos últims dígits de l'any després del prefix de l'identificador"
+
+#: ../browser/accreditation.py:62
+#: ../browser/analyses.py:75
+#: ../browser/analysisrequest.py:816
 msgid "All"
 msgstr "Tot"
 
-#: ../browser/analysisrequest.py:607
+#: ../browser/accreditation.py:40
+msgid "All Accredited analysis services are listed here."
+msgstr "Es mostren tots els anàlisis acreditats."
+
+#: ../browser/analysisrequest.py:1017
 msgid "All Samples"
 msgstr "Totes les mostres"
 
-#: ../browser/client.py:325
+#: ../browser/analysisrequest.py:2210
 msgid "All analyses assigned"
 msgstr "Totes les anàlisis assignades"
 
-#: ../skins/bika/attachments.pt:269
+#: ../skins/bika/attachments.pt:274
 msgid "All analyses of type"
 msgstr "Totes les anàlisis del tipus"
 
-#: ../browser/templates/analysisrequest_manage_results.pt:85
-#: ../browser/worksheetfolder.py:117 ../content/arimport.py:153
+#: ../browser/referencesample.py:180
+msgid "All reference samples in the system are displayed here."
+msgstr "Es mostren totes les mostres de referència."
+
+#: ../content/client.py:64
+msgid "Always expand the selected categories in client views"
+msgstr "Expandeix sempre les categories seleccionades a les vistes de client"
+
+#: ../browser/reports/analysesperservice.pt:77
+#: ../browser/templates/analysisrequest_manage_results.pt:84
+#: ../browser/templates/sample.pt:65
 msgid "Analyses"
 msgstr "Anàlisis"
 
-#: ../browser/templates/reports_qualitycontrol.pt:28
+#: ../browser/reports/reports_qualitycontrol.pt:29
 msgid "Analyses out of range"
 msgstr "Anàlisis fora de rang"
 
-#: ../browser/templates/reports_productivity.pt:49
+#: ../browser/reports/analysesperservice.pt:31
+msgid "Analyses per analysis service"
+msgstr ""
+
+#: ../browser/reports/reports_productivity.pt:40
 msgid "Analyses per sample type"
 msgstr "Anàlisis per tipus de mostra"
 
-#: ../browser/templates/reports_productivity.pt:39
+#: ../browser/reports/reports_productivity.pt:29
 msgid "Analyses per service"
 msgstr "Anàlisis per servei"
 
-#: ../browser/templates/reports_qualitycontrol.pt:34
+#: ../browser/reports/reports_qualitycontrol.pt:41
 msgid "Analyses repeated"
-msgstr ""
+msgstr "Anàlisis repetits"
 
-#: ../browser/analyses.py:41 ../browser/late_analyses.py:37
-#: ../browser/templates/analysisrequest_analyses_not_requested.pt:97
+#: ../browser/analyses.py:46
+#: ../browser/late_analyses.py:37
+#: ../browser/templates/analysisrequest_analyses_not_requested.pt:100
 msgid "Analysis"
 msgstr "Anàlisi"
 
-#: ../content/bikasetup.py:183
-msgid "Analysis Attachment Option"
-msgstr ""
+#: ../exportimport/instruments/fiastar.py:251
+msgid "Analysis ${service} at slot ${slot} has a result - not updated"
+msgstr "Servei d'anàlisi ${service} a la posició ${slot} amb resultat - no actualitzat"
 
-#. Default: "Same as the above, but sets the default on analysis services.
-#. This setting can be set per individual analysis on its own configuration"
-#: ../content/bikasetup.py:184
-msgid "Analysis Attachment Option description"
-msgstr ""
+#: ../exportimport/instruments/fiastar.py:244
+msgid "Analysis ${service} at slot ${slot} in state ${state} - not updated"
+msgstr "Servei d'anàlisi ${service} a la posició ${slot} en estat ${state} - no actualitzat"
+
+#: ../exportimport/instruments/fiastar.py:298
+msgid "Analysis ${service} at slot ${slot}: OK"
+msgstr "Servei d'anàlisi ${service} a la posició ${slot}: D'acord"
+
+#: ../content/bikasetup.py:199
+msgid "Analysis Attachment Option"
+msgstr "Opció de documents adjunts per a l'anàlisi"
 
 #: ../controlpanel/bika_analysiscategories.py:28
 msgid "Analysis Categories"
 msgstr "Categories d'anàlisi"
 
-#: ../content/analysisservice.py:233
+#: ../content/analysisservice.py:355
 msgid "Analysis Category"
 msgstr "Categoria d'anàlisi"
 
-#. Default: "The category the analysis service belongs to"
-#: ../content/analysisservice.py:234
-msgid "Analysis Category description"
-msgstr "Descripció de la categoria d'anàlisi"
-
-#: ../content/analysisservice.py:106
+#: ../content/analysisservice.py:233
 msgid "Analysis Keyword"
-msgstr ""
-
-#. Default: "The unique keyword used to identify the analysis service in
-#. import files of bulk AR requests and results imports from instruments. It
-#. is also used to identify dependent analysis services in user defined
-#. results calculations"
-#: ../content/analysisservice.py:107
-msgid "Analysis Keyword description"
-msgstr ""
+msgstr "Identificador de l'anàlisi"
 
 #: ../content/arimportitem.py:60
+#: ../content/artemplate.py:26
 msgid "Analysis Profile"
 msgstr "Perfil d'anàlisi"
 
-#: ../config.py:152
+#: ../config.py:73
 msgid "Analysis Request ID"
 msgstr "Identificador de la sol·licitud d'anàlisi"
 
-#: ../browser/client.py:493
+#: ../browser/client.py:303
 msgid "Analysis Request Imports"
-msgstr ""
+msgstr "Importacions de sol·licituds d'anàlisi"
 
-#: ../browser/client.py:494
-msgid "Analysis Request Imports description"
-msgstr ""
-
-#: ../browser/client.py:548 ../controlpanel/bika_arprofiles.py:29
-msgid "Analysis Request Profiles"
-msgstr ""
-
-#: ../browser/client.py:549
-msgid "Analysis Request Profiles description"
-msgstr ""
-
-#: ../browser/analysisrequest.py:1221 ../browser/client.py:129
+#: ../browser/analysisrequest.py:1867
 msgid "Analysis Requests"
 msgstr "Sol·licituds d'anàlisi"
 
-#: ../browser/analysisrequest.py:1222 ../browser/client.py:130
-msgid "Analysis Requests description"
-msgstr ""
-
-#: ../browser/fields/referenceresultsfield.py:20 ../content/analysis.py:34
-#: ../content/analysisspec.py:68
+#: ../browser/fields/referenceresultsfield.py:19
+#: ../content/analysis.py:34
+#: ../content/analysisspec.py:66
 msgid "Analysis Service"
 msgstr "Servei d'anàlisi"
 
-#. Default: "Select which Analyses should be included on the Worksheet"
-#: ../content/worksheettemplate.py:48
-msgid "Analysis Service description"
-msgstr "Descripció del servei d'anàlisi"
-
-#: ../config.py:122 ../controlpanel/bika_analysisservices.py:29
+#: ../browser/analysisrequest.py:797
+#: ../config.py:43
+#: ../controlpanel/bika_analysisservices.py:99
 msgid "Analysis Services"
 msgstr "Serveis d'anàlisi"
 
-#: ../browser/client.py:593
+#: ../browser/client.py:556
+#: ../controlpanel/bika_analysisspecs.py:30
 msgid "Analysis Specifications"
 msgstr "Especificacions d'anàlisi"
 
-#: ../browser/client.py:594
-msgid "Analysis Specifications description"
-msgstr "Descripció de les especificacions d'anàlisi"
-
-#: ../controlpanel/bika_analysisspecs.py:28
-msgid "Analysis Specs"
-msgstr "Especificacions d'anàlisi"
-
-#: ../content/worksheettemplate.py:25
+#: ../content/worksheettemplate.py:24
 msgid "Analysis Type"
 msgstr "Tipus d'anàlisi"
 
-#: ../browser/templates/reports_productivity.pt:60
+#: ../exportimport/instruments/fiastar.py:195
+msgid "Analysis container UID ${parent_uid} not found"
+msgstr "No s'ha trobat el contenidor d'anàlisis amb UID ${parent_uid}"
+
+#: ../exportimport/instruments/fiastar.py:186
+msgid "Analysis parent UID ${parent_uid} not found"
+msgstr "No s'ha trobat l'UID ${parent_uid} de l'anàlisi pare"
+
+#: ../browser/analysisrequest.py:1812
+msgid "Analysis request ${AR} was successfully created."
+msgstr "La sol·licitud d'anàlisi ${AR} s'ha creat satisfactòriament"
+
+#: ../controlpanel/bika_analysisservices.py:72
+msgid "Analysis request ${service} was successfully created."
+msgstr "La sol·licitud d'anàlisi ${service} s'ha creat amb èxit."
+
+#: ../browser/analysisrequest.py:1808
+msgid "Analysis requests ${ARs} were successfully created."
+msgstr "Les sol·licituds d'anàlisi ${ARs} s'han creat satisfactòriament"
+
+#: ../browser/reports/reports_productivity.pt:51
 msgid "Analysis requests and analyses"
 msgstr "Sol·licituds d'anàlisi i les anàlisis"
 
-#: ../browser/templates/reports_productivity.pt:72
+#: ../browser/reports/reports_productivity.pt:63
 msgid "Analysis requests and analyses per client"
-msgstr "Sol·licituds d'anàlisi i les anàlisis per client"
+msgstr "Sol·licituds d'anàlisi i anàlisis per client"
 
-#: ../browser/templates/reports_administration.pt:28
+#: ../browser/reports/reports_administration.pt:29
 msgid "Analysis requests not invoiced"
 msgstr "Sol·licituds d'anàlisi no facturades"
 
-#: ../browser/templates/reports_qualitycontrol.pt:30
-msgid "Analysis results out of lab or client specified range"
+#: ../browser/reports/reports_qualitycontrol.pt:34
+msgid "Analysis results out of lab or client specified range Note that this may take several minutes"
 msgstr ""
 
-#: ../browser/mailtemplates/analysisrequest_results.pt:526
+#: ../browser/mailtemplates/analysisrequest_results.pt:522
 msgid "Analysis results relate only to the samples tested"
-msgstr ""
+msgstr "Els resultats de l'anàlisi només fan referècia a les mostres avaluades"
 
-#: ../browser/client.py:649
-msgid "Analysis specs reset to lab defaults."
-msgstr ""
+#: ../browser/client.py:610
+msgid "Analysis specifications reset to lab defaults."
+msgstr "Reestabliment de les especificacions d'anàlisi als valors per defecte del laboratori."
 
-#: ../browser/templates/reports_productivity.pt:83
+#: ../browser/reports/reports_productivity.pt:74
 msgid "Analysis turnaround time"
 msgstr "Temps de resposta per a l'anàlisi"
 
+#: ../browser/templates/analysisrequest_sticker.pt:65
 #: ../browser/templates/worksheet_manage_results.pt:39
-#: ../browser/worksheetfolder.py:113
+#: ../browser/worksheetfolder.py:111
 msgid "Analyst"
 msgstr "Analista"
 
-#: ../browser/templates/analysisrequest_sticker.pt:66
-msgid "Analyst Name"
-msgstr "Nom de l'analista"
-
-#: ../browser/templates/worksheet_add_analyses.pt:67
+#: ../browser/templates/worksheet_add_analyses.pt:68
+#: ../content/analysisservice.py:180
 msgid "Any"
-msgstr ""
+msgstr "Qualsevol"
 
-#: ../browser/client.py:514
+#: ../browser/client.py:327
 msgid "Applied"
-msgstr ""
+msgstr "Tramitat"
 
 #: ../browser/templates/worksheet_add_analyses.pt:57
 msgid "Apply template"
-msgstr ""
+msgstr "Aplica plantilla"
 
-#: ../browser/client.py:197
+#: ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml
+#: ../profiles/default/workflows/bika_referenceanalysis_workflow/definition.xml
+#: ../profiles/default/workflows/bika_worksheetanalysis_workflow/definition.xml
+msgid "Assign"
+msgstr "Assigna"
+
+#: ../browser/analysisrequest.py:2106
+#: ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml
+#: ../profiles/default/workflows/bika_referenceanalysis_workflow/definition.xml
 msgid "Assigned"
-msgstr ""
+msgstr "Assignat"
 
-#: ../skins/bika/attachments.pt:256
+#: ../profiles/default/workflows/bika_analysis_workflow/definition.xml
+#: ../profiles/default/workflows/bika_ar_workflow/definition.xml
+#: ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml
+msgid "Attach"
+msgstr "Adjunta"
+
+#: ../skins/bika/attachments.pt:261
 msgid "Attach to"
-msgstr ""
+msgstr "Adjunta a"
 
-#: ../content/attachment.py:25
+#: ../content/attachment.py:24
+#: ../skins/bika/attachments.pt:12
 msgid "Attachment"
-msgstr ""
+msgstr "Fitxer adjunt"
 
-#: ../content/attachment.py:39
+#: ../content/attachment.py:38
 msgid "Attachment Keys"
-msgstr ""
+msgstr "Claus d'adjunt"
 
-#: ../content/analysisservice.py:53
+#: ../content/analysisservice.py:221
 msgid "Attachment Option"
-msgstr ""
+msgstr "Fitxers adjunts"
 
-#. Default: "Indicates whether file attachments, e.g. microscope images, are
-#. required for this analysis and whether file upload function will be
-#. available for it on data capturing screens"
-#: ../content/analysisservice.py:54
-msgid "Attachment Option description"
-msgstr ""
+#: ../profiles/default/workflows/bika_analysis_workflow/definition.xml
+#: ../profiles/default/workflows/bika_ar_workflow/definition.xml
+#: ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml
+msgid "Attachment Outstanding"
+msgstr "Adjunt destacat"
 
-#: ../browser/client.py:674 ../content/attachment.py:33
+#: ../browser/client.py:635
+#: ../content/attachment.py:32
 #: ../controlpanel/bika_attachmenttypes.py:36
 msgid "Attachment Type"
-msgstr ""
+msgstr "Tipus de fitxer adjunt"
 
 #: ../controlpanel/bika_attachmenttypes.py:29
 msgid "Attachment Types"
-msgstr ""
+msgstr "Tipus de fitxers adjunts"
 
-#: ../browser/analyses.py:48 ../browser/client.py:668
-#: ../browser/mailtemplates/analysisrequest_results.pt:408
+#: ../browser/analysisrequest.py:855
+#: ../controlpanel/bika_analysisservices.py:247
+msgid "Attachment not permitted"
+msgstr "No es permeten adjuncions"
+
+#: ../browser/analysisrequest.py:853
+#: ../controlpanel/bika_analysisservices.py:245
+msgid "Attachment required"
+msgstr "Adjuncions obligatòries"
+
+#: ../browser/analyses.py:65
+#: ../browser/client.py:629
+#: ../browser/mailtemplates/analysisrequest_results.pt:404
 msgid "Attachments"
-msgstr ""
+msgstr "Fitxers adjunts"
 
-#: ../content/contact.py:28
+#: ../content/contact.py:27
 msgid "Attachments Permitted"
-msgstr ""
+msgstr "Es permeten fitxers adjunts"
 
-#: ../browser/client.py:669
-msgid "Attachments description"
-msgstr ""
-
-#: ../content/bikasetup.py:207
-msgid "Automatic AR label printing"
-msgstr ""
-
-#. Default: "Select 'Register' if you want labels to be automatically printed
-#. when new ARs are created.  Select 'Receive' to print labels when the
-#. 'Receive' transition is invoked on ARs or Samples.  Select None to disable
-#. automatic printing"
-#: ../content/bikasetup.py:208
-msgid "Automatic AR label printing description"
-msgstr ""
-
-#: ../content/bikasetup.py:220
-msgid "Automatic AR label sizes"
-msgstr ""
-
-#. Default: "Select the size label to print if Automatic label printing is
-#. enabled."
 #: ../content/bikasetup.py:221
-msgid "Automatic AR label sizes description"
-msgstr ""
+msgid "Automatic AR label printing"
+msgstr "Impressió automàtica de les etiquetes de les sol·licituds d'anàlisi"
 
-#: ../content/bikasetup.py:64
-msgid "Automatic log-off"
-msgstr ""
+#: ../content/bikasetup.py:233
+msgid "Automatic AR label sizes"
+msgstr "Dimensions automàtiques de les etiquetes de les sol·licituds d'anàlisi"
 
-#. Default: "The number of minutes before a user is automatically logged off.
-#. 0 disables automatic log-off"
 #: ../content/bikasetup.py:65
-msgid "Automatic log-off description"
-msgstr ""
+msgid "Automatic log-off"
+msgstr "Desconnexió automàtica"
 
-#: ../content/organisation.py:89
+#: ../browser/templates/analysisrequest_sticker.pt:110
+#: ../browser/templates/analysisrequest_sticker_small.pt:86
+#: ../browser/templates/sample_sticker.pt:123
+msgid "Back to list"
+msgstr "Torna a la llista"
+
+#: ../content/organisation.py:92
 msgid "Bank branch"
-msgstr ""
+msgstr "Oficina bancària"
 
-#: ../content/organisation.py:83
+#: ../content/organisation.py:86
 msgid "Bank name"
-msgstr ""
+msgstr "Nom del banc"
 
 #: ../content/invoicebatch.py:25
 msgid "Batch end date"
-msgstr ""
+msgstr "Data de finalització del lot"
 
 #: ../content/invoicebatch.py:18
 msgid "Batch start date"
-msgstr ""
+msgstr "Data d'inici del lot"
 
-#: ../browser/fields/coordinatefield.py:27
+#: ../browser/fields/coordinatefield.py:23
 msgid "Bearing"
-msgstr ""
+msgstr "Retard"
 
-#. Default: "The discount percentage entered here, is applied to the prices
-#. for clients flagged as 'members', normally co-operative members or
-#. associates deserving of this discount"
-#: ../content/bikasetup.py:75
-msgid "Bika Setup Member discount % description"
-msgstr ""
-
-#. Default: "Enter percentage value eg. 14.0. This percentage is applied
-#. system wide but can be overwrittem on individual items"
-#: ../content/bikasetup.py:86
-msgid "Bika Setup VAT % description"
-msgstr ""
-
-#: ../config.py:166 ../content/organisation.py:59
+#: ../config.py:87
+#: ../content/organisation.py:62
 msgid "Billing address"
-msgstr ""
+msgstr "Adreça de facturació"
 
-#: ../browser/templates/referencesample_view.pt:56 ../config.py:133
-#: ../content/referencedefinition.py:40
+#: ../browser/templates/referencesample_view.pt:56
+#: ../config.py:54
+#: ../content/referencedefinition.py:38
 msgid "Blank"
-msgstr ""
+msgstr "Blanc"
 
-#. Default: "Reference sample values are zero or 'blank'"
-#: ../content/referencedefinition.py:41 ../content/referencesample.py:42
-msgid "Blank description"
-msgstr ""
-
-#: ../content/instrument.py:22 ../controlpanel/bika_instruments.py:43
+#: ../content/instrument.py:21
+#: ../controlpanel/bika_instruments.py:44
 msgid "Brand"
-msgstr ""
+msgstr "Marca"
 
-#. Default: "The commercial 'make' of the instrument"
-#: ../content/instrument.py:23
-msgid "Brand description"
-msgstr ""
+#: ../config.py:48
+msgid "Bulk Discount"
+msgstr "Descompte per volum"
 
-#. Default: "Bulk price (excluding VAT)"
-#: ../content/analysisservice.py:71
-msgid "Bulk price"
-msgstr ""
+#: ../content/analysisservice.py:371
+msgid "Bulk price (excluding VAT)"
+msgstr "Preu amb descompte per volum (sense IVA)"
 
-#. Default: "The price charged per analysis for clients who qualify for bulk
-#. discounts"
-#: ../content/analysisservice.py:72
-msgid "Bulk price description"
-msgstr ""
-
-#: ../browser/analysisrequest.py:534 ../browser/client.py:800
-#: ../browser/referencesupplier.py:117
+#: ../browser/analysisrequest.py:935
+#: ../browser/client.py:767
+#: ../browser/referencesupplier.py:122
 msgid "Business Phone"
-msgstr ""
+msgstr "Telèfon del negoci"
 
-#: ../browser/templates/analysisrequest_edit.pt:106
+#: ../browser/templates/analysisrequest_edit.pt:123
 msgid "CC"
-msgstr ""
+msgstr "CC"
 
-#: ../browser/templates/analysisrequest_edit.pt:134
-#: ../content/analysisrequest.py:88 ../content/arimport.py:97
+#: ../browser/templates/analysisrequest_edit.pt:151
+#: ../content/analysisrequest.py:86
+#: ../content/arimport.py:97
 msgid "CC Emails"
-msgstr ""
+msgstr "CC Correus"
 
-#: ../content/analysisservice.py:160
-#: ../controlpanel/bika_analysisservices.py:47
-#: ../controlpanel/bika_calculations.py:38
+#: ../browser/accreditation.py:57
+#: ../content/analysisservice.py:286
+#: ../controlpanel/bika_analysisservices.py:123
 msgid "Calculation"
-msgstr ""
+msgstr "Càlcul"
 
-#: ../content/calculation.py:57
+#: ../content/calculation.py:51
 msgid "Calculation Formula"
-msgstr ""
+msgstr "Fórmula de càlcul"
 
-#: ../content/analysis.py:50 ../content/calculation.py:29
-#: ../content/referenceanalysis.py:53
+#: ../content/analysis.py:50
+#: ../content/calculation.py:24
+#: ../content/referenceanalysis.py:52
 msgid "Calculation Interim Fields"
-msgstr ""
-
-#. Default: "Define interim fields such as vessel mass, dilution factors,
-#. should your calculation require them. The field title specified here will
-#. be used as column headers and field descriptors where the interim fields
-#. are displayed"
-#: ../content/calculation.py:30
-msgid "Calculation Interim Fields description"
-msgstr ""
-
-#. Default: "If required, select a calculation for the analysis here.
-#. Calculations can be configured under the calculations item in the LIMS set-
-#. up"
-#: ../content/analysisservice.py:161
-msgid "Calculation description"
-msgstr ""
+msgstr "Camps de càlcul provisionals"
 
 #: ../controlpanel/bika_calculations.py:29
 msgid "Calculations"
-msgstr ""
+msgstr "Càlculs"
 
-#: ../content/instrument.py:43
+#: ../content/instrument.py:39
 msgid "Calibration Certificate"
-msgstr ""
+msgstr "Certificat de calibratge"
 
-#. Default: "The instrument's calibration certificate and number"
-#: ../content/instrument.py:44
-msgid "Calibration Certificate description"
-msgstr ""
-
-#: ../content/instrument.py:52
+#: ../content/instrument.py:47
 msgid "Calibration Expiry Date"
-msgstr ""
+msgstr "Data d'expiració del calibratge"
 
-#. Default: "Due Date for next calibration"
-#: ../content/instrument.py:53
-msgid "Calibration Expiry Date description"
-msgstr ""
-
-#: ../browser/templates/analysisrequest_edit.pt:597
+#: ../browser/analysisrequest.py:851
+#: ../browser/templates/analysisrequest_edit.pt:652
+#: ../controlpanel/bika_analysisservices.py:243
 msgid "Can be reported as dry matter"
-msgstr ""
+msgstr "Es pot tractar com a matèria seca"
 
+#: ../profiles/default/workflows/bika_cancellation_workflow/definition.xml
 msgid "Cancel"
-msgstr ""
+msgstr "Cancel·la"
 
-#: ../browser/client.py:275 ../browser/menu.py:63
+#: ../browser/analysisrequest.py:2078
+#: ../browser/menu.py:65
+#: ../browser/sample.py:580
 msgid "Cancelled"
-msgstr ""
+msgstr "Cancel·lat"
 
-#: ../browser/templates/referencesample_view.pt:67
-#: ../content/referencesample.py:69
+#: ../content/container.py:38
+#: ../controlpanel/bika_containers.py:45
+msgid "Capacity"
+msgstr "Capacitat"
+
+#: ../browser/analyses.py:67
+msgid "Captured"
+msgstr "Capturat"
+
+#: ../browser/templates/referencesample_view.pt:66
+#: ../content/referencesample.py:66
 msgid "Catalogue Number"
+msgstr "Número del catàleg"
+
+#: ../content/bikasetup.py:155
+msgid "Categorise Analysis Services"
 msgstr ""
 
+#: ../browser/accreditation.py:50
 #: ../browser/referencesample.py:59
-#: ../browser/templates/worksheet_add_analyses.pt:62
-#: ../browser/worksheet.py:496
+#: ../browser/templates/worksheet_add_analyses.pt:63
 msgid "Category"
-msgstr ""
+msgstr "Categoria"
 
-#: ../subscribers/analysiscategory.py:23
+#: ../subscribers/analysiscategory.py:24
 msgid "Category cannot be deactivated because it contains Analysis Services"
-msgstr ""
+msgstr "No es pot desactivar la categoria, ja que té serveis d'anàlisi associats"
 
-#: ../browser/analysisrequest.py:865 ../browser/sample.py:137
+#: ../browser/analysisrequest.py:1382
 msgid "Changes not allowed"
+msgstr "No es permeten canvis"
+
+#: ../content/analysisservice.py:327
+msgid "Check this box if the analysis service is included in the laboratory's schedule of accredited analyses"
+msgstr "Marqueu aquesta casella si el servei d'anàlisi està en procés d'acreditació"
+
+#: ../content/samplepoint.py:70
+msgid "Check this box if the samples taken at this point are 'composite' and put together from more than one sub sample, e.g. several surface samples from a dam mixed together to be a representative sample for the dam. The default, unchecked, indicates 'grab' samples"
+msgstr "Marqueu aquesta casella si les mostres recollides en aquest punt de mostreig s'han de considerar en conjunt (composició). Per exemple, les mostres recollides en punts diferents de la riba d'una bassa s'acostumen a mesclar per a que siguin una mostra representativa de la totalitat de la bassa"
+
+#: ../content/container.py:15
+msgid "Check this box if this container is already preserved.Setting this will short-circuit the preservation workflow for sample partitions stored in this container."
+msgstr "Marqueu la casella de verificació si el contenidor ja està sota conservació, això farà que el sistema ometi el circuit de preservació per a les mostres del contenidor."
+
+#: ../content/laboratory.py:35
+msgid "Check this box if your laboratory is accredited"
+msgstr "Marqueu la casella si el laboratori està acreditat"
+
+#: ../content/bikasetup.py:291
+msgid "Check this if you want to use a separate ID server. Prefixes are configurable separately in each Bika site."
 msgstr ""
 
-#: ../browser/analysisrequest.py:152 ../browser/bika_listing.py:130
-#: ../browser/sample.py:135
-msgid "Changes saved"
-msgstr ""
+#: ../skins/bika/bika_widgets/custom_address_widget.pt:65
+msgid "City"
+msgstr "Ciutat"
 
-#: ../config.py:147
+#: ../config.py:68
 msgid "Classic"
-msgstr ""
+msgstr "Clàssic"
 
-#: ../browser/analysisrequest.py:574
+#: ../browser/referencesample.py:106
+#: ../content/analysisspec.py:73
+#: ../content/referencedefinition.py:23
+msgid "Click on Analysis Categories (against shaded background) to see Analysis Services in each category. Enter minimum and maximum values to indicate a valid results range. Any result outside this range will raise an alert. The % Error field allows for an % uncertainty to be considered when evaluating results against minimum and maximum values. A result out of range but still in range if the % error is taken into consideration, will raise a less severe alert."
+msgstr "Feu clic sobre les capçaleres de categories d'anàlisi (amb fons gris) per veure els serveis d'anàlisi que contenen cada una d'elles. Introduïu els valors mínim i màxim per indicar el rang vàlid del resultats. Si el resultat es troba fora d'aquest rang, el sistema mostrarà una alerta. El camp % Error li permet indicar el percentatge d'incertesa que ha de tenir en compte el sistema en avaluar els resultats enfront del rang indicat. Si un resultat fora de rang passa a ser vàlid quan el sistema té en compte el percentatge d'incertesa, l'alerta del sistema serà menys severa."
+
+#: ../browser/analysisrequest.py:977
 msgid "Click on a sample to create a secondary AR"
-msgstr ""
+msgstr "Feu clic a sobre de la mostra si voleu crear una sol·licitud d'anàlisi derivada"
 
-#: ../browser/analysisrequest.py:1232 ../browser/late_analyses.py:39
-#: ../browser/mailtemplates/analysisrequest_results.pt:259
+#: ../browser/analysisrequest.py:1889
+#: ../browser/late_analyses.py:39
+#: ../browser/mailtemplates/analysisrequest_results.pt:255
 msgid "Client"
-msgstr ""
+msgstr "Client"
 
 #: ../content/arimport.py:47
 msgid "Client Address"
-msgstr ""
+msgstr "Adreça del client"
 
 #: ../content/arimport.py:52
 msgid "Client City"
-msgstr ""
+msgstr "Població del client"
 
 #: ../content/arimport.py:85
 msgid "Client Email"
-msgstr ""
+msgstr "Correu electrònic del client"
 
 #: ../content/arimport.py:42
 msgid "Client Fax"
-msgstr ""
+msgstr "Fax del client"
 
-#: ../content/arimport.py:58 ../content/client.py:24
+#: ../content/arimport.py:58
+#: ../content/client.py:25
 msgid "Client ID"
-msgstr ""
+msgstr "ID de client"
 
 #: ../content/arimport.py:32
 msgid "Client Name"
-msgstr ""
+msgstr "Nom del client"
 
-#: ../browser/client.py:135
+#: ../browser/analysisrequest.py:383
+#: ../browser/mailtemplates/analysisrequest_results.pt:206
+#: ../browser/templates/analysisrequest_edit.pt:261
 msgid "Client Order"
-msgstr ""
-
-#: ../browser/mailtemplates/analysisrequest_results.pt:210
-#: ../browser/templates/analysisrequest_edit.pt:218
-#: ../browser/templates/analysisrequest_sticker.pt:60
-msgid "Client Order ID"
-msgstr ""
+msgstr "Encàrrec de client"
 
 #: ../content/arimport.py:37
 msgid "Client Phone"
-msgstr ""
+msgstr "Telèfon del client"
 
-#: ../browser/client.py:137 ../content/arimportitem.py:20
+#: ../browser/analysisrequest.py:1891
+#: ../browser/sample.py:456
+#: ../content/arimportitem.py:20
 msgid "Client Ref"
-msgstr ""
+msgstr "Ref. del client"
 
-#: ../browser/analysisrequest.py:593
-#: ../browser/mailtemplates/analysisrequest_results.pt:217
-#: ../browser/templates/analysisrequest_edit.pt:239
+#: ../browser/analysisrequest.py:377
+#: ../browser/mailtemplates/analysisrequest_results.pt:213
+#: ../browser/sample.py:248
 msgid "Client Reference"
-msgstr ""
+msgstr "Referència del client"
 
 #: ../content/arimportitem.py:25
 msgid "Client Remarks"
-msgstr ""
+msgstr "Comentaris del client"
 
-#: ../browser/analysisrequest.py:591 ../browser/client.py:366
-#: ../browser/mailtemplates/analysisrequest_results.pt:224
+#: ../browser/analysisrequest.py:365
+#: ../browser/mailtemplates/analysisrequest_results.pt:220
+#: ../browser/sample.py:254
 msgid "Client SID"
-msgstr ""
-
-#: ../browser/client.py:139
-msgid "Client Sample"
-msgstr ""
-
-#: ../config.py:155
-msgid "Client Sample ID"
-msgstr ""
+msgstr "ID de la mostra del client"
 
 #: ../content/client.py:41
 msgid "Client Type"
-msgstr ""
+msgstr "Tipus de client"
 
-#: ../browser/client.py:121
+#: ../browser/client.py:266
 msgid "Client contact required before request may be submitted"
-msgstr ""
+msgstr "Per a poder tramitar una sol·licitud d'anàlisi, és necessari que el client tingui donat d'alta, com a mínim, un contacte"
 
-#: ../browser/clientfolder.py:20
+#: ../browser/clientfolder.py:25
 msgid "Clients"
-msgstr ""
+msgstr "Clients"
 
-#: ../browser/clientfolder.py:21
-msgid "Clients description"
-msgstr ""
+#: ../profiles/default/workflows/bika_analysis_workflow/definition.xml
+#: ../profiles/default/workflows/bika_ar_workflow/definition.xml
+#: ../profiles/default/workflows/bika_arimport_workflow/definition.xml
+msgid "Comments about the last transition"
+msgstr "Comentaris respecte de la última transició"
 
-#: ../browser/templates/sample_edit.pt:96
-#: ../browser/templates/sample_sticker.pt:73
-#: ../browser/templates/sample_sticker_small.pt:73
+#: ../browser/analysisrequest.py:430
+#: ../browser/sample.py:279
+#: ../browser/templates/analysisrequest_edit.pt:422
 msgid "Composite"
-msgstr ""
+msgstr "Composició"
 
-#: ../browser/templates/analysisrequest_edit.pt:377
-msgid "Composite Sample"
-msgstr ""
-
-#. Default: "Check this box if the samples taken at this point are 'composite'
-#. and put together from more than one sub sample, e.g. several surface
-#. samples from a dam mixed together to be a representative sample for the
-#. dam. The default, unchecked, indicates 'grab' samples"
-#: ../content/samplepoint.py:56
-msgid "Composite description"
-msgstr ""
-
-#: ../content/laboratory.py:16
+#: ../content/laboratory.py:25
 msgid "Confidence Level %"
-msgstr ""
+msgstr "% Nivell de confidència"
 
-#. Default: "This value is reported at the bottom of all published results"
-#: ../content/laboratory.py:17
-msgid "Confidence Level % description"
-msgstr ""
-
-#: ../browser/templates/contact_login_details.pt:79
+#: ../browser/templates/contact_login_details.pt:80
 msgid "Confirm password"
-msgstr ""
+msgstr "Confirmeu la paraula de pas"
 
 #: ../browser/late_analyses.py:40
 msgid "Contact"
-msgstr ""
+msgstr "Contacte"
 
 #: ../content/arimport.py:63
 msgid "Contact ID"
-msgstr ""
+msgstr "ID de contacte"
 
 #: ../content/arimport.py:68
 msgid "Contact Name"
-msgstr ""
+msgstr "Nom del contacte"
 
-#: ../browser/templates/analysisrequest_edit.pt:87
-#: ../browser/templates/analysisrequest_view.pt:74
+#: ../browser/analysisrequest.py:371
+#: ../browser/templates/analysisrequest_edit.pt:90
 msgid "Contact Person"
-msgstr ""
+msgstr "Persona de contacte"
 
-#: ../browser/client.py:793
+#: ../browser/client.py:760
+#: ../browser/referencesupplier.py:140
 msgid "Contacts"
-msgstr ""
+msgstr "Contactes"
 
-#: ../browser/client.py:794
-msgid "Contacts description"
-msgstr ""
-
-#: ../browser/analysisrequest.py:516 ../content/contact.py:39
+#: ../browser/analysisrequest.py:913
+#: ../content/contact.py:38
 msgid "Contacts to CC"
-msgstr ""
+msgstr "Contactes amb còpia - CC"
 
-#. Default: "Select the contacts that will receive analysis results for this
-#. request."
-#: ../browser/analysisrequest.py:517
-msgid "Contacts to CC description"
-msgstr ""
-
+#: ../browser/sample.py:49
 #: ../browser/templates/sample_sticker.pt:78
 #: ../browser/templates/sample_sticker_small.pt:78
 msgid "Container"
-msgstr ""
+msgstr "Contenidor"
 
-#: ../browser/client.py:675
+#: ../content/analysisservice.py:101
+#: ../content/container.py:51
+#: ../content/preservation.py:39
+msgid "Container Type"
+msgstr "Tipus de contenidor"
+
+#: ../controlpanel/bika_containertypes.py:29
+msgid "Container Types"
+msgstr "Tipus de contenidors"
+
+#: ../browser/client.py:636
 msgid "Content Type"
-msgstr ""
+msgstr "Tipus de contingut"
 
-#: ../config.py:134
+#: ../config.py:55
 msgid "Control"
-msgstr ""
+msgstr "Control"
+
+#: ../skins/bika/bika_widgets/custom_address_widget.pt:47
+msgid "Copy from"
+msgstr "Còpia de"
+
+#: ../skins/bika/bika_widgets/custom_address_widget.pt:108
+msgid "Country"
+msgstr "País"
 
 #: ../browser/worksheetfolder.py:125
 msgid "Creation Date"
+msgstr "Data de creació"
+
+#: ../content/bikasetup.py:76
+msgid "Currency"
 msgstr ""
 
-#: ../browser/referencesample.py:208 ../browser/referencesupplier.py:43
+#: ../browser/referencesample.py:215
+#: ../browser/referencesupplier.py:48
+#: ../profiles/default/workflows/bika_referencesample_workflow/definition.xml
 msgid "Current"
-msgstr ""
+msgstr "En curs"
 
-#: ../content/instrument.py:61
+#: ../content/instrument.py:55
 msgid "Data Interface"
-msgstr ""
+msgstr "Interfície de dades"
 
-#: ../content/instrument.py:73
+#: ../content/instrument.py:66
 msgid "Data Interface Options"
-msgstr ""
+msgstr "Opcions d'interfície de dades"
 
-#. Default: "Use this field to pass arbitrary parameters to the export/import
-#. modules."
-#: ../content/instrument.py:74
-msgid "Data Interface Options description"
-msgstr ""
-
-#. Default: "Select an Import/Export interface for this instrument."
-#: ../content/instrument.py:62
-msgid "Data Interface description"
-msgstr ""
-
-#: ../browser/log.py:37 ../content/arimport.py:127 ../content/invoice.py:32
+#: ../browser/log.py:40
+#: ../content/arimport.py:127
+#: ../content/invoice.py:32
 msgid "Date"
-msgstr ""
+msgstr "Data"
 
-#: ../browser/client.py:745 ../content/supplyorder.py:50
+#: ../browser/client.py:706
+#: ../content/supplyorder.py:50
 msgid "Date Dispatched"
-msgstr ""
+msgstr "Data d'enviament"
 
-#: ../content/referencesample.py:114
+#: ../browser/sample.py:327
+#: ../content/referencesample.py:123
+#: ../content/sample.py:162
 msgid "Date Disposed"
-msgstr ""
+msgstr "Data d'exclusió"
 
-#: ../browser/templates/sample_edit.pt:147
-#: ../browser/templates/sample_view.pt:128 ../content/referencesample.py:107
+#: ../browser/sample.py:313
+#: ../content/referencesample.py:116
+#: ../content/sample.py:150
 msgid "Date Expired"
-msgstr ""
+msgstr "Data d'expiració"
 
-#: ../browser/client.py:498
+#: ../browser/client.py:308
 msgid "Date Imported"
-msgstr ""
+msgstr "Data d'importació"
 
-#: ../browser/client.py:677 ../browser/templates/reports_productivity.pt:430
-#: ../content/attachment.py:46
+#: ../browser/client.py:638
+#: ../content/attachment.py:45
 msgid "Date Loaded"
-msgstr ""
+msgstr "Data de càrrega"
 
-#: ../browser/referencesupplier.py:28
+#: ../browser/referencesupplier.py:32
 #: ../browser/templates/referencesample_sticker.pt:72
-#: ../browser/templates/referencesample_view.pt:102
+#: ../browser/templates/referencesample_view.pt:101
 msgid "Date Opened"
+msgstr "Data d'obertura"
+
+#: ../browser/analysisrequest.py:1911
+#: ../browser/sample.py:61
+msgid "Date Preserved"
 msgstr ""
 
-#: ../browser/client.py:151
-#: ../browser/mailtemplates/analysisrequest_results.pt:291
-#: ../browser/templates/analysisrequest_view.pt:140
+#: ../browser/analysisrequest.py:1924
+#: ../browser/mailtemplates/analysisrequest_results.pt:287
+#: ../content/analysis.py:74
 msgid "Date Published"
-msgstr ""
+msgstr "Data de publicació"
 
-#: ../browser/analysisrequest.py:599 ../browser/client.py:149
+#: ../browser/analysisrequest.py:423
 #: ../browser/late_analyses.py:41
+#: ../browser/mailtemplates/analysisrequest_results.pt:279
 msgid "Date Received"
-msgstr ""
+msgstr "Data de recepció"
 
-#: ../browser/templates/analysisrequest_edit.pt:306
-#: ../browser/templates/analysisrequest_view.pt:112
-#: ../browser/templates/reports_productivity.pt:135
+#: ../browser/templates/analysisrequest_edit.pt:349
+#: ../browser/worksheet.py:781
 msgid "Date Requested"
-msgstr ""
+msgstr "Data de sol·licitud"
 
-#: ../browser/client.py:145 ../browser/referencesample.py:191
-#: ../browser/referencesupplier.py:26
+#: ../browser/analysisrequest.py:1905
+#: ../browser/referencesample.py:198
+#: ../browser/referencesupplier.py:30
 msgid "Date Sampled"
-msgstr ""
+msgstr "Data de mostreig"
 
-#: ../browser/client.py:500 ../browser/templates/sample_edit.pt:118
-#: ../browser/templates/sample_view.pt:98
+#: ../browser/client.py:310
 msgid "Date Submitted"
-msgstr ""
+msgstr "Data de registre"
 
-#: ../browser/fields/durationfield.py:20
+#: ../browser/fields/durationfield.py:19
 msgid "Days"
-msgstr ""
+msgstr "Dies"
 
+#: ../profiles/default/workflows/bika_inactive_workflow/definition.xml
 msgid "Deactivate"
+msgstr "Desactiva"
+
+msgid "Default"
 msgstr ""
 
-#: ../content/client.py:62
-msgid "Default analysis categories"
-msgstr ""
+#: ../content/client.py:63
+msgid "Default categories"
+msgstr "Categories per defecte"
 
-#: ../content/bikasetup.py:195
+#: ../content/bikasetup.py:210
 msgid "Default sample retention period"
-msgstr ""
-
-#. Default: "The number of days before a sample expires and cannot be analysed
-#. any more. This setting can be overwritten per individual sample type in the
-#. sample types setup"
-#: ../content/bikasetup.py:196
-msgid "Default sample retention period description"
-msgstr ""
+msgstr "Període de retenció per defecte de la mostra"
 
 #: ../browser/fields/interimfieldsfield.py:16
 msgid "Default value"
-msgstr ""
+msgstr "Valor per defecte"
 
-#: ../browser/fields/coordinatefield.py:24
+#: ../content/calculation.py:25
+msgid "Define interim fields such as vessel mass, dilution factors, should your calculation require them. The field title specified here will be used as column headers and field descriptors where the interim fields are displayed"
+msgstr "Definiu els camps incògnita necessaris pel càlcul, com podrien ser el pes del recipient o el factor de dilució. El títol del camp s'utilitzarà com a encapçalaments de columnes i descripcions."
+
+#: ../content/analysisservice.py:205
+msgid "Define the number of decimals to be used for this result"
+msgstr "Indiqueu el número de decimals del resultat"
+
+#: ../content/bikasetup.py:252
+msgid "Define the prefixes for the unique sequential IDs the system issues for objects such as samples and analysis requests. In the 'Padding' field, indicate with how many leading zeros the numbers must be padded. E.g. a prefix of AR with padding of 4 for analysis requests, will see them numbered from AR0001 to AR9999."
+msgstr "Definició dels prefixos pels identificadors únics dels diferents elements del sistema, com les mostres o les sol·licituds d'anàlisi. Indiqueu el número de zeros que s'utilitzaran pel farciment de l'identificador en el camp 'Mida'. El rang d'identificadors admesos per a una sol·licitud d'anàlisi amb un valor de 4 assignat al camp 'Mida', serà d'entre AR0001 i AR9999."
+
+#: ../browser/fields/coordinatefield.py:20
 msgid "Degrees"
-msgstr ""
+msgstr "Graus"
 
-#: ../content/analysiscategory.py:27 ../content/analysisservice.py:260
-#: ../content/labcontact.py:34
+#: ../skins/bika/attachments.pt:61
+msgid "Delete attachment"
+msgstr "Elimina el document adjunt"
+
+#: ../browser/accreditation.py:51
+#: ../content/analysiscategory.py:26
+#: ../content/analysisservice.py:421
 msgid "Department"
-msgstr ""
+msgstr "Departament"
 
-#. Default: "The laboratory department"
-#: ../content/analysiscategory.py:28 ../content/analysisservice.py:261
-#: ../content/labcontact.py:35
-msgid "Department description"
-msgstr ""
-
-#: ../content/calculation.py:48
+#: ../content/calculation.py:42
 msgid "Dependent Analyses"
-msgstr ""
+msgstr "Anàlisis dependents"
 
-#: ../browser/log.py:40 ../content/analysisservice.py:102
+#: ../content/method.py:34
+msgid "Describes the method in layman terms. This information is made available to lab clients"
+msgstr "Descripció del mètode en llenguatge planer. Aquesta informació estarà disponible als clients del laboratori."
+
+#: ../browser/client.py:360
+#: ../browser/log.py:43
 #: ../content/invoicelineitem.py:23
 msgid "Description"
-msgstr ""
+msgstr "Descripció"
 
 #: ../browser/templates/sample_sticker.pt:71
 #: ../browser/templates/sample_sticker_small.pt:71
 msgid "Deviation"
-msgstr ""
+msgstr "Desviació"
 
-#: ../browser/templates/analysisrequest_edit.pt:498
+#: ../browser/templates/analysisrequest_edit.pt:541
 msgid "Discount"
-msgstr ""
+msgstr "Descompte"
 
-#: ../content/pricelist.py:30
+#: ../content/pricelist.py:29
 msgid "Discount %"
-msgstr ""
+msgstr "Descompte %"
 
-#. Default: "Enter discount percentage value"
-#: ../content/pricelist.py:31
-msgid "Discount % description"
-msgstr ""
+#: ../profiles/default/workflows/bika_order_workflow/definition.xml
+msgid "Dispatch"
+msgstr "Tramet"
 
-#: ../browser/client.py:757
+#: ../profiles/default/workflows/bika_order_workflow/definition.xml
+msgid "Dispatch order"
+msgstr "Tramet l'encàrrec"
+
+#: ../browser/client.py:721
+#: ../profiles/default/workflows/bika_order_workflow/definition.xml
 msgid "Dispatched"
-msgstr ""
+msgstr "Enviat"
 
-#: ../content/analysisservice.py:300
+#: ../content/analysisservice.py:460
 msgid "Display Value"
+msgstr "Valor que cal mostrar"
+
+#: ../browser/sample.py:65
+msgid "Disposal Date"
 msgstr ""
 
-#: ../browser/templates/analysisrequest_sticker.pt:82
+#: ../browser/templates/analysisrequest_sticker.pt:81
 #: ../browser/templates/analysisrequest_sticker_small.pt:58
-#: ../browser/templates/sample_edit.pt:137
 msgid "Disposal date"
-msgstr ""
+msgstr "Data d'anul·lació"
 
-#: ../browser/client.py:423 ../browser/referencesample.py:226
-#: ../browser/referencesupplier.py:61
+#: ../profiles/default/workflows/bika_sample_workflow/definition.xml
+msgid "Dispose"
+msgstr "Descarta"
+
+#: ../browser/referencesample.py:233
+#: ../browser/referencesupplier.py:66
+#: ../browser/sample.py:563
 msgid "Disposed"
-msgstr ""
+msgstr "Eliminats"
 
-#: ../browser/clientfolder.py:56 ../browser/menu.py:75
-#: ../controlpanel/bika_analysiscategories.py:54
+#: ../browser/client.py:789
+#: ../browser/clientfolder.py:68
+#: ../browser/menu.py:77
 msgid "Dormant"
-msgstr ""
+msgstr "Inactius"
 
-#: ../browser/analyses.py:44 ../browser/worksheet.py:202
+#: ../browser/analyses.py:58
+#: ../browser/worksheet.py:204
 msgid "Dry"
-msgstr ""
+msgstr "Dessecar"
 
-#: ../browser/mailtemplates/analysisrequest_results.pt:327
+#: ../browser/mailtemplates/analysisrequest_results.pt:323
 msgid "Dry Result"
-msgstr ""
+msgstr "Resultats en sec"
 
-#: ../content/bikasetup.py:150
+#: ../content/bikasetup.py:169
 msgid "Dry matter analysis"
-msgstr ""
+msgstr "Anàlisi de matèria seca"
 
-#. Default: "The analysis to be used for determining dry matter."
-#: ../content/bikasetup.py:151
-msgid "Dry matter analysis description"
-msgstr ""
-
-#: ../browser/client.py:394
+#: ../browser/analysisrequest.py:1961
+#: ../browser/sample.py:507
 msgid "Due"
-msgstr ""
+msgstr "Venciment"
 
-#: ../browser/analyses.py:49 ../browser/late_analyses.py:42
+#: ../browser/analyses.py:69
+#: ../browser/late_analyses.py:42
 #: ../browser/referencesample.py:64
 msgid "Due Date"
-msgstr ""
+msgstr "Data de venciment"
 
-#: ../controlpanel/bika_analysisservices.py:46
+#: ../content/instrument.py:48
+msgid "Due Date for next calibration"
+msgstr "Data de venciment pel pròxim calibrat"
+
+#: ../browser/accreditation.py:56
+#: ../controlpanel/bika_analysisservices.py:121
 msgid "Dup Var"
-msgstr ""
+msgstr "Var. dup."
 
-#: ../browser/worksheet.py:334 ../config.py:135
+#: ../browser/worksheet.py:337
+#: ../config.py:56
+#: ../controlpanel/bika_analysisservices.py:141
 msgid "Duplicate"
-msgstr ""
+msgstr "Duplicat"
 
-#: ../content/worksheettemplate.py:28
+#: ../content/worksheettemplate.py:27
 msgid "Duplicate Of"
-msgstr ""
+msgstr "Duplicat de"
 
-#: ../content/analysisservice.py:191
+#: ../content/analysisservice.py:316
 msgid "Duplicate Variation %"
-msgstr ""
+msgstr "% de variació entre duplicats"
 
-#. Default: "When the results of duplicate analyses on worksheets, carried out
-#. on the same sample, differ with more than this percentage, an alert is
-#. raised"
-#: ../content/analysisservice.py:192
-msgid "Duplicate Variation % description"
-msgstr ""
-
-#: ../browser/templates/reports_qualitycontrol.pt:44
+#: ../browser/reports/reports_qualitycontrol.pt:61
 msgid "Duplicate analysis QC"
-msgstr ""
+msgstr "QC de duplicat d'anàlisi"
 
-#: ../browser/templates/reports_qualitycontrol.pt:46
+#: ../exportimport/instruments/fiastar.py:215
+msgid "Duplicate analysis for slot ${slot} not found"
+msgstr "No s'ha trobat cap anàlisi duplicat per a la posició {$slot}"
+
+#: ../browser/reports/reports_qualitycontrol.pt:66
 msgid "Duplicate analysis quality control graphs"
-msgstr ""
+msgstr "Gràfics de control de qualitat per anàlisis duplicats"
 
-#: ../content/analysis.py:80
+#: ../content/analysis.py:84
 msgid "Duration"
-msgstr ""
+msgstr "Durada"
 
-#: ../content/analysis.py:85
+#: ../content/laboratory.py:53
+msgid "E.g. SANAS, APLAC, etc."
+msgstr "P. ex. ENAC, Applus, etc."
+
+#: ../content/analysis.py:89
 msgid "Earliness"
-msgstr ""
+msgstr "Earliness"
 
-#: ../content/samplepoint.py:38
+#: ../content/samplepoint.py:40
 msgid "Elevation"
-msgstr ""
+msgstr "Elevació"
 
-#. Default: "The height or depth at which the sample has to be taken"
-#: ../content/samplepoint.py:39
-msgid "Elevation description"
-msgstr ""
-
-#: ../browser/templates/contact_login_details.pt:91 ../config.py:103
-#: ../controlpanel/bika_referencesuppliers.py:47
+#: ../browser/templates/contact_login_details.pt:91
+#: ../config.py:19
+#: ../controlpanel/bika_referencesuppliers.py:45
 msgid "Email"
-msgstr ""
+msgstr "Correu electrònic"
 
-#: ../browser/analysisrequest.py:533 ../browser/client.py:799
-#: ../browser/clientfolder.py:33
+#: ../browser/analysisrequest.py:934
+#: ../browser/client.py:766
+#: ../browser/clientfolder.py:36
 msgid "Email Address"
-msgstr ""
+msgstr "Adreça de correu electrònic"
 
 #: ../content/client.py:50
 msgid "Email subject line"
+msgstr "Assumpte"
+
+#: ../content/bikasetup.py:147
+msgid "Enable the Sampling workflow"
 msgstr ""
 
-#: ../browser/templates/analysisrequest_edit.pt:424
+#: ../browser/templates/contact_login_details.pt:55
+msgid "Enter a user name, usually something like 'jsmith'. No spaces or special characters. Usernames and passwords are case sensitive, make sure the caps lock key is not enabled. This is the name used to log in."
+msgstr "Introduïu un nom d'usuari, que normalment és similar a 'jgarcia'. No introduïu caràcters en blanc ni caràcters especials. El nom d'usuari i la contrasenya són sensibles a les majúscules. És el nom que utilitzareu per autentificar-vos al sistema."
+
+#: ../browser/templates/contact_login_details.pt:95
+msgid "Enter an email address. This is necessary in case the password is lost. We respect your privacy, and will not give the address away to any third parties or expose it anywhere."
+msgstr "Introduïu una adreça de correu electrònic. Això és necessari en cas de pèrdua de la contrasenya. La vostra privacitat està garantida i no donarem la vostra adreça a tercers ni tampoc la farem pública enlloc."
+
+#: ../content/pricelist.py:30
+msgid "Enter discount percentage value"
+msgstr "Introduïu el percentatge de descompte"
+
+#: ../content/analysisservice.py:396
+#: ../content/labproduct.py:25
+msgid "Enter percentage value eg. 14.0"
+msgstr "Introduïu un percentatge, p. ex. 14.0"
+
+#: ../content/bikasetup.py:96
+msgid "Enter percentage value eg. 14.0. This percentage is applied system wide but can be overwrittem on individual items"
+msgstr "Introduïu un percentatge, p. ex. 14.0. Aquest percentatge s'aplicarà a tot el sistema però el podreu sobreescriure individualment a cada element."
+
+#: ../content/analysisrequest.py:146
+msgid "Enter percentage value eg. 33.0"
+msgstr "Introduïu un percentatge, p. ex. 33.0"
+
+#: ../content/samplepoint.py:25
+msgid "Enter the Sample Point's latitude in degrees 0-90, minutes 0-59, seconds 0-59 and N/S indicator"
+msgstr "Introduïu la latitud del punt de mostreig en graus (de 0 a 90), minuts (de 0 a 59), segons (0 a 59) i orientació N/S"
+
+#: ../content/samplepoint.py:33
+msgid "Enter the Sample Point's longitude in degrees 0-180, minutes 0-59, seconds 0-59 and E/W indicator"
+msgstr "Introduïu la longitud del punt de mostreig en graus (de 0 a 90), minuts (0 a 59), segons (0 a 59) i orientació E/W"
+
+#: ../browser/templates/analysisrequest_edit.pt:469
 msgid "Exclude from invoice"
-msgstr ""
+msgstr "Exclou de la factura"
 
-#: ../browser/fields/referenceresultsfield.py:21
-#: ../browser/widgets/referenceresultswidget.py:37
+#: ../browser/fields/referenceresultsfield.py:20
+#: ../browser/widgets/referenceresultswidget.py:38
 msgid "Expected Result"
-msgstr ""
+msgstr "Resultat esperat"
 
-#: ../content/referencesample.py:122
+#: ../content/referencesample.py:131
 msgid "Expected Results"
-msgstr ""
+msgstr "Resultats esperats"
 
-#: ../browser/client.py:413 ../browser/referencesample.py:217
-#: ../browser/referencesupplier.py:52
+#: ../profiles/default/workflows/bika_sample_workflow/definition.xml
+msgid "Expire"
+msgstr "Caduca"
+
+#: ../browser/referencesample.py:224
+#: ../browser/referencesupplier.py:57
+#: ../browser/sample.py:546
 msgid "Expired"
-msgstr ""
+msgstr "Caducats"
 
-#: ../browser/referencesample.py:193 ../browser/referencesupplier.py:29
+#: ../browser/referencesample.py:200
+#: ../browser/referencesupplier.py:33
 #: ../browser/templates/referencesample_sticker.pt:82
 msgid "Expiry Date"
-msgstr ""
+msgstr "Data de caducitat"
 
-#: ../browser/client.py:802 ../browser/clientfolder.py:35
-#: ../browser/referencesupplier.py:119
+#: Profile description in configure.zcml
+msgid "Extension profile for the Bika LIMS"
+msgstr "Perfil d'extensió per Bika LIMS"
+
+#: ../browser/client.py:769
+#: ../browser/clientfolder.py:38
+#: ../browser/referencesupplier.py:124
 msgid "Fax"
-msgstr ""
+msgstr "Fax"
 
-#: ../content/person.py:63
+#: ../content/person.py:62
 msgid "Fax (business)"
-msgstr ""
+msgstr "Fax (negoci)"
 
-#: ../config.py:160
+#: ../config.py:81
 msgid "Female"
-msgstr ""
+msgstr "Dona"
 
-#: ../config.py:117
+#: ../config.py:33
 msgid "Field"
-msgstr ""
+msgstr "Camp"
 
 #: ../browser/templates/sample_sticker.pt:95
-#: ../browser/templates/sample_sticker_small.pt:95 ../config.py:112
+#: ../browser/templates/sample_sticker_small.pt:95
+#: ../config.py:28
 msgid "Field Analyses"
-msgstr ""
+msgstr "Anàlisis de camp"
+
+#: ../config.py:38
+msgid "Field Preservation"
+msgstr "Camp de preservació"
 
 #: ../browser/fields/interimfieldsfield.py:15
 msgid "Field Title"
-msgstr ""
+msgstr "Títol del camp"
 
-#: ../browser/client.py:673 ../config.py:105
+#: ../browser/client.py:634
+#: ../config.py:21
 msgid "File"
-msgstr ""
+msgstr "Fitxer"
 
 #: ../content/arimport.py:26
 msgid "Filename"
-msgstr ""
+msgstr "Nom del fitxer"
 
-#: ../content/person.py:25
+#: ../content/person.py:24
 msgid "Firstname"
-msgstr ""
+msgstr "Nom"
 
-#: ../controlpanel/bika_calculations.py:42
+#: ../controlpanel/bika_calculations.py:43
 msgid "Formula"
-msgstr ""
+msgstr "Fórmula"
 
-#: ../browser/templates/reports_productivity.pt:139
+#: ../skins/bika/selection_macros.pt:40
 msgid "From"
-msgstr ""
+msgstr "De"
 
-#: ../browser/analysisrequest.py:531 ../browser/client.py:797
-#: ../browser/referencesupplier.py:115
+#: ../browser/analysisrequest.py:932
+#: ../browser/client.py:764
+#: ../browser/referencesupplier.py:120
 msgid "Full Name"
-msgstr ""
+msgstr "Nom complert"
 
-#: ../browser/analysisrequest.py:649 ../browser/client.py:336
+#: ../browser/analysisrequest.py:2221
+#: ../browser/sample.py:658
+msgid "Future dated sample"
+msgstr "Mostra amb futura assignació de data"
+
+#: ../content/person.py:18
+msgid "Greeting title eg. Mr, Mrs, Dr"
+msgstr "Títol de cortesia, com p. ex. Sr., Sra. o Dr."
+
+#: ../browser/analysisrequest.py:1063
+#: ../browser/templates/analysisrequest_analyses_not_requested.pt:71
 #: ../browser/templates/analysisrequest_manage_results.pt:49
 msgid "Hazardous"
-msgstr ""
+msgstr "Perillós"
 
-#. Default: "Samples of this type should be treated as hazardous"
-#: ../content/referencedefinition.py:50 ../content/referencesample.py:51
-#: ../content/sampletype.py:27
-msgid "Hazardous description"
-msgstr ""
-
-#: ../browser/fields/durationfield.py:21
+#: ../browser/fields/durationfield.py:20
 msgid "Hours"
-msgstr ""
+msgstr "Hores"
 
-#: ../browser/bika_listing.py:191 ../browser/referencesample.py:58
-#: ../browser/referencesupplier.py:22
+#: ../browser/bika_listing.py:199
+#: ../browser/referencesample.py:58
+#: ../browser/referencesupplier.py:26
 msgid "ID"
-msgstr ""
+msgstr "ID"
 
-#: ../content/bikasetup.py:226
-msgid "ID Server"
-msgstr ""
-
-#: ../content/bikasetup.py:281
+#: ../content/bikasetup.py:298
 msgid "ID Server URL"
-msgstr ""
+msgstr "ID Server URL"
 
-#. Default: "The full URL: protocol://URL/path:port"
-#: ../content/bikasetup.py:282
-msgid "ID Server URL description"
-msgstr ""
-
-#: ../controlpanel/bika_idserver.py:56 ../utils.py:207
+#: ../controlpanel/bika_idserver.py:52
+#: ../idserver.py:46
 msgid "ID Server unavailable"
+msgstr "ID Server no disponible"
+
+#: ../content/samplepoint.py:48
+msgid "If a sample is taken periodically at this sample point,  enter frequency here, e.g. weekly"
+msgstr "Si és necessària la recollida periòdica de mostres d'aquest punt de mostreig, introduïu-ne la freqüència en aquest camp. Per exemple, setmanalment"
+
+#: ../content/analysisservice.py:287
+msgid "If required, select a calculation for the analysis here. Calculations can be configured under the calculations item in the LIMS set-up"
+msgstr "Seleccioneu el càlcul associat a l'anàlisi si és necessari. Podeu configurar els càlculs des de l'apartat 'Càlculs'"
+
+#: ../content/analysisspec.py:39
+msgid "If the sample type you are looking for is not listed here, a specification for it has been created already. To edit existing, specifications, navigate 1 level up and select the specification by clicking on the sample type in the list"
+msgstr "Si el tipus de mostra que esteu cercant no apareix a la llista, això significa que ja se n'ha creat una especificació. Si voleu editar les especificacions registrades, navegueu a un nivell superior i seleccioneu-ne l'especificació fent clic sobre el tipus de mostra."
+
+#: ../content/bikasetup.py:156
+msgid "If there are many analysis services, the control panel view can group services by category"
 msgstr ""
 
-#: ../browser/client.py:497
+#: ../content/container.py:30
+msgid "If this container is pre-preserved, then the preservation method could be selected here."
+msgstr "Mètode de preservació del contenidor."
+
+#: ../browser/client.py:307
+#: ../exportimport/import.py:23
+#: ../profiles/default/workflows/bika_analysis_workflow/definition.xml
 msgid "Import"
-msgstr ""
+msgstr "Importació"
 
 #: ../content/arimport.py:20
 msgid "Import Option"
-msgstr ""
+msgstr "Opció d'importació"
 
-#: ../browser/client.py:510
+#: ../browser/client.py:322
+#: ../profiles/default/workflows/bika_arimport_workflow/definition.xml
 msgid "Imported"
-msgstr ""
+msgstr "Importats"
 
-#: ../content/pricelist.py:38
+#: ../profiles/default/workflows/bika_inactive_workflow/definition.xml
+msgid "Inactive"
+msgstr "Inactiu"
+
+#: ../content/pricelist.py:36
 msgid "Include descriptions"
-msgstr ""
+msgstr "Inclou les descripcions"
 
-#. Default: "Select if the descriptions should be included"
-#: ../content/pricelist.py:39
-msgid "Include descriptions description"
-msgstr ""
-
-#: ../content/bikasetup.py:243
+#: ../content/bikasetup.py:264
 msgid "Include year in ID prefix"
-msgstr ""
+msgstr "Inclou l'any en el prefix de l'ID"
 
-#. Default: "Adds a two-digit year after the ID prefix."
-#: ../content/bikasetup.py:244
-msgid "Include year in ID prefix description"
-msgstr ""
+#: ../browser/analyses.py:263
+#: ../browser/calcs.py:143
+msgid "Indet"
+msgstr "Indet"
 
-#: ../browser/fields/historyawarereferencefield.py:115
+#: ../browser/analyses.py:266
+#: ../browser/calcs.py:45
+msgid "Indeterminate result"
+msgstr "Resultat indeterminat"
+
+#: ../content/analysisservice.py:222
+msgid "Indicates whether file attachments, e.g. microscope images, are required for this analysis and whether file upload function will be available for it on data capturing screens"
+msgstr "Indica si és necessari l'adjunció de documents per aquest anàlisi i, per tant, si la opció de càrrega de fitxer estarà disponible en les pantalles de captura de dades."
+
+#: ../browser/fields/historyawarereferencefield.py:83
 #: ../skins/bika/update_version_before_edit.cpy:22
-#: ../subscribers/objectinitialized.py:16
+#: ../subscribers/objectinitialized.py:15
 msgid "Initial revision"
-msgstr ""
+msgstr "Revisió inicial"
 
-#: ../browser/templates/worksheet_manage_results.pt:42
-#: ../content/analysisservice.py:139 ../content/worksheettemplate.py:62
+#: ../browser/accreditation.py:52
+#: ../browser/templates/worksheet_manage_results.pt:56
+#: ../content/analysisservice.py:266
 msgid "Instrument"
-msgstr ""
+msgstr "Equip"
 
-#. Default: "Select the preferred instrument"
-#: ../content/analysisservice.py:140 ../content/worksheettemplate.py:63
-msgid "Instrument description"
-msgstr ""
-
-#: ../browser/worksheet.py:1001
+#: ../browser/worksheet.py:1018
 msgid "Instrument exporter not found"
-msgstr ""
+msgstr "No s'ha trobat cap exportador per a l'equip"
 
-#: ../browser/worksheet.py:988
+#: ../browser/worksheet.py:1006
 msgid "Instrument has no Data Interface selected"
-msgstr ""
+msgstr "No heu seleccionat cap interfície de comunicació de dades per a l'equip"
 
-#: ../content/instrument.py:17
+#: ../content/instrument.py:16
 msgid "Instrument type"
-msgstr ""
+msgstr "Tipus d'equip"
 
 #: ../controlpanel/bika_instruments.py:30
 msgid "Instruments"
-msgstr ""
+msgstr "Equips"
 
-#: ../browser/analyses.py:227 ../browser/calcs.py:149
+#: ../browser/analyses.py:273
+#: ../browser/calcs.py:151
 msgid "Invalid result"
-msgstr ""
+msgstr "Resultat incorrecte"
 
-#: ../content/analysisrequest.py:105
+#: ../browser/analysisrequest.py:436
+#: ../content/analysisrequest.py:108
 msgid "Invoice Exclude"
-msgstr ""
-
-#. Default: "Select if analyses to be excluded from invoice"
-#: ../content/analysisrequest.py:106
-msgid "Invoice Exclude description"
-msgstr ""
+msgstr "Exclòs de facturació"
 
 #: ../content/invoice.py:19
 msgid "Invoice number"
-msgstr ""
+msgstr "Número de factura"
 
-#: ../browser/analysisrequest.py:54 ../browser/bika_listing.py:100
+#: ../browser/analysisrequest.py:183
+#: ../browser/bika_listing.py:96
 msgid "Item is inactive."
-msgstr ""
+msgstr "L'element està desactivat."
 
-#: ../browser/templates/bika_listing_table.pt:644
+#: ../browser/templates/bika_listing_table.pt:659
 msgid "Items per page"
-msgstr ""
+msgstr "Nº d'elements per pàgina"
 
-#: ../content/person.py:80
+#: ../content/client.py:49
+msgid "Items to be included in email subject lines"
+msgstr "Elements que han de ser inclosos a l'assumpte del correu electrònic"
+
+#: ../content/person.py:79
 msgid "Job title"
-msgstr ""
+msgstr "Càrrec"
 
-#: ../content/instrument.py:70
+#: ../content/instrument.py:63
 msgid "Key"
-msgstr ""
+msgstr "Clau"
 
+#: ../browser/accreditation.py:49
+#: ../browser/analysisrequest.py:809
 #: ../browser/fields/interimfieldsfield.py:14
-#: ../controlpanel/bika_analysisservices.py:39
 msgid "Keyword"
-msgstr ""
+msgstr "Identificador"
 
-#: ../skins/bika/attachments.pt:226
+#: ../skins/bika/attachments.pt:231
 msgid "Keywords"
-msgstr ""
+msgstr "Paraules clau"
 
-#: ../browser/analysisrequest.py:221
+#: ../browser/analysisrequest.py:532
 #: ../browser/templates/analysisrequest_manage_results.pt:64
-#: ../browser/templates/analysisrequest_view.pt:177
+#: ../browser/templates/analysisrequest_view.pt:83
 msgid "Lab"
-msgstr ""
+msgstr "Laboratori"
 
-#: ../config.py:113
+#: ../config.py:29
 msgid "Lab Analyses"
-msgstr ""
+msgstr "Anàlisis del laboratori"
 
 #: ../controlpanel/bika_labcontacts.py:29
 msgid "Lab Contacts"
-msgstr ""
+msgstr "Contactes del laboratori"
 
 #: ../controlpanel/bika_departments.py:29
 msgid "Lab Departments"
-msgstr ""
+msgstr "Departaments del laboratori"
 
-#: ../config.py:123 ../controlpanel/bika_labproducts.py:30
+#: ../config.py:39
+msgid "Lab Preservation"
+msgstr "Preservació en el Laboratori"
+
+#: ../config.py:44
+#: ../controlpanel/bika_labproducts.py:30
 msgid "Lab Products"
-msgstr ""
+msgstr "Productes del laboratori"
 
-#: ../content/laboratory.py:26
+#: ../content/laboratory.py:18
 msgid "Lab URL"
-msgstr ""
+msgstr "URL del laboratori"
 
-#. Default: "The Laboratory's web address"
-#: ../content/laboratory.py:27
-msgid "Lab URL description"
-msgstr ""
-
-#: ../content/bikasetup.py:203
-msgid "Labels"
-msgstr ""
-
-#: ../setuphandlers.py:94
+#: ../content/laboratory.py:108
+#: ../setuphandlers.py:81
 msgid "Laboratory"
-msgstr ""
+msgstr "Laboratori"
 
-#: ../content/laboratory.py:36
+#: ../content/laboratory.py:34
 msgid "Laboratory Accredited"
-msgstr ""
+msgstr "Laboratori acreditat"
 
-#. Default: "Check this box if your laboratory is accredited"
-#: ../content/laboratory.py:37
-msgid "Laboratory Accredited description"
-msgstr ""
-
-#: ../browser/bika_listing.py:193
+#: ../browser/bika_listing.py:201
 msgid "Last modified"
-msgstr ""
+msgstr "Última modificació"
 
 #: ../browser/late_analyses.py:43
 msgid "Late"
-msgstr ""
+msgstr "Amb retard"
 
-#: ../browser/client.py:333 ../browser/late_analyses.py:26
-#: ../skins/bika/portlet_late_analyses.pt:33
+#: ../browser/analysisrequest.py:2215
+#: ../browser/late_analyses.py:25
+#: ../skins/bika/portlet_late_analyses.pt:34
 msgid "Late Analyses"
-msgstr ""
+msgstr "Anàlisis amb retard"
 
-#: ../browser/late_analyses.py:27
-msgid "Late Analyses description"
-msgstr ""
-
-#: ../browser/analyses.py:282 ../browser/worksheet.py:570
+#: ../browser/analyses.py:327
+#: ../browser/worksheet.py:587
 msgid "Late Analysis"
-msgstr ""
+msgstr "Anàlisi amb retard"
 
-#: ../content/samplepoint.py:20
+#: ../content/samplepoint.py:24
 msgid "Latitude"
-msgstr ""
+msgstr "Latitud"
 
-#. Default: "Enter the Sample Point's latitude in degrees 0-90, minutes 0-59,
-#. seconds 0-59 and N/S indicator"
-#: ../content/samplepoint.py:21
-msgid "Latitude description"
-msgstr ""
-
-#: ../content/sample.py:59
+#: ../content/sample.py:56
 msgid "Linked Sample"
-msgstr ""
+msgstr "Mostra enllaçada"
 
-#: ../content/samplepoint.py:18
-msgid "Location"
-msgstr ""
+#: ../browser/load_setup_data.py:25
+msgid "Load Setup Data"
+msgstr "Càrrega de les dades inicials"
 
-#: ../browser/log.py:32
+#: ../content/method.py:26
+msgid "Load documents describing the method here"
+msgstr "Carregueu aquí els documents que descriuen el mètode"
+
+#: ../browser/log.py:35
 msgid "Log"
-msgstr ""
+msgstr "Registre"
 
 #: ../browser/templates/contact_login_details.pt:12
 msgid "Login details"
-msgstr ""
+msgstr "Dades d'accés"
 
 #: ../skins/bika/logged_in.cpy:22
-msgid ""
-"Login failed. Both email address and password are case sensitive, check that"
-" caps lock is not enabled."
-msgstr ""
+msgid "Login failed. Both email address and password are case sensitive, check that caps lock is not enabled."
+msgstr "Ha fallat l'autenticació. Comproveu que no estigui activada la tecla d'ús de les majúscules, ja que tan l'adreça de correu electrònic com la paraula de pas hi són sensibles."
 
 #: ../skins/bika/logged_in.cpy:24
-msgid ""
-"Login failed. Both login name and password are case sensitive, check that "
-"caps lock is not enabled."
-msgstr ""
+msgid "Login failed. Both login name and password are case sensitive, check that caps lock is not enabled."
+msgstr "Ha fallat l'autenticació. Comproveu que no estigui activada la tecla d'ús de les majúscules, ja que tan el nom d'usuari com la paraula de pas hi són sensibles."
 
-#: ../content/samplepoint.py:29
+#: ../content/samplepoint.py:32
 msgid "Longitude"
-msgstr ""
-
-#. Default: "Enter the Sample Point's longitude in degrees 0-90, minutes 0-59,
-#. seconds 0-59 and E/W indicator"
-#: ../content/samplepoint.py:30
-msgid "Longitude description"
-msgstr ""
+msgstr "Longitud"
 
 #: ../browser/templates/referencesample_sticker.pt:57
-#: ../browser/templates/referencesample_view.pt:72
-#: ../content/referencesample.py:75
+#: ../browser/templates/referencesample_view.pt:71
+#: ../content/referencesample.py:72
 msgid "Lot Number"
-msgstr ""
+msgstr "Número de lot"
 
-#: ../config.py:165
+#: ../config.py:86
 msgid "Mailing address"
-msgstr ""
+msgstr "Adreça d'enviament de correus electrònics"
 
-#: ../config.py:159
+#: ../config.py:80
 msgid "Male"
-msgstr ""
+msgstr "Home"
 
-#: ../content/department.py:23 ../controlpanel/bika_departments.py:42
+#: ../content/department.py:22
+#: ../controlpanel/bika_departments.py:43
 msgid "Manager"
-msgstr ""
+msgstr "Responsable"
+
+#: ../controlpanel/bika_departments.py:49
+msgid "Manager Email"
+msgstr "Correu del responsable"
 
 #: ../controlpanel/bika_departments.py:46
-msgid "Manager Email"
-msgstr ""
-
-#: ../controlpanel/bika_departments.py:44
 msgid "Manager Phone"
-msgstr ""
+msgstr "Telèfon del responsable"
 
-#. Default: "Select a manager from the available personnel configured under
-#. the 'lab contacts' setup item. Departmental managers are referenced on
-#. analysis results reports containing analyses by their department."
-#: ../content/department.py:24
-msgid "Manager description"
-msgstr ""
-
-#: ../browser/referencesupplier.py:24
+#: ../browser/referencesupplier.py:28
 #: ../browser/templates/referencesample_sticker.pt:52
-#: ../browser/templates/referencesample_view.pt:62
+#: ../browser/templates/referencesample_view.pt:61
 msgid "Manufacturer"
-msgstr ""
+msgstr "Fabricant"
 
-#: ../browser/fields/referenceresultsfield.py:24
-#: ../browser/referencesample.py:119
-#: ../browser/widgets/referenceresultswidget.py:40
+#: ../browser/fields/referenceresultsfield.py:23
+#: ../browser/referencesample.py:127
+#: ../browser/widgets/referenceresultswidget.py:41
 msgid "Max"
-msgstr ""
+msgstr "Max"
 
-#: ../controlpanel/bika_analysisservices.py:45
+#: ../browser/accreditation.py:55
+#: ../controlpanel/bika_analysisservices.py:119
 msgid "Max Time"
-msgstr ""
+msgstr "Temps màxim"
 
-#. Default: "Maximum columns per results email"
-#: ../content/bikasetup.py:109
-msgid "Maximum cols per email"
-msgstr ""
+#: ../content/bikasetup.py:116
+msgid "Maximum columns per results email"
+msgstr "Número màxim de columnes als resultats per correu electrònic"
 
-#. Default: "Set the maximum number of analysis requests per results email.
-#. Too many columns per email are difficult to read for some clients who
-#. prefer fewer results per email"
-#: ../content/bikasetup.py:111
-msgid "Maximum cols per email description"
-msgstr ""
+#: ../content/bikasetup.py:127
+msgid "Maximum columns per results fax"
+msgstr "Número màxim de columnes als resultats per fax"
 
-#. Default: "Maximum columns per results fax"
-#: ../content/bikasetup.py:122
-msgid "Maximum cols per fax"
-msgstr ""
+#: ../content/container.py:39
+msgid "Maximum possible size or volume of samples."
+msgstr "Mida o volum màxims admesos per mostra"
 
-#. Default: "Too many AR columns per fax will see the font size minimised and
-#. could render faxes illegible. 4 ARs maximum per page is recommended"
-#: ../content/bikasetup.py:124
-msgid "Maximum cols per fax description"
-msgstr ""
+#: ../content/analysis.py:68
+#: ../content/analysisservice.py:309
+msgid "Maximum time allowed for completion of the analysis. A late analysis alert is raised when this period elapses"
+msgstr "Temps màxim permès per a la consecució d'un anàlisi. El sistema mostrarà una alerta pels anàlisis en retard"
 
-#: ../content/analysis.py:62 ../content/analysisservice.py:182
+#: ../content/analysis.py:67
+#: ../content/analysisservice.py:308
 msgid "Maximum turn-around time"
-msgstr ""
+msgstr "Temps màxim de resposta"
 
-#. Default: "Maximum time allowed for completion of the analysis. A late
-#. analysis alert is raised when this period elapses"
-#: ../content/analysis.py:63 ../content/analysisservice.py:183
-msgid "Maximum turn-around time description"
-msgstr ""
-
-#: ../content/analysisrequest.py:149 ../content/bikasetup.py:74
+#: ../content/analysisrequest.py:145
+#: ../content/bikasetup.py:85
 msgid "Member discount %"
-msgstr ""
-
-#. Default: "Enter percentage value eg. 33.0"
-#: ../content/analysisrequest.py:150
-msgid "Member discount % description"
-msgstr ""
+msgstr "% de descompte per a clients habituals"
 
 #: ../content/client.py:32
 msgid "Member discount applies"
-msgstr ""
+msgstr "Aplicar descompte de client habitual"
 
-#: ../content/analysisservice.py:115 ../controlpanel/bika_methods.py:39
+#: ../browser/analyses.py:50
+#: ../content/analysisservice.py:251
+#: ../controlpanel/bika_analysisservices.py:112
 msgid "Method"
-msgstr ""
+msgstr "Mètode"
 
-#. Default: "Description"
-#: ../content/method.py:36
-msgid "Method Description"
-msgstr ""
-
-#. Default: "Describes the method in layman terms. This information is made
-#. available to lab clients"
-#: ../content/method.py:38
-msgid "Method Description description"
-msgstr ""
-
-#: ../content/method.py:27
+#: ../content/method.py:25
 msgid "Method Document"
-msgstr ""
-
-#. Default: "Load documents describing the method here"
-#: ../content/method.py:28
-msgid "Method Document description"
-msgstr ""
+msgstr "Document del mètode"
 
 #. Default: "Instructions"
-#: ../content/method.py:19
+#: ../content/method.py:18
 msgid "Method Instructions"
-msgstr ""
+msgstr "Instruccions del mètode"
 
-#. Default: "Technical description and instructions intended for analysts"
-#: ../content/method.py:21
-msgid "Method Instructions description"
-msgstr ""
-
-#. Default: "Select analysis method"
-#: ../content/analysisservice.py:125
-msgid "Method description"
-msgstr ""
-
-#: ../controlpanel/bika_methods.py:30
+#: ../controlpanel/bika_methods.py:29
 msgid "Methods"
-msgstr ""
+msgstr "Mètodes"
 
-#: ../browser/mailtemplates/analysisrequest_results.pt:516
-#: ../browser/templates/analysisrequest_edit.pt:606
-msgid ""
-"Methods included in the ${accreditation_body} schedule of Accreditation for "
-"this Laboratory. Analysis remarks are not accredited"
-msgstr ""
+#: ../browser/mailtemplates/analysisrequest_results.pt:512
+#: ../browser/templates/analysisrequest_edit.pt:661
+msgid "Methods included in the ${accreditation_body} schedule of Accreditation for this Laboratory. Analysis remarks are not accredited"
+msgstr "Mètodes que està previst que siguin acreditats properament per ${accreditation_body}. Els comentaris i observacions no estan acreditats."
 
-#: ../browser/mailtemplates/analysisrequest_results.pt:553
+#: ../browser/mailtemplates/analysisrequest_results.pt:549
 msgid "Methods of analysis available by clicking on the 'Request' link"
-msgstr ""
+msgstr "Feu clic a l'enllaç 'sol·licitud' per accedir als mètodes d'anàlisi"
 
-#: ../browser/fields/referenceresultsfield.py:23
-#: ../browser/referencesample.py:118
-#: ../browser/widgets/referenceresultswidget.py:39
+#: ../browser/fields/referenceresultsfield.py:22
+#: ../browser/referencesample.py:126
+#: ../browser/widgets/referenceresultswidget.py:40
 msgid "Min"
-msgstr ""
+msgstr "Min"
 
-#: ../browser/worksheetfolder.py:148
+#: ../browser/worksheetfolder.py:152
 msgid "Mine"
-msgstr ""
+msgstr "Mine"
 
-#: ../browser/templates/contact_login_details.pt:71
+#: ../browser/templates/contact_login_details.pt:72
 msgid "Minimum 5 characters."
-msgstr ""
+msgstr "Mida mínima de 5 caràcters."
 
-#: ../browser/fields/coordinatefield.py:25
-#: ../browser/fields/durationfield.py:22
+#: ../content/bikasetup.py:105
+msgid "Minimum number of results for QC stats calculations"
+msgstr "Número mínim de resultats pels càlculs estadístics de QC"
+
+#: ../browser/fields/coordinatefield.py:21
+#: ../browser/fields/durationfield.py:21
 msgid "Minutes"
-msgstr ""
+msgstr "Minuts"
 
-#: ../browser/analysisrequest.py:535 ../browser/client.py:801
-#: ../browser/referencesupplier.py:118
+#: ../browser/analysisrequest.py:936
+#: ../browser/client.py:768
+#: ../browser/referencesupplier.py:123
 msgid "Mobile Phone"
-msgstr ""
+msgstr "Telèfon mòbil"
 
-#: ../content/instrument.py:29 ../controlpanel/bika_instruments.py:45
+#: ../content/instrument.py:27
+#: ../controlpanel/bika_instruments.py:46
 msgid "Model"
-msgstr ""
+msgstr "Model"
 
-#. Default: "The instrument's model number"
-#: ../content/instrument.py:30
-msgid "Model description"
-msgstr ""
+#: ../skins/bika/portlet_late_analyses.pt:61
+#: ../skins/bika/portlet_pending_orders.pt:53
+#: ../skins/bika/portlet_sample_due.pt:54
+msgid "More"
+msgstr "Més"
 
-#: ../skins/bika/portlet_late_analyses.pt:63
-#: ../skins/bika/portlet_pending_orders.pt:56
-#: ../skins/bika/portlet_sample_due.pt:57
-msgid "More..."
-msgstr ""
-
-#: ../browser/clientfolder.py:31 ../controlpanel/bika_labcontacts.py:38
-#: ../controlpanel/bika_referencesuppliers.py:45
+#: ../browser/clientfolder.py:35
+#: ../content/organisation.py:19
+#: ../controlpanel/bika_labcontacts.py:38
 msgid "Name"
-msgstr ""
+msgstr "Nom"
 
-#: ../browser/analysisrequest.py:1051
+#: ../browser/templates/worksheet_add_control.pt:44
+#: ../browser/templates/worksheet_add_duplicate.pt:37
+msgid "New"
+msgstr "Nou"
+
+#: ../browser/analysisservice.py:74
+msgid "No"
+msgstr "No"
+
+#: ../browser/viewlets.py:26
+msgid "No LIMS setup data configured.  <a href='load_setup_data'>Click here</a> to load pre-configured setup data, or visit <a href='@@overview-controlpanel'>Site Setup</a>"
+msgstr "No s'han configurat dades inicials. <a href='load_setup_data'>Premeu aquí</a> si desitgeu carregar dades inicials o visiteu la <a href='@@overview-controlpanel'>configuració del lloc</a>"
+
+#: ../browser/analysisrequest.py:1566
 msgid "No analyses have been selected"
-msgstr ""
+msgstr "No heu seleccionat cap anàlisi"
 
-#: ../browser/analysisrequest.py:942
+#: ../browser/analysisrequest.py:1456
 msgid "No analyses have been selected."
+msgstr "No heu seleccionat cap anàlisi."
+
+#: ../browser/worksheetfolder.py:431
+msgid "No analyses were added"
+msgstr "No s'ha afegit cap anàlisi"
+
+#: ../browser/worksheet.py:556
+msgid "No analyses were added to this worksheet."
+msgstr "No s'ha afegit cap anàlisi a aquesta fulla de treball."
+
+#: ../browser/analysisrequest.py:113
+#: ../browser/client.py:132
+msgid "No changes made."
 msgstr ""
 
-#: ../exportimport/instruments/fiastar.py:72
-msgid "No analyses were found."
-msgstr ""
-
-#: ../browser/worksheet.py:970
+#: ../browser/worksheet.py:986
 msgid "No control type specified"
-msgstr ""
+msgstr "No heu indicat el tipus de control"
 
-#: ../browser/analysisrequest.py:1039
+#: ../browser/analysisrequest.py:1555
 msgid "No data was entered"
-msgstr ""
+msgstr "No conté dades"
 
-#: ../browser/analysisrequest.py:71 ../browser/client.py:86
+#: ../browser/load_setup_data.py:58
+msgid "No file data submitted.  Please submit a valid Open XML Spreadsheet (.xlsx) file."
+msgstr "No heu pujat cap fitxer. Pugeu un fitxer vàlid del tipus Open XML Spreadsheet (.xlsx)."
+
+#: ../browser/analysisrequest.py:293
+#: ../browser/client.py:234
 msgid "No items were published"
-msgstr ""
+msgstr "No hi ha cap element publicat"
 
 #: ../content/arimportitem.py:45
 msgid "No of containers"
-msgstr ""
+msgstr "Núm. de contenidors"
 
-#: ../browser/templates/contact_login_details.pt:26
-msgid ""
-"No user exists for ${contact_fullname} and he/she will not be able to log "
-"in. Fill in the form below to create one for him/her."
-msgstr ""
+#: ../browser/templates/contact_login_details.pt:27
+msgid "No user exists for ${contact_fullname} and he/she will not be able to log in. Fill in the form below to create one for him/her."
+msgstr "El contacte ${contact_fullname} no té registrades credencials d'accés al sistema i, per tant, no hi podrà iniciar cap sessió. Li podeu crear les credencials d'accés omplint el formulari següent."
 
-#: ../content/bikasetup.py:38 ../content/instrument.py:93
+#: ../browser/templates/analysisrequest_edit.pt:176
+#: ../content/bikasetup.py:40
+#: ../content/instrument.py:79
 msgid "None"
-msgstr ""
+msgstr "Cap"
 
-#: ../content/bikasetup.py:45
+#: ../content/bikasetup.py:47
 msgid "Normal"
-msgstr ""
+msgstr "Normal"
 
-#: ../browser/client.py:215
-msgid "Not Assigned"
-msgstr ""
-
-#: ../config.py:144
+#: ../config.py:65
 msgid "Not Permitted"
-msgstr ""
+msgstr "No està permès"
 
-#: ../browser/mailtemplates/analysisrequest_results.pt:509
+#: ../browser/mailtemplates/analysisrequest_results.pt:505
 msgid "Not invoiced"
-msgstr ""
+msgstr "No facturat"
 
-#: ../browser/templates/reports_qualitycontrol.pt:31
-msgid "Note that this may take several minutes"
-msgstr ""
+#: ../profiles/default/workflows/bika_analysis_workflow/definition.xml
+msgid "Not requested"
+msgstr "No sol·licitat"
 
-#: ../content/analysisrequest.py:143 ../content/invoice.py:39
-#: ../content/pricelist.py:65
-msgid "Notes"
+#: ../browser/reports/analysesperservice.pt:33
+msgid "Number of analyses requested per analysis service."
 msgstr ""
 
 #: ../content/arimport.py:137
 msgid "Number of samples"
-msgstr ""
+msgstr "Número de mostres"
 
-#: ../browser/worksheetfolder.py:165
+#: ../content/preservation.py:25
+msgid "Once preserved, the sample must be disposed of within this time period.  If not specified, the sample type retention period will be used."
+msgstr "La mostra es descartarà durant el període de temps indicat tan bon punt s'estableixi en estat de preservació. Si no s'especifica res, s'utilitzarà el període de retenció per tipus de mostra."
+
+#: ../browser/worksheetfolder.py:169
+#: ../profiles/default/workflows/bika_worksheet_workflow/definition.xml
 msgid "Open"
-msgstr ""
+msgstr "Obert"
 
-#: ../browser/worksheet.py:494
+#: ../browser/worksheet.py:510
 msgid "Order"
-msgstr ""
+msgstr "Comanda"
 
-#: ../browser/client.py:744
+#: ../browser/client.py:705
 msgid "Order Date"
-msgstr ""
+msgstr "Data de comanda"
 
-#: ../config.py:153 ../content/arimport.py:103
+#: ../config.py:74
+#: ../content/arimport.py:103
 msgid "Order ID"
-msgstr ""
+msgstr "ID de comanda"
 
-#: ../browser/client.py:743 ../content/invoicelineitem.py:29
+#: ../browser/client.py:704
+#: ../content/invoicelineitem.py:29
 #: ../content/supplyorder.py:32
 msgid "Order Number"
-msgstr ""
+msgstr "Número de comanda"
 
-#: ../browser/client.py:739
+#: ../profiles/default/workflows/bika_order_workflow/definition.xml
+msgid "Order pending"
+msgstr "Encàrrec pendent"
+
+#: ../browser/client.py:701
 msgid "Orders"
-msgstr ""
+msgstr "Comandes"
 
-#: ../browser/client.py:740
-msgid "Orders description"
-msgstr ""
-
-#: ../config.py:106
+#: ../config.py:22
 msgid "PDF"
+msgstr "PDF"
+
+msgid "Parent"
 msgstr ""
 
-#: ../browser/templates/contact_login_details.pt:67
+#: ../browser/analyses.py:48
+#: ../browser/sample.py:47
+msgid "Partition"
+msgstr ""
+
+#: ../browser/templates/analysisrequest_view.pt:48
+#: ../browser/templates/sample.pt:29
+msgid "Partitions"
+msgstr ""
+
+#: ../browser/templates/contact_login_details.pt:68
 msgid "Password"
-msgstr ""
+msgstr "Paraula de pas"
 
-#: ../content/bikasetup.py:54
+#: ../content/bikasetup.py:56
 msgid "Password lifetime"
-msgstr ""
+msgstr "Temps de vida de les contrasenyes"
 
-#. Default: "The number of days before a password expires. 0 disables password
-#. expiry"
-#: ../content/bikasetup.py:55
-msgid "Password lifetime description"
-msgstr ""
-
-#: ../browser/client.py:754
+#: ../browser/client.py:717
 msgid "Pending"
-msgstr ""
+msgstr "Pendent"
 
 #: ../skins/bika/portlet_pending_orders.pt:22
 msgid "Pending orders"
-msgstr ""
+msgstr "Comandes pendents"
 
-#: ../config.py:143
+#: ../config.py:64
 msgid "Permitted"
-msgstr ""
+msgstr "Permès"
 
-#: ../browser/fields/referenceresultsfield.py:22
-#: ../browser/widgets/referenceresultswidget.py:38
+#: ../browser/fields/referenceresultsfield.py:21
+#: ../browser/widgets/referenceresultswidget.py:39
 msgid "Permitted Error %"
-msgstr ""
+msgstr "% d'error permès"
 
-#: ../browser/clientfolder.py:34 ../content/organisation.py:26
-#: ../controlpanel/bika_labcontacts.py:42
+#: ../browser/clientfolder.py:37
+#: ../content/organisation.py:29
+#: ../controlpanel/bika_labcontacts.py:43
 msgid "Phone"
-msgstr ""
+msgstr "Telèfon"
 
-#: ../content/person.py:57
+#: ../content/person.py:56
 msgid "Phone (business)"
-msgstr ""
+msgstr "Telèfon (negoci)"
 
-#: ../content/person.py:69
+#: ../content/person.py:68
 msgid "Phone (home)"
-msgstr ""
+msgstr "Telèfon (casa)"
 
-#: ../content/person.py:75
+#: ../content/person.py:74
 msgid "Phone (mobile)"
-msgstr ""
+msgstr "Telèfon (mòbil)"
 
-#: ../config.py:164 ../content/organisation.py:45 ../content/person.py:92
+#: ../config.py:85
+#: ../content/organisation.py:48
+#: ../content/person.py:91
 msgid "Physical address"
-msgstr ""
+msgstr "Adreça postal"
 
 #: ../content/arimportitem.py:50
 msgid "Picking Slip"
-msgstr ""
+msgstr "Llista d'encàrrec"
 
-#: ../content/analysisservice.py:215
+#: ../content/analysisservice.py:464
+msgid "Please list all options for the analysis result if you want to restrict it to specific options only, e.g. 'Positive', 'Negative' and 'Indeterminable'.  The option's result value must be a number."
+msgstr "Introduïu totes les opcions a les quals vulgueu restringir el resultat de l'anàlisi, com per exemple 'Positiu', 'Negatiu' o 'Indeterminat'. El valor per al resultat de l'opció ha de ser numèric."
+
+#: ../content/laboratory.py:84
+msgid "Please upload the logo you are authorised to use on your website and results reports by your accreditation body. Maximum size is 175 x 175 pixels."
+msgstr "Pengeu el logotip que la entitat acreditadora us ha autoritzat a utilitzar a la vostra web i als informes de resultats. La mida màxima és de 175x175 píxels."
+
+#: ../content/analysisservice.py:338
 msgid "Point of Capture"
-msgstr ""
+msgstr "Punt de mostreig"
 
-#. Default: "The results of field analyses are captured during sampling at the
-#. sample point, e.g. the temperature of a water sample in the river where it
-#. is sampled. Lab analyses are done in the laboratory"
-#: ../content/analysisservice.py:216
-msgid "Point of Capture description"
-msgstr ""
-
-#: ../browser/worksheet.py:198 ../content/worksheettemplate.py:24
+#: ../browser/worksheet.py:196
+#: ../content/worksheettemplate.py:23
 msgid "Position"
-msgstr ""
+msgstr "Posició"
 
-#: ../content/organisation.py:52 ../content/person.py:99
+#: ../content/organisation.py:55
+#: ../content/person.py:98
 msgid "Postal address"
-msgstr ""
+msgstr "Adreça postal"
 
-#. Default: "Precision as number of decimals"
-#: ../content/analysisservice.py:34
-msgid "Precision"
-msgstr ""
+#: ../skins/bika/bika_widgets/custom_address_widget.pt:94
+msgid "Postal code"
+msgstr "Codi postal"
 
-#. Default: "Define the number of decimals to be used for this result"
-#: ../content/analysisservice.py:35
-msgid "Precision description"
-msgstr ""
+#: ../content/container.py:14
+#: ../controlpanel/bika_containers.py:47
+msgid "Pre-preserved"
+msgstr "En pre-preservació"
 
-#: ../content/bikasetup.py:229
+#: ../content/analysisservice.py:204
+msgid "Precision as number of decimals"
+msgstr "Precisió en número de decimals"
+
+#: ../content/bikasetup.py:251
 msgid "Prefixes"
-msgstr ""
+msgstr "Prefixos"
 
-#. Default: "Define the prefixes for the unique sequential IDs the system
-#. issues for objects such as samples and analysis requests. In the 'Padding'
-#. field, indicate with how many leading zeros the numbers must be padded.
-#. E.g. a prefix of AR with padding of 4 for analysis requests, will see them
-#. numbered from AR0001 to AR9999."
-#: ../content/bikasetup.py:230
-msgid "Prefixes description"
-msgstr ""
+#: ../profiles/default/workflows/bika_ar_workflow/definition.xml
+msgid "Prepublish"
+msgstr "Fes una publicació prèvia"
 
+#: ../browser/sample.py:51
 #: ../browser/templates/sample_sticker.pt:80
 #: ../browser/templates/sample_sticker_small.pt:80
 msgid "Preservation"
+msgstr "Conservació"
+
+#: ../content/preservation.py:19
+msgid "Preservation Category"
+msgstr "Categoria de conservació"
+
+#: ../controlpanel/bika_preservations.py:29
+msgid "Preservations"
 msgstr ""
 
-#: ../content/analysisservice.py:61
-#: ../controlpanel/bika_analysisservices.py:44
-#: ../controlpanel/bika_labproducts.py:45
+#: ../profiles/default/workflows/bika_analysis_workflow/definition.xml
+#: ../profiles/default/workflows/bika_ar_workflow/definition.xml
+#: ../profiles/default/workflows/bika_sample_workflow/definition.xml
+msgid "Preserved"
+msgstr ""
+
+#: ../browser/analysisrequest.py:1915
+#: ../browser/sample.py:59
+msgid "Preserver"
+msgstr ""
+
+#: ../browser/accreditation.py:54
+#: ../browser/analysisrequest.py:811
+#: ../controlpanel/bika_analysisservices.py:118
 msgid "Price"
-msgstr ""
+msgstr "Import"
 
-#: ../content/analysisservice.py:64
+#: ../content/analysisservice.py:363
 msgid "Price (excluding VAT)"
-msgstr ""
+msgstr "Import (sense IVA)"
 
-#: ../content/labproduct.py:32
+#: ../content/labproduct.py:30
 msgid "Price excluding VAT"
-msgstr ""
+msgstr "Import sense IVA"
 
-#: ../content/pricelist.py:18
+#: ../content/pricelist.py:17
 msgid "Pricelist for"
-msgstr ""
+msgstr "Llista de preus"
 
-#: ../content/pricelist.py:25
+#: ../content/pricelist.py:24
 msgid "Pricing model"
-msgstr ""
+msgstr "Tarifa aplicable"
 
-#: ../config.py:107
+#: ../config.py:23
 msgid "Print"
-msgstr ""
+msgstr "Imprimeix"
 
 #: ../content/supplyorderitem.py:19
 msgid "Product"
-msgstr ""
+msgstr "Producte"
 
-#: ../browser/templates/analysisrequest_edit.pt:146
-#: ../browser/templates/analysisrequest_view.pt:165
-#: ../controlpanel/bika_arprofiles.py:36
+#: ../browser/client.py:463
+#: ../browser/templates/analysisrequest_edit.pt:189
+#: ../browser/templates/analysisrequest_view.pt:71
 msgid "Profile"
-msgstr ""
+msgstr "Perfil"
 
-#: ../content/arprofile.py:36
+#: ../content/arprofile.py:34
 msgid "Profile Analyses"
-msgstr ""
+msgstr "Perfils d'anàlisi"
 
-#. Default: "The analyses included in this profile, grouped per category"
-#: ../content/arprofile.py:37
-msgid "Profile Analyses description"
-msgstr ""
-
-#: ../browser/client.py:554 ../controlpanel/bika_arprofiles.py:40
+#: ../browser/client.py:362
+#: ../controlpanel/bika_arprofiles.py:42
 msgid "Profile Key"
-msgstr ""
+msgstr "Identificador del perfil"
 
-#: ../content/arprofile.py:22
+#: ../content/arprofile.py:21
 msgid "Profile Keyword"
-msgstr ""
+msgstr "Clau d'identificació del perfil"
 
-#. Default: "The profile's keyword is used to uniquely identify it in import
-#. files. It has to be unique, and it may not be the same as any Calculation
-#. Interim field ID."
-#: ../content/arprofile.py:23
-msgid "Profile Keyword description"
-msgstr ""
-
-#: ../config.py:148
+#: ../config.py:69
 msgid "Profiles"
+msgstr "Perfils"
+
+#: ../browser/client.py:454
+#: ../controlpanel/bika_arprofiles.py:29
+msgid "Profiles and Templates"
 msgstr ""
 
-#: ../content/contact.py:21
+#: ../profiles/default/workflows/bika_analysis_workflow/definition.xml
+#: ../profiles/default/workflows/bika_ar_workflow/definition.xml
+#: ../profiles/default/workflows/bika_cancellation_workflow/definition.xml
+msgid "Provides access to workflow history"
+msgstr "Accés a l'historial del flux de treball"
+
+#: ../content/contact.py:20
 msgid "Publication preference"
-msgstr ""
+msgstr "Preferències de publicació"
 
-#: ../browser/client.py:261
+#: ../profiles/default/workflows/bika_analysis_workflow/definition.xml
+#: ../profiles/default/workflows/bika_ar_workflow/definition.xml
+msgid "Publish"
+msgstr "Publica"
+
+#: ../browser/analysisrequest.py:2057
+#: ../profiles/default/workflows/bika_analysis_workflow/definition.xml
+#: ../profiles/default/workflows/bika_ar_workflow/definition.xml
 msgid "Published"
-msgstr ""
+msgstr "Publicat"
 
-#: ../browser/worksheetfolder.py:123
+#: ../browser/worksheetfolder.py:122
 msgid "QC"
-msgstr ""
-
-#. Default: "Minimum number of results for QC stats calculations"
-#: ../content/bikasetup.py:96
-msgid "QC Minimum results"
-msgstr ""
-
-#. Default: "Using too few data points does not make statistical sense. Set an
-#. acceptable minimum number of results before QC statistics will be
-#. calculated and plotted"
-#: ../content/bikasetup.py:98
-msgid "QC Minimum results description"
-msgstr ""
+msgstr "QC"
 
 #: ../content/supplyorderitem.py:26
 msgid "Quantity"
-msgstr ""
+msgstr "Quantitat"
 
 #: ../content/arimport.py:109
 msgid "QuoteID"
-msgstr ""
+msgstr "QuoteID"
 
-#: ../browser/templates/analysisrequest_edit.pt:501
-msgid "R"
-msgstr ""
-
-#: ../browser/templates/analysisrequest_analyses_not_requested.pt:51
+#: ../browser/templates/analysisrequest_analyses_not_requested.pt:54
 #: ../browser/templates/analysisrequest_manage_results.pt:63
-#: ../browser/templates/analysisrequest_view.pt:176
+#: ../browser/templates/analysisrequest_view.pt:82
 msgid "Range Specification"
-msgstr ""
+msgstr "Especificació del rang"
 
-#: ../content/analysisservice.py:281
+#: ../content/analysisservice.py:442
 msgid "Range max"
-msgstr ""
+msgstr "Llindar màxim"
 
-#: ../content/analysisservice.py:280
+#: ../content/analysisservice.py:441
 msgid "Range min"
-msgstr ""
+msgstr "Llindar mínim"
 
-#: ../browser/analysisrequest.py:623 ../browser/client.py:183
+#: ../browser/templates/contact_login_details.pt:84
+msgid "Re-enter the password. Make sure the passwords are identical."
+msgstr "Torneu a introduir la contrasenya i asseguri's que ambdues contrasenyes són idèntiques."
+
+#: ../content/bikasetup.py:42
+#: ../profiles/default/workflows/bika_sample_workflow/definition.xml
+msgid "Receive"
+msgstr "Rep"
+
+#: ../profiles/default/workflows/bika_analysis_workflow/definition.xml
+msgid "Receive Sample"
+msgstr "Rep la mostra"
+
+#: ../profiles/default/workflows/bika_analysis_workflow/definition.xml
+#: ../profiles/default/workflows/bika_ar_workflow/definition.xml
+msgid "Receive sample"
+msgstr "Recepciona la mostra"
+
+#: ../browser/analysisrequest.py:1988
+#: ../browser/sample.py:529
+#: ../profiles/default/workflows/bika_analysis_workflow/definition.xml
 msgid "Received"
-msgstr ""
-
-#: ../content/bikasetup.py:40
-msgid "Recieve"
-msgstr ""
+msgstr "Rebuda"
 
 #: ../browser/templates/referencesample_sticker.pt:47
-#: ../content/worksheettemplate.py:26
+#: ../content/worksheettemplate.py:25
 msgid "Reference"
-msgstr ""
+msgstr "Referència"
 
-#: ../browser/referencesample.py:190 ../browser/referencesupplier.py:25
-#: ../browser/templates/referencesample_view.pt:77
+#: ../browser/referencesample.py:197
+#: ../browser/referencesupplier.py:29
+#: ../browser/templates/referencesample_view.pt:76
 msgid "Reference Definition"
-msgstr ""
+msgstr "Definició de referència"
 
 #: ../controlpanel/bika_referencedefinitions.py:30
 msgid "Reference Definitions"
-msgstr ""
-
-#. Default: "ReferenceDefinition represents a Reference Definition or sample
-#. type used for quality control testing"
-#: ../controlpanel/bika_referencedefinitions.py:31
-msgid "Reference Definitions description"
-msgstr ""
+msgstr "Definicions de referència"
 
 #: ../controlpanel/bika_referencemanufacturers.py:28
 msgid "Reference Manufacturers"
-msgstr ""
+msgstr "Fabricants de referència"
 
-#: ../browser/referencesample.py:105 ../content/analysisspec.py:74
-#: ../content/referencedefinition.py:23
+#: ../browser/referencesample.py:105
+#: ../content/analysisspec.py:72
+#: ../content/referencedefinition.py:22
 msgid "Reference Results"
-msgstr ""
+msgstr "Resultats de referència"
 
-#: ../browser/referencesample.py:106 ../content/analysisspec.py:75
-#: ../content/referencedefinition.py:24
-msgid "Reference Results description"
-msgstr ""
-
-#: ../browser/referencesample.py:171 ../browser/referencesupplier.py:7
+#: ../browser/referencesample.py:179
+#: ../browser/referencesupplier.py:10
 msgid "Reference Samples"
-msgstr ""
-
-#: ../browser/referencesample.py:172 ../browser/referencesupplier.py:8
-msgid "Reference Samples description"
-msgstr ""
+msgstr "Mostres de referència"
 
 #: ../controlpanel/bika_referencesuppliers.py:31
 msgid "Reference Suppliers"
-msgstr ""
+msgstr "Proveïdors de referència"
 
-#: ../controlpanel/bika_referencesuppliers.py:32
-msgid "Reference Suppliers description"
-msgstr ""
-
-#: ../content/referenceanalysis.py:39
+#: ../content/referenceanalysis.py:38
 msgid "Reference Type"
-msgstr ""
+msgstr "Tipus de referència"
+
+#: ../browser/worksheet.py:972
+msgid "Reference sample"
+msgstr "Mostra de referència"
+
+#: ../content/referencedefinition.py:39
+#: ../content/referencesample.py:41
+msgid "Reference sample values are zero or 'blank'"
+msgstr "Els valors per a les mostres de referència són zero o 'blanc'"
 
 #: ../content/referenceanalysis.py:30
 msgid "ReferenceAnalysis ID"
-msgstr ""
+msgstr "ID d'anàlisi de referència"
 
-#. Default: "The ID assigned to the reference analysis"
-#: ../content/referenceanalysis.py:31
-msgid "ReferenceAnalysis ID description"
-msgstr ""
+#: ../controlpanel/bika_referencedefinitions.py:31
+msgid "ReferenceDefinition represents a Reference Definition or sample type used for quality control testing"
+msgstr "ReferenceDefinition representa una definició de referència o un tipus de mostra que s'utilitza per a les proves de control de qualitat"
 
-#: ../content/bikasetup.py:39
+#: ../content/bikasetup.py:41
 msgid "Register"
+msgstr "Registre"
+
+#: ../profiles/default/workflows/bika_analysis_workflow/definition.xml
+#: ../profiles/default/workflows/bika_ar_workflow/definition.xml
+#: ../profiles/default/workflows/bika_sample_workflow/definition.xml
+msgid "Registered"
 msgstr ""
 
+#: ../profiles/default/workflows/bika_cancellation_workflow/definition.xml
 msgid "Reinstate"
-msgstr ""
+msgstr "Reincorpora"
 
-#: ../browser/mailtemplates/analysisrequest_results.pt:396
-#: ../content/arimport.py:148 ../content/arimportitem.py:70
+#: ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml
+#: ../profiles/default/workflows/bika_referenceanalysis_workflow/definition.xml
+#: ../profiles/default/workflows/bika_worksheet_workflow/definition.xml
+msgid "Reject"
+msgstr "Rebutja"
+
+#: ../profiles/default/workflows/bika_worksheet_workflow/definition.xml
+msgid "Reject worksheet"
+msgstr "Rebutja la fulla de treball"
+
+#: ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml
+#: ../profiles/default/workflows/bika_referenceanalysis_workflow/definition.xml
+#: ../profiles/default/workflows/bika_worksheet_workflow/definition.xml
+msgid "Rejected"
+msgstr "Rebutjats"
+
+#: ../browser/mailtemplates/analysisrequest_results.pt:392
+#: ../content/analysisrequest.py:138
+#: ../content/arimport.py:148
 msgid "Remarks"
+msgstr "Comentaris"
+
+#: ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml
+#: ../profiles/default/workflows/bika_referenceanalysis_workflow/definition.xml
+#: ../profiles/default/workflows/bika_worksheetanalysis_workflow/definition.xml
+msgid "Remove"
+msgstr "Elimina"
+
+#: ../browser/reports/reports_qualitycontrol.pt:46
+msgid "Repeated analyses"
 msgstr ""
 
-#: ../browser/templates/reports_productivity.pt:37
+#: ../browser/reports/reports_administration.pt:27
+#: ../browser/reports/reports_productivity.pt:27
+#: ../browser/reports/reports_qualitycontrol.pt:27
 msgid "Report"
-msgstr ""
+msgstr "Informe"
 
-#: ../browser/templates/analysisrequest_edit.pt:401
-#: ../content/analysisrequest.py:113 ../content/analysisservice.py:43
+#: ../browser/analysisrequest.py:442
+#: ../browser/templates/analysisrequest_edit.pt:446
+#: ../content/analysisrequest.py:115
 msgid "Report as Dry Matter"
-msgstr ""
+msgstr "Informa com a matèria seca"
 
-#. Default: "This result can be reported as dry matter"
-#: ../content/analysisrequest.py:114 ../content/analysisservice.py:44
-msgid "Report as Dry Matter description"
-msgstr ""
-
-#: ../browser/templates/reports_administration.pt:30
+#: ../browser/reports/reports_administration.pt:34
 msgid "Report the published analysis requests which have not been invoiced"
-msgstr ""
+msgstr "Informa dels anàlisis publicats que no estan facturats"
 
-#: ../browser/mailtemplates/analysisrequest_results.pt:504
+#: ../browser/mailtemplates/analysisrequest_results.pt:500
 msgid "Reported as dry matter"
+msgstr "Informat com a matèria seca"
+
+#: ../profiles/default/workflows/bika_ar_workflow/definition.xml
+msgid "Republish"
+msgstr "Torna a publicar"
+
+#: ../browser/sample.py:175
+msgid "Request"
 msgstr ""
 
-#: ../browser/client.py:133 ../browser/late_analyses.py:38
-#: ../browser/mailtemplates/analysisrequest_results.pt:231
+#: ../browser/analysisrequest.py:1877
+#: ../browser/client.py:633
+#: ../browser/late_analyses.py:38
 msgid "Request ID"
-msgstr ""
-
-#. Default: "The ID assigned to the client's request by the lab"
-#: ../content/analysisrequest.py:42
-msgid "Request ID description"
-msgstr ""
+msgstr "ID de la sol·licitud"
 
 #: ../browser/templates/analysisrequest_edit.pt:16
 msgid "Request new analyses"
-msgstr ""
+msgstr "Sol·licita noves anàlisis"
 
-#: ../browser/client.py:362 ../browser/templates/sample_edit.pt:56
-#: ../browser/templates/sample_view.pt:53
+#: ../browser/sample.py:260
 msgid "Requests"
-msgstr ""
+msgstr "Sol·licituds"
 
-#: ../browser/templates/contact_login_details.pt:51 ../config.py:142
+#: ../browser/templates/contact_login_details.pt:52
+#: ../config.py:63
 msgid "Required"
-msgstr ""
+msgstr "Camp obligatori"
 
-#: ../content/client.py:69
-msgid "Restrict client to selected categories"
-msgstr ""
+#: ../content/analysisservice.py:132
+msgid "Required Volume"
+msgstr "Volum necessari"
 
-#: ../browser/analyses.py:43
-#: ../browser/mailtemplates/analysisrequest_results.pt:326
+#: ../content/client.py:78
+msgid "Restrict categories"
+msgstr "Restringeix les categories"
+
+#: ../browser/analyses.py:54
+#: ../browser/mailtemplates/analysisrequest_results.pt:322
 #: ../browser/referencesample.py:62
 msgid "Result"
-msgstr ""
+msgstr "Resultat"
 
-#: ../content/analysisservice.py:295
+#: ../content/analysisservice.py:463
 msgid "Result Options"
-msgstr ""
+msgstr "Opcions per a resultats"
 
-#. Default: "Please list all options for the analysis result if you want to
-#. restrict it to specific options only, e.g. 'Positive', 'Negative' and
-#. 'Indeterminable'.  The option's result value must be a number."
-#: ../content/analysisservice.py:304
-msgid "Result Options description"
-msgstr ""
-
-#: ../content/analysisservice.py:299
+#: ../content/analysisservice.py:459
 msgid "Result Value"
-msgstr ""
+msgstr "Valor del resultat"
 
-#: ../browser/mailtemplates/analysisrequest_results.pt:497
+#: ../browser/mailtemplates/analysisrequest_results.pt:493
 msgid "Result out of ${spec} specified range"
-msgstr ""
+msgstr "El resultat està fora del rang especificat a ${spec}"
 
-#: ../browser/calcs.py:228
+#: ../browser/calcs.py:229
 msgid "Result out of range"
+msgstr "El resultat està fora de rang"
+
+#: ../content/preservation.py:24
+#: ../content/sampletype.py:23
+msgid "Retention Period"
 msgstr ""
 
-#: ../content/bikasetup.py:92
-msgid "Results reports"
-msgstr ""
-
-#: ../content/sampletype.py:17
-msgid "Retention period"
-msgstr ""
-
-#. Default: "The period for which Samples of this type can be kept before they
-#. expire and cannot be analysed any further"
-#: ../content/sampletype.py:18
-msgid "Retention period description"
-msgstr ""
-
-#: ../browser/analyses.py:46
-#: ../browser/mailtemplates/analysisrequest_results.pt:367
+#: ../browser/analyses.py:62
+#: ../browser/mailtemplates/analysisrequest_results.pt:363
 #: ../browser/referencesample.py:65
 msgid "Retested"
-msgstr ""
+msgstr "Prova repetida"
 
-#: ../config.py:108
+#: ../profiles/default/workflows/bika_analysis_workflow/definition.xml
+#: ../profiles/default/workflows/bika_ar_workflow/definition.xml
+#: ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml
+msgid "Retract"
+msgstr "Retira"
+
+#: ../profiles/default/workflows/bika_worksheet_workflow/definition.xml
+msgid "Retract worksheet"
+msgstr "Retira la fulla de treball"
+
+#: ../config.py:24
 msgid "SMS"
-msgstr ""
+msgstr "SMS"
 
-#: ../content/bikasetup.py:134
+#: ../content/bikasetup.py:137
 msgid "SMS Gateway Email Address"
-msgstr ""
-
-#. Default: "The email to SMS gateway address. Either a complete email
-#. address, or just the domain, e.g. '@2way.co.za', the contact's mobile phone
-#. number will be prepended to"
-#: ../content/bikasetup.py:135
-msgid "SMS Gateway Email Address description"
-msgstr ""
+msgstr "Adreça de correu electrònic per la porta d'enllaç SMS"
 
 #. Default: "Title"
 #: ../content/person.py:16
 msgid "Salutation"
-msgstr ""
+msgstr "Tractament"
 
-#. Default: "Greeting title eg. Mr, Mrs, Dr"
-#: ../content/person.py:18
-msgid "Salutation description"
-msgstr ""
+#: ../content/bikasetup.py:200
+msgid "Same as the above, but sets the default on analysis services. This setting can be set per individual analysis on its own configuration"
+msgstr "Indiqueu quina és la política d'adjunció de documents per defecte per als serveis d'anàlisi. Podeu modificar aquesta configuració de forma individual per a cada anàlisi."
 
-#: ../browser/client.py:330 ../content/arimportitem.py:15
+#: ../browser/analysisrequest.py:1887
+#: ../content/arimportitem.py:15
 msgid "Sample"
-msgstr ""
+msgstr "Mostra"
+
+#: ../controlpanel/bika_containers.py:29
+msgid "Sample Containers"
+msgstr "Contenidors de mostres"
 
 #: ../content/arimportitem.py:40
 msgid "Sample Date"
-msgstr ""
+msgstr "Data de mostreig"
 
-#: ../browser/analysisrequest.py:615 ../browser/client.py:170
-#: ../skins/bika/portlet_sample_due.pt:22
+#: ../browser/analysisrequest.py:1026
+#: ../profiles/default/workflows/bika_analysis_workflow/definition.xml
+#: ../profiles/default/workflows/bika_ar_workflow/definition.xml
 msgid "Sample Due"
-msgstr ""
+msgstr "Mostra pendent"
 
-#: ../browser/analysisrequest.py:589 ../browser/client.py:360
-#: ../browser/mailtemplates/analysisrequest_results.pt:248
+#: ../browser/analysisrequest.py:359
+#: ../browser/mailtemplates/analysisrequest_results.pt:244
+#: ../browser/sample.py:444
 msgid "Sample ID"
-msgstr ""
+msgstr "ID de mostra"
 
-#: ../content/bikasetup.py:253
+#: ../content/bikasetup.py:273
 msgid "Sample ID Padding"
+msgstr "Mida de l'ID de la mostra"
+
+#: ../browser/sample.py:37
+#: ../browser/templates/analysisrequest_view.pt:52
+#: ../browser/templates/sample.pt:33
+msgid "Sample Partitions"
 msgstr ""
 
-#. Default: "The length of the zero-padding for Sample IDs"
-#: ../content/bikasetup.py:254
-msgid "Sample ID Padding description"
-msgstr ""
-
-#. Default: "The ID assigned to the client's sample by the lab"
-#: ../content/sample.py:32
-msgid "Sample ID description"
-msgstr ""
-
-#: ../browser/analysisrequest.py:597 ../browser/client.py:143
-#: ../browser/mailtemplates/analysisrequest_results.pt:273
+#: ../browser/analysisrequest.py:396
+#: ../browser/mailtemplates/analysisrequest_results.pt:269
+#: ../browser/sample.py:273
 msgid "Sample Point"
-msgstr ""
+msgstr "Punt de mostreig"
 
-#: ../controlpanel/bika_samplepoints.py:32
+#: ../content/sampletype.py:56
+#: ../controlpanel/bika_samplepoints.py:33
 msgid "Sample Points"
+msgstr "Punts de mostreig"
+
+#: ../browser/analysisrequest.py:1035
+#: ../profiles/default/workflows/bika_sample_workflow/definition.xml
+msgid "Sample Received"
 msgstr ""
 
-#: ../browser/analysisrequest.py:595 ../browser/client.py:141
-#: ../browser/mailtemplates/analysisrequest_results.pt:266
+#: ../browser/analysisrequest.py:389
+#: ../browser/client.py:559
+#: ../browser/mailtemplates/analysisrequest_results.pt:262
 msgid "Sample Type"
-msgstr ""
+msgstr "Tipus de mostra"
 
-#: ../content/sampletype.py:34
+#: ../content/sampletype.py:38
 msgid "Sample Type Prefix"
+msgstr "Prefix del tipus de mostra"
+
+#: ../browser/analysisrequest.py:459
+#: ../browser/sample.py:345
+msgid "Sample Type is required"
 msgstr ""
 
-#. Default: "If the sample type you are looking for is not listed here, a
-#. specification for it has been created already. To edit those, navigate 1
-#. level up and select the specification by clicking on the sample type in the
-#. list"
-#: ../content/analysisspec.py:40
-msgid "Sample Type description"
-msgstr ""
-
-#: ../browser/worksheetfolder.py:121 ../controlpanel/bika_sampletypes.py:32
+#: ../browser/worksheetfolder.py:119
+#: ../content/samplepoint.py:60
+#: ../controlpanel/bika_sampletypes.py:33
 msgid "Sample Types"
+msgstr "Tipus de mostres"
+
+#: ../content/sampletype.py:45
+msgid "Sample volume is specified in this unit."
+msgstr "Unitat de mesura del volum de la mostra"
+
+#: ../profiles/default/workflows/bika_analysis_workflow/definition.xml
+#: ../profiles/default/workflows/bika_ar_workflow/definition.xml
+#: ../profiles/default/workflows/bika_sample_workflow/definition.xml
+msgid "Sampled"
 msgstr ""
 
-#: ../browser/client.py:356 ../browser/sample.py:148
+#: ../browser/analysisrequest.py:1909
+#: ../browser/sample.py:53
+msgid "Sampler"
+msgstr ""
+
+#: ../browser/sample.py:434
 msgid "Samples"
-msgstr ""
+msgstr "Mostres"
 
-#: ../browser/client.py:357 ../browser/sample.py:149
-msgid "Samples description"
-msgstr ""
+#: ../content/referencedefinition.py:47
+#: ../content/referencesample.py:49
+#: ../content/sampletype.py:32
+msgid "Samples of this type should be treated as hazardous"
+msgstr "Aquest tipus de mostres són perilloses"
 
-#: ../browser/client.py:147
+#: ../browser/analysisrequest.py:415
+#: ../browser/sample.py:298
+#: ../browser/templates/analysisrequest_edit.pt:325
 msgid "Sampling Date"
-msgstr ""
+msgstr "Data de mostreig"
 
-#: ../content/samplepoint.py:46
-msgid "Sampling Frequency"
-msgstr ""
-
-#. Default: "If a sample is taken periodically at this sample point,  enter
-#. frequency here, e.g. weekly"
 #: ../content/samplepoint.py:47
-msgid "Sampling Frequency description"
-msgstr ""
+msgid "Sampling Frequency"
+msgstr "Freqüència de mostreig"
 
-#: ../browser/templates/analysisrequest_edit.pt:568
-#: ../browser/templates/contact_login_details.pt:104
-#: ../browser/templates/sample_edit.pt:158
+#: ../browser/analysisrequest.py:448
+#: ../browser/sample.py:334
+#: ../browser/templates/analysisrequest_edit.pt:610
 msgid "Save"
+msgstr "Guarda"
+
+#: ../skins/bika/bika_widgets/remarks.pt:69
+msgid "Save remarks"
 msgstr ""
 
-#: ../browser/templates/reports_productivity.pt:473
-#: ../browser/templates/worksheet_add_analyses.pt:106
+#: ../browser/reports/reports_productivity.pt:125
+#: ../browser/templates/worksheet_add_analyses.pt:107
 msgid "Search"
-msgstr ""
+msgstr "Cerca"
 
-#: ../browser/fields/coordinatefield.py:26
+#: ../browser/fields/coordinatefield.py:22
 msgid "Seconds"
-msgstr ""
+msgstr "Segons"
 
-#: ../content/bikasetup.py:50
-msgid "Security"
-msgstr ""
+#: ../content/bikasetup.py:222
+msgid "Select 'Register' if you want labels to be automatically printed when new ARs are created.  Select 'Receive' to print labels when the 'Receive' transition is invoked on ARs or Samples.  Select None to disable automatic printing"
+msgstr "Seleccioneu 'Registrar' si voleu que les etiquetes s'imprimeixin auomàticament quan es creïn noves sol·licituds d'anàlisi. Seleccioneu 'Recepció' per a que les etiquetes s'imprimeixin quan tingui lloc la transició d'estat a la sol·licitud d'anàlisi o a les mostres. No seleccioni cap opció si desitja desactivar la impressió automàtica d'etiquetes"
 
-#: ../browser/analysisrequest.py:573
-#: ../browser/templates/analysisrequest_edit.pt:195
+#: ../browser/analysisrequest.py:976
+#: ../browser/templates/analysisrequest_edit.pt:238
 msgid "Select Sample"
-msgstr ""
+msgstr "Selecciona la mostra"
 
-#: ../browser/templates/analysisrequest_analyses_not_requested.pt:90
+#: ../exportimport/import.py:24
+msgid "Select a data interface"
+msgstr "Seleccioneu una interfície de dades"
+
+#: ../browser/worksheet.py:729
+msgid "Select a destinaton position and the AR to duplicate."
+msgstr "Seleccioneu el destí i la sol·licitud d'anàlisi que voleu duplicar."
+
+#: ../content/department.py:23
+msgid "Select a manager from the available personnel configured under the 'lab contacts' setup item. Departmental managers are referenced on analysis results reports containing analyses by their department."
+msgstr "Seleccioneu algun dels responsables que estan registrats a l'apartat 'Contactes del laboratori. El sistema inclou els noms dels responsables de departament a tots els informes d'anàlisis que en pertanyen."
+
+#: ../browser/templates/analysisrequest_analyses_not_requested.pt:93
 msgid "Select all items"
-msgstr ""
+msgstr "Selecciona tots els elements"
 
-#: ../browser/templates/bika_listing.pt:32
+#: ../content/instrument.py:56
+msgid "Select an Import/Export interface for this instrument."
+msgstr "Seleccioneu una interfície d'importació/exportació per a l'equip."
+
+#: ../content/analysisservice.py:252
+msgid "Select analysis method"
+msgstr "Seleccioneu un mètode d'anàlisi"
+
+#: ../browser/templates/worksheetfolder.pt:33
 msgid "Select analyst"
+msgstr "Selecciona l'analista"
+
+#: ../content/analysisservice.py:510
+msgid "Select any combination of these fields to configure how the LIMS will create sample partitions for new ARs. Adding only a few very general rules will cause the empty fields to be set to computed, empty or default values. Values set above take precendence over those set in this table."
 msgstr ""
 
-#: ../browser/templates/bika_listing.pt:58
+#: ../content/analysisrequest.py:109
+msgid "Select if analyses to be excluded from invoice"
+msgstr "Indiqueu si l'anàlisi s'ha d'excloure de la factura"
+
+#: ../content/pricelist.py:37
+msgid "Select if the descriptions should be included"
+msgstr "Indiqueu si cal incloure les descripcions"
+
+#: ../browser/templates/worksheetfolder.pt:61
 msgid "Select instrument"
-msgstr ""
+msgstr "Selecciona l'equip"
 
-#: ../browser/templates/bika_listing.pt:45
+#: ../browser/worksheet.py:642
+msgid "Select services in the left column to locate reference samples. Select a reference by clicking it. "
+msgstr "Seleccioneu els serveis de la columna de l'esquerra per trobar mostres de referència. Podreu seleccionar-les fent clic a sobre."
+
 #: ../browser/templates/worksheet_add_analyses.pt:46
+#: ../browser/templates/worksheetfolder.pt:48
 msgid "Select template"
+msgstr "Selecciona la plantilla"
+
+#: ../browser/analysisrequest.py:914
+msgid "Select the contacts that will receive analysis results for this request."
+msgstr "Seleccioneu els contactes que voleu que rebin els resultats de la sol·licitud d'anàlisi."
+
+#: ../content/bikasetup.py:77
+msgid "Select the currency the site will use to display prices."
 msgstr ""
 
-#: ../browser/templates/reports_productivity.pt:110
+#: ../content/analysisservice.py:267
+#: ../content/worksheettemplate.py:60
+msgid "Select the preferred instrument"
+msgstr "Seleccioneu l'equip preferit"
+
+#: ../content/bikasetup.py:234
+msgid "Select the size label to print if Automatic label printing is enabled."
+msgstr "Seleccioneu la mida de l'etiqueta d'impressió si heu activat la funcionalitat de impressió automàtica d'etiquetes."
+
+#: ../content/bikasetup.py:148
+msgid "Select this to activate the sample collection workflow steps."
+msgstr ""
+
+#: ../content/worksheettemplate.py:46
+msgid "Select which Analyses should be included on the Worksheet"
+msgstr "Seleccioneu quins anàlisis voleu incloure a la fulla de treball."
+
+#: ../browser/reports/reports_administration.pt:47
+#: ../browser/reports/reports_productivity.pt:103
+#: ../browser/reports/reports_qualitycontrol.pt:80
 msgid "Selection criteria"
+msgstr "Criteri de selecció"
+
+#: ../content/analysisservice.py:131
+msgid "Separate Partition"
 msgstr ""
 
-#: ../content/instrument.py:36
+#: ../content/instrument.py:33
 msgid "Serial No"
-msgstr ""
+msgstr "Nº de serie"
 
-#. Default: "The serial number that uniquely identifies the instrument"
-#: ../content/instrument.py:37
-msgid "Serial No description"
-msgstr ""
-
+#: ../browser/accreditation.py:48
+#: ../browser/analysisrequest.py:807
 #: ../browser/referencesample.py:60
-#: ../browser/templates/worksheet_add_analyses.pt:77
-#: ../browser/widgets/referenceresultswidget.py:36
 msgid "Service"
+msgstr "Servei"
+
+# ../browser/js/analysisrequest.js
+msgid "Service dependencies"
+msgstr "Dependències del servei"
+
+#: ../exportimport/instruments/fiastar.py:131
+msgid "Service keyword ${keyword} not found"
+msgstr "No s'ha trobat la clau de servei ${keyword}"
+
+#: ../content/analysisservice.py:503
+msgid "Service partition will always be stored in one of the selected containers"
 msgstr ""
 
-#: ../browser/worksheet.py:923 ../browser/worksheetfolder.py:119
+#: ../content/analysisservice.py:489
+msgid "Service partition will always require one of the selected preservation methods"
+msgstr ""
+
+#: ../browser/worksheet.py:936
+#: ../browser/worksheetfolder.py:116
 msgid "Services"
-msgstr ""
+msgstr "Serveis"
 
-#: ../browser/client.py:584
+#: ../controlpanel/bika_analysisservices.py:66
+msgid "Services ${services} were successfully created."
+msgstr "Els serveis ${services} s'han creat amb èxit."
+
+#: ../content/bikasetup.py:117
+msgid "Set the maximum number of analysis requests per results email. Too many columns per email are difficult to read for some clients who prefer fewer results per email"
+msgstr "Número màxim de resultats de sol·licituds d'anàlisi per correu electrònic. Tingueu en compte que massa columnes de resultats en un correu electrònic pot comprometre la llegibilitat."
+
+#: ../browser/client.py:546
 msgid "Set to lab defaults"
-msgstr ""
+msgstr "Reestableix als valors per defecte del laboratori"
 
-#: ../controlpanel/bika_analysisspecs.py:29
+#: ../controlpanel/bika_analysisspecs.py:31
 msgid "Set up the laboratory analysis service results specifications"
-msgstr ""
+msgstr "Configura les especificacions del laboratori per als resultats del servei d'anàlisi"
 
-#: ../config.py:167
+#: ../config.py:88
 msgid "Shipping address"
-msgstr ""
+msgstr "Adreça d'enviament"
 
-#: ../content/labcontact.py:19
+#: ../content/client.py:79
+msgid "Show only selected categories in client views"
+msgstr "Només mostra les categories seleccionades a les vistes de client"
+
+#: ../content/labcontact.py:18
 msgid "Signature"
-msgstr ""
+msgstr "Signatura"
 
-#. Default: "Upload a scanned signature to be used on printed analysis results
-#. reports. Ideal size is 250 pixels wide by 150 high"
-#: ../content/labcontact.py:20
-msgid "Signature description"
-msgstr ""
-
-#: ../browser/client.py:676
+#: ../browser/client.py:637
 msgid "Size"
+msgstr "Mida"
+
+# ../browser/js/attachments.js
+msgid "Slot"
 msgstr ""
 
-#: ../content/bikasetup.py:44
+#: ../content/bikasetup.py:46
 msgid "Small"
-msgstr ""
+msgstr "Petit"
 
-#: ../config.py:149
+#: ../config.py:70
 msgid "Special"
-msgstr ""
+msgstr "Especial"
 
-#: ../browser/templates/reports_qualitycontrol.pt:39
+#: ../content/worksheettemplate.py:30
+msgid "Specify the size of the Worksheet, e.g. corresponding to a specific instrument's tray size. Then select an Analysis 'type' per Worksheet position. Where QC samples are selected, also select which Reference Sample should be used. If a duplicate analysis is selected, indicate which sample position it should be a duplicate of"
+msgstr "Mida de la fulla de treball, com per exemple el nombre de posicions per a mostres d'un equip concret. Si seleccioneu mostres de QC, seleccioneu també quines mostres de referència han d'utilitzar-se. Si heu escollit un anàlisi duplicat, indiqueu també en quina posició es troba el duplicat"
+
+#: ../content/analysisservice.py:447
+msgid "Specify the uncertainty value for a given range, e.g. for results in a range with minimum of 0 and maximum of 10, the uncertainty value is 0.5 - a result of 6.67 will be reported as 6.67 +- 0.5. Please ensure successive ranges are continuous, e.g. 0.00 - 10.00 is followed by 10.01 - 20.00, 20.01 - 30 .00 etc."
+msgstr "Valor d'incertesa per un rang de valors concret. Per exemple, un valor d'incertesa de 0.5 per un rang de valors entre 0 i 10 significa que el resultat 6.67 es mostrarà així: '6.67 +- 0.5'. Assegureu-vos que els rangs successius són continus, p. ex. al rang 0.00 - 10.00 l'ha de seguir el rang 10.01 - 20.00 i a aquest últim l'ha de seguir el rang 20.01 - 30.00"
+
+#: ../config.py:49
+msgid "Standard Price"
+msgstr "Preu estàndar"
+
+#: ../browser/reports/reports_qualitycontrol.pt:51
 msgid "Standard analysis QC"
-msgstr ""
+msgstr "Anàlisis de control de qualitat QC estàndar"
 
-#: ../browser/templates/reports_qualitycontrol.pt:41
+#: ../browser/reports/reports_qualitycontrol.pt:56
 msgid "Standard analysis quality control graphs"
-msgstr ""
+msgstr "Gràfics d'anàlisis de control de qualitat estàndar"
 
-#: ../browser/analysisrequest.py:601 ../browser/bika_listing.py:194
-#: ../browser/client.py:153
+#: ../browser/analysisrequest.py:1011
+#: ../browser/bika_listing.py:202
+#: ../browser/client.py:311
 msgid "State"
-msgstr ""
+msgstr "Estat"
 
-#: ../browser/analyses.py:42
-#: ../browser/templates/analysisrequest_analyses_not_requested.pt:100
-#: ../browser/templates/analysisrequest_view.pt:122
+#: ../browser/analyses.py:52
+#: ../browser/templates/analysisrequest_analyses_not_requested.pt:103
+#: ../content/arimport.py:143
 msgid "Status"
-msgstr ""
+msgstr "Estat"
 
-#: ../browser/templates/load_setup_data.pt:51
+#: ../browser/templates/load_setup_data.pt:53
+#: ../profiles/default/workflows/bika_arimport_workflow/definition.xml
 msgid "Submit"
-msgstr ""
+msgstr "Tramet"
 
-#: ../browser/templates/analysisrequest_edit.pt:513 ../content/invoice.py:45
+#: ../profiles/default/workflows/bika_arimport_workflow/definition.xml
+msgid "Submit ARImport"
+msgstr "Tramet una importació de sol·licitud d'anàlisi"
+
+#: ../browser/load_setup_data.py:26
+msgid "Submit a valid Open XML (.XLSX) file containing Bika setup records to continue."
+msgstr "Per continuar, pugeu un fitxer vàlid del tipus Open XML (.xlsx) amb els paràmetres de configuració de Bika."
+
+#: ../profiles/default/workflows/bika_analysis_workflow/definition.xml
+#: ../profiles/default/workflows/bika_ar_workflow/definition.xml
+#: ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml
+msgid "Submit for verification"
+msgstr "Tramet per verificació"
+
+#: ../profiles/default/workflows/bika_worksheet_workflow/definition.xml
+msgid "Submit worksheet"
+msgstr "Tramet la fulla de treball"
+
+#: ../profiles/default/workflows/bika_arimport_workflow/definition.xml
+msgid "Submitted"
+msgstr "Tramitats"
+
+#: ../browser/templates/analysisrequest_edit.pt:556
+#: ../content/invoice.py:49
 #: ../content/invoicelineitem.py:37
 msgid "Subtotal"
-msgstr ""
+msgstr "Subtotal"
 
-#: ../browser/referencesample.py:189
+#: ../browser/referencesample.py:196
 msgid "Supplier"
-msgstr ""
+msgstr "Proveïdor"
 
-#: ../browser/referencesupplier.py:8
-msgid "Supplier Reference Samples description"
-msgstr ""
-
-#: ../content/person.py:31
+#: ../content/person.py:30
 msgid "Surname"
-msgstr ""
+msgstr "Cognoms"
+
+#: ../content/method.py:20
+msgid "Technical description and instructions intended for analysts"
+msgstr "Descripció tècnica i instruccions pels analistes"
 
 #: ../content/arimport.py:120
 msgid "Temperature"
-msgstr ""
+msgstr "Temperatura"
 
-#: ../browser/worksheetfolder.py:115
+#: ../browser/templates/analysisrequest_edit.pt:163
+#: ../browser/worksheetfolder.py:114
 msgid "Template"
-msgstr ""
+msgstr "Plantilla"
 
-#: ../browser/mailtemplates/analysisrequest_results.pt:546
+#: ../browser/mailtemplates/analysisrequest_results.pt:542
 msgid "Test results are at a ${lab_confidence} % confidence level"
+msgstr "Els resultats de la prova tenen una confidència del ${lab_confidence} %"
+
+#: ../browser/analysisrequest.py:1778
+msgid "The AR Profile '${profile_name}' was automatically created."
 msgstr ""
 
-#: ../browser/templates/reports_productivity.pt:98
+#: ../content/artemplate.py:27
+msgid "The AR Profile selection for this template"
+msgstr ""
+
+#: ../content/analysisrequest.py:41
+msgid "The ID assigned to the client's request by the lab"
+msgstr "ID assignat pel laboratori a la sol·licitud del client"
+
+#: ../content/sample.py:33
+msgid "The ID assigned to the client's sample by the lab"
+msgstr "ID assignat pel laboratori a la mostra del client"
+
+#: ../content/referenceanalysis.py:31
+msgid "The ID assigned to the reference analysis"
+msgstr "ID assignat a l'anàlisi de referència"
+
+#: ../profiles/default/workflows/bika_analysis_workflow/definition.xml
+#: ../profiles/default/workflows/bika_ar_workflow/definition.xml
+#: ../profiles/default/workflows/bika_arimport_workflow/definition.xml
+msgid "The ID of the user who performed the last transition"
+msgstr "L'Identificador de l'usuari responsable de la última transició"
+
+#: ../content/laboratory.py:19
+msgid "The Laboratory's web address"
+msgstr "Adreça web del laboratori"
+
+#: ../content/laboratory.py:69
+msgid "The accreditation standard that applies, e.g. ISO 17025"
+msgstr "Normativa de l'acreditació, p. ex. ISO 17025"
+
+#: ../content/arprofile.py:35
+msgid "The analyses included in this profile, grouped per category"
+msgstr "Anàlisis del perfil, agrupats per categoria"
+
+#: ../content/bikasetup.py:170
+msgid "The analysis to be used for determining dry matter."
+msgstr "L'anàlisi que cal utilitzar per determinar la matèria seca"
+
+#: ../browser/reports/reports_productivity.pt:89
 msgid "The attachments linked to analysis requests and analyses"
+msgstr "Els fitxers adjunts enllaçats a les sol·licituds d'anàlisi i a les anàlisis"
+
+#: ../content/analysisservice.py:356
+msgid "The category the analysis service belongs to"
+msgstr "Categoria a la que pertany el servei d'anàlisi"
+
+#: ../content/instrument.py:22
+msgid "The commercial 'make' of the instrument"
+msgstr "Marca comercial de l'equip"
+
+#: ../content/bikasetup.py:86
+msgid "The discount percentage entered here, is applied to the prices for clients flagged as 'members', normally co-operative members or associates deserving of this discount"
+msgstr "Aquest percentatge de descompte només s'aplicarà als clients que estiguin etiquetats com a 'clients habituals'."
+
+#: ../content/bikasetup.py:138
+msgid "The email to SMS gateway address. Either a complete email address, or just the domain, e.g. '@2way.co.za', the contact's mobile phone number will be prepended to"
+msgstr "Correu electrònic a la porta d'enllaç SMS."
+
+#: ../content/bikasetup.py:299
+msgid "The full URL: http://URL/path:port"
+msgstr "L'adreça URL completa: http://URL/ruta:port"
+
+#: ../content/samplepoint.py:41
+msgid "The height or depth at which the sample has to be taken"
+msgstr "Alçada o profunditat de mostreig"
+
+#: ../content/instrument.py:40
+msgid "The instrument's calibration certificate and number"
+msgstr "Certificat i número de calibrat de l'equip"
+
+#: ../content/instrument.py:28
+msgid "The instrument's model number"
+msgstr "Número de model de l'equip"
+
+#: ../browser/accreditation.py:37
+msgid "The lab is not accredited, or accreditation has not been configured. "
+msgstr "El laboratori no està acreditat o no s'ha configurat."
+
+#: ../content/analysiscategory.py:27
+#: ../content/analysisservice.py:422
+#: ../content/labcontact.py:33
+msgid "The laboratory department"
+msgstr "Departament del laboratori"
+
+#: ../profiles/default/workflows/bika_analysis_workflow/definition.xml
+#: ../profiles/default/workflows/bika_ar_workflow/definition.xml
+#: ../profiles/default/workflows/bika_arimport_workflow/definition.xml
+msgid "The last transition"
+msgstr "Última transició"
+
+#: ../content/bikasetup.py:274
+msgid "The length of the zero-padding for Sample IDs"
+msgstr "Número de zeros de farciment pels identificadors de mostra."
+
+#: ../content/bikasetup.py:283
+msgid "The length of the zero-padding for the AR number in AR IDs"
+msgstr "Número de zeros de farciment pel número i identificador d'una sol·licitud d'anàlisi"
+
+#: ../content/sampletype.py:57
+msgid "The list of sample points from which this sample type can be collected.  If no sample points are selected, then all sample points are available."
 msgstr ""
 
-#: ../browser/templates/reports_productivity.pt:44
+#: ../content/samplepoint.py:61
+msgid "The list of sample types that can be collected at this sample point.  If no sample types are selected, then all sample types are available."
+msgstr ""
+
+#: ../content/analysisservice.py:197
+msgid "The measurement units for this analysis service' results, e.g. mg/l, ppm, dB, mV, etc."
+msgstr "Les unitats de mesura pel resultat d'aquest servei d'anàlisi, com mg/l, ppm, dB, mV, etc."
+
+#: ../content/laboratory.py:44
+msgid "The name of the accreditation body corresponding to the abbreviation above, e.g. South African National Accreditation Service for SANAS"
+msgstr "El nom de l'entitat acreditadora que correspon a l'abreviatura de dalt, p. ex. Entidad Nacional de Acreditación per ENAC"
+
+#: ../browser/reports/reports_productivity.pt:34
 msgid "The number of analyses requested per analysis service"
-msgstr ""
+msgstr "El número d'anàlisis sol·licitats per servei d'anàlisi"
 
-#: ../browser/templates/reports_productivity.pt:54
+#: ../browser/reports/reports_productivity.pt:45
 msgid "The number of analyses requested per sample type"
-msgstr ""
+msgstr "El número d'anàlisis sol·licitats per tipus de mostra"
 
-#: ../browser/templates/reports_productivity.pt:65
+#: ../content/bikasetup.py:57
+msgid "The number of days before a password expires. 0 disables password expiry"
+msgstr "Número de dies abans que caduqui la contrasenya. Si desitja que la contrasenya no caduqui mai, introdueixi el valor 0."
+
+#: ../content/bikasetup.py:211
+msgid "The number of days before a sample expires and cannot be analysed any more. This setting can be overwritten per individual sample type in the sample types setup"
+msgstr "El número de dies abans que caduqui la mostra, sense que pugui ser posteriorment analitzada. Aquesta propietat es pot sobreescriure individualment per a cada tipus de mostra a la pàgina de configuració de tipus de mostres."
+
+#: ../content/bikasetup.py:66
+msgid "The number of minutes before a user is automatically logged off. 0 disables automatic log-off"
+msgstr "El número de minuts de durada de la sessió d'usuari abans que el sistema l'expulsi automàticament. Si desitja desactivar l'expulsió automàtica d'usuaris, introdueixi el valor 0."
+
+#: ../browser/reports/reports_productivity.pt:56
 msgid "The number of requests and analyses"
-msgstr ""
+msgstr "El número de sol·licituds i d'anàlisis"
 
-#: ../browser/templates/reports_productivity.pt:77
+#: ../browser/reports/reports_productivity.pt:68
 msgid "The number of requests and analyses per client"
-msgstr ""
+msgstr "El número de sol·licituds i d'anàlisis per client"
 
-#: ../browser/templates/reports_productivity.pt:88
+#: ../content/sampletype.py:24
+msgid "The period for which un-preserved samples of this type can be kept before they expire and cannot be analysed any further"
+msgstr "Període de temps durant el qual es poden mantenir les mostres en un estat de no preservació abans que no caduquin i no puguin ser analitzades."
+
+#: ../content/analysisservice.py:372
+msgid "The price charged per analysis for clients who qualify for bulk discounts"
+msgstr "El preu per anàlisi que s'aplicarà als clients que tinguin assignat 'descompte per volum'"
+
+#: ../content/arprofile.py:22
+msgid "The profile's keyword is used to uniquely identify it in import files. It has to be unique, and it may not be the same as any Calculation Interim field ID."
+msgstr "La paraula clau del perfil s'utilitza per a identificar-lo unívocament en els fitxers d'importació. Ha de ser únic, i no pot ser igual a cap dels identificadors utilitzats en els camps d'entrada per a càlculs."
+
+#: ../content/laboratory.py:77
+msgid "The reference code issued to the lab by the accreditation body"
+msgstr "Codi de referència que l'entitat acreditadora ha concedit al laboratori."
+
+#: ../content/analysisservice.py:339
+msgid "The results of field analyses are captured during sampling at the sample point, e.g. the temperature of a water sample in the river where it is sampled. Lab analyses are done in the laboratory"
+msgstr "Els resultats per al camp d'anàlisi es capturaran durant el mostreig. Per exemple, la temperatura d'una mostra d'aigua del riu d'on s'ha recollit."
+
+#: ../content/instrument.py:34
+msgid "The serial number that uniquely identifies the instrument"
+msgstr "Número de sèrie que identifica unívocament l'equip"
+
+#: ../content/bikasetup.py:189
+msgid "The system wide default configuration to indicate whether file attachments are required, permitted or not per analysis request"
+msgstr "La configuració per defecte del sistema respecte de si els arxius adjunts a una sol·licitud d'anàlisi són un requisit, estan permesos o no. "
+
+#: ../browser/reports/reports_productivity.pt:79
 msgid "The turnaround times of analyses"
-msgstr ""
+msgstr "El temps de resposta de les anàlisis"
 
-#: ../browser/templates/analysisrequest_analyses_not_requested.pt:77
+#: ../content/analysisservice.py:234
+msgid "The unique keyword used to identify the analysis service in import files of bulk AR requests and results imports from instruments. It is also used to identify dependent analysis services in user defined results calculations"
+msgstr "La paraula clau única utilitzada per identificar el servei d'anàlisi en els fitxers d'importació per a sol·licituds d'anàlisis i importacions de resultats des d'equips."
+
+#: ../browser/templates/analysisrequest_analyses_not_requested.pt:80
 msgid "There are no results."
-msgstr ""
+msgstr "No s'han trobat resultats."
 
 #: ../subscribers/analysisservice.py:39
-msgid ""
-"This Analysis Service cannot be activated because it's calculation is "
-"inactive."
-msgstr ""
+msgid "This Analysis Service cannot be activated because it's calculation is inactive."
+msgstr "No s'ha pogut activar el servei d'anàlisi perquè el càlcul associat està desactivat."
 
 #: ../subscribers/analysisservice.py:27
-msgid ""
-"This Analysis Service cannot be deactivated because one or more active "
-"calculations list it as a dependency"
+msgid "This Analysis Service cannot be deactivated because one or more active calculations list it as a dependency"
+msgstr "No s'ha pogut desactivar el servei d'anàlisi perquè com a mínim hi ha un càlcul activat que en depèn."
+
+#: ../browser/mailtemplates/analysisrequest_results.pt:533
+msgid "This document shall not be reproduced except in full, without the written approval of ${name_lab}"
+msgstr "Aquest document no es pot reproduïr sense el consentiment de ${name_lab}, a excepció de la reproducció en la seva totalitat"
+
+#: ../content/preservation.py:40
+msgid "This preservation requires the sample partition to be stored in one of these container types. Choose multiple values by holding CTRL and clicking."
+msgstr "Per a les particions de les mostres cal que utilitzeu un d'aquests tipus de contenidors. Podeu seleccionar múltiples valor prement simultàniament el botó 'Ctrl' i fent clic sobre l'element."
+
+#: ../content/analysisrequest.py:116
+#: ../content/analysisservice.py:213
+#: ../content/artemplate.py:62
+msgid "This result can be reported as dry matter"
+msgstr "Aquest resultat es pot indicar com a matèria seca"
+
+#: ../content/analysisservice.py:475
+msgid "This service will always be assigned it's own separate sample partition."
 msgstr ""
 
-#: ../browser/mailtemplates/analysisrequest_results.pt:537
-msgid ""
-"This document shall not be reproduced except in full, without the written "
-"approval of ${name_lab}"
-msgstr ""
+#: ../content/laboratory.py:26
+msgid "This value is reported at the bottom of all published results"
+msgstr "El valor s'indica al capdavall de tots els resultats publicats"
 
-#: ../browser/bika_listing.py:192 ../browser/client.py:552
-#: ../browser/referencesample.py:188
+# ../browser/js/client.js
+msgid "This will remove all existing client analysis specifications and create copies of all lab specifications. Are you sure you want to do this?"
+msgstr "Amb aquesta acció eliminarà totes les especificacions d'anàlisis de client i crearà còpies de totes les especificacions del laboratori. Esteu segur que voleu continuar?"
+
+#: ../profiles/default/workflows/bika_analysis_workflow/definition.xml
+#: ../profiles/default/workflows/bika_ar_workflow/definition.xml
+#: ../profiles/default/workflows/bika_arimport_workflow/definition.xml
+msgid "Time of the last transition"
+msgstr "Data i hora de la última transició"
+
+#: ../browser/bika_listing.py:200
+#: ../browser/client.py:358
+#: ../browser/referencesample.py:195
 msgid "Title"
+msgstr "Títol"
+
+#: ../profiles/default/workflows/bika_analysis_workflow/definition.xml
+#: ../profiles/default/workflows/bika_ar_workflow/definition.xml
+#: ../profiles/default/workflows/bika_sample_workflow/definition.xml
+msgid "To Be Preserved"
 msgstr ""
 
-#: ../browser/client.py:233 ../browser/worksheetfolder.py:181
-#: ../skins/bika/portlet_to_be_verified.pt:33
+#: ../profiles/default/workflows/bika_analysis_workflow/definition.xml
+#: ../profiles/default/workflows/bika_ar_workflow/definition.xml
+#: ../profiles/default/workflows/bika_sample_workflow/definition.xml
+msgid "To Be Sampled"
+msgstr ""
+
+#: ../browser/analysisrequest.py:2011
+#: ../browser/worksheetfolder.py:184
+#: ../profiles/default/workflows/bika_ar_workflow/definition.xml
 msgid "To be verified"
-msgstr ""
+msgstr "Pendent de verificar"
 
-#: ../browser/templates/analysisrequest_edit.pt:549 ../content/invoice.py:59
-#: ../content/invoicelineitem.py:51
+#: ../content/bikasetup.py:128
+msgid "Too many AR columns per fax will see the font size minimised and could render faxes illegible. 4 ARs maximum per page is recommended"
+msgstr "Tingueu present que si hi ha massa columnes per als resultats d'una sol·licitud d'anàlisi que ha de ser enviada per fax, aquesta pot ser illegible. És recomanable utilitzar un màxim de 4 sol·licituds d'anàlisi per pàgina."
+
+#: ../browser/reports/analysesperservice.pt:105
+#: ../browser/templates/analysisrequest_edit.pt:592
+#: ../content/invoice.py:63
 msgid "Total"
-msgstr ""
+msgstr "Total"
 
-#: ../controlpanel/bika_labproducts.py:49
+#: ../controlpanel/bika_labproducts.py:54
 msgid "Total Price"
-msgstr ""
+msgstr "Import total"
 
-#: ../content/analysisservice.py:88 ../content/labproduct.py:45
+#: ../content/analysisservice.py:387
+#: ../content/labproduct.py:43
 msgid "Total price"
-msgstr ""
+msgstr "Import total"
 
-#: ../browser/bika_listing.py:190 ../controlpanel/bika_instruments.py:41
+#: ../browser/bika_listing.py:198
+#: ../controlpanel/bika_instruments.py:41
 msgid "Type"
-msgstr ""
+msgstr "Tipus"
 
-#: ../content/analysisservice.py:272
-msgid "Uncertainties"
-msgstr ""
+#: ../browser/analysisrequest.py:2138
+#: ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml
+#: ../profiles/default/workflows/bika_referenceanalysis_workflow/definition.xml
+msgid "Unassigned"
+msgstr "Sense assignar"
 
-#: ../content/analysisservice.py:285
+#: ../content/analysisservice.py:446
 msgid "Uncertainty"
-msgstr ""
+msgstr "Incertesa"
 
-#. Default: "Specify the uncertainty value for a given range, e.g. for results
-#. in a range with minimum of 0 and maximum of 10, the uncertainty value is
-#. 0.5 - a result of 6.67 will be reported as 6.67 +- 0.5. Please ensure
-#. successive ranges are continuous, e.g. 0.00 - 10.00 is followed by 10.01 -
-#. 20.00, 20.01 - 30 .00 etc."
-#: ../content/analysisservice.py:286
-msgid "Uncertainty description"
-msgstr ""
-
-#: ../content/analysisservice.py:282
+#: ../content/analysisservice.py:443
 msgid "Uncertainty value"
-msgstr ""
+msgstr "Valor d'incertesa"
 
+#: ../browser/accreditation.py:53
 #: ../browser/fields/interimfieldsfield.py:17
-#: ../browser/templates/analysisrequest_analyses_not_requested.pt:98
-#: ../content/analysisservice.py:25
+#: ../browser/templates/analysisrequest_analyses_not_requested.pt:101
 msgid "Unit"
-msgstr ""
-
-#. Default: "The measurement units for this analysis service, e.g. mg/l, ppm,
-#. dB, mV, etc."
-#: ../content/analysisservice.py:26
-msgid "Unit description"
-msgstr ""
+msgstr "Unitat"
 
 #: ../content/supplyorderitem.py:32
 msgid "Unit price"
-msgstr ""
+msgstr "Preu per unitat"
 
-#: ../content/bikasetup.py:272
+#: ../content/labcontact.py:19
+msgid "Upload a scanned signature to be used on printed analysis results reports. Ideal size is 250 pixels wide by 150 high"
+msgstr "Carrega una firma digitalitzada per a que sigui impresa en els informes de resultats. Les dimensions recomanades són 250px d'amplada per 150px d'alçada"
+
+#: ../content/bikasetup.py:290
 msgid "Use external ID server"
-msgstr ""
+msgstr "Utilitza un ID server extern"
 
-#. Default: "Check this if you want to use a seperate ID server. Prefixes are
-#. configurable seperately in each Bika site."
-#: ../content/bikasetup.py:273
-msgid "Use external ID server description"
-msgstr ""
+#: ../content/instrument.py:67
+msgid "Use this field to pass arbitrary parameters to the export/import modules."
+msgstr "Utilitzeu aquests camps per passar paràmetres arbitraris als mòdul d'importació i d'exportació."
 
-#: ../browser/log.py:38
+#: ../browser/log.py:41
 msgid "User"
-msgstr ""
+msgstr "Usuari"
 
-#: ../browser/templates/contact_login_details.pt:50
+#: ../browser/templates/contact_login_details.pt:51
 msgid "User Name"
-msgstr ""
+msgstr "Nom d'usuari"
 
-#: ../browser/templates/analysisrequest_edit.pt:531
-#: ../content/analysisservice.py:80 ../content/invoicelineitem.py:44
+#: ../content/bikasetup.py:106
+msgid "Using too few data points does not make statistical sense. Set an acceptable minimum number of results before QC statistics will be calculated and plotted"
+msgstr "Tingueu present que l'ús d'un número baix de punts de dades sol implicar que els resultats de càlcul estadístic no tinguin sentit. Establiu un número mínim acceptable de resultats abans que s'executin els càlculs estadístics de Control de Qualitat (QC)"
+
+#: ../browser/templates/analysisrequest_edit.pt:574
+#: ../content/analysisservice.py:379
+#: ../content/invoicelineitem.py:44
 msgid "VAT"
-msgstr ""
+msgstr "IVA"
 
-#: ../content/analysisservice.py:96 ../content/bikasetup.py:85
-#: ../content/invoice.py:52
+#: ../content/analysisservice.py:395
+#: ../content/bikasetup.py:95
+#: ../content/invoice.py:56
 msgid "VAT %"
-msgstr ""
+msgstr "% IVA"
 
-#. Default: "Enter percentage value eg. 14.0"
-#: ../content/analysisservice.py:97 ../content/labproduct.py:26
-msgid "VAT % description"
-msgstr ""
-
-#: ../controlpanel/bika_labproducts.py:47
+#: ../controlpanel/bika_labproducts.py:51
 msgid "VAT Amount"
-msgstr ""
+msgstr "IVA"
 
-#: ../content/organisation.py:21
+#: ../content/organisation.py:24
 msgid "VAT number"
-msgstr ""
+msgstr "CIF"
 
-#: ../content/pricelist.py:48
+#: ../content/pricelist.py:45
 msgid "Valid from"
-msgstr ""
+msgstr "Vàlid des de"
 
-#: ../content/pricelist.py:57
+#: ../content/pricelist.py:54
 msgid "Valid until"
-msgstr ""
+msgstr "Vàlid fins"
 
-#: ../validators.py:328
+#: ../validators.py:140
+msgid "Validation failed: '${keyword}': duplicate keyword"
+msgstr "La validació ha fallat: '${keyword}': paraula clau duplicada"
+
+#: ../validators.py:86
+msgid "Validation failed: '${title}': This keyword is already in use by calculation '${used_by}'"
+msgstr "La validació ha fallat: '${title}': La paraula clau ja està en ús pel càlcul '${used_by}'"
+
+#: ../validators.py:69
+msgid "Validation failed: '${title}': This keyword is already in use by service '${used_by}'"
+msgstr "La validació ha fallat: '${title}': La paraula clau ja es troba en ús pel servei '${used_by}'"
+
+#: ../validators.py:144
+msgid "Validation failed: '${title}': duplicate title"
+msgstr "La validació ha fallat:  '${title}': títol duplicat"
+
+#: ../validators.py:34
+msgid "Validation failed: '${value}' is not unique"
+msgstr "La validació ha fallat: '${value}' no és únic"
+
+#: ../validators.py:294
 msgid "Validation failed: Bearing must be E/W"
-msgstr ""
+msgstr "Ha fallat la validació: l'orientació ha de ser E/W (Est/Oest)"
+
+#: ../validators.py:283
+msgid "Validation failed: Bearing must be N/S"
+msgstr "Ha fallat la validació: l'orientació ha de ser N/S"
+
+#: ../validators.py:219
+msgid "Validation failed: Keyword '${keyword}' is invalid"
+msgstr "La validació ha fallat: la paraula clau '${keyword}' no és vàlida"
 
 #: ../validators.py:323
-msgid "Validation failed: Bearing must be N/S"
-msgstr ""
-
-#: ../validators.py:359
 msgid "Validation failed: Result Values must be numbers"
-msgstr ""
+msgstr "Ha fallat la validació: el valors resultat han de ser de tipus numèric"
 
-#: ../validators.py:300
-msgid "Validation failed: degrees must be 0 - 90"
-msgstr ""
+#: ../validators.py:363
+msgid "Validation failed: The selection requires the following categories to be selected: ${categories}"
+msgstr "La validació ha fallat: és imprescindible que seleccioneu les categories següents: ${categories}"
+
+#: ../validators.py:174
+msgid "Validation failed: column title '${title}' must have keyword '${keyword}'"
+msgstr "La validació ha fallat: la columna títol '${title}' ha de tenir la paraula clau '${keyword}'"
+
+#: ../validators.py:290
+msgid "Validation failed: degrees is 180; minutes must be zero"
+msgstr "Error de validació: els graus són 180; el valor per a minuts ha de ser zero"
+
+#: ../validators.py:292
+msgid "Validation failed: degrees is 180; seconds must be zero"
+msgstr "Error de validació: els graus són 180; el valor de segons ha de ser zero"
+
+#: ../validators.py:279
+msgid "Validation failed: degrees is 90; minutes must be zero"
+msgstr "Error de validació: els graus són 90; el valor de minuts ha de ser zero"
+
+#: ../validators.py:281
+msgid "Validation failed: degrees is 90; seconds must be zero"
+msgstr "Error de validació: els graus són 90; el valor de segons ha de ser zero"
 
 #: ../validators.py:287
+msgid "Validation failed: degrees must be 0 - 180"
+msgstr "Error de validació: el valor dels graus ha de ser entre 0 i 180"
+
+#: ../validators.py:276
+msgid "Validation failed: degrees must be 0 - 90"
+msgstr "Ha fallat la validació: els graus han d'estar entre 0 i 90"
+
+#: ../validators.py:254
 msgid "Validation failed: degrees must be numeric"
-msgstr ""
+msgstr "Ha fallat la validació: els graus han de ser de tipus numèric"
 
-#: ../validators.py:62
+#: ../validators.py:182
+msgid "Validation failed: keyword '${keyword}' must have column title '${title}'"
+msgstr "La validació ha fallat: la paraula clau '${keyword}' ha de tenir '${title}' com a títol de columna"
+
+#: ../validators.py:60
 msgid "Validation failed: keyword contains invalid characters"
-msgstr ""
+msgstr "Ha fallat la validació: hi han caràcters no vàlids en l'identificador"
 
-#: ../validators.py:305
+#: ../validators.py:267
 msgid "Validation failed: minutes must be 0 - 59"
-msgstr ""
+msgstr "Ha fallat la validació: els minuts han d'estar entre 0 i 59"
 
-#: ../validators.py:291
+#: ../validators.py:259
 msgid "Validation failed: minutes must be numeric"
-msgstr ""
+msgstr "Ha fallat la validació: els minuts han de ser de tipus numèric"
 
-#: ../validators.py:314
-msgid "Validation failed: minutes must be zero"
-msgstr ""
-
-#: ../validators.py:310
+#: ../validators.py:270
 msgid "Validation failed: seconds must be 0 - 59"
-msgstr ""
+msgstr "Ha fallat la validació: els segons han d'estar entre 0 i 59"
 
-#: ../validators.py:295
+#: ../validators.py:264
 msgid "Validation failed: seconds must be numeric"
-msgstr ""
+msgstr "Ha fallat la validació: els segons han de ser de tipus numèric"
 
-#: ../validators.py:316
-msgid "Validation failed: seconds must be zero"
-msgstr ""
-
-#: ../browser/client.py:499
+#: ../browser/client.py:309
 msgid "Validity"
-msgstr ""
+msgstr "Validesa"
 
-#: ../content/instrument.py:71
+#: ../content/instrument.py:64
 msgid "Value"
-msgstr ""
+msgstr "Valor"
 
-#: ../browser/client.py:247 ../browser/worksheetfolder.py:197
-#: ../skins/bika/portlet_verified.pt:22
+#: ../browser/analysisrequest.py:2036
+#: ../browser/worksheetfolder.py:201
+#: ../profiles/default/workflows/bika_analysis_workflow/definition.xml
 msgid "Verified"
-msgstr ""
+msgstr "Verificat"
 
-#: ../browser/mailtemplates/analysisrequest_results.pt:299
-#: ../browser/templates/analysisrequest_view.pt:149
+#: ../browser/mailtemplates/analysisrequest_results.pt:295
 msgid "Verified by"
-msgstr ""
+msgstr "Verificat per"
 
-#: ../browser/log.py:36
+#: ../profiles/default/workflows/bika_analysis_workflow/definition.xml
+#: ../profiles/default/workflows/bika_ar_workflow/definition.xml
+#: ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml
+msgid "Verify"
+msgstr "Verifica"
+
+#: ../browser/log.py:39
 msgid "Version"
-msgstr ""
+msgstr "Versió"
 
 #: ../skins/bika/update_version_on_edit.cpy:28
 msgid "Versioning for this file has been disabled because it is too large"
-msgstr ""
+msgstr "S'ha desactivat el registre de versions d'aquest fitxer perquè és massa gran."
 
-#: ../content/labproduct.py:14 ../controlpanel/bika_labproducts.py:41
+#: ../content/labproduct.py:13
+#: ../controlpanel/bika_labproducts.py:42
 msgid "Volume"
-msgstr ""
+msgstr "Volum"
 
-#: ../browser/referencesample.py:61 ../browser/worksheetfolder.py:111
+#: ../content/laboratory.py:61
+msgid "Web address for the accreditation body"
+msgstr "Adreça de correu electrònic de l'entitat acreditadora"
+
+#: ../content/analysisservice.py:317
+msgid "When the results of duplicate analyses on worksheets, carried out on the same sample, differ with more than this percentage, an alert is raised"
+msgstr "Si la diferència percentual entre els resultats d'una rèplica d'anàlisis en la fulla de treball per a la mateixa mostra i anàlisis, el sistema ho notificarà mitjançant una alerta."
+
+#: ../browser/referencesample.py:61
+#: ../browser/worksheetfolder.py:109
+#: ../skins/bika/selection_macros.pt:116
 msgid "Worksheet"
-msgstr ""
+msgstr "Full de treball"
 
-#: ../content/worksheettemplate.py:30
+#: ../content/worksheettemplate.py:29
 msgid "Worksheet Layout"
-msgstr ""
+msgstr "Disseny de la fulla de treball"
 
-#. Default: "Specify the size of the Worksheet, e.g. corresponding to a
-#. specific instrument's tray size. Then select an Analysis 'type' per
-#. Worksheet position. Where QC samples are selected, also select which
-#. Reference Sample should be used. If a duplicate analysis is selected,
-#. indicate which sample position it should be a duplicate of"
-#: ../content/worksheettemplate.py:31
-msgid "Worksheet Layout description"
-msgstr ""
-
-#: ../controlpanel/bika_worksheettemplates.py:32
+#: ../controlpanel/bika_worksheettemplates.py:31
 msgid "Worksheet Templates"
-msgstr ""
-
-#: ../browser/worksheet.py:534
-msgid "Worksheet updated."
-msgstr ""
-
-#: ../browser/worksheetfolder.py:78 ../skins/bika/portlet_to_be_verified.pt:65
-msgid "Worksheets"
-msgstr ""
+msgstr "Plantilles per a fulles de treball"
 
 #: ../browser/worksheetfolder.py:79
-msgid "Worksheets description"
-msgstr ""
+#: ../skins/bika/portlet_to_be_verified.pt:63
+msgid "Worksheets"
+msgstr "Fulles de treball"
 
-#: ../browser/worksheet.py:980
+#: ../browser/analysisservice.py:74
+msgid "Yes"
+msgstr "Sí"
+
+#: ../browser/worksheet.py:999
 msgid "You must select an instrument"
-msgstr ""
+msgstr "Heu de seleccionar un equip "
 
-#: ../skins/bika/accreditation.pt:40
-msgid "accreditation_analyses_accredited"
-msgstr ""
+#: ../browser/templates/referencesample_view.pt:131
+msgid "activate"
+msgstr "activa"
 
-#: ../skins/bika/accreditation.pt:37
-msgid "accreditation_body_description"
-msgstr ""
+#: ../browser/templates/analysisrequest_analyses_not_requested.pt:61
+msgid "client"
+msgstr "client"
 
-#. Default: "Enter an email address. This is necessary in case the password is
-#. lost. We respect your privacy, and will not give the address away to any
-#. third parties or expose it anywhere."
-#: ../browser/templates/contact_login_details.pt:95
-msgid "contact_login_email"
-msgstr ""
+#. The variables used here are the same as used in the strftime formating.
+#. Supported are ${A}, ${a}, ${B}, ${b}, ${H}, ${I}, ${m}, ${d}, ${M}, ${p},
+#. ${S}, ${Y}, ${y}, ${Z}, each used as variable in the msgstr.
+#. For example: "${A} ${d}. ${B} ${Y}, ${H}:${M} ${Z}"
+#. In english speaking countries default is:
+#. ${b} ${d}, ${Y} ${I}:${M} ${p}
+msgid "date_format_long"
+msgstr "format_data_llarg"
 
-#. Default: "${contact_fullname} can log into the LIMS by using
-#. ${contact_username} as username. Contacts must change their own passwords.
-#. If a password is forgotten a contact can request a new password from the
-#. login form."
-#: ../browser/templates/contact_login_details.pt:19
-msgid "contact_login_help"
-msgstr ""
+msgid "date_format_short"
+msgstr "format_data_curt"
 
-#. Default: "Re-enter the password. Make sure the passwords are identical."
-#: ../browser/templates/contact_login_details.pt:83
-msgid "contact_login_password"
-msgstr ""
+#: ../browser/templates/referencesample_view.pt:124
+msgid "deactivate"
+msgstr "desactiva"
 
-#. Default: "Enter a user name, usually something like 'jsmith'. No spaces or
-#. special characters. Usernames and passwords are case sensitive, make sure
-#. the caps lock key is not enabled. This is the name used to log in."
-#: ../browser/templates/contact_login_details.pt:54
-msgid "contact_login_username"
-msgstr ""
+#: ../browser/calcs.py:235
+msgid "error"
+msgstr "error"
 
-#: ../browser/referencesupplier.py:135
-msgid "contacts_descr"
-msgstr ""
+#: ../browser/templates/analysisrequest_analyses_not_requested.pt:55
+msgid "lab"
+msgstr "laboratori"
 
-#. Default: "Contacts"
-#: ../browser/referencesupplier.py:134
-msgid "contacts_title"
-msgstr ""
-
-#: ../browser/calcs.py:234
-msgid "error:"
-msgstr ""
-
-#. Default: "Indet"
-#: ../browser/analyses.py:213 ../browser/calcs.py:137
-msgid "indeterminate_abbrev"
-msgstr ""
-
-#. Default: "Indeterminate result"
-#: ../browser/analyses.py:218 ../browser/calcs.py:43
-msgid "indeterminate_result"
-msgstr ""
-
-#. Default: "Blank: "
-#: ../content/referencesample.py:166
-msgid "indicator_blank"
-msgstr ""
-
-#. Default: " (!)"
-#: ../content/referencesample.py:167
-msgid "indicator_hazardous"
-msgstr ""
-
-#. Default: "${id} is not a valid sample ID"
-#: ../browser/analysisrequest.py:1068
-msgid "invalid_sample_id"
-msgstr ""
-
-#. Default: "${sp} is not a valid sample point"
-#: ../browser/analysisrequest.py:928
-msgid "invalid_sample_point"
-msgstr ""
-
-#. Default: "${st} is not a valid sample type"
-#: ../browser/analysisrequest.py:920
-msgid "invalid_sample_type"
-msgstr ""
-
-#. Default: "Advanced..."
-#: ../browser/menu.py:211
-msgid "label_advanced"
-msgstr ""
-
-#. Default: "Submit a valid Open XML (.XLSX) file containing Bika setup
-#. records to continue."
-#: ../browser/load_setup_data.py:27
-msgid "load_setup_data_descr"
-msgstr ""
-
-#: ../browser/load_setup_data.py:29
-msgid "load_setup_data_helptext"
-msgstr ""
-
-#. Default: "No file data submitted.  Please submit  a valid Open XML
-#. Spreadsheet (.xlsx) file."
-#: ../browser/load_setup_data.py:58
-msgid "load_setup_data_no_input_file"
-msgstr ""
-
-#. Default: "Setup data loaded successfully"
-#: ../browser/load_setup_data.py:129
-msgid "load_setup_data_success"
-msgstr ""
-
-#. Default: "Load Setup Data"
-#: ../browser/load_setup_data.py:26
-msgid "load_setup_data_title"
-msgstr ""
-
-#: ../browser/calcs.py:233
+#: ../browser/calcs.py:225
 msgid "max"
-msgstr ""
+msgstr "màx."
 
 #: ../browser/calcs.py:224
-msgid "max:"
-msgstr ""
-
-#. Default: "${items} published."
-#: ../browser/analysisrequest.py:67 ../browser/client.py:82
-msgid "message_item_published"
-msgstr ""
-
-#. Default: "${items} were published."
-#: ../browser/client.py:78
-msgid "message_items_published"
-msgstr ""
-
-#: ../browser/calcs.py:232
 msgid "min"
+msgstr "min."
+
+#: ../browser/reports/analysesperservice.pt:78
+msgid "number of requests"
 msgstr ""
 
-#: ../browser/calcs.py:223
-msgid "min:"
-msgstr ""
-
-#. Default: "No analyses were added to this worksheet."
-#: ../browser/worksheet.py:538
-msgid "no_analyses_added"
-msgstr ""
-
+#: ../browser/templates/analysisrequest_analyses_not_requested.pt:51
 #: ../browser/templates/analysisrequest_manage_results.pt:59
+#: ../browser/templates/sample.pt:42
 msgid "range"
-msgstr ""
+msgstr "rang"
 
-#: ../browser/templates/reports_productivity.pt:153
+msgid "time_format"
+msgstr "format_hora"
+
+#: ../skins/bika/selection_macros.pt:54
 msgid "to"
-msgstr ""
-
-#. Default: "Policy..."
-#: ../browser/menu.py:222
-msgid "workflow_policy"
-msgstr ""
-
+msgstr "a"
 

@@ -16,8 +16,7 @@ schema = Person.schema.copy() + Schema((
     ImageField('Signature',
         widget = ImageWidget(
             label = _("Signature"),
-            description = _("Signature description",
-                            "Upload a scanned signature to be used on printed analysis "
+            description = _("Upload a scanned signature to be used on printed analysis "
                             "results reports. Ideal size is 250 pixels wide by 150 high"),
         ),
     ),
@@ -31,8 +30,7 @@ schema = Person.schema.copy() + Schema((
         widget = ReferenceWidget(
             checkbox_bound = 1,
             label = _("Department"),
-            description = _("Department description",
-                            "The laboratory department"),
+            description = _("The laboratory department"),
         ),
     ),
     ComputedField('DepartmentTitle',
@@ -64,7 +62,7 @@ class LabContact(Person):
 
     def getDepartments(self):
         bsc = getToolByName(self, 'bika_setup_catalog')
-        items = [('','')] + [(o.UID, o.Title) for o in \
+        items = [('','')] + [(o.UID, o.Title) for o in
                                bsc(portal_type='Department',
                                    inactive_state = 'active')]
         o = self.getDepartment()

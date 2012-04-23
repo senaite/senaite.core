@@ -1,53 +1,26 @@
-#!/bin/sh
+I18NDUDE=~/Plone414/zinstance/bin/i18ndude
+PLONE_POT=~/Plone414/zinstance/parts/omelette/plone/app/locales/locales/plone.pot
 
-PLONEPRODUCTS="/home/cb/Plone413/buildout-cache/eggs"
-I18NDUDE="/home/cb/Plone413/zinstance/bin/i18ndude"
+#echo Pull transifex
+#tx pull -a -f
 
-##
-## Domain: 'plone'
-##
-##
-## Search all translations in 'plone' domain and rebiuld a new catalog
-#i18ndude rebuild-pot --exclude build --pot "i18ndude-plone.pot" \
-#                     --create plone "../"
-##
-## Filter out all msgids that are already translated in PloneTranslations
-#i18ndude filter "i18ndude-plone.pot" \
-#                "${PLONEPRODUCTS}/PloneTranslations/i18n/plone.pot" > "filtered-plone.pot"
-##
-## Merge generated file with manual maintained pot file then with the current catalog
-#i18ndude merge --pot "${POPREFIX}-plone.pot" \
-#               --merge "filtered-plone.pot" \
-#               --merge2 "manual-plone.pot"
-##
-## Cleaning
-#rm "filtered-plone.pot" "i18ndude-plone.pot"
-##
-## Refresh po files for 'plone' domain
-#i18ndude sync --pot "${POPREFIX}-plone.pot" \
-#                    "${POPREFIX}-plone-fr.po" "${POPREFIX}-plone-en.po"
+echo Building bika
+$I18NDUDE rebuild-pot --pot bika.pot --exclude "build" --create bika --merge bika-manual.pot ..
+echo Syncing bika
+$I18NDUDE sync --pot bika.pot */LC_MESSAGES/bika.po
 
+echo Building plone
+$I18NDUDE rebuild-pot --pot i18ndude.pot --create plone --merge plone-manual.pot ../profiles/
+echo Filtering plone
+$I18NDUDE filter i18ndude.pot $PLONE_POT > plone.pot
+echo Syncing plone
+$I18NDUDE sync --pot plone.pot */LC_MESSAGES/plone.po
+rm i18ndude.pot
 
-$I18NDUDE rebuild-pot --exclude build --pot "i18ndude.pot" --create bika ".."
-$I18NDUDE merge --pot "bika.pot" --merge "i18ndude.pot" --merge2 "manual.pot"
-rm "i18ndude.pot"
-
-$I18NDUDE sync --pot "bika.pot" \
-                    "en/LC_MESSAGES/bika.po" \
-                    "af/LC_MESSAGES/bika.po" \
-                    "zh/LC_MESSAGES/bika.po" \
-                    "nl/LC_MESSAGES/bika.po" \
-                    "de/LC_MESSAGES/bika.po" \
-                    "pt/LC_MESSAGES/bika.po" \
-                    "es/LC_MESSAGES/bika.po" \
+#echo Push transifex
+#tx push -s -t
 
 echo "#########################################################"
-echo "##"
-echo "## untranslated messages summary report"
+echo "## untranslated messages"
 echo
-$I18NDUDE find-untranslated ..
-
-tx pull -a
-tx push -t
-
-exit 0
+$I18NDUDE find-untranslated -n ..

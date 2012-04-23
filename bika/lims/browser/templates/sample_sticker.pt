@@ -1,8 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <metal:block use-macro="context/global_defines/macros/defines" />
 
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
-      lang="en"
+<html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:tal="http://xml.zope.org/namespaces/tal"
       xmlns:metal="http://xml.zope.org/namespaces/metal"
       xmlns:i18n="http://xml.zope.org/namespaces/i18n"
@@ -92,12 +91,12 @@ td {
 </tr>
 
 <tr>
-<th colspan=4 i18n:translate="">Field Analyses</th>
+<th colspan="4" i18n:translate="">Field Analyses</th>
 </tr>
 
 <tal:block repeat="analysis python:[analysis for analysis in analyses if analysis.getService().getCategory()=='field']">
    <tr>
-      <td colspan=4 tal:content="python:analysis.getService().Title()"/>
+      <td colspan="4" tal:content="python:analysis.getService().Title()"/>
    </tr>
 </tal:block>
 

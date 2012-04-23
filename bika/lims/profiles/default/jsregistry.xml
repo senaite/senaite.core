@@ -1,209 +1,361 @@
 <?xml version="1.0"?>
-<!-- This file holds the setup configuration for the portal_javascripts tool.
-     -->
+<object name="portal_javascripts" meta_type="JavaScripts Registry">
 
-<object name="portal_javascripts">
 
-  <javascript cacheable="True" compression="safe"
-              cookable="True" enabled="False" expression=""
-              id="popupforms.js" inline="False"
-              insert-after="form_tabbing.js" />
+<!-- Plone defaults first -->
 
-  <javascript authenticated="False" cacheable="True" compression="safe"
-              conditionalcomment="" cookable="True" enabled="True"
-              expression="" id="++resource++plone.app.jquerytools.js"
-              insert-after="jquery-integration.js" inline="False"/>
-  <javascript authenticated="False" cacheable="True" compression="safe"
-              conditionalcomment="" cookable="True" enabled="True"
-              expression="" id="++resource++plone.app.jquerytools.form.js"
-              insert-after="++resource++plone.app.jquerytools.js" inline="False"/>
+ <javascript authenticated="False" cacheable="True" compression="none"
+    conditionalcomment="" cookable="True" enabled="True" expression=""
+    id="jquery.js" inline="False"/>
+ <javascript authenticated="False" cacheable="True" compression="safe"
+    conditionalcomment="" cookable="True" enabled="True" expression=""
+    id="jquery-integration.js" inline="False"/>
+ <javascript authenticated="False" cacheable="True" compression="none"
+    conditionalcomment="" cookable="True" enabled="True" expression=""
+    id="++resource++plone.app.jquerytools.js" inline="False"/>
+ <javascript authenticated="False" cacheable="True" compression="none"
+    conditionalcomment="" cookable="True" enabled="False" expression=""
+    id="++resource++plone.app.jquerytools.validator.js" inline="False"/>
+ <javascript authenticated="False" cacheable="True" compression="none"
+    conditionalcomment="" cookable="True" enabled="False" expression=""
+    id="++resource++plone.app.jquerytools.rangeinput.js" inline="False"/>
+ <javascript authenticated="False" cacheable="True" compression="none"
+    conditionalcomment="" cookable="True" enabled="False" expression=""
+    id="++resource++plone.app.jquerytools.dateinput.js" inline="False"/>
+ <javascript authenticated="False" cacheable="True" compression="none"
+    conditionalcomment="" cookable="True" enabled="False" expression=""
+    id="++resource++plone.app.jquerytools.plugins.js" inline="False"/>
+ <javascript authenticated="False" cacheable="True" compression="safe"
+    conditionalcomment="" cookable="True" enabled="True" expression=""
+    id="++resource++plone.app.jquerytools.overlayhelpers.js" inline="False"/>
+ <javascript authenticated="False" cacheable="True" compression="none"
+    conditionalcomment="" cookable="True" enabled="True" expression=""
+    id="++resource++plone.app.jquerytools.form.js" inline="False"/>
+ <javascript authenticated="False" cacheable="True" compression="safe"
+    conditionalcomment="" cookable="True" enabled="False" expression=""
+    id="event-registration.js" inline="False"/>
+ <javascript authenticated="False" cacheable="True" compression="safe"
+    conditionalcomment="" cookable="True" enabled="True" expression=""
+    id="register_function.js" inline="False"/>
+ <javascript authenticated="False" cacheable="True" compression="safe"
+    conditionalcomment="" cookable="True" enabled="True" expression=""
+    id="plone_javascript_variables.js" inline="False"/>
+ <javascript authenticated="False" cacheable="True" compression="safe"
+    conditionalcomment="" cookable="True" enabled="True" expression=""
+    id="nodeutilities.js" inline="False"/>
+ <javascript authenticated="False" cacheable="True" compression="safe"
+    conditionalcomment="" cookable="True" enabled="True" expression=""
+    id="cookie_functions.js" inline="False"/>
+ <javascript authenticated="False" cacheable="True" compression="full"
+    conditionalcomment="" cookable="True" enabled="True" expression=""
+    id="livesearch.js" inline="False"/>
+ <javascript authenticated="False" cacheable="True" compression="safe"
+    conditionalcomment="" cookable="True" enabled="False" expression=""
+    id="fullscreenmode.js" inline="False"/>
+ <javascript authenticated="False" cacheable="True" compression="safe"
+    conditionalcomment="" cookable="True" enabled="True" expression=""
+    id="select_all.js" inline="False"/>
+ <javascript authenticated="False" cacheable="True" compression="safe"
+    conditionalcomment="" cookable="True" enabled="True" expression=""
+    id="dragdropreorder.js" inline="False"/>
+ <javascript authenticated="False" cacheable="True" compression="safe"
+    conditionalcomment="" cookable="True" enabled="False" expression=""
+    id="mark_special_links.js" inline="False"/>
+ <javascript authenticated="False" cacheable="True" compression="full"
+    conditionalcomment="" cookable="True" enabled="True" expression=""
+    id="collapsiblesections.js" inline="False"/>
+ <javascript authenticated="False" cacheable="True" compression="safe"
+    conditionalcomment="" cookable="True" enabled="True" expression=""
+    id="form_tabbing.js" inline="False"/>
+ <javascript authenticated="False" cacheable="True" compression="safe"
+    conditionalcomment="" cookable="True" enabled="True" expression=""
+    id="popupforms.js" inline="False"
+    insert-after="++resource++plone.app.jquerytools.form.js"/>
+ <javascript authenticated="False" cacheable="True" compression="safe"
+    conditionalcomment="" cookable="True" enabled="True" expression=""
+    id="input-label.js" inline="False"/>
+ <javascript authenticated="False" cacheable="True" compression="safe"
+    conditionalcomment="" cookable="True" enabled="True" expression=""
+    id="jquery.highlightsearchterms.js" inline="False"/>
+ <javascript authenticated="False" cacheable="True" compression="safe"
+    conditionalcomment="" cookable="True" enabled="True" expression=""
+    id="first_input_focus.js" inline="False"/>
+ <javascript authenticated="False" cacheable="True" compression="full"
+    conditionalcomment="" cookable="True" enabled="True" expression=""
+    id="accessibility.js" inline="False"/>
+ <javascript authenticated="False" cacheable="True" compression="safe"
+    conditionalcomment="" cookable="True" enabled="True" expression=""
+    id="styleswitcher.js" inline="False"/>
+ <javascript authenticated="False" cacheable="True" compression="safe"
+    conditionalcomment="" cookable="True" enabled="True" expression=""
+    id="toc.js" inline="False"/>
+ <javascript authenticated="False" cacheable="True" compression="safe"
+    conditionalcomment="" cookable="True" enabled="True" expression=""
+    id="collapsibleformfields.js" inline="False"/>
+ <javascript authenticated="False" cacheable="True" compression="safe"
+    conditionalcomment="" cookable="True" enabled="True" expression=""
+    id="++resource++plone.app.discussion.javascripts/comments.js"
+    inline="False"/>
+ <javascript authenticated="False" cacheable="True" compression="safe"
+    conditionalcomment="" cookable="True" enabled="True"
+    expression="python:not context.restrictedTraverse('@@plone_portal_state').anonymous() or (getattr(portal, 'kupu_library_tool', None) and portal.kupu_library_tool.isKupuEnabled(REQUEST=request))"
+    id="sarissa.js" inline="False"/>
+ <javascript authenticated="True" cacheable="True" compression="safe"
+    conditionalcomment="" cookable="True" enabled="True" expression=""
+    id="dropdown.js" inline="False"/>
+ <javascript authenticated="True" cacheable="True" compression="safe"
+    conditionalcomment="" cookable="True" enabled="True" expression=""
+    id="table_sorter.js" inline="False"/>
+ <javascript authenticated="True" cacheable="True" compression="safe"
+    conditionalcomment="" cookable="True" enabled="True" expression=""
+    id="calendar_formfield.js" inline="False"/>
+ <javascript authenticated="True" cacheable="True" compression="safe"
+    conditionalcomment="" cookable="True" enabled="True" expression=""
+    id="formUnload.js" inline="False"/>
+ <javascript authenticated="True" cacheable="True" compression="safe"
+    conditionalcomment="" cookable="True" enabled="True" expression=""
+    id="formsubmithelpers.js" inline="False"/>
+ <javascript authenticated="True" cacheable="True" compression="safe"
+    conditionalcomment="" cookable="True" enabled="True" expression=""
+    id="unlockOnFormUnload.js" inline="False"/>
+ <javascript authenticated="True" cacheable="True" compression="none"
+    conditionalcomment="" cookable="True" enabled="True" expression=""
+    id="tiny_mce.js" inline="False"/>
+ <javascript authenticated="False" cacheable="True" compression="none"
+    conditionalcomment="" cookable="True" enabled="False" expression=""
+    id="++resource++MochiKit.js" inline="False"/>
+ <javascript authenticated="False" cacheable="True" compression="safe"
+    conditionalcomment="" cookable="True" enabled="False" expression=""
+    id="++resource++prototype.js" inline="False"/>
+ <javascript authenticated="False" cacheable="True" compression="safe"
+    conditionalcomment="" cookable="True" enabled="False" expression=""
+    id="++resource++effects.js" inline="False"/>
+ <javascript authenticated="False" cacheable="True" compression="safe"
+    conditionalcomment="" cookable="True" enabled="False" expression=""
+    id="++resource++cssQuery-compat.js" inline="False"/>
+ <javascript authenticated="True" cacheable="True" compression="none"
+    conditionalcomment="" cookable="True" enabled="False" expression=""
+    id="++resource++base2-dom-fp.js" inline="False"/>
+ <javascript authenticated="True" cacheable="True" compression="none"
+    conditionalcomment="" cookable="True" enabled="True" expression=""
+    id="++resource++kukit.js" inline="False"/>
+ <javascript authenticated="False" cacheable="True" compression="none"
+    conditionalcomment="" cookable="True" enabled="False" expression=""
+    id="++resource++kukit-devel.js" inline="False"/>
+ <javascript authenticated="True" cacheable="True" compression="none"
+    conditionalcomment="" cookable="True" enabled="True" expression=""
+    id="tiny_mce_init.js" inline="False"/>
+ <javascript authenticated="False" cacheable="True" compression="safe"
+    conditionalcomment="lt IE 8" cookable="True" enabled="True" expression=""
+    id="iefixes.js" inline="False"/>
 
-   <javascript authenticated="False"
-                cacheable="True"
-                compression="safe"
-                conditionalcomment=""
-                cookable="True"
-                enabled="on"
-                expression=""
-                id="++resource++bika.lims.js/utils.js"
-                inline="False"
-                insert-after="*"/>
+ <javascript authenticated="False"
+              cacheable="True"
+              compression="safe"
+              conditionalcomment=""
+              cookable="True"
+              enabled="on"
+              expression=""
+              id="++resource++bika.lims.js/jquery-ui.js"
+              inline="False"
+              insert-after="*"/>
 
-    <javascript authenticated="False"
-                cacheable="True"
-                compression="safe"
-                conditionalcomment=""
-                cookable="True"
-                enabled="on"
-                expression=""
-                id="++resource++bika.lims.js/jquery-ui.js"
-                inline="False"
-                insert-after="*"/>
+  <javascript authenticated="False"
+              cacheable="True"
+              compression="safe"
+              conditionalcomment=""
+              cookable="True"
+              enabled="on"
+              expression=""
+              id="++resource++bika.lims.js/jquery.json.js"
+              inline="False"
+              insert-after="*"/>
 
-    <javascript authenticated="False"
-                cacheable="True"
-                compression="safe"
-                conditionalcomment=""
-                cookable="True"
-                enabled="on"
-                expression=""
-                id="++resource++bika.lims.js/jquery.json.js"
-                inline="False"
-                insert-after="*"/>
+ <javascript authenticated="False"
+              cacheable="True"
+              compression="safe"
+              conditionalcomment=""
+              cookable="True"
+              enabled="on"
+              expression=""
+              id="++resource++bika.lims.js/utils.js"
+              inline="False"
+              insert-after="++resource++jsi18n.js"/>
 
-    <javascript authenticated="False"
-                cacheable="True"
-                compression="safe"
-                conditionalcomment=""
-                cookable="True"
-                enabled="on"
-                expression=""
-                id="++resource++bika.lims.js/bika_listing.js"
-                inline="False"
-                insert-after="*"/>
+  <javascript authenticated="False"
+              cacheable="True"
+              compression="safe"
+              conditionalcomment=""
+              cookable="True"
+              enabled="on"
+              expression=""
+              id="++resource++bika.lims.js/bika_listing.js"
+              inline="False"
+              insert-after="*"/>
 
-    <javascript authenticated="False"
-                cacheable="True"
-                compression="safe"
-                conditionalcomment=""
-                cookable="True"
-                enabled="on"
-                expression="python:here.portal_type == 'Client'"
-                id="++resource++bika.lims.js/client.js"
-                inline="False"
-                insert-after="*"/>
+  <javascript authenticated="False"
+              cacheable="True"
+              compression="safe"
+              conditionalcomment=""
+              cookable="True"
+              enabled="on"
+              expression="python:here.portal_type == 'Client'"
+              id="++resource++bika.lims.js/client.js"
+              inline="False"
+              insert-after="*"/>
 
-    <javascript authenticated="False"
-                cacheable="True"
-                compression="safe"
-                conditionalcomment=""
-                cookable="True"
-                enabled="on"
-                expression="python:here.portal_type in ['Client', 'AnalysisRequest',]"
-                id="++resource++bika.lims.js/analysisrequest.js"
-                inline="False"
-                insert-after="*"/>
+  <javascript authenticated="False"
+              cacheable="True"
+              compression="safe"
+              conditionalcomment=""
+              cookable="True"
+              enabled="on"
+              expression="python:here.portal_type in ['Client', 'AnalysisRequest',]"
+              id="++resource++bika.lims.js/analysisrequest.js"
+              inline="False"
+              insert-after="*"/>
 
-    <javascript authenticated="False"
-                cacheable="True"
-                compression="safe"
-                conditionalcomment=""
-                cookable="True"
-                enabled="on"
-                expression="python:here.portal_type in ['Client', 'AnalysisRequest','Worksheet',]"
-                id="++resource++bika.lims.js/calcs.js"
-                inline="False"
-                insert-after="*"/>
+  <javascript authenticated="False"
+              cacheable="True"
+              compression="safe"
+              conditionalcomment=""
+              cookable="True"
+              enabled="on"
+              expression="python:here.portal_type in ['Client', 'AnalysisRequest','Worksheet',]"
+              id="++resource++bika.lims.js/calcs.js"
+              inline="False"
+              insert-after="*"/>
 
-    <javascript authenticated="False"
-                cacheable="True"
-                compression="safe"
-                conditionalcomment=""
-                cookable="True"
-                enabled="on"
-                expression="python:here.portal_type in ['Worksheet','WorksheetFolder']"
-                id="++resource++bika.lims.js/worksheet.js"
-                inline="False"
-                insert-after="*"/>
+  <javascript authenticated="False"
+              cacheable="True"
+              compression="safe"
+              conditionalcomment=""
+              cookable="True"
+              enabled="on"
+              expression="python:here.portal_type in ['Worksheet','WorksheetFolder']"
+              id="++resource++bika.lims.js/worksheet.js"
+              inline="False"
+              insert-after="*"/>
 
-    <javascript authenticated="False"
-                cacheable="True"
-                compression="safe"
-                conditionalcomment=""
-                cookable="True"
-                enabled="on"
-                expression="python:here.portal_type in ['Sample',]"
-                id="++resource++bika.lims.js/sample.js"
-                inline="False"
-                insert-after="*"/>
+  <javascript authenticated="False"
+              cacheable="True"
+              compression="safe"
+              conditionalcomment=""
+              cookable="True"
+              enabled="on"
+              expression="python:here.portal_type in ['Sample',]"
+              id="++resource++bika.lims.js/sample.js"
+              inline="False"
+              insert-after="*"/>
 
-    <javascript authenticated="False"
-                cacheable="True"
-                compression="safe"
-                conditionalcomment=""
-                cookable="True"
-                enabled="on"
-                expression="python:here.portal_type in ['Contact',]"
-                id="++resource++bika.lims.js/contact.js"
-                inline="False"
-                insert-after="*"/>
+  <javascript authenticated="False"
+              cacheable="True"
+              compression="safe"
+              conditionalcomment=""
+              cookable="True"
+              enabled="on"
+              expression="python:here.portal_type in ['Contact',]"
+              id="++resource++bika.lims.js/contact.js"
+              inline="False"
+              insert-after="*"/>
 
-    <javascript authenticated="False"
-                cacheable="True"
-                compression="safe"
-                conditionalcomment=""
-                cookable="True"
-                enabled="on"
-                expression="python:here.portal_type in ['ReferenceSample',]"
-                id="++resource++bika.lims.js/referencesample.js"
-                inline="False"
-                insert-after="*"/>
+  <javascript authenticated="False"
+              cacheable="True"
+              compression="safe"
+              conditionalcomment=""
+              cookable="True"
+              enabled="on"
+              expression="python:here.portal_type in ['ReferenceSample',]"
+              id="++resource++bika.lims.js/referencesample.js"
+              inline="False"
+              insert-after="*"/>
 
-    <javascript authenticated="False"
-                cacheable="True"
-                compression="safe"
-                conditionalcomment=""
-                cookable="True"
-                enabled="on"
-                expression="python:here.portal_type in ['Reports',]"
-                id="++resource++bika.lims.js/reports.js"
-                inline="False"
-                insert-after="*"/>
+  <javascript authenticated="False"
+              cacheable="True"
+              compression="safe"
+              conditionalcomment=""
+              cookable="True"
+              enabled="on"
+              expression="python:here.portal_type in ['Reports',]"
+              id="++resource++bika.lims.js/reports.js"
+              inline="False"
+              insert-after="*"/>
 
-    <javascript authenticated="True"
-                cacheable="True"
-                compression="safe"
-                conditionalcomment=""
-                cookable="True"
-                enabled="on"
-                expression=""
-                id="++resource++bika.lims.js/barcode.js"
-                inline="False"
-                insert-after="*"/>
+  <javascript authenticated="False"
+              cacheable="True"
+              compression="safe"
+              conditionalcomment=""
+              cookable="True"
+              enabled="on"
+              expression="python:here.portal_type in ['AnalysisService',]"
+              id="++resource++bika.lims.js/analysisservice.js"
+              inline="False"
+              insert-after="*"/>
 
-    <javascript authenticated="True"
-                cacheable="True"
-                compression="safe"
-                conditionalcomment=""
-                cookable="True"
-                enabled="on"
-                expression=""
-                id="++resource++bika.lims.js/jquery-barcode-2.0.2.js"
-                inline="False"
-                insert-after="*"/>
+  <javascript authenticated="False"
+              cacheable="True"
+              compression="safe"
+              conditionalcomment=""
+              cookable="True"
+              enabled="on"
+              expression="python:here.portal_type in ['ARTemplate',]"
+              id="++resource++bika.lims.js/artemplate.js"
+              inline="False"
+              insert-after="*"/>
 
-    <javascript authenticated="True"
-                cacheable="True"
-                compression="safe"
-                conditionalcomment=""
-                cookable="True"
-                enabled="on"
-                expression=""
-                id="++resource++bika.lims.js/jquery-query-2.1.7.js"
-                inline="False"
-                insert-after="*"/>
+  <javascript authenticated="True"
+              cacheable="True"
+              compression="safe"
+              conditionalcomment=""
+              cookable="True"
+              enabled="on"
+              expression=""
+              id="++resource++bika.lims.js/barcode.js"
+              inline="False"
+              insert-after="*"/>
 
-    <javascript authenticated="True"
-                cacheable="True"
-                compression="safe"
-                conditionalcomment=""
-                cookable="True"
-                enabled="on"
-                expression=""
-                id="++resource++bika.lims.js/jquery.ui.combogrid-1.6.2.js"
-                inline="False"
-                insert-after="*"/>
+  <javascript authenticated="True"
+              cacheable="True"
+              compression="safe"
+              conditionalcomment=""
+              cookable="True"
+              enabled="on"
+              expression=""
+              id="++resource++bika.lims.js/jquery-barcode-2.0.2.js"
+              inline="False"
+              insert-after="*"/>
 
-    <javascript authenticated="True"
-                cacheable="True"
-                compression="safe"
-                conditionalcomment=""
-                cookable="True"
-                enabled="on"
-                expression=""
-                id="++resource++bika.lims.js/attachments.js"
-                inline="False"
-                insert-after="*"/>
+  <javascript authenticated="True"
+              cacheable="True"
+              compression="safe"
+              conditionalcomment=""
+              cookable="True"
+              enabled="on"
+              expression=""
+              id="++resource++bika.lims.js/jquery-query-2.1.7.js"
+              inline="False"
+              insert-after="*"/>
+
+  <javascript authenticated="True"
+              cacheable="True"
+              compression="safe"
+              conditionalcomment=""
+              cookable="True"
+              enabled="on"
+              expression=""
+              id="++resource++bika.lims.js/jquery.ui.combogrid-1.6.2.js"
+              inline="False"
+              insert-after="*"/>
+
+  <javascript authenticated="True"
+              cacheable="True"
+              compression="safe"
+              conditionalcomment=""
+              cookable="True"
+              enabled="on"
+              expression=""
+              id="++resource++bika.lims.js/attachments.js"
+              inline="False"
+              insert-after="*"/>
 
 </object>
-

@@ -7,7 +7,7 @@ from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import transaction_note
 from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from bika.lims import ManageResults, ViewResults, EditResults
+from bika.lims.permissions import ViewResults, EditResults, EditFieldResults
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.utils import isActive, TimeOrDate
@@ -25,12 +25,16 @@ class AnalysesView(BikaListingView):
         self.contentFilter = dict(kwargs)
         self.contentFilter['portal_type'] = 'Analysis'
         self.context_actions = {}
-        self.setoddeven = False
+        self.setoddeven = True
         self.show_sort_column = False
         self.show_select_row = False
-        self.show_select_column = True
-        self.pagesize = 100
+        self.show_select_column = False
+        self.show_column_toggles = False
+        self.pagesize = 1000
         self.form_id = 'analyses_form'
+
+        pc = getToolByName(context, 'portal_catalog')
+        self.contentsMethod = pc
 
         request.set('disable_plone.rightcolumn', 1);
 
@@ -39,23 +43,42 @@ class AnalysesView(BikaListingView):
         self.allow_edit = False
 
         self.columns = {
-            'Service': {'title': _('Analysis')},
-            'state_title': {'title': _('Status')},
-            'Result': {'title': _('Result')},
-            'ResultDM': {'title': _('Dry')},
-            'Uncertainty': {'title': _('+-')},
+            'Service': {'title': _('Analysis'),
+                        'sortable': False},
+            'Partition': {'title': _("Partition"),
+                          'sortable':False},
+            'Method': {'title': _('Method'),
+                       'sortable': False},
+            'state_title': {'title': _('Status'),
+                            'sortable': False},
+            'Result': {'title': _('Result'),
+                       'input_width': '6',
+                       'input_class': 'ajax_calculate numeric',
+                       'sortable': False},
+            'ResultDM': {'title': _('Dry'),
+                         'sortable': False},
+            'Uncertainty': {'title': _('+-'),
+                            'sortable': False},
             'retested': {'title': "<img src='++resource++bika.lims.images/retested.png' title='%s'/>" % _('Retested'),
-                         'type':'boolean'},
-            'Attachments': {'title': _('Attachments')},
-            'DueDate': {'title': _('Due Date')},
+                         'type':'boolean',
+                         'sortable': False},
+            'Attachments': {'title': _('Attachments'),
+                            'sortable': False},
+            'CaptureDate': {'title': _('Captured'),
+                            'sortable': False},
+            'DueDate': {'title': _('Due Date'),
+                        'sortable': False},
         }
 
         self.review_states = [
             {'id':'all',
              'title': _('All'),
              'columns':['Service',
+                        'Partition',
+                        'Method',
                         'Result',
                         'Uncertainty',
+                        'CaptureDate',
                         'DueDate',
                         'state_title',
                         'Attachments'],
@@ -69,13 +92,17 @@ class AnalysesView(BikaListingView):
         bsc = getToolByName(self.context, 'bika_setup_catalog')
         workflow = getToolByName(self.context, 'portal_workflow')
         portal = getToolByName(self.context, 'portal_url').getPortalObject()
+        translate = self.context.translation_service.translate
+        checkPermission = getSecurityManager().checkPermission
+        if not self.allow_edit:
+            can_edit_analyses = False
+        else:
+            if self.contentFilter.get('getPointOfCapture', '') == 'field':
+                can_edit_analyses = checkPermission(EditFieldResults, self.context)
+            else:
+                can_edit_analyses = checkPermission(EditResults, self.context)
 
-        can_edit_analyses = self.allow_edit and \
-            getSecurityManager().checkPermission(ManageResults, self.context)
-
-        context_active = True
-        if not isActive(self.context):
-            context_active = False
+        context_active = isActive(self.context)
 
         items = super(AnalysesView, self).folderitems(full_objects = True)
 
@@ -109,10 +136,14 @@ class AnalysesView(BikaListingView):
             items[i]['retested'] = obj.getRetested()
             items[i]['class']['retested'] = 'center'
             items[i]['calculation'] = calculation and True or False
+            items[i]['Partition'] = obj.getSamplePartition().Title()
             if obj.portal_type == "ReferenceAnalysis":
                 items[i]['DueDate'] = ''
+                items[i]['CaptureDate'] = ''
             else:
                 items[i]['DueDate'] = obj.getDueDate()
+                cd = obj.getResultCaptureDate()
+                items[i]['CaptureDate'] = cd and TimeOrDate(self.context, cd) or ''
             items[i]['Attachments'] = ''
 
             # calculate specs
@@ -132,6 +163,12 @@ class AnalysesView(BikaListingView):
                     else:
                         sample = obj.aq_parent.getSample()
                     st_uid = sample.getSampleType().UID()
+                    items[i]['st_uid'] = st_uid
+                    if st_uid not in self.specs:
+                        proxies = bsc(portal_type = 'AnalysisSpec',
+                                      getSampleTypeUID = st_uid)
+                elif self.context.portal_type == 'Sample':
+                    st_uid = self.context.getSampleType().UID()
                     items[i]['st_uid'] = st_uid
                     if st_uid not in self.specs:
                         proxies = bsc(portal_type = 'AnalysisSpec',
@@ -159,11 +196,19 @@ class AnalysesView(BikaListingView):
                             else:
                                 self.specs[st_uid] = {client_or_lab: {keyword: results_range}}
 
+            method = service.getMethod()
+            items[i]['Method'] = method and method.Title() or ''
+            if method:
+                items[i]['replace']['Method'] = "<a href='%s'>%s</a>" % \
+                    (method.absolute_url(), method.Title())
+
+
             # if the reference version is older than the object itself,
             # insert the version number of referenced service after Title
             service_uid = service.UID()
             latest_service = rc.lookupObject(service_uid)
             items[i]['Service'] = service.Title()
+            items[i]['class']['Service'] = "service_title"
             if hasattr(obj, 'reference_versions') and \
                service_uid in obj.reference_versions and \
                latest_service.version_id != obj.reference_versions[service_uid]:
@@ -180,8 +225,12 @@ class AnalysesView(BikaListingView):
                 getSecurityManager().checkPermission(ViewResults, obj)
 
             # permission to edit this item's results
+            # Editing Field Results is possible while in Sample Due.
+            poc = self.contentFilter.get("getPointOfCapture", 'lab')
             can_edit_analysis = self.allow_edit and context_active and \
-                getSecurityManager().checkPermission(EditResults, obj)
+                ( (poc == 'field' and getSecurityManager().checkPermission(EditFieldResults, obj))
+                  or
+                  (poc != 'field' and getSecurityManager().checkPermission(EditResults, obj)) )
 
             if can_edit_analysis:
                 items[i]['allow_edit'] = ['Result', ]
@@ -211,22 +260,17 @@ class AnalysesView(BikaListingView):
                                 str("%%.%sf" % precision) % float(result) or result
                         except:
                             items[i]['formatted_result'] = result
-                            indet = _('indeterminate_abbrev',
-                                      default='Indet')
-                            indet = self.context.translate(indet)
+                            indet = translate(_('Indet'))
                             if result == indet:
                                 # 'Indeterminate' results flag a specific error
-                                Indet = _('indeterminate_result',
-                                          default="Indeterminate result")
-                                Indet = self.context.translate(Indet)
+                                Indet = translate(_("Indeterminate result"))
                                 items[i]['after']['Result'] = \
                                     '<img width="16" height="16" title="%s"' % Indet + \
                                     'src="%s/++resource++bika.lims.images/exclamation.png"/>' % \
                                     (portal.absolute_url())
                             else:
                                 # result being un-floatable, is an error.
-                                msg = _("Invalid result")
-                                msg = self.context.translate(msg)
+                                msg = translate(_("Invalid result"))
                                 items[i]['after']['Result'] = \
                                     '<img width="16" height="16" title="%s"' % msg + \
                                     'src="%s/++resource++bika.lims.images/exclamation.png"/>' % \
@@ -270,17 +314,17 @@ class AnalysesView(BikaListingView):
             # check if this analysis is late/overdue
             if items[i]['obj'].portal_type != "DuplicateAnalysis":
                 if (not calculation or (calculation and not calculation.getDependentServices())) and \
-                   items[i]['review_state'] not in ['sample_due', 'published'] and \
+                   items[i]['review_state'] not in ['to_be_sampled', 'to_be_preserved', 'sample_due', 'published'] and \
                    items[i]['DueDate'] < DateTime():
                     DueDate = TimeOrDate(self.context, item['DueDate'], long_format = 0)
                     if self.context.portal_type == 'AnalysisRequest':
                         items[i]['replace']['DueDate'] = '%s <img width="16" height="16" src="%s/++resource++bika.lims.images/late.png" title="%s"/>' % \
                             (DueDate, portal.absolute_url(),
-                             self.context.translate(_("Due Date")) + ": " + DueDate)
+                             translate(_("Due Date")) + ": %s"%DueDate)
                     else:
                         items[i]['replace']['DueDate'] = '%s <img width="16" height="16" src="%s/++resource++bika.lims.images/late.png" title="%s"/>' % \
                             (DueDate, portal.absolute_url(),
-                             self.context.translate(_("Late Analysis")))
+                             translate(_("Late Analysis")))
                 else:
                     items[i]['replace']['DueDate'] = TimeOrDate(self.context, item['DueDate'])
 
@@ -306,7 +350,10 @@ class AnalysesView(BikaListingView):
         # add InterimFields keys to columns
         for col_id in interim_keys:
             if col_id not in self.columns:
-                self.columns[col_id] = {'title': self.interim_columns[col_id]}
+                self.columns[col_id] = {'title': self.interim_columns[col_id],
+                                        'input_width': '6',
+                                        'input_class': 'ajax_calculate numeric',
+                                        'sortable': False}
 
         if can_edit_analyses:
             new_states = []
@@ -328,10 +375,10 @@ class AnalysesView(BikaListingView):
             self.show_select_column = True
 
         # Dry Matter.
-        # XXX The Dry Matter column is always enabled for worksheets,
-        #     never enabled for reference sample contexts, and refers to
-        #     getReportDryMatter in ARs.
-        #     It should be enabled only if any of the ARs present asked for DM.
+        # The Dry Matter column is always enabled for worksheets,
+        # never enabled for reference sample contexts, and refers to
+        # getReportDryMatter in ARs.
+        # XXX It should be enabled only if any of the ARs present asked for DM.
         if items and \
            (self.context.portal_type == 'Worksheet' or \
             (hasattr(self.context, 'getReportDryMatter') and \

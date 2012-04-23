@@ -1,9 +1,7 @@
 jQuery( function($) {
 $(document).ready(function(){
 
-	// hack the save button into workflow_actions
-	$(".workflow_action_buttons")
-		.append("<input type='submit' value='Save' class='select_cc_save'/>");
+	_ = window.jsi18n;
 
 	// ##cc_uids is the parent AR form's CC contacts box
 	$.each(window.opener.$("#cc_uids").val().split(","), function(i,e){
@@ -12,7 +10,7 @@ $(document).ready(function(){
 	});
 
 	// return selected references from the CC popup window back into the widget
-	$('.select_cc_save').live('click', function(){
+	$('[transition=save]').click(function(){
 		uids = [];
 		titles = [];
 		$.each($("[name='uids:list']").filter(":checked"), function(i, e){
@@ -22,10 +20,8 @@ $(document).ready(function(){
 		window.opener.$("#cc_titles").val(titles.join(','));
 		window.opener.$("#cc_uids").val(uids.join(','));
 		window.close();
+		return false;
 	});
-
-
-
 
 });
 });

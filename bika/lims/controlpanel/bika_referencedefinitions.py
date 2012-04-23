@@ -28,8 +28,7 @@ class ReferenceDefinitionsView(BikaListingView):
                                  'icon': '++resource++bika.lims.images/add.png'}}
         self.icon = "++resource++bika.lims.images/referencedefinition_big.png"
         self.title = _("Reference Definitions")
-        self.description = _("Reference Definitions description",
-                             "ReferenceDefinition represents a Reference Definition "
+        self.description = _("ReferenceDefinition represents a Reference Definition "
                              "or sample type used for quality control testing")
         self.show_sort_column = False
         self.show_select_row = False
@@ -51,12 +50,12 @@ class ReferenceDefinitionsView(BikaListingView):
             {'id':'active',
              'title': _('Active'),
              'contentFilter': {'inactive_state': 'active'},
-             'transitions': ['deactivate'],
+             'transitions': [{'id':'deactivate'}, ],
              'columns': ['Title', 'Description']},
             {'id':'inactive',
              'title': _('Dormant'),
              'contentFilter': {'inactive_state': 'inactive'},
-             'transitions': ['activate',],
+             'transitions': [{'id':'activate'}, ],
              'columns': ['Title', 'Description']},
         ]
 

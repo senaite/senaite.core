@@ -5,6 +5,7 @@
  <object name="ARImportItem" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="ARProfile" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="ARProfiles" meta_type="Factory-based Type Information with dynamic views"/>
+ <object name="ARTemplate" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="Analysis" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="AnalysisCategories" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="AnalysisCategory" meta_type="Factory-based Type Information with dynamic views"/>

@@ -24,8 +24,7 @@ schema = BikaSchema.copy() + Schema((
         widget = ReferenceWidget(
             checkbox_bound = 1,
             label = _('Department'),
-            description = _("Department description",
-                            "The laboratory department"),
+            description = _("The laboratory department"),
         ),
     ),
     ComputedField('DepartmentTitle',

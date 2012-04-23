@@ -1,44 +1,11 @@
-from Products.CMFCore.permissions import AddPortalContent
 from Products.Archetypes.public import DisplayList
 from bika.lims import bikaMessageFactory as _
+from bika.lims.permissions import *
+from zope.i18n.locales import locales
 
-ADD_CONTENT_PERMISSION = AddPortalContent
 PROJECTNAME = "bika.lims"
 
 GLOBALS = globals()
-
-# Very Old permissions:
-ManageBika = 'BIKA: Manage Bika'
-ManageClients = 'BIKA: Manage Clients'
-ManageWorksheets = 'BIKA: Manage Worksheets'
-ManageOrders = 'BIKA: Manage Orders'
-DispatchOrder = 'BIKA: Dispatch Order'
-ManageAnalysisRequests = 'BIKA: Manage Analysis Requests'
-ManageARImport = 'BIKA: Manage ARImport'
-ManageSample = 'BIKA: Manage Sample'
-ManageReferenceSuppliers = 'BIKA: Manage Reference Suppliers'
-ManageReference = 'BIKA: Manage Reference'
-PostInvoiceBatch = 'BIKA: Post Invoice batch'
-ManagePricelists = 'BIKA: Manage Pricelists'
-# New or changed permissions:
-ReceiveSample = 'BIKA: Receive Sample'
-ExpireSample = 'BIKA: Expire Sample'
-DisposeSample = 'BIKA: Dispose Sample'
-ImportAnalysis = 'BIKA: Import Analysis'
-RejectWorksheet = 'BIKA: Reject Worksheet'
-Retract = "BIKA: Retract"
-Verify = 'BIKA: Verify'
-VerifyOwnResults = 'BIKA: Verify own results'
-Publish = 'BIKA: Publish'
-EditSample = 'BIKA: Edit Sample'
-EditAR = 'BIKA: Edit AR'
-EditWorksheet = 'BIKA: Edit Worksheet'
-ManageResults = 'BIKA: Manage Results'
-ResultsNotRequested = 'BIKA: Results not requested'
-ManageInvoices = 'BIKA: Manage Invoices'
-ViewResults = 'BIKA: View Results'
-EditResults = 'BIKA: Edit Results'
-CancelAndReinstate = 'BIKA: Cancel and reinstate'
 
 VERSIONABLE_TYPES = ('AnalysisService',
                      'Calculation',
@@ -47,40 +14,6 @@ VERSIONABLE_TYPES = ('AnalysisService',
                      'AnalysisSpec',
                      'WorksheetTemplate',
                      )
-
-BIKA_PERMISSIONS = (
-    (ManageBika, ()),
-    (ManageClients, ()),
-    (ManageWorksheets, ()),
-    (ManageOrders, ()),
-    (ManageAnalysisRequests, ()),
-    (ManageSample, ()),
-    (ManageReferenceSuppliers, ()),
-    (ManageReference, ()),
-    (ManagePricelists, ()),
-    (ManageARImport, ()),
-    (DispatchOrder, ()),
-    (PostInvoiceBatch, ()),
-    (ReceiveSample, ()),
-    (ExpireSample, ()),
-    (DisposeSample, ()),
-    (ImportAnalysis, ()),
-    (RejectWorksheet, ()),
-    (Retract, ()),
-    (Verify, ()),
-    (VerifyOwnResults, ()),
-    (Publish, ()),
-    (EditSample, ()),
-    (EditAR, ()),
-    (EditWorksheet, ()),
-    (ManageResults, ()),
-    (ResultsNotRequested, ()),
-    (ManageInvoices, ()),
-    (ViewResults, ()),
-    (EditResults, ()),
-    (CancelAndReinstate, ()),
-)
-
 
 PUBLICATION_PREFS = DisplayList((
     ('email', _('Email')),
@@ -112,8 +45,8 @@ PRICELIST_TYPES = DisplayList((
 ))
 
 CLIENT_TYPES = DisplayList((
-    ('corporate', 'Bulk Discount'),
-    ('noncorporate', 'Standard Price'),
+    ('corporate', _('Bulk Discount')),
+    ('noncorporate', _('Standard Price')),
 ))
 
 ANALYSIS_TYPES = DisplayList((
@@ -140,7 +73,7 @@ EMAIL_SUBJECT_OPTIONS = DisplayList((
     ('ar', _('Analysis Request ID')),
     ('co', _('Order ID')),
     ('cr', _('Client Reference')),
-    ('cs', _('Client Sample ID')),
+    ('cs', _('Client SID')),
 ))
 
 GENDERS = DisplayList((
@@ -154,3 +87,12 @@ ADDRESS_TYPES = DisplayList((
     ('billing', _('Billing address')),
     ('shipping', _('Shipping address')),
     ))
+
+english = locales.getLocale('en')
+currencies = english.numbers.currencies.values()
+currencies.sort(lambda x,y:cmp(x.displayName, y.displayName))
+
+CURRENCIES = DisplayList(
+    [(c.type, "%s (%s)" % (c.displayName, c.symbol))
+     for c in currencies]
+)

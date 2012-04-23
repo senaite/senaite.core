@@ -1,5 +1,4 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
-	xml:lang="en" lang="en"
 	xmlns:tal="http://xml.zope.org/namespaces/tal"
 	xmlns:metal="http://xml.zope.org/namespaces/metal"
 	xmlns:i18n="http://xml.zope.org/namespaces/i18n"
@@ -41,8 +40,7 @@
 							repeat="position view/getAvailablePositions">
 							<option tal:attributes="value position" tal:content="position"/>
 						</tal:options>
-						<option
-							value="new" tal:content="string:New" i18n:translate=""/>
+						<option value="new" i18n:translate="">New</option>
 					</select>
 				</td>
 			</tr>
@@ -58,6 +56,12 @@
 			</tr>
 		</table>
 	</fieldset>
+
+	<tal:remarks define="
+		field python:context.Schema()['Remarks'];
+		errors python:{};">
+		 <metal:widget use-macro="python:context.widget('Remarks', mode='edit')" />
+	</tal:remarks>
 
 </metal:content-core>
 

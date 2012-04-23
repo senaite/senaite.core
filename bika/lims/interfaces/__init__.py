@@ -77,6 +77,7 @@ class IIdServer(Interface):
 
 class IBikaSetup(Interface):
     ""
+
 class IAnalysisCategory(Interface):
     ""
 class IAnalysisCategories(Interface):
@@ -102,6 +103,8 @@ class IInstruments(Interface):
 class IAnalysisSpecs(Interface):
     ""
 class IARProfiles(Interface):
+    ""
+class IARTemplates(Interface):
     ""
 class ILabContacts(Interface):
     ""

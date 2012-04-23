@@ -66,8 +66,8 @@ jQuery( function($) {
 						$(this).attr("checked", "checked");
 					}
 			}
-				recalc_prices(column);
-				$(tbody).toggle(true);
+			recalc_prices(column);
+			$(tbody).toggle(true);
 			} else {
 				if (force_expand){ $(tbody).toggle(true); }
 				else { $(tbody).toggle(); }
@@ -90,8 +90,11 @@ jQuery( function($) {
 					$('input[name*="Analyses"]').bind('change', service_checkbox_change);
 					if(selectedservices!=[]){
 						recalc_prices(column);
+						// XXX template should do this one for us
+						ar_add_calculate_parts();
+					}
 				}
-			});
+			);
 		}
 	}
 
@@ -106,168 +109,418 @@ jQuery( function($) {
 		for(var i = 0; i<elements.length; i++){
 			remaining_columns.push($(elements[i]).attr('column'));
 		}
-		options = {
-			type: 'POST',
-			async: false,
-			beforeSubmit: function(formData, jqForm, options) {
-				$("input[class~='context']").attr('disabled',true);
-			},
-			success: function(responseText, statusText, xhr, $form) {
-				$("input[class~='context']").removeAttr('disabled');
-			},
-			data: {
-				'uid': $(element).attr('id'),
-				'_authenticator': $('input[name="_authenticator"]').val()},
-			error: function(XMLHttpRequest, statusText, errorThrown) {
-				portalMessage(statusText);
-				window.scroll(0,0);
-				$("input[class~='context']").removeAttr('disabled');
-			},
-			dataType: "json"
+
+		service_uid = $(element).attr('id');
+		service_data = bsc.data.services[service_uid];
+		if (service_data == undefined || service_data == null){
+			return;
 		}
+		deps = service_data['deps'];
+		backrefs = service_data['backrefs'];
+
 		if ($(element).attr("checked") == true){
 			// selecting a service; discover services it depends on.
 			var affected_services = [];
 			var affected_titles = [];
 			// actions are discovered and stored in dep_args, until confirmation dialog->Yes.
 			var dep_args = [];
-			options.url = 'get_service_dependencies';
-			options.success = function(pocdata,textStatus,$XHR){
-				if (pocdata == null) { return; }
-				$.each(pocdata, function(pocid_poctitle, catdata){
-					var poc = pocid_poctitle.split("_");
-					$.each(catdata, function(catid_cattitle, servicedata){
-						var cat = catid_cattitle.split("_");
-						var services = [];
-						$.each(servicedata, function(i, serviceuid_servicetitle){
-							service = serviceuid_servicetitle.split("_");
-							// if the service is already checked, skip it.
-							if (! $('input[column="'+column+'"]').filter('#'+service[0]).attr("checked") ){
-								// this one is for the current category
-								services.push(service[0]);
-								// and this one decides if the confirmation box gets shown at all.
-								affected_services.push(service[0]);
-								// this one is for the pretty message box.
-								affected_titles.push(service[1] + " ("+cat[1]+")");
-							}
-						});
-						// we want to confirm, then process these all at once
-						if(services.length > 0){
-							dep_args.push([poc[0], cat[0], column, services]);
+			if (deps == undefined || deps == null) {
+				pocdata = [];
+			} else {
+				pocdata = deps;
+			}
+			$.each(pocdata, function(pocid_poctitle, catdata){
+				var poc = pocid_poctitle.split("_");
+				$.each(catdata, function(catid_cattitle, servicedata){
+					var cat = catid_cattitle.split("_");
+					var services = [];
+					$.each(servicedata, function(i, serviceuid_servicetitle){
+						service = serviceuid_servicetitle.split("_");
+						// if the service is already checked, skip it.
+						if (! $('input[column="'+column+'"]').filter('#'+service[0]).attr("checked") ){
+							// this one is for the current category
+							services.push(service[0]);
+							// and this one decides if the confirmation box gets shown at all.
+							affected_services.push(service[0]);
+							// this one is for the pretty message box.
+							affected_titles.push(service[1] + " ("+cat[1]+")");
 						}
 					});
+					// we want to confirm, then process these all at once
+					if(services.length > 0){
+						dep_args.push([poc[0], cat[0], column, services]);
+					}
 				});
+			});
+
+			if (affected_services.length > 0) {
+				$("body").append(
+					"<div id='messagebox' style='display:none' title='" + _("Service dependencies") + "'>"+
+					_("<p>${service} requires the following services to be selected:</p><br/><p>${deps}</p><br/><p>Do you want to apply these selections now?</p>",
+						{service:$(element).attr('title'),
+						 deps: affected_titles.join("<br/>")})+"</div>");
+					function add_Yes(){
+						$.each(dep_args, function(i,args){
+							tbody = $("#"+args[0]+"_"+args[1]);
+							if ($(tbody).hasClass("expanded")) {
+								// if cat is already expanded, we toggle(true) it and manually select service checkboxes
+								$(tbody).toggle(true);
+								$.each(args[3], function(x,serviceUID){
+									$('input[column="'+args[2]+'"]').filter('#'+serviceUID).attr("checked", true);
+									// if elements from more than one column were passed, set all columns to be the same.
+									for(col in remaining_columns){
+										$('input[column="'+remaining_columns[col]+'"]').filter('#'+serviceUID).attr("checked", true);
+									}
+								});
+							} else {
+								// otherwise, toggleCat will take care of everything for us
+								toggleCat(args[0], args[1], args[2], args[3]);
+							}
+						});
+						recalc_prices();
+						$(this).dialog("close");
+						$('#messagebox').remove();
+						ar_add_calculate_parts();
+					}
+					function add_No(){
+						$(element).attr("checked", false);
+						recalc_prices();
+						for(col in remaining_columns){
+							e = $('input[column="'+remaining_columns[col]+'"]')
+									.filter('#'+serviceUID);
+							$(e).attr("checked", false);
+						}
+						recalc_prices(column);
+						$(this).dialog("close");
+						$('#messagebox').remove();
+						ar_add_calculate_parts();
+					}
+				if (auto_yes) {
+					$('#messagebox').remove();
+					add_Yes();
+				} else {
+					yes = _("Yes");
+					no = _("No");
+					$("#messagebox").dialog({width:450, resizable:false, closeOnEscape: false, buttons:{
+								yes: add_Yes,
+								no: add_No
+								}});
+				}
+			}
+		}
+		else {
+			// unselecting a service; discover back dependencies
+			var affected_titles = [];
+			var affected_services = [];
+			s_uids = backrefs;
+			if (s_uids == undefined || s_uids == null) {
+				s_uids = [];
+			}
+			if (s_uids.length > 0){
+				$.each(s_uids, function(i, serviceUID){
+					cb = $('input[column="'+column+'"]').filter('#'+serviceUID);
+					if (cb.attr("checked")){
+						affected_services.push(serviceUID);
+						affected_titles.push(cb.attr('title'));
+					}
+				});
+				$("body").append(
+					"<div id='messagebox' style='display:none' title='" + _("Service dependencies") + "'>"+
+					_("<p>The following services depend on ${service}, and will be unselected if you continue:</p><br/><p>${deps}</p><br/><p>Do you want to remove these selections now?</p>",
+						{service:$(element).attr('title'),
+						 deps: affected_titles.join("<br/>")})+"</div>");
+				yes = _("Yes");
+				no = _("No");
 				if (affected_services.length > 0) {
-					$("#confirm_add_deps").after(
-						"<div id='messagebox' style='display:none' title='Service dependencies'>"+
-						$("#confirm_add_deps").html()
-							.replace("_SERVICE_", $(element).attr('title'))
-							.replace("_DEPS_", affected_titles.join("<br/>"))+"</div>");
-						function add_Yes(){
-							$.each(dep_args, function(i,args){
-								tbody = $("#"+args[0]+"_"+args[1]);
-								if ($(tbody).hasClass("expanded")) {
-									// if cat is already expanded, we toggle(true) it and manually select service checkboxes
-									$(tbody).toggle(true);
-									$.each(args[3], function(x,serviceUID){
-										$('input[column="'+args[2]+'"]').filter('#'+serviceUID).attr("checked", true);
-										// if elements from more than one column were passed, set all columns to be the same.
-										for(col in remaining_columns){
-											$('input[column="'+remaining_columns[col]+'"]').filter('#'+serviceUID).attr("checked", true);
-										}
-									});
-								} else {
-									// otherwise, toggleCat will take care of everything for us
-									toggleCat(args[0], args[1], args[2], args[3]);
+					$("#messagebox").dialog({width:450, resizable:false, closeOnEscape: false, buttons:{
+						yes: function(){
+							$.each(affected_services, function(i,serviceUID){
+								cb = $('input[column="'+column+'"]').filter('#'+serviceUID).attr('checked', false);
+								if ($(cb).val() == $("#getDryMatterService").val()) {
+									$("#ar_"+column+"_ReportDryMatter").attr("checked", false);
+								}
+								// if elements from more than one column were passed, set all columns to be the same.
+								for(col in remaining_columns){
+									cb = $('input[column="'+remaining_columns[col]+'"]').filter('#'+serviceUID).attr("checked", false);
+									if ($(cb).val() == $("#getDryMatterService").val()) {
+										$("#ar_"+col+"_ReportDryMatter").attr("checked", false);
+									}
 								}
 							});
 							recalc_prices();
 							$(this).dialog("close");
-							$('#messagebox').remove()
-						}
-						function add_No(){
-							$(element).attr("checked", false);
-							recalc_prices();
+							$('#messagebox').remove();
+							ar_add_calculate_parts();
+						},
+						no:function(){
+							$(element).attr("checked", true);
 							for(col in remaining_columns){
-								e = $('input[column="'+remaining_columns[col]+'"]')
-										.filter('#'+serviceUID);
-								$(e).attr("checked", false);
+								$('input[column="'+remaining_columns[col]+'"]').filter('#'+serviceUID).attr("checked", true);
 							}
 							recalc_prices(column);
 							$(this).dialog("close");
-							$('#messagebox').remove()
+							$('#messagebox').remove();
+							ar_add_calculate_parts();
 						}
-					if (auto_yes) {
-						add_Yes();
-					} else {
-						$("#messagebox").dialog({width:450, resizable:false, closeOnEscape: false, buttons:{
-									'Yes': add_Yes,
-									'No': add_No
-									}});
-					}
+					}});
+				} else {
+					$('#messagebox').remove();
 				}
-			},
-			$.ajax(options);
-		}
-		else {
-			// unselecting a service; discover back dependencies
-			affected_titles = [];
-			affected_services = [];
-			options.url = 'get_back_references';
-			options.success = function(service_uids,textStatus,$XHR){
-				if (service_uids.length > 0){
-					$.each(service_uids, function(i, serviceUID){
-						cb = $('input[column="'+column+'"]').filter('#'+serviceUID);
-						if (cb.attr("checked")){
-							affected_services.push(serviceUID);
-							affected_titles.push(cb.attr('title'));
-						}
-					});
-					$("#confirm_remove_deps").after(
-						"<div id='messagebox' style='display:none' title='Service dependencies'>"+
-						$("#confirm_remove_deps").html()
-							.replace("_SERVICE_", $(element).attr('title'))
-							.replace("_DEPS_", affected_titles.join("<br/>"))+"</div>");
-					if (affected_services.length > 0) {
-						$("#messagebox").dialog({width:450, resizable:false, closeOnEscape: false, buttons:{
-							'Yes': function(){
-								$.each(affected_services, function(i,serviceUID){
-									cb = $('input[column="'+column+'"]').filter('#'+serviceUID).attr('checked', false);
-									if ($(cb).val() == $("#getDryMatterService").val()) {
-									    $("#ar_"+column+"_ReportDryMatter").attr("checked", false);
-									}
-									// if elements from more than one column were passed, set all columns to be the same.
-									for(col in remaining_columns){
-										cb = $('input[column="'+remaining_columns[col]+'"]').filter('#'+serviceUID).attr("checked", false);
-										if ($(cb).val() == $("#getDryMatterService").val()) {
-											$("#ar_"+col+"_ReportDryMatter").attr("checked", false);
-										}
-									}
-								});
-								recalc_prices();
-								$(this).dialog("close");
-								$('#messagebox').remove()
-							},
-							'No':function(){
-								$(element).attr("checked", true);
-								for(col in remaining_columns){
-									$('input[column="'+remaining_columns[col]+'"]').filter('#'+serviceUID).attr("checked", true);
-								}
-								recalc_prices(column);
-								$(this).dialog("close");
-								$('#messagebox').remove()
-							}
-						}});
-					}
-				}
-			},
-			$.ajax(options);
+			}
 		}
 	}
 
+	function calculate_parts(formvalues, nr_cols){
+
+		// parts is where we will store the table of which services
+		// belong to which partition, for each column.
+		// a 'partition' is a slice of this dictionary:
+		parts = [];
+
+		// formvalues looks like this:
+		// formvalues[col] = {services: [uid,uid], st_title: sampletype title}
+
+		for (col=0; col<nr_cols; col++) {
+			// blank entry for each column
+            parts.push([]);
+
+			// get column field values
+			st_title = formvalues[col]['st_title'];
+			st_uid = bsc.data.st_uids[st_title];
+			if (st_uid != undefined && st_uid != null){
+				st_uid = st_uid['uid'];
+			} else {
+				st_uid = '';
+			}
+			service_uids = formvalues[col]['services']
+
+			// loop through each selected service, assigning or creating
+			// partitions as we go.
+            for(i=0;i<service_uids.length;i++){
+				service_uid = service_uids[i];
+
+				// part_setup is filled with defaults here, if it is not
+				// already defined
+				z = bsc.data.services[service_uid];
+				if(z == undefined || z == null) {
+					bsc.data.services[service_uid] = {
+						'Separate': false,
+						'Container': [],
+						'Preservation': [],
+						'PartitionSetup': ''
+					}
+				}
+
+				// set service default partition setup field values
+				separate = bsc.data.services[service_uid]['Separate'];
+				container = bsc.data.services[service_uid]['Container'];
+				preservation = bsc.data.services[service_uid]['Preservation'];
+				// discover if a more specific part_setup exists for this
+				// sample_type and service_uid
+				part_setup = '';
+				$.each(bsc.data.services[service_uid]['PartitionSetup'],
+					function(x, ps){
+						if(ps['sampletype'] == st_uid){
+							part_setup = ps;
+							return false;
+						}
+					}
+				);
+				// if it does, we use it instead of defaults.
+				if (part_setup != '') {
+					separate = part_setup['separate'];
+					container = part_setup['container'];
+					preservation = part_setup['preservation'];
+				}
+
+				if (separate) {
+
+                    // create a separate partition for this analysis.
+					// partition container and preservation remain plural.
+                    part = {'services': [service_uid],
+                            'separate': true,
+                            'container': container,
+                            'preservation': preservation};
+                    parts[col].push(part);
+
+				} else {
+
+					// So now we either need to find an existing partition
+					// which permits us to add this analysis to it, or
+					// create a new one.
+					found_part = '';
+
+					for(x=0; x<parts[col].length;x++){
+						part = parts[col][x];
+						// make sure this partition isn't flagged as separate
+						if (part['separate']) {
+							continue;
+						}
+						// if no container info is provided by either the
+						// partition OR the service, this partition is available
+						var c_intersection = [];
+						if (part['container'].length > 0 || container.length > 0) {
+							// check our containers against this partition's
+							c_intersection = $.grep(container, function(c, y){
+								if(part['container'].indexOf(c) > -1){
+									return true;
+								} else {
+									return false;
+								}
+							});
+							if (c_intersection.length == 0){
+								// no match
+								continue;
+							}
+						}
+						// if no preservation info is provided by either the
+						// partition OR the service, this partition is available
+						var p_intersection = [];
+						if (part['preservation'].length > 0 || preservation.length > 0) {
+							// check our preservation against this partition's
+							p_intersection = $.grep(preservation, function(p, y){
+								if(part['preservation'].indexOf(p) > -1){
+									return true;
+								} else {
+									return false;
+								}
+							});
+							if (p_intersection.length == 0){
+								// no match
+								continue;
+							}
+						}
+
+						// other conditions
+
+						// all the conditions passed:
+						found_part = x;
+						parts[col][x]['services'].push(service_uid);
+						parts[col][x]['container'] = c_intersection;
+						parts[col][x]['preservation'] = p_intersection;
+						break;
+					}
+
+					if (found_part === ''){
+						// No home found - make a new part for this analysis
+						part = {'services': [service_uid],
+								'separate': false,
+								'container': container,
+								'preservation': preservation};
+						parts[col].push(part);
+					}
+				}
+			}
+		}
+		return parts
+	}
+
+	function ar_add_calculate_parts(){
+		var formvalues = {};
+		var partitionable = 0;
+		nr_cols = parseInt($("#col_count").val(), 10);
+		// gather up SampleType and all selected service checkboxes by column
+		for (var col=0; col<nr_cols; col++) {
+			var st_title = $("#ar_"+col+"_SampleType").val();
+			formvalues[col] = {'st_title':st_title, 'services': []};
+			var checkboxes_checked = $('[name^="ar\\.'+col+'\\.Analyses"]').filter(':checked');
+			for(i=0;i<checkboxes_checked.length;i++){
+				e = checkboxes_checked[i];
+				var uid = $(e).attr('value');
+				partitionable++;
+				formvalues[parseInt(col)]['services'].push(uid);
+			}
+		}
+
+		// all unchecked services have their part numbers removed
+		ep = $("[class^='partnr_']").not(":empty");
+		for(i=0;i<ep.length;i++){
+			em = ep[i];
+			uid = $(ep[0]).attr('class').split("_")[1]
+			cb = $("#"+uid);
+			if ( ! $(cb).attr('checked') ){
+				$(em).empty();
+			}
+		}
+
+		// remove all and skip everything if no selected
+		// services have partition setup info
+		if (partitionable == 0){
+			$.each($('[name$="\\.Analyses"]').filter(':checked'), function(i,e){
+				$(".partnr_"+$(e).attr('value')).filter("[column="+col+"]").empty();
+			});
+			return;
+		}
+		parts = calculate_parts(formvalues, nr_cols);
+
+		// Set new part numbers
+		for (var col=0; col<parts.length; col++) {
+			$.each(parts[col], function(p,part){
+				$.each(part['services'], function(s,service_uid){
+					$(".partnr_"+service_uid).filter("[column="+col+"]").empty().append(p+1);
+				});
+			});
+		}
+		$("#parts").val($.toJSON(parts));
+	}
+
+	function ar_analyses_calculate_parts(){
+		var formvalues = {};
+		var partitionable = 0;
+		nr_cols = 1;
+
+		// gather up SampleType and all selected service checkboxes by column
+		var st_title = $("#st_title").attr("st_title");
+		formvalues[0] = {'st_title':st_title, 'services': []};
+		var checkboxes_checked = $('[name="uids:list"]').filter(':checked');
+		for(i=0;i<checkboxes_checked.length;i++){
+			e = checkboxes_checked[i];
+			var uid = $(e).val();
+			partitionable++;
+			formvalues[0]['services'].push(uid);
+		}
+
+		parts = calculate_parts(formvalues, 1);
+
+		// Set new partition infos in selected rows
+		for(p=0;p<parts[0].length;p++){
+			part_nr = p+1;
+			part = parts[0][p];
+			if(part['container'].length > 0){
+				container = bsc.data.containers[part['container'][0]];
+				container = container['title'];
+			} else {
+				container = '';
+			}
+			if(part['preservation'].length > 0){
+				preservation = bsc.data.preservations[part['preservation'][0]];
+				preservation = preservation['title'];
+			} else {
+				preservation = '';
+			}
+			separate = part['separate'];
+			service_uids = part['services'];
+			for(s=0;s<service_uids.length;s++){
+				service_uid = service_uids[s];
+				//service_data = bsc.data.services[service_uid];
+				part_tr = $("[name=Partition."+service_uid+":records]").parent();
+				container_tr = $("[name=Container."+service_uid+":records]").parent();
+				preservation_tr = $("[name=Preservation."+service_uid+":records]").parent();
+				$($(part_tr).children()[1]).text('part-'+part_nr);
+				$($(container_tr).children()[1]).text(container);
+				$($(preservation_tr).children()[1]).text(preservation);
+			}
+		}
+		if ($("#parts").length == 0){
+			$("#list").append("<input type='hidden' id='parts' name='parts'/>");
+		}
+		$("#parts").val($.toJSON(parts));
+	}
+
+
 	function service_checkbox_change(){
-		column = $(this).attr("column");
-		element = $(this);
+		var column = $(this).attr("column");
+		var element = $(this);
 		if($("#ar_"+column+"_ARProfile").val() != ""){
 			$("#ar_"+column+"_ARProfile").val("");
 		}
@@ -276,7 +529,16 @@ jQuery( function($) {
 		}
 		calcdependencies([element]);
 		recalc_prices();
+		ar_add_calculate_parts();
 	};
+
+	function unsetARTemplate(column){
+		$('input[name^="ar.'+column+'.SampleType"]').val('');
+		$('input[name^="ar.'+column+'.SamplePoint"]').val('');
+		$('input[name^="ar.'+column+'.Composite"]').attr("checked", false);
+		$('input[name^="ar.'+column+'.InvoiceExclude"]').attr("checked", false);
+		$('input[name^="ar.'+column+'.ReportDryMatter"]').attr("checked", false);
+	}
 
 	function unsetARProfile(column){
 		$.each($('input[name^="ar.'+column+'.Analyses"]'), function(){
@@ -284,72 +546,75 @@ jQuery( function($) {
 		});
 	}
 
+	function setARTemplate(){
+		templateUID = $(this).val();
+		column = $(this).attr("column");
+		unsetARTemplate(column);
+		if(templateUID == "") return;
+
+		template_data = $.parseJSON($("#template_data").val())[templateUID];
+
+		// set ARProfile
+		$('#ar_'+column+'_ARProfile').val(template_data['ARProfile']);
+		$('#ar_'+column+'_ARProfile').change();
+
+		// set our template fields
+		// SampleType and SamplePoint are strings - the item's Title.
+		$('#ar_'+column+'_SampleType').val(template_data['SampleType']);
+		$('#ar_'+column+'_SamplePoint').val(template_data['SamplePoint']);
+		$('#ar_'+column+'_SamplePoint').change();
+
+		$('#ar_'+column+'_ReportDryMatter').attr('checked', template_data['ReportDryMatter']);
+
+	}
+
 	function setARProfile(){
 		profileUID = $(this).val();
 		column = $(this).attr("column");
 		unsetARProfile(column);
 		if(profileUID == "") return;
-		selected_elements = [];
-		$(".ARProfileCopyButton").toggle(false);
-		function success(profile_data){
-			// ReportDryMatter gets turned off explicity here
-			$("#ar_"+column+"_ReportDryMatter").attr("checked", false);
-			$.each(profile_data, function(poc_categoryUID, selectedservices){
-				if( $("tbody[class*='expanded']").filter("#"+poc_categoryUID).length > 0 ){
-					$.each(selectedservices, function(i,uid){
-						$.each($("input[column='"+column+"']").filter("#"+uid), function(x, e){
-							$(e).attr('checked', true);
-						});
-						recalc_prices(column);
+
+		profile_data = $.parseJSON($("#profile_data").val())[profileUID];
+		profile_services = profile_data['Services'];
+
+		// ReportDryMatter is getting turned off explicity here
+		$("#ar_"+column+"_ReportDryMatter").attr("checked", false);
+
+		$.each(profile_services, function(poc_categoryUID, selectedservices){
+			if( $("tbody[class*='expanded']").filter("#"+poc_categoryUID).length > 0 ){
+				$.each(selectedservices, function(i,uid){
+					$.each($("input[column='"+column+"']").filter("#"+uid), function(x, e){
+						$(e).attr('checked', true);
 					});
-				} else {
-					p_c = poc_categoryUID.split("_");
-					jQuery.ajaxSetup({async:false});
-					toggleCat(p_c[0], p_c[1], column, selectedservices);
-					jQuery.ajaxSetup({async:true});
-				}
-			});
-			$(".ARProfileCopyButton").toggle(true);
-		}
-		// cached value in #profileUID
-		if($("#"+profileUID).length > 0){
-			success($.parseJSON($("#"+profileUID).attr('data')));
-		} else {
-			options = {
-				url: 'analysisrequest_profileservices',
-				type: 'POST',
-				async: false,
-				data: {
-					'profileUID':profileUID,
-					'_authenticator': $('input[name="_authenticator"]').val()
-				},
-				success: function(data,textStatus,xhr){
-					$(".ARProfile").append("<div style='display:none' id='"+profileUID+"' data='"+data+"'>")
-					success($.parseJSON(data));
-				},
+					recalc_prices(column);
+				});
+			} else {
+				p_c = poc_categoryUID.split("_");
+				jQuery.ajaxSetup({async:false});
+				toggleCat(p_c[0], p_c[1], column, selectedservices);
+				jQuery.ajaxSetup({async:true});
 			}
-			$.ajax(options);
-		}
+		});
+		ar_add_calculate_parts();
 	}
 
-	function autocomplete_sampletype(request,callback){
-		$.getJSON('ajax_sampletypes', {'term':request.term}, function(data,textStatus){
-			callback(data);
-		});
-	}
-
-	function autocomplete_samplepoint(request,callback){
-		$.getJSON('ajax_samplepoints', {'term':request.term}, function(data,textStatus){
-			callback(data);
-		});
-	}
 
 	$(document).ready(function(){
 
-		// DateSampled field is readonly to prevent invalid data entry, so
-		// clicking date_sampled field clears existing values.
+		_ = window.jsi18n;
+
+		// If any required fields are missing, then we hide the Plone UI
+		// transitions for Sampled and Preserved, and use our own buttons instead
+		// (Save)
+		if ($("#DateSampled").val() == "" || $("#Sampler").val() == "") {
+			$("#workflow-transition-sampled").parent().toggle(false);
+		}
+		$("#workflow-transition-preserved").parent().toggle(false);
+
+		// Sampling Date field is readonly to prevent invalid data entry, so
+		// clicking SamplingDate field clears existing values.
 		// clear date widget values if the page is reloaded.
-		e = $('input[id$="_DateSampled"]')
+		e = $('input[id$="_SamplingDate"]');
 		if(e.length > 0){
 			// XXX Datepicker format is not i18n aware (dd Oct 2011)
 			if($($(e).parents('form').children('[name=came_from]')).val() == 'add'){
@@ -361,18 +626,102 @@ jQuery( function($) {
 				.datepicker({'dateFormat': 'dd M yy', showAnim: ''})
 			}
 		}
-		$(".sampletype").autocomplete({ minLength: 0, source: autocomplete_sampletype});
-		$(".samplepoint").autocomplete({ minLength: 0, source: autocomplete_samplepoint});
+
+		$("[name='uids:list']").live('click', function(){
+			// check calculation dependencies
+			if (!$(this).attr("checked")){
+				service_uid = $(this).val();
+				$($("[name=Partition."+service_uid+":records]").siblings()[1]).text('');
+				$($("[name=Container."+service_uid+":records]").siblings()[1]).text('');
+				$($("[name=Preservation."+service_uid+":records]").siblings()[1]).text('');
+			}
+			ar_analyses_calculate_parts();
+		});
+
+		// define these for each autocomplete dropdown individually
+		// this is done like this so that they can depend on each other's
+		// values
+		for (col=0; col<parseInt($("#col_count").val()); col++) {
+			$("#ar_"+col+"_SamplePoint").autocomplete({
+				minLength: 0,
+				source: function(request,callback){
+					$.getJSON('ajax_samplepoints',
+						{'term':request.term,
+						 'sampletype':$("#ar_"+window._ac_focus.id.split("_")[1]+"_SampleType").val(),
+						 '_authenticator': $('input[name="_authenticator"]').val()},
+						function(data,textStatus){
+							callback(data);
+						}
+					);
+				}
+			});
+			$("#ar_"+col+"_SampleType").autocomplete({
+				minLength: 0,
+				source: function(request,callback){
+					$.getJSON('ajax_sampletypes',
+						{'term':request.term,
+						 'samplepoint':$("#ar_"+window._ac_focus.id.split("_")[1]+"_SamplePoint").val(),
+						 '_authenticator': $('input[name="_authenticator"]').val()},
+						function(data,textStatus){
+							callback(data);
+						}
+					);
+				}
+			});
+		}
+		$("select[class='ARTemplate']").change(setARTemplate);
 		$("select[class='ARProfile']").change(setARProfile);
+
+		// when SamplePoint is selected, reset Composite flag to SP value
+		$(".samplepoint").focus(function(){
+			window._ac_focus = this;
+		});
+		function set_sp(e){
+			col = e.id.split("_")[1];
+			sp = bsc.data.sp_uids[$(e).val()];
+			if (sp != undefined && sp != null){
+				$("#ar_"+col+"+Composite").attr("checked", sp['composite']);
+			}
+		}
+		$(".samplepoint").change(function(){
+			set_sp(this);
+		});
+		$(".samplepoint").blur(function(){
+			set_sp(this);
+		});
+
+		// changing sampletype sets partition numbers.
+		// it's done funny, because autocomplete didn't like .change()
+		// and autocomplete's callback fires at the wrong time.
+		$(".sampletype").focus(function(){
+			window._ac_focus = this;
+		});
+		$(".sampletype").blur(function(){
+			if ($(this).val() != $(window._ac_focus).val()){
+				ar_add_calculate_parts();
+			}
+		})
+		// also set on .change() though,
+		// because sometimes we set these fields manually.
+		$(".sampletype").change(function(){
+			ar_add_calculate_parts()
+		});
 
 		$(".copyButton").live('click',  function (){
 			field_name = $(this).attr("name");
-			if ($(this).hasClass('ARProfileCopyButton')){ // Profile selector
+			if ($(this).hasClass('ARTemplateCopyButton')){ // Template selector
+				first_val = $('#ar_0_ARTemplate').val();
+				for (col=1; col<parseInt($("#col_count").val()); col++) {
+					$("#ar_"+col+"_ARTemplate").val(first_val);
+				}
+				//$("[id*=_ARTemplate]").change();
+			}
+			else if ($(this).hasClass('ARProfileCopyButton')){ // Profile selector
 				first_val = $('#ar_0_ARProfile').val();
 				for (col=1; col<parseInt($("#col_count").val()); col++) {
 					$("#ar_"+col+"_ARProfile").val(first_val);
-					$("#ar_"+col+"_ARProfile").change();
 				}
+				//$("[id*=_ARProfile]").change();
 			}
 			else if ($(this).parent().attr('class') == 'service'){ // Analysis Service checkbox
 				first_val = $('input[column="0"]').filter('#'+this.id).attr("checked");
@@ -392,8 +741,9 @@ jQuery( function($) {
 						affected_elements.push(other_elem);
 					}
 				}
-				calcdependencies(affected_elements);
+				calcdependencies(affected_elements, true);
 				recalc_prices();
+				ar_add_calculate_parts();
 			}
 			else if ($('input[name^="ar\\.0\\.'+field_name+'"]').attr("type") == "checkbox") {
 				// other checkboxes
@@ -403,9 +753,9 @@ jQuery( function($) {
 					other_elem = $('#ar_' + col + '_' + field_name);
 					if (!(other_elem.attr("checked")==first_val)) {
 						other_elem.attr("checked", first_val?true:false);
-						other_elem.change();
 					}
 				}
+				$('[id*=_' + field_name + "]").change();
 			}
 			else{
 				first_val = $('input[name^="ar\\.0\\.'+field_name+'"]').val();
@@ -414,9 +764,9 @@ jQuery( function($) {
 					other_elem = $('#ar_' + col + '_' + field_name);
 					if (!(other_elem.attr("disabled"))) {
 						other_elem.val(first_val);
-						other_elem.change();
 					}
 				}
+				$('[id*=_' + field_name + "]").change();
 			}
 		});
 
@@ -449,23 +799,13 @@ jQuery( function($) {
 
 		// Contact dropdown changes
 		$("#primary_contact").live('change', function(){
-			$.ajax({
-				type: 'POST',
-				url: 'analysisrequest_contact_ccs',
-				data: $(this).val(),
-				success: function(data,textStatus,$XHR){
-					if (data == null)
-						return;
-					$('#cc_uids').attr("value", data[0]);
-					$('#cc_titles').val(data[1]);
-				},
-				dataType: "json"
-			});
+			// XXX Should be passing along the cc_data value ('ccs_json')!
+			contact_uid = $(this).val();
+			elem = $("[uid="+contact_uid+"]");
+			cc_data = $.parseJSON($(elem).attr("ccs"));
+			$('#cc_uids').val($(elem).attr("cc_uids"));
+			$('#cc_titles').val($(elem).attr("cc_titles"));
 		});
-		contact_element = $("#primary_contact");
-		if(contact_element.length > 0) {
-			contact_element.change();
-		}
 
 		// recalculate when price elements' values are changed
 		$("input[name^='Price']").live('change', function(){
@@ -508,7 +848,7 @@ jQuery( function($) {
 			$("#ar_"+column+"_SampleID").val('');
 			$("#ar_"+column+"_ClientReference").val('').removeAttr("readonly");
 			// XXX Datepicker format is not i18n aware (dd Oct 2011)
-			$("#ar_"+column+"_DateSampled")
+			$("#ar_"+column+"_SamplingDate")
 				.datepicker({'dateFormat': 'dd M yy', showAnim: ''})
 				.click(function(){$(this).attr('value', '');})
 				.attr('value', '');
@@ -556,6 +896,7 @@ jQuery( function($) {
 				url: window.location.href.replace("/analysisrequest_add","/analysisrequest_submit").
 					 replace("/base_edit","/analysisrequest_submit"),
 				dataType: 'json',
+				data: {'_authenticator': $('input[name="_authenticator"]').val()},
 				beforeSubmit: function(formData, jqForm, options) {
 					$("input[class~='context']").attr('disabled',true);
 				},

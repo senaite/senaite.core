@@ -2,11 +2,11 @@
 
 <object name="portal_controlpanel" meta_type="Plone Control Panel Tool"
  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
- i18n:domain="bika.lims">
+ i18n:domain="plone">
 
  <configlet title="Bika Setup" action_id="bika_setup"
     appId="bika.lims" category="Products" condition_expr=""
-    icon_expr="string:++resource++bika.lims.images/setup.png"
+    icon_expr="string:++resource++bika.lims.images/bikasetup.png"
 	url_expr="string:$portal_url/bika_setup/edit"
     visible="True">
   <permission>BIKA: Manage Bika</permission>
@@ -14,7 +14,7 @@
 
  <configlet title="Laboratory Information" action_id="bika_labinfo"
     appId="bika.lims" category="Products" condition_expr=""
-    icon_expr="string:++resource++bika.lims.images/lab.png"
+    icon_expr="string:++resource++bika.lims.images/laboratory.png"
 	url_expr="string:$portal_url/bika_setup/laboratory/base_edit"
     visible="True"
 	i18n:attributes="title">
@@ -50,14 +50,14 @@
 
  <configlet title="Analysis Services" action_id="bika_analysisservices"
     appId="bika.lims" category="Products" condition_expr=""
-    icon_expr="string:++resource++bika.lims.images/service.png"
+    icon_expr="string:++resource++bika.lims.images/analysisservice.png"
     url_expr="string:$portal_url/bika_setup/bika_analysisservices"
     visible="True"
 	i18n:attributes="title">
   <permission>BIKA: Manage Bika</permission>
  </configlet>
 
- <configlet title="Analysis Specs" action_id="bika_analysisspecs"
+ <configlet title="Analysis Specifications" action_id="bika_analysisspecs"
     appId="bika.lims" category="Products" condition_expr=""
     icon_expr="string:++resource++bika.lims.images/analysisspec.png"
     url_expr="string:$portal_url/bika_setup/bika_analysisspecs"
@@ -96,7 +96,7 @@
  <configlet title="Methods" action_id="bika_methods"
     appId="bika.lims" category="Products" condition_expr=""
     icon_expr="string:++resource++bika.lims.images/method.png"
-    url_expr="string:$portal_url/bika_setup/bika_methods"
+    url_expr="string:$portal_url/bika_methods"
     visible="True"
 	i18n:attributes="title">
   <permission>BIKA: Manage Bika</permission>
@@ -202,4 +202,5 @@
 	i18n:attributes="title">
   <permission>BIKA: Manage Bika</permission>
  </configlet>
+
 </object>

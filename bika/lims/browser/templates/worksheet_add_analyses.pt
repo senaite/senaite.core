@@ -1,5 +1,4 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
-	xml:lang="en" lang="en"
 	xmlns:tal="http://xml.zope.org/namespaces/tal"
 	xmlns:metal="http://xml.zope.org/namespaces/metal"
 	xmlns:i18n="http://xml.zope.org/namespaces/i18n"
@@ -104,14 +103,21 @@
 						tal:content="python:client"/>
 				</tal:options>
 			</select>&nbsp;
-			<a href="view/view_url" i18n:translate=""
-				class="filter-search-button">Search</a>
+			<a tal:attributes="href view/view_url" i18n:translate=""
+				class="ws-analyses-search-button">Search</a>
 		</fieldset>
 
 	</tal:searchform>
+	<fieldset/>
 
 	<div id="folderlisting-main-table"
 		tal:content="structure view/contents_table"/>
+
+	<tal:remarks define="
+		field python:context.Schema()['Remarks'];
+		errors python:{};">
+		 <metal:widget use-macro="python:context.widget('Remarks', mode='edit')" />
+	</tal:remarks>
 
 </metal:content-core>
 

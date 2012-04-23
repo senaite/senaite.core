@@ -12,5 +12,5 @@ class CoordinateWidget(RecordWidget):
 
 registerWidget(CoordinateWidget,
                title = 'CoordinateWidget',
-               description = (''),
+               description = '',
                )

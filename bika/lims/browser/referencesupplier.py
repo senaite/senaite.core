@@ -25,16 +25,17 @@ class ReferenceSamplesView(BikaListingView):
         self.columns = {
             'ID': {'title': _('ID')},
             'Title': {'title': _('Title')},
-            'Manufacturer': {'title': _('Manufacturer')},
-            'Definition': {'title': _('Reference Definition')},
-            'DateSampled': {'title': _('Date Sampled')},
-            'DateReceived': {'title': _('Date Received')},
-            'DateOpened': {'title': _('Date Opened')},
-            'ExpiryDate': {'title': _('Expiry Date')},
-            'state_title': {'title': _('State')},
+            'Manufacturer': {'title': _('Manufacturer'), 'toggle':True},
+            'Definition': {'title': _('Reference Definition'), 'toggle':True},
+            'DateSampled': {'title': _('Date Sampled'), 'toggle':True},
+            'DateReceived': {'title': _('Date Received'), 'toggle':True},
+            'DateOpened': {'title': _('Date Opened'), 'toggle':True},
+            'ExpiryDate': {'title': _('Expiry Date'), 'toggle':True},
+            'state_title': {'title': _('State'), 'toggle':True},
         }
         self.review_states = [
-            {'title': _('All'), 'id':'all',
+            {'id':'all',
+             'title': _('All'),
              'columns': ['ID',
                          'Title',
                          'Manufacturer',
@@ -124,7 +125,8 @@ class ContactsView(BikaListingView):
           }
 
     review_states = [
-                {'title': 'All', 'id':'all',
+                {'id':'all',
+                 'title': _('All'),
                  'columns': ['getFullname',
                              'getEmailAddress',
                              'getBusinessPhone',
@@ -135,21 +137,13 @@ class ContactsView(BikaListingView):
     def __init__(self, context, request):
         super(ContactsView, self).__init__(context, request)
         self.icon = "++resource++bika.lims.images/referencesupplier_contact_big.png"
-        self.title = _("contacts_title", default="Contacts")
-        self.descriotion = _("contacts_descr", default="")
+        self.title = _("Contacts")
 
     def folderitems(self):
         items = BikaListingView.folderitems(self)
         for x in range(len(items)):
             if not items[x].has_key('obj'): continue
-
-            obj = items[x]['obj']
-            items[x]['getFullname'] = obj.getFullname()
-            items[x]['getEmailAddress'] = obj.getEmailAddress()
-            items[x]['getBusinessPhone'] = obj.getBusinessPhone()
-            items[x]['getMobilePhone'] = obj.getMobilePhone()
-
             items[x]['replace']['getFullName'] = "<a href='%s'>%s</a>" % \
-                 (items[x]['url'], items[x]['getFullname'])
+                 (items[x]['url'], items[x]['obj'].getFullname())
 
         return items

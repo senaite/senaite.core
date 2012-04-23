@@ -9,13 +9,13 @@ from bika.lims.browser.widgets import ServicesWidget
 from bika.lims.browser.widgets import WorksheetTemplateLayoutWidget
 from bika.lims.config import ANALYSIS_TYPES, PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
-from bika.lims import bikaMessageFactory as _
+from bika.lims import PMF, bikaMessageFactory as _
 from zope.interface import implements
 import sys
 
 schema = BikaSchema.copy() + Schema((
     RecordsField('Layout',
-        schemata = 'Layout',
+        schemata = PMF('Layout'),
         required = 1,
         type = 'templateposition',
         subfields = ('pos', 'type', 'blank_ref', 'control_ref', 'dup'),
@@ -27,8 +27,7 @@ schema = BikaSchema.copy() + Schema((
                            'dup': _('Duplicate Of')},
         widget = WorksheetTemplateLayoutWidget(
             label = _("Worksheet Layout"),
-            description = _("Worksheet Layout description",
-                            "Specify the size of the Worksheet, e.g. corresponding to a "
+            description = _("Specify the size of the Worksheet, e.g. corresponding to a "
                             "specific instrument's tray size. Then select an Analysis 'type' "
                             "per Worksheet position. Where QC samples are selected, also select "
                             "which Reference Sample should be used. If a duplicate analysis is "
@@ -36,7 +35,7 @@ schema = BikaSchema.copy() + Schema((
         )
     ),
     ReferenceField('Service',
-        schemata = 'Analyses',
+        schemata = PMF('Analyses'),
         required = 1,
         multiValued = 1,
         allowed_types = ('AnalysisService',),
@@ -44,12 +43,11 @@ schema = BikaSchema.copy() + Schema((
         referenceClass = HoldingReference,
         widget = ServicesWidget(
             label = _("Analysis Service"),
-            description = _("Analysis Service description",
-                            "Select which Analyses should be included on the Worksheet"),
+            description = _("Select which Analyses should be included on the Worksheet"),
         )
     ),
     ReferenceField('Instrument',
-        schemata = _("Description"),
+        schemata = PMF("Description"),
         required = 0,
         vocabulary_display_path_bound = sys.maxint,
         vocabulary = 'getInstruments',
@@ -59,8 +57,7 @@ schema = BikaSchema.copy() + Schema((
         widget = ReferenceWidget(
             checkbox_bound = 1,
             label = _("Instrument"),
-            description = _("Instrument description",
-                            "Select the preferred instrument"),
+            description = _("Select the preferred instrument"),
         ),
     ),
     ComputedField('InstrumentTitle',
@@ -71,10 +68,10 @@ schema = BikaSchema.copy() + Schema((
     ),
 ))
 
-schema['title'].schemata = 'Description'
+schema['title'].schemata = PMF('Description')
 schema['title'].widget.visible = True
 
-schema['description'].schemata = 'Description'
+schema['description'].schemata = PMF('Description')
 schema['description'].widget.visible = True
 
 
@@ -95,7 +92,7 @@ class WorksheetTemplate(BaseContent):
 
     def getInstruments(self):
         bsc = getToolByName(self, 'bika_setup_catalog')
-        items = [('', '')] + [(o.UID, o.Title) for o in \
+        items = [('', '')] + [(o.UID, o.Title) for o in
                                bsc(portal_type = 'Instrument',
                                    inactive_state = 'active')]
         o = self.getInstrument()

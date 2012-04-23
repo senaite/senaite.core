@@ -67,6 +67,12 @@ table {
 #content h1 {
     margin-top: .1em;
 }
+
+h1 span {
+	position:relative;
+	top:-0.2em;
+}
+
 #content p, #content table, #content dl, dl.portlet p, dl.portlet {
     margin-bottom: 1em;
 }
@@ -78,7 +84,7 @@ table {
 /* overwrite sunburst special display of description fields */
 /*#content .field textarea[name$=".description"],  */
 #archetypes-fieldname-description textarea#description {
-    font-style: normal;;
+    font-style: normal;
     color: &dtml-inputFontColor; !important;
     font-size: &dtml-fontSmallSize; !important;
     font-weight: normal;
@@ -240,7 +246,7 @@ dl.portlet dt.portletLateAnalyses {
 }
 
 ul#portal-globalnav {
-  line height:2em;
+  line-height:2em;
 }
 
 /* portal_tabs bar */
@@ -292,16 +298,20 @@ dt.attachments {
 	line-height:1em !important;
 }
 
+dt.collapsibleHeader {
+	margin-left:1px !important;
+}
+
 dl.expandedInlineCollapsible dt.collapsibleHeader,
 dl.expandedBlockCollapsible dt.collapsibleHeader {
     background: &dtml-backgroundColor; !important;
-    padding-left: .5em !important;
+    padding-left: 0 !important;
 }
 
 dl.collapsedInlineCollapsible dt.collapsibleHeader,
 dl.collapsedBlockCollapsible dt.collapsibleHeader {
     background: &dtml-backgroundColor; !important;
-    padding-left:.5em !important;
+    padding-left:0 !important;
     position: relative;
 }
 
@@ -337,10 +347,32 @@ th.expanded {
 }
 
 
+
+/*
+ * Header tables (header_table.pt)
+ */
+.header_table tr.odd {
+	background-color: &dtml-oddRowBackgroundColor;;
+}
+
+.header_table tr.even {
+	background-color: &dtml-evenRowBackgroundColor;;
+}
+
+.header_table td,
+.header_table th {
+  line-height:1.5em;
+  padding:.25em;
+}
+
+.header_table th.column_padding {
+  padding-left:1.25em;
+}
+
+
 /*
  * Analysis Request tables
  */
-
 table.analysisrequest {
 	border-top: 1px solid #dddddd;
 }
@@ -375,7 +407,8 @@ table.analysisrequest .pointofcapture th {
 	font-size:1.1em;
 }
 
-.ARProfile {
+.ARProfile,
+.ARTemplate {
   width: 95%;
 }
 
@@ -413,10 +446,11 @@ table.analysisrequest .right {
 }
 
 table.analysisrequest .price {
-	border: 0;
+	border: 1px solid #eee;
+	border-radius:.25em;
 	background:transparent;
     text-align: right;
-    padding: none;
+    padding: 1px 2px;
 }
 
 table.analysisrequest .unit {
@@ -429,6 +463,11 @@ table.analysisrequest input {
 }
 .analysisrequest td.contact {
     text-align: left;
+}
+
+.provisional input,
+.provisional select {
+	color: #777 !important;
 }
 
 .delAttachmentButton {
@@ -462,6 +501,7 @@ table.analysisrequest input {
 .deleteAttachmentButton {
     border: 0;
 	cursor: pointer;
+	margin-left:3px !important;
 }
 
 .deleteSampleButton{
@@ -475,6 +515,15 @@ table.analysisrequest input {
 }
 .center{
     text-align: center;
+}
+
+/*************
+ * Service Title
+ * This is clickable (utils.py) for a popup with service info
+ */
+.service_title {
+  color:&dtml-linkColor;;
+  cursor:pointer;
 }
 
 
@@ -563,13 +612,10 @@ fieldset.criteria p {
 	vertical-align:top !important;
 }
 
-.worksheet_add_references .bika-listing-table tbody tr:hover,
-.worksheet_add_references .bika-listing-table tbody tr:hover td,
-#worksheet_add_duplicate_ars .bika-listing-table tbody tr:hover,
-#worksheet_add_duplicate_ars .bika-listing-table tbody tr:hover td {
+.worksheet_add_references tbody.item-listing-tbody tr:hover,
+#worksheet_add_duplicate_ars tbody.item-listing-tbody tr:hover {
     cursor:pointer;
 	background:&dtml-notifyBackgroundColor; !important;
-
 }
 
 /* sample links in ws listing */
@@ -597,6 +643,7 @@ input.cb {
 }
 fieldset {
 	padding:.5em;
+	margin: 0;
 }
 select {
     vertical-align: middle !important;
@@ -622,9 +669,38 @@ select {
   border:1px solid &dtml-buttonClickBorderColor; !important;
 }
 
+.contextmenu{
+  background: &dtml-contextmenuBackgroundColor;;
+  color: &dtml-contextmenuTextColor;;
+  border:1px solid &dtml-contextmenuBorderColor;;
+  cursor:default;
+  border-radius:.25em;
+}
+
+.contextmenu th,
+.contextmenu th:hover {
+  padding:2px 5px 2px 0px;
+  border-bottom:1px solid &dtml-contextmenuBorderColor;;
+  background: &dtml-contextmenuHeaderBackgroundColor;;
+  color: &dtml-contextmenuHeaderTextColor;;
+  cursor:default;
+}
+
+.contextmenu td {
+  padding:2px 5px 2px 0px;
+  cursor:default;
+}
+
+.contextmenu tr:hover {
+  background: &dtml-contextmenuHighlightBackgroundColor;;
+  color: &dtml-contextmenuHighlightTextColor;;
+  cursor:default;
+}
+
 .noborder {border:none !important;}
 .nomargin {margin:0 !important;}
 .nopadding {padding:0 !important;}
+.nowrap {  whitespace:nowrap !important; }
 
 /* Print Only */
 @media print {

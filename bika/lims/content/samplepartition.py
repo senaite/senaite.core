@@ -1,10 +1,13 @@
 from AccessControl import ClassSecurityInfo
 from DateTime import DateTime
+from datetime import timedelta
 from Products.ATContentTypes.lib.historyaware import HistoryAwareMixin
+from Products.ATContentTypes.utils import DT2dt,dt2DT
 from Products.Archetypes.public import *
 from Products.Archetypes.references import HoldingReference
 from Products.CMFCore.utils import getToolByName
 from bika.lims import bikaMessageFactory as _
+from bika.lims.browser.fields import DurationField
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import ISamplePartition
@@ -14,23 +17,36 @@ schema = BikaSchema.copy() + Schema((
     ReferenceField('Container',
         allowed_types=('Container',),
         relationship='SamplePartitionContainer',
-        referenceClass=HoldingReference,
+        #referenceClass=HoldingReference,
         required=1,
+        multiValued=0,
     ),
     ReferenceField('Preservation',
         allowed_types=('Preservation',),
         relationship='SamplePartitionPreservation',
-        referenceClass=HoldingReference,
+        #referenceClass=HoldingReference,
         required=0,
+        multiValued=0,
+    ),
+    ReferenceField('Analyses',
+        allowed_types=('Analysis',),
+        relationship='SamplePartitionAnalysis',
+        #referenceClass=HoldingReference,
+        required=0,
+        multiValued=1,
     ),
     DateTimeField('DatePreserved',
-        index='DateIndex',
     ),
-    StringField('PreservedByUser',
-        index='FieldIndex',
-        searchable=True,
+    StringField('Preserver',
+        searchable=True
     ),
-    TextField('PreservationComments',
+    DurationField('RetentionPeriod',
+    ),
+    ComputedField('DisposalDate',
+        expression = 'context.disposal_date()',
+        widget = ComputedWidget(
+            visible = False,
+        ),
     ),
 ),
 )
@@ -71,36 +87,25 @@ class SamplePartition(BaseContent, HistoryAwareMixin):
     security.declarePublic('disposal_date')
     def disposal_date(self):
         """ return disposal date """
-        delay = self.aq_parent.getSampleType().getRetentionPeriod()
-        dis_date = self.getDateSampled() + int(delay)
+
+        DateSampled = self.getDateSampled()
+
+        # fallback to sampletype retention period
+        st_retention = self.aq_parent.getSampleType().getRetentionPeriod()
+
+        # but prefer retention period from preservation
+        pres = self.getPreservation()
+        pres_retention = pres and pres.getRetentionPeriod() or None
+
+        rp = pres_retention and pres_retention or None
+        rp = rp or st_retention
+
+        td = timedelta(
+            days = rp['days'] and int(rp['days']) or 0,
+            hours = rp['hours'] and int(rp['hours']) or 0,
+            minutes = rp['minutes'] and int(rp['minutes']) or 0)
+
+        dis_date = DateSampled and dt2DT(DT2dt(DateSampled) + td) or None
         return dis_date
-
-    security.declarePublic('current_user')
-    def current_user(self):
-        """ get the current user """
-        user = self.REQUEST.AUTHENTICATED_USER
-        user_id = user.getUserName()
-        return user_id
-
-    security.declarePublic('getPreservedByName')
-    def getPreservedByName(self):
-        """ get the name of the user who preserved this partition """
-        uid = self.getPreservedByUser()
-        if uid in (None, ''):
-            return ' '
-
-        r = self.portal_catalog(portal_type = 'Contact', getUsername = uid)
-        if len(r) == 1:
-            return r[0].Title
-
-        mtool = getToolByName(self, 'portal_membership')
-        member = mtool.getMemberById(uid)
-        if member is None:
-            return uid
-        else:
-            fullname = member.getProperty('fullname')
-        if fullname in (None, ''):
-            return uid
-        return fullname
 
 registerType(SamplePartition, PROJECTNAME)

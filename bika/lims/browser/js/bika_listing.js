@@ -1,27 +1,27 @@
 jQuery( function($) {
-
-function setoddeven(){
-	// set alternating odd and even classes if table has setoddeven class
-	$.each($("table.setoddeven tbody.item-listing-tbody tr"), function(i,tr){
-		if (i%2 == 0) {
-			$(tr).addClass('odd');
-		} else {
-			$(tr).addClass('even');
-		}
-	});
-}
-
-function portalMessage(message){
-	str = "<dl class='portalMessage error'>"+
-		"<dt>Error</dt>"+
-		"<dd><ul>" + message +
-		"</ul></dd></dl>";
-	$('.portalMessage').remove();
-	$(str).appendTo('#viewlet-above-content');
-}
-
-
 $(document).ready(function(){
+
+	_ = window.jsi18n;
+
+	function setoddeven(){
+		// set alternating odd and even classes if table has setoddeven class
+		$.each($("table.setoddeven tbody.item-listing-tbody tr"), function(i,tr){
+			if (i%2 == 0) {
+				$(tr).addClass('even');
+			} else {
+				$(tr).addClass('odd');
+			}
+		});
+	}
+
+	function portalMessage(message){
+		str = "<dl class='portalMessage error'>"+
+			"<dt>"+_("error")+"</dt>"+
+			"<dd><ul>" + message +
+			"</ul></dd></dl>";
+		$('.portalMessage').remove();
+		$(str).appendTo('#viewlet-above-content');
+	}
 
 	setoddeven();
 
@@ -91,7 +91,7 @@ $(document).ready(function(){
 		$(form).attr("action", stored_form_action);
 	});
 
-	// select all (on this screen at least)
+	// select all (on this page at least)
 	$("input[id*='select_all']").live('click', function(){
 		form_id = $(this).parents("form").attr("id");
 		checked = $(this).attr("checked");
@@ -217,10 +217,7 @@ $(document).ready(function(){
 	});
 
 	// trap the Clear search / Search buttons
-	$('.filter-search-button,.filter-search-clear').live('click', function(event){
-		if ($(this).hasClass('filter-search-clear')){
-			$('.filter-search-input').val('');
-		}
+	$('.filter-search-button').live('click', function(event){
 		form = $(this).parents('form');
 		form_id = $(form).attr('id');
 		stored_form_action = $(form).attr("action");
@@ -240,24 +237,36 @@ $(document).ready(function(){
 		return false;
 	});
 
-	// wait for all asynchronous requests to complete before allowing clicks
+	// Workflow Action button was clicked.
 	$('.workflow_action_button').live('click', function(event){
+
+		// wait for all asynchronous requests to complete before allowing clicks
 		if($.active > 0){
 			event.preventDefault();
 			$(this).ajaxStop(function(){
 				$(this).click();
 			});
 		}
+
+		// The submit buttons would like to put the translated action title
+		// into the request.  Insert the real action name here to prevent the
+		// WorkflowAction handler from having to look it up (painful/slow).
+		form = $(this).parents('form');
+		form_id = $(form).attr('id');
+		$(form).append("<input type='hidden' name='workflow_action_id' value='"+$(this).attr('transition')+"'>");
+
+		$(form).submit();
+
+
 	});
 
 	function positionTooltip(event){
 		var tPosX = event.pageX-5;
 		var tPosY = event.pageY-5;
-		$('div.tooltip').css({'border': '1px solid #ccc',
+		$('div.tooltip').css({'border': '1px solid #fff',
 							  'border-radius':'.25em',
 							  'background-color':'#fff',
 							  'position': 'absolute',
-							  'padding':'5px',
 							  'top': tPosY,
 							  'left': tPosX});
 	};
@@ -266,25 +275,53 @@ $(document).ready(function(){
 	$('th[id^="foldercontents-"]').live('contextmenu', function(event){
 		event.preventDefault();
 		form_id = $(this).parents("form").attr("id");
+		base_url = window.location.href;
 		toggle_cols = $("#" + form_id + "_toggle_cols").val();
-		if (toggle_cols == ""){
+		if (toggle_cols == ""
+		    || toggle_cols == undefined
+			|| toggle_cols == null){
 			return false;
 		}
-		toggle_cols = toggle_cols.split(",");
-		txt = '<div class="tooltip"><table cellpadding="0" cellspacing="0">';
-		txt = txt + "<tr><th colspan='2' style='border-bottom:1px solid #ccc;'>"+$('[name=toggle_columns]').val()+"</th></tr>"
-		for(i=0;i<toggle_cols.length;i++){
-			col = toggle_cols[i];
-			coltitle = $('[name=coltitle_'+col+']').val();
-			txt = txt + "<tr><td style='padding:2px 5px 2px 0px;'>";
-			enabled = $("#foldercontents-"+col+"-column");
+		sorted_toggle_cols = [];
+		$.each($.parseJSON(toggle_cols), function(col_id,v){
+			v['id'] = col_id;
+			sorted_toggle_cols.push(v);
+		});
+		sorted_toggle_cols.sort(function(a, b){
+			var titleA=a['title'].toLowerCase();
+			var titleB=b['title'].toLowerCase();
+			if (titleA < titleB) return -1;
+			if (titleA > titleB) return 1;
+			return 0;
+		});
+
+		txt = '<div class="tooltip"><table class="contextmenu" cellpadding="0" cellspacing="0">';
+		txt = txt + "<tr><th colspan='2'>"+_("Display columns")+"</th></tr>";
+		for(i=0;i<sorted_toggle_cols.length;i++){
+			col = sorted_toggle_cols[i];
+			col_id = _(col['id']);
+			col_title = _(col['title']);
+			enabled = $("#foldercontents-"+col_id+"-column");
 			if(enabled.length > 0){
-				txt = txt + "<input type='checkbox' form_id='"+form_id+"' name='"+col+"' class='toggle_col' checked='checked'>";
+				txt = txt + "<tr class='enabled' col_id='"+col_id+"' form_id='"+form_id+"'>";
+				txt = txt + "<td>";
+	            txt = txt + "<img style='height:1em;' src='"+base_url+"/++resource++bika.lims.images/ok.png'/>";
+				txt = txt + "</td>";
+				txt = txt + "<td>"+col_title+"</td></tr>";
 			} else {
-				txt = txt + "<input type='checkbox' form_id='"+form_id+"' name='"+col+"' class='toggle_col'>";
+				txt = txt + "<tr col_id='"+col_id+"' form_id='"+form_id+"'>";
+				txt = txt + "<td>&nbsp;</td>";
+				txt = txt + "<td>"+col_title+"</td></tr>";
 			}
-			txt = txt + "</td><td>"+coltitle+"</td></tr>";
 		}
+		txt = txt + "<tr col_id='ALL' form_id='"+form_id+"'>";
+		txt = txt + "<td style='border-top:1px solid #ddd'>&nbsp;</td>";
+		txt = txt + "<td style='border-top:1px solid #ddd'>"+_('All')+"</td></tr>";
+
+		txt = txt + "<tr col_id='DEFAULT' form_id='"+form_id+"'>";
+		txt = txt + "<td>&nbsp;</td>";
+		txt = txt + "<td>"+_('Default')+"</td></tr>";
+
 		txt = txt + '</table></div>';
 		$(txt).appendTo('body');
 		positionTooltip(event);
@@ -294,16 +331,58 @@ $(document).ready(function(){
 		$(".tooltip").remove();
 	});
 
-	// show / hide columns - the action when a checkbox is clicked in the menu
-	$('.toggle_col').live('click', function(event){
-		$(".tooltip").remove();
+	// show / hide columns - the action when a column is clicked in the menu
+	$('.contextmenu tr').live('click', function(event){
 		form_id = $(this).attr('form_id');
 		form = $("form#"+form_id);
-		col = $(this).attr('name');
+
+		col_id = $(this).attr('col_id');
+		col_title = $(this).text();
+		enabled = $(this).hasClass("enabled");
+
+		cookie = readCookie("toggle_cols");
+		cookie = $.parseJSON(cookie);
+		cookie_key = $(form[0].view_url).val() + "/" + form_id;
+
+		if (cookie == null || cookie == undefined) {
+			cookie = {};
+		}
+		if(col_id=='DEFAULT'){
+			// Remove entry from existing cookie if there is one
+			delete(cookie[cookie_key]);
+			createCookie('toggle_cols', $.toJSON(cookie), 365);
+		} else if(col_id=='ALL') {
+			// add all possible columns
+			toggle_cols = [];
+			$.each($.parseJSON($('#'+form_id+"_toggle_cols").val()), function(i,v){
+				toggle_cols.push(i);
+			});
+			cookie[cookie_key] = toggle_cols;
+			createCookie('toggle_cols', $.toJSON(cookie), 365);
+		} else {
+			toggle_cols = cookie[cookie_key];
+			if (toggle_cols == null || toggle_cols == undefined) {
+				// this cookie key not yet defined
+				toggle_cols = [];
+				$.each($.parseJSON($('#'+form_id+"_toggle_cols").val()), function(i,v){
+					if(!(col_id == i && enabled) && v['toggle']) {
+						toggle_cols.push(i);
+					}
+				});
+			} else {
+				// modify existing cookie
+				if(enabled) {
+					toggle_cols.splice(toggle_cols.indexOf(col_id), 1);
+				} else {
+					toggle_cols.push(col_id);
+				}
+			}
+			cookie[cookie_key] = toggle_cols;
+			createCookie('toggle_cols', $.toJSON(cookie), 365);
+		}
 		stored_form_action = $(form).attr("action");
 		$(form).attr("action", window.location.href);
 		$(form).append("<input type='hidden' name='table_only' value='"+form_id+"'>");
-		$(form).append("<input type='hidden' name='toggle_col' value='"+col+"'>");
 		options = {
 			target: $(form).children(".bika-listing-table"),
 			replaceTarget: true,
@@ -312,10 +391,10 @@ $(document).ready(function(){
 				setoddeven();
 			}
 		}
+		$(".tooltip").remove();
 		form.ajaxSubmit(options);
 		$('[name=table_only]').remove();
-		$('[name=toggle_col]').remove();
-		$(form).attr('action', stored_form_action)
+		$(form).attr('action', stored_form_action);
 		return false;
 	});
 

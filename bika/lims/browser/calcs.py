@@ -18,6 +18,8 @@ class ajaxCalculateAnalysisEntry():
 
     def calculate(self, uid = None):
 
+        translate = self.context.translation_service.translate
+
         analysis = self.analyses[uid]
         form_result = self.current_results[uid]
         service = analysis.getService()
@@ -40,9 +42,7 @@ class ajaxCalculateAnalysisEntry():
             if form_result.startswith("<") or \
                form_result.startswith(">"):
                 # Indeterminate results
-                Indet = _('indeterminate_result',
-                          default="Indeterminate result")
-                Indet = self.context.translate(Indet)
+                Indet = translate(_("Indeterminate result"))
                 self.alerts.append({'uid': uid,
                                     'field': 'Result',
                                     'icon': 'exclamation',
@@ -140,20 +140,15 @@ class ajaxCalculateAnalysisEntry():
             except TypeError:
                 # non-numeric arguments in interim mapping?
                 if indeterminate:
-                    indet = _('indeterminate_abbrev',
-                              default='Indet')
-                    indet = self.context.translate(indet)
-                    Indet = _('indeterminate_result',
-                              default="Indeterminate result")
-                    Indet = self.context.translate(Indet)
+                    indet = translate(_('Indet'))
+                    Indet = translate(_("Indeterminate result"))
                     Result['result'] = indet
                     self.alerts.append({'uid': uid,
                                         'field': 'Result',
                                         'icon': 'exclamation',
                                         'msg': Indet})
                 else:
-                    inval = _("Invalid result")
-                    Indet = self.context.translate(inval)
+                    inval = translate(_("Invalid result"))
                     self.alerts.append({'uid': uid,
                                         'field': 'Result',
                                         'icon': 'exclamation',
@@ -186,8 +181,8 @@ class ajaxCalculateAnalysisEntry():
         if dm:
             dry_service = self.context.bika_setup.getDryMatterService()
             # get the UID of the DryMatter Analysis from our parent AR
-            dry_analysis = [a for a in \
-                            analysis.aq_parent.getAnalyses(full_objects=True) \
+            dry_analysis = [a for a in
+                            analysis.aq_parent.getAnalyses(full_objects=True)
                             if a.getService().UID() == dry_service.UID()]
             if dry_analysis:
                 dry_analysis = dry_analysis[0]

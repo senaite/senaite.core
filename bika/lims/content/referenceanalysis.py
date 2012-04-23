@@ -28,8 +28,7 @@ schema = BikaSchema.copy() + Schema((
         searchable = True,
         widget = StringWidget(
             label = _("ReferenceAnalysis ID"),
-            description = _("ReferenceAnalysis ID description",
-                            "The ID assigned to the reference analysis"),
+            description = _("The ID assigned to the reference analysis"),
             visible = {'edit':'hidden'},
         ),
     ),
@@ -79,13 +78,6 @@ schema = BikaSchema.copy() + Schema((
         default = False,
         widget = BooleanWidget(
             label = _("Retested"),
-        ),
-    ),
-    DateTimeField('DateRequested',
-        required = 1,
-        default_method = 'current_date',
-        widget = DateTimeWidget(
-            label = _("Date Requested"),
         ),
     ),
     ComputedField('ReferenceSampleUID',
