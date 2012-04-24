@@ -714,14 +714,14 @@ jQuery( function($) {
 				for (col=1; col<parseInt($("#col_count").val()); col++) {
 					$("#ar_"+col+"_ARTemplate").val(first_val);
 				}
-				//$("[id*=_ARTemplate]").change();
+				$("[id*=_ARTemplate]").change();
 			}
 			else if ($(this).hasClass('ARProfileCopyButton')){ // Profile selector
 				first_val = $('#ar_0_ARProfile').val();
 				for (col=1; col<parseInt($("#col_count").val()); col++) {
 					$("#ar_"+col+"_ARProfile").val(first_val);
 				}
-				//$("[id*=_ARProfile]").change();
+				$("[id*=_ARProfile]").change();
 			}
 			else if ($(this).parent().attr('class') == 'service'){ // Analysis Service checkbox
 				first_val = $('input[column="0"]').filter('#'+this.id).attr("checked");
