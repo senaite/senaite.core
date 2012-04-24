@@ -1,9 +1,12 @@
-from plone.app.controlpanel.overview import OverviewControlPanel
+from bika.lims import bikaMessageFactory as _
+from bika.lims import PMF
 
-def Overview(PloneOverviewControlPanel):
-
-    def categories(self):
-        # add bika to the list of control panel categories.
-        groups = PloneOverviewControlPanel.categories()
-        groups.append({'id': 'bika', 'title': u'Bika Configuration'})
-        return groups
+def categories(self):
+    """Monkey patch
+    see ../configure.zcml
+    """
+    return [
+        {'id': 'Plone', 'title': PMF(u'Plone Configuration')},
+        {'id': 'bika', 'title': _(u'Bika LIMS Configuration')},
+        {'id': 'Products', 'title': PMF(u'Add-on Configuration')},
+    ]
