@@ -93,7 +93,7 @@ def formatDateQuery(context, date_id):
 
 def formatDateParms(context, date_id):
     """ Obtain and reformat the from and to dates
-        into a printable date parameter construct    
+        into a printable date parameter construct
     """
     from_date = context.REQUEST.get('%s_fromdate' % date_id, None)
     to_date = context.REQUEST.get('%s_todate' % date_id, None)
@@ -201,7 +201,6 @@ def sortable_title(portal, title):
     return sortabletitle
 
 def pretty_user_name_or_id(context, userid):
-    pdb.set_trace()
     pc = getToolByName(context, 'portal_catalog')
     r = pc(portal_type = 'Contact', getUsername = userid)
     if len(r) == 1:
@@ -218,7 +217,6 @@ def pretty_user_name_or_id(context, userid):
     return fullname
 
 def pretty_user_email(context, userid):
-    pdb.set_trace()
     pc = getToolByName(context, 'portal_catalog')
     r = pc(portal_type = 'Contact', getUsername = userid)
     if len(r) == 1:
