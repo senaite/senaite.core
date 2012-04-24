@@ -142,7 +142,7 @@ schema = BikaFolderSchema.copy() + Schema((
     ),
     BooleanField('SamplingWorkflowEnabled',
         schemata = PMF("Analyses"),
-        default = True,
+        default = False,
         widget = BooleanWidget(
             label = _("Enable the Sampling workflow"),
             description = _("Select this to activate the sample collection workflow steps.")
