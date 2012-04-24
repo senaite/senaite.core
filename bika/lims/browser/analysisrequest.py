@@ -1494,25 +1494,43 @@ class ajaxAnalysisRequestSubmit():
                     continue
 
                 if field == "SampleID":
-                    if not pc(portal_type = 'Sample',
-                              cancellation_state = 'active',
-                              id = ar[field]):
+                    valid = True
+                    try:
+                        if not pc(portal_type = 'Sample',
+                                  cancellation_state = 'active',
+                                  id = ar[field]):
+                            valid = False
+                    except:
+                        valid = False
+                    if not valid:
                         msg = _("${id} is not a valid sample ID",
                                 mapping={'id':ar[field]})
                         error(field, column, translate(msg))
 
                 elif field == "SampleType":
-                    if not bsc(portal_type = 'SampleType',
-                               inactive_state = 'active',
-                               Title = ar[field]):
+                    valid = True
+                    try:
+                        if not bsc(portal_type = 'SampleType',
+                                   inactive_state = 'active',
+                                   Title = ar[field]):
+                            valid = False
+                    except:
+                        valid = False
+                    if not valid:
                         msg = _("${sampletype} is not a valid sample type",
                                 mapping={'sampletype':ar[field]})
                         error(field, column, translate(msg))
 
                 elif field == "SamplePoint":
-                    if not bsc(portal_type = 'SamplePoint',
-                               inactive_state = 'active',
-                               Title = ar[field]):
+                    valid = True
+                    try:
+                        if not bsc(portal_type = 'SamplePoint',
+                                   inactive_state = 'active',
+                                   Title = ar[field]):
+                            valid = False
+                    except:
+                        valid = False
+                    if not valid:
                         msg = _("${samplepoint} is not a valid sample point",
                                 mapping={'samplepoint':ar[field]})
                         error(field, column, translate(msg))
