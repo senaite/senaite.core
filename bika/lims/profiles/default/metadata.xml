@@ -6,6 +6,5 @@
     <dependency>profile-Products.ATExtensions:default</dependency>
     <dependency>profile-plone.app.iterate:plone.app.iterate</dependency>
     <dependency>profile-Products.TinyMCE:TinyMCE</dependency>
-    <dependency>profile-collective.indexing:default</dependency>
   </dependencies>
 </metadata>
