@@ -17,10 +17,15 @@
     <h1>
     <img tal:condition="view/icon | nothing"
          src="" tal:attributes="src view/icon"/>
-    <span class="documentFirstHeading" tal:content="context/title_or_id"/>
-    <img src=""
-        tal:condition="here/getInvoiceExclude"
-        tal:attributes="src string:++resource++bika.lims.images/no_invoice.png"/>
+    <span class="documentFirstHeading" tal:content="context/title_or_id"></span>
+	<img tal:condition="python:context.getSample().getSampleType().getHazardous()"
+		title="Hazardous"
+		i18n:attributes="value"
+		tal:attributes="src string:++resource++bika.lims.images/hazardous_big.png"/>
+	<img tal:condition="python:context.getInvoiceExclude()"
+		title="Exclude from invoice"
+		i18n:attributes="value"
+		tal:attributes="src string:++resource++bika.lims.images/invoice_exclude_big.png"/>
     </h1>
 </metal:content-title>
 
@@ -45,11 +50,6 @@
 
 	<br/>
 
-    <img tal:condition="view/getHazardous"
-        title="Hazardous"
-		i18n:attributes="title"
-        src=""
-        tal:attributes="src string:++resource++bika.lims.images/hazardous_big.png"/>
     <h3>
         <tal:range>
             <form name="specificationForm"

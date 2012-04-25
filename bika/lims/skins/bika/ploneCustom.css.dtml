@@ -351,6 +351,11 @@ th.expanded {
 /*
  * Header tables (header_table.pt)
  */
+.header_table {
+	margin-bottom:2px !important;
+}
+
+
 .header_table tr.odd {
 	background-color: &dtml-oddRowBackgroundColor;;
 }

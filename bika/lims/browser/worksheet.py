@@ -37,6 +37,7 @@ class WorksheetWorkflowAction(WorkflowAction):
         plone.protect.CheckAuthenticator(form)
         workflow = getToolByName(self.context, 'portal_workflow')
         rc = getToolByName(self.context, REFERENCE_CATALOG)
+        bsc = getToolByName(self.context, 'bika_setup_catalog')
         action, came_from = WorkflowAction._get_form_workflow_action(self)
 
         # XXX combine data from multiple bika listing tables.
@@ -149,7 +150,10 @@ class WorksheetWorkflowAction(WorkflowAction):
                 return
 
             selected_analyses = WorkflowAction._get_selected_items(self)
-            for analysis in selected_analyses:
+            selected_analysis_uids = selected_analyses.keys()
+
+            for analysis_uid in selected_analysis_uids:
+                analysis = bsc(UID=analysis_uid)[0].getObject()
                 if skip(analysis, action, peek=True):
                     continue
                 self.context.removeAnalysis(analysis)

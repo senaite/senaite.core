@@ -7,12 +7,14 @@ from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import transaction_note
 from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from bika.lims.permissions import ViewResults, EditResults, EditFieldResults
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
+from bika.lims.permissions import EditFieldResults
+from bika.lims.permissions import EditResults
+from bika.lims.permissions import ManageBika
+from bika.lims.permissions import ViewResults
 from bika.lims.utils import isActive, TimeOrDate
 from zope.component import getMultiAdapter
-from zope.interface import implements, 	alsoProvides, implementsOnly
 import json
 import plone
 
@@ -93,7 +95,8 @@ class AnalysesView(BikaListingView):
         workflow = getToolByName(self.context, 'portal_workflow')
         portal = getToolByName(self.context, 'portal_url').getPortalObject()
         translate = self.context.translation_service.translate
-        checkPermission = getSecurityManager().checkPermission
+        mtool = getToolByName(self.context, 'portal_membership')
+        checkPermission = mtool.checkPermission
         if not self.allow_edit:
             can_edit_analyses = False
         else:
@@ -202,18 +205,17 @@ class AnalysesView(BikaListingView):
                 items[i]['replace']['Method'] = "<a href='%s'>%s</a>" % \
                     (method.absolute_url(), method.Title())
 
-
-            # if the reference version is older than the object itself,
-            # insert the version number of referenced service after Title
-            service_uid = service.UID()
-            latest_service = rc.lookupObject(service_uid)
-            items[i]['Service'] = service.Title()
-            items[i]['class']['Service'] = "service_title"
-            if hasattr(obj, 'reference_versions') and \
-               service_uid in obj.reference_versions and \
-               latest_service.version_id != obj.reference_versions[service_uid]:
-                items[i]['after']['Service'] = "(v%s)" % \
-                     (obj.reference_versions[service_uid])
+            # Show version number of out-of-date objects
+            if checkPermission(ManageBika, self.context):
+                service_uid = service.UID()
+                latest = rc.lookupObject(service_uid).version_id
+                items[i]['Service'] = service.Title()
+                items[i]['class']['Service'] = "service_title"
+                if hasattr(obj, 'reference_versions') and \
+                   service_uid in obj.reference_versions and \
+                   latest != obj.reference_versions[service_uid]:
+                    items[i]['after']['Service'] = "(v%s)" % \
+                         (obj.reference_versions[service_uid])
 
             # choices defined on Service apply to result fields.
             choices = service.getResultOptions()

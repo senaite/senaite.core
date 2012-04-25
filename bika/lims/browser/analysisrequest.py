@@ -392,7 +392,7 @@ class AnalysisRequestViewView(BrowserView):
              'type': 'text'},
             {'id': 'ClientSampleID',
              'title': _('Client SID'),
-             'allow_edit': allow_sample_edit,
+             'allow_edit': True,
              'value': sample.getClientSampleID(),
              'condition':True,
              'type': 'text'},
@@ -404,13 +404,13 @@ class AnalysisRequestViewView(BrowserView):
              'type': 'text'},
             {'id': 'ClientReference',
              'title': _('Client Reference'),
-             'allow_edit': allow_sample_edit,
+             'allow_edit': True,
              'value': sample.getClientReference(),
              'condition':True,
              'type': 'text'},
             {'id': 'ClientOrderNumber',
              'title': _('Client Order'),
-             'allow_edit': allow_sample_edit,
+             'allow_edit': True,
              'value': self.context.getClientOrderNumber(),
              'condition':True,
              'type': 'text'},
@@ -463,7 +463,7 @@ class AnalysisRequestViewView(BrowserView):
              'type': 'boolean'},
             {'id': 'InvoiceExclude',
              'title': _('Invoice Exclude'),
-             'allow_edit': allow_sample_edit,
+             'allow_edit': True,
              'value': self.context.getInvoiceExclude(),
              'condition':True,
              'type': 'boolean'},
@@ -627,9 +627,6 @@ class AnalysisRequestViewView(BrowserView):
                          for group in pg.getGroupsByUserId(member.id)]
         default_spec = ('Clients' in member_groups) and 'client' or 'lab'
         return default_spec
-
-    def getHazardous(self):
-        return self.context.getSample().getSampleType().getHazardous()
 
     def getARProfileTitle(self):
         """Grab the context's current ARProfile Title if any
@@ -2142,12 +2139,15 @@ class AnalysisRequestsView(BikaListingView):
             if obj.getLate():
                 after_icons += "<img src='++resource++bika.lims.images/late.png' title='%s'>" % \
                     translate(_("Late Analyses"))
-            if sample.getSampleType().getHazardous():
-                after_icons += "<img src='++resource++bika.lims.images/hazardous.png' title='%s'>" % \
-                    translate(_("Hazardous"))
             if samplingdate > DateTime():
                 after_icons += "<img src='++resource++bika.lims.images/calendar.png' title='%s'>" % \
                     translate(_("Future dated sample"))
+            if obj.getInvoiceExclude():
+                after_icons += "<img src='++resource++bika.lims.images/invoice_exclude.png' title='%s'>" % \
+                    translate(_("Exclude from invoice"))
+            if sample.getSampleType().getHazardous():
+                after_icons += "<img src='++resource++bika.lims.images/hazardous.png' title='%s'>" % \
+                    translate(_("Hazardous"))
             if after_icons:
                 items[x]['after']['getRequestID'] = after_icons
 

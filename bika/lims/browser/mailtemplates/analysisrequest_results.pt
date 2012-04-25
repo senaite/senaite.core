@@ -229,7 +229,7 @@ h1, h2, h3, h4, h5, h6 {
           <a href="" tal:content="ar/getRequestID"
             tal:attributes="href ar/absolute_url">AR-00001</a>
           <tal:exclude tal:condition="ar/getInvoiceExclude">
-            <img tal:attributes="src string:${portal/absolute_url}/++resource++bika.lims.images/no_invoice.png"
+            <img tal:attributes="src string:${portal/absolute_url}/++resource++bika.lims.images/invoice_exclude.png"
               tal:define="global invoice_exclude python:1">
           </tal:exclude>
           <tal:dry tal:condition="ar/getReportDryMatter">
@@ -500,7 +500,7 @@ h1, h2, h3, h4, h5, h6 {
     </p>
 
     <p tal:condition="invoice_exclude">
-      <img tal:attributes="src string:${portal/absolute_url}/++resource++bika.lims.images/no_invoice.png">
+      <img tal:attributes="src string:${portal/absolute_url}/++resource++bika.lims.images/invoice_exclude.png">
       <span i18n:translate="">Not invoiced</span>
     </p>
 
