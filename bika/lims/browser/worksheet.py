@@ -38,6 +38,7 @@ class WorksheetWorkflowAction(WorkflowAction):
         workflow = getToolByName(self.context, 'portal_workflow')
         rc = getToolByName(self.context, REFERENCE_CATALOG)
         bsc = getToolByName(self.context, 'bika_setup_catalog')
+        pc = getToolByName(self.context, 'portal_catalog')
         action, came_from = WorkflowAction._get_form_workflow_action(self)
 
         # XXX combine data from multiple bika listing tables.
@@ -153,7 +154,7 @@ class WorksheetWorkflowAction(WorkflowAction):
             selected_analysis_uids = selected_analyses.keys()
 
             for analysis_uid in selected_analysis_uids:
-                analysis = bsc(UID=analysis_uid)[0].getObject()
+                analysis = pc(UID=analysis_uid)[0].getObject()
                 if skip(analysis, action, peek=True):
                     continue
                 self.context.removeAnalysis(analysis)

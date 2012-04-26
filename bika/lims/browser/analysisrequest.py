@@ -1,9 +1,9 @@
+from Products.CMFCore.utils import getToolByName
 from AccessControl import getSecurityManager
 from DateTime import DateTime
 from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.Archetypes.public import DisplayList
 from Products.CMFCore.WorkflowCore import WorkflowException
-from Products.CMFCore.utils import getToolByName
 from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import PMF
@@ -236,9 +236,12 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
                 if not analysis:
                     # ignore result if analysis object no longer exists
                     continue
-                if not getSecurityManager().checkPermission(EditResults, analysis) \
-                   and not getSecurityManager().checkPermission(EditFieldResults, analysis):
-                    # or changes no longer allowed
+                if not checkPermission(EditResults, analysis) \
+                   and not checkPermission(EditFieldResults, analysis):
+                    username = mtool.getAuthenticatedMember().getUserName()
+                    path = "/".join(app.Plone.clients['client-1'].getPhysicalPath())
+                    logger.info("Changes no longer allowed (user: %s, object: %s)" % \
+                                (username, path))
                     continue
                 results[uid] = result
                 service = analysis.getService()
@@ -247,18 +250,15 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
                     hasInterims[uid] = True
                 else:
                     hasInterims[uid] = False
-                unit = service.getUnit() and service.getUnit() or ''
+                service_unit = service.getUnit() and service.getUnit() or ''
                 retested = form.has_key('retested') and form['retested'].has_key(uid)
-                # Some silly if statements here to avoid saving if it isn't necessary.
-                if analysis.getInterimFields != interimFields or \
-                   analysis.getRetested != retested or \
-                   analysis.getUnit != unit:
+                # Don't save uneccessary things
+                if analysis.getInterimFields() != interimFields or \
+                   analysis.getRetested() != retested:
                     analysis.edit(
                         InterimFields = interimFields,
-                        Retested = retested,
-                        Unit = unit)
-                # results get checked/saved separately, so the setResults()
-                # mutator only sets the ResultsCapturedDate when it needs to.
+                        Retested = retested)
+                # save results separately, otherwise capture date is rewritten
                 if analysis.getResult() != result or \
                    analysis.getResultDM() != dry_result:
                     analysis.edit(
@@ -269,7 +269,7 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
             # guard_submit does a lot of the same stuff, too.
             submissable = []
             for uid, analysis in selected_analyses.items():
-                if uid not in results:
+                if uid not in results or not results[uid]:
                     continue
                 can_submit = True
                 for dependency in analysis.getDependencies():
@@ -294,8 +294,7 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
 
             message = translate(PMF("Changes saved."))
             self.context.plone_utils.addPortalMessage(message, 'info')
-            mtool = getToolByName(self.context, 'portal_membership')
-            if mtool.checkPermission(EditResults, self.context):
+            if checkPermission(EditResults, self.context):
                 self.destination_url = self.context.absolute_url() + "/manage_results"
             else:
                 self.destination_url = self.context.absolute_url()
@@ -528,6 +527,7 @@ class AnalysisRequestViewView(BrowserView):
             if self.context.getAnalyses(getPointOfCapture = poc):
                 t = AnalysesView(ar, self.request, getPointOfCapture = poc)
                 t.allow_edit = True
+                t.form_id = "%s_analyses" % poc
                 t.review_states[0]['transitions'] = [{'id':'submit'},
                                                      {'id':'retract'},
                                                      {'id':'verify'}]
@@ -2185,8 +2185,7 @@ class AnalysisRequestsView(BikaListingView):
                 items[x]['required'] = ['getSampler', 'getDateSampled']
                 items[x]['allow_edit'] = ['getSampler', 'getDateSampled']
                 samplers = getUsers(sample, ['Sampler', 'LabManager', 'Manager'])
-                getAuthenticatedMember = self.context.portal_membership.getAuthenticatedMember
-                username = getAuthenticatedMember().getUserName()
+                username = mtool.getAuthenticatedMember().getUserName()
                 users = [({'ResultValue': u, 'ResultText': samplers.getValue(u)})
                          for u in samplers]
                 items[x]['choices'] = {'getSampler': users}
@@ -2206,8 +2205,7 @@ class AnalysisRequestsView(BikaListingView):
                 items[x]['required'] = ['getPreserver', 'getDatePreserved']
                 items[x]['allow_edit'] = ['getPreserver', 'getDatePreserved']
                 preservers = getUsers(obj, ['Preserver', 'LabManager', 'Manager'])
-                getAuthenticatedMember = self.context.portal_membership.getAuthenticatedMember
-                username = getAuthenticatedMember().getUserName()
+                username = mtool.getAuthenticatedMember().getUserName()
                 users = [({'ResultValue': u, 'ResultText': preservers.getValue(u)})
                          for u in preservers]
                 items[x]['choices'] = {'getPreserver': users}
