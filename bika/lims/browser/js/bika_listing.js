@@ -101,7 +101,7 @@ $(document).ready(function(){
 	});
 
 	// modify select_all checkbox when regular checkboxes are modified
-	$("input[id*='_cb_']").live('click', function(){
+	$("input[id*='_cb_']").live('change', function(){
 		form_id = $(this).parents("form").attr("id");
 		all_selected = true;
 		$.each($("input[id^='"+form_id+"_cb_']"), function(i,v){

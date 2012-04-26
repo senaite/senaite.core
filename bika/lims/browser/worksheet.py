@@ -243,6 +243,8 @@ class WorksheetAnalysesView(AnalysesView):
             items[x]['Pos'] = pos
             items[x]['colspan'] = {'Pos':1}
             service = obj.getService()
+            items[x]['Service'] = service.Title()
+            items[x]['class']['Service'] = 'service_title'
             items[x]['Category'] = service.getCategory().Title()
             if obj.portal_type == "ReferenceAnalysis":
                 items[x]['DueDate'] = ''
