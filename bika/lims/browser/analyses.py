@@ -255,7 +255,7 @@ class AnalysesView(BikaListingView):
                     if 'Result' in items[i]['choices'] and items[i]['choices']['Result']:
                         items[i]['formatted_result'] = \
                             [r['ResultText'] for r in items[i]['choices']['Result'] \
-                                              if r['ResultValue'] == result][0]
+                                              if str(r['ResultValue']) == str(result)][0]
                     else:
                         try:
                             items[i]['formatted_result'] = precision and \
