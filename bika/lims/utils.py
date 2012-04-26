@@ -18,7 +18,6 @@ import copy,re,urllib
 import json
 import plone.protect
 import transaction
-import pdb
 
 ModuleSecurityInfo('email.Utils').declarePublic('formataddr')
 allow_module('csv')
