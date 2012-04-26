@@ -25,6 +25,7 @@
 
 <state state_id="to_be_sampled" title="To Be Sampled" i18n:attributes="title">
     <exit-transition transition_id="sampled"/>
+    <exit-transition transition_id="submit"/>
     <permission-map name="BIKA: Add Analysis" acquired="False">
         <permission-role>Manager</permission-role>
         <permission-role>LabManager</permission-role>
@@ -123,6 +124,7 @@
 
 <state state_id="sample_due" title="Sample Due" i18n:attributes="title">
     <exit-transition transition_id="receive"/>
+    <exit-transition transition_id="submit"/>
     <permission-map name="BIKA: Add Analysis" acquired="False">
         <permission-role>Manager</permission-role>
         <permission-role>LabManager</permission-role>

@@ -238,8 +238,9 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
                     continue
                 if not checkPermission(EditResults, analysis) \
                    and not checkPermission(EditFieldResults, analysis):
+                    mtool = getToolByName(self.context, 'portal_membership')
                     username = mtool.getAuthenticatedMember().getUserName()
-                    path = "/".join(app.Plone.clients['client-1'].getPhysicalPath())
+                    path = "/".join(self.context.getPhysicalPath())
                     logger.info("Changes no longer allowed (user: %s, object: %s)" % \
                                 (username, path))
                     continue

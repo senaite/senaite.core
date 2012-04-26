@@ -237,16 +237,22 @@ $(document).ready(function(){
 		return false;
 	});
 
+	$(".listing_string_entry").live('focus', function(){
+		$(this).parents("form").find(".workflow_action_button")
+			.addClass('disabled')
+			.attr("disabled", true);
+        $(".workflow_action_button")
+
+	});
+
+	$(".listing_string_entry").live('blur', function(){
+		$(this).parents("form").find(".workflow_action_button")
+			.removeClass('disabled')
+			.removeAttr("disabled");
+	});
+
 	// Workflow Action button was clicked.
 	$('.workflow_action_button').live('click', function(event){
-
-		// wait for all asynchronous requests to complete before allowing clicks
-		if($.active > 0){
-			event.preventDefault();
-			$(this).ajaxStop(function(){
-				$(this).click();
-			});
-		}
 
 		// The submit buttons would like to put the translated action title
 		// into the request.  Insert the real action name here to prevent the
@@ -256,7 +262,6 @@ $(document).ready(function(){
 		$(form).append("<input type='hidden' name='workflow_action_id' value='"+$(this).attr('transition')+"'>");
 
 		$(form).submit();
-
 
 	});
 
