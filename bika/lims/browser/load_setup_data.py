@@ -5,6 +5,7 @@ from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import bikaMessageFactory as _
 from bika.lims import PMF, logger
+from bika.lims.utils import sortable_title
 from cStringIO import StringIO
 from openpyxl.reader.excel import load_workbook
 from os.path import join
@@ -15,7 +16,7 @@ import Globals
 import tempfile
 import transaction
 import zope
-from pkg_resources import resource_listdir, resource_filename
+from pkg_resources import resource_listdir, resource_filename, ResourceManager
 
 class LoadSetupData(BrowserView):
     template = ViewPageTemplateFile("templates/load_setup_data.pt")
@@ -58,6 +59,8 @@ class LoadSetupData(BrowserView):
             msg = translate(_("No file data submitted.  Please submit a valid Open XML Spreadsheet (.xlsx) file."))
             self.plone_utils.addPortalMessage(msg)
             return self.template()
+
+        self.file_name = file_name
 
         wb = load_workbook(filename = resource_filename("bika.lims", "setupdata/%s.xlsx"%file_name))
 
@@ -528,13 +531,23 @@ class LoadSetupData(BrowserView):
             row = dict(zip(fields, row))
             _id = folder.invokeFactory('Method', id = 'tmp')
             obj = folder[_id]
+
             obj.edit(title = unicode(row['title']),
                      description = unicode(row['description']),
                      Instructions = unicode(row['Instructions']))
-#                     MethodDocument = row['MethodDocument'])
+
+            if row['MethodDocument']:
+                file_title = sortable_title(obj, row['MethodDocument'])
+                path = resource_filename("bika.lims",
+                                         "setupdata/%s/methods/%s" \
+                                         % (self.file_name, row['MethodDocument']))
+                #file_id = obj.invokeFactory("File", id=row['MethodDocument'])
+                #thisfile = obj[file_id]
+                file_data = open(path, "rb").read()
+                obj.setMethodDocument(file_data)
+
             obj.processForm()
             self.methods[unicode(row['title'])] = obj
-
 
     def CreateServiceObjects(self, services):
         deferred = 0
