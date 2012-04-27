@@ -1010,7 +1010,7 @@ class ExportView(BrowserView):
         exim = instrument.getDataInterface()
         if not exim:
             self.context.plone_utils.addPortalMessage(
-                translate(_("Instrument has no Data Interface selected")), 'info')
+                translate(_("Instrument has no data interface selected")), 'info')
             self.request.RESPONSE.redirect(self.context.absolute_url())
             return
 

@@ -1411,7 +1411,7 @@ msgid "Instrument exporter not found"
 msgstr "No s'ha trobat cap exportador per a l'equip"
 
 #: ../browser/worksheet.py:1006
-msgid "Instrument has no Data Interface selected"
+msgid "Instrument has no data interface selected"
 msgstr "No heu seleccionat cap interfície de comunicació de dades per a l'equip"
 
 #: ../content/instrument.py:16

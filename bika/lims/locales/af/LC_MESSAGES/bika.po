@@ -1413,7 +1413,7 @@ msgid "Instrument exporter not found"
 msgstr "Instrument uitvoerder nie gevind nie"
 
 #: ../browser/worksheet.py:1006
-msgid "Instrument has no Data Interface selected"
+msgid "Instrument has no data interface selected"
 msgstr "Instrument het geen datakoppelvlak gekies nie"
 
 #: ../content/instrument.py:16

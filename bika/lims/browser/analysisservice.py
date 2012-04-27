@@ -53,7 +53,7 @@ class ajaxServicePopup(BrowserView):
         plone.protect.CheckAuthenticator(self.request)
         bsc = getToolByName(self.context, 'bika_setup_catalog')
 
-        service_title = self.request.get('service_title', '')
+        service_title = self.request.get('service_title', '').strip()
         if not service_title:
             return ''
 

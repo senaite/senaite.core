@@ -1412,7 +1412,7 @@ msgid "Instrument exporter not found"
 msgstr ""
 
 #: ../browser/worksheet.py:1006
-msgid "Instrument has no Data Interface selected"
+msgid "Instrument has no data interface selected"
 msgstr ""
 
 #: ../content/instrument.py:16

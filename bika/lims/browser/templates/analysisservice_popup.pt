@@ -100,7 +100,7 @@
 			<h5>
 				<img tal:attributes="src python:portal_url + '/++resource++bika.lims.images/attachment.png'"/>
 				<span i18n:translate="">
-					Method Documents
+					Method Document
 				</span>
 			</h5>
 			<a
