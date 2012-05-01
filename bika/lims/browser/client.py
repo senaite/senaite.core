@@ -47,7 +47,7 @@ class ClientWorkflowAction(AnalysisRequestWorkflowAction):
         workflow = getToolByName(self.context, 'portal_workflow')
         pc = getToolByName(self.context, 'portal_catalog')
         rc = getToolByName(self.context, REFERENCE_CATALOG)
-        translate = self.context.translation_service.translate
+        translate = self.context.translate
         checkPermission = self.context.portal_membership.checkPermission
 
         # use came_from to decide which UI action was clicked.
@@ -232,7 +232,7 @@ class ClientWorkflowAction(AnalysisRequestWorkflowAction):
                             mapping = {'item': ', '.join(transitioned)})
             else:
                 message = _('No items were published')
-            message = translate(message)
+            message = self.context.translate(message)
             self.context.plone_utils.addPortalMessage(message, 'info')
             self.destination_url = self.request.get_header("referer",
                                    self.context.absolute_url())
@@ -530,8 +530,10 @@ class ClientAnalysisSpecsView(BikaListingView):
         wf = getToolByName(context, 'portal_workflow')
         self.contentFilter = {'portal_type': 'AnalysisSpec',
                               'getClientUID': context.UID(),
-                              'path': {"query": "/".join(context.getPhysicalPath()),
-                                       "level" : 0 }
+                              'path': {
+                                  "query": "/".join(context.getPhysicalPath()),
+                                  "level" : 0
+                                  }
                               }
         self.contentsMethod = bsc
 
@@ -539,11 +541,12 @@ class ClientAnalysisSpecsView(BikaListingView):
         self.context_actions = {}
         if isActive(self.context):
             if checkPermission(AddAnalysisSpec, self.context):
-                self.context_actions[translate(_('Add'))] = \
+                self.context_actions[self.context.translate(_('Add'))] = \
                     {'url': 'createObject?type_name=AnalysisSpec',
                      'icon': '++resource++bika.lims.images/add.png'}
             if checkPermission(ManageClients, self.context):
-                self.context_actions[translate(_('Set to lab defaults'))] = \
+                self.context_actions[self.context.translate(
+                    _('Set to lab defaults'))] = \
                     {'url': 'set_to_lab_defaults',
                      'icon': '++resource++bika.lims.images/analysisspec.png'}
 
@@ -606,10 +609,12 @@ class SetSpecsToLabDefaults(BrowserView):
                 SampleType = labspec.getSampleType(),
                 ResultsRange = labspec.getResultsRange(),
             )
-        translate = self.context.translation_service.translate
-        message = translate(_("Analysis specifications reset to lab defaults."))
+        translate = self.context.translate
+        message = self.context.translate(
+            _("Analysis specifications reset to lab defaults."))
         self.context.plone_utils.addPortalMessage(message, 'info')
-        self.request.RESPONSE.redirect(self.context.absolute_url() + "/analysisspecs")
+        self.request.RESPONSE.redirect(self.context.absolute_url() +
+                                       "/analysisspecs")
         return
 
 class ClientAttachmentsView(BikaListingView):

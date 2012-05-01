@@ -603,7 +603,7 @@ class SamplesView(BikaListingView):
         items = BikaListingView.folderitems(self)
         mtool = getToolByName(self.context, 'portal_membership')
         member = mtool.getAuthenticatedMember()
-        translate = self.context.translation_service.translate
+        translate = self.context.translate
 
         for x in range(len(items)):
             if not items[x].has_key('obj'): continue
@@ -655,7 +655,7 @@ class SamplesView(BikaListingView):
                 after_icons += "<img title='Hazardous' src='++resource++bika.lims.images/hazardous.png'>"
             if obj.getSamplingDate() > DateTime():
                 after_icons += "<img src='++resource++bika.lims.images/calendar.png' title='%s'>" % \
-                    translate(_("Future dated sample"))
+                    self.context.translate(_("Future dated sample"))
             if after_icons:
                 items[x]['after']['getSampleID'] = after_icons
 

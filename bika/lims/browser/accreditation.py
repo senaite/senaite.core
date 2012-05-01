@@ -34,12 +34,12 @@ class AccreditationView(AnalysisServicesView):
                     "accreditation body in ${labcountry}. ",
                     mapping = self.mapping)
         else:
-            msg = _("The lab is not accredited, or accreditation has not been configured. ")
-        translate = context.translation_service.translate
-        self.description = translate(msg)
+            msg = _("The lab is not accredited, or accreditation has not "
+                    "been configured. ")
+        self.description = context.translate(msg)
         msg = _("All Accredited analysis services are listed here.")
         self.description = "%s<p><br/>%s</p>"%(self.description,
-                                               translate(msg))
+                                               context.translate(msg))
 
         self.show_select_column = False
         request.set('disable_border', 1)

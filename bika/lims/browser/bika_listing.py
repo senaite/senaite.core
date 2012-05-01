@@ -81,7 +81,7 @@ class WorkflowAction:
         form = self.request.form
         plone.protect.CheckAuthenticator(form)
         workflow = getToolByName(self.context, 'portal_workflow')
-        translate = self.context.translation_service.translate
+
         if self.destination_url == "":
             self.destination_url = self.request.get_header("referer",
                                    self.context.absolute_url())
@@ -93,7 +93,7 @@ class WorkflowAction:
             # the only actions allowed on inactive/cancelled
             # items are "reinstate" and "activate"
             if not isActive(obj) and action not in ('reinstate', 'activate'):
-                message = translate(_('Item is inactive.'))
+                message = self.context.translate(_('Item is inactive.'))
                 self.context.plone_utils.addPortalMessage(message, 'info')
                 self.request.response.redirect(self.destination_url)
                 return
@@ -123,7 +123,7 @@ class WorkflowAction:
                     transitioned.append(item.Title())
 
         if len(transitioned) > 0:
-            message = translate(PMF('Changes saved.'))
+            message = self.context.translate(PMF('Changes saved.'))
             self.context.plone_utils.addPortalMessage(message, 'info')
 
         # automatic label printing
@@ -468,7 +468,8 @@ class BikaListingView(BrowserView):
                 type_title_msgid = obj.portal_type
 
             url_href_title = u'%s at %s: %s' % \
-                (translate(type_title_msgid, context = self.request),
+                (self.context.translate(type_title_msgid,
+                                        context = self.request),
                  path,
                  safe_unicode(description))
 

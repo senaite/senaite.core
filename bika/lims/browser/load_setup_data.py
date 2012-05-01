@@ -50,19 +50,22 @@ class LoadSetupData(BrowserView):
         self.portal_registration = getToolByName(self.context, 'portal_registration')
         self.portal_groups = getToolByName(self.context, 'portal_groups')
         self.portal_membership = getToolByName(self.context, 'portal_membership')
-        translate = self.context.translation_service.translate
         self.plone_utils = getToolByName(self.context, 'plone_utils')
         portal = getSite()
 
         file_name = 'xlsx' in form and form['xlsx'] or None
         if not file_name:
-            msg = translate(_("No file data submitted.  Please submit a valid Open XML Spreadsheet (.xlsx) file."))
+            msg = self.context.translate(
+                _("No file data submitted.  Please submit a valid Open "
+                  "XML Spreadsheet (.xlsx) file."))
             self.plone_utils.addPortalMessage(msg)
             return self.template()
 
         self.file_name = file_name
 
-        wb = load_workbook(filename = resource_filename("bika.lims", "setupdata/%s.xlsx"%file_name))
+        filename = resource_filename("bika.lims",
+                                     "setupdata/%s.xlsx"%file_name)
+        wb = load_workbook(filename = filename)
 
         sheets = {}
         for sheetname in wb.get_sheet_names():
@@ -245,8 +248,7 @@ class LoadSetupData(BrowserView):
             for group_id in group_ids:
                 group = portal_groups.getGroupById(group_id)
                 if not group:
-                    translate = self.context.translation_service.translate
-                    message = translate(
+                    message = self.context.translate(
                         "message_invalid_group",
                         "bika",
                         {'group_id': group_id},

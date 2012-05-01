@@ -21,8 +21,6 @@ class LogView(BikaListingView):
     def __init__(self, context, request):
         BikaListingView.__init__(self, context, request)
 
-        translate = context.translation_service.translate
-
         self.show_sort_column = False
         self.show_select_row = False
         self.show_select_column = False
@@ -32,7 +30,7 @@ class LogView(BikaListingView):
         self.icon = "++resource++bika.lims.images/%s_big.png" % \
             context.portal_type.lower()
         self.title = "%s %s" % (self.context.Title(),
-                                translate(_("Log")))
+                                self.context.translate(_("Log")))
         self.description = ""
 
         self.columns = {

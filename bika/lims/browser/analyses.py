@@ -94,7 +94,6 @@ class AnalysesView(BikaListingView):
         bsc = getToolByName(self.context, 'bika_setup_catalog')
         workflow = getToolByName(self.context, 'portal_workflow')
         portal = getToolByName(self.context, 'portal_url').getPortalObject()
-        translate = self.context.translation_service.translate
         mtool = getToolByName(self.context, 'portal_membership')
         checkPermission = mtool.checkPermission
         if not self.allow_edit:
@@ -262,17 +261,17 @@ class AnalysesView(BikaListingView):
                                 str("%%.%sf" % precision) % float(result) or result
                         except:
                             items[i]['formatted_result'] = result
-                            indet = translate(_('Indet'))
+                            indet = self.context.translate(_('Indet'))
                             if result == indet:
                                 # 'Indeterminate' results flag a specific error
-                                Indet = translate(_("Indeterminate result"))
+                                Indet = self.context.translate(_("Indeterminate result"))
                                 items[i]['after']['Result'] = \
                                     '<img width="16" height="16" title="%s"' % Indet + \
                                     'src="%s/++resource++bika.lims.images/exclamation.png"/>' % \
                                     (portal.absolute_url())
                             else:
                                 # result being un-floatable, is an error.
-                                msg = translate(_("Invalid result"))
+                                msg = self.context.translate(_("Invalid result"))
                                 items[i]['after']['Result'] = \
                                     '<img width="16" height="16" title="%s"' % msg + \
                                     'src="%s/++resource++bika.lims.images/exclamation.png"/>' % \
@@ -322,11 +321,11 @@ class AnalysesView(BikaListingView):
                     if self.context.portal_type == 'AnalysisRequest':
                         items[i]['replace']['DueDate'] = '%s <img width="16" height="16" src="%s/++resource++bika.lims.images/late.png" title="%s"/>' % \
                             (DueDate, portal.absolute_url(),
-                             translate(_("Due Date")) + ": %s"%DueDate)
+                             self.context.translate(_("Due Date")) + ": %s"%DueDate)
                     else:
                         items[i]['replace']['DueDate'] = '%s <img width="16" height="16" src="%s/++resource++bika.lims.images/late.png" title="%s"/>' % \
                             (DueDate, portal.absolute_url(),
-                             translate(_("Late Analysis")))
+                             self.context.translate(_("Late Analysis")))
                 else:
                     items[i]['replace']['DueDate'] = TimeOrDate(self.context, item['DueDate'])
 
@@ -335,8 +334,8 @@ class AnalysesView(BikaListingView):
                workflow.getInfoFor(items[i]['obj'], 'worksheetanalysis_review_state') == 'assigned':
                 ws = items[i]['obj'].getBackReferences('WorksheetAnalysis')[0]
                 items[i]['after']['state_title'] = \
-                     "<a href='%s'><img src='++resource++bika.lims.images/worksheet.png' title='Assigned: %s'/></a>" % \
-                     (ws.absolute_url(), ws.id)
+                     "<a href='%s'><img src='++resource++bika.lims.images/worksheet.png' title='%s'/></a>" % \
+                     (ws.absolute_url(), _("Assigned to: ${worksheet_id}", mapping={'worksheet_id':ws.id}))
 
         # the TAL requires values for all interim fields on all
         # items, so we set blank values in unused cells

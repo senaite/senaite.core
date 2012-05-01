@@ -97,8 +97,6 @@ def Import(context,request):
     """ Read FIAStar analysis results
     """
 
-    translate = context.translation_service.translate
-
     template = "fiastar_import.pt"
 
     csvfile = request.form['file']
@@ -130,7 +128,7 @@ def Import(context,request):
         if not service:
             msg = _('Service keyword ${keyword} not found',
                     mapping = {'keyword': options[param], })
-            res['errors'].append(translate(msg))
+            res['errors'].append(context.translate(msg))
             continue
         service = service[0].getObject()
         kw_map[param] = service
@@ -185,7 +183,7 @@ def Import(context,request):
         if len(parent) == 0:
             msg = _('Analysis parent UID ${parent_uid} not found',
                     mapping = {'parent_uid': row['Sample name'], })
-            res['errors'].append(translate(msg))
+            res['errors'].append(context.translate(msg))
             continue
         parent = parent[0].getObject()
 
@@ -194,7 +192,7 @@ def Import(context,request):
         if len(container) == 0:
             msg = _('Analysis container UID ${parent_uid} not found',
                     mapping = {'container_uid': row['Sample type'], })
-            res['errors'].append(translate(msg))
+            res['errors'].append(context.translate(msg))
             continue
         container = container[0].getObject()
 
@@ -214,7 +212,7 @@ def Import(context,request):
             if not analysis:
                 msg = _('Duplicate analysis for slot ${slot} not found',
                         mapping = {'slot': row['Cup'], })
-                res['errors'].append(translate(msg))
+                res['errors'].append(context.translate(msg))
                 continue
             row['analysis'] = analysis
         else:
@@ -245,13 +243,13 @@ def Import(context,request):
                     mapping = {'service': service.Title(),
                                'slot': row['Cup'],
                                'state': as_state,})
-            res['errors'].append(translate(msg))
+            res['errors'].append(context.translate(msg))
             continue
         if analysis.getResult():
             msg = _('Analysis ${service} at slot ${slot} has a result - not updated',
                     mapping = {'service': service.Title(),
                                'slot': row['Cup'], })
-            res['errors'].append(translate(msg))
+            res['errors'].append(context.translate(msg))
             continue
 
         analysis.setInterimFields(
@@ -298,6 +296,6 @@ def Import(context,request):
         msg = _('Analysis ${service} at slot ${slot}: OK',
                 mapping = {'service': service.Title(),
                            'slot': row['Cup'], })
-        res['log'].append(translate(msg))
+        res['log'].append(context.translate(msg))
 
     return json.dumps(res)

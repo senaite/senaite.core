@@ -170,12 +170,11 @@ class ReferenceSample(BaseFolder):
             # definition is selected (./js/referencesample.js)
             if not o:
                 return ''
-            translate = self.translation_service.translate
             title = o.Title()
             if o.getBlank():
-                title += " %s" % translate(_('(Blank)'))
+                title += " %s" % self.translate(_('(Blank)'))
             if o.getHazardous():
-                title += " %s" % translate(_('(Hazardous)'))
+                title += " %s" % self.translate(_('(Hazardous)'))
 
             return title
 

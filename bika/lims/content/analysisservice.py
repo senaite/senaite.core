@@ -97,8 +97,7 @@ def getContainers(instance,
             if not pres_c_types:
                 containers_notype.append((container.UID(), container.Title()))
 
-    translate = instance.translation_service.translate
-    cat_str = translate(_('Container Type'))
+    cat_str = instance.translate(_('Container Type'))
 
     for ctype in containers.keys():
         if container_type_entries:
