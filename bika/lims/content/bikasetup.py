@@ -49,7 +49,7 @@ LABEL_AUTO_SIZES = DisplayList((
 
 schema = BikaFolderSchema.copy() + Schema((
     IntegerField('PasswordLifetime',
-        schemata = PMF("Security"),
+        schemata = "Security",
         required = 1,
         default = 0,
         widget = IntegerWidget(
@@ -58,7 +58,7 @@ schema = BikaFolderSchema.copy() + Schema((
         )
     ),
     IntegerField('AutoLogOff',
-        schemata = PMF("Security"),
+        schemata = "Security",
         required = 1,
         default = 0,
         widget = IntegerWidget(
@@ -68,7 +68,7 @@ schema = BikaFolderSchema.copy() + Schema((
         )
     ),
     StringField('Currency',
-        schemata = PMF("Accounting"),
+        schemata = "Accounting",
         required = 1,
         vocabulary = CURRENCIES,
         default = 'ZAR',
@@ -79,7 +79,7 @@ schema = BikaFolderSchema.copy() + Schema((
         )
     ),
     FixedPointField('MemberDiscount',
-        schemata = PMF("Accounting"),
+        schemata = "Accounting",
         default = '33.33',
         widget = DecimalWidget(
             label = _("Member discount %"),
@@ -89,7 +89,7 @@ schema = BikaFolderSchema.copy() + Schema((
         )
     ),
     FixedPointField('VAT',
-        schemata = PMF("Accounting"),
+        schemata = "Accounting",
         default = '14.00',
         widget = DecimalWidget(
             label = _("VAT %"),
@@ -98,7 +98,7 @@ schema = BikaFolderSchema.copy() + Schema((
         )
     ),
     IntegerField('MinimumResults',
-        schemata = PMF("Results Reports"),
+        schemata = "Results Reports",
         required = 1,
         default = 5,
         widget = IntegerWidget(
@@ -109,7 +109,7 @@ schema = BikaFolderSchema.copy() + Schema((
         )
     ),
     IntegerField('BatchEmail',
-        schemata = PMF("Results Reports"),
+        schemata = "Results Reports",
         required = 1,
         default = 5,
         widget = IntegerWidget(
@@ -120,7 +120,7 @@ schema = BikaFolderSchema.copy() + Schema((
         )
     ),
     IntegerField('BatchFax',
-        schemata = PMF("Results Reports"),
+        schemata = "Results Reports",
         required = 1,
         default = 4,
         widget = IntegerWidget(
@@ -131,7 +131,7 @@ schema = BikaFolderSchema.copy() + Schema((
     ),
     # XXX stringfield, chars to strip from cell number
     StringField('SMSGatewayAddress',
-        schemata = PMF("Results Reports"),
+        schemata = "Results Reports",
         required = 0,
         widget = StringWidget(
             label = _("SMS Gateway Email Address"),
@@ -141,7 +141,7 @@ schema = BikaFolderSchema.copy() + Schema((
         )
     ),
     BooleanField('SamplingWorkflowEnabled',
-        schemata = PMF("Analyses"),
+        schemata = "Analyses",
         default = False,
         widget = BooleanWidget(
             label = _("Enable the Sampling workflow"),
@@ -149,7 +149,7 @@ schema = BikaFolderSchema.copy() + Schema((
         ),
     ),
     BooleanField('CategoriseAnalysisServices',
-        schemata = PMF("Analyses"),
+        schemata = "Analyses",
         default = False,
         widget = BooleanWidget(
             label = _("Categorise Analysis Services"),
@@ -158,7 +158,7 @@ schema = BikaFolderSchema.copy() + Schema((
         ),
     ),
     ReferenceField('DryMatterService',
-        schemata = PMF("Analyses"),
+        schemata = "Analyses",
         required = 0,
         vocabulary_display_path_bound = sys.maxint,
         allowed_types = ('AnalysisService',),
@@ -171,7 +171,7 @@ schema = BikaFolderSchema.copy() + Schema((
         )
     ),
     LinesField('ARImportOption',
-        schemata = PMF("Analyses"),
+        schemata = "Analyses",
         vocabulary = ARIMPORT_OPTIONS,
         widget = MultiSelectionWidget(
             label = _("AR Import options"),
@@ -181,7 +181,7 @@ schema = BikaFolderSchema.copy() + Schema((
         )
     ),
     StringField('ARAttachmentOption',
-        schemata = PMF("Analyses"),
+        schemata = "Analyses",
         default = 'p',
         vocabulary = ATTACHMENT_OPTIONS,
         widget = SelectionWidget(
@@ -192,7 +192,7 @@ schema = BikaFolderSchema.copy() + Schema((
         )
     ),
     StringField('AnalysisAttachmentOption',
-        schemata = PMF("Analyses"),
+        schemata = "Analyses",
         default = 'p',
         vocabulary = ATTACHMENT_OPTIONS,
         widget = SelectionWidget(
@@ -203,7 +203,7 @@ schema = BikaFolderSchema.copy() + Schema((
         )
     ),
     DurationField('DefaultSampleLifetime',
-        schemata = PMF("Analyses"),
+        schemata = "Analyses",
         required = 1,
         default = {"days":30, "hours":0, "minutes":0},
         widget = DurationWidget(
@@ -214,7 +214,7 @@ schema = BikaFolderSchema.copy() + Schema((
         )
     ),
     LinesField('AutoPrintLabels',
-        schemata = PMF("Labels"),
+        schemata = "Labels",
         vocabulary = LABEL_AUTO_OPTIONS,
         widget = SelectionWidget(
             format = 'select',
@@ -226,7 +226,7 @@ schema = BikaFolderSchema.copy() + Schema((
         )
     ),
     LinesField('AutoLabelSize',
-        schemata = PMF("Labels"),
+        schemata = "Labels",
         vocabulary = LABEL_AUTO_SIZES,
         widget = SelectionWidget(
             format = 'select',
@@ -235,7 +235,7 @@ schema = BikaFolderSchema.copy() + Schema((
         )
     ),
     PrefixesField('Prefixes',
-        schemata = PMF("ID Server"),
+        schemata = "ID Server",
         default = [{'portal_type': 'ARImport', 'prefix': 'B', 'padding': '3'},
                    {'portal_type': 'Client', 'prefix': 'client', 'padding': '0'},
                    {'portal_type': 'DuplicateAnalysis', 'prefix': 'DA', 'padding': '0'},
@@ -258,7 +258,7 @@ schema = BikaFolderSchema.copy() + Schema((
         )
     ),
     BooleanField('YearInPrefix',
-        schemata = PMF("ID Server"),
+        schemata = "ID Server",
         default = False,
         widget = BooleanWidget(
             label = _("Include year in ID prefix"),
@@ -266,7 +266,7 @@ schema = BikaFolderSchema.copy() + Schema((
         ),
     ),
     IntegerField('SampleIDPadding',
-        schemata = PMF("ID Server"),
+        schemata = "ID Server",
         required = 1,
         default = 4,
         widget = IntegerWidget(
@@ -275,7 +275,7 @@ schema = BikaFolderSchema.copy() + Schema((
         )
     ),
     IntegerField('ARIDPadding',
-        schemata = PMF("ID Server"),
+        schemata = "ID Server",
         required = 1,
         default = 2,
         widget = IntegerWidget(
@@ -284,7 +284,7 @@ schema = BikaFolderSchema.copy() + Schema((
         )
     ),
     BooleanField('ExternalIDServer',
-        schemata = PMF("ID Server"),
+        schemata = "ID Server",
         default = False,
         widget = BooleanWidget(
             label = _("Use external ID server"),
@@ -293,7 +293,7 @@ schema = BikaFolderSchema.copy() + Schema((
         ),
     ),
     StringField('IDServerURL',
-        schemata = PMF("ID Server"),
+        schemata = "ID Server",
         widget = StringWidget(
             label = _("ID Server URL"),
             description = _("The full URL: http://URL/path:port")

@@ -4,7 +4,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Bika-LIMS\n"
-"POT-Creation-Date: 2012-04-19 18:01+0000\n"
+"POT-Creation-Date: 2012-05-01 11:53+0000\n"
 "PO-Revision-Date: 2012-02-17 22:31+0000\n"
 "Last-Translator: Bika <bikasupport@bikalabs.com>\n"
 "Language-Team: Bika <bikasupport@bikalabs.com>\n"
@@ -51,7 +51,6 @@ msgstr ""
 msgid "Administration"
 msgstr ""
 
-#: ../profiles/default/types/AnalysisRequest.xml
 #: ../profiles/default/types/ReferenceSample.xml
 msgid "Analyses"
 msgstr ""
@@ -246,9 +245,12 @@ msgstr ""
 msgid "Lab Departments"
 msgstr ""
 
-#: ../profiles/default/controlpanel.xml
 #: ../profiles/default/types/LabProducts.xml
 msgid "Lab Products"
+msgstr ""
+
+#: ../profiles/default/controlpanel.xml
+msgid "Lab bika"
 msgstr ""
 
 #: ../profiles/default/types/Laboratory.xml
@@ -266,8 +268,8 @@ msgid "Large Sticker"
 msgstr ""
 
 #: ../profiles/default/types/AnalysisRequest.xml
-#: ../profiles/default/types/AnalysisService.xml
 #: ../profiles/default/types/ReferenceSample.xml
+#: ../profiles/default/types/Sample.xml
 msgid "Log"
 msgstr ""
 
@@ -277,6 +279,10 @@ msgstr ""
 
 #: ../profiles/default/types/Contact.xml
 msgid "Login details"
+msgstr ""
+
+#: ../profiles/default/types/AnalysisRequest.xml
+msgid "Manage Analyses"
 msgstr ""
 
 #: ../profiles/default/types/AnalysisRequest.xml

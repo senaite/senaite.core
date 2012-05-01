@@ -45,7 +45,7 @@
          i18n:attributes="title"
          i18n:domain="plone"
          visible="True">
-     <permission value="BIKA: Manage Analysis Requests"/>
+     <permission value="BIKA: Add Analysis"/>
  </action>
 
  <action title="Manage Results"

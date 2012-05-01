@@ -78,7 +78,7 @@ class ClientFolderContentsView(BikaListingView):
         self.context_actions = {}
         mtool = getToolByName(self.context, 'portal_membership')
         if (mtool.checkPermission(AddClient, self.context)):
-            self.context_actions['Add'] = \
+            self.context_actions[_('Add')] = \
                 {'url': 'createObject?type_name=Client',
                  'icon': '++resource++bika.lims.images/add.png'}
         return super(ClientFolderContentsView, self).__call__()

@@ -19,7 +19,7 @@ from bika.lims import PMF, bikaMessageFactory as _
 
 schema = BikaSchema.copy() + Schema((
     InterimFieldsField('InterimFields',
-        schemata = PMF('Calculation'),
+        schemata = 'Calculation',
         widget = BikaRecordsWidget(
             label = _("Calculation Interim Fields"),
             description =_("Define interim fields such as vessel mass, dilution factors, "
@@ -29,7 +29,7 @@ schema = BikaSchema.copy() + Schema((
         )
     ),
     HistoryAwareReferenceField('DependentServices',
-        schemata = PMF('Calculation'),
+        schemata = 'Calculation',
         required = 1,
         multiValued = 1,
         vocabulary_display_path_bound = sys.maxint,
@@ -43,7 +43,7 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     TextField('Formula',
-        schemata = PMF('Calculation'),
+        schemata = 'Calculation',
         validators = ('formulavalidator',),
         default_content_type = 'text/plain',
         allowable_content_types = ('text/plain',),
@@ -63,9 +63,9 @@ schema = BikaSchema.copy() + Schema((
     ),
 ))
 schema['title'].widget.visible = True
-schema['title'].schemata = PMF('Description')
+schema['title'].schemata = 'Description'
 schema['description'].widget.visible = True
-schema['description'].schemata = PMF('Description')
+schema['description'].schemata = 'Description'
 
 class Calculation(BaseFolder, HistoryAwareMixin):
     security = ClassSecurityInfo()

@@ -19,7 +19,7 @@ import sys
 
 schema = BikaSchema.copy() + Schema((
     CoordinateField('Latitude',
-        schemata = PMF('Location'),
+        schemata = 'Location',
         widget=CoordinateWidget(
             label= _("Latitude"),
             description = _("Enter the Sample Point's latitude in "
@@ -27,7 +27,7 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     CoordinateField('Longitude',
-        schemata = PMF('Location'),
+        schemata = 'Location',
         widget=CoordinateWidget(
             label= _("Longitude"),
             description = _("Enter the Sample Point's longitude in "
@@ -35,7 +35,7 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     StringField('Elevation',
-        schemata = PMF('Location'),
+        schemata = 'Location',
         widget=StringWidget(
             label =  _("Elevation"),
             description = _("The height or depth at which the sample has to be taken"),

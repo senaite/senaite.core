@@ -26,7 +26,7 @@ import time
 
 schema = Schema((
     HistoryAwareReferenceField('SampleType',
-        schemata = PMF('Description'),
+        schemata = 'Description',
         required = 1,
         vocabulary = "getRemainingSampleTypes",
         vocabulary_display_path_bound = sys.maxint,
@@ -58,7 +58,7 @@ schema = Schema((
 BikaSchema.copy() + \
 Schema((
     RecordsField('ResultsRange',
-        schemata = PMF('Reference Results'),
+        schemata = 'Reference Results',
         required = 1,
         type = 'analysisspec',
         subfields = ('keyword', 'min', 'max', 'error'),
@@ -88,9 +88,9 @@ Schema((
         ),
     ),
 ))
-schema['description'].schemata = PMF('Description')
+schema['description'].schemata = 'Description'
 schema['description'].widget.visible = True
-schema['title'].schemata = PMF('Description')
+schema['title'].schemata = 'Description'
 schema['title'].required = False
 schema['title'].widget.visible = False
 

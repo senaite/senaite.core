@@ -23,7 +23,7 @@ import sys, time
 
 schema = BikaSchema.copy() + Schema((
     ReferenceField('ReferenceDefinition',
-        schemata = PMF('Description'),
+        schemata = 'Description',
         allowed_types = ('ReferenceDefinition',),
         relationship = 'ReferenceSampleReferenceDefinition',
         referenceClass = HoldingReference,
@@ -34,7 +34,7 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     BooleanField('Blank',
-        schemata = PMF('Description'),
+        schemata = 'Description',
         default = False,
         widget = BooleanWidget(
             label = _("Blank"),
@@ -42,7 +42,7 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     BooleanField('Hazardous',
-        schemata = PMF('Description'),
+        schemata = 'Description',
         default = False,
         widget = BooleanWidget(
             label = _("Hazardous"),
@@ -50,7 +50,7 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     ReferenceField('ReferenceManufacturer',
-        schemata = PMF('Description'),
+        schemata = 'Description',
         allowed_types = ('ReferenceManufacturer',),
         relationship = 'ReferenceSampleReferenceManufacturer',
         vocabulary = "getReferenceManufacturers",
@@ -61,19 +61,19 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     StringField('CatalogueNumber',
-        schemata = PMF('Description'),
+        schemata = 'Description',
         widget = StringWidget(
             label = _("Catalogue Number"),
         ),
     ),
     StringField('LotNumber',
-        schemata = PMF('Description'),
+        schemata = 'Description',
         widget = StringWidget(
             label = _("Lot Number"),
         ),
     ),
     TextField('Remarks',
-        schemata = PMF('Description'),
+        schemata = 'Description',
         searchable = True,
         default_content_type = 'text/x-web-intelligent',
         allowable_content_types = ('text/x-web-intelligent',),
@@ -85,40 +85,40 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     DateTimeField('DateSampled',
-        schemata = PMF('Dates'),
+        schemata = 'Dates',
         widget = bika_DateTimeWidget(
             label = _("Date Sampled"),
         ),
     ),
     DateTimeField('DateReceived',
-        schemata = PMF('Dates'),
+        schemata = 'Dates',
         default_method = 'current_date',
         widget = bika_DateTimeWidget(
             label = _("Date Received"),
         ),
     ),
     DateTimeField('DateOpened',
-        schemata = PMF('Dates'),
+        schemata = 'Dates',
         widget = bika_DateTimeWidget(
             label = _("Date Opened"),
         ),
     ),
     DateTimeField('ExpiryDate',
-        schemata = PMF('Dates'),
+        schemata = 'Dates',
         required = 1,
         widget = bika_DateTimeWidget(
             label = _("Expiry Date"),
         ),
     ),
     DateTimeField('DateExpired',
-        schemata = PMF('Dates'),
+        schemata = 'Dates',
         widget = bika_DateTimeWidget(
             label = _("Date Expired"),
             visible = {'edit':'hidden'},
         ),
     ),
     DateTimeField('DateDisposed',
-        schemata = PMF('Dates'),
+        schemata = 'Dates',
         widget = bika_DateTimeWidget(
             label = _("Date Disposed"),
             visible = {'edit':'hidden'},
@@ -145,7 +145,7 @@ schema = BikaSchema.copy() + Schema((
     ),
 ))
 
-schema['title'].schemata = PMF('Description')
+schema['title'].schemata = 'Description'
 
 class ReferenceSample(BaseFolder):
     implements(IReferenceSample)

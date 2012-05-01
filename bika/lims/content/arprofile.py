@@ -25,7 +25,7 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     ReferenceField('Service',
-        schemata = PMF('Analyses'),
+        schemata = 'Analyses',
         required = 1,
         multiValued = 1,
         allowed_types = ('AnalysisService',),
