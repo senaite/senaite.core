@@ -1,4 +1,5 @@
 <form name="bika_listing_form" method="post" action="workflow_action"
+    i18n:domain="bika"
 	tal:attributes="id form_id"
 	tal:omit-tag="table_only"
 	tal:define="
@@ -533,7 +534,6 @@ Table cells for each column from in review_state's column list.
 	</tal:rowcolspan>
 	</tal:cell>
 
-
 	</tr>
 	</tal:items>
 </tal:cats>
@@ -557,16 +557,14 @@ Workflow Actions
 					<input
 						type="hidden"
 						tal:attributes="name action/title;
-										value action/id;"
-						i18n:attributes="name"/>
+										value action/id;"/>
 					<input
 						class="context workflow_action_button allowMultiSubmit"
 						type="submit"
 						name="workflow_action_button"
 						tal:attributes="
 							transition action/id;
-							value action/title;"
-						i18n:attributes="value"/>
+							value action/title;"/>
 				</span>
 			</span>
 		</td>

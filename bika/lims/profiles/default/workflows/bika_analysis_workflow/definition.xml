@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <dc-workflow xmlns:i18n="http://xml.zope.org/namespaces/i18n"
-             i18n:domain="bika"
+             i18n:domain="plone"
 			 workflow_id="bika_analysis_workflow"
 			 title="Bika Analysis Workflow"
 			 state_variable="review_state"
@@ -344,7 +344,7 @@
  </transition>
 
  <transition transition_id="receive"
-             title="Receive Sample"
+             title="Receive sample"
 			 new_state="sample_received"
 			 trigger="USER"
 			 before_script=""

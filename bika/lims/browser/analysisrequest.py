@@ -396,7 +396,8 @@ class AnalysisRequestViewView(BrowserView):
              'condition':True,
              'type': 'text'},
             {'id': 'Contact',
-             'title': "<a href='#' id='open_cc_browser'>%s</a>" % _('Contact Person'),
+             'title': "<a href='#' id='open_cc_browser'>%s</a>" % \
+                      self.context.translate(_('Contact Person')),
              'allow_edit': False,
              'value': "; ".join(ccs),
              'condition':True,
@@ -1113,7 +1114,7 @@ class AnalysisRequestSelectSampleView(BikaListingView):
                          'SamplePointTitle',
                          'SamplingDate']},
             {'id':'sample_received',
-             'title': _('Sample Received'),
+             'title': _('Sample received'),
              'contentFilter': {'review_state': 'sample_received'},
              'columns': ['SampleID',
                          'ClientReference',

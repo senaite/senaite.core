@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <dc-workflow xmlns:i18n="http://xml.zope.org/namespaces/i18n"
-             i18n:domain="bika"
+             i18n:domain="plone"
              workflow_id="bika_sample_workflow"
              title="Bika Sample Workflow"
              state_variable="review_state"
@@ -133,7 +133,7 @@
     </permission-map>
 </state>
 
- <state state_id="sample_received" title="Sample Received" i18n:attributes="title">
+ <state state_id="sample_received" title="Sample received" i18n:attributes="title">
   <exit-transition transition_id="expire"/>
     <permission-map name="BIKA: Edit Sample" acquired="False">
         <permission-role>Manager</permission-role>

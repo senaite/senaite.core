@@ -1,4 +1,5 @@
 <html
+    i18n:domain="bika"
 	tal:define="portal_state context/@@plone_portal_state;
 				portal_url portal_state/portal_url;
 				locale portal_state/locale;
@@ -35,7 +36,8 @@
 
 </head>
 
-<body>
+<body
+  tal:define="currencies python:modules['zope.i18n.locales'].locales.getLocale('en').numbers.currencies;">
 
 <div class="service_popup">
 
@@ -178,7 +180,7 @@
 							tal:content="m/Title"/>
 					</td>
 					<td>
-						<span tal:replace="python:locale.numbers.currencies[currency].symbol"/>
+						<span tal:replace="python:currencies[currency].symbol"/>
 						<span tal:replace="python:'%.02f'%dep.getTotalPrice()"/>
 					</td>
 				</tr>

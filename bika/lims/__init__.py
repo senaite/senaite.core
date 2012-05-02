@@ -25,6 +25,7 @@ allow_module('bika.lims')
 allow_module('bika.lims.permissions')
 allow_module('json')
 allow_module('pdb')
+allow_module('zope.i18n.locales')
 
 def initialize(context):
 

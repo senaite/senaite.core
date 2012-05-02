@@ -9,6 +9,7 @@
       xmlns:tal="http://xml.zope.org/namespaces/tal"
       xmlns:metal="http://xml.zope.org/namespaces/metal"
       xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      i18n:domain="bika"
       tal:define="portal_state context/@@plone_portal_state;
                   context_state context/@@plone_context_state;
                   plone_view context/@@plone;

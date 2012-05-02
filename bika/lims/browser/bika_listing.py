@@ -245,6 +245,7 @@ class BikaListingView(BrowserView):
         #self.contentsMethod = self.context.getFolderContents
         self.contentsMethod = getToolByName(context, 'portal_catalog')
 
+        self.translate = self.context.translate
 
     def _process_request(self):
         # Use this function from a template that is using bika_listing_table
@@ -524,8 +525,9 @@ class BikaListingView(BrowserView):
             )
             try:
                 review_state = workflow.getInfoFor(obj, 'review_state')
-                state_title = workflow.getTitleForStateOnType(review_state,
-                                                              obj.portal_type)
+                state_title = self.context.translate(
+                    PMF(workflow.getTitleForStateOnType(review_state,
+                                                    obj.portal_type)))
             except:
                 review_state = 'active'
                 state_title = None
@@ -666,4 +668,7 @@ class BikaListingTable(tableview.Table):
             for action in review_state['custom_actions']:
                 actions.append(action)
 
+        for a,action in enumerate(actions):
+            actions[a]['title'] = \
+                self.bika_listing.translate(PMF(actions[a]['title']))
         return actions
