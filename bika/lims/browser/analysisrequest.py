@@ -69,23 +69,20 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
         if action == "save_button":
             ar = self.context
             sample = ar.getSample()
+
+            # Read all service selections
             objects = WorkflowAction._get_selected_items(self)
-            form_parts = json.loads(self.request.form['parts'])
-            if not form_parts:
-                message = _('No changes made.')
-            else:
-                new_analyses = ar.setAnalyses(objects.keys(),
-                                              prices = form['Price'][0])
 
-                # XXX
+            # Read partition/container/preservation selections for selections
 
-                # stopgap - ignore selected values ; assign first partition
-                # to new analyses.  Form interface doesn't yet support
-                # selection of partition - AR Add and AR Edit will get some
-                # additional functionality for this, soon.
-                first_part = sample.objectValues("SamplePartition")[0]
-                for a in new_analyses:
-                    a.setSamplePartition(first_part)
+            # Send the full list to setAnalyses which will add/remove analyses
+            # as necessary.
+            new_analyses = ar.setAnalyses(objects.keys(),
+                                          prices = form['Price'][0])
+
+            first_part = sample.objectValues("SamplePartition")[0]
+            for a in new_analyses:
+                a.setSamplePartition(first_part)
 
                 message = self.context.translate(PMF("Changes saved."))
 
@@ -836,13 +833,13 @@ class AnalysisRequestAnalysesView(BikaListingView):
             'Title': {'title': _('Service'),
                       'index': 'sortable_title',
                       'sortable': False,},
-            'Keyword': {'title': _('Keyword'),
-                        'index': 'getKeyword',
-                        'sortable': False,},
             'Price': {'title': _('Price'),
                       'sortable': False,},
-            'Method': {'title': _('Method'),
-                       'sortable': False,},
+##            'Keyword': {'title': _('Keyword'),
+##                        'index': 'getKeyword',
+##                        'sortable': False,},
+##            'Method': {'title': _('Method'),
+##                       'sortable': False,},
             'Partition': {'title': _('Partition'),
                           'sortable': False,},
             'Container': {'title': _('Container'),
@@ -856,8 +853,8 @@ class AnalysisRequestAnalysesView(BikaListingView):
              'title': _('All'),
              'columns': ['Title',
                          'Price',
-                         'Keyword',
-                         'Method',
+##                         'Keyword',
+##                         'Method',
                          'Partition',
                          'Container',
                          'Preservation'
@@ -873,10 +870,18 @@ class AnalysisRequestAnalysesView(BikaListingView):
         mtool = getToolByName(self.context, 'portal_membership')
         member = mtool.getAuthenticatedMember()
         roles = member.getRoles()
-        can_edit_price = 'LabManager' in roles or 'Manager' in roles
-        self.allow_edit = can_edit_price
-
+        self.allow_edit = 'LabManager' in roles or 'Manager' in roles
+        bsc = getToolByName(self.context, 'bika_setup_catalog')
         items = BikaListingView.folderitems(self)
+
+        containers = [({'ResultValue':o.UID,
+                        'ResultText':o.title})
+                      for o in bsc(portal_type="Container",
+                                   inactive_state="active")]
+        preservations = [({'ResultValue':o.UID,
+                           'ResultText':o.title})
+                         for o in bsc(portal_type="Preservation",
+                                      inactive_state="active")]
 
         for x in range(len(items)):
             if not items[x].has_key('obj'): continue
@@ -890,30 +895,35 @@ class AnalysisRequestAnalysesView(BikaListingView):
             items[x]['selected'] = items[x]['uid'] in self.selected
 
             items[x]['class']['Title'] = 'service_title'
-            items[x]['Keyword'] = obj.getKeyword()
 
             calculation = obj.getCalculation()
             items[x]['Calculation'] = calculation and calculation.Title()
 
-            method = obj.getMethod()
-            items[x]['Method'] = method and method.Title() or ''
+##            method = obj.getMethod()
+##            items[x]['Method'] = method and method.Title() or ''
+##            items[x]['Keyword'] = obj.getKeyword()
 
             locale = locales.getLocale('en')
             currency = self.context.bika_setup.getCurrency()
             symbol = locale.numbers.currencies[currency].symbol
             items[x]['before']['Price'] = symbol
             items[x]['Price'] = obj.getPrice()
-            items[x]['allow_edit'] = ['Price', ]
+            items[x]['allow_edit'] = ['Price', 'Container', 'Preservation']
             items[x]['class']['Price'] = 'nowrap'
+
+            items[x]['choices']['Container'] = containers
+            items[x]['choices']['Preservation'] = preservations
 
             if obj.UID() in self.analyses:
                 part = self.analyses[obj.UID()].getSamplePartition()
                 part = part and part or obj
                 items[x]['Partition'] = part.Title()
                 container = part.getContainer()
-                items[x]['Container'] = container and container.Title() or ''
+                items[x]['Container'] = \
+                    container and container.UID() or ''
                 preservation = part.getPreservation()
-                items[x]['Preservation'] = preservation and preservation.Title() or ''
+                items[x]['Preservation'] = \
+                    preservation and preservation.UID() or ''
             else:
                 items[x]['Partition'] = ''
                 items[x]['Container'] = ''

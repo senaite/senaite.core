@@ -486,29 +486,67 @@ jQuery( function($) {
 		for(p=0;p<parts[0].length;p++){
 			part_nr = p+1;
 			part = parts[0][p];
-			if(part['container'].length > 0){
-				container = bsc.data.containers[part['container'][0]];
-				container = container['title'];
-			} else {
-				container = '';
-			}
-			if(part['preservation'].length > 0){
-				preservation = bsc.data.preservations[part['preservation'][0]];
-				preservation = preservation['title'];
-			} else {
-				preservation = '';
-			}
+
+			// grab current partition container/preservation values
+//			if(containers.length > 0){
+//				container = bsc.data.containers[containers[0]];
+//				container = container['title'];
+//			} else {
+//				container = '';
+//			}
+//			if(part['preservation'].length > 0){
+//				preservation = bsc.data.preservations[preservations[0]];
+//				preservation = preservation['title'];
+//			} else {
+//				preservation = '';
+//			}
+
+			container = part['container'];
+			preservation = part['preservation'];
 			separate = part['separate'];
 			service_uids = part['services'];
+
 			for(s=0;s<service_uids.length;s++){
 				service_uid = service_uids[s];
-				//service_data = bsc.data.services[service_uid];
-				part_tr = $("[name=Partition."+service_uid+":records]").parent();
-				container_tr = $("[name=Container."+service_uid+":records]").parent();
-				preservation_tr = $("[name=Preservation."+service_uid+":records]").parent();
-				$($(part_tr).children()[1]).text('part-'+part_nr);
-				$($(container_tr).children()[1]).text(container);
-				$($(preservation_tr).children()[1]).text(preservation);
+				service_data = bsc.data.services[service_uid];
+
+				part_cell = $("[name=Partition."+service_uid+":records]").siblings()[1];
+				container_cell = $("[name=Container."+service_uid+":records]").siblings()[1];
+				preservation_cell = $("[name=Preservation."+service_uid+":records]").siblings()[1];
+
+				parts_select = "<select name='parts."+service_uid+":records'>";
+				for(_pa=0;_pa<parts[0].length;_pa++){
+					selected = (p==_pa) ? "selected='selected'" : "";
+					parts_select = parts_select +
+						"<option value='"+_pa+"' "+selected+">part-"+part_nr+"</option>";
+				}
+				parts_select = parts_select +
+					"<option value='new'>"+_('New')+"</option>";
+				parts_select = parts_select + "</select>";
+
+				containers_select = "<select name='containers."+service_uid+":records'>";
+				selected = (container=='') ? "selected='selected'" : "";
+				containers_select = containers_select + "<option value='' " + selected + "></option>";
+				$.each(bsc.data.containers, function(_co, co){
+					selected = (container==_co) ? "selected='selected'" : "";
+					containers_select = containers_select +
+						"<option value='"+_co+"' "+selected+">"+co['title']+"</option>";
+				});
+				containers_select = containers_select + "</select>";
+
+				preservations_select = "<select name='preservations."+service_uid+":records'>";
+				selected = (preservation=='') ? "selected='selected'" : "";
+				preservations_select = preservations_select + "<option value='' " + selected + "></option>";
+				$.each(bsc.data.containers, function(_pr, pr){
+					selected = (preservation==_pr) ? "selected='selected'" : "";
+					preservations_select = preservations_select +
+						"<option value='"+_pr+"' "+selected+">"+pr['title']+"</option>";
+				});
+				preservations_select = preservations_select + "</select>";
+
+				$(part_cell).empty().append(parts_select);
+				$(container_cell).empty().append(containers_select);
+				$(preservation_cell).empty().append(preservations_select);
 			}
 		}
 		if ($("#parts").length == 0){

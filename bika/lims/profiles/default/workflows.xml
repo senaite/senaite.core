@@ -113,7 +113,10 @@
    <bound-workflow workflow_id="bika_inactive_workflow"/>
   </type>
 
-  <type type_id="Container"/>
+  <type type_id="Container">
+   <bound-workflow workflow_id="bika_one_state_workflow"/>
+   <bound-workflow workflow_id="bika_inactive_workflow"/>
+  </type>
   <type type_id="Containers"/>
 
   <type type_id="ContainerType"/>
