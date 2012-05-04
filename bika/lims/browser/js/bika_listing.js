@@ -388,6 +388,7 @@ $(document).ready(function(){
 		stored_form_action = $(form).attr("action");
 		$(form).attr("action", window.location.href);
 		$(form).append("<input type='hidden' name='table_only' value='"+form_id+"'>");
+		$(form).append("<input type='hidden' name='toggle_cookie_value' value='"+$.toJSON(cookie)+"'>");
 		options = {
 			target: $(form).children(".bika-listing-table"),
 			replaceTarget: true,
@@ -399,6 +400,7 @@ $(document).ready(function(){
 		$(".tooltip").remove();
 		form.ajaxSubmit(options);
 		$('[name=table_only]').remove();
+		$('[name=toggle_cookie_value]').remove();
 		$(form).attr('action', stored_form_action);
 		return false;
 	});

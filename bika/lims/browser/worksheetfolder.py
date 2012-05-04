@@ -248,9 +248,11 @@ class WorksheetFolderListingView(BikaListingView):
                 items[x]['replace']['Template'] = "<a href='%s'>%s</a>" % \
                     (wst.absolute_url(), wst.Title())
 
-            # this cannot be setup in contentFilter, because AuthenticatedMember
-            # is not available in __init__
-            if self.request.get("%s_review_state"%self.form_id, '') == 'mine':
+            # this cannot be setup in contentFilter,
+            # because AuthenticatedMember is not available in __init__
+            cookie = json.loads(self.request.get("review_state", '{}'))
+            selected_state = cookie.get(self.form_id, '')
+            if selected_state == 'mine':
                 if member.getId() not in (analyst, creator):
                     continue
 

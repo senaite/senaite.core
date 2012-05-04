@@ -699,4 +699,25 @@ class SamplesView(BikaListingView):
                 items[x]['class']['getPreserver'] = 'provisional'
                 items[x]['class']['getDatePreserved'] = 'provisional'
 
-        return items
+         # Hide Preservation/Sampling workflow actions if the edit columns
+        # are not displayed.
+        toggle_cols = self.get_toggle_cols()
+        new_states = []
+        for i,state in enumerate(self.review_states):
+            if state['id'] == self.review_state:
+                if 'getSampler' not in toggle_cols \
+                   or 'getDateSampled' not in toggle_cols:
+                    if 'hide_transitions' in state:
+                        state['hide_transitions'].append('sampled')
+                    else:
+                        state['hide_transitions'] = ['sampled',]
+                if 'getPreserver' not in toggle_cols \
+                   or 'getDatePreserved' not in toggle_cols:
+                    if 'hide_transitions' in state:
+                        state['hide_transitions'].append('preserved')
+                    else:
+                        state['hide_transitions'] = ['preserved',]
+            new_states.append(state)
+        self.review_states = new_states
+
+       return items

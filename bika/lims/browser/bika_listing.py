@@ -261,15 +261,23 @@ class BikaListingView(BrowserView):
         if form_id not in self.request.get('table_only', form_id):
             return ''
 
-        # review_state_selector (POST value OR cookie value OR 'all')
-        request_key = form_id + '_review_state'
-        review_state_name = self.request.get(request_key, None) \
-            or 'all'
-        states = [r for r in self.review_states if r['id'] == review_state_name]
+        ## review_state_selector
+        # first check POST
+        cookie = json.loads(self.request.get("review_state", '{}'))
+        selected_state = cookie.get("%s_review_state"%form_id, '')
+        if not selected_state:
+            # then check cookie
+            selected_state = form_id in cookie and cookie[form_id] or ''
+        # get review_state id=selected_state
+        states = [r for r in self.review_states if r['id'] == selected_state]
         review_state = states and states[0] or self.review_states[0]
-        self.review_state = review_state['id']
-        self.request[request_key] = review_state['id']
-        self.request.response.setCookie(request_key, review_state['id'], path=self.view_url)
+        # set request and cookie to currently selected state id
+        if not selected_state:
+            selected_state = self.review_states[0]['id']
+        self.review_state = cookie[form_id] = selected_state
+        cookie = json.dumps(cookie)
+        self.request['review_state'] = cookie
+        self.request.response.setCookie('review_state', cookie)
         if review_state.has_key('contentFilter'):
             for k, v in review_state['contentFilter'].items():
                 self.contentFilter[k] = v
@@ -350,28 +358,33 @@ class BikaListingView(BrowserView):
 
         # get toggle_cols cookie value
         # and modify self.columns[]['toggle'] to match.
+        toggle_cols = self.get_toggle_cols()
+        for col in self.columns.keys():
+            if col in toggle_cols:
+                self.columns[col]['toggle'] = True
+            else:
+                self.columns[col]['toggle'] = False
+
+    def get_toggle_cols(self):
+        states = [r for r in self.review_states if r['id'] == self.review_state]
+        review_state = states and states[0] or self.review_states[0]
         try:
             toggles = {}
             # request OR cookie OR default
-            toggles = json.loads(self.request.get('toggle_cookie',
+            toggles = json.loads(self.request.get('toggle_cookie_value',
                                  self.request.get("toggle_cols", "{}")))
         except:
             pass
         finally:
             if not toggles:
                 toggles = {}
-
-        cookie_key = "%s/%s" % (self.view_url, form_id)
+        cookie_key = "%s/%s" % (self.view_url, self.form_id)
         toggle_cols = toggles.get(cookie_key,
                                   [col for col in self.columns.keys()
                                    if col in review_state['columns']
                                    and ('toggle' not in self.columns[col]
                                         or self.columns[col]['toggle'] == True)])
-        for col in self.columns.keys():
-            if col in toggle_cols:
-                self.columns[col]['toggle'] = True
-            else:
-                self.columns[col]['toggle'] = False
+        return toggle_cols
 
     def __call__(self):
         """ Handle request parameters and render the form."""
@@ -639,10 +652,16 @@ class BikaListingTable(tableview.Table):
 
         workflow = getToolByName(self.context, 'portal_workflow')
 
-        state = self.request.get('review_state',
-                                 self.bika_listing.review_state)
-        review_state = [i for i in self.bika_listing.review_states
-                        if i['id'] == state][0]
+        cookie = json.loads(self.request.get('review_state', '{}'))
+        state = cookie.get(self.bika_listing.form_id, '')
+        if not state:
+            state = self.bika_listing.review_state
+        review_states = [i for i in self.bika_listing.review_states
+                        if i['id'] == state]
+        if review_states:
+            review_state = review_states[0]
+        else:
+            review_state = self.bika_listing.review_states[0]
 
         # get all transitions for all items.
         transitions = {}
@@ -652,15 +671,18 @@ class BikaListingTable(tableview.Table):
             for t in workflow.getTransitionsFor(obj):
                 transitions[t['id']] = t
 
-        # if there is a review_state['some_state']['transitions'] attribute
-        # on the BikaListingView, the list is restricted to and ordered by
-        # these transitions.
+        # the list is restricted to and ordered by these transitions.
         if 'transitions' in review_state:
             for transition_dict in review_state['transitions']:
                 if transition_dict['id'] in transitions:
                     actions.append(transitions[transition_dict['id']])
         else:
             actions = transitions.values()
+
+        # and these are removed
+        if 'hide_transitions' in review_state:
+            actions = [a for a in actions
+                       if a['id'] not in review_state['hide_transitions']]
 
         # if there is a review_state['some_state']['custom_actions'] attribute
         # on the BikaListingView, append these actions to the list.
