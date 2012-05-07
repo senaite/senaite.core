@@ -111,7 +111,7 @@ jQuery( function($) {
 		}
 
 		service_uid = $(element).attr('id');
-		service_data = bsc.data.services[service_uid];
+		service_data = window.bsc.data.services[service_uid];
 		if (service_data == undefined || service_data == null){
 			return;
 		}
@@ -469,62 +469,44 @@ jQuery( function($) {
 		var partitionable = 0;
 		nr_cols = 1;
 
-		// gather up SampleType and all selected service checkboxes by column
-		var st_title = $("#st_title").attr("st_title");
-		formvalues[0] = {'st_title':st_title, 'services': []};
-		var checkboxes_checked = $('[name="uids:list"]').filter(':checked');
-		for(i=0;i<checkboxes_checked.length;i++){
-			e = checkboxes_checked[i];
-			var uid = $(e).val();
-			partitionable++;
-			formvalues[0]['services'].push(uid);
-		}
-
-		parts = calculate_parts(formvalues, 1);
+		parts = $.parseJSON($('#parts').val());
+		parts.push()
 
 		// Set new partition infos in selected rows
-		for(p=0;p<parts[0].length;p++){
-			part_nr = p+1;
-			part = parts[0][p];
+		$.each(parts, function(p, part){
 
-			// grab current partition container/preservation values
-//			if(containers.length > 0){
-//				container = bsc.data.containers[containers[0]];
-//				container = container['title'];
-//			} else {
-//				container = '';
-//			}
-//			if(part['preservation'].length > 0){
-//				preservation = bsc.data.preservations[preservations[0]];
-//				preservation = preservation['title'];
-//			} else {
-//				preservation = '';
-//			}
-
-			container = part['container'];
-			preservation = part['preservation'];
-			separate = part['separate'];
-			service_uids = part['services'];
+			container = part['Container'];
+			preservation = part['Preservation'];
+			separate = part['Separate'];
+			// get checked services with this partition selected
+			service_uids = []
+			$.each($("[name=uids:list]").filter(":checked"), function(i,v){
+				service_uid	= $(v).attr("value");
+				sp = $("[name=Partition\\."+service_uid+":records]").val();
+				if ( sp == p){
+					service_uids.push(service_uid);
+				}
+			});
 
 			for(s=0;s<service_uids.length;s++){
 				service_uid = service_uids[s];
 				service_data = bsc.data.services[service_uid];
 
-				part_cell = $("[name=Partition."+service_uid+":records]").siblings()[1];
-				container_cell = $("[name=Container."+service_uid+":records]").siblings()[1];
-				preservation_cell = $("[name=Preservation."+service_uid+":records]").siblings()[1];
+				part_cell = $("[name=Partition."+service_uid+":records]").parent();
+				container_cell = $("[name=Container."+service_uid+":records]").parent();
+				preservation_cell = $("[name=Preservation."+service_uid+":records]").parent();
 
-				parts_select = "<select name='parts."+service_uid+":records'>";
-				for(_pa=0;_pa<parts[0].length;_pa++){
+				parts_select = "<select style='font-size:100%' name='Partition."+service_uid+":records'>";
+				for(_pa=0;_pa<parts.length;_pa++){
 					selected = (p==_pa) ? "selected='selected'" : "";
 					parts_select = parts_select +
-						"<option value='"+_pa+"' "+selected+">part-"+part_nr+"</option>";
+						"<option value='"+_pa+"' "+selected+">part-"+(_pa+1)+"</option>";
 				}
 				parts_select = parts_select +
 					"<option value='new'>"+_('New')+"</option>";
 				parts_select = parts_select + "</select>";
 
-				containers_select = "<select name='containers."+service_uid+":records'>";
+				containers_select = "<select style='font-size:100%' name='Container."+service_uid+":records'>";
 				selected = (container=='') ? "selected='selected'" : "";
 				containers_select = containers_select + "<option value='' " + selected + "></option>";
 				$.each(bsc.data.containers, function(_co, co){
@@ -534,7 +516,7 @@ jQuery( function($) {
 				});
 				containers_select = containers_select + "</select>";
 
-				preservations_select = "<select name='preservations."+service_uid+":records'>";
+				preservations_select = "<select style='font-size:100%' name='Preservation."+service_uid+":records'>";
 				selected = (preservation=='') ? "selected='selected'" : "";
 				preservations_select = preservations_select + "<option value='' " + selected + "></option>";
 				$.each(bsc.data.containers, function(_pr, pr){
@@ -548,13 +530,8 @@ jQuery( function($) {
 				$(container_cell).empty().append(containers_select);
 				$(preservation_cell).empty().append(preservations_select);
 			}
-		}
-		if ($("#parts").length == 0){
-			$("#list").append("<input type='hidden' id='parts' name='parts'/>");
-		}
-		$("#parts").val($.toJSON(parts));
+		});
 	}
-
 
 	function service_checkbox_change(){
 		var column = $(this).attr("column");
@@ -665,16 +642,50 @@ jQuery( function($) {
 			}
 		}
 
-		$("[name='uids:list']").live('click', function(){
-			// check calculation dependencies
+		// checkboxes in ar/analyses
+		$(".template-analyses input[name='uids:list']").live('click', function(){
+			calcdependencies([this]);
+
 			if (!$(this).attr("checked")){
 				service_uid = $(this).val();
-				$($("[name=Partition."+service_uid+":records]").siblings()[1]).text('');
-				$($("[name=Container."+service_uid+":records]").siblings()[1]).text('');
-				$($("[name=Preservation."+service_uid+":records]").siblings()[1]).text('');
+
+				element = $("[name=Partition."+service_uid+":records]");
+				$(element).after(
+					"<input type='hidden' name='Partition."+service_uid+":records'"+
+					"value='"+$(element).val()+"'/>"
+				);
+				$(element).remove();
+
+				element = $("[name=Container."+service_uid+":records]");
+				$(element).after(
+					"<input type='hidden' name='Container."+service_uid+":records'"+
+					"value='"+$(element).val()+"'/>"
+				);
+				$(element).remove();
+
+				element = $("[name=Preservation."+service_uid+":records]");
+				$(element).after(
+					"<input type='hidden' name='Preservation."+service_uid+":records'"+
+					"value='"+$(element).val()+"'/>"
+				);
+				$(element).remove();
+
 			}
+			else {
+			}
+			recalc_prices();
 			ar_analyses_calculate_parts();
 		});
+
+		// AR/Analyses Partition dropdown
+		$("[name^=Partition\\.]").live('change', function(){
+			service_uid = $(this).attr("name").split(".")[1];
+			part_nr = parseInt($(this).val(), 10);
+			part = $.parseJSON($("#parts").val())["part-"+part_nr];
+			$("[name=Container\\.]"+service_uid+":records]").val(part['Container']);
+			$("[name=Preservation\\.]"+service_uid+":records]").val(part['Preservation']);
+		})
+
 
 		// define these for each autocomplete dropdown individually
 		// this is done like this so that they can depend on each other's

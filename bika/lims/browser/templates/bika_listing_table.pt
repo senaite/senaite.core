@@ -456,7 +456,7 @@ Table cells for each column from in review_state's column list.
 	<tal:comment replace="nothing"><!-- choices --></tal:comment>
 	<span tal:omit-tag="python:True"
 		tal:condition="python:field_type == 'choices'">
-		<span tal:condition="allow_edit">
+		<span tal:condition="python: allow_edit and item.get('edit_condition', {}).get(column, True)">
 			<select class="listing_select_entry" style="font-size: 100%"
 				tal:condition="python:column in item['choices']"
 				tal:attributes="
@@ -477,18 +477,19 @@ Table cells for each column from in review_state's column list.
 			</select>
 		</span>
 		<span tal:omit-tag="python:True"
-			tal:condition="not:allow_edit">
+			tal:condition="python:not allow_edit or not item.get('edit_condition', {}).get(column, True)">
+			<span>
+				<input
+					type="hidden"
+					tal:attributes="
+						uid string:${item/uid};
+						field python:column;
+						value python:item[column];
+						name string:${column}.${item/uid}:records"/>
+			</span>
 			<span
-				tal:content="python:item['formatted_result'] and item['formatted_result'] or item[column]"
+				tal:content="python:item.has_key('formatted_result') and item['formatted_result'] or item[column]"
 				tal:attributes="class string:${item/state_class} result"/>
-			<input
-				type="hidden"
-				tal:condition="not:allow_edit"
-				tal:attributes="
-					size input_width;
-					uid string:${item/uid};
-					field python:column;
-					value python:item[column];"/>
 		</span>
 	</span>
 

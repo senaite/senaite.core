@@ -83,8 +83,10 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
             first_part = sample.objectValues("SamplePartition")[0]
             for a in new_analyses:
                 a.setSamplePartition(first_part)
-
+            if new_analyses:
                 message = self.context.translate(PMF("Changes saved."))
+            else:
+                message = self.context.translate(_("No changes made."))
 
             self.context.plone_utils.addPortalMessage(message, 'info')
             self.destination_url = self.context.absolute_url()
@@ -874,6 +876,13 @@ class AnalysisRequestAnalysesView(BikaListingView):
         self.allow_edit = 'LabManager' in roles or 'Manager' in roles
         bsc = getToolByName(self.context, 'bika_setup_catalog')
         items = BikaListingView.folderitems(self)
+        sample = self.context.getSample()
+
+        partitions = [{'ResultValue':o.Title(), 'ResultText':o.Title()}
+                      for o in
+                      self.context.getSample().objectValues('SamplePartition')]
+        partitions.append({'ResultValue':len(partitions),
+                           'ResultText':self.context.translate(_("New"))})
 
         containers = [({'ResultValue':o.UID,
                         'ResultText':o.title})
@@ -909,9 +918,15 @@ class AnalysisRequestAnalysesView(BikaListingView):
             symbol = locale.numbers.currencies[currency].symbol
             items[x]['before']['Price'] = symbol
             items[x]['Price'] = obj.getPrice()
-            items[x]['allow_edit'] = ['Price', 'Container', 'Preservation']
             items[x]['class']['Price'] = 'nowrap'
+            items[x]['allow_edit'] = ['Price', 'Partition', 'Container', 'Preservation']
+            if not items[x]['selected']:
+                items[x]['edit_condition'] = {'Container':False,
+                                              'Preservation':False,
+                                              'Partition':False}
 
+            items[x]['required'].append('Partition')
+            items[x]['choices']['Partition'] = partitions
             items[x]['choices']['Container'] = containers
             items[x]['choices']['Preservation'] = preservations
 

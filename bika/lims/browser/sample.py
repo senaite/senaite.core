@@ -713,7 +713,7 @@ class SamplesView(BikaListingView):
                 items[x]['class']['getPreserver'] = 'provisional'
                 items[x]['class']['getDatePreserved'] = 'provisional'
 
-         # Hide Preservation/Sampling workflow actions if the edit columns
+        # Hide Preservation/Sampling workflow actions if the edit columns
         # are not displayed.
         toggle_cols = self.get_toggle_cols()
         new_states = []
