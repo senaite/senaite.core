@@ -49,7 +49,7 @@ class MethodsView(BikaListingView):
              'columns': ['Title', 'Description']},
         ]
 
-    def folderitems(self):
+    def __call__(self):
         mtool = getToolByName(self.context, 'portal_membership')
         ## Add action is not permitted in /methods folder
         if mtool.checkPermission(AddMethod, self.context) \
@@ -58,6 +58,10 @@ class MethodsView(BikaListingView):
                 'url': 'createObject?type_name=Method',
                 'icon': '++resource++bika.lims.images/add.png'
             }
+        return super(MethodsView, self).__call__()
+
+    def folderitems(self):
+        mtool = getToolByName(self.context, 'portal_membership')
         if mtool.checkPermission(ManageBika, self.context):
             del self.review_states[0]['transitions']
             self.show_select_column = True
