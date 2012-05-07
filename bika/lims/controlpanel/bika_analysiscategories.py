@@ -44,18 +44,19 @@ class AnalysisCategoriesView(BikaListingView):
         }
 
         self.review_states = [
-            {'id':'all',
-             'title': _('All'),
-             'columns': ['Title', 'Description', 'Department']},
-            {'id':'active',
+            {'id':'default',
              'title': _('Active'),
              'contentFilter': {'inactive_state': 'active'},
              'transitions': [{'id':'deactivate'}, ],
              'columns': ['Title', 'Description', 'Department']},
             {'id':'inactive',
-             'title': _('Dormant'),
+             'title': _('Inactive'),
              'contentFilter': {'inactive_state': 'inactive'},
              'transitions': [{'id':'activate'}, ],
+             'columns': ['Title', 'Description', 'Department']},
+            {'id':'all',
+             'title': _('All'),
+             'contentFilter':{},
              'columns': ['Title', 'Description', 'Department']},
         ]
 

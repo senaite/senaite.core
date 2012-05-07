@@ -849,8 +849,9 @@ class AnalysisRequestAnalysesView(BikaListingView):
         }
 
         self.review_states = [
-            {'id':'all',
+            {'id':'default',
              'title': _('All'),
+             'contentFilter':{},
              'columns': ['Title',
                          'Price',
 ##                         'Keyword',
@@ -1028,8 +1029,9 @@ class AnalysisRequestSelectCCView(BikaListingView):
             'MobilePhone': {'title': _('Mobile Phone')},
         }
         self.review_states = [
-            {'id':'all',
+            {'id':'default',
              'title': _('All'),
+             'contentFilter':{},
              'columns': ['Fullname',
                          'EmailAddress',
                          'BusinessPhone',
@@ -1105,7 +1107,8 @@ class AnalysisRequestSelectSampleView(BikaListingView):
         }
 
         self.review_states = [
-            {'id':'all',
+            {'id':'default',
+             'contentFilter':{},
              'title': _('All Samples'),
              'columns': ['SampleID',
                          'ClientReference',
@@ -1788,12 +1791,10 @@ class AnalysisRequestsView(BikaListingView):
         super(AnalysisRequestsView, self).__init__(context, request)
 
         self.contentFilter = {'portal_type':'AnalysisRequest',
-                              'sort_on':'id',
+                              'sort_on':'created',
                               'sort_order': 'reverse',
                               'path': {"query": "/", "level" : 0 }
                               }
-
-        self.review_state = 'all'
 
         self.context_actions = {}
 
@@ -1876,8 +1877,11 @@ class AnalysisRequestsView(BikaListingView):
                             'index': 'review_state'},
         }
         self.review_states = [
-            {'id':'all',
-             'title': _('All'),
+            {'id':'default',
+             'title': _('Active'),
+             'contentFilter':{'cancellation_state':'active',
+                              'sort_on':'created',
+                              'sort_order': 'reverse'},
              'transitions': [{'id':'sampled'},
                              {'id':'preserved'},
                              {'id':'receive'},
@@ -1910,7 +1914,7 @@ class AnalysisRequestsView(BikaListingView):
              'contentFilter': {'review_state': ('to_be_sampled',
                                                 'to_be_preserved',
                                                 'sample_due'),
-                               'sort_on':'id',
+                               'sort_on':'created',
                                'sort_order': 'reverse'},
              'transitions': [{'id':'sampled'},
                              {'id':'preserved'},
@@ -1935,7 +1939,7 @@ class AnalysisRequestsView(BikaListingView):
            {'id':'sample_received',
              'title': _('Received'),
              'contentFilter': {'review_state': 'sample_received',
-                               'sort_on':'id',
+                               'sort_on':'created',
                                'sort_order': 'reverse'},
              'transitions': [{'id':'prepublish'},
                              {'id':'cancel'},
@@ -1958,7 +1962,7 @@ class AnalysisRequestsView(BikaListingView):
             {'id':'to_be_verified',
              'title': _('To be verified'),
              'contentFilter': {'review_state': 'to_be_verified',
-                               'sort_on':'id',
+                               'sort_on':'created',
                                'sort_order': 'reverse'},
              'transitions': [{'id':'retract'},
                              {'id':'verify'},
@@ -1983,7 +1987,7 @@ class AnalysisRequestsView(BikaListingView):
             {'id':'verified',
              'title': _('Verified'),
              'contentFilter': {'review_state': 'verified',
-                               'sort_on':'id',
+                               'sort_on':'created',
                                'sort_order': 'reverse'},
              'transitions': [{'id':'publish'}],
              'columns':['getRequestID',
@@ -2004,7 +2008,7 @@ class AnalysisRequestsView(BikaListingView):
             {'id':'published',
              'title': _('Published'),
              'contentFilter': {'review_state': 'published',
-                               'sort_on':'id',
+                               'sort_on':'created',
                                'sort_order': 'reverse'},
              'columns':['getRequestID',
                         'getSample',
@@ -2029,7 +2033,7 @@ class AnalysisRequestsView(BikaListingView):
                                                 'sample_due', 'sample_received',
                                                 'to_be_verified', 'attachment_due',
                                                 'verified', 'published'),
-                               'sort_on':'id',
+                               'sort_on':'created',
                                'sort_order': 'reverse'},
              'transitions': [{'id':'reinstate'}],
              'columns':['getRequestID',
@@ -2056,7 +2060,7 @@ class AnalysisRequestsView(BikaListingView):
                                'review_state': ('sample_received', 'to_be_verified',
                                                 'attachment_due', 'verified',
                                                 'published'),
-                               'sort_on':'id',
+                               'sort_on':'created',
                                'sort_order': 'reverse'},
              'transitions': [{'id':'retract'},
                              {'id':'verify'},
@@ -2088,7 +2092,7 @@ class AnalysisRequestsView(BikaListingView):
                                'review_state': ('sample_received', 'to_be_verified',
                                                 'attachment_due', 'verified',
                                                 'published'),
-                               'sort_on':'id',
+                               'sort_on':'created',
                                'sort_order': 'reverse'},
              'transitions': [{'id':'receive'},
                              {'id':'retract'},

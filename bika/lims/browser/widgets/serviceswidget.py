@@ -38,8 +38,9 @@ class ServicesView(BikaListingView):
             'Calculation': {'title': _('Calculation')},
         }
         self.review_states = [
-            {'id':'all',
+            {'id':'default',
              'title': _('All'),
+             'contentFilter':{},
              'transitions': [],
              'columns':['Service',
                         'Keyword',

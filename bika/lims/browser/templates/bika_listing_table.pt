@@ -11,7 +11,7 @@
 		global colspan_max python:1;
 		nosortclass view/get_nosort_class;
 		portal context/@@plone_portal_state/portal;
-		review_state_id python:request.get(form_id+'_review_state', 'all');
+		review_state_id python:request.get(form_id+'_review_state', 'default');
 		review_state python:[t for t in view.bika_listing.review_states
 							 if t['id'] == review_state_id][0];
 		toggle_cols python:dict([(col, view.bika_listing.columns[col])
@@ -111,7 +111,7 @@ Workflow review state selector
 						href view/view_url;
 						value state_id;
 						id state/id;
-						class python:request.get(form_id + '_review_state', 'all') == state_id
+						class python:request.get(form_id + '_review_state', 'default') == state_id
 									   and 'selected' or ''"
 					tal:content="structure state/title"/>
 				</tal:review_states>

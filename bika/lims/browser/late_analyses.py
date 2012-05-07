@@ -44,7 +44,9 @@ class LateAnalysesView(BikaListingView):
                         }
 
         self.review_states = [
-            {'title': _('All'), 'id':'all',
+            {'id':'default',
+             'title': _('All'),
+             'contentFilter':{},
              'columns':['Analysis',
                         'RequestID',
                         'Client',

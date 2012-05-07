@@ -162,7 +162,7 @@ class BikaListingView(BrowserView):
     select_checkbox_name = "uids"
     # when rendering multiple bika_listing tables, form_id must be unique
     form_id = "list"
-    review_state = 'all'
+    review_state = 'default'
 
 
     """
@@ -221,7 +221,8 @@ class BikaListingView(BrowserView):
     subclass.
     """
     review_states = [
-        {'id':'all',
+        {'id':'default',
+         'contentFilter':{},
          'title': _('All'),
          'columns':['obj_type', 'title_or_id', 'modified', 'state_title']
          },
@@ -262,9 +263,9 @@ class BikaListingView(BrowserView):
             return ''
 
         ## review_state_selector
-        # first check POST
         cookie = json.loads(self.request.get("review_state", '{}'))
-        selected_state = cookie.get("%s_review_state"%form_id, '')
+        # first check POST
+        selected_state = self.request.get("%s_review_state"%form_id, '')
         if not selected_state:
             # then check cookie
             selected_state = form_id in cookie and cookie[form_id] or ''
@@ -277,13 +278,11 @@ class BikaListingView(BrowserView):
         self.review_state = cookie[form_id] = selected_state
         cookie = json.dumps(cookie)
         self.request['review_state'] = cookie
-        self.request.response.setCookie('review_state', cookie)
-        if review_state.has_key('contentFilter'):
-            for k, v in review_state['contentFilter'].items():
-                self.contentFilter[k] = v
-        else:
-            if review_state['id'] != 'all':
-                self.contentFilter['review_state'] = review_state['id']
+        self.request.response.setCookie('review_state', cookie, path="/")
+
+        # contentFilter is expected in every review_state.
+        for k, v in review_state['contentFilter'].items():
+            self.contentFilter[k] = v
 
         # sort on
         sort_on = self.request.get(form_id + '_sort_on', '')
@@ -566,8 +565,7 @@ class BikaListingView(BrowserView):
 ##                    if not 'version_id' in self.columns.keys():
 ##                        self.columns['version_id'] = {'title':'version'}
 ##                        for x in range(len(self.review_states)):
-##                            if self.review_states[x]['id'] == 'all':
-##                                self.review_states[x]['columns'].append('version_id')
+##                            self.review_states[x]['columns'].append('version_id')
 ##                    results_dict['version_id'] = '%s/%s' % (version_id, history_id)
 
             # extra classes for individual fields on this item { field_id : "css classes" }

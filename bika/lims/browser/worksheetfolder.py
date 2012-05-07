@@ -129,7 +129,7 @@ class WorksheetFolderListingView(BikaListingView):
                             'index': 'review_state'},
         }
         self.review_states = [
-            {'id':'all',
+            {'id':'default',
              'title': _('All'),
              'contentFilter': {'portal_type': 'Worksheet',
                                'review_state':['open', 'to_be_verified', 'verified', 'rejected'],
@@ -352,7 +352,7 @@ class WorksheetFolderListingView(BikaListingView):
 
         if can_reassign:
             for x in range(len(self.review_states)):
-                if self.review_states[x]['id'] in ['all', 'mine', 'open']:
+                if self.review_states[x]['id'] in ['default', 'mine', 'open']:
                     self.review_states[x]['custom_actions'] = [{'id': 'reassign', 'title': _('Reassign')}, ]
 
         return new_items

@@ -41,8 +41,9 @@ class LogView(BikaListingView):
             'Description': {'title': _('Description')},
         }
         self.review_states = [
-            {'id':'all',
+            {'id':'default',
              'title': 'All',
+             'contentFilter':{},
              'columns': ['Version',
                          'Date',
                          'User',

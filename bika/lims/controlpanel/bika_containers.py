@@ -49,8 +49,9 @@ class ContainersView(BikaListingView):
         }
 
         self.review_states = [
-            {'id':'all',
+            {'id':'default',
              'title': _('All'),
+             'contentFilter':{},
              'columns': ['Title',
                          'Description',
                          'ContainerType',

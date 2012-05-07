@@ -213,7 +213,9 @@ class WorksheetAnalysesView(AnalysesView):
             'state_title': {'title': _('State')},
         }
         self.review_states = [
-            {'title': _('All'), 'id':'all',
+            {'id':'default',
+             'title': _('All'),
+             'contentFilter':{},
              'transitions': [{'id':'submit'},
                              {'id':'verify'},
                              {'id':'retract'},
@@ -525,8 +527,9 @@ class AddAnalysesView(BikaListingView):
         }
         self.filter_indexes = ['Title',]
         self.review_states = [
-            {'id':'all',
+            {'id':'default',
              'title': _('All'),
+             'contentFilter': {},
              'transitions': [{'id':'assign'}, ],
              'columns':['Client',
                         'getClientOrderNumber',
@@ -789,7 +792,9 @@ class WorksheetARsView(BikaListingView):
             'created': {'title': _('Date Requested')},
         }
         self.review_states = [
-            {'title': _('All'), 'id':'all',
+            {'id':'default',
+             'title': _('All'),
+             'contentFilter':{},
              'transitions': [],
              'columns':['Position', 'RequestID', 'Client', 'created'],
             },
@@ -861,8 +866,9 @@ class WorksheetServicesView(BikaListingView):
                         'sortable': False},
         }
         self.review_states = [
-            {'id':'all',
+            {'id':'default',
              'title': _('All'),
+             'contentFilter': {},
              'transitions': [],
              'columns':['Service'],
             },
@@ -944,8 +950,9 @@ class ajaxGetWorksheetReferences(ReferenceSamplesView):
         self.columns['Services'] = {'title': _('Services')}
         self.columns['Definition'] = {'title': _('Reference Definition')}
         self.review_states = [
-            {'id':'all',
+            {'id':'default',
              'title': _('All'),
+             'contentFilter':{},
              'columns': ['ID',
                          'Title',
                          'Definition',

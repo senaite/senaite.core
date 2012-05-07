@@ -40,8 +40,9 @@ class AttachmentTypesView(BikaListingView):
                             'toggle': True},
         }
         self.review_states = [
-            {'id':'all',
+            {'id':'default',
              'title': _('All'),
+             'contentFilter':{},
              'columns': ['Title',
                          'Description']},
         ]

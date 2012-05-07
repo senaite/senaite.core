@@ -73,8 +73,9 @@ class AnalysesView(BikaListingView):
         }
 
         self.review_states = [
-            {'id':'all',
+            {'id':'default',
              'title': _('All'),
+             'contentFilter':{},
              'columns':['Service',
                         'Partition',
                         'Method',
@@ -129,6 +130,7 @@ class AnalysesView(BikaListingView):
                 and obj.getInterimFields() or []
             self.interim_fields[obj.UID()] = interim_fields
 
+            items[i]['Service'] = service.Title()
             items[i]['Keyword'] = keyword
             items[i]['Unit'] = unit and unit or ''
             items[i]['Result'] = ''

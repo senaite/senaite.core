@@ -69,8 +69,9 @@ class SamplePartitionsView(BikaListingView):
         }
 
         self.review_states = [
-            {'id':'all',
+            {'id':'default',
              'title': _('All'),
+             'contentFilter':{},
              'columns': ['Title',
                          'getContainer',
                          'getPreservation',
@@ -414,7 +415,7 @@ class SamplesView(BikaListingView):
     def __init__(self, context, request):
         super(SamplesView, self).__init__(context, request)
         self.contentFilter = {'portal_type': 'Sample',
-                              'sort_on':'id',
+                              'sort_on':'created',
                               'sort_order': 'reverse',
                               'path': {'query': "/",
                                        'level': 0 }
@@ -485,8 +486,10 @@ class SamplesView(BikaListingView):
                             'index':'review_state'},
         }
         self.review_states = [
-            {'id':'all',
-             'title': _('All'),
+            {'id':'default',
+             'title': _('Active'),
+             'contentFilter':{'cancellation_state':'active',
+                               'sort_on':'created'},
              'columns': ['getSampleID',
                          'Client',
                          'Creator',
@@ -508,7 +511,7 @@ class SamplesView(BikaListingView):
              'contentFilter': {'review_state': ('to_be_sampled',
                                                 'to_be_preserved',
                                                 'sample_due'),
-                               'sort_on':'id',
+                               'sort_on':'created',
                                'sort_order': 'reverse'},
              'columns': ['getSampleID',
                          'Client',
@@ -527,6 +530,9 @@ class SamplesView(BikaListingView):
                          'state_title']},
             {'id':'sample_received',
              'title': _('Received'),
+             'contentFilter':{'review_state':'sample_received',
+                              'sort_order': 'reverse',
+                              'sort_on':'created'},
              'columns': ['getSampleID',
                          'Client',
                          'Creator',
@@ -544,6 +550,9 @@ class SamplesView(BikaListingView):
                          'DateReceived']},
             {'id':'expired',
              'title': _('Expired'),
+             'contentFilter':{'review_state':'expired',
+                              'sort_order': 'reverse',
+                              'sort_on':'created'},
              'columns': ['getSampleID',
                          'Client',
                          'Creator',
@@ -561,6 +570,9 @@ class SamplesView(BikaListingView):
                          'DateReceived']},
             {'id':'disposed',
              'title': _('Disposed'),
+             'contentFilter':{'review_state':'disposed',
+                              'sort_order': 'reverse',
+                              'sort_on':'created'},
              'columns': ['getSampleID',
                          'Client',
                          'Creator',
@@ -578,7 +590,9 @@ class SamplesView(BikaListingView):
                          'DateReceived']},
             {'id':'cancelled',
              'title': _('Cancelled'),
-             'contentFilter': {'cancellation_state': 'cancelled'},
+             'contentFilter': {'cancellation_state': 'cancelled',
+                               'sort_order': 'reverse',
+                               'sort_on':'created'},
              'transitions': [{'id':'reinstate'}, ],
              'columns': ['getSampleID',
                          'Client',

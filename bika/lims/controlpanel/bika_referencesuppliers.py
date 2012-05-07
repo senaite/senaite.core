@@ -50,8 +50,9 @@ class ReferenceSuppliersView(BikaListingView):
                     'toggle': True},
         }
         self.review_states = [
-            {'id':'all',
+            {'id':'default',
              'title': _('All'),
+             'contentFilter':{},
              'columns': ['Name',
                          'Email',
                          'Phone',

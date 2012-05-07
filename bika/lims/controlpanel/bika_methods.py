@@ -43,8 +43,9 @@ class MethodsView(BikaListingView):
         }
 
         self.review_states = [
-            {'id':'all',
+            {'id':'default',
              'title': _('All'),
+             'contentFilter':{},
              'transitions':[{'id':'empty'},],
              'columns': ['Title', 'Description']},
         ]

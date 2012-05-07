@@ -47,10 +47,7 @@ class SampleTypesView(BikaListingView):
         }
 
         self.review_states = [
-            {'id':'all',
-             'title': _('All'),
-             'columns': ['Title', 'Description']},
-            {'id':'active',
+            {'id':'default',
              'title': _('Active'),
              'contentFilter': {'inactive_state': 'active'},
              'transitions': [{'id':'deactivate'}, ],
@@ -59,6 +56,10 @@ class SampleTypesView(BikaListingView):
              'title': _('Dormant'),
              'contentFilter': {'inactive_state': 'inactive'},
              'transitions': [{'id':'activate'}, ],
+             'columns': ['Title', 'Description']},
+            {'id':'all',
+             'title': _('All'),
+             'contentFilter':{},
              'columns': ['Title', 'Description']},
         ]
 

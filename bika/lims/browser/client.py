@@ -311,8 +311,9 @@ class ClientARImportsView(BikaListingView):
             'state_title': {'title': _('State')},
         }
         self.review_states = [
-            {'id':'all',
+            {'id':'default',
              'title': _('All'),
+             'contentFilter':{},
              'columns': ['title',
                          'getDateImported',
                          'getStatus',
@@ -320,11 +321,13 @@ class ClientARImportsView(BikaListingView):
                          'state_title']},
             {'id':'imported',
              'title': _('Imported'),
+             'contentFilter':{'review_state':'imported'},
              'columns': ['title',
                          'getDateImported',
                          'getStatus']},
             {'id':'submitted',
              'title': _('Applied'),
+             'contentFilter':{'review_state':'submitted'},
              'columns': ['title',
                          'getDateImported',
                          'getStatus',
@@ -354,6 +357,10 @@ class ClientARProfilesView(BikaListingView):
         self.show_select_column = True
         self.pagesize = 50
 
+        self.icon = "++resource++bika.lims.images/arprofile_big.png"
+        self.title = _("AR Profiles")
+        self.description = ""
+
         self.columns = {
             'title': {'title': _('Title'),
                       'index': 'sortable_title'},
@@ -363,10 +370,20 @@ class ClientARProfilesView(BikaListingView):
 
         }
         self.review_states = [
-            {'id':'all',
+            {'id':'default',
              'title': _('All'),
+             'contentFilter':{},
              'columns': ['title', 'Description', 'getProfileKey']},
         ]
+
+    def __call__(self):
+        mtool = getToolByName(self.context, 'portal_membership')
+        checkPermission = mtool.checkPermission
+        if checkPermission(AddARProfile, self.context):
+            self.context_actions[_('Add')] = \
+                {'url': 'createObject?type_name=ARProfile',
+                 'icon': '++resource++bika.lims.images/add.png'}
+        return super(ClientARProfilesView, self).__call__()
 
     def getProfiles(self, contentFilter={}):
         istate = contentFilter.get("inactive_state", None)
@@ -403,18 +420,31 @@ class ClientARTemplatesView(BikaListingView):
         self.show_select_column = True
         self.pagesize = 50
 
+        self.icon = "++resource++bika.lims.images/artemplate_big.png"
+        self.title = _("AR Templates")
+        self.description = ""
+
         self.columns = {
             'title': {'title': _('Title'),
                       'index': 'sortable_title'},
             'Description': {'title': _('Description'),
                             'index': 'description'},
-
         }
         self.review_states = [
-            {'id':'all',
+            {'id':'default',
              'title': _('All'),
+             'contentFilter':{},
              'columns': ['title', 'Description']},
         ]
+
+    def __call__(self):
+        mtool = getToolByName(self.context, 'portal_membership')
+        checkPermission = mtool.checkPermission
+        if checkPermission(AddARTemplate, self.context):
+            self.context_actions[_('Add')] = \
+                {'url': 'createObject?type_name=ARTemplate',
+                 'icon': '++resource++bika.lims.images/add.png'}
+        return super(ClientARTemplatesView, self).__call__()
 
     def getTemplates(self, contentFilter={}):
         istate = contentFilter.get("inactive_state", None)
@@ -456,18 +486,7 @@ class ClientAnalysisSpecsView(BikaListingView):
                               }
         self.contentsMethod = bsc
 
-        checkPermission = self.context.portal_membership.checkPermission
         self.context_actions = {}
-        if isActive(self.context):
-            if checkPermission(AddAnalysisSpec, self.context):
-                self.context_actions[self.context.translate(_('Add'))] = \
-                    {'url': 'createObject?type_name=AnalysisSpec',
-                     'icon': '++resource++bika.lims.images/add.png'}
-            if checkPermission(ManageClients, self.context):
-                self.context_actions[self.context.translate(
-                    _('Set to lab defaults'))] = \
-                    {'url': 'set_to_lab_defaults',
-                     'icon': '++resource++bika.lims.images/analysisspec.png'}
 
         self.show_sort_column = False
         self.show_select_row = False
@@ -482,11 +501,26 @@ class ClientAnalysisSpecsView(BikaListingView):
                            'index': 'getSampleTypeTitle'},
         }
         self.review_states = [
-            {'id':'all',
+            {'id':'default',
              'title': _('All'),
+             'contentFilter':{},
              'columns': ['SampleType'],
              },
         ]
+
+    def __call__(self):
+        mtool = getToolByName(self.context, 'portal_membership')
+        checkPermission = mtool.checkPermission
+        if isActive(self.context):
+            if checkPermission(AddAnalysisSpec, self.context):
+                self.context_actions[_('Add')] = \
+                    {'url': 'createObject?type_name=AnalysisSpec',
+                     'icon': '++resource++bika.lims.images/add.png'}
+            if checkPermission(ManageClients, self.context):
+                self.context_actions[_('Set to lab defaults')] = \
+                    {'url': 'set_to_lab_defaults',
+                     'icon': '++resource++bika.lims.images/analysisspec.png'}
+        return super(ClientAnalysisSpecsView, self).__call__()
 
     def folderitems(self):
         items = BikaListingView.folderitems(self)
@@ -562,8 +596,9 @@ class ClientAttachmentsView(BikaListingView):
             'DateLoaded': {'title': _('Date Loaded')},
         }
         self.review_states = [
-            {'id':'all',
+            {'id':'default',
              'title': 'All',
+             'contentFilter':{},
              'columns': ['getTextTitle',
                          'AttachmentFile',
                          'AttachmentType',
@@ -631,17 +666,20 @@ class ClientOrdersView(BikaListingView):
             'state_title': {'title': _('State')},
         }
         self.review_states = [
-            {'id':'all',
+            {'id':'default',
              'title': _('All'),
+             'contentFilter':{},
              'columns': ['OrderNumber',
                          'OrderDate',
                          'DateDispatched',
                          'state_title']},
             {'id':'pending',
+             'contentFilter':{'review_state':'pending'},
              'title': _('Pending'),
              'columns': ['OrderNumber',
                          'OrderDate']},
             {'id':'dispatched',
+             'contentFilter':{'review_state':'dispatched'},
              'title': _('Dispatched'),
              'columns': ['OrderNumber',
                          'OrderDate',
@@ -693,14 +731,7 @@ class ClientContactsView(BikaListingView):
             'getFax': {'title': _('Fax')},
         }
         self.review_states = [
-            {'id':'all',
-             'title': _('All'),
-             'columns': ['getFullname',
-                         'getEmailAddress',
-                         'getBusinessPhone',
-                         'getMobilePhone',
-                         'getFax']},
-            {'id':'active',
+            {'id':'default',
              'title': _('Active'),
              'contentFilter': {'inactive_state': 'active'},
              'transitions': [{'id':'deactivate'}, ],
@@ -713,6 +744,14 @@ class ClientContactsView(BikaListingView):
              'title': _('Dormant'),
              'contentFilter': {'inactive_state': 'inactive'},
              'transitions': [{'id':'activate'}, ],
+             'columns': ['getFullname',
+                         'getEmailAddress',
+                         'getBusinessPhone',
+                         'getMobilePhone',
+                         'getFax']},
+            {'id':'all',
+             'title': _('All'),
+             'contentFilter':{},
              'columns': ['getFullname',
                          'getEmailAddress',
                          'getBusinessPhone',
