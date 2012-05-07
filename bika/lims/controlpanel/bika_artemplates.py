@@ -11,64 +11,61 @@ from bika.lims.content.bikaschema import BikaFolderSchema
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.folder.folder import ATFolder, ATFolderSchema
 from plone.app.layout.globals.interfaces import IViewView
-from bika.lims.interfaces import IARProfiles
+from bika.lims.interfaces import IARTemplates
 from zope.interface.declarations import implements
 
-class ProfilesView(BikaListingView):
-
+class TemplatesView(BikaListingView):
+    implements(IFolderContentsView, IViewView)
     def __init__(self, context, request):
-        super(ProfilesView, self).__init__(context, request)
+        super(TemplatesView, self).__init__(context, request)
         self.show_sort_column = False
         self.show_select_row = False
         self.show_select_column = True
-        self.icon = "++resource++bika.lims.images/arprofile_big.png"
-        self.title = _("AR Profiles")
-        self.context_actions = {_('Add Profile'):
-                                {'url': 'createObject?type_name=ARProfile',
+        self.icon = "++resource++bika.lims.images/artemplate_big.png"
+        self.title = _("AR Templates")
+        self.description = ""
+        self.context_actions = {_('Add Template'):
+                                {'url': 'createObject?type_name=ARTemplate',
                                  'icon': '++resource++bika.lims.images/add.png'}}
 
         self.columns = {
-            'Title': {'title': _('Profile'),
+            'Title': {'title': _('Template'),
                       'index': 'sortable_title'},
             'Description': {'title': _('Description'),
                             'index': 'description'},
-            'ProfileKey': {'title': _('Profile Key')},
         }
 
         self.review_states = [
+            {'id':'all',
+             'title': _('All'),
+             'columns': ['Title',
+                         'Description']},
             {'id':'active',
              'contentFilter': {'inactive_review_state':'active'},
              'title': _('Active'),
              'columns': ['Title',
-                         'Description',
-                         'ProfileKey']},
+                         'Description']},
             {'id':'inactive',
              'contentFilter': {'inactive_review_state':'inactive'},
              'title': _('Inactive'),
              'columns': ['Title',
-                         'Description',
-                         'ProfileKey']},
-            {'id':'all',
-             'title': _('All'),
-             'columns': ['Title',
-                         'Description',
-                         'ProfileKey']},
+                         'Description']},
         ]
 
-    def getARProfiles(self, contentFilter={}):
+    def getARTemplates(self, contentFilter={}):
         istate = contentFilter.get("inactive_state", None)
         if istate == 'active':
-            profiles = [p for p in self.context.objectValues("ARProfile")
+            templates = [p for p in self.context.objectValues("ARTemplate")
                         if isActive(p)]
         elif istate == 'inactive':
-            profiles = [p for p in self.context.objectValues("ARProfile")
+            templates = [p for p in self.context.objectValues("ARTemplate")
                         if not isActive(p)]
         else:
-            profiles = [p for p in self.context.objectValues("ARProfile")]
-        return profiles
+            templates = [p for p in self.context.objectValues("ARTemplate")]
+        return templates
 
     def folderitems(self):
-        self.contentsMethod = self.getARProfiles
+        self.contentsMethod = self.getARTemplates
         items = BikaListingView.folderitems(self)
         for x in range(len(items)):
             if not items[x].has_key('obj'): continue
@@ -76,14 +73,13 @@ class ProfilesView(BikaListingView):
             items[x]['Title'] = obj.Title()
             items[x]['replace']['Title'] = "<a href='%s'>%s</a>" % \
                  (items[x]['url'], items[x]['title'])
-            items[x]['ProfileKey'] = obj.getProfileKey()
         return items
 
 schema = ATFolderSchema.copy()
-class ARProfiles(ATFolder):
-    implements(IARProfiles)
+class ARTemplates(ATFolder):
+    implements(IARTemplates)
     displayContentsTab = False
     schema = schema
 
 schemata.finalizeATCTSchema(schema, folderish = True, moveDiscussion = False)
-atapi.registerType(ARProfiles, PROJECTNAME)
+atapi.registerType(ARTemplates, PROJECTNAME)

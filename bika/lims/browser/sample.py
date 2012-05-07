@@ -720,4 +720,4 @@ class SamplesView(BikaListingView):
             new_states.append(state)
         self.review_states = new_states
 
-       return items
+        return items
