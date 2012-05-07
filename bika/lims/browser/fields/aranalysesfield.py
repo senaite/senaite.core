@@ -93,6 +93,11 @@ class ARAnalysesField(ObjectField):
                               MaxTimeAllowed = service.getMaxTimeAllowed())
                 analysis.unmarkCreationFlag()
                 zope.event.notify(ObjectInitializedEvent(analysis))
+                SamplingWorkflowEnabled = instance.bika_setup.getSamplingWorkflowEnabled()
+                if SamplingWorkflowEnabled:
+                    workflow.doActionFor(analysis, 'sampling_workflow')
+                else:
+                    workflow.doActionFor(analysis, 'no_sampling_workflow')
                 new_analyses.append(analysis)
                 # Note: subscriber might retract and/or unassign the AR
 

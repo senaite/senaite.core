@@ -1597,6 +1597,10 @@ class ajaxAnalysisRequestSubmit():
                     SamplingWorkflowEnabled = SamplingWorkflowEnabled,
                 )
                 sample.processForm()
+                if SamplingWorkflowEnabled:
+                    wftool.doActionFor(sample, 'sampling_workflow')
+                else:
+                    wftool.doActionFor(sample, 'no_sampling_workflow')
 
                 # Object has been renamed
                 sample_id = sample.getId()
@@ -1623,6 +1627,10 @@ class ajaxAnalysisRequestSubmit():
                     Preservation = p['preservation'],
                 )
                 part.processForm()
+                if SamplingWorkflowEnabled:
+                    wftool.doActionFor(part, 'sampling_workflow')
+                else:
+                    wftool.doActionFor(part, 'no_sampling_workflow')
                 parts_and_services[part.id] = p['services']
 
             # create the AR
@@ -1643,6 +1651,10 @@ class ajaxAnalysisRequestSubmit():
                 **dict(values)
             )
             ar.processForm()
+            if SamplingWorkflowEnabled:
+                wftool.doActionFor(ar, 'sampling_workflow')
+            else:
+                wftool.doActionFor(ar, 'no_sampling_workflow')
             # Object has been renamed
             ar_id = ar.getId()
             ar.edit(RequestID = ar_id)
