@@ -255,18 +255,19 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             Will not overwrite slots which are filled already.
         """
         rc = getToolByName(self, REFERENCE_CATALOG)
-        pc = getToolByName(self, "portal_catalog")
+        bac = getToolByName(self, "bika_analysis_catalog")
+        bc = getToolByName(self, 'bika_catalog')
 
         layout = self.getLayout()
         wstlayout = wst.getLayout()
         services = wst.getService()
         wst_service_uids = [s.UID() for s in services]
 
-        analyses = pc(portal_type = 'Analysis',
-                      getServiceUID = wst_service_uids,
-                      review_state = 'sample_received',
-                      worksheetanalysis_review_state = 'unassigned',
-                      sort_on = 'getDueDate')
+        analyses = bac(portal_type = 'Analysis',
+                       getServiceUID = wst_service_uids,
+                       review_state = 'sample_received',
+                       worksheetanalysis_review_state = 'unassigned',
+                       sort_on = 'getDueDate')
         # collect analyses from the first X ARs.
         ar_analyses = {} # ar_uid : [analyses]
         ars = [] # for sorting
@@ -295,7 +296,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             for row in [r for r in wstlayout if
                         r['type'] == t and r['pos'] not in ws_slots]:
                 reference_definition_uid = row[form_key]
-                samples = pc(portal_type = 'ReferenceSample',
+                samples = bc(portal_type = 'ReferenceSample',
                              review_state = 'current',
                              inactive_state = 'active',
                              getReferenceDefinitionUID = reference_definition_uid)

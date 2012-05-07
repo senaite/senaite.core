@@ -82,7 +82,8 @@ class ReferenceAnalysesView(AnalysesView):
         ]
 
     def folderitems(self):
-        self.contentsMethod = getToolByName(self.context, 'portal_catalog')
+        bac = getToolByName(self.context, 'bika_analysis_catalog')
+        self.contentsMethod = bac
         items = super(ReferenceAnalysesView, self).folderitems()
         for x in range(len(items)):
             if not items[x].has_key('obj'):
@@ -247,6 +248,8 @@ class ReferenceSamplesView(BikaListingView):
         ]
 
     def folderitems(self):
+        bc = getToolByName(self.context, 'bika_catalog')
+        self.contentsMethod = bc
         items = super(ReferenceSamplesView, self).folderitems()
         for x in range(len(items)):
             if not items[x].has_key('obj'): continue

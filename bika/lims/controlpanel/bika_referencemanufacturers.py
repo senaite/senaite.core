@@ -19,8 +19,6 @@ class ReferenceManufacturersView(BikaListingView):
     implements(IFolderContentsView, IViewView)
     def __init__(self, context, request):
         super(ReferenceManufacturersView, self).__init__(context, request)
-        bsc = getToolByName(context, 'bika_setup_catalog')
-        self.contentsMethod = bsc
         self.contentFilter = {'portal_type': 'ReferenceManufacturer', 'sort_on': 'sortable_title'}
         self.context_actions = {_('Add'):
                                 {'url': 'createObject?type_name=ReferenceManufacturer',
@@ -59,6 +57,8 @@ class ReferenceManufacturersView(BikaListingView):
         ]
 
     def folderitems(self):
+        bsc = getToolByName(context, 'bika_setup_catalog')
+        self.contentsMethod = bsc
         items = BikaListingView.folderitems(self)
         for x in range(len(items)):
             if not items[x].has_key('obj'): continue

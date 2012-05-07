@@ -22,7 +22,6 @@ class WorksheetTemplatesView(BikaListingView):
 
     def __init__(self, context, request):
         super(WorksheetTemplatesView, self).__init__(context, request)
-        bsc = getToolByName(self.context, 'bika_setup_catalog')
         self.contentFilter = {'portal_type': 'WorksheetTemplate',
                               'sort_on': 'sortable_title'}
         self.context_actions = {_('Add'):

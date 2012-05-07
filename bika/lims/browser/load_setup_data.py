@@ -47,6 +47,7 @@ class LoadSetupData(BrowserView):
             return self.template()
 
         self.portal_catalog = getToolByName(self.context, 'portal_catalog')
+        self.bc = bsc = getToolByName(self.context, 'bika_catalog')
         self.bsc = bsc = getToolByName(self.context, 'bika_setup_catalog')
         self.reference_catalog = getToolByName(self.context, REFERENCE_CATALOG)
         self.portal_registration = getToolByName(self.context, 'portal_registration')

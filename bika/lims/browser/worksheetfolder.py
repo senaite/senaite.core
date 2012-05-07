@@ -215,6 +215,9 @@ class WorksheetFolderListingView(BikaListingView):
         ]
 
     def folderitems(self):
+        bc = getToolByName(context, 'bika_catalog')
+        self.contentsMethod = bc
+
         wf = getToolByName(self, 'portal_workflow')
         rc = getToolByName(self, REFERENCE_CATALOG)
         pm = getToolByName(self.context, "portal_membership")

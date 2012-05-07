@@ -114,12 +114,12 @@ class AnalysisSpec(BaseFolder, HistoryAwareMixin):
 
     security.declarePublic('getSpecCategories')
     def getSpecCategories(self):
-        tool = getToolByName(self, REFERENCE_CATALOG)
+        bsc = getToolByName(self, 'bika_setup_catalog')
         categories = []
         for spec in self.getResultsRange():
             keyword = spec['keyword']
-            service = pc(portal_type="AnalysisService",
-                         getKeyword = keyword)
+            service = bsc(portal_type="AnalysisService",
+                          getKeyword = keyword)
             if service.getCategoryUID() not in categories:
                 categories.append(service.getCategoryUID())
         return categories

@@ -8,7 +8,7 @@ import plone.protect
 
 class barcode_entry(BrowserView):
     """ return redirect url if the item exists
-        passes the request to portal_catalog
+        passes the request to catalog
     """
     def __call__(self):
         try:

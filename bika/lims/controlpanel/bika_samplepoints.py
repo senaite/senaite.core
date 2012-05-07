@@ -23,8 +23,6 @@ class SamplePointsView(BikaListingView):
 
     def __init__(self, context, request):
         super(SamplePointsView, self).__init__(context, request)
-        bsc = getToolByName(context, 'bika_setup_catalog')
-        self.contentsMethod = bsc
         self.contentFilter = {'portal_type': 'SamplePoint',
                               'sort_on': 'sortable_title'}
         self.context_actions = {_('Add'):
@@ -64,6 +62,8 @@ class SamplePointsView(BikaListingView):
         ]
 
     def folderitems(self):
+        bsc = getToolByName(context, 'bika_setup_catalog')
+        self.contentsMethod = bsc
         items = BikaListingView.folderitems(self)
         for x in range(len(items)):
             if not items[x].has_key('obj'): continue

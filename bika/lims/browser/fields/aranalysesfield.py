@@ -31,7 +31,7 @@ class ARAnalysesField(ObjectField):
         """ get() returns the list of contained analyses
             By default, return a list of catalog brains.
             If you want objects, pass full_objects = True
-            other kwargs are passed to portal_catalog
+            other kwargs are passed to bika_analysis_catalog
         """
         full_objects = False
         if 'full_objects' in kwargs:
@@ -41,8 +41,8 @@ class ARAnalysesField(ObjectField):
         contentFilter['portal_type'] = "Analysis"
         contentFilter['path'] = {'query':"/".join(instance.getPhysicalPath()),
                                  'level':0}
-        pc = getToolByName(instance, 'portal_catalog')
-        analyses = pc(contentFilter)
+        bac = getToolByName(instance, 'bika_analysis_catalog')
+        analyses = bac(contentFilter)
         if full_objects:
             analyses = [a.getObject() for a in analyses]
         return analyses
@@ -121,6 +121,8 @@ class ARAnalysesField(ObjectField):
             # Note: subscriber might promote the AR
             instance.manage_delObjects(ids = delete_ids)
 
+##        for a in new_analyses:
+##            a.reindexObject()
         return new_analyses
 
     security.declarePublic('Vocabulary')

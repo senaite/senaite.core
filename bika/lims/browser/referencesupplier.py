@@ -83,6 +83,8 @@ class ReferenceSamplesView(BikaListingView):
 
 
     def folderitems(self):
+        bc = getToolByName(self.context, 'bika_catalog')
+        self.contentsMethod = bc
         items = BikaListingView.folderitems(self)
         for x in range(len(items)):
             if not items[x].has_key('obj'): continue

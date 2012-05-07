@@ -38,7 +38,6 @@ class WorksheetWorkflowAction(WorkflowAction):
         workflow = getToolByName(self.context, 'portal_workflow')
         rc = getToolByName(self.context, REFERENCE_CATALOG)
         bsc = getToolByName(self.context, 'bika_setup_catalog')
-        pc = getToolByName(self.context, 'portal_catalog')
         action, came_from = WorkflowAction._get_form_workflow_action(self)
 
         # XXX combine data from multiple bika listing tables.
@@ -154,7 +153,7 @@ class WorksheetWorkflowAction(WorkflowAction):
             selected_analysis_uids = selected_analyses.keys()
 
             for analysis_uid in selected_analysis_uids:
-                analysis = pc(UID=analysis_uid)[0].getObject()
+                analysis = bac(UID=analysis_uid)[0].getObject()
                 if skip(analysis, action, peek=True):
                     continue
                 self.context.removeAnalysis(analysis)
@@ -231,6 +230,9 @@ class WorksheetAnalysesView(AnalysesView):
         ]
 
     def folderitems(self):
+        bac = getToolByName(context, 'bika_analysis_catalog')
+        self.contentsMethod = bac
+
         self.analyst = self.context.getAnalyst().strip()
         self.instrument = self.context.getInstrument()
         self.contentsMethod = self.context.getFolderContents
@@ -577,8 +579,8 @@ class AddAnalysesView(BikaListingView):
             return self.template()
 
     def folderitems(self):
-        pc = getToolByName(self.context, 'portal_catalog')
-        self.contentsMethod = pc
+        bac = getToolByName(self.context, 'bika_analysis_catalog')
+        self.contentsMethod = bac
         items = BikaListingView.folderitems(self)
         for x in range(len(items)):
             if not items[x].has_key('obj'):
@@ -801,6 +803,8 @@ class WorksheetARsView(BikaListingView):
         ]
 
     def folderitems(self):
+        bac = getToolByName(self.context, 'bika_analysis_catalog')
+        self.contentsMethod = bac
         rc = getToolByName(self.context, REFERENCE_CATALOG)
         ars = {}
         for slot in self.context.getLayout():
@@ -935,7 +939,8 @@ class ajaxGetWorksheetReferences(ReferenceSamplesView):
     def __init__(self, context, request):
         super(ajaxGetWorksheetReferences, self).__init__(context, request)
         self.contentFilter = {'portal_type': 'ReferenceSample'}
-        self.contentsMethod = self.context.portal_catalog
+        bc = getToolByName(self.context, 'bika_catalog')
+        self.contentsMethod = bc
         self.context_actions = {}
         self.show_sort_column = False
         self.show_select_row = False
@@ -963,6 +968,9 @@ class ajaxGetWorksheetReferences(ReferenceSamplesView):
 
     def folderitems(self):
         translate = self.context.translate
+
+        bc = getToolByName(context, 'bika_catalog')
+        self.contentsMethod = bc
 
         items = super(ajaxGetWorksheetReferences, self).folderitems()
         new_items = []

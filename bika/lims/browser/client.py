@@ -45,7 +45,7 @@ class ClientWorkflowAction(AnalysisRequestWorkflowAction):
         form = self.request.form
         plone.protect.CheckAuthenticator(form)
         workflow = getToolByName(self.context, 'portal_workflow')
-        pc = getToolByName(self.context, 'portal_catalog')
+        bc = getToolByName(self.context, 'bika_catalog')
         rc = getToolByName(self.context, REFERENCE_CATALOG)
         translate = self.context.translate
         checkPermission = self.context.portal_membership.checkPermission
@@ -209,7 +209,7 @@ class ClientWorkflowAction(AnalysisRequestWorkflowAction):
                 for path in form['paths']:
                     item_id = path.split("/")[-1]
                     item_path = path.replace("/" + item_id, '')
-                    ar = pc(id = item_id,
+                    ar = bc(id = item_id,
                               path = {'query':item_path,
                                       'depth':1})[0].getObject()
                     # can't publish inactive items
@@ -243,10 +243,8 @@ class ClientWorkflowAction(AnalysisRequestWorkflowAction):
 class ClientAnalysisRequestsView(AnalysisRequestsView):
     def __init__(self, context, request):
         super(ClientAnalysisRequestsView, self).__init__(context, request)
-
         self.contentFilter['path'] = {"query": "/".join(context.getPhysicalPath()),
                                       "level" : 0 }
-
         review_states = []
         for review_state in self.review_states:
             review_state['columns'].remove('Client')
@@ -278,7 +276,6 @@ class ClientSamplesView(SamplesView):
 
         self.contentFilter['path'] = {"query": "/".join(context.getPhysicalPath()),
                                       "level" : 0 }
-
         review_states = []
         for review_state in self.review_states:
             review_state['columns'].remove('Client')
@@ -335,6 +332,8 @@ class ClientARImportsView(BikaListingView):
         ]
 
     def folderitems(self):
+        pc = getToolByName(self.context, 'portal_catalog')
+        self.contentsMethod = pc
         items = BikaListingView.folderitems(self)
         for x in range(len(items)):
             if not items[x].has_key('obj'): continue

@@ -13,7 +13,8 @@ class LateAnalysesView(BikaListingView):
     """
     def __init__(self, context, request):
         super(LateAnalysesView, self).__init__(context, request)
-        self.contentsMethod = getToolByName(self.context, 'portal_catalog')
+        bac = getToolByName(self.context, 'bika_analysis_catalog')
+        self.contentsMethod = bac
         self.contentFilter = {'portal_type':'Analysis',
                               'getDueDate': {'query': [DateTime(),], 'range': 'max'},
                               'review_state':['assigned',
@@ -58,6 +59,8 @@ class LateAnalysesView(BikaListingView):
         ]
 
     def folderitems(self):
+        bac = getToolByName(self.context, 'bika_analysis_catalog')
+        self.contentsMethod = bac
         items = super(LateAnalysesView, self).folderitems()
         for x in range(len(items)):
             if not items[x].has_key('obj'):

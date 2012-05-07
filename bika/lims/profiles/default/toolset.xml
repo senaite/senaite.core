@@ -1,5 +1,6 @@
 <?xml version="1.0"?>
 <tool-setup>
- <required tool_id="bika_setup_catalog"
-           class="bika.lims.catalog.BikaSetupCatalog"/>
+ <required tool_id="bika_catalog" class="bika.lims.catalog.BikaCatalog"/>
+ <required tool_id="bika_analysis_catalog" class="bika.lims.catalog.BikaAnalysisCatalog"/>
+ <required tool_id="bika_setup_catalog" class="bika.lims.catalog.BikaSetupCatalog"/>
 </tool-setup>

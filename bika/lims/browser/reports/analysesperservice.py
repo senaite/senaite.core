@@ -24,9 +24,9 @@ class AnalysesPerService(BrowserView):
 
     def __call__(self):
         # get all the data into datalines
-        
+
         sc = getToolByName(self.context, 'bika_setup_catalog')
-        pc = getToolByName(self.context, 'portal_catalog')
+        bc = getToolByName(self.context, 'bika_analysis_catalog')
         rc = getToolByName(self.context, 'reference_catalog')
         self.report_content = {}
         parm_lines = {}
@@ -52,7 +52,7 @@ class AnalysesPerService(BrowserView):
         date_query = formatDateQuery(self.context, 'DateRequested')
         if date_query:
             query['created'] = date_query
-            requested = formatDateParms(self.context, 'DateRequested') 
+            requested = formatDateParms(self.context, 'DateRequested')
         else:
             requested = 'Undefined'
         parms.append(
@@ -63,7 +63,7 @@ class AnalysesPerService(BrowserView):
         date_query = formatDateQuery(self.context, 'DatePublished')
         if date_query:
             query['getDatePublished'] = date_query
-            published = formatDateParms(self.context, 'DatePublished') 
+            published = formatDateParms(self.context, 'DatePublished')
         else:
             published = 'Undefined'
         parms.append(
@@ -118,7 +118,7 @@ class AnalysesPerService(BrowserView):
                             getCategoryUID = cat.UID,
                             sort_on='sortable_title'):
                 query['getServiceUID'] = service.UID
-                analyses = pc(query)
+                analyses = bc(query)
                 count_analyses = len(analyses)
                 service_data.append([service.Title, count_analyses])
                 count_all += count_analyses
@@ -126,7 +126,7 @@ class AnalysesPerService(BrowserView):
             datalines.append([cat.Title, service_data])
 
 
-        
+
 
         self.report_content = {
                 'headings': headings,
@@ -137,4 +137,4 @@ class AnalysesPerService(BrowserView):
 
         return self.template()
 
-    
+

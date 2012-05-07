@@ -101,7 +101,7 @@ def Import(context,request):
 
     csvfile = request.form['file']
 
-    pc = getToolByName(context, 'portal_catalog')
+    bac = getToolByName(context, 'bika_analysis_catalog')
     uc = getToolByName(context, 'uid_catalog')
     bsc = getToolByName(context, 'bika_setup_catalog')
     workflow = getToolByName(context, 'portal_workflow')
@@ -199,7 +199,7 @@ def Import(context,request):
         # Duplicates.
         if p_uid != c_uid:
             dups = [d.getObject() for d in
-                    pc(portal_type='DuplicateAnalysis',
+                    bac(portal_type='DuplicateAnalysis',
                        path={'query': "/".join(container.getPhysicalPath()),
                              'level': 0,})]
             # The analyses should exist already

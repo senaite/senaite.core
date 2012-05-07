@@ -242,7 +242,7 @@ class BikaListingView(BrowserView):
         self.base_url = context.absolute_url()
         self.view_url = self.base_url
         # contentsMethod may return a list of brains or a list of objects.
-        # force it to "portal_catalog", subclass can/should override it
+        # force it by default to "portal_catalog", subclass should override it
         #self.contentsMethod = self.context.getFolderContents
         self.contentsMethod = getToolByName(context, 'portal_catalog')
 

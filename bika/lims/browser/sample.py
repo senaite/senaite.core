@@ -27,8 +27,8 @@ import json
 class SamplePartitionsView(BikaListingView):
     def __init__(self, context, request):
         super(SamplePartitionsView, self).__init__(context, request)
-        pc = getToolByName(context, 'portal_catalog')
-        self.contentsMethod = pc
+        bc = getToolByName(context, 'bika_catalog')
+        self.contentsMethod = bc
         self.contentFilter = {'portal_type': 'SamplePartition',
                               'sort_on': 'sortable_title'}
         self.contentFilter['path'] = {"query": "/".join(context.getPhysicalPath()),
@@ -88,6 +88,9 @@ class SamplePartitionsView(BikaListingView):
         ]
 
     def folderitems(self, full_objects = False):
+        bc = getToolByName(self.context, 'bika_catalog')
+        self.contentsMethod = bc
+
         workflow = getToolByName(self.context, "portal_workflow")
         items = BikaListingView.folderitems(self)
 
@@ -220,8 +223,8 @@ class SampleView(BrowserView):
 
     def __call__(self):
         form = self.request.form
+        bc = getToolByName(self.context, 'bika_catalog')
         bsc = getToolByName(self.context, 'bika_setup_catalog')
-        pc = getToolByName(self.context, 'portal_catalog')
         checkPermission = self.context.portal_membership.checkPermission
         getAuthenticatedMember = self.context.portal_membership.getAuthenticatedMember
         workflow = getToolByName(self.context, 'portal_workflow')
@@ -613,6 +616,8 @@ class SamplesView(BikaListingView):
         ]
 
     def folderitems(self, full_objects = False):
+        bc = getToolByName(self.context, 'bika_catalog')
+        self.contentsMethod = bc
         workflow = getToolByName(self.context, "portal_workflow")
         items = BikaListingView.folderitems(self)
         mtool = getToolByName(self.context, 'portal_membership')

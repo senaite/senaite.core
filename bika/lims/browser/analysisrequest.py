@@ -578,9 +578,9 @@ class AnalysisRequestViewView(BrowserView):
             [[PointOfCapture, category uid, service uid],
              [PointOfCapture, category uid, service uid], ...]
         """
-        pc = getToolByName(self.context, 'portal_catalog')
+        bac = getToolByName(self.context, 'bika_analysis_catalog')
         res = []
-        for analysis in pc(portal_type = "Analysis",
+        for analysis in bac(portal_type = "Analysis",
                            getRequestID = self.context.RequestID):
             analysis = analysis.getObject()
             service = analysis.getService()
@@ -812,8 +812,6 @@ class AnalysisRequestAnalysesView(BikaListingView):
         """
 
         super(AnalysisRequestAnalysesView, self).__init__(context, request)
-        bsc = getToolByName(context, 'bika_setup_catalog')
-        self.contentsMethod = bsc
         self.contentFilter = {'portal_type': 'AnalysisService',
                               'sort_on': 'sortable_title',
                               'inactive_state': 'active',}
@@ -870,11 +868,13 @@ class AnalysisRequestAnalysesView(BikaListingView):
     def folderitems(self):
         self.categories = []
 
+        bsc = getToolByName(context, 'bika_setup_catalog')
+        self.contentsMethod = bsc
+
         mtool = getToolByName(self.context, 'portal_membership')
         member = mtool.getAuthenticatedMember()
         roles = member.getRoles()
         self.allow_edit = 'LabManager' in roles or 'Manager' in roles
-        bsc = getToolByName(self.context, 'bika_setup_catalog')
         items = BikaListingView.folderitems(self)
         sample = self.context.getSample()
 
@@ -1057,6 +1057,8 @@ class AnalysisRequestSelectCCView(BikaListingView):
         ]
 
     def folderitems(self, full_objects = False):
+        pc = getToolByName(self.context, 'portal_catalog')
+        self.contentsMethod = pc
         old_items = BikaListingView.folderitems(self)
         items = []
         for item in old_items:
@@ -1154,6 +1156,8 @@ class AnalysisRequestSelectSampleView(BikaListingView):
         ]
 
     def folderitems(self, full_objects = False):
+        bc = getToolByName(self.context, 'bika_catalog')
+        self.contentsMethod = bc
         items = BikaListingView.folderitems(self)
         for x in range(len(items)):
             if not items[x].has_key('obj'): continue
@@ -1453,7 +1457,7 @@ class ajaxAnalysisRequestSubmit():
         plone.protect.PostOnly(self.request.form)
         came_from = form.has_key('came_from') and form['came_from'] or 'add'
         wftool = getToolByName(self.context, 'portal_workflow')
-        pc = getToolByName(self.context, 'portal_catalog')
+        bc = getToolByName(self.context, 'bika_catalog')
         bsc = getToolByName(self.context, 'bika_setup_catalog')
 
         SamplingWorkflowEnabled = self.context.bika_setup.getSamplingWorkflowEnabled()
@@ -1517,7 +1521,7 @@ class ajaxAnalysisRequestSubmit():
                 if field == "SampleID":
                     valid = True
                     try:
-                        if not pc(portal_type = 'Sample',
+                        if not bc(portal_type = 'Sample',
                                   cancellation_state = 'active',
                                   id = ar[field]):
                             valid = False
@@ -1592,7 +1596,7 @@ class ajaxAnalysisRequestSubmit():
             if values.has_key('SampleID'):
                 # Secondary AR
                 sample_id = values['SampleID']
-                sample_proxy = pc(portal_type = 'Sample',
+                sample_proxy = bc(portal_type = 'Sample',
                                   cancellation_state = 'active',
                                   id = sample_id)
                 assert len(sample_proxy) == 1
@@ -2137,6 +2141,8 @@ class AnalysisRequestsView(BikaListingView):
             ]
 
     def folderitems(self, full_objects = False):
+        bc = getToolByName(self.context, 'bika_catalog')
+        self.contentsMethod = bc
         workflow = getToolByName(self.context, "portal_workflow")
         items = BikaListingView.folderitems(self)
         mtool = getToolByName(self.context, 'portal_membership')
