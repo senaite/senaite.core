@@ -62,6 +62,7 @@ class BikaGenerator:
                        'bika_instruments',
                        'bika_analysisspecs',
                        'bika_arprofiles',
+                       'bika_artemplates',
                        'bika_labcontacts',
                        'bika_labproducts',
                        'bika_samplepoints',

@@ -18,8 +18,6 @@ class ajaxCalculateAnalysisEntry():
 
     def calculate(self, uid = None):
 
-        translate = self.context.translation_service.translate
-
         analysis = self.analyses[uid]
         form_result = self.current_results[uid]
         service = analysis.getService()
@@ -140,15 +138,15 @@ class ajaxCalculateAnalysisEntry():
             except TypeError:
                 # non-numeric arguments in interim mapping?
                 if indeterminate:
-                    indet = translate(_('Indet'))
-                    Indet = translate(_("Indeterminate result"))
+                    indet = self.context.translate(_('Indet'))
+                    Indet = self.context.translate(_("Indeterminate result"))
                     Result['result'] = indet
                     self.alerts.append({'uid': uid,
                                         'field': 'Result',
                                         'icon': 'exclamation',
                                         'msg': Indet})
                 else:
-                    inval = translate(_("Invalid result"))
+                    inval = self.context.translate(_("Invalid result"))
                     self.alerts.append({'uid': uid,
                                         'field': 'Result',
                                         'icon': 'exclamation',

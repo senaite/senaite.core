@@ -101,7 +101,7 @@ $(document).ready(function(){
 	});
 
 	// modify select_all checkbox when regular checkboxes are modified
-	$("input[id*='_cb_']").live('click', function(){
+	$("input[id*='_cb_']").live('change', function(){
 		form_id = $(this).parents("form").attr("id");
 		all_selected = true;
 		$.each($("input[id^='"+form_id+"_cb_']"), function(i,v){
@@ -237,16 +237,22 @@ $(document).ready(function(){
 		return false;
 	});
 
+	$(".listing_string_entry").live('focus', function(){
+		$(this).parents("form").find(".workflow_action_button")
+			.addClass('disabled')
+			.attr("disabled", true);
+        $(".workflow_action_button")
+
+	});
+
+	$(".listing_string_entry").live('blur', function(){
+		$(this).parents("form").find(".workflow_action_button")
+			.removeClass('disabled')
+			.removeAttr("disabled");
+	});
+
 	// Workflow Action button was clicked.
 	$('.workflow_action_button').live('click', function(event){
-
-		// wait for all asynchronous requests to complete before allowing clicks
-		if($.active > 0){
-			event.preventDefault();
-			$(this).ajaxStop(function(){
-				$(this).click();
-			});
-		}
 
 		// The submit buttons would like to put the translated action title
 		// into the request.  Insert the real action name here to prevent the
@@ -256,7 +262,6 @@ $(document).ready(function(){
 		$(form).append("<input type='hidden' name='workflow_action_id' value='"+$(this).attr('transition')+"'>");
 
 		$(form).submit();
-
 
 	});
 
@@ -383,6 +388,7 @@ $(document).ready(function(){
 		stored_form_action = $(form).attr("action");
 		$(form).attr("action", window.location.href);
 		$(form).append("<input type='hidden' name='table_only' value='"+form_id+"'>");
+		$(form).append("<input type='hidden' name='toggle_cookie_value' value='"+$.toJSON(cookie)+"'>");
 		options = {
 			target: $(form).children(".bika-listing-table"),
 			replaceTarget: true,
@@ -394,6 +400,7 @@ $(document).ready(function(){
 		$(".tooltip").remove();
 		form.ajaxSubmit(options);
 		$('[name=table_only]').remove();
+		$('[name=toggle_cookie_value]').remove();
 		$(form).attr('action', stored_form_action);
 		return false;
 	});

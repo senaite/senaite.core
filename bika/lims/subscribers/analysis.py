@@ -323,7 +323,7 @@ def AfterTransitionEventHandler(instance, event):
         # Escalate action to the parent AR
         if not skip(ar, action_id, peek=True):
             if wf.getInfoFor(ar, 'review_state') == 'sample_received':
-                ar.skip(ar, action_id)
+                skip(ar, action_id)
             else:
                 if not "retract all analyses" in instance.REQUEST['workflow_skiplist']:
                     instance.REQUEST["workflow_skiplist"].append("retract all analyses")

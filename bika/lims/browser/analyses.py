@@ -7,12 +7,14 @@ from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import transaction_note
 from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from bika.lims.permissions import ViewResults, EditResults, EditFieldResults
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
+from bika.lims.permissions import EditFieldResults
+from bika.lims.permissions import EditResults
+from bika.lims.permissions import ManageBika
+from bika.lims.permissions import ViewResults
 from bika.lims.utils import isActive, TimeOrDate
 from zope.component import getMultiAdapter
-from zope.interface import implements, 	alsoProvides, implementsOnly
 import json
 import plone
 
@@ -92,8 +94,8 @@ class AnalysesView(BikaListingView):
         bsc = getToolByName(self.context, 'bika_setup_catalog')
         workflow = getToolByName(self.context, 'portal_workflow')
         portal = getToolByName(self.context, 'portal_url').getPortalObject()
-        translate = self.context.translation_service.translate
-        checkPermission = getSecurityManager().checkPermission
+        mtool = getToolByName(self.context, 'portal_membership')
+        checkPermission = mtool.checkPermission
         if not self.allow_edit:
             can_edit_analyses = False
         else:
@@ -202,18 +204,17 @@ class AnalysesView(BikaListingView):
                 items[i]['replace']['Method'] = "<a href='%s'>%s</a>" % \
                     (method.absolute_url(), method.Title())
 
-
-            # if the reference version is older than the object itself,
-            # insert the version number of referenced service after Title
-            service_uid = service.UID()
-            latest_service = rc.lookupObject(service_uid)
-            items[i]['Service'] = service.Title()
-            items[i]['class']['Service'] = "service_title"
-            if hasattr(obj, 'reference_versions') and \
-               service_uid in obj.reference_versions and \
-               latest_service.version_id != obj.reference_versions[service_uid]:
-                items[i]['after']['Service'] = "(v%s)" % \
-                     (obj.reference_versions[service_uid])
+            # Show version number of out-of-date objects
+            if checkPermission(ManageBika, self.context):
+                service_uid = service.UID()
+                latest = rc.lookupObject(service_uid).version_id
+                items[i]['Service'] = service.Title()
+                items[i]['class']['Service'] = "service_title"
+                if hasattr(obj, 'reference_versions') and \
+                   service_uid in obj.reference_versions and \
+                   latest != obj.reference_versions[service_uid]:
+                    items[i]['after']['Service'] = "(v%s)" % \
+                         (obj.reference_versions[service_uid])
 
             # choices defined on Service apply to result fields.
             choices = service.getResultOptions()
@@ -253,24 +254,24 @@ class AnalysesView(BikaListingView):
                     if 'Result' in items[i]['choices'] and items[i]['choices']['Result']:
                         items[i]['formatted_result'] = \
                             [r['ResultText'] for r in items[i]['choices']['Result'] \
-                                              if r['ResultValue'] == result][0]
+                                              if str(r['ResultValue']) == str(result)][0]
                     else:
                         try:
                             items[i]['formatted_result'] = precision and \
                                 str("%%.%sf" % precision) % float(result) or result
                         except:
                             items[i]['formatted_result'] = result
-                            indet = translate(_('Indet'))
+                            indet = self.context.translate(_('Indet'))
                             if result == indet:
                                 # 'Indeterminate' results flag a specific error
-                                Indet = translate(_("Indeterminate result"))
+                                Indet = self.context.translate(_("Indeterminate result"))
                                 items[i]['after']['Result'] = \
                                     '<img width="16" height="16" title="%s"' % Indet + \
                                     'src="%s/++resource++bika.lims.images/exclamation.png"/>' % \
                                     (portal.absolute_url())
                             else:
                                 # result being un-floatable, is an error.
-                                msg = translate(_("Invalid result"))
+                                msg = self.context.translate(_("Invalid result"))
                                 items[i]['after']['Result'] = \
                                     '<img width="16" height="16" title="%s"' % msg + \
                                     'src="%s/++resource++bika.lims.images/exclamation.png"/>' % \
@@ -320,11 +321,11 @@ class AnalysesView(BikaListingView):
                     if self.context.portal_type == 'AnalysisRequest':
                         items[i]['replace']['DueDate'] = '%s <img width="16" height="16" src="%s/++resource++bika.lims.images/late.png" title="%s"/>' % \
                             (DueDate, portal.absolute_url(),
-                             translate(_("Due Date")) + ": %s"%DueDate)
+                             self.context.translate(_("Due Date")) + ": %s"%DueDate)
                     else:
                         items[i]['replace']['DueDate'] = '%s <img width="16" height="16" src="%s/++resource++bika.lims.images/late.png" title="%s"/>' % \
                             (DueDate, portal.absolute_url(),
-                             translate(_("Late Analysis")))
+                             self.context.translate(_("Late Analysis")))
                 else:
                     items[i]['replace']['DueDate'] = TimeOrDate(self.context, item['DueDate'])
 
@@ -333,8 +334,8 @@ class AnalysesView(BikaListingView):
                workflow.getInfoFor(items[i]['obj'], 'worksheetanalysis_review_state') == 'assigned':
                 ws = items[i]['obj'].getBackReferences('WorksheetAnalysis')[0]
                 items[i]['after']['state_title'] = \
-                     "<a href='%s'><img src='++resource++bika.lims.images/worksheet.png' title='Assigned: %s'/></a>" % \
-                     (ws.absolute_url(), ws.id)
+                     "<a href='%s'><img src='++resource++bika.lims.images/worksheet.png' title='%s'/></a>" % \
+                     (ws.absolute_url(), _("Assigned to: ${worksheet_id}", mapping={'worksheet_id':ws.id}))
 
         # the TAL requires values for all interim fields on all
         # items, so we set blank values in unused cells

@@ -1,11 +1,19 @@
-<tal:define define="
-	portal_state context/@@plone_portal_state;
-	locale portal_state/locale;
-	currency python:context.bika_setup.getCurrency();
-	categoryUID python:view.request['categoryUID'];
-	poc python:view.request['poc'];
-	col_count python:int(view.request.get('col_count', 1));
-	portal context/@@plone_portal_state/portal">
+<html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:tal="http://xml.zope.org/namespaces/tal"
+    xmlns:metal="http://xml.zope.org/namespaces/metal"
+    xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+    i18n:domain="bika">
+
+<tal:define
+    i18n:domain="bika"
+	define="
+		portal_state context/@@plone_portal_state;
+		currencies python:modules['zope.i18n.locales'].locales.getLocale('en').numbers.currencies;
+		currency python:context.bika_setup.getCurrency();
+		categoryUID python:view.request['categoryUID'];
+		poc python:view.request['poc'];
+		col_count python:int(view.request.get('col_count', 1));
+		portal context/@@plone_portal_state/portal">
 	<tr tal:repeat="service python:view.Services(poc, categoryUID)"
 		tal:attributes="id service/UID">
         <tal:service tal:define="service_obj python:service.getObject()">
@@ -29,7 +37,7 @@
 			style="white-space:nowrap;"
 		    tal:define="analysis python: hasattr(here, service.id) and here[service.id] or None;
                 vat python:service_obj.getVAT()">
-			<span tal:replace="python:locale.numbers.currencies[currency].symbol"/>
+			<span tal:replace="python:currencies[currency].symbol"/>
 			<input
 				class="price numeric"
 				type="text"
@@ -92,3 +100,4 @@
 	    </tal:service>
 	</tr>
 </tal:define>
+</html>

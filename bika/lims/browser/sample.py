@@ -246,13 +246,13 @@ class SampleView(BrowserView):
         self.header_rows = [
             {'id': 'ClientReference',
              'title': _('Client Reference'),
-             'allow_edit': allow_sample_edit,
+             'allow_edit': True,
              'value': self.context.getClientReference(),
              'condition':True,
              'type': 'text'},
             {'id': 'ClientSampleID',
              'title': _('Client SID'),
-             'allow_edit': allow_sample_edit,
+             'allow_edit': True,
              'value': self.context.getClientSampleID(),
              'condition':True,
              'type': 'text'},
@@ -603,7 +603,7 @@ class SamplesView(BikaListingView):
         items = BikaListingView.folderitems(self)
         mtool = getToolByName(self.context, 'portal_membership')
         member = mtool.getAuthenticatedMember()
-        translate = self.context.translation_service.translate
+        translate = self.context.translate
 
         for x in range(len(items)):
             if not items[x].has_key('obj'): continue
@@ -655,7 +655,7 @@ class SamplesView(BikaListingView):
                 after_icons += "<img title='Hazardous' src='++resource++bika.lims.images/hazardous.png'>"
             if obj.getSamplingDate() > DateTime():
                 after_icons += "<img src='++resource++bika.lims.images/calendar.png' title='%s'>" % \
-                    translate(_("Future dated sample"))
+                    self.context.translate(_("Future dated sample"))
             if after_icons:
                 items[x]['after']['getSampleID'] = after_icons
 
@@ -698,5 +698,26 @@ class SamplesView(BikaListingView):
                     self.context, DateTime(), long_format=1, with_time=False)
                 items[x]['class']['getPreserver'] = 'provisional'
                 items[x]['class']['getDatePreserved'] = 'provisional'
+
+         # Hide Preservation/Sampling workflow actions if the edit columns
+        # are not displayed.
+        toggle_cols = self.get_toggle_cols()
+        new_states = []
+        for i,state in enumerate(self.review_states):
+            if state['id'] == self.review_state:
+                if 'getSampler' not in toggle_cols \
+                   or 'getDateSampled' not in toggle_cols:
+                    if 'hide_transitions' in state:
+                        state['hide_transitions'].append('sampled')
+                    else:
+                        state['hide_transitions'] = ['sampled',]
+                if 'getPreserver' not in toggle_cols \
+                   or 'getDatePreserved' not in toggle_cols:
+                    if 'hide_transitions' in state:
+                        state['hide_transitions'].append('preserved')
+                    else:
+                        state['hide_transitions'] = ['preserved',]
+            new_states.append(state)
+        self.review_states = new_states
 
         return items

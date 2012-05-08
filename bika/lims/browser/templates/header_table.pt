@@ -113,16 +113,18 @@
 
 	</table>
 
+	<span style="padding-left:8px;">
 	<tal:buttons
 		repeat="button view/header_buttons"
 		tal:condition="edit_enabled">
 		<input
-			class="context allowMultiSubmit"
+			class="context workflow_action_button allowMultiSubmit"
 			type="submit"
 			tal:attributes="
 				value button/title;
 				name button/name;"/>
 	</tal:buttons>
+	</span>
 
 	</form>
 

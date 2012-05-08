@@ -25,7 +25,7 @@
 		portal context/@@plone_portal_state/portal;
         plone_view context/@@plone;
 		portal_state context/@@plone_portal_state;
-		locale portal_state/locale;
+		currencies python:modules['zope.i18n.locales'].locales.getLocale('en').numbers.currencies;
 		currency python:context.bika_setup.getCurrency();
 	    checkPermission nocall: context/portal_membership/checkPermission;
         tabindex view/tabindex;
@@ -541,7 +541,7 @@
         <span class="discreet">(<tal:i content="here/bika_setup/getMemberDiscount"/>%)</span>
     </th>
     <th class="topborder noleftborder" style="text-align:center">
-		<span tal:replace="python:locale.numbers.currencies[currency].symbol"/>
+		<span tal:replace="python:currencies[currency].symbol"/>
 	</th>
     <tal:block repeat="column python:range(view.col_count)">
         <td class="topborder" tal:define="input_id string:ar_${column}_discount;">
@@ -554,7 +554,7 @@
 <tr>
     <th class="topborder" colspan="2"><b i18n:translate="">Subtotal</b></th>
     <th class="topborder noleftborder" style="text-align:center">
-		<span tal:replace="python:locale.numbers.currencies[currency].symbol"/>
+		<span tal:replace="python:currencies[currency].symbol"/>
 	</th>
     <tal:block repeat="column python:range(view.col_count)">
         <td class="topborder" tal:define="input_id string:ar_${column}_subtotal;
@@ -572,7 +572,7 @@
 <tr>
     <th colspan="2" class="topborder"><b i18n:translate="">VAT</b></th>
     <th class="topborder noleftborder" style="text-align:center">
-		<span tal:replace="python:locale.numbers.currencies[currency].symbol"/>
+		<span tal:replace="python:currencies[currency].symbol"/>
 	</th>
     <tal:block repeat="column python:range(view.col_count)">
         <td class="topborder" tal:define="input_id string:ar_${column}_vat;
@@ -590,7 +590,7 @@
 <tr>
     <th class="topborder" colspan="2"><b i18n:translate="">Total</b></th>
     <th class="topborder noleftborder" style="text-align:center">
-		<span tal:replace="python:locale.numbers.currencies[currency].symbol"/>
+		<span tal:replace="python:currencies[currency].symbol"/>
 	</th>
     <tal:block repeat="column python:range(view.col_count)">
         <td class="topborder" tal:define="
@@ -631,6 +631,7 @@
     <input class="context button allowMultiSubmit"
         type="submit"
         name="save_button"
+		i18n:attributes="value"
         value="Save"/>
 
     <br/>&nbsp;

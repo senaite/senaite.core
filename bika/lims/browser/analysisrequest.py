@@ -1,9 +1,9 @@
+from Products.CMFCore.utils import getToolByName
 from AccessControl import getSecurityManager
 from DateTime import DateTime
 from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.Archetypes.public import DisplayList
 from Products.CMFCore.WorkflowCore import WorkflowException
-from Products.CMFCore.utils import getToolByName
 from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import PMF
@@ -51,7 +51,6 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
         plone.protect.CheckAuthenticator(form)
         workflow = getToolByName(self.context, 'portal_workflow')
         rc = getToolByName(self.context, REFERENCE_CATALOG)
-        translate = self.context.translation_service.translate
         action, came_from = WorkflowAction._get_form_workflow_action(self)
         checkPermission = self.context.portal_membership.checkPermission
 
@@ -70,25 +69,22 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
         if action == "save_button":
             ar = self.context
             sample = ar.getSample()
+
+            # Read all service selections
             objects = WorkflowAction._get_selected_items(self)
-            form_parts = json.loads(self.request.form['parts'])
-            if not form_parts:
-                message = _('No changes made.')
-            else:
-                new_analyses = ar.setAnalyses(objects.keys(),
-                                              prices = form['Price'][0])
 
-                # XXX
+            # Read partition/container/preservation selections for selections
 
-                # stopgap - ignore selected values ; assign first partition
-                # to new analyses.  Form interface doesn't yet support
-                # selection of partition - AR Add and AR Edit will get some
-                # additional functionality for this, soon.
-                first_part = sample.objectValues("SamplePartition")[0]
-                for a in new_analyses:
-                    a.setSamplePartition(first_part)
+            # Send the full list to setAnalyses which will add/remove analyses
+            # as necessary.
+            new_analyses = ar.setAnalyses(objects.keys(),
+                                          prices = form['Price'][0])
 
-                message = translate(PMF("Changes saved."))
+            first_part = sample.objectValues("SamplePartition")[0]
+            for a in new_analyses:
+                a.setSamplePartition(first_part)
+
+                message = self.context.translate(PMF("Changes saved."))
 
             self.context.plone_utils.addPortalMessage(message, 'info')
             self.destination_url = self.context.absolute_url()
@@ -209,7 +205,7 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
         ## submit
         elif action == 'submit' and self.request.form.has_key("Result"):
             if not isActive(self.context):
-                message = translate(_('Item is inactive.'))
+                message = self.context.translate(_('Item is inactive.'))
                 self.context.plone_utils.addPortalMessage(message, 'info')
                 self.request.response.redirect(self.context.absolute_url())
                 return
@@ -236,9 +232,13 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
                 if not analysis:
                     # ignore result if analysis object no longer exists
                     continue
-                if not getSecurityManager().checkPermission(EditResults, analysis) \
-                   and not getSecurityManager().checkPermission(EditFieldResults, analysis):
-                    # or changes no longer allowed
+                if not checkPermission(EditResults, analysis) \
+                   and not checkPermission(EditFieldResults, analysis):
+                    mtool = getToolByName(self.context, 'portal_membership')
+                    username = mtool.getAuthenticatedMember().getUserName()
+                    path = "/".join(self.context.getPhysicalPath())
+                    logger.info("Changes no longer allowed (user: %s, object: %s)" % \
+                                (username, path))
                     continue
                 results[uid] = result
                 service = analysis.getService()
@@ -247,18 +247,15 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
                     hasInterims[uid] = True
                 else:
                     hasInterims[uid] = False
-                unit = service.getUnit() and service.getUnit() or ''
+                service_unit = service.getUnit() and service.getUnit() or ''
                 retested = form.has_key('retested') and form['retested'].has_key(uid)
-                # Some silly if statements here to avoid saving if it isn't necessary.
-                if analysis.getInterimFields != interimFields or \
-                   analysis.getRetested != retested or \
-                   analysis.getUnit != unit:
+                # Don't save uneccessary things
+                if analysis.getInterimFields() != interimFields or \
+                   analysis.getRetested() != retested:
                     analysis.edit(
                         InterimFields = interimFields,
-                        Retested = retested,
-                        Unit = unit)
-                # results get checked/saved separately, so the setResults()
-                # mutator only sets the ResultsCapturedDate when it needs to.
+                        Retested = retested)
+                # save results separately, otherwise capture date is rewritten
                 if analysis.getResult() != result or \
                    analysis.getResultDM() != dry_result:
                     analysis.edit(
@@ -269,7 +266,7 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
             # guard_submit does a lot of the same stuff, too.
             submissable = []
             for uid, analysis in selected_analyses.items():
-                if uid not in results:
+                if uid not in results or not results[uid]:
                     continue
                 can_submit = True
                 for dependency in analysis.getDependencies():
@@ -292,10 +289,9 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
             for analysis in submissable:
                 doActionFor(analysis, 'submit')
 
-            message = translate(PMF("Changes saved."))
+            message = self.context.translate(PMF("Changes saved."))
             self.context.plone_utils.addPortalMessage(message, 'info')
-            mtool = getToolByName(self.context, 'portal_membership')
-            if mtool.checkPermission(EditResults, self.context):
+            if checkPermission(EditResults, self.context):
                 self.destination_url = self.context.absolute_url() + "/manage_results"
             else:
                 self.destination_url = self.context.absolute_url()
@@ -304,7 +300,7 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
         ## publish
         elif action in ('prepublish', 'publish', 'republish'):
             if not isActive(self.context):
-                message = translate(_('Item is inactive.'))
+                message = self.context.translate(_('Item is inactive.'))
                 self.context.plone_utils.addPortalMessage(message, 'info')
                 self.request.response.redirect(self.context.absolute_url())
                 return
@@ -316,10 +312,10 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
                                    action,
                                    [self.context, ])()
             if len(transitioned) == 1:
-                message = translate('${items} published.',
+                message = self.context.translate('${items} published.',
                                     mapping = {'items': ', '.join(transitioned)})
             else:
-                message = translate(_("No items were published"))
+                message = self.context.translate(_("No items were published"))
             self.context.plone_utils.addPortalMessage(message, 'info')
             self.destination_url = self.request.get_header("referer",
                                    self.context.absolute_url())
@@ -392,25 +388,26 @@ class AnalysisRequestViewView(BrowserView):
              'type': 'text'},
             {'id': 'ClientSampleID',
              'title': _('Client SID'),
-             'allow_edit': allow_sample_edit,
+             'allow_edit': True,
              'value': sample.getClientSampleID(),
              'condition':True,
              'type': 'text'},
             {'id': 'Contact',
-             'title': "<a href='#' id='open_cc_browser'>%s</a>" % _('Contact Person'),
+             'title': "<a href='#' id='open_cc_browser'>%s</a>" % \
+                      self.context.translate(_('Contact Person')),
              'allow_edit': False,
              'value': "; ".join(ccs),
              'condition':True,
              'type': 'text'},
             {'id': 'ClientReference',
              'title': _('Client Reference'),
-             'allow_edit': allow_sample_edit,
+             'allow_edit': True,
              'value': sample.getClientReference(),
              'condition':True,
              'type': 'text'},
             {'id': 'ClientOrderNumber',
              'title': _('Client Order'),
-             'allow_edit': allow_sample_edit,
+             'allow_edit': True,
              'value': self.context.getClientOrderNumber(),
              'condition':True,
              'type': 'text'},
@@ -463,7 +460,7 @@ class AnalysisRequestViewView(BrowserView):
              'type': 'boolean'},
             {'id': 'InvoiceExclude',
              'title': _('Invoice Exclude'),
-             'allow_edit': allow_sample_edit,
+             'allow_edit': True,
              'value': self.context.getInvoiceExclude(),
              'condition':True,
              'type': 'boolean'},
@@ -528,6 +525,7 @@ class AnalysisRequestViewView(BrowserView):
             if self.context.getAnalyses(getPointOfCapture = poc):
                 t = AnalysesView(ar, self.request, getPointOfCapture = poc)
                 t.allow_edit = True
+                t.form_id = "%s_analyses" % poc
                 t.review_states[0]['transitions'] = [{'id':'submit'},
                                                      {'id':'retract'},
                                                      {'id':'verify'}]
@@ -551,27 +549,25 @@ class AnalysisRequestViewView(BrowserView):
     def arprofiles(self):
         """ Return applicable client and Lab ARProfile records
         """
-        translate = self.context.translate
         profiles = []
         for profile in self.context.objectValues("ARProfile"):
             if isActive(profile):
                 profiles.append((profile.Title(), profile))
         for profile in self.context.bika_setup.bika_arprofiles.objectValues("ARProfile"):
             if isActive(profile):
-                profiles.append((translate(_('Lab')) + ": " + profile.Title(), profile))
+                profiles.append((self.context.translate(_('Lab')) + ": " + profile.Title(), profile))
         return profiles
 
     def artemplates(self):
         """ Return applicable client and Lab ARTemplate records
         """
-        translate = self.context.translate
         templates = []
         for template in self.context.objectValues("ARTemplate"):
             if isActive(template):
                 templates.append((template.Title(), template))
         for template in self.context.bika_setup.bika_arprofiles.objectValues("ARTemplate"):
             if isActive(template):
-                templates.append((translate(_('Lab')) + ": " + template.Title(), template))
+                templates.append((self.context.translate(_('Lab')) + ": " + template.Title(), template))
         return templates
 
     def SelectedServices(self):
@@ -627,9 +623,6 @@ class AnalysisRequestViewView(BrowserView):
                          for group in pg.getGroupsByUserId(member.id)]
         default_spec = ('Clients' in member_groups) and 'client' or 'lab'
         return default_spec
-
-    def getHazardous(self):
-        return self.context.getSample().getSampleType().getHazardous()
 
     def getARProfileTitle(self):
         """Grab the context's current ARProfile Title if any
@@ -840,13 +833,13 @@ class AnalysisRequestAnalysesView(BikaListingView):
             'Title': {'title': _('Service'),
                       'index': 'sortable_title',
                       'sortable': False,},
-            'Keyword': {'title': _('Keyword'),
-                        'index': 'getKeyword',
-                        'sortable': False,},
             'Price': {'title': _('Price'),
                       'sortable': False,},
-            'Method': {'title': _('Method'),
-                       'sortable': False,},
+##            'Keyword': {'title': _('Keyword'),
+##                        'index': 'getKeyword',
+##                        'sortable': False,},
+##            'Method': {'title': _('Method'),
+##                       'sortable': False,},
             'Partition': {'title': _('Partition'),
                           'sortable': False,},
             'Container': {'title': _('Container'),
@@ -860,8 +853,8 @@ class AnalysisRequestAnalysesView(BikaListingView):
              'title': _('All'),
              'columns': ['Title',
                          'Price',
-                         'Keyword',
-                         'Method',
+##                         'Keyword',
+##                         'Method',
                          'Partition',
                          'Container',
                          'Preservation'
@@ -877,10 +870,18 @@ class AnalysisRequestAnalysesView(BikaListingView):
         mtool = getToolByName(self.context, 'portal_membership')
         member = mtool.getAuthenticatedMember()
         roles = member.getRoles()
-        can_edit_price = 'LabManager' in roles or 'Manager' in roles
-        self.allow_edit = can_edit_price
-
+        self.allow_edit = 'LabManager' in roles or 'Manager' in roles
+        bsc = getToolByName(self.context, 'bika_setup_catalog')
         items = BikaListingView.folderitems(self)
+
+        containers = [({'ResultValue':o.UID,
+                        'ResultText':o.title})
+                      for o in bsc(portal_type="Container",
+                                   inactive_state="active")]
+        preservations = [({'ResultValue':o.UID,
+                           'ResultText':o.title})
+                         for o in bsc(portal_type="Preservation",
+                                      inactive_state="active")]
 
         for x in range(len(items)):
             if not items[x].has_key('obj'): continue
@@ -894,30 +895,35 @@ class AnalysisRequestAnalysesView(BikaListingView):
             items[x]['selected'] = items[x]['uid'] in self.selected
 
             items[x]['class']['Title'] = 'service_title'
-            items[x]['Keyword'] = obj.getKeyword()
 
             calculation = obj.getCalculation()
             items[x]['Calculation'] = calculation and calculation.Title()
 
-            method = obj.getMethod()
-            items[x]['Method'] = method and method.Title() or ''
+##            method = obj.getMethod()
+##            items[x]['Method'] = method and method.Title() or ''
+##            items[x]['Keyword'] = obj.getKeyword()
 
             locale = locales.getLocale('en')
             currency = self.context.bika_setup.getCurrency()
             symbol = locale.numbers.currencies[currency].symbol
             items[x]['before']['Price'] = symbol
             items[x]['Price'] = obj.getPrice()
-            items[x]['allow_edit'] = ['Price', ]
+            items[x]['allow_edit'] = ['Price', 'Container', 'Preservation']
             items[x]['class']['Price'] = 'nowrap'
+
+            items[x]['choices']['Container'] = containers
+            items[x]['choices']['Preservation'] = preservations
 
             if obj.UID() in self.analyses:
                 part = self.analyses[obj.UID()].getSamplePartition()
                 part = part and part or obj
                 items[x]['Partition'] = part.Title()
                 container = part.getContainer()
-                items[x]['Container'] = container and container.Title() or ''
+                items[x]['Container'] = \
+                    container and container.UID() or ''
                 preservation = part.getPreservation()
-                items[x]['Preservation'] = preservation and preservation.Title() or ''
+                items[x]['Preservation'] = \
+                    preservation and preservation.UID() or ''
             else:
                 items[x]['Partition'] = ''
                 items[x]['Container'] = ''
@@ -1118,7 +1124,7 @@ class AnalysisRequestSelectSampleView(BikaListingView):
                          'SamplePointTitle',
                          'SamplingDate']},
             {'id':'sample_received',
-             'title': _('Sample Received'),
+             'title': _('Sample received'),
              'contentFilter': {'review_state': 'sample_received'},
              'columns': ['SampleID',
                          'ClientReference',
@@ -1131,7 +1137,6 @@ class AnalysisRequestSelectSampleView(BikaListingView):
 
     def folderitems(self, full_objects = False):
         items = BikaListingView.folderitems(self)
-        translate = self.context.translation_service.translate
         for x in range(len(items)):
             if not items[x].has_key('obj'): continue
             obj = items[x]['obj']
@@ -1146,7 +1151,7 @@ class AnalysisRequestSelectSampleView(BikaListingView):
             if obj.getSampleType().getHazardous():
                 items[x]['after']['SampleID'] = \
                      "<img src='++resource++bika.lims.images/hazardous.png' title='%s'>"%\
-                     translate(_("Hazardous"))
+                     self.context.translate(_("Hazardous"))
             items[x]['SampleTypeTitle'] = obj.getSampleTypeTitle()
             items[x]['SamplePointTitle'] = obj.getSamplePointTitle()
             items[x]['row_data'] = json.dumps({
@@ -1220,7 +1225,6 @@ class ar_formdata(BrowserView):
     """
     def __call__(self):
         plone.protect.CheckAuthenticator(self.request)
-        translate = self.context.translate
         bsc = getToolByName(self.context, 'bika_setup_catalog')
         rc = getToolByName(self.context, REFERENCE_CATALOG)
 
@@ -1254,7 +1258,7 @@ class ar_formdata(BrowserView):
                         services[key] = [service.UID, ]
 
                 title = context == self.context.bika_setup.bika_arprofiles \
-                    and translate(_('Lab')) + ": " + profile.Title() \
+                    and self.context.translate(_('Lab')) + ": " + profile.Title() \
                     or profile.Title()
 
                 p_dict = {
@@ -1270,7 +1274,7 @@ class ar_formdata(BrowserView):
                          if isActive(t)]
             for template in templates:
                 title = context == self.context.bika_setup.bika_arprofiles \
-                    and translate(_('Lab')) + ": " + template.Title() \
+                    and self.context.translate(_('Lab')) + ": " + template.Title() \
                     or template.Title()
                 sp_title = template.getSamplePoint()
                 st_title = template.getSampleType()
@@ -1429,7 +1433,6 @@ class ajaxAnalysisRequestSubmit():
         form = self.request.form
         plone.protect.CheckAuthenticator(self.request.form)
         plone.protect.PostOnly(self.request.form)
-        translate = self.context.translation_service.translate
         came_from = form.has_key('came_from') and form['came_from'] or 'add'
         wftool = getToolByName(self.context, 'portal_workflow')
         pc = getToolByName(self.context, 'portal_catalog')
@@ -1440,7 +1443,7 @@ class ajaxAnalysisRequestSubmit():
         errors = {}
         def error(field = None, column = None, message = None):
             if not message:
-                message = translate(PMF('Input is required but no input given.'))
+                message = self.context.translate(PMF('Input is required but no input given.'))
             if (column or field):
                 error_key = " %s.%s" % (int(column) + 1, field or '')
             else:
@@ -1463,7 +1466,7 @@ class ajaxAnalysisRequestSubmit():
             columns.append(column)
 
         if len(columns) == 0:
-            error(message = translate(_("No data was entered")))
+            error(message = self.context.translate(_("No data was entered")))
             return json.dumps({'errors':errors})
 
         # Now some basic validation
@@ -1474,7 +1477,7 @@ class ajaxAnalysisRequestSubmit():
             formkey = "ar.%s" % column
             ar = form[formkey]
             if not ar.has_key("Analyses"):
-                error('Analyses', column, translate(_("No analyses have been selected")))
+                error('Analyses', column, self.context.translate(_("No analyses have been selected")))
 
             # check that required fields have values
             for field in required_fields:
@@ -1485,7 +1488,7 @@ class ajaxAnalysisRequestSubmit():
             # make sure it's clean.
             if ar.has_key('profileTitle'):
                 if re.findall(r"[^A-Za-z\w\d\_\s]", ar['profileTitle']):
-                    error(message="Validation failed: Profile title contains invalid characters")
+                    error(message=_("Validation failed: Profile title contains invalid characters"))
 
             # validate field values
             for field in validated_fields:
@@ -1505,7 +1508,7 @@ class ajaxAnalysisRequestSubmit():
                     if not valid:
                         msg = _("${id} is not a valid sample ID",
                                 mapping={'id':ar[field]})
-                        error(field, column, translate(msg))
+                        error(field, column, self.context.translate(msg))
 
                 elif field == "SampleType":
                     valid = True
@@ -1519,7 +1522,7 @@ class ajaxAnalysisRequestSubmit():
                     if not valid:
                         msg = _("${sampletype} is not a valid sample type",
                                 mapping={'sampletype':ar[field]})
-                        error(field, column, translate(msg))
+                        error(field, column, self.context.translate(msg))
 
                 elif field == "SamplePoint":
                     valid = True
@@ -1533,7 +1536,7 @@ class ajaxAnalysisRequestSubmit():
                     if not valid:
                         msg = _("${samplepoint} is not a valid sample point",
                                 mapping={'samplepoint':ar[field]})
-                        error(field, column, translate(msg))
+                        error(field, column, self.context.translate(msg))
 
         if errors:
             return json.dumps({'errors':errors})
@@ -1594,6 +1597,10 @@ class ajaxAnalysisRequestSubmit():
                     SamplingWorkflowEnabled = SamplingWorkflowEnabled,
                 )
                 sample.processForm()
+                if SamplingWorkflowEnabled:
+                    wftool.doActionFor(sample, 'sampling_workflow')
+                else:
+                    wftool.doActionFor(sample, 'no_sampling_workflow')
 
                 # Object has been renamed
                 sample_id = sample.getId()
@@ -1620,6 +1627,10 @@ class ajaxAnalysisRequestSubmit():
                     Preservation = p['preservation'],
                 )
                 part.processForm()
+                if SamplingWorkflowEnabled:
+                    wftool.doActionFor(part, 'sampling_workflow')
+                else:
+                    wftool.doActionFor(part, 'no_sampling_workflow')
                 parts_and_services[part.id] = p['services']
 
             # create the AR
@@ -1640,6 +1651,10 @@ class ajaxAnalysisRequestSubmit():
                 **dict(values)
             )
             ar.processForm()
+            if SamplingWorkflowEnabled:
+                wftool.doActionFor(ar, 'sampling_workflow')
+            else:
+                wftool.doActionFor(ar, 'no_sampling_workflow')
             # Object has been renamed
             ar_id = ar.getId()
             ar.edit(RequestID = ar_id)
@@ -1704,10 +1719,11 @@ class ajaxAnalysisRequestSubmit():
                         _id = self.context.invokeFactory(type_name='ARProfile',
                                                          id='tmp')
                         new_profile = self.context[_id]
-                        message = translate(_("The AR Profile '${profile_name}' was "
-                                              "automatically created.",
-                                              mapping = {'profile_name':
-                                                         values['profileTitle']}))
+                        message = self.context.translate(
+                            _("The AR Profile '${profile_name}' was "
+                              "automatically created.",
+                              mapping = {'profile_name':
+                                         values['profileTitle']}))
                         new_profile.edit(
                             title = values['profileTitle'],
                             description = message,
@@ -1734,20 +1750,23 @@ class ajaxAnalysisRequestSubmit():
                 wftool.doActionFor(ar, 'receive')
 
         if len(ARs) > 1:
-            message = translate(_("Analysis requests ${ARs} were "
-                                  "successfully created.",
-                                  mapping = {'ARs': ', '.join(ARs)}))
+            message = self.context.translate(
+                _("Analysis requests ${ARs} were "
+                  "successfully created.",
+                  mapping = {'ARs': ', '.join(ARs)}))
         else:
-            message = translate(_("Analysis request ${AR} was "
-                                  "successfully created.",
-                                  mapping = {'AR': ARs[0]}))
+            message = self.context.translate(
+                _("Analysis request ${AR} was "
+                  "successfully created.",
+                  mapping = {'AR': ARs[0]}))
 
         self.context.plone_utils.addPortalMessage(message, 'info')
 
         if new_profile:
-            message = translate(_("The AR Profile '${profile_name}' was "
-                                  "automatically created.",
-                                  mapping = {'profile_name': new_profile.Title()}))
+            message = self.context.translate(
+                _("The AR Profile '${profile_name}' was "
+                  "automatically created.",
+                  mapping = {'profile_name': new_profile.Title()}))
             self.context.plone_utils.addPortalMessage(message, 'info')
 
         # automatic label printing
@@ -1784,7 +1803,7 @@ class AnalysisRequestsView(BikaListingView):
         else:
             self.request.set('disable_border', 1)
 
-        translate = self.context.translation_service.translate
+        translate = self.context.translate
 
         self.allow_edit = True
 
@@ -2032,7 +2051,7 @@ class AnalysisRequestsView(BikaListingView):
                         'state_title']},
             {'id':'assigned',
              'title': "<img title='%s' src='++resource++bika.lims.images/assigned.png'/>" %
-                        translate(_("Assigned")),
+                        self.context.translate(_("Assigned")),
              'contentFilter': {'worksheetanalysis_review_state': 'assigned',
                                'review_state': ('sample_received', 'to_be_verified',
                                                 'attachment_due', 'verified',
@@ -2064,7 +2083,7 @@ class AnalysisRequestsView(BikaListingView):
                         'state_title']},
             {'id':'unassigned',
              'title': "<img title='%s' src='++resource++bika.lims.images/unassigned.png'/>" %
-                        translate(_("Unassigned")),
+                        self.context.translate(_("Unassigned")),
              'contentFilter': {'worksheetanalysis_review_state': 'unassigned',
                                'review_state': ('sample_received', 'to_be_verified',
                                                 'attachment_due', 'verified',
@@ -2103,7 +2122,6 @@ class AnalysisRequestsView(BikaListingView):
         items = BikaListingView.folderitems(self)
         mtool = getToolByName(self.context, 'portal_membership')
         member = mtool.getAuthenticatedMember()
-        translate = self.context.translation_service.translate
 
         for x in range(len(items)):
             if not items[x].has_key('obj'): continue
@@ -2136,18 +2154,21 @@ class AnalysisRequestsView(BikaListingView):
             if state == 'assigned':
                 items[x]['after']['state_title'] = \
                     "<img src='++resource++bika.lims.images/worksheet.png' title='%s'/>" % \
-                    translate(_("All analyses assigned"))
+                    self.context.translate(_("All analyses assigned"))
 
             after_icons = ""
             if obj.getLate():
                 after_icons += "<img src='++resource++bika.lims.images/late.png' title='%s'>" % \
-                    translate(_("Late Analyses"))
-            if sample.getSampleType().getHazardous():
-                after_icons += "<img src='++resource++bika.lims.images/hazardous.png' title='%s'>" % \
-                    translate(_("Hazardous"))
+                    self.context.translate(_("Late Analyses"))
             if samplingdate > DateTime():
                 after_icons += "<img src='++resource++bika.lims.images/calendar.png' title='%s'>" % \
-                    translate(_("Future dated sample"))
+                    self.context.translate(_("Future dated sample"))
+            if obj.getInvoiceExclude():
+                after_icons += "<img src='++resource++bika.lims.images/invoice_exclude.png' title='%s'>" % \
+                    self.context.translate(_("Exclude from invoice"))
+            if sample.getSampleType().getHazardous():
+                after_icons += "<img src='++resource++bika.lims.images/hazardous.png' title='%s'>" % \
+                    self.context.translate(_("Hazardous"))
             if after_icons:
                 items[x]['after']['getRequestID'] = after_icons
 
@@ -2185,8 +2206,7 @@ class AnalysisRequestsView(BikaListingView):
                 items[x]['required'] = ['getSampler', 'getDateSampled']
                 items[x]['allow_edit'] = ['getSampler', 'getDateSampled']
                 samplers = getUsers(sample, ['Sampler', 'LabManager', 'Manager'])
-                getAuthenticatedMember = self.context.portal_membership.getAuthenticatedMember
-                username = getAuthenticatedMember().getUserName()
+                username = mtool.getAuthenticatedMember().getUserName()
                 users = [({'ResultValue': u, 'ResultText': samplers.getValue(u)})
                          for u in samplers]
                 items[x]['choices'] = {'getSampler': users}
@@ -2206,8 +2226,7 @@ class AnalysisRequestsView(BikaListingView):
                 items[x]['required'] = ['getPreserver', 'getDatePreserved']
                 items[x]['allow_edit'] = ['getPreserver', 'getDatePreserved']
                 preservers = getUsers(obj, ['Preserver', 'LabManager', 'Manager'])
-                getAuthenticatedMember = self.context.portal_membership.getAuthenticatedMember
-                username = getAuthenticatedMember().getUserName()
+                username = mtool.getAuthenticatedMember().getUserName()
                 users = [({'ResultValue': u, 'ResultText': preservers.getValue(u)})
                          for u in preservers]
                 items[x]['choices'] = {'getPreserver': users}
@@ -2217,5 +2236,26 @@ class AnalysisRequestsView(BikaListingView):
                     self.context, DateTime(), long_format=1, with_time=False)
                 items[x]['class']['getPreserver'] = 'provisional'
                 items[x]['class']['getDatePreserved'] = 'provisional'
+
+        # Hide Preservation/Sampling workflow actions if the edit columns
+        # are not displayed.
+        toggle_cols = self.get_toggle_cols()
+        new_states = []
+        for i,state in enumerate(self.review_states):
+            if state['id'] == self.review_state:
+                if 'getSampler' not in toggle_cols \
+                   or 'getDateSampled' not in toggle_cols:
+                    if 'hide_transitions' in state:
+                        state['hide_transitions'].append('sampled')
+                    else:
+                        state['hide_transitions'] = ['sampled',]
+                if 'getPreserver' not in toggle_cols \
+                   or 'getDatePreserved' not in toggle_cols:
+                    if 'hide_transitions' in state:
+                        state['hide_transitions'].append('preserved')
+                    else:
+                        state['hide_transitions'] = ['preserved',]
+            new_states.append(state)
+        self.review_states = new_states
 
         return items

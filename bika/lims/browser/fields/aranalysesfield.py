@@ -93,6 +93,11 @@ class ARAnalysesField(ObjectField):
                               MaxTimeAllowed = service.getMaxTimeAllowed())
                 analysis.unmarkCreationFlag()
                 zope.event.notify(ObjectInitializedEvent(analysis))
+                SamplingWorkflowEnabled = instance.bika_setup.getSamplingWorkflowEnabled()
+                if SamplingWorkflowEnabled:
+                    workflow.doActionFor(analysis, 'sampling_workflow')
+                else:
+                    workflow.doActionFor(analysis, 'no_sampling_workflow')
                 new_analyses.append(analysis)
                 # Note: subscriber might retract and/or unassign the AR
 
@@ -103,19 +108,18 @@ class ARAnalysesField(ObjectField):
             if service_uid not in service_uids:
                 # If it is verified or published, don't delete it.
                 if workflow.getInfoFor(analysis, 'review_state') in ('verified', 'published'):
-                    continue
+                    continue # log it
                 # If it is assigned to a worksheet, unassign it before deletion.
                 elif workflow.getInfoFor(analysis, 'worksheetanalysis_review_state') == 'assigned':
                     ws = analysis.getBackReferences("WorksheetAnalysis")[0]
                     ws.removeAnalysis(analysis)
+                # Unset the partition reference
+                analysis.edit(SamplePartition = None)
                 delete_ids.append(analysis.getId())
 
-        # before we delete, check if there are partitions linking here
-        # if so, remove the reference.
-        # if removing the reference *empties* the partition, remove it.
-
-        instance.manage_delObjects(ids = delete_ids)
-        # Note: subscriber might promote the AR
+        if delete_ids:
+            # Note: subscriber might promote the AR
+            instance.manage_delObjects(ids = delete_ids)
 
         return new_analyses
 

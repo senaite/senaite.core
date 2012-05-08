@@ -99,6 +99,18 @@
   <permission value="BIKA: Manage Clients"/>
  </action>
 
+ <action title="Templates"
+         action_id="templates"
+         category="object"
+         condition_expr=""
+         icon_expr="string:${portal_url}/images/artemplate.png"
+         link_target=""
+         url_expr="string:${object_url}/artemplates"
+         i18n:attributes="title"
+         visible="True">
+  <permission value="BIKA: Manage Clients"/>
+ </action>
+
  <action title="Analysis Specs"
          action_id="specs"
          category="object"

@@ -18,7 +18,6 @@ import copy,re,urllib
 import json
 import plone.protect
 import transaction
-import pdb
 
 ModuleSecurityInfo('email.Utils').declarePublic('formataddr')
 allow_module('csv')
@@ -417,6 +416,7 @@ class bsc_browserdata(BrowserView):
             s = s.getObject()
             data['containers'][s.UID()] = {
                 'title':s.Title(),
+                'uid':s.UID(),
             }
 
         data['preservations'] = {}
@@ -424,6 +424,7 @@ class bsc_browserdata(BrowserView):
             s = s.getObject()
             data['preservations'][s.UID()] = {
                 'title':s.Title(),
+                'uid':s.UID(),
             }
 
         return json.dumps(data)

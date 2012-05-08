@@ -340,7 +340,6 @@ tfoot td.batching a {
 
 .workflow_action_button:hover {
   background: &dtml-buttonHoverBackgroundColor; !important;
-  color: &dtml-buttonHoverTextColor; !important;
   border:1px solid &dtml-buttonHoverBorderColor; !important;
 }
 
@@ -348,6 +347,21 @@ tfoot td.batching a {
   background: &dtml-buttonClickBackgroundColor; !important;
   color: &dtml-buttonClickTextColor; !important;
   border:1px solid &dtml-buttonClickBorderColor; !important;
+}
+
+.workflow_action_button.disabled {
+  border-radius: &dtml-buttonBorderRadius; !important;
+  background: &dtml-buttonSelectedBackgroundColor; !important;
+  color:#bbb !important;
+  border:1px solid &dtml-buttonSelectedBorderColor; !important;
+  padding:1px 2px 1px 2px;
+}
+.workflow_action_button.disabled:active {
+  border-radius: &dtml-buttonBorderRadius; !important;
+  background: &dtml-buttonSelectedBackgroundColor; !important;
+  color:#bbb !important;
+  border:1px solid &dtml-buttonSelectedBorderColor; !important;
+  padding:1px 2px 1px 2px;
 }
 
 

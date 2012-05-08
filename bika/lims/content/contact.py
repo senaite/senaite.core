@@ -15,20 +15,20 @@ from zope.interface import implements
 schema = Person.schema.copy() + Schema((
     LinesField('PublicationPreference',
         vocabulary = PUBLICATION_PREFS,
-        schemata = PMF('Publication preference'),
+        schemata = 'Publication preference',
         widget = MultiSelectionWidget(
             label = _("Publication preference"),
         ),
     ),
     BooleanField('AttachmentsPermitted',
         default = False,
-        schemata = PMF('Publication preference'),
+        schemata = 'Publication preference',
         widget = BooleanWidget(
             label = _("Attachments Permitted"),
         ),
     ),
     ReferenceField('CCContact',
-        schemata = PMF('Publication preference'),
+        schemata = 'Publication preference',
         vocabulary = 'getCCContactsDisplayList',
         multiValued = 1,
         allowed_types = ('Contact',),

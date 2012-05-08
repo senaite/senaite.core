@@ -1,0 +1,12 @@
+*~
+*.pyc
+*.mo
+*egg-info*
+build/*
+dist/*
+*.orig
+.DS_Store*
+Thumbs.db
+*.log
+*.wpr
+*.wpu

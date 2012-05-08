@@ -12,8 +12,16 @@
     <h1>
         <img tal:condition="view/icon | nothing"
             src="" tal:attributes="src view/icon"/>
-        <span class="documentFirstHeading" tal:content="context/id"/>
-        <span class="barcode" tal:attributes="value context/id"/>
+        <span class="documentFirstHeading" tal:content="context/id"></span>
+        <span class="barcode" tal:attributes="value context/id"></span>
+		<img tal:condition="python:context.getSample().getSampleType().getHazardous()"
+			title="Hazardous"
+			i18n:attributes="value"
+			tal:attributes="src string:++resource++bika.lims.images/hazardous_big.png"/>
+		<img tal:condition="python:context.getInvoiceExclude()"
+			title="Exclude from invoice"
+			i18n:attributes="value"
+			tal:attributes="src string:++resource++bika.lims.images/invoice_exclude_big.png"/>
     </h1>
 </metal:content-title>
 
@@ -57,11 +65,6 @@
         name="analysisrequest_edit_form"
         method="POST"
         enctype="multipart/form-data">
-
-		<img tal:condition="view/getHazardous"
-			title="Hazardous"
-			i18n:attributes="value"
-			tal:attributes="src string:++resource++bika.lims.images/hazardous_big.png"/>
 
 		<h3 style="margin-top:1em;">
 		<tal:profile tal:condition="view/getARProfileTitle">

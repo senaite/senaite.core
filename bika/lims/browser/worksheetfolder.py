@@ -43,7 +43,7 @@ class WorksheetFolderWorkflowAction(WorkflowAction):
                         changes = True
 
                 if changes:
-                    message = self.context.translation_service.translate(PMF('Changes saved.'))
+                    message = self.context.translate(PMF('Changes saved.'))
                     self.context.plone_utils.addPortalMessage(message, 'info')
 
             self.destination_url = self.request.get_header("referer",
@@ -248,9 +248,11 @@ class WorksheetFolderListingView(BikaListingView):
                 items[x]['replace']['Template'] = "<a href='%s'>%s</a>" % \
                     (wst.absolute_url(), wst.Title())
 
-            # this cannot be setup in contentFilter, because AuthenticatedMember
-            # is not available in __init__
-            if self.request.get("%s_review_state"%self.form_id, '') == 'mine':
+            # this cannot be setup in contentFilter,
+            # because AuthenticatedMember is not available in __init__
+            cookie = json.loads(self.request.get("review_state", '{}'))
+            selected_state = cookie.get(self.form_id, '')
+            if selected_state == 'mine':
                 if member.getId() not in (analyst, creator):
                     continue
 
@@ -351,7 +353,7 @@ class WorksheetFolderListingView(BikaListingView):
         if can_reassign:
             for x in range(len(self.review_states)):
                 if self.review_states[x]['id'] in ['all', 'mine', 'open']:
-                    self.review_states[x]['custom_actions'] = [{'id': 'reassign', 'title': 'Reassign'}, ]
+                    self.review_states[x]['custom_actions'] = [{'id': 'reassign', 'title': _('Reassign')}, ]
 
         return new_items
 
@@ -394,7 +396,7 @@ class AddWorksheetView(BrowserView):
         instrument = self.request.get('instrument', '')
 
         if not analyst:
-            message = self.context.translation_service.translate("Analyst must be specified.")
+            message = self.context.translate("Analyst must be specified.")
             self.context.plone_utils.addPortalMessage(message, 'info')
             self.request.RESPONSE.redirect(self.context.absolute_url())
             return
@@ -428,6 +430,6 @@ class AddWorksheetView(BrowserView):
         if ws.getLayout():
             self.request.RESPONSE.redirect(ws.absolute_url() + "/manage_results")
         else:
-            msg = self.context.translation_service.translate(_("No analyses were added"))
+            msg = self.context.translate(_("No analyses were added"))
             self.context.plone_utils.addPortalMessage(msg)
             self.request.RESPONSE.redirect(ws.absolute_url() + "/add_analyses")

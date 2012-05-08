@@ -25,6 +25,7 @@ allow_module('bika.lims')
 allow_module('bika.lims.permissions')
 allow_module('json')
 allow_module('pdb')
+allow_module('zope.i18n.locales')
 
 def initialize(context):
 
@@ -90,6 +91,7 @@ def initialize(context):
     from controlpanel.bika_analysisservices import AnalysisServices
     from controlpanel.bika_analysisspecs import AnalysisSpecs
     from controlpanel.bika_arprofiles import ARProfiles
+    from controlpanel.bika_artemplates import ARTemplates
     from controlpanel.bika_attachmenttypes import AttachmentTypes
     from controlpanel.bika_calculations import Calculations
     from controlpanel.bika_containers import Containers

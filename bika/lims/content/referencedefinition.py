@@ -16,7 +16,7 @@ from zope.interface import implements
 
 schema = BikaSchema.copy() + Schema((
     ReferenceResultsField('ReferenceResults',
-        schemata = PMF('Reference Results'),
+        schemata = 'Reference Results',
         required = 1,
         widget = ReferenceResultsWidget(
             label = _("Reference Results"),
@@ -32,7 +32,7 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     BooleanField('Blank',
-        schemata = PMF('Description'),
+        schemata = 'Description',
         default = False,
         widget = BooleanWidget(
             label = _("Blank"),
@@ -40,7 +40,7 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     BooleanField('Hazardous',
-        schemata = PMF('Description'),
+        schemata = 'Description',
         default = False,
         widget = BooleanWidget(
             label = _("Hazardous"),
@@ -49,9 +49,9 @@ schema = BikaSchema.copy() + Schema((
     ),
 ))
 
-schema['title'].schemata = PMF('Description')
+schema['title'].schemata = 'Description'
 schema['title'].widget.visible = True
-schema['description'].schemata = PMF('Description')
+schema['description'].schemata = 'Description'
 schema['description'].widget.visible = True
 
 class ReferenceDefinition(BaseContent):

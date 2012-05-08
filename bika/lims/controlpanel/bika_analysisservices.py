@@ -62,13 +62,13 @@ class AnalysisServicesWorkflowAction(WorkflowAction):
                 created.append(_id)
 
             if len(created) > 1:
-                message = self.context.translation_service.translate(
+                message = self.context.translate(
                     _('Services ${services} were successfully created.',
                       mapping = {'services': ', '.join(created)}))
                 self.destination_url = self.request.get_header("referer",
                                                                self.context.absolute_url())
             else:
-                message = self.context.translation_service.translate(
+                message = self.context.translate(
                     _('Analysis request ${service} was successfully created.',
                     mapping = {'service': ', '.join(created)}))
                 self.destination_url = dup.absolute_url() + "/base_edit"

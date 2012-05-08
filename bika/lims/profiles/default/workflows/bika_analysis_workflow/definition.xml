@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <dc-workflow xmlns:i18n="http://xml.zope.org/namespaces/i18n"
-             i18n:domain="bika"
+             i18n:domain="plone"
 			 workflow_id="bika_analysis_workflow"
 			 title="Bika Analysis Workflow"
 			 state_variable="review_state"
@@ -15,8 +15,8 @@
  <permission>BIKA: Cancel and reinstate</permission>
 
 <state state_id="sample_registered" title="Registered" i18n:attributes="title">
-    <exit-transition transition_id="auto_sampling_workflow"/>
-    <exit-transition transition_id="auto_no_sampling_workflow"/>
+    <exit-transition transition_id="sampling_workflow"/>
+    <exit-transition transition_id="no_sampling_workflow"/>
 </state>
 
 <state state_id="to_be_sampled" title="To Be Sampled" i18n:attributes="title">
@@ -237,27 +237,27 @@
   </guard>
  </transition>
 
- <transition transition_id="auto_sampling_workflow"
-             title="auto_sampling_workflow"
+ <transition transition_id="sampling_workflow"
+             title="sampling_workflow"
              new_state="to_be_sampled"
-             trigger="AUTOMATIC"
+             trigger="USER"
              before_script=""
              after_script="">
   <description i18n:translate=""></description>
   <guard>
-   <guard-expression>python:here.guard_auto_sampling_workflow() == True</guard-expression>
+   <guard-permission>BIKA: Add Analysis</guard-permission>
   </guard>
  </transition>
 
- <transition transition_id="auto_no_sampling_workflow"
-             title="auto_no_sampling_workflow"
+ <transition transition_id="no_sampling_workflow"
+             title="no_sampling_workflow"
              new_state="sampled"
-             trigger="AUTOMATIC"
+             trigger="USER"
              before_script=""
              after_script="">
   <description i18n:translate=""></description>
   <guard>
-   <guard-expression>python:here.guard_auto_sampling_workflow() == False</guard-expression>
+   <guard-permission>BIKA: Add Analysis</guard-permission>
   </guard>
  </transition>
 
@@ -344,7 +344,7 @@
  </transition>
 
  <transition transition_id="receive"
-             title="Receive Sample"
+             title="Receive sample"
 			 new_state="sample_received"
 			 trigger="USER"
 			 before_script=""
