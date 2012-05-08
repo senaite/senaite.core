@@ -62,6 +62,8 @@ class AdministrationView(BrowserView):
         self.icon = "++resource++bika.lims.images/report_big.png"
         self.TimeOrDate = TimeOrDate
         self.address = None
+        self.lab_email = None
+        self.lab_url = None
         self.reporter = None
         self.reporter_email = None
 
@@ -84,6 +86,8 @@ class SubmitForm(BrowserView):
         lab = self.context.bika_setup.laboratory
         self.lab_title = lab.getName()
         self.address = lab.getPrintAddress()
+        self.lab_email = lab.getEmailAddress()
+        self.lab_url = lab.getLabURL()
         self.date = DateTime()
         username = self.context.portal_membership.getAuthenticatedMember().getUserName()
         self.reporter = pretty_user_name_or_id(self.context, username)
@@ -118,6 +122,7 @@ class SubmitForm(BrowserView):
         #    setheader('Content-Disposition', 'inline; filename=%s' % filename)
         #    self.request.RESPONSE.write(result)
 
+        # this is the good part
         #filename = "testing4.pdf"
         ramdisk = StringIO()
         pdf = pisa.CreatePDF(self.template(), ramdisk) 
@@ -144,5 +149,5 @@ class SubmitForm(BrowserView):
         """
 
 
-        #return self.template()
+        return self.template()
 

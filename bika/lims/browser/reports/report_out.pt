@@ -14,18 +14,21 @@
 
     </style>
 
-    <link rel="stylesheet" type="text/css" media="print" href=""
-          tal:attributes="href string:$portal_url/plonePrint.css" />
+    <link rel="stylesheet" type="text/css" media="all" href=""
+          tal:attributes="href string:$portal_url/reports.css" />
 </head>
 <body
     tal:define="
         report_content view/report_content;
+        report_format python:report_content.has_key('formats')
+                and report_content['formats'] or [];
         report_parms python:report_content.has_key('parms')
                 and report_content['parms'] or [];
         report_headers python:report_content.has_key('headings') 
                 and report_content['headings'] or {};
-        lines python:report_content['datalines'];
-        total python:report_content['total']"   >
+        footlines python:report_content['footings'];
+        datalines python:report_content['datalines'];
+        ">
 
 <h2 tal:condition="python:report_headers.has_key('header')">
 <span tal:content="python:report_headers['header']"/>
@@ -35,7 +38,7 @@
 </h3>
 <div>
 <table
-    class="listing"
+    class=""
     summary="Parameters"
     cellpadding="0" cellspacing="0">
 <tal:parms tal:repeat="line report_parms">
@@ -50,44 +53,67 @@
 
 <div>
 <table
-    class="listing"
+    class="bika-report-table"
     summary="Results"
-    cellpadding="0" cellspacing="0">
+    cellpadding="0" cellspacing="0"
+    tal:define="
+        col_cnt python:report_format['columns'];
+        col_heads python:report_format['col_heads'];
+        "
+    >
 <thead>
 <tr>
-<th i18n:translate="">Analyses</th>
-<th i18n:translate="">number of requests</th>
+    <th 
+        tal:repeat="col_head col_heads"
+        tal:content="col_head">
+    </th>
 </tr>
 </thead>
 
 <tbody>
-<metal:block tal:repeat="line lines">
-<tr>
-<td class="category" colspan="2"
-    tal:content="python:line[0]"></td>
-</tr>
-
-<tal:category
-    tal:define="services python:line[1]"
-    tal:repeat="service services">
-<tal:service>
-<tr tal:define="oddrow repeat/service/odd"
+<metal:block tal:repeat="line datalines">
+<tr tal:define="oddrow repeat/line/odd"
     tal:attributes="class python:oddrow and 'even' or 'odd'">
-<td tal:content="python:service[0]">Alcohol</td>
-<td tal:content="python:service[1]">
-</td>
+<tal:column
+    tal:repeat="i python:range(len(line))">
+    <td class="" colspan=""
+        tal:define="
+            colspan python:line[i].has_key('colspan') 
+                and line[i]['colspan'] or 1;
+            oddrow repeat/line/odd;
+            class python:line[i].has_key('class') 
+                and line[i]['class'] or None;
+            "
+
+        tal:attributes="
+            class class;
+            colspan colspan">
+        <span tal:content="python:line[i]['value']"/> 
+    </td>
+</tal:column>
 </tr>
-</tal:service>
-</tal:category>
 </metal:block>
 </tbody>
+
 <tfoot>
+<metal:block tal:repeat="line footlines">
 <tr>
-<th ><b i18n:translate="">Total</b></th>
-
-<td><b tal:content="total"/></td>
+<tal:column
+    tal:repeat="i python:range(len(line))">
+    <td class="" colspan=""
+        tal:define="
+            colspan python:line[i].has_key('colspan') 
+                and line[i]['colspan'] or 1;
+            class python:line[i].has_key('class') 
+                and line[i]['class'] or None;"
+        tal:attributes="
+            class class;
+            colspan colspan">
+        <span tal:content="python:line[i]['value']"/> 
+    </td>
+</tal:column>
 </tr>
-
+</metal:block>
 </tfoot>
 
 </table>

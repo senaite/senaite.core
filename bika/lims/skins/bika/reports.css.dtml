@@ -1,0 +1,72 @@
+/* <dtml-with bika_reports>
+<dtml-call "REQUEST.set('portal_url', portal_url())">
+*/
+
+/* General Bika Listing Table */
+
+.testgreen {
+    color: Green}
+
+div.bika_report {
+	font-family: &dtml-fontFamily;;
+    background-color: &dtml-backgroundColor;;
+	color: &dtml-fontColor;;
+}
+
+.bika-report-table {
+    font-size: &dtml-fontSmallSize;;
+    border-bottom: none;
+	margin-bottom: 0 !important;
+}
+
+.bika-report-table a {
+    text-decoration: none;
+}
+
+.bika-report-table tr {
+	line-height: 2em; /*2.1em;*/
+    border-left: &dtml-borderWidth; &dtml-borderStyle; &dtml-borderColor;;
+}
+
+.bika-report-table tr.odd {
+	background-color: &dtml-oddRowBackgroundColor;;
+}
+
+.bika-report-table tr.even {
+	background-color: &dtml-evenRowBackgroundColor;;
+}
+
+
+.bika-report-table th {
+    background-color: &dtml-tableHeaderBackgroundColor;;
+	color: &dtml-tableHeaderTextColor;;
+	padding:1px;
+	text-align:center;
+    vertical-align: middle;
+/* <dtml-if tableVerticalGrid> */ border-right: 1px solid &dtml-borderColor;;
+/* <dtml-else> */ border-right: none; /* </dtml-if> */
+}
+
+.bika-report-table td {
+    vertical-align: middle;
+	padding:1px 4px 1px 4px;
+/* <dtml-if tableHorizontalGrid> */	border-right: 1px solid &dtml-borderColor;;
+/* <dtml-else> */	border-right: none; /* </dtml-if> */
+}
+
+.bika-report-table td {
+}
+
+.bika-listing-table th.column,
+.bika-listing-table td.interim,
+.bika-listing-table td.Result,
+.bika-listing-table td.getRequestID,
+.bika-listing-table td.Title,
+.bika-listing-table td.ID {
+    white-space:nowrap !important;
+}
+
+
+/* </dtml-with> */
+
+

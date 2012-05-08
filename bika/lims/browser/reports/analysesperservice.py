@@ -109,30 +109,56 @@ class AnalysesPerService(BrowserView):
              'type': 'text'})
 
 
+        # and now lets do the actual report lines
+        formats = {'columns': 2,
+                   'col_heads': [ _('Analyses'), _('number of requests')],
+                   'class': '',
+                  }
 
         datalines = []
         for cat in sc(portal_type="AnalysisCategory",
                         sort_on='sortable_title'):
-            service_data = []
+            dataline = [{'value': cat.Title, 
+                        'class': 'category',
+                        'colspan': 2},]
+            datalines.append(dataline)
             for service in sc(portal_type="AnalysisService",
                             getCategoryUID = cat.UID,
                             sort_on='sortable_title'):
                 query['getServiceUID'] = service.UID
                 analyses = pc(query)
                 count_analyses = len(analyses)
-                service_data.append([service.Title, count_analyses])
+
+                dataline = []
+                dataitem = {'value': service.Title,
+                            'class': 'testgreen'} 
+                dataline.append(dataitem)
+                dataitem = {'value': count_analyses }
+
+                dataline.append(dataitem)
+
+
+                datalines.append(dataline)
+
                 count_all += count_analyses
 
-            datalines.append([cat.Title, service_data])
-
-
+        # footer data
+        footlines = []
+        footline = []
+        footitem = {'value': _('Total'),
+                    'class': 'total_label'} 
+        footline.append(footitem)
+        footitem = {'value': count_all} 
+        footline.append(footitem)
+        footlines.append(footline)
         
 
         self.report_content = {
                 'headings': headings,
                 'parms': parms,
+                'formats': formats,
                 'datalines': datalines,
-                'total': count_all}
+                'footings': footlines}
 
 
         return self.template()
