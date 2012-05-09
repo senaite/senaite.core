@@ -11,6 +11,7 @@
 
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone import PloneMessageFactory as _
+from bika.lims.utils import logged_in_client
 REQUEST=context.REQUEST
 
 membership_tool=getToolByName(context, 'portal_membership')
@@ -39,17 +40,20 @@ elif must_change_password:
 
 membership_tool.loginUser(REQUEST)
 
+client = logged_in_client(context, member)
+if client:
+    url = client.absolute_url()
+    return context.REQUEST.response.redirect(url)
+
 groups_tool=context.portal_groups
 member_groups = [groups_tool.getGroupById(group.id).getGroupName()
                  for group in groups_tool.getGroupsByUserId(member.id)]
 
-if 'Clients' in member_groups:
-    for obj in context.clients.objectValues("Client"):
-        if member.id in obj.users_with_local_role('Owner'):
-            url = obj.absolute_url()
-            return context.REQUEST.response.redirect(url)
+groups_tool=context.portal_groups
+member_groups = [groups_tool.getGroupById(group.id).getGroupName()
+                 for group in groups_tool.getGroupsByUserId(member.id)]
 
-elif 'Analysts' in member_groups:
+if 'Analysts' in member_groups:
     url = context.worksheets.absolute_url()
     return context.REQUEST.RESPONSE.redirect(url)
 

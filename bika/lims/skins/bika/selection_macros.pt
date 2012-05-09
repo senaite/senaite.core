@@ -29,7 +29,6 @@
         </tal:clients>
     </select>
 </div>
-
 </div>
 
 <div metal:define-macro="date">

@@ -5,7 +5,7 @@ from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.client import ClientSamplesView
-from bika.lims.utils import formatDateQuery, formatDateParms
+from bika.lims.utils import formatDateQuery, formatDateParms, logged_in_client
 from bika.lims.interfaces import IReports
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.layout.globals.interfaces import IViewView
@@ -26,7 +26,7 @@ class AnalysesPerService(BrowserView):
         # get all the data into datalines
         
         sc = getToolByName(self.context, 'bika_setup_catalog')
-        pc = getToolByName(self.context, 'portal_catalog')
+        pc = getToolByName(self.context, 'bika_analysis_catalog')
         rc = getToolByName(self.context, 'reference_catalog')
         self.report_content = {}
         parm_lines = {}
@@ -43,7 +43,12 @@ class AnalysesPerService(BrowserView):
             client = rc.lookupObject(client_uid)
             client_title = client.Title()
         else:
-            client_title = 'Undefined'
+            client = logged_in_client(self.context)
+            if client:
+                client_title = client.Title()
+                query['getClientUID'] = client.UID()
+            else:
+                client_title = 'Undefined'
         parms.append(
             { 'title': _('Client'),
              'value': client_title,

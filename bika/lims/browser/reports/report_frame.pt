@@ -8,12 +8,17 @@
 <table>
     <tr>
         <td class="left">
+            <span tal:content="view/client_title | nothing"/>
+            <tal:address tal:repeat="line view/client_address">
+                <span tal:content="structure line "/>
+                <br/>
+            </tal:address>
         </td>
         <td align="right">
             <img tal:attributes="src string:${context/absolute_url}/logo.png"/>
             <br/>
             <h3 tal:content="view/lab_title | nothing"/>
-            <tal:address tal:repeat="line view/address">
+            <tal:address tal:repeat="line view/lab_address">
                 <span tal:content="structure line "/>
                 <br/>
             </tal:address>

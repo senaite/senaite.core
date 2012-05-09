@@ -229,6 +229,22 @@ def pretty_user_email(context, userid):
     else:
         return member.getProperty('email')
 
+def logged_in_client(context, member=None):
+    if not member:
+        membership_tool=getToolByName(context, 'portal_membership')
+        member = membership_tool.getAuthenticatedMember()
+
+    client = None
+    groups_tool=context.portal_groups
+    member_groups = [groups_tool.getGroupById(group.id).getGroupName()
+                 for group in groups_tool.getGroupsByUserId(member.id)]
+
+    if 'Clients' in member_groups:
+        for obj in context.clients.objectValues("Client"):
+            if member.id in obj.users_with_local_role('Owner'):
+                client = obj
+    return client
+
 def changeWorkflowState(content, state_id, acquire_permissions=False,
                         portal_workflow=None, **kw):
     """Change the workflow state of an object
