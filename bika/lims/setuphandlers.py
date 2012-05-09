@@ -346,7 +346,7 @@ class BikaGenerator:
         bac.addIndex('sortable_title', 'FieldIndex')
         bac.addIndex('description', 'FieldIndex', 'Description')
         bac.addIndex('review_state', 'FieldIndex')
-        bac.addIndex('worksheetanalysis_review_state' 'FieldIndex')
+        bac.addIndex('worksheetanalysis_review_state', 'FieldIndex')
         bac.addIndex('cancellation_state', 'FieldIndex')
 
         bac.addIndex('getDateAnalysisPublished', 'DateIndex')
