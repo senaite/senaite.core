@@ -62,7 +62,7 @@ class SampleTypesView(BikaListingView):
         ]
 
     def folderitems(self):
-        bsc = getToolByName(context, 'bika_setup_catalog')
+        bsc = getToolByName(self.context, 'bika_setup_catalog')
         self.contentsMethod = bsc
         items = BikaListingView.folderitems(self)
         for x in range(len(items)):

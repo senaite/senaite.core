@@ -17,7 +17,7 @@ class AnalysesTats(BrowserView):
     """ stuff
     """
     implements(IViewView)
-    template = ViewPageTemplateFile("analysestats.pt")
+    template = ViewPageTemplateFile("report_out.pt")
 
     def __init__(self, context, request):
         BrowserView.__init__(self, context, request)

@@ -14,8 +14,6 @@ import json
 import plone
 
 class AnalysesPerService(BrowserView):
-    """ stuff
-    """
     implements(IViewView)
     template = ViewPageTemplateFile("report_out.pt")
 
@@ -26,7 +24,7 @@ class AnalysesPerService(BrowserView):
         # get all the data into datalines
         
         sc = getToolByName(self.context, 'bika_setup_catalog')
-        pc = getToolByName(self.context, 'bika_analysis_catalog')
+        bc = getToolByName(self.context, 'bika_analysis_catalog')
         rc = getToolByName(self.context, 'reference_catalog')
         self.report_content = {}
         parm_lines = {}
@@ -131,7 +129,7 @@ class AnalysesPerService(BrowserView):
                             getCategoryUID = cat.UID,
                             sort_on='sortable_title'):
                 query['getServiceUID'] = service.UID
-                analyses = pc(query)
+                analyses = bc(query)
                 count_analyses = len(analyses)
 
                 dataline = []
