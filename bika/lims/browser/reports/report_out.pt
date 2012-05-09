@@ -16,6 +16,7 @@
 
     <link rel="stylesheet" type="text/css" media="all" href=""
           tal:attributes="href string:$portal_url/reports.css" />
+
 </head>
 <body
     tal:define="
@@ -117,6 +118,9 @@
 </tfoot>
 
 </table>
-</div>
+
+
+
 </body>
+
 </html>

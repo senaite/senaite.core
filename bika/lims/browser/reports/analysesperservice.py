@@ -135,8 +135,7 @@ class AnalysesPerService(BrowserView):
                 count_analyses = len(analyses)
 
                 dataline = []
-                dataitem = {'value': service.Title,
-                            'class': 'testgreen'} 
+                dataitem = {'value': service.Title}
                 dataline.append(dataitem)
                 dataitem = {'value': count_analyses }
 
