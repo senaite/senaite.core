@@ -41,8 +41,9 @@ class LogView(BikaListingView):
             'Description': {'title': _('Description')},
         }
         self.review_states = [
-            {'id':'all',
+            {'id':'default',
              'title': 'All',
+             'contentFilter':{},
              'columns': ['Version',
                          'Date',
                          'User',
@@ -51,8 +52,8 @@ class LogView(BikaListingView):
         ]
 
     def folderitems(self):
-        pc = getToolByName(self.context, 'portal_catalog')
-        bsc = bsc = getToolByName(self.context, 'bika_setup_catalog')
+        bc = getToolByName(self.context, 'bika_catalog')
+        bsc = getToolByName(self.context, 'bika_setup_catalog')
         rc = getToolByName(self.context, REFERENCE_CATALOG)
         wf = getToolByName(self.context, 'portal_workflow')
         pr = getToolByName(self.context, 'portal_repository')

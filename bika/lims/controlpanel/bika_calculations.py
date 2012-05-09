@@ -19,8 +19,6 @@ class CalculationsView(BikaListingView):
     implements(IFolderContentsView, IViewView)
     def __init__(self, context, request):
         super(CalculationsView, self).__init__(context, request)
-        bsc = getToolByName(context, 'bika_setup_catalog')
-        self.contentsMethod = bsc
         self.contentFilter = {'portal_type': 'Calculation',
                               'sort_on': 'sortable_title'}
         self.context_actions = {_('Add'):
@@ -46,28 +44,31 @@ class CalculationsView(BikaListingView):
         }
 
         self.review_states = [
-            {'id':'all',
-             'title': _('All'),
-                     'columns': ['Title',
-                                 'Description',
-                                 'Formula']},
-            {'id':'active',
+            {'id':'default',
              'title': _('Active'),
              'contentFilter': {'inactive_state': 'active'},
              'transitions': [{'id':'deactivate'}, ],
-                     'columns': ['Title',
-                                 'Description',
-                                 'Formula']},
+             'columns': ['Title',
+                         'Description',
+                         'Formula']},
             {'id':'inactive',
-             'title': _('Dormant'),
+             'title': _('Inactive'),
              'contentFilter': {'inactive_state': 'inactive'},
              'transitions': [{'id':'activate'}, ],
-                     'columns': ['Title',
-                                 'Description',
-                                 'Formula']},
+             'columns': ['Title',
+                         'Description',
+                         'Formula']},
+            {'id':'all',
+             'title': _('All'),
+             'contentFilter':{},
+             'columns': ['Title',
+                         'Description',
+                         'Formula']},
         ]
 
     def folderitems(self):
+        bsc = getToolByName(context, 'bika_setup_catalog')
+        self.contentsMethod = bsc
         items = BikaListingView.folderitems(self)
         for x in range(len(items)):
             if not items[x].has_key('obj'): continue

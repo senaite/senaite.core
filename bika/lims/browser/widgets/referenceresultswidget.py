@@ -41,8 +41,9 @@ class ReferenceResultsView(BikaListingView):
             'max': {'title': _('Max')}
         }
         self.review_states = [
-            {'id':'all',
+            {'id':'default',
              'title': _('All'),
+             'contentFilter':{},
              'transitions': [],
              'columns':['service', 'result', 'error', 'min', 'max'],
             },

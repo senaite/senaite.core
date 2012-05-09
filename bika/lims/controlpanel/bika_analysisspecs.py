@@ -17,8 +17,6 @@ class AnalysisSpecsView(BikaListingView):
 
     def __init__(self, context, request):
         super(AnalysisSpecsView, self).__init__(context, request)
-        bsc = getToolByName(context, 'bika_setup_catalog')
-        self.contentsMethod = bsc
         self.contentFilter = {'portal_type': 'AnalysisSpec',
                               'sort_on': 'sortable_title',
                               'path': {'query':"/".join(self.context.getPhysicalPath()),
@@ -40,22 +38,25 @@ class AnalysisSpecsView(BikaListingView):
         }
 
         self.review_states = [
-            {'id':'all',
-             'title': _('All'),
-             'columns': ['SampleType']},
-            {'id':'active',
+            {'id':'default',
              'title': _('Active'),
              'contentFilter': {'inactive_state': 'active'},
              'transitions': [{'id':'deactivate'}, ],
              'columns': ['SampleType']},
             {'id':'inactive',
-             'title': _('Dormant'),
+             'title': _('Inactive'),
              'contentFilter': {'inactive_state': 'inactive'},
              'transitions': [{'id':'activate'}, ],
+             'columns': ['SampleType']},
+            {'id':'all',
+             'title': _('All'),
+             'contentFilter':{},
              'columns': ['SampleType']},
         ]
 
     def folderitems(self):
+        bsc = getToolByName(context, 'bika_setup_catalog')
+        self.contentsMethod = bsc
         items = BikaListingView.folderitems(self)
 
         for x in range(len(items)):

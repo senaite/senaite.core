@@ -11,7 +11,7 @@
 		global colspan_max python:1;
 		nosortclass view/get_nosort_class;
 		portal context/@@plone_portal_state/portal;
-		review_state_id python:request.get(form_id+'_review_state', 'all');
+		review_state_id python:request.get(form_id+'_review_state', 'default');
 		review_state python:[t for t in view.bika_listing.review_states
 							 if t['id'] == review_state_id][0];
 		toggle_cols python:dict([(col, view.bika_listing.columns[col])
@@ -111,7 +111,7 @@ Workflow review state selector
 						href view/view_url;
 						value state_id;
 						id state/id;
-						class python:request.get(form_id + '_review_state', 'all') == state_id
+						class python:request.get(form_id + '_review_state', 'default') == state_id
 									   and 'selected' or ''"
 					tal:content="structure state/title"/>
 				</tal:review_states>
@@ -456,7 +456,7 @@ Table cells for each column from in review_state's column list.
 	<tal:comment replace="nothing"><!-- choices --></tal:comment>
 	<span tal:omit-tag="python:True"
 		tal:condition="python:field_type == 'choices'">
-		<span tal:condition="allow_edit">
+		<span tal:condition="python: allow_edit and item.get('edit_condition', {}).get(column, True)">
 			<select class="listing_select_entry" style="font-size: 100%"
 				tal:condition="python:column in item['choices']"
 				tal:attributes="
@@ -477,18 +477,19 @@ Table cells for each column from in review_state's column list.
 			</select>
 		</span>
 		<span tal:omit-tag="python:True"
-			tal:condition="not:allow_edit">
+			tal:condition="python:not allow_edit or not item.get('edit_condition', {}).get(column, True)">
+			<span>
+				<input
+					type="hidden"
+					tal:attributes="
+						uid string:${item/uid};
+						field python:column;
+						value python:item[column];
+						name string:${column}.${item/uid}:records"/>
+			</span>
 			<span
-				tal:content="python:item['formatted_result'] and item['formatted_result'] or item[column]"
+				tal:content="python:item.has_key('formatted_result') and item['formatted_result'] or item[column]"
 				tal:attributes="class string:${item/state_class} result"/>
-			<input
-				type="hidden"
-				tal:condition="not:allow_edit"
-				tal:attributes="
-					size input_width;
-					uid string:${item/uid};
-					field python:column;
-					value python:item[column];"/>
 		</span>
 	</span>
 

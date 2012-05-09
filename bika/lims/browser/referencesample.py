@@ -66,8 +66,9 @@ class ReferenceAnalysesView(AnalysesView):
             'state_title': {'title': _('State'), 'toggle':True},
         }
         self.review_states = [
-            {'id':'all',
+            {'id':'default',
              'title': _('All'),
+             'contentFilter':{},
              'transitions': [],
              'columns':['id',
                         'Category',
@@ -81,7 +82,8 @@ class ReferenceAnalysesView(AnalysesView):
         ]
 
     def folderitems(self):
-        self.contentsMethod = getToolByName(self.context, 'portal_catalog')
+        bac = getToolByName(self.context, 'bika_analysis_catalog')
+        self.contentsMethod = bac
         items = super(ReferenceAnalysesView, self).folderitems()
         for x in range(len(items)):
             if not items[x].has_key('obj'):
@@ -127,8 +129,9 @@ class ReferenceResultsView(BikaListingView):
             'max': {'title': _('Max')},
         }
         self.review_states = [
-            {'id':'all',
+            {'id':'default',
              'title': _('All'),
+             'contentFilter':{},
              'columns': ['Service',
                          'result',
                          'min',
@@ -201,18 +204,9 @@ class ReferenceSamplesView(BikaListingView):
             'state_title': {'title': _('State'), 'toggle':True},
         }
         self.review_states = [
-            {'id':'all',
-             'title': _('All'),
-             'columns': ['ID',
-                         'Title',
-                         'Supplier',
-                         'Definition',
-                         'DateSampled',
-                         'DateReceived',
-                         'ExpiryDate',
-                         'state_title']},
-            {'id':'current',
+            {'id':'default',
              'title': _('Current'),
+             'contentFilter':{'review_state':'current'},
              'columns': ['ID',
                          'Title',
                          'Supplier',
@@ -222,6 +216,7 @@ class ReferenceSamplesView(BikaListingView):
                          'ExpiryDate']},
             {'id':'expired',
              'title': _('Expired'),
+             'contentFilter':{'review_state':'expired'},
              'columns': ['ID',
                          'Title',
                          'Supplier',
@@ -231,6 +226,7 @@ class ReferenceSamplesView(BikaListingView):
                          'ExpiryDate']},
             {'id':'disposed',
              'title': _('Disposed'),
+             'contentFilter':{'review_state':'disposed'},
              'columns': ['ID',
                          'Title',
                          'Supplier',
@@ -238,9 +234,22 @@ class ReferenceSamplesView(BikaListingView):
                          'DateSampled',
                          'DateReceived',
                          'ExpiryDate']},
+            {'id':'all',
+             'title': _('All'),
+             'contentFilter':{},
+             'columns': ['ID',
+                         'Title',
+                         'Supplier',
+                         'Definition',
+                         'DateSampled',
+                         'DateReceived',
+                         'ExpiryDate',
+                         'state_title']},
         ]
 
     def folderitems(self):
+        bc = getToolByName(self.context, 'bika_catalog')
+        self.contentsMethod = bc
         items = super(ReferenceSamplesView, self).folderitems()
         for x in range(len(items)):
             if not items[x].has_key('obj'): continue

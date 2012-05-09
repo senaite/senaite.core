@@ -83,8 +83,10 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
             first_part = sample.objectValues("SamplePartition")[0]
             for a in new_analyses:
                 a.setSamplePartition(first_part)
-
+            if new_analyses:
                 message = self.context.translate(PMF("Changes saved."))
+            else:
+                message = self.context.translate(_("No changes made."))
 
             self.context.plone_utils.addPortalMessage(message, 'info')
             self.destination_url = self.context.absolute_url()
@@ -576,9 +578,9 @@ class AnalysisRequestViewView(BrowserView):
             [[PointOfCapture, category uid, service uid],
              [PointOfCapture, category uid, service uid], ...]
         """
-        pc = getToolByName(self.context, 'portal_catalog')
+        bac = getToolByName(self.context, 'bika_analysis_catalog')
         res = []
-        for analysis in pc(portal_type = "Analysis",
+        for analysis in bac(portal_type = "Analysis",
                            getRequestID = self.context.RequestID):
             analysis = analysis.getObject()
             service = analysis.getService()
@@ -810,8 +812,6 @@ class AnalysisRequestAnalysesView(BikaListingView):
         """
 
         super(AnalysisRequestAnalysesView, self).__init__(context, request)
-        bsc = getToolByName(context, 'bika_setup_catalog')
-        self.contentsMethod = bsc
         self.contentFilter = {'portal_type': 'AnalysisService',
                               'sort_on': 'sortable_title',
                               'inactive_state': 'active',}
@@ -849,8 +849,9 @@ class AnalysisRequestAnalysesView(BikaListingView):
         }
 
         self.review_states = [
-            {'id':'all',
+            {'id':'default',
              'title': _('All'),
+             'contentFilter':{},
              'columns': ['Title',
                          'Price',
 ##                         'Keyword',
@@ -867,12 +868,21 @@ class AnalysisRequestAnalysesView(BikaListingView):
     def folderitems(self):
         self.categories = []
 
+        bsc = getToolByName(context, 'bika_setup_catalog')
+        self.contentsMethod = bsc
+
         mtool = getToolByName(self.context, 'portal_membership')
         member = mtool.getAuthenticatedMember()
         roles = member.getRoles()
         self.allow_edit = 'LabManager' in roles or 'Manager' in roles
-        bsc = getToolByName(self.context, 'bika_setup_catalog')
         items = BikaListingView.folderitems(self)
+        sample = self.context.getSample()
+
+        partitions = [{'ResultValue':o.Title(), 'ResultText':o.Title()}
+                      for o in
+                      self.context.getSample().objectValues('SamplePartition')]
+        partitions.append({'ResultValue':len(partitions),
+                           'ResultText':self.context.translate(_("New"))})
 
         containers = [({'ResultValue':o.UID,
                         'ResultText':o.title})
@@ -908,9 +918,15 @@ class AnalysisRequestAnalysesView(BikaListingView):
             symbol = locale.numbers.currencies[currency].symbol
             items[x]['before']['Price'] = symbol
             items[x]['Price'] = obj.getPrice()
-            items[x]['allow_edit'] = ['Price', 'Container', 'Preservation']
             items[x]['class']['Price'] = 'nowrap'
+            items[x]['allow_edit'] = ['Price', 'Partition', 'Container', 'Preservation']
+            if not items[x]['selected']:
+                items[x]['edit_condition'] = {'Container':False,
+                                              'Preservation':False,
+                                              'Partition':False}
 
+            items[x]['required'].append('Partition')
+            items[x]['choices']['Partition'] = partitions
             items[x]['choices']['Container'] = containers
             items[x]['choices']['Preservation'] = preservations
 
@@ -1028,8 +1044,9 @@ class AnalysisRequestSelectCCView(BikaListingView):
             'MobilePhone': {'title': _('Mobile Phone')},
         }
         self.review_states = [
-            {'id':'all',
+            {'id':'default',
              'title': _('All'),
+             'contentFilter':{},
              'columns': ['Fullname',
                          'EmailAddress',
                          'BusinessPhone',
@@ -1040,6 +1057,8 @@ class AnalysisRequestSelectCCView(BikaListingView):
         ]
 
     def folderitems(self, full_objects = False):
+        pc = getToolByName(self.context, 'portal_catalog')
+        self.contentsMethod = pc
         old_items = BikaListingView.folderitems(self)
         items = []
         for item in old_items:
@@ -1105,7 +1124,8 @@ class AnalysisRequestSelectSampleView(BikaListingView):
         }
 
         self.review_states = [
-            {'id':'all',
+            {'id':'default',
+             'contentFilter':{},
              'title': _('All Samples'),
              'columns': ['SampleID',
                          'ClientReference',
@@ -1136,6 +1156,8 @@ class AnalysisRequestSelectSampleView(BikaListingView):
         ]
 
     def folderitems(self, full_objects = False):
+        bc = getToolByName(self.context, 'bika_catalog')
+        self.contentsMethod = bc
         items = BikaListingView.folderitems(self)
         for x in range(len(items)):
             if not items[x].has_key('obj'): continue
@@ -1435,7 +1457,7 @@ class ajaxAnalysisRequestSubmit():
         plone.protect.PostOnly(self.request.form)
         came_from = form.has_key('came_from') and form['came_from'] or 'add'
         wftool = getToolByName(self.context, 'portal_workflow')
-        pc = getToolByName(self.context, 'portal_catalog')
+        bc = getToolByName(self.context, 'bika_catalog')
         bsc = getToolByName(self.context, 'bika_setup_catalog')
 
         SamplingWorkflowEnabled = self.context.bika_setup.getSamplingWorkflowEnabled()
@@ -1499,7 +1521,7 @@ class ajaxAnalysisRequestSubmit():
                 if field == "SampleID":
                     valid = True
                     try:
-                        if not pc(portal_type = 'Sample',
+                        if not bc(portal_type = 'Sample',
                                   cancellation_state = 'active',
                                   id = ar[field]):
                             valid = False
@@ -1574,7 +1596,7 @@ class ajaxAnalysisRequestSubmit():
             if values.has_key('SampleID'):
                 # Secondary AR
                 sample_id = values['SampleID']
-                sample_proxy = pc(portal_type = 'Sample',
+                sample_proxy = bc(portal_type = 'Sample',
                                   cancellation_state = 'active',
                                   id = sample_id)
                 assert len(sample_proxy) == 1
@@ -1788,12 +1810,10 @@ class AnalysisRequestsView(BikaListingView):
         super(AnalysisRequestsView, self).__init__(context, request)
 
         self.contentFilter = {'portal_type':'AnalysisRequest',
-                              'sort_on':'id',
+                              'sort_on':'created',
                               'sort_order': 'reverse',
                               'path': {"query": "/", "level" : 0 }
                               }
-
-        self.review_state = 'all'
 
         self.context_actions = {}
 
@@ -1876,8 +1896,11 @@ class AnalysisRequestsView(BikaListingView):
                             'index': 'review_state'},
         }
         self.review_states = [
-            {'id':'all',
-             'title': _('All'),
+            {'id':'default',
+             'title': _('Active'),
+             'contentFilter':{'cancellation_state':'active',
+                              'sort_on':'created',
+                              'sort_order': 'reverse'},
              'transitions': [{'id':'sampled'},
                              {'id':'preserved'},
                              {'id':'receive'},
@@ -1910,7 +1933,7 @@ class AnalysisRequestsView(BikaListingView):
              'contentFilter': {'review_state': ('to_be_sampled',
                                                 'to_be_preserved',
                                                 'sample_due'),
-                               'sort_on':'id',
+                               'sort_on':'created',
                                'sort_order': 'reverse'},
              'transitions': [{'id':'sampled'},
                              {'id':'preserved'},
@@ -1935,7 +1958,7 @@ class AnalysisRequestsView(BikaListingView):
            {'id':'sample_received',
              'title': _('Received'),
              'contentFilter': {'review_state': 'sample_received',
-                               'sort_on':'id',
+                               'sort_on':'created',
                                'sort_order': 'reverse'},
              'transitions': [{'id':'prepublish'},
                              {'id':'cancel'},
@@ -1958,7 +1981,7 @@ class AnalysisRequestsView(BikaListingView):
             {'id':'to_be_verified',
              'title': _('To be verified'),
              'contentFilter': {'review_state': 'to_be_verified',
-                               'sort_on':'id',
+                               'sort_on':'created',
                                'sort_order': 'reverse'},
              'transitions': [{'id':'retract'},
                              {'id':'verify'},
@@ -1983,7 +2006,7 @@ class AnalysisRequestsView(BikaListingView):
             {'id':'verified',
              'title': _('Verified'),
              'contentFilter': {'review_state': 'verified',
-                               'sort_on':'id',
+                               'sort_on':'created',
                                'sort_order': 'reverse'},
              'transitions': [{'id':'publish'}],
              'columns':['getRequestID',
@@ -2004,7 +2027,7 @@ class AnalysisRequestsView(BikaListingView):
             {'id':'published',
              'title': _('Published'),
              'contentFilter': {'review_state': 'published',
-                               'sort_on':'id',
+                               'sort_on':'created',
                                'sort_order': 'reverse'},
              'columns':['getRequestID',
                         'getSample',
@@ -2029,7 +2052,7 @@ class AnalysisRequestsView(BikaListingView):
                                                 'sample_due', 'sample_received',
                                                 'to_be_verified', 'attachment_due',
                                                 'verified', 'published'),
-                               'sort_on':'id',
+                               'sort_on':'created',
                                'sort_order': 'reverse'},
              'transitions': [{'id':'reinstate'}],
              'columns':['getRequestID',
@@ -2056,7 +2079,7 @@ class AnalysisRequestsView(BikaListingView):
                                'review_state': ('sample_received', 'to_be_verified',
                                                 'attachment_due', 'verified',
                                                 'published'),
-                               'sort_on':'id',
+                               'sort_on':'created',
                                'sort_order': 'reverse'},
              'transitions': [{'id':'retract'},
                              {'id':'verify'},
@@ -2088,7 +2111,7 @@ class AnalysisRequestsView(BikaListingView):
                                'review_state': ('sample_received', 'to_be_verified',
                                                 'attachment_due', 'verified',
                                                 'published'),
-                               'sort_on':'id',
+                               'sort_on':'created',
                                'sort_order': 'reverse'},
              'transitions': [{'id':'receive'},
                              {'id':'retract'},
@@ -2118,6 +2141,8 @@ class AnalysisRequestsView(BikaListingView):
             ]
 
     def folderitems(self, full_objects = False):
+        bc = getToolByName(self.context, 'bika_catalog')
+        self.contentsMethod = bc
         workflow = getToolByName(self.context, "portal_workflow")
         items = BikaListingView.folderitems(self)
         mtool = getToolByName(self.context, 'portal_membership')

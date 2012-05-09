@@ -21,7 +21,7 @@ import plone
 class AnalysesView(BikaListingView):
     """ Displays a list of Analyses in a table.
         All InterimFields from all analyses are added to self.columns[].
-        Keyword arguments are passed directly to portal_catalog.
+        Keyword arguments are passed directly to bika_analysis_catalog.
     """
     def __init__(self, context, request, **kwargs):
         self.contentFilter = dict(kwargs)
@@ -34,9 +34,6 @@ class AnalysesView(BikaListingView):
         self.show_column_toggles = False
         self.pagesize = 1000
         self.form_id = 'analyses_form'
-
-        pc = getToolByName(context, 'portal_catalog')
-        self.contentsMethod = pc
 
         request.set('disable_plone.rightcolumn', 1);
 
@@ -73,8 +70,9 @@ class AnalysesView(BikaListingView):
         }
 
         self.review_states = [
-            {'id':'all',
+            {'id':'default',
              'title': _('All'),
+             'contentFilter':{},
              'columns':['Service',
                         'Partition',
                         'Method',
@@ -90,6 +88,9 @@ class AnalysesView(BikaListingView):
         super(AnalysesView, self).__init__(context, request)
 
     def folderitems(self):
+        bac = getToolByName(context, 'bika_analysis_catalog')
+        self.contentsMethod = bac
+
         rc = getToolByName(self.context, REFERENCE_CATALOG)
         bsc = getToolByName(self.context, 'bika_setup_catalog')
         workflow = getToolByName(self.context, 'portal_workflow')
@@ -105,6 +106,9 @@ class AnalysesView(BikaListingView):
                 can_edit_analyses = checkPermission(EditResults, self.context)
 
         context_active = isActive(self.context)
+
+        bac = getToolByName(self.context, 'bika_analysis_catalog')
+        self.contentsMethod = bac
 
         items = super(AnalysesView, self).folderitems(full_objects = True)
 
@@ -129,6 +133,7 @@ class AnalysesView(BikaListingView):
                 and obj.getInterimFields() or []
             self.interim_fields[obj.UID()] = interim_fields
 
+            items[i]['Service'] = service.Title()
             items[i]['Keyword'] = keyword
             items[i]['Unit'] = unit and unit or ''
             items[i]['Result'] = ''

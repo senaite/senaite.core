@@ -58,8 +58,9 @@ class AccreditationView(AnalysisServicesView):
         }
 
         self.review_states = [
-            {'id':'all',
+            {'id':'default',
              'title': _('All'),
+             'contentFilter':{},
              'columns': ['Title',
                          'Keyword',
                          'Category',

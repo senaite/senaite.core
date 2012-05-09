@@ -25,9 +25,9 @@ class AnalysesPerSampleType(BrowserView):
 
     def __call__(self):
         # get all the data into datalines
-        
+
         sc = getToolByName(self.context, 'bika_setup_catalog')
-        pc = getToolByName(self.context, 'portal_catalog')
+        bc = getToolByName(self.context, 'bika_analysis_catalog')
         rc = getToolByName(self.context, 'reference_catalog')
         self.report_content = {}
         parms = {}
@@ -75,7 +75,7 @@ class AnalysesPerSampleType(BrowserView):
                             getCategoryUID = cat.UID,
                             sort_on='sortable_title'):
                 query['getServiceUID'] = service.UID
-                analyses = pc(query)
+                analyses = bc(query)
                 count_analyses = len(analyses)
                 service_data.append([service.Title, count_analyses])
                 count_all += count_analyses
@@ -83,7 +83,7 @@ class AnalysesPerSampleType(BrowserView):
             datalines.append([cat.Title, service_data])
 
 
-        
+
 
         self.report_content = {
                 'parms': parms,
@@ -93,4 +93,4 @@ class AnalysesPerSampleType(BrowserView):
 
         return self.template()
 
-    
+

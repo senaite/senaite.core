@@ -137,7 +137,7 @@ $(document).ready(function(){
 		$(form).append("<input type='hidden' name='table_only' value='"+form_id+"'>");
 
 		// dropdowns are printed in ../templates/worksheet_add_analyses.pt
-		// We add list_<portal_catalog args>, which go
+		// We add list_<bika_analysis_catalog args>, which go
 		// into contentFilter in bika_listing.py
 		getCategoryTitle = $("[name=list_getCategoryTitle]").val();
 		Title = $("[name=list_Title]").val();

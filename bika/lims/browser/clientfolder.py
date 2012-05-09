@@ -38,23 +38,12 @@ class ClientFolderContentsView(BikaListingView):
             'Fax': {'title': _('Fax')},
         }
 
-        self.review_states = [
-            {'id':'all',
-             'title': _('All'),
-             'transitions': [{'id':'empty'}, ], # none
-             'columns':['title',
-                        'EmailAddress',
-                        'Phone',
-                        'Fax', ]
-             },
-        ]
 
         mtool = getToolByName(self.context, 'portal_membership')
         if mtool.checkPermission(CancelAndReinstate, self.context):
             self.show_select_column = True
-            self.review_states[0]['transitions'] = [] # all
-            self.review_states.append(
-                {'id':'active',
+            self.review_states = [
+                {'id':'default',
                  'title': _('Active'),
                  'contentFilter': {'inactive_state': 'active'},
                  'transitions': [{'id':'deactivate'}, ],
@@ -62,8 +51,7 @@ class ClientFolderContentsView(BikaListingView):
                             'EmailAddress',
                             'Phone',
                             'Fax', ]
-                 })
-            self.review_states.append(
+                 },
                 {'id':'inactive',
                  'title': _('Dormant'),
                  'contentFilter': {'inactive_state': 'inactive'},
@@ -72,7 +60,29 @@ class ClientFolderContentsView(BikaListingView):
                             'EmailAddress',
                             'Phone',
                             'Fax', ]
-                 })
+                 },
+                {'id':'all',
+                 'title': _('All'),
+                 'contentFilter':{},
+                 'transitions': [],
+                 'columns':['title',
+                            'EmailAddress',
+                            'Phone',
+                            'Fax', ]
+                 },
+            ]
+        else:
+            self.review_states = [
+                {'id':'default',
+                 'title': _('All'),
+                 'contentFilter':{},
+                 'transitions': [{'id':'empty'}, ], # none
+                 'columns':['title',
+                            'EmailAddress',
+                            'Phone',
+                            'Fax', ]
+                 },
+            ]
 
     def __call__(self):
         self.context_actions = {}

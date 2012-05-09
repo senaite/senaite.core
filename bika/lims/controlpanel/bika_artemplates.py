@@ -36,18 +36,19 @@ class TemplatesView(BikaListingView):
         }
 
         self.review_states = [
-            {'id':'all',
-             'title': _('All'),
-             'columns': ['Title',
-                         'Description']},
-            {'id':'active',
-             'contentFilter': {'inactive_review_state':'active'},
+            {'id':'default',
              'title': _('Active'),
+             'contentFilter': {'inactive_review_state':'active'},
              'columns': ['Title',
                          'Description']},
             {'id':'inactive',
-             'contentFilter': {'inactive_review_state':'inactive'},
              'title': _('Inactive'),
+             'contentFilter': {'inactive_review_state':'active'},
+             'columns': ['Title',
+                         'Description']},
+            {'id':'all',
+             'title': _('All'),
+             'contentFilter':{},
              'columns': ['Title',
                          'Description']},
         ]

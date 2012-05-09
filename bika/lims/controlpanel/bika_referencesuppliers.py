@@ -25,8 +25,6 @@ class ReferenceSuppliersView(BikaListingView):
     implements(IFolderContentsView, IViewView)
     def __init__(self, context, request):
         super(ReferenceSuppliersView, self).__init__(context, request)
-        bsc = getToolByName(context, 'bika_setup_catalog')
-        self.contentsMethod = bsc
         self.icon = "++resource++bika.lims.images/referencesupplier_big.png"
         self.title = _("Reference Suppliers")
         self.contentFilter = {'portal_type': 'ReferenceSupplier',
@@ -50,8 +48,9 @@ class ReferenceSuppliersView(BikaListingView):
                     'toggle': True},
         }
         self.review_states = [
-            {'id':'all',
+            {'id':'default',
              'title': _('All'),
+             'contentFilter':{},
              'columns': ['Name',
                          'Email',
                          'Phone',
@@ -59,6 +58,8 @@ class ReferenceSuppliersView(BikaListingView):
         ]
 
     def folderitems(self):
+        bsc = getToolByName(context, 'bika_setup_catalog')
+        self.contentsMethod = bsc
         items = BikaListingView.folderitems(self)
         for x in range(len(items)):
             if not items[x].has_key('obj'): continue

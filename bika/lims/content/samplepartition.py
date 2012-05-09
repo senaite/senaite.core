@@ -28,6 +28,9 @@ schema = BikaSchema.copy() + Schema((
         required=0,
         multiValued=0,
     ),
+    BooleanField('Separate',
+        default=False
+    ),
     ReferenceField('Analyses',
         allowed_types=('Analysis',),
         relationship='SamplePartitionAnalysis',

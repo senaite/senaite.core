@@ -19,8 +19,6 @@ class DepartmentsView(BikaListingView):
 
     def __init__(self, context, request):
         super(DepartmentsView, self).__init__(context, request)
-        bsc = getToolByName(context, 'bika_setup_catalog')
-        self.contentsMethod = bsc
         self.contentFilter = {'portal_type': 'Department',
                               'sort_on': 'sortable_title'}
         self.context_actions = {_('Add'):
@@ -52,14 +50,7 @@ class DepartmentsView(BikaListingView):
         }
 
         self.review_states = [
-            {'id':'all',
-             'title': _('All'),
-             'columns': ['Title',
-                         'Description',
-                         'Manager',
-                         'ManagerPhone',
-                         'ManagerEmail']},
-            {'id':'active',
+            {'id':'default',
              'title': _('Active'),
              'contentFilter': {'inactive_state': 'active'},
              'transitions': [{'id':'deactivate'}, ],
@@ -77,9 +68,19 @@ class DepartmentsView(BikaListingView):
                          'Manager',
                          'ManagerPhone',
                          'ManagerEmail']},
+            {'id':'all',
+             'title': _('All'),
+             'contentFilter':{},
+             'columns': ['Title',
+                         'Description',
+                         'Manager',
+                         'ManagerPhone',
+                         'ManagerEmail']},
         ]
 
     def folderitems(self):
+        bsc = getToolByName(context, 'bika_setup_catalog')
+        self.contentsMethod = bsc
         items = BikaListingView.folderitems(self)
         for x in range(len(items)):
             if not items[x].has_key('obj'): continue

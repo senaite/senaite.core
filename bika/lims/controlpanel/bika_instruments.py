@@ -20,8 +20,6 @@ class InstrumentsView(BikaListingView):
     implements(IFolderContentsView, IViewView)
     def __init__(self, context, request):
         super(InstrumentsView, self).__init__(context, request)
-        bsc = getToolByName(context, 'bika_setup_catalog')
-        self.contentsMethod = bsc
         self.contentFilter = {'portal_type': 'Instrument',
                               'sort_on': 'sortable_title'}
         self.context_actions = {_('Add'):
@@ -51,14 +49,7 @@ class InstrumentsView(BikaListingView):
                            'toggle': True},
         }
         self.review_states = [
-            {'id':'all',
-             'title': _('All'),
-             'columns': ['Title',
-                         'Type',
-                         'Brand',
-                         'Model',
-                         'ExpiryDate']},
-            {'id':'active',
+            {'id':'default',
              'title': _('Active'),
              'contentFilter': {'inactive_state': 'active'},
              'transitions': [{'id':'deactivate'}, ],
@@ -76,9 +67,19 @@ class InstrumentsView(BikaListingView):
                          'Brand',
                          'Model',
                          'ExpiryDate']},
+            {'id':'all',
+             'title': _('All'),
+             'contentFilter':{},
+             'columns': ['Title',
+                         'Type',
+                         'Brand',
+                         'Model',
+                         'ExpiryDate']},
         ]
 
     def folderitems(self):
+        bsc = getToolByName(context, 'bika_setup_catalog')
+        self.contentsMethod = bsc
         items = BikaListingView.folderitems(self)
         for x in range(len(items)):
             if not items[x].has_key('obj'): continue

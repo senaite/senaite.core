@@ -49,6 +49,20 @@
 		id="st_title"
 		tal:attributes="st_title python:context.getSample().getSampleType().Title()"/>
 
+	<input type="hidden"
+		id="parts"
+		tal:define="parts python:context.getSample().objectValues('SamplePartition');"
+		tal:attributes="value python:modules['json'].dumps(dict(
+			[('part-%s'%len(parts),{'Container':'',
+			                        'Preservation':'',
+									'Separate':''},),] +
+			[(o.Title(), {
+			  'Container': o.getContainer() and o.getContainer().UID() or '',
+			  'Preservation': o.getPreservation() and o.getPreservation().UID() or '',
+			  'Separate': o.getSeparate(),}
+			  ) for o in parts]
+		))"/>
+
 	<tal:hasremarks tal:condition="python:hasattr(context, 'Remarks')">
 		<tal:remarks define="
 			field python:context.Schema()['Remarks'];

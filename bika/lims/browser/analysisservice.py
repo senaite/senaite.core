@@ -83,8 +83,11 @@ class ajaxServicePopup(BrowserView):
 
             if ps.has_key('container'):
                 if type(ps['container']) == str:
-                    ps['container'] = [ps['container'],]
-                containers = [bsc(UID=c)[0].Title for c in ps['container']]
+                    self.partsetup[i]['container'] = [ps['container'],]
+                try:
+                    containers = [bsc(UID=c)[0].Title for c in ps['container']]
+                except IndexError:
+                    containers = [c for c in ps['container']]
                 self.partsetup[i]['container'] = ", ".join(containers)
             else:
                 self.partsetup[i]['container'] = ''
@@ -92,7 +95,10 @@ class ajaxServicePopup(BrowserView):
             if ps.has_key('preservation'):
                 if type(ps['preservation']) == str:
                     ps['preservation'] = [ps['preservation'],]
-                preservations = [bsc(UID=p)[0].Title for p in ps['preservation']]
+                try:
+                    preservations = [bsc(UID=c)[0].Title for c in ps['preservation']]
+                except IndexError:
+                    preservations = [c for c in ps['preservation']]
                 self.partsetup[i]['preservation'] = ", ".join(preservations)
             else:
                 self.partsetup[i]['container'] = ''

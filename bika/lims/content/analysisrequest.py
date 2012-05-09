@@ -378,8 +378,8 @@ class AnalysisRequest(BaseFolder):
         batch_month = now.strftime('%b %Y')
         batch_title = '%s - %s' % (batch_month, 'ad hoc')
         invoice_batch = None
-        for b_proxy in  self.portal_catalog(portal_type = 'InvoiceBatch',
-                                    Title = batch_title):
+        for b_proxy in self.portal_catalog(portal_type = 'InvoiceBatch',
+                                           Title = batch_title):
             invoice_batch = b_proxy.getObject()
         if not invoice_batch:
             first_day = DateTime(now.year(), now.month(), 1)

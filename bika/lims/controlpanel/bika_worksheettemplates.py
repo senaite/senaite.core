@@ -22,7 +22,6 @@ class WorksheetTemplatesView(BikaListingView):
 
     def __init__(self, context, request):
         super(WorksheetTemplatesView, self).__init__(context, request)
-        bsc = getToolByName(self.context, 'bika_setup_catalog')
         self.contentFilter = {'portal_type': 'WorksheetTemplate',
                               'sort_on': 'sortable_title'}
         self.context_actions = {_('Add'):
@@ -48,12 +47,7 @@ class WorksheetTemplatesView(BikaListingView):
         }
 
         self.review_states = [
-            {'id':'all',
-             'title': _('All'),
-             'columns': ['Title',
-                         'Description',
-                         'Instrument']},
-            {'id':'active',
+            {'id':'default',
              'title': _('Active'),
              'contentFilter': {'inactive_state': 'active'},
              'transitions': [{'id':'deactivate'}, ],
@@ -64,6 +58,12 @@ class WorksheetTemplatesView(BikaListingView):
              'title': _('Dormant'),
              'contentFilter': {'inactive_state': 'inactive'},
              'transitions': ['activate', ],
+             'columns': ['Title',
+                         'Description',
+                         'Instrument']},
+            {'id':'all',
+             'title': _('All'),
+             'contentFilter':{},
              'columns': ['Title',
                          'Description',
                          'Instrument']},

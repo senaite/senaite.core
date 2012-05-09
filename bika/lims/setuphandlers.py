@@ -302,14 +302,147 @@ class BikaGenerator:
         portal_repository.setVersionableContentTypes(versionable_types)
 
     def setupCatalogs(self, portal):
+        # an item should belong to only one catalog.
+        # that way looking it up means first looking up *the* catalog
+        # in which it is indexed, as well as making it cheaper to index.
+
+        bac = getToolByName(portal, 'bika_analysis_catalog', None)
+        if bac == None:
+            logger.warning('Could not find the bika_analysis_catalog tool.')
+            return
+
+        at = getToolByName(portal, 'archetype_tool')
+        at.setCatalogsByType('Analysis', ['bika_analysis_catalog', ])
+        at.setCatalogsByType('ReferenceAnalysis', ['bika_analysis_catalog', ])
+        at.setCatalogsByType('DuplicateAnalysis', ['bika_analysis_catalog', ])
+
+        # create lexicon
+        wordSplitter = Empty()
+        wordSplitter.group = 'Word Splitter'
+        wordSplitter.name = 'Unicode Whitespace splitter'
+        caseNormalizer = Empty()
+        caseNormalizer.group = 'Case Normalizer'
+        caseNormalizer.name = 'Unicode Case Normalizer'
+        stopWords = Empty()
+        stopWords.group = 'Stop Words'
+        stopWords.name = 'Remove listed and single char words'
+        elem = [wordSplitter, caseNormalizer, stopWords]
+        bac.manage_addProduct['ZCTextIndex'].manage_addLexicon('Lexicon', 'Lexicon', elem)
+        zc_extras = Empty()
+        zc_extras.index_type = 'Okapi BM25 Rank'
+        zc_extras.lexicon_id = 'Lexicon'
+
+        bac.addIndex('path', 'ExtendedPathIndex', ('getPhysicalPath'))
+        bac.addIndex('allowedRolesAndUsers', 'KeywordIndex')
+        bac.addIndex('UID', 'FieldIndex')
+        bac.addIndex('Title', 'FieldIndex')
+        bac.addIndex('Description', 'ZCTextIndex', zc_extras)
+        bac.addIndex('id', 'FieldIndex')
+        bac.addIndex('Type', 'FieldIndex')
+        bac.addIndex('portal_type', 'FieldIndex')
+        bac.addIndex('created', 'DateIndex')
+        bac.addIndex('getObjPositionInParent', 'GopipIndex')
+        bac.addIndex('title', 'FieldIndex', 'Title')
+        bac.addIndex('sortable_title', 'FieldIndex')
+        bac.addIndex('description', 'FieldIndex', 'Description')
+        bac.addIndex('review_state', 'FieldIndex')
+        bac.addIndex('worksheetanalysis_review_state' 'FieldIndex')
+        bac.addIndex('cancellation_state', 'FieldIndex')
+
+        bac.addIndex('getDateAnalysisPublished', 'DateIndex')
+        bac.addIndex('getDueDate', 'DateIndex')
+
+        bac.addIndex('getClientUID', 'FieldIndex')
+        bac.addIndex('getAnalyst', 'FieldIndex')
+        bac.addIndex('getClientTitle', 'FieldIndex')
+        bac.addIndex('getRequestID', 'FieldIndex')
+        bac.addIndex('getClientOrderNumber', 'FieldIndex')
+        bac.addIndex('getKeyword', 'FieldIndex')
+        bac.addIndex('getServiceTitle', 'FieldIndex')
+        bac.addIndex('getServiceUID', 'FieldIndex')
+        bac.addIndex('getCategoryUID', 'FieldIndex')
+        bac.addIndex('getCategoryTitle', 'FieldIndex')
+        bac.addIndex('getPointOfCapture', 'FieldIndex')
+        bac.addIndex('getDateReceived', 'DateIndex')
+
+        bc = getToolByName(portal, 'bika_catalog', None)
+        if bc == None:
+            logger.warning('Could not find the bika_catalog tool.')
+            return
+
+        at = getToolByName(portal, 'archetype_tool')
+        at.setCatalogsByType('AnalysisRequest', ['bika_catalog', ])
+        at.setCatalogsByType('Sample', ['bika_catalog', ])
+        at.setCatalogsByType('SamplePartition', ['bika_catalog', ])
+        at.setCatalogsByType('ReferenceSample', ['bika_catalog', ])
+
+        # create lexicon
+        wordSplitter = Empty()
+        wordSplitter.group = 'Word Splitter'
+        wordSplitter.name = 'Unicode Whitespace splitter'
+        caseNormalizer = Empty()
+        caseNormalizer.group = 'Case Normalizer'
+        caseNormalizer.name = 'Unicode Case Normalizer'
+        stopWords = Empty()
+        stopWords.group = 'Stop Words'
+        stopWords.name = 'Remove listed and single char words'
+        elem = [wordSplitter, caseNormalizer, stopWords]
+        bc.manage_addProduct['ZCTextIndex'].manage_addLexicon('Lexicon', 'Lexicon', elem)
+        zc_extras = Empty()
+        zc_extras.index_type = 'Okapi BM25 Rank'
+        zc_extras.lexicon_id = 'Lexicon'
+
+        bc.addIndex('path', 'ExtendedPathIndex', ('getPhysicalPath'))
+        bc.addIndex('allowedRolesAndUsers', 'KeywordIndex')
+        bc.addIndex('UID', 'FieldIndex')
+        bc.addIndex('SearchableText', 'ZCTextIndex', zc_extras)
+        bc.addIndex('Title', 'ZCTextIndex', zc_extras)
+        bc.addIndex('Description', 'ZCTextIndex', zc_extras)
+        bc.addIndex('id', 'FieldIndex')
+        bc.addIndex('getId', 'FieldIndex')
+        bc.addIndex('Type', 'FieldIndex')
+        bc.addIndex('portal_type', 'FieldIndex')
+        bc.addIndex('created', 'DateIndex')
+        bc.addIndex('getObjPositionInParent', 'GopipIndex')
+        bc.addIndex('title', 'FieldIndex', 'Title')
+        bc.addIndex('sortable_title', 'FieldIndex')
+        bc.addIndex('description', 'FieldIndex', 'Description')
+        bc.addIndex('review_state', 'FieldIndex')
+        bc.addIndex('inactive_state', 'FieldIndex')
+        bc.addIndex('cancellation_state', 'FieldIndex')
+
+        bc.addIndex('getSampleID', 'FieldIndex')
+        bc.addIndex('getSampleUID', 'FieldIndex')
+        bc.addIndex('getRequestID', 'FieldIndex')
+        bc.addIndex('getClientReference', 'FieldIndex')
+        bc.addIndex('getClientOrderNumber', 'FieldIndex')
+        bc.addIndex('getClientSampleID', 'FieldIndex')
+        bc.addIndex('getServiceTitle', 'FieldIndex')
+        bc.addIndex('getSamplePointTitle', 'FieldIndex')
+        bc.addIndex('getSampleTypeTitle', 'FieldIndex')
+        bc.addIndex('getDueDate', 'DateIndex')
+        bc.addIndex('getSamplingDate', 'DateIndex')
+        bc.addIndex('getDateSampled', 'DateIndex')
+        bc.addIndex('getDateReceived', 'DateIndex')
+        bc.addIndex('getDatePublished', 'DateIndex')
+        bc.addIndex('getDateExpired', 'DateIndex')
+        bc.addIndex('getDisposalDate', 'DateIndex')
+        bc.addIndex('getDateDisposed', 'DateIndex')
+        bc.addIndex('getDateOpened', 'DateIndex')
+        bc.addIndex('getExpiryDate', 'DateIndex')
+        bc.addIndex('getClientUID', 'FieldIndex')
+        bc.addIndex('getSamplePointUID', 'FieldIndex')
+        bc.addIndex('getSampleTypeUID', 'FieldIndex')
+        bc.addIndex('getReferenceDefinitionUID', 'FieldIndex')
+        bc.addIndex('getPreserver', 'FieldIndex')
+        bc.addIndex('getSampler', 'FieldIndex')
+        bc.addIndex('getWorksheetTemplateTitle', 'FieldIndex')
+        bc.addIndex('getAnalyst', 'FieldIndex')
+
         bsc = getToolByName(portal, 'bika_setup_catalog', None)
         if bsc == None:
             logger.warning('Could not find the setup catalog tool.')
             return
-
-        # an item should belong to only one catalog.
-        # that way looking it up means first looking up *the* catalog
-        # in which it is indexed, as well as making it cheaper to index.
 
         at = getToolByName(portal, 'archetype_tool')
         at.setCatalogsByType('Department', ['bika_setup_catalog', ])

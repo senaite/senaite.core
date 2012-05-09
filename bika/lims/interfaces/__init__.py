@@ -125,5 +125,7 @@ class IReferenceDefinitions(Interface):
 class IWorksheetTemplates(Interface):
     ""
 
+class IBikaCatalog(Interface):
+   ""
 class IBikaSetupCatalog(Interface):
    ""

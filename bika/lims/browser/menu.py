@@ -105,7 +105,7 @@ class WorkflowSubMenuItem(WorkflowSubMenuItem):
 
         workflow = getToolByName(self.context, 'portal_workflow')
 
-        state = self.request.get('review_state', 'all')
+        state = self.request.get('review_state', 'default')
         review_state = [i for i in self.review_states if i['id'] == state][0]
 
         # get all transitions for all items.

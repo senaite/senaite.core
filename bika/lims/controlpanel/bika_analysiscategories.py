@@ -17,8 +17,6 @@ class AnalysisCategoriesView(BikaListingView):
 
     def __init__(self, context, request):
         super(AnalysisCategoriesView, self).__init__(context, request)
-        bsc = getToolByName(context, 'bika_setup_catalog')
-        self.contentsMethod = bsc
         self.contentFilter = {'portal_type': 'AnalysisCategory',
                               'sort_on': 'sortable_title'}
         self.context_actions = {_('Add'):
@@ -44,22 +42,25 @@ class AnalysisCategoriesView(BikaListingView):
         }
 
         self.review_states = [
-            {'id':'all',
-             'title': _('All'),
-             'columns': ['Title', 'Description', 'Department']},
-            {'id':'active',
+            {'id':'default',
              'title': _('Active'),
              'contentFilter': {'inactive_state': 'active'},
              'transitions': [{'id':'deactivate'}, ],
              'columns': ['Title', 'Description', 'Department']},
             {'id':'inactive',
-             'title': _('Dormant'),
+             'title': _('Inactive'),
              'contentFilter': {'inactive_state': 'inactive'},
              'transitions': [{'id':'activate'}, ],
+             'columns': ['Title', 'Description', 'Department']},
+            {'id':'all',
+             'title': _('All'),
+             'contentFilter':{},
              'columns': ['Title', 'Description', 'Department']},
         ]
 
     def folderitems(self):
+        bsc = getToolByName(context, 'bika_setup_catalog')
+        self.contentsMethod = bsc
         items = BikaListingView.folderitems(self)
         for x in range(len(items)):
             if not items[x].has_key('obj'):

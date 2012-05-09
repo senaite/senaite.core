@@ -160,7 +160,7 @@ class InvoiceBatch(BaseFolder):
                           self.getBatchEndDate()]
                 }
         }
-        ars = self.portal_catalog(query)
+        ars = self.bika_catalog(query)
 
         ## query for Orders in date range
         query = {

@@ -12,7 +12,6 @@ def AfterTransitionEventHandler(instance, event):
         return
 
     wf = getToolByName(instance, 'portal_workflow')
-    pc = getToolByName(instance, 'portal_catalog')
     bsc = getToolByName(instance, 'bika_setup_catalog')
     rc = getToolByName(instance, REFERENCE_CATALOG)
     pu = getToolByName(instance, 'plone_utils')

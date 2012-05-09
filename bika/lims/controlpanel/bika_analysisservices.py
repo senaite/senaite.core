@@ -88,8 +88,6 @@ class AnalysisServicesView(BikaListingView):
         """
 
         super(AnalysisServicesView, self).__init__(context, request)
-        bsc = getToolByName(context, 'bika_setup_catalog')
-        self.contentsMethod = bsc
         self.contentFilter = {'portal_type': 'AnalysisService',
                               'sort_on': 'sortable_title'}
         self.context_actions = {_('Add'):
@@ -124,24 +122,7 @@ class AnalysisServicesView(BikaListingView):
         }
 
         self.review_states = [
-            {'id':'all',
-             'title': _('All'),
-             'columns': ['Title',
-                         'Keyword',
-                         'Category',
-                         'Method',
-                         'Department',
-                         'Instrument',
-                         'Unit',
-                         'Price',
-                         'MaxTimeAllowed',
-                         'DuplicateVariation',
-                         'Calculation',
-                         ],
-             'custom_actions':[{'id': 'duplicate', 'title': _('Duplicate')}, ]
-             },
-
-            {'id':'active',
+            {'id':'default',
              'title': _('Active'),
              'contentFilter': {'inactive_state': 'active'},
              'transitions': [{'id':'deactivate'}, ],
@@ -177,9 +158,28 @@ class AnalysisServicesView(BikaListingView):
                          ],
              'custom_actions':[{'id': 'duplicate', 'title': _('Duplicate')}, ]
              },
+            {'id':'all',
+             'title': _('All'),
+             'contentFilter':{},
+             'columns': ['Title',
+                         'Keyword',
+                         'Category',
+                         'Method',
+                         'Department',
+                         'Instrument',
+                         'Unit',
+                         'Price',
+                         'MaxTimeAllowed',
+                         'DuplicateVariation',
+                         'Calculation',
+                         ],
+             'custom_actions':[{'id': 'duplicate', 'title': _('Duplicate')}, ]
+             },
         ]
 
     def folderitems(self):
+        bsc = getToolByName(context, 'bika_setup_catalog')
+        self.contentsMethod = bsc
         self.categories = []
         do_cats = self.context.bika_setup.getCategoriseAnalysisServices()
         if do_cats:
