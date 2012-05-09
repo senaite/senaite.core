@@ -73,6 +73,7 @@ class LoadSetupData(BrowserView):
         sheets = {}
         for sheetname in wb.get_sheet_names():
             sheets[sheetname] = wb.get_sheet_by_name(sheetname)
+        self.load_lab_information(sheets['Lab Information'])
         self.load_lab_users(sheets['Lab Users'])
         self.load_lab_contacts(sheets['Lab Contacts'])
         self.load_lab_departments(sheets['Lab Departments'])
@@ -226,6 +227,36 @@ class LoadSetupData(BrowserView):
             renameAfterCreation(obj)
             self.containers[unicode(row['title'])] = obj
 
+
+    def load_lab_information(self, sheet):
+        self.departments = {}
+        laboratory = self.context.bika_setup.laboratory
+        nr_rows = sheet.get_highest_row()
+        nr_cols = sheet.get_highest_column()
+##        self.request.response.write("<input type='hidden' id='load_section' value='Lab Information' max='1'/>")
+##        self.request.response.flush()
+
+        rows = [[sheet.cell(row=row_nr, column=col_nr).value 
+                for col_nr in range(nr_cols + 1)] 
+                        for row_nr in range(nr_rows)]
+
+        lab_info = {}
+        for row in rows:
+            lab_info[row[2]] = row[1]
+
+        laboratory.edit(
+            Name = unicode(lab_info['Name']),
+            TaxNumber = unicode(lab_info['TaxNumber']),
+            Phone = unicode(lab_info['Phone']),
+            EmailAddress = unicode(lab_info['EmailAddress']),
+            LabURL = unicode(lab_info['LabURL']),
+            Confidence = unicode(lab_info['Confidence']),
+            LaboratoryAccredited = lab_info['LaboratoryAccredited'],
+            AccreditationBody = unicode(lab_info['AccreditationBody']),
+            AccreditationBodyLong = unicode(lab_info['AccreditationBodyLong']),
+            Accreditation = unicode(lab_info['Accreditation']),
+            AccreditationReference = unicode(lab_info['AccreditationReference']),
+            PhysicalAddress = unicode(lab_info['PhysicalAddress'])),
 
     def load_lab_users(self, sheet):
         portal_registration = getToolByName(self.context, 'portal_registration')
