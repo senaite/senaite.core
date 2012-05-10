@@ -364,6 +364,7 @@ class BikaGenerator:
         bac.addIndex('getCategoryTitle', 'FieldIndex')
         bac.addIndex('getPointOfCapture', 'FieldIndex')
         bac.addIndex('getDateReceived', 'DateIndex')
+        bac.addIndex('getSampleTypeUID', 'FieldIndex')
 
         bc = getToolByName(portal, 'bika_catalog', None)
         if bc == None:

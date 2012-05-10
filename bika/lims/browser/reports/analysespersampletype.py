@@ -100,7 +100,7 @@ class AnalysesPerSampleType(BrowserView):
 
         # and now lets do the actual report lines
         formats = {'columns': 2,
-                   'col_heads': [ _('Analyses'), _('number of requests')],
+                   'col_heads': [ _('Sample type'), _('Number of analyses')],
                    'class': '',
                   }
 
@@ -112,7 +112,7 @@ class AnalysesPerSampleType(BrowserView):
             count_analyses = len(analyses)
 
             dataline = []
-            dataitem = {'value': service.Title}
+            dataitem = {'value': sampletype.Title}
             dataline.append(dataitem)
             dataitem = {'value': count_analyses }
 

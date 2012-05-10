@@ -114,7 +114,7 @@ class AnalysesPerService(BrowserView):
 
         # and now lets do the actual report lines
         formats = {'columns': 2,
-                   'col_heads': [ _('Analyses'), _('number of requests')],
+                   'col_heads': [ _('Analysis service'), _('Number of analyses')],
                    'class': '',
                   }
 
