@@ -88,7 +88,7 @@ class AnalysesView(BikaListingView):
         super(AnalysesView, self).__init__(context, request)
 
     def folderitems(self):
-        bac = getToolByName(context, 'bika_analysis_catalog')
+        bac = getToolByName(self.context, 'bika_analysis_catalog')
         self.contentsMethod = bac
 
         rc = getToolByName(self.context, REFERENCE_CATALOG)

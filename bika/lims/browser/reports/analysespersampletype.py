@@ -24,7 +24,7 @@ class AnalysesPerSampleType(BrowserView):
         # get all the data into datalines
 
         sc = getToolByName(self.context, 'bika_setup_catalog')
-        bc = getToolByName(self.context, 'bika_analysis_catalog')
+        bac = getToolByName(self.context, 'bika_analysis_catalog')
         rc = getToolByName(self.context, 'reference_catalog')
         self.report_content = {}
         parm_lines = {}
@@ -55,7 +55,7 @@ class AnalysesPerSampleType(BrowserView):
         date_query = formatDateQuery(self.context, 'st_DateRequested')
         if date_query:
             query['created'] = date_query
-            requested = formatDateParms(self.context, 'DateRequested') 
+            requested = formatDateParms(self.context, 'st_DateRequested') 
         else:
             requested = 'Undefined'
         parms.append(
@@ -108,7 +108,7 @@ class AnalysesPerSampleType(BrowserView):
         for sampletype in sc(portal_type="SampleType",
                         sort_on='sortable_title'):
             query['getSampleTypeUID'] = sampletype.UID
-            analyses = bc(query)
+            analyses = bac(query)
             count_analyses = len(analyses)
 
             dataline = []

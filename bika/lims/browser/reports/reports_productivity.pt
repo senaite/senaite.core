@@ -140,7 +140,7 @@
 <metal:block use-macro="context/selection_macros/macros/client"/>
 
 <tal:created
-    tal:define="date_id string:xDateRequested;
+    tal:define="date_id string:st_DateRequested;
                 date_label string:Requested">
 <metal:date use-macro="context/selection_macros/macros/date"/>
 </tal:created>
@@ -169,13 +169,8 @@
 <fieldset>
 
 <legend i18n:translate="">Selection criteria</legend>
-<br/>
-<br/>
-<br/>
-<b> Under construction </b>
-<!--
 <tal:created
-    tal:define="date_id string:DateRequested;
+    tal:define="date_id string:c_DateRequested;
                 date_label string:Requested">
 <metal:date use-macro="context/selection_macros/macros/date"/>
 </tal:created>
@@ -186,9 +181,7 @@
 
 <metal:date use-macro="context/selection_macros/macros/ws_review_state"/>
 
--->
 </fieldset>
-<!--
     <input tabindex=""
         class="searchButton"
         type="submit"
@@ -196,9 +189,10 @@
         value="Search"
         i18n:attributes="value"
         />
--->
 </form>
 </div>
+
+
 
 <div id="tats" style="display:none" class="criteria">
 <form action="reports" method="post" name="analysestotals">

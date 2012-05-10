@@ -65,7 +65,10 @@ jQuery( function($) {
 				dateFormat:'dd M yy',
 				changeMonth:true,
 				changeYear:true
-			}).focus();
+			})
+            .click(function(){$(this).attr('value', '');})
+            .focus();
+
 		});
 
 		$('input.datepicker_nofuture').live('click', function() {
@@ -76,7 +79,9 @@ jQuery( function($) {
 				changeMonth:true,
 				changeYear:true,
 				maxDate: '+0d'
-			}).focus();
+			})
+            .click(function(){$(this).attr('value', '');})
+            .focus();
 		});
 
 		// Analysis Service popup trigger
