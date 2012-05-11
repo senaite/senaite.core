@@ -261,18 +261,19 @@ class BikaListingView(BrowserView):
 
         ## review_state_selector
         cookie = json.loads(self.request.get("review_state", '{}'))
+        cookie_key = "%s%s" % (self.view_url, self.form_id)
         # first check POST
         selected_state = self.request.get("%s_review_state"%form_id, '')
         if not selected_state:
             # then check cookie
-            selected_state = form_id in cookie and cookie[form_id] or ''
+            selected_state = cookie.get(cookie_key, '')
         # get review_state id=selected_state
         states = [r for r in self.review_states if r['id'] == selected_state]
         review_state = states and states[0] or self.review_states[0]
         # set request and cookie to currently selected state id
         if not selected_state:
             selected_state = self.review_states[0]['id']
-        self.review_state = cookie[form_id] = selected_state
+        self.review_state = cookie[cookie_key] = selected_state
         cookie = json.dumps(cookie)
         self.request['review_state'] = cookie
         self.request.response.setCookie('review_state', cookie, path="/")
