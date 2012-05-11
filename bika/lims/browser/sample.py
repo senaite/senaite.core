@@ -27,8 +27,7 @@ import json
 class SamplePartitionsView(BikaListingView):
     def __init__(self, context, request):
         super(SamplePartitionsView, self).__init__(context, request)
-        bc = getToolByName(context, 'bika_catalog')
-        self.contentsMethod = bc
+        self.catalog = 'bika_catalog'
         self.contentFilter = {'portal_type': 'SamplePartition',
                               'sort_on': 'sortable_title'}
         self.contentFilter['path'] = {"query": "/".join(context.getPhysicalPath()),
@@ -88,10 +87,6 @@ class SamplePartitionsView(BikaListingView):
         ]
 
     def folderitems(self, full_objects = False):
-        bc = getToolByName(self.context, 'bika_catalog')
-        self.contentsMethod = bc
-
-        workflow = getToolByName(self.context, "portal_workflow")
         items = BikaListingView.folderitems(self)
 
         props = getToolByName(self.context, 'portal_properties').bika_properties
@@ -190,7 +185,8 @@ class SampleAnalysesView(AnalysesView):
                 continue
             obj = items[x]['obj']
             ar = obj.aq_parent
-            items[x]['replace']['Request'] = "<a href='%s'>%s</a>"%(ar.absolute_url(), ar.Title())
+            items[x]['replace']['Request'] = \
+                "<a href='%s'>%s</a>"%(ar.absolute_url(), ar.Title())
         return items
 
 class SampleView(BrowserView):
@@ -417,6 +413,7 @@ class SamplesView(BikaListingView):
 
     def __init__(self, context, request):
         super(SamplesView, self).__init__(context, request)
+        self.catalog = 'bika_catalog'
         self.contentFilter = {'portal_type': 'Sample',
                               'sort_on':'created',
                               'sort_order': 'reverse',
@@ -616,8 +613,6 @@ class SamplesView(BikaListingView):
         ]
 
     def folderitems(self, full_objects = False):
-        bc = getToolByName(self.context, 'bika_catalog')
-        self.contentsMethod = bc
         workflow = getToolByName(self.context, "portal_workflow")
         items = BikaListingView.folderitems(self)
         mtool = getToolByName(self.context, 'portal_membership')
@@ -641,7 +636,8 @@ class SamplesView(BikaListingView):
             items[x]['Creator'] = pretty_user_name_or_id(self.context,
                                                          obj.Creator())
 
-            items[x]['DateReceived'] = TimeOrDate(self.context,  obj.getDateReceived())
+            items[x]['DateReceived'] = TimeOrDate(self.context,
+                                                  obj.getDateReceived())
 
             samplingdate = obj.getSamplingDate()
 
@@ -671,9 +667,12 @@ class SamplesView(BikaListingView):
 
             after_icons = ''
             if obj.getSampleType().getHazardous():
-                after_icons += "<img title='Hazardous' src='++resource++bika.lims.images/hazardous.png'>"
+                after_icons += "<img title='%s' " \
+                    "src='++resource++bika.lims.images/hazardous.png'>" % \
+                    self.context.translate(_("Hazardous"))
             if obj.getSamplingDate() > DateTime():
-                after_icons += "<img src='++resource++bika.lims.images/calendar.png' title='%s'>" % \
+                after_icons += "<img title='%s' " \
+                    "src='++resource++bika.lims.images/calendar.png' >" % \
                     self.context.translate(_("Future dated sample"))
             if after_icons:
                 items[x]['after']['getSampleID'] = after_icons

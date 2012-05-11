@@ -24,6 +24,7 @@ class AnalysesView(BikaListingView):
         Keyword arguments are passed directly to bika_analysis_catalog.
     """
     def __init__(self, context, request, **kwargs):
+        self.catalog = "bika_analysis_catalog"
         self.contentFilter = dict(kwargs)
         self.contentFilter['portal_type'] = 'Analysis'
         self.context_actions = {}
@@ -88,9 +89,6 @@ class AnalysesView(BikaListingView):
         super(AnalysesView, self).__init__(context, request)
 
     def folderitems(self):
-        bac = getToolByName(self.context, 'bika_analysis_catalog')
-        self.contentsMethod = bac
-
         rc = getToolByName(self.context, REFERENCE_CATALOG)
         bsc = getToolByName(self.context, 'bika_setup_catalog')
         workflow = getToolByName(self.context, 'portal_workflow')
@@ -106,9 +104,6 @@ class AnalysesView(BikaListingView):
                 can_edit_analyses = checkPermission(EditResults, self.context)
 
         context_active = isActive(self.context)
-
-        bac = getToolByName(self.context, 'bika_analysis_catalog')
-        self.contentsMethod = bac
 
         items = super(AnalysesView, self).folderitems(full_objects = True)
 

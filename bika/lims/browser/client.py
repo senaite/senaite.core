@@ -287,6 +287,7 @@ class ClientARImportsView(BikaListingView):
 
     def __init__(self, context, request):
         super(ClientARImportsView, self).__init__(context, request)
+        self.catalog = "portal_catalog"
         self.contentFilter = {'portal_type': 'ARImport'}
         self.context_actions = {_('AR Import'):
                                 {'url': 'createObject?type_name=ARImport',
@@ -332,8 +333,6 @@ class ClientARImportsView(BikaListingView):
         ]
 
     def folderitems(self):
-        pc = getToolByName(self.context, 'portal_catalog')
-        self.contentsMethod = pc
         items = BikaListingView.folderitems(self)
         for x in range(len(items)):
             if not items[x].has_key('obj'): continue
@@ -474,17 +473,16 @@ class ClientAnalysisSpecsView(BikaListingView):
 
     def __init__(self, context, request):
         super(ClientAnalysisSpecsView, self).__init__(context, request)
-        bsc = getToolByName(context, 'bika_setup_catalog')
-        wf = getToolByName(context, 'portal_workflow')
-        self.contentFilter = {'portal_type': 'AnalysisSpec',
-                              'getClientUID': context.UID(),
-                              'path': {
-                                  "query": "/".join(context.getPhysicalPath()),
-                                  "level" : 0
-                                  }
-                              }
-        self.contentsMethod = bsc
 
+        self.catalog = 'bika_setup_catalog'
+        self.contentFilter = {
+            'portal_type': 'AnalysisSpec',
+            'getClientUID': context.UID(),
+            'path': {
+                "query": "/".join(context.getPhysicalPath()),
+                "level" : 0
+            }
+        }
         self.context_actions = {}
 
         self.show_sort_column = False
@@ -704,11 +702,15 @@ class ClientContactsView(BikaListingView):
 
     def __init__(self, context, request):
         super(ClientContactsView, self).__init__(context, request)
-        self.contentFilter = {'portal_type': 'Contact',
-                              'sort_on':'sortable_title',
-                              'path': {"query": "/".join(context.getPhysicalPath()),
-                                       "level" : 0 }
-                              }
+        self.catalog = "portal_catalog"
+        self.contentFilter = {
+            'portal_type': 'Contact',
+            'sort_on':'sortable_title',
+            'path': {
+                "query": "/".join(context.getPhysicalPath()),
+                "level" : 0
+            }
+        }
         self.context_actions = {_('Add'):
                                 {'url': 'createObject?type_name=Contact',
                                  'icon': '++resource++bika.lims.images/add.png'}}

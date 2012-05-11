@@ -808,10 +808,8 @@ class AnalysisRequestAnalysesView(BikaListingView):
     template = ViewPageTemplateFile("templates/analysisrequest_analyses.pt")
 
     def __init__(self, context, request):
-        """
-        """
-
         super(AnalysisRequestAnalysesView, self).__init__(context, request)
+        self.catalog = "bika_setup_catalog"
         self.contentFilter = {'portal_type': 'AnalysisService',
                               'sort_on': 'sortable_title',
                               'inactive_state': 'active',}
@@ -867,9 +865,6 @@ class AnalysisRequestAnalysesView(BikaListingView):
 
     def folderitems(self):
         self.categories = []
-
-        bsc = getToolByName(context, 'bika_setup_catalog')
-        self.contentsMethod = bsc
 
         mtool = getToolByName(self.context, 'portal_membership')
         member = mtool.getAuthenticatedMember()
@@ -1087,6 +1082,7 @@ class AnalysisRequestSelectSampleView(BikaListingView):
         self.title = _("Select Sample")
         self.description = _("Click on a sample to create a secondary AR")
         c = context.portal_type == 'AnalysisRequest' and context.aq_parent or context
+        self.catalog = "bika_catalog"
         self.contentFilter = {'portal_type': 'Sample',
                               'sort_on':'id',
                               'sort_order': 'reverse',
@@ -1156,8 +1152,6 @@ class AnalysisRequestSelectSampleView(BikaListingView):
         ]
 
     def folderitems(self, full_objects = False):
-        bc = getToolByName(self.context, 'bika_catalog')
-        self.contentsMethod = bc
         items = BikaListingView.folderitems(self)
         for x in range(len(items)):
             if not items[x].has_key('obj'): continue
@@ -1809,6 +1803,7 @@ class AnalysisRequestsView(BikaListingView):
     def __init__(self, context, request):
         super(AnalysisRequestsView, self).__init__(context, request)
 
+        self.catalog = "bika_catalog"
         self.contentFilter = {'portal_type':'AnalysisRequest',
                               'sort_on':'created',
                               'sort_order': 'reverse',
@@ -2141,8 +2136,6 @@ class AnalysisRequestsView(BikaListingView):
             ]
 
     def folderitems(self, full_objects = False):
-        bc = getToolByName(self.context, 'bika_catalog')
-        self.contentsMethod = bc
         workflow = getToolByName(self.context, "portal_workflow")
         items = BikaListingView.folderitems(self)
         mtool = getToolByName(self.context, 'portal_membership')

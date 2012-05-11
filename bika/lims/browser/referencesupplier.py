@@ -8,6 +8,7 @@ class ReferenceSamplesView(BikaListingView):
         super(ReferenceSamplesView, self).__init__(context, request)
         self.icon = "++resource++bika.lims.images/referencesample_big.png"
         self.title = _("Reference Samples")
+        self.catalog = 'bika_catalog'
         self.contentFilter = {'portal_type': 'ReferenceSample',
                               'sort_on': 'id',
                               'sort_order': 'reverse',
@@ -83,8 +84,6 @@ class ReferenceSamplesView(BikaListingView):
 
 
     def folderitems(self):
-        bc = getToolByName(self.context, 'bika_catalog')
-        self.contentsMethod = bc
         items = BikaListingView.folderitems(self)
         for x in range(len(items)):
             if not items[x].has_key('obj'): continue
@@ -115,39 +114,41 @@ class ReferenceSamplesView(BikaListingView):
 
 
 class ContactsView(BikaListingView):
-    contentFilter = {'portal_type': 'SupplierContact'}
-    context_actions = {_('Add'):
-                       {'url': 'createObject?type_name=SupplierContact',
-                        'icon': '++resource++bika.lims.images/add.png'}}
-    show_table_only = False
-    show_sort_column = False
-    show_select_row = False
-    show_select_column = True
-    pagesize = 25
-
-    columns = {
-           'getFullname': {'title': _('Full Name')},
-           'getEmailAddress': {'title': _('Email Address')},
-           'getBusinessPhone': {'title': _('Business Phone')},
-           'getMobilePhone': {'title': _('Mobile Phone')},
-           'getFax': {'title': _('Fax')},
-          }
-
-    review_states = [
-                {'id':'default',
-                 'title': _('All'),
-                 'contentFilter':{},
-                 'columns': ['getFullname',
-                             'getEmailAddress',
-                             'getBusinessPhone',
-                             'getMobilePhone',
-                             'getFax']},
-                ]
 
     def __init__(self, context, request):
         super(ContactsView, self).__init__(context, request)
+        self.catalog = "portal_catalog"
+        self.contentFilter = {'portal_type': 'SupplierContact'}
+        self.context_actions = {_('Add'):
+            {'url': 'createObject?type_name=SupplierContact',
+             'icon': '++resource++bika.lims.images/add.png'}
+        }
+        self.show_table_only = False
+        self.show_sort_column = False
+        self.show_select_row = False
+        self.show_select_column = True
+        self.pagesize = 25
         self.icon = "++resource++bika.lims.images/referencesupplier_contact_big.png"
         self.title = _("Contacts")
+
+        self.columns = {
+            'getFullname': {'title': _('Full Name')},
+            'getEmailAddress': {'title': _('Email Address')},
+            'getBusinessPhone': {'title': _('Business Phone')},
+            'getMobilePhone': {'title': _('Mobile Phone')},
+            'getFax': {'title': _('Fax')},
+        }
+
+        self.review_states = [
+            {'id':'default',
+             'title': _('All'),
+             'contentFilter':{},
+             'columns': ['getFullname',
+                         'getEmailAddress',
+                         'getBusinessPhone',
+                         'getMobilePhone',
+                         'getFax']},
+        ]
 
     def folderitems(self):
         items = BikaListingView.folderitems(self)

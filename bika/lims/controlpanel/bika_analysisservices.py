@@ -88,6 +88,7 @@ class AnalysisServicesView(BikaListingView):
         """
 
         super(AnalysisServicesView, self).__init__(context, request)
+        self.catalog = 'bika_setup_catalog'
         self.contentFilter = {'portal_type': 'AnalysisService',
                               'sort_on': 'sortable_title'}
         self.context_actions = {_('Add'):
@@ -178,8 +179,6 @@ class AnalysisServicesView(BikaListingView):
         ]
 
     def folderitems(self):
-        bsc = getToolByName(context, 'bika_setup_catalog')
-        self.contentsMethod = bsc
         self.categories = []
         do_cats = self.context.bika_setup.getCategoriseAnalysisServices()
         if do_cats:

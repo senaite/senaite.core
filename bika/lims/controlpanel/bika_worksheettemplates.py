@@ -22,6 +22,7 @@ class WorksheetTemplatesView(BikaListingView):
 
     def __init__(self, context, request):
         super(WorksheetTemplatesView, self).__init__(context, request)
+        self.catalog = 'bika_setup_catalog'
         self.contentFilter = {'portal_type': 'WorksheetTemplate',
                               'sort_on': 'sortable_title'}
         self.context_actions = {_('Add'):
@@ -70,8 +71,6 @@ class WorksheetTemplatesView(BikaListingView):
         ]
 
     def folderitems(self):
-        bsc = getToolByName(self.context, 'bika_setup_catalog')
-        self.contentsMethod = bsc
         items = BikaListingView.folderitems(self)
         for x in range(len(items)):
             if not items[x].has_key('obj'): continue

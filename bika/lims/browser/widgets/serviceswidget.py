@@ -20,6 +20,7 @@ class ServicesView(BikaListingView):
         BikaListingView.__init__(self, context, request)
         self.selected = [o.UID() for o in getattr(field, field.accessor)()]
         self.context_actions = {}
+        self.catalog = "bika_setup_catalog"
         self.contentFilter = {'review_state': 'impossible_state'}
         self.base_url = self.context.absolute_url()
         self.view_url = self.base_url
@@ -50,12 +51,11 @@ class ServicesView(BikaListingView):
         ]
 
     def folderitems(self):
-        bsc = getToolByName(self.context, 'bika_setup_catalog')
         self.categories = []
         checkPermission = self.context.portal_membership.checkPermission
-        services = bsc(portal_type = 'AnalysisService',
-                       inactive_state = 'active',
-                       sort_on = 'sortable_title')
+        services = self.catalog(portal_type = 'AnalysisService',
+                                inactive_state = 'active',
+                                sort_on = 'sortable_title')
         items = []
         for service in services:
             service = service.getObject()

@@ -58,6 +58,7 @@ class WorksheetFolderListingView(BikaListingView):
     template = ViewPageTemplateFile("templates/worksheetfolder.pt")
     def __init__(self, context, request):
         BikaListingView.__init__(self, context, request)
+        self.catalog = 'bika_catalog'
         self.contentFilter = {
             'portal_type': 'Worksheet',
             'review_state':['open', 'to_be_verified', 'verified', 'rejected'],
@@ -85,7 +86,6 @@ class WorksheetFolderListingView(BikaListingView):
         self.analysts = getUsers(self, ['Manager', 'LabManager', 'Analyst'])
 
         bsc = getToolByName(context, 'bika_setup_catalog')
-
         templates = [t for t in bsc(portal_type = 'WorksheetTemplate',
                                     inactive_state = 'active')]
 
@@ -215,9 +215,6 @@ class WorksheetFolderListingView(BikaListingView):
         ]
 
     def folderitems(self):
-        bc = getToolByName(context, 'bika_catalog')
-        self.contentsMethod = bc
-
         wf = getToolByName(self, 'portal_workflow')
         rc = getToolByName(self, REFERENCE_CATALOG)
         pm = getToolByName(self.context, "portal_membership")

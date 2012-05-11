@@ -21,6 +21,7 @@ class MethodsView(BikaListingView):
 
     def __init__(self, context, request):
         super(MethodsView, self).__init__(context, request)
+        self.catalog = 'bika_setup_catalog'
         self.contentFilter = {'portal_type': 'Method',
                               'sort_on': 'sortable_title'}
         self.context_actions = {}
@@ -60,8 +61,6 @@ class MethodsView(BikaListingView):
         return super(MethodsView, self).__call__()
 
     def folderitems(self):
-        bsc = getToolByName(context, 'bika_setup_catalog')
-        self.contentsMethod = bsc
         mtool = getToolByName(self.context, 'portal_membership')
         if mtool.checkPermission(ManageBika, self.context):
             del self.review_states[0]['transitions']

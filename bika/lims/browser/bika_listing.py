@@ -142,6 +142,7 @@ class BikaListingView(BrowserView):
 
     title = ""
     description = ""
+    catalog = "portal_catalog"
     contentFilter = {}
     allow_edit = True
     context_actions = {}
@@ -241,10 +242,6 @@ class BikaListingView(BrowserView):
 
         self.base_url = context.absolute_url()
         self.view_url = self.base_url
-        # contentsMethod may return a list of brains or a list of objects.
-        # force it by default to "portal_catalog", subclass should override it
-        #self.contentsMethod = self.context.getFolderContents
-        self.contentsMethod = getToolByName(context, 'portal_catalog')
 
         self.translate = self.context.translate
 
@@ -408,6 +405,10 @@ class BikaListingView(BrowserView):
     def folderitems(self, full_objects = False):
         """
         """
+        #self.contentsMethod = self.context.getFolderContents
+        if not hasattr(self, 'contentsMethod'):
+            self.contentsMethod = getToolByName(context, self.catalog)
+
         context = aq_inner(self.context)
         plone_layout = getMultiAdapter((context, self.request), name = u'plone_layout')
         plone_utils = getToolByName(context, 'plone_utils')

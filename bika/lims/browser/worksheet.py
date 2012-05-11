@@ -186,6 +186,7 @@ class WorksheetAnalysesView(AnalysesView):
     """
     def __init__(self, context, request):
         AnalysesView.__init__(self, context, request)
+        self.catalog = 'bika_analysis_catalog'
         self.contentFilter = {'portal_type':'Analysis',
                               'review_state':'sample_received',
                               'worksheetanalysis_review_state':'unassigned'}
@@ -230,9 +231,6 @@ class WorksheetAnalysesView(AnalysesView):
         ]
 
     def folderitems(self):
-        bac = getToolByName(context, 'bika_analysis_catalog')
-        self.contentsMethod = bac
-
         self.analyst = self.context.getAnalyst().strip()
         self.instrument = self.context.getInstrument()
         self.contentsMethod = self.context.getFolderContents
@@ -500,7 +498,7 @@ class AddAnalysesView(BikaListingView):
         self.icon = "++resource++bika.lims.images/worksheet_big.png"
         self.title = _("Add Analyses")
         self.description = ""
-        self.contentsMethod = self.context.getFolderContents
+        self.catalog = "bika_analysis_catalog"
         self.context_actions = {}
         # initial review state for first form display of the worksheet
         # add_analyses search view - first batch of analyses, latest first.
@@ -579,8 +577,6 @@ class AddAnalysesView(BikaListingView):
             return self.template()
 
     def folderitems(self):
-        bac = getToolByName(self.context, 'bika_analysis_catalog')
-        self.contentsMethod = bac
         items = BikaListingView.folderitems(self)
         for x in range(len(items)):
             if not items[x].has_key('obj'):
@@ -778,6 +774,7 @@ class WorksheetARsView(BikaListingView):
     def __init__(self, context, request):
         BikaListingView.__init__(self, context, request)
         self.context_actions = {}
+        self.catalog = 'bika_analysis_catalog'
         self.contentFilter = {'portal_type': 'Analysis',
                               'review_state':'impossible_state'}
         self.base_url = self.context.absolute_url()
@@ -803,8 +800,6 @@ class WorksheetARsView(BikaListingView):
         ]
 
     def folderitems(self):
-        bac = getToolByName(self.context, 'bika_analysis_catalog')
-        self.contentsMethod = bac
         rc = getToolByName(self.context, REFERENCE_CATALOG)
         ars = {}
         for slot in self.context.getLayout():
@@ -855,6 +850,7 @@ class WorksheetServicesView(BikaListingView):
     def __init__(self, context, request):
         BikaListingView.__init__(self, context, request)
         self.context_actions = {}
+        self.catalog = 'bika_setup_catalog'
         self.contentFilter = {'review_state':'impossible_state'}
         self.base_url = self.context.absolute_url()
         self.view_url = self.context.absolute_url()
@@ -879,15 +875,14 @@ class WorksheetServicesView(BikaListingView):
         ]
 
     def folderitems(self):
-        bsc = getToolByName(self.context, 'bika_setup_catalog')
         ws_services = []
         for analysis in self.context.getAnalyses():
             service_uid = analysis.getService().UID()
             if service_uid not in ws_services:
                 ws_services.append(service_uid)
         self.categories = []
-        services = bsc(portal_type = "AnalysisService",
-                       inactive_state = "active")
+        services = self.catalog(portal_type = "AnalysisService",
+                                inactive_state = "active")
         items = []
         for service in services:
             # if the service has dependencies, it can't have reference analyses
@@ -938,9 +933,8 @@ class ajaxGetWorksheetReferences(ReferenceSamplesView):
 
     def __init__(self, context, request):
         super(ajaxGetWorksheetReferences, self).__init__(context, request)
+        self.catalog = 'bika_catalog'
         self.contentFilter = {'portal_type': 'ReferenceSample'}
-        bc = getToolByName(self.context, 'bika_catalog')
-        self.contentsMethod = bc
         self.context_actions = {}
         self.show_sort_column = False
         self.show_select_row = False
@@ -968,9 +962,6 @@ class ajaxGetWorksheetReferences(ReferenceSamplesView):
 
     def folderitems(self):
         translate = self.context.translate
-
-        bc = getToolByName(context, 'bika_catalog')
-        self.contentsMethod = bc
 
         items = super(ajaxGetWorksheetReferences, self).folderitems()
         new_items = []

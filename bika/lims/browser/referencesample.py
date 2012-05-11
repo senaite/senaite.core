@@ -46,6 +46,7 @@ class ReferenceAnalysesView(AnalysesView):
 
     def __init__(self, context, request):
         AnalysesView.__init__(self, context, request)
+        self.catalog = 'bika_analysis_catalog'
         self.contentFilter = {'portal_type':'ReferenceAnalysis',
                               'path': {'query':"/".join(self.context.getPhysicalPath()),
                                        'level':0}}
@@ -82,8 +83,6 @@ class ReferenceAnalysesView(AnalysesView):
         ]
 
     def folderitems(self):
-        bac = getToolByName(self.context, 'bika_analysis_catalog')
-        self.contentsMethod = bac
         items = super(ReferenceAnalysesView, self).folderitems()
         for x in range(len(items)):
             if not items[x].has_key('obj'):
@@ -103,7 +102,6 @@ class ReferenceResultsView(BikaListingView):
     def __init__(self, context, request):
         super(ReferenceResultsView, self).__init__(context, request)
         bsc = getToolByName(context, 'bika_setup_catalog')
-        self.contentsMethod = bsc
         self.title = _("Reference Results")
         self.description = _("Click on Analysis Categories (against shaded background) "
                              "to see Analysis Services in each category. Enter minimum "
@@ -181,6 +179,7 @@ class ReferenceSamplesView(BikaListingView):
         self.icon = "++resource++bika.lims.images/referencesample_big.png"
         self.title = _("Reference Samples")
         self.description = _("All reference samples in the system are displayed here.")
+        self.catalog = 'bika_catalog'
         self.contentFilter = {'portal_type': 'ReferenceSample',
                               'sort_on':'id',
                               'sort_order': 'reverse',
@@ -248,8 +247,6 @@ class ReferenceSamplesView(BikaListingView):
         ]
 
     def folderitems(self):
-        bc = getToolByName(self.context, 'bika_catalog')
-        self.contentsMethod = bc
         items = super(ReferenceSamplesView, self).folderitems()
         for x in range(len(items)):
             if not items[x].has_key('obj'): continue
