@@ -368,7 +368,6 @@ class BikaGenerator:
         bac.addColumn('path')
         bac.addColumn('UID')
         bac.addColumn('id')
-        bac.addColumn('getId')
         bac.addColumn('Type')
         bac.addColumn('portal_type')
         bac.addColumn('getObjPositionInParent')
@@ -454,6 +453,18 @@ class BikaGenerator:
         bc.addIndex('getSampler', 'FieldIndex')
         bc.addIndex('getWorksheetTemplateTitle', 'FieldIndex')
         bc.addIndex('getAnalyst', 'FieldIndex')
+
+        bc.addColumn('path')
+        bc.addColumn('UID')
+        bc.addColumn('id')
+        bc.addColumn('Type')
+        bc.addColumn('portal_type')
+        bc.addColumn('Title')
+        bc.addColumn('Description')
+        bc.addColumn('sortable_title')
+        bc.addColumn('review_state')
+        bc.addColumn('inactive_state')
+        bc.addColumn('cancellation_state')
 
         bsc = getToolByName(portal, 'bika_setup_catalog', None)
         if bsc == None:
