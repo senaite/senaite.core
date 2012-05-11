@@ -26,8 +26,10 @@ class BikaGenerator:
 
         obj = portal._getOb('front-page')
         alsoProvides(obj, IHaveNoBreadCrumbs)
+        # our frontpage text isn't shaped right for presentation mode
+        obj.edit(presentation = False)
 
-        # remove undesired content objects
+##        # remove undesired content objects
 ##        del_ids = []
 ##        for obj_id in ['Members', 'front-page', 'news', 'events']:
 ##            if obj_id in portal.objectIds():

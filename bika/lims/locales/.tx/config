@@ -12,3 +12,10 @@ file_filter = <lang>/LC_MESSAGES/plone.po
 host = https://www.transifex.net
 source_file = plone.pot
 source_lang = en
+
+[bika-lims.plonefrontpage]
+file_filter = <lang>/LC_MESSAGES/plonefrontpage.po
+host = https://www.transifex.net
+source_file = plonefrontpage.pot
+source_lang = en
+

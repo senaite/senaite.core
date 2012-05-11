@@ -75,9 +75,9 @@
 
             <fieldset tal:condition="python:append_only and 'portal_factory' not in context.absolute_url()" >
               <legend i18n:translate=""
-                      tal:define="label widget/label"
-                      tal:content="string:HISTORY: ${label}">
-                label
+			          i18n:domain="plone"
+                      tal:define="label widget/label">
+                History
               </legend>
               <span i18n:translate=""
                     tal:content="structure accessor">content</span>

@@ -4,7 +4,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Bika-LIMS\n"
-"POT-Creation-Date: 2012-05-02 13:15+0000\n"
+"POT-Creation-Date: 2012-05-12 14:27+0000\n"
 "PO-Revision-Date: 2012-02-18 12:52+0000\n"
 "Last-Translator: lemoene Smit <admin@bikalabs.com>\n"
 "Language-Team: Bika <bikasupport@bikalabs.com>\n"
@@ -29,6 +29,10 @@ msgstr "AR Profiles"
 
 #: ../profiles/default/types/ARTemplate.xml
 msgid "AR Template"
+msgstr ""
+
+#: ../profiles/default/types/ARTemplates.xml
+msgid "AR Templates"
 msgstr ""
 
 #: ../profiles/default/workflows/bika_inactive_workflow/definition.xml
@@ -92,6 +96,10 @@ msgstr "Analysis Request"
 msgid "Analysis Request Profiles"
 msgstr "Analysis Request Profiles"
 
+#: ../profiles/default/controlpanel.xml
+msgid "Analysis Request Templates"
+msgstr ""
+
 #: ../profiles/default/actions.xml
 #: ../profiles/default/types/AnalysisRequestsFolder.xml
 #: ../profiles/default/types/Client.xml
@@ -113,12 +121,9 @@ msgstr "Analysis Specification"
 
 #: ../profiles/default/controlpanel.xml
 #: ../profiles/default/types/AnalysisSpecs.xml
+#: ../profiles/default/types/Client.xml
 msgid "Analysis Specifications"
 msgstr "Analysis Specifications"
-
-#: ../profiles/default/types/Client.xml
-msgid "Analysis Specs"
-msgstr "Analysis Specs"
 
 #: ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml
 #: ../profiles/default/workflows/bika_referenceanalysis_workflow/definition.xml
@@ -666,6 +671,10 @@ msgstr "Suppliers"
 msgid "Supply Order"
 msgstr "Supply Order"
 
+#: ../profiles/default/types/Client.xml
+msgid "Templates"
+msgstr ""
+
 #: ../profiles/default/workflows/bika_analysis_workflow/definition.xml
 #: ../profiles/default/workflows/bika_ar_workflow/definition.xml
 #: ../profiles/default/workflows/bika_arimport_workflow/definition.xml
@@ -739,14 +748,6 @@ msgstr "Accounting"
 #. Default: "Address"
 msgid "label_schema_Address"
 msgstr "Address"
-
-#. Default: "Analyses"
-msgid "label_schema_Analyses"
-msgstr "Analyses"
-
-#. Default: "Analysis"
-msgid "label_schema_Analysis"
-msgstr "Analysis"
 
 #. Default: "Bank details"
 msgid "label_schema_Bank details"

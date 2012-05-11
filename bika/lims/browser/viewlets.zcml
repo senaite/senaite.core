@@ -2,6 +2,7 @@
     xmlns="http://namespaces.zope.org/zope"
     xmlns:browser="http://namespaces.zope.org/browser"
     xmlns:i18n="http://namespaces.zope.org/i18n"
+    xmlns:monkey="http://namespaces.plone.org/monkey"
     i18n_domain="bika">
 
     <!-- Hide BreadCrumbs for root views -->
@@ -20,6 +21,17 @@
         name="plone.path_bar"
         manager="plone.app.layout.viewlets.interfaces.IAboveContent"
         template="templates/blank.pt"
+        permission="zope2.View"
+        layer="bika.lims.interfaces.IBikaLIMS"
+        />
+
+    <!-- Translated breadcrumbs -->
+    <browser:viewlet
+        for="*"
+        name="plone.path_bar"
+        manager="plone.app.layout.viewlets.interfaces.IAboveContent"
+        template="templates/path_bar.pt"
+        class="bika.lims.browser.viewlets.PathBarViewlet"
         permission="zope2.View"
         layer="bika.lims.interfaces.IBikaLIMS"
         />

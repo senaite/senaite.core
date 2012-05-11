@@ -111,7 +111,7 @@
   <permission value="BIKA: Manage Clients"/>
  </action>
 
- <action title="Analysis Specs"
+ <action title="Analysis Specifications"
          action_id="specs"
          category="object"
          condition_expr=""

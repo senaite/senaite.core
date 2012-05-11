@@ -3,7 +3,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Bika-LIMS\n"
-"POT-Creation-Date: 2012-05-02 13:15+0000\n"
+"POT-Creation-Date: 2012-05-12 14:27+0000\n"
 "PO-Revision-Date: 2012-01-01 23:11+0000\n"
 "Last-Translator: Bika <bikasupport@bikalabs.com>\n"
 "Language-Team: Bika <bikasupport@bikalabs.com>\n"
@@ -26,6 +26,10 @@ msgstr ""
 
 #: ../profiles/default/types/ARTemplate.xml
 msgid "AR Template"
+msgstr ""
+
+#: ../profiles/default/types/ARTemplates.xml
+msgid "AR Templates"
 msgstr ""
 
 #: ../profiles/default/workflows/bika_inactive_workflow/definition.xml
@@ -89,6 +93,10 @@ msgstr ""
 msgid "Analysis Request Profiles"
 msgstr ""
 
+#: ../profiles/default/controlpanel.xml
+msgid "Analysis Request Templates"
+msgstr ""
+
 #: ../profiles/default/actions.xml
 #: ../profiles/default/types/AnalysisRequestsFolder.xml
 #: ../profiles/default/types/Client.xml
@@ -110,11 +118,8 @@ msgstr ""
 
 #: ../profiles/default/controlpanel.xml
 #: ../profiles/default/types/AnalysisSpecs.xml
-msgid "Analysis Specifications"
-msgstr ""
-
 #: ../profiles/default/types/Client.xml
-msgid "Analysis Specs"
+msgid "Analysis Specifications"
 msgstr ""
 
 #: ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml
@@ -663,6 +668,10 @@ msgstr ""
 msgid "Supply Order"
 msgstr ""
 
+#: ../profiles/default/types/Client.xml
+msgid "Templates"
+msgstr ""
+
 #: ../profiles/default/workflows/bika_analysis_workflow/definition.xml
 #: ../profiles/default/workflows/bika_ar_workflow/definition.xml
 #: ../profiles/default/workflows/bika_arimport_workflow/definition.xml
@@ -735,14 +744,6 @@ msgstr ""
 
 #. Default: "Address"
 msgid "label_schema_Address"
-msgstr ""
-
-#. Default: "Analyses"
-msgid "label_schema_Analyses"
-msgstr ""
-
-#. Default: "Analysis"
-msgid "label_schema_Analysis"
 msgstr ""
 
 #. Default: "Bank details"

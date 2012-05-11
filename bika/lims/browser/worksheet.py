@@ -881,8 +881,9 @@ class WorksheetServicesView(BikaListingView):
             if service_uid not in ws_services:
                 ws_services.append(service_uid)
         self.categories = []
-        services = self.catalog(portal_type = "AnalysisService",
-                                inactive_state = "active")
+        catalog = getToolByName(self, self.catalog)
+        services = catalog(portal_type = "AnalysisService",
+                           inactive_state = "active")
         items = []
         for service in services:
             # if the service has dependencies, it can't have reference analyses

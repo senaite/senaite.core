@@ -59,7 +59,9 @@ class AnalysesView(BikaListingView):
                          'sortable': False},
             'Uncertainty': {'title': _('+-'),
                             'sortable': False},
-            'retested': {'title': "<img src='++resource++bika.lims.images/retested.png' title='%s'/>" % _('Retested'),
+            'retested': {'title': "<img title='%s' "\
+                         "src='++resource++bika.lims.images/retested.png' />" % \
+                         context.translate(_('Retested')),
                          'type':'boolean',
                          'sortable': False},
             'Attachments': {'title': _('Attachments'),
@@ -335,7 +337,9 @@ class AnalysesView(BikaListingView):
                 ws = items[i]['obj'].getBackReferences('WorksheetAnalysis')[0]
                 items[i]['after']['state_title'] = \
                      "<a href='%s'><img src='++resource++bika.lims.images/worksheet.png' title='%s'/></a>" % \
-                     (ws.absolute_url(), _("Assigned to: ${worksheet_id}", mapping={'worksheet_id':ws.id}))
+                     (ws.absolute_url(), self.context.translate(
+                         _("Assigned to: ${worksheet_id}",
+                           mapping={'worksheet_id':ws.id})))
 
         # the TAL requires values for all interim fields on all
         # items, so we set blank values in unused cells

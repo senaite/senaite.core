@@ -5,20 +5,20 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Bika-LIMS\n"
-"POT-Creation-Date: 2012-05-02 13:15+0000\n"
-"PO-Revision-Date: 2012-05-01 11:59+0000\n"
+"Report-Msgid-Bugs-To: http://github.com/bikalabs/Bika-LIMS/issues\n"
+"POT-Creation-Date: 2012-05-11 17:43+0000\n"
+"PO-Revision-Date: 2012-05-11 14:41+0000\n"
 "Last-Translator: lemoene Smit <admin@bikalabs.com>\n"
 "Language-Team: Bika <bikasupport@bikalabs.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1)\n"
+"Domain: DOMAIN\n"
+"Language: af\n"
 "Language-Code: en\n"
 "Language-Name: English\n"
+"Plural-Forms: nplurals=2; plural=(n != 1)\n"
 "Preferred-Encodings: utf-8 latin1\n"
-"Domain: DOMAIN\n"
-"Report-Msgid-Bugs-To: http://github.com/bikalabs/Bika-LIMS/issues\n"
-"Language: af\n"
 
 #: ../profiles/default/types/ARProfile.xml
 msgid "AR Profile"
@@ -30,6 +30,10 @@ msgstr "OV profiele"
 
 #: ../profiles/default/types/ARTemplate.xml
 msgid "AR Template"
+msgstr ""
+
+#: ../profiles/default/types/ARTemplates.xml
+msgid "AR Templates"
 msgstr ""
 
 #: ../profiles/default/workflows/bika_inactive_workflow/definition.xml
@@ -93,6 +97,10 @@ msgstr ""
 msgid "Analysis Request Profiles"
 msgstr "Ontledingsversoek profiele"
 
+#: ../profiles/default/controlpanel.xml
+msgid "Analysis Request Templates"
+msgstr ""
+
 #: ../profiles/default/actions.xml
 #: ../profiles/default/types/AnalysisRequestsFolder.xml
 #: ../profiles/default/types/Client.xml
@@ -114,12 +122,9 @@ msgstr "Ontledingspesifikasie"
 
 #: ../profiles/default/controlpanel.xml
 #: ../profiles/default/types/AnalysisSpecs.xml
+#: ../profiles/default/types/Client.xml
 msgid "Analysis Specifications"
 msgstr "Ontledingspesifikasies"
-
-#: ../profiles/default/types/Client.xml
-msgid "Analysis Specs"
-msgstr ""
 
 #: ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml
 #: ../profiles/default/workflows/bika_referenceanalysis_workflow/definition.xml
@@ -183,8 +188,7 @@ msgstr "Gekanselleer"
 msgid "Client"
 msgstr "Kliënt"
 
-#: ../profiles/default/actions.xml
-#: ../profiles/default/types/ClientFolder.xml
+#: ../profiles/default/actions.xml ../profiles/default/types/ClientFolder.xml
 msgid "Clients"
 msgstr "Kliënte"
 
@@ -392,8 +396,7 @@ msgstr ""
 msgid "Method"
 msgstr "Metode"
 
-#: ../profiles/default/controlpanel.xml
-#: ../profiles/default/types/Methods.xml
+#: ../profiles/default/controlpanel.xml ../profiles/default/types/Methods.xml
 msgid "Methods"
 msgstr "Metodes"
 
@@ -409,8 +412,7 @@ msgstr "Oop"
 msgid "Order pending"
 msgstr ""
 
-#: ../profiles/default/actions.xml
-#: ../profiles/default/types/Client.xml
+#: ../profiles/default/actions.xml ../profiles/default/types/Client.xml
 msgid "Orders"
 msgstr "Bestellings"
 
@@ -622,8 +624,7 @@ msgstr ""
 msgid "Sampled"
 msgstr ""
 
-#: ../profiles/default/actions.xml
-#: ../profiles/default/types/Client.xml
+#: ../profiles/default/actions.xml ../profiles/default/types/Client.xml
 msgid "Samples"
 msgstr "Monsters"
 
@@ -665,6 +666,10 @@ msgstr ""
 
 #: ../profiles/default/types/SupplyOrder.xml
 msgid "Supply Order"
+msgstr ""
+
+#: ../profiles/default/types/Client.xml
+msgid "Templates"
 msgstr ""
 
 #: ../profiles/default/workflows/bika_analysis_workflow/definition.xml
@@ -741,14 +746,6 @@ msgstr ""
 msgid "label_schema_Address"
 msgstr ""
 
-#. Default: "Analyses"
-msgid "label_schema_Analyses"
-msgstr ""
-
-#. Default: "Analysis"
-msgid "label_schema_Analysis"
-msgstr ""
-
 #. Default: "Bank details"
 msgid "label_schema_Bank details"
 msgstr ""
@@ -820,4 +817,3 @@ msgstr ""
 #. Default: "Uncertainties"
 msgid "label_schema_Uncertainties"
 msgstr ""
-

@@ -19,12 +19,6 @@ msgstr "Accounting"
 msgid "label_schema_Address"
 msgstr "Address"
 
-msgid "label_schema_Analysis"
-msgstr "Analysis"
-
-msgid "label_schema_Analyses"
-msgstr "Analyses"
-
 msgid "label_schema_Bank details"
 msgstr "Bank details"
 

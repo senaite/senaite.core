@@ -3,7 +3,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Bika-LIMS\n"
-"POT-Creation-Date: 2012-05-02 13:15+0000\n"
+"POT-Creation-Date: 2012-05-12 14:27+0000\n"
 "PO-Revision-Date: 2012-02-21 17:06+0000\n"
 "Last-Translator: lemoene Smit <admin@bikalabs.com>\n"
 "Language-Team: Bika <bikasupport@bikalabs.com>\n"
@@ -22,16 +22,16 @@ msgstr ""
 msgid "${contact_fullname} can log into the LIMS by using ${contact_username} as username. Contacts must change their own passwords. If a password is forgotten a contact can request a new password from the login form."
 msgstr "${contact_fullname} can log into the LIMS by using ${contact_username} as username. Contacts must change their own passwords. If a password is forgotten a contact can request a new password from the login form."
 
-#: ../browser/analysisrequest.py:1499
+#: ../browser/analysisrequest.py:1526
 msgid "${id} is not a valid sample ID"
 msgstr "${id} is not a valid sample ID"
 
-#: ../browser/analysisrequest.py:184
+#: ../browser/analysisrequest.py:183
 #: ../browser/client.py:115
 msgid "${items} are waiting for preservation."
 msgstr ""
 
-#: ../browser/analysisrequest.py:131
+#: ../browser/analysisrequest.py:130
 #: ../browser/client.py:118
 msgid "${items} are waiting to be received."
 msgstr ""
@@ -44,12 +44,12 @@ msgstr "${items} were published."
 msgid "${items}: partitions are waiting to be received."
 msgstr ""
 
-#: ../browser/analysisrequest.py:193
+#: ../browser/analysisrequest.py:192
 #: ../browser/client.py:124
 msgid "${item} is waiting for preservation."
 msgstr ""
 
-#: ../browser/analysisrequest.py:136
+#: ../browser/analysisrequest.py:135
 #: ../browser/client.py:127
 msgid "${item} is waiting to be received."
 msgstr ""
@@ -66,13 +66,13 @@ msgstr ""
 msgid "${labname} has been accredited as ${accr} conformant by ${abbr}, (${body}). ${abbr} is recognised by government as a national accreditation body in ${labcountry}. "
 msgstr "${labname} has been accredited as ${accr} conformant by ${abbr}, (${body}). ${abbr} is recognised by government as a national accreditation body in ${labcountry}. "
 
-#: ../browser/analysisrequest.py:498
+#: ../browser/analysisrequest.py:497
 #: ../browser/sample.py:355
 #: ../content/artemplate.py:138
 msgid "${samplepoint} is not a valid sample point"
 msgstr "${samplepoint} is not a valid sample point"
 
-#: ../browser/analysisrequest.py:491
+#: ../browser/analysisrequest.py:490
 #: ../browser/sample.py:348
 #: ../content/artemplate.py:114
 msgid "${sampletype} is not a valid sample type"
@@ -107,8 +107,8 @@ msgstr "(Hazardous)"
 msgid "(Required)"
 msgstr "(Required)"
 
-#: ../browser/analyses.py:62
-#: ../browser/referencesample.py:63
+#: ../browser/analyses.py:60
+#: ../browser/referencesample.py:64
 #: ../browser/worksheet.py:208
 msgid "+-"
 msgstr "+-"
@@ -127,7 +127,7 @@ msgstr "AR Attachment Option"
 msgid "AR ID Padding"
 msgstr "AR ID Padding"
 
-#: ../browser/client.py:294
+#: ../browser/client.py:292
 msgid "AR Import"
 msgstr "AR Import"
 
@@ -139,8 +139,8 @@ msgstr "AR Import options"
 msgid "AR Profile"
 msgstr "AR Profile"
 
-#: ../browser/client.py:476
-#: ../controlpanel/bika_arprofiles.py:51
+#: ../browser/client.py:359
+#: ../controlpanel/bika_arprofiles.py:25
 msgid "AR Profiles"
 msgstr "AR Profiles"
 
@@ -148,8 +148,8 @@ msgstr "AR Profiles"
 msgid "AR Template"
 msgstr ""
 
-#: ../browser/client.py:472
-#: ../controlpanel/bika_arprofiles.py:47
+#: ../browser/client.py:422
+#: ../controlpanel/bika_artemplates.py:25
 msgid "AR Templates"
 msgstr ""
 
@@ -194,7 +194,7 @@ msgstr "Accreditation Logo"
 msgid "Accreditation Reference"
 msgstr "Accreditation Reference"
 
-#: ../browser/analysisrequest.py:926
+#: ../browser/analysisrequest.py:947
 #: ../content/analysisservice.py:325
 #: ../content/pricelistlineitem.py:25
 msgid "Accredited"
@@ -204,41 +204,39 @@ msgstr "Accredited"
 msgid "Action"
 msgstr "Action"
 
-#: ../browser/client.py:785
-#: ../browser/clientfolder.py:58
-#: ../browser/reports/analysesperservice.py:94
+#: ../browser/analysisrequest.py:1896
+#: ../browser/client.py:736
+#: ../browser/clientfolder.py:47
 msgid "Active"
 msgstr "Active"
 
-#: ../browser/client.py:270
-#: ../browser/clientfolder.py:81
-#: ../browser/referencesupplier.py:17
+#: ../browser/client.py:268
+#: ../browser/clientfolder.py:91
+#: ../browser/referencesupplier.py:18
 msgid "Add"
 msgstr "Add"
 
-#: ../browser/worksheet.py:497
+#: ../browser/worksheet.py:499
 msgid "Add Analyses"
 msgstr "Add Analyses"
 
-#: ../browser/worksheet.py:649
+#: ../browser/worksheet.py:650
 msgid "Add Blank Reference"
 msgstr "Add Blank Reference"
 
-#: ../browser/worksheet.py:693
+#: ../browser/worksheet.py:694
 msgid "Add Control Reference"
 msgstr "Add Control Reference"
 
-#: ../browser/worksheet.py:736
+#: ../browser/worksheet.py:737
 msgid "Add Duplicate"
 msgstr "Add Duplicate"
 
-#: ../browser/client.py:455
-#: ../controlpanel/bika_arprofiles.py:30
+#: ../controlpanel/bika_arprofiles.py:26
 msgid "Add Profile"
 msgstr ""
 
-#: ../browser/client.py:458
-#: ../controlpanel/bika_arprofiles.py:33
+#: ../controlpanel/bika_artemplates.py:27
 msgid "Add Template"
 msgstr ""
 
@@ -247,8 +245,8 @@ msgid "Adds a two-digit year after the ID prefix."
 msgstr "Adds a two-digit year after the ID prefix."
 
 #: ../browser/accreditation.py:62
-#: ../browser/analyses.py:77
-#: ../browser/analysisrequest.py:856
+#: ../browser/analyses.py:75
+#: ../browser/analysisrequest.py:851
 msgid "All"
 msgstr "All"
 
@@ -256,11 +254,11 @@ msgstr "All"
 msgid "All Accredited analysis services are listed here."
 msgstr "All Accredited analysis services are listed here."
 
-#: ../browser/analysisrequest.py:1099
+#: ../browser/analysisrequest.py:1126
 msgid "All Samples"
 msgstr "All Samples"
 
-#: ../browser/analysisrequest.py:2135
+#: ../browser/analysisrequest.py:2176
 msgid "All analyses assigned"
 msgstr "All analyses assigned"
 
@@ -268,7 +266,7 @@ msgstr "All analyses assigned"
 msgid "All analyses of type"
 msgstr "All analyses of type"
 
-#: ../browser/referencesample.py:180
+#: ../browser/referencesample.py:181
 msgid "All reference samples in the system are displayed here."
 msgstr "All reference samples in the system are displayed here."
 
@@ -276,9 +274,9 @@ msgstr "All reference samples in the system are displayed here."
 msgid "Always expand the selected categories in client views"
 msgstr ""
 
-#: ../browser/reports/analysesperservice.pt:85
-#: ../browser/reports/report_out.pt:58
 #: ../browser/templates/analysisrequest_manage_results.pt:83
+#: ../browser/templates/sample.pt:64
+#: ../content/arimport.py:153
 msgid "Analyses"
 msgstr "Analyses"
 
@@ -286,11 +284,11 @@ msgstr "Analyses"
 msgid "Analyses out of range"
 msgstr "Analyses out of range"
 
-#: ../browser/reports/analysesperservice.pt:28
-#: ../browser/reports/analysesperservice.py:35
+#: ../browser/reports/analysesperservice.py:33
 msgid "Analyses per analysis service"
 msgstr ""
 
+#: ../browser/reports/analysespersampletype.py:33
 #: ../browser/reports/reports_productivity.pt:39
 msgid "Analyses per sample type"
 msgstr "Analyses per sample type"
@@ -303,8 +301,8 @@ msgstr "Analyses per service"
 msgid "Analyses repeated"
 msgstr "Analyses repeated"
 
-#: ../browser/analyses.py:48
-#: ../browser/late_analyses.py:37
+#: ../browser/analyses.py:46
+#: ../browser/late_analyses.py:39
 #: ../browser/templates/analysisrequest_analyses_not_requested.pt:100
 msgid "Analysis"
 msgstr "Analysis"
@@ -325,7 +323,7 @@ msgstr "Analysis ${service} at slot ${slot}: OK"
 msgid "Analysis Attachment Option"
 msgstr "Analysis Attachment Option"
 
-#: ../controlpanel/bika_analysiscategories.py:28
+#: ../controlpanel/bika_analysiscategories.py:27
 msgid "Analysis Categories"
 msgstr "Analysis Categories"
 
@@ -346,11 +344,11 @@ msgstr "Analysis Profile"
 msgid "Analysis Request ID"
 msgstr "Analysis Request ID"
 
-#: ../browser/client.py:303
+#: ../browser/client.py:301
 msgid "Analysis Request Imports"
 msgstr "Analysis Request Imports"
 
-#: ../browser/analysisrequest.py:1793
+#: ../browser/analysisrequest.py:1831
 msgid "Analysis Requests"
 msgstr "Analysis Requests"
 
@@ -361,12 +359,12 @@ msgid "Analysis Service"
 msgstr "Analysis Service"
 
 #: ../config.py:43
-#: ../controlpanel/bika_analysisservices.py:99
+#: ../controlpanel/bika_analysisservices.py:98
 msgid "Analysis Services"
 msgstr "Analysis Services"
 
-#: ../browser/client.py:559
-#: ../controlpanel/bika_analysisspecs.py:30
+#: ../browser/client.py:494
+#: ../controlpanel/bika_analysisspecs.py:29
 msgid "Analysis Specifications"
 msgstr "Analysis Specifications"
 
@@ -382,7 +380,7 @@ msgstr "Analysis container UID ${parent_uid} not found"
 msgid "Analysis parent UID ${parent_uid} not found"
 msgstr "Analysis parent UID ${parent_uid} not found"
 
-#: ../browser/analysisrequest.py:1737
+#: ../browser/analysisrequest.py:1776
 msgid "Analysis request ${AR} was successfully created."
 msgstr "Analysis request ${AR} was successfully created."
 
@@ -390,14 +388,16 @@ msgstr "Analysis request ${AR} was successfully created."
 msgid "Analysis request ${service} was successfully created."
 msgstr "Analysis request ${service} was successfully created."
 
-#: ../browser/analysisrequest.py:1732
+#: ../browser/analysisrequest.py:1771
 msgid "Analysis requests ${ARs} were successfully created."
 msgstr "Analysis requests ${ARs} were successfully created."
 
+#: ../browser/reports/analysesperclient.py:36
 #: ../browser/reports/reports_productivity.pt:50
 msgid "Analysis requests and analyses"
 msgstr "Analysis requests and analyses"
 
+#: ../browser/reports/analysesperclient.py:39
 #: ../browser/reports/reports_productivity.pt:62
 msgid "Analysis requests and analyses per client"
 msgstr "Analysis requests and analyses per client"
@@ -414,7 +414,11 @@ msgstr ""
 msgid "Analysis results relate only to the samples tested"
 msgstr "Analysis results relate only to the samples tested"
 
-#: ../browser/client.py:614
+#: ../browser/reports/analysesperservice.py:117
+msgid "Analysis service"
+msgstr ""
+
+#: ../browser/client.py:564
 msgid "Analysis specifications reset to lab defaults."
 msgstr "Analysis specifications reset to lab defaults."
 
@@ -441,11 +445,13 @@ msgstr "Applied"
 msgid "Apply template"
 msgstr "Apply template"
 
-#: ../browser/analysisrequest.py:2032
+#: ../browser/analysisrequest.py:2073
 msgid "Assigned"
 msgstr "Assigned"
 
-#: ../browser/reports/analysesperservice.py:107
+#: ../browser/reports/analysesperclient.py:88
+#: ../browser/reports/analysespersampletype.py:96
+#: ../browser/reports/analysesperservice.py:110
 msgid "Assigned to worksheet"
 msgstr ""
 
@@ -470,28 +476,32 @@ msgstr "Attachment Keys"
 msgid "Attachment Option"
 msgstr "Attachment Option"
 
-#: ../browser/client.py:640
+#: ../browser/client.py:590
 #: ../content/attachment.py:32
-#: ../controlpanel/bika_attachmenttypes.py:36
+#: ../controlpanel/bika_attachmenttypes.py:35
 msgid "Attachment Type"
 msgstr "Attachment Type"
 
-#: ../controlpanel/bika_attachmenttypes.py:29
+#: ../controlpanel/bika_attachmenttypes.py:28
 msgid "Attachment Types"
 msgstr "Attachment Types"
 
-#: ../browser/analysisrequest.py:937
-#: ../controlpanel/bika_analysisservices.py:247
+#: ../browser/analysisrequest.py:958
+#: ../controlpanel/bika_analysisservices.py:246
 msgid "Attachment not permitted"
 msgstr "Attachment not permitted"
 
-#: ../browser/analysisrequest.py:933
-#: ../controlpanel/bika_analysisservices.py:245
+#: ../browser/analysisrequest.py:954
+#: ../controlpanel/bika_analysisservices.py:244
 msgid "Attachment required"
 msgstr "Attachment required"
 
-#: ../browser/analyses.py:67
-#: ../browser/client.py:634
+#: ../browser/reports/analysesattachments.py:73
+msgid "Attachment type"
+msgstr ""
+
+#: ../browser/analyses.py:65
+#: ../browser/client.py:584
 #: ../browser/mailtemplates/analysisrequest_results.pt:403
 msgid "Attachments"
 msgstr "Attachments"
@@ -554,7 +564,7 @@ msgid "Blank"
 msgstr "Blank"
 
 #: ../content/instrument.py:21
-#: ../controlpanel/bika_instruments.py:44
+#: ../controlpanel/bika_instruments.py:43
 msgid "Brand"
 msgstr "Brand"
 
@@ -566,9 +576,9 @@ msgstr "Bulk Discount"
 msgid "Bulk price (excluding VAT)"
 msgstr "Bulk price (excluding VAT)"
 
-#: ../browser/analysisrequest.py:1017
-#: ../browser/client.py:772
-#: ../browser/referencesupplier.py:122
+#: ../browser/analysisrequest.py:1039
+#: ../browser/client.py:730
+#: ../browser/referencesupplier.py:137
 msgid "Business Phone"
 msgstr "Business Phone"
 
@@ -583,7 +593,7 @@ msgid "CC Emails"
 msgstr "CC Emails"
 
 #: ../browser/accreditation.py:57
-#: ../browser/widgets/serviceswidget.py:38
+#: ../browser/widgets/serviceswidget.py:39
 #: ../content/analysisservice.py:285
 msgid "Calculation"
 msgstr "Calculation"
@@ -606,7 +616,7 @@ msgstr ""
 msgid "Calculation: None"
 msgstr ""
 
-#: ../controlpanel/bika_calculations.py:29
+#: ../controlpanel/bika_calculations.py:28
 msgid "Calculations"
 msgstr "Calculations"
 
@@ -618,24 +628,24 @@ msgstr "Calibration Certificate"
 msgid "Calibration Expiry Date"
 msgstr "Calibration Expiry Date"
 
-#: ../browser/analysisrequest.py:929
+#: ../browser/analysisrequest.py:950
 #: ../browser/templates/analysisrequest_edit.pt:652
 #: ../browser/templates/analysisservice_popup.pt:66
 msgid "Can be reported as dry matter"
 msgstr "Can be reported as dry matter"
 
-#: ../browser/analysisrequest.py:2004
+#: ../browser/analysisrequest.py:2045
 #: ../browser/menu.py:63
-#: ../browser/sample.py:580
+#: ../browser/sample.py:592
 msgid "Cancelled"
 msgstr "Cancelled"
 
 #: ../content/container.py:38
-#: ../controlpanel/bika_containers.py:45
+#: ../controlpanel/bika_containers.py:44
 msgid "Capacity"
 msgstr "Capacity"
 
-#: ../browser/analyses.py:69
+#: ../browser/analyses.py:67
 msgid "Captured"
 msgstr "Captured"
 
@@ -649,12 +659,12 @@ msgid "Categorise Analysis Services"
 msgstr ""
 
 #: ../browser/accreditation.py:50
-#: ../browser/referencesample.py:59
+#: ../browser/referencesample.py:60
 #: ../browser/templates/analysisservice_popup.pt:161
 msgid "Category"
 msgstr "Category"
 
-#: ../subscribers/analysiscategory.py:24
+#: ../subscribers/analysiscategory.py:23
 msgid "Category cannot be deactivated because it contains Analysis Services"
 msgstr "Category cannot be deactivated because it contains Analysis Services"
 
@@ -692,7 +702,7 @@ msgstr "Classic"
 msgid "Click on Analysis Categories (against shaded background) to see Analysis Services in each category. Enter minimum and maximum values to indicate a valid results range. Any result outside this range will raise an alert. The % Error field allows for an % uncertainty to be considered when evaluating results against minimum and maximum values. A result out of range but still in range if the % error is taken into consideration, will raise a less severe alert."
 msgstr "Click on Analysis Categories (against shaded background) to see Analysis Services in each category. Enter minimum and maximum values to indicate a valid results range. Any result outside this range will raise an alert. The % Error field allows for an % uncertainty to be considered when evaluating results against minimum and maximum values. A result out of range but still in range if the % error is taken into consideration, will raise a less severe alert."
 
-#: ../browser/analysisrequest.py:1059
+#: ../browser/analysisrequest.py:1084
 msgid "Click on a sample to create a secondary AR"
 msgstr "Click on a sample to create a secondary AR"
 
@@ -700,8 +710,8 @@ msgstr "Click on a sample to create a secondary AR"
 msgid "Click to download"
 msgstr ""
 
-#: ../browser/analysisrequest.py:1815
-#: ../browser/late_analyses.py:39
+#: ../browser/analysisrequest.py:1853
+#: ../browser/late_analyses.py:41
 #: ../browser/mailtemplates/analysisrequest_results.pt:254
 msgid "Client"
 msgstr "Client"
@@ -731,7 +741,7 @@ msgstr "Client ID"
 msgid "Client Name"
 msgstr "Client Name"
 
-#: ../browser/analysisrequest.py:412
+#: ../browser/analysisrequest.py:411
 #: ../browser/mailtemplates/analysisrequest_results.pt:205
 #: ../browser/templates/analysisrequest_edit.pt:260
 msgid "Client Order"
@@ -741,13 +751,13 @@ msgstr "Client Order"
 msgid "Client Phone"
 msgstr "Client Phone"
 
-#: ../browser/analysisrequest.py:1817
-#: ../browser/sample.py:456
+#: ../browser/analysisrequest.py:1855
+#: ../browser/sample.py:457
 #: ../content/arimportitem.py:20
 msgid "Client Ref"
 msgstr "Client Ref"
 
-#: ../browser/analysisrequest.py:406
+#: ../browser/analysisrequest.py:405
 #: ../browser/mailtemplates/analysisrequest_results.pt:212
 #: ../browser/sample.py:248
 msgid "Client Reference"
@@ -757,7 +767,7 @@ msgstr "Client Reference"
 msgid "Client Remarks"
 msgstr "Client Remarks"
 
-#: ../browser/analysisrequest.py:393
+#: ../browser/analysisrequest.py:392
 #: ../browser/mailtemplates/analysisrequest_results.pt:219
 #: ../browser/sample.py:254
 msgid "Client SID"
@@ -767,7 +777,7 @@ msgstr "Client SID"
 msgid "Client Type"
 msgstr "Client Type"
 
-#: ../browser/client.py:266
+#: ../browser/client.py:264
 msgid "Client contact required before request may be submitted"
 msgstr "Client contact required before request may be submitted"
 
@@ -775,7 +785,7 @@ msgstr "Client contact required before request may be submitted"
 msgid "Clients"
 msgstr "Clients"
 
-#: ../browser/analysisrequest.py:459
+#: ../browser/analysisrequest.py:458
 #: ../browser/sample.py:279
 #: ../browser/templates/analysisrequest_edit.pt:421
 msgid "Composite"
@@ -789,7 +799,7 @@ msgstr "Confidence Level %"
 msgid "Confirm password"
 msgstr "Confirm password"
 
-#: ../browser/late_analyses.py:40
+#: ../browser/late_analyses.py:42
 msgid "Contact"
 msgstr "Contact"
 
@@ -801,23 +811,23 @@ msgstr "Contact ID"
 msgid "Contact Name"
 msgstr "Contact Name"
 
-#: ../browser/analysisrequest.py:400
+#: ../browser/analysisrequest.py:399
 #: ../browser/templates/analysisrequest_edit.pt:89
 msgid "Contact Person"
 msgstr "Contact Person"
 
-#: ../browser/client.py:765
-#: ../browser/referencesupplier.py:140
+#: ../browser/client.py:723
+#: ../browser/referencesupplier.py:132
 msgid "Contacts"
 msgstr "Contacts"
 
-#: ../browser/analysisrequest.py:995
+#: ../browser/analysisrequest.py:1016
 #: ../content/contact.py:38
 msgid "Contacts to CC"
 msgstr "Contacts to CC"
 
-#: ../browser/analysisrequest.py:848
-#: ../browser/sample.py:49
+#: ../browser/analysisrequest.py:843
+#: ../browser/sample.py:48
 #: ../browser/templates/sample_sticker.pt:77
 msgid "Container"
 msgstr "Container"
@@ -828,7 +838,7 @@ msgstr "Container"
 msgid "Container Type"
 msgstr "Container Type"
 
-#: ../controlpanel/bika_containertypes.py:29
+#: ../controlpanel/bika_containertypes.py:28
 msgid "Container Types"
 msgstr "Container Types"
 
@@ -836,9 +846,13 @@ msgstr "Container Types"
 msgid "Containers"
 msgstr "Containers"
 
-#: ../browser/client.py:641
+#: ../browser/client.py:591
 msgid "Content Type"
 msgstr "Content Type"
+
+#: ../browser/reports/analysesattachments.py:74
+msgid "Content type"
+msgstr ""
 
 #: ../config.py:55
 msgid "Control"
@@ -852,7 +866,7 @@ msgstr "Copy from"
 msgid "Country"
 msgstr "Country"
 
-#: ../browser/reports/report_frame.pt:27
+#: ../browser/reports/report_frame.pt:47
 msgid "Created by:"
 msgstr ""
 
@@ -864,8 +878,8 @@ msgstr "Creation Date"
 msgid "Currency"
 msgstr ""
 
-#: ../browser/referencesample.py:215
-#: ../browser/referencesupplier.py:48
+#: ../browser/referencesample.py:207
+#: ../browser/referencesupplier.py:39
 msgid "Current"
 msgstr "Current"
 
@@ -883,7 +897,7 @@ msgstr "Data Interface Options"
 msgid "Date"
 msgstr "Date"
 
-#: ../browser/client.py:711
+#: ../browser/client.py:662
 #: ../content/supplyorder.py:50
 msgid "Date Dispatched"
 msgstr "Date Dispatched"
@@ -900,50 +914,50 @@ msgstr "Date Disposed"
 msgid "Date Expired"
 msgstr "Date Expired"
 
-#: ../browser/client.py:308
+#: ../browser/client.py:306
 msgid "Date Imported"
 msgstr "Date Imported"
 
-#: ../browser/client.py:643
+#: ../browser/client.py:593
 #: ../content/attachment.py:45
 msgid "Date Loaded"
 msgstr "Date Loaded"
 
-#: ../browser/referencesupplier.py:32
+#: ../browser/referencesupplier.py:33
 #: ../browser/templates/referencesample_sticker.pt:71
 #: ../browser/templates/referencesample_view.pt:100
 msgid "Date Opened"
 msgstr "Date Opened"
 
-#: ../browser/analysisrequest.py:1837
-#: ../browser/sample.py:61
+#: ../browser/analysisrequest.py:1875
+#: ../browser/sample.py:60
 msgid "Date Preserved"
 msgstr ""
 
-#: ../browser/analysisrequest.py:1850
+#: ../browser/analysisrequest.py:1888
 #: ../browser/mailtemplates/analysisrequest_results.pt:286
 #: ../content/analysis.py:74
 msgid "Date Published"
 msgstr "Date Published"
 
-#: ../browser/analysisrequest.py:452
-#: ../browser/late_analyses.py:41
+#: ../browser/analysisrequest.py:451
+#: ../browser/late_analyses.py:43
 #: ../browser/mailtemplates/analysisrequest_results.pt:278
 msgid "Date Received"
 msgstr "Date Received"
 
 #: ../browser/templates/analysisrequest_edit.pt:348
-#: ../browser/worksheet.py:789
+#: ../browser/worksheet.py:791
 msgid "Date Requested"
 msgstr "Date Requested"
 
-#: ../browser/analysisrequest.py:1831
-#: ../browser/referencesample.py:198
-#: ../browser/referencesupplier.py:30
+#: ../browser/analysisrequest.py:1869
+#: ../browser/referencesample.py:200
+#: ../browser/referencesupplier.py:31
 msgid "Date Sampled"
 msgstr "Date Sampled"
 
-#: ../browser/client.py:310
+#: ../browser/client.py:308
 msgid "Date Submitted"
 msgstr "Date Submitted"
 
@@ -1009,7 +1023,7 @@ msgstr "Dependent Analyses"
 msgid "Describes the method in layman terms. This information is made available to lab clients"
 msgstr "Describes the method in layman terms. This information is made available to lab clients"
 
-#: ../browser/client.py:360
+#: ../browser/client.py:365
 #: ../browser/log.py:41
 #: ../content/invoicelineitem.py:23
 msgid "Description"
@@ -1028,7 +1042,7 @@ msgstr "Discount"
 msgid "Discount %"
 msgstr "Discount %"
 
-#: ../browser/client.py:726
+#: ../browser/client.py:680
 msgid "Dispatched"
 msgstr "Dispatched"
 
@@ -1036,7 +1050,7 @@ msgstr "Dispatched"
 msgid "Display Value"
 msgstr "Display Value"
 
-#: ../browser/sample.py:65
+#: ../browser/sample.py:64
 msgid "Disposal Date"
 msgstr ""
 
@@ -1045,19 +1059,19 @@ msgstr ""
 msgid "Disposal date"
 msgstr "Disposal date"
 
-#: ../browser/referencesample.py:233
-#: ../browser/referencesupplier.py:66
-#: ../browser/sample.py:563
+#: ../browser/referencesample.py:227
+#: ../browser/referencesupplier.py:61
+#: ../browser/sample.py:572
 msgid "Disposed"
 msgstr "Disposed"
 
-#: ../browser/client.py:794
-#: ../browser/clientfolder.py:68
+#: ../browser/client.py:745
+#: ../browser/clientfolder.py:56
 #: ../browser/menu.py:75
 msgid "Dormant"
 msgstr "Dormant"
 
-#: ../browser/analyses.py:60
+#: ../browser/analyses.py:58
 #: ../browser/worksheet.py:209
 msgid "Dry"
 msgstr "Dry"
@@ -1070,14 +1084,14 @@ msgstr "Dry Result"
 msgid "Dry matter analysis"
 msgstr "Dry matter analysis"
 
-#: ../browser/analysisrequest.py:1887
-#: ../browser/sample.py:507
+#: ../browser/analysisrequest.py:1928
+#: ../browser/sample.py:510
 msgid "Due"
 msgstr "Due"
 
-#: ../browser/analyses.py:71
-#: ../browser/late_analyses.py:42
-#: ../browser/referencesample.py:64
+#: ../browser/analyses.py:69
+#: ../browser/late_analyses.py:44
+#: ../browser/referencesample.py:65
 msgid "Due Date"
 msgstr "Due Date"
 
@@ -1086,13 +1100,13 @@ msgid "Due Date for next calibration"
 msgstr "Due Date for next calibration"
 
 #: ../browser/accreditation.py:56
-#: ../controlpanel/bika_analysisservices.py:121
+#: ../controlpanel/bika_analysisservices.py:120
 msgid "Dup Var"
 msgstr "Dup Var"
 
-#: ../browser/worksheet.py:344
+#: ../browser/worksheet.py:346
 #: ../config.py:56
-#: ../controlpanel/bika_analysisservices.py:141
+#: ../controlpanel/bika_analysisservices.py:142
 msgid "Duplicate"
 msgstr "Duplicate"
 
@@ -1134,12 +1148,12 @@ msgstr "Elevation"
 
 #: ../browser/templates/contact_login_details.pt:90
 #: ../config.py:19
-#: ../controlpanel/bika_referencesuppliers.py:45
+#: ../controlpanel/bika_referencesuppliers.py:44
 msgid "Email"
 msgstr "Email"
 
-#: ../browser/analysisrequest.py:1016
-#: ../browser/client.py:771
+#: ../browser/analysisrequest.py:1038
+#: ../browser/client.py:729
 #: ../browser/clientfolder.py:36
 msgid "Email Address"
 msgstr "Email Address"
@@ -1185,7 +1199,7 @@ msgstr "Enter the Sample Point's latitude in degrees 0-90, minutes 0-59, seconds
 msgid "Enter the Sample Point's longitude in degrees 0-180, minutes 0-59, seconds 0-59 and E/W indicator"
 msgstr "Enter the Sample Point's longitude in degrees 0-180, minutes 0-59, seconds 0-59 and E/W indicator"
 
-#: ../browser/analysisrequest.py:2146
+#: ../browser/analysisrequest.py:2187
 #: ../browser/templates/analysisrequest_edit.pt:468
 msgid "Exclude from invoice"
 msgstr "Exclude from invoice"
@@ -1199,14 +1213,14 @@ msgstr "Expected Result"
 msgid "Expected Results"
 msgstr "Expected Results"
 
-#: ../browser/referencesample.py:224
-#: ../browser/referencesupplier.py:57
-#: ../browser/sample.py:546
+#: ../browser/referencesample.py:217
+#: ../browser/referencesupplier.py:50
+#: ../browser/sample.py:552
 msgid "Expired"
 msgstr "Expired"
 
-#: ../browser/referencesample.py:200
-#: ../browser/referencesupplier.py:33
+#: ../browser/referencesample.py:202
+#: ../browser/referencesupplier.py:34
 #: ../browser/templates/referencesample_sticker.pt:81
 msgid "Expiry Date"
 msgstr "Expiry Date"
@@ -1215,9 +1229,9 @@ msgstr "Expiry Date"
 msgid "Extension profile for the Bika LIMS"
 msgstr "Extension profile for the Bika LIMS"
 
-#: ../browser/client.py:774
+#: ../browser/client.py:732
 #: ../browser/clientfolder.py:38
-#: ../browser/referencesupplier.py:124
+#: ../browser/referencesupplier.py:139
 msgid "Fax"
 msgstr "Fax"
 
@@ -1247,7 +1261,8 @@ msgstr "Field Preservation"
 msgid "Field Title"
 msgstr "Field Title"
 
-#: ../browser/client.py:639
+#: ../browser/client.py:589
+#: ../browser/reports/analysesattachments.py:72
 #: ../config.py:21
 msgid "File"
 msgstr "File"
@@ -1260,22 +1275,22 @@ msgstr "Filename"
 msgid "Firstname"
 msgstr "Firstname"
 
-#: ../controlpanel/bika_calculations.py:43
+#: ../controlpanel/bika_calculations.py:42
 msgid "Formula"
 msgstr "Formula"
 
-#: ../skins/bika/selection_macros.pt:40
+#: ../skins/bika/selection_macros.pt:39
 msgid "From"
 msgstr "From"
 
-#: ../browser/analysisrequest.py:1014
-#: ../browser/client.py:769
-#: ../browser/referencesupplier.py:120
+#: ../browser/analysisrequest.py:1036
+#: ../browser/client.py:727
+#: ../browser/referencesupplier.py:135
 msgid "Full Name"
 msgstr "Full Name"
 
-#: ../browser/analysisrequest.py:2143
-#: ../browser/sample.py:658
+#: ../browser/analysisrequest.py:2184
+#: ../browser/sample.py:676
 msgid "Future dated sample"
 msgstr "Future dated sample"
 
@@ -1283,9 +1298,9 @@ msgstr "Future dated sample"
 msgid "Greeting title eg. Mr, Mrs, Dr"
 msgstr "Greeting title eg. Mr, Mrs, Dr"
 
-#: ../browser/analysisrequest.py:1144
+#: ../browser/analysisrequest.py:1171
+#: ../browser/sample.py:672
 #: ../browser/templates/analysisrequest_analyses_not_requested.pt:167
-#: ../browser/templates/referencesample_view.pt:26
 msgid "Hazardous"
 msgstr "Hazardous"
 
@@ -1293,9 +1308,9 @@ msgstr "Hazardous"
 msgid "Hours"
 msgstr "Hours"
 
-#: ../browser/bika_listing.py:199
-#: ../browser/referencesample.py:58
-#: ../browser/referencesupplier.py:26
+#: ../browser/bika_listing.py:200
+#: ../browser/referencesample.py:59
+#: ../browser/referencesupplier.py:27
 msgid "ID"
 msgstr "ID"
 
@@ -1328,7 +1343,7 @@ msgstr ""
 msgid "If this container is pre-preserved, then the preservation method could be selected here."
 msgstr "If this container is pre-preserved, then the preservation method could be selected here."
 
-#: ../browser/client.py:307
+#: ../browser/client.py:305
 #: ../exportimport/import.py:23
 msgid "Import"
 msgstr "Import"
@@ -1337,9 +1352,15 @@ msgstr "Import"
 msgid "Import Option"
 msgstr "Import Option"
 
-#: ../browser/client.py:322
+#: ../browser/client.py:321
 msgid "Imported"
 msgstr "Imported"
+
+#: ../controlpanel/bika_analysiscategories.py:52
+#: ../controlpanel/bika_analysisspecs.py:48
+#: ../controlpanel/bika_arprofiles.py:46
+msgid "Inactive"
+msgstr ""
 
 #: ../content/pricelist.py:36
 msgid "Include descriptions"
@@ -1375,11 +1396,11 @@ msgstr "Initial revision"
 msgid "Instrument"
 msgstr "Instrument"
 
-#: ../browser/worksheet.py:1026
+#: ../browser/worksheet.py:1032
 msgid "Instrument exporter not found"
 msgstr "Instrument exporter not found"
 
-#: ../browser/worksheet.py:1014
+#: ../browser/worksheet.py:1020
 msgid "Instrument has no data interface selected"
 msgstr "Instrument has no data interface selected"
 
@@ -1387,7 +1408,7 @@ msgstr "Instrument has no data interface selected"
 msgid "Instrument type"
 msgstr "Instrument type"
 
-#: ../controlpanel/bika_instruments.py:30
+#: ../controlpanel/bika_instruments.py:29
 msgid "Instruments"
 msgstr "Instruments"
 
@@ -1396,7 +1417,7 @@ msgstr "Instruments"
 msgid "Invalid result"
 msgstr "Invalid result"
 
-#: ../browser/analysisrequest.py:465
+#: ../browser/analysisrequest.py:464
 #: ../content/analysisrequest.py:108
 msgid "Invoice Exclude"
 msgstr "Invoice Exclude"
@@ -1405,12 +1426,12 @@ msgstr "Invoice Exclude"
 msgid "Invoice number"
 msgstr "Invoice number"
 
-#: ../browser/analysisrequest.py:211
+#: ../browser/analysisrequest.py:210
 #: ../browser/bika_listing.py:96
 msgid "Item is inactive."
 msgstr "Item is inactive."
 
-#: ../browser/templates/bika_listing_table.pt:657
+#: ../browser/templates/bika_listing_table.pt:660
 msgid "Items per page"
 msgstr "Items per page"
 
@@ -1427,8 +1448,8 @@ msgid "Key"
 msgstr "Key"
 
 #: ../browser/accreditation.py:49
-#: ../browser/analysisrequest.py:839
 #: ../browser/fields/interimfieldsfield.py:14
+#: ../browser/templates/analysisservice_popup.pt:162
 msgid "Keyword"
 msgstr "Keyword"
 
@@ -1436,7 +1457,7 @@ msgstr "Keyword"
 msgid "Keywords"
 msgstr "Keywords"
 
-#: ../browser/analysisrequest.py:561
+#: ../browser/analysisrequest.py:560
 #: ../browser/templates/analysisrequest_manage_results.pt:63
 #: ../browser/templates/analysisrequest_view.pt:85
 msgid "Lab"
@@ -1446,11 +1467,11 @@ msgstr "Lab"
 msgid "Lab Analyses"
 msgstr "Lab Analyses"
 
-#: ../controlpanel/bika_labcontacts.py:29
+#: ../controlpanel/bika_labcontacts.py:28
 msgid "Lab Contacts"
 msgstr "Lab Contacts"
 
-#: ../controlpanel/bika_departments.py:29
+#: ../controlpanel/bika_departments.py:28
 msgid "Lab Departments"
 msgstr "Lab Departments"
 
@@ -1459,7 +1480,7 @@ msgid "Lab Preservation"
 msgstr "Lab Preservation"
 
 #: ../config.py:44
-#: ../controlpanel/bika_labproducts.py:30
+#: ../controlpanel/bika_labproducts.py:29
 msgid "Lab Products"
 msgstr "Lab Products"
 
@@ -1468,7 +1489,7 @@ msgid "Lab URL"
 msgstr "Lab URL"
 
 #: ../content/laboratory.py:108
-#: ../setuphandlers.py:81
+#: ../setuphandlers.py:82
 msgid "Laboratory"
 msgstr "Laboratory"
 
@@ -1476,22 +1497,22 @@ msgstr "Laboratory"
 msgid "Laboratory Accredited"
 msgstr "Laboratory Accredited"
 
-#: ../browser/bika_listing.py:201
+#: ../browser/bika_listing.py:202
 msgid "Last modified"
 msgstr "Last modified"
 
-#: ../browser/late_analyses.py:43
+#: ../browser/late_analyses.py:45
 msgid "Late"
 msgstr "Late"
 
-#: ../browser/analysisrequest.py:2140
-#: ../browser/late_analyses.py:25
+#: ../browser/analysisrequest.py:2181
+#: ../browser/late_analyses.py:27
 #: ../skins/bika/portlet_late_analyses.pt:34
 msgid "Late Analyses"
 msgstr "Late Analyses"
 
 #: ../browser/analyses.py:328
-#: ../browser/worksheet.py:595
+#: ../browser/worksheet.py:596
 msgid "Late Analysis"
 msgstr "Late Analysis"
 
@@ -1503,13 +1524,17 @@ msgstr "Latitude"
 msgid "Linked Sample"
 msgstr "Linked Sample"
 
-#: ../browser/load_setup_data.py:26
+#: ../browser/load_setup_data.py:28
 msgid "Load Setup Data"
 msgstr "Load Setup Data"
 
 #: ../content/method.py:26
 msgid "Load documents describing the method here"
 msgstr "Load documents describing the method here"
+
+#: ../browser/reports/analysesattachments.py:64
+msgid "Loaded"
+msgstr ""
 
 #: ../browser/log.py:33
 msgid "Log"
@@ -1519,11 +1544,11 @@ msgstr "Log"
 msgid "Login details"
 msgstr "Login details"
 
-#: ../skins/bika/logged_in.cpy:22
+#: ../skins/bika/logged_in.cpy:23
 msgid "Login failed. Both email address and password are case sensitive, check that caps lock is not enabled."
 msgstr "Login failed. Both email address and password are case sensitive, check that caps lock is not enabled."
 
-#: ../skins/bika/logged_in.cpy:24
+#: ../skins/bika/logged_in.cpy:25
 msgid "Login failed. Both login name and password are case sensitive, check that caps lock is not enabled."
 msgstr "Login failed. Both login name and password are case sensitive, check that caps lock is not enabled."
 
@@ -1546,19 +1571,19 @@ msgid "Male"
 msgstr "Male"
 
 #: ../content/department.py:22
-#: ../controlpanel/bika_departments.py:43
+#: ../controlpanel/bika_departments.py:42
 msgid "Manager"
 msgstr "Manager"
 
-#: ../controlpanel/bika_departments.py:49
+#: ../controlpanel/bika_departments.py:48
 msgid "Manager Email"
 msgstr "Manager Email"
 
-#: ../controlpanel/bika_departments.py:46
+#: ../controlpanel/bika_departments.py:45
 msgid "Manager Phone"
 msgstr "Manager Phone"
 
-#: ../browser/referencesupplier.py:28
+#: ../browser/referencesupplier.py:29
 #: ../browser/templates/referencesample_sticker.pt:51
 #: ../browser/templates/referencesample_view.pt:60
 msgid "Manufacturer"
@@ -1571,7 +1596,7 @@ msgid "Max"
 msgstr "Max"
 
 #: ../browser/accreditation.py:55
-#: ../controlpanel/bika_analysisservices.py:119
+#: ../controlpanel/bika_analysisservices.py:118
 msgid "Max Time"
 msgstr "Max Time"
 
@@ -1606,9 +1631,9 @@ msgstr "Member discount %"
 msgid "Member discount applies"
 msgstr "Member discount applies"
 
-#: ../browser/analyses.py:52
-#: ../browser/analysisrequest.py:844
+#: ../browser/analyses.py:50
 #: ../browser/templates/analysisservice_popup.pt:163
+#: ../browser/widgets/serviceswidget.py:38
 msgid "Method"
 msgstr "Method"
 
@@ -1630,7 +1655,7 @@ msgstr ""
 msgid "Method: None"
 msgstr ""
 
-#: ../controlpanel/bika_methods.py:29
+#: ../controlpanel/bika_methods.py:28
 msgid "Methods"
 msgstr "Methods"
 
@@ -1666,14 +1691,14 @@ msgstr "Minimum number of results for QC stats calculations"
 msgid "Minutes"
 msgstr "Minutes"
 
-#: ../browser/analysisrequest.py:1018
-#: ../browser/client.py:773
-#: ../browser/referencesupplier.py:123
+#: ../browser/analysisrequest.py:1040
+#: ../browser/client.py:731
+#: ../browser/referencesupplier.py:138
 msgid "Mobile Phone"
 msgstr "Mobile Phone"
 
 #: ../content/instrument.py:27
-#: ../controlpanel/bika_instruments.py:46
+#: ../controlpanel/bika_instruments.py:45
 msgid "Model"
 msgstr "Model"
 
@@ -1685,10 +1710,11 @@ msgstr "More"
 
 #: ../browser/clientfolder.py:35
 #: ../content/organisation.py:19
-#: ../controlpanel/bika_labcontacts.py:38
+#: ../controlpanel/bika_labcontacts.py:37
 msgid "Name"
 msgstr "Name"
 
+#: ../browser/analysisrequest.py:880
 #: ../browser/templates/worksheet_add_control.pt:43
 #: ../browser/templates/worksheet_add_duplicate.pt:36
 msgid "New"
@@ -1702,28 +1728,28 @@ msgstr "No"
 msgid "No LIMS setup data configured.  <a href='load_setup_data'>Click here</a> to load pre-configured setup data, or visit <a href='@@overview-controlpanel'>Site Setup</a>"
 msgstr "No LIMS setup data configured.  <a href='load_setup_data'>Click here</a> to load pre-configured setup data, or visit <a href='@@overview-controlpanel'>Site Setup</a>"
 
-#: ../browser/analysisrequest.py:1470
+#: ../browser/analysisrequest.py:1497
 msgid "No analyses have been selected"
 msgstr "No analyses have been selected"
 
-#: ../browser/worksheetfolder.py:431
+#: ../browser/worksheetfolder.py:433
 msgid "No analyses were added"
 msgstr "No analyses were added"
 
-#: ../browser/worksheet.py:565
+#: ../browser/worksheet.py:568
 msgid "No analyses were added to this worksheet."
 msgstr "No analyses were added to this worksheet."
 
-#: ../browser/analysisrequest.py:75
+#: ../browser/analysisrequest.py:89
 #: ../browser/client.py:132
 msgid "No changes made."
 msgstr ""
 
-#: ../browser/worksheet.py:994
+#: ../browser/worksheet.py:1000
 msgid "No control type specified"
 msgstr "No control type specified"
 
-#: ../browser/analysisrequest.py:1459
+#: ../browser/analysisrequest.py:1486
 msgid "No data was entered"
 msgstr "No data was entered"
 
@@ -1735,11 +1761,11 @@ msgstr ""
 msgid "No default preservations specified for this service"
 msgstr ""
 
-#: ../browser/load_setup_data.py:59
+#: ../browser/load_setup_data.py:62
 msgid "No file data submitted.  Please submit a valid Open XML Spreadsheet (.xlsx) file."
 msgstr "No file data submitted.  Please submit a valid Open XML Spreadsheet (.xlsx) file."
 
-#: ../browser/analysisrequest.py:321
+#: ../browser/analysisrequest.py:320
 #: ../browser/client.py:234
 msgid "No items were published"
 msgstr "No items were published"
@@ -1770,12 +1796,30 @@ msgstr "Not Permitted"
 msgid "Not invoiced"
 msgstr "Not invoiced"
 
-#: ../browser/reports/analysesperservice.py:36
+#: ../browser/reports/analysesperclient.py:37
+msgid "Number of Analysis requests and analyses"
+msgstr ""
+
+#: ../browser/reports/analysesperclient.py:40
+msgid "Number of Analysis requests and analyses per client"
+msgstr ""
+
+#: ../browser/reports/analysesperclient.py:97
+#: ../browser/reports/analysespersampletype.py:103
+#: ../browser/reports/analysesperservice.py:117
+msgid "Number of analyses"
+msgstr ""
+
+#: ../browser/reports/analysesperservice.py:34
 msgid "Number of analyses requested per analysis service"
 msgstr ""
 
-#: ../browser/reports/analysesperservice.pt:30
-msgid "Number of analyses requested per analysis service."
+#: ../browser/reports/analysespersampletype.py:34
+msgid "Number of analyses requested per sample type"
+msgstr ""
+
+#: ../browser/reports/analysesperclient.py:96
+msgid "Number of requests"
 msgstr ""
 
 #: ../content/arimport.py:137
@@ -1790,11 +1834,11 @@ msgstr "Once preserved, the sample must be disposed of within this time period. 
 msgid "Open"
 msgstr "Open"
 
-#: ../browser/worksheet.py:517
+#: ../browser/worksheet.py:519
 msgid "Order"
 msgstr "Order"
 
-#: ../browser/client.py:710
+#: ../browser/client.py:661
 msgid "Order Date"
 msgstr "Order Date"
 
@@ -1803,13 +1847,13 @@ msgstr "Order Date"
 msgid "Order ID"
 msgstr "Order ID"
 
-#: ../browser/client.py:709
+#: ../browser/client.py:660
 #: ../content/invoicelineitem.py:29
 #: ../content/supplyorder.py:32
 msgid "Order Number"
 msgstr "Order Number"
 
-#: ../browser/client.py:706
+#: ../browser/client.py:657
 msgid "Orders"
 msgstr "Orders"
 
@@ -1820,9 +1864,9 @@ msgstr "PDF"
 msgid "Parent"
 msgstr ""
 
-#: ../browser/analyses.py:50
-#: ../browser/analysisrequest.py:846
-#: ../browser/sample.py:47
+#: ../browser/analyses.py:48
+#: ../browser/analysisrequest.py:841
+#: ../browser/sample.py:46
 msgid "Partition"
 msgstr ""
 
@@ -1843,7 +1887,7 @@ msgstr "Password"
 msgid "Password lifetime"
 msgstr "Password lifetime"
 
-#: ../browser/client.py:722
+#: ../browser/client.py:675
 msgid "Pending"
 msgstr "Pending"
 
@@ -1862,7 +1906,7 @@ msgstr "Permitted Error %"
 
 #: ../browser/clientfolder.py:37
 #: ../content/organisation.py:29
-#: ../controlpanel/bika_labcontacts.py:43
+#: ../controlpanel/bika_labcontacts.py:42
 msgid "Phone"
 msgstr "Phone"
 
@@ -1915,7 +1959,7 @@ msgid "Postal code"
 msgstr "Postal code"
 
 #: ../content/container.py:14
-#: ../controlpanel/bika_containers.py:47
+#: ../controlpanel/bika_containers.py:46
 msgid "Pre-preserved"
 msgstr "Pre-preserved"
 
@@ -1927,8 +1971,8 @@ msgstr "Precision as number of decimals"
 msgid "Prefixes"
 msgstr "Prefixes"
 
-#: ../browser/analysisrequest.py:850
-#: ../browser/sample.py:51
+#: ../browser/analysisrequest.py:845
+#: ../browser/sample.py:50
 #: ../browser/templates/sample_sticker.pt:79
 msgid "Preservation"
 msgstr "Preservation"
@@ -1938,17 +1982,17 @@ msgid "Preservation Category"
 msgstr "Preservation Category"
 
 #: ../browser/templates/analysisservice_popup.pt:262
-#: ../controlpanel/bika_preservations.py:29
+#: ../controlpanel/bika_preservations.py:28
 msgid "Preservations"
 msgstr "Preservations"
 
-#: ../browser/analysisrequest.py:1841
-#: ../browser/sample.py:59
+#: ../browser/analysisrequest.py:1879
+#: ../browser/sample.py:58
 msgid "Preserver"
 msgstr ""
 
 #: ../browser/accreditation.py:54
-#: ../browser/analysisrequest.py:842
+#: ../browser/analysisrequest.py:834
 #: ../browser/templates/analysisservice_popup.pt:164
 msgid "Price"
 msgstr "Price"
@@ -1977,9 +2021,9 @@ msgstr "Print"
 msgid "Product"
 msgstr "Product"
 
-#: ../browser/client.py:463
 #: ../browser/templates/analysisrequest_edit.pt:188
 #: ../browser/templates/analysisrequest_view.pt:73
+#: ../controlpanel/bika_arprofiles.py:31
 msgid "Profile"
 msgstr "Profile"
 
@@ -1987,8 +2031,8 @@ msgstr "Profile"
 msgid "Profile Analyses"
 msgstr "Profile Analyses"
 
-#: ../browser/client.py:362
-#: ../controlpanel/bika_arprofiles.py:42
+#: ../browser/client.py:367
+#: ../controlpanel/bika_arprofiles.py:35
 msgid "Profile Key"
 msgstr "Profile Key"
 
@@ -2000,17 +2044,12 @@ msgstr "Profile Keyword"
 msgid "Profiles"
 msgstr "Profiles"
 
-#: ../browser/client.py:454
-#: ../controlpanel/bika_arprofiles.py:29
-msgid "Profiles and Templates"
-msgstr ""
-
 #: ../content/contact.py:20
 msgid "Publication preference"
 msgstr "Publication preference"
 
-#: ../browser/analysisrequest.py:1983
-#: ../browser/reports/analysesperservice.py:70
+#: ../browser/analysisrequest.py:2024
+#: ../browser/reports/analysesperservice.py:73
 msgid "Published"
 msgstr "Published"
 
@@ -2044,7 +2083,7 @@ msgstr "Range min"
 msgid "Re-enter the password. Make sure the passwords are identical."
 msgstr "Re-enter the password. Make sure the passwords are identical."
 
-#: ../browser/worksheetfolder.py:354
+#: ../browser/worksheetfolder.py:356
 msgid "Reassign"
 msgstr ""
 
@@ -2052,8 +2091,8 @@ msgstr ""
 msgid "Receive"
 msgstr "Receive"
 
-#: ../browser/analysisrequest.py:1914
-#: ../browser/sample.py:529
+#: ../browser/analysisrequest.py:1955
+#: ../browser/sample.py:532
 msgid "Received"
 msgstr "Received"
 
@@ -2062,17 +2101,17 @@ msgstr "Received"
 msgid "Reference"
 msgstr "Reference"
 
-#: ../browser/referencesample.py:197
-#: ../browser/referencesupplier.py:29
+#: ../browser/referencesample.py:199
+#: ../browser/referencesupplier.py:30
 #: ../browser/templates/referencesample_view.pt:75
 msgid "Reference Definition"
 msgstr "Reference Definition"
 
-#: ../controlpanel/bika_referencedefinitions.py:30
+#: ../controlpanel/bika_referencedefinitions.py:29
 msgid "Reference Definitions"
 msgstr "Reference Definitions"
 
-#: ../controlpanel/bika_referencemanufacturers.py:28
+#: ../controlpanel/bika_referencemanufacturers.py:27
 msgid "Reference Manufacturers"
 msgstr "Reference Manufacturers"
 
@@ -2082,12 +2121,12 @@ msgstr "Reference Manufacturers"
 msgid "Reference Results"
 msgstr "Reference Results"
 
-#: ../browser/referencesample.py:179
+#: ../browser/referencesample.py:180
 #: ../browser/referencesupplier.py:10
 msgid "Reference Samples"
 msgstr "Reference Samples"
 
-#: ../controlpanel/bika_referencesuppliers.py:31
+#: ../controlpanel/bika_referencesuppliers.py:29
 msgid "Reference Suppliers"
 msgstr "Reference Suppliers"
 
@@ -2095,7 +2134,7 @@ msgstr "Reference Suppliers"
 msgid "Reference Type"
 msgstr "Reference Type"
 
-#: ../browser/worksheet.py:980
+#: ../browser/worksheet.py:986
 msgid "Reference sample"
 msgstr "Reference sample"
 
@@ -2108,7 +2147,7 @@ msgstr "Reference sample values are zero or 'blank'"
 msgid "ReferenceAnalysis ID"
 msgstr "ReferenceAnalysis ID"
 
-#: ../controlpanel/bika_referencedefinitions.py:31
+#: ../controlpanel/bika_referencedefinitions.py:30
 msgid "ReferenceDefinition represents a Reference Definition or sample type used for quality control testing"
 msgstr "ReferenceDefinition represents a Reference Definition or sample type used for quality control testing"
 
@@ -2132,7 +2171,7 @@ msgstr ""
 msgid "Report"
 msgstr "Report"
 
-#: ../browser/analysisrequest.py:471
+#: ../browser/analysisrequest.py:470
 #: ../browser/templates/analysisrequest_edit.pt:445
 #: ../content/analysisrequest.py:115
 msgid "Report as Dry Matter"
@@ -2146,13 +2185,14 @@ msgstr "Report the published analysis requests which have not been invoiced"
 msgid "Reported as dry matter"
 msgstr "Reported as dry matter"
 
-#: ../browser/sample.py:175
+#: ../browser/reports/analysesattachments.py:71
+#: ../browser/sample.py:174
 msgid "Request"
 msgstr ""
 
-#: ../browser/analysisrequest.py:1803
-#: ../browser/client.py:638
-#: ../browser/late_analyses.py:38
+#: ../browser/analysisrequest.py:1841
+#: ../browser/client.py:588
+#: ../browser/late_analyses.py:40
 msgid "Request ID"
 msgstr "Request ID"
 
@@ -2160,7 +2200,9 @@ msgstr "Request ID"
 msgid "Request new analyses"
 msgstr "Request new analyses"
 
-#: ../browser/reports/analysesperservice.py:59
+#: ../browser/reports/analysesperclient.py:53
+#: ../browser/reports/analysespersampletype.py:62
+#: ../browser/reports/analysesperservice.py:62
 msgid "Requested"
 msgstr ""
 
@@ -2181,9 +2223,9 @@ msgstr "Required Volume"
 msgid "Restrict categories"
 msgstr ""
 
-#: ../browser/analyses.py:56
+#: ../browser/analyses.py:54
 #: ../browser/mailtemplates/analysisrequest_results.pt:321
-#: ../browser/referencesample.py:62
+#: ../browser/referencesample.py:63
 msgid "Result"
 msgstr "Result"
 
@@ -2208,9 +2250,9 @@ msgstr "Result out of range"
 msgid "Retention Period"
 msgstr "Retention Period"
 
-#: ../browser/analyses.py:64
+#: ../browser/analyses.py:62
 #: ../browser/mailtemplates/analysisrequest_results.pt:362
-#: ../browser/referencesample.py:65
+#: ../browser/referencesample.py:66
 msgid "Retested"
 msgstr "Retested"
 
@@ -2231,12 +2273,12 @@ msgstr "Salutation"
 msgid "Same as the above, but sets the default on analysis services. This setting can be set per individual analysis on its own configuration"
 msgstr "Same as the above, but sets the default on analysis services. This setting can be set per individual analysis on its own configuration"
 
-#: ../browser/analysisrequest.py:1813
+#: ../browser/analysisrequest.py:1851
 #: ../content/arimportitem.py:15
 msgid "Sample"
 msgstr "Sample"
 
-#: ../controlpanel/bika_containers.py:29
+#: ../controlpanel/bika_containers.py:28
 msgid "Sample Containers"
 msgstr "Sample Containers"
 
@@ -2244,14 +2286,14 @@ msgstr "Sample Containers"
 msgid "Sample Date"
 msgstr "Sample Date"
 
-#: ../browser/analysisrequest.py:1108
+#: ../browser/analysisrequest.py:1135
 #: ../skins/bika/portlet_sample_due.pt:22
 msgid "Sample Due"
 msgstr "Sample Due"
 
-#: ../browser/analysisrequest.py:387
+#: ../browser/analysisrequest.py:386
 #: ../browser/mailtemplates/analysisrequest_results.pt:243
-#: ../browser/sample.py:444
+#: ../browser/sample.py:445
 msgid "Sample ID"
 msgstr "Sample ID"
 
@@ -2259,25 +2301,25 @@ msgstr "Sample ID"
 msgid "Sample ID Padding"
 msgstr "Sample ID Padding"
 
-#: ../browser/sample.py:37
+#: ../browser/sample.py:36
 #: ../browser/templates/analysisrequest_view.pt:59
 #: ../browser/templates/sample.pt:32
 msgid "Sample Partitions"
 msgstr ""
 
-#: ../browser/analysisrequest.py:425
+#: ../browser/analysisrequest.py:424
 #: ../browser/mailtemplates/analysisrequest_results.pt:268
 #: ../browser/sample.py:273
 msgid "Sample Point"
 msgstr "Sample Point"
 
 #: ../content/sampletype.py:56
-#: ../controlpanel/bika_samplepoints.py:33
+#: ../controlpanel/bika_samplepoints.py:32
 msgid "Sample Points"
 msgstr "Sample Points"
 
-#: ../browser/analysisrequest.py:418
-#: ../browser/client.py:562
+#: ../browser/analysisrequest.py:417
+#: ../browser/client.py:497
 #: ../browser/mailtemplates/analysisrequest_results.pt:261
 msgid "Sample Type"
 msgstr "Sample Type"
@@ -2286,7 +2328,7 @@ msgstr "Sample Type"
 msgid "Sample Type Prefix"
 msgstr "Sample Type Prefix"
 
-#: ../browser/analysisrequest.py:488
+#: ../browser/analysisrequest.py:487
 #: ../browser/sample.py:345
 msgid "Sample Type is required"
 msgstr ""
@@ -2297,20 +2339,24 @@ msgstr ""
 msgid "Sample Types"
 msgstr "Sample Types"
 
-#: ../browser/analysisrequest.py:1117
+#: ../browser/analysisrequest.py:1144
 msgid "Sample received"
+msgstr ""
+
+#: ../browser/reports/analysespersampletype.py:103
+msgid "Sample type"
 msgstr ""
 
 #: ../content/sampletype.py:45
 msgid "Sample volume is specified in this unit."
 msgstr "Sample volume is specified in this unit."
 
-#: ../browser/analysisrequest.py:1835
-#: ../browser/sample.py:53
+#: ../browser/analysisrequest.py:1873
+#: ../browser/sample.py:52
 msgid "Sampler"
 msgstr ""
 
-#: ../browser/sample.py:434
+#: ../browser/sample.py:435
 msgid "Samples"
 msgstr "Samples"
 
@@ -2320,7 +2366,7 @@ msgstr "Samples"
 msgid "Samples of this type should be treated as hazardous"
 msgstr "Samples of this type should be treated as hazardous"
 
-#: ../browser/analysisrequest.py:444
+#: ../browser/analysisrequest.py:443
 #: ../browser/sample.py:298
 #: ../browser/templates/analysisrequest_edit.pt:324
 msgid "Sampling Date"
@@ -2330,7 +2376,7 @@ msgstr "Sampling Date"
 msgid "Sampling Frequency"
 msgstr "Sampling Frequency"
 
-#: ../browser/analysisrequest.py:477
+#: ../browser/analysisrequest.py:476
 #: ../browser/sample.py:334
 #: ../browser/templates/analysisrequest_edit.pt:609
 msgid "Save"
@@ -2353,7 +2399,7 @@ msgstr "Seconds"
 msgid "Select 'Register' if you want labels to be automatically printed when new ARs are created.  Select 'Receive' to print labels when the 'Receive' transition is invoked on ARs or Samples.  Select None to disable automatic printing"
 msgstr "Select 'Register' if you want labels to be automatically printed when new ARs are created.  Select 'Receive' to print labels when the 'Receive' transition is invoked on ARs or Samples.  Select None to disable automatic printing"
 
-#: ../browser/analysisrequest.py:1058
+#: ../browser/analysisrequest.py:1083
 #: ../browser/templates/analysisrequest_edit.pt:237
 msgid "Select Sample"
 msgstr "Select Sample"
@@ -2362,7 +2408,7 @@ msgstr "Select Sample"
 msgid "Select a data interface"
 msgstr "Select a data interface"
 
-#: ../browser/worksheet.py:737
+#: ../browser/worksheet.py:738
 msgid "Select a destinaton position and the AR to duplicate."
 msgstr "Select a destinaton position and the AR to duplicate."
 
@@ -2402,7 +2448,7 @@ msgstr "Select if the descriptions should be included"
 msgid "Select instrument"
 msgstr "Select instrument"
 
-#: ../browser/worksheet.py:650
+#: ../browser/worksheet.py:651
 msgid "Select services in the left column to locate reference samples. Select a reference by clicking it. "
 msgstr "Select services in the left column to locate reference samples. Select a reference by clicking it. "
 
@@ -2411,7 +2457,7 @@ msgstr "Select services in the left column to locate reference samples. Select a
 msgid "Select template"
 msgstr "Select template"
 
-#: ../browser/analysisrequest.py:996
+#: ../browser/analysisrequest.py:1017
 msgid "Select the contacts that will receive analysis results for this request."
 msgstr "Select the contacts that will receive analysis results for this request."
 
@@ -2455,8 +2501,8 @@ msgid "Serial No"
 msgstr "Serial No"
 
 #: ../browser/accreditation.py:48
-#: ../browser/analysisrequest.py:836
-#: ../browser/referencesample.py:60
+#: ../browser/analysisrequest.py:831
+#: ../browser/referencesample.py:61
 msgid "Service"
 msgstr "Service"
 
@@ -2480,7 +2526,7 @@ msgstr ""
 msgid "Service partition will always require one of the selected preservation methods"
 msgstr ""
 
-#: ../browser/worksheet.py:944
+#: ../browser/worksheet.py:949
 #: ../browser/worksheetfolder.py:116
 msgid "Services"
 msgstr "Services"
@@ -2493,11 +2539,11 @@ msgstr "Services ${services} were successfully created."
 msgid "Set the maximum number of analysis requests per results email. Too many columns per email are difficult to read for some clients who prefer fewer results per email"
 msgstr "Set the maximum number of analysis requests per results email. Too many columns per email are difficult to read for some clients who prefer fewer results per email"
 
-#: ../browser/client.py:549
+#: ../browser/client.py:517
 msgid "Set to lab defaults"
 msgstr "Set to lab defaults"
 
-#: ../controlpanel/bika_analysisspecs.py:31
+#: ../controlpanel/bika_analysisspecs.py:30
 msgid "Set up the laboratory analysis service results specifications"
 msgstr "Set up the laboratory analysis service results specifications"
 
@@ -2513,7 +2559,8 @@ msgstr ""
 msgid "Signature"
 msgstr "Signature"
 
-#: ../browser/client.py:642
+#: ../browser/client.py:592
+#: ../browser/reports/analysesattachments.py:75
 msgid "Size"
 msgstr "Size"
 
@@ -2549,15 +2596,15 @@ msgstr "Standard analysis QC"
 msgid "Standard analysis quality control graphs"
 msgstr "Standard analysis quality control graphs"
 
-#: ../browser/analysisrequest.py:1093
-#: ../browser/bika_listing.py:202
-#: ../browser/client.py:311
+#: ../browser/analysisrequest.py:1119
+#: ../browser/bika_listing.py:203
+#: ../browser/client.py:309
 msgid "State"
 msgstr "State"
 
-#: ../browser/analyses.py:54
-#: ../browser/reports/analysesperservice.py:83
-#: ../browser/templates/analysisrequest_analyses_not_requested.pt:103
+#: ../browser/analyses.py:52
+#: ../browser/reports/analysesperclient.py:65
+#: ../browser/reports/analysespersampletype.py:74
 msgid "Status"
 msgstr "Status"
 
@@ -2565,7 +2612,7 @@ msgstr "Status"
 msgid "Submit"
 msgstr "Submit"
 
-#: ../browser/load_setup_data.py:27
+#: ../browser/load_setup_data.py:29
 msgid "Submit a valid Open XML (.XLSX) file containing Bika setup records to continue."
 msgstr "Submit a valid Open XML (.XLSX) file containing Bika setup records to continue."
 
@@ -2575,7 +2622,7 @@ msgstr "Submit a valid Open XML (.XLSX) file containing Bika setup records to co
 msgid "Subtotal"
 msgstr "Subtotal"
 
-#: ../browser/referencesample.py:196
+#: ../browser/referencesample.py:198
 msgid "Supplier"
 msgstr "Supplier"
 
@@ -2593,6 +2640,7 @@ msgstr "Temperature"
 
 #: ../browser/templates/analysisrequest_edit.pt:162
 #: ../browser/worksheetfolder.py:114
+#: ../controlpanel/bika_artemplates.py:32
 msgid "Template"
 msgstr "Template"
 
@@ -2600,7 +2648,7 @@ msgstr "Template"
 msgid "Test results are at a ${lab_confidence} % confidence level"
 msgstr "Test results are at a ${lab_confidence} % confidence level"
 
-#: ../browser/analysisrequest.py:1701
+#: ../browser/analysisrequest.py:1740
 msgid "The AR Profile '${profile_name}' was automatically created."
 msgstr ""
 
@@ -2636,6 +2684,7 @@ msgstr "The analyses included in this profile, grouped per category"
 msgid "The analysis to be used for determining dry matter."
 msgstr "The analysis to be used for determining dry matter."
 
+#: ../browser/reports/analysesattachments.py:36
 #: ../browser/reports/reports_productivity.pt:88
 msgid "The attachments linked to analysis requests and analyses"
 msgstr "The attachments linked to analysis requests and analyses"
@@ -2816,9 +2865,9 @@ msgstr "This value is reported at the bottom of all published results"
 msgid "This will remove all existing client analysis specifications and create copies of all lab specifications. Are you sure you want to do this?"
 msgstr "This will remove all existing client analysis specifications and create copies of all lab specifications. Are you sure you want to do this?"
 
-#: ../browser/bika_listing.py:200
-#: ../browser/client.py:358
-#: ../browser/referencesample.py:195
+#: ../browser/bika_listing.py:201
+#: ../browser/client.py:363
+#: ../browser/referencesample.py:197
 msgid "Title"
 msgstr "Title"
 
@@ -2830,7 +2879,7 @@ msgstr ""
 msgid "To Be Sampled"
 msgstr ""
 
-#: ../browser/analysisrequest.py:1937
+#: ../browser/analysisrequest.py:1978
 #: ../browser/worksheetfolder.py:184
 #: ../skins/bika/portlet_to_be_verified.pt:33
 msgid "To be verified"
@@ -2840,13 +2889,13 @@ msgstr "To be verified"
 msgid "Too many AR columns per fax will see the font size minimised and could render faxes illegible. 4 ARs maximum per page is recommended"
 msgstr "Too many AR columns per fax will see the font size minimised and could render faxes illegible. 4 ARs maximum per page is recommended"
 
-#: ../browser/reports/analysesperservice.pt:113
-#: ../browser/reports/report_out.pt:86
-#: ../browser/templates/analysisrequest_edit.pt:591
+#: ../browser/reports/analysesattachments.py:118
+#: ../browser/reports/analysesperclient.py:136
+#: ../browser/reports/analysespersampletype.py:129
 msgid "Total"
 msgstr "Total"
 
-#: ../controlpanel/bika_labproducts.py:54
+#: ../controlpanel/bika_labproducts.py:53
 msgid "Total Price"
 msgstr "Total Price"
 
@@ -2855,12 +2904,12 @@ msgstr "Total Price"
 msgid "Total price"
 msgstr "Total price"
 
-#: ../browser/bika_listing.py:198
-#: ../controlpanel/bika_instruments.py:41
+#: ../browser/bika_listing.py:199
+#: ../controlpanel/bika_instruments.py:40
 msgid "Type"
 msgstr "Type"
 
-#: ../browser/analysisrequest.py:2064
+#: ../browser/analysisrequest.py:2105
 msgid "Unassigned"
 msgstr "Unassigned"
 
@@ -2918,7 +2967,7 @@ msgstr "VAT"
 msgid "VAT %"
 msgstr "VAT %"
 
-#: ../controlpanel/bika_labproducts.py:51
+#: ../controlpanel/bika_labproducts.py:50
 msgid "VAT Amount"
 msgstr "VAT Amount"
 
@@ -2966,7 +3015,7 @@ msgstr "Validation failed: Bearing must be N/S"
 msgid "Validation failed: Keyword '${keyword}' is invalid"
 msgstr ""
 
-#: ../browser/analysisrequest.py:1481
+#: ../browser/analysisrequest.py:1508
 msgid "Validation failed: Profile title contains invalid characters"
 msgstr ""
 
@@ -3034,7 +3083,7 @@ msgstr "Validation failed: seconds must be 0 - 59"
 msgid "Validation failed: seconds must be numeric"
 msgstr "Validation failed: seconds must be numeric"
 
-#: ../browser/client.py:309
+#: ../browser/client.py:307
 msgid "Validity"
 msgstr "Validity"
 
@@ -3042,7 +3091,7 @@ msgstr "Validity"
 msgid "Value"
 msgstr "Value"
 
-#: ../browser/analysisrequest.py:1962
+#: ../browser/analysisrequest.py:2003
 #: ../browser/worksheetfolder.py:201
 #: ../skins/bika/portlet_verified.pt:22
 msgid "Verified"
@@ -3062,7 +3111,7 @@ msgstr "Versioning for this file has been disabled because it is too large"
 
 #: ../browser/templates/analysisservice_popup.pt:264
 #: ../content/labproduct.py:13
-#: ../controlpanel/bika_labproducts.py:42
+#: ../controlpanel/bika_labproducts.py:41
 msgid "Volume"
 msgstr "Volume"
 
@@ -3074,9 +3123,9 @@ msgstr "Web address for the accreditation body"
 msgid "When the results of duplicate analyses on worksheets, carried out on the same sample, differ with more than this percentage, an alert is raised"
 msgstr "When the results of duplicate analyses on worksheets, carried out on the same sample, differ with more than this percentage, an alert is raised"
 
-#: ../browser/referencesample.py:61
+#: ../browser/referencesample.py:62
 #: ../browser/worksheetfolder.py:109
-#: ../skins/bika/selection_macros.pt:116
+#: ../skins/bika/selection_macros.pt:115
 msgid "Worksheet"
 msgstr "Worksheet"
 
@@ -3088,7 +3137,7 @@ msgstr "Worksheet Layout"
 msgid "Worksheet Templates"
 msgstr "Worksheet Templates"
 
-#: ../browser/worksheetfolder.py:79
+#: ../browser/worksheetfolder.py:80
 #: ../skins/bika/portlet_to_be_verified.pt:63
 msgid "Worksheets"
 msgstr "Worksheets"
@@ -3097,7 +3146,7 @@ msgstr "Worksheets"
 msgid "Yes"
 msgstr "Yes"
 
-#: ../browser/worksheet.py:1007
+#: ../browser/worksheet.py:1013
 msgid "You must select an instrument"
 msgstr "You must select an instrument"
 
@@ -3141,11 +3190,6 @@ msgstr "max"
 msgid "min"
 msgstr "min"
 
-#: ../browser/reports/analysesperservice.pt:86
-#: ../browser/reports/report_out.pt:59
-msgid "number of requests"
-msgstr ""
-
 #: ../browser/templates/analysisrequest_analyses_not_requested.pt:55
 #: ../browser/templates/analysisrequest_manage_results.pt:58
 #: ../browser/templates/sample.pt:41
@@ -3153,7 +3197,7 @@ msgid "range"
 msgstr "range"
 
 #. Default: "Content listing"
-#: ../browser/templates/bika_listing_table.pt:86
+#: ../browser/templates/bika_listing_table.pt:88
 msgid "summary_content_listing"
 msgstr ""
 
@@ -3161,16 +3205,16 @@ msgid "time_format"
 msgstr "time_format"
 
 #. Default: "Move item down"
-#: ../browser/templates/bika_listing_table.pt:233
+#: ../browser/templates/bika_listing_table.pt:235
 msgid "title_move_item_down"
 msgstr ""
 
 #. Default: "Move item up"
-#: ../browser/templates/bika_listing_table.pt:227
+#: ../browser/templates/bika_listing_table.pt:229
 msgid "title_move_item_up"
 msgstr ""
 
-#: ../skins/bika/selection_macros.pt:54
+#: ../skins/bika/selection_macros.pt:53
 msgid "to"
 msgstr "to"
 

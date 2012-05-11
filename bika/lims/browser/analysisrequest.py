@@ -873,6 +873,8 @@ class AnalysisRequestAnalysesView(BikaListingView):
         items = BikaListingView.folderitems(self)
         sample = self.context.getSample()
 
+        bsc = getToolByName(self.context, 'bika_setup_catalog')
+
         partitions = [{'ResultValue':o.Title(), 'ResultText':o.Title()}
                       for o in
                       self.context.getSample().objectValues('SamplePartition')]

@@ -3,7 +3,7 @@ I18NDUDE=~/Plone414/zinstance/bin/i18ndude
 PLONE_POT=~/Plone414/zinstance/parts/omelette/plone/app/locales/locales/plone.pot
 
 echo Pull transifex
-tx pull -a -f
+#tx pull -a -f
 
 # if strings are removed, and not replaced with new ones then
 # these files are used to revert them after we're done here.
@@ -22,6 +22,9 @@ $I18NDUDE filter i18ndude.pot $PLONE_POT > plone.pot
 echo Syncing plone
 $I18NDUDE sync --pot plone.pot */LC_MESSAGES/plone.po
 rm i18ndude.pot
+
+echo Syncing plonefrontpage domain
+$I18NDUDE sync --pot plonefrontpage.pot */LC_MESSAGES/plonefrontpage.po
 
 echo Checking bika for missing strings
 for x in `find . -name bika-backup.po`; do
@@ -66,7 +69,7 @@ for x in `find . -name plone.po`; do
 done
 
 echo Push transifex
-tx push -s -t
+#tx push -s -t
 
 #echo "#########################################################"
 #echo "## untranslated messages"
