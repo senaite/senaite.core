@@ -65,42 +65,6 @@ class AnalysesAttachments(BrowserView):
              'value': loaded,
              'type': 'text'})
 
-        workflow = getToolByName(self.context, 'portal_workflow')
-        if self.request.form.has_key('review_state'):
-            query['review_state'] = self.request.form['review_state']
-            review_state = workflow.getTitleForStateOnType(
-                        self.request.form['review_state'], 'Analysis')
-        else:
-            review_state = 'Undefined'
-        parms.append(
-            { 'title': _('Status'),
-             'value': review_state,
-             'type': 'text'})
-
-        if self.request.form.has_key('cancellation_state'):
-            query['cancellation_state'] = self.request.form['cancellation_state']
-            cancellation_state = workflow.getTitleForStateOnType(
-                        self.request.form['cancellation_state'], 'Analysis')
-        else:
-            cancellation_state = 'Undefined'
-        parms.append(
-            { 'title': _('Active'),
-             'value': cancellation_state,
-             'type': 'text'})
-
-
-
-        if self.request.form.has_key('ws_review_state'):
-            query['worksheetanalysis_review_state'] = self.request.form['ws_review_state']
-            ws_review_state = workflow.getTitleForStateOnType(
-                        self.request.form['ws_review_state'], 'Analysis')
-        else:
-            ws_review_state = 'Undefined'
-        parms.append(
-            { 'title': _('Assigned to worksheet'),
-             'value': ws_review_state,
-             'type': 'text'})
-
 
         # and now lets do the actual report lines
         formats = {'columns': 6,

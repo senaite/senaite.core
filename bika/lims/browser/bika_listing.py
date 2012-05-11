@@ -407,7 +407,7 @@ class BikaListingView(BrowserView):
         """
         #self.contentsMethod = self.context.getFolderContents
         if not hasattr(self, 'contentsMethod'):
-            self.contentsMethod = getToolByName(context, self.catalog)
+            self.contentsMethod = getToolByName(self.context, self.catalog)
 
         context = aq_inner(self.context)
         plone_layout = getMultiAdapter((context, self.request), name = u'plone_layout')

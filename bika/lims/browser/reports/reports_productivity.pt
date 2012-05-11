@@ -247,11 +247,6 @@
 <metal:date use-macro="context/selection_macros/macros/date"/>
 </tal:loaded>
 
-<metal:date use-macro="context/selection_macros/macros/review_state"/>
-
-<metal:date use-macro="context/selection_macros/macros/cancellation_state"/>
-
-<metal:date use-macro="context/selection_macros/macros/ws_review_state"/>
 </fieldset>
     <input tabindex=""
         class="searchButton"
