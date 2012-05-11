@@ -371,18 +371,23 @@ class BikaGenerator:
         bac.addColumn('Type')
         bac.addColumn('portal_type')
         bac.addColumn('getObjPositionInParent')
-        bsc.addColumn('Title')
+        bac.addColumn('Title')
         bac.addColumn('Description')
         bac.addColumn('title')
         bac.addColumn('sortable_title')
         bac.addColumn('description')
         bac.addColumn('review_state')
         bac.addColumn('cancellation_state')
-        bsc.addColumn('getRequestID')
+        bac.addColumn('getRequestID')
 
         bc = getToolByName(portal, 'bika_catalog', None)
         if bc == None:
             logger.warning('Could not find the bika_catalog tool.')
+            return
+
+        bsc = getToolByName(portal, 'bika_setup_catalog', None)
+        if bsc == None:
+            logger.warning('Could not find the setup catalog tool.')
             return
 
         at = getToolByName(portal, 'archetype_tool')
@@ -465,11 +470,6 @@ class BikaGenerator:
         bc.addColumn('review_state')
         bc.addColumn('inactive_state')
         bc.addColumn('cancellation_state')
-
-        bsc = getToolByName(portal, 'bika_setup_catalog', None)
-        if bsc == None:
-            logger.warning('Could not find the setup catalog tool.')
-            return
 
         at = getToolByName(portal, 'archetype_tool')
         at.setCatalogsByType('Department', ['bika_setup_catalog', ])
