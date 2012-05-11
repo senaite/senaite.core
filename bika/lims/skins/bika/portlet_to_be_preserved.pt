@@ -11,7 +11,7 @@
      tal:define="portal context/portal_url/getPortalObject;
                  plone_view context/@@plone;
                  DateTime python:modules['DateTime'].DateTime;
-                 rs python:here.portal_catalog(portal_type='Sample',
+                 rs python:here.bika_catalog(portal_type='Sample',
                                                review_state='to_be_preserved',
                                                cancellation_state='active');
                  results python:[p.getObject() for p in rs[:5]];"
