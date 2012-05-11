@@ -5,7 +5,7 @@ from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.client import ClientSamplesView
-from bika.lims.utils import TimeOrDate
+from bika.lims.utils import formatDateQuery, formatDateParms, logged_in_client
 from bika.lims.interfaces import IReports
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.layout.globals.interfaces import IViewView
@@ -14,18 +14,161 @@ import json
 import plone
 
 class AnalysesAttachments(BrowserView):
-    """ stuff
-    """
     implements(IViewView)
     template = ViewPageTemplateFile("report_out.pt")
 
     def __init__(self, context, request):
         BrowserView.__init__(self, context, request)
-        self.TimeOrDate = TimeOrDate
 
     def __call__(self):
-        self.datalines = 'here is the stuff for the analyses attachments report'
+        # get all the data into datalines
+        
+        pc = getToolByName(self.context, 'portal_catalog')
+        sc = getToolByName(self.context, 'bika_setup_catalog')
+        bc = getToolByName(self.context, 'bika_analysis_catalog')
+        rc = getToolByName(self.context, 'reference_catalog')
+        localTimeFormat = self.context.portal_properties.site_properties.getProperty('localTimeFormat')
+        self.report_content = {}
+        parm_lines = {}
+        parms = []
+        headings = {}
+        headings['header'] = _("Attachments")
+        headings['subheader'] = _("The attachments linked to analysis requests and analyses")
+
+        count_all = 0
+        query = {'portal_type': 'Attachment'}
+        if self.request.form.has_key('getClientUID'):
+            client_uid = self.request.form['getClientUID']
+            query['getClientUID'] = client_uid
+            client = rc.lookupObject(client_uid)
+            client_title = client.Title()
+        else:
+            client = logged_in_client(self.context)
+            if client:
+                client_title = client.Title()
+                query['getClientUID'] = client.UID()
+            else:
+                client_title = 'Undefined'
+        parms.append(
+            { 'title': _('Client'),
+             'value': client_title,
+             'type': 'text'})
+
+        date_query = formatDateQuery(self.context, 'DateLoaded')
+        if date_query:
+            query['getDateLoaded'] = date_query
+            loaded = formatDateParms(self.context, 'DateLoaded') 
+        else:
+            loaded = 'Undefined'
+        parms.append(
+            { 'title': _('Loaded'),
+             'value': loaded,
+             'type': 'text'})
+
+        workflow = getToolByName(self.context, 'portal_workflow')
+        if self.request.form.has_key('review_state'):
+            query['review_state'] = self.request.form['review_state']
+            review_state = workflow.getTitleForStateOnType(
+                        self.request.form['review_state'], 'Analysis')
+        else:
+            review_state = 'Undefined'
+        parms.append(
+            { 'title': _('Status'),
+             'value': review_state,
+             'type': 'text'})
+
+        if self.request.form.has_key('cancellation_state'):
+            query['cancellation_state'] = self.request.form['cancellation_state']
+            cancellation_state = workflow.getTitleForStateOnType(
+                        self.request.form['cancellation_state'], 'Analysis')
+        else:
+            cancellation_state = 'Undefined'
+        parms.append(
+            { 'title': _('Active'),
+             'value': cancellation_state,
+             'type': 'text'})
+
+
+
+        if self.request.form.has_key('ws_review_state'):
+            query['worksheetanalysis_review_state'] = self.request.form['ws_review_state']
+            ws_review_state = workflow.getTitleForStateOnType(
+                        self.request.form['ws_review_state'], 'Analysis')
+        else:
+            ws_review_state = 'Undefined'
+        parms.append(
+            { 'title': _('Assigned to worksheet'),
+             'value': ws_review_state,
+             'type': 'text'})
+
+
+        # and now lets do the actual report lines
+        formats = {'columns': 6,
+                   'col_heads': [ _('Request'), \
+                                  _('File'), \
+                                  _('Attachment type'), \
+                                  _('Content type'), \
+                                  _('Size'), \
+                                  _('Loaded'), \
+                                  ],
+                   'class': '',
+                  }
+
+        datalines = []
+        attachments = pc(query)
+        for a_proxy in attachments:
+            attachment = a_proxy.getObject()
+            attachment_file = attachment.getAttachmentFile()
+            icon = attachment_file.getBestIcon()
+            filename = attachment_file.filename
+            filesize = attachment_file.get_size()
+            filesize = filesize / 1024
+            sizeunit = "Kb"
+            if filesize > 1024:
+                filesize = filesize / 1024
+                sizeunit = "Mb"
+            dateloaded = attachment.getDateLoaded()
+            dataline = []
+            dataitem = {'value': attachment.getTextTitle()}
+            dataline.append(dataitem)
+            dataitem = {'value': filename,
+                        'img_before': icon}
+            dataline.append(dataitem)
+            dataitem = {'value': attachment.getAttachmentType().Title()}
+            dataline.append(dataitem)
+            dataitem = {'value': self.context.lookupMime(attachment_file.getContentType())}
+            dataline.append(dataitem)
+            dataitem = {'value': '%s%s' %(filesize, sizeunit)}
+            dataline.append(dataitem)
+            dataitem = {'value': dateloaded.asdatetime().strftime(localTimeFormat)}
+            dataline.append(dataitem)
+
+
+            datalines.append(dataline)
+
+            count_all += 1
+
+        # footer data
+        footlines = []
+        footline = []
+        footitem = {'value': _('Total'),
+                    'colspan': 5,
+                    'class': 'total_label'} 
+        footline.append(footitem)
+        footitem = {'value': count_all} 
+        footline.append(footitem)
+        footlines.append(footline)
+        
+
+        self.report_content = {
+                'headings': headings,
+                'parms': parms,
+                'formats': formats,
+                'datalines': datalines,
+                'footings': footlines}
+
 
         return self.template()
 
     
+
