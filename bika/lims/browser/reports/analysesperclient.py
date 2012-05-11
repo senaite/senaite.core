@@ -31,8 +31,13 @@ class AnalysesPerClient(BrowserView):
         parm_lines = {}
         parms = []
         headings = {}
-        headings['header'] = _("Analysis requests and analyses per client")
-        headings['subheader'] = _("Number of Analysis requests and analyses per client")
+        is_client = self.context.member_is_client()
+        if is_client:
+            headings['header'] = _("Analysis requests and analyses")
+            headings['subheader'] = _("Number of Analysis requests and analyses")
+        else:
+            headings['header'] = _("Analysis requests and analyses per client")
+            headings['subheader'] = _("Number of Analysis requests and analyses per client")
 
         count_all_ars = 0
         count_all_analyses = 0
@@ -94,8 +99,16 @@ class AnalysesPerClient(BrowserView):
                   }
 
         datalines = []
-        for client in pc(portal_type="Client",
-                        sort_on='sortable_title'):
+
+        if is_client:
+            this_client = logged_in_client(self.context)
+            c_proxies = pc(portal_type="Client",
+                           UID=this_client.UID())
+        else:
+            c_proxies = pc(portal_type="Client",
+                        sort_on='sortable_title')
+
+        for client in c_proxies:
             query['getClientUID'] = client.UID
             dataline = [{'value': client.Title },]
             query['portal_type'] = 'AnalysisRequest'
@@ -118,17 +131,18 @@ class AnalysesPerClient(BrowserView):
 
         # footer data
         footlines = []
-        footline = []
-        footitem = {'value': _('Total'),
-                    'class': 'total_label'} 
-        footline.append(footitem)
+        if not is_client:
+            footline = []
+            footitem = {'value': _('Total'),
+                        'class': 'total_label'} 
+            footline.append(footitem)
 
-        footitem = {'value': count_all_ars} 
-        footline.append(footitem)
-        footitem = {'value': count_all_analyses} 
-        footline.append(footitem)
+            footitem = {'value': count_all_ars} 
+            footline.append(footitem)
+            footitem = {'value': count_all_analyses} 
+            footline.append(footitem)
 
-        footlines.append(footline)
+            footlines.append(footline)
         
 
         self.report_content = {
