@@ -18,8 +18,7 @@ class AttachmentTypesView(BikaListingView):
     implements(IFolderContentsView, IViewView)
     def __init__(self, context, request):
         super(AttachmentTypesView, self).__init__(context, request)
-        bsc = getToolByName(context, 'bika_setup_catalog')
-        self.contentsMethod = bsc
+        self.catalog = 'bika_setup_catalog'
         self.contentFilter = {'portal_type': 'AttachmentType',
                               'sort_on': 'sortable_title'}
         self.context_actions = {_('Add'):

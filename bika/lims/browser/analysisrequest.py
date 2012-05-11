@@ -1016,6 +1016,7 @@ class AnalysisRequestSelectCCView(BikaListingView):
         self.title = _("Contacts to CC")
         self.description = _("Select the contacts that will receive analysis results for this request.")
         c = context.portal_type == 'AnalysisRequest' and context.aq_parent or context
+        self.catalog = "portal_catalog"
         self.contentFilter = {'portal_type': 'Contact',
                               'sort_on':'sortable_title',
                               'inactive_state': 'active',
