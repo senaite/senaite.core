@@ -23,9 +23,6 @@ echo Syncing plone
 $I18NDUDE sync --pot plone.pot */LC_MESSAGES/plone.po
 rm i18ndude.pot
 
-echo Syncing plonefrontpage domain
-$I18NDUDE sync --pot plonefrontpage.pot */LC_MESSAGES/plonefrontpage.po
-
 echo Checking bika for missing strings
 for x in `find . -name bika-backup.po`; do
   SRC=$x;
@@ -33,7 +30,6 @@ for x in `find . -name bika-backup.po`; do
   $I18NDUDE admix $DEST $SRC > $DEST.new;
   rm $DEST
   mv $DEST.new $DEST
-  rm $x;
 done
 
 echo Checking plone for missing strings
@@ -43,7 +39,6 @@ for x in `find . -name plone-backup.po`; do
   $I18NDUDE admix $DEST $SRC > $DEST.new;
   rm $DEST
   mv $DEST.new $DEST
-  rm $x;
 done
 
 echo Merging extra strings from bika into plone
@@ -67,6 +62,8 @@ for x in `find . -name plone.po`; do
   mv $DEST.new $DEST
   fi;
 done
+
+find . -name *backup.po -delete
 
 echo Push transifex
 #tx push -s -t
