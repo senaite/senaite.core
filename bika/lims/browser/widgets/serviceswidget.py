@@ -53,9 +53,10 @@ class ServicesView(BikaListingView):
     def folderitems(self):
         self.categories = []
         checkPermission = self.context.portal_membership.checkPermission
-        services = self.catalog(portal_type = 'AnalysisService',
-                                inactive_state = 'active',
-                                sort_on = 'sortable_title')
+        catalog = getToolByName(self.context, self.catalog)
+        services = catalog(portal_type = 'AnalysisService',
+                           inactive_state = 'active',
+                           sort_on = 'sortable_title')
         items = []
         for service in services:
             service = service.getObject()

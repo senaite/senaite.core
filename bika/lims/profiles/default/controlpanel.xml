@@ -165,10 +165,10 @@
   <permission>BIKA: Manage Bika</permission>
  </configlet>
 
- <configlet title="Lab bika" action_id="bika_labbika"
+ <configlet title="Lab Products" action_id="bika_labproducts"
     appId="bika.lims" category="bika" condition_expr=""
     icon_expr="string:++resource++bika.lims.images/product.png"
-    url_expr="string:$portal_url/bika_setup/bika_labbika"
+    url_expr="string:$portal_url/bika_setup/labproducts"
     visible="True"
 	i18n:attributes="title">
   <permission>BIKA: Manage Bika</permission>

@@ -740,15 +740,15 @@ msgstr "Fulles de treball"
 
 #. Default: "Accounting"
 msgid "label_schema_Accounting"
-msgstr "label_schema_Accounting"
+msgstr ""
 
 #. Default: "Address"
 msgid "label_schema_Address"
-msgstr "label_schema_Address"
+msgstr ""
 
 #. Default: "Bank details"
 msgid "label_schema_Bank details"
-msgstr "label_schema_Bank details"
+msgstr ""
 
 #. Default: "Calculation"
 msgid "label_schema_Calculation"
@@ -756,7 +756,7 @@ msgstr "Càlcul"
 
 #. Default: "Dates"
 msgid "label_schema_Dates"
-msgstr "label_schema_Dates"
+msgstr ""
 
 #. Default: "Description"
 msgid "label_schema_Description"
@@ -764,23 +764,23 @@ msgstr "Descripció"
 
 #. Default: "Email Telephone Fax"
 msgid "label_schema_Email Telephone Fax"
-msgstr "label_schema_Email Telephone Fax"
+msgstr "Telephone Fax"
 
 #. Default: "ID Server"
 msgid "label_schema_ID Server"
-msgstr "label_schema_ID Server"
+msgstr "Server"
 
 #. Default: "Labels"
 msgid "label_schema_Labels"
-msgstr "label_schema_Labels"
+msgstr ""
 
 #. Default: "Layout"
 msgid "label_schema_Layout"
-msgstr "label_schema_Layout"
+msgstr ""
 
 #. Default: "Location"
 msgid "label_schema_Location"
-msgstr "label_schema_Location"
+msgstr ""
 
 #. Default: "Method"
 msgid "label_schema_Method"
@@ -788,7 +788,7 @@ msgstr "Mètode"
 
 #. Default: "Partition Setup"
 msgid "label_schema_Partition Setup"
-msgstr "label_schema_Partition Setup"
+msgstr "Setup"
 
 #. Default: "Preferences"
 msgid "label_schema_Preferences"
@@ -812,8 +812,8 @@ msgstr "Informes de resultats"
 
 #. Default: "Security"
 msgid "label_schema_Security"
-msgstr "label_schema_Security"
+msgstr ""
 
 #. Default: "Uncertainties"
 msgid "label_schema_Uncertainties"
-msgstr "label_schema_Uncertainties"
+msgstr ""
