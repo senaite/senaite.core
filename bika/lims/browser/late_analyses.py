@@ -9,7 +9,7 @@ from zope.component import getMultiAdapter
 import plone
 
 class LateAnalysesView(BikaListingView):
-    """ Late analysees (click from portlet_late_analyses More... link)
+    """ Late analyses (click from portlet_late_analyses More... link)
     """
     def __init__(self, context, request):
         super(LateAnalysesView, self).__init__(context, request)
@@ -36,12 +36,16 @@ class LateAnalysesView(BikaListingView):
 
         request.set('disable_border', 1)
 
-        self.columns = {'Analysis': {'title': _('Analysis')},
-                        'RequestID': {'title': _('Request ID')},
+        self.columns = {'Analysis': {'title': _('Analysis'),
+                                     'index': 'sortable_title'},
+                        'RequestID': {'title': _('Request ID'),
+                                      'index': 'getRequestID'},
                         'Client': {'title': _('Client')},
                         'Contact': {'title': _('Contact')},
-                        'DateReceived': {'title': _('Date Received')},
-                        'DueDate': {'title': _('Due Date')},
+                        'DateReceived': {'title': _('Date Received'),
+                                         'index': 'getDateReceived'},
+                        'DueDate': {'title': _('Due Date'),
+                                    'index': 'getDueDate'},
                         'Late': {'title': _('Late')},
                         }
 

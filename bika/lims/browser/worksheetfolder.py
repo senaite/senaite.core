@@ -119,12 +119,15 @@ class WorksheetFolderListingView(BikaListingView):
             'SampleTypes': {'title': _('Sample Types'),
                             'sortable':False,
                             'toggle': False},
+            'Instrument': {'title': _('Instrument'),
+                            'sortable':False,
+                            'toggle': False},
             'QC': {'title': _('QC'),
                    'sortable':False,
                    'toggle': False},
-            'CreationDate': {'title': _('Creation Date'),
-                             'toggle': True},
-                             #'index': 'created'},
+            'CreationDate': {'title': PMF('Date Created'),
+                             'toggle': True,
+                             'index': 'created'},
             'state_title': {'title': _('State'),
                             'index': 'review_state'},
         }
@@ -143,6 +146,7 @@ class WorksheetFolderListingView(BikaListingView):
                         'Template',
                         'Services',
                         'SampleTypes',
+                        'Instrument',
                         'QC',
                         'CreationDate',
                         'state_title']},
@@ -162,6 +166,7 @@ class WorksheetFolderListingView(BikaListingView):
                         'Template',
                         'Services',
                         'SampleTypes',
+                        'Instrument',
                         'QC',
                         'CreationDate',
                         'state_title']},
@@ -177,6 +182,7 @@ class WorksheetFolderListingView(BikaListingView):
                         'Template',
                         'Services',
                         'SampleTypes',
+                        'Instrument',
                         'QC',
                         'CreationDate',
                         'state_title']},
@@ -194,6 +200,7 @@ class WorksheetFolderListingView(BikaListingView):
                         'Template',
                         'Services',
                         'SampleTypes',
+                        'Instrument',
                         'QC',
                         'CreationDate',
                         'state_title']},
@@ -209,6 +216,7 @@ class WorksheetFolderListingView(BikaListingView):
                         'Template',
                         'Services',
                         'SampleTypes',
+                        'Instrument',
                         'QC',
                         'CreationDate',
                         'state_title']},
@@ -241,6 +249,9 @@ class WorksheetFolderListingView(BikaListingView):
 
             items[x]['Analyst'] = analyst
 
+            instrument = obj.getInstrument()
+            items[x]['Instrument'] = instrument and instrument.Title() or ''
+
             items[x]['Title'] = obj.Title()
             wst = obj.getWorksheetTemplate()
             items[x]['Template'] = wst and wst.Title() or ''
@@ -248,10 +259,16 @@ class WorksheetFolderListingView(BikaListingView):
                 items[x]['replace']['Template'] = "<a href='%s'>%s</a>" % \
                     (wst.absolute_url(), wst.Title())
 
+            # Only show "my" worksheets
             # this cannot be setup in contentFilter,
             # because AuthenticatedMember is not available in __init__
             cookie = json.loads(self.request.get("review_state", '{}'))
-            selected_state = cookie.get(self.form_id, '')
+            cookie_key = "%s%s" % (self.context.portal_type, self.form_id)
+            # first check POST
+            selected_state = self.request.get("%s_review_state"%self.form_id, '')
+            if not selected_state:
+                # then check cookie
+                selected_state = cookie.get(cookie_key, '')
             if selected_state == 'mine':
                 if member.getId() not in (analyst, creator):
                     continue

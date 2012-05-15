@@ -11,9 +11,12 @@ def createNavTree(self):
     q = ["data['children']"]
     while q:
         for i in range(len(eval(q[0]))):
-            exec("%s[%s]['Title'] = "
-                 "self.context.translate(PMF(%s[%s]['Title']))" %(
-                 q[0], i, q[0], i))
+            try:
+                exec("%s[%s]['Title'] = "
+                     "self.context.translate(PMF(%s[%s]['Title']))" %(
+                         q[0], i, q[0], i))
+            except:
+                pass
             if eval("%s[%s]" % (q[0], i)).get('children', []):
                 q.append(q[0] + "[%s]['children']"%i)
         del(q[0])

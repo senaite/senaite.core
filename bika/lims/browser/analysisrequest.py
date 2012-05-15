@@ -567,7 +567,7 @@ class AnalysisRequestViewView(BrowserView):
         for template in self.context.objectValues("ARTemplate"):
             if isActive(template):
                 templates.append((template.Title(), template))
-        for template in self.context.bika_setup.bika_arprofiles.objectValues("ARTemplate"):
+        for template in self.context.bika_setup.bika_artemplates.objectValues("ARTemplate"):
             if isActive(template):
                 templates.append((self.context.translate(_('Lab')) + ": " + template.Title(), template))
         return templates
@@ -782,10 +782,10 @@ class AnalysisRequestAddView(AnalysisRequestViewView):
         templates = {}
         client = self.context.portal_type == 'AnalysisRequest' \
             and self.context.aq_parent or self.context
-        for context in (client, self.context.bika_setup.bika_arprofiles):
+        for context in (client, self.context.bika_setup.bika_artemplates):
             for template in [t for t in context.objectValues("ARTemplate")
                              if isActive(t)]:
-                title = context == self.context.bika_setup.bika_arprofiles \
+                title = context == self.context.bika_setup.bika_artemplates \
                     and self.context.translate(_('Lab')) + ": " + template.Title() \
                     or template.Title()
                 sp_title = template.getSamplePoint()
@@ -1117,7 +1117,8 @@ class AnalysisRequestSelectSampleView(BikaListingView):
                                  'index': 'getSamplePointTitle', },
             'DateReceived': {'title': _('Date Received'),
                              'index': 'getDateReceived', },
-            'SamplingDate': {'title': _('Sampling Date')},
+            'SamplingDate': {'title': _('Sampling Date'),
+                             'index': 'getSamplingDate', },
             'state_title': {'title': _('State'),
                             'index': 'review_state', },
         }
@@ -1849,7 +1850,8 @@ class AnalysisRequestsView(BikaListingView):
                                      'index': 'Creator',
                                      'toggle': False},
             'Created': {'title': PMF('Date Created'),
-                                     'toggle': False},
+                        'index': 'Created',
+                        'toggle': False},
             'getSample': {'title': _("Sample"),
                           'toggle': False,},
             'Client': {'title': _('Client'),
@@ -1867,8 +1869,10 @@ class AnalysisRequestsView(BikaListingView):
                                     'index': 'getSamplePointTitle',
                                     'toggle': False},
             'SamplingDate': {'title': _('Sampling Date'),
+                             'index': 'getSamplingDate',
                              'toggle': True},
             'getDateSampled': {'title': _('Date Sampled'),
+                               'index': 'getDateSampled',
                                'toggle': not SamplingWorkflowEnabled,
                                'input_class': 'datepicker_nofuture',
                                'input_width': '10'},
@@ -1877,13 +1881,10 @@ class AnalysisRequestsView(BikaListingView):
             'getDatePreserved': {'title': _('Date Preserved'),
                                  'toggle': user_is_preserver,
                                  'input_class': 'datepicker_nofuture',
-                                 'input_width': '10'},
+                                 'input_width': '10',
+                                 'sortable': False}, # no datesort without index
             'getPreserver': {'title': _('Preserver'),
                              'toggle': user_is_preserver},
-            'getDatePreserved': {'title': _('Date Preserved'),
-                               'input_class': 'datepicker_nofuture',
-                               'input_width': '10'},
-            'getPreserver': {'title': _('Preserver')},
             'getDateReceived': {'title': _('Date Received'),
                                 'index': 'getDateReceived',
                                 'toggle': False},
@@ -2171,13 +2172,11 @@ class AnalysisRequestsView(BikaListingView):
             items[x]['getDateReceived'] = TimeOrDate(self.context, obj.getDateReceived())
             items[x]['getDatePublished'] =  TimeOrDate(self.context, obj.getDatePublished())
 
+            after_icons = ""
             state = workflow.getInfoFor(obj, 'worksheetanalysis_review_state')
             if state == 'assigned':
-                items[x]['after']['state_title'] = \
-                    "<img src='++resource++bika.lims.images/worksheet.png' title='%s'/>" % \
+                after_icons += "<img src='++resource++bika.lims.images/worksheet.png' title='%s'/>" % \
                     self.context.translate(_("All analyses assigned"))
-
-            after_icons = ""
             if obj.getLate():
                 after_icons += "<img src='++resource++bika.lims.images/late.png' title='%s'>" % \
                     self.context.translate(_("Late Analyses"))

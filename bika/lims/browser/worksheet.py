@@ -38,6 +38,7 @@ class WorksheetWorkflowAction(WorkflowAction):
         workflow = getToolByName(self.context, 'portal_workflow')
         rc = getToolByName(self.context, REFERENCE_CATALOG)
         bsc = getToolByName(self.context, 'bika_setup_catalog')
+        bac = getToolByName(self.context, 'bika_analysis_catalog')
         action, came_from = WorkflowAction._get_form_workflow_action(self)
 
         # XXX combine data from multiple bika listing tables.
@@ -514,16 +515,27 @@ class AddAnalysesView(BikaListingView):
         self.pagesize = 50
 
         self.columns = {
-            'Client': {'title': _('Client'),
-                            'index':'getClientTitle'},
-            'getClientOrderNumber': {'title': _('Order')},
-            'getRequestID': {'title': _('Request ID')},
-            'CategoryTitle': {'title': _('Category'),
-                              'index':'getCategoryTitle'},
-            'Title': {'title': _('Analysis'),
-                      'index':'sortable_title'},
-            'getDateReceived': {'title': _('Date Received')},
-            'getDueDate': {'title': _('Due Date')},
+            'Client': {
+                'title': _('Client'),
+                'index':'getClientTitle'},
+            'getClientOrderNumber': {
+                'title': _('Order'),
+                'index': 'getClientOrderNumber'},
+            'getRequestID': {
+                'title': _('Request ID'),
+                'index': 'getRequestID'},
+            'CategoryTitle': {
+                'title': _('Category'),
+                'index':'getCategoryTitle'},
+            'Title': {
+                'title': _('Analysis'),
+                'index':'sortable_title'},
+            'getDateReceived': {
+                'title': _('Date Received'),
+                'index': 'getDateReceived'},
+            'getDueDate': {
+                'title': _('Due Date'),
+                'index': 'getDueDate'},
         }
         self.filter_indexes = ['Title',]
         self.review_states = [

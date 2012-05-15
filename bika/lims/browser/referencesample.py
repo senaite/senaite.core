@@ -62,7 +62,9 @@ class ReferenceAnalysesView(AnalysesView):
             'Worksheet': {'title': _('Worksheet'), 'toggle':True},
             'Result': {'title': _('Result'), 'toggle':True},
             'Uncertainty': {'title': _('+-'), 'toggle':True},
-            'DueDate': {'title': _('Due Date'), 'toggle':True},
+            'DueDate': {'title': _('Due Date'),
+                        'index': 'getDueDate',
+                        'toggle':True},
             'retested': {'title': _('Retested'), 'type':'boolean', 'toggle':True},
             'state_title': {'title': _('State'), 'toggle':True},
         }
@@ -193,14 +195,34 @@ class ReferenceSamplesView(BikaListingView):
         request.set('disable_border', 1)
 
         self.columns = {
-            'ID': {'title': _('ID')},
-            'Title': {'title': _('Title'), 'toggle':True},
-            'Supplier': {'title': _('Supplier'), 'toggle':True},
-            'Definition': {'title': _('Reference Definition'), 'toggle':True},
-            'DateSampled': {'title': _('Date Sampled'), 'toggle':True},
-            'DateReceived': {'title': _('Date Received'), 'toggle':True},
-            'ExpiryDate': {'title': _('Expiry Date'), 'toggle':True},
-            'state_title': {'title': _('State'), 'toggle':True},
+            'ID': {
+                'title': _('ID'),
+                'index': 'sortable_title'},
+            'Title': {
+                'title': _('Title'),
+                'index': 'sortable_title',
+                'toggle':True},
+            'Supplier': {
+                'title': _('Supplier'),
+                'toggle':True},
+            'Definition': {
+                'title': _('Reference Definition'),
+                'toggle':True},
+            'DateSampled': {
+                'title': _('Date Sampled'),
+                'index': 'getDateSampled',
+                'toggle':True},
+            'DateReceived': {
+                'title': _('Date Received'),
+                'index': 'getDateReceived',
+                'toggle':True},
+            'ExpiryDate': {
+                'title': _('Expiry Date'),
+                'index': 'getExpiryDate',
+                'toggle':True},
+            'state_title': {
+                'title': _('State'),
+                'toggle':True},
         }
         self.review_states = [
             {'id':'default',

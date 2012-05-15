@@ -37,6 +37,8 @@
 <input type="hidden" tal:omit-tag="python:table_only" name="form_id" tal:attributes="value form_id"/>
 <input type="hidden" tal:omit-tag="python:table_only" name="view_url"
 	tal:attributes="value view/bika_listing/view_url"/>
+<input type="hidden" tal:omit-tag="python:table_only" name="portal_type"
+	tal:attributes="value view/context/portal_type"/>
 <input type="hidden" tal:omit-tag="python:table_only"
 	tal:attributes="
 		name python:form_id+'_sort_on';

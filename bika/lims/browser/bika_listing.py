@@ -1,8 +1,9 @@
 """ Display lists of items in tables.
 """
+from DateTime import DateTime
 from Acquisition import aq_parent, aq_inner
 from OFS.interfaces import IOrderedContainer
-from Products.AdvancedQuery import And, Or, MatchGlob, MatchRegexp
+from Products.AdvancedQuery import And, Or, MatchRegexp, Between, Generic, Eq
 from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFCore.utils import getToolByName
@@ -252,6 +253,7 @@ class BikaListingView(BrowserView):
         form_id = self.form_id
         form = self.request.form
         workflow = getToolByName(self.context, 'portal_workflow')
+        catalog = getToolByName(self.context, self.catalog)
 
         # If table_only specifies another form_id, then we abort.
         # this way, a single table among many can request a redraw,
@@ -261,7 +263,7 @@ class BikaListingView(BrowserView):
 
         ## review_state_selector
         cookie = json.loads(self.request.get("review_state", '{}'))
-        cookie_key = "%s%s" % (self.view_url, self.form_id)
+        cookie_key = "%s%s" % (self.context.portal_type, form_id)
         # first check POST
         selected_state = self.request.get("%s_review_state"%form_id, '')
         if not selected_state:
@@ -273,6 +275,7 @@ class BikaListingView(BrowserView):
         # set request and cookie to currently selected state id
         if not selected_state:
             selected_state = self.review_states[0]['id']
+
         self.review_state = cookie[cookie_key] = selected_state
         cookie = json.dumps(cookie)
         self.request['review_state'] = cookie
@@ -313,7 +316,14 @@ class BikaListingView(BrowserView):
             del self.contentFilter['sort_order']
 
         # pagesize
-        self.pagesize = int(self.request.get(form_id + '_pagesize', self.pagesize))
+        pagesize = self.request.get(form_id + '_pagesize', self.pagesize)
+        if type(pagesize) in (list, tuple):
+            pagesize = pagesize[0]
+        try:
+            pagesize = int(pagesize)
+        except:
+            pagesize = self.pagesize
+        self.pagesize = pagesize
         self.request.set('pagesize', self.pagesize)
 
         # pagenumber
@@ -336,22 +346,54 @@ class BikaListingView(BrowserView):
         # will pass it's value to that index in self.contentFilter.
         # all conditions using ${form_id}_{index_name} are searched with AND
         for index in self.filter_indexes:
+            idx = catalog.Indexes.get(index, None)
+            if not idx:
+                logger.debug("index named '%s' not found in %s.  "
+                             "(Perhaps the index is still empty)." %
+                            (index, self.catalog))
+                continue
             request_key = "%s_%s" % (form_id, index)
-            if request_key in self.request:
-                ##logger.info("And: %s=%s"%(index, self.request[request_key]))
-                ##self.And.append(MatchGlob(index, self.request[request_key]))
-                self.And.append(MatchRegexp(index, self.request[request_key]))
+            value = self.request.get(request_key, '')
+            if len(value) > 1:
+                ##logger.info("And: %s=%s"%(index, value))
+                if idx.meta_type in('ZCTextIndex', 'FieldIndex'):
+                    self.And.append(MatchRegexp(index, value))
+                elif idx.meta_type == 'DateIndex':
+                    import pdb;pdb.set_trace()
+                else:
+                    self.Or.append(Generic(index, value))
 
         # if there's a ${form_id}_filter in request, then all indexes
         # are are searched for it's value.
         # ${form_id}_filter is searched with OR agains all indexes
         request_key = "%s_filter" % form_id
-        if request_key in self.request and self.request[request_key] != '':
+        value = self.request.get(request_key, '')
+        if len(value) > 1:
             for index in self.filter_indexes:
-                ##logger.info("Or: %s=%s"%(index, self.request[request_key]))
-                ##self.Or.append(MatchGlob(index, self.request[request_key]))
-                self.Or.append(MatchRegexp(index, self.request[request_key]))
-            self.Or.append(MatchRegexp('review_state', self.request[request_key]))
+                idx = catalog.Indexes.get(index, None)
+                if not idx:
+                    logger.debug("index named '%s' not found in %s.  "
+                                 "(Perhaps the index is still empty)." %
+                                 (index, self.catalog))
+                    continue
+                ##logger.info("Or: %s=%s"%(index, value))
+                if idx.meta_type in('ZCTextIndex', 'FieldIndex'):
+                    self.Or.append(MatchRegexp(index, value))
+                elif idx.meta_type == 'DateIndex':
+                    if value.find(":") > -1:
+                        try:
+                            lohi = [DateTime(x) for x in value.split(":")]
+                        except SyntaxError:
+                            raise #pass
+                        self.Or.append(Between(index, lohi[0], lohi[1]))
+                    else:
+                        try:
+                            self.Or.append(Eq(index, DateTime(value)))
+                        except SyntaxError:
+                            raise #pass
+                else:
+                    self.Or.append(Generic(index, value))
+            self.Or.append(MatchRegexp('review_state', value))
 
         # get toggle_cols cookie value
         # and modify self.columns[]['toggle'] to match.
@@ -368,14 +410,14 @@ class BikaListingView(BrowserView):
         try:
             toggles = {}
             # request OR cookie OR default
-            toggles = json.loads(self.request.get('toggle_cookie_value',
+            toggles = json.loads(self.request.get(self.form_id+"_toggle_cols",
                                  self.request.get("toggle_cols", "{}")))
         except:
             pass
         finally:
             if not toggles:
                 toggles = {}
-        cookie_key = "%s/%s" % (self.view_url, self.form_id)
+        cookie_key = "%s%s" % (self.context.portal_type, self.form_id)
         toggle_cols = toggles.get(cookie_key,
                                   [col for col in self.columns.keys()
                                    if col in review_state['columns']
@@ -633,6 +675,7 @@ class BikaListingTable(tableview.Table):
 
         self.context = bika_listing.context
         self.request = bika_listing.request
+        self.form_id = bika_listing.form_id
         self.items = folderitems
 
     def tabindex(self):
@@ -652,16 +695,20 @@ class BikaListingTable(tableview.Table):
 
         workflow = getToolByName(self.context, 'portal_workflow')
 
-        cookie = json.loads(self.request.get('review_state', '{}'))
-        state = cookie.get(self.bika_listing.form_id, '')
-        if not state:
-            state = self.bika_listing.review_state
-        review_states = [i for i in self.bika_listing.review_states
-                        if i['id'] == state]
-        if review_states:
-            review_state = review_states[0]
-        else:
-            review_state = self.bika_listing.review_states[0]
+
+        cookie = json.loads(self.request.get("review_state", '{}'))
+        cookie_key = "%s%s" % (self.context.portal_type,
+                               self.form_id)
+        # first check POST
+        selected_state = self.request.get("%s_review_state"%self.form_id, '')
+        if not selected_state:
+            # then check cookie
+            selected_state = cookie.get(cookie_key, '')
+        # get review_state id=selected_state
+        states = [r for r in self.bika_listing.review_states
+                  if r['id'] == selected_state]
+        review_state = states and states[0] \
+            or self.bika_listing.review_states[0]
 
         # get all transitions for all items.
         transitions = {}
