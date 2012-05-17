@@ -10,6 +10,7 @@ import sys
 from Products.CMFEditions.Permissions import SaveNewVersion
 from Products.Archetypes.config import REFERENCE_CATALOG
 from bika.lims import bikaMessageFactory as _
+from bika.lims import logger
 
 class HistoryAwareReferenceField(ReferenceField):
     """ Version aware references.
@@ -119,6 +120,7 @@ class HistoryAwareReferenceField(ReferenceField):
         except:
             pass
 
+        mtool = getToolByName(instance, 'portal_membership')
         pr = getToolByName(instance, 'portal_repository')
         rd = {}
         for r in res:
@@ -126,10 +128,17 @@ class HistoryAwareReferenceField(ReferenceField):
             if hasattr(instance, 'reference_versions') and \
                hasattr(r, 'version_id') and \
                uid in instance.reference_versions and \
-               instance.reference_versions[uid] != r.version_id and\
+               instance.reference_versions[uid] != r.version_id and \
                r.version_id != None:
-                version_id = instance.reference_versions[uid]
-                o = pr.retrieve(r, selector=version_id).object
+                if mtool.checkPermission(
+                    'CMFEditions: Access previous versions', instance):
+                    version_id = instance.reference_versions[uid]
+                    o = pr.retrieve(r, selector=version_id).object
+                else:
+                    logger.warn("Permission denied (%s --> %s) "
+                                "(CMFEditions: Access previous versions)" %
+                                (instance,r))
+                    o = r
             else:
                 o = r
             rd[uid] = o
