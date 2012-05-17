@@ -105,14 +105,19 @@ jQuery( function($) {
 		var element = elements.shift();
 		if(auto_yes == undefined){ auto_yes = false ; }
 		var column = $(element).attr('column');
+		if (column == undefined || column == null) {
+			column = '0';
+		}
 		var remaining_columns = [];
 		for(var i = 0; i<elements.length; i++){
 			remaining_columns.push($(elements[i]).attr('column'));
 		}
 
-		service_uid = $(element).attr('id');
+		service_uid = $(element).attr('id').split("_cb_");
+		service_uid = service_uid[service_uid.length-1];
 		service_data = window.bsc.data.services[service_uid];
 		if (service_data == undefined || service_data == null){
+			// if service_uid is not in bsc.services, there are no deps.
 			return;
 		}
 		deps = service_data['deps'];
@@ -416,6 +421,12 @@ jQuery( function($) {
 	}
 
 	function ar_add_calculate_parts(){
+
+		// Just let's make sure we're only being called in an AR Add context.
+		if (window.location.href.find("analysisrequest_add") == -1){
+			return
+		}
+
 		var formvalues = {};
 		var partitionable = 0;
 		nr_cols = parseInt($("#col_count").val(), 10);
@@ -462,75 +473,6 @@ jQuery( function($) {
 			});
 		}
 		$("#parts").val($.toJSON(parts));
-	}
-
-	function ar_analyses_calculate_parts(){
-		var formvalues = {};
-		var partitionable = 0;
-		nr_cols = 1;
-
-		parts = $.parseJSON($('#parts').val());
-		parts.push()
-
-		// Set new partition infos in selected rows
-		$.each(parts, function(p, part){
-
-			container = part['Container'];
-			preservation = part['Preservation'];
-			separate = part['Separate'];
-			// get checked services with this partition selected
-			service_uids = []
-			$.each($("[name=uids:list]").filter(":checked"), function(i,v){
-				service_uid	= $(v).attr("value");
-				sp = $("[name=Partition\\."+service_uid+":records]").val();
-				if ( sp == p){
-					service_uids.push(service_uid);
-				}
-			});
-
-			for(s=0;s<service_uids.length;s++){
-				service_uid = service_uids[s];
-				service_data = bsc.data.services[service_uid];
-
-				part_cell = $("[name=Partition."+service_uid+":records]").parent();
-				container_cell = $("[name=Container."+service_uid+":records]").parent();
-				preservation_cell = $("[name=Preservation."+service_uid+":records]").parent();
-
-				parts_select = "<select style='font-size:100%' name='Partition."+service_uid+":records'>";
-				for(_pa=0;_pa<parts.length;_pa++){
-					selected = (p==_pa) ? "selected='selected'" : "";
-					parts_select = parts_select +
-						"<option value='"+_pa+"' "+selected+">part-"+(_pa+1)+"</option>";
-				}
-				parts_select = parts_select +
-					"<option value='new'>"+_('New')+"</option>";
-				parts_select = parts_select + "</select>";
-
-				containers_select = "<select style='font-size:100%' name='Container."+service_uid+":records'>";
-				selected = (container=='') ? "selected='selected'" : "";
-				containers_select = containers_select + "<option value='' " + selected + "></option>";
-				$.each(bsc.data.containers, function(_co, co){
-					selected = (container==_co) ? "selected='selected'" : "";
-					containers_select = containers_select +
-						"<option value='"+_co+"' "+selected+">"+co['title']+"</option>";
-				});
-				containers_select = containers_select + "</select>";
-
-				preservations_select = "<select style='font-size:100%' name='Preservation."+service_uid+":records'>";
-				selected = (preservation=='') ? "selected='selected'" : "";
-				preservations_select = preservations_select + "<option value='' " + selected + "></option>";
-				$.each(bsc.data.containers, function(_pr, pr){
-					selected = (preservation==_pr) ? "selected='selected'" : "";
-					preservations_select = preservations_select +
-						"<option value='"+_pr+"' "+selected+">"+pr['title']+"</option>";
-				});
-				preservations_select = preservations_select + "</select>";
-
-				$(part_cell).empty().append(parts_select);
-				$(container_cell).empty().append(containers_select);
-				$(preservation_cell).empty().append(preservations_select);
-			}
-		});
 	}
 
 	function service_checkbox_change(){
@@ -613,7 +555,6 @@ jQuery( function($) {
 		ar_add_calculate_parts();
 	}
 
-
 	$(document).ready(function(){
 
 		_ = window.jsi18n;
@@ -656,25 +597,10 @@ jQuery( function($) {
 				);
 				$(element).remove();
 
-				element = $("[name=Container."+service_uid+":records]");
-				$(element).after(
-					"<input type='hidden' name='Container."+service_uid+":records'"+
-					"value='"+$(element).val()+"'/>"
-				);
-				$(element).remove();
-
-				element = $("[name=Preservation."+service_uid+":records]");
-				$(element).after(
-					"<input type='hidden' name='Preservation."+service_uid+":records'"+
-					"value='"+$(element).val()+"'/>"
-				);
-				$(element).remove();
-
 			}
 			else {
 			}
 			recalc_prices();
-			ar_analyses_calculate_parts();
 		});
 
 		// AR/Analyses Partition dropdown
@@ -865,8 +791,8 @@ jQuery( function($) {
 		$('#open_cc_browser').click(function(){
 			contact_uid = $('#primary_contact').val();
 			cc_uids = $('#cc_uids').val();
-			window.open('analysisrequest_select_cc?hide_uids=' + contact_uid + '&selected_uids=' + cc_uids,
-				'analysisrequest_select_cc','toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=600,height=550');
+			window.open('ar_select_cc?hide_uids=' + contact_uid + '&selected_uids=' + cc_uids,
+				'ar_select_cc','toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=600,height=550');
 		});
 
 		// analysisrequest select CC submit button invokes this
@@ -887,8 +813,8 @@ jQuery( function($) {
 		// button in each column to display Sample browser window
 		$('input[id$="_SampleID_button"]').click(function(){
 			column = this.id.split("_")[1];
-			window.open('analysisrequest_select_sample?column=' + column,
-				'analysisrequest_select_sample','toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=600,height=550');
+			window.open('ar_select_sample?column=' + column,
+				'ar_select_sample','toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=600,height=550');
 		});
 
 		$(".deleteSampleButton").click(function(){

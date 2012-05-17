@@ -98,7 +98,7 @@
 
     <browser:page
       for="*"
-      name="analysisrequest_select_sample"
+      name="ar_select_sample"
       class="bika.lims.browser.analysisrequest.AnalysisRequestSelectSampleView"
       permission="bika.lims.ManageAnalysisRequests"
       layer="bika.lims.interfaces.IBikaLIMS"
@@ -106,7 +106,7 @@
 
     <browser:page
       for="*"
-      name="analysisrequest_select_cc"
+      name="ar_select_cc"
       class="bika.lims.browser.analysisrequest.AnalysisRequestSelectCCView"
       permission="bika.lims.ManageAnalysisRequests"
       layer="bika.lims.interfaces.IBikaLIMS"
