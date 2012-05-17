@@ -406,6 +406,7 @@ class BikaGenerator:
         at.setCatalogsByType('Sample', ['bika_catalog', ])
         at.setCatalogsByType('SamplePartition', ['bika_catalog', ])
         at.setCatalogsByType('ReferenceSample', ['bika_catalog', ])
+        at.setCatalogsByType('Worksheet', ['bika_catalog', ])
 
         # create lexicon
         wordSplitter = Empty()

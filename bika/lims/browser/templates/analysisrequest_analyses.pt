@@ -42,26 +42,30 @@
 </metal:content-description>
 
 <metal:content-core fill-slot="content-core">
+
+	<h3 style="margin-top:2em;">
+		<img
+			i18n:attributes="title"
+			title="Partitions"
+			src="++resource++bika.lims.images/samplepartition.png"/>
+		<span i18n:translate="">Sample Partitions</span>
+	</h3>
+	<tal:parts replace="structure view/parts"/>
+
+	<h3 style="margin-top:1em;">
+		<img
+			i18n:attributes="title"
+			title="Analyses"
+			src="++resource++bika.lims.images/analysisservice.png"/>
+		<span i18n:translate="">Analyses</span>
+	</h3>
+
 	<div id="folderlisting-main-table"
 		tal:content="structure view/contents_table"/>
 
 	<span style="display:none"
 		id="st_title"
 		tal:attributes="st_title python:context.getSample().getSampleType().Title()"/>
-
-	<input type="hidden"
-		id="parts"
-		tal:define="parts python:context.getSample().objectValues('SamplePartition');"
-		tal:attributes="value python:modules['json'].dumps(dict(
-			[('part-%s'%len(parts),{'Container':'',
-			                        'Preservation':'',
-									'Separate':''},),] +
-			[(o.Title(), {
-			  'Container': o.getContainer() and o.getContainer().UID() or '',
-			  'Preservation': o.getPreservation() and o.getPreservation().UID() or '',
-			  'Separate': o.getSeparate(),}
-			  ) for o in parts]
-		))"/>
 
 	<tal:hasremarks tal:condition="python:hasattr(context, 'Remarks')">
 		<tal:remarks define="

@@ -65,8 +65,8 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
             else:
                 item_data = json.loads(form['item_data'])
 
-        ## Analyses added or removed
-        if action == "save_button":
+        ## Manage Analyses: save Analyses
+        if action == "save_analyses_button":
             ar = self.context
             sample = ar.getSample()
 
@@ -92,6 +92,10 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
             self.destination_url = self.context.absolute_url()
             self.request.response.redirect(self.destination_url)
             return
+
+        ## Manage Analyses: save partition table
+        elif action == "save_parts_button":
+            pass
 
         ## Partition Preservation
         # the partition table shown in AR and Sample views sends it's
@@ -516,11 +520,6 @@ class AnalysisRequestViewView(BrowserView):
             self.request.RESPONSE.redirect(self.context.absolute_url())
             return
 
-        ## Create Partitions View for this ARs sample
-        p = SamplePartitionsView(self.context.getSample(), self.request)
-        p.show_column_toggles = False
-        self.parts = p.contents_table()
-
         ## Create Field and Lab Analyses tables
         self.tables = {}
         for poc in POINTS_OF_CAPTURE:
@@ -833,17 +832,8 @@ class AnalysisRequestAnalysesView(BikaListingView):
                       'sortable': False,},
             'Price': {'title': _('Price'),
                       'sortable': False,},
-##            'Keyword': {'title': _('Keyword'),
-##                        'index': 'getKeyword',
-##                        'sortable': False,},
-##            'Method': {'title': _('Method'),
-##                       'sortable': False,},
             'Partition': {'title': _('Partition'),
                           'sortable': False,},
-            'Container': {'title': _('Container'),
-                          'sortable': False,},
-            'Preservation': {'title': _('Preservation'),
-                             'sortable': False,},
         }
 
         self.review_states = [
@@ -852,16 +842,21 @@ class AnalysisRequestAnalysesView(BikaListingView):
              'contentFilter':{},
              'columns': ['Title',
                          'Price',
-##                         'Keyword',
-##                         'Method',
                          'Partition',
-                         'Container',
-                         'Preservation'
                          ],
              'transitions': [{'id':'empty'}, ], # none
-             'custom_actions':[{'id': 'save_button', 'title': _('Save')}, ]
+             'custom_actions':[{'id': 'save_analyses_button', 'title': _('Save')}, ]
              },
         ]
+
+        ## Create Partitions View for this ARs sample
+        sample = self.context.getSample()
+        p = SamplePartitionsView(sample, self.request)
+        p.show_column_toggles = False
+        p.review_states[0]['transitions'] = [{'id':'empty'}] # none
+        p.allow_edit = True
+
+        self.parts = p.contents_table()
 
     def folderitems(self):
         self.categories = []
@@ -881,15 +876,6 @@ class AnalysisRequestAnalysesView(BikaListingView):
         partitions.append({'ResultValue':len(partitions),
                            'ResultText':self.context.translate(_("New"))})
 
-        containers = [({'ResultValue':o.UID,
-                        'ResultText':o.title})
-                      for o in bsc(portal_type="Container",
-                                   inactive_state="active")]
-        preservations = [({'ResultValue':o.UID,
-                           'ResultText':o.title})
-                         for o in bsc(portal_type="Preservation",
-                                      inactive_state="active")]
-
         for x in range(len(items)):
             if not items[x].has_key('obj'): continue
             obj = items[x]['obj']
@@ -906,41 +892,25 @@ class AnalysisRequestAnalysesView(BikaListingView):
             calculation = obj.getCalculation()
             items[x]['Calculation'] = calculation and calculation.Title()
 
-##            method = obj.getMethod()
-##            items[x]['Method'] = method and method.Title() or ''
-##            items[x]['Keyword'] = obj.getKeyword()
-
             locale = locales.getLocale('en')
             currency = self.context.bika_setup.getCurrency()
             symbol = locale.numbers.currencies[currency].symbol
             items[x]['before']['Price'] = symbol
             items[x]['Price'] = obj.getPrice()
             items[x]['class']['Price'] = 'nowrap'
-            items[x]['allow_edit'] = ['Price', 'Partition', 'Container', 'Preservation']
+            items[x]['allow_edit'] = ['Price', 'Partition']
             if not items[x]['selected']:
-                items[x]['edit_condition'] = {'Container':False,
-                                              'Preservation':False,
-                                              'Partition':False}
+                items[x]['edit_condition'] = {'Partition':False}
 
             items[x]['required'].append('Partition')
             items[x]['choices']['Partition'] = partitions
-            items[x]['choices']['Container'] = containers
-            items[x]['choices']['Preservation'] = preservations
 
             if obj.UID() in self.analyses:
                 part = self.analyses[obj.UID()].getSamplePartition()
                 part = part and part or obj
                 items[x]['Partition'] = part.Title()
-                container = part.getContainer()
-                items[x]['Container'] = \
-                    container and container.UID() or ''
-                preservation = part.getPreservation()
-                items[x]['Preservation'] = \
-                    preservation and preservation.UID() or ''
             else:
                 items[x]['Partition'] = ''
-                items[x]['Container'] = ''
-                items[x]['Preservation'] = ''
 
             after_icons = ''
             if obj.getAccredited():
@@ -1010,7 +980,7 @@ class AnalysisRequestResultsNotRequestedView(AnalysisRequestManageResultsView):
 
 class AnalysisRequestSelectCCView(BikaListingView):
 
-    template = ViewPageTemplateFile("templates/analysisrequest_select_cc.pt")
+    template = ViewPageTemplateFile("templates/ar_select_cc.pt")
 
     def __init__(self, context, request):
         super(AnalysisRequestSelectCCView, self).__init__(context, request)
@@ -1077,7 +1047,7 @@ class AnalysisRequestSelectCCView(BikaListingView):
 
 class AnalysisRequestSelectSampleView(BikaListingView):
 
-    template = ViewPageTemplateFile("templates/analysisrequest_select_sample.pt")
+    template = ViewPageTemplateFile("templates/ar_select_sample.pt")
 
     def __init__(self, context, request):
         super(AnalysisRequestSelectSampleView, self).__init__(context, request)
