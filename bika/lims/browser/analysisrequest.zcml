@@ -34,7 +34,7 @@
 
     <browser:page
       for="bika.lims.interfaces.IClient"
-      name="analysisrequest_add"
+      name="ar_add"
       class="bika.lims.browser.analysisrequest.AnalysisRequestAddView"
       permission="bika.lims.ManageAnalysisRequests"
       layer="bika.lims.interfaces.IBikaLIMS"

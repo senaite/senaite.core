@@ -423,7 +423,7 @@ jQuery( function($) {
 	function ar_add_calculate_parts(){
 
 		// Just let's make sure we're only being called in an AR Add context.
-		if (window.location.href.find("analysisrequest_add") == -1){
+		if (window.location.href.find("ar_add") == -1){
 			return
 		}
 
@@ -868,7 +868,7 @@ jQuery( function($) {
 		ar_edit_form = $('#analysisrequest_edit_form');
 		if (ar_edit_form.ajaxForm != undefined){
 			var options = {
-				url: window.location.href.replace("/analysisrequest_add","/analysisrequest_submit").
+				url: window.location.href.replace("/ar_add","/analysisrequest_submit").
 					 replace("/base_edit","/analysisrequest_submit"),
 				dataType: 'json',
 				data: {'_authenticator': $('input[name="_authenticator"]').val()},
@@ -878,7 +878,7 @@ jQuery( function($) {
 				success: function(responseText, statusText, xhr, $form)  {
 					if(responseText['success'] != undefined){
 						if(responseText['labels'] != undefined){
-							destination = window.location.href.replace("/analysisrequest_add","");
+							destination = window.location.href.replace("/ar_add","");
 							destination = destination.replace("/base_edit", "");
 							ars = responseText['labels'];
 							labelsize = responseText['labelsize'];
@@ -890,7 +890,7 @@ jQuery( function($) {
 							q = q + ars.join(",");
 							window.location.replace(destination+q);
 						} else {
-							destination = window.location.href.replace("/analysisrequest_add","");
+							destination = window.location.href.replace("/ar_add","");
 							destination = destination.replace("/base_edit", "/base_view");
 							window.location.replace(destination);
 						}

@@ -719,7 +719,7 @@ class AnalysisRequestAddView(AnalysisRequestViewView):
     """ The main AR Add form
     """
     implements(IViewView)
-    template = ViewPageTemplateFile("templates/analysisrequest_edit.pt")
+    template = ViewPageTemplateFile("templates/ar_add.pt")
 
     def __init__(self, context, request):
         AnalysisRequestViewView.__init__(self, context, request)
