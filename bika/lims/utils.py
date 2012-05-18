@@ -108,6 +108,24 @@ def formatDateParms(context, date_id):
 
     return date_parms
 
+def formatDuration(context, totminutes):
+    """ Format a time period in a usable manner: eg. 3h24m
+    """
+    mins = totminutes % 60
+    hours = (totminutes - mins) / 60
+
+    if mins:
+        mins_str = '%sm' % mins
+    else:
+        mins_str = ''
+
+    if hours:
+        hours_str = '%sh' % hours
+    else:
+        hours_str = ''
+
+    return '%s%s' % (hours_str, mins_str)
+
 def TimeOrDate(context, datetime, long_format = False, with_time = True):
     """ Return the Time date is today,
         otherwise return the Date.
