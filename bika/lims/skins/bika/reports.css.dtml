@@ -2,7 +2,7 @@
 <dtml-call "REQUEST.set('portal_url', portal_url())">
 */
 
-/* General Bika Listing Table */
+/* General Bika Report Table */
 @page {
     size: A4;
     margin: 1cm;
@@ -23,7 +23,22 @@
 }
 }
 .testgreen {
-    color: Green}
+    color: Black}
+
+.number {
+    text-align: right
+}
+.category {
+    font-size: 110%;
+    font-weight:bold;
+    border: &dtml-borderWidth; &dtml-borderStyle; &dtml-borderColor;;
+}
+.total {
+    font-size: 120%;
+    font-weight:bold;
+    border: &dtml-borderWidth; &dtml-borderStyle; &dtml-borderColor;;
+}
+
 
 div.bika_report {
 	font-family: &dtml-fontFamily;;
@@ -31,9 +46,17 @@ div.bika_report {
 	color: &dtml-fontColor;;
 }
 
+.bika-report-parms {
+    font-size: 110%;
+	margin-bottom: 0 !important;
+}
+
+.bika-report-parms td, th {
+	padding:5px 10px;
+}
+
 .bika-report-table {
-    font-size: &dtml-fontSmallSize;;
-    border-bottom: none;
+    font-size: &dtml-fontBaseSize;;
 	margin-bottom: 0 !important;
 }
 
@@ -44,6 +67,7 @@ div.bika_report {
 .bika-report-table tr {
 	line-height: 2em; /*2.1em;*/
     border-left: &dtml-borderWidth; &dtml-borderStyle; &dtml-borderColor;;
+    border-bottom: &dtml-borderWidth; &dtml-borderStyle; &dtml-borderColor;;
 }
 
 .bika-report-table tr.odd {
@@ -56,17 +80,19 @@ div.bika_report {
 
 
 .bika-report-table th {
-    background-color: &dtml-tableHeaderBackgroundColor;;
 	color: &dtml-tableHeaderTextColor;;
-	padding:1px;
+	padding:1px 4px 1px 4px;
+    font-size: &dtml-fontBaseSize; !important;
 	text-align:center;
-    vertical-align: middle;
+    vertical-align: middle !important;
+    border-top: &dtml-borderWidth; &dtml-borderStyle; &dtml-borderColor;;
 /* <dtml-if tableVerticalGrid> */ border-right: 1px solid &dtml-borderColor;;
 /* <dtml-else> */ border-right: none; /* </dtml-if> */
 }
 
 .bika-report-table td {
-    vertical-align: middle;
+    font-size: &dtml-fontBaseSize; !important;
+    vertical-align: middle !important;
 	padding:1px 4px 1px 4px;
 /* <dtml-if tableHorizontalGrid> */	border-right: 1px solid &dtml-borderColor;;
 /* <dtml-else> */	border-right: none; /* </dtml-if> */
@@ -75,12 +101,12 @@ div.bika_report {
 .bika-report-table td {
 }
 
-.bika-listing-table th.column,
-.bika-listing-table td.interim,
-.bika-listing-table td.Result,
-.bika-listing-table td.getRequestID,
-.bika-listing-table td.Title,
-.bika-listing-table td.ID {
+.bika-report-table th.column,
+.bika-report-table td.interim,
+.bika-report-table td.Result,
+.bika-report-table td.getRequestID,
+.bika-report-table td.Title,
+.bika-report-table td.ID {
     white-space:nowrap !important;
 }
 

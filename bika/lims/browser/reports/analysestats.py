@@ -157,10 +157,10 @@ class AnalysesTats(BrowserView):
 
         for cat in sc(portal_type='AnalysisCategory',
                         sort_on='sortable_title'):
-            dataline = [{'value': cat.Title, 
+            catline = [{'value': cat.Title, 
                         'class': 'category',
                         'colspan': 7},]
-            datalines.append(dataline)
+            first_time = True
             cat_count_early = 0
             cat_count_late = 0
             cat_count_undefined = 0
@@ -169,15 +169,15 @@ class AnalysesTats(BrowserView):
             for service in sc(portal_type="AnalysisService",
                             getCategoryUID = cat.UID,
                             sort_on='sortable_title'):
-                dataline = [{'value': service.Title},]
+
+                dataline = [{'value': service.Title,
+                             'class': 'testgreen'},]
                 if not services.has_key(service.UID):
-                    dataline.append({'value': 0, 'class': 'number'})
-                    dataline.append({'value': 0, 'class': 'number'})
-                    dataline.append({'value': 0, 'class': 'number'})
-                    dataline.append({'value': 0, 'class': 'number'})
-                    dataline.append({'value': 0, 'class': 'number'})
-                    dataline.append({'value': 0, 'class': 'number'})
                     continue
+
+                if first_time:
+                    datalines.append(catline)
+                    first_time = False
 
                 # analyses found
                 cat_count_early += services[service.UID]['count_early']
@@ -253,38 +253,37 @@ class AnalysesTats(BrowserView):
         footlines = []
         footline = []
         footline = [{'value': _('Total'),
-                     'class': 'total_label'}, ]
+                     'class': 'total'}, ]
 
         footline.append({'value' : total_count_early + \
                                    total_count_late + \
                                    total_count_undefined,
-                         'class' : 'total_number'})
+                         'class' : 'total number'})
 
         footline.append({'value' : total_count_undefined,
-                         'class' : 'total_number'})
+                         'class' : 'total number'})
 
         footline.append({'value' : total_count_late,
-                         'class' : 'total_number'})
+                         'class' : 'total number'})
 
         if total_count_late:
             ave_mins = total_mins_late / total_count_late
             footline.append({'value' : formatDuration(self.context, ave_mins),
-                             'class' : 'total_number'})
+                             'class' : 'total number'})
         else:
-            footline.append({'value' : '',
-                             'class' : 'total_number'})
+            footline.append({'value' : ''})
 
         footline.append({'value' : total_count_early,
-                         'class' : 'total_number'})
+                         'class' : 'total number'})
 
 
         if total_count_early:
             ave_mins = total_mins_early / total_count_early
             footline.append({'value' : formatDuration(self.context, ave_mins),
-                             'class' : 'total_number'})
+                             'class' : 'total number'})
         else:
             footline.append({'value' : '',
-                             'class' : 'total_number'})
+                             'class' : 'total number'})
 
         
         footlines.append(footline)

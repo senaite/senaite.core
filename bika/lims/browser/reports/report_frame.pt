@@ -8,6 +8,8 @@
 <table>
     <tr>
         <td class="left">
+            <img tal:attributes="src string:${context/absolute_url}/logo.png"/>
+            <br/>
             <span tal:content="view/client_title | nothing"/>
             <tal:address tal:repeat="line view/client_address">
                 <span tal:content="structure line "/>
@@ -15,8 +17,6 @@
             </tal:address>
         </td>
         <td align="right">
-            <img tal:attributes="src string:${context/absolute_url}/logo.png"/>
-            <br/>
             <h3 tal:content="view/lab_title | nothing"/>
             <tal:address tal:repeat="line view/lab_address">
                 <span tal:content="structure line "/>
@@ -36,29 +36,26 @@
                    tal:attributes="href string:url"/>
             </tal:laburl>
 
-            <br/>
-            <br/>
-
-            <span  tal:define="printdate view/date" 
-                tal:content="python:plone_view.toLocalizedTime(printdate, long_format=1)"/>
-            <tal:reporter tal:condition="view/reporter">
-                <br/>
-                <br/>
-                <span i18n:translate="">Created by:</span>
-                <span tal:content="view/reporter"/>
-                <tal:email tal:condition="view/reporter_email">
-                    <br/>
-                    <a tal:define="email view/reporter_email"
-                       tal:content="email"
-                       tal:attributes="href string:mailto:${email}"/>
-                </tal:email>
-            </tal:reporter>
-
         </td>
     </tr>
 </table>
+<div>
+    <span class="documentFirstHeading" tal:content="view/title | nothing"/>
 
-        <span class="documentFirstHeading" tal:content="view/title | nothing"/>
+    <span  tal:define="printdate view/date" 
+           tal:content="python:plone_view.toLocalizedTime(printdate, long_format=1)"/>
+
+    <tal:reporter tal:condition="view/reporter">
+        <span i18n:translate="">Created by:</span>
+        <span tal:content="view/reporter"/>
+        <tal:email tal:condition="view/reporter_email">
+            <br/>
+            <a tal:define="email view/reporter_email"
+               tal:content="email"
+               tal:attributes="href string:mailto:${email}"/>
+        </tal:email>
+    </tal:reporter>
+</div>
 
 <div tal:content="structure view/reportout"/>
 

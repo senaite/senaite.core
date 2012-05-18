@@ -40,7 +40,7 @@
 </h3>
 <div>
 <table
-    class=""
+    class="bika-report-parms"
     summary="Parameters"
     cellpadding="0" cellspacing="0">
 <tal:parms tal:repeat="line report_parms">
@@ -55,6 +55,7 @@
 
 <br/>
 <div>
+
 <table
     class="bika-report-table"
     summary="Results"
@@ -75,8 +76,7 @@
 
 <tbody>
 <metal:block tal:repeat="line datalines">
-<tr tal:define="oddrow repeat/line/odd"
-    tal:attributes="class python:oddrow and 'even' or 'odd'">
+<tr>
 <tal:column
     tal:repeat="i python:range(len(line))">
     <td class="" colspan=""
@@ -85,7 +85,6 @@
                 and line[i]['img_before'] or None;
             colspan python:line[i].has_key('colspan') 
                 and line[i]['colspan'] or 1;
-            oddrow repeat/line/odd;
             class python:line[i].has_key('class') 
                 and line[i]['class'] or None;
             "
