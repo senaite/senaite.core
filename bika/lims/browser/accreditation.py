@@ -61,6 +61,7 @@ class AccreditationView(AnalysisServicesView):
             {'id':'default',
              'title': _('All'),
              'contentFilter':{},
+             'transitions': [{'id':'empty'}, ], # none
              'columns': ['Title',
                          'Keyword',
                          'Category',

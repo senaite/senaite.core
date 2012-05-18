@@ -67,9 +67,11 @@ class AnalysesView(BikaListingView):
             'Attachments': {'title': _('Attachments'),
                             'sortable': False},
             'CaptureDate': {'title': _('Captured'),
-                            'sortable': False},
+                            'index': 'getResultCaptureDate',
+                            'sortable':False},
             'DueDate': {'title': _('Due Date'),
-                        'sortable': False},
+                        'index': 'getDueDate',
+                        'sortable':False},
         }
 
         self.review_states = [
@@ -140,7 +142,10 @@ class AnalysesView(BikaListingView):
             items[i]['retested'] = obj.getRetested()
             items[i]['class']['retested'] = 'center'
             items[i]['calculation'] = calculation and True or False
-            items[i]['Partition'] = obj.getSamplePartition().Title()
+            try:
+                items[i]['Partition'] = obj.getSamplePartition().Title()
+            except AttributeError:
+                items[i]['Partition'] = ''
             if obj.portal_type == "ReferenceAnalysis":
                 items[i]['DueDate'] = ''
                 items[i]['CaptureDate'] = ''

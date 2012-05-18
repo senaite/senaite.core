@@ -13,7 +13,9 @@ class NoSetupDataViewlet(ViewletBase):
     def render(self):
         bsc = getToolByName(self, 'bika_setup_catalog')
         portal = getToolByName(self.context, 'portal_url').getPortalObject()
-        if self.request.URL == portal.absolute_url() and not bsc():
+        portal_url = portal.absolute_url()
+        if self.request.URL == portal_url + "/front-page/document_view" \
+           and not bsc():
             self.message = _("No LIMS setup data configured.  "
                              "<a href='load_setup_data'>Click here</a> "
                              "to load pre-configured setup data, or visit "

@@ -350,6 +350,7 @@ class BikaGenerator:
         addIndex(bac, 'Type', 'FieldIndex')
         addIndex(bac, 'portal_type', 'FieldIndex')
         addIndex(bac, 'created', 'DateIndex')
+        addIndex(bac, 'Creator', 'FieldIndex')
         addIndex(bac, 'title', 'FieldIndex', 'Title')
         addIndex(bac, 'sortable_title', 'FieldIndex')
         addIndex(bac, 'description', 'FieldIndex', 'Description')
@@ -372,6 +373,7 @@ class BikaGenerator:
         addIndex(bac, 'getCategoryTitle', 'FieldIndex')
         addIndex(bac, 'getPointOfCapture', 'FieldIndex')
         addIndex(bac, 'getDateReceived', 'DateIndex')
+        addIndex(bac, 'getResultCaptureDate', 'DateIndex')
         addIndex(bac, 'getSampleTypeUID', 'FieldIndex')
 
         addColumn(bac, 'path')
@@ -433,12 +435,14 @@ class BikaGenerator:
         addIndex(bc, 'Type', 'FieldIndex')
         addIndex(bc, 'portal_type', 'FieldIndex')
         addIndex(bc, 'created', 'DateIndex')
+        addIndex(bc, 'Creator', 'FieldIndex')
         addIndex(bc, 'getObjPositionInParent', 'GopipIndex')
         addIndex(bc, 'title', 'FieldIndex', 'Title')
         addIndex(bc, 'sortable_title', 'FieldIndex')
         addIndex(bc, 'description', 'FieldIndex', 'Description')
         addIndex(bc, 'review_state', 'FieldIndex')
         addIndex(bc, 'inactive_state', 'FieldIndex')
+        addIndex(bc, 'worksheetanalysis_review_state', 'FieldIndex')
         addIndex(bc, 'cancellation_state', 'FieldIndex')
 
         addIndex(bc, 'getSampleID', 'FieldIndex')
@@ -533,6 +537,7 @@ class BikaGenerator:
         addIndex(bsc, 'Type', 'FieldIndex')
         addIndex(bsc, 'portal_type', 'FieldIndex')
         addIndex(bsc, 'created', 'DateIndex')
+        addIndex(bsc, 'Creator', 'FieldIndex')
         addIndex(bsc, 'getObjPositionInParent', 'GopipIndex')
 
         addIndex(bsc, 'title', 'FieldIndex', 'Title')
