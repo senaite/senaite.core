@@ -118,7 +118,7 @@
 		repeat="button view/header_buttons"
 		tal:condition="edit_enabled">
 		<input
-			class="context workflow_action_button allowMultiSubmit"
+			class="context workflow_action_button action_button allowMultiSubmit"
 			type="submit"
 			tal:attributes="
 				value button/title;

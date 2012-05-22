@@ -1,26 +1,26 @@
-jQuery( function($) {
+(function( $ ) {
 $(document).ready(function(){
 
 	_ = window.jsi18n;
 
-//  change url to prevent caching
-//		$.getJSON('as_setupdata?' + new Date().getTime(), function(data) {
-		$.getJSON('as_setupdata',
-			{'_authenticator': $('input[name="_authenticator"]').val()},
-			function(data) {
-				$('body').data('ar_formdata', data);
+	//  change url to prevent caching
+	//	$.getJSON('as_setupdata?' + new Date().getTime(), function(data) {
+	$.getJSON('as_setupdata',
+		{'_authenticator': $('input[name="_authenticator"]').val()},
+		function(data) {
+			$('body').data('ar_formdata', data);
 
-				// Contact dropdown is set in TAL to a default value.
-				// we force change it to run the primary_contact .change()
-				// code - but the ajax for ar_formdata must complete first.
-				// So it goes here, in the ajax complete handler.
-				contact_element = $("#primary_contact");
-				if(contact_element.length > 0) {
-					contact_element.change();
-				}
-
+			// Contact dropdown is set in TAL to a default value.
+			// we force change it to run the primary_contact .change()
+			// code - but the ajax for ar_formdata must complete first.
+			// So it goes here, in the ajax complete handler.
+			contact_element = $("#primary_contact");
+			if(contact_element.length > 0) {
+				contact_element.change();
 			}
-		);
+
+		}
+	);
 
 
 	// setting the service default Preservation causes ContainerType
@@ -50,8 +50,6 @@ $(document).ready(function(){
 			dataType: "json"
 		});
     });
-
-
 
 
 	// PartitionSetup RecordsWidget AJAX things
@@ -89,5 +87,4 @@ $(document).ready(function(){
     //$("[name^='PartitionSetup.preservation']").change();
 
 });
-});
-
+}(jQuery));

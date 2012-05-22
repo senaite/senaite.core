@@ -1,4 +1,4 @@
-jQuery( function($) {
+(function( $ ) {
 $(document).ready(function(){
 
 	_ = window.jsi18n;
@@ -62,5 +62,4 @@ $(document).ready(function(){
 	});
 
 });
-});
-
+}(jQuery));

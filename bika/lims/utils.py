@@ -372,9 +372,9 @@ class bsc_browserdata(BrowserView):
             deps = {}
             calc = service.getCalculation()
             if calc:
-                deps = calc.getCalculationDependencies()
-                def walk(deps):
-                    for depserv_uid, depserv_deps in deps.items():
+                td = calc.getCalculationDependencies()
+                def walk(td):
+                    for depserv_uid, depserv_deps in td.items():
                         if depserv_uid == uid:
                             continue
                         depserv = services[depserv_uid]
@@ -386,10 +386,11 @@ class bsc_browserdata(BrowserView):
                         srv = '%s_%s' % (depserv.UID(), depserv.Title())
                         if not deps.has_key(poc): deps[poc] = {}
                         if not deps[poc].has_key(cat): deps[poc][cat] = []
-                        deps[poc][cat].append(srv)
+                        if not srv in deps[poc][cat]:
+                            deps[poc][cat].append(srv)
                         if depserv_deps:
                             walk(depserv_deps)
-                walk(deps)
+                walk(td)
 
             ## Get partition setup records for this service
             separate = service.getSeparate()

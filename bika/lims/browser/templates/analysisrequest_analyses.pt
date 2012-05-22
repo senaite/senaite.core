@@ -4,6 +4,15 @@
 	xmlns:i18n="http://xml.zope.org/namespaces/i18n"
 	metal:use-macro="here/main_template/macros/master"
 	i18n:domain="bika">
+
+<head>
+    <metal:block fill-slot="javascript_head_slot"
+        tal:define="portal context/@@plone_portal_state/portal;">
+    <script type="text/javascript"
+        tal:attributes="src python:portal.absolute_url() + '/++resource++bika.lims.js/ar_analyses.js'"></script>
+    </metal:block>
+</head>
+
 <body
 	tal:define="
 		form_id view/form_id;
@@ -43,14 +52,45 @@
 
 <metal:content-core fill-slot="content-core">
 
-	<h3 style="margin-top:2em;">
-		<img
-			i18n:attributes="title"
-			title="Partitions"
-			src="++resource++bika.lims.images/samplepartition.png"/>
-		<span i18n:translate="">Sample Partitions</span>
-	</h3>
-	<tal:parts replace="structure view/parts"/>
+<h3 style="margin-top:1em;">
+	<img
+		i18n:attributes="title"
+		title="Partitions"
+		src="++resource++bika.lims.images/samplepartition.png"/>
+	<span i18n:translate="">Sample Partitions</span>
+</h3>
+
+<form id="list" action="workflow_action" method="post" name="bika_listing_form">
+	<input tal:replace="structure context/@@authenticator/authenticator"/>
+	<input type="hidden" value="1" name="submitted">
+	<input type="hidden" value="list" name="form_id">
+	<input type="hidden" tal:attributes="value view/view_url" name="view_url">
+	<input type="hidden" tal:attributes="value context/portal_type" name="portal_type">
+	<input type="hidden" value="id" name="list_sort_on">
+	<input type="hidden" value="ascending" name="list_sort_order">
+	<input type="hidden" value="default" name="list_review_state">
+	<input type="hidden" value="1000" name="list_pagesize">
+	<input type="hidden" value="1" name="list_pagenumber">
+	<input type="hidden" value="[]" name="specs">
+	<input id="item_data" type="hidden" value="[]" name="item_data">
+
+	<span style="display:none"
+		id="st_title"
+		tal:attributes="st_title python:context.getSample().getSampleType().Title()">
+	</span>
+
+	<span id="partitions">
+		<tal:parts replace="structure view/parts"/>
+	</span>
+
+	<input class="ar_analyses_add_part context action_button allowMultiSubmit"
+		type="submit"
+		i18n:attributes="value"
+		value="Add"/>
+	<input class="ar_analyses_delete_part context action_button allowMultiSubmit"
+		type="submit"
+		i18n:attributes="value"
+		value="Delete"/>
 
 	<h3 style="margin-top:1em;">
 		<img
@@ -63,9 +103,7 @@
 	<div id="folderlisting-main-table"
 		tal:content="structure view/contents_table"/>
 
-	<span style="display:none"
-		id="st_title"
-		tal:attributes="st_title python:context.getSample().getSampleType().Title()"/>
+	</form>
 
 	<tal:hasremarks tal:condition="python:hasattr(context, 'Remarks')">
 		<tal:remarks define="

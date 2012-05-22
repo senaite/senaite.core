@@ -44,8 +44,8 @@ class SamplePartitionsView(BikaListingView):
         self.form_id = "partitions"
 
         self.columns = {
-            'Title': {'title': _('Partition'),
-                      'sortable':False},
+            'PartTitle': {'title': _('Partition'),
+                          'sortable':False},
             'getContainer': {'title': _('Container'),
                              'sortable':False},
             'getPreservation': {'title': _('Preservation'),
@@ -72,7 +72,7 @@ class SamplePartitionsView(BikaListingView):
             {'id':'default',
              'title': _('All'),
              'contentFilter':{},
-             'columns': ['Title',
+             'columns': ['PartTitle',
                          'getContainer',
                          'getPreservation',
                          'getSampler',
@@ -107,6 +107,8 @@ class SamplePartitionsView(BikaListingView):
         for x in range(len(items)):
             if not items[x].has_key('obj'): continue
             obj = items[x]['obj']
+
+            items[x]['PartTitle'] = obj.getId()
 
             container = obj.getContainer()
             items[x]['getContainer'] = container and container.UID() or ''
