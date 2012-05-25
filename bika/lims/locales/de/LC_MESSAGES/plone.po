@@ -785,8 +785,8 @@ msgstr ""
 msgid "label_schema_Method"
 msgstr ""
 
-#. Default: "Partition Setup"
-msgid "label_schema_Partition Setup"
+#. Default: "Container and Preservation"
+msgid "label_schema_Container and Preservation"
 msgstr ""
 
 #. Default: "Preferences"

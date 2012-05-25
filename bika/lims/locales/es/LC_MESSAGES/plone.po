@@ -740,67 +740,67 @@ msgstr "Hojas de trabajo"
 
 #. Default: "Accounting"
 msgid "label_schema_Accounting"
-msgstr "label_schema_Accounting"
+msgstr ""
 
 #. Default: "Address"
 msgid "label_schema_Address"
-msgstr "label_schema_Address"
+msgstr ""
 
 #. Default: "Bank details"
 msgid "label_schema_Bank details"
-msgstr "label_schema_Bank details"
+msgstr ""
 
 #. Default: "Calculation"
 msgid "label_schema_Calculation"
-msgstr "label_schema_Calculation"
+msgstr ""
 
 #. Default: "Dates"
 msgid "label_schema_Dates"
-msgstr "label_schema_Dates"
+msgstr ""
 
 #. Default: "Description"
 msgid "label_schema_Description"
-msgstr "label_schema_Description"
+msgstr ""
 
 #. Default: "Email Telephone Fax"
 msgid "label_schema_Email Telephone Fax"
-msgstr "label_schema_Email_Telephone Fax"
+msgstr ""
 
 #. Default: "ID Server"
 msgid "label_schema_ID Server"
-msgstr "label_schema_ID Server"
+msgstr ""
 
 #. Default: "Labels"
 msgid "label_schema_Labels"
-msgstr "label_schema_Labels"
+msgstr ""
 
 #. Default: "Layout"
 msgid "label_schema_Layout"
-msgstr "label_schema_Layout"
+msgstr ""
 
 #. Default: "Location"
 msgid "label_schema_Location"
-msgstr "label_schema_Location"
+msgstr ""
 
 #. Default: "Method"
 msgid "label_schema_Method"
-msgstr "label_schema_Method"
+msgstr ""
 
-#. Default: "Partition Setup"
-msgid "label_schema_Partition Setup"
-msgstr "label_schema_Partition Setup"
+#. Default: "Container and Preservation"
+msgid "label_schema_Container and Preservation"
+msgstr ""
 
 #. Default: "Preferences"
 msgid "label_schema_Preferences"
-msgstr "label_schema_Preferences"
+msgstr ""
 
 #. Default: "Publication preference"
 msgid "label_schema_Publication preference"
-msgstr "label_schema_Publication preference"
+msgstr ""
 
 #. Default: "Reference Results"
 msgid "label_schema_Reference Results"
-msgstr "label_schema_Reference Results"
+msgstr ""
 
 #. Default: "Result Options"
 msgid "label_schema_Result Options"

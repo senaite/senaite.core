@@ -1,4 +1,4 @@
-# 
+#
 # Translators:
 # Alfonso de la Guarda Reyes <alfonsodg@gmail.com>, 2012.
 # Jordi Puiggené <jordi.puiggene@gmail.com>, 2012.
@@ -2412,10 +2412,9 @@ msgstr "Seleccionar el analista"
 
 #: ../content/analysisservice.py:509
 msgid ""
-"Select any combination of these fields to configure how the LIMS will create"
-" sample partitions for new ARs. Adding only a few very general rules will "
-"cause the empty fields to be set to computed, empty or default values. "
-"Values set above take precendence over those set in this table."
+"Please specify preservations that differ from the "
+"analysis service's default preservation per sample "
+"type here."
 msgstr "Seleccione cualquier combinación de estos campos para configurar como desea que el LIMS cree las particiones para nuevas solicitudes de análisis. Los valores introducidos arriba tienen preferencia sobre los introducidos en esta tabla."
 
 #: ../content/analysisrequest.py:109
@@ -2503,7 +2502,7 @@ msgstr "No se ha encontrado la clave del servicio ${keyword}"
 
 #: ../content/analysisservice.py:502
 msgid ""
-"Service partition will always be stored in one of the selected containers"
+"Select the default container to be used for this analysis service. If the container to be used depends on the sample type and preservation combination, specify the container in the sample type table below."
 msgstr "La partición del servicio siempre será almacenada en alguno de los contenedores seleccionados"
 
 #: ../content/analysisservice.py:488
@@ -2885,12 +2884,12 @@ msgid "This service does not require a separate partition"
 msgstr "El servicio no requiere de una partición por separado"
 
 #: ../browser/templates/analysisservice_popup.pt:219
-msgid "This service requires a separate partition"
+msgid "This service requires a separate container."
 msgstr "El servicio requiere de una partición por separado"
 
 #: ../content/analysisservice.py:474
 msgid ""
-"This service will always be assigned it's own separate sample partition."
+"Check this box to ensure a separate sample container is used for this analysis service."
 msgstr "A este servicio siempre se le asignará su partición separada de muestras."
 
 #: ../content/laboratory.py:26

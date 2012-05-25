@@ -1,4 +1,4 @@
-# 
+#
 # Translators:
 # <>, 2012.
 #   <>, 2012.
@@ -2413,10 +2413,9 @@ msgstr "Analytiker auswählen"
 
 #: ../content/analysisservice.py:509
 msgid ""
-"Select any combination of these fields to configure how the LIMS will create"
-" sample partitions for new ARs. Adding only a few very general rules will "
-"cause the empty fields to be set to computed, empty or default values. "
-"Values set above take precendence over those set in this table."
+"Please specify preservations that differ from the "
+"analysis service's default preservation per sample "
+"type here."
 msgstr ""
 
 #: ../content/analysisrequest.py:109
@@ -2504,7 +2503,7 @@ msgstr ""
 
 #: ../content/analysisservice.py:502
 msgid ""
-"Service partition will always be stored in one of the selected containers"
+"Select the default container to be used for this analysis service. If the container to be used depends on the sample type and preservation combination, specify the container in the sample type table below."
 msgstr ""
 
 #: ../content/analysisservice.py:488
@@ -2886,12 +2885,12 @@ msgid "This service does not require a separate partition"
 msgstr ""
 
 #: ../browser/templates/analysisservice_popup.pt:219
-msgid "This service requires a separate partition"
+msgid "This service requires a separate container."
 msgstr ""
 
 #: ../content/analysisservice.py:474
 msgid ""
-"This service will always be assigned it's own separate sample partition."
+"Check this box to ensure a separate sample container is used for this analysis service."
 msgstr ""
 
 #: ../content/laboratory.py:26

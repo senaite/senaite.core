@@ -49,8 +49,8 @@ msgstr "Location"
 msgid "label_schema_Method"
 msgstr "Method"
 
-msgid "label_schema_Partition Setup"
-msgstr "Partition Setup"
+msgid "label_schema_Container and Preservation"
+msgstr "Container and Preservation"
 
 msgid "label_schema_Preferences"
 msgstr "Preferences"

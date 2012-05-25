@@ -127,7 +127,7 @@ class PartitionSetupField(RecordsField):
             'sampletype':_('Sample Type'),
             'preservation':_('Preservation'),
             'container':_('Container'),
-            'separate':_('Separate Partition'),
+            'separate':_('Separate Container'),
             'vol':_('Required Volume'),
             #'retentionperiod': _('Retention Period'),
             },
@@ -466,16 +466,16 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     BooleanField('Separate',
-        schemata = 'Partition Setup',
+        schemata = 'Container and Preservation',
         default = False,
         required = 0,
         widget = BooleanWidget(
-            label = _('Separate Partition'),
-            description = _("This service will always be assigned it's own separate sample partition."),
+            label = _('Separate Container'),
+            description = _("Check this box to ensure a separate sample container is used for this analysis service."),
         ),
     ),
     ReferenceField('Preservation',
-        schemata = 'Partition Setup',
+        schemata = 'Container and Preservation',
         allowed_types=('Preservation',),
         relationship='AnalysisServicePreservation',
         referenceClass=HoldingReference,
@@ -484,12 +484,12 @@ schema = BikaSchema.copy() + Schema((
         multiValued=1,
         widget = ReferenceWidget(
             checkbox_bound = 1,
-            label = _('Preservation'),
-            description = _("Service partition will always require one of the selected preservation methods"),
+            label = _('Default Preservation'),
+            description = _("Select a default preservation for this this analysis service. If the preservation depends on the sample type combination, specify a preservation per sample type in the table below."),
         ),
     ),
     ReferenceField('Container',
-        schemata = 'Partition Setup',
+        schemata = 'Container and Preservation',
         allowed_types=('Container',),
         relationship='AnalysisServiceContainer',
         referenceClass=HoldingReference,
@@ -498,19 +498,17 @@ schema = BikaSchema.copy() + Schema((
         multiValued=1,
         widget = ReferenceWidget(
             checkbox_bound = 1,
-            label = _('Container'),
-            description = _("Service partition will always be stored in one of the selected containers"),
+            label = _('Default Container'),
+            description = _("Select the default container to be used for this analysis service. If the container to be used depends on the sample type and preservation combination, specify the container in the sample type table below."),
         ),
     ),
     PartitionSetupField('PartitionSetup',
-        schemata = 'Partition Setup',
+        schemata = 'Container and Preservation',
         widget = RecordsWidget(
-            label = PMF("Partition Setup"),
-            description = _("Select any combination of these fields to configure how "
-                            "the LIMS will create sample partitions for new ARs. "
-                            "Adding only a few very general rules will cause the empty "
-                            "fields to be set to computed, empty or default values. "
-                            "Values set above take precendence over those set in this table."),
+            label = PMF("Preservation per sample type"),
+            description = _("Please specify preservations that differ from the "
+                            "analysis service's default preservation per sample "
+                            "type here."),
         ),
     ),
 ))
