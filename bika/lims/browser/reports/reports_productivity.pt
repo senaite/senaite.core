@@ -200,11 +200,6 @@
 <fieldset>
 
 <legend i18n:translate="">Selection criteria</legend>
-<br/>
-<br/>
-<br/>
-<b> Under construction </b>
-<!--
 <metal:block use-macro="context/selection_macros/macros/client"/>
 
 <tal:received
@@ -213,14 +208,8 @@
 <metal:date use-macro="context/selection_macros/macros/date"/>
 </tal:received>
 
-<metal:date use-macro="context/selection_macros/macros/review_state"/>
-
-<metal:date use-macro="context/selection_macros/macros/cancellation_state"/>
-
 <metal:date use-macro="context/selection_macros/macros/ws_review_state"/>
--->
 </fieldset>
-<!--
     <input tabindex=""
         class="searchButton"
         type="submit"
@@ -228,7 +217,6 @@
         value="Search"
         i18n:attributes="value"
         />
--->
 </form>
 </div>
 

@@ -106,23 +106,8 @@ class SubmitForm(BrowserView):
             self.reportout = "no report to out"
 
 
-        # this works but the html is not rendered. 
-        #filename = "testing4.pdf"
-        #ramdisk = StringIO()
-        #pdf = pisa.CreatePDF(StringIO(self.reportout), ramdisk) 
-        #result = ramdisk.getvalue()
-        #ramdisk.close()
-
-        #if not pdf.err:
-        #    #stream file to browser
-        #    setheader = self.request.RESPONSE.setHeader
-        #    #setheader('Content-Length',len(result))
-        #    setheader('Content-Type', 'Application/pdf')
-        #    setheader('Content-Disposition', 'inline; filename=%s' % filename)
-        #    self.request.RESPONSE.write(result)
 
         # this is the good part
-        #filename = "testing4.pdf"
         ramdisk = StringIO()
         pdf = pisa.CreatePDF(self.template(), ramdisk) 
         result = ramdisk.getvalue()
@@ -143,9 +128,6 @@ class SubmitForm(BrowserView):
             self.request.RESPONSE.redirect(thisfile.absolute_url())
 
         pisa.showLogging()
-
-        """pisa.CreatePDF(self.reportout, "testing.pdf")
-        """
 
 
         return self.template()

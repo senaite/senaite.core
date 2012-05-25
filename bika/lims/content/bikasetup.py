@@ -174,6 +174,7 @@ schema = BikaFolderSchema.copy() + Schema((
         schemata = "Analyses",
         vocabulary = ARIMPORT_OPTIONS,
         widget = MultiSelectionWidget(
+            visible = False,
             label = _("AR Import options"),
             description = _("'Classic' indicates importing analysis requests per sample and "
                             "analysis service selection. With 'Profiles', analysis profile keywords "
