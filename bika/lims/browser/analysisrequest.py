@@ -15,14 +15,7 @@ from bika.lims.browser.bika_listing import  WorkflowAction
 from bika.lims.browser.publish import Publish
 from bika.lims.browser.sample import SamplePartitionsView
 from bika.lims.config import POINTS_OF_CAPTURE
-from bika.lims.permissions import EditAR
-from bika.lims.permissions import EditFieldResults
-from bika.lims.permissions import EditResults
-from bika.lims.permissions import ManageSamples
-from bika.lims.permissions import PreserveSample
-from bika.lims.permissions import ResultsNotRequested
-from bika.lims.permissions import SampleSample
-from bika.lims.permissions import ViewResults
+from bika.lims.permissions import *
 from bika.lims.utils import getUsers
 from bika.lims.utils import isActive
 from bika.lims.utils import TimeOrDate
@@ -66,23 +59,11 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
             else:
                 item_data = json.loads(form['item_data'])
 
-        ## Manage Analyses: save Analyses
-        if action == "save_analyses_button":
-            ar = self.context
-            sample = ar.getSample()
+        ## Sample Partitions or AR Manage Analyses: save Partition Table
+        if action == "save_partitions_button":
+            sample = self.context.portal_type == 'Sample' and self.context or\
+                self.context.getSample()
 
-            objects = WorkflowAction._get_selected_items(self)
-            if not objects:
-                message = self.context.translate(
-                    _("No analyses have been selected"))
-                self.context.plone_utils.addPortalMessage(message, 'info')
-                self.destination_url = self.context.absolute_url() + "/analyses"
-                self.request.response.redirect(self.destination_url)
-                return
-
-            new = ar.setAnalyses(objects.keys(), prices = form['Price'][0])
-
-            ## Partitions
             nr_existing = len(sample.objectIds())
             nr_parts = len(form['PartTitle'][0])
             # add missing parts
@@ -107,6 +88,39 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
                     Preservation = form['getPreservation'][0][part_uid],
                 )
                 part.reindexObject()
+
+
+            objects = WorkflowAction._get_selected_items(self)
+            if not objects:
+                message = self.context.translate(
+                    _("No items have been selected"))
+                self.context.plone_utils.addPortalMessage(message, 'info')
+                if self.context.portal_type == 'Sample':
+                    # in samples his table is on 'Partitions' tab
+                    self.destination_url = self.context.absolute_url() +\
+                        "/partitions"
+                else:
+                    # in ar context this table is on 'ManageAnalyses' tab
+                    self.destination_url = self.context.absolute_url() +\
+                        "/analyses"
+                self.request.response.redirect(self.destination_url)
+                return
+
+        ## AR Manage Analyses: save Analyses
+        if action == "save_analyses_button":
+            ar = self.context
+            sample = ar.getSample()
+
+            objects = WorkflowAction._get_selected_items(self)
+            if not objects:
+                message = self.context.translate(
+                    _("No analyses have been selected"))
+                self.context.plone_utils.addPortalMessage(message, 'info')
+                self.destination_url = self.context.absolute_url() + "/analyses"
+                self.request.response.redirect(self.destination_url)
+                return
+
+            new = ar.setAnalyses(objects.keys(), prices = form['Price'][0])
 
             # link analyses and partitions
             for service_uid, service in objects.items():
@@ -759,7 +773,6 @@ class AnalysisRequestAddView(AnalysisRequestViewView):
         self.can_edit_ar = True
         self.DryMatterService = self.context.bika_setup.getDryMatterService()
         request.set('disable_plone.rightcolumn', 1)
-
         self.col_count = 6
 
     def __call__(self):
@@ -877,28 +890,24 @@ class AnalysisRequestAnalysesView(BikaListingView):
                          'Partition',
                          ],
              'transitions': [{'id':'empty'}, ], # none
-             'custom_actions':[{'id': 'save_analyses_button', 'title': _('Save')}, ]
+             'custom_actions':[{'id': 'save_analyses_button',
+                                'title': _('Save')}, ],
              },
         ]
 
         ## Create Partitions View for this ARs sample
         sample = self.context.getSample()
         p = SamplePartitionsView(sample, self.request)
-        p.allow_edit = True
-        p.show_column_toggles = False
-        p.show_select_column = False
-        p.setoddeven = False
         p.table_only = True
-        p.review_states[0]['transitions'] = [{'id':'empty'}] # none
+        p.allow_edit = False
+        p.show_select_column = False
+        p.review_states[0]['transitions'] = [{'id':'empty'},] # none
+        p.review_states[0]['custom_actions'] = []
         p.review_states[0]['columns'] = ['PartTitle',
                                          'getContainer',
-                                         'getPreservation']
-##                                         'getSampler',
-##                                         'getDateSampled',
-##                                         'getPreserver',
-##                                         'getDatePreserved',
-##                                         'getDisposalDate',
-##                                         'state_title']
+                                         'getPreservation',
+                                         'state_title']
+
         self.parts = p.contents_table()
 
     def folderitems(self):
@@ -1403,7 +1412,11 @@ class ar_formdata(BrowserView):
                         service = rc.lookupObject(service_uid)
                         category = service.getCategory()
                         cat = '%s_%s' % (category.UID(), category.Title())
-                        poc = '%s_%s' % (service.getPointOfCapture(), POINTS_OF_CAPTURE.getValue(service.getPointOfCapture()))
+                        poc = '%s_%s' % (
+                            service.getPointOfCapture(),
+                            POINTS_OF_CAPTURE.getValue(
+                                service.getPointOfCapture())
+                        )
                         srv = '%s_%s' % (service.UID(), service.Title())
                         if not deps.has_key(poc): deps[poc] = {}
                         if not deps[poc].has_key(cat): deps[poc][cat] = []
@@ -1483,12 +1496,14 @@ class ajaxAnalysisRequestSubmit():
         bc = getToolByName(self.context, 'bika_catalog')
         bsc = getToolByName(self.context, 'bika_setup_catalog')
 
-        SamplingWorkflowEnabled = self.context.bika_setup.getSamplingWorkflowEnabled()
+        SamplingWorkflowEnabled =\
+            self.context.bika_setup.getSamplingWorkflowEnabled()
 
         errors = {}
         def error(field = None, column = None, message = None):
             if not message:
-                message = self.context.translate(PMF('Input is required but no input given.'))
+                message = self.context.translate(
+                    PMF('Input is required but no input given.'))
             if (column or field):
                 error_key = " %s.%s" % (int(column) + 1, field or '')
             else:
@@ -1522,18 +1537,15 @@ class ajaxAnalysisRequestSubmit():
             formkey = "ar.%s" % column
             ar = form[formkey]
             if not ar.has_key("Analyses"):
-                error('Analyses', column, self.context.translate(_("No analyses have been selected")))
+                error('Analyses',
+                      column,
+                      self.context.translate(
+                          _("No analyses have been selected")))
 
             # check that required fields have values
             for field in required_fields:
                 if not ar.has_key(field):
                     error(field, column)
-
-            # If a new ARTemplate or ARProfile's name is specified,
-            # make sure it's clean.
-            if ar.has_key('profileTitle'):
-                if re.findall(r"[^A-Za-z\w\d\_\s]", ar['profileTitle']):
-                    error(message=_("Validation failed: Profile title contains invalid characters"))
 
             # validate field values
             for field in validated_fields:
@@ -1653,6 +1665,9 @@ class ajaxAnalysisRequestSubmit():
 
             sample_uid = sample.UID()
 
+            # XXX Selecting a template sets the hidden 'parts' field to template values.
+            # XXX Selecting a profile will allow ar_add.js to fill in the parts field.
+            # XXX The result is the same once we are here.
             if not parts:
                 parts = [{'services':[],
                          'container':[],
@@ -1741,55 +1756,6 @@ class ajaxAnalysisRequestSubmit():
                 doActionFor(sample, lowest_state)
                 doActionFor(ar, lowest_state)
 
-            # Save new ARProfile/ARTemplate
-            profile = None
-            template = None
-            if (values.has_key('profileTitle')):
-                if self.request.ARProfileType == 'ARProfile':
-                    # Save a normal AR Profile
-                    _id = self.context.invokeFactory(type_name='ARProfile',
-                                                     id='tmp')
-                    profile = self.context[_id]
-                    profile.edit(title = values['profileTitle'],
-                                 Service = Analyses)
-                    profile.processForm()
-                    ar.edit(Profile = profile,
-                            Template = None)
-                else:
-                    # saving a new AR Template
-
-                    # First create new ARProfile if none was specified.
-                    selected_arprofile = values.get('ARProfile', '')
-                    if not selected_arprofile:
-                        _id = self.context.invokeFactory(type_name='ARProfile',
-                                                         id='tmp')
-                        new_profile = self.context[_id]
-                        message = self.context.translate(
-                            _("The AR Profile '${profile_name}' was "
-                              "automatically created.",
-                              mapping = {'profile_name':
-                                         values['profileTitle']}))
-                        new_profile.edit(
-                            title = values['profileTitle'],
-                            description = message,
-                            Service = Analyses)
-                        new_profile.processForm()
-                        selected_arprofile = new_profile
-
-                    _id = self.context.invokeFactory(type_name='ARTemplate',
-                                                     id='tmp')
-                    template = self.context[_id]
-                    template.edit(
-                        title = values['profileTitle'],
-                        ReportDryMatter = values.get('reportDryMatter', False),
-                        SampleType = values.get('SampleType', ''),
-                        SamplePoint = values.get('SamplePoint', ''),
-                        ARProfile = selected_arprofile,
-                    )
-                    template.processForm()
-                    ar.edit(Profile = selected_arprofile,
-                            Template = template)
-
             if values.has_key('SampleID') and \
                wftool.getInfoFor(sample, 'review_state') != 'sample_due':
                 wftool.doActionFor(ar, 'receive')
@@ -1806,13 +1772,6 @@ class ajaxAnalysisRequestSubmit():
                   mapping = {'AR': ARs[0]}))
 
         self.context.plone_utils.addPortalMessage(message, 'info')
-
-        if new_profile:
-            message = self.context.translate(
-                _("The AR Profile '${profile_name}' was "
-                  "automatically created.",
-                  mapping = {'profile_name': new_profile.Title()}))
-            self.context.plone_utils.addPortalMessage(message, 'info')
 
         # automatic label printing
         # won't print labels for Register on Secondary ARs

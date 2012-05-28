@@ -9,7 +9,8 @@
 	top:-0.5em;
     margin-right: .5em;
     font-size: 50%;
-    border:1px solid #eee !important;
+    /* border:1px solid #eee !important; */
+    border:none
     vertical-align: middle;
 	font-weight:normal;
 	letter-spacing: 0;
@@ -17,7 +18,7 @@
 	padding: 5px 2px 3px 22px;
 }
 .context_action_link:hover {
-	background-color:#eee !important;
+	/* background-color:#eee !important; */
 }
 
 .context_action_dropdown {

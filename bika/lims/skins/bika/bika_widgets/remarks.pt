@@ -20,7 +20,7 @@
             tal:attributes="class kss_class;
                             id string:parent-fieldname-$fieldName-$uid">
             <span metal:define-slot="inside"
-                  tal:replace="accessor">textarea</span>
+                  tal:replace="structure accessor">textarea</span>
         </span>
     </metal:view_macro>
 

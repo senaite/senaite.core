@@ -92,6 +92,7 @@
 	<tal:remarks define="
 		field python:context.Schema()['Remarks'];
 		errors python:{};">
+		<p style="margin-top:2em;"/>
 		 <metal:widget use-macro="python:context.widget('Remarks', mode='edit')" />
 	</tal:remarks>
 

@@ -6,15 +6,12 @@ from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import EditSample
 from bika.lims import PMF
+from bika.lims.utils import changeWorkflowState
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.analyses import AnalysesView
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.config import POINTS_OF_CAPTURE
-from bika.lims.permissions import EditFieldResults
-from bika.lims.permissions import EditResults
-from bika.lims.permissions import ManageSamples
-from bika.lims.permissions import SampleSample
-from bika.lims.permissions import PreserveSample
+from bika.lims.permissions import *
 from bika.lims.utils import TimeOrDate
 from bika.lims.utils import getUsers
 from bika.lims.utils import isActive
@@ -33,12 +30,15 @@ class SamplePartitionsView(BikaListingView):
         self.contentFilter['path'] = {"query": "/".join(context.getPhysicalPath()),
                                       "level" : 0 }
         self.context_actions = {}
-        self.allow_edit = False
         self.title = _("Sample Partitions")
         self.icon = "++resource++bika.lims.images/samplepartition_big.png"
         self.description = ""
+        self.allow_edit = True
+        self.show_select_all_checkbox = False
         self.show_sort_column = False
+        self.show_column_toggles = False
         self.show_select_row = False
+        self.setoddeven = False
         self.show_select_column = True
         self.pagesize = 1000
         self.form_id = "partitions"
@@ -83,9 +83,27 @@ class SamplePartitionsView(BikaListingView):
                          'state_title'],
              'transitions': [{'id': 'sampled'},
                              {'id': 'preserved'},
-                             {'id': 'receive'}],
+                             {'id': 'receive'},
+                             {'id': 'cancel'},
+                             {'id': 'reinstate'}],
+             'custom_actions':[{'id': 'save_partitions_button',
+                                'title': _('Save')}, ],
             },
         ]
+
+    def __call__(self):
+        mtool = getToolByName(self.context, 'portal_membership')
+        checkPermission = mtool.checkPermission
+        if self.context.portal_type == 'AnalysisRequest':
+            sample = self.context.getSample()
+        else:
+            sample = self.context
+        if checkPermission(AddSamplePartition, sample):
+            self.context_actions[_('Add')] = \
+                {'url': sample.absolute_url() + \
+                        '/createSamplePartition',
+                 'icon': '++resource++bika.lims.images/add.png'}
+        return super(SamplePartitionsView, self).__call__()
 
     def folderitems(self, full_objects = False):
         items = BikaListingView.folderitems(self)
@@ -111,11 +129,16 @@ class SamplePartitionsView(BikaListingView):
             items[x]['PartTitle'] = obj.getId()
 
             container = obj.getContainer()
-            items[x]['getContainer'] = container and container.UID() or ''
+            if self.allow_edit:
+                items[x]['getContainer'] = container and container.UID() or ''
+            else:
+                items[x]['getContainer'] = container and container.Title() or ''
 
             preservation = obj.getPreservation()
-            items[x]['getPreservation'] = \
-                preservation and preservation.UID() or ''
+            if self.allow_edit:
+                items[x]['getPreservation'] = preservation and preservation.UID() or ''
+            else:
+                items[x]['getPreservation'] = preservation and preservation.Title() or ''
 
             sampler = obj.getSampler().strip()
             items[x]['getSampler'] = \
@@ -123,10 +146,6 @@ class SamplePartitionsView(BikaListingView):
             datesampled = obj.getDateSampled()
             items[x]['getDateSampled'] = \
                 datesampled and TimeOrDate(self.context, datesampled) or ''
-
-            items[x]['allow_edit'] = ['getContainer', 'getPreservation']
-            items[x]['choices']['getPreservation'] = preservations
-            items[x]['choices']['getContainer'] = containers
 
             preserver = obj.getPreserver().strip()
             items[x]['getPreserver'] = \
@@ -141,12 +160,17 @@ class SamplePartitionsView(BikaListingView):
 
             samplingdate = obj.getSamplingDate()
 
+            # inline edits for Container and Preservation
+            items[x]['allow_edit'] = ['getContainer', 'getPreservation']
+            items[x]['choices']['getPreservation'] = preservations
+            items[x]['choices']['getContainer'] = containers
+
             # inline edits for Sampler and Date Sampled
             checkPermission = self.context.portal_membership.checkPermission
             if checkPermission(SampleSample, obj) \
                 and not samplingdate > DateTime():
-                items[x]['required'] = ['getSampler', 'getDateSampled']
-                items[x]['allow_edit'] = ['getSampler', 'getDateSampled']
+                items[x]['required'] += ['getSampler', 'getDateSampled']
+                items[x]['allow_edit'] += ['getSampler', 'getDateSampled']
                 samplers = getUsers(obj, ['Sampler', 'LabManager', 'Manager'])
                 getAuthenticatedMember = obj.portal_membership.getAuthenticatedMember
                 username = getAuthenticatedMember().getUserName()
@@ -163,8 +187,8 @@ class SamplePartitionsView(BikaListingView):
             # inline edits for Preserver and Date Preserved
             checkPermission = self.context.portal_membership.checkPermission
             if checkPermission(PreserveSample, obj):
-                items[x]['required'] = ['getPreserver', 'getDatePreserved']
-                items[x]['allow_edit'] = ['getPreserver', 'getDatePreserved']
+                items[x]['required'] += ['getPreserver', 'getDatePreserved']
+                items[x]['allow_edit'] += ['getPreserver', 'getDatePreserved']
                 preservers = getUsers(obj, ['Preserver', 'LabManager', 'Manager'])
                 getAuthenticatedMember = obj.portal_membership.getAuthenticatedMember
                 username = getAuthenticatedMember().getUserName()
@@ -180,15 +204,34 @@ class SamplePartitionsView(BikaListingView):
 
         return items
 
+class createSamplePartition(BrowserView):
+    """create a new Sample Partition
+    """
+    def __call__(self):
+        wf = getToolByName(self.context, 'portal_workflow')
+        _id = self.context.invokeFactory(type_name = 'SamplePartition',
+                                         id = 'tmp')
+        part = self.context[_id]
+        part.processForm()
+        SamplingWorkflowEnabled = part.bika_setup.getSamplingWorkflowEnabled()
+        ## We force the object to have the same state as the parent
+        sample_state = workflow.getInfoFor(sample, 'review_state')
+        changeWorkflowState(part, sample_state)
+        self.request.RESPONSE.redirect(self.context.absolute_url() +
+                                       "/partitions")
+        return
+
 class SampleAnalysesView(AnalysesView):
     """ This renders the Field and Lab analyses tables for Samples
     """
     def __init__(self, context, request, **kwargs):
         AnalysesView.__init__(self, context, request)
+        self.show_select_column = False
+        self.allow_edit = False
+        self.show_workflow_action_buttons = False
         for k,v in kwargs.items():
             self.contentFilter[k] = v
         if kwargs.get('getPointOfCapture', '') == 'lab':
-            self.allow_edit = False
             self.columns['Request'] = {'title': _("Request"),
                                        'sortable':False}
             # Add Request column
@@ -207,8 +250,8 @@ class SampleAnalysesView(AnalysesView):
                 "<a href='%s'>%s</a>"%(ar.absolute_url(), ar.Title())
         return items
 
-class SampleView(BrowserView):
-    """ Sample View/Edit form
+class SampleEdit(BrowserView):
+    """
     """
 
     implements(IViewView)
@@ -219,6 +262,7 @@ class SampleView(BrowserView):
         BrowserView.__init__(self, context, request)
         self.icon = "++resource++bika.lims.images/sample_big.png"
         self.TimeOrDate = TimeOrDate
+        self.allow_edit = True
 
     def now(self):
         return DateTime()
@@ -243,7 +287,6 @@ class SampleView(BrowserView):
         getAuthenticatedMember = self.context.portal_membership.getAuthenticatedMember
         workflow = getToolByName(self.context, 'portal_workflow')
         ars = self.context.getAnalysisRequests()
-
         props = getToolByName(self.context, 'portal_properties').bika_properties
         datepicker_format = props.getProperty('datepicker_format')
 
@@ -264,13 +307,13 @@ class SampleView(BrowserView):
         self.header_rows = [
             {'id': 'ClientReference',
              'title': _('Client Reference'),
-             'allow_edit': True,
+             'allow_edit': self.allow_edit,
              'value': self.context.getClientReference(),
              'condition':True,
              'type': 'text'},
             {'id': 'ClientSampleID',
              'title': _('Client SID'),
-             'allow_edit': True,
+             'allow_edit': self.allow_edit,
              'value': self.context.getClientSampleID(),
              'condition':True,
              'type': 'text'},
@@ -282,20 +325,20 @@ class SampleView(BrowserView):
              'type': 'text'},
             {'id': 'SampleType',
              'title': _('Sample Type'),
-             'allow_edit': allow_sample_edit,
+             'allow_edit': self.allow_edit and allow_sample_edit,
              'value': st and st.Title() or '',
              'condition':True,
              'type': 'text',
              'required': True},
             {'id': 'SamplePoint',
              'title': _('Sample Point'),
-             'allow_edit': allow_sample_edit,
+             'allow_edit': self.allow_edit and allow_sample_edit,
              'value': sp and sp.Title() or '',
              'condition':True,
              'type': 'text'},
             {'id': 'Composite',
              'title': _('Composite'),
-             'allow_edit': allow_sample_edit,
+             'allow_edit': self.allow_edit and allow_sample_edit,
              'value': self.context.getComposite(),
              'condition':True,
              'type': 'boolean'},
@@ -314,7 +357,7 @@ class SampleView(BrowserView):
              'type': 'text'},
             {'id': 'SamplingDate',
              'title': _('Sampling Date'),
-             'allow_edit': allow_sample_edit,
+             'allow_edit': self.allow_edit and allow_sample_edit,
              'value': self.context.getSamplingDate().strftime(datepicker_format),
              'formatted_value': TimeOrDate(self.context, self.context.getSamplingDate()),
              'condition':True,
@@ -349,7 +392,10 @@ class SampleView(BrowserView):
              'condition':True,
              'type': 'text'},
         ]
-        self.header_buttons = [{'name':'save_button', 'title':_('Save')}]
+        if self.allow_edit:
+            self.header_buttons = [{'name':'save_button', 'title':_('Save')}]
+        else:
+            self.header_buttons = []
 
         ## handle_header table submit
         if 'save_button' in form:
@@ -394,29 +440,36 @@ class SampleView(BrowserView):
             return
 
         ## Create Sample Partitions table
-        p = SamplePartitionsView(self.context, self.request)
-        p.show_column_toggles = False
-        self.parts = p.contents_table()
+        parts_table = None
+        if not self.allow_edit:
+            p = SamplePartitionsView(self.context, self.request)
+            p.allow_edit = self.allow_edit
+            p.show_select_column = self.allow_edit
+            p.show_workflow_action_buttons = self.allow_edit
+            p.show_column_toggles = False
+            p.show_select_all_checkbox = False
+            p.review_states[0]['transitions'] = [{'id': 'empty'},] # none
+            parts_table = p.contents_table()
+        self.parts = parts_table
 
         ## Create Field and Lab Analyses tables
         self.tables = {}
-        for poc in POINTS_OF_CAPTURE:
-            if not self.context.getAnalyses({'getPointOfCapture': poc}):
-                continue
-            t = SampleAnalysesView(self.context,
-                             self.request,
-                             getPointOfCapture = poc,
-                             sort_on = 'getServiceTitle')
-            t.form_id = "sample_%s_analyses" % poc
-            t.allow_edit = True
-            if poc == 'field':
-                t.review_states[0]['columns'].remove('DueDate')
-            t.show_column_toggles = False
-            t.review_states[0]['transitions'] = [{'id':'submit'},
-                                                 {'id':'retract'},
-                                                 {'id':'verify'}]
-            t.show_select_column = True
-            self.tables[POINTS_OF_CAPTURE.getValue(poc)] = t.contents_table()
+        if not self.allow_edit:
+            for poc in POINTS_OF_CAPTURE:
+                if not self.context.getAnalyses({'getPointOfCapture': poc}):
+                    continue
+                t = SampleAnalysesView(self.context,
+                                 self.request,
+                                 getPointOfCapture = poc,
+                                 sort_on = 'getServiceTitle')
+                t.form_id = "sample_%s_analyses" % poc
+                if poc == 'field':
+                    t.review_states[0]['columns'].remove('DueDate')
+                t.show_column_toggles = False
+                t.review_states[0]['transitions'] = [{'id':'submit'},
+                                                     {'id':'retract'},
+                                                     {'id':'verify'}]
+                self.tables[POINTS_OF_CAPTURE.getValue(poc)] = t.contents_table()
 
         return self.template()
 
@@ -425,6 +478,11 @@ class SampleView(BrowserView):
         while True:
             i += 1
             yield i
+
+class SampleView(SampleEdit):
+    def __call__(self):
+        self.allow_edit = False
+        return SampleEdit.__call__(self)
 
 class SamplesView(BikaListingView):
     implements(IViewView)

@@ -22,18 +22,23 @@
 	specification python:request.get('specification', view.getDefaultSpec());
 	mtool here/portal_membership;">
 
-	<span tal:replace="structure view/header_table"/>
+	<span tal:condition="view/header_table"
+	      tal:replace="structure view/header_table">
+	</span>
 
-	<h3 style="margin-top:2em;">
+	<h3 tal:condition="view/parts"
+	    style="margin-top:1em;">
 		<img
 			i18n:attributes="title"
 			title="Partitions"
 			src="++resource++bika.lims.images/samplepartition.png"/>
 		<span i18n:translate="">Sample Partitions</span>
 	</h3>
-	<tal:parts replace="structure view/parts"/>
+	<tal:parts tal:condition="view/parts"
+	            replace="structure view/parts"/>
 
-    <h3 style="margin-top:2em;">
+    <h3 tal:condition="view/tables"
+	    style="margin-top:2em;">
         <tal:range>
             <form name="specificationForm"
                 enctype="multipart/form-data"
@@ -59,7 +64,8 @@
         </tal:range>
     </h3>
 
-    <tal:tables tal:repeat="table python:view.tables.items()">
+    <tal:tables tal:condition="view/tables"
+	            tal:repeat="table python:view.tables.items()">
 		<h3 style="margin-top:2em;">
 			<img
 				i18n:attributes="title"
@@ -70,11 +76,21 @@
         <span tal:replace="structure python: table[1]"/>
     </tal:tables>
 
-	<span style="margin-top:2em;">
+	<span tal:condition="view/allow_edit">
+		<p style="margin-top:2em;"/>
 		<tal:remarks define="
 			field python:context.Schema()['Remarks'];
 			errors python:{};">
 			 <metal:widget use-macro="python:context.widget('Remarks', mode='edit')" />
+		</tal:remarks>
+	</span>
+
+	<span tal:condition="not:view/allow_edit">
+		<p style="margin-top:2em;"/>
+		<tal:remarks define="
+			field python:context.Schema()['Remarks'];
+			errors python:{};">
+			 <metal:widget use-macro="python:context.widget('Remarks', mode='view')" />
 		</tal:remarks>
 	</span>
 

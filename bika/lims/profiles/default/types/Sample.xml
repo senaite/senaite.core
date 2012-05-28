@@ -43,8 +43,44 @@
          url_expr="string:${object_url}/base_edit"
          i18n:attributes="title"
          i18n:domain="plone"
-         visible="False">
+         visible="True">
  </action>
+
+ <action title="Sample Partitions"
+         action_id="partitions"
+         category="object"
+         icon_expr=""
+         link_target=""
+         url_expr="string:${object_url}/partitions"
+         i18n:attributes="title"
+         i18n:domain="plone"
+         visible="True">
+   <permission value="BIKA: Manage Samples"/>
+ </action>
+
+ <action title="Analyses"
+         action_id="analyses"
+         category="object"
+         icon_expr=""
+         link_target=""
+         url_expr="string:${object_url}/analyses"
+         i18n:attributes="title"
+         i18n:domain="plone"
+         visible="True">
+   <permission value="BIKA: Manage Samples"/>
+ </action>
+
+<!-- <action title="Labels"-->
+<!--        action_id="labels"-->
+<!--        category="object"-->
+<!--        condition_expr=""-->
+<!--        icon_expr="string:${object_url}/++resource++bika.lims.images/labels.png"-->
+<!--        link_target=""-->
+<!--        url_expr="string:${object_url}/labels"-->
+<!--        i18n:attributes="title"-->
+<!--        visible="True">-->
+<!--   <permission value="View"/>-->
+<!-- </action>-->
 
  <action title="Log"
          action_id="log"
@@ -55,6 +91,7 @@
          visible="True">
    <permission value="View"/>
  </action>
+
 
 <action title="Large Sticker"
         action_id="sticker_large"

@@ -7,7 +7,7 @@
 <body>
 
 <metal:content-title fill-slot="content-title">
-<h1>Administrative Reports </h1>
+<h1 i18n:translate="">Administrative Reports</h1>
 </metal:content-title>
 
 <metal:content-description fill-slot="content-description">

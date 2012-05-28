@@ -58,6 +58,14 @@
 		title="Partitions"
 		src="++resource++bika.lims.images/samplepartition.png"/>
 	<span i18n:translate="">Sample Partitions</span>
+	<tal:add_actions repeat="add_item python:view.context_actions.keys()">
+		<a tal:attributes="
+			style python:'background: url(%s) 2px 50%% no-repeat'%(view.context_actions[add_item]['icon']);
+			href python:view.context_actions[add_item]['url'];
+			class python:'context_action_link %s' % (view.context_actions[add_item].get('class',''))">
+			<span tal:replace="python:add_item"/>
+		</a>
+	</tal:add_actions>
 </h3>
 
 <form id="list" action="workflow_action" method="post" name="bika_listing_form">
@@ -83,15 +91,6 @@
 		<tal:parts replace="structure view/parts"/>
 	</span>
 
-	<input class="ar_analyses_add_part context action_button allowMultiSubmit"
-		type="submit"
-		i18n:attributes="value"
-		value="Add"/>
-	<input class="ar_analyses_delete_part context action_button allowMultiSubmit"
-		type="submit"
-		i18n:attributes="value"
-		value="Delete"/>
-
 	<h3 style="margin-top:1em;">
 		<img
 			i18n:attributes="title"
@@ -106,9 +105,11 @@
 	</form>
 
 	<tal:hasremarks tal:condition="python:hasattr(context, 'Remarks')">
+		<p style="margin-top:2em;"/>
 		<tal:remarks define="
 			field python:context.Schema()['Remarks'];
 			errors python:{};">
+		<p style="margin-top:2em;"/>
 			 <metal:widget use-macro="python:context.widget('Remarks', mode='edit')" />
 		</tal:remarks>
 	</tal:hasremarks>

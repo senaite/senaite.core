@@ -72,3 +72,10 @@ msgstr "Security"
 
 msgid "label_schema_Uncertainties"
 msgstr "Uncertainties"
+
+msgid "label_schema_Partitions"
+msgstr "Partitions"
+
+msgid "label_schema_Analyses"
+msgstr "Analyses"
+
